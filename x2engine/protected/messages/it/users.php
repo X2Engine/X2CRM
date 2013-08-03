@@ -1,68 +1,32 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Users Attributes
-'ID'=>'ID',
-'First Name'=>'Nome',
-'Last Name'=>'Cognome',
-'Username'=>'Nome Utente',
-'Password'=>'Password',
-'Title'=>'Titolo',
-'Department'=>'Reparto',
-'Office Phone'=>'Telefono Ufficio',
-'Cell Phone'=>'Cellulare',
 'Home Phone'=>'Telefono di Casa',
-'Address'=>'Indirizzo',
-'Background Info'=>'Informazioni Generali',
-'Email'=>'E-mail',
-'Status'=>'Stato',
+'Department'=>'Dipartimento',
 'Update Password'=>'Aggiorna Password',
-'Last Updated'=>'Ultimo Aggiornamento',
-'Updated By'=>'Aggiornato Da',
 'Recent Items'=>'Elementi Recenti',
+'API Key'=>'API Key',
 
 // Users Actions
 'Create User'=>'Crea Utente',
 'View User'=>'Vista User',
 'Update User'=>'Aggiornamento Utente',
-'Manage Users'=>'Gestire gli Utenti',
 'Invite Users'=>'Invitare gli Utenti',
+'Delete User'=>'Elimina utente',
+'User:'=>'Utente:',
+'Action History'=>'Storia azione',
 
 // Users Titles
 'User: {name}'=>'Utente: {name}',
 'Update User: {name}'=>'Aggiornamento Utente: {name}',
+'Invite Users to X2CRM'=>'Invitare gli utenti a X2CRM',
+'Instructions'=>'Istruzione',
+'Delete Unregistered'=>'Elimina non registrato',
+'Invited Users'=>'Utenti invitati',
+
+// Misc Text
+'Please enter a list of e-mails separated by commas.'=>'Si prega di inserire un elenco di e-mail separati da virgole.',
+'{n} user(s) have been invited but have not yet completed registration.'=>'{n} user (s), sono stati invitati, ma non hanno ancora completato la registrazione.',
+'To delete all users who have not completed their invite, click the button below.'=>'Per eliminare tutti gli utenti che non hanno completato il loro invito, fare clic sul pulsante qui sotto.',
+'Are you sure you want to delete these users?'=>'Sei sicuro di voler cancellare questi utenti?',
 );

@@ -49,8 +49,8 @@ $this->actionMenu = $this->formatMenu(array(
 ?>
 
 
+<div class="page-title icon charts"><h2><?php echo Yii::t('charts', 'Pipeline Dashboard'); ?>&nbsp;&nbsp;</h2></div>
 <div class="form">
-	<div class="page-title icon charts"><h2><?php echo Yii::t('app', 'Pipeline Dashboard'); ?>&nbsp;&nbsp;</h2></div>
 	<br>
 
 	<?php
@@ -75,29 +75,29 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('charts', 'Select deals closing in&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('charts', 'Select deals closing in').'&nbsp;&nbsp;&nbsp;&nbsp;')); ?>
 				<?php
 				echo $form->radioButtonList($model, 'dateRange', array(
-					5 => Yii::t('charts', '5 days'),
-					10 => Yii::t('charts', '10 days'),
-					15 => Yii::t('charts', '15 days'),
-					20 => Yii::t('charts', '20 days'),
-					30 => Yii::t('charts', '30 days'),
-					60 => Yii::t('charts', '60 days'),
-					90 => Yii::t('charts', '90 days')
+					5 => Yii::t('charts', '{n} days',array('{n}'=>'5')),
+					10 => Yii::t('charts', '{n} days',array('{n}'=>'10')),
+					15 => Yii::t('charts', '{n} days',array('{n}'=>'15')),
+					20 => Yii::t('charts', '{n} days',array('{n}'=>'20')),
+					30 => Yii::t('charts', '{n} days',array('{n}'=>'30')),
+					60 => Yii::t('charts', '{n} days',array('{n}'=>'60')),
+					90 => Yii::t('charts', '{n} days',array('{n}'=>'90'))
 						), array(
 					'separator' => '&nbsp;&nbsp;|&nbsp;&nbsp;'
 						)
 				)
 				?>
-				<a onclick="submitForm('chart');" href="#" class="x2-button"><span>Go</span></a>
+				<a onclick="submitForm('chart');" href="#" class="x2-button"><span><?php echo Yii::t('app','Go'); ?></span></a>
 			</div>
 		</div>
 	</div>
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'confidence', array('label' => Yii::t('charts', 'Limit to confidence is&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'confidence', array('label' => Yii::t('charts', 'Limit to confidence is').'&nbsp;&nbsp;&nbsp;&nbsp;')); ?>
 				<?php
 				echo $form->radioButtonList($model, 'confidence', array(
 					-1 => Yii::t('charts', 'Any'),
@@ -112,14 +112,14 @@ $this->actionMenu = $this->formatMenu(array(
 						)
 				)
 				?>
-				<a onclick="submitForm('chart');" href="#" class="x2-button"><span>Go</span></a>
+				<a onclick="submitForm('chart');" href="#" class="x2-button"><span><?php echo Yii::t('app','Go'); ?></span></a>
 			</div>
 		</div>
 	</div>
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'limitTo', array('label' => Yii::t('charts', 'Limit selected deals to&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'limitTo', array('label' => Yii::t('charts', 'Limit selected deals to').'&nbsp;&nbsp;&nbsp;&nbsp;')); ?>
 				<?php
 				echo $form->radioButtonList($model, 'limitTo', array(
 					1 => Yii::t('charts', 'Smallest'),
@@ -131,18 +131,18 @@ $this->actionMenu = $this->formatMenu(array(
 						)
 				)
 				?>
-				<a onclick="submitForm('chart');" href="#" class="x2-button"><span>Go</span></a>
+				<a onclick="submitForm('chart');" href="#" class="x2-button"><span><?php echo Yii::t('app','Go'); ?></span></a>
 			</div>
 		</div>
 	</div>
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'assignedTo', array('label' => Yii::t('charts', 'Select deals assigned to&nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'assignedTo', array('label' => Yii::t('charts', 'Select deals assigned to').'&nbsp;&nbsp;&nbsp;&nbsp;')); ?>
 				<?php
 				echo $form->dropDownList($model, 'assignedTo', array_merge(array('0' => 'All'), Groups::getNames(), User::getNames()));
 				?>
-				<a onclick="submitForm('chart');" href="#" class="x2-button"><span>Go</span></a>
+				<a onclick="submitForm('chart');" href="#" class="x2-button"><span><?php echo Yii::t('app','Go'); ?></span></a>
 			</div>
 		</div>
 	</div>

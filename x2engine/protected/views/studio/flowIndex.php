@@ -92,5 +92,5 @@ $this->widget('zii.widgets.grid.CGridView', array(
 ?><br>
 <?php
 if(Yii::app()->params->edition==='pro')
-	echo CHtml::link('Create New Flow',array('/studio/flowDesigner'),array('class'=>'x2-button'));
+	echo CHtml::link(Yii::t('studio','Create New Flow'),array('/studio/flowDesigner'),array('class'=>'x2-button'));
 ?>

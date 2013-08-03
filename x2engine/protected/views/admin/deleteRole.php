@@ -34,13 +34,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin','Delete A Role'); ?></h2></div>
-<br /> <span style="color:red;"><b>WARNING:</b> this operation is not reversible, all users will have this role removed from them.</span>
-<form name="deleteRoles" action="deleteRole" method="POST">
-	<br />
-	<select name="role">
-		<?php foreach($roles as $key=>$value) echo "<option value='$key'>$value</option>"; ?>
-	</select>
-	<br /><br />
-	<input class="x2-button" type="submit" value="<?php echo Yii::t('admin','Delete');?>" />
-</form>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'Delete A Role'); ?></h2></div>
+<div class="form">
+    <br /> <span style="color:red;"><?php echo Yii::t('admin','<b>WARNING:</b> this operation is not reversible, all users will have this role removed from them.');?></span>
+    <form name="deleteRoles" action="deleteRole" method="POST">
+        <br />
+        <select name="role">
+            <?php foreach($roles as $key => $value)
+                echo "<option value='$key'>$value</option>"; ?>
+        </select>
+        <br /><br />
+        <input class="x2-button" type="submit" value="<?php echo Yii::t('admin', 'Delete'); ?>" />
+    </form>
+</div>

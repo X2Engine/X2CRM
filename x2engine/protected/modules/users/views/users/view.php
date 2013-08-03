@@ -41,7 +41,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('users','Invite Users'), 'url'=>array('inviteUsers')),
 	array('label'=>Yii::t('users','View User')),
 	array('label'=>Yii::t('users','Update User'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('contacts','Delete User'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
+	array('label'=>Yii::t('users','Delete User'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 ));
 ?>
 <div class="page-title icon users">
@@ -70,7 +70,7 @@ $this->actionMenu = $this->formatMenu(array(
 	),
 )); ?>
 <br>
-<div class="page-title"><h2><?php echo Yii::t('users','Action History'); ?></h2></div>
+<div class="page-title rounded-top"><h2><?php echo Yii::t('users','Action History'); ?></h2></div>
 
 
 <?php
@@ -86,7 +86,7 @@ foreach($actionHistory as $action) {
 							 array('/actions/actions/view','id'=>$action->id)),
 			),
 			'assignedTo',
-                        array(  
+                        array(
                                 'name'=>'dueDate',
 				'label'=>'Due Date',
 				'type'=>'raw',
@@ -99,7 +99,7 @@ foreach($actionHistory as $action) {
 			),
 			'priority',
 			'type',
-                        array(  
+                        array(
                                 'name'=>'createDate',
 				'label'=>'Create Date',
 				'type'=>'raw',

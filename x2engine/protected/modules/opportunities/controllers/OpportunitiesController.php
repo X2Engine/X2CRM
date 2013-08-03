@@ -87,8 +87,11 @@ class OpportunitiesController extends x2base {
 		$type = 'opportunities';
 		$model = $this->loadModel($id);
 		$model->associatedContacts = Contacts::getContactLinks($model->associatedContacts);
-
-		parent::view($model, $type);
+        if($this->checkPermissions($model,'view')){
+            parent::view($model, $type);
+        }else{
+            $this->redirect('index');
+        }
 	}
 
 	public function actionShareOpportunity($id){

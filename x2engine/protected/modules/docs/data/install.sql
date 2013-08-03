@@ -6,7 +6,7 @@ CREATE TABLE `x2_docs` (
     subject                 VARCHAR(255),
 	type					VARCHAR(10)		NOT NULL DEFAULT "",
 	text					LONGTEXT		NOT NULL,
-	createdBy				VARCHAR(60)		NOT NULL,
+	createdBy				VARCHAR(60)		DEFAULT NULL,
 	createDate				BIGINT,
 	editPermissions			VARCHAR(250),
 	updatedBy				VARCHAR(50),

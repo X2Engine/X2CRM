@@ -36,43 +36,43 @@
 
 /**
  * Create Record action
- * 
+ *
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowEmail extends X2FlowAction {
 	public $title = 'Email';
 	public $info = 'Send a template or custom email to the specified address.';
-	
+
 	public function paramRules() {
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
 			'options' => array(
-				array('name'=>'to','label'=>'To:','type'=>'email'),
-				array('name'=>'from','label'=>'From:','type'=>'email'),
-				array('name'=>'template','label'=>'Template','type'=>'dropdown','options'=>array(''=>Yii::t('studio','Custom'))+Docs::getEmailTemplates(),'optional'=>1),
-				array('name'=>'subject','label'=>'Subject'),
-				array('name'=>'cc','label'=>'CC:','optional'=>1,'type'=>'email'),
-				array('name'=>'bcc','label'=>'BCC:','optional'=>1,'type'=>'email'),
-				array('name'=>'body','label'=>'Message','optional'=>1,'type'=>'richtext'),
+				array('name'=>'to','label'=>Yii::t('studio','To:'),'type'=>'email'),
+				array('name'=>'from','label'=>Yii::t('studio','From:'),'type'=>'email'),
+				array('name'=>'template','label'=>Yii::t('studio','Template'),'type'=>'dropdown','options'=>array(''=>Yii::t('studio','Custom'))+Docs::getEmailTemplates(),'optional'=>1),
+				array('name'=>'subject','label'=>Yii::t('studio','Subject')),
+				array('name'=>'cc','label'=>Yii::t('studio','CC:'),'optional'=>1,'type'=>'email'),
+				array('name'=>'bcc','label'=>Yii::t('studio','BCC:'),'optional'=>1,'type'=>'email'),
+				array('name'=>'body','label'=>Yii::t('studio','Message'),'optional'=>1,'type'=>'richtext'),
 				// 'time','dateTime'),
 			));
 	}
-	
+
 	public function execute(&$params) {
 		// die(var_dump(array_keys($params)));
 		$eml = new InlineEmail;
 		$options = &$this->config['options'];
-		
+
 		if(isset($options['cc']['value']))
 			$eml->cc = $this->parseOption('cc',$params);
 		if(isset($options['bcc']['value']))
 			$eml->bcc = $this->parseOption('bcc',$params);
 		$eml->to = $this->parseOption('to',$params);
-		
+
 		$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
 		$eml->subject = $this->parseOption('subject',$params);
-		
+
 		if(isset($options['body']['value']) && !empty($options['body']['value'])) {	// "body" option (deliberately-entered content) takes precedence over template
 			$eml->scenario = 'custom';
 			$eml->message = InlineEmail::emptyBody($this->parseOption('body',$params));

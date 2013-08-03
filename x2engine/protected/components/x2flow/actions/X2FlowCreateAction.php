@@ -47,7 +47,6 @@ class X2FlowCreateAction extends X2FlowAction {
 		$visOptions = array(
 			1 => Yii::t('actions','Public'),
 			0 => Yii::t('actions','Private'),
-			2 => Yii::t('actions','User\'s Groups')
 		);
 		$priorityOptions = array(
 			'1' => Yii::t('actions','Low'),

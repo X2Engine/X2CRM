@@ -125,16 +125,21 @@ foreach($layoutData['sections'] as &$section) {
 		echo ' showSection';
 	echo '">';
 
-	if($section['collapsible'] || !empty($section['title'])) {
+	//if($section['collapsible'] || !empty($section['title'])) {
 		echo '<div class="formSectionHeader">';
 		if($section['collapsible']) {
 			echo '<a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>';
 			echo '<a href="javascript:void(0)" class="formSectionShow">[+]</a>';
 		}
-		if(!empty($section['title']))
+		/*if(!empty($section['title']))
+			echo '<span class="sectionTitle" title="',addslashes($section['title']),'">',Yii::t(strtolower(Yii::app()->controller->id),$section['title']),'</span>';*/
+		if(!empty($section['title'])) {
 			echo '<span class="sectionTitle" title="',addslashes($section['title']),'">',Yii::t(strtolower(Yii::app()->controller->id),$section['title']),'</span>';
+		} else {
+			echo '<span class="sectionTitle"></span>';
+		}
 		echo '</div>';
-	}
+	//}
 	if(!empty($section['rows'])) {
 		echo '<div class="tableWrapper"';
 		if($collapsed)

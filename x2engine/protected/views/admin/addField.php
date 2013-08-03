@@ -36,14 +36,14 @@
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin', "Add A Custom Field"); ?></h2></div>
 <div class="form">
-<?php echo Yii::t('admin', "This form allows you to add custom fields to models."); ?>
-<br><br>
+    <?php echo Yii::t('admin', "This form allows you to add custom fields to models."); ?>
+    <br><br>
     <?php
     $form = $this->beginWidget('CActiveForm', array(
-    'id' => 'field-form',
-    'enableAjaxValidation' => false,
-    'action' => 'addField',
-    ));
+        'id' => 'field-form',
+        'enableAjaxValidation' => false,
+        'action' => 'addField',
+            ));
     echo $form->errorSummary($model);
     ?>
 
@@ -51,45 +51,44 @@
 
     <div class="row">
         <?php echo $form->labelEx($model, 'modelName'); ?>
-        <?php  echo $form->dropDownList($model, 'modelName', Admin::getModelList());?>
+        <?php echo $form->dropDownList($model, 'modelName', Admin::getModelList()); ?>
         <?php echo $form->error($model, 'modelName'); ?>
     </div>
 
     <div class="row">
-        <br><div><?php echo Yii::t('admin', 'Field Name <b>MUST</b> be of the format: wordWordWord. i.e. firstName'); ?>
-            <br><?php echo Yii::t('admin', 'The first letter must be lowercase and each following word should have its first letter capitalized.'); ?>
-            <br>No spaces are allowed.</div><br>
+        <br><div><?php echo Yii::t('admin', 'No spaces are allowed.'); ?></div><br>
         <?php echo $form->labelEx($model, 'fieldName'); ?>
-<?php echo $form->textField($model, 'fieldName'); ?>
-<?php echo $form->error($model, 'fieldName'); ?>
+        <?php echo $form->textField($model, 'fieldName'); ?>
+        <?php echo $form->error($model, 'fieldName'); ?>
     </div>
 
     <div class="row">
-        <br><div>Attribute Label is what you want the field to be displayed as. <br>
-            So for the field firstName, the label should probably be First Name</div><br>
+        <br><div><?php echo Yii::t('admin', 'Attribute Label is what you want the field to be displayed as.'); ?><br>
+            <?php echo Yii::t('admin', 'So for the field firstName, the label should probably be First Name'); ?></div><br>
         <?php echo $form->labelEx($model, 'attributeLabel'); ?>
-<?php echo $form->textField($model, 'attributeLabel'); ?>
-<?php echo $form->error($model, 'attributeLabel'); ?>
+        <?php echo $form->textField($model, 'attributeLabel'); ?>
+        <?php echo $form->error($model, 'attributeLabel'); ?>
     </div>
 
     <div class="row">
         <?php echo $form->labelEx($model, 'type'); ?>
         <?php
         echo $form->dropDownList($model, 'type', array(
-            'varchar' => 'Single Line Text',
-            'text' => 'Multiple Line Text Area',
-            'date' => 'Date',
-            'dateTime'=>'Date/Time',
-            'dropdown' => 'Dropdown',
-            'int' => 'Number',
-            'email' => 'E-Mail',
-            'currency' => 'Currency',
-            'url' => 'URL',
-            'float' => 'Decimal',
-            'boolean' => 'Checkbox',
-            'link' => 'Lookup',
-            'rating' => 'Rating',
-            'assignment' => 'Assignment'
+            'varchar' => Yii::t('admin', 'Single Line Text'),
+            'text' => Yii::t('admin', 'Multiple Line Text Area'),
+            'date' => Yii::t('admin', 'Date'),
+            'dateTime' => Yii::t('admin', 'Date/Time'),
+            'dropdown' => Yii::t('admin', 'Dropdown'),
+            'int' => Yii::t('admin', 'Number'),
+            'email' => Yii::t('admin', 'E-Mail'),
+            'currency' => Yii::t('admin', 'Currency'),
+            'url' => Yii::t('admin', 'URL'),
+            'float' => Yii::t('admin', 'Decimal'),
+            'boolean' => Yii::t('admin', 'Checkbox'),
+            'link' => Yii::t('admin', 'Lookup'),
+            'rating' => Yii::t('admin', 'Rating'),
+            'assignment' => Yii::t('admin', 'Assignment'),
+            'visibility' => Yii::t('admin', 'Visibility'),
                 ), array(
             'ajax' => array(
                 'type' => 'POST', //request type
@@ -100,7 +99,7 @@
             //leave out the data key to pass all form values through
                 )));
         ?>
-<?php echo $form->error($model, 'type'); ?>
+        <?php echo $form->error($model, 'type'); ?>
     </div>
 
     <div class="row" id="dropdown">
@@ -109,27 +108,27 @@
 
     <div class="row">
         <?php echo $form->labelEx($model, 'required'); ?>
-<?php echo $form->checkBox($model, 'required'); ?>
-<?php echo $form->error($model, 'required'); ?>
+        <?php echo $form->checkBox($model, 'required'); ?>
+        <?php echo $form->error($model, 'required'); ?>
     </div>
 
     <div class="row">
         <?php echo $form->labelEx($model, 'searchable'); ?>
-<?php echo $form->checkBox($model, 'searchable', array('id' => 'searchable', 'onclick' => '$("#relevance_box").toggle();')); ?>
-<?php echo $form->error($model, 'searchable'); ?>
+        <?php echo $form->checkBox($model, 'searchable', array('id' => 'searchable', 'onclick' => '$("#relevance_box").toggle();')); ?>
+        <?php echo $form->error($model, 'searchable'); ?>
     </div>
 
     <div class="row" id ="relevance_box" style="display:none">
         <?php echo $form->labelEx($model, 'relevance'); ?>
-<?php echo $form->dropDownList($model, 'relevance', array('Low' => 'Low', "Medium" => "Medium", "High" => "High"), array("id" => "relevance", 'options' => array('Medium' => array('selected' => true)))); ?>
-<?php echo $form->error($model, 'relevance'); ?>
+        <?php echo $form->dropDownList($model, 'relevance', array('Low' => Yii::t('app','Low'), "Medium" => Yii::t('app',"Medium"), "High" => Yii::t('app',"High")), array("id" => "relevance", 'options' => array('Medium' => array('selected' => true)))); ?>
+        <?php echo $form->error($model, 'relevance'); ?>
     </div>
 
 
     <div class="row buttons">
-    <?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Save'), array('class' => 'x2-button','onclick'=>'validateField();return false;')); ?>
+        <?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Save'), array('class' => 'x2-button', 'onclick' => 'validateField();return false;')); ?>
     </div>
-<?php $this->endWidget(); ?>
+    <?php $this->endWidget(); ?>
 </div>
 <script>
     var validationFlag=false;

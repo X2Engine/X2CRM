@@ -34,14 +34,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-include("protected/modules/products/productConfig.php");
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),
-	array('label'=>Yii::t('module','Create',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
-	array('label'=>Yii::t('module','View',array('{X}'=>$moduleConfig['recordName']))),
-	array('label'=>Yii::t('module','Update',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('module','Delete',array('{X}'=>$moduleConfig['recordName'])), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
+	array('label'=>Yii::t('products','Product List'), 'url'=>array('index')),
+	array('label'=>Yii::t('products','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('products','View')),
+	array('label'=>Yii::t('products','Update'), 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('products','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 ));
 $modelType = json_encode("Products");
 $modelId = json_encode($model->id);
@@ -60,10 +59,13 @@ $(function() {
 <div id="main-column" class="half-width">
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Product')); ?>
 
-<div class="form">
-	<b><?php echo Yii::t('app', 'Tags'); ?></b>
-<?php $this->widget('InlineTags', array('model'=>$model)); ?>
-</div>
+<?php 
+	$this->widget('X2WidgetList', array(
+		'block'=>'center', 
+		'model'=>$model, 
+		'modelType'=>'products'
+	)); 
+?>
 
 <?php $this->widget('Attachments',array('associationType'=>'products','associationId'=>$model->id)); ?>
 </div>

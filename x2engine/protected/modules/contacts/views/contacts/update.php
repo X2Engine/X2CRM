@@ -48,17 +48,28 @@ $this->actionMenu = $this->formatMenu(array(
 ),$authParams);
 
 ?>
+<?php
+	if (!IS_ANDROID) {
+		echo '
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
 	<div class="page-title-fixed-inner">
+		';
+	}
+?>
 		<div class="page-title icon contacts">
 			<h2><span class="no-bold"><?php echo Yii::t('app','Update:'); ?></span> <?php echo $model->name; ?></h2>
 			<?php echo CHtml::link(Yii::t('app','Save'),'#',array('class'=>'x2-button highlight right','onclick'=>'$("#save-button").click();return false;')); ?>
 		</div>
+<?php
+	if (!IS_ANDROID) {
+		echo '
 	</div>
 </div>
+		';
+	}
+?>
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts')); ?>
-
 <?php
 $createAccountUrl = $this->createUrl('/accounts/create');
 Yii::app()->clientScript->registerScript('create-account', "

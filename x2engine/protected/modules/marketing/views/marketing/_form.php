@@ -76,12 +76,13 @@ $("#Campaign_templateDropdown").change(function() {
 	if(template != "0") {
 		
 		$.ajax({
-			url:yii.baseUrl+"/index.php/docs/fullView/"+template,
+			url:yii.baseUrl+"/index.php/docs/fullView/"+template+"?json=1",
 			type:"GET",
-			success:function(data) {
-				window.emailEditor.setData(data);
-				window.emailEditor.document.on("keyup",function(){ $("#Campaign_templateDropdown").val("0"); });
-			}
+			dataType:"json"
+		}).done(function(data) {
+			window.emailEditor.setData(data.body);
+			$(\'input[name="Campaign[subject]"]\').val(data.subject);
+			window.emailEditor.document.on("keyup",function(){ $("#Campaign_templateDropdown").val("0"); });
 		});
 	}
 });
@@ -92,6 +93,11 @@ $("#Campaign_type").change(function(){
 		$("#Campaign_sendAs").parents(".formItem").fadeIn();
 	else
 		$("#Campaign_sendAs").parents(".formItem").fadeOut();
+});
+
+$("#Campaign_type").each(function(){
+	if($(this).val() != "Email")
+		$("#Campaign_sendAs").parents(".formItem").hide();
 });
 
 ',CClientScript::POS_READY);

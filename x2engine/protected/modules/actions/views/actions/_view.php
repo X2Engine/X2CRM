@@ -45,6 +45,9 @@ function deleteAction(actionId) {
 			success: function(response) {
 				if(response=='Success')
 					$('#history-'+actionId).fadeOut(200,function() { $('#history-'+actionId).remove(); });
+
+					// event detected by x2chart.js
+					$(document).trigger ('deletedAction');
 				}
 		});
 	}
@@ -92,12 +95,12 @@ if($type == 'workflow'){
 <?php
 if(empty($data->type) || $data->type == 'weblead'){
     if($data->complete == 'Yes'){
-        echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Completed: ')."</span>".Formatter::formatCompleteDate($data->completeDate);
+        echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Completed:')." </span>".Formatter::formatCompleteDate($data->completeDate);
     }else{
         if(!empty($data->dueDate)){
-            echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Due: ')."</span>".Actions::parseStatus($data->dueDate).'</b>';
+            echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Due:')." </span>".Actions::parseStatus($data->dueDate).'</b>';
         }elseif(!empty($data->createDate)){
-            echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Created: ')."</span>".Formatter::formatLongDateTime($data->createDate).'</b>';
+            echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Created:')." </span>".Formatter::formatLongDateTime($data->createDate).'</b>';
         }else{
             echo "&nbsp;";
         }
@@ -170,9 +173,9 @@ else if($type == 'workflow'){
 
     if(!empty($data->stageNumber) && !empty($data->workflowId) && $data->stageNumber <= count($stageRecords)){
         if($data->complete == 'Yes')
-            echo ' <b>'.Yii::t('workflow', 'Completed').'</b> '.date('Y-m-d H:i:s', $data->completeDate);
+            echo ' <b>'.Yii::t('workflow', 'Completed').'</b> '.Formatter::formatLongDateTime($data->completeDate);
         else
-            echo ' <b>'.Yii::t('workflow', 'Started').'</b> '.date('Y-m-d H:i:s', $data->createDate);
+            echo ' <b>'.Yii::t('workflow', 'Started').'</b> '.Formatter::formatLongDateTime($data->createDate);
     }
     if(isset($data->actionDescription))
         echo '<br>'.$data->actionDescription;
@@ -205,7 +208,9 @@ else if($type == 'workflow'){
     }
     echo ($legacy ? '<br />' : '').CHtml::link('[View email]', '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'email-frame'));
 }elseif($data->type == 'quotes'){
-    echo CHtml::link('[View quote]', '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'quote-frame'));
+    $quotePrint = (bool)  preg_match('/^\d+$/',$data->actionDescription); 
+    $objectId = $quotePrint ? $data->actionDescription : $data->id; 
+    echo CHtml::link('[View quote]', 'javascript:void(0);', array('onclick' => 'return false;', 'id' => $objectId, 'class' => $quotePrint ? 'quote-print-frame' : 'quote-frame'));
 } else
     echo Yii::app()->controller->convertUrls(CHtml::encode($data->actionDescription)); // convert LF and CRLF to <br />
 ?>

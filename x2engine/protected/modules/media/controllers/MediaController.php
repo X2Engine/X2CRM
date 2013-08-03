@@ -368,7 +368,10 @@ class MediaController extends x2base {
                 return false;
             }
         }catch(Google_AuthException $e){
-            unset($_SESSION['access_token']);
+            $auth->flushCredentials();
+            $auth->setErrors($e->getMessage());
+            return false;
+        }catch(Google_ServiceException $e){
             $auth->setErrors($e->getMessage());
             return false;
         }

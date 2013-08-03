@@ -1,105 +1,45 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-// // // Language Name
+// Language Name
 'languageName'=>'فارسی',
-// // // Login
+// Login
 'Please log in to continue:'=>'لطفا برای ادامه وارد شوید',
-'Username'=>'نام کاربر',
-'Password'=>'گذر واژه',
 'Remember me'=>'من را بخاطر بسپار',
 'Login'=>'ورود',
 'Welcome to {appName}.'=>'.{appName}به انجمن خوش آمدید',
-'Verification Code'=>'کد تأیید',
 'Login with Google'=>'ورود به سیستم با گوگل',
-// // // 
-// // // Main Menu
-'Calendar'=>'تقویم',
-'Actions'=>'اقدامات',
-'Contacts'=>'تماس ها',
-'Opportunities'=>'فرصت',
+
+// Main Menu
 'Projects'=>'پروژه ها',
 'Group Chat'=>'گپ گروهی',
-'Marketing'=>'بازاریابی',
 'Cases'=>'موارد',
-'Accounts'=>'حساب ها',
-'Users'=>'کاربران',
 'Admin'=>'مدیر',
-'Docs'=>'سند ها',
 'Chat'=>'گپ',
-'Social'=>'اجتماعی',
 'Profile'=>'نمایه',
-'Settings'=>'تنظیمات',
 'Logout'=>'خروج',
 'Login'=>'ورود',
-'More'=>'بیشتر',
 'What\'s New'=>'جدید',
-'Quotes'=>'نقل قول',
 'Dashboard'=>'داشبورد',
-'Products'=>'محصولات',
-'Workflow'=>'گردش کار',
-'Groups'=>'گروهها',
 'Notifications'=>'اطلاعیه ها',
 'Charts'=>'نمودارها',
-'Manage Users'=>'مدیریت کاربران',
-'Social Feed'=>'خوراک اجتماعی',
 'Preferences'=>'تنظیمات',
 'Reports'=>'گزارش',
 'Activity'=>'فعالیت',
 'Service'=>'سرویس',
 'Go Invisible'=>'رفتن به حالت نامرئی',
 'Go Visible'=>'برو مرئی',
-// // // 
-// // // Search Bar
+
+// Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM گروه افزار',
-'Go'=>'برو',
-'Contact'=>'تماس',
-'Action'=>'حرکت',
 'Contact + Action'=>'تماس + اقدام',
 'Search for contact, action, deal...'=>'پرس وجو برای تماس، اقدام، قرارداد و ...',
-// // // 
-// // // Footer
-'All Rights Reserved.'=>'تمام حقوق محفوظ.',
+
+// Footer
 'Generated in {time} seconds.'=>'ثانیه. {time} ساخته شده در',
 'About'=>'در حدود',
 'The Program is provided AS IS, without warranty.'=>'این برنامه به عنوان است، بدون ضمانت ارائه شده است.',
-// // // 
-// // // Widgets
-'My Actions'=>'اقدامات من',
+
+// Widgets
 'Twitter Feed'=>'خوراک توییتر',
 'Quick Contact'=>'ارتباط سریع',
 'Google Map'=>'نقشه گوگل',
@@ -109,81 +49,68 @@ return array (
 'Just Me'=>'فقط من',
 'All Users'=>'همه کاربران',
 'Doc Viewer'=>'نمایشگر سند',
-'Time Zone'=>'منطقه زمانی',
 'Top Sites'=>'سایت های برتر',
-'Media'=>'رسانه ها',
 'Current time in'=>'زمان کنونی در',
-'Hide'=>'پنهان کردن',
-// // // 
+
 'Total Action|Total Actions'=>'تمام اقدام| تمام اقدامات',
 'Unfinished Action|Unfinished Actions'=>'اقدام ناتمام|اقدامات ناتمام',
 'Overdue Action|Overdue Actions'=>'اقدام عقب افتاده|اقدامات عقب افتاده',
 'Completed Action|Completed Actions'=>'اقدام کامل شد|اقدامات کامل شدند',
-// // // 
+
 'Message Board'=>'تابلو اعلانات',
 'Please enter a message of the day!'=>'پیام روز را وارد کنید!',
 'Edit Message'=>'ویرایش پیام',
-// // // 
+
 'Note Pad'=>'دفتر یادداشت',
 'Feel free to enter some notes!'=>'با احساس راحتی یادداشت وارد کنید!',
-// // // 
-'Top Contacts'=>'تماس های برتر',
+
 'Add {name}'=>'اضافه کردن {name}',
-// // // 
+
 'Enter Title'=>'عنوان را وارد کنید',
-'Title'=>'عنوان',
 'Title:'=>'عنوان:',
-'Link'=>'پیوند',
 'Link:'=>'پیوند:',
 'Add Site'=>'اضافه کردن پایگاه ',
-'Example'=>'مثال',
-// // // 
-// // // Chat
+
+// Chat
 'Message Body'=>'متن  پیام',
 'Enter text here...'=>'اینجا متن را وارد کنید...',
 'Send'=>'ارسال',
-// // // 
-// // // Email Form
+
+// Activity Feed
+'Activity Feed Order'=>'فعالیت خوراک سفارش',
+'Top Down'=>'بالا به پایین',
+'Bottom Up'=>'پایین به بالا',
+
+// Email Form
 'To:'=>'به:',
 'Subject:'=>'موضوع:',
 'Message:'=>'پیام:',
 'Error: Could not send email.'=>'خطا: امکان ارسال ای-نامه نیست.',
 'Email Sent!'=>'ای-نامه ارسال شد!',
-'Preview'=>'پیش دید',
 'Attachments'=>'فایل های پیوست',
-// // // 
-// // // Comments
-'Add Comment'=>'ایجاد نظر',
-'Create Action'=>'ایجاد اقدام',
+'Note: you have entered text into the email that will be lost. Are you sure you want to continue?'=>'توجه: شما متن را به ایمیل که از دست خواهد رفت، وارد شده است. آیا شما مطمئن هستید که می خواهید ادامه دهید؟',
+'From:'=>'از:',
+'Send As:'=>'ارسال به:',
+'System default (legacy)'=>'به طور پیش فرض سیستم (میراث)',
+
+// Comments
 'Add a comment...'=>'ایجاد یک نظر...',
-'History'=>'تاریخچه',
 'Today'=>'امروز',
 'Tomorrow'=>'فردا',
-'Comments'=>'نظر',
 'Post'=>'پست',
-// // // 
-// // // Misc
+
+// Misc
 'Advanced Search'=>'پرس و جوی پیشرفته',
 'Clear Filters'=>'پاک کردن شرایط',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'شما به صورت اختیاری ممکن است وارد یک عملگر مقایسه (<b> <</b> <b> <= </b> <b>> </b>، <b>> = </b><b> <> </b> یا <b> = </b>) در آغاز هر یک از ارزش های جستجوی خود را مشخص مقایسه باید انجام شود.',
 'Fields with <span class="required">*</span> are required.'=>'زمینه با <span class="required"> * </span> مورد نیاز است.',
 'Click here to return to where you were'=>'اینجا را کلیک کنید برای بازگشت به جایی که شما',
-'Private'=>'خصوصی',
 'Attach A File/Photo'=>'ضمیمه کردن یک فایل / عکس',
 'Attach a File'=>'پیوست کردن یک فایل',
-'None'=>'هیچ یک',
-'Anyone'=>'هر کس',
-'Share'=>'اشتراک',
-'Link'=>'پیوند',
+'Share:'=>'به اشتراک بگذارید:',
 'Theme'=>'پوسته',
-'Account'=>'حساب',
-'Opportunity'=>'فرصت',
-'All'=>'همه',
 'Optional'=>'اختیاری',
 'Records that have been modified since your last login.'=>'سوابق شده اند که پس از آخرین ورود شما به سایت تغییر یافتهاست.',
-'Are you sure you want to delete this item?'=>'آیا شما مطمئن هستید که شما می خواهید به حذف این مورد؟',
-'Columns'=>'ستونها',
-'Tools'=>'ابزار',
 'Rights reserved.'=>'حقوق محفوظ است.',
 'GNU General Public License version 3'=>'GNU عمومی نسخه 3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'این برنامه به عنوان است، ارائه بدون گارانتی. <br> تحت مجوز {BSD}.',
@@ -191,32 +118,21 @@ return array (
 'Minimize'=>'به حداقل رساندن',
 '"{X}" is not an allowed filetype.'=>'"{X}" نوع فایل مجاز نیست.',
 'Loading'=>'بارگزاری کردن',
-'Edit'=>'ویرایش',
 'Due'=>'به علت',
 'Help'=>'کمک',
 '---'=>'---',
 'You don\'t have any notifications.'=>'شما هیچ اعلان ها ندارد.',
 'View all'=>'مشاهده همه',
 'Close'=>'بستن',
-'Delete'=>'حذف کردن',
 'Group?'=>'گروه؟',
 'Check box'=>'جعبه چک',
 'results per page'=>'تعداد نتایج در هر صفحه',
-'Public'=>'عمومی',
-'Tags'=>'برچسب ها',
 'Template:'=>':قالب',
-'Model Name'=>'نام مدل',
-'Model ID'=>'شناسایی مدل',
 'What should the list be named?'=>'چه باید این فهرست می توان نام برد؟',
 'Added items to list.'=>'.آیتم های اضافه شده به لیست',
 'Select an option'=>'یک گزینه را انتخاب کنید',
 'loading...'=>'...در حال بارگیری',
-'Checkbox'=>'جعبه',
 'New List From Selection'=>'لیست جدید از انتخاب',
-'No'=>'بدون',
-'Yes'=>'بله',
-'View'=>'دیدن',
-'Update'=>'بروز',
 'results per page.'=>'تعداد نتایج در هر صفحه است.',
 'Displaying {start}-{end} of {count} result(s).'=>'نمایش {start} - {end} {count} نتیجه (ها).',
 'Marketing Dashboard'=>'داشبورد بازاریابی',
@@ -224,12 +140,9 @@ return array (
 'Quick Create'=>'میانبر ایجاد',
 'Create a Contact, Account, and Opportunity.'=>'ایجاد یک تماس، حساب و فرصت.',
 '<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'<b> نکته: </b> شما می توانید از عملگرهای مقایسه با مقادیر فیلتر به ریز لحن جستجوی خود را با استفاده از.',
-'less than'=>'کمتر از',
 'less than or equal to'=>'کمتر از یا مساوی با',
-'greater than'=>'بزرگتر از',
 'greater than or equal to'=>'بزرگتر یا مساوی با',
 'equal to'=>'برابر با',
-'not equal to'=>'برابر نیست',
 ' results per page'=>' تعداد نتایج در هر صفحه',
 'Add to list:'=>'اضافه کردن به لیست:',
 '<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'<b> {شروع} - {پایان} </b> از <b> {count} </b>',
@@ -237,7 +150,6 @@ return array (
 'Associate Account'=>'حساب دانشیار',
 'Associate Opportunity'=>'فرصت های کاردانی',
 'Associate Contact'=>'دانشیار تماس با ما',
-'Contact Attributes'=>'تماس با صفات',
 'CC:'=>'CC:',
 'BCC:'=>'BCC:',
 'What should the map be named?'=>'چه باید نقشه را می توان نام برد؟',
@@ -248,87 +160,134 @@ return array (
 'Check Filters'=>'بررسی کنید فیلترها',
 'Show/Hide All Comments'=>'نمایش / عدم نمایش همه نظرات',
 '{n} rows'=>'{n} ردیف',
-// // // 
-// // // Misc Actions
+'vs.'=>'در مقابل',
+'- Select an event type -'=>'- یک نوع رویداد را انتخاب کنید -',
+'Simple'=>'ساده',
+'Full'=>'کامل',
+'Helpful Tips'=>'نکات مفید',
+'Bug Reports'=>'گزارش اشکالات',
+'Loading...'=>'در حال بارگیری ...',
+'Link Contact'=>'تماس با پیوند',
+'Link Account'=>'پیوند حساب',
+'Link Opportunity'=>'فرصت لینک',
+'Quick Note'=>'توجه داشته باشید سریع',
+'Update:'=>'به روز رسانی:',
+'Form'=>'فرم',
+'left'=>'سمت چپ',
+'{n} sec'=>'{n} ثانیه',
+'{n} min'=>'{n} دقیقه',
+'{n} hour'=>'{n} ساعت',
+'{n} hours'=>'{n} ساعت',
+'{n} day'=>'{n} روز',
+'{n} month'=>'{n} ماه',
+'{n} months'=>'{n} ماه',
+'{n} year'=>'{n} سال',
+'Unlimited'=>'نا محدود',
+'Enable'=>'قادر ساختن',
+'Disable'=>'از کار انداختن',
+'IP Address'=>'IP آدرس',
+'Login Status'=>'وضعیت ورود به سیستم',
+'Allowed filetypes: .csv'=>'filetypes مجاز:. CSV',
+'Predefined Theme'=>'تم از پیش تعریف شده',
+'Menu Background Color'=>'رنگ پس زمینه های منو',
+'Page Header Background Color'=>'هدر صفحه رنگ پس زمینه',
+'Grid View Row Color 1'=>'نمایش ردیف رنگ گرید 1',
+'Grid View Row Color 2'=>'شبکه نمایش به صورت سطری رنگ 2',
+'stretch'=>'بسط',
+'center'=>'مرکز',
+'repeat'=>'تکرار',
+'repeat-x'=>'تکرار x',
+'repeat-y'=>'تکرار y',
+'Save Profile Settings'=>'ذخیره تنظیمات پروفایل',
+'Creating a theme will save your current theme settings as a predefined theme'=>'ایجاد موضوع تنظیمات تم فعلی خود را به عنوان یک موضوع از پیش تعریف شده را نجات دهد',
+'Theme name'=>'نام تم',
+
+// Misc Actions
 'Submit'=>'ارائه دادن',
-'Save'=>'ذخیره',
 'Cancel'=>'لغو کردن',
 'Send Email'=>'ارسال ایمیل',
 'Attach A File'=>'پیوست کردن یک فایل',
 'Save Changes'=>'ذخیره تغییرات',
 'Save Action'=>'ذخیره اقدام',
 'Save Comment'=>'ذخیره نظر',
-'Create'=>'ساختن',
 'Search'=>'جستجو',
 'Search Results'=>'نتیجه های جستجو',
-'Name'=>'نام',
-'Description'=>'شرح',
-'Action'=>'حرکت',
-'Status'=>'وضعیت',
 'E-mail'=>'ای-نامه',
 'Download'=>'بارگزاری',
 'Contact Saved'=>'تماس ذخیره شد',
 'Add Note'=>'افزودن تماس',
 'New List'=>'لیست جدید',
-'Add'=>'اضافه کردن',
-'Remove'=>'برداشتن',
-// // // 
-// // // Timestamps
+'Toggle Comments'=>'ضامن نظرات',
+'Show Chart'=>'نمایش نمودار',
+'Hide Chart'=>'ویرایشهای نمودار',
+'Make Sticky'=>'مطمئن مهم شود',
+'Load More'=>'بار بیشتر',
+'Go to Activity Feed'=>'برو به خوراک فعالیت',
+'Toggle Text'=>'تعویض متن',
+'Click to toggle showing the full text of History items.'=>'کلیک کنید تا ضامن نشان دادن متن کامل از آیتم های تاریخچه.',
+'Click to increase the number of History items shown.'=>'کلیک کنید برای افزایش تعداد اقلام تاریخچه نشان داده شده است.',
+'Show Less'=>'نمایش کمتر',
+'Click to decrease the number of History items shown.'=>'به منظور کاهش تعداد از اقلام تاریخچه نشان داده شده است کلیک کنید.',
+'Click to toggle showing actions associated with related records.'=>'کلیک کنید تا ضامن نشان دادن اقدامات مرتبط با سوابق مربوط به.',
+'Email Quote'=>'نقل قول پست الکترونیک',
+'Email Invoice'=>'فاکتور ایمیل',
+'Start typing to suggest...'=>'شروع تایپ کردن نشان می دهد ...',
+'Do not delete'=>'آیا حذف کنید',
+
+// Timestamps
 'Just now'=>'هم اکنون',
 '{n} minutes ago'=>'دقیقه قبل {n}',
 '{n} hours ago'=>'ساعت قبل {n}',
 '{n} days ago'=>'روز قبل {n}',
-// // // 
-// // // Errors
+
+// Errors
 'Error creating note!'=>'خطا در ایجاد توجه کنید!',
 'Invalid request. Please do not repeat this request again.'=>'نامعتبر درخواست. لطفا این درخواست را دوباره تکرار نمی کنید.',
 'The requested page does not exist.'=>'صفحه درخواست شده وجود ندارد.',
 'Please fix the following errors:'=>':لطفا خطاهای زیر را حل کنید',
-// // // 
-// // // Admin Page
+
+// Admin Page
 'Administration Tools'=>'ابزار مدیریت',
 'Welcome to the administration tool set.'=>'به دولت مجموعه ابزار خوش آمدید.',
 'Links'=>'کلیدهای',
 'How To\'s'=>'چگونه به',
-'Gii - A Code Generation Module'=>'گروه II - کد ماژول نسل',
 'Send Mass E-mail'=>'ارسال ایمیل به جرم',
 'How to use Gii'=>'چگونه به استفاده از گروه II',
 'How to add a database field'=>'چگونه برای اضافه کردن یک فیلد پایگاه داده',
-// // // 
-// // // Activity Feed
-// // 
+
+// Activity Feed
+
 'Activity Feed'=>'خوراک فعالیت',
-// // // Filter Headers
-'Visibility'=>'دید',
+// Filter Headers
 'Relevant Users'=>'کاربران مربوطه',
 'Event Types'=>'انواع رویداد',
 'Social Subtypes'=>'زیرگروه های اجتماعی',
-'Options'=>'گزینه ها',
 'Set Default'=>'تنظیم پیش فرض',
 'Apply Filters'=>'اعمال فیلترها',
-// // // Filter Text
-'Social Post'=>'ارسال های اجتماعی',
-'Announcement'=>'خبر',
-'Product Info'=>'اطلاعات فروشگاه',
-'Competitive Info'=>'اطلاعات رقابتی',
-'Confidential'=>'محرمانه',
-// // // Event Types
+// Filter Text
+'Filter Controls'=>'کنترل فیلتر',
+// Event Types
 'Social Posts'=>'نوشته ها اجتماعی',
 'Records Created'=>'سوابق ایجاد شده',
 'Records Deleted'=>'سوابق حذف شده',
-'Action Reminders'=>'یادآوری اقدام',
-'Actions Completed'=>'عملیات تکمیل',
 'Calendar Events'=>'رویدادهای تقویم',
 'Cases Escalated'=>'موارد تشدید',
 'Emails Opened'=>'ایمیل افتتاح شد',
+'Doc Updates'=>'توضیحات',
 'Emails Sent'=>'ایمیل های فرستاده شده',
 'Notifications'=>'اطلاعیه ها',
 'Webleads Created'=>'وب فرصت های ایجاد شده',
-'Web Activity'=>'فعالیت وب',
 'Workflow Complete'=>'گردش کار کامل',
 'Workflow Reverted'=>'گردش کار واگردانی',
 'Workflow Started'=>'گردش کار آغاز شده',
-// // // Event Text
+'VOIP Calls'=>'تماسهای VoIP',
+'All Events'=>'همه رویدادها',
+'Feed Events'=>'رویدادهای خوراک',
+'Making an event sticky will cause it to always show up at the top of the feed.'=>'در ساخت چسبنده رویداد باعث می شود آن را به همیشه نشان می دهد تا در بالای خوراک.',
+'Undo Sticky'=>'واگرد مهم شود',
+'Like Post'=>'مانند ارسال',
+'Unlike Post'=>'بر خلاف پست',
+// Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'ایجاد جدید {actionLink} در ارتباط با مخاطب {contactLink}',
 'created a new {modelName}, {modelLink}'=>'ایجاد جدید {modelName}، {modelLink}',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'ایجاد جدید {modelName}، {deletionText}. حذف شده است.',
@@ -363,14 +322,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'یک عمل است که به علت در حال حاضر، اما این رکورد می تواند یافت نمی شود.',
 'completed the following action: {actionDescription}'=>'تکمیل زیر عمل: {actionDescription}',
 'completed an action, but the record could not be found.'=>'به اتمام عمل، اما این رکورد می تواند یافت نمی شود.',
-// // // Model Names
+// Model Names
 'action'=>'اقدام',
 'contact'=>'تماس',
-'account'=>'حساب',
 'opportunity'=>'فرصت',
 'marketing campaign'=>'کمپین بازاریابی',
-// // 
-// // // Misc. Text
+'product'=>'محصول',
+
+// Misc. Text
 'Minimize Posts'=>'به حداقل رساندن نوشته ها',
 'Restore Posts'=>'بازگرداندن نوشته ها',
 'My Groups'=>'گروه های من',
@@ -379,15 +338,20 @@ return array (
 'Broadcast Event'=>'پخش رویداد',
 'Cancel Broadcast'=>'لغو پخش',
 'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'پخش یک رویداد آن را به هر کاربر در حال مشاهده وقایع خود را در خوراک فعالیت قابل مشاهده است - صرف نظر از فیلترهای نوع است.',
-// //
-// // Error Reporting
+'Leave colors blank for defaults.'=>'ترک رنگ خالی برای پیش فرض.',
+'Do you want to email all users?'=>'آیا می خواهید به ایمیل تمام کاربران؟',
+'What color should the broadcast be?'=>'پخش چه رنگی باید باشد؟',
+'What color should the font be?'=>'فونت چه رنگی باید باشد؟',
+'What color should the links be?'=>'لینک چه رنگی باید باشد؟',
+'Are you sure you want to remove these items from the list?'=>'آیا شما مطمئن هستید که می خواهید به حذف این آیتم ها را از لیست؟',
+
+// Error Reporting
 'Bug Report Form'=>'اشکال فرم گزارش',
 'This is the form to manually report bugs.'=>'این فرم به صورت دستی گزارش اشکالات است.',
 'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'اگر شما از یک اشکال را گزارش می دهند که یک خطای واقعی (که فرم گزارش خطا میشوند) لطفا با پر کردن هر گونه اطلاعاتی که شما می توانید به ما و به ضربه ایجاد نمی شود "ارسال شده است." خواهیم به این مسئله نگاه کنید و اگر شما هم شامل آدرس ایمیل خود را ما باید به شما در اسرع وقت. با تشکر!',
 'Send Bug Report'=>'ارسال گزارش اشکالات',
 'Here\'s a quick list of what will be included in the report:'=>'در اینجا یک لیست سریع از چه خواهد بود در این گزارش گنجانده شده است:',
 'Report A Bug'=>'گزارش یک اشکال',
-'Email Address'=>'آدرس ایمیل',
 'Bug Description'=>'شرح اشکالات',
 'X2CRM Version:'=>'نسخه X2CRM:',
 'PHP Version:'=>'نسخه PHP:',
@@ -407,4 +371,191 @@ return array (
 'Please Note:'=>'لطفا توجه داشته باشید:',
 'Any information in the $_GET or $_POST arrays included with the request will also be sent with the report.'=>'هر گونه اطلاعات در آرایه $ _GET $ _POST همراه با درخواست نیز با گزارش ارسال می شود.',
 'Error report sent!'=>'گزارش خطا ارسال شد!',
+
+// About Page
+'Professional Edition'=>'نسخه حرفه ای',
+'X2Engine is a Customer Relationship Management application <br>designed by John Roberts.'=>'X2Engine یک برنامه مدیریت ارتباط با مشتری <br> طراحی شده توسط جان رابرتز.',
+'For customer and community support:'=>'برای پشتیبانی مشتری و جامعه:',
+'Core Team'=>'تیم هسته',
+'Special Thanks'=>'تشکر ویژه',
+'Version Info'=>'اطلاعات نسخه',
+'Build'=>'ساختن',
+'Code Base'=>'پایگاه کد',
+'Plugins/Extensions'=>'پلاگین / ضمیمهها',
+'Developer'=>'توسعه دهنده',
+'Yii Extension'=>'Yii فرمت',
+'Powered by X2Engine'=>'صفحه X2Engine',
+'X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 			to install and use this Software for your internal business purposes. 			You shall not modify, distribute, license or sublicense the Software. 			Title, ownership, and all intellectual property rights in the Software belong 			exclusively to X2Engine.'=>'شرکت X2Engine شما اعطا مجوز همیشگی، غیر انحصاری، غیر قابل انتقال برای نصب و استفاده از این نرم افزار برای اهداف کسب و کار داخلی خود را. شما باید تغییر دهید، توزیع، مجوز واگذاری مجدد حق امتیاز و یا نرم افزار. عنوان، مالکیت و کلیه حقوق مالکیت فکری در نرم افزار متعلق انحصاری به X2Engine.',
+'THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 		EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 		MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.'=>'این نرم افزار ارائه شده "AS IS" و بدون ضمانت از هر نوع، چه به صورت صریح یا ضمنی، از جمله بدون محدودیت ضمانت خرید و فروش، تناسب اندام برای یک هدف خاص، TITLE، و قانونی را رد.',
+'Our office in downtown Santa Cruz'=>'دفتر ما در مرکز شهر سانتا کروز',
+'X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.'=>'X2Engine شرکت در زیبا سانتا کروز، کالیفرنیا مستقر شده است. ما واقعا لذت بردن از جلسه مشتریان و شرکای هر زمان که امکان پذیر است و شما را تشویق به بازدید از دفاتر خود را هنگامی که شما به خودتان پیدا کنید در منطقه خلیج سان فرانسیسکو.',
+'Cannot delete admin user.  Please do not repeat this request.'=>'آیا می توانم مدیر کاربر را حذف کنید. لطفا این درخواست را تکرار نمی کند.',
+'The "model" property cannot be empty.'=>'"مدل" ملک نمی تواند خالی باشد.',
+'The "options" property cannot be empty.'=>'"گزینه های" ملک نمی تواند خالی باشد.',
+'The "chart" property is not valid JSON.'=>'"نمودار" ملک JSON معتبر نیست.',
+'The "model property is not valid'=>'"مدل اموال معتبر نیست',
+'Rights Reserved.'=>'حقوق محفوظ است.',
+'Click to get a new image'=>'کلیک کنید برای دریافت یک تصویر جدید',
+'Please enter the letters in the image above.'=>'لطفا حروف در تصویر بالا را وارد کنید.',
+'Main Menu'=>'منوی اصلی',
+'Incorrect username or password.'=>'نام کاربری یا رمز عبور اشتباه است.',
+'Email '=>'پست الکترونیک',
+'Cannot be blank.'=>'نمی تواند خالی باشد.',
+'Side Panel Settings'=>'تنظیمات پنل جانبی',
+'top'=>'بالا',
+'Sync'=>'همگام سازی',
+'anyone'=>'هر کس',
+'Invalid selection.'=>'انتخاب نامعتبر است.',
+'This list cannot be found.'=>'این لیست را نمی توان یافت.',
+'You do not have permission to modify this list.'=>'شما اجازه دسترسی به این لیست تغییر ندارد.',
+'The requested list does not exist.'=>'لیست درخواست شده وجود ندارد.',
+'Severity'=>'شدت',
+'Creating a theme will save your current '=>'ایجاد یک تم در حال حاضر شما صرفه جویی خواهد شد',
+'Encrypted storage enabled'=>'ذخیره سازی رمز را فعال کنید',
+'shared system-wide'=>'به اشتراک گذاشته شده در سیستم',
+'Set as default'=>'تنظیم بعنوان پیش فرض',
+'Set as my default'=>'تنظیم به عنوان پیش فرض من',
+'for'=>'برای',
+'Apply'=>'درخواست',
+'Add New'=>'افزودن جدید',
+'Visible to lead routing'=>'قابل مشاهده برای رهبری مسیریابی',
+'Invisible to lead routing'=>'نامرئی به رهبری مسیریابی',
+'GNU Affero GPL v3'=>'گنو افرو جیپیال V3',
+'GNU Affero General Public License version 3'=>'گنو افرو عمومی مجوز نسخه 3',
+'Released as free software without warranties under the'=>'بدون ضمانت نامه تحت عنوان نرم افزار آزاد',
+'Make Important'=>'مطمئن مهم',
+'Broadcast'=>'پخش',
+'Select at least one user to broadcast to'=>'انتخاب حداقل یک کاربر برای پخش به',
+'Okay'=>'خوب',
+'Nevermind'=>'مهم نیست',
+'Create Chart Setting'=>'ایجاد تنظیمات نمودار',
+'Clear second metric'=>'پاک کردن دوم متریک',
+'Delete predefined chart setting'=>'حذف تنظیمات نمودار از پیش تعریف شده',
+'Setting Name'=>'تنظیم نام',
+'Select a group of users to send this event to via email or notification.'=>'گروهی از کاربران برای ارسال این رویداد از طریق پست الکترونیک و یا اطلاع رسانی، انتخاب کنید.',
+'Clear All'=>'پاک کردن همه',
+'Designating an event as important will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'بدون در نظر گرفتن نوع فیلتر - تعیین یک رویداد به عنوان مهم آن را به هر کاربر در نمایش رویدادهای خود را در خوراک فعالیت قابل مشاهده است.',
+'Make Unimportant'=>'مطمئن بی اهمیت',
+'Send test email'=>'ارسال ایمیل به آزمون',
+'Register'=>'ثبات',
+'New Event Publisher'=>'رویداد جدید ناشر',
+'Send Now'=>'ارسال کن',
+'Send Later'=>'ارسال بعدها',
+'Media Widget Settings'=>'تنظیمات ویجت مطبوعات',
+'X2 Media'=>'X2 رسانه ها',
+'Refresh Google Drive Cache'=>'تازه کردن درایو کش گوگل',
+'Refresh Files'=>'تازه کردن فایلها',
+'Errors encountered in {attribute}'=>'خطاها در مواجه {attribute}',
+'Auto'=>'لوازم خودرو',
+'Did not send email because you do not have permission to use the specified credentials.'=>'آیا هنوز ایمیل ارسال نمی کند چرا که شما مجاز به استفاده از اعتبار مشخص ندارد.',
+'Inline email model missing from the request to the server.'=>'مدل ایمیل های درون خطی از دست رفته از درخواست به سرور.',
+'Timezone not available'=>'منطقه زمانی در دسترس نیست',
+'The requested post does not exist.'=>'پست ارسال درخواست وجود ندارد.',
+'Manage Credentials'=>'مدیریت اطلاعات کاربری',
+'Edit Credentials'=>'ویرایش اعتبارنامه',
+'Saved'=>'ذخیره شده',
+'Phone system reported inbound call from contact.'=>'سیستم تلفن تماس ورودی از تماس.',
+'You are not authorized to perform this action.'=>'شما مجاز به انجام این عمل است.',
+'your feed'=>'فید شما',
+'{name}\'s feed'=>'{name} خوراک  &#39;',
+'GMail Account'=>'حساب Gmail',
+'Email address'=>'آدرس پست الکترونیک',
+'Server'=>'سرور',
+'Security type'=>'نوع امنیت',
+'secured with'=>'ایمن شده با',
+'Email Account'=>'ایمیل حساب کاربری',
+'Bin Size'=>'اندازه سطل',
+'Metric 1'=>'متریک 1',
+'Metric 2'=>'متریک 2',
+'Encryption Enabled'=>'رمزگذاری فعال',
+'Date Created'=>'تاریخ ایجاد',
+'Date Last Updated'=>'تاریخ آخرین به روز رسانی',
+'Authentication Details'=>'جزئیات تایید',
+'New {service}'=>'جدید {service}',
+'Google Account'=>'حساب کاربری گوگل',
+'Bulk Email Account'=>'حساب ایمیل انبوه',
+'Service Case Email Account'=>'خدمات صورت حساب پست الکترونیک',
+'System Response Emailer'=>'سیستم پاسخ کاربران ایمیل',
+'System Notification Emailer'=>'هشدار از طریق سیستم کاربران ایمیل',
+'Notification not found'=>'هشدار از طریق یافت نشد',
+'A new {actionLink} associated with the contact {contactLink} has been created.'=>'جدید {actionLink} مرتبط با تماس {contactLink} ایجاد شده است.',
+'issued the {transModelName} "{modelLink}" via email'=>'صادر {transModelName} &quot; {modelLink} &quot;از طریق ایمیل',
+'{modelLink} called.'=>'{modelLink} نامیده می شود.',
+'Call from a contact whose record could not be found.'=>'تماس از یک تماس که رکورد یافت نشد.',
+'A lead failed to come through Lead Capture. Check {link} to recover it.'=>'برتری رو از آن خودش نتوانست از طریق جذب سرب آمده است. بررسی کنید {link} برای بازیابی آن.',
+'here'=>'اینجا',
+'{user} posted on {link}'=>'{user} نوشته شده در {link}',
+'{user} replied on {link}'=>'{user} در {link} پاسخ {link}',
+'{name} is currently on {url}'=>'{name} است که در حال حاضر در {url}',
+'{name} is currently on your website.'=>'{name} است که در حال حاضر بر روی وب سایت خود را.',
+'Invalid email address list.'=>'لیست آدرس ایمیل نامعتبر است.',
+'Cannot delete. The item is in use by the system, or you do not have permission.'=>'می توانید حذف کنید. قلم دوم از اقلام است که در حال استفاده توسط سیستم، و یا به شما اجازه انجام این کار را ندارد.',
+'You have made an invalid request, please do not repeat this.'=>'شما را ساخته اند یک درخواست نامعتبر است، لطفا این کار را تکرار کند.',
+'If this happened by clicking a Delete button on a Grid, just go back to that page and it should work now. This is a known issue we are working to fix.'=>'اگر این کار را با کلیک کردن بر روی یک دکمه حذف بر روی یک شبکه اتفاق افتاده، فقط به آن صفحه بروید و آن را در حال حاضر باید کار کند. این یک مسئله شناخته شده است که ما در حال کار برای رفع شده است.',
+'Your X2CRM session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.'=>'جلسه X2CRM شما تمام شده است. شما ممکن است "لغو" به چشم پوشی از این پیام و بازیابی اطلاعات ذخیره نشده از صفحه فعلی را انتخاب کنید. در غیر این صورت، شما را به صفحه ورود هدایت می شوید.',
+'Sorry, this record doesn\'t seem to exist.'=>'با عرض پوزش، این سابقه ندارد  &#39;تی به نظر می رسد وجود داشته باشد.',
+'A new {modelName}, {modelLink}, has been created.'=>'A جدید {modelName} ، {modelLink} ، ایجاد شده است.',
+'A {modelName}, {deletionText}, was created. It has been deleted.'=>'{modelName} ، {deletionText} ، ایجاد شده است. حذف شده است.',
+'A {modelName} was created, but it could not be found.'=>'{modelName} ، ایجاد شد، اما آن را می تواند یافت نمی شود.',
+'A {modelType}, {text}, was deleted'=>'{modelType} ، {text} ، حذف شد',
+'deleted an {modelType}, {text}.'=>'حذف {modelType} ، {text} .',
+'An {modelType}, {text}, was deleted.'=>'{modelType} ، {text} ، حذف شد.',
+'issued a quote by email, but that record has been deleted.'=>'صادر اعلان از طریق ایمیل، اما این رکورد حذف شده است.',
+'issued a quote by email, but that record could not be found.'=>'صادر اعلان از طریق ایمیل، اما این رکورد می تواند یافت نمی شود.',
+'issued an invoice by email, but that record has been deleted.'=>'صدور فاکتور از طریق ایمیل، اما این رکورد حذف شده است.',
+'issued an invoice by email, but that record could not be found.'=>'یک صورتحساب از طریق ایمیل صادر شده، اما این رکورد می تواند یافت نمی شود.',
+'A contact has opened {emailType}, but that contact cannot be found.'=>'تماس باز کرده است {emailType} ، اما این تماس می تواند یافت نمی شود.',
+'updated a document, {docLink}'=>'به روز شده در سند، {docLink}',
+'received an email from a {transModelName}, {modelLink}'=>'یک ایمیل از دریافت {transModelName} ، {modelLink}',
+'received an email from a {transModelName}, but that record has been deleted.'=>'یک ایمیل از {transModelName} ، اما این رکورد حذف شده است.',
+'received an email from a {transModelName}, but that record could not be found.'=>'یک ایمیل از {transModelName} ، اما این رکورد می تواند یافت نمی شود.',
+'A contact called, but the contact record has been deleted.'=>'تماس نامیده می شود، اما. ثبت تماس مورد نظر حذف شده است.',
+'Pressing the X button on a tag will hide it from this widget. Hidden tags can be restored from your Preferences page.'=>'با فشار دادن دکمه X در برچسب آن را از این عنصر پنهان. برچسب های مخفی را می توان از صفحه تنظیمات خود را دوباره بازسازی شد.',
+'Displaying {start}-{end} result(s).'=>'نمایش {start} - {end} نتیجه (بازدید کنندگان).',
+'Email Address (optional)'=>'آدرس پست الکترونیک (اختیاری)',
+'User name (if different from email address)'=>'نام کاربری (در صورت متفاوت از آدرس ایمیل)',
+'This record may be a duplicate!'=>'این رکورد ممکن است تکراری!',
+'Credentials stored in plain text!'=>'اعتبارنامه های ذخیره شده در متن ساده!',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'اگر شما از یک اشکال را گزارش می دهند که یک خطای واقعی (که فرم گزارش خطا میشوند) لطفا با پر کردن هر گونه اطلاعاتی که شما می توانید به ما و به ضربه ایجاد نمی شود "ارسال شده است." خواهیم به این مسئله نگاه کنید و اگر شما هم شامل آدرس ایمیل خود را ما باید به شما در اسرع وقت. با تشکر!',
+'A new version is available! Click here to update to version {version}'=>'نسخه جدید در دسترس است! اینجا را کلیک کنید برای به روز رسانی به نسخه {version}',
+'a quote email'=>'یک ایمیل اعلان',
+'an invoice email'=>'یک ایمیل به فاکتور',
+'an email'=>'ایمیل',
+' has opened {emailType}!'=>'باز کرده است {emailType} !',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit \"Send.\" We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'اگر شما یک اشکال به گزارش که \ &#39;خطای واقعی (که می تواند فرم گزارش خطا میشوند) باعث نشده است لطفا با پر کردن هر گونه اطلاعات شما می تواند ما را و به ضربه \ &quot;ارسال \&quot; ما \&#39; تخم ریزی به نگاهی موضوع و اگر شما نیز شامل آدرس ایمیل خود را \ &#39;خواهید به شما در اسرع وقت. با تشکر از شما',
+'issued the {transModelName} \"{modelLink}\" via email'=>'صادر {transModelName} \ &quot; {modelLink} \ &quot;از طریق ایمیل',
+'What color should the event be?'=>'این رویداد چه رنگی باید باشد؟',
+'Do you want to email selected users?'=>'آیا می خواهید به ایمیل کاربران انتخاب شده است؟',
+'Do you want to notify selected users?'=>'آیا می خواهید به اطلاع کاربران انتخاب شده است؟',
+'Permanently delete all notifications?'=>'تمام اطلاعیه برای همیشه حذف کنید؟',
+'Save to Google Drive?'=>'ذخیره به Google Drive؟',
+'If you disable this option, administrators and users granted privilege to do so will be able to use these credentials on your behalf.'=>'اگر شما غیر فعال کردن این گزینه، مدیران و کاربران اعطا امتیاز به انجام این کار خواهد بود قادر به استفاده از این اعتبار از طرف شما.',
+'select a type'=>'یک نوع را انتخاب کنید',
+'Owned by {user}'=>'متعلق به {user}',
+'Maximize Widget'=>'بیشینهسازی ویجت',
+'Minimize Widget'=>'به حداقل رساندن عناصر',
+'Sort Widget'=>'مرتب سازی بر عناصر',
+'Close Widget'=>'بستن عناصر',
+'Check all'=>'انتخاب همه',
+'Uncheck all'=>'لغو انتخاب همه',
+'metric(s) selected'=>'متریک (بازدید کنندگان) انتخاب',
+'Per Hour'=>'میانگین پستها در طول ساعت',
+'Per Day'=>'میانگین پستها در طول روز',
+'Per Week'=>'میانگین پستها در طول هفته',
+'Per Month'=>'میانگین پستها در طول ماه',
+'Tasks'=>'وظایف',
+'Calls'=>'تلفن',
+'Emails'=>'ایمیل',
+'Workflow Actions'=>'عملیات گردش کار',
+'View history item'=>'مشاهده آیتم تاریخچه',
+'Someone'=>'کسی',
+' opened a link in an email campaign and is visiting your website!'=>'یک لینک در یک کمپین ایمیل باز است و بازدید از وب سایت شما!',
+'A contact has opened a link in an email campaign, but that contact cannot be found.'=>'تماس یک لینک در یک کمپین ایمیل باز کرده است، اما این تماس می تواند یافت نمی شود.',
+'Class "{class}" specified for {attribute} does not exist, so cannot create relationships with it.'=>'کلاس &quot; {class} &quot;مشخص شده برای {attribute} وجود ندارد، بنابراین می تواند به روابط با آن ایجاد کنید.',
+'Class "{class}" specified for {attribute} does not have X2LinkableBehavior, and thus cannot be used with relationships.'=>'کلاس &quot; {class} &quot;برای {attribute} X2LinkableBehavior ندارد، و در نتیجه مشخص را نمی توان با روابط استفاده می شود.',
+'Model record not found for {attribute}.'=>'سابقه مدل یافت نشد {attribute} .',
+'Google Email Account'=>'حساب ایمیل گوگل',
+'Setting'=>'زمینه',
+'Attach a File/Photo'=>'ضمیمه کردن فایل / عکس',
+'Select at least one broadcast method'=>'حداقل یکی از روش های پخش را انتخاب کنید',
 );

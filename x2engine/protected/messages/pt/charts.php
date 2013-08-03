@@ -1,48 +1,10 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // // Charts Translation File
 
 // // Button Text
-'Go'=>'Ir',
 
 // // Labels
-'Start Date'=>'Data de Início',
-'End Date'=>'Data Final',
 'Date Range'=>'Intervalo de Data',
 'Data Summary'=>'Resumo de Dados',
 'Total Records'=>'Total de Registros',
@@ -56,7 +18,6 @@ return array (
 'User Activity'=>'Atividade do Usuário',
 'Row Field'=>'Campo de Linha',
 'Column Field'=>'Campo Coluna',
-'Total'=>'Total',
 'Hide empty rows/columns?'=>'Ocultar linhas vazias / colunas?',
 'Cell Data Type'=>'Tipo de Dados Celular',
 'Count'=>'Contar',
@@ -66,7 +27,6 @@ return array (
 '(none)'=>'(nenhum)',
 'pie'=>'torta',
 'bar'=>'bar',
-'Export to CSV'=>'Exportar para CSV',
 'Save Report'=>'Salvar Relatório',
 'Print Report'=>'Imprimir Relatório',
 'Email Report'=>'Relatório de E-mail',
@@ -75,34 +35,47 @@ return array (
 'View Report'=>'Ver Relatório',
 'Grid'=>'Grade',
 'Deal'=>'Tratar',
-'Record Type'=>'Tipo de Registro',
-'Full Name'=>'Nome Completo',
-'Last Login'=>'último Login',
-'Records Updated'=>'Registros Atualizados',
-'Actions Completed'=>'Ações Concluídas',
 'Actions Due'=>'Acções Devidas',
 'Lead Volume'=>'Chumbo Volume',
-'Marketing'=>'Marketing',
 'Pipeline'=>'Oleoduto',
-'Opportunities'=>'Oportunidades',
+'Select leads received in the last'=>'Selecção ligações recebidas na última',
+'Lead Distribution and Status'=>'Chumbo Distribuição e Estado',
+'Lead Conversion'=>'Levar Conversão',
+'Lead Received'=>'Levar Recebido',
+'Pipeline Dashboard'=>'Painel Pipeline',
+'Select deals closing in'=>'Selecione ofertas de fechamento em',
+'Limit to confidence is'=>'Limite de confiança é',
+'Limit selected deals to'=>'Limite ofertas selecionadas para',
+'Select deals assigned to'=>'Selecione negócios atribuídos a',
+'Opportunities Dashboard'=>'Painel de Oportunidades',
+'Select deals with status'=>'Selecione lida com estado',
 
 // // Data Options
-'Custom'=>'Personalizado',
-'This Week'=>'Esta Semana',
-'This Month'=>'Este Mês',
 'Last Week'=>'Semana Passada',
 'Last Month'=>'Mês Passado',
 'This Year'=>'Este Ano',
 'Last Year'=>'Ano Passado',
 'All Time'=>'Todos os Tempos',
+'Growing'=>'Crescente',
+'Forecast'=>'Previsão',
+'Committed'=>'Cometido',
+'In The Bag'=>'Na Bolsa',
+'Smallest'=>'Menor',
+'Largest'=>'Maior',
+'Others'=>'Outros',
+'Deals'=>'Ofertas',
+'Days To Close'=>'Dias para fechar',
+'Date Closing'=>'Data de Fechamento',
 
 // // Report Attributes
 'Report Type'=>'Tipo de Relatório',
-'Model'=>'Modelo',
-'Columns'=>'Colunas',
 'Rows'=>'Linhas',
 'Ignore Zeros?'=>'Ignorar Zeros?',
 'Data Type'=>'Tipo de Dados',
-'Create Date'=>'Criar Data',
-'Created By'=>'Criado por',
+'Lead Activity'=>'Chumbo Atividade',
+'Lead Sources'=>'Levar Fontes',
+'Last Quarter'=>'Quarto Minguante',
+'Unknown'=>'Desconhecido',
+'Limit To'=>'Limite para',
+'Widget Dashboard'=>'Widget do Dashboard',
 );

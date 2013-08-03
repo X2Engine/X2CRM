@@ -108,9 +108,19 @@ $this->widget('application.components.X2GridView', array(
 		),
 		'account'=>array(
 			'name'=>'account',
-			'header'=>Yii::t('accounts', 'Account'),
+			'header'=>Yii::t('contacts', 'Account'),
 			'type'=>'raw',
 			'value'=>'$data->contactIdModel? (isset($data->contactIdModel->companyModel) ? $data->contactIdModel->companyModel->getLink() : "") : ""'
+		),
+        'status'=>array(
+			'name'=>'status',
+			'type'=>'raw',
+			'value'=>'Yii::t("services",$data->status)',
+		),
+        'impact'=>array(
+			'name'=>'impact',
+			'type'=>'raw',
+			'value'=>'Yii::t("services",$data->impact)',
 		),
 /*		'name'=>array(
 			'name'=>'name',

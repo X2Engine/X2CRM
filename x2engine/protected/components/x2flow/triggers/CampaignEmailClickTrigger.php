@@ -35,14 +35,14 @@
  *****************************************************************************************/
 
 /**
- * X2FlowTrigger 
- * 
+ * X2FlowTrigger
+ *
  * @package X2CRM.components.x2flow.actions
  */
 class CampaignEmailClickTrigger extends X2FlowTrigger {
 	public $title = 'Campaign Email Clicked';
 	public $info = 'Triggers when a contact clicks a tracking link in a campaign email.';
-	
+
 	public function paramRules() {
 		return array(
 			'title' => Yii::t('studio',$this->title),
@@ -52,7 +52,7 @@ class CampaignEmailClickTrigger extends X2FlowTrigger {
 				array('name'=>'campaign','label'=>Yii::t('studio','Campaign'),'type'=>'link','linkType'=>'Campaign','optional'=>1,'linkSource'=>Yii::app()->controller->createUrl(
 					CActiveRecord::model('Campaign')->autoCompleteSource
 				)),
-				array('name'=>'url','label'=>'URL','operators'=>array('=','<>','list','notList','contains','noContains'),'optional'=>1),
+				array('name'=>'url','label'=>Yii::t('studio','URL'),'operators'=>array('=','<>','list','notList','contains','noContains'),'optional'=>1),
 			));
 	}
 }

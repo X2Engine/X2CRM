@@ -139,7 +139,8 @@ div.form.details a {
 div.form.no-border input, div.form.no-border textarea, div.form.no-border select, div.form.no-border button {
 	margin:0;
 }
-div.form input:focus, div.form textarea:focus, div.form select:focus, div.form button:focus {
+div.form input:focus, div.form textarea:focus, div.form select:focus, div.form button:focus,
+.ui-dialog input:focus {
 	border-color:#579100;
 /* 	border:1px solid green; */
 }
@@ -153,7 +154,8 @@ div.form.thin input, div.form.thin textarea, div.form.thin select {
 	padding:2px 4px;
 }
 
-div.form input,div.form textarea,div.form select {
+div.form input,div.form textarea,div.form select,
+.ui-dialog input {
 	margin: 3px 0 5px 0;
 	border:1px solid #aaa;
 	-moz-border-radius:		3px;
@@ -222,7 +224,8 @@ div.form span.required {
 div.form div.error label,div.form label.error,div.form span.error {
 	color: #C00;
 }
-div.form div.error input,div.form div.error textarea,div.form div.error select,div.form input.error,div.form textarea.error,div.form select.error {
+div.form div.error input,div.form div.error textarea,div.form div.error select,div.form input.error,div.form textarea.error,div.form select.error,
+.ui-dialog input.error {
 	background: #FEE;
 	border-color: #C00;
 }
@@ -496,7 +499,7 @@ div.form .background-row a.delete-link {
 #inline-email-form #email-attachments {margin-top:5px;overflow:visible;}
 
 div.form select[multiple="multiple"] {
-	min-width:130px;
+	/*min-width:130px;*/
 }
 
 div.form textarea {
@@ -516,7 +519,8 @@ div.text-area-wrapper {
 }
 div.text-area-wrapper textarea {width:100%;margin:0;padding:0 !important;border:none;}
 
-div.form input, div.form textarea, div.form select, div.form button {
+div.form input, div.form textarea, div.form select, div.form button,
+.ui-dialog input {
 	font-size:12px;
 	font-family:Arial, Helvetica, sans-serif;
 	padding:2px 4px;

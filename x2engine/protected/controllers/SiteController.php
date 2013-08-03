@@ -71,9 +71,10 @@ class SiteController extends x2base {
                     'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload', 'uploadProfilePicture', 'index', 'contact',
                     'viewNotifications', 'inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'createRecords',
                     'whatsNew', 'toggleVisibility', 'page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
-                    'loadPosts', 'addComment', 'flagPost', 'sendErrorReport', 'minimizePosts', 'bugReport', 'deleteRelationship', 'toggleFeedControls', 'toggleFeedFilters',
+                    'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'sendErrorReport', 'minimizePosts', 'bugReport', 'deleteRelationship', 'toggleFeedControls', 'toggleFeedFilters',
                     'getTip', 'share', 'activityFeedOrder', 'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory',
-                    'dynamicDropdown', 'stickyPost', 'getEventsBetween','mediaWidgetToggle'),
+                    'dynamicDropdown', 'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
+                    'deleteChartSetting', 'GetActionsBetweenAction'),
                 'users' => array('@'),
             ),
             array('allow',
@@ -102,6 +103,9 @@ class SiteController extends x2base {
             'inlineEmail' => array(
                 'class' => 'InlineEmailAction',
             ),
+			'GetActionsBetweenAction' => array (
+				'class' => 'GetActionsBetweenAction'
+			),
         );
     }
 
@@ -322,6 +326,21 @@ class SiteController extends x2base {
                         ),
                     ));
             $_SESSION['stickyFlag'] = false;
+
+            $chartSettingsDataProvider = new CActiveDataProvider('ChartSetting', array(
+                        'criteria' => array(
+                            'condition' => 'userId='.Yii::app()->user->id,
+                            'order' => 'name ASC'
+                        )
+                    ));
+
+            $usersDataProvider = new CActiveDataProvider('User', array(
+                        'criteria' => array(
+							'condition' => 'status=1',
+                            'order' => 'lastName ASC'
+                        )
+                    ));
+
             $this->render('whatsNew', array(
                 'dataProvider' => $dataProvider,
                 'users' => $users,
@@ -329,6 +348,8 @@ class SiteController extends x2base {
                 'firstEventId' => !empty($firstId) ? $firstId : 0,
                 'lastTimestamp' => $lastTimestamp,
                 'stickyDataProvider' => $stickyDataProvider,
+                'usersDataProvider' => $usersDataProvider,
+                'chartSettingsDataProvider' => $chartSettingsDataProvider,
             ));
         }else{
             $this->redirect('login');
@@ -553,6 +574,11 @@ class SiteController extends x2base {
         ));
     }
 
+    /*
+      Indicates that a post is important by changing it's css properties.
+      Called via ajax from the make important dialog.
+     */
+
     public function actionFlagPost(){
         if(isset($_GET['id']) && isset($_GET['attr'])){
             $id = $_GET['id'];
@@ -579,28 +605,49 @@ class SiteController extends x2base {
                 }else{
                     $event->important = 0;
                 }
-                if($event->save()){
-                    if(isset($_GET['email']) && $_GET['email'] == 'checked' && $event->important){
-                        $subject = "Event Broadcast";
-                        $phpMail = $this->getPhpMailer();
-                        $fromEmail = Yii::app()->params->profile->emailAddress;
-                        $fromName = Yii::app()->params->profile->fullName;
-                        $phpMail->AddReplyTo($fromEmail, $fromName);
-                        $phpMail->SetFrom($fromEmail, $fromName);
-                        $phpMail->Subject = $subject;
-                        $phpMail->MsgHTML("$fromName has broadcast an event on your X2CRM Activity Feed:<br><br>".$event->getText()."<br><br>Link to activity feed:<br><br>");
-                        $users = Profile::model()->findAllByAttributes(array('status' => 1));
-                        foreach($users as $user){
-                            $phpMail->AddAddress($user->emailAddress, $user->fullName);
-                        }
-                        if($phpMail->Send()){
-                            printR($phpMail);
-                        }else{
-                            echo $phpMail->ErrorInfo;
-                        }
-                    }
+                $event->save();
+            }
+        }
+    }
+
+    /*
+      Broadcasts an event via email or notification to a list of users.
+      Called via ajax from the broadcast event dialog.
+     */
+
+    public function actionBroadcastEvent($id, $email, $notify, $users){
+        $event = X2Model::model('Events')->findByPk($id);
+		print_r (array ($email, $notify));
+        if(isset($event)){
+            $users = Profile::model()->findAllByPk(CJSON::decode($users));
+            if($email === 'true'){ // broadcast via email
+				print ('emailing');
+                // Check if user has set a default account for email delivery
+                $subject = "Event Broadcast";
+                $fromName = Yii::app()->params->profile->fullName;
+                $body = "$fromName has broadcast an event on your X2CRM Activity Feed:<br><br>".
+                        $event->getText(array('requireAbsoluteUrl' => true));
+                $recipients = array('to' => array());
+                foreach($users as $user)
+                    $recipients['to'][] = array($user->fullName, $user->emailAddress);
+                //$this->sendUserEmail($recipients, $subject, $body, null, Credentials::$sysUseId['systemNotificationEmail']);
+                $this->sendUserEmail($recipients, $subject, $body);
+            }
+            if($notify === 'true'){ // broadcast via notifation
+				print ('notifying');
+                $time = time();
+                foreach($users as $user){
+                    $notif = new Notification;
+                    $notif->modelType = 'Events';
+                    $notif->createdBy = Yii::app()->user->getName();
+                    $notif->modelId = $event->id;
+                    $notif->user = $user->username;
+                    $notif->createDate = $time;
+                    $notif->type = 'event_broadcast';
+                    $notif->save();
                 }
             }
+			exit ();
         }
     }
 
@@ -896,7 +943,7 @@ class SiteController extends x2base {
         $content = URL::model()->findAllByAttributes(array('userid' => Yii::app()->user->getId()), array(
             'order' => 'timestamp DESC',
                 ));
-        $res = '<table><tr><th>Title</th><th>Link</th></tr>';
+        $res = '<table><tr><th>'.Yii::t('app', 'Title').'</th><th>'.Yii::t('app', 'Link').'</th></tr>';
         if($content){
             foreach($content as $entry){
                 if(strpos($entry->url, 'http://') === false){
@@ -905,7 +952,7 @@ class SiteController extends x2base {
                 $res .= '<tr><td>'.$entry->title."</td><td>".CHtml::link(Yii::t('app', 'Link'), $entry->url)."</td></tr>";
             }
         }else{
-            $res .= "<tr><td>Example</td><td><a href='.'>LINK</a></td></tr>";
+            $res .= "<tr><td>".Yii::t('app', 'Example')."</td><td><a href='.'>".Yii::t('app', 'Link')."</a></td></tr>";
         }
         echo $res;
     }
@@ -1239,7 +1286,7 @@ class SiteController extends x2base {
                             throw new CHttpException('400', 'Invalid request.');
                         }
                     }catch(Google_AuthException $e){
-                        unset($_SESSION['access_token']);
+                        $auth->flushCredentials();
                         $auth->setErrors($e->getMessage());
                         $service = null;
                         $createdFile = null;
@@ -1644,7 +1691,7 @@ class SiteController extends x2base {
             $email = "";
         $phpversion = phpversion();
         $x2version = Yii::app()->params->version;
-
+        $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
         $phpInfoErrorReport = base64_encode(serialize(array(
                     'phpinfo' => $info,
                     'phpversion' => $phpversion,
@@ -1652,6 +1699,7 @@ class SiteController extends x2base {
                     'adminEmail' => $email,
                     'user' => Yii::app()->user->getName(),
                     'isAdmin' => Yii::app()->params->isAdmin,
+                    'userAgent' => $userAgent,
                 )));
 
         $errorReport = base64_encode(serialize(array(
@@ -1660,6 +1708,7 @@ class SiteController extends x2base {
                     'adminEmail' => $email,
                     'user' => Yii::app()->user->getName(),
                     'isAdmin' => Yii::app()->params->isAdmin,
+                    'userAgent' => $userAgent,
                 )));
 
         $this->render('bugReport', array(
@@ -1830,7 +1879,7 @@ class SiteController extends x2base {
             }
         }
 
-        header('REQUIRES_AUTH: 1');    // tell windows making AJAX requests to redirect
+        header('REQUIRES_AUTH: 1'); // tell windows making AJAX requests to redirect
 
         $this->render('login', array('model' => $model)); // display the login form
     }
@@ -1854,9 +1903,15 @@ class SiteController extends x2base {
             try{
                 $user = $auth->getUserInfo($token);
                 $email = filter_var($user->email, FILTER_SANITIZE_EMAIL);
-                $userRecord = User::model()->findByAttributes(array('emailAddress' => $email));
-                $profileRecord = Profile::model()->findByAttributes(array(), "emailAddress=:email OR googleId=:email", array(':email' => $email));
-                if(isset($profileRecord)){
+                $profileRecord = X2Model::model('Profile')->findByAttributes(array('googleId' => $email));
+                if(!isset($profileRecord)){
+                    $userRecord = X2Model::model('User')->findByAttributes(array('emailAddress' => $email));
+                    $profileRecord = X2Model::model('Profile')->findByAttributes(array(), "emailAddress=:email OR googleId=:email", array(':email' => $email));
+                }
+                if(isset($userRecord) || isset($profileRecord)){
+                    if(!isset($profileRecord)){
+                        $profileRecord = X2Model::model('Profile')->findByPk($userRecord->id);
+                    }
                     $auth->storeCredentials($profileRecord->id, $_SESSION['access_token']);
                 }
                 if(isset($userRecord) || isset($profileRecord)){
@@ -1923,11 +1978,11 @@ class SiteController extends x2base {
                     ));
                 }
             }catch(Google_AuthException $e){
-                unset($_SESSION['access_token']);
+                $auth->flushCredentials();
                 $auth->setErrors($e->getMessage());
                 $this->render('googleLogin', array(
-                        'failure' => $auth->getErrors(),
-                    ));
+                    'failure' => $auth->getErrors(),
+                ));
             }
         }else{
             $this->render('googleLogin');
@@ -2221,10 +2276,10 @@ class SiteController extends x2base {
         $context = stream_context_create(array(
             'http' => array('timeout' => 2)  // set request timeout in seconds
                 ));
-        $updateSources = array('http://x2planet.com/installs/updates/versionCheck');
+        $updateSources = array('https://x2planet.com/installs/updates/versionCheck');
         if(in_array(Yii::app()->params->admin['edition'], array('opensource', Null))){
             $updateSources = array(
-                'http://x2planet.com/updates/versionCheck.php',
+                'https://x2planet.com/updates/versionCheck.php',
                 'http://x2base.com/updates/versionCheck.php'
             );
         }
@@ -2241,7 +2296,7 @@ class SiteController extends x2base {
             $newVersion = Yii::app()->params->version;
         /*
           // check X2Planet for updates
-          $x2planetVersion = @file_get_contents('http://x2planet.com/updates/versionCheck.php',0,$context);
+          $x2planetVersion = @file_get_contents('https://x2planet.com/updates/versionCheck.php',0,$context);
           if($x2planetVersion !== false)
           $newVersion = $x2planetVersion;
           else {
@@ -2432,8 +2487,7 @@ class SiteController extends x2base {
         }
     }
 
-    function actionGetEventsBetween($startTimestamp, $endTimestamp, $type){
-
+	public static function getChartData ($startTimestamp, $endTimestamp){
         $command = Yii::app()->db->createCommand()
                 ->select(
                         'type, timestamp, COUNT(type) AS count,'.
@@ -2443,14 +2497,9 @@ class SiteController extends x2base {
                         'DAY(FROM_UNIXTIME(timestamp)) AS day,'.
                         'HOUR(from_unixtime(timestamp)) as hour')
                 ->from('x2_events');
-        if($type !== 'any'){
-            $command->where(
-                    'timestamp BETWEEN :startTimestamp AND :endTimestamp AND type=:type', array('startTimestamp' => $startTimestamp, 'endTimestamp' => $endTimestamp,
-                'type' => $type));
-        }else{
-            $command->where(
-                    'timestamp BETWEEN :startTimestamp AND :endTimestamp', array('startTimestamp' => $startTimestamp, 'endTimestamp' => $endTimestamp));
-        }
+        $command->where(
+                'timestamp BETWEEN :startTimestamp AND :endTimestamp', 
+				array('startTimestamp' => $startTimestamp, 'endTimestamp' => $endTimestamp));
         $events = $command->group(
                         'HOUR(FROM_UNIXTIME(timestamp)),'.
                         'DAY(FROM_UNIXTIME(timestamp)),'.
@@ -2460,7 +2509,51 @@ class SiteController extends x2base {
                         'type, timestamp')
                 ->order('year DESC, month DESC, week DESC, day DESC, hour desc')
                 ->queryAll();
-        echo CJSON::encode($events);
+		return $events;
+	}
+
+    function actionGetEventsBetween($startTimestamp, $endTimestamp){
+        echo CJSON::encode(self::getChartData ($startTimestamp, $endTimestamp));
+    }
+
+    /**
+      Create a new chart setting record in the chart settings table.
+      Called via ajax from the chart setting creation dialog.
+     */
+    function actionCreateChartSetting($chartSettingAttributes){
+        $chartSetting = new ChartSetting;
+		$chartSettingAttributesDec = CJSON::decode ($chartSettingAttributes);
+		if (is_array ($chartSettingAttributesDec) &&
+			array_key_exists ('settings', $chartSettingAttributesDec) &&
+			array_key_exists ('name', $chartSettingAttributesDec)) {
+			$chartSetting->settings = $chartSettingAttributesDec['settings'];
+			$chartSetting->name = $chartSettingAttributesDec['name'];
+			$chartSetting->userId = Yii::app()->user->id;
+			if($chartSetting->validate()){
+				if($chartSetting->save()){
+					return;
+				}
+			}
+			echo CJSON::encode($chartSetting->getErrors());
+			return;
+		}
+		echo CJSON::encode(array ('failure'));
+    }
+
+    /**
+      Delete a chart setting record from the chart settings table.
+      Called via ajax from the feed chart UI.
+     */
+    function actionDeleteChartSetting($chartSettingName){
+        $chartSetting = ChartSetting::model()->findByAttributes(array(
+            'userId' => Yii::app()->user->id,
+            'name' => $chartSettingName
+                ));
+        if(!empty($chartSetting) && $chartSetting->delete()){
+            echo 'success';
+        }else{
+            echo 'failure';
+        }
     }
 
 }

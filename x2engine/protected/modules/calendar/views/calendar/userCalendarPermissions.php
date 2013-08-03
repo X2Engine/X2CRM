@@ -135,36 +135,53 @@ if(isset($id)) {
 	$fullname = $first . ' ' . $last;
 	
 	echo CHtml::hiddenField('user-id', $id); // save user id for POST
+	?>
 	
-	echo "<h2>" . Yii::t('calendar', 'View Permission') . "</h2>";
-	echo "These users can view $fullname's calendar.";
-	echo CHtml::listBox('view-permission', $viewPermission, $names, array(
-		'class'=>'user-permission',
-		'multiple'=>'multiple',
-		'onChange'=>'giveSaveButtonFocus();',
-	));
-	echo "<br>\n";
-	
-	echo "<h2>" . Yii::t('calendar', 'Edit Permission') . "</h2>";
-	echo "These users can edit $fullname's calendar.";
-	echo CHtml::listBox('edit-permission', $editPermission, $names, array(
-		'class'=>'user-permission',
-		'multiple'=>'multiple',
-		'onChange'=>'giveSaveButtonFocus();',
-	));
-	
-	echo '	<div class="row buttons">'."\n";
-	echo '		'.CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button', 'name'=>'save-button', 'tabindex'=>24, 'style'=>'display: inline-block'))."\n";
-	echo '		'.CHtml::link(Yii::t('calendar', 'Back To User List'), $this->createUrl(''), array('class'=>'x2-button'));
-	echo "	</div>\n";
-	
-	$this->endWidget();
+	<div class="page-title"><h2><?php echo Yii::t('calendar', 'View Permission'); ?></h2></div>
+	<div class="form">
+		<?php echo Yii::t('calendar', "These users can view {fullname}'s calendar.", array ('{fullname}' => $fullname)); ?>
+		<?php
+		echo CHtml::listBox('view-permission', $viewPermission, $names, array(
+			'class'=>'user-permission',
+			'multiple'=>'multiple',
+			'onChange'=>'giveSaveButtonFocus();',
+		));
+		?>
+		<br>
+	</div>
+	<div class="page-title rounded-top"><h2><?php echo Yii::t('calendar', 'Edit Permission'); ?></h2></div>
+	<div class="form">
+		<?php echo Yii::t('calendar', "These users can edit {fullname}'s calendar.", array ('{fullname}' => $fullname)); ?>
+		<?php
+		echo CHtml::listBox('edit-permission', $editPermission, $names, array(
+			'class'=>'user-permission',
+			'multiple'=>'multiple',
+			'onChange'=>'giveSaveButtonFocus();',
+		));
+		?>
+		<br>
+		<div class="row buttons">
+			<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button', 'name'=>'save-button', 'tabindex'=>24)); ?>
+		    <?php echo CHtml::link(Yii::t('calendar', 'Back To User List'), $this->createUrl(''), array('class'=>'x2-button')); ?>
+		</div>
+	</div>
+	<?php
+$this->endWidget();
+	?>
 
+	<?php
 } else {
+	?>
+	<div class="page-title"><h2><?php echo Yii::t('calendar', 'User Calendar Permissions'); ?></h2></div>
+	<div style="padding: 8px">
+	<?php
 	foreach($users as $user) {
 			echo CHtml::link($user->firstName . ' ' . $user->lastName, $this->createUrl('', array('id'=>$user->id)));
 			echo "<br>\n";
 	}
+	?>
+	</div>
+	<?php
 }
 
 ?>

@@ -36,44 +36,44 @@
 
 /**
  * X2FlowAction that calls a remote API
- * 
+ *
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowApiCall extends X2FlowAction {
 	public $title = 'Remote API Call';
 	public $info = 'Call a remote API by requesting the specified URL. You can specify the request type and any variables to be passed with the request. To improve performance, he request will be put into a job queue unless you need it to execute immediately.';
-	
+
 	public function paramRules() {
 		$httpVerbs = array(
-			'get'=>'GET',
-			'post'=>'POST',
-			'put'=>'PUT',
-			'delete'=>'DELETE'
+			'get'=>Yii::t('studio','GET'),
+			'post'=>Yii::t('studio','POST'),
+			'put'=>Yii::t('studio','PUT'),
+			'delete'=>Yii::t('studio','DELETE')
 		);
-		
+
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
 			'modelClass' => 'API_params',
 			'options' => array(
-				array('name'=>'url','label'=>'URL'),
-				array('name'=>'method','label'=>'Method','type'=>'dropdown','options'=>$httpVerbs),
+				array('name'=>'url','label'=>Yii::t('studio','URL')),
+				array('name'=>'method','label'=>Yii::t('studio','Method'),'type'=>'dropdown','options'=>$httpVerbs),
 				array('name'=>'attributes','optional'=>1),
 				// array('name'=>'immediate','label'=>'Call immediately?','type'=>'boolean','defaultVal'=>true),
 			));
 	}
-	
+
 	public function execute(&$params) {
 		$url = $this->parseOption('url',$params);
 		$method = $this->parseOption('method',$params);
-		
+
 		if($this->parseOption('immediate',$params) || true) {
 			$headers = array();
 			if(isset($this->config['attributes']) && !empty($this->config['attributes'])) {
 				$data = http_build_query($this->config['attributes']);
-			
+
 				if($method === 'GET') {
-					
+
 					$url .= strpos($url,'?')===false? '?' : '&';	// make sure the URL is ready for GET params
 					$url .= $data;
 				} else {
@@ -87,9 +87,9 @@ class X2FlowApiCall extends X2FlowAction {
 				'method' => $method,
 				'header' => implode("\r\n",$headers),
 			);
-			
+
 			$context = stream_context_create(array('http'=>$httpOptions));
-			
+
 			return @FileUtil::getContents($url,false,$context);
 		}
 	}

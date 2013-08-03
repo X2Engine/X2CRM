@@ -111,7 +111,7 @@ $this->actionMenu[] = array('label'=>($model->type == 'invoice'? Yii::t('quotes'
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 ?>
-<div class="page-title">
+<div class="page-title icon quotes">
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 	<h2><span class="no-bold"><?php echo ($model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?></span> <?php echo $model->name==''?'#'.$model->id:$model->name; ?></h2>
@@ -153,13 +153,13 @@ if($model->type == 'invoice') { ?>
 					<tr class="formSectionRow">
 						<td style="width: 300px">
 							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('media', 'Invoice Status'); ?></label>
+								<label><?php echo Yii::t('quotes', 'Invoice Status'); ?></label>
 								<div class="formInputBox" style="width: 150px; height: auto;">
 									<?php echo $model->renderAttribute('invoiceStatus'); ?>
 								</div>
 							</div>
 							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('media', 'Invoice Created'); ?></label>
+								<label><?php echo Yii::t('quotes', 'Invoice Created'); ?></label>
 								<div class="formInputBox" style="width: 150px; height: auto;">
 									<?php echo $model->renderAttribute('invoiceCreateDate'); ?>
 								</div>
@@ -167,13 +167,13 @@ if($model->type == 'invoice') { ?>
 						</td>
 						<td style="width: 300px">
 							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('media', 'Invoice Issued'); ?></label>
+								<label><?php echo Yii::t('quotes', 'Invoice Issued'); ?></label>
 								<div class="formInputBox" style="width: 150px; height: auto;">
 									<?php echo $model->renderAttribute('invoiceIssuedDate'); ?>
 								</div>
 							</div>
 							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('media', 'Invoice Payed'); ?></label>
+								<label><?php echo Yii::t('quotes', 'Invoice Payed'); ?></label>
 								<div class="formInputBox" style="width: 150px; height: auto;">
 									<?php echo $model->renderAttribute('invoicePayedDate'); ?>
 								</div>

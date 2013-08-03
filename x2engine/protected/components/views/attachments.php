@@ -82,13 +82,13 @@ function checkName(el, sbm) {
         echo CHtml::hiddenField('attachmentText', '');
         echo CHtml::dropDownList('private', 'public', array('0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions', 'Private')));
         echo CHtml::fileField('upload', '', array('id' => 'upload', 'onchange' => "checkName(this, '#submitAttach')"));
-        echo CHtml::submitButton('Submit', array('id' => 'submitAttach', 'disabled' => 'disabled', 'class' => 'x2-button', 'style' => 'display:inline'));
+        echo CHtml::submitButton(Yii::t('app','Submit'), array('id' => 'submitAttach', 'disabled' => 'disabled', 'class' => 'x2-button', 'style' => 'display:inline'));
         echo "</div>";
         if(Yii::app()->params->admin->googleIntegration){
             $auth = new GoogleAuthenticator();
             if($auth->getAccessToken()){
                 echo "<div class='row'>";
-                echo CHtml::label('Save to Google Drive?', 'drive');
+                echo CHtml::label(Yii::t('app','Save to Google Drive?'), 'drive');
                 echo CHtml::checkBox('drive');
                 echo "</div>";
             }

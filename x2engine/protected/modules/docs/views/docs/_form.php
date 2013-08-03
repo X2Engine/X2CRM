@@ -98,7 +98,7 @@ function setupAutosave() {
 	if($.browser.msie)
 		return;
 	// save after 1.5 seconds when the user is done typing
-	
+
 	window.docEditor.document.on("keyup",function(e) {
 		clearTimeout(typingTimer);
 		typingTimer = setTimeout(autosave, 1500);
@@ -142,12 +142,12 @@ $form = $this->beginWidget('CActiveForm', array(
 		<span id="savetime">
 			<?php if(isset($_GET['saved'])){
 				$date=date("g:i:s A",$_GET['time']);
-				echo Yii::t('Docs', 'Saved at') ." $date";
+				echo Yii::t('docs', 'Saved at') ." $date";
 			} ?>
 		</span>
 	</div><?php  ?>
 	<div class="row" style="margin-top:5px;">
-		<?php 
+		<?php
 		if($model->isNewRecord && isset($users) && !in_array($model->type,array('email','quote'))){
 			echo $form->label($model,'editPermissions');
 			echo $form->dropDownList($model,'editPermissions',$users,array('multiple'=>'multiple','size'=>'5'));

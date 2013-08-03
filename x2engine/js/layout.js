@@ -93,7 +93,7 @@ $(function() {
 		var contentWidth = $contentDiv.width();
 
 		// figure out what layout mode to use
-		if(windowWidth <= 1040) {
+		if(!x2.isAndroid && windowWidth <= 1040) {
 			newPageMode = 0;
 		} else {
 			if(windowWidth >= 1040 && window.enableFullWidth) {
@@ -209,9 +209,10 @@ $(function() {
 	$('.yiiTranslationList').draggable({handle:'td,th'}).offset({top:300,left:0});
 	
 	
-	
 	// show/hide widget button
-	$('#fullscreen-button').click(function() {
+	$('#fullscreen-button').click(function(evt) {
+        evt.preventDefault ();
+                                                    
 		// save preference
 		$.ajax({
 			url: yii.scriptUrl+'/site/fullscreen',

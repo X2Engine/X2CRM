@@ -1,0 +1,139 @@
+
+/*
+Chart setting dialog
+*/
+
+.chart-setting-name-input-container {
+    margin-top: 9px;
+    margin-bottom: 0px;
+}
+
+#create-chart-setting-dialog input {
+    margin-top: 0px;
+}
+
+#chart-setting-name {
+    width: 170px;
+    margin-left: 4px;
+    margin-bottom: 4px;
+}
+
+
+
+/*
+Chart
+*/
+
+/*.jqplot-table-legend.jqplot-table-legend-swatch {
+	width: 5px;
+}
+
+.jqplot-table-legend.jqplot-table-legend-swatch .jqplot-table-legend-swatch-outline {
+	border: none;
+	width: 5px;
+}
+
+.jqplot-table-legend.jqplot-table-legend-label {
+	width: 80px;
+	margin-left: -10px;
+}*/
+
+/*#chart-legend {
+}*/
+
+#chart-legend {
+	padding-top: 7px;
+	padding-left: 15px;
+	table-layout: fixed;
+	width: 80%;
+	border-spacing: 4px;
+}
+
+#chart-legend .chart-color-label {
+	font-size: 12px;
+	color: #404040;
+}
+
+#chart-legend .chart-color-swatch {
+	width: 10px;
+	height: 10px;
+	margin-right: 4px;
+	float: left;
+	-moz-border-radius: 1px;
+	-o-border-radius: 1px;
+	-webkit-border-radius: 1px;
+	border-radius: 1px;
+	margin-top: 2px;
+}
+
+#chart-container {
+	border: none !important;
+	padding-bottom: 0px;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+#chart-tooltip {
+	padding: 4px;
+	min-width: 100px;
+	background: white;
+	border: 1px solid #ccc;
+}
+
+#chart-tooltip .chart-tooltip-date {
+	font-weight: bold;
+	color: #424242;
+}
+
+#chart-container #delete-setting-button {
+    margin-top: 8px;
+    margin-left: -2px;
+    margin-right: 11px;
+}
+
+#chart-container #create-setting-button {
+    margin-top: 4px;
+}
+
+
+#chart-container #bin-size-button-set {
+    margin-top: 1px;
+}
+
+#chart-container #predefined-settings {
+    margin-top: 6px;
+    margin-right: 4px;
+}
+
+#chart-container #chart {
+    width: 98%;
+    height: 200px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+#chart-container a {
+    text-decoration: none;
+}
+
+#chart-container button.selected {
+    border: 1px solid black;
+}
+
+#chart-container .datepicker-row {
+    margin-top: -3px;
+}
+
+#chart-container .datepicker-row button {
+    margin-right: 0;
+}
+
+/*#chart-container .top-button-row {
+}*/
+
+#chart-container a.x2-button {
+    margin: 0px -4px 0 0;
+}
+
+
+

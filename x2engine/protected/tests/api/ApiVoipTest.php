@@ -14,8 +14,11 @@ class ApiVoipTest extends CURLTestCase {
 	public $fixtures = array(
 		'notifications' => 'Notification',
 		'contacts' => 'Contacts',
-		'phoneNumbers' => 'PhoneNumber',
 	);
+
+	public static function referenceFixtures() {
+		return array('phoneNumbers' => 'PhoneNumber',);
+	}
 
 	public function urlFormat() {
 		return 'api/voip?data={data}';

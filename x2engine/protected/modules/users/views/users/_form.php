@@ -39,7 +39,7 @@
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'users-form',
 	'enableAjaxValidation'=>false,
-)); 
+));
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
 Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
 Yii::app()->clientScript->registerCss('multiselectCss',"
@@ -89,7 +89,7 @@ $(document).ready(function() {
 		<?php echo $form->passwordField($model,'password',array('size'=>20,'maxlength'=>100)); ?>
 		<?php echo $form->error($model,'password'); ?>
 	</div>
-	
+
 	<div class="row">
 		<?php echo $form->labelEx($model,'userKey'); ?>
 		<?php echo $form->textField($model,'userKey',array('size'=>20,'maxlength'=>30)); ?>
@@ -143,7 +143,7 @@ $(document).ready(function() {
 		<?php echo $form->error($model,'backgroundInfo'); ?>
 	</div>
 	<?php } ?>
-	
+
 	<div class="row">
 		<?php echo $form->labelEx($model,'emailAddress'); ?>
 		<?php echo $form->textField($model,'emailAddress',array('size'=>20,'maxlength'=>100,'disabled'=>isset($flag)&&$flag?'disabled':'')); ?>
@@ -157,20 +157,20 @@ $(document).ready(function() {
 		<?php echo $form->error($model,'status'); ?>
 	</div>
        <?php if((isset($flag) && !$flag) || !isset($flag)){?>
-            <label>Roles</label>
+            <label><?php echo Yii::t('users','Roles');?></label>
             <br />
             <?php
             echo CHtml::dropDownList('roles[]',$selectedRoles,$roles,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>6));
             ?>
             <br />
-            <label>Groups</label>
+            <label><?php echo Yii::t('app','Groups');?></label>
             <br />
             <?php
             echo CHtml::dropDownList('groups[]',$selectedGroups,$groups,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>6));
             ?>
             <br />
 			<?php } ?>
-        
+
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
 	</div>

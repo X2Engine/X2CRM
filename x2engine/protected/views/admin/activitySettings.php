@@ -57,12 +57,17 @@ $('#timeout').change(function() {
 	'enableAjaxValidation' => false,
 	    ));
 	?>
-	
+
 	<div class="form">
     <div class="span-16">
 	<?php
 	echo $form->labelEx($model, 'eventDeletionTime')."<br /><br />";
-	echo $form->dropDownList($model,'eventDeletionTime',array(1=>'1 day',7=>'7 days',30=>'30 days', 0=>'Do not delete'));
+	echo $form->dropDownList($model,'eventDeletionTime',array(
+        1=>Yii::t('app','{n} day',array('{n}'=>1)),
+        7=>Yii::t('app','{n} days',array('{n}'=>7)),
+        30=>Yii::t('app','{n} days',array('{n}'=>30)),
+        0=>Yii::t('app','Do not delete')
+    ));
 	?><br>
 	<?php echo Yii::t('admin', 'Set how long activity feed events should last before deletion.'); ?>
 	<br><br>

@@ -84,7 +84,7 @@ $form = $this->beginWidget('CActiveForm', array(
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
 ?>
-<div class="page-title">
+<div class="page-title rounded-top">
 	<h2><span class="no-bold"><?php echo Yii::t('opportunities','Opportunity:'); ?></span> <?php echo $model->name; ?></h2>
 </div>
 <?php

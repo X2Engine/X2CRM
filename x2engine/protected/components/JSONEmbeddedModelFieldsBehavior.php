@@ -38,7 +38,7 @@
 Yii::import('application.models.embedded.*');
 
 /**
- * Behavior class for more advanced JSON storage in fields, using CModel chilren
+ * Behavior class for more advanced JSON storage in fields, using CModel children
  * in protected/models/embedded for validation, input widget rendering, etc.
  *
  * Supports multiple distinct stored structures of JSON (with transparent

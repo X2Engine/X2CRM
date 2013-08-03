@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -46,195 +47,199 @@
  * @property integer $custom
  */
 class Fields extends CActiveRecord {
-	/**
-	 * Returns the static model of the specified AR class.
-	 * @return Fields the static model class
-	 */
-	public static function model($className=__CLASS__) {
-		return parent::model($className);
-	}
 
-	/**
-	 * @return string the associated database table name
-	 */
-	public function tableName() {
-		return 'x2_fields';
-	}
+    /**
+     * Returns the static model of the specified AR class.
+     * @return Fields the static model class
+     */
+    public static function model($className = __CLASS__){
+        return parent::model($className);
+    }
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('modelName, fieldName, attributeLabel', 'length', 'max'=>250),
-			array('modelName, fieldName, attributeLabel','required'),
-			array('custom, modified, readOnly', 'boolean'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, modelName, fieldName, attributeLabel, custom, modified, readOnly', 'safe', 'on'=>'search'),
-		);
-	}
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName(){
+        return 'x2_fields';
+    }
 
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations() {
-		return array();
-	}
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules(){
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('modelName, fieldName, attributeLabel', 'length', 'max' => 250),
+            array('modelName, fieldName, attributeLabel', 'required'),
+            array('custom, modified, readOnly', 'boolean'),
+            // The following rule is used by search().
+            // Please remove those attributes that should not be searched.
+            array('id, modelName, fieldName, attributeLabel, custom, modified, readOnly', 'safe', 'on' => 'search'),
+        );
+    }
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels() {
-		return array(
-			'id' => 'ID',
-			'modelName' => 'Model Name',
-			'fieldName' => 'Field Name',
-			'attributeLabel' => 'Attribute Label',
-			'custom' => 'Custom',
-			'modified' => 'Modified',
-			'readOnly' => 'Read Only',
-                        'required' => "Required",
-                        'searchable' => "Searchable",
-                        'relevance' => 'Search Relevance',
-		);
-	}
+    /**
+     * @return array relational rules.
+     */
+    public function relations(){
+        return array();
+    }
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels(){
+        return array(
+            'id' => Yii::t('admin','ID'),
+            'modelName' => Yii::t('admin','Model Name'),
+            'fieldName' => Yii::t('admin','Field Name'),
+            'attributeLabel' => Yii::t('admin','Attribute Label'),
+            'custom' => Yii::t('admin','Custom'),
+            'modified' => Yii::t('admin','Modified'),
+            'readOnly' => Yii::t('admin','Read Only'),
+            'required' => Yii::t('admin',"Required"),
+            'searchable' => Yii::t('admin',"Searchable"),
+            'relevance' => Yii::t('admin','Search Relevance'),
+        );
+    }
 
-		$criteria=new CDbCriteria;
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     */
+    public function search(){
+        // Warning: Please modify the following code to remove attributes that
+        // should not be searched.
 
-		$criteria->compare('id',$this->id);
-		$criteria->compare('modelName',$this->modelName,true);
-		$criteria->compare('fieldName',$this->fieldName,true);
-		$criteria->compare('attributeLabel',$this->attributeLabel,true);
-		$criteria->compare('custom',$this->custom);
-		$criteria->compare('modified',$this->modified);
-		$criteria->compare('readOnly',$this->readOnly);
+        $criteria = new CDbCriteria;
 
-		return new CActiveDataProvider(get_class($this), array(
-			'criteria'=>$criteria,
-		));
-	}
+        $criteria->compare('id', $this->id);
+        $criteria->compare('modelName', $this->modelName, true);
+        $criteria->compare('fieldName', $this->fieldName, true);
+        $criteria->compare('attributeLabel', $this->attributeLabel, true);
+        $criteria->compare('custom', $this->custom);
+        $criteria->compare('modified', $this->modified);
+        $criteria->compare('readOnly', $this->readOnly);
 
-	/**
-	 * Finds a contact matching a full name; returns Contacts::name if a match was found, null otherwise.
-	 * @param string $type
-	 * @param string $name
-	 * @return mixed
-	 */
-	public static function getLinkId($type,$name) {
-		if(strtolower($type) == 'contacts')
-			$model = X2Model::model('Contacts')->find('CONCAT(firstName," ",lastName)=:name',array(':name'=>$name));
-		else
-			$model = X2Model::model(ucfirst($type))->findByAttributes(array('name'=>$name));
-		if(isset($model))
-			return $model->name;
-		else
-			return null;
-	}
+        return new CActiveDataProvider(get_class($this), array(
+                    'criteria' => $criteria,
+                ));
+    }
 
-	/**
-	 * Parses a value for table insertion using X2Fields rules
-	 * @param string $type the type of field
-	 * @param mixed $value
-	 * @return mixed the parsed value
-	 */
-	public function parseValue($value) {
-		if(in_array($this->type,array('int','float','currency','percentage'))) {
-			return self::strToNumeric($value,$this->type);
-		}
-		switch($this->type) {
-			case 'assignment':
-				return ($this->linkType === 'multiple')? Accounts::parseUsers($value) : $value;
+    /**
+     * Finds a contact matching a full name; returns Contacts::name if a match was found, null otherwise.
+     * @param string $type
+     * @param string $name
+     * @return mixed
+     */
+    public static function getLinkId($type, $name){
+        if(strtolower($type) == 'contacts')
+            $model = X2Model::model('Contacts')->find('CONCAT(firstName," ",lastName)=:name', array(':name' => $name));
+        else
+            $model = X2Model::model(ucfirst($type))->findByAttributes(array('name' => $name));
+        if(isset($model))
+            return $model->name;
+        else
+            return null;
+    }
 
-			case 'date':
-			case 'dateTime':
-				if(ctype_digit((string)$value))		// must already be a timestamp
-					return $value;
-				$value = $this->type === 'dateTime'? Formatter::parseDateTime($value) : Formatter::parseDate($value);
-				return $value === false? null : $value;
+    /**
+     * Parses a value for table insertion using X2Fields rules
+     * @param string $type the type of field
+     * @param mixed $value
+     * @return mixed the parsed value
+     */
+    public function parseValue($value){
+        if(in_array($this->type, array('int', 'float', 'currency', 'percentage'))){
+            return self::strToNumeric($value, $this->type);
+        }
+        switch($this->type){
+            case 'assignment':
+                return ($this->linkType === 'multiple') ? Accounts::parseUsers($value) : $value;
 
-			case 'link':
-				if(empty($value) || empty($this->linkType) || is_int($value))	// if it's empty, then whatever; if it's already numeric, assume it's valid
-					return $value;
-				$linkId = Yii::app()->db->createCommand()
-					->select('id')
-					->from(X2Model::model($this->linkType)->tableName())
-					->where('name=?',array($value))
-					->queryScalar();
-				return $linkId === false? $value : $linkId;
-			case 'boolean':
-				return (bool)$value;
-			default:
-				return $value;
-		}
-	}
+            case 'date':
+            case 'dateTime':
+                if(ctype_digit((string) $value))  // must already be a timestamp
+                    return $value;
+                $value = $this->type === 'dateTime' ? Formatter::parseDateTime($value) : Formatter::parseDate($value);
+                return $value === false ? null : $value;
 
-	/**
-	 * Converts a string into a numeric value.
-	 *
-	 * @param string $input The string to convert
-	 * @param string $type A hint as to the type of input; one of 'int', 'float', 'currency' or 'percentage'
-	 * @param string $currencySymbol Optional currency symbol to trim off the string before conversion
-	 * @param string $percentSymbol Optional percent symbol to trim off the string before conversion
-	 */
-	public static function strToNumeric($input, $type='float') {
-		$sign = 1;
-		// Typecasting in the case that it's not a string
-		$inType = gettype($input);
-		if($inType != 'string') {
-			if($type == $inType)
-				return $inType;
-			else
-				return ($type == 'int' ? (int) $input : (float) $input);
-		}
-		
-		// Get rid of leading and trailing whitespace:
-		$value = trim($input);
-		if(strpos($value,'(') === 0) // Parentheses notation
-			$sign = -1;
-		$posNeg = strpos($value,'-');
-		if($posNeg === 0 || $posNeg === strlen($value)-1) // Minus sign notation
-			$sign = -1;
-		// Strip out currency/percent symbols and digit group separators, but exclude null currency symbols:
-		$stripSymbols = array_filter(array_values(Yii::app()->params->supportedCurrencySymbols),function($s){return !empty($s);});
-		// Just in case "Other" currency used: include that currency's symbol
-		$defaultSym = Yii::app()->getLocale()->getCurrencySymbol(Yii::app()->params->admin->currency);
-		if($defaultSym)
-			if(!in_array($defaultSym,$stripSymbols))
-				$stripSymbols[] = $defaultSym;
-		$stripSymbols[] = '%';
-		$grpSym = Yii::app()->getLocale()->getNumberSymbol('group');
-		if(!empty($grpSym) && $type!='percentage')
-			$stripSymbols[] = $grpSym;
-		$value = strtr($value,array_fill_keys($stripSymbols,''));
-		// Trim away negative symbols and any remaining whitespace:
-		$value = trim($value, "-() ");
+            case 'link':
+                if(empty($value) || empty($this->linkType) || is_int($value)) // if it's empty, then whatever; if it's already numeric, assume it's valid
+                    return $value;
+                $linkId = Yii::app()->db->createCommand()
+                        ->select('id')
+                        ->from(X2Model::model($this->linkType)->tableName())
+                        ->where('name=?', array($value))
+                        ->queryScalar();
+                return $linkId === false ? $value : $linkId;
+            case 'boolean':
+                return (bool) $value;
+            default:
+                return $value;
+        }
+    }
+
+    /**
+     * Converts a string into a numeric value.
+     *
+     * @param string $input The string to convert
+     * @param string $type A hint as to the type of input; one of 'int', 'float', 'currency' or 'percentage'
+     * @param string $currencySymbol Optional currency symbol to trim off the string before conversion
+     * @param string $percentSymbol Optional percent symbol to trim off the string before conversion
+     */
+    public static function strToNumeric($input, $type = 'float'){
+        $sign = 1;
+        // Typecasting in the case that it's not a string
+        $inType = gettype($input);
+        if($inType != 'string'){
+            if($type == $inType)
+                return $inType;
+            else
+                return ($type == 'int' ? (int) $input : (float) $input);
+        }
+
+        // Get rid of leading and trailing whitespace:
+        $value = trim($input);
+        if(strpos($value, '(') === 0) // Parentheses notation
+            $sign = -1;
+        $posNeg = strpos($value, '-');
+        if($posNeg === 0 || $posNeg === strlen($value) - 1) // Minus sign notation
+            $sign = -1;
+        // Strip out currency/percent symbols and digit group separators, but exclude null currency symbols:
+        $stripSymbols = array_filter(array_values(Yii::app()->params->supportedCurrencySymbols), function($s){
+                    return !empty($s);
+                });
+        // Just in case "Other" currency used: include that currency's symbol
+        $defaultSym = Yii::app()->getLocale()->getCurrencySymbol(Yii::app()->params->admin->currency);
+        if($defaultSym)
+            if(!in_array($defaultSym, $stripSymbols))
+                $stripSymbols[] = $defaultSym;
+        $stripSymbols[] = '%';
+        $grpSym = Yii::app()->getLocale()->getNumberSymbol('group');
+        if(!empty($grpSym) && $type != 'percentage')
+            $stripSymbols[] = $grpSym;
+        $value = strtr($value, array_fill_keys($stripSymbols, ''));
+        // Trim away negative symbols and any remaining whitespace:
+        $value = trim($value, "-() ");
         $converted = strtr($value, array_flip(get_html_translation_table(HTML_ENTITIES, ENT_QUOTES)));
-        $value = trim($converted,chr(0xC2).chr(0xA0));
-		// Turn null string into zero:
-		if($value === null || $value === '')
-			return ($type!='int')?0.0:0;
-		else if (!in_array($type, array('int', 'currency', 'float', 'percentage')))
-			return $value; // Unrecognized type
-		else if (!preg_match('/^([\d\.,]+)e?[\+\-]?\d*$/', $value))
-			return $input; // Unreadable input
+        $value = trim($converted, chr(0xC2).chr(0xA0));
+        // Turn null string into zero:
+        if($value === null || $value === '')
+            return ($type != 'int') ? 0.0 : 0;
+        else if(!in_array($type, array('int', 'currency', 'float', 'percentage')))
+            return $value; // Unrecognized type
+        else if(!preg_match('/^([\d\.,]+)e?[\+\-]?\d*$/', $value))
+            return $input; // Unreadable input
 
-        $value=str_replace(Yii::app()->getLocale()->getNumberSymbol('decimal'),'.',$value);
-		if(in_array($type,array('float','currency','percentage'))) {
-            return ((float) $value)*$sign;
-		} else if($type == 'int') {
-			return ((int) $value)*$sign;
-		} else
-			return $value;
-	}
+        $value = str_replace(Yii::app()->getLocale()->getNumberSymbol('decimal'), '.', $value);
+        if(in_array($type, array('float', 'currency', 'percentage'))){
+            return ((float) $value) * $sign;
+        }else if($type == 'int'){
+            return ((int) $value) * $sign;
+        } else
+            return $value;
+    }
+
 }

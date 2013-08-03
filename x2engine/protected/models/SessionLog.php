@@ -89,10 +89,10 @@ class SessionLog extends CActiveRecord {
 	 */
 	public function attributeLabels() {
 		return array(
-			'id' => Yii::t('sessions','Sesesion ID'),
-			'user' => Yii::t('sessions','User'),
-			'timestamp' => Yii::t('sessions','Timestamp'),
-			'status' => Yii::t('sessions','Session Event'),
+			'id' => Yii::t('admin','Sesesion ID'),
+			'user' => Yii::t('admin','User'),
+			'timestamp' => Yii::t('admin','Timestamp'),
+			'status' => Yii::t('admin','Session Event'),
 		);
 	}
 
@@ -116,7 +116,7 @@ class SessionLog extends CActiveRecord {
 			'criteria'=>$criteria,
 		));
     }
-    
+
     public static function logSession($user, $sessionId, $status){
         $sessionLog=Yii::app()->db->createCommand()
                 ->select('sessionLog')
@@ -132,7 +132,7 @@ class SessionLog extends CActiveRecord {
             $model->save();
         }
     }
-    
+
     public static function parseStatus($status){
         $ret=$status;
         switch($status){

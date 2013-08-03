@@ -185,6 +185,7 @@ class QuotesController extends x2base {
 			if(!$model->hasLineItemErrors){
 				if($model->save()){
 					$model->createEventRecord();
+					$model->createActionRecord();
 					$model->saveLineItems();
 					if(!$quick)
 						$this->redirect(array('view', 'id' => $model->id));
@@ -277,7 +278,9 @@ class QuotesController extends x2base {
 	 * @return type
 	 */
 	public function getPrintQuote($id = null,$email = false) {
-		$model = $this->getModel($id);
+		$model = $this->getModel($id,false);
+		if($model == null)
+			return Yii::t('quotes','Quote {id} does not exist. It may have been deleted.',array('{id}'=>$id));
 		if (empty($model->template)) { // Legacy view (very, very plain!)
 			return $this->renderPartial('print', array(
 				'model' => $model,

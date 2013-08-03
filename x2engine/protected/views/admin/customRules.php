@@ -42,7 +42,7 @@ $str="<select name=\"Values[field][]\">";
 foreach(X2Model::model('Contacts')->attributeLabels() as $field=>$label){
     $str.="<option value=\"$field\">$label</option>";
 }
-$str.="</select>"; 
+$str.="</select>";
 Yii::app()->clientScript->registerScript('leadRules', "
 function deleteStage(object) {
 	$(object).closest('li').remove();
@@ -51,13 +51,13 @@ function deleteStage(object) {
 function addStage() {
 	$('#criteria ul').append(' \
 	<li>\
-                AND ".$str."\
+                ".Yii::t('admin','AND')." ".$str."\
                 <select name=\"Values[comparison][]\">\
-                    <option value=\"<\">Less Than</option>\
-                    <option value=\">\">Greater Than</option>\
-                    <option value=\"=\">Equal To</option>\
-                    <option value=\"!=\">Not Equal To</option>\
-                    <option value=\"contains\">Contains</option>\
+                    <option value=\"<\">".Yii::t('admin','Less Than')."</option>\
+                    <option value=\">\">".Yii::t('admin','Greater Than')."</option>\
+                    <option value=\"=\">".Yii::t('admin','Equal To')."</option>\
+                    <option value=\"!=\">".Yii::t('admin','Not Equal To')."</option>\
+                    <option value=\"contains\">".Yii::t('admin','Contains')."</option>\
                 </select>\
                 <input type=\"text\" size=\"30\" name=\"Values[value][]\" /><br />\
         <div class=\"cell\">\
@@ -101,11 +101,11 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 			'name'=>'delete',
 			'header'=>Yii::t('admin','Delete'),
-			'value'=>'CHtml::link("Delete","deleteRouting/$data->id")',
+			'value'=>'CHtml::link(Yii::t("app","Delete"),"deleteRouting/$data->id")',
 			'type'=>'raw',
 			'htmlOptions'=>array('width'=>'80%'),
 		),
-		
+
 	),
 ));
 ?>
@@ -123,18 +123,18 @@ $this->widget('zii.widgets.grid.CGridView', array(
 )); ?>
 
 	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br>
-        
+
         <div id="criteria">
-        <label>Criteria</label>
+        <label><?php echo Yii::t('admin','Criteria');?></label>
         <ul>
         <li>
             <?php echo CHtml::dropDownList('Values[field][]','',X2Model::model('Contacts')->attributeLabels()); ?>
             <select name="Values[comparison][]">
-                    <option value="<">Less Than</option>
-                    <option value=">">Greater Than</option>
-                    <option value="=">Equal To</option>
-                    <option value="!=">Not Equal To</option>
-                    <option value="contains">Contains</option>
+                    <option value="<"><?php echo Yii::t('admin','Less Than');?></option>
+                    <option value=">"><?php echo Yii::t('admin','Greater Than');?></option>
+                    <option value="="><?php echo Yii::t('admin','Equal To');?></option>
+                    <option value="!="><?php echo Yii::t('admin','Not Equal To');?></option>
+                    <option value="contains"><?php echo Yii::t('admin','Contains');?></option>
                 </select>
                 <input type="text" size="30" name="Values[value][]" />
                 <br />
@@ -146,7 +146,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
         </ul>
         <a href="javascript:void(0)" onclick="addStage();" class="add-workflow-stage">[<?php echo Yii::t('workflow','Add'); ?>]</a>
     </div>
-        
+
         <div class="row">
             <?php echo $form->labelEx($model,'users'); ?>
             <?php echo $form->dropDownList($model,'users',$users,array('multiple'=>'multiple','size'=>7,'id'=>'assignedToDropdown')); ?>
@@ -154,7 +154,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
             <?php /* x2temp */
                             echo "<br>";
                             $url=$this->createUrl('groups/getGroups');
-                            echo "<label>Group?</label>";
+                            echo "<label>".Yii::t('app','Group?')."</label>";
                             echo CHtml::checkBox('group','',array(
                                 'id'=>'groupCheckbox',
                                 'ajax'=>array(
@@ -176,15 +176,15 @@ $this->widget('zii.widgets.grid.CGridView', array(
                                 )
                             ));
                             echo "<br>";
-                            echo CHtml::dropDownList('groupType', '', array('0'=>'Within Group(s)','1'=>'Between Group(s)'),array('id'=>'groupType','style'=>'display:none'))
+                            echo CHtml::dropDownList('groupType', '', array('0'=>Yii::t('admin','Within Group(s)'),'1'=>Yii::t('admin','Between Group(s)')),array('id'=>'groupType','style'=>'display:none'))
                         /* end x2temp */ ?>
         </div>
-        
+
         <div class="row">
             <?php echo $form->labelEx($model,'priority');?>
             <?php echo $form->dropDownList($model,'priority',$priorityArray,array('selected'=>LeadRouting::model()->count()));?>
         </div>
-        
+
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
 	</div>

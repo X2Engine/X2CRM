@@ -86,7 +86,7 @@ if($type == 'workflow') {
 
 
 <div class="view" id="history-<?php echo $data->id; ?>">
-    <div class="sticky-icon x2-hint" title="This action has been marked as sticky and will remain at the top of the list." style="<?php echo $data->sticky?"":"display:none"; ?>"></div>
+    <div class="sticky-icon x2-hint" title="<?php echo Yii::t('actions','This action has been marked as sticky and will remain at the top of the list.');?>" style="<?php echo $data->sticky?"":"display:none"; ?>"></div>
     <?php
     if($data->complete!='Yes'){
 		if(empty($data->dueDate)){
@@ -192,16 +192,16 @@ if($type == 'workflow') {
                 $subject = $matches[1];
 				$body = '';
 			} else {
-                $subject = "No subject found";
-				$body = "(Error displaying email)";
+                $subject = Yii::t('actions',"No subject found");
+				$body = Yii::t('actions',"(Error displaying email)");
 			}
             if($type=='emailOpened'){
-                echo "Contact has opened the following email:<br />";
+                echo Yii::t('actions',"Contact has opened the following email:")."<br>";
             }
             echo '<strong>'.$subject.'</strong> '.$body;
-			echo '<br /><br />'.CHtml::link('[View email]','#',array('onclick'=>'return false;','id'=>$data->id,'class'=>'email-frame'));
+			echo '<br /><br />'.CHtml::link(Yii::t('actions','[View Email]'),'#',array('onclick'=>'return false;','id'=>$data->id,'class'=>'email-frame'));
         } elseif($data->type == 'quotes') {
-			echo CHtml::link('[View quote]', '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'quote-frame'));
+			echo CHtml::link(Yii::t('actions','[View Quote]'), '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'quote-frame'));
 		} else
 			echo Yii::app()->controller->convertUrls(CHtml::encode(empty($data->subject)?$data->actionDescription:$data->subject));	// convert LF and CRLF to <br />
 		?>

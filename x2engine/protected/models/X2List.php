@@ -44,7 +44,7 @@ class X2List extends CActiveRecord {
 	private $_itemModel = null;
 	private $_itemFields = array();
 	private $_itemAttributeLabels = array();
-	
+
 	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
@@ -56,7 +56,7 @@ class X2List extends CActiveRecord {
 	public function tableName() {
 		return 'x2_lists';
 	}
-	
+
 	public function behaviors() {
 		return array(
 			'X2LinkableBehavior'=>array(
@@ -106,7 +106,7 @@ class X2List extends CActiveRecord {
 			'lastUpdated' => Yii::t('contacts','Last Updated'),
 		);
 	}
-	
+
 	public function getDefaultRoute() {
 		return '/contacts/list';
 	}
@@ -123,10 +123,10 @@ class X2List extends CActiveRecord {
 	 */
 	public function afterDelete() {
 		CActiveRecord::model('X2ListItem')->deleteAllByAttributes(array('listId'=>$this->id)); // delete all the things!
-		
+
 		parent::afterDelete();
 	}
-	
+
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
@@ -150,7 +150,7 @@ class X2List extends CActiveRecord {
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	// get fields for listed model
 	public function getItemFields() {
 		if(empty($this->_itemFields)) {
@@ -160,7 +160,7 @@ class X2List extends CActiveRecord {
 		}
 		return $this->_itemFields;
 	}
-	
+
 	// get attribute labels for listed model
 	public function getItemAttributeLabels() {
 		if(empty($this->_itemAttributeLabels)) {
@@ -179,7 +179,7 @@ class X2List extends CActiveRecord {
 			// if(!empty($groupLinks))
 				// $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
 
-			// $condition .= 'OR (t.visibility=2 AND t.assignedTo IN 
+			// $condition .= 'OR (t.visibility=2 AND t.assignedTo IN
 				// (SELECT username FROM x2_group_to_user WHERE groupId IN
 					// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 		// } else {
@@ -205,24 +205,24 @@ class X2List extends CActiveRecord {
 				foreach (X2Model::model($this->modelName)->fields as $field) {
 					if ($field->fieldName == $criterion->attribute) {
 						switch($field->type) {
-							case 'date': 
+							case 'date':
 							case 'dateTime':
 								if (ctype_digit((string)$criterion->value) || (substr($criterion->value, 0, 1)=='-' && ctype_digit((string)substr($criterion->value, 1))))
 									$criterion->value = (int)$criterion->value;
 								else
 									$criterion->value = strtotime($criterion->value);
-								$dateType = true; 
+								$dateType = true;
 								break;
-							case 'link': 
+							case 'link':
 								if (!ctype_digit((string)$criterion->value)) $criterion->value = Fields::getLinkId($field->linkType,$criterion->value); break;
-							case 'boolean': 
+							case 'boolean':
 							case 'visibility':
 								$criterion->value = in_array(strtolower($criterion->value),array('1','yes','y','t','true'))? 1 : 0; break;
 						}
 						break;
 					}
 				}
-			
+
 				if($criterion->attribute == 'tags' && $criterion->value) {
 					$tags = explode(',',preg_replace('/\s?,\s?/',',',trim($criterion->value)));	//remove any spaces around commas, then explode to array
 					for($i=0; $i<count($tags); $i++) {
@@ -237,7 +237,7 @@ class X2List extends CActiveRecord {
 						}
 					}
 					$tagConditions = implode(' OR ',$tags);
-					
+
 					$search->distinct = true;
 					$search->join = 'JOIN x2_tags ON (x2_tags.itemId=t.id AND x2_tags.type="' . $this->modelName . '" AND ('.$tagConditions.'))';
 				} else if ($dateType) {
@@ -309,16 +309,16 @@ class X2List extends CActiveRecord {
             // if(!empty($groupLinks))
                 // $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
 
-            // $condition .= 'OR (visibility=2 AND assignedTo IN 
+            // $condition .= 'OR (visibility=2 AND assignedTo IN
                 // (SELECT username FROM x2_group_to_user WHERE groupId IN
                     // (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
         // if(Yii::app()->user->getName()!='admin')
             // $search->addCondition($condition);
-			
+
 		if($useAccessRules) {
 			$accessCriteria = X2Model::model('Contacts')->getAccessCriteria();	// record-level access control for Contacts
 			$accessCriteria->mergeWith($search,'AND');
-			
+
 			return $accessCriteria;
 		} else {
 			return $search;
@@ -356,17 +356,17 @@ class X2List extends CActiveRecord {
 	 * @return Array array of VCR links and stats
 	 */
 	public static function getVcrLinks(&$dataProvider,$modelId) {
-	
-	
+
+
 		$criteria = $dataProvider->criteria;
-		
+
 		$tableSchema = X2Model::model($dataProvider->modelClass)->getTableSchema();
 		if($tableSchema === null)
 			return false;
-		
+
 		// for the first query, find the current ID's row number in the list
 		$criteria->select = 't.id';
-		
+
 		foreach(explode(',',$criteria->order) as $token) {		// we also need any columns that are being used in the sort
 			$token = preg_replace('/\s|asc|desc/i','',$token);	// so loop through $criteria->order and extract them
 			if($token !== '' && $token !== 'id' && $token!='t.id'){
@@ -377,30 +377,30 @@ class X2List extends CActiveRecord {
                 }
             }
 		}
-		
+
 		// always include "id DESC" in sorting (for order consistency with SmartDataProvider)
 		if(!preg_match('/\bid\b/',$criteria->order)) {
 			if(!empty($criteria->order))
 				$criteria->order .= ',';
 			$criteria->order .= 't.id DESC';
 		}
-		
+
 		// get search conditions (WHERE, JOIN, ORDER BY, etc) from the criteria
 		$searchConditions = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema,$criteria)->getText();
-        
+
 		$rowNumberQuery = Yii::app()->db->createCommand(
 			'SELECT r-1 FROM (SELECT *,@rownum:=@rownum + 1 AS r FROM ('.$searchConditions.') t1, (SELECT @rownum:=0) r) t2 WHERE t2.id='.$modelId
 		);
 		// attach params from $criteria to this query
 		$rowNumberQuery->params = $criteria->params;
 		$rowNumber = $rowNumberQuery->queryScalar();
-		
+
 		if($rowNumber === false) {	// the specified record isn't in this list
 			return false;
 		} else {
-			
+
 			$criteria->select = '*';	// need to select everything to be sure ORDER BY will work
-			
+
 			if($rowNumber == 0) {	// if we're on the first row, get 2 items, otherwise get 3
 				$criteria->offset = 0;
 				$criteria->limit = 2;
@@ -410,19 +410,19 @@ class X2List extends CActiveRecord {
 				$criteria->limit = 3;
 				$vcrIndex = 1;		// index of current record in $vcrModels
 			}
-			
+
 			$vcrModels = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema,$criteria)->queryAll();
 			$count = $dataProvider->getTotalItemCount();
-			
+
 			$vcrData = array();
 			$vcrData['index'] = $rowNumber + 1;
 			$vcrData['count'] = $dataProvider->getTotalItemCount();
-			
+
 			/* if($vcrIndex > 0)		// there's a record before the current one
 				$vcrData['prev'] = '<li class="prev">'.CHtml::link('<',array('view/'.$vcrModels[0]['id']),array('title'=>$vcrModels[0]['name'],'class'=>'x2-button')).'</li>';
 			else
 				$vcrData['prev'] = '<li class="prev">'.CHtml::link('<','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
-			
+
 			if(count($vcrModels) - 1 > $vcrIndex)	// there's a record after the current one
 				$vcrData['next'] = '<li class="next">'.CHtml::link('>', array('view/'.$vcrModels[$vcrIndex+1]['id']), array('title'=>$vcrModels[$vcrIndex+1]['name'],'class'=>'x2-button')).'</li>';
 			else
@@ -432,7 +432,7 @@ class X2List extends CActiveRecord {
 				$vcrData['prev'] = CHtml::link('<',array('view/'.$vcrModels[0]['id']),array('title'=>$vcrModels[0]['name'],'class'=>'x2-button'));
 			else
 				$vcrData['prev'] = CHtml::link('<','javascript:void(0);',array('class'=>'x2-button disabled'));
-			
+
 			if(count($vcrModels) - 1 > $vcrIndex)	// there's a record after the current one
 				$vcrData['next'] = CHtml::link('>', array('view/'.$vcrModels[$vcrIndex+1]['id']), array('title'=>$vcrModels[$vcrIndex+1]['name'],'class'=>'x2-button'));
 			else
@@ -473,13 +473,31 @@ class X2List extends CActiveRecord {
 			),
 		));
 	}
-	
+
 	/**
 	 * Return a SQL data provider for a list of emails in a campaign
 	 * includes associated contact info with each email
 	 * @return CSqlDataProvider
 	 */
 	public function campaignDataProvider($pageSize=null) {
+		// The following line should probably be removed (in addition to the 
+		// access checks in queryCriteria) because here in the model is a very
+		// inappropriate place for an access check. Access logic should be
+		// resolved in the controller (or view, and in that case only to hide UI
+		// elements that a user should not be seeing because he/she does not have
+		// permission to use them). The line below is kept here for historical
+		// purposes, just in case it is needed for something terribly important.
+		//
+		// Case in point: let us say that a user does not have proper access to
+		// view a campaign, and cannot view it in practice. That would make this
+		// condition completely redundant; the check has already been performed.
+		// Let us then suppose the user does actually have access to view
+		// something that uses the contact list. In that scenario, the view where
+		// data from this provider is displayed would falsely report zero results
+		// while a different user would see X number of contacts in the campaign,
+		// and the campaign's scope would depend on who launches it instead of the
+		// actual criteria, when the user who saw it with zero contacts should have
+		// been denied access to it to begin with.
 		$conditions = X2Model::model('Campaign')->getAccessCriteria()->condition;
 		$params = array('listId'=>$this->id);
 		$sql = Yii::app()->db->createCommand()
@@ -489,7 +507,7 @@ class X2List extends CActiveRecord {
 			->where('list.listId=:listId AND ('.$conditions.')',array(':listId'=>$this->id))
             ->group('t.id')
 			->getText();
-			
+
 		return new CSqlDataProvider($sql, array(
 			'params'=>$params,
 			'pagination'=>array(
@@ -514,7 +532,7 @@ class X2List extends CActiveRecord {
 		if (!in_array($type, $whitelist)) {
 			return 0;
 		}
-		
+
 		$lstTbl = X2ListItem::model()->tableName();
 		$count = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '. $lstTbl .' WHERE listId = :listid AND '. $type .' > 0')
 				->queryScalar(array('listid'=>$this->id));
@@ -568,7 +586,7 @@ class X2List extends CActiveRecord {
 		}
 		return $dup;
 	}
-	
+
 	/**
 	 * Adds the specified ID(s) to this list (if they're not already in there)
 	 * @param mixed $ids a single integer or an array of integer IDs
@@ -576,15 +594,15 @@ class X2List extends CActiveRecord {
 	public function addIds($ids) {
 		if($this->type !== 'static')
 			return false;
-			
+
 		$ids = (array)$ids;
-		
+
 		$existingIds = Yii::app()->db->createCommand()
 			->select('contactId')
 			->from('x2_list_items')
 			->where('listId='.$this->id.' AND contactId IN('.implode(',',$ids).')')		// intersection of $ids and the IDs already in this list
 			->queryColumn();
-		
+
 		foreach($ids as $id) {
 			if(in_array($id,$existingIds))
 				continue;
@@ -593,7 +611,7 @@ class X2List extends CActiveRecord {
 			$listItem->contactId = $id;
 			$listItem->save();
 		}
-		
+
 		$this->count = CActiveRecord::model('X2ListItem')->countByAttributes(array('listId'=>$this->id));
 		return $this->update(array('count'));
 	}
@@ -605,11 +623,11 @@ class X2List extends CActiveRecord {
 	public function removeIds($ids) {
 		if($this->type !== 'static')
 			return false;
-		
+
 		$criteria = new CDbCriteria();
 		$criteria->compare('listId',$list->id);
 		$criteria->addInCondition('contactId',(array)$ids);
-		
+
 		// delete all the things!
 		if(CActiveRecord::model('X2ListItem')->deleteAll($criteria)) {
 			$this->count = CActiveRecord::model('X2ListItem')->countByAttributes(array('listId'=>$this->id));
@@ -625,7 +643,7 @@ class X2List extends CActiveRecord {
 	public function hasRecord($id) {
 		$criteria = $this->queryCriteria(false);	// don't use access rules
 		$criteria->compare('id',$id);
-		
+
 		return X2Model::model($this->modelName)->exists($criteria);
 	}
 

@@ -1,45 +1,10 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Install screen
 'Install X2EngineCRM'=>'Εγκατάσταση X2EngineCRM',
 'X2EngineCRM Installation'=>'Εγκατάσταση X2EngineCRM',
 'Installation Complete'=>'Η εγκατάσταση ολοκληρώθηκε',
-'Αυτή η εφαρμογή web απαιτεί την σωστή λειτουργία της Javascript. Παρακαλώ ενεργοποιήστε την Javascript στο πρόγραμμα περιήγησης που χρησιμοποιείτε πριν συνεχίσετε.'=>'',
+'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'Αυτή η εφαρμογή web απαιτεί Javascript για να λειτουργήσει σωστά. Παρακαλούμε ενεργοποιήστε την Javascript στον browser σας πριν συνεχίσετε.',
 // Requirements check
 'Cannot install X2EngineCRM'=>'Η X2EngineCRM δεν μπορεί να εγκατασταθεί',
 'required but missing'=>'απαιτείται αλλά λείπει',
@@ -55,7 +20,6 @@ return array (
 
 'Application Name'=>'Όνομα Εφαρμογής',
 'Default Language'=>'Προεπιλεγμένη Γλώσσα',
-'Currency'=>'Νόμισμα',
 'Admin Password'=>'Κωδικός Πρόσβασης Διαχειριστή',
 'Confirm Password'=>'Επιβεβαίωση Κωδικού Πρόσβασης',
 'Administrator Email'=>'Email Διαχειριστή',
@@ -66,21 +30,15 @@ return array (
 'This release only supports MySQL. Please create a database before installing.'=>'Αυτή η έκδοση υποστηρίζει μόνο βάσεις δεδομένων MySQL. Δημιουργήστε μιά βάση δεδομένων πρίν την εγκατάσταση.',
 'Host Name'=>'Όνομα ',
 'Database Name'=>'Όνομα Βάσης Δεδομένων',
-'Username'=>'Όνομα Χρήστη',
-'Password'=>'Κωδικός Πρόσβασης',
 
 // Software updates
 'Software Updates'=>'Ενημερώσεις Λογισμικού',
 'Notify me of software updates'=>'Ενημερωσέ με όταν υπάρχουν διαθέσιμες ενημερώσεις',
-'First Name'=>'Όνομα',
-'Last Name'=>'Επώνυμο',
-'Email'=>'Email',
 'Company'=>'Εταιρία',
 'Position'=>'Θέση',
 'How you found X2EngineCRM'=>'Πώς βρήκατε την X2EngineCRM',
 'Phone Number'=>'Τηλέφωνο',
 'Subscribe to the newsletter'=>'Εγγραφή σε newsletter',
-'Comments'=>'Σχόλια',
 'Request a follow-up contact'=>'Ζητήστε συνεχή επικοινωνία',
 'Software Updates'=>'Ενημερώσεις Λογισμικού',
 'Please help us improve X2EngineCRM by providing the following information:'=>'Βοηθήστε μας, να βελτιώσουμε την X2EngineCRM, παραθέτωντας τις παρακάτω πληροφορίες:',
@@ -88,12 +46,23 @@ return array (
 'Optional Information'=>'Προαιρετικές Πληροφορίες',
 'Could not connect to the updates server at this time.'=>'Δεν μπορεί να υπάρξει σύνδεση στους διακομιστές ενημερώσεων αυτή την στιγμή',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'Μπορείτε να συνεχίσετε την εγκατάσταση της εφαρμογής χωρίς την ενεργοποίηση των ενημερώσεων και να δοκιμάσετε αργότερα πάλι, πηγαίνοντας στην επιλογή "Γενικές Ρυθμίσεις" του μενού "Ρυθμίσεις Εφαρμογής" στον πίνακα ελέγχου Διαχειριστή.',
+'Product Key'=>'Κλειδί προϊόντος',
+'Registration'=>'Εγγραφή',
+'Software registration succeeded.'=>'Εγγραφή λογισμικού πέτυχε.',
+'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'Για να λαμβάνετε ενημερώσεις λογισμικού από X2Engine, παρακαλούμε να δηλώσετε το αντίγραφο του X2EngineCRM:',
+'For support or sales inquiries, please contact us'=>'Για υποστήριξη ή πωλήσεων πληροφορίες, παρακαλούμε επικοινωνήστε μαζί μας',
+'If different from Administrator Email'=>'Εάν διαφέρει από Administrator Αποστολή email',
+'Intended use of X2EngineCRM, goals, etc.'=>'Προβλεπόμενη χρήση των X2EngineCRM, στόχους, κλπ.',
+'Make sure you have an active internet connection. If the problem persists, please contact us'=>'Βεβαιωθείτε ότι έχετε μια ενεργή σύνδεση στο Internet. Εάν το πρόβλημα παραμένει, παρακαλούμε επικοινωνήστε μαζί μας',
+'-----'=>'-----',
+'Sourceforge'=>'Sourceforge',
+'Github'=>'Github',
+'News Outlet'=>'Νέα Outlet',
 
 'Install'=>'Εγκατάσταση',
 
 'For help or more information - X2Engine.com'=>'Για βοήθεια ή περισσότερες πληροφορίες - X2Engine.com',
 
-'All Rights Reserved.'=>'Με επιφύλαξη παντός δικαιώματος.',
 
 // Splash screen
 'Installation Complete!'=>'Ολοκλήρωση Εγκατάστασης!',
@@ -101,4 +70,49 @@ return array (
 'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'Η X2Engine εγκαταστάθηκε με επιτυχία στον διακομιστή σας! Μπορείτε τώρα να συνδεθείτε με το όνομα χρήστη "admin" και τον κωδικό πρόσβασης που επιλέξατε κατά την εγκατάσταση.',
 'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'Εάν επιλέξετε να εγκαταστήσετε το Gii, μπορείτε να το βρείτε <a href="index.php/gii/">εδώ</a>. Ο κωδικός πρόσβασης είναι ο ίδιος με τον κωδικό πρόσβασης του Διαχειριστή.',
 
+'This directory is not writable by PHP processes run by the webserver.'=>'Αυτός ο κατάλογος δεν είναι εγγράψιμος από την PHP διεργασίες εκτελούνται από τον server.',
+'PHP scripts are not permitted to run the function "chmod".'=>'PHP scripts δεν επιτρέπεται να εκτελέσετε τη λειτουργία &quot;chmod&quot;.',
+'Time zone widget will not work'=>'Ώρα widget ζώνη δεν θα λειτουργήσει',
+'Contact views may be inaccessible'=>'Επικοινωνία απόψεις μπορεί να είναι απροσπέλαστα',
+'Google integration will not work'=>'Google ολοκλήρωση δεν θα λειτουργήσει',
+'Built-in error reporter will not work'=>'Built-in δημοσιογράφος σφάλματος δεν θα λειτουργήσει',
+'The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.'=>'Η διαμόρφωση PHP επιλογή &quot;allow_url_fopen&quot; είναι απενεργοποιημένη. Μπούκλα θα πρέπει να χρησιμοποιούνται για την κατασκευή όλων των HTTP αιτήσεων κατά τη διάρκεια αναβαθμίσεων.',
+'This will result in the inability to import and export custom modules.'=>'Αυτό θα έχει ως αποτέλεσμα την αδυναμία εισαγωγής και εξαγωγής custom modules.',
+'Image previews and MIME info for uploaded files in the media module will not be available.'=>'Προεπισκόπηση της εικόνας και Παντομίμας πληροφορίες για μεταφόρτωση αρχείων στη μονάδα πολυμέσων δεν θα είναι διαθέσιμες.',
+'All other essential requirements were met.'=>'Όλες οι άλλες βασικές απαιτήσεις ικανοποιήθηκαν.',
+'The version of the PCRE library included in this build of PHP is {thisVer}, but {reqVer} or later is required.'=>'Η έκδοση της βιβλιοθήκης PCRE που περιλαμβάνονται σε αυτήν την έκδοση της PHP είναι {thisVer} , αλλά {reqVer} ή νεότερη έκδοση.',
+'The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will not work.'=>'Η διαμόρφωση PHP επιλογή &quot;allow_url_fopen&quot; είναι απενεργοποιημένη εκτός από την CURL παράταση λείπει. Αυτό σημαίνει ότι δεν υπάρχει δυνατό τρόπο για να κάνουν αιτήσεις HTTP, και ως εκ τούτου ενημερώσεις λογισμικού δεν θα λειτουργήσει.',
+'Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will not work.'=>'Δεν ήταν δυνατή η επικοινωνία με το διακομιστή ενημερώσεις από αυτό του web server. Αυτό μπορεί να είναι ένα προσωρινό πρόβλημα. Αν επιμείνει, ενημερώσεις λογισμικού δεν θα λειτουργήσει.',
+'Could not connect to host or select database.'=>'Δεν ήταν δυνατή η σύνδεση για να φιλοξενήσει ή επιλέξτε τη βάση δεδομένων.',
+'cannot create tables'=>'Δεν μπορείτε να δημιουργήσετε πίνακες',
+'cannot insert data'=>'Δεν μπορείτε να εισαγάγετε τα δεδομένα',
+'cannot delete data'=>'Δεν μπορείτε να διαγράψετε τα δεδομένα',
+'cannot alter tables'=>'δεν μπορεί να αλλάξει τους πίνακες',
+'cannot drop tables'=>'δεν μπορεί να μειωθεί πίνακες',
+'Module "{module}" installed.'=>'Ενότητα &quot; {module} &quot;εγκατασταθεί.',
+'Error applying initial configuration'=>'Σφάλμα κατά την εφαρμογή αρχική διαμόρφωση',
+'Could not find database configuration script'=>'Δεν ήταν δυνατή η εύρεση της βάσης δεδομένων δέσμη ενεργειών ρύθμισης παραμέτρων',
+'Could not {stage}. SQL statement "{sql}" from {file} failed'=>'Δεν θα μπορούσε {stage} . SQL δήλωση &quot; {sql} &quot;από {file} απέτυχε',
+'Could not {stage}'=>'Δεν θα μπορούσε {stage}',
+'Could not find installation stage database script'=>'Δεν μπόρεσα να βρω την εγκατάσταση script βάση το στάδιο',
+'Database connection error'=>'Database σφάλμα σύνδεσης',
+'Installation completed {time}.'=>'Εγκατάσταση ολοκληρώθηκε {time} .',
+'Able to connect to database'=>'Σε θέση να συνδεθεί με τη βάση δεδομένων',
+'Created new tables for X2Engine'=>'Δημιουργήθηκε νέους πίνακες για X2Engine',
+'Created login for admin account'=>'Δημιουργήθηκε login για λογαριασμό διαχειριστή',
+'Created config file'=>'Δημιουργήθηκε config αρχείο',
+'Next Steps'=>'Επόμενα βήματα',
+'Log in to app'=>'Συνδεθείτε στο app',
+'Create new users'=>'Δημιουργία νέων χρηστών',
+'Set location'=>'Ορίστε την τοποθεσία',
+'Explore the app'=>'Εξερευνήστε το app',
+'Dropped old X2Engine tables (if any)'=>'Έπεσε παλιά τραπέζια X2Engine (αν υπάρχει)',
+'Set up Cron Job to deal with action reminders (see readme)'=>'Δημιουργία θέσεων εργασίας Cron να ασχοληθεί με υπενθυμίσεις δράσης (βλ. readme)',
+'The path defined in session.save_path ({ssp}) is not writable. Uploading files via the media module will not work.'=>'Η διαδρομή που ορίζεται στο session.save_path ( {ssp} ) δεν είναι εγγράψιμος. Μεταφόρτωση αρχείων μέσω της μονάδας των μέσων ενημέρωσης δεν θα λειτουργήσει.',
+'The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2CRM, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.'=>'Το &quot;OpenSSL&quot; και &quot;mcrypt&quot; βιβλιοθήκες δεν είναι διαθέσιμα. Εάν οι τυχόν πιστοποιήσεις εφαρμογής (π.χ. κωδικών πρόσβασης του λογαριασμού e-mail) τέθηκε σε X2CRM, θα πρέπει να αποθηκεύονται στη βάση δεδομένων σε μορφή απλού κειμένου (χωρίς κρυπτογράφηση απολύτως). Έτσι, εάν η βάση δεδομένων είναι πάντα σε κίνδυνο, αυτοί οι κωδικοί πρόσβασης θα είναι αναγνώσιμο από μη εξουσιοδοτημένους τρίτους.',
+'Connection successful!'=>'Σύνδεση επιτυχής!',
+'This webserver can run X2CRM!'=>'Αυτό webserver μπορεί να τρέξει X2CRM!',
+'Permissions and/or ownership of uploaded files do not permit PHP processes run by the webserver to write files.'=>'Δικαιώματα και / ή την ιδιοκτησία των αρχείων που δεν επιτρέπουν PHP διεργασίες εκτελούνται από τον server για να γράψετε τα αρχεία.',
+'The function proc_open and/or the "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.'=>'Η proc_open λειτουργίας και / ή το &quot;mysqldump&quot; και &quot;mysql&quot; βοηθητικά προγράμματα της γραμμής εντολών είναι διαθέσιμες σε αυτό το σύστημα. X2CRM δεν θα είναι σε θέση να κάνει αυτόματα ένα αντίγραφο ασφαλείας της βάσης δεδομένων του κατά τη διάρκεια ενημερώσεις του λογισμικού, ή αυτόματα αποκατάσταση της βάσης δεδομένων του, σε περίπτωση μιας αποτυχημένης ενημερωμένης έκδοσης.',
+'Security captchas will not work, and the media module will not be able to detect or display the dimensions of uploaded images.'=>'Ασφάλεια captchas δεν θα λειτουργήσει και η μονάδα των μέσων ενημέρωσης δεν θα είναι σε θέση να εντοπίσει ή να εμφανίσετε τις διαστάσεις των ανεβασμένων εικόνων.',
 );

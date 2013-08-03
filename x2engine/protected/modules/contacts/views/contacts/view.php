@@ -106,9 +106,15 @@ function subscribe(link) {
 $layout = Yii::app()->params->profile->getLayout();
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
+<?php
+	if (!IS_ANDROID) {
+		echo '
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
 	<div class="page-title-fixed-inner">
+		';
+	}
+?>
 		<div class="page-title icon contacts">
 			<h2><?php echo $model->name; ?></h2>
 			<?php $this->renderPartial('_vcrControls', array('model'=>$model)); ?>
@@ -120,12 +126,24 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 			}
 			?>
 		</div>
+<?php
+	if (!IS_ANDROID) {
+		echo '
 	</div>
 </div>
+		';
+	}
+?>
 <div id="main-column">
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts')); ?>
 
-<?php $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'contacts')); ?>
+<?php 
+	$this->widget('X2WidgetList', array(
+		'block'=>'center', 
+		'model'=>$model, 
+		'modelType'=>'contacts'
+	)); 
+?>
 
 <?php
 //$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'contacts'));

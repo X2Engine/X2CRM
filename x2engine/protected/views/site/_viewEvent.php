@@ -53,6 +53,16 @@ if(in_array($data->type, array('email_sent','email_opened','record_create'))) {
 	if(in_array($data->subtype,array('quote','invoice')))
 		$typeFile .= "_{$data->subtype}";
 }
+// Distinct call logging icon:
+if($data->type=='record_create') {
+	switch($data->subtype) {
+		case 'call':
+			$typeFile = 'voip_call';
+			break;
+	}
+		
+}
+	
 $authorRecord = X2Model::model('User')->findByAttributes(array('username'=>$data->user));
 if(isset($authorRecord)){
     if(Yii::app()->user->getName()==$data->user){
@@ -113,7 +123,7 @@ $likedPost=Yii::app()->db->createCommand()
     ?>
 
 <div class="view top-level activity-feed" style="<?php echo $style; ?>" id="<?php echo $data->id; ?>-feed-box">
-    <div class="img-box <?php echo $data->type." ".(($data->type=='record_create')?$data->associationType.'-create':""); ?>" title="<?php echo $data->parseType($data->type); ?>" style="width:45px;float:left;margin-right:5px;">
+    <div class="img-box <?php echo $typeFile." ".(($data->type=='record_create')?$data->associationType.'-create':""); ?>" title="<?php echo $data->parseType($data->type); ?>" style="width:45px;float:left;margin-right:5px;">
     <?php if($data->type=='record_create' && file_exists('themes/'.Yii::app()->theme->name.'/images/'.strtolower($data->associationType).'.png')){
         echo "<div class='img-box plus-sign'></div>";
     }
@@ -149,8 +159,9 @@ $likedPost=Yii::app()->db->createCommand()
         |
         <?php
         $important=($data->important==1);
-        echo CHtml::link(Yii::t('app','Broadcast Event'),'#',array('class'=>'important-link x2-hint','id'=>$data->id.'-important-link','style'=>($important?'display:none;':''),'title'=>Yii::t('app','Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.')));
-        echo CHtml::link(Yii::t('app','Cancel Broadcast'),'#',array('class'=>'unimportant-link','id'=>$data->id.'-unimportant-link','style'=>($important?'':'display:none;'))); ?>
+        //echo CHtml::link(Yii::t('app','Broadcast Event'),'#',array('class'=>'important-link x2-hint','id'=>$data->id.'-important-link','style'=>($important?'display:none;':''),'title'=>Yii::t('app','Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.')));
+        echo CHtml::link(Yii::t('app','Make Important'),'#',array('class'=>'important-link x2-hint','id'=>$data->id.'-important-link','style'=>($important?'display:none;':''),'title'=>Yii::t('app','Designating an event as important will make it visible to any user viewing your events on the activity feed--regardless of type filters.')));
+        echo CHtml::link(Yii::t('app','Make Unimportant'),'#',array('class'=>'unimportant-link','id'=>$data->id.'-unimportant-link','style'=>($important?'':'display:none;'))); ?>
 
         <?php
         if(Yii::app()->params->isAdmin){
@@ -172,8 +183,13 @@ $likedPost=Yii::app()->db->createCommand()
           echo CHtml::link(Yii::t('app','Unlike Post'),'#',array('id'=>$data->id.'-unlike-button',
             'class'=>'unlike-button','style'=>'display:none;'));
         }
-        echo CHtml::link(Yii::t('app',' (' . $likeCount . ')'),'#',array('id'=>$data->id.'-like-count',
+        echo ' '.CHtml::link('(' . $likeCount . ')','#',array('id'=>$data->id.'-like-count',
           'class'=>'like-count'));
+        ?>
+        <?php
+        echo " | ";
+        echo CHtml::link(Yii::t('app','Broadcast Event'),'#',array('id'=>$data->id.'-broadcast-button',
+          'class'=>'broadcast-button'));
         ?>
     </span>
 	<?php

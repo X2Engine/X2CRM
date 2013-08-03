@@ -15,7 +15,7 @@ class IasPager extends CLinkPager {
         parent::init();
 
         $assets = dirname(__FILE__) . '/assets';
-        $this->baseUrl = Yii::app()->assetManager->publish($assets);
+        $this->baseUrl = Yii::app()->assetManager->publish($assets, false, -1, true);
 
         $cs = Yii::app()->getClientScript();
         $cs->registerCoreScript('jquery');

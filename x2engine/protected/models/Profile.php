@@ -37,7 +37,6 @@
 
 Yii::import('application.components.X2LinkableBehavior');
 Yii::import('application.modules.users.models.*');
-Yii::import('application.extensions.CSerializeBehavior');
 Yii::import('application.components.JSONFieldsBehavior');
 
 /**
@@ -74,10 +73,6 @@ class Profile extends CActiveRecord {
                 'defaults' => array(),
                 'defaultStickOnClear' => false
             ),
-            /* 'CSerializeBehavior' => array(
-              'class' => 'application.extensions.CSerializeBehavior',
-              'serialAttributes' => array('theme')
-              ), */
             'JSONFieldsBehavior' => array(
                 'class' => 'application.components.JSONFieldsBehavior',
                 'transformAttributes' => array('theme' => array(
@@ -85,7 +80,7 @@ class Profile extends CActiveRecord {
                         'pageHeaderTextColor', 'activityFeedWidgetBgColor',
                         'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling',
                         'pageOpacity', 'themeName', 'private', 'owner', 'loginSound',
-                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven'))
+                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven')),
             )
         );
     }
@@ -108,7 +103,8 @@ class Profile extends CActiveRecord {
             array('officePhone, cellPhone, language', 'length', 'max' => 40),
             array('timeZone', 'length', 'max' => 100),
             array('widgets, tagLine, emailAddress', 'length', 'max' => 255),
-            array('widgetOrder, emailSignature', 'length', 'max' => 512),
+            array('widgetOrder', 'length', 'max' => 512),
+	    array('emailSignature','safe'),
             array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
@@ -441,14 +437,7 @@ class Profile extends CActiveRecord {
             else
                 return CHtml::link(Yii::t('app', '{name}\'s feed', array('{name}' => $this->fullName)), array($this->baseRoute.'/'.$this->id));
         } else{
-            if($wbc = realpath(Yii::app()->basePath.'/../webLeadConfig.php')){
-                // Attempt to get the URL of the base of the app from webLeadConfig
-                include($wbc);
-                return CHtml::link($this->fullName, $url.'/index.php'.$this->baseRoute.'/'.$this->id);
-            }else{
-                // Give up and just return text
-                return $this->fullName;
-            }
+			return CHtml::link($this->fullName,Yii::app()->externalBaseUrl.'/index.php'.$this->baseRoute.'/'.$this->id);
         }
     }
 
@@ -646,7 +635,7 @@ class Profile extends CActiveRecord {
     }
 
     /**
-     * Initis a layout for viewing a module. The layout is a set of associative arrays
+     * Inits a layout for viewing a module. The layout is a set of associative arrays
      * with the following format:
      * array (
      * 'left'=> array()
@@ -666,6 +655,10 @@ class Profile extends CActiveRecord {
         return array(
             'left' => array(),
             'center' => array(
+                'ActionHistoryChart' => array(
+                    'title' => 'Action History Chart',
+                    'minimize' => false,
+                ),
                 'InlineTags' => array(
                     'title' => 'Tags',
                     'minimize' => false,
@@ -738,6 +731,41 @@ class Profile extends CActiveRecord {
         );
     }
 
+	/* 
+	Private helper function to update users layout elements to match the set of layout
+	elements specified in initLayout ().
+	*/
+	private function addRemoveCenterLayoutElements ($layout, $initLayout) {
+
+		$changed = false;
+
+		$layoutCenterWidgets = array_merge ($layout['center'], $layout['hidden']);
+		$initLayoutCenterWidgets = array_merge ($initLayout['center'], $initLayout['hidden']);
+
+		$arrayDiff = 
+			array_diff (array_keys ($initLayoutCenterWidgets), array_keys ($layoutCenterWidgets));
+		foreach ($arrayDiff as $elem) {
+			//$layout['center'][$elem] = $initLayout['center'][$elem];
+			$layout['center'] = array ($elem => $initLayout['center'][$elem]) + $layout['center']; // unshift key-value pair
+			$changed = true;
+		}
+		$arrayDiff = 
+			array_diff (array_keys ($layoutCenterWidgets), array_keys ($initLayoutCenterWidgets));
+		foreach ($arrayDiff as $elem) {
+			if ($layout['center'][$elem])
+				unset ($layout['center'][$elem]);
+			else if ($layout['hidden'][$elem])
+				unset ($layout['hidden'][$elem]);
+			$changed = true;
+		}
+
+		if ($changed) {
+            Yii::app()->params->profile->layout = json_encode($layout);
+            Yii::app()->params->profile->update(array('layout'));
+		}
+
+	}
+
     /**
      * Returns the layout for the user's widgets as an associative array.
      *
@@ -746,12 +774,15 @@ class Profile extends CActiveRecord {
     public function getLayout(){
         $layout = Yii::app()->params->profile->layout;
 
+		$initLayout = $this->initLayout(); 
+
         if(!$layout){ // layout hasn't been initialized?
-            $layout = $this->initLayout(); // initilize layout
+            $layout = $initLayout;
             Yii::app()->params->profile->layout = json_encode($layout);
             Yii::app()->params->profile->update(array('layout'));
         }else{
             $layout = json_decode($layout, true); // json to associative array
+			$this->addRemoveCenterLayoutElements ($layout, $initLayout);
         }
 
         return $layout;

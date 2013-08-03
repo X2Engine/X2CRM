@@ -90,7 +90,7 @@ $form=$this->beginWidget('CActiveForm', array(
 				'2'=>Yii::t('actions','Medium'),
 				'3'=>Yii::t('actions','High')
 			);
-		echo $priorityArray[$model->priority]; ?>
+		echo isset($priorityArray[$model->priority])?$priorityArray[$model->priority]:""; ?>
 		<?php /*
 		<?php echo $form->dropDownList($model,'priority',
 			array(

@@ -45,15 +45,22 @@ $this->actionMenu = array(
 ?>
 
 <div class="page-title"><h2><?php echo Yii::t('profile','Manage Passwords for Third-Party Applications'); ?></h2></div>
-<div style="padding:10px;">
+<div class="credentials-storage">
 <?php
 
-$dp = new CActiveDataProvider('Credentials',array(
-	'criteria' => array(
-		'condition'=>'userId=:uid OR userId IS NULL',
+$crit = new CDbCriteria(array(
+		'condition'=>'userId=:uid OR userId=-1',
 		'order' => 'name ASC',
 		'params' => array(':uid' => $profile->user->id),
-	),
+	)
+);
+$staticModel = Credentials::model();
+$staticModel->private = 0;
+if(Yii::app()->user->checkAccess('CredentialsSelectNonPrivate',array('model'=>$staticModel)))
+	$crit->addCondition('private=0','OR');
+
+$dp = new CActiveDataProvider('Credentials',array(
+	'criteria' => $crit,
 ));
 $this->widget('zii.widgets.CListView', array(
 	'dataProvider' => $dp,
@@ -68,7 +75,9 @@ $this->widget('zii.widgets.CListView', array(
 <?php
 echo CHtml::beginForm(array('profile/createUpdateCredentials'),'get');
 echo CHtml::submitButton(Yii::t('app','Add New'),array('class'=>'x2-button','style'=>'float:left;margin-top:0'));
-echo CHtml::dropDownList('class','EmailAccount',Credentials::model()->authModelLabels);
+$modelLabels = Credentials::model()->authModelLabels;
+$types = array_merge(array(null=>'- '.Yii::t('app','select a type').' -'),$modelLabels);
+echo CHtml::dropDownList('class','EmailAccount',$types,array('options'=>array_merge(array(null=>array('selected'=>'selected')),array_fill_keys(array_keys($modelLabels),array('selected'=>false)))));
 echo CHtml::endForm();
 
 ?>

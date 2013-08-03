@@ -41,6 +41,7 @@ $this->actionMenu = array(
 	array('label'=>Yii::t('profile','Update Profile')),
 	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->id)),
 	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->id)),
+	array('label'=>Yii::t('profile','Manage Apps'),'url'=>array('manageCredentials'))
 );
 ?>
 <div class="page-title"><h2><?php echo Yii::t('profile','Update Your Profile'); ?></h2></div>

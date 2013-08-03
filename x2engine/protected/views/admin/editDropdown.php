@@ -50,30 +50,30 @@ foreach($list as $dropdown){
 )); ?>
 
 	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br />
-        
+
         <div class="row">
             <?php echo $form->labelEx($model,'name'); ?>
             <?php echo $form->dropDownList($model,'name',$names,array(
-                'empty'=>'Select a dropdown',
+                'empty'=>Yii::t('admin','Select a dropdown'),
                 'ajax' => array(
                 'type'=>'POST', //request type
                 'url'=>CController::createUrl('admin/getDropdown'), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#options', //selector to update
-                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
+                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
                 //leave out the data key to pass all form values through
                 ))); ?>
             <?php echo $form->error($model,'name'); ?>
         </div>
-        
+
         <div id="workflow-stages">
-            <label>Dropdown Options</label>
+            <label><?php echo Yii::t('admin','Dropdown Options');?></label>
             <ol id="options">
-            
+
             </ol>
         </div>
         <a href="javascript:void(0)" onclick="addStage();" class="add-workflow-stage">[<?php echo Yii::t('admin','Add Option'); ?>]</a>
-        
+
 	<div class="row buttons">
         <br />
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Save'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>

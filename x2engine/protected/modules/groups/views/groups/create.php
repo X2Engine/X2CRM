@@ -35,8 +35,8 @@
  *****************************************************************************************/
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>'Manage Groups', 'url'=>array('index')),
-	array('label'=>'Create Group'),
+	array('label'=>Yii::t('groups','Group List'), 'url'=>array('index')),
+	array('label'=>Yii::t('groups','Create Group')),
 ));
 ?>
 <div class="page-title icon groups"><h2><?php echo Yii::t('groups','Create Group'); ?></h2></div>

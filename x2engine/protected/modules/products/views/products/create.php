@@ -34,14 +34,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-include("protected/modules/products/productConfig.php");
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),
-	array('label'=>Yii::t('module','Create',array('{X}'=>$moduleConfig['recordName']))),
+	array('label'=>Yii::t('products','Product List'), 'url'=>array('index')),
+	array('label'=>Yii::t('products','Create')),
 ));
 ?>
-<div class="page-title icon products"><h2><?php echo Yii::t('module','Create New {X}',array('{X}'=>$moduleConfig['recordName'])); ?></h2></div>
-<?php 
+<div class="page-title icon products"><h2><?php echo Yii::t('products','Create New Product'); ?></h2></div>
+<?php
 if(!isset($model->status) || $model->status == '') {
 	$model->status = 'Active';
 }

@@ -49,14 +49,14 @@ var record=0;
 <style>
     .clean-link{
         text-decoration:none;
-    }    
+    }
 </style>
-<div class="page-title icon contacts"><h2><?php echo Yii::t('admin','Contacts Import'); ?></h2></div>
+<div class="page-title icon contacts"><h2><?php echo Yii::t('contacts','Contacts Import'); ?></h2></div>
 <div class="form" >
 <div style="width:600px">
-<?php echo Yii::t('admin',"First, we'll need to make sure your fields have mapped properly for import. "); ?>
-<?php echo Yii::t('admin','Below is a list of our fields, the fields you provided, and a few sample records that you are importing.');?><br /><br />
-<?php echo Yii::t('admin','If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.') ?>
+<?php echo Yii::t('contacts',"First, we'll need to make sure your fields have mapped properly for import. "); ?>
+<?php echo Yii::t('contacts','Below is a list of our fields, the fields you provided, and a few sample records that you are importing.');?><br /><br />
+<?php echo Yii::t('contacts','If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.') ?>
 <br /><br />
 <?php echo Yii::t('contacts','Selecting "DO NOT MAP" will ignore the field from your CSV, and selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it.') ?>
 </div></div><div><br /></div>
@@ -64,20 +64,20 @@ var record=0;
 <div id="super-import-map-box">
 <h2><a href="#" class="clean-link" onclick="$('.import-hide').toggle();">[-]</a> <span class="import-hide">Import Map</span></h2>
 <div id="import-map-box" class="import-hide form" style="width:600px">
-    
+
 <table id="import-map" >
     <tr>
-        <td><strong>Your Field</strong></td>
-        <td><strong>Our Field</strong></td>
-        <td><strong>Sample Contact</strong> <a href="#" class="clean-link" onclick="prevContact();">[Prev]</a> <a href="#" class="clean-link" onclick="nextContact();">[Next]</a></td>
+        <td><strong><?php echo Yii::t('contacts','Your Field');?></strong></td>
+        <td><strong><?php echo Yii::t('contacts','Our Field');?></strong></td>
+        <td><strong><?php echo Yii::t('contacts','Sample Contact');?></strong> <a href="#" class="clean-link" onclick="prevContact();"><?php echo Yii::t('contacts','[Prev]');?></a> <a href="#" class="clean-link" onclick="nextContact();"><?php echo Yii::t('contacts','[Next]');?></a></td>
     </tr>
-<?php 
+<?php
     foreach($meta as $attribute){
         echo "<tr>";
         echo "<td style='width:33%'>$attribute</td>";
         echo "<td style='width:33%'>".CHtml::dropDownList($attribute,
                 isset($importMap[$attribute])?$importMap[$attribute]:'',
-                array_merge(array(''=>'DO NOT MAP','createNew'=>'CREATE NEW FIELD'),Contacts::model()->attributeLabels()),
+                array_merge(array(''=>Yii::t('contacts','DO NOT MAP'),'createNew'=>Yii::t('contacts','CREATE NEW FIELD')),Contacts::model()->attributeLabels()),
                 array('class'=>'import-attribute')
                 )."</td>";
         echo "<td style='width:33%'>";
@@ -93,15 +93,15 @@ var record=0;
         echo "</td>";
         echo "</tr>";
     }
-    
-    
+
+
 ?>
 </table>
 <br />
 </div>
 </div>
 <br /><br />
-<h2><?php echo Yii::t('admin','Process Import Data'); ?></h2>
+<h2><?php echo Yii::t('contacts','Process Import Data'); ?></h2>
 <div class="form" style="width:600px">
     <div class="row">
         <div class="cell"><?php echo "<span class='x2-hint' title='This will attempt to create a record for any field that links to another record type (e.g. Account)'>[?]</span>"; ?></div>
@@ -115,9 +115,9 @@ var record=0;
     </div>
     <div class="row">
         <div class="cell"><?php echo "<span class='x2-hint' title='These fields will be applied to all imported contacts and override their respective mapped fields from the import.'>[?]</span>"; ?></div>
-        <div class="cell"><strong><?php echo Yii::t('admin','Automatically fill certain fields?'); ?></strong></div>
+        <div class="cell"><strong><?php echo Yii::t('contacts','Automatically fill certain fields?'); ?></strong></div>
         <div class="cell"><?php echo CHtml::checkBox('fill-fields-box');?></div>
-    
+
         <div id="fields" class="row" style="display:none;">
             <div>
                 <div id="field-box">
@@ -129,7 +129,7 @@ var record=0;
     </div>
     <div class="row">
         <div class="cell"><?php echo "<span class='x2-hint' title=\"Anything entered here will be created as a comment and logged as an Action in the imported record's history.\">[?]</span>"; ?></div>
-        <div class="cell"><strong><?php echo Yii::t('admin','Automatically log a comment on these records?'); ?></strong></div>
+        <div class="cell"><strong><?php echo Yii::t('contacts','Automatically log a comment on these records?'); ?></strong></div>
         <div class="cell"><?php echo CHtml::checkBox('log-comment-box');?></div>
         <div class="row">
             <div id="comment-form" style="display:none;">
@@ -141,39 +141,39 @@ var record=0;
     </div>
     <div class="row">
         <div class="cell"><?php echo "<span class='x2-hint' title=\"If this box is checked, all contacts will be assigned to users based on your lead routing settings.\">[?]</span>"; ?></div>
-        <div class="cell"><strong><?php echo Yii::t('admin','Assign records via lead-routing?'); ?></strong></div>
+        <div class="cell"><strong><?php echo Yii::t('contacts','Assign records via lead-routing?'); ?></strong></div>
         <div class="cell"><?php echo CHtml::checkBox('lead-routing-box');?></div>
     </div>
 </div>
 <br /><br />
-<?php echo CHtml::link("Process Import","#",array('id'=>'process-link','class'=>'x2-button highlight'));?>
+<?php echo CHtml::link(Yii::t('contacts',"Process Import"),"#",array('id'=>'process-link','class'=>'x2-button highlight'));?>
 <br /><br />
 </div>
-<h3 id="import-status" style="display:none;"><?php echo Yii::t('admin','Import Status'); ?></h3>
+<h3 id="import-status" style="display:none;"><?php echo Yii::t('contacts','Import Status'); ?></h3>
 <div id="prep-status-box" style="color:green">
-    
+
 </div>
 <br />
 <div id="status-box" style="color:green">
-    
+
 </div>
 <div id="failures-box" style="color:red">
-    
+
 </div>
 <script>
     var attributeLabels = <?php echo json_encode(Contacts::model()->attributeLabels(), false);?>;
     $('#process-link').click(function(){
-       prepareImport(); 
+       prepareImport();
     });
     $('#fill-fields-box').change(function(){
         $('#fields').toggle();
     });
     $('#log-comment-box').change(function(){
-       $('#comment-form').toggle(); 
+       $('#comment-form').toggle();
     });
-    
-    
-    
+
+
+
     function prepareImport(){
         $('#import-container').hide();
         var attributes=new Array();
@@ -188,7 +188,7 @@ var record=0;
         });
         if($('#fill-fields-box').attr('checked')=='checked'){
             $('.forced-attribute').each(function(){
-            forcedAttributes.push($(this).val()); 
+            forcedAttributes.push($(this).val());
             });
             $('.forced-value').each(function(){
                 forcedValues.push($(this).val());
@@ -204,9 +204,9 @@ var record=0;
             url:'prepareImport',
             type:"POST",
             data:{
-                attributes:attributes, 
-                keys:keys, 
-                forcedAttributes:forcedAttributes, 
+                attributes:attributes,
+                keys:keys,
+                forcedAttributes:forcedAttributes,
                 forcedValues:forcedValues,
                 createRecords:$('#create-records-box').attr('checked')=='checked'?'checked':'',
                 tags:$('#tags').val(),
@@ -293,7 +293,7 @@ var record=0;
         }
         $('.record-'+record).show();
     }
-    
+
     function nextContact(){
         $('.record-'+record).hide();
         if(record==4){
@@ -303,7 +303,7 @@ var record=0;
         }
         $('.record-'+record).show();
     }
-    
+
     function createDropdown(list, ignore) {
         var sel = $(document.createElement('select'));
         $.each(list, function(key, value) {
@@ -313,7 +313,7 @@ var record=0;
         });
         return sel;
     }
-    
+
     function createAttrCell(){
         var div = $(document.createElement('div'));
         div.attr('class', 'field-row');
@@ -332,5 +332,5 @@ var record=0;
             $(this).closest('.field-row').remove();;
         });
     });
-    
+
 </script>

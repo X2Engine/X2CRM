@@ -35,6 +35,9 @@
  *****************************************************************************************/
 
 Yii::app()->clientScript->registerCss('campaignContentCss','
+#attachments-title {
+	margin-left: 5px;
+}
 #Campaign_content_inputBox {min-height:300px;}
 #Campaign_content_field {float:none;}
 #Campaign_content_field .formInputBox {float:none;width:auto !important;margin-left:80px;}
@@ -47,23 +50,23 @@ $("#docIframe").parent().resizable({
 	handles:"s,se",
 	resize: function(event, ui) {
 		$(this).css("width","");
-		
-		$(\'<div class="ui-resizable-iframeFix" style="background: #fff;"></div>\') 
+
+		$(\'<div class="ui-resizable-iframeFix" style="background: #fff;"></div>\')
 			.css({
-				width: this.offsetWidth+"px", height: this.offsetHeight+"px", 
-				position: "absolute", opacity: "0.001", zIndex: 1000 
-			}) 
-			.css($(this).offset()) 
+				width: this.offsetWidth+"px", height: this.offsetHeight+"px",
+				position: "absolute", opacity: "0.001", zIndex: 1000
+			})
+			.css($(this).offset())
 			.appendTo("body");
 	},
 	stop: function(event, ui) {
 		$(this).css("width","");
-		$("div.ui-resizable-iframeFix").each(function() { this.parentNode.removeChild(this); }); //Remove frame helpers 
+		$("div.ui-resizable-iframeFix").each(function() { this.parentNode.removeChild(this); }); //Remove frame helpers
 	}
 });
 ',CClientScript::POS_READY);
 
-$this->pageTitle = $model->name; 
+$this->pageTitle = $model->name;
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $authParams['assignedTo']=$model->createdBy;
 $this->actionMenu = $this->formatMenu(array(
@@ -104,21 +107,21 @@ $this->renderPartial('application.components.views._detailView',array(
 )); ?>
 <div style="overflow: auto;">
 <?php
-if(!$model->complete && $model->type=='Email') {
+if(!$model->complete && in_array($model->type,array('Email','Call List')) && Yii::app()->user->checkAccess('MarketingLaunch')) {
 	if($model->launchDate == 0) {
 		echo CHtml::beginForm(array('launch', 'id'=>$model->id));
 		echo CHtml::submitButton(
 			Yii::t('marketing','Launch Now'),
 			array('class'=>'x2-button highlight left','style'=>'margin-left:0;'));
 		echo CHtml::endForm();
-		echo CHtml::Button(
-			Yii::t('marketing', 'Send Test Email'),
-			array(
-				'id'=>'test-email-button',
-				'class'=>'x2-button left',
-				'onclick'=>'toggleEmailForm(); return false;'
-			)
-		);
+		if($model->type == 'Email')
+			echo CHtml::Button(
+					Yii::t('marketing', 'Send Test Email'), array(
+				'id' => 'test-email-button',
+				'class' => 'x2-button left',
+				'onclick' => 'toggleEmailForm(); return false;'
+					)
+			);
 	} elseif($model->active) {
 		echo CHtml::beginForm(array('toggle', 'id'=>$model->id));
 		echo CHtml::submitButton(
@@ -152,7 +155,7 @@ if(!$model->complete && $model->type=='Email') {
 	}
 }
 ?>
-</div><br>
+</div>
 <?php
 $this->widget('InlineEmailForm',
 	array(
@@ -171,7 +174,7 @@ $this->widget('InlineEmailForm',
 );
 ?>
 
-<h2><?php echo Yii::t('app','Attachments'); ?></h2>
+<h2 id='attachments-title'><?php echo Yii::t('app','Attachments'); ?></h2>
 
 
 <?php // find out if attachments are minimized
@@ -226,16 +229,19 @@ $(function() {
 	</div>
 </div>
 </div>
-<div class="form">
-	<b><?php echo Yii::t('app', 'Tags'); ?></b>
-	<?php $this->widget('InlineTags', array('model'=>$model)); ?>
-</div>
+<?php 
+	$this->widget('X2WidgetList', array(
+		'block'=>'center', 
+		'model'=>$model, 
+		'modelType'=>'Marketing'
+	)); 
+?>
 <?php if($model->launchDate && $model->active && !$model->complete && $model->type == 'Email') { ?>
 <div id="mailer-status" class="wide form" style="max-height: 150px; margin-top:13px;">
 </div>
-<?php 
+<?php
 	Yii::app()->clientScript->registerScript('mailer-status-update','
-	function tryMail() { 
+	function tryMail() {
 		newEl = $("<div id=\"mailer-status-active\">'. Yii::t('marketing','Attempting to send email') .'...</div>");
 		newEl.prependTo($("#mailer-status")).slideDown(232);
 		$.ajax("'. $this->createUrl('mail', array('id'=>$model->id)) .'").done(function(data) {
@@ -256,7 +262,7 @@ $(function() {
 
 <div style="margin-top: 23px;">
 <?php
-if(isset($contactList)) {
+if(isset($contactList) && $model->launchDate) {
 	//these columns will be passed to gridview, depending on the campaign type
 	$displayColumns = array(
 		array(
@@ -337,7 +343,7 @@ if(isset($contactList)) {
 		'id'=>'contacts-grid',
 		'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 		'template'=>'{summary}{items}{pager}',
-		'summaryText' => Yii::t('app','Displaying {start}-{end} of {count} result(s).')
+		'summaryText' => Yii::t('app','Displaying {start}-{end} result(s).')
 			. '<div class="form no-border" style="margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
 				. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
 						'ajax' => array(
@@ -347,10 +353,10 @@ if(isset($contactList)) {
 						),
 						'style' => 'margin: 0;',
 					))
-			. ' </div>'
-			. Yii::t('app', 'results per page.'),
+			. ' </div>',
 		'dataProvider'=>$contactList->campaignDataProvider(Profile::getResultsPerPage()),
 		'columns'=>$displayColumns,
+		'enablePagination' => false	
 	));
 }
 ?>

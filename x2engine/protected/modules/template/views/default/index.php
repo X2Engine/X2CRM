@@ -93,7 +93,7 @@ $this->widget('application.components.X2GridView', array(
 		),
 		'description'=>array(
 			'name'=>'description',
-			'header'=>Yii::t('templates','Description'),
+			'header'=>Yii::t('app','Description'),
 			'value'=>'trimText($data->description)',
 			'type'=>'raw',
 		),

@@ -49,11 +49,10 @@ $form=$this->beginWidget('CActiveForm', array(
 
 <?php echo $form->labelEx($admin,'serviceDistribution'); ?>
 <?php echo $form->dropDownList($admin,'serviceDistribution',array(
-    ''=>'Free For All',
-    'evenDistro'=>'Even Distribution',
-    'trueRoundRobin'=>'Round Robin',
-    'singleUser'=>'Single User',
-    'singleGroup'=>'Single Group',
+    ''=>Yii::t('admin','Free For All'),
+    'trueRoundRobin'=>Yii::t('admin','Round Robin'),
+    'singleUser'=>Yii::t('admin','Single User'),
+    'singleGroup'=>Yii::t('admin','Single Group'),
 ),array('id'=>"service-source-select"));?>
 
 <div id="user-list" style="<?php echo (!empty($admin->serviceDistribution) && $admin->serviceDistribution=="singleUser")?"":"display:none;" ?>">
@@ -68,25 +67,23 @@ $form=$this->beginWidget('CActiveForm', array(
 
     <?php echo $form->labelEx($admin,'serviceOnlineOnly'); ?>
 <?php echo $form->dropDownList($admin,'serviceOnlineOnly',array(
-    '0'=>'No',
-    '1'=>'Yes',
+    '0'=>Yii::t('app','No'),
+    '1'=>Yii::t('app','Yes'),
 )); ?>
 
 <?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button'))."\n";?>
 <?php $this->endWidget();?></div>
 <div class="form">
-<b>Free For All</b><br>
-Assigns all web leads to "Anyone" and users can re-assign to themselves.<br><br>
-<b>Even Distribution</b><br>
-Assigns web leads to whomever has the lowest number of uncompleted actions, evening out the number of uncompleted actions between users.<br><br>
-<b>Round Robin</b><br>
-Assigns leads to each user going through the list one by one. <br><br>
-<b>Single User</b><br>
-The Single User option will assign all leads to the specified user.
-<br><br><br>
-<b>Online Only</b><br>
-This option will filter your routing rule so that leads only go to a subset of the users who are logged in.  
-i.e. if you set custom rules to go to 4 different users, but 2 are logged in, only those 2 will get the leads
+<b><?php echo Yii::t('admin','Free For All');?></b><br>
+<?php echo Yii::t('admin','Assigns all web leads to "Anyone" and users can re-assign to themselves.');?><br><br>
+<b><?php echo Yii::t('admin','Round Robin');?></b><br>
+<?php echo Yii::t('admin','Assigns leads to each user going through the list one by one.');?><br><br>
+<b><?php echo Yii::t('admin','Single User');?></b><br>
+<?php echo Yii::t('admin','The Single User option will assign all leads to the specified user.');?>
+<br><br>
+<b><?php echo Yii::t('admin','Online Only');?></b><br>
+<?php echo Yii::t('admin','This option will filter your routing rule so that leads only go to a subset of the users who are logged in.');?>
+<?php echo Yii::t('admin','i.e. if you set custom rules to go to 4 different users, but 2 are logged in, only those 2 will get the leads');?>
 </div>
 </div>
 <script>
@@ -97,7 +94,7 @@ i.e. if you set custom rules to go to 4 different users, but 2 are logged in, on
             $('#user-list').hide();
         }
     });
-    
+
     $('#service-source-select').change(function(){
         if($('#service-source-select').val()=='singleGroup'){
             $('#group-list').show();

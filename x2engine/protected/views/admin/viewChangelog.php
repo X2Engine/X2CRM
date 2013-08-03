@@ -33,47 +33,47 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+?>
 
-
-    $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'changelog-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-        'template'=> '<div class="page-title"><h2>Changelog</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Clear Filters'),array('viewChangelog','clearFilters'=>1))
-		.'{summary}</div></div>{items}{pager}',
-	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
-    'dataProvider'=>$model->search(),
-    'filter'=>$model,
-    'afterAjaxUpdate'=>'refreshQtipHistory',
-	'columns'=>array(
+<?php
+$this->widget('zii.widgets.grid.CGridView', array(
+    'id' => 'changelog-grid',
+    'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+    'template' => '<div class="page-title"><h2>'.Yii::t('admin','Changelog').'</h2><div class="title-bar">'
+    .CHtml::link(Yii::t('app', 'Clear Filters'), array('viewChangelog', 'clearFilters' => 1))
+    .'{summary}</div></div>{items}{pager}',
+    'summaryText' => Yii::t('app', '<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
+    'dataProvider' => $model->search(),
+    'filter' => $model,
+    'afterAjaxUpdate' => 'refreshQtipHistory',
+    'columns' => array(
         array(
-            'header'=>Yii::t('admin','History'),
-            'value'=>'$data->type=="Contacts"?CHtml::link("View",Yii::app()->controller->createUrl("/contacts/revisions?id=$data->itemId&timestamp=$data->timestamp"),array("class"=>"x2-hint","title"=>"Click to view the record at this point in its history.")):""',
-            'type'=>'raw',
+            'header' => Yii::t('admin', 'History'),
+            'value' => '$data->type=="Contacts"?CHtml::link(Yii::t("app","View"),Yii::app()->controller->createUrl("/contacts/revisions?id=$data->itemId&timestamp=$data->timestamp"),array("class"=>"x2-hint","title"=>Yii::t("admin","Click to view the record at this point in its history."))):""',
+            'type' => 'raw',
         ),
-		array(
-            
-			'name'=>'recordName',
-			'header'=>Yii::t('admin','Record'),
-			'value'=>'CHtml::link($data->recordName,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))',
-			'type'=>'raw',
-		),
+        array(
+            'name' => 'recordName',
+            'header' => Yii::t('admin', 'Record'),
+            'value' => 'CHtml::link($data->recordName,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))',
+            'type' => 'raw',
+        ),
         'changed',
         'fieldName',
         'oldValue',
         'newValue',
         'changedBy',
-		array(
-			'name'=>'timestamp',
-			'header'=>Yii::t('admin','Timestamp'),
-			'value'=>'Formatter::formatLongDateTime($data->timestamp)',
-			'type'=>'raw',
-                        'htmlOptions'=>array('width'=>'20%'),
-		),
-	),
+        array(
+            'name' => 'timestamp',
+            'header' => Yii::t('admin', 'Timestamp'),
+            'value' => 'Formatter::formatLongDateTime($data->timestamp)',
+            'type' => 'raw',
+            'htmlOptions' => array('width' => '20%'),
+        ),
+    ),
 ));
-echo "<br />";
-echo CHtml::link('Clear Changelog','#',array('class'=>'x2-button', 'submit'=>'clearChangelog','confirm'=>'Are you sure you want to clear the changelog?'));
+echo "<br>";
+echo CHtml::link(Yii::t('admin','Clear Changelog'), '#', array('class' => 'x2-button', 'submit' => 'clearChangelog', 'confirm' => 'Are you sure you want to clear the changelog?'));
 ?>
 <script>
     function refreshQtipHistory(){

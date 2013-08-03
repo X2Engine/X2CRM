@@ -43,5 +43,5 @@
 <?php echo CHtml::form('renameModules','post',array('enctype'=>'multipart/form-data')); ?>
 <?php echo CHtml::dropDownList('module', '', $modules); ?> <br><br>
 <?php echo CHtml::textField('name'); ?>
-<?php echo CHtml::submitButton(Yii::t('app','Submit')); ?> 
+<?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?>
 <?php echo CHtml::endForm(); ?> </div>

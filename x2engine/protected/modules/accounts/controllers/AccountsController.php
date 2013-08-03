@@ -323,7 +323,7 @@ class AccountsController extends x2base {
         foreach(Groups::model()->findAll() as $group){
             $users[$group->id] = $group->name;
         }
-        $contacts = Contacts::getAllNames();
+        //$contacts = Contacts::getAllNames(); // very inefficient with large table
         $model = $this->loadModel($id);
         $users = Accounts::editUserArray($users, $model);
 
@@ -351,7 +351,7 @@ class AccountsController extends x2base {
         $this->render('addUser', array(
             'model' => $model,
             'users' => $users,
-            'contacts' => $contacts,
+            //'contacts' => $contacts, 
             'action' => 'Add'
         ));
     }

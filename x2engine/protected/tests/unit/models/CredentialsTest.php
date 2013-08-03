@@ -47,41 +47,12 @@ Yii::import('application.models.embedded.*');
  */
 class CredentialsTest extends X2DbTestCase {
 
-	public static $iv;
-	public static $key;
-
 	public static function referenceFixtures(){
 		return array(
 			'users' => 'User',
 		);
 	}
 
-	/**
-	 * Override that uses a specific key/iv for unit testing
-	 */
-	public static function setUpBeforeClass(){
-		parent::setUpBeforeClass();
-		foreach(array('iv','key') as $ext) {
-			$file = Yii::app()->basePath."/config/encryption.$ext";
-			$testFile = Yii::app()->basePath."/tests/data/encryption/encryption.$ext";
-			self::${$ext} = $file;
-			if(file_exists($file)){
-				rename($file,"$file.bak");
-				copy($testFile, $file);
-			}
-		}
-		EncryptedFieldsBehavior::setup(self::$key,self::$iv);
-	}
-
-	/**
-	 * Override that copies the original key/iv back
-	 */
-	public static function tearDownAfterClass(){
-		parent::tearDownAfterClass();
-		foreach(array('iv','key') as $ext) {
-			rename(self::${$ext}.'.bak',self::${$ext});
-		}
-	}
 
 	public $fixtures = array(
 		'credentials' => 'Credentials',

@@ -97,7 +97,7 @@ function trimText($text) {
 		),
 		'description'=>array(
 			'name'=>'description',
-			'header'=>Yii::t('templates','Description'),
+			'header'=>Yii::t('app','Description'),
 			'value'=>'trimText($data->description)',
 			'type'=>'raw',
 		),

@@ -36,7 +36,7 @@ VALUES
 ("Media",	"description",		"Description",			0,			0,			"text",			0,			0,			NULL,			1,			0,			"Medium"),
 ("Media",	"mimetype",			"MIME Info",			0,			0,			"varchar",		0,			1,			NULL,			0,			0,			""),
 ("Media",	"filesize",			"File Size",			0,			0,			"int",			0,			1,			NULL,			0,			0,			""),
-("Media",	"drive",			"Drive",				0,			0,			"int",			0,			0,			NULL,			0,			0,			""),
+("Media",	"drive",			"Google Drive",			0,			0,			"int",			0,			0,			NULL,			0,			0,			""),
 ("Media",	"dimensions",		"Dimensions",			0,			0,			"varchar",		0,			1,			NULL,			0,			0,			"");
 /*&*/
 INSERT INTO x2_media

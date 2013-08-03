@@ -71,7 +71,8 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 				else
 					$this->module = strtolower(get_class($this->owner));  // assume the model name is the same as the controller
 			} else {
-				throw new Exception('Class '.get_class($owner).' has not declared its property "module" and there is no way of attempting to resolve said property.');
+				if(!isset($this->baseRoute,$this->autoCompleteSource))
+					throw new Exception('Class '.get_class($owner).' has not declared properties "baseRoute" or "autoCompleteSource" for using X2LinkableBehavior, yet neither has it declared "module". There is thus no way of resolving links.');
 			}
 		}
 
@@ -86,24 +87,47 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 	}
 
 	/**
+	 * Generates a url to the view of the object.
+	 *
+	 * @return string a url to the model
+	 */
+	public function getUrl() {
+
+		//$url = array($this->viewRoute.'/'.$this->owner->id);
+		$url = null;
+		if(Yii::app()->hasProperty('controller')) // Use the controller
+			if((bool) Yii::app()->controller)
+				$url = Yii::app()->controller->createAbsoluteUrl ($this->viewRoute.'/'.$this->owner->id);
+		if(empty($url)) // Construct an absolute URL; no web request data available.
+			$url = Yii::app()->externalBaseUrl.'/index.php'.$this->viewRoute.'/'.$this->owner->id;
+		return $url;
+	}
+
+	/**
+	 * Generates a link to the view of the object.
+	 *
+	 * @return string a link to the model
+	 */
+	public function getUrlLink() {
+		$name = ($this->owner->hasAttribute('name') || method_exists ($this->owner, 'getName')) ? $this->owner->name : '';
+		if($name == '')
+			$name = $this->owner->hasAttribute('id') ? '&#35;'.$this->owner->id : '';
+
+		$url = $this->url;
+	        if($this->owner instanceof Contacts){
+        	    return CHtml::link('<span>'.$name.'</span>',$url,array('class'=>'contact-name'));
+	        }else{
+        	    return CHtml::link('<span>'.$name.'</span>',$url);
+	        }
+	}
+
+	/**
 	 * Generates a link to the view of the object.
 	 *
 	 * @return string a link to the model
 	 */
 	public function getLink() {
-
-		$name = $this->owner->hasAttribute('name') ? $this->owner->name : '';
-		if($name == '')
-			$name = $this->owner->hasAttribute('id') ? '&#35;'.$this->owner->id : '';
-		$url = array($this->viewRoute.'/'.$this->owner->id);
-		if(Yii::app()->params->noSession) { // Construct an absolute URL; the URL manager is unavailable.
-			$url = Yii::app()->externalBaseUrl.'/index.php'.$this->viewRoute.'/'.$this->owner->id;
-		}
-        if($this->owner instanceof Contacts){
-            return CHtml::link('<span>'.$name.'</span>',$url,array('class'=>'contact-name'));
-        }else{
-            return CHtml::link('<span>'.$name.'</span>',$url);
-        }
+		return $this->urlLink;
 	}
 
 	/**

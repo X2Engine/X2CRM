@@ -64,7 +64,7 @@ $this->widget('application.components.X2GridView', array(
 	'id'=>'invoices-grid',
 	'title'=>Yii::t('quotes','Invoices'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
-	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
+	'template'=> '<div class="page-title icon quotes">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->searchInvoice(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,

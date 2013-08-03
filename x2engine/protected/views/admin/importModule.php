@@ -42,6 +42,6 @@
 <h3><?php echo Yii::t('contacts','Upload File'); ?></h3>
 <?php echo CHtml::form('importModule','post',array('enctype'=>'multipart/form-data')); ?>
 <?php echo CHtml::fileField('data', '', array('id'=>'data')); ?> <br><br>
-<?php echo CHtml::submitButton(Yii::t('app','Submit')); ?> 
-<?php echo CHtml::endForm(); ?> 
+<?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?>
+<?php echo CHtml::endForm(); ?>
 </div>

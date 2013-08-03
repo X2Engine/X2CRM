@@ -72,7 +72,10 @@ $fullname = Yii::app()->params->profile->fullName;
         <div id="<?php echo $username; ?>-media" class="user-media-list">
             <?php
             foreach($myMediaItems as $item){
-                $id = "$username-media-id-{$item['id']}";
+				$baseId = "$username-media-id-{$item['id']}";
+                $jsSelectorId = CJSON::encode("#$baseId");
+				$propertyId = addslashes($baseId);
+				$desc = CHtml::encode($item['description']);
                 echo '<span class="media-item">';
                 $path = Media::getFilePath($item['uploadedBy'], $item['fileName']);
                 $filename = $item['drive']?$item['title']:$item['fileName'];
@@ -81,7 +84,7 @@ $fullname = Yii::app()->params->profile->fullName;
                 }
                 echo CHtml::link($filename, array('/media', 'view' => $item['id']), array(
                     'class' => 'x2-link media'.(Media::isImageExt($item['fileName']) ? ' image-file' : ''),
-                    'id' => $id,
+                    'id' => $baseId,
                     'style' => 'curosr:pointer;',
                     'data-url' => Media::getFullFileUrl($path),
                 ));
@@ -90,12 +93,16 @@ $fullname = Yii::app()->params->profile->fullName;
                 if(Media::isImageExt($item['fileName'])){
                     $imageLink = Media::getFileUrl($path);
                     $image = CHtml::image($imageLink, '', array('class' => 'media-hover-image'));
-                    if($item['description'])
-                        $imageTooltips .= "$('#$id').qtip({content: '<span style=\"max-width: 200px;\">$image {$item['description']}</span>', position: {my: 'top right', at: 'bottom left'}});\n";
-                    else
-                        $imageTooltips .= "$('#$id').qtip({content: '$image', position: {my: 'top right', at: 'bottom left'}});\n";
+					$imageStr = CJSON::encode($image);
+					
+                    if($item['description']) {
+						$content = CJSON::encode("<span style=\"max-width: 200px;\">$image $desc</span>");
+                        $imageTooltips .= "$($jsSelectorId).qtip({content: $content, position: {my: 'top right', at: 'bottom left'}});\n";
+					}else
+                        $imageTooltips .= "$($jsSelectorId).qtip({content: $imageStr, position: {my: 'top right', at: 'bottom left'}});\n";
                 } else if($item['description']){
-                    $imageTooltips .= "$('#$id').qtip({content: '{$item['description']}', position: {my: 'top right', at: 'bottom left'}});\n";
+					$content = CJSON::encode($item['description']);
+                    $imageTooltips .= "$($jsSelectorId).qtip({content: $content, position: {my: 'top right', at: 'bottom left'}});\n";
                 }
             }
             ?>
@@ -133,7 +140,10 @@ $fullname = Yii::app()->params->profile->fullName;
                     <?php
                     foreach($userMediaItems as $item){
                         if(!$item['private'] || $admin){
-                            $id = "{$user['username']}-media-id-{$item['id']}";
+							$baseId = "{$user['username']}-media-id-{$item['id']}";
+				            $jsSelectorId = CJSON::encode("#$baseId");
+							$propertyId = addslashes($baseId);
+							$desc = CHtml::encode($item['description']);
                             echo '<span class="media-item">';
                             $path = Media::getFilePath($item['uploadedBy'], $item['fileName']);
                             $filename = $item['drive']?$item['title']:$item['fileName'];
@@ -142,19 +152,23 @@ $fullname = Yii::app()->params->profile->fullName;
                             }
                             echo CHtml::link($filename, array('/media', 'view' => $item['id']), array(
                                 'class' => 'x2-link media media-library-item'.(Media::isImageExt($item['fileName']) ? ' image-file' : ''),
-                                'id' => $id,
+                                'id' => $baseId,
                                 'data-url' => Media::getFullFileUrl($path),
                             ));
                             echo '</span>';
                             if(Media::isImageExt($item['fileName'])){
                                 $imageLink = Media::getFileUrl($path);
                                 $image = CHtml::image($imageLink, '', array('class' => 'media-hover-image'));
-                                if($item['description'])
-                                    $imageTooltips .= "$('#$id').qtip({content: '<span style=\"max-width: 200px;\">$image {$item['description']}</span>', position: {my: 'top right', at: 'bottom left'}});\n";
-                                else
-                                    $imageTooltips .= "$('#$id').qtip({content: '$image', position: {my: 'top right', at: 'bottom left'}});\n";
+								$imageStr = CJSON::encode($image);
+								
+                                if($item['description']) {
+									$content = CJSON::encode("<span style=\"max-width: 200px;\">$image $desc</span>");
+                                    $imageTooltips .= "$($jsSelectorId).qtip({content: $content, position: {my: 'top right', at: 'bottom left'}});\n";
+								}else
+                                    $imageTooltips .= "$($jsSelectorId).qtip({content: $imageStr, position: {my: 'top right', at: 'bottom left'}});\n";
                             } else if($item['description']){
-                                $imageTooltips .= "$('#$id').qtip({content: '{$item['description']}', position: {my: 'top right', at: 'bottom left'}});\n";
+								$content = CJSON::encode($desc);
+                                $imageTooltips .= "$($jsSelectorId).qtip({content: $content, position: {my: 'top right', at: 'bottom left'}});\n";
                             }
                         }
                     }

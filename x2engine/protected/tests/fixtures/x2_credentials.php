@@ -1,6 +1,7 @@
 <?php
-
-return array(
+$custom = __DIR__.'/x2_credentials-local.php'; // The liveDeliveryTest alias should be defined in this file
+$customCreds = file_exists($custom) ? require($custom) : array();
+return array_merge($customCreds,array(
 	'testUser' => array(
 		'id' => '1',
 		'name' => 'Sales Rep\'s Email Account',
@@ -34,5 +35,5 @@ return array(
 		'lastUpdated' => NULL,
 		'auth' => 'DjFnHn8VbWx0qEWmDeEfV4zECPDOEZA27vMtNKxgw/gPDU43IhOgEPVozjUZXw1qNWZsxw3+0dV5wGkyRsXnVbqh7ik7/D0J0sNJCyHmB/Gnrna4IRiLnpbEqGChcbw2',
 	),
-);
+));
 ?>

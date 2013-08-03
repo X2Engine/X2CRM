@@ -34,15 +34,18 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin','Delete A Module');?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'Delete A Module'); ?></h2></div>
+<div class="form">
 
-<?php echo Yii::t('admin','Please select a model to delete.  WARNING: This operation cannot be undone, be very careful.');?> 
+    <?php echo Yii::t('admin', 'Please select a model to delete.  WARNING: This operation cannot be undone, be very careful.'); ?>
 
-<form name="deleteModule" action="deleteModule" method="POST">
-	<br />
-	<select name="name">
-		<?php foreach($modules as $name=>$module) echo "<option value='$name'>$module</option>"; ?>
-	</select>
-	<br /><br />
-	<input class="x2-button" type="submit" value="<?php echo Yii::t('admin','Delete');?>" />
-</form>
+    <form name="deleteModule" action="deleteModule" method="POST">
+        <br />
+        <select name="name">
+            <?php foreach($modules as $name => $module)
+                echo "<option value='$name'>$module</option>"; ?>
+        </select>
+        <br /><br />
+        <input class="x2-button" type="submit" value="<?php echo Yii::t('admin', 'Delete'); ?>" />
+    </form>
+</div>

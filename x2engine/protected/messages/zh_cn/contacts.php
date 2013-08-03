@@ -1,93 +1,22 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // // Contact Form Attributes
-'Verification Code'=>'验证码',
 // // Contact Attributes
-'ID'=>'编号',
-'First Name'=>'名字',
-'Name'=>'名称',
-'Full Name'=>'姓名',
-'Last Name'=>'姓氏',
-'Title'=>'职位名称',
-'Account'=>'帐户',
 'Work'=>'工作',
 'Cell'=>'手机',
 'Work Phone'=>'工作电话',
-'Cell Phone'=>'手机号码',
-'Email'=>'电子邮件',
-'Phone'=>'电话',
 'Phone 2'=>'电话2',
 'IM'=>'即时通讯',
-'Website'=>'网站',
-'Address'=>'地址',
-'City'=>'市',
-'State'=>'洲／省',
 'Zip Code'=>'邮政编码',
-'Country'=>'国家',
-'Visibility'=>'隐私',
-'Assigned To'=>'分配给',
-'Background Info'=>'背景资料',
-'Last Updated'=>'最后更新',
-'Updated By'=>'更新',
-'Lead Source'=>'潜在客户的来源',
-'Priority'=>'优先级',
-'Create Date'=>'创建日期',
-'Rating'=>'评价',
-'Low'=>'低',
-'Medium'=>'中',
-'High'=>'高',
-'Public'=>'公开',
-'Private'=>'私人',
 'Twitter'=>'Twitter',
 'Linkedin'=>'Linkedin',
 'Skype'=>'Skype',
 'Googleplus'=>'Googleplus',
 'Address 2'=>'地址2',
-'Postal Code'=>'邮政编码',
 'Lead Date'=>'机会日期',
 'Confidence'=>'信心',
-'Facebook'=>'Facebook',
-'Lead Type'=>'机会型',
-'Other'=>'其他',
 'Close Date'=>'关闭日期',
-'Expected Close Date'=>'预计关闭日期',
 'Interest'=>'兴趣',
-'Deal Value'=>'这笔交易的价值',
 'Lead Status'=>'机会状态',
 'Lead Score'=>'机会分数',
 'Deal Status'=>'交易状态',
@@ -96,71 +25,37 @@ return array (
 'Sales &amp; Marketing'=>'销售和市场营销',
 'In Person'=>'在人',
 'Accepted'=>'公认',
-'Lost'=>'失落',
-'None'=>'无',
-'Web'=>'网际网路',
 'Assigned'=>'分配',
-'Won'=>'韩元',
-'E-Mail'=>'电子邮件',
-'Google'=>'Google',
-'Walk In'=>'走在',
 'Unassigned'=>'未分配',
-'Working'=>'工作的',
 'Dead'=>'死',
 'Rejected'=>'拒绝',
-'Tags'=>'标签',
-'Associated Contacts'=>'相关联的联系人',
 'Duplicate Check'=>'重复检查',
-'Last Activity'=>'最近活动',
 'Timezone'=>'时区',
 'Web Tracking Key'=>'网络跟踪重点',
 // // 
 // // List Attributes
-'Owner'=>'业主',
-'Description'=>'描述',
 'Logic Type'=>'逻辑类型',
-'Record Type'=>'记录类型',
 'Members'=>'成员',
 'Dynamic'=>'动态',
 'Static'=>'静止',
 // // 
-// // List Criteria Attributes
-'List'=>'表',
-'Type'=>'类型',
-'Attribute'=>'属性',
-'Comparison'=>'比较',
-'Value'=>'值',
-// // 
-// // List Criteria Comparitors
-'equals'=>'等于',
-'greater than'=>'大于',
-'less than'=>'小于',
-'not equal to'=>'不等于',
-'in list'=>'在列表',
-'not in list'=>'不在列表中',
-'empty'=>'空的',
-'not empty'=>'不空',
-'contains'=>'包含',
-'does not contain'=>'不包含',
-// // 
 // // Misc
-'Assigned to {name}'=>'分配给 {name}',
 'Social Networks'=>'社会网络',
 'Detail View'=>'详细查看',
 'Simple View'=>'简单查看',
-'Contact Info'=>'联系方式',
 'Opportunities &amp; Marketing'=>'销售及市场推广',
 'Social Media'=>'社会化媒体',
-'AND'=>'，',
 'OR'=>'或',
-'User'=>'用户',
 'Leads'=>'信息',
 '<b>{m}</b> of <b>{n}</b>'=>'<b>{m}</b> 的第 <b>{n}</b>',
 'Create a new Opportunity associated with this Contact.'=>'创建一个新的机会与这个联络人。',
 'Create a new Account associated with this Contact.'=>'创建一个新的帐户，与这个联络人。',
 'Create a new Service Case associated with this Contact.'=>'创建一个新的服务案例与这个联络人。',
 'Link to Record'=>'链接记录',
-'Contact Attributes'=>'联系人属性',
+'Clicking this button will pull any relevant fields from the associated Account record and overwrite the Contact data for those fields.  This operation cannot be reversed.'=>'单击此按钮，将拉动相关领域的相关帐户记录和覆盖这些领域的联系人数据。此操作无法逆转。',
+'Create a new Contact associated with this Contact.'=>'创建一个新的联系人与联系人相关联。',
+'Create a new Contact'=>'创建一个新的联系人',
+'Tag Search'=>'标签搜索',
 // // 
 // // Contacts Actions
 'My Contacts'=>'我的联系人',
@@ -173,30 +68,20 @@ return array (
 'Update Contact:'=>'更新联系人',
 'Delete Contact'=>'删除联系人',
 'Contact Lists'=>'联系人列表',
-'Create Lead'=>'创建潜在客户',
 'Share Contact'=>'共享联系人',
-'Create'=>'创建',
 'Lists'=>'列表',
 'Create List'=>'创建列表',
-'View'=>'视图',
-'Share'=>'共享',
-'Update'=>'更新',
 'View Opportunities'=>'查看销售',
-'Delete'=>'删除',
-'Show All'=>'显示所有',
 'Hide All'=>'全部隐藏',
-'Show'=>'显示',
-'Hide'=>'隐藏',
 'View Relationships'=>'查看关系',
-'Subscribe'=>'订阅',
 'View List'=>'查看列表',
-'Share Action'=>'分享行动',
-'Import Contacts'=>'导入联系人',
 'Contact Map'=>'联系方式电子地图',
 'Saved Maps'=>'储存的地图',
+'Save Contact'=>'储存联络',
 // // 
+'Edit List'=>'编辑列表',
+'Delete List'=>'删除列表',
 // // Contacts Titles
-'Contacts'=>'联系人',
 'Manage Contacts'=>'管理联系人',
 'Contact:'=>'联系方式：',
 // // 
@@ -205,14 +90,41 @@ return array (
 'Import from Template'=>'从模板中输入联系人',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'如果想要从模板中输入您的联系人，请填写我们的模板文件。然后使用下面的表格以上传文件。\', \'The template file can be found here:\'=>\'模板文件可以在这里找到：',
 'The template file can be found here:'=>'模板文件可以在这里找到：',
-'Export to CSV'=>'输出联系人',
 'Please click the link below to download contacts.'=>'请点击下面的链接下载联系。',
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'若要从Outlook中输入您的联系人，请首先创建一个CSV文件（DOS格式）打开Outlook和输出联系人。然后使用下面的表格以上传文件。',
 'Upload File'=>'上传文件',
 'Contact Record Details'=>'联系人的详细档案',
+'Import Contacts from Template'=>'从模板导入联系人',
+'To import your contacts, please fill out a CSV file where the first row contains the column headers for your records (e.g. first_name, last_name, title etc.).  A properly formatted example can be found below.'=>'导入联​​系人，请填写一个CSV文件的第一行包含列标题为您的记录（例如名字，姓氏，标题等）。可以在下面找到一个正确格式化的例子。',
+'The application will attempt to automatically map your column headers to our fields in the database.  If a match is not found, you will be given the option to choose one of our fields to map to, ignore the field, or create a new field within X2.'=>'该应用程序将尝试自动映射我们的领域在数据库中的列标题。如果没有找到匹配的，你会得到的选项，选择一个映射到我们的田地，忽略该字段，或创建一个新的领域内X2。',
+'If you decide to map the "Create Date", "Last Updated", or any other explicit date field, be sure that you have a valid date format entered so that the software can convert to a UNIX Timestamp (if it is already a UNIX Timestamp even better).  Visibility should be either "1" for Public or "0" for Private (it will default to 1 if not provided).'=>'如果您决定“创建日期”，“最近更新”，或任何其他明确的日期字段映射，可以肯定，你必须输入一个有效的日期格式，该软件可以转换为UNIX时间戳（如果它已经是一个UNIX时间戳甚至更好）。能见度应该是公共或私人（如果没有提供，它会默认为1）“0”“1”。',
+'Contacts Import'=>'联系人导入',
+'First, we\'ll need to make sure your fields have mapped properly for import. '=>'首先，我们\&#39;LL需要，以确保进口领域的正确映射。',
+'Below is a list of our fields, the fields you provided, and a few sample records that you are importing.'=>'下面是我们的领域，提供的字段，和一些样品，您要导入的记录列表。',
+'If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.'=>'如果选择ID字段需要进口，进口工具将尝试与ID覆盖预先存在的记录。如果你不\&#39;吨要做到这一点，不要ID字段映射。',
+'Selecting "DO NOT MAP" will ignore the field from your CSV, and selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it.'=>'选择“不映射”将忽略该字段从CSV，然后选择“创建新的字段”X2和地图你的领域内会产生一个新的文本字段。',
+'Your Field'=>'你的领域',
+'Our Field'=>'我们的现场',
+'Sample Contact'=>'样品接触',
+'[Prev]'=>'[上一页]',
+'[Next]'=>'[下一页]',
+'DO NOT MAP'=>'不映射',
+'CREATE NEW FIELD'=>'创造新的领域',
+'Process Import Data'=>'流程导入数据',
+'Create records for link fields?'=>'创建链接字段记录？',
+'Automatically fill certain fields?'=>'自动填补某些字段？',
+'Automatically log a comment on these records?'=>'自动记录这些记录评论？',
+'Assign records via lead-routing?'=>'通过领先的路由分配的记录吗？',
+'Import Status'=>'进口状态',
+'Process Import'=>'流程导入',
+'Please click the button below to begin the export. Do not close this page until the export is finished, which may take some time if you have a large number of records. A counter will keep you updated on how many records have been successfully updated.'=>'请点击下面的按钮开始导出。不要关闭此页面，直至出口完成，这可能需要一些时间，如果你有大量的记录。计数器将让你更新多少记录已成功更新。',
+'You are currently exporting: '=>'您目前出口：',
+'Exporting <b>Contact</b> data...'=>'导出<b>联系人</b>数据...',
+'records from <b>Contacts</b> successfully exported.'=>'成功导出<b>联系人</b>记录。',
+'All Contact data successfully exported.'=>'所有的联系人数据成功导出。',
+'Export Complete!'=>'导出完成！',
 // // 
 // // Subscribe
-'Subscribe'=>'订阅',
 'The information for {name} has changed.'=>'{name}的信息已更改。',
 'Receive email updates every time information for {name} changes'=>'收到电子邮件更新，每一次信息交换{name}',
 'Unsubscribe'=>'退订',
@@ -242,8 +154,24 @@ return array (
 'Map Name'=>'地图名称',
 'Map Owner'=>'地图拥有人',
 'Zoom Level'=>'缩放级别',
-'Parameters'=>'参数',
 'Center Latitude'=>'中心纬度',
 'Center Longitude'=>'中心经度',
-'Contact'=>'联系',
+'Web Form'=>'Web窗体',
+'Import Contacts from Outlook'=>'从Outlook中导入联系人',
+'Remove From List'=>'从列表中删除',
+'Today\'s Contacts'=>'今天\的联系',
+'Directions from Corporate'=>'路线从企业',
+'Directions from Personal Address'=>'路线从个人通讯簿',
+'Keep This Record'=>'保持这个记录',
+'This operation is disabled because the data set is too large.'=>'此操作被禁止，因为过大的数据集。',
+'{dupes} records shown out of {count} records found.'=>'{dupes} {count}记录发现记录。',
+'Hide This Record'=>'隐藏此记录',
+'Delete This Record'=>'删除该记录',
+'Contact ID'=>'联系ID',
+'Latitutde'=>'Latitutde',
+'Longitude'=>'经度',
+'Are you sure you want to hide all other records?'=>'你确定你要隐藏所有其他的记录吗？',
+'Are you sure you want to delete all other records?'=>'你确定你要删除所有其他的记录吗？',
+'Are you sure you want to hide this record?'=>'你确定你要隐藏这个纪录吗？',
+'Are you sure you want to delete this record?'=>'你确定你要删除这个记录吗？',
 );

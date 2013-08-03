@@ -99,6 +99,12 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		// 'current_local_time' => ''),
 	);
 
+    public static function getGenericConditions() {
+        return array_map(function($term){
+            return Yii::t('studio',$term);
+        },self::$genericConditions);
+    }
+
 	public static function getGenericCondition($type) {
 		switch($type) {
 			case 'current_user':
@@ -674,7 +680,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
 				continue;
 			$class = self::create(array('type'=>substr($file,0,-4)));	// remove file extension and create instance
 			if($class !== null)
-				$types[get_class($class)] = $class->title;
+				$types[get_class($class)] = Yii::t('studio',$class->title);
 		}
 		return $types;
 	}

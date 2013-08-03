@@ -82,7 +82,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 			<div class="x2-layout form-view" style="margin-bottom: 0;">
 
 				<div class="formSection showSection">
-					<div class="tableWrapper">
+					<div class="tableWrapper noTitle">
 						<table>
 							<tbody>
 								<tr class="formSectionRow">
@@ -189,7 +189,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 			</div>
 <?php
 if(!$model->drive && empty($fileView)){
-    echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px;'));
+    echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px; margin-left: 5px; margin-bottom: 10px'));
 }elseif(empty($fileView)){
     echo CHtml::link(Yii::t('media', 'View in Google Drive'),"https://drive.google.com/file/d/".$model->fileName,array('class'=>'x2-button', 'style'=>'margin-top: 5px;','target'=>'_blank'));
 }?>

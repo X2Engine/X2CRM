@@ -13,6 +13,7 @@ return array(
 		'visibility' => 1,
 		'phone' => '(234) 918-2348',
 		'phone2' => '398-103-6291',
+		'trackingKey' => '12345678901234567890'
 	),
 	// Treated as assigned to test user and preexisting.
 	'testUser' => array(
@@ -24,7 +25,8 @@ return array(
 		'assignedTo' => 'testuser',
 		'visibility' => 1,
 		'phone' => '+13810482910',
-		'phone2' => '18561029204'
+		'phone2' => '18561029204',
+		'trackingKey' => '9832749823842382398',
 	),
 );
 

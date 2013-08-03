@@ -1,77 +1,25 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Campaign model
-'Campaign'=>'',
 'Campaigns'=>'',
-'ID'=>'',
 'Master Campaign ID'=>'',
-'Name'=>'',
-'Assigned To'=>'',
 'Contact List'=>'',
-'Active'=>'',
-'Description'=>'',
-'Type'=>'',
 'Cost'=>'',
-'Subject'=>'',
 'Content'=>'',
-'Complete'=>'',
-'Visibility'=>'',
-'Create Date'=>'',
 'Launch Date'=>'',
-'Last Updated'=>'',
-'Updated By'=>'',
-'None'=>'',
 'Basic Info'=>'',
-'Email'=>'',
 'Call List'=>'',
 'Physical Mail'=>'',
 'Email Template'=>'',
 'Update Campaign'=>'',
-'Last Activity'=>'',
-'Template'=>'',
 
 // Menu
 'All Campaigns'=>'',
 'Create Campaign'=>'',
 'Newsletters'=>'',
 'Create Newsletter'=>'',
-'Create Web Form'=>'',
 'Web Tracker'=>'',
+'Email List'=>'',
 
 // Launching
 'The campaign has already been launched.'=>'',
@@ -79,8 +27,6 @@ return array (
 'Subject cannot be blank.'=>'',
 'The contact list is empty.'=>'',
 'Launch Now'=>'',
-'Stop'=>'',
-'Resume'=>'',
 'Send Test Email'=>'',
 'Campaign launched'=>'',
 'Campaign paused'=>'',
@@ -89,7 +35,6 @@ return array (
 'Opened'=>'',
 'Clicked'=>'',
 'Unsubscribed'=>'',
-'Status'=>'',
 
 // Mailing
 'The email sending limit has been reached.'=>'',
@@ -124,9 +69,6 @@ return array (
 'To stop receiving these messages, click here'=>'',
 
 // WebForm model
-'Model Name'=>'',
-'Fields'=>'',
-'Parameters'=>'',
 'CSS'=>'',
 
 // Web Lead Form creator
@@ -138,25 +80,42 @@ return array (
 'Copy and paste this code into your website to include the web lead form.'=>'',
 'Choose an existing form as a starting point.'=>'',
 'Text Color'=>'',
-'Background Color'=>'',
 'Font'=>'',
 'Border'=>'',
 'Size'=>'',
 'pixels'=>'',
-'Color'=>'',
-'Tags'=>'',
-'Default'=>'',
 'black'=>'',
 'transparent'=>'',
 'none'=>'',
-'Example'=>'',
 'These tags will be applied to any contact created by the form.'=>'',
-'Save'=>'',
 'Enter a name and save this form to edit later.'=>'',
 'Form Saved'=>'',
 'Reset Form'=>'',
 'Embed Code'=>'',
 'Saved Forms'=>'',
-'Settings'=>'',
-'Preview'=>'',
+'Enter custom css for the web form.'=>'',
+'Custom &lt;HEAD&gt;'=>'',
+'Enter any HTML you would like inserted into the &lt;HEAD&gt; tag.'=>'',
+'Select email templates to send to the new weblead and the user assigned to the weblead.'=>'',
+'NOTE: The weblead form must be saved for these emails to be sent.'=>'',
+'User Email'=>'',
+'Weblead Email'=>'',
+'Drag and Drop fields from Fields List to Form.'=>'',
+'Live web form preview.'=>'',
+'Label:'=>'',
+'Position:'=>'',
+
+// Web Tracker
+'Web Tracker Code'=>'',
+'This HTML tag will allow you to track contacts who visit your website.'=>'',
+'Paste this code into the body section of every page of your website.'=>'',
+'<b>Note:</b> Contacts can be tracked only if they filled out the web lead capture form, or clicked on a tracking link in an email campaign.'=>'',
+'Web Tracker Settings'=>'',
+'You can enable or disable the web tracker. The tracker will ignore repeat hits from a given contact during the cooldown period.'=>'',
+'If a contact visits several pages in a short time, you will only get one notification.'=>'',
+'Turn it down all the way to receive notifications about every page hit.'=>'',
+'Contact has opened the email sent on '=>'',
+'Email sent'=>'',
+'Header Code'=>'',
+'Batch completed, sending again in '=>'',
 );

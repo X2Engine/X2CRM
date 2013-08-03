@@ -296,17 +296,19 @@ return array(
 //					 'countLimit' => 1, // How many times the same query should be executed to be considered inefficient
 //					 'slowQueryMin' => 0.01, // Minimum time for the query to be slow
 //				 ),
-				// array(
-					// 'class'=>'CWebLogRoute',
-					// 'categories' => 'translations',
-					// 'levels' => 'missing',
-				// ),
+//				 array(
+//					 'class'=>'CWebLogRoute',
+//					 'categories' => 'translations',
+//					 'levels' => 'missing',
+//				 ),
 			),
 		),
-		// 'messages'=>array(
-			// 'forceTranslation'=>true,
-			// 'onMissingTranslation'=>create_function('$event', 'Yii::log("[".$event->category."] ".$event->message,"missing","translations");'),
-		// ),
+		 'messages'=>array(
+             'class'=>'X2MessageSource',
+//			 'forceTranslation'=>true,
+//             'logBlankMessages'=>false,
+//			 'onMissingTranslation'=>create_function('$event', 'Yii::log("[".$event->category."] ".$event->message,"missing","translations");'),
+		 ),
 
 		'cache'=>array(
 			'class'=>'system.caching.CFileCache',

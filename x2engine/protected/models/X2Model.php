@@ -45,7 +45,6 @@ Yii::import('application.modules.users.models.*');
 /**
  * General model class that uses dynamic fields
  *
- * @property User $suModel Substitute User model in the case that no user session is available.
  * @property string $myModelName (read-only) Model name of the instance.
  * @property array $relatedX2Models (read-only) Models associated via the associations table
  * @property integer $suID (read-only) substitute user ID in the case that no user session is available.
@@ -77,27 +76,6 @@ abstract class X2Model extends CActiveRecord {
     protected static $_linkedModels; // cache for models loaded for link field attributes (used by automation system)
     protected $_runAfterCreate;   // run afterCreate before afterSave, but only for new records
     private $_relatedX2Models;   // Relationship models stored in here
-
-    /**
-     * Substitute user ID. Used in the case of API calls and console commands
-     * when Yii::app()->user is not available (because there is no user session
-     * in such cases).
-     *
-     * @var integer
-     */
-    private $_suID = 1;
-
-    /**
-     * Substitute user model (used in api and console scenarios)
-     * @var User
-     */
-    private static $_suModel;
-
-    /**
-     * Distinguishes whether the model is being used inside an actual user session.
-     * @var bool
-     */
-    private static $_isInSession;
 
     /**
      * Calls {@link queryFields()} before CActiveRecord::__constructo() is called
@@ -177,8 +155,13 @@ abstract class X2Model extends CActiveRecord {
         if(!isset(self::$_fields[$key])){ // only look up fields if they haven't already been looked up
             self::$_fields[$key] = Yii::app()->cache->get('fields_'.$key); // check the app cache for the data
             if(self::$_fields[$key] === false){ // if the cache is empty, look up the fields
-                self::$_fields[$key] = CActiveRecord::model('Fields')->findAllByAttributes(array('modelName' => get_class($this), 'isVirtual' => 0));
-                Yii::app()->cache->set('fields_'.$key, self::$_fields[$key], 0); // cache the data
+                $fieldList = CActiveRecord::model('Fields')->findAllByAttributes(array('modelName' => get_class($this), 'isVirtual' => 0));
+                if(!empty($fieldList)){
+                    self::$_fields[$key] = $fieldList;
+                    Yii::app()->cache->set('fields_'.$key, self::$_fields[$key], 0); // cache the data
+                }else{
+                    self::$_fields[$key] = $this->attributeLabels();
+                }
             }
         }
     }
@@ -202,6 +185,7 @@ abstract class X2Model extends CActiveRecord {
             'X2TimestampBehavior' => array('class' => 'X2TimestampBehavior'),
             'tags' => array('class' => 'TagBehavior'),
             'changelog' => array('class' => 'X2ChangeLogBehavior'),
+            'permissions' => array('class' => 'X2PermissionsBehavior'),
         );
     }
 
@@ -242,17 +226,18 @@ abstract class X2Model extends CActiveRecord {
             $this->onAfterUpdate(new CEvent($this));
     }
 
-	/**
-	 * Runs when a model is deleted.
-	 * Clears any entries in <tt>x2_phone_numbers</tt>.
-	 * Fires onAfterDelete event.
-	 */
-	public function afterDelete() {
-		X2Model::model('PhoneNumber')->deleteAllByAttributes(array('modelId'=>$this->id,'modelType'=>get_class($this)));	// clear out old phone numbers
+    /**
+     * Runs when a model is deleted.
+     * Clears any entries in <tt>x2_phone_numbers</tt>.
+     * Fires onAfterDelete event.
+     */
+    public function afterDelete(){
+        X2Model::model('PhoneNumber')->deleteAllByAttributes(array('modelId' => $this->id, 'modelType' => get_class($this))); // clear out old phone numbers
 
-		if($this->hasEventHandler('onAfterDelete'))
-			$this->onAfterDelete(new CEvent($this));
-	}
+        if($this->hasEventHandler('onAfterDelete'))
+            $this->onAfterDelete(new CEvent($this));
+    }
+
     /**
      * Runs when a model is saved.
      * Scans attributes for phone numbers and index them in <tt>x2_phone_numbers</tt>.
@@ -476,17 +461,25 @@ abstract class X2Model extends CActiveRecord {
      * @param string $class the model class
      * @return string a link to the model, or $id if the model is invalid
      */
-    public static function getModelLink($id, $class){
+    public static function getModelLink($id, $class, $requireAbsoluteUrl = false){
         $model = X2Model::model($class)->findByPk($id);
         if(isset($model) && !is_null($model->asa('X2LinkableBehavior'))){
             if(isset(Yii::app()->controller) && method_exists(Yii::app()->controller, 'checkPermissions')){
                 if(Yii::app()->controller->checkPermissions($model, 'view')){
-                    return $model->getLink();
+                    if($requireAbsoluteUrl){
+                        return $model->getUrlLink();
+                    }else{
+                        return $model->getLink();
+                    }
                 }else{
                     return $model->name;
                 }
             }else{
-                return $model->getLink();
+                if($requireAbsoluteUrl){
+                    return $model->getUrlLink();
+                }else{
+                    return $model->getLink();
+                }
             }
             // return CHtml::link($model->name,array($model->getDefaultRoute().'/'.$model->id));
         }elseif(is_numeric($id)){
@@ -510,8 +503,14 @@ abstract class X2Model extends CActiveRecord {
                 ->order('modelName ASC')
                 ->queryColumn();
 
-        if($assoc === true)
-            return array_combine($modelTypes, $modelTypes);
+        if($assoc === true){
+            return array_combine($modelTypes, array_map(function($term){
+                                        return Yii::t('app', $term);
+                                    }, $modelTypes));
+        }
+        $modelTypes = array_map(function($term){
+                    return Yii::t('app', $term);
+                }, $modelTypes);
         return $modelTypes;
     }
 
@@ -551,17 +550,24 @@ abstract class X2Model extends CActiveRecord {
      */
     public function getAttributeLabel($attribute){
         foreach(self::$_fields[$this->tableName()] as &$_field){ // don't call attributeLabels(), just look in self::$_fields
-            if($_field->fieldName == $attribute){
-                if(get_class($this) == "Opportunity"){
-                    return Yii::t('opportunities', $_field->attributeLabel);
-                }elseif(get_class($this) == "Quote"){
-                    return Yii::t('quotes', $_field->attributeLabel);
-                }elseif(get_class($this) == "Product"){
-                    return Yii::t('products', $_field->attributeLabel);
-                }else{
-                    return Yii::t(strtolower(get_class($this)), $_field->attributeLabel);
+            if(isset($_field->fieldName)){
+                if($_field->fieldName == $attribute){
+                    if(get_class($this) == "Opportunity"){
+                        return Yii::t('opportunities', $_field->attributeLabel);
+                    }elseif(get_class($this) == "Quote"){
+                        return Yii::t('quotes', $_field->attributeLabel);
+                    }elseif(get_class($this) == "Product"){
+                        return Yii::t('products', $_field->attributeLabel);
+                    }else{
+                        return Yii::t(strtolower(get_class($this)), $_field->attributeLabel);
+                    }
                 }
+            }else{
+                break;
             }
+        }
+        if(isset(self::$_fields[$this->tableName()][$attribute])){
+            return self::$_fields[$this->tableName()][$attribute];
         }
         // original Yii code
         if(strpos($attribute, '.') !== false){
@@ -750,7 +756,7 @@ abstract class X2Model extends CActiveRecord {
                                         return stripslashes((strlen($matches[2]) > 0 ? '<a href=\"'.$matches[2].'\" target=\"_blank\">'.$matches[0].'</a>' : $matches[0]));
                                     }, $this->$fieldName
                             ));
-                    if($text==trim($oldText)){
+                    if($text == trim($oldText)){
                         $text = trim(preg_replace_callback(
                                         array(
                                     '/(^|\s|>)(www.[^<> \n\r]+)/ix',
@@ -789,17 +795,17 @@ abstract class X2Model extends CActiveRecord {
             case 'text':
                 return Yii::app()->controller->convertUrls($this->$fieldName);
 
-			case 'credentials':
-				$sysleg = Yii::t('app','System default (legacy)');
-				if($this->$fieldName == -1) {
-					return $sysleg;
-				} else {
-					$creds = Credentials::model()->findByPk($this->$fieldName);
-					if(!empty($creds))
-						return CHtml::encode($creds->name);
-					else
-						return $sysleg;
-				}
+            case 'credentials':
+                $sysleg = Yii::t('app', 'System default (legacy)');
+                if($this->$fieldName == -1){
+                    return $sysleg;
+                }else{
+                    $creds = Credentials::model()->findByPk($this->$fieldName);
+                    if(!empty($creds))
+                        return CHtml::encode($creds->name);
+                    else
+                        return $sysleg;
+                }
 
             default:
                 return $this->$fieldName;
@@ -1103,7 +1109,7 @@ abstract class X2Model extends CActiveRecord {
                                     // 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
                                     // 'disabled'=>$item['readOnly']? 'disabled' : null,
                                     'title' => $field->attributeLabel,
-                                    'empty' => Yii::t('app', ""),
+                                    'empty' => '',
                                         ), $htmlOptions));
 
             case 'visibility':
@@ -1139,8 +1145,15 @@ abstract class X2Model extends CActiveRecord {
                                     'title' => $field->attributeLabel,
                                     'class' => 'currency-field',
                                         ), $htmlOptions));
-			case 'credentials':
-				return Credentials::selectorField($this,$field->fieldName,$field->linkType);
+            case 'credentials':
+                $typeAlias = explode(':', $field->linkType);
+                $type = $typeAlias[0];
+                if(count($typeAlias) > 1){
+                    $uid = Credentials::$sysUseId[$typeAlias[1]];
+                }else{
+                    $uid = Yii::app()->user->id;
+                }
+                return Credentials::selectorField($this, $field->fieldName, $type, $uid);
 
             default:
                 return CHtml::activeTextField($this, $field->fieldName, array_merge(array(
@@ -1348,156 +1361,7 @@ abstract class X2Model extends CActiveRecord {
       return $model;
       } */
 
-    /**
-     * Returns a CDbCriteria containing record-level access conditions.
-     * @return CDbCriteria
-     */
-    public function getAccessCriteria(){
-        $criteria = new CDbCriteria;
 
-        $accessLevel = $this->getAccessLevel();
-
-        if($this->hasAttribute('visibility')){
-            $visFlag = true;
-        }else{
-            $visFlag = false;
-        }
-
-        $criteria->addCondition(X2Model::getAccessConditions($accessLevel, $visFlag), 'AND');
-
-        return $criteria;
-    }
-
-    /**
-     * Returns a number from 0 to 3 representing the current user's access level using the Yii auth manager
-     * Assumes authItem naming scheme like "ContactsViewPrivate", etc.
-     * This method probably ought to overridden, as there is no reliable way to determine the module a model "belongs" to.
-     * @return integer The access level. 0=no access, 1=own records, 2=public records, 3=full access
-     */
-    public function getAccessLevel(){
-        $module = ucfirst($this->module);
-
-        if(self::isInSession()){ // Web request
-            $uid = Yii::app()->user->id;
-        }else{ // User session not available; doing an operation through API or console
-            $uid = $this->suID;
-        }
-        $accessLevel = 0;
-        if(Yii::app()->authManager->checkAccess($module.'Admin', $uid)){
-            if($accessLevel < 3)
-                $accessLevel = 3;
-        }elseif(Yii::app()->authManager->checkAccess($module.'View', $uid)){
-            if($accessLevel < 2)
-                $accessLevel = 2;
-        }elseif(Yii::app()->authManager->checkAccess($module.'PrivateReadOnlyAccess', $uid)){
-            if($accessLevel < 1)
-                $accessLevel = 1;
-        }
-        $roles = X2Model::model('RoleToUser')->findAllByAttributes(array('userId' => $uid));
-        foreach($roles as $role){
-            if(Yii::app()->authManager->checkAccess($module.'Admin', $role->roleId)){
-                if($accessLevel < 3)
-                    $accessLevel = 3;
-            }elseif(Yii::app()->authManager->checkAccess($module.'View', $role->roleId)){
-                if($accessLevel < 2)
-                    $accessLevel = 2;
-            }elseif(Yii::app()->authManager->checkAccess($module.'PrivateReadOnlyAccess', $role->roleId)){
-                if($accessLevel < 1)
-                    $accessLevel = 1;
-            }
-        }
-        return $accessLevel;
-    }
-
-    /**
-     * Generates SQL condition to filter out records the user doesn't have permission to see.
-     * This method is used by the 'accessControl' filter.
-     * @param Integer $accessLevel The user's access level. 0=no access, 1=own records, 2=public records, 3=full access
-     * @param Boolean $useVisibility Whether to consider the model's visibility setting
-     * @param String $user The username to use in these checks (defaults to current user)
-     * @return String The SQL conditions
-     */
-    public static function getAccessConditions($accessLevel, $useVisibility = true, $user = null){
-        if($user === null){
-            if(self::isInSession())
-                $user = Yii::app()->user->getName();
-            else
-                $user = $this->suModel->username;
-        }
-
-        if($accessLevel === 2 && $useVisibility === false) // level 2 access only works if we consider visibility,
-            $accessLevel = 3;  // so upgrade to full access
-
-        switch($accessLevel){
-            case 3:  // user can view everything
-                return 'TRUE';
-            case 1:  // user can view records they (or one of their groups) own
-                return 't.assignedTo="'.$user.'"
-					OR t.assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")';
-            case 2:  // user can view any public (shared) record
-                return 't.visibility=1
-					OR t.assignedTo="'.$user.'"
-					OR t.assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")
-					OR (t.visibility=2 AND t.assignedTo IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.$user.'"))';
-            default:
-            case 0:  // can't view anything
-                return 'FALSE';
-        }
-    }
-
-    /**
-     * Substitute user ID magic getter.
-     *
-     * If the user has already been looked up or set, method will defer to its
-     * value for id.
-     * @return type
-     */
-    public function getSuID(){
-        if(!empty($this->suModel))
-            return $this->suModel->id;
-        else
-            return $this->_suID;
-    }
-
-    /**
-     * Shortcut method for ascertaining if a user session is available
-     * @return type
-     */
-    public static function isInSession(){
-        if(!isset(self::$_isInSession)){
-            $app = Yii::app();
-            if(!$app->params->hasProperty('noSession'))
-                self::$_isInSession = true;
-            else
-                self::$_isInSession = !Yii::app()->params->noSession;
-        }
-        return self::$_isInSession;
-    }
-
-    /**
-     * Substitute user model magic getter.
-     *
-     * Uses static attribute for storage so that the user won't have to be looked
-     * up for each and every model instantiated when checking permissions.
-     *
-     * @return User
-     */
-    public function getSuModel(){
-        if(!isset(self::$_suModel)){
-            if(self::isInSession())
-                $this->_suID == Yii::app()->user->id;
-            self::$_suModel = User::model()->findByPk($this->_suID);
-        }
-        return self::$_suModel;
-    }
-
-    /**
-     * Magic getter for substitute user model
-     * @param User $user
-     */
-    public function setSuModel(User $user){
-        self::$_suModel = $user;
-    }
 
     /**
      * Returns a model of the appropriate type with a particular record loaded.

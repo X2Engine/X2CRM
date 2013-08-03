@@ -49,7 +49,7 @@
         <div id="log-a-call">
             <?php if($showQuickNote){ ?>
                 <div class="row">
-                    <?php echo CHtml::label('Quick Note', 'quickNote', array('style' => 'display:inline-block;')); ?>
+                    <?php echo CHtml::label(Yii::t('app','Quick Note'), 'quickNote', array('style' => 'display:inline-block;')); ?>
                     <?php
                     echo CHtml::dropDownList('quickNote', '', array_merge(array('' => '-'), Dropdowns::getItems(117)), array(
                         'ajax' => array(
@@ -79,11 +79,20 @@
 
 						return true; // form is sane: submit!
 					 }",
-                'success' => "function(data) { if(!data){publisherUpdates(); resetPublisher();
-                            \$('#publisher-error').html('');
-							\$('.publisher-text').animate({opacity: 1.0});
-							\$('#publisher-saving-icon').animate({opacity: 0.0});}else{
-                            \$('#publisher-error').html(data);} }",
+                'success' => "function(data) { 
+					if(!data){
+						publisherUpdates(); 
+						resetPublisher();
+
+						// event detected by x2chart.js
+						$(document).trigger ('newlyPublishedAction');
+
+                    	\$('#publisher-error').html('');
+						\$('.publisher-text').animate({opacity: 1.0});
+						\$('#publisher-saving-icon').animate({opacity: 0.0});}else{
+                    	\$('#publisher-error').html(data);
+					} 
+				}",
                 'type' => 'POST',
                     ), array('id' => 'save-publisher', 'class' => 'x2-button', 'tabindex' => 21));
             ?>

@@ -36,18 +36,18 @@
 
 /**
  * X2FlowAction that creates a notification
- * 
+ *
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowWait extends X2FlowAction {
 	public $title = 'Wait';
 	public $info = 'Delay execution of the remaining steps until the specified time.';
-	
+
 	public $flowId = null;
 	public $flowPath = null;
-	
+
 	public function paramRules() {
-		
+
 		$units = array(
 			'mins'=>Yii::t('studio','minutes'),
 			'hours'=>Yii::t('studio','hours'),
@@ -60,26 +60,26 @@ class X2FlowWait extends X2FlowAction {
 			'options' => array(
 				// array('name'=>'user','label'=>'User','type'=>'assignment','options'=>$assignmentOptions),	// just users, no groups or 'anyone'
 				// array('name'=>'type','label'=>'Type','type'=>'dropdown','options'=>$notifTypes),
-				array('name'=>'delay','label'=>'For'),
-				array('name'=>'unit','label'=>'Type','type'=>'dropdown','options'=>$units),
+				array('name'=>'delay','label'=>Yii::t('studio','For')),
+				array('name'=>'unit','label'=>Yii::t('studio','Type'),'type'=>'dropdown','options'=>$units),
 				// array('name'=>'timeOfDay','type'=>'time','label'=>'Time of Day','optional'=>1),
 			));
 	}
 
 	public function execute(&$params) {
 		$options = &$this->config['options'];
-		
+
 		if(!is_array($this->flowPath) || !is_numeric($options['delay']['value']))
 			return false;
-		
+
 		$time = X2FlowItem::calculateTimeOffset((int)$options['delay']['value'],$options['unit']['value']);
-		
+
 		if($time === false)
 			return false;
 		$time += time();
-			
+
 		$this->flowPath[count($this->flowPath)-1]++;	// add 1 to the branch position in the flow path, to skip this action
-			
+
 		$cron = new CronEvent;
 		$cron->type = 'x2flow';
 		$cron->createDate = time();
@@ -88,7 +88,7 @@ class X2FlowWait extends X2FlowAction {
 			'flowPath'=>$this->flowPath
 		);
 		$cron->time = $time;
-		
+
 		if(isset($params['model'])) {
 			$cronData['modelId'] = $params['model']->id;
 			$cronData['modelClass'] = get_class($params['model']);
@@ -97,16 +97,16 @@ class X2FlowWait extends X2FlowAction {
 			if(is_object($params[$param]) && $params[$param] instanceof CActiveRecord)	// remove any models so the JSON doesn't get crazy long
 				unset($params['model']);
 		}
-		
+
 		$cronData['params'] = $params;
-		
+
 		$cron->data = CJSON::encode($cronData);
 		// $cron->validate();
 		// die(var_dump($cron->getErrors()));
-		
+
 		return $cron->save();
 		// $notif->user = $this->parseOption('user',$params);
-		
+
 	}
 }
 

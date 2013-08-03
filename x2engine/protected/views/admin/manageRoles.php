@@ -47,7 +47,7 @@ Yii::app()->clientScript->registerCss('multiselectCss',"
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'roles-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'.Yii::t('accounts','Role List').'</h2><div class="title-bar">'
+	'template'=> '<div class="page-title"><h2>'.Yii::t('admin','Role List').'</h2><div class="title-bar">'
 		.'{summary}</div></div>{items}{pager}',
 		'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
 	'dataProvider'=>$dataProvider,

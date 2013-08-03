@@ -45,8 +45,8 @@ $this->actionMenu = $this->formatMenu($menuItems);
     <h2><?php echo Yii::t('actions','Actions');?></h2>
 
     <div class="title-bar" style="padding-left:0px;">
-        <?php echo CHtml::link(Yii::t('app','Back to Top'),'#',array('class'=>'x2-button right','id'=>'scroll-top-button')); ?>
-        <?php echo CHtml::link(Yii::t('app','Filters'),'#',array('class'=>'controls-button x2-button right','id'=>'advanced-controls-toggle')); ?>
+        <?php echo CHtml::link(Yii::t('actions','Back to Top'),'#',array('class'=>'x2-button right','id'=>'scroll-top-button')); ?>
+        <?php echo CHtml::link(Yii::t('actions','Filters'),'#',array('class'=>'controls-button x2-button right','id'=>'advanced-controls-toggle')); ?>
         <?php echo CHtml::link(Yii::t('actions','New Action'),array('/actions/create'),array('class'=>'controls-button x2-button right','id'=>'create-button')); ?>
         <?php echo CHtml::link(Yii::t('actions','Switch to Grid'),array('index','toggleView'=>1),array('class'=>'x2-button right')); ?>
     </div>
@@ -126,7 +126,10 @@ $this->widget('zii.widgets.CListView', array(
                 }
             }else{
                 $(this).addClass('important');
-                $('.items').css('margin-right','20px').animate({'margin-right': '60%'});
+				if (x2.isAndroid)
+                	$('.items').css('margin-right','20px').animate({'margin-right': '5%'});
+				else
+                	$('.items').css('margin-right','20px').animate({'margin-right': '60%'});
                 $('#action-view-pane').addClass($(this).attr('id'));
                 lastClass=$(this).attr('id');
                 var pieces=lastClass.split('-');

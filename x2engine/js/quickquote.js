@@ -118,6 +118,7 @@ jQuery(document).ready(function ($) {
 			$('#quote-form-wrapper').html(html).find('#quotes-form .wide.form').addClass('focus-mini-module');
 			quickQuote.declare();
 			$.fn.yiiGridView.update("relationships-grid");
+			$.fn.yiiListView.update("history");
 			$('html,body').animate({
 				scrollTop: quickQuote.updatingId ? $('#quote-detail-' + id).offset().top : quickQuote.wrapper.parents('#quote-form-wrapper').first().offset().top
 			},300);
@@ -222,7 +223,8 @@ jQuery(document).ready(function ($) {
 	}
 
 	// Switches the inline email form into quote mode for issuing via email:
-	quickQuote.setInlineEmail = function(id) {
+	quickQuote.setInlineEmail = function(id,template) {
+		template = typeof template == 'undefined' ? 0 : (template == null ? 0 : template);
 		// Warn the user we're switching into quote issue mode:
 		if (!inlineEmailSwitchConfirm())
 			return false;
@@ -233,7 +235,7 @@ jQuery(document).ready(function ($) {
 		// Set up initial quote email by requesting a template change from the server:
 		$.ajax({
 			'type':'POST',
-			'url':yii.scriptUrl+'/contacts/inlineEmail?ajax=1&template=1',
+			'url':yii.scriptUrl+'/contacts/inlineEmail?ajax=1&template=1&loadTemplate='+template,
 			'data':quickQuote.inlineEmailModule.find("form").serialize(),
 			'beforeSend':function() {
 				$('#email-sending-icon').show();

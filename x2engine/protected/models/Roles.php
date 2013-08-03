@@ -88,9 +88,9 @@ class Roles extends CActiveRecord {
 	 */
 	public function attributeLabels() {
 		return array(
-			'id' => 'ID',
-			'name' => 'Name',
-			'users' => 'Users',
+			'id' => Yii::t('admin','ID'),
+			'name' => Yii::t('admin','Name'),
+			'users' => Yii::t('admin','Users'),
 		);
 	}
 
@@ -115,14 +115,14 @@ class Roles extends CActiveRecord {
 
 	/* Looks up roles held by the specified user.
 	 * Uses cache to lookup/store roles.
-	 * 
+	 *
 	 * @param Integer $userId user to look up roles for
 	 * @param Boolean $cache whether to use cache
 	 * @return Array array of roleIds
 	 */
 	public static function getUserRoles($userId,$cache=true) {
 		$cacheVar = 'user_roles_'.$userId;
-	
+
 		// check the app cache for user's roles
 		if($cache === true && ($userRoles = Yii::app()->cache->get($cacheVar)) !== false) {
 			if(isset($userRoles[$userId]))

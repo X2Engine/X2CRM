@@ -36,8 +36,8 @@
 
 /**
  * TagBehavior class file.
- * 
- * @package X2CRM.components 
+ *
+ * @package X2CRM.components
  * TagBehavior adds and removes tags from x2_tags when a record is created, updated or deleted
  */
 class TagBehavior extends CActiveRecordBehavior {
@@ -54,17 +54,17 @@ class TagBehavior extends CActiveRecordBehavior {
 	 *    - consist of these characters: UTF-8 letters, numbers, _ and - (but only in the middle of the tag)
 	 *    - come after a space or . or are at the beginning
 	 *    - are not in quotes
-	 * 
+	 *
 	 * Looks up any current tag records, and saves a tag record for each new tag.
 	 * Note: does not delete tags when they are removed from text fields (this would screw with manual tagging)
-	 * 
+	 *
 	 * @param CModelEvent $event event parameter
 	 */
 	public function afterSave($event) {
 		// look up current tags
 		$oldTags = $this->getTags();
 		$newTags = array();
-		
+
 		foreach($this->scanForTags() as $tag) {
 			if(!in_array($tag,$oldTags)) {	// don't add duplicates if there are already tags
 				$tagModel = new Tags;
@@ -72,14 +72,14 @@ class TagBehavior extends CActiveRecordBehavior {
 				$tagModel->type = get_class($this->getOwner());
 				$tagModel->itemId = $this->getOwner()->id;
 				$tagModel->itemName = $this->getOwner()->name;
-				$tagModel->taggedBy = $this->getOwner()->suModel->username;
+				$tagModel->taggedBy = Yii::app()->getSuModel()->username;
 				$tagModel->timestamp = time();
 				if($tagModel->save())
 					$newTags[] = $tag;
 			}
 		}
 		$this->_tags = $newTags + $oldTags;	// update tag cache
-		
+
 		if(!empty($newTags)) {
 			X2Flow::trigger('RecordTagAddTrigger',array(
 				'model'=>$this->getOwner(),
@@ -91,7 +91,7 @@ class TagBehavior extends CActiveRecordBehavior {
 	/**
 	 * Responds to {@link CActiveRecord::onAfterDelete} event.
 	 * Deletes all the tags for this model
-	 * 
+	 *
 	 * @param CModelEvent $event event parameter
 	 */
 	public function afterDelete($event) {
@@ -100,7 +100,7 @@ class TagBehavior extends CActiveRecordBehavior {
 
 	/**
 	 * Scans through every 'varchar' and 'text' field in the owner model for tags.
-	 * 
+	 *
 	 * @return array an array of tags
 	 */
 	public function scanForTags() {
@@ -122,7 +122,7 @@ class TagBehavior extends CActiveRecordBehavior {
 	/**
 	 * Looks up the tags associated with the owner model.
 	 * Uses {@link $tags} as a cache to prevent repeated queries.
-	 * 
+	 *
 	 * @return array an array of tags
 	 */
 	public function getTags() {
@@ -138,14 +138,14 @@ class TagBehavior extends CActiveRecordBehavior {
 
 	/**
 	 * Tests whether the owner model has any (OR mode) or all (AND mode) of the provided tags
-	 * 
+	 *
 	 * @param mixed $tags sring or array of strings containing tags
 	 * @param array $mode logic mode (either "AND" or "OR") for the test
 	 * @return boolean the test result
 	 */
 	public function hasTags($tags,$mode='OR') {
 		$matches = array_intersect($this->getTags(),(array)$tags);
-		
+
 		if($mode === 'AND')
 			return count($matches) === count((array)$tags);		// all tags must be present
 		else
@@ -153,7 +153,7 @@ class TagBehavior extends CActiveRecordBehavior {
 	}
 
 	/**
-	 * Adds the specified tag(s) to the owner model, but not 
+	 * Adds the specified tag(s) to the owner model, but not
 	 * if the tag has already been added.
 	 * @param mixed $tags a string or array of strings containing tags
 	 * @return boolean whether or not at least one tag was added successfully
@@ -161,7 +161,7 @@ class TagBehavior extends CActiveRecordBehavior {
 	public function addTags($tags) {
 		$result = false;
 		$addedTags = array();
-		
+
 		foreach((array)$tags as $tagName) {
 			if(empty($tagName))
 				continue;
@@ -170,10 +170,10 @@ class TagBehavior extends CActiveRecordBehavior {
                 $tag->tag=$tagName;
 				$tag->itemId = $this->getOwner()->id;
 				$tag->type = get_class($this->getOwner());
-				$tag->taggedBy = $this->owner->suModel->username;
+				$tag->taggedBy = Yii::app()->getSuModel()->username;
 				$tag->timestamp = time();
 				$tag->itemName = $this->getOwner()->name;
-				
+
 				if($tag->save()) {
 					$this->_tags[] = $tag;	// update tag cache
 					$addedTags[] = $tagName;
@@ -187,10 +187,10 @@ class TagBehavior extends CActiveRecordBehavior {
 			'model'=>$this->getOwner(),
 			'tags'=>$addedTags,
 		));
-		
+
 		return $result;
 	}
-	
+
 	/**
 	 * Removes the specified tag(s) from the owner model
 	 * @param mixed $tags a string or array of strings containing tags
@@ -199,21 +199,21 @@ class TagBehavior extends CActiveRecordBehavior {
 	public function removeTags($tags) {
 		$result = false;
 		$removedTags = array();
-		
+
 		foreach((array)$tags as $tag) {
 			if(empty($tag))
 				continue;
-			
+
 			$attributes = array(
 				'type'=>get_class($this->getOwner()),
 				'itemId'=>$this->getOwner()->id,
 				'tag'=>$tag
 			);
-			
+
 			if(in_array($tag,$this->getTags()) && CActiveRecord::model('Tags')->deleteAllByAttributes($attributes) > 0) {
 				if(false !== $offset = array_search($tag,$this->_tags))
 					unset($this->_tags[$offset]);	// update tag cache
-					
+
 				$removedTags[] = $tag;
 				$result = true;
 			}
@@ -222,7 +222,7 @@ class TagBehavior extends CActiveRecordBehavior {
 			'model'=>$this->getOwner(),
 			'tags'=>$removedTags,
 		));
-		
+
 		return $result;
 	}
 
@@ -231,7 +231,7 @@ class TagBehavior extends CActiveRecordBehavior {
 	 */
 	public function clearTags() {
 		$this->_tags = array();	// clear tag cache
-		
+
 		return (bool)CActiveRecord::model('Tags')->deleteAllByAttributes(array(
 			'type'=>get_class($this->getOwner()),
 			'itemId'=>$this->getOwner()->id)

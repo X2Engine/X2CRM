@@ -3,7 +3,7 @@
 
 /**
  * Consolidated class for common string formatting and parsing functions.
- * 
+ *
  * @package X2CRM.components
  */
 class Formatter {
@@ -94,10 +94,10 @@ class Formatter {
 	 */
 	public static function formatTimePicker($width = ''){
 		if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh'){
-			return "hh:mm";
+			return "HH:mm";
 		}
 		$format = Yii::app()->locale->getTimeFormat('short');
-		$format = strtolower($format); // jquery specifies hours/minutes as hh/mm instead of HH//MM
+		//$format = strtolower($format); // jquery specifies hours/minutes as hh/mm instead of HH//MM
 		$format = str_replace('a', 'TT', $format); // yii and jquery have different format to specify am/pm
 		return $format;
 	}

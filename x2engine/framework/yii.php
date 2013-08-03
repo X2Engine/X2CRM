@@ -28,7 +28,7 @@ class Yii extends YiiBase {
 
 	public static $paths = array();
 	protected static $rootPath;
-	
+
 	public static function getRootPath() {
 		if(!isset(self::$rootPath)) {
 			self::$rootPath = dirname(self::app()->request->scriptFile);
@@ -48,7 +48,7 @@ class Yii extends YiiBase {
 
 	/**
 	 * Checks if a custom version of a file exists
-	 * 
+	 *
 	 * @param String $path The file path
 	 * @return String $path The original file path, or the version in /custom if it exists
 	 */
@@ -59,10 +59,10 @@ class Yii extends YiiBase {
 			$path = $customPath;
 		return $path;
 	}
-	
+
 	/**
 	 * Checks if a custom version of a class file exists
-	 * 
+	 *
 	 * @param String $path The path to something in /custom
 	 * @return String $path The path to the original file or folder
 	 */
@@ -73,7 +73,7 @@ class Yii extends YiiBase {
 	/**
 	 * Imports a class or a directory.
 	 * Overrides {@link YiiBase::import()} to check in /custom for all imported classes
-	 * 
+	 *
 	 * @param string $alias path alias to be imported
 	 * @param boolean $forceInclude whether to include the class file immediately. If false, the class file
 	 * will be included only when the class is being used. This parameter is used only when
@@ -216,7 +216,7 @@ class Yii extends YiiBase {
 				.CHtml::hiddenField('msg',$message)
 				.parent::t($category,$message,$params,$source,$language)
 				.'</dt>';
-		
+
 		else
 			return parent::t($category,$message,$params,$source,$language);
 	}

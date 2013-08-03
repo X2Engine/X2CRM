@@ -1,18 +1,21 @@
-# X2CRM 3.2 #
-7/10/2013
+# X2CRM 3.3 #
+8/2/2013
 ## Changes ##
-* Enhancements to X2Flow Automation
-  * Improved UI is more intuitive
-  * You can now set time delays to run actions at a later date
-  * New cronjob endpoint for time-based events
-* New multi-account email system
-  * You can now create and manage unlimited SMTP accounts for email integration
-* Advanced Google Drive integration
-  * Upload, view and access your Drive files from within X2CRM
-  * Effortlessly attach files to emails
-  * General improvements to Google integration
-* New charting system on the home page feed lets you visualize new leads and user activity
+* Better translations
+  * Vastly more comprehensive coverage
+  * Added Polish language pack
+* Improved charting
+  * New action history chart provides visual timelines of activity on almost anything
+  * Improvements to the activity chart on the home page
+* Improvements to the third-party application credentials (email passwords) manager
+  * Improved, more intuitive UI
+  * More concise access control logic
+  * Web lead and service case forms can be configured to use credentials to send email
+* New REST-ful API action for adding/removing relationships between models
+* Broadcasting events now supports sending emails to any number of users
+* New event feed, action history, module header and admin console icons
 * Numerous bug fixes
+* SSL-secured software updates
 
 ## Release Notes ##
 ### 3.0 ###

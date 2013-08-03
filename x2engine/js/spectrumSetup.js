@@ -55,7 +55,7 @@ function setupSpectrum (element, replaceHash /* optional */) {
         hide: function (color) {
             removeCheckerImage ($(element));
             $(element).data ('ignoreChange', false);
-                
+
             if (replaceHash) {
                 var text = color.toHexString ().replace (/#/, '');
             } else {
@@ -66,7 +66,8 @@ function setupSpectrum (element, replaceHash /* optional */) {
             $(element).change ();
         }
     });
-	$(element).show ();
+    
+    $(element).show ();
     if ($(element).val () === '') {
         addCheckerImage ($(element));
     }

@@ -42,7 +42,7 @@
 <form name="removeFields" action="removeField" method="POST">
 	<br>
 	<select name="field">
-            <option value="">Select A Field</option>
+            <option value=""><?php echo Yii::t('admin','Select A Field');?></option>
 		<?php foreach($fields as $id=>$field){
             $fieldRecord=X2Model::model('Fields')->findByPk($id);
             if(isset($fieldRecord))

@@ -51,8 +51,9 @@ Yii::app()->clientScript->registerScript('leadVolume',"
 	});
 ",CClientScript::POS_READY);
 ?>
+<div class="page-title icon charts"><h2><?php echo Yii::t('charts', 'Lead Volume'); ?></h2></div>
+
 <div class="form">
-	<div class="page-title icon charts"><h2><?php echo Yii::t('charts', 'Lead Volume'); ?></h2></div>
 
 	<?php
 	$form = $this->beginWidget('CActiveForm', array(

@@ -90,11 +90,11 @@ class Session extends CActiveRecord {
 	 */
 	public function attributeLabels() {
 		return array(
-			'id' => Yii::t('sessions','Sesesion ID'),
-			'user' => Yii::t('sessions','User'),
-			'lastUpdated' => Yii::t('sessions','Last Updated'),
-			'IP' => Yii::t('sessions','IP Address'),
-			'status' => Yii::t('sessions','Login Status'),
+			'id' => Yii::t('app','Sesesion ID'),
+			'user' => Yii::t('app','User'),
+			'lastUpdated' => Yii::t('app','Last Updated'),
+			'IP' => Yii::t('app','IP Address'),
+			'status' => Yii::t('app','Login Status'),
 		);
 	}
 

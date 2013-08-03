@@ -64,36 +64,21 @@ echo CHtml::activeLabel($model, 'name');
 echo CHtml::error($model, 'name');
 echo CHtml::activeTextField($model, 'name');
 
-// echo CHtml::activeLabel($model, 'private');
-echo CHtml::activeHiddenField($model, 'private',array('value'=>1));
+echo CHtml::activeLabel($model, 'private');
+echo CHtml::activeCheckbox($model, 'private',array('value'=>1));
+echo CHtml::tag('span', array('class' => 'x2-hint', 'style'=>'display:inline-block; margin-left:5px;', 'title' => Yii::t('app', 'If you disable this option, administrators and users granted privilege to do so will be able to use these credentials on your behalf.')),'[?]');
 
-if(Yii::app()->user->checkAccess('AdminIndex')) {
-	$users = User::model()->findAll();
-	$users = array_combine(array_map(function($u){return $u->id;},$users),array_map(function($u){return $u->name;},$users));
-	$users[null] = 'None (system-wide)';
-	echo CHtml::activeLabel($model,'userId');
-	echo CHtml::activeDropDownList($model, 'userId', $users,array('selected'=>null));
-}
-
-$subsLabels = $model->substituteLabels;
-
-echo CHtml::label(Yii::t('app', 'Set as default'), 'default');
-if(count($subsLabels) > 1){
-	$options = array();
-	if(array_key_exists($user->id, $model->defaultCredentials)){
-		$defaults = $model->defaultCredentials[$user->id];
-		foreach($subsLabels as $sub => $label){
-			if(isset($defaults[$sub])){
-				if($defaults[$sub] == $model->id){
-					$options[$sub] = array('selected' => true);
-				}
-			}
-		}
+if($model->isNewRecord){
+	if(Yii::app()->user->checkAccess('CredentialsAdmin')){
+		$users = array($user->id => Yii::t('app', 'You'));
+		$users[Credentials::SYS_ID] = 'System';
+		echo CHtml::activeLabel($model, 'userId');
+		echo CHtml::activeDropDownList($model, 'userId', $users, array('selected' => Credentials::SYS_ID));
+	}else{
+		echo CHtml::activeHiddenField($model, 'userId', array('value' => $user->id));
 	}
-	echo CHtml::dropDownList('default', array_keys($options), $subsLabels, array('multiple' => 'multiple','options' => $options));
-}else{
-	echo CHtml::checkBox('default');
 }
+
 ?>
 	
 <!-- Credentials details (embedded model) -->

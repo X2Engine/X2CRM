@@ -65,11 +65,14 @@ class Publisher extends X2Widget {
 
         Yii::app()->clientScript->registerScript('loadEmails',"
             function loadFrame(id,type){
-                if(type!='Action'){
+                if(type!='Action' && type!='QuotePrint'){
                     var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/actions/viewEmail/'))."?id='+id+'\"></iframe>';
-                }else{
+                }else if(type=='Action'){
                     var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/actions/viewAction/'))."?id='+id+'&publisher=true\"></iframe>';
-                }
+                } else if(type=='QuotePrint'){
+		    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/quotes/print'))."?id='+id+'\"></iframe>';
+
+		}
                 if(typeof x2ViewEmailDialog != 'undefined') {
                     if($(x2ViewEmailDialog).is(':hidden')){
                         $(x2ViewEmailDialog).remove();
@@ -82,7 +85,7 @@ class Publisher extends X2Widget {
                 x2ViewEmailDialog = $('<div></div>', {id: 'x2-view-email-dialog'});
 
                 x2ViewEmailDialog.dialog({
-                    title: 'View '+type,
+                    title: '".Yii::t('app','View history item') /* Changed to generic title from "View" +type because there's no practical way to translate javascript variables */ ."',
                     autoOpen: false,
                     resizable: true,
                     width: '650px',
@@ -121,7 +124,13 @@ class Publisher extends X2Widget {
                     t=setTimeout(function(){loadFrame(id,'Quote')},500);
                 }).mouseleave(function(){
                     clearTimeout(t);
-                });
+                }); // Legacy quote pop-out view
+		$('.quote-print-frame').mouseenter(function(){
+			var id=$(this).attr('id');
+			t=setTimeout(function(){loadFrame(id,'QuotePrint')},500);
+		}).mouseleave(function(){
+			clearTimeout(t);
+		}); // New quote pop-out view
             });
         ",CClientScript::POS_HEAD);
 

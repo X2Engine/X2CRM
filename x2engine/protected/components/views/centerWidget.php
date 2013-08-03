@@ -59,8 +59,22 @@ if($name == "InlineRelationships"){
         </span>
         <?php if(!Yii::app()->user->isGuest){ ?>
             <div class="portlet-minimize">
-                <a onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false" href="#" class="x2widget-minimize"><?php echo $widget['minimize'] ? CHtml::image($themeUrl.'/images/icons/Expand_Widget.png') : CHtml::image($themeUrl.'/images/icons/Collapse_Widget.png'); ?></a>
-                <a onclick="$('#x2widget_<?php echo $name; ?>').hideWidget(); return false" href="#"><?php echo CHtml::image($themeUrl.'/images/icons/Close_Widget.png'); ?></a>
+                <a onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false" href="#" class="x2widget-minimize">
+					<?php echo $widget['minimize'] ? CHtml::image($themeUrl.'/images/icons/Expand_Widget.png', Yii::t('app', 'Maximize Widget'), array ('title' => Yii::t('app', 'Maximize Widget'))) : CHtml::image($themeUrl.'/images/icons/Collapse_Widget.png', Yii::t('app', 'Minimize Widget'), array ('title' => Yii::t('app', 'Minimize Widget'))); ?>
+				</a>
+				<?php 
+					echo CHtml::image(
+						$themeUrl.'/css/gridview/arrow_both.png', 
+						Yii::t('app', 'Sort Widget'), 
+						array (
+							'title' => Yii::t('app', 'Sort Widget'),
+							'class' => 'widget-sort-handle'
+						)
+					); 
+				?>
+                <a onclick="$('#x2widget_<?php echo $name; ?>').hideWidget(); return false" href="#">
+					<?php echo CHtml::image($themeUrl.'/images/icons/Close_Widget.png', Yii::t('app', 'Close Widget'), array ('title' => Yii::t('app', 'Close Widget'))); ?>
+				</a>
             </div>
         <?php } ?>
     </div>

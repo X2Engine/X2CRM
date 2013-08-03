@@ -74,6 +74,6 @@ foreach($allTags as &$tag) {
     });
     $('#tag-hint').qtip({
        position:{'my':'top right','at':'bottom left'},
-       content:'Pressing the X button on a tag will hide it from this widget. Hidden tags can be restored from your Preferences page.'
+       content:'<?php echo Yii::t('app','Pressing the X button on a tag will hide it from this widget. Hidden tags can be restored from your Preferences page.'); ?>'
     });
 </script>

@@ -62,7 +62,7 @@ $(document).ready(function() {
 	'enableAjaxValidation'=>false,
 )); ?>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
+	<p class="note"><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.');?></p>
 
 	<?php echo $form->errorSummary($model); ?>
 
@@ -71,12 +71,12 @@ $(document).ready(function() {
 		<?php echo $form->textField($model,'name',array('size'=>60,'maxlength'=>259)); ?>
 		<?php echo $form->error($model,'name'); ?>
 	</div>
-        <label>Users</label>
+        <label><?php echo Yii::t('groups','Users');?></label>
         <?php echo CHtml::dropDownList('users[]', isset($selected)?$selected:"", $users, array('class'=>'multiselect', 'multiple'=>'multiple')); ?>
         <br />
 
 	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save',array('class'=>'x2-button')); ?>
+		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button')); ?>
 	</div>
 
 <?php $this->endWidget(); ?>

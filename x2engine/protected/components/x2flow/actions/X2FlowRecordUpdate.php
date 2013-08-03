@@ -36,29 +36,31 @@
 
 /**
  * X2FlowAction that updates a new record
- * 
+ *
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowRecordUpdate extends X2FlowAction {
-	public $title = 'Update Record';
-	public $info = 'Change one or more fields on an existing record.';
-	
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'modelReqired' => 1,
-			// 'modelClass' => 'modelClass',
-			'options' => array(
-				array('name'=>'attributes'),
-			));
-	}
-	
-	public function execute(&$params) {
-		if(!isset($this->config['attributes']) || empty($this->config['attributes']))
-			return false;
-		
-		$this->setModelAttributes($params['model'],$this->config['attributes'],$params);
-		return $params['model']->save();
-	}
+
+    public $title = 'Update Record';
+    public $info = 'Change one or more fields on an existing record.';
+
+    public function paramRules(){
+        return array(
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
+            'modelReqired' => 1,
+            // 'modelClass' => 'modelClass',
+            'options' => array(
+                array('name' => 'attributes'),
+                ));
+    }
+
+    public function execute(&$params){
+        if(!isset($this->config['attributes']) || empty($this->config['attributes']))
+            return false;
+
+        $this->setModelAttributes($params['model'], $this->config['attributes'], $params);
+        return $params['model']->updateByPk($params['model']->id, $params['model']->attributes);
+    }
+
 }

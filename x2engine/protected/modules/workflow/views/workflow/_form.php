@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
- 
+
 if(empty($model->stages))
 	$model->stages = array(new WorkflowStage);	// start with at least 1 blank row
 
@@ -53,7 +53,7 @@ function deleteStage(object) {
 		opacity: 0,
 		height: 0
 	}, 200,function() { $(this).remove(); updateStageNumbers(); });
-	
+
 	var stageCount = $('#workflow-stages li').length;
 	$('#workflow-stages li select.workflow_requirePrevious').find('option:last').remove();
 }
@@ -90,7 +90,7 @@ function addStage() {
 	</div>\
 	</li>');
 	stageCount++;
-	
+
 	for(i=1;i<stageCount;i++)
 		$('#workflow-stages li:last-child select.workflow_requirePrevious').append('<option value=\"-'+i+'\">".addslashes(Yii::t('workflow','Stage'))." '+i+'</option>');
 	$('#workflow-stages li select.workflow_requirePrevious').append('<option value=\"'+stageCount+'\">".addslashes(Yii::t('workflow','Stage'))." '+stageCount+'</option>');
@@ -151,7 +151,7 @@ $(function() {
 	);
 	for($i=1;$i<=count($model->stages);$i++)
 		$stageRequirements['-'.$i] = Yii::t('workflow','Stage').' '.$i;
-	
+
 	// $model->stages = array_reverse($model->stages);
 
 	for($i=0; $i<count($model->stages); $i++) {
@@ -165,7 +165,7 @@ $(function() {
 				<?php echo CHtml::textField('WorkflowStages['.($i+1).'][name]',$stage->name,array('class'=>'workflow_name','style'=>'width:140px','maxlength'=>40)); ?>
 				<?php echo CHtml::error($stage,'name'); ?>
 			</div>
-			
+
 			<div class="cell">
 				<?php echo $form->labelEx($stage,'requirePrevious'); ?>
 				<?php
@@ -191,7 +191,7 @@ $(function() {
 	</div>
 	<a href="javascript:void(0)" onclick="addStage()" class="x2-sortlist-add">[<?php echo Yii::t('workflow','Add'); ?>]</a>
 	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save',array('class'=>'x2-button')); ?>
+		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button')); ?>
 	</div>
 
 <?php $this->endWidget(); ?>

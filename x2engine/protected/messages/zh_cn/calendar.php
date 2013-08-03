@@ -1,41 +1,5 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-'Calendar'=>'日历',
 'Calendars'=>'日历',
 // // 
 'User Calendars'=>'用户日历',
@@ -45,27 +9,24 @@ return array (
 'My Calendar Permissions'=>'我的日历权限',
 'User Calendar Permissions'=>'用户日历权限',
 'Google Event'=>'谷歌事件',
-'Contacts'=>'往来',
-'Accounts'=>'帐户',
-'Opportunities'=>'机会',
-'Products'=>'产品',
-'Media'=>'媒体',
 'View Permission'=>'查看权限',
 'These users can view your calendar.'=>'这些用户可以查看您的日历。',
 'Edit Permission'=>'编辑权限',
 'These users can edit your calendar.'=>'这些用户可以编辑您的日历。',
+'Sync My Actions To Google Calendar'=>'谷歌日历同步我的行动',
+'Show Actions associated with Contacts'=>'与隐形眼镜相关的动作',
+'Show Actions associated with Accounts'=>'与帐户相关的行动',
+'Show Actions associated with Opportunities'=>'显示操作与机会',
+'Show Actions associated with Quotes'=>'显示操作与行情',
+'Show Actions associated with Products'=>'与产品相关的动作',
+'Show Actions associated with Media'=>'显示与媒体相关的行动',
+'Show Completed Actions'=>'显示已完成的动作',
+'Show Emails'=>'显示电子邮件',
+'Show Attachments'=>'显示附件',
 // // 
-'Completed'=>'完成',
-'Quotes'=>'行情',
-'Email'=>'电子邮件',
 'Attachment'=>'附件',
 // // 
-'List'=>'表',
-'Delete'=>'删除',
-'Create'=>'创建',
 // // button text
-'Update'=>'更新',
-'today'=>'今日',
 'month'=>'月',
 'week'=>'周',
 'day'=>'天',
@@ -115,4 +76,92 @@ return array (
 'Thu'=>'星期四',
 'Fri'=>'星期五',
 'Sat'=>'星期',
+'Create Shared Calendar'=>'创建共享日历',
+'Don\'t link to Google Calendar'=>'Don \&#39;吨的链接到Google日历',
+'Link to Google Calendar'=>'链接到Google日历',
+'Back To User List'=>'返回到用户列表',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'你的行动正在同步到谷歌日历“ {calendarName}',
+'Don\'t Sync My Actions To Google Calendar'=>'唐\&#39;吨谷歌日历同步我的行动',
+'Google Integration is not configured on this server.'=>'谷歌整合没有此服务器上配置。',
+'Once'=>'一旦',
+'Yearly'=>'每年',
+'Google Calendar'=>'谷歌日历',
+'Google Feed'=>'谷歌饲料',
+'Google Calendar Name'=>'谷歌日历名称',
+'View Association'=>'查看协会',
+'User Calendars'=>'用户日历',
+'Filter'=>'过滤',
+'Show Actions associated with Contacts'=>'与隐形眼镜相关的动作',
+'Show Actions associated with Accounts'=>'与帐户相关的行动',
+'Show Actions associated with Opportunities'=>'显示操作与机会',
+'Show Actions associated with Quotes'=>'显示操作与行情',
+'Show Actions associated with Products'=>'与产品相关的动作',
+'Show Actions associated with Media'=>'显示与媒体相关的行动',
+'Show Completed Actions'=>'显示已完成的动作',
+'Show Emails'=>'显示电子邮件',
+'Show Attachments'=>'显示附件',
+'Group Calendars'=>'组日历',
+'Google Calendars'=>'谷歌日历',
+'My Calendar Permissions'=>'我的日历权限',
+'Sync My Actions To Google Calendar'=>'谷歌日历同步我的行动',
+'Create Shared Calendar'=>'创建共享日历',
+'Don\'t link to Google Calendar'=>'Don \&#39;吨的链接到Google日历',
+'Link to Google Calendar'=>'链接到Google日历',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'你的行动正在同步到谷歌日历“ {calendarName}',
+'Don\'t Sync My Actions To Google Calendar'=>'唐\&#39;吨谷歌日历同步我的行动',
+'Google Integration is not configured on this server.'=>'谷歌整合没有此服务器上配置。',
+'User Calendar Permissions'=>'用户日历的权​​限',
+'Google Event'=>'谷歌事件',
+'month'=>'月',
+'week'=>'周',
+'day'=>'天',
+'January'=>'一月',
+'February'=>'二月',
+'March'=>'三月',
+'April'=>'四月',
+'May'=>'五月',
+'June'=>'六月',
+'July'=>'七月',
+'August'=>'八月',
+'September'=>'九月',
+'October'=>'十月',
+'November'=>'十一月',
+'December'=>'十二月',
+'Jan'=>'一月',
+'Feb'=>'二月',
+'Mar'=>'损伤',
+'Apr'=>'四月',
+'Jun'=>'君',
+'Jul'=>'七月',
+'Aug'=>'八月',
+'Sep'=>'九月',
+'Oct'=>'十月',
+'Nov'=>'十一月',
+'Dec'=>'十二月',
+'Sunday'=>'星期天',
+'Monday'=>'星期一',
+'Tuesday'=>'星期二',
+'Wednesday'=>'星期三',
+'Thursday'=>'星期四',
+'Friday'=>'星期五',
+'Saturday'=>'星期六',
+'Sun'=>'太阳',
+'Mon'=>'周一',
+'Tue'=>'星期二',
+'Wed'=>'星期三',
+'Thu'=>'周四',
+'Fri'=>'周五',
+'Sat'=>'星期六',
+'View Permission'=>'查看权限',
+'These users can view {fullname}\'s calendar.'=>'这些用户可以查看{fullname} \的日历。',
+'Edit Permission'=>'编辑权限',
+'These users can edit {fullname}\'s calendar.'=>'这些用户可以编辑{fullname} \的日历。',
+'Back To User List'=>'返回到用户列表',
+'These users can view your calendar.'=>'这些用户可以查看您的日历。',
+'These users can edit your calendar.'=>'这些用户可以编辑您的日历。',
+'Google Calendar'=>'谷歌日历',
+'Google Feed'=>'谷歌饲料',
+'Google Calendar Name'=>'谷歌日历名称',
+'Once'=>'一旦',
+'Yearly'=>'每年',
 );

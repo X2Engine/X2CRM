@@ -77,10 +77,10 @@ function addStage() {
 <div class="form">
 
 <?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'field-form', 
-	'enableAjaxValidation'=>false, 
+	'id'=>'field-form',
+	'enableAjaxValidation'=>false,
         'action'=>'dropDownEditor',
-)); ?> 
+)); ?>
 
     <div class="row">
         <?php echo $form->labelEx($model,'name'); ?>
@@ -88,11 +88,11 @@ function addStage() {
         <?php echo $form->error($model,'name'); ?>
     </div>
     <div id="workflow-stages">
-        <label>Dropdown Options</label>
+        <label><?php echo Yii::t('admin','Dropdown Options');?></label>
         <ol>
         <li>
             <input type="text" size="30" name="Dropdowns[options][]" />
-            
+
             <div class="">
                 <a href="javascript:void(0)" onclick="moveStageUp(this);">[<?php echo Yii::t('workflow','Up'); ?>]</a>
                 <a href="javascript:void(0)" onclick="moveStageDown(this);">[<?php echo Yii::t('workflow','Down'); ?>]</a>

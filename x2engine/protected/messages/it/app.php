@@ -1,105 +1,45 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-// // // Language Name
+// Language Name
 'languageName'=>'Italiano',
-// // // Login
+// Login
 'Please log in to continue:'=>'Effettua il login per continuare:',
-'Username'=>'Nome Utente',
-'Password'=>'Password',
 'Remember me'=>'Ricordati di me',
 'Login'=>'Accesso',
 'Welcome to {appName}.'=>'Benvenuto in {appName}.',
-'Verification Code'=>'Codice di Verifica',
 'Login with Google'=>'Accesso con Google',
-// // // 
-// // // Main Menu
-'Calendar'=>'Calendario',
-'Actions'=>'Azioni',
-'Contacts'=>'Contatti',
-'Opportunities'=>'di vendita',
+
+// Main Menu
 'Projects'=>'Progetti',
 'Group Chat'=>'Chat di Gruppo',
-'Marketing'=>'Commercializzazione',
 'Cases'=>'Casi',
-'Accounts'=>'Conti',
-'Users'=>'Utenti',
 'Admin'=>'Admin',
-'Docs'=>'Documenti',
 'Chat'=>'Chiacchierata',
-'Social'=>'Sociale',
 'Profile'=>'Profilo',
-'Settings'=>'Impostazioni',
 'Logout'=>'Logout',
 'Login'=>'Accesso',
-'More'=>'di più',
 'What\'s New'=>'Novità',
-'Quotes'=>'Citazioni',
 'Dashboard'=>'Cruscotto',
-'Products'=>'Prodotti',
-'Workflow'=>'Flusso di Lavoro',
-'Groups'=>'Gruppi',
 'Notifications'=>'Notifiche',
 'Charts'=>'Grafici',
-'Manage Users'=>'Gestire gli Utenti',
-'Social Feed'=>'Sociale Feed',
 'Preferences'=>'Preferenze',
 'Reports'=>'Rapporti',
 'Activity'=>'Attività',
 'Service'=>'Servizio',
 'Go Invisible'=>'Vai Invisibile',
 'Go Visible'=>'Vai Visibile',
-// // // 
-// // // Search Bar
+
+// Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
-'Go'=>'Andare',
-'Contact'=>'Contatto',
-'Action'=>'Azione',
 'Contact + Action'=>'Contatto + Azione',
 'Search for contact, action, deal...'=>'Ricerca di contatto, azione, affare ...',
-// // // 
-// // // Footer
-'All Rights Reserved.'=>'Tutti i Diritti Riservati.',
+
+// Footer
 'Generated in {time} seconds.'=>'Generato in {time} secondi',
 'About'=>'Circa',
 'The Program is provided AS IS, without warranty.'=>'Il programma è fornito così com\'è, senza alcuna garanzia.',
-// // // 
-// // // Widgets
-'My Actions'=>'Le Mie Azioni',
+
+// Widgets
 'Twitter Feed'=>'Twitter Feed',
 'Quick Contact'=>'Contatto Veloce',
 'Google Map'=>'Google Map',
@@ -109,81 +49,68 @@ return array (
 'Just Me'=>'Solo Io',
 'All Users'=>'Tutti gli Utenti',
 'Doc Viewer'=>'Visualizzatore Doc',
-'Time Zone'=>'Fuso Orario',
 'Top Sites'=>'Siti Top',
-'Media'=>'Media',
 'Current time in'=>'Ora attuale in',
-'Hide'=>'Nascondere',
-// // // 
+
 'Total Action|Total Actions'=>'Totale Azione | Azioni Totali',
 'Unfinished Action|Unfinished Actions'=>'Incompiuta Azione | Azioni Incompiuta',
 'Overdue Action|Overdue Actions'=>'Scadute Azione | Azioni Scadute',
 'Completed Action|Completed Actions'=>'Azione Completato | Azioni Completate',
-// // // 
+
 'Message Board'=>'Forum',
 'Please enter a message of the day!'=>'Si prega di inserire un messaggio del giorno!',
 'Edit Message'=>'Modifica Messaggio',
-// // // 
+
 'Note Pad'=>'Appunti',
 'Feel free to enter some notes!'=>'Sentitevi liberi di inserire alcune note!',
-// // // 
-'Top Contacts'=>'Contatti Top',
+
 'Add {name}'=>'Aggiungi {name}',
-// // // 
+
 'Enter Title'=>'Inserire il Titolo',
-'Title'=>'Titolo',
 'Title:'=>'Titolo:',
-'Link'=>'Collegamento',
 'Link:'=>'Collegamento:',
 'Add Site'=>'Aggiungi Sito',
-'Example'=>'Esempio',
-// // // 
-// // // Chat
+
+// Chat
 'Message Body'=>'Corpo del Messaggio',
 'Enter text here...'=>'Inserisci il testo qui ...',
 'Send'=>'Inviare',
-// // // 
-// // // Email Form
+
+// Activity Feed
+'Activity Feed Order'=>'Feed attività dell&#39;Ordine',
+'Top Down'=>'Top Down',
+'Bottom Up'=>'Bottom Up',
+
+// Email Form
 'To:'=>'Per:',
 'Subject:'=>'Oggetto:',
 'Message:'=>'Messaggio:',
 'Error: Could not send email.'=>'Errore: Impossibile inviare e-mail.',
 'Email Sent!'=>'E-mail Inviata!',
-'Preview'=>'Anteprima',
 'Attachments'=>'Allegati',
-// // // 
-// // // Comments
-'Add Comment'=>'Aggiungi Commento',
-'Create Action'=>'Creare Azione',
+'Note: you have entered text into the email that will be lost. Are you sure you want to continue?'=>'Nota: aver inserito il testo nella email che verrà perso. Sei sicuro di voler continuare?',
+'From:'=>'Da:',
+'Send As:'=>'Invia come:',
+'System default (legacy)'=>'Di default del sistema (legacy)',
+
+// Comments
 'Add a comment...'=>'Aggiungi un commento ...',
-'History'=>'Storia',
 'Today'=>'Oggi',
 'Tomorrow'=>'Domani',
-'Comments'=>'Commenti',
 'Post'=>'Posta',
-// // // 
-// // // Misc
+
+// Misc
 'Advanced Search'=>'Ricerca Avanzata',
 'Clear Filters'=>'Filtri Chiaro',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Si può opzionalmente inserire un operatore di confronto (<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>o <b>=</b>) all\'inizio di ciascuno dei vostri valori di ricerca per specificare come il confronto dovrebbe essere fatto.',
 'Fields with <span class="required">*</span> are required.'=>'I campi contrassegnati con <span class="required">*</span> sono obbligatori.',
 'Click here to return to where you were'=>'Clicca qui per tornare dove eravate',
-'Private'=>'Privato',
 'Attach A File/Photo'=>'Allega un file / Foto',
 'Attach a File'=>'Allega un file',
-'None'=>'Nessuno',
-'Anyone'=>'Chiunque',
-'Share'=>'Parte',
-'Link'=>'Collegamento',
+'Share:'=>'Condividi:',
 'Theme'=>'Tema',
-'Account'=>'Conto',
-'Opportunity'=>'Opportunità',
-'All'=>'Tutti',
 'Optional'=>'Opzionale',
 'Records that have been modified since your last login.'=>'I record che sono stati modificati dal tuo ultimo login.',
-'Are you sure you want to delete this item?'=>'Sei sicuro di voler eliminare questo elemento?',
-'Columns'=>'Colonne',
-'Tools'=>'Strumenti',
 'Rights reserved.'=>'Diritti riservati.',
 'GNU General Public License version 3'=>'GNU Generale Pubblico Licenza Versione 3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'Il programma è fornito così com\'è, senza alcuna garanzia. <br> Sotto licenza {BSD}.',
@@ -191,32 +118,21 @@ return array (
 'Minimize'=>'Ridurre al Minimo',
 '"{X}" is not an allowed filetype.'=>'"{X}" non è un tipo di file consentito.',
 'Loading'=>'Caricamento',
-'Edit'=>'Modifica',
 'Due'=>'Dovuto',
 'Help'=>'Aiuto',
 '---'=>'---',
 'You don\'t have any notifications.'=>'Non hai alcuna notifica.',
 'View all'=>'Vedi Tutti',
 'Close'=>'Chiudere',
-'Delete'=>'Cancellare',
 'Group?'=>'Gruppo?',
 'Check box'=>'Casella di controllo',
 'results per page'=>'risultati per pagina',
-'Public'=>'Pubblico',
-'Tags'=>'Tag',
 'Template:'=>'Sagoma:',
-'Model Name'=>'Nome Modello',
-'Model ID'=>'ID Modello',
 'What should the list be named?'=>'Quale dovrebbe essere la lista essere nominato?',
 'Added items to list.'=>'Elementi aggiunti alla lista.',
 'Select an option'=>'Selezionare un\'opzione',
 'loading...'=>'caricamento...',
-'Checkbox'=>'Casella di Controllo',
 'New List From Selection'=>'Nuovo elenco da selezione',
-'No'=>'No',
-'Yes'=>'Sì',
-'View'=>'Vista',
-'Update'=>'Aggiornare',
 'results per page.'=>'Risultati per Pagina.',
 'Displaying {start}-{end} of {count} result(s).'=>'Visualizzazione {start} - {end} di {count} risultato (s).',
 'Marketing Dashboard'=>'Cruscotto di Marketing',
@@ -224,12 +140,9 @@ return array (
 'Quick Create'=>'Creazione Rapida',
 'Create a Contact, Account, and Opportunity.'=>'Creazione di un contatto, account e opportunità.',
 '<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'<b> Suggerimento: </b> è possibile utilizzare i seguenti operatori di confronto con i valori di filtro per affinare la ricerca.',
-'less than'=>'meno',
 'less than or equal to'=>'minore o uguale a',
-'greater than'=>'maggiore',
 'greater than or equal to'=>'maggiore o uguale a',
 'equal to'=>'pari a',
-'not equal to'=>'non uguale a',
 ' results per page'=>' risultati per pagina',
 'Add to list:'=>'Aggiungi alla lista:',
 '<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'<b> {start} - {end} </b> di <b> {count} </b>',
@@ -237,7 +150,6 @@ return array (
 'Associate Account'=>'Account Associate',
 'Associate Opportunity'=>'Opportunità Associate',
 'Associate Contact'=>'Associare Contatto',
-'Contact Attributes'=>'Contatti Attributi',
 'CC:'=>'CC:',
 'BCC:'=>'BCC:',
 'What should the map be named?'=>'Quale dovrebbe essere nominato la mappa?',
@@ -248,87 +160,134 @@ return array (
 'Check Filters'=>'Controllare i Filtri',
 'Show/Hide All Comments'=>'Mostra / Nascondi tutti i Commenti',
 '{n} rows'=>'{n} righe',
-// // // 
-// // // Misc Actions
+'vs.'=>'vs',
+'- Select an event type -'=>'- Selezionare un tipo di evento -',
+'Simple'=>'Semplice',
+'Full'=>'Completa',
+'Helpful Tips'=>'Consigli utili',
+'Bug Reports'=>'Bug report',
+'Loading...'=>'Caricamento in corso ...',
+'Link Contact'=>'Link Contact',
+'Link Account'=>'Collega account',
+'Link Opportunity'=>'Collegamento Opportunity',
+'Quick Note'=>'Nota rapida',
+'Update:'=>'Aggiornamento:',
+'Form'=>'Modulo',
+'left'=>'a sinistra',
+'{n} sec'=>'{n} sec',
+'{n} min'=>'{n} min',
+'{n} hour'=>'{n} ora',
+'{n} hours'=>'{n} ore',
+'{n} day'=>'{n} giorno',
+'{n} month'=>'{n} mese',
+'{n} months'=>'{n} mesi',
+'{n} year'=>'{n} anno',
+'Unlimited'=>'Illimitato',
+'Enable'=>'Attiva',
+'Disable'=>'Disabilitare',
+'IP Address'=>'Indirizzo IP',
+'Login Status'=>'Accedi Stato',
+'Allowed filetypes: .csv'=>'Tipi di file ammessi:. Csv',
+'Predefined Theme'=>'Tema predefinito',
+'Menu Background Color'=>'Menu Colore di sfondo',
+'Page Header Background Color'=>'Colore sfondo intestazione pagina',
+'Grid View Row Color 1'=>'Griglia Row colore 1',
+'Grid View Row Color 2'=>'Griglia Row 2 colori',
+'stretch'=>'allungare',
+'center'=>'Centro',
+'repeat'=>'ripetizione',
+'repeat-x'=>'repeat-x',
+'repeat-y'=>'repeat-y',
+'Save Profile Settings'=>'Salva Impostazioni profilo',
+'Creating a theme will save your current theme settings as a predefined theme'=>'Creazione di un tema consentirà di salvare le impostazioni del tema corrente come tema predefinito',
+'Theme name'=>'Nome del tema',
+
+// Misc Actions
 'Submit'=>'Presentare',
-'Save'=>'Memorizzare',
 'Cancel'=>'Annullare',
 'Send Email'=>'Invia Email',
 'Attach A File'=>'Allega un File',
 'Save Changes'=>'Salva Modifiche',
 'Save Action'=>'Salva Azione',
 'Save Comment'=>'Invia un Commento',
-'Create'=>'Creare',
 'Search'=>'Cerca',
 'Search Results'=>'Risultati della Ricerca',
-'Name'=>'Nome',
-'Description'=>'Descrizione',
-'Action'=>'Azione',
-'Status'=>'Stato',
 'E-mail'=>'E-mail',
 'Download'=>'Scarica',
 'Contact Saved'=>'Contatto Salvato',
 'Add Note'=>'Aggiungi Nota',
 'New List'=>'Nuovo Elenco',
-'Add'=>'Aggiungere',
-'Remove'=>'Rimuovere',
-// // // 
-// // // Timestamps
+'Toggle Comments'=>'Toggle Comments',
+'Show Chart'=>'Mostra Tabella',
+'Hide Chart'=>'Nascondi Tabella',
+'Make Sticky'=>'Fai Sticky',
+'Load More'=>'Caricare più',
+'Go to Activity Feed'=>'Vai a Feed attività',
+'Toggle Text'=>'Toggle Testo',
+'Click to toggle showing the full text of History items.'=>'Fare clic per scegliere che mostra il testo completo di articoli di storia.',
+'Click to increase the number of History items shown.'=>'Clicca per aumentare il numero di elementi di storia mostrati.',
+'Show Less'=>'Mostra meno',
+'Click to decrease the number of History items shown.'=>'Clicca per diminuire il numero di elementi di storia mostrati.',
+'Click to toggle showing actions associated with related records.'=>'Fare clic per scegliere mostrando azioni associate con i record correlati.',
+'Email Quote'=>'Email Quote',
+'Email Invoice'=>'Email Fattura',
+'Start typing to suggest...'=>'Iniziare a digitare per suggerire ...',
+'Do not delete'=>'Non eliminare',
+
+// Timestamps
 'Just now'=>'Proprio ora',
 '{n} minutes ago'=>'{n} minuti fa',
 '{n} hours ago'=>'{n} ore fa',
 '{n} days ago'=>'{n} giorni fa',
-// // // 
-// // // Errors
+
+// Errors
 'Error creating note!'=>'Errore durante la creazione nota!',
 'Invalid request. Please do not repeat this request again.'=>'Non valida richiesta. Si prega di non ripetere questa richiesta nuovamente.',
 'The requested page does not exist.'=>'La pagina richiesta non esiste.',
 'Please fix the following errors:'=>'Correggi i seguenti errori:',
-// // // 
-// // // Admin Page
+
+// Admin Page
 'Administration Tools'=>'Strumenti di Amministrazione',
 'Welcome to the administration tool set.'=>'Benvenuti al set di strumenti di amministrazione.',
 'Links'=>'Links',
 'How To\'s'=>'Come Fare',
-'Gii - A Code Generation Module'=>'Gii - Un modulo di generazione del codice',
 'Send Mass E-mail'=>'Invia e-mail di massa',
 'How to use Gii'=>'Come utilizzare Gii',
 'How to add a database field'=>'Come aggiungere un campo di database',
-// // // 
-// // // Activity Feed
-// // 
+
+// Activity Feed
+
 'Activity Feed'=>'Feed Attività',
-// // // Filter Headers
-'Visibility'=>'Visibilità',
+// Filter Headers
 'Relevant Users'=>'Utenti Rilevanti',
 'Event Types'=>'Tipi di Eventi',
 'Social Subtypes'=>'Sottotipi Sociali',
-'Options'=>'Opzioni',
 'Set Default'=>'Imposta Predefinito',
 'Apply Filters'=>'Applica Filtri',
-// // // Filter Text
-'Social Post'=>'Messaggio Sociale',
-'Announcement'=>'Annuncio',
-'Product Info'=>'Informazioni sul Prodotto',
-'Competitive Info'=>'Info Competitive',
-'Confidential'=>'Riservato',
-// // // Event Types
+// Filter Text
+'Filter Controls'=>'Filtra i controlli',
+// Event Types
 'Social Posts'=>'Messaggi Sociali',
 'Records Created'=>'Creato Records',
 'Records Deleted'=>'I record cancellati',
-'Action Reminders'=>'Azione Promemoria',
-'Actions Completed'=>'Azioni Completato',
 'Calendar Events'=>'Calendario degli Eventi',
 'Cases Escalated'=>'Casi Escalation',
 'Emails Opened'=>'E-mail Aperti',
+'Doc Updates'=>'Doc Aggiornamenti',
 'Emails Sent'=>'E-mail Inviate',
 'Notifications'=>'Notifiche',
 'Webleads Created'=>'Web Leads Creato',
-'Web Activity'=>'Web Activity',
 'Workflow Complete'=>'Flusso di lavoro completo',
 'Workflow Reverted'=>'Flusso di lavoro Ripristinata',
 'Workflow Started'=>'Flusso di lavoro iniziato',
-// // // Event Text
+'VOIP Calls'=>'Chiamate VoIP',
+'All Events'=>'Tutti gli Eventi',
+'Feed Events'=>'Feed Events',
+'Making an event sticky will cause it to always show up at the top of the feed.'=>'Fare un appiccicoso evento causerà per mostrare sempre nella parte superiore del feed.',
+'Undo Sticky'=>'Undo Sticky',
+'Like Post'=>'Come Post',
+'Unlike Post'=>'A differenza Messaggio',
+// Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'creato un nuovo {actionLink} associato al contatto {contactLink}',
 'created a new {modelName}, {modelLink}'=>'creato un nuovo {modelName}, {modelLink}',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'creato un nuovo {modelName}, {deletionText}. E \'stato eliminato.',
@@ -363,14 +322,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'L\'azione è dovuta ora, ma il record non è stato trovato.',
 'completed the following action: {actionDescription}'=>'completato le seguenti azioni: {actionDescription}',
 'completed an action, but the record could not be found.'=>'completato l\'azione, ma il record non è stato trovato.',
-// // // Model Names
+// Model Names
 'action'=>'azione',
 'contact'=>'contatto',
-'account'=>'conto',
 'opportunity'=>'opportunità',
 'marketing campaign'=>'campagna di marketing',
-// // 
-// // // Misc. Text
+'product'=>'prodotto',
+
+// Misc. Text
 'Minimize Posts'=>'Riduci Messaggi',
 'Restore Posts'=>'Ripristinare Messaggi',
 'My Groups'=>'I miei gruppi',
@@ -379,15 +338,20 @@ return array (
 'Broadcast Event'=>'Evento di trasmissione',
 'Cancel Broadcast'=>'Annulla Broadcast',
 'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'Trasmettendo un evento renderà visibile a qualsiasi utente che visualizza i vostri eventi sul feed attività - indipendentemente dal tipo di filtri.',
-// //
-// // Error Reporting
+'Leave colors blank for defaults.'=>'Lasciare i colori in bianco per default.',
+'Do you want to email all users?'=>'Vuoi inviare tutti gli utenti?',
+'What color should the broadcast be?'=>'Di che colore deve essere la trasmissione?',
+'What color should the font be?'=>'Di che colore deve essere il tipo di carattere?',
+'What color should the links be?'=>'Di che colore dovrebbero essere i link?',
+'Are you sure you want to remove these items from the list?'=>'Sei sicuro di voler rimuovere questi elementi dalla lista?',
+
+// Error Reporting
 'Bug Report Form'=>'Segnala un Bug Form',
 'This is the form to manually report bugs.'=>'Questo è il modulo per segnalare manualmente bug.',
 'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'Se si dispone di un bug che non è causato da un errore effettivo (che potrebbero rendere il modulo Resoconto errori) vi preghiamo di compilare tutte le informazioni che ci può dare e clicca su "Invia". Ci esaminare la questione e se si includono anche il tuo indirizzo e-mail vi risponderemo nel più breve tempo possibile. Grazie!',
 'Send Bug Report'=>'Invia Bug Report',
 'Here\'s a quick list of what will be included in the report:'=>'Ecco una breve lista di ciò che verrà incluso nella relazione:',
 'Report A Bug'=>'Segnala un Bug',
-'Email Address'=>'Indirizzo E-mail',
 'Bug Description'=>'Bug Descrizione',
 'X2CRM Version:'=>'Versione X2CRM:',
 'PHP Version:'=>'Versione PHP:',
@@ -407,4 +371,191 @@ return array (
 'Please Note:'=>'Si prega di notare:',
 'Any information in the $_GET or $_POST arrays included with the request will also be sent with the report.'=>'Tutte le informazioni in array $ _GET o $ _POST inclusi con la richiesta sarà inviata anche con la relazione.',
 'Error report sent!'=>'Rapporto di errore inviata!',
+
+// About Page
+'Professional Edition'=>'Professional Edition',
+'X2Engine is a Customer Relationship Management application <br>designed by John Roberts.'=>'X2Engine è un&#39;applicazione di gestione Customer Relationship <br> progettato da John Roberts.',
+'For customer and community support:'=>'Per i clienti e la comunità di supporto:',
+'Core Team'=>'Core Team',
+'Special Thanks'=>'Ringraziamenti speciali',
+'Version Info'=>'Info Version',
+'Build'=>'Costruire',
+'Code Base'=>'Codice di base',
+'Plugins/Extensions'=>'Plugins / Estensioni',
+'Developer'=>'Sviluppatore',
+'Yii Extension'=>'Yii Extension',
+'Powered by X2Engine'=>'Powered by X2Engine',
+'X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 			to install and use this Software for your internal business purposes. 			You shall not modify, distribute, license or sublicense the Software. 			Title, ownership, and all intellectual property rights in the Software belong 			exclusively to X2Engine.'=>'X2Engine Inc. concede all&#39;utente una non esclusiva licenza perpetua,, non trasferibile per installare e utilizzare il presente Software per i vostri scopi commerciali interni. Non è possibile modificare, distribuire, concedere in licenza o in sublicenza il software. Titolo, la proprietà, e di tutti i i diritti di proprietà intellettuale sul Software appartengono esclusivamente alla X2Engine.',
+'THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 		EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 		MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.'=>'QUESTO SOFTWARE VIENE FORNITO "COSÌ COM&#39;È" E SENZA GARANZIE DI ALCUN TIPO, SIA ESPLICITA O IMPLICITA, INCLUSE SENZA LIMITAZIONI LE GARANZIE IMPLICITE DI COMMERCIABILITÀ, IDONEITÀ PER UN PARTICOLARE SCOPO, TITOLARITA &#39;, E DI NON VIOLAZIONE.',
+'Our office in downtown Santa Cruz'=>'Il nostro ufficio nel centro di Santa Cruz',
+'X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.'=>'X2Engine Inc. è acquartierato in bella Santa Cruz, California. Ci piace molto incontrare i clienti e partner quando possibile e invitiamo a visitare i nostri uffici quando ci si trova nella zona di San Francisco Bay.',
+'Cannot delete admin user.  Please do not repeat this request.'=>'Impossibile eliminare utente admin. Si prega di non ripetere questa richiesta.',
+'The "model" property cannot be empty.'=>'La proprietà "modello" non può essere vuoto.',
+'The "options" property cannot be empty.'=>'La proprietà "opzioni" non può essere vuoto.',
+'The "chart" property is not valid JSON.'=>'La proprietà "grafico" non è JSON valido.',
+'The "model property is not valid'=>'La "proprietà modello non è valido',
+'Rights Reserved.'=>'I diritti riservati.',
+'Click to get a new image'=>'Fare clic per ottenere una nuova immagine',
+'Please enter the letters in the image above.'=>'Inserisci le lettere presenti nell&#39;immagine qui sopra.',
+'Main Menu'=>'Menu principale',
+'Incorrect username or password.'=>'Nome utente o password errati.',
+'Email '=>'Email',
+'Cannot be blank.'=>'Non può essere vuoto.',
+'Side Panel Settings'=>'Impostazioni del pannello laterale',
+'top'=>'superiore',
+'Sync'=>'Sincronizza',
+'anyone'=>'chiunque',
+'Invalid selection.'=>'Valida scelta.',
+'This list cannot be found.'=>'Questo elenco non può essere trovato.',
+'You do not have permission to modify this list.'=>'Non si dispone dell&#39;autorizzazione per modificare questa lista.',
+'The requested list does not exist.'=>'L&#39;elenco richiesto non esiste.',
+'Severity'=>'Gravità',
+'Creating a theme will save your current '=>'Creazione di un tema salverà la corrente',
+'Encrypted storage enabled'=>'Storage cifrato abilitato',
+'shared system-wide'=>'condivise a livello di sistema',
+'Set as default'=>'Imposta come predefinito',
+'Set as my default'=>'Imposta come predefinito il mio',
+'for'=>'per',
+'Apply'=>'Applicare',
+'Add New'=>'Aggiungi nuovo',
+'Visible to lead routing'=>'Visibile a guidare il routing',
+'Invisible to lead routing'=>'Invisibile a guidare il routing',
+'GNU Affero GPL v3'=>'GNU Affero GPL v3',
+'GNU Affero General Public License version 3'=>'GNU Affero General Public License versione 3',
+'Released as free software without warranties under the'=>'Rilasciato come software libero senza garanzie sotto il',
+'Make Important'=>'Fai Importante',
+'Broadcast'=>'Trasmettere',
+'Select at least one user to broadcast to'=>'Selezionare almeno un utente per la trasmissione di',
+'Okay'=>'Ok',
+'Nevermind'=>'Nevermind',
+'Create Chart Setting'=>'Creare Tabella impostazioni',
+'Clear second metric'=>'Chiaro seconda metrica',
+'Delete predefined chart setting'=>'Elimina impostazione grafico predefinito',
+'Setting Name'=>'Nome impostazione',
+'Select a group of users to send this event to via email or notification.'=>'Selezionare un gruppo di utenti di inviare questo evento per via e-mail o notifica.',
+'Clear All'=>'Cancella tutto',
+'Designating an event as important will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'Designazione di un evento così importante renderà visibile a qualsiasi utente che visualizza i vostri eventi sul feed attività - indipendentemente da filtri di tipo.',
+'Make Unimportant'=>'Fai Insignificante',
+'Send test email'=>'Invia mail di prova',
+'Register'=>'Registrati',
+'New Event Publisher'=>'Nuovo Evento Editore',
+'Send Now'=>'Invia ora',
+'Send Later'=>'Trasmissione differita',
+'Media Widget Settings'=>'Media Widget Impostazioni',
+'X2 Media'=>'X2 media',
+'Refresh Google Drive Cache'=>'Refresh Google cache dell&#39;unità',
+'Refresh Files'=>'Aggiorna file',
+'Errors encountered in {attribute}'=>'Gli errori riscontrati in {attribute}',
+'Auto'=>'Auto',
+'Did not send email because you do not have permission to use the specified credentials.'=>'Non inviare e-mail, perché non hai il permesso di utilizzare le credenziali specificate.',
+'Inline email model missing from the request to the server.'=>'Modello di e-mail in linea manca la richiesta al server.',
+'Timezone not available'=>'Fuso orario non disponibile',
+'The requested post does not exist.'=>'Il messaggio richiesto non esiste.',
+'Manage Credentials'=>'Gestisci credenziali',
+'Edit Credentials'=>'Modifica credenziali',
+'Saved'=>'Salvato',
+'Phone system reported inbound call from contact.'=>'Sistema di telefono riportato chiamata in ingresso da contatto.',
+'You are not authorized to perform this action.'=>'Non sei autorizzato ad eseguire questa azione.',
+'your feed'=>'il tuo feed',
+'{name}\'s feed'=>'{name}  &#39;s alimentazione',
+'GMail Account'=>'Account GMail',
+'Email address'=>'Indirizzo e-mail',
+'Server'=>'Server',
+'Security type'=>'Tipo di protezione',
+'secured with'=>'fissato con',
+'Email Account'=>'Account e-mail',
+'Bin Size'=>'Bin Dimensione',
+'Metric 1'=>'Metric 1',
+'Metric 2'=>'Metric 2',
+'Encryption Enabled'=>'Crittografia abilitata',
+'Date Created'=>'Data di creazione',
+'Date Last Updated'=>'Data ultimo aggiornamento',
+'Authentication Details'=>'Dettagli di autenticazione',
+'New {service}'=>'Nuovo {service}',
+'Google Account'=>'Account Google',
+'Bulk Email Account'=>'Bulk account e-mail',
+'Service Case Email Account'=>'Servizio Caso Email Account',
+'System Response Emailer'=>'Response System Emailer',
+'System Notification Emailer'=>'Sistema di notifica Emailer',
+'Notification not found'=>'Notifica non trovata',
+'A new {actionLink} associated with the contact {contactLink} has been created.'=>'Un nuovo {actionLink} associato al contatto {contactLink} è stato creato.',
+'issued the {transModelName} "{modelLink}" via email'=>'rilasciato il {transModelName} &quot; {modelLink} &quot;via e-mail',
+'{modelLink} called.'=>'{modelLink} chiamato.',
+'Call from a contact whose record could not be found.'=>'Chiamata da un contatto il cui record non è stato trovato.',
+'A lead failed to come through Lead Capture. Check {link} to recover it.'=>'Un cavo non è riuscito a venire attraverso la cattura di piombo. Controllare {link} di recuperarlo.',
+'here'=>'ecco',
+'{user} posted on {link}'=>'{user} pubblicato su {link}',
+'{user} replied on {link}'=>'{user} risposto il {link}',
+'{name} is currently on {url}'=>'{name} è attualmente in {url}',
+'{name} is currently on your website.'=>'{name} è attualmente sul vostro sito web.',
+'Invalid email address list.'=>'Email elenco di indirizzi non valido.',
+'Cannot delete. The item is in use by the system, or you do not have permission.'=>'Impossibile eliminare. La voce è in uso da parte del sistema, oppure non si dispone dell&#39;autorizzazione.',
+'You have made an invalid request, please do not repeat this.'=>'Hai fatto una richiesta non valida, si prega di non ripetere questo.',
+'If this happened by clicking a Delete button on a Grid, just go back to that page and it should work now. This is a known issue we are working to fix.'=>'Se questo è accaduto facendo clic su un pulsante Elimina in una griglia, basta tornare a quella pagina e dovrebbe funzionare adesso. Questo è un problema noto stiamo lavorando per risolvere.',
+'Your X2CRM session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.'=>'La sessione X2CRM è scaduto. È possibile selezionare "Annulla" per ignorare questo messaggio e ripristinare i dati non salvati dalla pagina corrente. In caso contrario, si verrà reindirizzati alla pagina di login.',
+'Sorry, this record doesn\'t seem to exist.'=>'Siamo spiacenti, questo record doesn  &#39;t sembra esistere.',
+'A new {modelName}, {modelLink}, has been created.'=>'Un nuovo {modelName} , {modelLink} , è stato creato.',
+'A {modelName}, {deletionText}, was created. It has been deleted.'=>'Un {modelName} , {deletionText} , è stato creato. E &#39;stato cancellato.',
+'A {modelName} was created, but it could not be found.'=>'Un {modelName} è stato creato, ma non è stato trovato.',
+'A {modelType}, {text}, was deleted'=>'Un {modelType} , {text} , è stato cancellato',
+'deleted an {modelType}, {text}.'=>'eliminato un {modelType} , {text} .',
+'An {modelType}, {text}, was deleted.'=>'Un {modelType} , {text} , è stato cancellato.',
+'issued a quote by email, but that record has been deleted.'=>'emesso un preventivo via e-mail, ma che record è stato cancellato.',
+'issued a quote by email, but that record could not be found.'=>'emesso un preventivo via e-mail, ma il record non è stato trovato.',
+'issued an invoice by email, but that record has been deleted.'=>'emessa una fattura via e-mail, ma che record è stato cancellato.',
+'issued an invoice by email, but that record could not be found.'=>'emessa una fattura via e-mail, ma il record non è stato trovato.',
+'A contact has opened {emailType}, but that contact cannot be found.'=>'Un contatto ha aperto {emailType} , ma che il contatto non può essere trovato.',
+'updated a document, {docLink}'=>'aggiornato un documento, {docLink}',
+'received an email from a {transModelName}, {modelLink}'=>'ricevuto una email da un {transModelName} , {modelLink}',
+'received an email from a {transModelName}, but that record has been deleted.'=>'ricevuto una email da un {transModelName} , ma che record è stato cancellato.',
+'received an email from a {transModelName}, but that record could not be found.'=>'ricevuto una email da un {transModelName} , ma il record non è stato trovato.',
+'A contact called, but the contact record has been deleted.'=>'Un contatto chiama, ma il record del contatto è stato cancellato.',
+'Pressing the X button on a tag will hide it from this widget. Hidden tags can be restored from your Preferences page.'=>'Premendo il tasto X su un tag verrà nasconderlo da questo widget. Tag nascosti possono essere ripristinati dalla pagina Preferenze.',
+'Displaying {start}-{end} result(s).'=>'Visualizzazione {start} - {end} risultato (s).',
+'Email Address (optional)'=>'Indirizzo Email (opzionale)',
+'User name (if different from email address)'=>'Nome utente (se diverso da indirizzo di posta elettronica)',
+'This record may be a duplicate!'=>'Questo record potrebbe essere un duplicato!',
+'Credentials stored in plain text!'=>'Credenziali archiviate in testo normale!',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'Se si dispone di un bug che non è causato da un errore effettivo (che potrebbero rendere il modulo Resoconto errori) vi preghiamo di compilare tutte le informazioni che ci può dare e clicca su "Invia". Ci esaminare la questione e se si includono anche il tuo indirizzo e-mail vi risponderemo nel più breve tempo possibile. Grazie!',
+'A new version is available! Click here to update to version {version}'=>'Una nuova versione è disponibile! Clicca qui per aggiornare alla versione {version}',
+'a quote email'=>'una email di preventivo',
+'an invoice email'=>'una e-mail fattura',
+'an email'=>'una e-mail',
+' has opened {emailType}!'=>'ha aperto {emailType} !',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit \"Send.\" We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'Se si dispone di un bug da segnalare che \ &#39;s non è causato da un errore effettivo (il che renderebbe il modulo di report di errore) si prega di compilare tutte le informazioni che ci può dare e colpire \ &quot;Invia. \&quot; Noi \&#39; ll guardiamo al problema e se si include anche il tuo indirizzo e-mail noi \ &#39;ll ottenere al più presto possibile. Grazie!',
+'issued the {transModelName} \"{modelLink}\" via email'=>'rilasciato il {transModelName} \ &quot; {modelLink} \ &quot;via e-mail',
+'What color should the event be?'=>'Di che colore dovrebbe essere l&#39;evento?',
+'Do you want to email selected users?'=>'Vuoi inviare utenti selezionati?',
+'Do you want to notify selected users?'=>'Vuoi avvisare gli utenti selezionati?',
+'Permanently delete all notifications?'=>'Eliminare definitivamente tutte le notifiche?',
+'Save to Google Drive?'=>'Salva su Google Drive?',
+'If you disable this option, administrators and users granted privilege to do so will be able to use these credentials on your behalf.'=>'Se si disattiva questa opzione, gli amministratori e gli utenti concesso il privilegio di farlo sarà in grado di utilizzare queste credenziali a vostro nome.',
+'select a type'=>'selezionare un tipo di',
+'Owned by {user}'=>'Di proprietà di {user}',
+'Maximize Widget'=>'Massimizzare Widget',
+'Minimize Widget'=>'Minimizzare Widget',
+'Sort Widget'=>'Ordina Widget',
+'Close Widget'=>'Chiudi Widget',
+'Check all'=>'Controllare tutti',
+'Uncheck all'=>'Deseleziona tutti',
+'metric(s) selected'=>'metrico (s) selezionato',
+'Per Hour'=>'Per Ora',
+'Per Day'=>'Per Giorno',
+'Per Week'=>'Per Settimana',
+'Per Month'=>'Per Mese',
+'Tasks'=>'Compiti',
+'Calls'=>'Chiamate',
+'Emails'=>'Messaggi di posta elettronica',
+'Workflow Actions'=>'Le azioni del flusso di lavoro',
+'View history item'=>'Guarda elemento della cronologia',
+'Someone'=>'Qualcuno',
+' opened a link in an email campaign and is visiting your website!'=>'aperto un link in una campagna di email ed è in visita il tuo sito web!',
+'A contact has opened a link in an email campaign, but that contact cannot be found.'=>'Un contatto ha aperto un link in una campagna e-mail, ma tale contatto non può essere trovato.',
+'Class "{class}" specified for {attribute} does not exist, so cannot create relationships with it.'=>'Classe &quot; {class} &quot;specificata per {attribute} non esiste, quindi non in grado di creare relazioni con esso.',
+'Class "{class}" specified for {attribute} does not have X2LinkableBehavior, and thus cannot be used with relationships.'=>'Classe &quot; {class} &quot;specificata per {attribute} non ha X2LinkableBehavior, e quindi non può essere utilizzato con le relazioni.',
+'Model record not found for {attribute}.'=>'Record di modello non trovato per {attribute} .',
+'Google Email Account'=>'Google account e-mail',
+'Setting'=>'Impostazione',
+'Attach a File/Photo'=>'Allega un file / foto',
+'Select at least one broadcast method'=>'Selezionare almeno un metodo di trasmissione',
 );

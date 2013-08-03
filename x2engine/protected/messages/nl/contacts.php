@@ -1,93 +1,22 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // // Contact Form Attributes
-'Verification Code'=>'Verificatie Code',
 // // Contact Attributes
-'ID'=>'ID',
-'First Name'=>'Voornaam',
-'Name'=>'Naam',
-'Full Name'=>'Volledige Naam',
-'Last Name'=>'Achternaam',
-'Title'=>'Titel',
-'Account'=>'Account',
 'Work'=>'Werk',
 'Cell'=>'Mobiel',
 'Work Phone'=>'Werk telefoon',
-'Cell Phone'=>'Mobiele telefoon',
-'Email'=>'Email',
-'Phone'=>'Telefoon',
 'Phone 2'=>'Telefoon 2',
 'IM'=>'IM',
-'Website'=>'Website',
-'Address'=>'Adres',
-'City'=>'Plaats',
-'State'=>'Staat',
 'Zip Code'=>'Postcode',
-'Country'=>'Land',
-'Visibility'=>'Zichtbaarheid',
-'Assigned To'=>'Toegewezen Aan',
-'Background Info'=>'Achtergrond Info',
-'Last Updated'=>'Laatst Bijgewerkt',
-'Updated By'=>'Bijgewerkt Door',
-'Lead Source'=>'Lead Bron',
-'Priority'=>'Prioriteit',
-'Create Date'=>'Aanmaak Datum',
-'Rating'=>'Waardering',
-'Low'=>'Laag',
-'Medium'=>'Medium',
-'High'=>'Hoog',
-'Public'=>'Publiek',
-'Private'=>'Prive',
 'Twitter'=>'Twitter',
 'Linkedin'=>'Linkedin',
 'Skype'=>'Skype',
 'Googleplus'=>'Googleplus',
 'Address 2'=>'Adres 2',
-'Postal Code'=>'Post Code',
 'Lead Date'=>'Lead Datum',
 'Confidence'=>'Vertrouwen',
-'Facebook'=>'Facebook',
-'Lead Type'=>'Lead Soort',
-'Other'=>'Anders',
 'Close Date'=>'Sluit Datum',
-'Expected Close Date'=>'Verwachte Sluiten Datum',
 'Interest'=>'Intresse',
-'Deal Value'=>'Verkoop Waarde',
 'Lead Status'=>'Lead Status',
 'Lead Score'=>'Lead Score',
 'Deal Status'=>'Verkoop Status',
@@ -96,71 +25,37 @@ return array (
 'Sales &amp; Marketing'=>'Verkoop &amp; Marketing',
 'In Person'=>'In Person',
 'Accepted'=>'Aanvaard',
-'Lost'=>'Verloren',
-'None'=>'Geen',
-'Web'=>'Web',
 'Assigned'=>'Toegewezen',
-'Won'=>'Won',
-'E-Mail'=>'E-Mail',
-'Google'=>'Google',
-'Walk In'=>'Walk In',
 'Unassigned'=>'Niet Toegewezen',
-'Working'=>'Werkzaam',
 'Dead'=>'Dood',
 'Rejected'=>'Verworpen',
-'Tags'=>'Tags',
-'Associated Contacts'=>'Gekoppelde Contacten',
 'Duplicate Check'=>'Dubbele Controleren',
-'Last Activity'=>'Laatste Activiteit',
 'Timezone'=>'Tijdzone',
 'Web Tracking Key'=>'Web Tracking Key',
 // // 
 // // List Attributes
-'Owner'=>'Eigenaar',
-'Description'=>'Omschrijving',
 'Logic Type'=>'Logische Soort',
-'Record Type'=>'Record Type',
 'Members'=>'Leden',
 'Dynamic'=>'Dynamisch',
 'Static'=>'Statisch',
 // // 
-// // List Criteria Attributes
-'List'=>'Lijst',
-'Type'=>'Soort',
-'Attribute'=>'Eigenschap',
-'Comparison'=>'Vergelijking',
-'Value'=>'Waarde',
-// // 
-// // List Criteria Comparitors
-'equals'=>'Gelijk aan',
-'greater than'=>'Groter dan',
-'less than'=>'Kleiner dan',
-'not equal to'=>'Niet gelijk aan',
-'in list'=>'In lijst',
-'not in list'=>'Niet in Lijst',
-'empty'=>'Leeg',
-'not empty'=>'Niet leeg',
-'contains'=>'Bevat',
-'does not contain'=>'Bevat niet',
-// // 
 // // Misc
-'Assigned to {name}'=>'Toegewezen aan {name}',
 'Social Networks'=>'Sociale netwerken',
 'Detail View'=>'Detail View',
 'Simple View'=>'Eenvoudige View',
-'Contact Info'=>'Contact Info',
 'Opportunities &amp; Marketing'=>'Kansen &amp; Marketing',
 'Social Media'=>'Sociale Media',
-'AND'=>'EN',
 'OR'=>'OF',
-'User'=>'Gebruiker',
 'Leads'=>'Leads',
 '<b>{m}</b> of <b>{n}</b>'=>'<b> {m} </b> van <b> {n} </b>',
 'Create a new Opportunity associated with this Contact.'=>'Maak een nieuwe Opportunity in verband met deze contactpersoon.',
 'Create a new Account associated with this Contact.'=>'Maak een nieuwe account is gekoppeld aan deze persoon.',
 'Create a new Service Case associated with this Contact.'=>'Maak een nieuwe dienst zaak in verband met deze contactpersoon.',
 'Link to Record'=>'Link naar Record',
-'Contact Attributes'=>'Contact Attributen',
+'Clicking this button will pull any relevant fields from the associated Account record and overwrite the Contact data for those fields.  This operation cannot be reversed.'=>'Klik op deze knop alle relevante velden van de bijbehorende accountrecord trekken en de Contact gegevens voor deze velden te overschrijven. Deze bewerking kan niet ongedaan worden gemaakt.',
+'Create a new Contact associated with this Contact.'=>'Maak een nieuwe Contact gekoppeld aan deze persoon.',
+'Create a new Contact'=>'Maak een nieuwe Contact',
+'Tag Search'=>'Tag Zoeken',
 // // 
 // // Contacts Actions
 'My Contacts'=>'Mijn Contacten',
@@ -173,30 +68,20 @@ return array (
 'Update Contact:'=>'Werk Contact:',
 'Delete Contact'=>'Contact Verwijderen',
 'Contact Lists'=>'Contact lijsten',
-'Create Lead'=>'Lead Aanmaken',
 'Share Contact'=>'Deel Contact',
-'Create'=>'Aanmaken',
 'Lists'=>'Lijst',
 'Create List'=>'Lijst Aanmaken',
-'View'=>'Bekijk',
-'Share'=>'Deel',
-'Update'=>'Bijwerken',
 'View Opportunities'=>'Bekijk kansen',
-'Delete'=>'Verwijder',
-'Show All'=>'Toon Alles',
 'Hide All'=>'Verberg Alles',
-'Show'=>'Toon',
-'Hide'=>'Verberg',
 'View Relationships'=>'Bekijk Relaties',
-'Subscribe'=>'Aanmelden',
 'View List'=>'Bekijk Lijst',
-'Share Action'=>'Deel Actie',
-'Import Contacts'=>'Contactpersonen Importeren',
 'Contact Map'=>'Contact Kaart',
 'Saved Maps'=>'Opgeslagen Kaarten',
+'Save Contact'=>'Sparen Contact',
 // // 
+'Edit List'=>'Lijst bewerken',
+'Delete List'=>'Lijst wissen',
 // // Contacts Titles
-'Contacts'=>'Contacten',
 'Manage Contacts'=>'Beheer Contacten',
 'Contact:'=>'Contact:',
 // // 
@@ -205,14 +90,41 @@ return array (
 'Import from Template'=>'Importeer uit Template',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'Om je contacten te importeren met ons template bestand, vul het template bestand in. Daarna kun je het uploaden met het onderstaande formulier.',
 'The template file can be found here:'=>'Het template bestand kan hier gevonden worden:',
-'Export to CSV'=>'Exporteer naar CSV',
 'Please click the link below to download contacts.'=>'Click de link hier onder om de contacten te downloaden.',
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Om je contact uit outlook te importeren, vul eerst het CSV bestand (DOS format) door outlook te openen en de contacten te exporteren. Vervolgens het bestand uploaden met het onderstaande formulier.',
 'Upload File'=>'Bestand Uploaden',
 'Contact Record Details'=>'Contact Record Details',
+'Import Contacts from Template'=>'Contactpersonen importeren uit Template',
+'To import your contacts, please fill out a CSV file where the first row contains the column headers for your records (e.g. first_name, last_name, title etc.).  A properly formatted example can be found below.'=>'Om uw contacten te importeren, vul dan een CSV-bestand waar de eerste rij bevat de kolomkoppen voor uw administratie (bijv. voornaam, achternaam, titel, enz.). Een goed geformatteerde voorbeeld is hieronder te vinden.',
+'The application will attempt to automatically map your column headers to our fields in the database.  If a match is not found, you will be given the option to choose one of our fields to map to, ignore the field, or create a new field within X2.'=>'De applicatie zal proberen om uw kolomkoppen automatisch toewijzen aan onze velden in de database. Als er geen overeenkomst wordt gevonden, krijgt u de optie om een ​​van onze velden in kaart te kiezen, negeer het veld, of maak een nieuw veld binnen X2.',
+'If you decide to map the "Create Date", "Last Updated", or any other explicit date field, be sure that you have a valid date format entered so that the software can convert to a UNIX Timestamp (if it is already a UNIX Timestamp even better).  Visibility should be either "1" for Public or "0" for Private (it will default to 1 if not provided).'=>'Als u besluit om de &quot;Date maken&quot;, &quot;Laatst bijgewerkt&quot;, of enige andere expliciete datumveld in kaart, zorg ervoor dat u een geldige datum formaat ingevoerd, zodat de software kan converteren naar een UNIX Timestamp (als het al een UNIX timestamp nog beter). Zichtbaarheid moeten zijn ofwel &quot;1&quot; voor Publiek en &quot;0&quot; voor Private (het wordt standaard 1 als niet verstrekt).',
+'Contacts Import'=>'Contacten importeren',
+'First, we\'ll need to make sure your fields have mapped properly for import. '=>'Eerste, \ &#39;ll moeten we ervoor zorgen dat uw velden correct hebt toegewezen voor de invoer.',
+'Below is a list of our fields, the fields you provided, and a few sample records that you are importing.'=>'Hieronder vindt u een overzicht van onze velden, de velden die u verstrekt, en een paar voorbeeld records die u importeert.',
+'If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.'=>'Als het veld ID is geselecteerd om te worden geïmporteerd, zal het hulpprogramma import proberen te pre-bestaande records te overschrijven met die ID. Niet in kaart het veld ID als u don \ &#39;t wilt dat dit gebeurt.',
+'Selecting "DO NOT MAP" will ignore the field from your CSV, and selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it.'=>'Selecteren &quot;GEEN KAART&quot; zal het veld negeren van uw CSV, en te kiezen voor &quot;CREATE NEW FIELD&quot; zal een nieuwe tekstveld binnen X2 en de map van uw veld om het te genereren.',
+'Your Field'=>'Uw Veld',
+'Our Field'=>'Onze Field',
+'Sample Contact'=>'Monster Contact',
+'[Prev]'=>'[Vorige]',
+'[Next]'=>'[Next]',
+'DO NOT MAP'=>'GEEN KAART',
+'CREATE NEW FIELD'=>'CREATE NEW FIELD',
+'Process Import Data'=>'Proces Gegevens importeren',
+'Create records for link fields?'=>'Maak records voor koppeling velden?',
+'Automatically fill certain fields?'=>'Automatisch invullen van bepaalde velden?',
+'Automatically log a comment on these records?'=>'Automatisch aanmelden een reactie op deze administratie?',
+'Assign records via lead-routing?'=>'Verslagen via lead-routing toewijzen?',
+'Import Status'=>'Import Status',
+'Process Import'=>'Proces Import',
+'Please click the button below to begin the export. Do not close this page until the export is finished, which may take some time if you have a large number of records. A counter will keep you updated on how many records have been successfully updated.'=>'Klik op onderstaande knop om de export te beginnen. Sluiten niet deze pagina totdat het exporteren voltooid is, kan enige tijd duren als u een groot aantal records. Een teller houdt u op de hoogte hoeveel records zijn met succes bijgewerkt.',
+'You are currently exporting: '=>'Je bent momenteel exporteren:',
+'Exporting <b>Contact</b> data...'=>'Exporteren <b>Contactgegevens</b> ...',
+'records from <b>Contacts</b> successfully exported.'=>'records uit <b>Contacten</b> met succes geëxporteerd.',
+'All Contact data successfully exported.'=>'Alle Contactgegevens succes geëxporteerd.',
+'Export Complete!'=>'Export Complete!',
 // // 
 // // Subscribe
-'Subscribe'=>'Aanmelden',
 'The information for {name} has changed.'=>'De informatie van {name} is bijgewerkt',
 'Receive email updates every time information for {name} changes'=>'Ontvang email updates iedere keer als de informatie van {name} is bijgewerkt.',
 'Unsubscribe'=>'Afmelden',
@@ -242,8 +154,24 @@ return array (
 'Map Name'=>'Kaart Naam',
 'Map Owner'=>'Map Eigenaar',
 'Zoom Level'=>'Zoomniveau',
-'Parameters'=>'Parameters',
 'Center Latitude'=>'Center Latitude',
 'Center Longitude'=>'Center Lengtegraad',
-'Contact'=>'Contact',
+'Web Form'=>'Web Form',
+'Import Contacts from Outlook'=>'Contacten uit Outlook importeren',
+'Remove From List'=>'Uit lijst verwijderen',
+'Today\'s Contacts'=>'Vandaag \ &#39;s Contacten',
+'Directions from Corporate'=>'Routebeschrijving vanaf Zakelijk',
+'Directions from Personal Address'=>'Routebeschrijving vanaf Persoonlijke Adres',
+'Keep This Record'=>'Houd Deze Record',
+'This operation is disabled because the data set is too large.'=>'Deze bewerking is uitgeschakeld omdat de gegevensset te groot.',
+'{dupes} records shown out of {count} records found.'=>'{dupes} verslagen getoond uit {count} registreert gevonden.',
+'Hide This Record'=>'Verberg Dit Record',
+'Delete This Record'=>'Delete This Record',
+'Contact ID'=>'Contacteer ID',
+'Latitutde'=>'Latitutde',
+'Longitude'=>'Lengte',
+'Are you sure you want to hide all other records?'=>'Weet u zeker dat u alle andere dossiers verbergen?',
+'Are you sure you want to delete all other records?'=>'Weet u zeker dat u alle andere records te verwijderen?',
+'Are you sure you want to hide this record?'=>'Weet u zeker dat u dit record wilt verbergen?',
+'Are you sure you want to delete this record?'=>'Weet u zeker dat u dit record wilt verwijderen?',
 );

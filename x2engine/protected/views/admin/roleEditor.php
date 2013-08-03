@@ -72,16 +72,17 @@ foreach($groups as $group){
 /* end x2temp */
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin','Add Role'); ?></h2></div>
+<div class="form">
 <div style="width:600px">
     <?php echo Yii::t('admin','Roles allow you to control which fields are editable on a record and by whom.  To add a role, enter the name, a list of users, and a list of fields they are allowed to view or edit.  Any field not included will be assumed to be unavailable to users of that Role.') ?>
 </div>
-<div class="form">
+
 
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'role-form',
 	'enableAjaxValidation'=>false,
         'action'=>'roleEditor',
-)); 
+));
 ?>
 <div class="row">
         <?php echo $form->labelEx($model,'name'); ?>

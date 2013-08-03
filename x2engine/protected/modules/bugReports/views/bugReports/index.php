@@ -101,13 +101,13 @@ $this->widget('application.components.X2GridView', array(
 		),
 		'description'=>array(
 			'name'=>'description',
-			'header'=>Yii::t('bugReports','Description'),
+			'header'=>Yii::t('app','Description'),
 			'value'=>'trimText($data->description)',
 			'type'=>'raw',
 		),
         'severity'=>array(
             'name'=>'severity',
-            'header'=>Yii::t('bugReports','Severity'),
+            'header'=>Yii::t('app','Severity'),
             'value'=>'X2Model::model("Dropdowns")->getDropdownValue(116,$data->severity)',
             'type'=>'raw',
         )

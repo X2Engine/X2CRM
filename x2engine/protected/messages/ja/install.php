@@ -1,39 +1,4 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Install screen
 'Install X2EngineCRM'=>'インストールX2EngineCRM',
@@ -55,7 +20,6 @@ return array (
 
 'Application Name'=>'アプリケーション名',
 'Default Language'=>'デフォルトの言語',
-'Currency'=>'通貨',
 'Admin Password'=>'管理者パスワード',
 'Confirm Password'=>'パスワードを確認',
 'Administrator Email'=>'管理者のメール',
@@ -66,21 +30,15 @@ return array (
 'This release only supports MySQL. Please create a database before installing.'=>'このリリースではMySQLのみをサポートしています。インストールする前にデータベースを作成してください。',
 'Host Name'=>'ホスト名',
 'Database Name'=>'データベース名',
-'Username'=>'ユーザー名',
-'Password'=>'パスワード',
 
 // Software updates
 'Software Updates'=>'ソフトウェアアップデート',
 'Notify me of software updates'=>'ソフトウェアの最新情報を知らせて！',
-'First Name'=>'ファーストネーム',
-'Last Name'=>'姓',
-'Email'=>'メール',
 'Company'=>'会社',
 'Position'=>'位置',
 'How you found X2EngineCRM'=>'あなたはX2Engineを見つけた方法',
 'Phone Number'=>'電話番号',
 'Subscribe to the newsletter'=>'ニュースレターを購読する',
-'Comments'=>'注釈',
 'Request a follow-up contact'=>'フォローアップの接触を要求する',
 'Software Updates'=>'ソフトウェアアップデート',
 'Please help us improve X2EngineCRM by providing the following information:'=>'私たちは、次の情報を提供することにより、X2EngineCRMを改善する手助けをしてください：',
@@ -88,12 +46,23 @@ return array (
 'Optional Information'=>'オプションの情報',
 'Could not connect to the updates server at this time.'=>'この時点でアップデートサーバーに接続できませんでした。',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'あなたは、更新を有効にせずにアプリケーションのインストールを続行し、Adminコンソールのセクション"アプリケーションの設定"の "一般設定"に入ることによって、後でもう一度試してみることができます。',
+'Product Key'=>'プロダクトキー',
+'Registration'=>'登録',
+'Software registration succeeded.'=>'ソフトウェアの登録に成功しました。',
+'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'X2Engineからソフトウェアアップデートを受け取るには、X2EngineCRMのコピーを登録してください：',
+'For support or sales inquiries, please contact us'=>'サポートや販売のお問い合わせは、お問い合わせください',
+'If different from Administrator Email'=>'管理者のメールアドレスと異なる場合',
+'Intended use of X2EngineCRM, goals, etc.'=>'X2EngineCRM、目標などの使用目的',
+'Make sure you have an active internet connection. If the problem persists, please contact us'=>'アクティブなインターネット接続を持っていることを確認してください。問題が解決しない場合は、ご連絡ください',
+'-----'=>'-----',
+'Sourceforge'=>'Sourceforgeの',
+'Github'=>'githubの',
+'News Outlet'=>'ニュースアウトレット',
 
 'Install'=>'インストール',
 
 'For help or more information - X2Engine.com'=>'ヘルプまたは詳細については、X2Engine.com',
 
-'All Rights Reserved.'=>'すべての内容は著作権を有します。',
 
 // Splash screen
 'Installation Complete!'=>'インストールが完了します！',
@@ -101,4 +70,49 @@ return array (
 'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engineは正常にWebサーバーにインストール！これで、ユーザ名"admin"とインストール中に指定したパスワードでログインできます。',
 'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'あなたがGIIのインストールを選択した場合、あなたは見つけることができるそれ<a href="index.php/gii/">ここ</a>。パスワードは、管理者パスワードと同じです。',
 
+'This directory is not writable by PHP processes run by the webserver.'=>'このディレクトリには、Webサーバによって実行PHPプロセスによって書き込み可能ではありません。',
+'PHP scripts are not permitted to run the function "chmod".'=>'PHPスクリプトは、 &quot;chmodコマンド&quot;機能を実行するために許可されていません。',
+'Time zone widget will not work'=>'タイムゾーンのウィジェットが動作しません',
+'Contact views may be inaccessible'=>'連絡先のビューはアクセスできないかもしれない',
+'Google integration will not work'=>'Googleの統合は機能しません',
+'Built-in error reporter will not work'=>'内蔵エラーレポーター動作しません',
+'The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.'=>'PHP設定オプション &quot;allow_url_fopenを&quot;が無効になっています。 CURLは、更新時にすべてのHTTP要求を行うために使用されます。',
+'This will result in the inability to import and export custom modules.'=>'これは、カスタムモジュールをインポートしてエクスポートすることができないことになります。',
+'Image previews and MIME info for uploaded files in the media module will not be available.'=>'画像のプレビューとメディアモジュールにアップロードされたファイルのMIME情報が利用できません。',
+'All other essential requirements were met.'=>'他のすべての本質的な要件が満たされた。',
+'The version of the PCRE library included in this build of PHP is {thisVer}, but {reqVer} or later is required.'=>'PHPのこのビルドに含まれているPCREライブラリのバージョンである{thisVer}が、 {reqVer}後以降が必要です。',
+'The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will not work.'=>'PHP設定オプション &quot;allow_url_fopenを&quot;が不足しているCURL拡張に加えて、無効になっています。これは、HTTP要求を行うすることが可能な方法がないことを意味しますので、ソフトウェアのアップデートは機能しません。',
+'Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will not work.'=>'このWebサーバからアップデートサーバーに到達できませんでした。これは一時的な問題かもしれません。それが解決しない場合は、ソフトウェア更新は機能しません。',
+'Could not connect to host or select database.'=>'データベースをホストするか、または選択するために接続できませんでした。',
+'cannot create tables'=>'テーブルを作成することはできません',
+'cannot insert data'=>'データを挿入することはできません',
+'cannot delete data'=>'データを削除することはできません',
+'cannot alter tables'=>'テーブルを変更することはできません',
+'cannot drop tables'=>'テーブルを削除することはできません',
+'Module "{module}" installed.'=>'モジュールには、 &quot; {module} &quot;インストールされています。',
+'Error applying initial configuration'=>'初期設定を適用エラー',
+'Could not find database configuration script'=>'データベース構成スクリプトを見つけることができませんでした',
+'Could not {stage}. SQL statement "{sql}" from {file} failed'=>'できませんでした{stage} 。 SQL文の&quot; {sql}から&quot; {file}失敗した',
+'Could not {stage}'=>'できませんでした{stage}',
+'Could not find installation stage database script'=>'インストールステージデータベーススクリプトを見つけることができませんでした',
+'Database connection error'=>'データベース接続エラー',
+'Installation completed {time}.'=>'インストールが完了した{time} 。',
+'Able to connect to database'=>'データベースに接続でき',
+'Created new tables for X2Engine'=>'X2Engineために作成された新しいテーブル',
+'Created login for admin account'=>'管理者アカウントの作成ログイン',
+'Created config file'=>'作成した設定ファイル',
+'Next Steps'=>'次のステップ',
+'Log in to app'=>'アプリにログイン',
+'Create new users'=>'新しいユーザーを作成',
+'Set location'=>'場所を設定します',
+'Explore the app'=>'アプリを探る',
+'Dropped old X2Engine tables (if any)'=>'ドロップされた古いX2Engineテーブル（もしあれば）',
+'Set up Cron Job to deal with action reminders (see readme)'=>'アクションの通知に対処するためのcronジョブを設定（readmeを参照してください）',
+'The path defined in session.save_path ({ssp}) is not writable. Uploading files via the media module will not work.'=>'session.save_pathを（で定義されたパスは、 {ssp} ）書き込み可能ではありません。メディアモジュールを経由してファイルのアップロードは動作しません。',
+'The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2CRM, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.'=>'&quot;opensslの&quot;と &quot;mcryptの&quot;ライブラリは利用できません。任意のアプリケーションの資格情報（つまり、電子メールアカウントのパスワード）をX2CRM締結されている場合、それらはプレーンテキスト（いかなる暗号化なし）でデータベースに保存されます。データベースはこれまで侵害された場合このように、これらのパスワードは、権限のない第三者が読めるようになります。',
+'Connection successful!'=>'接続に成功！',
+'This webserver can run X2CRM!'=>'このWebサーバはX2CRM実行することができます！',
+'Permissions and/or ownership of uploaded files do not permit PHP processes run by the webserver to write files.'=>'権限および/またはアップロードされたファイルの所有権は、ファイルを書き込むためにウェブサーバによって実行PHPプロセスを許可しない。',
+'The function proc_open and/or the "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.'=>'関数せるproc_openおよび/または &quot;mysqldumpを&quot;と &quot;MySQLの&quot;コマンドラインユーティリティは、このシステムでは使用できません。 X2CRMが自動的にソフトウェア更新中にそのデータベースのバックアップを作成するか、自動的に失敗した更新が発生した場合にそのデータベースをリストアすることはできません。',
+'Security captchas will not work, and the media module will not be able to detect or display the dimensions of uploaded images.'=>'セキュリティCAPTCHAのは動作しません、メディアモジュールは、アップロードした画像の大きさを検出したり、表示することができません。',
 );

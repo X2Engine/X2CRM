@@ -102,12 +102,43 @@ $(function() {
 		}
 	});
 
-	$('.inlineLabel').find('input:text, textarea').focus(function() { formFieldFocus(this); }).blur(function() { formFieldBlur(this); });
-
+	$('.inlineLabel').find('input:text, textarea').focus(function() { 
+			formFieldFocus(this); 
+		}).blur(function() { 
+			formFieldBlur(this); 
+		});
 
 	// set up x2 helper tooltips
-	$('.x2-hint').qtip();
+	$('.x2-hint').qtip({
+		events: {
+			show: function (event, api) {
+				var tooltip = api.elements.tooltip;
+				var windowWidth = $(window).width ();
+				var elemWidth = $(api.elements.target).width ();
+				var elemLeft = $(api.elements.target).offset ().left;
+				var tooltipWidth = $(api.elements.tooltip).width ();
+
+				if (elemLeft + elemWidth + tooltipWidth > windowWidth) {
+
+					// flip tooltip if it would go off screen
+					console.log ('gt');
+					api.set ({
+						'position.my': 'top right',
+				    	'position.at': 'bottom right'
+					});
+				} else {
+					api.set ({
+						'position.my': 'top left',
+				    	'position.at': 'bottom right'
+					});
+				}
+			}
+		}
+
+	});
 	$('.x2-info').qtip(); // no format qtip (.x2-hint turns text blue)
+
+	$('.x2-hint')
 
 	/*
 	$(window).resize(function() {

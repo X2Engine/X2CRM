@@ -1,41 +1,5 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-'Calendar'=>'Ημερολόγιο',
 'Calendars'=>'Ημερολόγια',
 // // 
 'User Calendars'=>'Ημερολόγιο Χρήστη',
@@ -45,27 +9,24 @@ return array (
 'My Calendar Permissions'=>'Δικαιώματα Ημερολογίου',
 'User Calendar Permissions'=>'Δικαιώματα Ημερολογίου Χρήστη',
 'Google Event'=>'Συμβάν Google',
-'Contacts'=>'Επαφές',
-'Accounts'=>'Λογαριασμοί',
-'Opportunities'=>'Ευκαιρίες',
-'Products'=>'Προϊόντα',
-'Media'=>'Ενημερωτικό Υλικό',
 'View Permission'=>'Προβολή Δικαιωμάτων',
 'These users can view your calendar.'=>'Αυτοί οι χρήστες μπορούν να δούν το ημερολόγιό σας',
 'Edit Permission'=>'Επεξεργασία Δικαιωμάτων',
 'These users can edit your calendar.'=>'Αυτοί οι χρήστε μπορούν να επεξεργαστούν το ημερολογιό σας',
+'Sync My Actions To Google Calendar'=>'Συγχρονισμός Ενέργειες μου στο Google Calendar',
+'Show Actions associated with Contacts'=>'Εμφάνιση δράσεις που σχετίζονται με τις Επαφές',
+'Show Actions associated with Accounts'=>'Εμφάνιση δράσεις που συνδέονται με τους λογαριασμούς',
+'Show Actions associated with Opportunities'=>'Εμφάνιση δράσεις που σχετίζονται με τις ευκαιρίες',
+'Show Actions associated with Quotes'=>'Εμφάνιση δράσεις που σχετίζονται με Αποσπάσματα',
+'Show Actions associated with Products'=>'Εμφάνιση δράσεις που σχετίζονται με τα προϊόντα',
+'Show Actions associated with Media'=>'Εμφάνιση δράσεις που σχετίζονται με το Media',
+'Show Completed Actions'=>'Εμφάνιση Ολοκληρωμένες Δράσεις',
+'Show Emails'=>'Εμφάνιση Emails',
+'Show Attachments'=>'Εμφάνιση Συνημμένα',
 // // 
-'Completed'=>'Ολοκληρωμένο',
-'Quotes'=>'Δηλώσεις',
-'Email'=>'Email',
 'Attachment'=>'Συνημμένο',
 // // 
-'List'=>'Λίστα',
-'Delete'=>'Διαγραφή',
-'Create'=>'Δημιουργία',
 // // button text
-'Update'=>'Ενημέρωση',
-'today'=>'σήμερα',
 'month'=>'μήνας',
 'week'=>'εβδομάδα',
 'day'=>'ημέρα',
@@ -75,7 +36,7 @@ return array (
 'February'=>'Φεβρουάριος',
 'March'=>'Μάρτιος',
 'April'=>'Απρίλιος',
-'May'=>'Μάϊος',
+'May'=>'Μαι',
 'June'=>'Ιούνιος',
 'July'=>'Ιούλιος',
 'August'=>'Αύγουστος',
@@ -115,4 +76,92 @@ return array (
 'Thu'=>'Πεμ',
 'Fri'=>'Παρ',
 'Sat'=>'Σαβ',
+'Create Shared Calendar'=>'Δημιουργήστε ένα κοινόχρηστο ημερολόγιο',
+'Don\'t link to Google Calendar'=>'T σύνδεσμο Don \ &#39;στο Google Calendar',
+'Link to Google Calendar'=>'Σύνδεση με Google Calendar',
+'Back To User List'=>'Επιστροφή στη λίστα χρηστών',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'Οι ενέργειές σας συγχρονίζονται με το Google Calendar &quot; {calendarName} &quot;.',
+'Don\'t Sync My Actions To Google Calendar'=>'Don \ &#39;t Sync Ενέργειες μου στο Google Calendar',
+'Google Integration is not configured on this server.'=>'Google Ολοκλήρωσης δεν έχει ρυθμιστεί σε αυτόν το διακομιστή.',
+'Once'=>'Μια φορά',
+'Yearly'=>'Ετήσια',
+'Google Calendar'=>'Google Calendar',
+'Google Feed'=>'Google Feed',
+'Google Calendar Name'=>'Google Calendar Όνομα',
+'View Association'=>'Δείτε Association',
+'User Calendars'=>'Ημερολόγια χρήστη',
+'Filter'=>'Φιλτράρισμα',
+'Show Actions associated with Contacts'=>'Εμφάνιση δράσεις που σχετίζονται με τις Επαφές',
+'Show Actions associated with Accounts'=>'Εμφάνιση δράσεις που συνδέονται με τους λογαριασμούς',
+'Show Actions associated with Opportunities'=>'Εμφάνιση δράσεις που σχετίζονται με τις ευκαιρίες',
+'Show Actions associated with Quotes'=>'Εμφάνιση δράσεις που σχετίζονται με Αποσπάσματα',
+'Show Actions associated with Products'=>'Εμφάνιση δράσεις που σχετίζονται με τα προϊόντα',
+'Show Actions associated with Media'=>'Εμφάνιση δράσεις που σχετίζονται με το Media',
+'Show Completed Actions'=>'Εμφάνιση Ολοκληρωμένες Δράσεις',
+'Show Emails'=>'Εμφάνιση Emails',
+'Show Attachments'=>'Εμφάνιση Συνημμένα',
+'Group Calendars'=>'Ημερολόγια Ομάδα',
+'Google Calendars'=>'Google Ημερολόγια',
+'My Calendar Permissions'=>'Δικαιώματα Ημερολόγιο μου',
+'Sync My Actions To Google Calendar'=>'Συγχρονισμός Ενέργειες μου στο Google Calendar',
+'Create Shared Calendar'=>'Δημιουργήστε ένα κοινόχρηστο ημερολόγιο',
+'Don\'t link to Google Calendar'=>'T σύνδεσμο Don \ &#39;στο Google Calendar',
+'Link to Google Calendar'=>'Σύνδεση με Google Calendar',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'Οι ενέργειές σας συγχρονίζονται με το Google Calendar &quot; {calendarName} &quot;.',
+'Don\'t Sync My Actions To Google Calendar'=>'Don \ &#39;t Sync Ενέργειες μου στο Google Calendar',
+'Google Integration is not configured on this server.'=>'Google Ολοκλήρωσης δεν έχει ρυθμιστεί σε αυτόν το διακομιστή.',
+'User Calendar Permissions'=>'Δικαιώματα Ημερολόγιο Χρήστη',
+'Google Event'=>'Google Event',
+'month'=>'μήνας',
+'week'=>'εβδομάδα',
+'day'=>'ημέρα',
+'January'=>'Ιανουάριος',
+'February'=>'Φεβρουάριος',
+'March'=>'Μάρτιος',
+'April'=>'Απρίλιος',
+'May'=>'Μάιος',
+'June'=>'Ιούνιος',
+'July'=>'Ιούλιος',
+'August'=>'Αύγουστος',
+'September'=>'Σεπτέμβριος',
+'October'=>'Οκτώβριος',
+'November'=>'Νοέμβριος',
+'December'=>'Δεκέμβριος',
+'Jan'=>'Ιαν',
+'Feb'=>'Φεβρουάριος',
+'Mar'=>'Mar',
+'Apr'=>'Απρίλιος',
+'Jun'=>'Ιούνιος',
+'Jul'=>'Ιούλιος',
+'Aug'=>'Αύγουστος',
+'Sep'=>'Σεπτέμβριος',
+'Oct'=>'Οκτώβριος',
+'Nov'=>'Νοέμβριος',
+'Dec'=>'Δεκέμβριος',
+'Sunday'=>'Κυριακή',
+'Monday'=>'Δευτέρα',
+'Tuesday'=>'Τρίτη',
+'Wednesday'=>'Τετάρτη',
+'Thursday'=>'Πέμπτη',
+'Friday'=>'Παρασκευή',
+'Saturday'=>'Σάββατο',
+'Sun'=>'Ήλιος',
+'Mon'=>'Mon',
+'Tue'=>'Tue',
+'Wed'=>'Παντρεύομαι',
+'Thu'=>'Thu',
+'Fri'=>'Παρ',
+'Sat'=>'Sat',
+'View Permission'=>'Δείτε άδεια',
+'These users can view {fullname}\'s calendar.'=>'Οι χρήστες μπορούν να δουν {fullname} Ημερολόγιο \ &#39;s.',
+'Edit Permission'=>'Επεξεργασία άδεια',
+'These users can edit {fullname}\'s calendar.'=>'Οι χρήστες μπορούν να επεξεργαστούν {fullname} Ημερολόγιο \ &#39;s.',
+'Back To User List'=>'Επιστροφή στη λίστα χρηστών',
+'These users can view your calendar.'=>'Οι χρήστες μπορούν να δουν το ημερολόγιό σας.',
+'These users can edit your calendar.'=>'Οι χρήστες μπορούν να επεξεργαστούν το ημερολόγιό σας.',
+'Google Calendar'=>'Google Calendar',
+'Google Feed'=>'Google Feed',
+'Google Calendar Name'=>'Google Calendar Όνομα',
+'Once'=>'Μια φορά',
+'Yearly'=>'Ετήσια',
 );

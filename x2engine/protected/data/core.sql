@@ -46,6 +46,7 @@ CREATE TABLE x2_admin(
 	rrId					INT				DEFAULT 0,
 	leadDistribution		VARCHAR(255),
 	onlineOnly				TINYINT,
+	emailBulkAccount		INT				NOT NULL DEFAULT -1,
 	emailFromName			VARCHAR(255)	NOT NULL DEFAULT "X2CRM",
 	emailFromAddr			VARCHAR(255)	NOT NULL DEFAULT '',
 	emailBatchSize			INT				NOT NULL DEFAULT 200,
@@ -73,6 +74,7 @@ CREATE TABLE x2_admin(
 	workflowBackdateReassignment	TINYINT		NOT NULL DEFAULT 1,
 	unique_id		VARCHAR(32) NOT NULL DEFAULT "none",
 	edition			VARCHAR(10) NOT NULL DEFAULT "opensource",
+	serviceCaseEmailAccount		INT NOT NULL DEFAULT -1,
 	serviceCaseFromEmailAddress	TEXT,
 	serviceCaseFromEmailName	TEXT,
 	serviceCaseEmailSubject		TEXT,
@@ -592,4 +594,15 @@ CREATE TABLE `x2_view_log` (
 	recordType				VARCHAR(255),
 	recordId				INT,
 	timestamp				BIGINT
+) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_chart_settings;
+/*&*/
+CREATE TABLE `x2_chart_settings` (
+  `id`                      int(11)         NOT NULL AUTO_INCREMENT,
+  `userId`                  int(11)         NOT NULL,
+  `name`                    varchar(100)    NOT NULL,
+  `settings`                 TEXT,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `userId` (`userId`,`name`)
 ) COLLATE = utf8_general_ci;

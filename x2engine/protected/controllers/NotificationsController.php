@@ -102,7 +102,7 @@ class NotificationsController extends CController {
                     (int)$events[$i]->id,
                     (int)$events[$i]->timestamp,
                     $userLink,
-                    $events[$i]->getText(true),
+                    $events[$i]->getText(array ('truncated' =>true)),
                     Formatter::formatFeedTimestamp($events[$i]->timestamp)
                 );
             }
@@ -126,6 +126,7 @@ class NotificationsController extends CController {
 		// import all the models
 		Yii::import('application.models.Social');
 		Yii::import('application.models.Profile');
+		Yii::import('application.models.Events');
 		Yii::import('application.models.Notification');
 		Yii::import('application.models.Fields');
         Yii::import('application.components.X2WebUser');

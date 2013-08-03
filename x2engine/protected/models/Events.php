@@ -36,7 +36,7 @@
  *****************************************************************************************/
 
 /**
- * This is the model class for table "x2_imports".
+ * This is the model class for table "x2_events".
  * @package X2CRM.models
  */
 class Events extends CActiveRecord {
@@ -110,13 +110,19 @@ class Events extends CActiveRecord {
         return Yii::t('app', $model);
     }
 
-    public function getText($truncated = false){
+    public function getText(array $params = array ()) {
+		$truncated = (array_key_exists ('truncated', $params)) ? $params['truncated'] : false;
+		$requireAbsoluteUrl = (array_key_exists ('requireAbsoluteUrl', $params)) ? $params['requireAbsoluteUrl'] : false;
         $text = "";
         $authorText = "";
         if(Yii::app()->user->getName() == $this->user){
-            $authorText = CHtml::link(Yii::t('app', 'You'), array('profile/view', 'id' => Yii::app()->user->getId()))." ";
+            //$authorText = CHtml::link(Yii::t('app', 'You'), array('profile/view', 'id' => Yii::app()->user->getId()))." ";
+            $authorText = CHtml::link(Yii::t('app', 'You'), Yii::app()->controller->createAbsoluteUrl ('profile/view', array ('id' => Yii::app()->user->getId())));
         }else{
-            $authorText = User::getUserLinks($this->user)." ";
+            $authorText = User::getUserLinks($this->user);
+        }
+        if(!empty($authorText)){
+            $authorText.=" ";
         }
         switch($this->type){
             case 'notif':
@@ -138,20 +144,30 @@ class Events extends CActiveRecord {
                             }
                         }
                         if($actionFlag){
-                            if(!empty($authorText)){
-                                $text = $authorText.Yii::t('app', "created a new {actionLink} associated with the contact {contactLink}", array('{actionLink}' => CHtml::link(Events::parseModelName($this->associationType), '#', array('class' => 'action-frame-link', 'data-action-id' => $this->associationId)),
-                                            '{contactLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType))));
-                            }else{
-                                $text = Yii::t('app', "A new {actionLink} associated with the contact {contactLink} has been created.", array('{actionLink}' => CHtml::link(Events::parseModelName($this->associationType), '#', array('class' => 'action-frame-link', 'data-action-id' => $this->associationId)),
-                                            '{contactLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType))));
-                            }
+				switch($action->type) {
+					case 'call':
+						$authorText = empty($authorText) ? Yii::t('app','Someone') : $authorText;
+						$text = Yii::t('app','{authorText} logged a call with {contactLink}: "{logAbbrev}"',array('{authorText}'=>$authorText,'{contactLink}'=>X2Model::getModelLink($action->associationId,ucfirst($action->associationType),$requireAbsoluteUrl),'{logAbbrev}'=>Formatter::truncateText($action->actionDescription)));
+						break;
+					case 'note':
+						$authorText = empty($authorText) ? Yii::t('app','Someone') : $authorText;
+						$text = Yii::t('app','{authorText} posted a comment on {contactLink}: "{noteAbbrev}"',array('{authorText}'=>$authorText,'{contactLink}'=>X2Model::getModelLink($action->associationId,ucfirst($action->associationType),$requireAbsoluteUrl),'{noteAbbrev}'=>Formatter::truncateText($action->actionDescription)));
+						break;
+					default:
+						if(!empty($authorText)){
+	        		                        $text = $authorText.Yii::t('app', "created a new {actionLink} associated with the contact {contactLink}", array('{actionLink}' => CHtml::link(Events::parseModelName($this->associationType), '#', array('class' => 'action-frame-link', 'data-action-id' => $this->associationId)),'{contactLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl)));
+						}else{
+							$text = Yii::t('app', "A new {actionLink} associated with the contact {contactLink} has been created.", array('{actionLink}' => CHtml::link(Events::parseModelName($this->associationType), '#', array('class' => 'action-frame-link', 'data-action-id' => $this->associationId)),'{contactLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl)));
+						}
+
+				}
                         }else{
                             if(!empty($authorText)){
                                 $text = $authorText.Yii::t('app', "created a new {modelName}, {modelLink}", array('{modelName}' => Events::parseModelName($this->associationType),
-                                            '{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType)));
+                                            '{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType, $requireAbsoluteUrl)));
                             }else{
                                 $text = Yii::t('app', "A new {modelName}, {modelLink}, has been created.", array('{modelName}' => Events::parseModelName($this->associationType),
-                                            '{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType)));
+                                            '{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType, $requireAbsoluteUrl)));
                             }
                         }
                     }else{
@@ -199,31 +215,36 @@ class Events extends CActiveRecord {
                 }
                 break;
             case 'record_deleted':
-                if(class_exists($this->associationType) && (!$truncated && (Yii::app()->params->profile->language != 'en' && !empty(Yii::app()->params->profile->language)) || (strpos($this->associationType, 'A') !== 0 && strpos($this->associationType, 'E') !== 0 && strpos($this->associationType, 'I') !== 0 && strpos($this->associationType, 'O') !== 0 && strpos($this->associationType, 'U') !== 0))){
-                    if(!empty($authorText)){
-                        $text = $authorText.Yii::t('app', "deleted a {modelType}, {text}", array(
-                                    '{modelType}' => Events::parseModelName($this->associationType),
-                                    '{text}' => $this->text
-                                ));
-                    }else{
-                        $text = Yii::t('app', "A {modelType}, {text}, was deleted", array(
-                                    '{modelType}' => Events::parseModelName($this->associationType),
-                                    '{text}' => $this->text
-                                ));
-                    }
-                }else{
-                    if(!empty($authorText)){
-                        $text = $authorText.Yii::t('app', "deleted an {modelType}, {text}.", array(
-                                    '{modelType}' => Events::parseModelName($this->associationType),
-                                    '{text}' => $this->text
-                                ));
-                    }else{
-                        $text = Yii::t('app', "An {modelType}, {text}, was deleted.", array(
-                                    '{modelType}' => Events::parseModelName($this->associationType),
-                                    '{text}' => $this->text
-                                ));
-                    }
-                }
+                if (class_exists ($this->associationType)) {
+					if (((Yii::app()->params->profile !== null && Yii::app()->params->profile->language != 'en' && !empty(Yii::app()->params->profile->language)) ||
+					     (Yii::app()->params->profile === null && Yii::app()->language !== 'en')) ||
+						(strpos($this->associationType, 'A') !== 0 && strpos($this->associationType, 'E') !== 0 && strpos($this->associationType, 'I') !== 0 &&
+						 strpos($this->associationType, 'O') !== 0 && strpos($this->associationType, 'U') !== 0)) {
+	                    if(!empty($authorText)){
+	                        $text = $authorText.Yii::t('app', "deleted a {modelType}, {text}", array(
+	                                    '{modelType}' => Events::parseModelName($this->associationType),
+	                                    '{text}' => $this->text
+	                                ));
+	                    }else{
+	                        $text = Yii::t('app', "A {modelType}, {text}, was deleted", array(
+	                                    '{modelType}' => Events::parseModelName($this->associationType),
+	                                    '{text}' => $this->text
+	                                ));
+	                    }
+	                }else{
+	                    if(!empty($authorText)){
+	                        $text = $authorText.Yii::t('app', "deleted an {modelType}, {text}.", array(
+	                                    '{modelType}' => Events::parseModelName($this->associationType),
+	                                    '{text}' => $this->text
+	                                ));
+	                    }else{
+	                        $text = Yii::t('app', "An {modelType}, {text}, was deleted.", array(
+	                                    '{modelType}' => Events::parseModelName($this->associationType),
+	                                    '{text}' => $this->text
+	                                ));
+	                    }
+	                }
+				}
                 break;
             case 'workflow_start':
                 $action = X2Model::model('Actions')->findByPk($this->associationId);
@@ -301,7 +322,8 @@ class Events extends CActiveRecord {
                 break;
             case 'feed':
                 if(Yii::app()->user->getName() == $this->user){
-                    $author = CHtml::link(Yii::t('app', 'You'), array('profile/view', 'id' => Yii::app()->user->getId()));
+                    //$author = CHtml::link(Yii::t('app', 'You'), array('profile/view', 'id' => Yii::app()->user->getId()));
+            		$author = CHtml::link(Yii::t('app', 'You'), Yii::app()->controller->createAbsoluteUrl ('profile/view', array ('id' => Yii::app()->user->getId())))." ";
                 }else{
                     $author = User::getUserLinks($this->user);
                 }
@@ -383,24 +405,33 @@ class Events extends CActiveRecord {
             case 'email_opened':
                 switch($this->subtype){
                     case 'quote':
-                        $emailType = 'a quote email';
+                        $emailType = Yii::t('app','a quote email');
                         break;
                     case 'invoice':
-                        $emailType = 'an invoice email';
+                        $emailType = Yii::t('app','an invoice email');
                         break;
                     default:
-                        $emailType = 'an email';
+                        $emailType = Yii::t('app','an email');
                         break;
                 }
                 if(count(X2Model::model($this->associationType)->findAllByPk($this->associationId)) > 0){
-                    $text = X2Model::getModelLink($this->associationId, $this->associationType).Yii::t('app', " has opened {emailType}!", array(
-                                '{emailType}' => Yii::t('app', $emailType),
+                    $text = X2Model::getModelLink($this->associationId, $this->associationType).Yii::t('app',' has opened {emailType}!', array(
+                                '{emailType}' => $emailType,
                                 '{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType)
                             ));
                 }else{
-                    $text = Yii::t('app', "A contact has opened {emailType}, but that contact cannot be found.", array('{emailType}' => Yii::t('app', $emailType)));
+                    $text = Yii::t('app', "A contact has opened {emailType}, but that contact cannot be found.", array('{emailType}' => $emailType));
                 }
                 break;
+	    case 'email_clicked':
+	    	 if(count(X2Model::model($this->associationType)->findAllByPk($this->associationId)) > 0){
+                    $text = X2Model::getModelLink($this->associationId, $this->associationType).Yii::t('app',' opened a link in an email campaign and is visiting your website!', array(
+                                '{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType)
+                            ));
+                }else{
+                    $text = Yii::t('app', "A contact has opened a link in an email campaign, but that contact cannot be found.");
+                }
+		break;
             case 'web_activity':
                 if(count(X2Model::model($this->associationType)->findAllByPk($this->associationId)) > 0){
                     $text = X2Model::getModelLink($this->associationId, $this->associationType)." ".Yii::t('app', "is currently on your website!");
@@ -423,12 +454,14 @@ class Events extends CActiveRecord {
                 $action = X2Model::model('Actions')->findByPk($this->associationId);
                 if(isset($action)){
                     $text = Yii::t('app', "{calendarText} event: {actionDescription}", array(
-                                '{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), array('calendar/index')),
+                                //'{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), array('calendar/index')),
+                                '{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), Yii::app()->controller->createAbsoluteUrl ('calendar/index')),
                                 '{actionDescription}' => $action->actionDescription
                             ));
                 }else{
                     $text = Yii::t('app', "{calendarText} event: event not found.", array(
-                                '{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), array('calendar/index')),
+                                //'{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), array('calendar/index')),
+                                '{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), Yii::app()->controller->createAbsoluteUrl ('calendar/index')),
                             ));
                 }
                 break;
@@ -446,7 +479,7 @@ class Events extends CActiveRecord {
                 $action = X2Model::model('Actions')->findByPk($this->associationId);
                 if(isset($action)){
                     $text = $authorText.Yii::t('app', "completed the following action: {actionDescription}", array(
-                                '{actionDescription}' => X2Model::getModelLink($this->associationId, $this->associationType)
+                                '{actionDescription}' => X2Model::getModelLink($this->associationId, $this->associationType, $requireAbsoluteUrl)
                             ));
                 }else{
                     $text = $authorText.Yii::t('app', "completed an action, but the record could not be found.");

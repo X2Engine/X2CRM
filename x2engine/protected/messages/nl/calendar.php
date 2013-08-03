@@ -1,43 +1,7 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-'Calendar'=>'Kalender',
 'Calendars'=>'Kalenders',
-
+// // 
 'User Calendars'=>'Gebruiker Kalenders',
 'Group Calendars'=>'Groep Kalenders',
 'Google Calendars'=>'Google Kalenders',
@@ -45,23 +9,29 @@ return array (
 'My Calendar Permissions'=>'Mijn Kalender Permissies',
 'User Calendar Permissions'=>'Gebruikers Kalender Permissies',
 'Google Event'=>'Google Evenement',
-
-'Completed'=>'Afgerond',
-'Quotes'=>'Offertes',
-'Email'=>'Email',
+'View Permission'=>'Bekijk Toestemming',
+'These users can view your calendar.'=>'Deze gebruikers kunnen uw agenda bekijken.',
+'Edit Permission'=>'Toestemming bewerken',
+'These users can edit your calendar.'=>'Deze gebruikers kunnen uw agenda bewerken.',
+'Sync My Actions To Google Calendar'=>'Sync My Acties om Google Calendar',
+'Show Actions associated with Contacts'=>'Toon Acties in verband met Contacten',
+'Show Actions associated with Accounts'=>'Toon Acties in verband met accounts',
+'Show Actions associated with Opportunities'=>'Toon Acties in verband met Kansen',
+'Show Actions associated with Quotes'=>'Toon Acties in verband met Quotes',
+'Show Actions associated with Products'=>'Toon Acties in verband met producten',
+'Show Actions associated with Media'=>'Toon Acties in verband met Media',
+'Show Completed Actions'=>'Toon Voltooide Acties',
+'Show Emails'=>'Toon Emails',
+'Show Attachments'=>'Toon Bijlagen',
+// // 
 'Attachment'=>'Bijlage',
-
-'List'=>'Lijst',
-'Delete'=>'Verwijder',
-'Create'=>'Aanmaken',
-// button text
-'Update'=>'Bijwerken',
-'today'=>'Vandaag',
+// // 
+// // button text
 'month'=>'Maand',
 'week'=>'Week',
 'day'=>'Dag',
-
-// month names
+// // 
+// // month names
 'January'=>'Januari',
 'February'=>'Februari',
 'March'=>'Maart',
@@ -74,8 +44,8 @@ return array (
 'October'=>'Oktober',
 'November'=>'November',
 'December'=>'December',
-
-// short month names
+// // 
+// // short month names
 'Jan'=>'Jan',
 'Feb'=>'Feb',
 'Mar'=>'Mar',
@@ -88,8 +58,8 @@ return array (
 'Oct'=>'Okt',
 'Nov'=>'Nov',
 'Dec'=>'Dec',
-
-// day names
+// // 
+// // day names
 'Sunday'=>'Zondag',
 'Monday'=>'Maandag',
 'Tuesday'=>'Dinsdag',
@@ -97,8 +67,8 @@ return array (
 'Thursday'=>'Donderdag',
 'Friday'=>'Vrijdag',
 'Saturday'=>'Zondag',
-
-// short day names,
+// // 
+// // short day names,
 'Sun'=>'Zon',
 'Mon'=>'Maa',
 'Tue'=>'Din',
@@ -106,4 +76,92 @@ return array (
 'Thu'=>'Don',
 'Fri'=>'Vri',
 'Sat'=>'Zat',
+'Create Shared Calendar'=>'Maak Gedeelde Kalender',
+'Don\'t link to Google Calendar'=>'Don \ &#39;t link naar Google Calendar',
+'Link to Google Calendar'=>'Link naar Google Calendar',
+'Back To User List'=>'Terug naar gebruikerslijst',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'Uw acties worden gesynchroniseerd met de Google Agenda &quot; {calendarName} &quot;.',
+'Don\'t Sync My Actions To Google Calendar'=>'Don \ &#39;t Sync My Acties om Google Calendar',
+'Google Integration is not configured on this server.'=>'Google-integratie is niet geconfigureerd op deze server.',
+'Once'=>'Eenmaal',
+'Yearly'=>'Jaar-',
+'Google Calendar'=>'Google Agenda',
+'Google Feed'=>'Google Feed',
+'Google Calendar Name'=>'Google Calendar Naam',
+'View Association'=>'Bekijk Association',
+'User Calendars'=>'Gebruiker Kalenders',
+'Filter'=>'Filteren',
+'Show Actions associated with Contacts'=>'コンタクトに関連付けられたアクションを表示',
+'Show Actions associated with Accounts'=>'アカウントに関連付けられたアクションを表示',
+'Show Actions associated with Opportunities'=>'機会に関連付けられたアクションを表示',
+'Show Actions associated with Quotes'=>'引用に関連付けられたアクションを表示',
+'Show Actions associated with Products'=>'製品に関連付けられたアクションを表示',
+'Show Actions associated with Media'=>'メディアに関連付けられたアクションを表示',
+'Show Completed Actions'=>'完了したアクションを表示',
+'Show Emails'=>'電子メールを表示する',
+'Show Attachments'=>'添付ファイルを表示',
+'Group Calendars'=>'Groep Kalenders',
+'Google Calendars'=>'Google-agenda',
+'My Calendar Permissions'=>'Mijn Kalender Permissions',
+'Sync My Actions To Google Calendar'=>'Googleカレンダーに自分のアクションを同期',
+'Create Shared Calendar'=>'共有カレンダーを作成',
+'Don\'t link to Google Calendar'=>'Googleカレンダーへドン\ &#39;トンリンク',
+'Link to Google Calendar'=>'Googleカレンダーへのリンク',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'あなたの行動は、 &quot;Googleカレンダーに同期されている{calendarName} &quot;。',
+'Don\'t Sync My Actions To Google Calendar'=>'ドン\ &#39;tはGoogleカレンダーに自分のアクションを同期',
+'Google Integration is not configured on this server.'=>'Googleとの統合は、このサーバー上で構成されていません。',
+'User Calendar Permissions'=>'Gebruikers Kalender Permissions',
+'Google Event'=>'Google Event',
+'month'=>'月',
+'week'=>'週',
+'day'=>'日',
+'January'=>'1月',
+'February'=>'2月',
+'March'=>'3月',
+'April'=>'4月',
+'May'=>'5月',
+'June'=>'6月',
+'July'=>'7月',
+'August'=>'8月',
+'September'=>'9月',
+'October'=>'10月',
+'November'=>'11月',
+'December'=>'12月',
+'Jan'=>'ヤン',
+'Feb'=>'2月',
+'Mar'=>'マー',
+'Apr'=>'4月',
+'Jun'=>'ジュン',
+'Jul'=>'7月',
+'Aug'=>'8月',
+'Sep'=>'9月',
+'Oct'=>'10月',
+'Nov'=>'11月',
+'Dec'=>'12月',
+'Sunday'=>'日曜日',
+'Monday'=>'月曜日',
+'Tuesday'=>'火曜日',
+'Wednesday'=>'水曜日',
+'Thursday'=>'木曜日',
+'Friday'=>'金曜日',
+'Saturday'=>'土曜日',
+'Sun'=>'サン',
+'Mon'=>'モン',
+'Tue'=>'火曜',
+'Wed'=>'結婚',
+'Thu'=>'木',
+'Fri'=>'金',
+'Sat'=>'土',
+'View Permission'=>'Bekijk Toestemming',
+'These users can view {fullname}\'s calendar.'=>'이러한 사용자는 볼 수 {fullname} \ &#39;의 달력.',
+'Edit Permission'=>'Toestemming bewerken',
+'These users can edit {fullname}\'s calendar.'=>'이러한 사용자는 편집 할 수 있습니다 {fullname} \ &#39;의 달력.',
+'Back To User List'=>'ユーザーリストに戻る',
+'These users can view your calendar.'=>'Deze gebruikers kunnen uw agenda bekijken.',
+'These users can edit your calendar.'=>'Deze gebruikers kunnen uw agenda bewerken.',
+'Google Calendar'=>'Googleカレンダー',
+'Google Feed'=>'Googleのフィード',
+'Google Calendar Name'=>'Googleカレンダー名',
+'Once'=>'一度',
+'Yearly'=>'毎年',
 );

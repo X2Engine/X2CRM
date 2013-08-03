@@ -47,9 +47,9 @@ $this->actionMenu = $this->formatMenu(array(
 
 ?>
 
-<div class="page-title icon contacts"><h2><?php echo Yii::t('contacts','Update List'); ?></h2></div>
+<div class="page-title icon contacts"><h2><?php echo Yii::t('contacts','Edit List'); ?></h2></div>
 
-<?php 
+<?php
 echo $this->renderPartial('_listForm', array(
 	'model'=>$model,
 	'criteriaModels'=>$criteriaModels,
@@ -58,5 +58,5 @@ echo $this->renderPartial('_listForm', array(
 	'users'=>$users,
 	'listTypes'=>$listTypes,
 	'itemModel'=>$itemModel,
-)); 
-?> 
+));
+?>

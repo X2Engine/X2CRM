@@ -72,10 +72,17 @@ $(function() {
 	$('#content-widgets').sortable({
 		update: function(event, ui) {
 			$.post(yii.scriptUrl+'/site/reorderWidgets', $(this).sortable('serialize') + '&block=center');
-		}
+		},
+		handle: $(this).find ('.x2widget-header')
 	});
 	
-	$('.x2-widget-menu-item').draggable({revert: 'invalid', helper:'clone', revertDuration:200, appendTo:'#widget-menu',iframeFix:true});
+	$('.x2-widget-menu-item').draggable({
+		revert: 'invalid', 
+		helper:'clone', 
+		revertDuration:200, 
+		appendTo:'#widget-menu',
+		iframeFix:true
+	});
 	
 	$('.x2-widget-menu-item').click(function() {
 		return handleWidgetMenuItemClick($(this));
@@ -184,7 +191,15 @@ $.fn.minimizeWidget = function() {
 				widget.find('.x2widget-container').slideUp();
 				widget.find('.x2widget-minimize').html('<img src="'+yii.themeBaseUrl+'/images/icons/Expand_Widget.png" />');
 			} else {
-				widget.find('.x2widget-container').slideDown();		
+				widget.find('.x2widget-container').slideDown({
+					done: function () {
+						if (widgetName === 'ActionHistoryChart') {
+
+							// event detected by x2chart.js
+							$(document).trigger ('chartWidgetMaximized'); 
+						}
+					}
+				});		
 				widget.find('.x2widget-minimize').html('<img src="'+yii.themeBaseUrl+'/images/icons/Collapse_Widget.png" />');
 			}
 		});

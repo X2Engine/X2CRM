@@ -1,61 +1,12 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Profile Attributes
-'ID'=>'ID',
-'Full Name'=>'Vollständiger Name',
-'Username'=>'Benutzername',
 'Tag Line'=>'Untertitel',
-'Office Phone'=>'Büro Telefon',
-'Cell Phone'=>'Handy',
-'Email Address'=>'E-Mail Adresse',
-'Notes'=>'Hinweise',
-'Status'=>'Status',
-'Description'=>'Beschreibung',
-'Last Updated'=>'Zuletzt Aktualisiert',
-'Updated By'=>'Aktualisiert Von',
 'Allow users to post on your profile?'=>'Benutzern erlauben, auf Ihrem Profil zu schreiben?',
 'Language'=>'Sprache',
-'Time Zone'=>'Zeitzone',
 'Enable group chat?'=>'Aktiviere Gruppen-Chat?',
 'Widgets'=>'Widgets',
-'Background Color'=>'Hintergrundfarbe',
 'Menu Color'=>'Menü-Hintergrundfarbe',
-'Menu Text Color'=>'Menu Textfarbe',
 'Background Image'=>'Hintergrundbild',
 'Start Page'=>'Startseite',
 'Results Per Page'=>'Ergebnisse Pro Seite',
@@ -74,7 +25,6 @@ return array (
 'Enable Full Width Layout'=>'Aktivieren Sie Volle Breite Layout-',
 'Google ID'=>'Google ID',
 'Signature'=>'Unterschrift',
-'Address'=>'Adresse',
 'Use my signature'=>'Verwenden meiner Unterschrift',
 'Use default'=>'Standardeinstellungen verwenden',
 'Old Password'=>'Altes Passwort',
@@ -85,11 +35,11 @@ return array (
 'View Profile'=>'Profil Anzeigen',
 'Update Profile'=>'Profil Aktualisieren',
 'Change Settings'=>'Einstellungen Ändern',
-'Social Feed'=>'Soziale-Feed',
 'People'=>'Menschen',
 'Change Personal Settings'=>'Ändern Sie Ihre Persönliche Einstellungen',
 'Change Password'=>'Kennwort ändern',
 'Reset Widgets'=>'Zurücksetzen Widgets',
+'Manage Apps'=>'Apps verwalten',
 
 // Profile Titles
 'Profile:'=>'Profil:',
@@ -99,11 +49,32 @@ return array (
 
 // Social
 'Feed'=>'Eingabe',
-'Social'=>'Sozial',
 'Reply'=>'Antwort',
 'A larger Chat Box'=>'Eine größere Chatt-Box',
 'A blog-like discussion forum'=>'Ein Blog-ähnliches Diskussionsforum',
 
 // Misc
 'This user does not allow posting on their feed.'=>'Dieser Benutzer erlaubt keine Antwort auf seine Feeds.',
+'Save your current theme settings as a predefined theme.'=>'Speichern Sie Ihre aktuellen Einstellungen als Thema einer vorgegebenen Thema.',
+'Update the settings of the currently selected predefined theme.'=>'Aktualisieren Sie die Einstellungen der aktuell ausgewählten vordefinierten Thema.',
+'Create Theme'=>'Neues Theme',
+'Save Theme'=>'Speichern Theme',
+'Upload Background Image'=>'Hintergrundbild hochladen',
+'Login Sound'=>'Anmelden Ton',
+'Upload a Login Sound'=>'Laden Sie ein Login Ton',
+'Upload Login Sound'=>'Hochladen Anmelden Ton',
+'Notification Sound'=>'Notification Sound',
+'Upload Notification Sound'=>'Hochladen Notification Sound',
+'Upload a Notification Sound'=>'Laden Sie ein Notification Sound',
+'Create a Theme'=>'Erstellen Sie ein Thema',
+'Upload a Background Image'=>'Laden Sie ein Hintergrundbild',
+'Export Theme'=>'Exportieren Theme',
+'Upload Theme'=>'Theme hochladen',
+'Manage Passwords for Third-Party Applications'=>'Kennwörter verwalten für Anwendungen von Drittanbietern',
+'Send E-Mail'=>'E-Mail senden',
+'Choose Picture'=>'Bild auswählen',
+'Theme saved successfully.'=>'Theme erfolgreich gespeichert.',
+'Theme name already exists or is invalid.'=>'Theme Name bereits oder ist ungültig.',
+'Theme created successfully.'=>'Theme erfolgreich erstellt.',
+'Page Header Color'=>'Seitenkopf Farbe',
 );

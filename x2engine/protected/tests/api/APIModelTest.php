@@ -17,9 +17,12 @@ class APIModelTest extends CURLTestCase {
 	}
 
 	public $fixtures = array(
-		'contacts' => 'Contacts',
-		'users' => 'User',
+		'contacts' => 'Contacts'
 	);
+
+	public static function referenceFixtures() {
+		return array('users'=>'User');
+	}
 
 	public function newModel() {
 		return new APIModel('testuser','5f4dcc3b5aa765d61d8327deb882cf99',rtrim(TEST_BASE_URL,'/'));
@@ -86,7 +89,7 @@ class APIModelTest extends CURLTestCase {
 		$contact = Contacts::model()->findByAttributes($oldAttr);
 		$this->assertNotEmpty($contact,'Failed asserting that the model was saved properly.');
 		foreach($contact->attributes as $name=>$noVal) {
-			$this->assertEquals($contact->$name,$model->$name,'Failed asserting that the API model received the attributes of the model from the server');
+			$this->assertEquals($contact->$name,$model->$name,"Failed asserting that the API model received the attributes of the model from the server; attribute $name does not match.");
 		}
 		$this->assertEquals('testuser',$contact->assignedTo,'Failed asserting proper assignment of the new model.');
 		// Now test updating... With validation error.

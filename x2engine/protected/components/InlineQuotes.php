@@ -109,8 +109,8 @@ class InlineQuotes extends X2Widget {
 		}
 		
 		var sendingQuote = false;
-		function sendQuoteEmail(quoteId) {  // fill the inline email form with some info about a quote: name, table of products, description
-			quickQuote.setInlineEmail(quoteId);
+		function sendQuoteEmail(quoteId,quoteTemplate) {  // fill the inline email form with some info about a quote: name, table of products, description
+			quickQuote.setInlineEmail(quoteId,quoteTemplate);
 		    sendingQuote = true; // stop quote mini-module from stealing focus away from email
 		}
 		", CClientScript::POS_HEAD);

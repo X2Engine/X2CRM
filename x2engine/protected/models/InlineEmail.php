@@ -64,6 +64,7 @@ Yii::import('application.modules.quotes.models.*');
  *
  * @property string $actionHeader (read-only) A mock-up of the email's header
  * 	fields to be inserted into the email actions' bodies, for display purposes.
+ * @property Credentials $credentials (read-only) The credentials record, if applicable.
  * @property array $from The sender of the email.
  * @property PHPMailer $mailer PHPMailer instance
  * @property array $insertableAttributes (read-only) Attributes for the inline
@@ -104,7 +105,7 @@ class InlineEmail extends CFormModel {
 	 * ID of the credentials record to use for SMTP authentication
 	 * @var integer
 	 */
-	public $credId = -1;
+	public $credId = null;
 
     /**
      * @var string BCC email address(es), if applicable
@@ -178,6 +179,12 @@ class InlineEmail extends CFormModel {
      * @var string
      */
     private $_actionHeader;
+
+	/**
+	 * Stores the email credentials, if an account has been defined and is used.
+	 * @var mixed
+	 */
+	private $_credentials;
 
     /**
      * Stores value of {@link insertableAttributes}
@@ -347,12 +354,35 @@ class InlineEmail extends CFormModel {
         return $this->_actionHeader;
     }
 
+	/**
+	 * Getter for {@link credentials}
+	 * returns Credentials
+	 */
+	public function getCredentials() {
+		if(!isset($this->_credentials)) {
+			if($this->credId == Credentials::LEGACY_ID)
+				$this->_credentials = false;
+			else {
+				$cred = Credentials::model()->findByPk($this->credId);
+				$this->_credentials = empty($cred) ? false : $cred;
+			}
+		}
+		return $this->_credentials;
+	}
+
     public function getFrom(){
-        if(!isset($this->_from))
-            $this->_from = array(
-                'name' => $this->userProfile->fullName,
-                'address' => $this->userProfile->emailAddress
-            );
+        if(!isset($this->_from)) {
+			if($this->credentials)
+				$this->_from = array(
+					'name' => $this->credentials->auth->senderName,
+					'address' => $this->credentials->auth->email
+				);
+			else
+				$this->_from = array(
+					'name' => $this->userProfile->fullName,
+					'address' => $this->userProfile->emailAddress
+				);
+		}
         return $this->_from;
     }
 
@@ -476,15 +506,14 @@ class InlineEmail extends CFormModel {
      * @return \PHPMailer
      */
     public function getMailer(){
-        if(!isset($this->_phpMailer)){
+        if(!isset($this->_mailer)){
             require_once(realpath(Yii::app()->basePath.'/components/phpMailer/class.phpmailer.php'));
 
             $phpMail = new PHPMailer(true); // the true param means it will throw exceptions on errors, which we need to catch
             $phpMail->CharSet = 'utf-8';
 
-			if($this->credId != -1)
-				$cred = Credentials::model()->findByPk($this->credId);
-			if(!empty($cred)){ // Use an individual user email account if specified and valid
+			$cred = $this->credentials;
+			if($cred){ // Use an individual user email account if specified and valid
 				$phpMail->IsSMTP();
 				$phpMail->Host = $cred->auth->server;
 				$phpMail->Port = $cred->auth->port;
@@ -495,6 +524,10 @@ class InlineEmail extends CFormModel {
 					$phpMail->Username = $cred->auth->user;
 					$phpMail->Password = $cred->auth->password;
 				}
+				// Use the specified credentials (which should have the sender name):
+				$phpMail->AddReplyTo($cred->auth->email, $cred->auth->senderName);
+				$phpMail->SetFrom($cred->auth->email, $cred->auth->senderName);
+				$this->from = array('address' => $cred->auth->email, 'name' => $cred->auth->senderName);
 			}else{ // Use the system default (legacy method)
 				switch(Yii::app()->params->admin->emailType){
 					case 'sendmail':
@@ -521,14 +554,7 @@ class InlineEmail extends CFormModel {
 					default:
 						$phpMail->IsMail();
 				}
-			}
-
-			// Set sender info:
-			if(!empty($cred)){ // Use the specified credentials (which should have the sender name):
-				$phpMail->AddReplyTo($cred->auth->email,$cred->auth->senderName);
-				$phpMail->SetFrom($cred->auth->email,$cred->auth->senderName);
-				$this->from = array('address' => $cred->auth->email,'name' => $cred->auth->senderName);
-			}else{ // Use sender specified in attributes/system (legacy method):
+				// Use sender specified in attributes/system (legacy method):
 				$from = $this->from;
 				if($from == null){ // if no from address (or not formatted properly)
 					if(empty($this->userProfile->emailAddress))
@@ -649,7 +675,8 @@ class InlineEmail extends CFormModel {
             if(!Yii::app()->params->noSession){
                 $trackUrl = Yii::app()->controller->createAbsoluteUrl('actions/emailOpened', array('uid' => $this->uniqueId, 'type' => 'open'));
             }else{
-                // Use webLeadConfig to construct the URL
+		// This might be a console application! In that case, there's
+		// no controller application component available.
                 $url = Yii::app()->externalBaseUrl;
                 if(!empty($url))
                     $trackUrl = "$url/index.php/actions/emailOpened?uid={$this->uniqueId}&type=open";

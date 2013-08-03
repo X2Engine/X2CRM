@@ -142,10 +142,11 @@ class Notification extends CActiveRecord {
 		if(empty($this->modelId) || empty($this->modelType))	// skip if there is no association
 			$record = null;
 		else {
-			if(class_exists($this->modelType))
+			if(class_exists($this->modelType)) {
 				$record = X2Model::model($this->modelType)->findByPk($this->modelId);
-			else
-				return 'Error: unkown record <b>'.$this->modelType.'</b>';
+			} else {
+				return 'Error: unknown record <b>'.$this->modelType.'</b>';
+			}
 			if($record === null) {
 				$this->delete();
 				return null;
@@ -218,7 +219,8 @@ class Notification extends CActiveRecord {
 					return Yii::t('app','Record deleted: {record}',array('{record}'=>$this->modelType.' '.$this->modelId));
 				else
 					return Yii::t('app','{user} deleted a record: {record}',array('{user}'=>User::getUserLinks($this->createdBy),'{record}'=>$this->modelType.' '.$this->modelId));
-
+			case 'event_broadcast':
+				return Yii::t('app','{user} broadcast an event: {event}',array('{user}'=>User::getUserLinks($record->user),'{event}'=>$record->getText()));
 			case 'update':
 				if($passive)
 					return Yii::t('app','Record updated: {record}',array('{record}'=>$record->getLink()));
@@ -270,7 +272,7 @@ class Notification extends CActiveRecord {
 			case 'custom':
 				return $this->text;
 			default:
-				return 'Error: unkown type <b>'.$this->type.'</b>';
+				return 'Error: unknown type <b>'.$this->type.'</b>';
 
 		}
 	}

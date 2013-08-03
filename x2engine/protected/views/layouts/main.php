@@ -133,15 +133,19 @@ $cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
 
 $cs->registerCssFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.css');
 
+if (IS_ANDROID)
+	$cs->registerCssFile($themeUrl.'/css/androidLayout.css'.$jsVersion,'screen, projection');
+
 $fullscreen = Yii::app()->user->isGuest || $profile->fullscreen;
 
 $cs->registerScript('fullscreenToggle', '
 window.enableFullWidth = '.(!Yii::app()->user->isGuest ? ($profile->enableFullWidth ? 'true' : 'false') : 'true').';
 window.fullscreen = '.($fullscreen ? 'true' : 'false').';
 ', CClientScript::POS_HEAD);
-
+if(!$isGuest){
 $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
         ->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion);
+}
 
 if(!$isGuest && ($profile->language == 'he' || $profile->language == 'fa'))
     $cs->registerCss('rtl-language', 'body{text-align:right;}');
@@ -404,7 +408,7 @@ $userMenu = array(
             array('label' => Yii::t('app', 'Profile'), 'url' => array('/profile/view', 'id' => Yii::app()->user->getId())),
             array('label' => Yii::t('app', 'Notifications'), 'url' => array('/site/viewNotifications')),
             array('label' => Yii::t('app', 'Preferences'), 'url' => array('/profile/settings')),
-            array('label' => Yii::t('app', 'Help'), 'url' => 'http://www.x2engine.com/screen-shots-2', 'linkOptions' => array('target' => '_blank')),
+			array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('/profile/manageCredentials')),
             array('label' => Yii::t('help', 'Icon Reference'), 'url' => array('/site/page/', 'view' => 'iconreference')),
             array('label' => Yii::t('app', 'Report A Bug'), 'url' => array('/site/bugReport')),
             array('label' => Yii::t('app', '---'), 'itemOptions' => array('class' => 'divider')),
@@ -591,7 +595,7 @@ if(method_exists($this,'renderGaCode'))
 		?>
 <a id="page-fader" class="x2-button"><span></span></a>
 <div id="dialog" title="Completion Notes? (Optional)" style="display:none;" class="text-area-wrapper">
-	<textarea id="completion-notes" style="height:110px;width:99%;"></textarea>
+	<textarea id="completion-notes" style="height:110px;"></textarea>
 </div>
 </body>
 <audio id="notificationSound"></audio>

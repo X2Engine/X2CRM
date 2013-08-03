@@ -1,68 +1,17 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Campaign model
-'Campaign'=>'Campagna',
 'Campaigns'=>'Campagne',
-'ID'=>'ID',
 'Master Campaign ID'=>'Maestro ID Campagna',
-'Name'=>'Nome',
-'Assigned To'=>'Assegnata A',
 'Contact List'=>'Elenco Contatti',
-'Active'=>'Attivo',
-'Description'=>'Descrizione',
-'Type'=>'Tipo',
 'Cost'=>'Costo',
-'Subject'=>'Soggetto',
 'Content'=>'Contenuto',
-'Complete'=>'Completa',
-'Visibility'=>'Visibilità',
-'Create Date'=>'Data di Creazione',
 'Launch Date'=>'Data di Lancio',
-'Last Updated'=>'Ultimo Aggiornamento',
-'Updated By'=>'Aggiornato Da',
-'None'=>'Nessuno',
 'Basic Info'=>'Informazioni di Base',
-'Email'=>'E-mail',
 'Call List'=>'Lista Chiamate',
 'Physical Mail'=>'Posta Fisica',
 'Email Template'=>'Modello Email',
 'Update Campaign'=>'Aggiornamento Campagna',
-'Last Activity'=>'Ultima Attività',
 'Template'=>'Sagoma',
 
 // Menu
@@ -70,8 +19,8 @@ return array (
 'Create Campaign'=>'Creazione di una Campagna',
 'Newsletters'=>'Notizie Lettere',
 'Create Newsletter'=>'Creare Notiziario',
-'Create Web Form'=>'Creazione di Web Form',
 'Web Tracker'=>'Web Tracker',
+'Email List'=>'Email List',
 
 // Launching
 'The campaign has already been launched.'=>'La campagna è già stata avviata.',
@@ -89,7 +38,6 @@ return array (
 'Opened'=>'Aperto',
 'Clicked'=>'Si fa Clic',
 'Unsubscribed'=>'Annullato l\'Iscrizione',
-'Status'=>'Stato',
 
 // Mailing
 'The email sending limit has been reached.'=>'Il limite di invio e-mail è stato raggiunto.',
@@ -122,11 +70,9 @@ return array (
 'Contact has clicked a link'=>'Il contatto è fatto clic su un collegamento',
 'has clicked a link'=>'ha cliccato un link',
 'To stop receiving these messages, click here'=>'Per interrompere la ricezione di questi messaggi, clicca qui',
+'Send As'=>'Invia come',
 
 // WebForm model
-'Model Name'=>'Nome del Modello',
-'Fields'=>'Campi',
-'Parameters'=>'Parametri',
 'CSS'=>'CSS',
 
 // Web Lead Form creator
@@ -138,25 +84,42 @@ return array (
 'Copy and paste this code into your website to include the web lead form.'=>'Copiare e incollare questo codice nel tuo sito web per includere il modulo di piombo web.',
 'Choose an existing form as a starting point.'=>'Scegliere un modulo esistente come punto di partenza.',
 'Text Color'=>'Colore del Testo',
-'Background Color'=>'Colore di Sfondo',
 'Font'=>'Carattere Tipografico',
 'Border'=>'Confine',
 'Size'=>'Dimensione',
 'pixels'=>'pixel',
-'Color'=>'Colore',
-'Tags'=>'Tag',
-'Default'=>'Per Impostazione Predefinita',
 'black'=>'nero',
 'transparent'=>'trasparente',
 'none'=>'nessuno',
-'Example'=>'Esempio',
 'These tags will be applied to any contact created by the form.'=>'Questi tag essere applicato a qualsiasi contatto creato dal modulo.',
-'Save'=>'Salvare',
 'Enter a name and save this form to edit later.'=>'Immettere un nome e salvare il modulo da modificare in seguito.',
 'Form Saved'=>'Modulo Memorizzato',
 'Reset Form'=>'Reset Modulo',
 'Embed Code'=>'Codice da Incorporare',
 'Saved Forms'=>'Moduli Salvati',
-'Settings'=>'Impostazioni',
-'Preview'=>'Anteprima',
+'Enter custom css for the web form.'=>'Inserisci CSS personalizzato per il modulo web.',
+'Custom &lt;HEAD&gt;'=>'&lt;HEAD&gt; Personalizzata',
+'Enter any HTML you would like inserted into the &lt;HEAD&gt; tag.'=>'Immettere qualsiasi HTML che si desidera inserire nella &lt;head&gt;.',
+'Select email templates to send to the new weblead and the user assigned to the weblead.'=>'Selezionare modelli di posta elettronica da inviare al nuovo weblead e l&#39;utente assegnato al weblead.',
+'NOTE: The weblead form must be saved for these emails to be sent.'=>'NOTA: Il modulo weblead deve essere salvato per queste e-mail da inviare.',
+'User Email'=>'Utente Email',
+'Weblead Email'=>'Weblead Email',
+'Drag and Drop fields from Fields List to Form.'=>'Trascinare e rilasciare i campi dalla lista campi al modulo.',
+'Live web form preview.'=>'Anteprima dal vivo modulo web.',
+'Label:'=>'Etichetta:',
+'Position:'=>'Posizione:',
+
+// Web Tracker
+'Web Tracker Code'=>'Web Tracker Codice',
+'This HTML tag will allow you to track contacts who visit your website.'=>'Questo tag HTML vi permetterà di tenere traccia di contatti che visitano il tuo sito web.',
+'Paste this code into the body section of every page of your website.'=>'Incolla questo codice nella sezione body di ogni pagina del tuo sito web.',
+'<b>Note:</b> Contacts can be tracked only if they filled out the web lead capture form, or clicked on a tracking link in an email campaign.'=>'<b>Nota:</b> I contatti possono essere monitorati solo se compilato il modulo di acquisizione di piombo web, o cliccato su un link di monitoraggio in una campagna di email.',
+'Web Tracker Settings'=>'Impostazioni web tracker',
+'You can enable or disable the web tracker. The tracker will ignore repeat hits from a given contact during the cooldown period.'=>'È possibile attivare o disattivare il tracker web. Il tracker ignorerà ripetizione colpi da un determinato contatto durante il periodo di cooldown.',
+'If a contact visits several pages in a short time, you will only get one notification.'=>'Se un contatto visita diverse pagine in poco tempo, si otterrà solo una notifica.',
+'Turn it down all the way to receive notifications about every page hit.'=>'Girare verso il basso fino a ricevere avvisi di ogni pagina colpo.',
+'Contact has opened the email sent on '=>'Contatto è aperto l&#39;e-mail inviata a',
+'Email sent'=>'E-mail inviata',
+'Header Code'=>'Codice Header',
+'Batch completed, sending again in '=>'Batch completato, inviare di nuovo a',
 );

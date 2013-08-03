@@ -34,6 +34,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss ('servicesView', "
+	#contact-info-container {
+		margin: -6px 5px 5px 5px !important;
+	}
+");
+
 $authParams['assignedTo']=$model->assignedTo;
 $menuItems = array(
 	array('label'=>Yii::t('services','All Cases'), 'url'=>array('index')),
@@ -104,21 +110,26 @@ $this->endWidget();
 if($model->contactId) { // every service case should have a contact associated with it
 	$contact = Contacts::model()->findByPk($model->contactId);
 	if($contact) { // if associated contact exists, display mini contact view
-		echo '<h2>'.Yii::t('actions','Contact Info').'</h2>';
+		?>
+		<div id='contact-info-container'>
+		<h2> <?php echo Yii::t('actions','Contact Info'); ?> </h2>
+		<?php
 		$this->renderPartial('application.modules.contacts.views.contacts._detailViewMini',array('model'=>$contact, 'serviceModel'=>$model));
+		?>
+		</div>
+		<?php
 	}
 }
 ?>
 
-<div class="form">
-	<b><?php echo Yii::t('app', 'Tags'); ?></b>
-	<?php $this->widget('InlineTags', array('model'=>$model)); ?>
-</div>
+<?php 
+	$this->widget('X2WidgetList', array(
+		'block'=>'center', 
+		'model'=>$model, 
+		'modelType'=>'services'
+	)); 
+?>
 
-<div class="form">
-	<b><?php echo Yii::t('workflow', 'Workflow'); ?></b>
-	<?php $this->widget('WorkflowStageDetails',array('model'=>$model,'modelName'=>'services','currentWorkflow'=>$currentWorkflow)); ?>
-</div>
 
 <?php $this->widget('Attachments',array('associationType'=>'services','associationId'=>$model->id,'startHidden'=>true)); ?>
 

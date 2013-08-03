@@ -1,42 +1,5 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-'Calendar'=>'',
-'Calendars'=>'',
 // // 
 'User Calendars'=>'',
 'Group Calendars'=>'',
@@ -45,27 +8,24 @@ return array (
 'My Calendar Permissions'=>'',
 'User Calendar Permissions'=>'',
 'Google Event'=>'',
-'Contacts'=>'',
-'Accounts'=>'',
-'Opportunities'=>'',
-'Products'=>'',
-'Media'=>'',
 'View Permission'=>'',
 'These users can view your calendar.'=>'',
 'Edit Permission'=>'',
 'These users can edit your calendar.'=>'',
+'Sync My Actions To Google Calendar'=>'',
+'Show Actions associated with Contacts'=>'',
+'Show Actions associated with Accounts'=>'',
+'Show Actions associated with Opportunities'=>'',
+'Show Actions associated with Quotes'=>'',
+'Show Actions associated with Products'=>'',
+'Show Actions associated with Media'=>'',
+'Show Completed Actions'=>'',
+'Show Emails'=>'',
+'Show Attachments'=>'',
 // // 
-'Completed'=>'',
-'Quotes'=>'',
-'Email'=>'',
 'Attachment'=>'',
 // // 
-'List'=>'',
-'Delete'=>'',
-'Create'=>'',
 // // button text
-'Update'=>'',
-'today'=>'',
 'month'=>'',
 'week'=>'',
 'day'=>'',
@@ -115,4 +75,19 @@ return array (
 'Thu'=>'',
 'Fri'=>'',
 'Sat'=>'',
+'Create Shared Calendar'=>'',
+'Don\'t link to Google Calendar'=>'',
+'Link to Google Calendar'=>'',
+'Back To User List'=>'',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'',
+'Don\'t Sync My Actions To Google Calendar'=>'',
+'Google Integration is not configured on this server.'=>'',
+'Once'=>'',
+'Yearly'=>'',
+'Google Calendar'=>'',
+'Google Feed'=>'',
+'Google Calendar Name'=>'',
+'View Association'=>'',
+'These users can view {fullname}\'s calendar.'=>'',
+'These users can edit {fullname}\'s calendar.'=>'',
 );

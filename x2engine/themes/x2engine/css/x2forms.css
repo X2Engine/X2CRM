@@ -77,16 +77,24 @@ div.x2-layout a:hover {text-decoration:underline;}
 div.x2-layout .formSection {
 	/* background:#fff; */
 	overflow:hidden;	/* disable */
-	border-top:1px solid #333;
+	/*border-top:1px solid #333;*/
 }
-div.x2-layout .formSection:first-child {border-top:none;}
+div.x2-layout .formSection:first-child {
+	border-top:none;
+}
 div.x2-layout .tableWrapper {
-	margin-left:16px;
+	/*margin-left:16px;*/
 	width:auto;
-	border-left:1px solid #aaa;
+	/*border-left:1px solid #aaa;*/
+	border-top: 1px solid #ccc;
 	margin-bottom:-1px;
 	margin-right:-1px;
 }
+
+div.x2-layout .tableWrapper.noTitle{
+	border-top: none;
+}
+
 /* div.x2-layout .formSection hr {height:1px;margin:-1px 0 0 0;position:relative;background-color:#999;border-color:#999;} */
 div.x2-layout .formSection:first-child {
 	-moz-border-radius:		3px 0 0 0;
@@ -101,18 +109,29 @@ div.x2-layout .formSection:last-child {
 	border-radius:			0 0 0 3px;
 }
 div.x2-layout .formSectionHeader {
-	float:left;
+	/*float:left;*/
 	display:block;
+	/*background: black;*/
 	height:16px;
+	border-top: 1px solid #ccc;
+	-moz-border-radius:		4px 4px 0 0;
+	-o-border-radius:		4px 4px 0 0;
+	-webkit-border-radius:	4px 4px 0 0;
+	border-radius:			4px 4px 0 0;
+}
+div.x2-layout .formSection:first-child .formSectionHeader {
+	border-top: none;
 }
 div.x2-layout .showSection .formSectionHeader {
-	display:block; width:15px;
+	display:block; 
+	/*width:15px;*/
 }
 div.x2-layout .formSectionHeader a {
 	display:none;
 	float:left;
 	/* margin-right:1px; */
-	width:16px;
+	/*width:16px;*/
+
 	font-size:12px;
 	font-style:normal;
 	text-decoration:none;
@@ -123,6 +142,7 @@ div.x2-layout .formSectionHeader a {
 div.x2-layout .sectionTitle {
 	
 	/*filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand',M11=0.0, M12=1.0, M21=-1.0, M22=0.0); /* IE6, IE7 */
+	margin-left: 2px;
 	
 	display:inline-block;
 	white-space:nowrap;
@@ -139,25 +159,39 @@ div.x2-layout .showSection .sectionTitle {
 
 	height:15px;
 	
-	-webkit-transform-origin:	top left;
+	/*-webkit-transform-origin:	top left;
 	-moz-transform-origin:		top left;
 	-o-transform-origin:		top left;
 	-ms-transform-origin:		top left;
-	transform-origin:			top left;
-	-webkit-transform:	rotate(270deg) translate(-100%,0);
+	transform-origin:			top left;*/
+	/*-webkit-transform:	rotate(270deg) translate(-100%,0);
 	-moz-transform:		rotate(270deg) translate(-100%,0);
 	-o-transform:		rotate(270deg) translate(-100%,0);
 	-ms-transform:		rotate(270deg) translate(-100%,0);
-	transform:			rotate(270deg) translate(-100%,0);
+	transform:			rotate(270deg) translate(-100%,0);*/
 }
 .lt-ie9 div.x2-layout .showSection .sectionTitle {
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 
-div.x2-layout .formSection a.formSectionShow {display:block;}
-div.x2-layout .formSection a.formSectionHide {display:none;}
-div.x2-layout .formSection.showSection a.formSectionShow {display:none !important;}
-div.x2-layout .formSection.showSection a.formSectionHide {display:block !important;}
+div.x2-layout .formSection a.formSectionShow {
+	display:block;
+	margin-left: 2px;
+}
+div.x2-layout .formSection a.formSectionHide {
+	display:none;
+	margin-left: 2px;
+}
+div.x2-layout .formSection.showSection a.formSectionShow {
+	display:none !important;
+	float: left;
+	margin-left: 2px;
+}
+div.x2-layout .formSection.showSection a.formSectionHide {
+	display:block !important;
+	float: left;
+	margin-left: 2px;
+}
 
 
 div.x2-layout .formSection table {

@@ -119,7 +119,7 @@ function refreshQtip() {
 		if(typeof contactId != null && contactId.length) {
 			$(this).qtip({
 				content: {
-					text: "'.addslashes(Yii::t('app','loading...')).'",
+					text: "'.addslashes(Yii::t('app','Loading...')).'",
 					ajax: {
 						url: yii.baseUrl+"/index.php/contacts/qtip",
 						data: { id: contactId[0] },
@@ -181,6 +181,7 @@ $this->widget('application.components.X2GridView', array(
 	),
 	'specialColumns'=>array(
 		'actionDescription'=>array(
+            'header'=>Yii::t('actions','Action Description'),
 			'name'=>'actionDescription',
 			'value'=>'CHtml::link(($data->type=="attachment")? Media::attachmentActionText($data->actionDescription) : CHtml::encode(trimText($data->actionDescription)),array("view","id"=>$data->id))',
 			'type'=>'raw',

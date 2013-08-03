@@ -49,8 +49,8 @@ $this->actionMenu = $this->formatMenu(array(
 ?>
 
 
+<div class="page-title icon charts"><h2><?php echo Yii::t('app', 'Marketing Dashboard'); ?>&nbsp;&nbsp;</h2></div>
 <div class="form">
-	<div class="page-title icon charts"><h2><?php echo Yii::t('app', 'Marketing Dashboard'); ?>&nbsp;&nbsp;</h2></div>
 	<br>
 
 	<?php
@@ -65,21 +65,21 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('charts', 'Select leads received in the last &nbsp;&nbsp;&nbsp;&nbsp;'))); ?>
+				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('charts', 'Select leads received in the last').' &nbsp;&nbsp;&nbsp;&nbsp;')); ?>
 				<?php
 				echo $form->radioButtonList($model, 'dateRange', array(
-					10 => Yii::t('charts', '10 days'),
-					30 => Yii::t('charts', '30 days'),
-					60 => Yii::t('charts', '60 days'),
-					90 => Yii::t('charts', '90 days'),
-					120 => Yii::t('charts', '120 days'),
-					360 => Yii::t('charts', '360 days')
+					10 => Yii::t('charts', '{n} days',array('{n}'=>'10')),
+					30 => Yii::t('charts', '{n} days',array('{n}'=>'30')),
+					60 => Yii::t('charts', '{n} days',array('{n}'=>'60')),
+					90 => Yii::t('charts', '{n} days',array('{n}'=>'90')),
+					120 => Yii::t('charts', '{n} days',array('{n}'=>'120')),
+					360 => Yii::t('charts', '{n} days',array('{n}'=>'360'))
 						), array(
 					'separator' => '&nbsp;&nbsp;|&nbsp;&nbsp;'
 						)
 				)
 				?>
-				<a onclick="submitForm('chart');" href="#" class="x2-button"><span>Go</span></a>
+				<a onclick="submitForm('chart');" href="#" class="x2-button"><span><?php echo Yii::t('app','Go'); ?></span></a>
 			</div>
 		</div>
 	</div>

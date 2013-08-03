@@ -313,25 +313,39 @@ if(!$curl){
 		installer_t('Google integration will not work'),
 		installer_t('Built-in error reporter will not work')
 	);
-	$reqMessages[2][] = '<a href="http://php.net/manual/book.curl.php">cURL</a>: '.$rbm.'. '.installer_t('This will result in the following issues:').'<ul><li>'.implode('</li><li>', $curlMissingIssues).'</li></ul>';
+	$reqMessages[2][] = '<a href="http://php.net/manual/book.curl.php">cURL</a>: '.$rbm.'. '.installer_t('This will result in the following issues:').'<ul><li>'.implode('</li><li>', $curlMissingIssues).'</li></ul>'.installer_t('Furthermore, please note: without this extension, the requirements check script could not check the outbound internet connection of this server.');
 }
 if(!(bool) (@ini_get('allow_url_fopen'))){
 	if(!$curl){
 		$tryAccess = false;
 		$reqMessages[2][] = installer_t('The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will not work.');
 	} else
-		$reqMessages[2][] = installer_t('The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.');
+		$reqMessages[1][] = installer_t('The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.');
 }
 if($tryAccess){
 	if(!(bool) @file_get_contents('http://google.com')){
+
 		$ch = curl_init('http://google.com');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_POST, 0);
 		$response = (bool) @curl_exec($ch);
+		curl_close($ch);
 		if(!$response){
-			$reqMessages[2][] = installer_t('This server is effectively cut off from the internet; (1) no outbound network route exists, or (2) local DNS resolution is failing, or (3) this server is behind a firewall that is preventing outbound requests. Software updates will not work.');
+			$reqMessages[2][] = installer_t('This web server is effectively cut off from the internet; (1) no outbound network route exists, or (2) local DNS resolution is failing, or (3) this server is behind a firewall that is preventing outbound requests. Software updates and Google integration will not work.');
+		} else {
+			$ch = curl_init('https://x2planet.com/installs/registry/reqCheck');
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_POST, 0);
+			$response = (bool) @curl_exec($ch);
+			curl_close($ch);
+			if(!$response) {
+				$reqMessages[2][] = installer_t('Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will not work.');
+			}
 		}
+
 	}
+} else {
+
 }
 // Check the ability to make database backups during updates:
 $canBackup = function_exists('proc_open');
@@ -380,15 +394,6 @@ if(function_exists('is_executable')){
 	$canDo['sendmail'] = false;
 	$canDo['qmail'] = false;
 }
-if(!($canDo['phpmail'] || (($canDo['sendmail'] || $canDo['qmail'] ) && $canDo['shell']))){
-	$reqMessages[1][] = installer_t("No methods for sending email are available on this server. As a result of this, the legacy email delivery methods (Sendmail, PHPMail and QMail) will not be available.");
-}else{
-	if(!($canDo['shell'] && ($canDo['sendmail'] || $canDo['qmail']))){
-		$reqMessages[1][] = installer_t('The "sendmail" and "qmail" methods for email delivery cannot be used on this server.');
-	}
-	if(!$canDo['phpmail'])
-		$reqMessages[1][] = installer_t('The "PHP Mail" method will not work because E-mail delivery in PHP is disabled on this webserver.');
-}
 // Check for Zip extension
 if(!extension_loaded('zip')){
 	$reqMessages[1][] = '<a href="http://php.net/manual/book.zip.php">Zip</a>: '.$rbm.'. '.installer_t('This will result in the inability to import and export custom modules.');
@@ -399,7 +404,7 @@ if(!extension_loaded('fileinfo')){
 }
 // Check for GD exension
 if(!extension_loaded('gd')){
-	$reqMessages[1][] = '<a href="http://php.net/manual/book.image.php">GD</a>: '.$rbm.'. '.installer_t('Security captchas and will not work, and the media module will not be able to detect or display the dimensions of uploaded images.');
+	$reqMessages[1][] = '<a href="http://php.net/manual/book.image.php">GD</a>: '.$rbm.'. '.installer_t('Security captchas will not work, and the media module will not be able to detect or display the dimensions of uploaded images.');
 }
 
 // Determine if there are messages to show and if installation is even possible

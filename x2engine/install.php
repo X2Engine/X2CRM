@@ -37,7 +37,7 @@
 // run silent installer with default values?
 $silent = isset($_GET['silent']) || (isset($argv) && in_array('silent', $argv));
 
-if ($silent) {
+if($silent){
     header('Location: initialize.php?silent');
     exit;
 }
@@ -50,43 +50,53 @@ include(realpath('protected/config/X2Config.php'));
 $languageDirs = scandir('./protected/messages');
 $languages = array();
 
-foreach ($languageDirs as $code) {  // look for langauges name
+foreach($languageDirs as $code){  // look for langauges name
     $name = getLanguageName($code);  // in each item in $languageDirs
-    if ($name !== false)
-	$languages[$code] = $name; // add to $languages if name is found
+    if($name !== false)
+        $languages[$code] = $name; // add to $languages if name is found
 }
 $lang = isset($_GET['language']) ? strtolower($_GET['language']) : ''; // get language setting, default to none (english)
 
-if (array_key_exists($lang, $languages))    // is this language installed?
+if(array_key_exists($lang, $languages)){    // is this language installed?
     $installMessageFile = realpath("protected/messages/$lang/install.php");
-
-$installMessages = array();
-
-if (isset($installMessageFile) && file_exists($installMessageFile)) { // attempt to load installer messages
-    $installMessages = include($installMessageFile);     // from the chosen language
-    if (!is_array($installMessages))
-	$installMessages = array();      // ...or return an empty array
+    $commonMessageFile = realpath("protected/messages/$lang/common.php");
 }
 
-function getLanguageName($code) { // lookup language name for the language code provided
+$installMessages = array();
+$commonMessages = array();
+if(isset($installMessageFile) && file_exists($installMessageFile)){ // attempt to load installer messages
+    $installMessages = include($installMessageFile);     // from the chosen language
+    if(!is_array($installMessages))
+        $installMessages = array();      // ...or return an empty array
+}
+if(isset($commonMessageFile) && file_exists($commonMessageFile)){ // attempt to load installer messages
+    $commonMessages = include($commonMessageFile);     // from the chosen language
+    if(!is_array($commonMessages))
+        $commonMessages = array();      // ...or return an empty array
+}
+
+function getLanguageName($code){ // lookup language name for the language code provided
     global $languageDirs;
 
-    if (in_array($code, $languageDirs)) { // is the language pack here?
-	$appMessageFile = realpath("protected/messages/$code/app.php");
-	if (file_exists($appMessageFile)) { // attempt to load 'app' messages in
-	    $appMessages = include($appMessageFile);     // the chosen language
-	    if (is_array($appMessages) and isset($appMessages['languageName']) && $appMessages['languageName'] != 'Template')
-		return $appMessages['languageName'];       // return language name
-	}
+    if(in_array($code, $languageDirs)){ // is the language pack here?
+        $appMessageFile = realpath("protected/messages/$code/app.php");
+        if(file_exists($appMessageFile)){ // attempt to load 'app' messages in
+            $appMessages = include($appMessageFile);     // the chosen language
+            if(is_array($appMessages) and isset($appMessages['languageName']) && $appMessages['languageName'] != 'Template')
+                return $appMessages['languageName'];       // return language name
+        }
     }
     return false; // false if languge pack wasn't there
 }
 
 // translates by looking up string in install.php language file
-function installer_t($str) {
-    global $installMessages;
-    if (isset($installMessages[$str]) && $installMessages[$str] != '')  // if the chosen language is available
-	return $installMessages[$str];  // and the message is in there, use it
+function installer_t($str){
+    global $installMessages, $commonMessages;
+    if(isset($installMessages[$str]) && $installMessages[$str] != ''){  // if the chosen language is available
+        return $installMessages[$str];  // and the message is in there, use it
+    }elseif(isset($commonMessages[$str]) && $commonMessages[$str] != ''){
+        return $commonMessages[$str];
+    }
     return $str;
 }
 
@@ -95,62 +105,62 @@ $themeURL = 'themes/x2engine';
 // check for submitted data (errors from initialize.php)
 $dbStatus = '';
 
-if (isset($_GET['errors'])) {
+if(isset($_GET['errors'])){
 
-	$errorMessagesIni = $_GET['errors'];
-	$errorMessages = array();
-	$errorCss = array();
+    $errorMessagesIni = $_GET['errors'];
+    $errorMessages = array();
+    $errorCss = array();
 
-	foreach ($errorMessagesIni as $message) {
-		if ($message == 'DB_COULD_NOT_SELECT') {
-			$dbErr = installer_t('Could not select database.');
-			$dbStatus = '<img src="' . $themeURL . '/images/NOT_OK.png">' . addslashes($dbErr);
-			$errorMessages[] = $dbErr;
-			$errorCss = array_unique(array_merge($errorCss, array('dbName', 'dbUser', 'dbPass')));
-		} else if ($message == 'DB_CONNECTION_FAILED') {
-			$dbErr = installer_t('Could not connect to host.');
-			$dbStatus = '<img src="' . $themeURL . '/images/NOT_OK.png">' . addslashes($dbErr);
-			$errorMessages[] = $dbErr;
-			$errorCss = array_unique(array_merge($errorCss, array('dbHost', 'dbName', 'dbUser', 'dbPass')));
-		} else {
-			$error = explode('--', $message);
-			if (count($error) > 1) {
-				$errorMessages[] = $error[1];
-				$errorCss[] = $error[0];
-			} else {
-				$errorMessages[] = $message;
-			}
-		}
-	}
+    foreach($errorMessagesIni as $message){
+        if($message == 'DB_COULD_NOT_SELECT'){
+            $dbErr = installer_t('Could not select database.');
+            $dbStatus = '<img src="'.$themeURL.'/images/NOT_OK.png">'.addslashes($dbErr);
+            $errorMessages[] = $dbErr;
+            $errorCss = array_unique(array_merge($errorCss, array('dbName', 'dbUser', 'dbPass')));
+        }else if($message == 'DB_CONNECTION_FAILED'){
+            $dbErr = installer_t('Could not connect to host.');
+            $dbStatus = '<img src="'.$themeURL.'/images/NOT_OK.png">'.addslashes($dbErr);
+            $errorMessages[] = $dbErr;
+            $errorCss = array_unique(array_merge($errorCss, array('dbHost', 'dbName', 'dbUser', 'dbPass')));
+        }else{
+            $error = explode('--', $message);
+            if(count($error) > 1){
+                $errorMessages[] = $error[1];
+                $errorCss[] = $error[0];
+            }else{
+                $errorMessages[] = $message;
+            }
+        }
+    }
 }
 
-function getField($name, $default, $return = False) {
-	$ret = Null;
-	if (isset($_GET[$name])) {
-		if ($name == 'dummy_data' && $_GET[$name] == 1)
-			$ret = ' checked="checked"';
-		else
-			$ret = $_GET[$name];
-	} else {
-		$ret = $default;
-	}
-	if ($return)
-		return $ret;
-	else
-		echo $ret;
+function getField($name, $default, $return = False){
+    $ret = Null;
+    if(isset($_GET[$name])){
+        if($name == 'dummy_data' && $_GET[$name] == 1)
+            $ret = ' checked="checked"';
+        else
+            $ret = $_GET[$name];
+    } else{
+        $ret = $default;
+    }
+    if($return)
+        return $ret;
+    else
+        echo $ret;
 }
 
-function checkCurrency($code) {
-	if (isset($_GET['currency'])) {
-		if ($_GET['currency'] == $code)
-			echo ' selected="selected"';
-	} else if ($code == 'USD')
-		echo ' selected="selected"';
+function checkCurrency($code){
+    if(isset($_GET['currency'])){
+        if($_GET['currency'] == $code)
+            echo ' selected="selected"';
+    } else if($code == 'USD')
+        echo ' selected="selected"';
 }
 
-function checkTimezone($timezone) {
-    if ((isset($_GET['timezone']) && $_GET['timezone'] == $timezone) || (!isset($_GET['timezone']) && $timezone == 'US/Pacific')) //date_default_timezone_get()))
-	return ' selected="selected"';
+function checkTimezone($timezone){
+    if((isset($_GET['timezone']) && $_GET['timezone'] == $timezone) || (!isset($_GET['timezone']) && $timezone == 'US/Pacific')) //date_default_timezone_get()))
+        return ' selected="selected"';
 }
 
 date_default_timezone_set(isset($_GET['timezone']) ? $_GET['timezone'] : 'UTC');
@@ -302,18 +312,26 @@ $timezones = array(
 		}
 	}
 
+	function installStageRequest(stage,formData,done,fail,always) {
+		done = typeof done == 'undefined' ? function(){} : done;
+		fail = typeof fail == 'undefined' ? function(){} : fail;
+		always = typeof always == 'undefined' ? function(){} : always;
+		formData = typeof formData == undefined ? $('form#install').serialize() : formData;
+		$.ajax({
+			url:'initialize.php?stage='+stage,
+			type:'POST',
+			data:formData,
+			dataType:'json'
+		}).done(done).fail(fail).always(always);
+	}
+
 
 	function installStage(stages,formData,form,nDone,responseData) {
 		var thisStage = stages[0],stagesRemaining = stages.slice(1);
 		var box = $('#error-box');
 		if (typeof thisStage != 'undefined') {
 			if (thisStage=='validate') {
-				$.ajax({
-					url:'initialize.php?stage=validate',
-					type:'POST',
-					data:formData,
-					dataType:'json'
-				}).done(function(data) {
+				installStageRequest('validate',formData,(function(data) {
 					if(data.errors || data.globalError) {
 						box.html($("<h3>").text(data.message));
 						if(data.globalError)
@@ -327,9 +345,9 @@ $timezones = array(
 					} else {
 						installStage(stagesRemaining,formData,form,nDone+1,data);
 					}
-				}).fail(function(jqXHR,textStatus,errorMessage) {
+				}),(function(jqXHR,textStatus,errorMessage) {
 					alert('An unexpected server error occurred during validation: '+textStatus+' '+jqXHR.status+' '+errorMessage);
-				});
+				}));
 			} else {
 				var messageHeader = box.find('h3');
 				var percentDone = messageHeader.find('#percentDone');
@@ -343,20 +361,15 @@ $timezones = array(
 					progressList = $('<ul>');
 					progressList.insertAfter(messageHeader);
 				}
-				$.ajax({
-					url:'initialize.php?stage='+thisStage,
-					type:'POST',
-					data:formData,
-					dataType:'json'
-				}).done(function(data) {
+				installStageRequest(thisStage,formData,(function(data) {
 					progressList.append($('<li>').text(data.message).css({color: (data.failed ? 'red':'green')}));
 					if(!data.failed)
 						installStage(stagesRemaining,formData,form,nDone+1,data);
 					else
 						box.find('img').remove();
-				}).fail(function(jqXHR,textStatus,errorMessage) {
+				}),(function(jqXHR,textStatus,errorMessage) {
 					alert('An unexpected server error occurred during installation: '+textStatus+' '+jqXHR.status+' '+errorMessage);
-				});
+				}));
 			}
 		} else {
 			// Submit the form, mark as complete.
@@ -398,192 +411,193 @@ $timezones = array(
 <?php if (!empty($errorMessages)): // Add error class to fields that failed validation ?>
 		$("#install").find("#<?php echo implode(',#', $errorCss); ?>").addClass('error');
 <?php endif; ?>
-	});
+        });
 
 
-	function testDB() {
-		var data = $('#install').serialize()+'&testDb=1';
-		$.ajax({
-			type: "POST",
-			url: "initialize.php",
-			data: data,
-			dataType:'json',
-			beforeSend: function() {
-				$('#response-box').html('<img src="<?php echo $themeURL; ?>/images/loading.gif">');
-			}
-		}).done(function(r) {
-			var message = '';
-			var okImage = '<img src="<?php echo $themeURL; ?>/images/OK.png">';
-			var notOkImage = '<img src="<?php echo $themeURL; ?>/images/NOT_OK.png">';
-			if (r.errors || r.globalError || r.failed) {
-				message =  notOkImage + '<span class="error">'+r.message+'</span>';
-			} else {
-				message = okImage + r.message;
-			}
-			$('#response-box').html(message);
-		});
-	}
+        function testDB() {
+            var data = $('#install').serialize()+'&testDb=1';
+            $.ajax({
+                type: "POST",
+                url: "initialize.php",
+                data: data,
+                dataType:'json',
+                beforeSend: function() {
+                    $('#response-box').html('<img src="<?php echo $themeURL; ?>/images/loading.gif">');
+                }
+            }).done(function(r) {
+                var message = '';
+                var okImage = '<img src="<?php echo $themeURL; ?>/images/OK.png">';
+                var notOkImage = '<img src="<?php echo $themeURL; ?>/images/NOT_OK.png">';
+                if (r.errors || r.globalError || r.failed) {
+                    message =  notOkImage + '<span class="error">'+r.message+'</span>';
+                } else {
+                    message = okImage + r.message;
+                }
+                $('#response-box').html(message);
+            });
+        }
 
-	</script>
+        </script>
     </head>
     <body>
-	<!--<img id="bg" src="uploads/defaultBg.jpg" alt="">-->
-	<div id="installer-box">
-	    <noscript><h3><span id="noscript-error"><?php echo installer_t('This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'); ?></span></h3></noscript>
-	    <img src="themes/x2engine/images/x2engine_crm_white.png" alt="X2Engine" id="installer-logo">
-	    <h2 id="title"><?php echo installer_t('Installation Page'); ?></h2>
+    <!--<img id="bg" src="uploads/defaultBg.jpg" alt="">-->
+        <div id="installer-box">
+            <noscript><h3><span id="noscript-error"><?php echo installer_t('This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'); ?></span></h3></noscript>
+            <img src="themes/x2engine/images/x2engine_crm_white.png" alt="X2Engine" id="installer-logo">
+            <h2 id="title"><?php echo installer_t('Installation Page'); ?></h2>
 
 
 
 <?php echo installer_t('Welcome to the X2CRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'); ?>
 
 
-	    <div class="wide form" id="install-form">
-		<?php
-		$thisFile = __FILE__;
-		$reqCheck = 'protected/components/views/requirements.php';
-		if(file_exists($reqCheck))
-			require_once($reqCheck);
-		else
-			echo "<span class=\"error\">Note: cannot find requirements check script.</span>";
-		?>
-		<form name="install" id="install" action="initialize.php" method="POST" onSubmit="return validate(this);">
-		    <h2><?php echo installer_t('X2CRM Application Info'); ?></h2><hr>
-		    <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2Engine'); ?>" style="width:190px" /></div>
-		    <div class="row"><label for="language"><?php echo installer_t('Default Language'); ?></label>
-			<select name="language" id="language" onChange="changeLang(this.options[this.selectedIndex].value);" style="width:200px"><option value="">English</option>
-			    <?php
-			    foreach ($languageDirs as $code) { // generate language dropdown
-					$languageName = getLanguageName($code); // lookup language name
-					if ($languageName !== false) {
-					    $selected = ($code == $lang) ? ' selected' : ''; // mark option selected if user has chosen this language
-					    echo "		<option value=\"$code\"$selected>$languageName</option>\n"; // list all available languages
-					}
-			    }
+            <div class="wide form" id="install-form">
+                <?php
+                $thisFile = __FILE__;
+                $reqCheck = 'protected/components/views/requirements.php';
+                if(file_exists($reqCheck))
+                    require_once($reqCheck);
+                else
+                    echo "<span class=\"error\">Note: cannot find requirements check script.</span>";
+                ?>
+                <form name="install" id="install" action="initialize.php" method="POST" onSubmit="return validate(this);">
+                    <h2><?php echo installer_t('X2CRM Application Info'); ?></h2><hr>
+                    <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2Engine'); ?>" style="width:190px" /></div>
+                    <div class="row"><label for="language"><?php echo installer_t('Default Language'); ?></label>
+                        <select name="language" id="language" onChange="changeLang(this.options[this.selectedIndex].value);" style="width:200px"><option value="">English</option>
+                            <?php
+                            foreach($languageDirs as $code){ // generate language dropdown
+                                $languageName = getLanguageName($code); // lookup language name
+                                if($languageName !== false){
+                                    $selected = ($code == $lang) ? ' selected' : ''; // mark option selected if user has chosen this language
+                                    echo "		<option value=\"$code\"$selected>$languageName</option>\n"; // list all available languages
+                                }
+                            }
 
-			    // flag images are public domain from http://www.famfamfam.com/lab/icons/flags
-			    $flagUrl = file_exists("images/flags/$lang.png") ? "images/flags/$lang.png" : "images/flags/us.png";
+                            // flag images are public domain from http://www.famfamfam.com/lab/icons/flags
+                            $flagUrl = file_exists("images/flags/$lang.png") ? "images/flags/$lang.png" : "images/flags/us.png";
 
-			    echo '</select> <img src="' . $flagUrl . '">';
-			    ?></div>
+                            echo '</select> <img src="'.$flagUrl.'">';
+                            ?></div>
 
-		    <div class="row"><label for="currency"><?php echo installer_t('Currency'); ?></label>
-			<select name="currency" id="currency">
-			    <option value="USD"<?php checkCurrency('USD'); ?>>USD</option>
-			    <option value="EUR"<?php checkCurrency('EUR'); ?>>EUR</option>
-			    <option value="GBP"<?php checkCurrency('GBP'); ?>>GBP</option>
-			    <option value="CAD"<?php checkCurrency('CAD'); ?>>CAD</option>
-			    <option value="JPY"<?php checkCurrency('JPY'); ?>>JPY</option>
-			    <option value="CNY"<?php checkCurrency('CNY'); ?>>CNY</option>
-			    <option value="CHF"<?php checkCurrency('CHF'); ?>>CHF</option>
-			    <option value="INR"<?php checkCurrency('INR'); ?>>INR</option>
-			    <option value="BRL"<?php checkCurrency('BRL'); ?>>BRL</option>
-			    <option value="other"<?php checkCurrency('other'); ?>><?php echo installer_t('Other'); ?></option>
-			</select>
-			<input type="text" name="currency2" id="currency2" style="width:120px;<?php if (!isset($_GET['currency']) || $_GET['currency'] != 'other') echo 'display:none;'; ?>" value="<?php getField('currency2', ''); ?>" />
-		    </div>
-		    <div class="row"><label for="timezone"><?php echo installer_t('Default Timezone'); ?></label>
-			<select name="timezone" id="timezone">
-			    <?php
-			    foreach ($timezones as $key => $value)
-				echo '<option value="' . $key . '"' . checkTimezone($key) . '>' . $value . '</option>';
-			    ?>
-			</select>
-		    </div>
-		    <div class="row"><label for="dummy_data"><?php echo installer_t('Create sample data'); ?></label><input type='checkbox' name='dummy_data' id="dummy_data" value='1' <?php echo getField('dummy_data',0,true)?' checked=1':''; ?> /><br /><br /></div>
-		    <div class="row"><label for="adminUsername"><?php echo installer_t('Admin Username'); ?></label><input type="text" name="adminUsername" id="adminUsername" value="<?php getField('adminUsername', 'admin'); ?>" /></div>
-			<div class="row"><label for="adminPass"><?php echo installer_t('Admin Password'); ?></label><input type="password" name="adminPass" id="adminPass" /></div>
-		    <div class="row"><label for="adminPass2"><?php echo installer_t('Confirm Password'); ?></label><input type="password" name="adminPass2" id="adminPass2" /></div>
-		    <div class="row"><label for="adminEmail"><?php echo installer_t('Administrator Email'); ?></label><input type="text" name="adminEmail" id="adminEmail" value="<?php getField('adminEmail', ''); ?>" /></div>
-			<h2><?php echo installer_t('Visible Modules'); ?></h2><hr>
-			<div id="menu_items" class="row">
-				<?php echo installer_t('Choose which modules will be visible in the main menu. Any of these can be re-enabled after installation if necessary.'); ?><br /><br />
-				<?php
-				$modules = require_once(dirname(__FILE__).implode(DIRECTORY_SEPARATOR,array('','protected','data','')).'enabledModules.php');
-				$disabledByDefault = array('products','quotes','bugReports');
-				foreach($modules as $moduleName):
-					$item = "menu_$moduleName"; ?>
-					<div class="checkbox-grid-cell">
-					<label for="<?php echo $item ?>"><?php echo function_exists('ucfirst')?ucfirst($moduleName):$moduleName; ?></label><input type="checkbox" name="<?php echo $item ?>" id="<?php echo $item; ?>" value="1"<?php echo getField($item,1,!in_array($moduleName,$disabledByDefault))?' checked=1':''; ?> />
-					</div>
-				<?php endforeach; ?>
-			</div>
+                    <div class="row"><label for="currency"><?php echo installer_t('Currency'); ?></label>
+                        <select name="currency" id="currency">
+                            <option value="USD"<?php checkCurrency('USD'); ?>>USD</option>
+                            <option value="EUR"<?php checkCurrency('EUR'); ?>>EUR</option>
+                            <option value="GBP"<?php checkCurrency('GBP'); ?>>GBP</option>
+                            <option value="CAD"<?php checkCurrency('CAD'); ?>>CAD</option>
+                            <option value="JPY"<?php checkCurrency('JPY'); ?>>JPY</option>
+                            <option value="CNY"<?php checkCurrency('CNY'); ?>>CNY</option>
+                            <option value="CHF"<?php checkCurrency('CHF'); ?>>CHF</option>
+                            <option value="INR"<?php checkCurrency('INR'); ?>>INR</option>
+                            <option value="BRL"<?php checkCurrency('BRL'); ?>>BRL</option>
+                            <option value="other"<?php checkCurrency('other'); ?>><?php echo installer_t('Other'); ?></option>
+                        </select>
+                        <input type="text" name="currency2" id="currency2" style="width:120px;<?php if(!isset($_GET['currency']) || $_GET['currency'] != 'other') echo 'display:none;'; ?>" value="<?php getField('currency2', ''); ?>" />
+                    </div>
+                    <div class="row"><label for="timezone"><?php echo installer_t('Default Timezone'); ?></label>
+                        <select name="timezone" id="timezone">
+                            <?php
+                            foreach($timezones as $key => $value)
+                                echo '<option value="'.$key.'"'.checkTimezone($key).'>'.$value.'</option>';
+                            ?>
+                        </select>
+                    </div>
+                    <div class="row"><label for="dummy_data"><?php echo installer_t('Create sample data'); ?></label><input type='checkbox' name='dummy_data' id="dummy_data" value='1' <?php echo getField('dummy_data', 0, true) ? ' checked=1' : ''; ?> /><br /><br /></div>
+                    <div class="row"><label for="adminUsername"><?php echo installer_t('Admin Username'); ?></label><input type="text" name="adminUsername" id="adminUsername" value="<?php getField('adminUsername', 'admin'); ?>" /></div>
+                    <div class="row"><label for="adminPass"><?php echo installer_t('Admin Password'); ?></label><input type="password" name="adminPass" id="adminPass" /></div>
+                    <div class="row"><label for="adminPass2"><?php echo installer_t('Confirm Password'); ?></label><input type="password" name="adminPass2" id="adminPass2" /></div>
+                    <div class="row"><label for="adminEmail"><?php echo installer_t('Administrator Email'); ?></label><input type="text" name="adminEmail" id="adminEmail" value="<?php getField('adminEmail', ''); ?>" /></div>
+                    <h2><?php echo installer_t('Visible Modules'); ?></h2><hr>
+                    <div id="menu_items" class="row">
+                        <?php echo installer_t('Choose which modules will be visible in the main menu. Any of these can be re-enabled after installation if necessary.'); ?><br /><br />
+                        <?php
+                        $modules = require_once(dirname(__FILE__).implode(DIRECTORY_SEPARATOR, array('', 'protected', 'data', '')).'enabledModules.php');
+                        $disabledByDefault = array('products', 'quotes', 'bugReports');
+                        foreach($modules as $moduleName):
+                            $item = "menu_$moduleName";
+                            ?>
+                            <div class="checkbox-grid-cell">
+                                <label for="<?php echo $item ?>"><?php echo function_exists('ucfirst') ? ucfirst($moduleName) : $moduleName; ?></label><input type="checkbox" name="<?php echo $item ?>" id="<?php echo $item; ?>" value="1"<?php echo getField($item, 1, !in_array($moduleName, $disabledByDefault)) ? ' checked=1' : ''; ?> />
+                            </div>
+<?php endforeach; ?>
+                    </div>
 
-		    <h2><?php echo installer_t('Database Connection Info'); ?></h2><hr>
+                    <h2><?php echo installer_t('Database Connection Info'); ?></h2><hr>
 <?php echo installer_t('This release only supports MySQL. Please create a database before installing.'); ?><br /><br />
 
-		    <div id="db-form-box">
-			<div class="row"><label for="dbHost"><?php echo installer_t('Host Name'); ?></label><input type="text" name="dbHost" id="dbHost" value="<?php getField('dbHost', 'localhost'); ?>" /></div>
-			<div class="row"><label for="dbName"><?php echo installer_t('Database Name'); ?></label><input type="text" name="dbName" id="dbName" value="<?php getField('dbName', 'x2engine'); ?>" /></div>
-			<div class="row"><label for="dbUser"><?php echo installer_t('Username'); ?></label><input type="text" name="dbUser" id="dbUser" value="<?php getField('dbUser', 'root'); ?>" /></div>
-			<div class="row"><label for="dbPass"><?php echo installer_t('Password'); ?></label><input type="password" name="dbPass" id="dbPass" /></div>
-			<div class="row"><label for="test_db"><?php echo installer_t('Testing database'); ?></label><input type='checkbox' name='test_db' id="test_db" value='1' <?php echo getField('test_db',0,true)?' checked=1':''; ?> /> </div>
-			<div class="row" id="test_db_notice" style="display:none;padding-bottom:20px;">
-				Enable this only if reinstalling on a separate database for automated testing. <em>Do not</em> use the same database for testing and production.
-				<br /><br />
-				To set up the configuration for web testing, ensure the following URL correctly resolves to index-test.php on this server:
-			<br />
-			<label for="test_url"><?php echo installer_t('Test base URL'); ?></label><input type="text" name='test_url' id="test_url" value="<?php getField('test_url', 'http://'.rtrim($_SERVER['SERVER_NAME']. $_SERVER['REQUEST_URI'],'install.php').'index-test.php'); ?>" />
-			</div>
-		    </div>
-		    <div id="db-test-box"><input type="button" id="db-test-button" class="x2-button" value="<?php echo installer_t('Test Connection'); ?>" />
-			<div id="response-box"><?php echo $dbStatus; ?></div>
-		    </div>
+                    <div id="db-form-box">
+                        <div class="row"><label for="dbHost"><?php echo installer_t('Host Name'); ?></label><input type="text" name="dbHost" id="dbHost" value="<?php getField('dbHost', 'localhost'); ?>" /></div>
+                        <div class="row"><label for="dbName"><?php echo installer_t('Database Name'); ?></label><input type="text" name="dbName" id="dbName" value="<?php getField('dbName', 'x2engine'); ?>" /></div>
+                        <div class="row"><label for="dbUser"><?php echo installer_t('Username'); ?></label><input type="text" name="dbUser" id="dbUser" value="<?php getField('dbUser', 'root'); ?>" /></div>
+                        <div class="row"><label for="dbPass"><?php echo installer_t('Password'); ?></label><input type="password" name="dbPass" id="dbPass" /></div>
+                        <div class="row"><label for="test_db"><?php echo installer_t('Testing database'); ?></label><input type='checkbox' name='test_db' id="test_db" value='1' <?php echo getField('test_db', 0, true) ? ' checked=1' : ''; ?> /> </div>
+                        <div class="row" id="test_db_notice" style="display:none;padding-bottom:20px;">
+                            Enable this only if reinstalling on a separate database for automated testing. <em>Do not</em> use the same database for testing and production.
+                            <br /><br />
+                            To set up the configuration for web testing, ensure the following URL correctly resolves to index-test.php on this server:
+                            <br />
+                            <label for="test_url"><?php echo installer_t('Test base URL'); ?></label><input type="text" name='test_url' id="test_url" value="<?php getField('test_url', 'http://'.rtrim($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], 'install.php').'index-test.php'); ?>" />
+                        </div>
+                    </div>
+                    <div id="db-test-box"><input type="button" id="db-test-button" class="x2-button" value="<?php echo installer_t('Test Connection'); ?>" />
+                        <div id="response-box"><?php echo $dbStatus; ?></div>
+                    </div>
 
-<div></div>
+                    <div></div>
 
-		    <br /><br /><br />
+                    <br /><br /><br />
 
-			<?php
-			include(realpath('protected/components/UpdatesForm.php'));
-			// Configuration for the updates / optional info form:
-			$editions = array('pro');
-			$edition = 'opensource';
-			foreach ($editions as $ed) // Add editional prefixes as necessary
-				if (file_exists("initialize_$ed.php"))
-					$edition = $ed;
-			$form = new UpdatesForm(
-							array(
-								'x2_version' => $version,
-								'unique_id' => getField('unique_id', 'none', True),
-								'formId' => 'install',
-								'submitButtonId' => 'install-button',
-								'statusId' => 'error-box',
-								'themeUrl' => $themeURL,
-								'receiveUpdates' => getField('receiveUpdates', 1, True),
-								'edition' => $edition,
-							),
-							'installer_t'
-			);
-			require_once(realpath('protected/views/admin/stayUpdated.php'));
-			?>
+                    <?php
+                    include(realpath('protected/components/UpdatesForm.php'));
+                    // Configuration for the updates / optional info form:
+                    $editions = array('pro');
+                    $edition = 'opensource';
+                    foreach($editions as $ed) // Add editional prefixes as necessary
+                        if(file_exists("initialize_$ed.php"))
+                            $edition = $ed;
+                    $form = new UpdatesForm(
+                                    array(
+                                        'x2_version' => $version,
+                                        'unique_id' => getField('unique_id', 'none', True),
+                                        'formId' => 'install',
+                                        'submitButtonId' => 'install-button',
+                                        'statusId' => 'error-box',
+                                        'themeUrl' => $themeURL,
+                                        'receiveUpdates' => getField('receiveUpdates', 1, True),
+                                        'edition' => $edition,
+                                    ),
+                                    'installer_t'
+                    );
+                    require_once(realpath('protected/views/admin/stayUpdated.php'));
+                    ?>
 
 
-<?php $haveErrors = !empty($errorMessages); ?>
-		    <hr />
-		    <div class="form" id="error-box"<?php echo $haveErrors ? Null : ' style="display:none;"'; ?>>
-<?php if ($haveErrors): ?>
-    			<h3><?php echo installer_t("Please correct the following errors:") ?></h3>
-    			<ul>
-				<?php foreach ($errorMessages as $message): ?>
-				    <li><?php echo $message; ?></li>
-			    <?php endforeach; ?>
-    			</ul>
+                        <?php $haveErrors = !empty($errorMessages); ?>
+                    <hr />
+                    <div class="form" id="error-box"<?php echo $haveErrors ? Null : ' style="display:none;"'; ?>>
+                            <?php if($haveErrors): ?>
+                            <h3><?php echo installer_t("Please correct the following errors:") ?></h3>
+                            <ul>
+                                <?php foreach($errorMessages as $message): ?>
+                                    <li><?php echo $message; ?></li>
+                            <?php endforeach; ?>
+                            </ul>
 <?php endif; ?>
-		    </div>
-			<input type="hidden" id="complete" name="complete" value="0" />
-		    <input type="submit" id="install-button" class="x2-button" value="<?php echo installer_t('Install'); ?>" />
-		    <br />
-		</form>
-		<a style="text-align: center; display:block;" href="http://www.x2engine.com"><?php echo installer_t('For help or more information - X2Engine.com'); ?></a>
+                    </div>
+                    <input type="hidden" id="complete" name="complete" value="0" />
+                    <input type="submit" id="install-button" class="x2-button" value="<?php echo installer_t('Install'); ?>" />
+                    <br />
+                </form>
+                <a style="text-align: center; display:block;" href="http://www.x2engine.com"><?php echo installer_t('For help or more information - X2Engine.com'); ?></a>
 
-	    </div>
-	    <div id="footer">
+            </div>
+            <div id="footer">
 
 
-		Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
+                Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
 <?php echo installer_t('All Rights Reserved.'); ?>
-	    </div>
-	</div>
+            </div>
+        </div>
     </body>
 </html>

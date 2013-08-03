@@ -42,11 +42,11 @@
 class X2FlowRecordReassign extends X2FlowAction {
 	public $title = 'Reassign Record';
 	public $info = 'Assign the record to a user or group, or automatically using lead routing.';
-	
+
 	public function __construct() {
 		$this->attachBehavior('LeadRoutingBehavior',array('class'=>'LeadRoutingBehavior'));
 	}
-	
+
 	public function paramRules() {
 		$leadRoutingModes = array(
 			''=>'Free For All',
@@ -68,11 +68,11 @@ class X2FlowRecordReassign extends X2FlowAction {
 	public function execute(&$params) {
 		$user = $this->parseOption('user',$params);
 		if($user === 'auto')
-			$params['model']->assignedTo = $this->getNextAssignee();
+			$assignedTo = $this->getNextAssignee();
 		elseif(CActiveRecord::model('User')->exists('username=?',array($user)))	// make sure the user exists
-			$params['model']->assignedTo = $user;
+			$assignedTo = $user;
 		else
 			return false;
-		return $params['model']->save();
+		return $params['model']->updateByPk($params['model']->id,array('assignedTo'=>$assignedTo));
 	}
 }

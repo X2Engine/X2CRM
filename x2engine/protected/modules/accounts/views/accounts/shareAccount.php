@@ -83,7 +83,7 @@ $form = $this->beginWidget('CActiveForm', array(
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
 ?>
-<div class="page-title">
+<div class="page-title icon accounts">
 	<h2><span class="no-bold"><?php echo Yii::t('accounts','Account:'); ?></span> <?php echo $model->name; ?></h2>
 </div>
 <?php

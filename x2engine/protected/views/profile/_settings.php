@@ -35,9 +35,9 @@
  *****************************************************************************************/
 
 Yii::app()->clientScript->registerScriptFile(
-    Yii::app()->getBaseUrl().'/js/profileSettings.js', CClientScript::POS_END);
+        Yii::app()->getBaseUrl().'/js/profileSettings.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(
-    Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
+        Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
 
 Yii::app()->clientScript->registerCss("profileSettings", "
 
@@ -184,328 +184,341 @@ $preferences = $model->theme;
 $passVariablesToClientScript = "
     x2.profileSettings = {};
     x2.profileSettings.checkerImagePath = '".
-        Yii::app()->theme->getBaseUrl() . "/images/checkers.gif';
-    x2.profileSettings.createThemeHint = '" .  
-        Yii::t ('preferences', 
-                'Save your current theme settings as a predefined theme.') . "';
-    x2.profileSettings.saveThemeHint = '" .  
-        Yii::t ('preferences', 
-                'Update the settings of the currently selected predefined theme.') . "';
-    x2.profileSettings.normalizedUnhideTagUrl = '" .  
-        CHtml::normalizeUrl(array("/profile/unhideTag")) . "';
+        Yii::app()->theme->getBaseUrl()."/images/checkers.gif';
+    x2.profileSettings.createThemeHint = '".
+        Yii::t('profile', 'Save your current theme settings as a predefined theme.')."';
+    x2.profileSettings.saveThemeHint = '".
+        Yii::t('profile', 'Update the settings of the currently selected predefined theme.')."';
+    x2.profileSettings.normalizedUnhideTagUrl = '".
+        CHtml::normalizeUrl(array("/profile/unhideTag"))."';
     x2.profileSettings.uploadedByAttrs = {};";
 
 // pass array of predefined theme uploadedBy attributes to client
-foreach ($myThemes->data as $theme) {
-  $passVariablesToClientScript .= "x2.profileSettings.uploadedByAttrs['".
-    $theme->fileName . "'] = '" . $theme->uploadedBy . "';";
+foreach($myThemes->data as $theme){
+    $passVariablesToClientScript .= "x2.profileSettings.uploadedByAttrs['".
+            $theme->fileName."'] = '".$theme->uploadedBy."';";
 }
 
 Yii::app()->clientScript->registerScript(
-    'passVariablesToClientScript', $passVariablesToClientScript,
-    CClientScript::POS_END);
-
+        'passVariablesToClientScript', $passVariablesToClientScript, CClientScript::POS_END);
 ?>
 
 <?php
-$form=$this->beginWidget('CActiveForm', array(
-    'id'=>'settings-form',
-    'enableAjaxValidation'=>false,
-)); ?>
+$form = $this->beginWidget('CActiveForm', array(
+    'id' => 'settings-form',
+    'enableAjaxValidation' => false,
+        ));
+?>
 <?php echo $form->errorSummary($model); ?>
 
 <div id="profile-settings" class="form">
     <div class="row" style="margin-bottom:10px;">
         <div class="cell">
-            <?php echo $form->checkBox(
-                $model,'allowPost',array('onchange'=>'js:highlightSave();')); ?>
-            <?php echo $form->labelEx(
-                $model,'allowPost',array('style'=>'display:inline;')); ?>
+            <?php
+            echo $form->checkBox(
+                    $model, 'allowPost', array('onchange' => 'js:highlightSave();'));
+            ?>
+            <?php
+            echo $form->labelEx(
+                    $model, 'allowPost', array('style' => 'display:inline;'));
+            ?>
         </div>
         <!--<div class="cell">
-            <?php //echo $form->checkBox($model,'showSocialMedia',array('onchange'=>'js:highlightSave();')); ?>
-            <?php //echo $form->labelEx($model,'showSocialMedia',array('style'=>'display:inline;')); ?>
-            <?php //echo $form->dropDownList($model,'showSocialMedia',array(1=>Yii::t('actions','Yes'),0=>Yii::t('actions','No')),array('onchange'=>'js:highlightSave();','style'=>'width:100px')); ?>
+        <?php //echo $form->checkBox($model,'showSocialMedia',array('onchange'=>'js:highlightSave();'));  ?>
+        <?php //echo $form->labelEx($model,'showSocialMedia',array('style'=>'display:inline;'));  ?>
+        <?php //echo $form->dropDownList($model,'showSocialMedia',array(1=>Yii::t('actions','Yes'),0=>Yii::t('actions','No')),array('onchange'=>'js:highlightSave();','style'=>'width:100px'));  ?>
         </div>-->
     </div>
     <div class="row">
         <div class="cell">
-            <?php echo $form->labelEx($model,'startPage'); ?>
-            <?php echo $form->dropDownList(
-                $model,'startPage',$menuItems,
-                array('onchange'=>'js:highlightSave();','style'=>'min-width:140px;')); ?>
+            <?php echo $form->labelEx($model, 'startPage'); ?>
+            <?php
+            echo $form->dropDownList(
+                    $model, 'startPage', $menuItems, array('onchange' => 'js:highlightSave();', 'style' => 'min-width:140px;'));
+            ?>
         </div>
         <div class="cell">
-            <?php echo $form->labelEx($model,'resultsPerPage'); ?>
-            <?php echo $form->dropDownList(
-                $model,'resultsPerPage',Profile::getPossibleResultsPerPage(),
-                array('onchange'=>'js:highlightSave();','style'=>'width:100px')); ?>
+            <?php echo $form->labelEx($model, 'resultsPerPage'); ?>
+            <?php
+            echo $form->dropDownList(
+                    $model, 'resultsPerPage', Profile::getPossibleResultsPerPage(), array('onchange' => 'js:highlightSave();', 'style' => 'width:100px'));
+            ?>
         </div>
 
     </div>
     <div class="row">
         <div class="cell">
-            <?php echo $form->labelEx($model,'language'); ?>
-            <?php echo $form->dropDownList(
-                $model,'language',$languages,array('onchange'=>'js:highlightSave();')); ?>
+            <?php echo $form->labelEx($model, 'language'); ?>
+            <?php
+            echo $form->dropDownList(
+                    $model, 'language', $languages, array('onchange' => 'js:highlightSave();'));
+            ?>
         </div>
         <div class="cell">
             <?php
             if(!isset($model->timeZone))
-                $model->timeZone="Europe/London";
+                $model->timeZone = "Europe/London";
             ?>
-            <?php echo $form->labelEx($model,'timeZone'); ?>
-            <?php echo $form->dropDownList(
-                $model,'timeZone',$times,array('onchange'=>'js:highlightSave();')); ?>
+            <?php echo $form->labelEx($model, 'timeZone'); ?>
+            <?php
+            echo $form->dropDownList(
+                    $model, 'timeZone', $times, array('onchange' => 'js:highlightSave();'));
+            ?>
         </div>
     </div>
 </div>
 
 <div id="theme-attributes" class='form'>
     <div id="theme-attributes-title-bar" class="row prefs-title-bar">
-        <h3 class="left"><?php echo Yii::t('app','Theme'); ?></h3>
+        <h3 class="left"><?php echo Yii::t('app', 'Theme'); ?></h3>
         <div class="right minimize-arrows">
             <img class="prefs-expand-arrow"
-             src="<?php echo Yii::app()->theme->getBaseUrl() . "/images/icons/Expand_Widget.png"; ?>" />
+                 src="<?php echo Yii::app()->theme->getBaseUrl()."/images/icons/Expand_Widget.png"; ?>" />
             <img class="hide prefs-collapse-arrow"
-             src="<?php echo Yii::app()->theme->getBaseUrl() . "/images/icons/Collapse_Widget.png"; ?>" />
+                 src="<?php echo Yii::app()->theme->getBaseUrl()."/images/icons/Collapse_Widget.png"; ?>" />
         </div>
     </div>
     <div id="theme-attributes-body" class="row prefs-body">
         <div class="row">
             <label for="themeName">
-                <?php echo Yii::t('app','Predefined Theme') ?>
+                <?php echo Yii::t('app', 'Predefined Theme') ?>
             </label>
-            <select id="themeName" class="left theme-attr" name="preferences[themeName]"> 
-                <option value="" id="custom-theme-option"> 
-                    <?php echo Yii::t('app','Custom'); ?> 
+            <select id="themeName" class="left theme-attr" name="preferences[themeName]">
+                <option value="" id="custom-theme-option">
+                    <?php echo Yii::t('app', 'Custom'); ?>
                 </option>
-                <?php foreach ($myThemes->data as $theme) { ?>
-                <option value="<?php echo $theme->fileName; ?>"
-                 <?php 
-                 if ($theme->fileName == $preferences['themeName']) {
-                    echo "selected='selected'";
-                 }
-                 ?>>
-                    <?php echo $theme->fileName; ?>
-                </option>
+                <?php foreach($myThemes->data as $theme){ ?>
+                    <option value="<?php echo $theme->fileName; ?>"
+                    <?php
+                    if($theme->fileName == $preferences['themeName']){
+                        echo "selected='selected'";
+                    }
+                    ?>>
+                                <?php echo $theme->fileName; ?>
+                    </option>
                 <?php } ?>
             </select>
-            <button type='button' class='x2-button x2-small-button left' 
-             id='prefs-create-theme-button'>
-                <?php echo Yii::t('profile', 'Create Theme'); ?>
+            <button type='button' class='x2-button x2-small-button left'
+                    id='prefs-create-theme-button'>
+                        <?php echo Yii::t('profile', 'Create Theme'); ?>
             </button>
             <span id="prefs-create-theme-hint" class='prefs-hint'>[?]</span>
-            <button type='button' class='x2-button x2-small-button left' 
-             id='prefs-save-theme-button'>
-                <?php echo Yii::t('profile', 'Save Theme'); ?>
+            <button type='button' class='x2-button x2-small-button left'
+                    id='prefs-save-theme-button'>
+                        <?php echo Yii::t('profile', 'Save Theme'); ?>
             </button>
             <span id="prefs-save-theme-hint" class='hide prefs-hint'>[?]</span>
             <!--<div id="create-theme-dialog" title="Create Theme">
-                <span class='left'> <?php //echo Yii::t('app', 'Theme name'); ?>: </span>
+                <span class='left'> <?php //echo Yii::t('app', 'Theme name');    ?>: </span>
                 <input id="new-theme-name"> </input>
                 <input type="checkbox"> Private </input>
                 <br/>
                 <button class='dialog-create-button' class="x2-button">
-                    <?php //echo Yii::t('app', 'Create'); ?>
+            <?php //echo Yii::t('app', 'Create');  ?>
                 </button>
             </div>-->
             <!--<button type='button' class='x2-button' id='export-theme-button'>
-                <?php //echo Yii::t('profile', 'Export Theme'); ?>
+            <?php //echo Yii::t('profile', 'Export Theme');  ?>
             </button>
             <button type='button' class='x2-button' id='upload-theme-button'>
-                <?php //echo Yii::t('profile', 'Upload Theme'); ?>
+            <?php //echo Yii::t('profile', 'Upload Theme');   ?>
             </button>-->
         </div>
         <div class="row">
             <label for="backgroundColor">
-                <?php echo Yii::t('app','Background Color') ?>
+                <?php echo Yii::t('app', 'Background Color') ?>
             </label>
             <input id="backgroundColor" type="text" name="preferences[backgroundColor]"
-             value="<?php echo $preferences['backgroundColor']; ?>"
-             class='color-picker-input theme-attr'> </input>
+                   value="<?php echo $preferences['backgroundColor']; ?>"
+                   class='color-picker-input theme-attr'> </input>
         </div>
         <div class="row">
             <label for="menuBgColor">
-                <?php echo Yii::t('app','Menu Background Color') ?>
+                <?php echo Yii::t('app', 'Menu Background Color') ?>
             </label>
             <input id="menuBgColor" type="text" name="preferences[menuBgColor]"
-             value="<?php echo $preferences['menuBgColor']; ?>"
-             class='color-picker-input theme-attr'> </input>
+                   value="<?php echo $preferences['menuBgColor']; ?>"
+                   class='color-picker-input theme-attr'> </input>
         </div>
         <div class="row">
             <label for="menuTextColor">
-                <?php echo Yii::t('app','Menu Text Color') ?>
+                <?php echo Yii::t('app', 'Menu Text Color') ?>
             </label>
             <input id="menuTextColor" type="text" name="preferences[menuTextColor]"
-             value="<?php echo $preferences['menuTextColor']; ?>"
-             class='color-picker-input theme-attr'> </input>
+                   value="<?php echo $preferences['menuTextColor']; ?>"
+                   class='color-picker-input theme-attr'> </input>
         </div>
         <div class="row">
             <label for="pageHeaderBgColor">
-                <?php echo Yii::t('app','Page Header Background Color') ?>
+                <?php echo Yii::t('app', 'Page Header Background Color') ?>
             </label>
             <input id="pageHeaderBgColor" type="text"
-             name="preferences[pageHeaderBgColor]"
-             value="<?php echo $preferences['pageHeaderBgColor']; ?>"
-             class='color-picker-input theme-attr'> </input>
+                   name="preferences[pageHeaderBgColor]"
+                   value="<?php echo $preferences['pageHeaderBgColor']; ?>"
+                   class='color-picker-input theme-attr'> </input>
         </div>
         <div class="row">
             <label for="pageHeaderTextColor">
-                <?php echo Yii::t('app','Page Header Text Color') ?>
+                <?php echo Yii::t('app', 'Page Header Text Color') ?>
             </label>
             <input id="pageHeaderTextColor" type="text"
-             name="preferences[pageHeaderTextColor]"
-             value="<?php echo $preferences['pageHeaderTextColor']; ?>"
-             class='color-picker-input theme-attr'> </input>
+                   name="preferences[pageHeaderTextColor]"
+                   value="<?php echo $preferences['pageHeaderTextColor']; ?>"
+                   class='color-picker-input theme-attr'> </input>
         </div>
         <div class="row">
             <label for="activityFeedWidgetBgColor">
-                <?php echo Yii::t('app','Activity Feed Widget Background Color'); ?>
+                <?php echo Yii::t('app', 'Activity Feed Widget Background Color'); ?>
             </label>
-            <input id="activityFeedWidgetBgColor" type="text" 
-             name="preferences[activityFeedWidgetBgColor]" 
-             value="<?php echo $preferences['activityFeedWidgetBgColor']; ?>"
-             class='color-picker-input theme-attr'> </input>
+            <input id="activityFeedWidgetBgColor" type="text"
+                   name="preferences[activityFeedWidgetBgColor]"
+                   value="<?php echo $preferences['activityFeedWidgetBgColor']; ?>"
+                   class='color-picker-input theme-attr'> </input>
         </div>
         <div class="row">
             <label for="gridViewRowColorOdd">
-                <?php echo Yii::t('app','Grid View Row Color 1'); ?>
+                <?php echo Yii::t('app', 'Grid View Row Color 1'); ?>
             </label>
-            <input id="gridViewRowColorOdd" type="text" 
-             name="preferences[gridViewRowColorOdd]" 
-             value="<?php echo $preferences['gridViewRowColorOdd']; ?>"
-             class='color-picker-input theme-attr'> </input>
+            <input id="gridViewRowColorOdd" type="text"
+                   name="preferences[gridViewRowColorOdd]"
+                   value="<?php echo $preferences['gridViewRowColorOdd']; ?>"
+                   class='color-picker-input theme-attr'> </input>
         </div>
         <div class="row">
             <label for="gridViewRowColorEven">
-                <?php echo Yii::t('app','Grid View Row Color 2'); ?>
+                <?php echo Yii::t('app', 'Grid View Row Color 2'); ?>
             </label>
-            <input id="gridViewRowColorEven" type="text" 
-             name="preferences[gridViewRowColorEven]" 
-             value="<?php echo $preferences['gridViewRowColorEven']; ?>"
-             class='color-picker-input theme-attr'> </input>
+            <input id="gridViewRowColorEven" type="text"
+                   name="preferences[gridViewRowColorEven]"
+                   value="<?php echo $preferences['gridViewRowColorEven']; ?>"
+                   class='color-picker-input theme-attr'> </input>
         </div>
         <div class="row">
             <label for="backgroundTiling">
-                <?php echo Yii::t('app','Background Tiling') ?>
+                <?php echo Yii::t('app', 'Background Tiling') ?>
             </label>
-            <select id="backgroundTiling" name="preferences[backgroundTiling]" 
-             class='theme-attr left'>
-             <?php
-                $tilingOptions = array ('stretch', 'center', 'repeat', 'repeat-x', 'repeat-y');
-                foreach ($tilingOptions as $option) { ?>
-                <option value="<?php echo $option; ?>" 
-                 <?php echo $option == $preferences['backgroundTiling'] ? 
-                    "selected=\'selected\'" : '';?>>
-                    <?php echo Yii::t('app', $option) ?>
-                </option>
+            <select id="backgroundTiling" name="preferences[backgroundTiling]"
+                    class='theme-attr left'>
+                        <?php
+                        $tilingOptions = array('stretch', 'center', 'repeat', 'repeat-x', 'repeat-y');
+                        foreach($tilingOptions as $option){
+                            ?>
+                    <option value="<?php echo $option; ?>"
+                    <?php
+                    echo $option == $preferences['backgroundTiling'] ?
+                            "selected=\'selected\'" : '';
+                    ?>>
+                                <?php echo Yii::t('app', $option) ?>
+                    </option>
                 <?php } ?>
             </select>
         </div>
         <div class="row">
             <label for="backgroundImg">
-                <?php echo Yii::t('profile','Background Image'); ?>
+                <?php echo Yii::t('profile', 'Background Image'); ?>
             </label>
             <select id="backgroundImg" name="preferences[backgroundImg]"
-            class='theme-attr left'>
-                <option value=""> <?php echo Yii::t('app','None'); ?> </option>
-            <?php foreach ($myBackgrounds->data as $background) { ?>
-                <option value="<?php
-                 echo $background->uploadedBy == null ?
-                     $background->fileName :
-                     ('media/' . $background->uploadedBy . '/' . $background->fileName);
-                 ?>"
-                 <?php
-                 if ($background->fileName == $preferences['backgroundImg']) {
-                    echo "selected='selected'";
-                 }
-                 ?>>
-                    <?php echo $background->fileName; ?>
-                </option>
-            <?php } ?>
+                    class='theme-attr left'>
+                <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
+                <?php foreach($myBackgrounds->data as $background){ ?>
+                    <option value="<?php
+                echo $background->uploadedBy == null ?
+                        $background->fileName :
+                        ('media/'.$background->uploadedBy.'/'.$background->fileName);
+                    ?>"
+                            <?php
+                            if($background->fileName == $preferences['backgroundImg']){
+                                echo "selected='selected'";
+                            }
+                            ?>>
+                                <?php echo $background->fileName; ?>
+                    </option>
+                <?php } ?>
             </select>
             <button type='button' class='x2-button x2-small-button'
-             id='upload-background-img-button'>
-                <?php echo Yii::t('profile', 'Upload Background Image'); ?>
+                    id='upload-background-img-button'>
+                        <?php echo Yii::t('profile', 'Upload Background Image'); ?>
             </button>
         </div>
         <div class="row">
             <label for="loginSounds">
-                <?php echo Yii::t('profile','Login Sound'); ?>
+                <?php echo Yii::t('profile', 'Login Sound'); ?>
             </label>
             <select id="loginSounds" name="preferences[loginSound]" class='left'>
-                <option value=""> <?php echo Yii::t('app','None'); ?> </option>
-            <?php foreach ($myLoginSounds->data as $loginSound) { ?>
-                <option value="<?php echo $loginSound->id . "," .
-                 $loginSound->fileName . "," . $loginSound->uploadedBy; ?>"
-                 id="sound-<?php echo $loginSound->id; ?>"
-                 <?php
-                 if ($loginSound->fileName == $model->loginSound) {
-                    echo "selected='selected'";
-                 }
-                 ?>>
-                    <?php echo $loginSound->fileName; ?>
-                </option>
-            <?php } ?>
+                <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
+                <?php foreach($myLoginSounds->data as $loginSound){ ?>
+                    <option value="<?php
+                echo $loginSound->id.",".
+                $loginSound->fileName.",".$loginSound->uploadedBy;
+                    ?>"
+                            id="sound-<?php echo $loginSound->id; ?>"
+                            <?php
+                            if($loginSound->fileName == $model->loginSound){
+                                echo "selected='selected'";
+                            }
+                            ?>>
+                                <?php echo $loginSound->fileName; ?>
+                    </option>
+                <?php } ?>
             </select>
             <button type='button' class='x2-button x2-small-button'
-             id='upload-login-sound-button'>
-                <?php echo Yii::t('profile', 'Upload Login Sound'); ?>
+                    id='upload-login-sound-button'>
+                        <?php echo Yii::t('profile', 'Upload Login Sound'); ?>
             </button>
         </div>
         <div class="row">
             <label for="notificationSounds">
-                <?php echo Yii::t('profile','Notification Sound'); ?>
+                <?php echo Yii::t('profile', 'Notification Sound'); ?>
             </label>
             <select id="notificationSounds" name="preferences[notificationSound]"
-             class='left'>
-                <option value=""> <?php echo Yii::t('app','None'); ?> </option>
-                <?php foreach ($myNotificationSounds->data as $notificationSound) { ?>
-                <option value="<?php echo $notificationSound->id . "," .
-                                          $notificationSound->fileName . "," .
-                                          $notificationSound->uploadedBy; ?>"
-                 id="sound-<?php echo $notificationSound->id; ?>"
-                    <?php
-                    if ($notificationSound->fileName == $model->notificationSound) {
-                        echo "selected='selected'";
-                    }
-                    ?>>
-                    <?php echo $notificationSound->fileName; ?>
-                </option>
+                    class='left'>
+                <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
+                <?php foreach($myNotificationSounds->data as $notificationSound){ ?>
+                    <option value="<?php
+                echo $notificationSound->id.",".
+                $notificationSound->fileName.",".
+                $notificationSound->uploadedBy;
+                    ?>"
+                            id="sound-<?php echo $notificationSound->id; ?>"
+                            <?php
+                            if($notificationSound->fileName == $model->notificationSound){
+                                echo "selected='selected'";
+                            }
+                            ?>>
+                                <?php echo $notificationSound->fileName; ?>
+                    </option>
                 <?php } ?>
             </select>
             <button type='button' class='x2-button x2-small-button'
-             id='upload-notification-sound-button'>
-                <?php echo Yii::t('profile', 'Upload Notification Sound'); ?>
+                    id='upload-notification-sound-button'>
+                        <?php echo Yii::t('profile', 'Upload Notification Sound'); ?>
             </button>
         </div>
     </div>
 
-    <?php /*<div class="row">
-        <?php echo $form->checkBox($model,'enableFullWidth'); ?>
-        <?php echo $form->labelEx($model,'enableFullWidth',array('style'=>'display:inline;')); ?>
-    </div> */ ?>
+    <?php /* <div class="row">
+      <?php echo $form->checkBox($model,'enableFullWidth'); ?>
+      <?php echo $form->labelEx($model,'enableFullWidth',array('style'=>'display:inline;')); ?>
+      </div> */ ?>
 </div>
 
 <div id="prefs-tags" class="form">
     <div id="tags-title-bar" class="row prefs-title-bar">
-        <h3 class="left"><?php echo Yii::t('profile','Unhide Tags'); ?></h3>
+        <h3 class="left"><?php echo Yii::t('profile', 'Unhide Tags'); ?></h3>
         <div class="right minimize-arrows">
             <img class="prefs-expand-arrow"
-             src="<?php echo Yii::app()->theme->getBaseUrl() ?>/images/icons/Expand_Widget.png"/>
+                 src="<?php echo Yii::app()->theme->getBaseUrl() ?>/images/icons/Expand_Widget.png"/>
             <img class="hide prefs-collapse-arrow"
-             src="<?php echo Yii::app()->theme->getBaseUrl() ?>/images/icons/Collapse_Widget.png"/>
+                 src="<?php echo Yii::app()->theme->getBaseUrl() ?>/images/icons/Collapse_Widget.png"/>
         </div>
     </div>
     <div id="tags-body" class="row prefs-body">
-        <?php   
-        foreach($allTags as &$tag) {
-            echo '<span class="tag unhide" tag-name="'.substr($tag['tag'],1).'">'.
-                CHtml::link($tag['tag'],array(
-                    '/search/search?term=%23'.substr($tag['tag'],1)),
-                    array('class'=>'x2-link x2-tag')).
-                '</span>';
+        <?php
+        foreach($allTags as &$tag){
+            echo '<span class="tag unhide" tag-name="'.substr($tag['tag'], 1).'">'.
+            CHtml::link($tag['tag'], array(
+                '/search/search?term=%23'.substr($tag['tag'], 1)), array('class' => 'x2-link x2-tag')).
+            '</span>';
         }
         ?>
     </div>
@@ -515,9 +528,10 @@ $form=$this->beginWidget('CActiveForm', array(
 <div class="form">
     <br/>
     <div class="row buttons">
-        <?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : 
-          Yii::t('app','Save Profile Settings'),
-          array('id'=>'save-changes','class'=>'x2-button')); ?>
+        <?php
+        echo CHtml::submitButton($model->isNewRecord ? Yii::t('app', 'Create') :
+                        Yii::t('app', 'Save Profile Settings'), array('id' => 'save-changes', 'class' => 'x2-button'));
+        ?>
     </div>
 </div>
 
@@ -525,45 +539,47 @@ $form=$this->beginWidget('CActiveForm', array(
 
 <div class="form hide upload-box" id="create-theme-box">
     <div class="row">
-        <h3><?php echo Yii::t('profile','Create a Theme'); ?></h3>
-            <span class='left'>
-                <?php echo Yii::t('app', 'Creating a theme will save your current ' .
-                    'theme settings as a predefined theme'); ?>.
-            </span>
-            <br/>
-            <div class='theme-name-input-container'>
-                <span class='left'> <?php echo Yii::t('app', 'Theme name'); ?>: </span>
-                <input id="new-theme-name"> </input>
-            </div>
-            <select class='prefs-theme-privacy-setting'> 
-                <option value='0' selected='selected'>
+        <h3><?php echo Yii::t('profile', 'Create a Theme'); ?></h3>
+        <span class='left'>
+            <?php
+            echo Yii::t('app', 'Creating a theme will save your current '.
+                    'theme settings as a predefined theme');
+            ?>.
+        </span>
+        <br/>
+        <div class='theme-name-input-container'>
+            <span class='left'> <?php echo Yii::t('app', 'Theme name'); ?>: </span>
+            <input id="new-theme-name"> </input>
+        </div>
+        <select class='prefs-theme-privacy-setting'>
+            <option value='0' selected='selected'>
                 <?php echo Yii::t('app', 'Public'); ?>
-                </option>
-                <option value='1'>
+            </option>
+            <option value='1'>
                 <?php echo Yii::t('app', 'Private'); ?>
-                </option>
-            </select>
-            <br/>
-            <div class="row buttons">
-                <button id='create-theme-submit-button' class='x2-button submit-upload'>
-                    <?php echo Yii::t('app', 'Create'); ?>
-                </button>
-                <button class="x2-button cancel-upload"> Cancel </button>
-            </div>
+            </option>
+        </select>
+        <br/>
+        <div class="row buttons">
+            <button id='create-theme-submit-button' class='x2-button submit-upload'>
+                <?php echo Yii::t('app', 'Create'); ?>
+            </button>
+            <button class="x2-button cancel-upload"> <?php echo Yii::t('app', 'Cancel'); ?> </button>
+        </div>
     </div>
 </div>
 
 <div class="form hide upload-box" id="upload-background-img-box">
     <div class="row">
-        <h3><?php echo Yii::t('profile','Upload a Background Image'); ?></h3>
-        <?php echo CHtml::form(array('site/upload','id'=>$model->id),'post',array('enctype'=>'multipart/form-data')); ?>
-        <?php echo CHtml::dropDownList('private','public',array('0'=>Yii::t('actions','Public'),'1'=>Yii::t('actions','Private'))); ?>
-        <?php echo CHtml::hiddenField('associationId',Yii::app()->user->getId()); ?>
+        <h3><?php echo Yii::t('profile', 'Upload a Background Image'); ?></h3>
+        <?php echo CHtml::form(array('site/upload', 'id' => $model->id), 'post', array('enctype' => 'multipart/form-data')); ?>
+        <?php echo CHtml::dropDownList('private', 'public', array('0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions', 'Private'))); ?>
+        <?php echo CHtml::hiddenField('associationId', Yii::app()->user->getId()); ?>
         <?php echo CHtml::hiddenField('associationType', 'bg'); ?>
-        <?php echo CHtml::fileField('upload','',array('id'=>'background-img-file')); ?>
+        <?php echo CHtml::fileField('upload', '', array('id' => 'background-img-file')); ?>
         <div class="row buttons">
-            <?php echo CHtml::submitButton(Yii::t('app','Upload'),array('id'=>'upload-background-img-submit-button','disabled'=>'disabled','class'=>'x2-button submit-upload')); ?>
-            <button class="x2-button cancel-upload"> Cancel </button>
+            <?php echo CHtml::submitButton(Yii::t('app', 'Upload'), array('id' => 'upload-background-img-submit-button', 'disabled' => 'disabled', 'class' => 'x2-button submit-upload')); ?>
+            <button class="x2-button cancel-upload"> <?php echo Yii::t('app', 'Cancel'); ?> </button>
         </div>
         <?php echo CHtml::endForm(); ?>
     </div>
@@ -572,14 +588,14 @@ $form=$this->beginWidget('CActiveForm', array(
 <div class="form hide upload-box" id="upload-login-sound-box">
     <div class="row">
         <h3><?php echo Yii::t('profile', 'Upload a Login Sound'); ?></h3>
-        <?php echo CHtml::form(array('site/upload','id'=>$model->id),'post',array('enctype'=>'multipart/form-data')); ?>
-        <?php echo CHtml::dropDownList('private','public',array('0'=>Yii::t('actions','Public'),'1'=>Yii::t('actions','Private'))); ?>
-        <?php echo CHtml::hiddenField('associationId',Yii::app()->user->getId()); ?>
-        <?php echo CHtml::hiddenField('associationType','loginSound'); ?>
-        <?php echo CHtml::fileField('upload','',array('id'=>'login-sound-file')); ?>
+        <?php echo CHtml::form(array('site/upload', 'id' => $model->id), 'post', array('enctype' => 'multipart/form-data')); ?>
+        <?php echo CHtml::dropDownList('private', 'public', array('0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions', 'Private'))); ?>
+        <?php echo CHtml::hiddenField('associationId', Yii::app()->user->getId()); ?>
+        <?php echo CHtml::hiddenField('associationType', 'loginSound'); ?>
+        <?php echo CHtml::fileField('upload', '', array('id' => 'login-sound-file')); ?>
         <div class="row buttons">
-            <?php echo CHtml::submitButton(Yii::t('app','Upload'),array('id'=>'upload-login-sound-submit-button','disabled'=>'disabled','class'=>'x2-button submit-upload')); ?>
-            <button class="x2-button cancel-upload"> Cancel </button>
+            <?php echo CHtml::submitButton(Yii::t('app', 'Upload'), array('id' => 'upload-login-sound-submit-button', 'disabled' => 'disabled', 'class' => 'x2-button submit-upload')); ?>
+            <button class="x2-button cancel-upload"> <?php echo Yii::t('app', 'Cancel'); ?> </button>
         </div>
         <?php echo CHtml::endForm(); ?>
     </div>
@@ -588,14 +604,14 @@ $form=$this->beginWidget('CActiveForm', array(
 <div class="form hide upload-box" id="upload-notification-sound-box">
     <div class="row">
         <h3><?php echo Yii::t('profile', 'Upload a Notification Sound'); ?></h3>
-        <?php echo CHtml::form(array('site/upload','id'=>$model->id),'post',array('enctype'=>'multipart/form-data')); ?>
-        <?php echo CHtml::dropDownList('private','public',array('0'=>Yii::t('actions','Public'),'1'=>Yii::t('actions','Private'))); ?>
-        <?php echo CHtml::hiddenField('associationId',Yii::app()->user->getId()); ?>
-        <?php echo CHtml::hiddenField('associationType','notificationSound'); ?>
-        <?php echo CHtml::fileField('upload','',array('id'=>'notification-sound-file')); ?>
+        <?php echo CHtml::form(array('site/upload', 'id' => $model->id), 'post', array('enctype' => 'multipart/form-data')); ?>
+        <?php echo CHtml::dropDownList('private', 'public', array('0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions', 'Private'))); ?>
+        <?php echo CHtml::hiddenField('associationId', Yii::app()->user->getId()); ?>
+        <?php echo CHtml::hiddenField('associationType', 'notificationSound'); ?>
+        <?php echo CHtml::fileField('upload', '', array('id' => 'notification-sound-file')); ?>
         <div class="row buttons">
-            <?php echo CHtml::submitButton(Yii::t('app','Upload'),array('id'=>'upload-notification-sound-submit-button','disabled'=>'disabled','class'=>'x2-button submit-upload')); ?>
-            <button class="x2-button cancel-upload"> Cancel </button>
+            <?php echo CHtml::submitButton(Yii::t('app', 'Upload'), array('id' => 'upload-notification-sound-submit-button', 'disabled' => 'disabled', 'class' => 'x2-button submit-upload')); ?>
+            <button class="x2-button cancel-upload"> <?php echo Yii::t('app', 'Cancel'); ?> </button>
         </div>
         <?php echo CHtml::endForm(); ?>
     </div>

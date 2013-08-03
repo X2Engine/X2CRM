@@ -40,12 +40,33 @@
  * written in config/main
  *
  * @property string $externalBaseUrl (read-only) the base URL of the web application,
- *	independent of whether there is a web request.
+ * 	independent of whether there is a web request.
  * @package X2CRM.components
  */
 class ApplicationConfigBehavior extends CBehavior {
 
-	private $_externalBaseUrl;
+    private $_externalBaseUrl;
+
+    /**
+     * Substitute user ID. Used in the case of API calls and console commands
+     * when Yii::app()->user is not available (because there is no user session
+     * in such cases).
+     *
+     * @var integer
+     */
+    private $_suID = 1;
+
+    /**
+     * Substitute user model (used in api and console scenarios)
+     * @var User
+     */
+    private static $_suModel;
+
+    /**
+     * Distinguishes whether the model is being used inside an actual user session.
+     * @var bool
+     */
+    private static $_isInSession;
 
     /**
      * Declares events and the event handler methods.
@@ -73,8 +94,10 @@ class ApplicationConfigBehavior extends CBehavior {
         if(!$noSession){
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
                 Yii::import('application.components.X2WebUser');
+                Yii::import('application.components.X2MessageSource');
                 Yii::import('application.components.Formatter');
                 Yii::import('application.components.TransformedFieldStorageBehavior');
+                Yii::import('application.components.X2PermissionsBehavior');
                 if(!$this->owner->user->isGuest)
                     $profData = $this->owner->db->createCommand()->select('timeZone, language')->from('x2_profile')->where('id='.$this->owner->user->getId())->queryRow(); // set the timezone to the admin's
                 if(isset($profData)){
@@ -107,7 +130,7 @@ class ApplicationConfigBehavior extends CBehavior {
             date_default_timezone_set(Profile::model()->tableSchema->getColumn('timeZone')->defaultValue);
         }
 
-		// Import directories
+        // Import directories
         Yii::import('application.models.*');
         Yii::import('application.controllers.X2Controller');
         Yii::import('application.controllers.x2base');
@@ -121,27 +144,24 @@ class ApplicationConfigBehavior extends CBehavior {
         $this->owner->messages->onMissingTranslation = array(new TranslationLogger, 'log');
         $this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
         $notGuest = True;
-        $uname = 'admin';
+        $uname = 'admin'; // Will always be admin in a console command
         if(!$noSession){
             $uname = $this->owner->user->getName();
             $notGuest = !$this->owner->user->isGuest;
+            // Set up encryption:
+            $key = Yii::app()->basePath.'/config/encryption.key';
+            $iv = Yii::app()->basePath.'/config/encryption.iv';
+            if(extension_loaded('openssl') && extension_loaded('mcrypt') && file_exists($key) && file_exists($iv)){
+                EncryptedFieldsBehavior::setup($key, $iv);
+            }else{
+                // Use unsafe method with encryption
+                EncryptedFieldsBehavior::setupUnsafe();
+            }
         }
 
-		// Set up encryption:
-		$key = Yii::app()->basePath.'/config/encryption.key';
-		$iv = Yii::app()->basePath.'/config/encryption.iv';
-		if(extension_loaded('openssl') && extension_loaded('mcrypt') && file_exists($key) && file_exists($iv)) {
-			EncryptedFieldsBehavior::setup($key,$iv);
-		} else {
-			// Use unsafe method with encryption
-			EncryptedFieldsBehavior::setupUnsafe();
-		}
-		
         $sessionId = isset($_SESSION['sessionId']) ? $_SESSION['sessionId'] : session_id();
 
-
-
-		// Set profile
+        // Set profile
         $this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array('username' => $uname));
         $session = X2Model::model('Session')->findByPk($sessionId);
         if(isset($this->owner->params->profile)){
@@ -149,38 +169,38 @@ class ApplicationConfigBehavior extends CBehavior {
         }
 
 
-		if(!$noSession){
-			if($notGuest && !($this->owner->request->getPathInfo() == 'site/getEvents')){
-				$this->owner->user->setReturnUrl($this->owner->request->requestUri);
-				if($session !== null){
-					if($session->lastUpdated + $this->owner->params->admin->timeout < time()){
-						SessionLog::logSession($this->owner->user->getName(), $sessionId, 'activeTimeout');
-						$session->delete();
-						$this->owner->user->logout(false);
-					}else{
-						$session->lastUpdated = time();
-						$session->update(array('lastUpdated'));
+        if(!$noSession){
+            if($notGuest && !($this->owner->request->getPathInfo() == 'site/getEvents')){
+                $this->owner->user->setReturnUrl($this->owner->request->requestUri);
+                if($session !== null){
+                    if($session->lastUpdated + $this->owner->params->admin->timeout < time()){
+                        SessionLog::logSession($this->owner->user->getName(), $sessionId, 'activeTimeout');
+                        $session->delete();
+                        $this->owner->user->logout(false);
+                    }else{
+                        $session->lastUpdated = time();
+                        $session->update(array('lastUpdated'));
 
-						$this->owner->params->sessionStatus = $session->status;
-					}
-				}else{
-					$this->owner->user->logout(false);
-				}
+                        $this->owner->params->sessionStatus = $session->status;
+                    }
+                }else{
+                    $this->owner->user->logout(false);
+                }
 
 
-				$userId = $this->owner->user->getId();
-				if(!is_null($userId)){
-					$this->owner->params->groups = Groups::getUserGroups($userId);
-					$this->owner->params->roles = Roles::getUserRoles($userId);
+                $userId = $this->owner->user->getId();
+                if(!is_null($userId)){
+                    $this->owner->params->groups = Groups::getUserGroups($userId);
+                    $this->owner->params->roles = Roles::getUserRoles($userId);
 
-					$this->owner->params->isAdmin = $this->owner->user->checkAccess('AdminIndex');
-				}
-			}elseif(!($this->owner->request->getPathInfo() == 'site/getEvents')){
-				$guestRole = Roles::model()->findByAttributes(array('name' => 'Guest'));
-				if(isset($guestRole))
-					$this->owner->params->roles = array($guestRole->id);
-			}
-		}
+                    $this->owner->params->isAdmin = $this->owner->user->checkAccess('AdminIndex');
+                }
+            }elseif(!($this->owner->request->getPathInfo() == 'site/getEvents')){
+                $guestRole = Roles::model()->findByAttributes(array('name' => 'Guest'));
+                if(isset($guestRole))
+                    $this->owner->params->roles = array($guestRole->id);
+            }
+        }
 
         $modules = $this->owner->modules;
         $arr = array();
@@ -197,7 +217,7 @@ class ApplicationConfigBehavior extends CBehavior {
         }
         $this->owner->setModules($modules);
         $adminProf = X2Model::model('Profile')->findByPk(1);
-        $this->owner->params->adminProfile=$adminProf;
+        $this->owner->params->adminProfile = $adminProf;
 
         // set currency
         $this->owner->params->currency = $this->owner->params->admin->currency;
@@ -211,12 +231,11 @@ class ApplicationConfigBehavior extends CBehavior {
             $this->owner->language = '';
 
         $locale = $this->owner->locale;
-		$curSyms = array();
-		foreach(Yii::app()->params->supportedCurrencies as $curCode) {
-			$curSyms[$curCode] = $locale->getCurrencySymbol($curCode);
-		}
-		$this->owner->params->supportedCurrencySymbols = $curSyms; // Code to symbol
-
+        $curSyms = array();
+        foreach(Yii::app()->params->supportedCurrencies as $curCode){
+            $curSyms[$curCode] = $locale->getCurrencySymbol($curCode);
+        }
+        $this->owner->params->supportedCurrencySymbols = $curSyms; // Code to symbol
         // set timezone
         if(!empty($this->owner->params->profile->timeZone))
             date_default_timezone_set($this->owner->params->profile->timeZone);
@@ -231,12 +250,12 @@ class ApplicationConfigBehavior extends CBehavior {
 
 
         // set edition
-        if (YII_DEBUG) {
-            if (PRO_VERSION)
+        if(YII_DEBUG){
+            if(PRO_VERSION)
                 $this->owner->params->edition = 'pro';
             else
                 $this->owner->params->edition = 'opensource';
-        } else {
+        } else{
             $this->owner->params->edition = $this->owner->params->admin->edition;
         }
 
@@ -271,8 +290,8 @@ class ApplicationConfigBehavior extends CBehavior {
                         profile: '.CJSON::encode(Yii::app()->params->profile->getAttributes()).',
                         notificationSoundPath: "'.$notificationSound.'"
                     },
-                    x2 = {},
-                    notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
+                    x2 = {};
+                    x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
                     ';
                 }else{
                     $yiiString = '
@@ -284,8 +303,8 @@ class ApplicationConfigBehavior extends CBehavior {
                     datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
                     timePickerFormat: "'.Formatter::formatTimePicker().'"
                 },
-                x2 = {},
-                notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
+                x2 = {};
+                x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
                 ';
                 }
             }else{
@@ -298,9 +317,23 @@ class ApplicationConfigBehavior extends CBehavior {
 				datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
 				timePickerFormat: "'.Formatter::formatTimePicker().'"
 			},
-			x2 = {},
-			notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
+			x2 = {};
+			x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
 			';
+            }
+
+            $userAgentStr = strtolower(Yii::app()->request->userAgent);
+            $isAndroid = preg_match('/android/', $userAgentStr);
+            if($isAndroid){
+                define('IS_ANDROID', true);
+                $yiiString .= '
+					x2.isAndroid = true;
+				';
+            }else{
+                define('IS_ANDROID', false);
+                $yiiString .= '
+					x2.isAndroid = false;
+				';
             }
 
             Yii::app()->clientScript->registerScript('setParams', $yiiString, CClientScript::POS_HEAD);
@@ -323,28 +356,93 @@ class ApplicationConfigBehavior extends CBehavior {
         }
     }
 
-	/**
-	 * Magic getter for {@link externalBaseUrl}; in the case that web request data
-	 * isn't available, it uses a config file.
-	 *
-	 * @return type
-	 */
-	public function getExternalBaseUrl() {
-		if(!isset($this->_externalBaseUrl)) {
-			if($this->owner->params->noSession) {
-				$this->_externalBaseUrl = '';
-				// Use webLeadConfig to construct the URL
-				$file = realpath(Yii::app()->basePath.'/../webLeadConfig.php');
-				if($file){
-					include($file);
-					if(isset($url))
-						$this->_externalBaseUrl = $url;
-				}
-			} else {
-				$this->_externalBaseUrl = $this->owner->baseUrl;
-			}
-		}
-		return $this->_externalBaseUrl;
-	}
+    /**
+     * Magic getter for {@link externalBaseUrl}; in the case that web request data
+     * isn't available, it uses a config file.
+     *
+     * @return type
+     */
+    public function getExternalBaseUrl(){
+        if(!isset($this->_externalBaseUrl)){
+            if($this->owner->params->noSession){
+                $this->_externalBaseUrl = '';
+                // Use the web API config file to construct the URL
+                $file = realpath($this->owner->basePath.'/../webLeadConfig.php');
+                if($file){
+                    include($file);
+                    if(isset($url))
+                        $this->_externalBaseUrl = $url;
+                }
+                if(!isset($this->_externalBaseUrl)){
+                    $this->_externalBaseUrl = ''; // Default
+                    if($this->owner->hasProperty('request')){
+                        // If this is an API request, there is still hope yet to resolve it
+                        try{
+                            $this->_externalBaseUrl = $this->owner->request->baseUrl;
+                        }catch(Exception $e){
+
+                        }
+                    }
+                }
+            }else{
+                $this->_externalBaseUrl = $this->owner->baseUrl;
+            }
+        }
+        return $this->_externalBaseUrl;
+    }
+
+    /**
+     * Substitute user ID magic getter.
+     *
+     * If the user has already been looked up or set, method will defer to its
+     * value for id.
+     * @return type
+     */
+    public function getSuID(){
+        if($this->suModel)
+            return $this->suModel->id;
+        else
+            return $this->_suID;
+    }
+
+    /**
+     * Shortcut method for ascertaining if a user session is available
+     * @return type
+     */
+    public static function isInSession(){
+        if(!isset(self::$_isInSession)){
+            $app = Yii::app();
+            if(!$app->params->hasProperty('noSession'))
+                self::$_isInSession = true;
+            else
+                self::$_isInSession = !Yii::app()->params->noSession;
+        }
+        return self::$_isInSession;
+    }
+
+    /**
+     * Substitute user model magic getter.
+     *
+     * Uses static attribute for storage so that the user won't have to be looked
+     * up for each and every model instantiated when checking permissions.
+     *
+     * @return User
+     */
+    public function getSuModel(){
+        if(!isset(self::$_suModel)){
+            if(self::isInSession())
+                $this->_suID == $this->owner->user->id;
+            self::$_suModel = User::model()->findByPk($this->_suID);
+        }
+        return self::$_suModel;
+    }
+
+    /**
+     * Magic getter for substitute user model
+     * @param User $user
+     */
+    public function setSuModel(User $user){
+        self::$_suModel = $user;
+    }
 
 }

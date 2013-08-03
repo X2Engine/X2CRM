@@ -443,7 +443,21 @@ class CalendarController extends x2base {
             if($action['visibility'] >= 1 || // don't show private actions,
                     $action['assignedTo'] == Yii::app()->user->name || // unless they belong to current user
                     Yii::app()->params->isAdmin){ // admin sees all
-                $description = strip_tags($action['actionDescription']);
+                $description = $action['actionDescription'];
+                if(in_array($action['type'], array('email', 'emailFrom', 'email_quote', 'email_invoice', 'emailOpened', 'emailOpened_quote', 'emailOpened_invoice'))){
+                    $actionHeaderPattern = InlineEmail::insertedPattern('ah', '(.*)', 1, 'mis');
+                    if(!preg_match($actionHeaderPattern, $description, $matches)){
+                        $description = preg_replace('/<b>(.*?)<\/b>(.*)/mis', '', $description); // Legacy action header
+                    }else{
+                        $description = preg_replace($actionHeaderPattern, '', $description); // Current action header
+                    }
+                    $description = preg_replace('/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail--\!>/s', '', $description);
+                    $description = preg_replace('/<\!--BeginSignature-->(.*?)<\!--EndSignature-->/mis', '', $description);
+                    $description = preg_replace('/\&nbsp;/', '', $description);
+                    $description = trim(strip_tags($description));
+                    $description = 'Email: '.$description;
+                }
+                $description = trim(strip_tags($description));
                 $title = mb_substr($description, 0, 30, 'UTF-8');
                 if($action['type'] == 'event'){
                     $events[] = array(
@@ -464,19 +478,19 @@ class CalendarController extends x2base {
                         $events[$last]['allDay'] = $action['allDay'];
                     if($action['color'])
                         $events[$last]['color'] = $action['color'];
-                    if($action['associationType'] == 'contacts'){
-                        $events[$last]['associationUrl'] = $this->createUrl('/contacts/contacts/view/id/'.$action['associationId']);
+                    if(!empty($action['associationType']) && class_exists(X2Model::getModelName($action['associationType']))){
+                        $events[$last]['associationUrl'] = $this->createUrl('/'.$action['associationType'].'/view/id/'.$action['associationId']);
                         $events[$last]['associationName'] = $action['associationName'];
                     }
-                }else if($action['associationType'] == 'contacts'){
+                }else if(!empty($action['associationType']) && class_exists(X2Model::getModelName($action['associationType']))){
                     $events[] = array(
                         'title' => $title,
                         'description' => $description,
                         'start' => date('Y-m-d H:i', $action['dueDate']),
                         'id' => $action['id'],
                         'complete' => $action['complete'],
-                        'associationType' => 'contacts',
-                        'associationUrl' => $this->createUrl('/contacts/contacts/view/id/'.$action['associationId']),
+                        'associationType' => $action['associationType'],
+                        'associationUrl' => $this->createUrl('/'.$action['associationType'].'/view/id/'.$action['associationId']),
                         'associationName' => $action['associationName'],
                         'allDay' => false,
                     );
@@ -1138,6 +1152,7 @@ class CalendarController extends x2base {
     }
 
     public function actionSyncActionsToGoogleCalendar(){
+        $errors = array();
         $model = Yii::app()->params->profile;
         $client = null;
         if(isset($_POST['Profile'])){
@@ -1177,28 +1192,58 @@ class CalendarController extends x2base {
                     $model->syncGoogleCalendarAccessToken = null;
                     $model->update();
                     $googleCalendarList = null;
-                    if(!is_null($auth->getAccessToken())){
+                    if($auth->getAccessToken()){
                         $googleCalendar = $auth->getCalendarService();
-                        $calList = $googleCalendar->calendarList->listCalendarList();
-                        $googleCalendarList = array();
-                        foreach($calList['items'] as $cal)
-                            $googleCalendarList[$cal['id']] = $cal['summary'];
+                        try{
+                            $calList = $googleCalendar->calendarList->listCalendarList();
+                            $googleCalendarList = array();
+                            foreach($calList['items'] as $cal){
+                                $googleCalendarList[$cal['id']] = $cal['summary'];
+                            }
+                        }catch(Google_ServiceException $e){
+                            if($e->getCode() == '403'){
+                                $errors[] = $e->getMessage();
+                                Yii::app()->user->setFlash('error', $e->getMessage());
+                                $googleCalendarList = null;
+                                //$auth->flushCredentials();
+                            }elseif($e->getCode() == '401'){
+                                $errors[] = 'Invalid user credentials provided. Please try again.';
+                                Yii::app()->user->setFlash('error', 'Invalid user credentials. Please ensure your account is able to use this service or delete the access permissions and try again.');
+                                $googleCalendarList = null;
+                                $auth->flushCredentials();
+                            }
+                        }
                     }else{
                         $googleCalendarList = null;
                     }
                 }else{
-                    if(!is_null($auth->getAccessToken())){
+                    if($auth->getAccessToken()){
                         $googleCalendar = $auth->getCalendarService();
-                        $calList = $googleCalendar->calendarList->listCalendarList();
-                        $googleCalendarList = array();
-                        foreach($calList['items'] as $cal)
-                            $googleCalendarList[$cal['id']] = $cal['summary'];
+                        try{
+                            $calList = $googleCalendar->calendarList->listCalendarList();
+                            $googleCalendarList = array();
+                            foreach($calList['items'] as $cal){
+                                $googleCalendarList[$cal['id']] = $cal['summary'];
+                            }
+                        }catch(Google_ServiceException $e){
+                            if($e->getCode() == '403'){
+                                $errors[] = 'Google Calendar API access has not been configured.';
+                                Yii::app()->user->setFlash('error', 'Google Calendar API access has not been configured.');
+                                $googleCalendarList = null;
+                                //$auth->flushCredentials();
+                            }elseif($e->getCode() == '401'){
+                                $errors[] = 'Invalid user credentials provided. Please try again.';
+                                Yii::app()->user->setFlash('error', 'Invalid user credentials. Please ensure your account is able to use this service or delete the access permissions and try again.');
+                                $googleCalendarList = null;
+                                $auth->flushCredentials();
+                            }
+                        }
                     }else{
                         $googleCalendarList = null;
                     }
                 }
             }catch(Google_AuthException $e){
-                unset($_SESSION['access_token']);
+                $auth->flushCredentials();
                 $auth->setErrors($e->getMessage());
                 $client = null;
                 $googleCalendarList = null;
@@ -1211,7 +1256,8 @@ class CalendarController extends x2base {
         }
 
         $this->render('syncActionsToGoogleCalendar', array(
-            'auth' => isset($auth)? $auth : null,
+            'errors' => $errors,
+            'auth' => isset($auth) ? $auth : null,
             'model' => $model,
             'googleIntegration' => $googleIntegration,
             'client' => $client,

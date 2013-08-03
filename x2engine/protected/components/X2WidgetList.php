@@ -46,21 +46,16 @@ class X2WidgetList extends X2Widget {
     public $modelType;
     public $block; // left, right, or center
     public $layout; // associative array with 3 lists of widgets: left, right, and center
+	public $associationType;
+	public $associationId;
+
 
     public function init(){
         // widget layout
         if(!Yii::app()->user->isGuest){
-        $this->layout = Yii::app()->params->profile->layout;
-
-        if(!$this->layout){ // layout hasn't been initialized?
-            $this->layout = $this->initLayout(); // initilize layout
-            Yii::app()->params->profile->layout = json_encode($this->layout);
-            Yii::app()->params->profile->update();
+	        $this->layout = Yii::app()->params->profile->getLayout ();
         }else{
-            $this->layout = json_decode($this->layout, true); // json to associative array
-        }
-        }else{
-            $this->layout = $this->initLayout();
+            $this->layout = Yii::app()->params->profile->initLayout ();
         }
 
         parent::init();
@@ -72,9 +67,26 @@ class X2WidgetList extends X2Widget {
             echo '<div id="content-widgets">';
             foreach($this->layout['center'] as $name => $widget){ // list of widgets
 				$exclude = $this->modelType == 'BugReports' && $name != 'InlineRelationships';
-				$exclude = $exclude || $this->modelType == 'Quote' && $name == 'WorkflowStageDetails';
+				$exclude = $exclude || 
+					$this->modelType == 'Quote' && $name == 'WorkflowStageDetails';
+				$exclude = $exclude || 
+					$this->modelType == 'Marketing' && 
+					($name == 'WorkflowStageDetails' || $name === 'InlineRelationships');
+				$exclude = $exclude || 
+					$this->modelType == 'services' && $name == 'InlineRelationships';
+				$exclude = $exclude || 
+					$this->modelType === 'products' && 
+					($name === 'InlineRelationships' || $name === 'WorkflowStageDetails');
                 if(!$exclude){
-                    $this->render('centerWidget', array('widget' => $widget, 'name' => $name, 'model' => $this->model, 'modelType' => $this->modelType));
+					$this->render(
+						'centerWidget', 
+						array(
+							'widget' => $widget, 
+							'name' => $name, 
+							'model' => $this->model, 
+							'modelType' => $this->modelType
+						)
+					);
                 }
             }
 
@@ -82,80 +94,5 @@ class X2WidgetList extends X2Widget {
         }
     }
 
-    function initLayout(){
-        return array(
-            'left' => array(),
-            'center' => array(
-                'InlineTags' => array(
-                    'title' => 'Tags',
-                    'minimize' => false,
-                ),
-                'WorkflowStageDetails' => array(
-                    'title' => 'Workflow',
-                    'minimize' => false,
-                ),
-                'InlineRelationships' => array(
-                    'title' => 'Relationships',
-                    'minimize' => false,
-                ),
-            ),
-            'right' => array(
-                'ActionMenu' => array(
-                    'title' => 'My Actions',
-                    'minimize' => false,
-                ),
-                'ChatBox' => array(
-                    'title' => 'Activity Feed',
-                    'minimize' => false,
-                ),
-                'GoogleMaps' => array(
-                    'title' => 'Google Map',
-                    'minimize' => false,
-                ),
-                'OnlineUsers' => array(
-                    'title' => 'Active Users',
-                    'minimize' => false,
-                ),
-                'TagCloud' => array(
-                    'title' => 'Tag Cloud',
-                    'minimize' => false,
-                ),
-                'TimeZone' => array(
-                    'title' => 'Time Zone',
-                    'minimize' => false,
-                ),
-                'MessageBox' => array(
-                    'title' => 'Message Board',
-                    'minimize' => false,
-                ),
-                'QuickContact' => array(
-                    'title' => 'Quick Contact',
-                    'minimize' => false,
-                ),
-                'NoteBox' => array(
-                    'title' => 'Note Pad',
-                    'minimize' => false,
-                ),
-                'MediaBox' => array(
-                    'title' => 'Media',
-                    'minimize' => false,
-                ),
-                'DocViewer' => array(
-                    'title' => 'Doc Viewer',
-                    'minimize' => false,
-                ),
-                'TopSites' => array(
-                    'title' => 'Top Sites',
-                    'minimize' => false,
-                ),
-                'HelpfulTips' => array(
-                    'title' => 'Helpful Tips',
-                    'minimize' => false,
-                ),
-            ),
-            'hidden' => array(),
-            'hiddenRight' => array(), // x2temp, should be merged into 'hidden' when widgets can be placed anywhere
-        );
-    }
-
 }
+

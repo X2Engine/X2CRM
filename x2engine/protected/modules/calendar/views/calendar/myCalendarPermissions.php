@@ -103,7 +103,7 @@ $editPermission = X2CalendarPermissions::getUserIdsWithEditPermission(Yii::app()
 	?>
 	<br>
 </div>
-<div class="page-title"><h2><?php echo Yii::t('calendar', 'Edit Permission'); ?></h2></div>
+<div class="page-title rounded-top"><h2><?php echo Yii::t('calendar', 'Edit Permission'); ?></h2></div>
 <div class="form">
 	<?php echo Yii::t('calendar', 'These users can edit your calendar.'); ?>
 	<?php

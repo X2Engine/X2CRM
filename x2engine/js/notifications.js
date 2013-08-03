@@ -123,15 +123,14 @@ $(function() {
 
 	// initialize variables
 	var hasFocus = true;
-	var notifUrl,
-			newNotif = null,
-			notifCount = 0,
-			notifTimeout,
-			// notifUpdateInterval = 1500,
-			notifViewTimeout,
-			lastNotifId = 0,
-			lastEventId = 0;
-	lastTimestamp = 0;
+	var newNotif = null,
+		//notifCount = 0,
+		notifTimeout,
+		// notifUpdateInterval = 1500,
+		notifViewTimeout,
+		lastNotifId = 0,
+		lastEventId = 0,
+		lastTimestamp = 0;
 	
 	var fetchUpdates = true;
 
@@ -152,12 +151,12 @@ $(function() {
 		 */
 		function checkMasterId(forceUpdate) {	// check if there's currently a master window
 			if (masterId == windowId) {
-				$.jStorage.setTTL('iwcMasterId', notifUpdateInterval + 2000);	// still here, update masterId expiration
+				$.jStorage.setTTL('iwcMasterId', x2.notifUpdateInterval + 2000);	// still here, update masterId expiration
 			} else {
 				masterId = $.jStorage.get('iwcMasterId', null);
 				if (masterId == null) {	// no incumbent master window, time to step up!
 					masterId = windowId;
-					$.jStorage.set('iwcMasterId', masterId, {TTL: notifUpdateInterval + 2000});
+					$.jStorage.set('iwcMasterId', masterId, {TTL: x2.notifUpdateInterval + 2000});
 				}
 			}
 
@@ -166,7 +165,7 @@ $(function() {
 			else if (masterId == windowId)
 				getUpdates();	// check for notifs
 			else
-				notifTimeout = setTimeout(checkMasterId, notifUpdateInterval);	// leave the AJAX to the master window, but keep an eye on him
+				notifTimeout = setTimeout(checkMasterId, x2.notifUpdateInterval);	// leave the AJAX to the master window, but keep an eye on him
 		}
 
 		checkMasterId(true);	// always get updates on startup, because the master
@@ -185,8 +184,8 @@ $(function() {
 		$.jStorage.subscribe("x2iwc_notif", function(ch, payload) {
 			if (payload.origin == windowId)
 				return;
-			if (payload.notifCount)
-				notifCount = payload.notifCount;
+			/*if (payload.notifCount)
+				notifCount = payload.notifCount;*/
 			if (payload.data) {
 				addNotifications(payload.data, false);
 				openNotifications();
@@ -206,8 +205,9 @@ $(function() {
 			if (payload.origin == windowId)
 				return;
 
-			notifCount = payload.notifCount;
+			//notifCount = payload.notifCount;
 			removeNotification(payload.id)
+			//notifCount = $('#notifications').children ('.notif').length; 
 
 			if (payload.nextNotif)
 				addNotifications(payload.nextNotif, true);
@@ -232,11 +232,6 @@ $(function() {
 	}
 
 	pageTitle = document.title;
-
-	$('#notif-box .close').click(function() {
-		$('#notif-box').fadeOut(300);
-		// $.fn.titleMarquee('softStop');
-	});
 
 	// listen for window focus/blur for stupid browsers that can't handle document.hasFocus()
 	$(window).bind('blur focusout', function() {
@@ -269,6 +264,11 @@ $(function() {
 		}
 	});
 
+	$('#notif-box .close').click(function() {
+		//console.log ('close');											
+		$('#notif-box').fadeOut(300);
+		// $.fn.titleMarquee('softStop');
+	});
 
 	/**
 	 * Deletes a notification.
@@ -283,11 +283,10 @@ $(function() {
 
 		var nextNotif = false;
 
-		notifCount--;
+		removeNotification(notifId);	// remove notif from the list
+		var notifCount = $('#notifications').children ('.notif').length;
 
 		getNextNotif = notifCount > 9 ? '1' : null;	// load the next notification if there are any more
-
-		removeNotification(notifId);	// remove notif from the list
 
 		$.ajax({
 			type: 'GET',
@@ -370,14 +369,14 @@ $(function() {
 			}).done(function(response) {
 
 				if (iwcMode)
-					notifTimeout = setTimeout(checkMasterId, notifUpdateInterval);	// call checkMasterId, which will then call getUpdates
+					notifTimeout = setTimeout(checkMasterId, x2.notifUpdateInterval);	// call checkMasterId, which will then call getUpdates
 				else
-					notifTimeout = setTimeout(getUpdates, notifUpdateInterval);		// there's no IWC, so call getUpdates directly
+					notifTimeout = setTimeout(getUpdates, x2.notifUpdateInterval);		// there's no IWC, so call getUpdates directly
 
 				if (response == null || typeof response != 'object')	// if there's no new data, we're done
 					return;
 
-				if(typeof response.sessionError != 'undefined') {
+				if(typeof response.sessionError != 'undefined' && hasFocus) {
 					fetchUpdates = confirm(response.sessionError);
 					if(fetchUpdates) {
 						window.location = window.location;
@@ -388,8 +387,9 @@ $(function() {
 					var data = response; //$.parseJSON(response);
 
 					if (data.notifData.length) {
-						notifCount = data.notifCount;
+						//notifCount = data.notifCount;
 						addNotifications(data.notifData, false);		// add new notifications to the notif box (prepend)
+						var notifCount = $('#notifications').children ('.notif').length; 
 
 						if (!firstCall) {
 							playNotificationSound();
@@ -399,7 +399,8 @@ $(function() {
 								$.jStorage.publish("x2iwc_notif", {
 									origin: windowId,
 									data: data.notifData,
-									notifCount: data.notifCount
+									//notifCount: data.notifCount
+									notifCount: notifCount
 								});
 							}
 						}
@@ -451,7 +452,20 @@ $(function() {
 			}
 		}, 2000);
 
-		$('#notif-box').fadeIn(300);
+		$('#notif-box').fadeIn({
+			duration: 300,
+			step: function () { // resize multiline notifications and reposition x button
+				$(this).find('.notif').each (function () {
+					$(this).height ($(this).find ('.msg').height ());
+					$(this).find ('.close').position ({
+						my: "right-4 top+4",
+						at: "right top",
+						of: $(this)
+					});
+
+				});
+			}
+		});
 	}
 
 	/**
@@ -461,6 +475,17 @@ $(function() {
 		clearTimeout(notifViewTimeout);
 		$('#notif-box').fadeOut(300);
 		// $.fn.titleMarquee('softStop');
+	}
+
+	function checkIfAreadyReceived (notifId) {
+		var alreadyReceived = false;
+		$('#notifications .notif').each(function() {
+			if ($(this).data('id') == notifId) {
+				alreadyReceived = true;
+				return false;
+			}
+		});
+		return alreadyReceived;
 	}
 
 	/**
@@ -477,13 +502,22 @@ $(function() {
 		// loop through the notifications backwards (they're ordered by ID descending, so start with the oldest)
 		for (var i = notifData.length - 1; i >= 0; --i) {
 			var timeNow = new Date();
-			if(notifData[i].type=='voip_call' && timeNow.getTime()/1000-notifData[i].timestamp < 20 && windowId==masterId) { // Screen pop only if less than 20 seconds ago and master window
-				window.open(yii.baseUrl+'/index.php/contacts/'+notifData[i].modelId);
+
+			var notifId = notifData[i].id;
+			//console.log ('addNotifications: notifId = ' + notifId);
+
+			if (checkIfAreadyReceived (notifId)) continue;
+			
+			if (notifData[i].type == 'voip_call' && timeNow.getTime() / 1000 - notifData[i].timestamp < 20 && 
+				windowId == masterId) { // Screen pop only if less than 20 seconds ago and master window
+
+				window.open (yii.baseUrl+'/index.php/contacts/'+notifData[i].modelId);
 			}
+
 			var notif = $(document.createElement('div'))
 					.addClass('notif')
 					.html('<div class="msg">' + notifData[i].text + '</div><div class="close">x</div>')
-					.data('id', notifData[i].id);
+					.data('id', notifId);
 
 			if (append)
 				notif.appendTo($notifBox);
@@ -494,6 +528,16 @@ $(function() {
 				notif.addClass('unviewed');
 				newNotif = true;
 			}
+
+			$notifBox.find ('.notif').each (function () {
+				$(this).height ($(this).find ('.msg').height ());
+				$(this).find ('.close').position ({
+					my: "right-4 top+4",
+					at: "right top",
+					of: $(this)
+				});
+			});
+
 		}
 
 		while ($notifBox.find('.notif').length > 10)		// remove older messages if it gets past 10
@@ -528,12 +572,13 @@ $(function() {
 	 * and decide whether to show the "no notifications" thingy
 	 */
 	function countNotifications() {
-		notifCount = Math.max(0, notifCount);
+		//notifCount = Math.max(0, notifCount);
+		var notifCount = $('#notifications').children ('.notif').length; 
 
 		$('#main-menu-notif span').html(notifCount);
 
 		var showViewAll = false,
-				showNoNotif = false;
+			showNoNotif = false;
 
 		if (notifCount < 1)
 			showNoNotif = true;
@@ -557,11 +602,11 @@ $(function() {
 		// var scrollToBottom = $('#chat-box').prop('scrollTop') >= $('#chat-box').prop('scrollHeight') - $('#chat-box').height();
 
 		var feedOrder = yii.profile.activityFeedOrder;
-        if(feedOrder==0){
-            scrollToBottom=true;
-        }else{
-            scrollToBottom=false;
-        }
+		if(feedOrder==0){
+			scrollToBottom=true;
+		}else{
+			scrollToBottom=false;
+		}
 		//scrollToBottom = !feedOrder;
 
 
@@ -604,3 +649,4 @@ $(function() {
 	});
 
 });
+

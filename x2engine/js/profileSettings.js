@@ -492,7 +492,7 @@ Returns a jQuery element corresponding to a feedback box containing the
 specified message.
 messages.
 Parameters:
-    errorHeader - a string
+    message - a string
 */
 function createReqFeedbackBox (message) {
     var feedbackBox = $('<div>', {'class': 'feedback-container'}).append (

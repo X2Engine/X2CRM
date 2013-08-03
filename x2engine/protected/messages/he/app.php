@@ -1,105 +1,45 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-// // // Language Name
+// Language Name
 'languageName'=>'עברית',
-// // // Login
+// Login
 'Please log in to continue:'=>'נא להתחבר כדי להמשיך:',
-'Username'=>'שם משתמש',
-'Password'=>'סיסמה',
 'Remember me'=>'זכור אותי',
 'Login'=>'כניסה',
 'Welcome to {appName}.'=>'.{appName}ברוכים הבאים ל',
-'Verification Code'=>'קוד אימות',
 'Login with Google'=>'כניסה עם גוגל',
-// // // 
-// // // Main Menu
-'Calendar'=>'לוח שנה',
-'Actions'=>'פעולות',
-'Contacts'=>'אנשי קשר',
-'Opportunities'=>'מכירות',
+
+// Main Menu
 'Projects'=>'פרוייקטים',
 'Group Chat'=>'צ\'אט קבוצתי',
-'Marketing'=>'שיווק',
 'Cases'=>'במקרים',
-'Accounts'=>'חשבונות',
-'Users'=>'משתמשים',
 'Admin'=>'מנהל',
-'Docs'=>'מסמכים',
 'Chat'=>'לשוחח',
-'Social'=>'חברתי',
 'Profile'=>'פרופיל',
-'Settings'=>'הגדרות',
 'Logout'=>'התנתקות',
 'Login'=>'כניסה',
-'More'=>'יותר',
 'What\'s New'=>'מה חדש',
-'Quotes'=>'ציטוטים',
 'Dashboard'=>'לוח מחוונים',
-'Products'=>'מוצרים',
-'Workflow'=>'זרימת עבודה',
-'Groups'=>'קבוצות',
 'Notifications'=>'הודעות',
 'Charts'=>'תרשימים',
-'Manage Users'=>'ניהול משתמשים',
-'Social Feed'=>'הזנה חברתית',
 'Preferences'=>'העדפות',
 'Reports'=>'דוחות',
 'Activity'=>'פעילות',
 'Service'=>'שרות',
 'Go Invisible'=>'עבור הבלתי נראית',
 'Go Visible'=>'עבור גלוי',
-// // // 
-// // // Search Bar
+
+// Search Bar
 'X2Engine CRM Groupware'=>'X2Engine קשרי לקוחות קבוצת התוכנה',
-'Go'=>'ללכת',
-'Contact'=>'ליצור קשר',
-'Action'=>'פעולה',
 'Contact + Action'=>'צור פעולה',
 'Search for contact, action, deal...'=>'חיפוש, מגע פעולה וכו \', מציאה',
-// // // 
-// // // Footer
-'All Rights Reserved.'=>'כל הזכויות שמורות.',
+
+// Footer
 'Generated in {time} seconds.'=>'שנוצר בתוך שניות {זמן ההמתנה',
 'About'=>'על',
 'The Program is provided AS IS, without warranty.'=>'התכנית מסופקת AS IS, ללא אחריות.',
-// // // 
-// // // Widgets
-'My Actions'=>'פעולות שלי',
+
+// Widgets
 'Twitter Feed'=>'רשימת בטוויטר',
 'Quick Contact'=>'יצירת קשר מהיר',
 'Google Map'=>'Google Map',
@@ -109,81 +49,68 @@ return array (
 'Just Me'=>'רק אני',
 'All Users'=>'כל המשתמשים',
 'Doc Viewer'=>'דוק חלון',
-'Time Zone'=>'אזור זמן',
 'Top Sites'=>'למעלה אתרים',
-'Media'=>'כלי תקשורת',
 'Current time in'=>'בזמן נוכחי',
-'Hide'=>'להסתיר',
-// // // 
+
 'Total Action|Total Actions'=>'סה"כ פעולה | פעולות סך הכל',
 'Unfinished Action|Unfinished Actions'=>'פעולה לא גמור | פעולות שלא נשלמו',
 'Overdue Action|Overdue Actions'=>'פעולה איחור | פעולות איחור',
 'Completed Action|Completed Actions'=>'פעולה השלים | פעולות שהושלמו',
-// // // 
+
 'Message Board'=>'פורום',
 'Please enter a message of the day!'=>'אנא הכנס מסר של היום!',
 'Edit Message'=>'ערוך הודעה',
-// // // 
+
 'Note Pad'=>'פנקס רשימות',
 'Feel free to enter some notes!'=>'אתה מוזמן להיכנס כמה הערות!',
-// // // 
-'Top Contacts'=>'אנשי הקשר הפופולריים ביותר',
+
 'Add {name}'=>'{name} הוסף',
-// // // 
+
 'Enter Title'=>'הזן כותרת',
-'Title'=>'כותרת',
 'Title:'=>'כותרת:',
-'Link'=>'קשר',
 'Link:'=>'קישור:',
 'Add Site'=>'הוסף אתר',
-'Example'=>'דוגמה',
-// // // 
-// // // Chat
+
+// Chat
 'Message Body'=>'הודעה גוף',
 'Enter text here...'=>'הזן את הטקסט כאן ...',
 'Send'=>'לשלוח',
-// // // 
-// // // Email Form
+
+// Activity Feed
+'Activity Feed Order'=>'Feed סדר פעילות',
+'Top Down'=>'בגלילה למטה',
+'Bottom Up'=>'מלמטה למעלה',
+
+// Email Form
 'To:'=>'עד:',
 'Subject:'=>'נושא ההודעה:',
 'Message:'=>'הודעה:',
 'Error: Could not send email.'=>'שגיאה: לא ניתן לשלוח דואר אלקטרוני.',
 'Email Sent!'=>'מייל נשלח!',
-'Preview'=>'תצוגה מקדימה',
 'Attachments'=>'קבצים מצורפים',
-// // // 
-// // // Comments
-'Add Comment'=>'הוסף תגובה',
-'Create Action'=>'יצירת פעולה',
+'Note: you have entered text into the email that will be lost. Are you sure you want to continue?'=>'הערה: יש לך טקסט שנכנס לדוא"ל שילך לאיבוד. האם אתה בטוח שברצונך להמשיך?',
+'From:'=>'מ:',
+'Send As:'=>'שלח כ:',
+'System default (legacy)'=>'ברירת מחדל של מערכת (מורשת)',
+
+// Comments
 'Add a comment...'=>'הוסף ביקורת ...',
-'History'=>'היסטוריה',
 'Today'=>'היום',
 'Tomorrow'=>'מחר',
-'Comments'=>'תגובות',
 'Post'=>'להציב',
-// // // 
-// // // Misc
+
+// Misc
 'Advanced Search'=>'חיפוש מתקדם',
 'Clear Filters'=>'ניקוי מסננים',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'ייתכן לחלופין להיכנס אופרטור השוואה (<b> <</b>, <b> <= </b>, <b>> </b>, <b>> = </b>, <b> <> </b> או <b> = </b>) בתחילת כל ערכי החיפוש שלך כדי לציין כיצד יש לעשות השוואה.',
 'Fields with <span class="required">*</span> are required.'=>'שדות עם <span class="required"> * </span> נדרשים.',
 'Click here to return to where you were'=>'לחץ כאן כדי לחזור למקום שבו היית',
-'Private'=>'פרטי',
 'Attach A File/Photo'=>'צירוף קובץ / תמונה',
 'Attach a File'=>'צירוף קובץ',
-'None'=>'אף אחד',
-'Anyone'=>'כל אחד',
-'Share'=>'חלק',
-'Link'=>'קשר',
+'Share:'=>'שתף:',
 'Theme'=>'נושא',
-'Account'=>'חשבון',
-'Opportunity'=>'הזדמנות',
-'All'=>'כל',
 'Optional'=>'אופציונלי',
 'Records that have been modified since your last login.'=>'רשומות ששונו מאז הכניסה האחרונה שלך.',
-'Are you sure you want to delete this item?'=>'האם אתה בטוח שברצונך למחוק פריט זה?',
-'Columns'=>'עמודות',
-'Tools'=>'כלי עבודה',
 'Rights reserved.'=>'זכויות שמורות.',
 'GNU General Public License version 3'=>'גרסה של גניו רישיון הציבורי הכללית 3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'התכנית מסופקת AS IS, ללא אחריות. <br> תחת רישיון {BSD}.',
@@ -191,32 +118,21 @@ return array (
 'Minimize'=>'לצמצם',
 '"{X}" is not an allowed filetype.'=>'"{X}" היא לא קובץ מורשה.',
 'Loading'=>'טעינה',
-'Edit'=>'לערוך',
 'Due'=>'ראוי',
 'Help'=>'עזרה',
 '---'=>'---',
 'You don\'t have any notifications.'=>'אין לך שום הודעות.',
 'View all'=>'הצג את כל',
 'Close'=>'לסגור',
-'Delete'=>'למחוק',
 'Group?'=>'קבוצה?',
 'Check box'=>'תיבת סימון',
 'results per page'=>'תוצאות בכל עמוד',
-'Public'=>'ציבורי',
-'Tags'=>'תגיות',
 'Template:'=>':תבנית',
-'Model Name'=>'שם דגם',
-'Model ID'=>'זיהוי דגם',
 'What should the list be named?'=>'?מה צריך להיות שם הרשימה',
 'Added items to list.'=>'.פריטים שנוסף לרשימה',
 'Select an option'=>'בחר באפשרות',
 'loading...'=>'...טוען',
-'Checkbox'=>'סימון',
 'New List From Selection'=>'רשימה חדשה מתוך בחירה',
-'No'=>'לא',
-'Yes'=>'כן',
-'View'=>'לצפות',
-'Update'=>'לעדכן',
 'results per page.'=>'תוצאות בכל עמוד.',
 'Displaying {start}-{end} of {count} result(s).'=>'מציג {start} - {end} של תוצאת {count} (הים).',
 'Marketing Dashboard'=>'לוח מחווני שיווק',
@@ -224,12 +140,9 @@ return array (
 'Quick Create'=>'יצירה מהירה',
 'Create a Contact, Account, and Opportunity.'=>'יצירת איש קשר, חשבון, והזדמנות.',
 '<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'<b>: עצת </b> תוכל להשתמש באופרטורים ההשוואה הבאים עם ערכי סינון לחיפוש לכווננך.',
-'less than'=>'פחות מ',
 'less than or equal to'=>'קטן או שווה ל',
-'greater than'=>'גדול מ',
 'greater than or equal to'=>'גדול או שווה ל',
 'equal to'=>'שווה',
-'not equal to'=>'לא שווה',
 ' results per page'=>' תוצאות בכל עמוד',
 'Add to list:'=>'הוסף לרשימה:',
 '<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'<b> {start} - {end} </b> של <b> {count} </b>',
@@ -237,7 +150,6 @@ return array (
 'Associate Account'=>'חשבון עמית',
 'Associate Opportunity'=>'הזדמנות עמית',
 'Associate Contact'=>'משייך קשר',
-'Contact Attributes'=>'צור תכונות',
 'CC:'=>'CC:',
 'BCC:'=>'BCC:',
 'What should the map be named?'=>'מה צריך המפה להיות שם?',
@@ -248,87 +160,134 @@ return array (
 'Check Filters'=>'בדקו מסננים',
 'Show/Hide All Comments'=>'צג / סתר כל התגובות',
 '{n} rows'=>'שורות {n}',
-// // // 
-// // // Misc Actions
+'vs.'=>'לעומת',
+'- Select an event type -'=>'- בחר סוג אירוע -',
+'Simple'=>'פשוט',
+'Full'=>'מלא',
+'Helpful Tips'=>'טיפים מועילים',
+'Bug Reports'=>'דיווחי באגים',
+'Loading...'=>'טוען ...',
+'Link Contact'=>'צור קשר עם קישור',
+'Link Account'=>'חשבון קישור',
+'Link Opportunity'=>'הזדמנות קישור',
+'Quick Note'=>'הערה מהירה',
+'Update:'=>'עדכון:',
+'Form'=>'טופס',
+'left'=>'שמאל',
+'{n} sec'=>'{n} שניות',
+'{n} min'=>'{n} דקות',
+'{n} hour'=>'{n} שעה',
+'{n} hours'=>'{n} שעות',
+'{n} day'=>'{n} יום',
+'{n} month'=>'{n} חודש',
+'{n} months'=>'{n} חודשים',
+'{n} year'=>'{n} שנה',
+'Unlimited'=>'בלתי מוגבל',
+'Enable'=>'לאפשר',
+'Disable'=>'השבת',
+'IP Address'=>'כתובת ה-IP',
+'Login Status'=>'התחברות סטטוס',
+'Allowed filetypes: .csv'=>'סוגי קבצים מותרים: csv.',
+'Predefined Theme'=>'נושאים מוגדרים מראש',
+'Menu Background Color'=>'צבע רקע תפריט',
+'Page Header Background Color'=>'צבע רקע של כותרת דף',
+'Grid View Row Color 1'=>'רשת צבע שורה צפה 1',
+'Grid View Row Color 2'=>'רשת צבע השורה צפה 2',
+'stretch'=>'למתוח',
+'center'=>'מרכז',
+'repeat'=>'לחזור על',
+'repeat-x'=>'repeat-x',
+'repeat-y'=>'repeat-y',
+'Save Profile Settings'=>'שמור הגדרות פרופיל',
+'Creating a theme will save your current theme settings as a predefined theme'=>'יצירת ערכת נושא תהיה לשמור את ההגדרות של הנושא הנוכחי שלך כערכת נושא מוגדרת מראש',
+'Theme name'=>'שם ערכת נושא',
+
+// Misc Actions
 'Submit'=>'להגיש',
-'Save'=>'להציל',
 'Cancel'=>'לבטל',
 'Send Email'=>'שלח',
 'Attach A File'=>'צרף קובץ',
 'Save Changes'=>'שמור שינויים',
 'Save Action'=>'שמור פעולה',
 'Save Comment'=>'שמור תגובה',
-'Create'=>'ליצור',
 'Search'=>'לחפש',
 'Search Results'=>'תוצאות חיפוש',
-'Name'=>'שם',
-'Description'=>'תיאור',
-'Action'=>'פעולה',
-'Status'=>'מצב',
 'E-mail'=>'דוא"ל',
 'Download'=>'הורד',
 'Contact Saved'=>'צורו נשמר',
 'Add Note'=>'הוסף הערה',
 'New List'=>'רשימה חדשה',
-'Add'=>'להוסיף',
-'Remove'=>'להסיר',
-// // // 
-// // // Timestamps
+'Toggle Comments'=>'תגובות Toggle',
+'Show Chart'=>'הצג תרשים',
+'Hide Chart'=>'הסתר תרשים',
+'Make Sticky'=>'הפוך נעוץ',
+'Load More'=>'טען עוד',
+'Go to Activity Feed'=>'עבור לעדכון פעילות',
+'Toggle Text'=>'טקסט Toggle',
+'Click to toggle showing the full text of History items.'=>'לחץ כדי לעבור מראה את הטקסט המלא של פריטי היסטוריה.',
+'Click to increase the number of History items shown.'=>'לחץ כדי להגדיל את מספר הפריטים המוצגים היסטוריה.',
+'Show Less'=>'הצג פחות',
+'Click to decrease the number of History items shown.'=>'לחץ כדי להקטין את מספר הפריטים המוצגים היסטוריה.',
+'Click to toggle showing actions associated with related records.'=>'לחץ כדי לעבור מראה פעולות הקשורות לרשומות קשורות.',
+'Email Quote'=>'ציטוט דוא"ל',
+'Email Invoice'=>'חשבונית דוא"ל',
+'Start typing to suggest...'=>'התחל להקליד כדי להציע ...',
+'Do not delete'=>'אל תמחק',
+
+// Timestamps
 'Just now'=>'זה עתה',
 '{n} minutes ago'=>'{n} דקות',
 '{n} hours ago'=>'שעתי {n} לפני',
 '{n} days ago'=>'{n} ימים לפני',
-// // // 
-// // // Errors
+
+// Errors
 'Error creating note!'=>'שגיאה ביצירת לב!',
 'Invalid request. Please do not repeat this request again.'=>'בקשה לא חוקי. נא לא לחזור על בקשה זו שוב.',
 'The requested page does not exist.'=>'הדף המבוקש לא קיים.',
 'Please fix the following errors:'=>':אנא תקן את השגיאות הבאות',
-// // // 
-// // // Admin Page
+
+// Admin Page
 'Administration Tools'=>'כלי לניהול',
 'Welcome to the administration tool set.'=>'ברוכים באים לסט כלי הניהול.',
 'Links'=>'קישורים',
 'How To\'s'=>'איך של',
-'Gii - A Code Generation Module'=>'Gii - מודול דור קוד',
 'Send Mass E-mail'=>'שלח המוני בדואר אלקטרוני',
 'How to use Gii'=>'כיצד להשתמש Gii',
 'How to add a database field'=>'כיצד להוסיף שדה במסד נתונים',
-// // // 
-// // // Activity Feed
-// // 
+
+// Activity Feed
+
 'Activity Feed'=>'עדכון פעילות',
-// // // Filter Headers
-'Visibility'=>'ראות',
+// Filter Headers
 'Relevant Users'=>'משתמשים רלוונטיים',
 'Event Types'=>'סוגי אירועים',
 'Social Subtypes'=>'תת סוגים חברתיים',
-'Options'=>'אפשרויות',
 'Set Default'=>'הגדרת ברירת מחדל',
 'Apply Filters'=>'החל מסננים',
-// // // Filter Text
-'Social Post'=>'הודעת חברה',
-'Announcement'=>'הכרזה',
-'Product Info'=>'מידע על מוצר',
-'Competitive Info'=>'מידע תחרותי',
-'Confidential'=>'סודי',
-// // // Event Types
+// Filter Text
+'Filter Controls'=>'פקדי סינון',
+// Event Types
 'Social Posts'=>'הודעות חברתיות',
 'Records Created'=>'רשומות שנוצרו',
 'Records Deleted'=>'רשומים שנמחק',
-'Action Reminders'=>'תזכורות פעולה',
-'Actions Completed'=>'פעולות הושלמו',
 'Calendar Events'=>'אירועי לוח שנה',
 'Cases Escalated'=>'מקרים הסלימו',
 'Emails Opened'=>'מיילים נפתחו',
+'Doc Updates'=>'עדכוני דוק',
 'Emails Sent'=>'מיילים שנשלחו',
 'Notifications'=>'הודעות',
 'Webleads Created'=>'האינטרנט מוביל נוצר',
-'Web Activity'=>'פעילות אינטרנט',
 'Workflow Complete'=>'זרימת עבודה מלאה',
 'Workflow Reverted'=>'זרימת העבודה שוחזרה',
 'Workflow Started'=>'זרימת העבודה',
-// // // Event Text
+'VOIP Calls'=>'שיחות VoIP',
+'All Events'=>'כל האירועים',
+'Feed Events'=>'אירועי Feed',
+'Making an event sticky will cause it to always show up at the top of the feed.'=>'מה שהופך דביקות אירוע יגרום לו תמיד להופיע בחלק העליון של ההזנה.',
+'Undo Sticky'=>'בטל נעוץ',
+'Like Post'=>'כמו בהודעה',
+'Unlike Post'=>'בניגוד להודעה',
+// Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'נוצר {actionLink} חדש קשור בקשר {contactLink}',
 'created a new {modelName}, {modelLink}'=>'נוצר חדש {modelName}, {modelLink} ',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'נוצר {modelName}  חדש, {deletionText}. זה נמחק.',
@@ -363,14 +322,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'פעולה נובעת עכשיו, אבל השיא לא נמצא.',
 'completed the following action: {actionDescription}'=>'השלים את הפעולה הבאה: {actionDescription}',
 'completed an action, but the record could not be found.'=>'השלים פעולה, אבל השיא לא נמצא.',
-// // // Model Names
+// Model Names
 'action'=>'פעולה',
 'contact'=>'ליצור קשר עם',
-'account'=>'חשבון',
 'opportunity'=>'הזדמנות',
 'marketing campaign'=>'קמפיין שיווק',
-// // 
-// // // Misc. Text
+'product'=>'מוצר',
+
+// Misc. Text
 'Minimize Posts'=>'מזער הודעות',
 'Restore Posts'=>'שחזור הודעות',
 'My Groups'=>'הקבוצות שלי',
@@ -379,15 +338,20 @@ return array (
 'Broadcast Event'=>'אירוע שודר',
 'Cancel Broadcast'=>'ביטול שידור',
 'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'שידור אירוע יעשה את זה גלוי לכל משתמש לצפות באירועים שלך להאכיל פעילות - ללא קשר לסוג מסננים.',
-// //
-// // Error Reporting
+'Leave colors blank for defaults.'=>'השאר צבעים ריקים לברירות מחדל.',
+'Do you want to email all users?'=>'האם ברצונך לשלוח את כל המשתמשים?',
+'What color should the broadcast be?'=>'איזה צבע צריך להיות שידור?',
+'What color should the font be?'=>'איזה צבע צריך להיות לגופן?',
+'What color should the links be?'=>'איזה צבע צריכים להיות בקישורים?',
+'Are you sure you want to remove these items from the list?'=>'האם אתה בטוח שברצונך להסיר את הפריטים הללו מהרשימה?',
+
+// Error Reporting
 'Bug Report Form'=>'טופס דיווח באג',
 'This is the form to manually report bugs.'=>'זוהי הצורה ידנית כדי לדווח על באגים.',
 'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'אם יש לך באג לדווח שלא נגרם על ידי שגיאה בפועל (שיעשה את טופס דוח שגיאות) יש למלא את כל מידע שאתה יכול לתת לנו ופגעת "שלח". אנחנו נבדוק את הנושא ואם אתה כולל גם את כתובת הדוא"ל שלך אנו נחזור אליך בהקדם האפשרי. תודה!',
 'Send Bug Report'=>'שלח דוח באג',
 'Here\'s a quick list of what will be included in the report:'=>'הנה רשימה מהירה של מה ייכלל בדו"ח:',
 'Report A Bug'=>'דווח על באג',
-'Email Address'=>'כתובת דוא"ל',
 'Bug Description'=>'תיאור באג',
 'X2CRM Version:'=>'גרסת X2CRM:',
 'PHP Version:'=>'PHP גרסה:',
@@ -407,4 +371,191 @@ return array (
 'Please Note:'=>'שים לב:',
 'Any information in the $_GET or $_POST arrays included with the request will also be sent with the report.'=>'כל מידע ב_GET $ או $ מערכי _POST הכלולים בבקשה יישלח גם בדו"ח.',
 'Error report sent!'=>'דוח שגיאה נשלח!',
+
+// About Page
+'Professional Edition'=>'מהדורת Professional',
+'X2Engine is a Customer Relationship Management application <br>designed by John Roberts.'=>'X2Engine הוא יישום ניהול קשרי לקוחות <br> עוצב על ידי ג&#39;ון רוברטס.',
+'For customer and community support:'=>'לתמיכה בלקוחות וקהילה:',
+'Core Team'=>'צוות הליבה',
+'Special Thanks'=>'תודה מיוחדת',
+'Version Info'=>'מידע על גרסות',
+'Build'=>'לבנות',
+'Code Base'=>'בסיס קוד',
+'Plugins/Extensions'=>'תוספים / הרחבות',
+'Developer'=>'מפתחים',
+'Yii Extension'=>'יי הארכה',
+'Powered by X2Engine'=>'מופעל על ידי X2Engine',
+'X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 			to install and use this Software for your internal business purposes. 			You shall not modify, distribute, license or sublicense the Software. 			Title, ownership, and all intellectual property rights in the Software belong 			exclusively to X2Engine.'=>'X2Engine בע"מ מעניק לך רישיון תמידי, שאינם בלעדי, אינו ניתן להעברה להתקנה ושימוש בתוכנה זו למטרות העסקיות הפנימיות שלך. אסור לך לשנות, להפיץ, רישיון או רישיון משנה לתוכנה. כותרת, בעלות, וכל זכויות הקניין הרוחניים בתוכנה שייכת באופן בלעדי לX2Engine.',
+'THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 		EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 		MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.'=>'תוכנה זו מסופקת "כפי שהם" וללא אחריות מכל סוג שהוא, מפורש או משתמעת, כולל ללא הגבלת אחריות משתמעת לסחירות, התאמה למטרה מסוימת, בעלות, ואי פר.',
+'Our office in downtown Santa Cruz'=>'המשרד שלנו במרכז העיר סנטה קרוז',
+'X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.'=>'X2Engine Inc היא שבסיסה ביפה סנטה קרוז, קליפורניה. אנחנו באמת נהנים לקוחות ושותפים לפגישה בכל הזדמנות וממליצים לך לבקר במשרדים שלנו, כאשר אתה מוצא את עצמך באזור מפרץ סן פרנסיסקו.',
+'Cannot delete admin user.  Please do not repeat this request.'=>'לא יכול למחוק את משתמש admin. נא לא לחזור על בקשה זו.',
+'The "model" property cannot be empty.'=>'הרכוש "המודל" לא יכול להיות ריק.',
+'The "options" property cannot be empty.'=>'הרכוש "האפשרויות" לא יכול להיות ריק.',
+'The "chart" property is not valid JSON.'=>'הרכוש "התרשים" אינו תקף JSON.',
+'The "model property is not valid'=>'"רכוש המודל אינו חוקי',
+'Rights Reserved.'=>'זכויות שמורות.',
+'Click to get a new image'=>'לחץ כדי לקבל תמונה חדשה',
+'Please enter the letters in the image above.'=>'אנא הכנס את האותיות בתמונה למעלה.',
+'Main Menu'=>'תפריט ראשי',
+'Incorrect username or password.'=>'שם משתמש או סיסמא שגוי.',
+'Email '=>'דוא"ל',
+'Cannot be blank.'=>'לא יכול להיות ריק.',
+'Side Panel Settings'=>'הגדרות לוח צד',
+'top'=>'עליון',
+'Sync'=>'לסנכרן',
+'anyone'=>'כל אחד',
+'Invalid selection.'=>'בחירה לא חוקי.',
+'This list cannot be found.'=>'לא ניתן למצוא ברשימה זו.',
+'You do not have permission to modify this list.'=>'אין לך הרשאה לשנות רשימה זו.',
+'The requested list does not exist.'=>'הרשימה המבוקשת לא קיימת.',
+'Severity'=>'חומרה',
+'Creating a theme will save your current '=>'יצירת ערכת נושא תחסוך הנוכחית שלך',
+'Encrypted storage enabled'=>'אחסון מוצפן אפשר',
+'shared system-wide'=>'משותף מערכתי',
+'Set as default'=>'קבע כברירת מחדל',
+'Set as my default'=>'קבע כברירת המחדל שלי',
+'for'=>'עבור',
+'Apply'=>'ליישם',
+'Add New'=>'הוסף חדש',
+'Visible to lead routing'=>'גלוי להוביל ניתוב',
+'Invisible to lead routing'=>'Invisible להוביל ניתוב',
+'GNU Affero GPL v3'=>'GNU GPL v3 Affero',
+'GNU Affero General Public License version 3'=>'גנו Affero הציבורי כללי גרסת רישיון 3',
+'Released as free software without warranties under the'=>'שוחרר כתוכנה החופשית תחת ללא אחריות',
+'Make Important'=>'הפוך חשוב',
+'Broadcast'=>'משדר',
+'Select at least one user to broadcast to'=>'בחר לפחות משתמש אחד לשדר ל',
+'Okay'=>'בסדר',
+'Nevermind'=>'Nevermind',
+'Create Chart Setting'=>'ליצור הגדרת תרשים',
+'Clear second metric'=>'ברור שני מטרי',
+'Delete predefined chart setting'=>'מחק את הגדרת תרשים מוגדרת מראש',
+'Setting Name'=>'הגדרה שם',
+'Select a group of users to send this event to via email or notification.'=>'בחר קבוצה של משתמשים לשלוח את האירוע הזה לבאמצעות דואר אלקטרוני או הודעה.',
+'Clear All'=>'נקה הכל',
+'Designating an event as important will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'ייעוד כאירוע חשוב יעשה את זה גלוי לכל משתמש צופה באירועים שלך להאכיל פעילות - ללא קשר לסוג מסננים.',
+'Make Unimportant'=>'הפוך לא חשוב',
+'Send test email'=>'שלח דוא"ל מבחן',
+'Register'=>'לרשום',
+'New Event Publisher'=>'מו"ל אירוע חדש',
+'Send Now'=>'שלח עכשיו',
+'Send Later'=>'שלח מאוחר יותר',
+'Media Widget Settings'=>'הגדרות יישומון תקשורת',
+'X2 Media'=>'X2 מדיה',
+'Refresh Google Drive Cache'=>'מטמון כונן Google רענן',
+'Refresh Files'=>'קבצים רענן',
+'Errors encountered in {attribute}'=>'שגיאות נתקלו {attribute}',
+'Auto'=>'אוטומטי',
+'Did not send email because you do not have permission to use the specified credentials.'=>'לא לשלוח דואר אלקטרוני, כי אין לך הרשאה לשימוש באישורים שצוינו.',
+'Inline email model missing from the request to the server.'=>'מודל דוא"ל בשורה חסר בקשה לשרת.',
+'Timezone not available'=>'אזור זמן לא זמין',
+'The requested post does not exist.'=>'ההודעה המבוקשת לא קיימת.',
+'Manage Credentials'=>'נהל אישורים',
+'Edit Credentials'=>'ערוך אישורים',
+'Saved'=>'הציל',
+'Phone system reported inbound call from contact.'=>'מערכת טלפון דיווחה שיחה נכנסת מכל מגע.',
+'You are not authorized to perform this action.'=>'אין לך הרשאה לביצוע פעולה זו.',
+'your feed'=>'העדכון שלך',
+'{name}\'s feed'=>'{name}  &#39;s feed',
+'GMail Account'=>'חשבון Gmail',
+'Email address'=>'כתובת דוא"ל',
+'Server'=>'שרת',
+'Security type'=>'סוג האבטחה',
+'secured with'=>'מאובטח באמצעות',
+'Email Account'=>'חשבון דואר אלקטרוני',
+'Bin Size'=>'גודל סל',
+'Metric 1'=>'1 מטרי',
+'Metric 2'=>'2 מטרי',
+'Encryption Enabled'=>'הצפנה מופעלת',
+'Date Created'=>'תאריך יצירה',
+'Date Last Updated'=>'תאריך עדכון האחרון',
+'Authentication Details'=>'פרטי אימות',
+'New {service}'=>'ניו {service}',
+'Google Account'=>'חשבון Google',
+'Bulk Email Account'=>'חשבון דואר אלקטרוני בתפוצה רחבה',
+'Service Case Email Account'=>'חשבון דוא"ל מקרה שירות',
+'System Response Emailer'=>'תגובת המערכת Emailer',
+'System Notification Emailer'=>'מערכת הודעות Emailer',
+'Notification not found'=>'הודעה לא נמצא',
+'A new {actionLink} associated with the contact {contactLink} has been created.'=>'חדש {actionLink} קשור קשר {contactLink} נוצר.',
+'issued the {transModelName} "{modelLink}" via email'=>'הנפיק {transModelName} {modelLink} באמצעות דואר אלקטרוני',
+'{modelLink} called.'=>'{modelLink} התקשר.',
+'Call from a contact whose record could not be found.'=>'התקשר ממגע השיא שלא ניתן למצוא.',
+'A lead failed to come through Lead Capture. Check {link} to recover it.'=>'יתרון לא הצליח לבוא דרך להוביל ללכידה. בדקו {link} לשחזר את זה.',
+'here'=>'כאן',
+'{user} posted on {link}'=>'{user} פורסם {link}',
+'{user} replied on {link}'=>'{user} השיב על {link}',
+'{name} is currently on {url}'=>'{name} הוא כרגע על {url}',
+'{name} is currently on your website.'=>'{name} הוא כיום באתר האינטרנט שלך.',
+'Invalid email address list.'=>'לא חוקי רשימת כתובות דואר אלקטרוני.',
+'Cannot delete. The item is in use by the system, or you do not have permission.'=>'לא יכול למחוק. הפריט שנמצא בשימוש על ידי המערכת, או שאין לך הרשאה.',
+'You have made an invalid request, please do not repeat this.'=>'אתה עשית את בקשה לא חוקית, בבקשה אל תחזור על זה.',
+'If this happened by clicking a Delete button on a Grid, just go back to that page and it should work now. This is a known issue we are working to fix.'=>'אם זה קרה על ידי לחיצה על כפתור מחיקה ברשת, פשוט לחזור לדף זה וזה אמור לעבוד עכשיו. זו בעיה מוכרת ואנו פועלים כדי לתקן.',
+'Your X2CRM session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.'=>'מפגש X2CRM שלך פג. אתה יכול לבחור באפשרות "ביטול" כדי להתעלם מהודעה זו ולשחזר את הנתונים שלא נשמרו מהעמוד הנוכחי. אחרת, אתה יהיה מנותב אל דף הכניסה.',
+'Sorry, this record doesn\'t seem to exist.'=>'מצטערים, נראה שיא לא מסוגל  &#39;זה לא להתקיים.',
+'A new {modelName}, {modelLink}, has been created.'=>'חדש {modelName} {modelLink} כבר נוצר.',
+'A {modelName}, {deletionText}, was created. It has been deleted.'=>'{modelName} {deletionText} נוצר. זה כבר נמחק.',
+'A {modelName} was created, but it could not be found.'=>'{modelName} נוצר, אבל זה לא נמצא.',
+'A {modelType}, {text}, was deleted'=>'{modelType} {text} נמחק',
+'deleted an {modelType}, {text}.'=>'נמחק {modelType} {text}',
+'An {modelType}, {text}, was deleted.'=>'{modelType} {text} נמחק.',
+'issued a quote by email, but that record has been deleted.'=>'פרסם ציטוט בדוא"ל, אבל השיא שנמחק.',
+'issued a quote by email, but that record could not be found.'=>'הוציא ציטוט על ידי דואר אלקטרוני, אך לא ניתן היו למצוא תקליטים ש.',
+'issued an invoice by email, but that record has been deleted.'=>'הוציא חשבונית במייל, אבל השיא שנמחק.',
+'issued an invoice by email, but that record could not be found.'=>'הוציא חשבונית בדואר אלקטרוני, אבל זה לא נמצא תיעוד ש.',
+'A contact has opened {emailType}, but that contact cannot be found.'=>'קשר פתח {emailType} אך לא ניתן למצוא איש קשר זה.',
+'updated a document, {docLink}'=>'עודכן מסמך, {docLink}',
+'received an email from a {transModelName}, {modelLink}'=>'קיבל דוא"ל מ {transModelName} {modelLink}',
+'received an email from a {transModelName}, but that record has been deleted.'=>'קיבל דוא"ל מ {transModelName} אבל השיא שנמחק.',
+'received an email from a {transModelName}, but that record could not be found.'=>'קיבל דוא"ל מ {transModelName} אך לא נמצא כי השיא.',
+'A contact called, but the contact record has been deleted.'=>'קשר בשם, אבל רשומת איש הקשר נמחקה.',
+'Pressing the X button on a tag will hide it from this widget. Hidden tags can be restored from your Preferences page.'=>'לחיצה על כפתור X על תג יהיה להסתיר את זה מן יישומון זה. ניתן לשחזר תגים נסתרות מדף ההעדפות שלך.',
+'Displaying {start}-{end} result(s).'=>'מציג {start} - {end} התוצאה (ות).',
+'Email Address (optional)'=>'כתובת דוא"ל (לא חובה)',
+'User name (if different from email address)'=>'שם משתמש (אם שונה מכתובת דוא"ל)',
+'This record may be a duplicate!'=>'שיא זה עשוי להיות כפול!',
+'Credentials stored in plain text!'=>'האישורים המאוחסנים בטקסט רגיל!',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'אם יש לך באג לדווח שלא נגרם על ידי שגיאה בפועל (שיעשה את טופס דוח שגיאות) יש למלא את כל מידע שאתה יכול לתת לנו ופגעת "שלח". אנחנו נבדוק את הנושא ואם אתה כולל גם את כתובת הדוא"ל שלך אנו נחזור אליך בהקדם האפשרי. תודה!',
+'A new version is available! Click here to update to version {version}'=>'גרסה חדשה זמינה! לחץ כאן כדי לעדכן לגרסת {version}',
+'a quote email'=>'דוא"ל ציטוט',
+'an invoice email'=>'דוא"ל חשבונית',
+'an email'=>'דוא"ל',
+' has opened {emailType}!'=>'פתח {emailType}',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit \"Send.\" We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'אם יש לך באג לדווח כי \ &#39;s לא נגרם על ידי שגיאה בפועל (אשר יהפוך את טופס דוח השגיאה) אנא מלא את כל מידע שאתה יכול לתת לנו ופגעתי \ &quot;שלח. \&quot; אנחנו \&#39; ll להסתכל לתוך נושא ואם אתה כולל גם את כתובת הדוא&quot;ל שלך אנחנו \ &#39;אחזור אליך בהקדם האפשרי. תודה!',
+'issued the {transModelName} \"{modelLink}\" via email'=>'הנפיק {transModelName} \ {modelLink} \&quot; באמצעות דואר אלקטרוני',
+'What color should the event be?'=>'איזה צבע צריך להיות אירוע?',
+'Do you want to email selected users?'=>'האם ברצונך לשלוח את המשתמשים שנבחרו?',
+'Do you want to notify selected users?'=>'האם ברצונך להודיע ​​למשתמשים שנבחרו?',
+'Permanently delete all notifications?'=>'למחוק לצמיתות את כל ההתראות?',
+'Save to Google Drive?'=>'שמור ל-Google כונן?',
+'If you disable this option, administrators and users granted privilege to do so will be able to use these credentials on your behalf.'=>'אם תבטל את האפשרות זו, מנהלי מערכת ומשתמשים הוענקו זכות לעשות זאת יוכלו להשתמש באישורים אלה בשמך.',
+'select a type'=>'בחר סוג',
+'Owned by {user}'=>'בבעלות {user}',
+'Maximize Widget'=>'מקסם יישומון',
+'Minimize Widget'=>'למזער יישומון',
+'Sort Widget'=>'מיין יישומון',
+'Close Widget'=>'יישומון סגור',
+'Check all'=>'לבדוק את כל',
+'Uncheck all'=>'בטל כל',
+'metric(s) selected'=>'מדד (ים) נבחר',
+'Per Hour'=>'לשעה',
+'Per Day'=>'ליום',
+'Per Week'=>'לכל שבוע',
+'Per Month'=>'לחודש',
+'Tasks'=>'משימות',
+'Calls'=>'שיחות',
+'Emails'=>'הודעות דוא&quot;ל',
+'Workflow Actions'=>'פעולות זרימת עבודה',
+'View history item'=>'צפה בפריט ההיסטוריה',
+'Someone'=>'מישהו',
+' opened a link in an email campaign and is visiting your website!'=>'פתח קישור בקמפיין דוא&quot;ל ומבקר באתר האינטרנט שלך!',
+'A contact has opened a link in an email campaign, but that contact cannot be found.'=>'קשר פתח בקישור קמפיין דואר אלקטרוני, אך לא ניתן למצוא איש קשר זה.',
+'Class "{class}" specified for {attribute} does not exist, so cannot create relationships with it.'=>'כיתה {class} שצוינה עבור {attribute} אינו קיים, ולכן לא ניתן ליצור קשר עימו.',
+'Class "{class}" specified for {attribute} does not have X2LinkableBehavior, and thus cannot be used with relationships.'=>'כיתה {class} שצוינה עבור {attribute} אין X2LinkableBehavior, ולכן לא יכולה להיות בשימוש עם מערכות יחסים.',
+'Model record not found for {attribute}.'=>'שיא מודל לא מצא {attribute}',
+'Google Email Account'=>'חשבון הדואר האלקטרוני של Google',
+'Setting'=>'הצבה',
+'Attach a File/Photo'=>'לצרף קובץ / תמונה',
+'Select at least one broadcast method'=>'בחר שיטת שידור אחת לפחות',
 );

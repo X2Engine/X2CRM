@@ -75,18 +75,14 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 }
 ?>
 
-<table style="width: 900px;">
-	<tr>
 		<?php if(!empty($fileView)) { ?>
-			<td style="width: 32%;">
+			<div style="float: left; margin-right: 5px;">
 				<div class="formItem" style="height: 200px; border: 1px solid #CCC; background: #FAFAFA; display: table-cell; -moz-border-radius: 4px; -o-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;">
 					<?php echo $fileView; ?>
 				</div>
-			</td>
+			</div>
 		<?php } ?>
 
-
-		<td style="vertical-align: top;">
 
 			<div class="x2-layout form-view" style="margin-bottom: 0;">
 
@@ -241,10 +237,6 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 			</div>
 
 
-		</td>
-
-	</tr>
-</table>
 
 <?php
 echo '	<div class="row buttons">'."\n";

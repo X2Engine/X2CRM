@@ -99,11 +99,12 @@ class CommonControllerBehavior extends CBehavior {
 	 * Returns the data model based on the primary key given.
 	 *
 	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded. Note, it is assumed that
+	 * @param integer $id the ID of the model to be loaded. Note, it is assumed that
 	 *	when this value is null, {@link _model} is set already; otherwise there's
 	 *	nothing that can be done to correctly resolve the model.
+	 * @param bool $throw Whether to throw a 404 upon not finding the model
 	 */
-	public function getModel($id=null){
+	public function getModel($id=null,$throw=true){
 		if(!isset($this->_model)) {
 			if($this->owner->modelClass == 'Admin' && empty($id)) // Special case for Admin: let the ID be the one and only record if unspecified
 				$id = 1;
@@ -112,7 +113,7 @@ class CommonControllerBehavior extends CBehavior {
 			else { // ID was specified, so load it.
 				$this->_model = CActiveRecord::model($this->owner->modelClass)->findByPk((int) $id);
 			}
-			if($this->_model === null) // Model record couldn't be retrieved
+			if($this->_model === null && $throw) // Model record couldn't be retrieved
 				throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));
 		} else if($this->_model->id != $id && !empty($id)) { // A different record is being requested
 			// Change the ID and load the different record.

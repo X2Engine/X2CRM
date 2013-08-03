@@ -1,0 +1,12 @@
+<?php
+return array (
+'No relationships found.'=>'',
+'Such a relationship already exists.'=>'',
+'Successfully saved a relationship.'=>'',
+'Failed to save relationship record for unknown reason.'=>'',
+'{n} relationships deleted.'=>'',
+'One or more relationships could not be deleted.'=>'',
+'Request type not supported for this action.'=>'',
+'Tags not added.'=>'',
+'Error'=>'',
+);

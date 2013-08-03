@@ -37,7 +37,7 @@
 <div class="page-title"><h2><?php echo Yii::t('admin','Add Exception'); ?></h2></div>
 <div class="form">
 <div style="width:500px">
-    <?php echo Yii::t('admin','Adding an exception will alter a Role\'s behavior while the contact is on a particular workflow stage.  You can change which fields are editable by whom to be dependent on where a contact is in workflow this way.') ?>
+    <?php echo Yii::t('admin',"Adding an exception will alter a Role's behavior while the contact is on a particular workflow stage.  You can change which fields are editable by whom to be dependent on where a contact is in workflow this way.") ?>
 </div><br>
 <?php
 //Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
@@ -63,7 +63,7 @@ foreach($list as $role){
         'action'=>'roleException',
 )); ?>
 
-        <label><?php echo Yii::t('admin','Workflow'); ?></label>
+        <label><?php echo Yii::t('workflow','Workflow'); ?></label>
         <?php echo CHtml::dropDownList('workflow','',$workflows,array(
         'empty'=>'Select a workflow',
                 'ajax' => array(
@@ -71,15 +71,15 @@ foreach($list as $role){
                 'url'=>CController::createUrl('admin/getWorkflowStages'), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#workflowStages', //selector to update
-                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
+                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
                 //leave out the data key to pass all form values through
                 ))); ?>
-        <label><?php echo Yii::t('admin','Workflow Stage'); ?></label>
+        <label><?php echo Yii::t('workflow','Workflow Stage'); ?></label>
         <?php echo CHtml::dropDownList('workflowStages','',array(),array('id'=>'workflowStages','empty'=>'Select a workflow first'));?>
         <div class="row">
             <label>Role Name</label>
             <?php echo $form->dropDownList($model,'name',$names,array(
-                'empty'=>'Select a role',
+                'empty'=>Yii::t('admin','Select a role'),
                 'ajax' => array(
                 'type'=>'POST', //request type
                 'url'=>CController::createUrl('admin/getRole'), //url to call.
@@ -89,14 +89,14 @@ foreach($list as $role){
                     $('.multiselect').multiselect();
                     $('#users').hide();
                 }"
-                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
+                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
                 //leave out the data key to pass all form values through
                 ))); ?>
             <?php echo $form->error($model,'name'); ?>
         </div>
-        
+
         <div id="roleFormTwo">
-            
+
         </div>
         <br />
 	<div class="row buttons">

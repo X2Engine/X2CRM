@@ -230,6 +230,7 @@ class User extends CActiveRecord {
         }
     }
 
+
     /**
      * Generate a link to a user or group.
      *
@@ -244,7 +245,8 @@ class User extends CActiveRecord {
             if(is_numeric($users)){
                 $group = Groups::model()->findByPk($users);
                 if(isset($group))
-                    $link = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
+                    //$link = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
+                    $link = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
                 else
                     $link = '';
                 return $link;
@@ -263,12 +265,14 @@ class User extends CActiveRecord {
             }else if(is_numeric($user)){  // this is a group
                 if(isset($userCache[$user])){
                     $group=$userCache[$user];
-                    $links[] =  $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
+                    //$links[] =  $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
+                    $links[] = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
                 }else{
                     $group = Groups::model()->findByPk($user);
                     // $group = Groups::model()->findByPk($users);
                     if(isset($group)){
-                        $groupLink = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
+                        //$groupLink = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
+                    	$groupLink = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
                         $userCache[$user] = $group;
                         $links[] = $groupLink;
                     }
@@ -277,13 +281,15 @@ class User extends CActiveRecord {
                 if(isset($userCache[$user])){
                     $model=$userCache[$user];
                     $linkText = $useFullName ? $model->name : $user;
-                    $userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
+                    //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
+                   	$userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl ('/profile/view', array ('id' => $model->id))) : $linkText;
                     $links[] = $userLink;
                 }else{
                     $model = X2Model::model('User')->findByAttributes(array('username' => $user));
                     if(isset($model)){
                         $linkText = $useFullName ? $model->name : $user;
-                        $userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
+                        //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
+                   		$userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl ('/profile/view', array ('id' => $model->id))) : $linkText;
                         $userCache[$user] = $model;
                         $links[] = $userLink;
                     }

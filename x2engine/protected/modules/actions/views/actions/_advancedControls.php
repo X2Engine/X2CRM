@@ -38,25 +38,26 @@
 <?php
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
     echo CHtml::form();
-    echo "Show me
-        ".CHtml::dropDownList('complete',!empty($complete)?$complete:'No',array('No'=>'unfinished','Yes'=>'complete','all'=>'all'))."
-        Actions assigned to
-        ".CHtml::dropDownList('assignedTo',!empty($assignedTo)?$assignedTo:'me',array('me'=>'me','both'=>'me or anyone','all'=>'everyone'))."
-        that
-        ".CHtml::dropDownList('dateType',!empty($dateType)?$dateType:'due',array('due'=>'are due','create'=>'were created'))."
-        ".CHtml::dropDownList('dateRange',!empty($dateRange)?$dateRange:'today',array(
-            'today'=>'today',
-            'tomorrow'=>'tomorrow',
-            'week'=>'this week',
-            'month'=>'this month',
-            'all'=>'any time',
-            'range'=>'between these dates',
+    echo Yii::t('actions',"Show me")." "
+        .CHtml::dropDownList('complete',!empty($complete)?$complete:'No',array('No'=>Yii::t('actions','unfinished'),'Yes'=>Yii::t('actions','complete'),'all'=>Yii::t('actions','all')))
+        ." ".Yii::t('actions',"Actions assigned to")." "
+        .CHtml::dropDownList('assignedTo',!empty($assignedTo)?$assignedTo:'me',array('me'=>Yii::t('actions','me'),'both'=>Yii::t('actions','me or anyone'),'all'=>Yii::t('actions','everyone')))
+        ." ".Yii::t('actions',"that")." "
+        .CHtml::dropDownList('dateType',!empty($dateType)?$dateType:'due',array('due'=>Yii::t('actions','are due'),'create'=>Yii::t('actions','were created')))
+        ." "
+        .CHtml::dropDownList('dateRange',!empty($dateRange)?$dateRange:'today',array(
+            'today'=>Yii::t('actions','today'),
+            'tomorrow'=>Yii::t('actions','tomorrow'),
+            'week'=>Yii::t('actions','this week'),
+            'month'=>Yii::t('actions','this month'),
+            'all'=>Yii::t('actions','any time'),
+            'range'=>Yii::t('actions','between these dates'),
         ));
     echo "<span id='date-controls' style='".((!empty($dateRange) && $dateRange=='range')?"":"display:none")."'> (";
     Yii::app()->controller->widget('CJuiDateTimePicker', array(
                 'name' => 'start',
                 'value'=>!empty($start)?$start:'',
-                // 'title'=>Yii::t('app','Start Date'),
+                // 'title'=>Yii::t('actions','Start Date'),
                 // 'model'=>$model, //Model object
                 // 'attribute'=>$field->fieldName, //attribute name
                 'mode' => 'date', //use "time","date" or "datetime" (default)
@@ -73,7 +74,7 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                 'name' => 'end',
                 // 'value'=>$startDate,
                 'value'=>!empty($end)?$end:'',
-                // 'title'=>Yii::t('app','Start Date'),
+                // 'title'=>Yii::t('actions','Start Date'),
                 // 'model'=>$model, //Model object
                 // 'attribute'=>$field->fieldName, //attribute name
                 'mode' => 'date', //use "time","date" or "datetime" (default)
@@ -86,10 +87,11 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                 'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
             ));
     echo ") </span>";
-    echo" and order them by
-        ".CHtml::dropDownList('orderType',!empty($orderType)?$orderType:'desc',array('desc'=>'descending','asc'=>'ascending'))."
-        ".CHtml::dropDownList('order',!empty($order)?$order:'due',array('due'=>'due date.','create'=>'create date.','priority'=>'priority.'));
-    echo " ".CHtml::submitButton('Go',array('class'=>'x2-button','style'=>'padding: 1px 15px;display:inline;'));
+    echo" ".Yii::t('actions',"and order them by")." "
+        .CHtml::dropDownList('orderType',!empty($orderType)?$orderType:'desc',array('desc'=>Yii::t('actions','descending'),'asc'=>Yii::t('actions','ascending')))
+        ." "
+        .CHtml::dropDownList('order',!empty($order)?$order:'due',array('due'=>Yii::t('actions','due date'),'create'=>Yii::t('actions','create date'),'priority'=>Yii::t('actions','priority')));
+    echo " ".CHtml::submitButton(Yii::t('app','Go'),array('class'=>'x2-button','style'=>'padding: 1px 15px;display:inline;'));
     echo CHtml::endForm();
 ?>
 </div>

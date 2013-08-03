@@ -1239,7 +1239,7 @@ class ContactsController extends x2base {
 			'<>'=>Yii::t('contacts','not equal to'),
 			'contains' => Yii::t('contacts', 'contains'),
 			'noContains' => Yii::t('contacts', 'does not contain'),
-			'empty' => Yii::t('empty', 'empty'),
+			'empty' => Yii::t('contacts', 'empty'),
 			'notEmpty' => Yii::t('contacts', 'not empty'),
 			'list' => Yii::t('contacts', 'in list'),
 			'notList' => Yii::t('contacts', 'not in list'),
@@ -1336,7 +1336,7 @@ class ContactsController extends x2base {
 			'<>'=>Yii::t('contacts','not equal to'),
 			'contains' => Yii::t('contacts', 'contains'),
 			'noContains' => Yii::t('contacts', 'does not contain'),
-			'empty' => Yii::t('empty', 'empty'),
+			'empty' => Yii::t('contacts', 'empty'),
 			'notEmpty' => Yii::t('contacts', 'not empty'),
 			'list' => Yii::t('contacts', 'in list'),
 			'notList' => Yii::t('contacts', 'not in list'),
@@ -1840,7 +1840,7 @@ class ContactsController extends x2base {
                             $field->attributeLabel=$field->generateAttributeLabel($key);
                             if($field->save()){
                                 $fieldType="VARCHAR(250)";
-                                $sql = "ALTER TABLE x2_contacts ADD COLUMN $columnName $fieldType";
+                                $sql = "ALTER TABLE x2_contacts ADD COLUMN `$columnName` $fieldType";
                                 $command = Yii::app()->db->createCommand($sql);
                                 $result = $command->query();
                                 $value=$columnName;
@@ -2388,7 +2388,7 @@ class ContactsController extends x2base {
 				if($profile && $profile->emailAddress) {
 					$subject = Yii::t('marketing', 'New Web Lead');
 					$message = Yii::t('marketing', 'A new web lead has been assigned to you: ') . CHtml::link($model->firstName . ' ' . $model->lastName ,array('/contacts/contacts/view','id'=>$model->id)) . '.';
-					$address = array('', $profile->emailAddress);
+					$address = array('to'=>array(array('', $profile->emailAddress)));
 					$status = $this->sendUserEmail($address, $subject, $message);
 				}
 			}

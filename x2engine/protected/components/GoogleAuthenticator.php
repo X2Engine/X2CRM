@@ -243,6 +243,19 @@ class GoogleAuthenticator {
         }
     }
 
+    public function flushCredentials(){
+        if($this->_enabled){
+            unset($_SESSION['access_token']);
+            unset($_SESSION['token']);
+            unset($_GET['code']);
+            $profile = Yii::app()->params->profile;
+            if(isset($profile)){
+                $profile->googleRefreshToken = null;
+                $profile->update(array('googleRefreshToken'));
+            }
+        }
+    }
+
     public function getAccessToken($userId = null){
         if($this->_enabled){
             $client = new Google_Client();
@@ -265,17 +278,30 @@ class GoogleAuthenticator {
             }
             if(!empty($userId) && !is_null($this->getStoredCredentials($userId))){
                 $refreshToken = $this->getStoredCredentials($userId);
-                $client->refreshToken($refreshToken);
-                $credentials = $client->getAccessToken();
-                $_SESSION['token'] = $credentials;
-                $_SESSION['access_token'] = $credentials;
-                return $credentials;
+                try{
+                    $client->refreshToken($refreshToken);
+                    $credentials = $client->getAccessToken();
+                    $_SESSION['token'] = $credentials;
+                    $_SESSION['access_token'] = $credentials;
+                    return $credentials;
+                }catch(Google_AuthException $e){
+                    $profile = Yii::app()->params->profile;
+                    if(isset($profile)){
+                        $profile->googleRefreshToken = null;
+                        $profile->update(array('googleRefreshToken'));
+                    }
+                    return false;
+                }
             }
             if(isset($_GET['code'])){
-                $credentials = $this->getCredentials($_GET['code'], null);
-                $_SESSION['token'] = $credentials;
-                $_SESSION['access_token'] = $credentials;
-                return $credentials;
+                try{
+                    $credentials = $this->getCredentials($_GET['code'], null);
+                    $_SESSION['token'] = $credentials;
+                    $_SESSION['access_token'] = $credentials;
+                    return $credentials;
+                }catch(CodeExchangeException $e){
+                    return false;
+                }
             }
         }
         return false;

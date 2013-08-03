@@ -1,68 +1,17 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Campaign model
-'Campaign'=>'运动',
 'Campaigns'=>'广告系列',
-'ID'=>'账号',
 'Master Campaign ID'=>'主广告系列ID',
-'Name'=>'名称',
-'Assigned To'=>'分配给',
 'Contact List'=>'联络名单',
-'Active'=>'活跃',
-'Description'=>'说明',
-'Type'=>'类型',
 'Cost'=>'成本',
-'Subject'=>'主题',
 'Content'=>'内容',
-'Complete'=>'完成',
-'Visibility'=>'能见度',
-'Create Date'=>'创建日期',
 'Launch Date'=>'发射日期',
-'Last Updated'=>'最后更新',
-'Updated By'=>'更新',
-'None'=>'没有',
 'Basic Info'=>'基本信息',
-'Email'=>'电子邮件',
 'Call List'=>'呼叫清单',
 'Physical Mail'=>'实物邮件',
 'Email Template'=>'电子邮件模板',
 'Update Campaign'=>'更新广告',
-'Last Activity'=>'最近活动',
 'Template'=>'模板',
 
 // Menu
@@ -70,8 +19,8 @@ return array (
 'Create Campaign'=>'建立广告活动',
 'Newsletters'=>'通讯',
 'Create Newsletter'=>'创建通讯',
-'Create Web Form'=>'创建Web窗体',
 'Web Tracker'=>'网络跟踪',
+'Email List'=>'电邮名单',
 
 // Launching
 'The campaign has already been launched.'=>'该活动已经启动。',
@@ -89,7 +38,6 @@ return array (
 'Opened'=>'开业',
 'Clicked'=>'被点击',
 'Unsubscribed'=>'取消订阅',
-'Status'=>'状态',
 
 // Mailing
 'The email sending limit has been reached.'=>'电子邮件发送已达到限制。',
@@ -122,11 +70,9 @@ return array (
 'Contact has clicked a link'=>'联系人点击一个链接',
 'has clicked a link'=>'点击一个链接',
 'To stop receiving these messages, click here'=>'要停止接收这些消息，请点击这里',
+'Send As'=>'发送作为',
 
 // WebForm model
-'Model Name'=>'模型名称',
-'Fields'=>'字段',
-'Parameters'=>'参数',
 'CSS'=>'CSS',
 
 // Web Lead Form creator
@@ -138,25 +84,42 @@ return array (
 'Copy and paste this code into your website to include the web lead form.'=>'复制并粘贴此代码到您的网站，包括网页导致形成。',
 'Choose an existing form as a starting point.'=>'选择一个现有的形式为出发点。',
 'Text Color'=>'文字颜色',
-'Background Color'=>'背景颜色',
 'Font'=>'字体',
 'Border'=>'边界',
 'Size'=>'大小',
 'pixels'=>'像素',
-'Color'=>'颜色',
-'Tags'=>'标签',
-'Default'=>'默认情况下',
 'black'=>'黑色',
 'transparent'=>'透明',
 'none'=>'没有',
-'Example'=>'例子',
 'These tags will be applied to any contact created by the form.'=>'这些标记将被施加到由表单创建的任何接触。',
-'Save'=>'保存',
 'Enter a name and save this form to edit later.'=>'输入一个名称，这个形式保存编辑后。',
 'Form Saved'=>'窗体保存',
 'Reset Form'=>'重设表单“',
 'Embed Code'=>'代码中嵌入',
 'Saved Forms'=>'已保存表单',
-'Settings'=>'设置',
-'Preview'=>'预览',
+'Enter custom css for the web form.'=>'输入自定义CSS的Web表单。',
+'Custom &lt;HEAD&gt;'=>'自定义&lt;HEAD&gt;“',
+'Enter any HTML you would like inserted into the &lt;HEAD&gt; tag.'=>'输入任何HTML你想插入到&lt;HEAD&gt;标签。',
+'Select email templates to send to the new weblead and the user assigned to the weblead.'=>'选择电子邮件模板发送到新weblead和用户分配到weblead。',
+'NOTE: The weblead form must be saved for these emails to be sent.'=>'注：weblead表格必须保存这些要发送的电子邮件。',
+'User Email'=>'用户电子邮件',
+'Weblead Email'=>'Weblead电邮',
+'Drag and Drop fields from Fields List to Form.'=>'拖放字段从字段列表形式。',
+'Live web form preview.'=>'实时网络形式预览。',
+'Label:'=>'标签：',
+'Position:'=>'位置：',
+
+// Web Tracker
+'Web Tracker Code'=>'网站跟踪代码',
+'This HTML tag will allow you to track contacts who visit your website.'=>'此HTML标记将允许您访问您的网站的跟踪联系人。',
+'Paste this code into the body section of every page of your website.'=>'这段代码粘贴到你的网站的每一个页面的主体部分。',
+'<b>Note:</b> Contacts can be tracked only if they filled out the web lead capture form, or clicked on a tracking link in an email campaign.'=>'<b>注：</b>隐形眼镜只有当他们填写的铅捕获形式，或点击链接跟踪电子邮件活动，可以跟踪。',
+'Web Tracker Settings'=>'网络跟踪设置',
+'You can enable or disable the web tracker. The tracker will ignore repeat hits from a given contact during the cooldown period.'=>'您可以启用或禁用网络跟踪。从一个给定的冷却时间期间的接触，跟踪器将忽略重复点击。',
+'If a contact visits several pages in a short time, you will only get one notification.'=>'如果在很短的时间内，接触访问几个页面，你只会得到一个通知。',
+'Turn it down all the way to receive notifications about every page hit.'=>'关闭了所有的方式来接收通知每一页命中。',
+'Contact has opened the email sent on '=>'已开通联系方式发送的电子邮件',
+'Email sent'=>'发送电​​子邮件',
+'Header Code'=>'头码',
+'Batch completed, sending again in '=>'批量完成，再次发送',
 );

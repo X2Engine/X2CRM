@@ -1,105 +1,45 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-// // // Language Name
+// Language Name
 'languageName'=>'Русский',
-// // // Login
+// Login
 'Please log in to continue:'=>'Пожалуйста, войдите для продолжения:',
-'Username'=>'имя пользователя',
-'Password'=>'пароль',
 'Remember me'=>'Запомнить меня',
 'Login'=>'Войти',
 'Welcome to {appName}.'=>'Добро пожаловать в {appName}.',
-'Verification Code'=>'Код проверки',
 'Login with Google'=>'Войти с Google',
-// // // 
-// // // Main Menu
-'Calendar'=>'календарь',
-'Actions'=>'Действия',
-'Contacts'=>'связи',
-'Opportunities'=>'реализация',
+
+// Main Menu
 'Projects'=>'Проекты',
 'Group Chat'=>'чат-группы',
-'Marketing'=>'маркетинг',
 'Cases'=>'случаи',
-'Accounts'=>'счета',
-'Users'=>'Пользователи',
 'Admin'=>'администратор',
-'Docs'=>'Документы',
 'Chat'=>'чат',
-'Social'=>'социальный',
 'Profile'=>'профиль',
-'Settings'=>'настройки',
 'Logout'=>'Выход',
 'Login'=>'Войти',
-'More'=>'больше',
 'What\'s New'=>'Что нового',
-'Quotes'=>'кавычки',
 'Dashboard'=>'приборная панель',
-'Products'=>'Продукция',
-'Workflow'=>'рабочий процесс',
-'Groups'=>'Группы',
 'Notifications'=>'Уведомления',
 'Charts'=>'Чарты',
-'Manage Users'=>'Управление пользователями',
-'Social Feed'=>'Социальная поток',
 'Preferences'=>'Предпочтения',
 'Reports'=>'Отчеты',
 'Activity'=>'деятельность',
 'Service'=>'обслуживание',
 'Go Invisible'=>'Перейти Невидимый',
 'Go Visible'=>'Перейти Видимые',
-// // // 
-// // // Search Bar
+
+// Search Bar
 'X2Engine CRM Groupware'=>'X2Engine CRM Groupware',
-'Go'=>'идти',
-'Contact'=>'контакт',
-'Action'=>'действие',
 'Contact + Action'=>'Контакт + Действие',
 'Search for contact, action, deal...'=>'Поиск контакта, действие, сделка ...',
-// // // 
-// // // Footer
-'All Rights Reserved.'=>'Все права защищены.',
+
+// Footer
 'Generated in {time} seconds.'=>'Сгенерировано за {time} секунд',
 'About'=>'о',
 'The Program is provided AS IS, without warranty.'=>'Программа поставляется как есть, без гарантии.',
-// // // 
-// // // Widgets
-'My Actions'=>'Мои действия',
+
+// Widgets
 'Twitter Feed'=>'Twitter Feed',
 'Quick Contact'=>'Быстрый контакт',
 'Google Map'=>'карту Google',
@@ -109,81 +49,68 @@ return array (
 'Just Me'=>'Только Я',
 'All Users'=>'Все Пользователи',
 'Doc Viewer'=>'Просмотр документов',
-'Time Zone'=>'часовой пояс',
 'Top Sites'=>'Лучшие сайты',
-'Media'=>'средства массовой информации',
 'Current time in'=>'Точное время в',
-'Hide'=>'скрывать',
-// // // 
+
 'Total Action|Total Actions'=>'Всего Действие | Всего Действия',
 'Unfinished Action|Unfinished Actions'=>'Незавершенное Действие | Незавершенные действия',
 'Overdue Action|Overdue Actions'=>'Просроченные Действие | Просроченная Действия',
 'Completed Action|Completed Actions'=>'Завершено Действие | завершенных действий',
-// // // 
+
 'Message Board'=>'Форум',
 'Please enter a message of the day!'=>'Пожалуйста, введите сообщение дня!',
 'Edit Message'=>'Изменить сообщение',
-// // // 
+
 'Note Pad'=>'Блокнот',
 'Feel free to enter some notes!'=>'Не стесняйтесь ввести некоторые ноты!',
-// // // 
-'Top Contacts'=>'Топ Контакты',
+
 'Add {name}'=>'Добавьте {name}',
-// // // 
+
 'Enter Title'=>'Введите название',
-'Title'=>'название',
 'Title:'=>'Название:',
-'Link'=>'ссылка',
 'Link:'=>'Ссылка:',
 'Add Site'=>'Добавить сайт',
-'Example'=>'пример',
-// // // 
-// // // Chat
+
+// Chat
 'Message Body'=>'Тело сообщения',
 'Enter text here...'=>'Введите текст здесь ...',
 'Send'=>'послать',
-// // // 
-// // // Email Form
+
+// Activity Feed
+'Activity Feed Order'=>'Заказать Лента',
+'Top Down'=>'Сверху вниз',
+'Bottom Up'=>'Вверх дном',
+
+// Email Form
 'To:'=>'Кому:',
 'Subject:'=>'Тема:',
 'Message:'=>'сообщение:',
 'Error: Could not send email.'=>'Ошибка: не удалось отправить электронную почту.',
 'Email Sent!'=>'Отправки сообщения!',
-'Preview'=>'предварительный просмотр',
 'Attachments'=>'Вложения',
-// // // 
-// // // Comments
-'Add Comment'=>'Добавить комментарий',
-'Create Action'=>'Создать действия',
+'Note: you have entered text into the email that will be lost. Are you sure you want to continue?'=>'Примечание: вы ввели текст в электронном письме, которое будет потеряно. Вы уверены, что хотите продолжить?',
+'From:'=>'От:',
+'Send As:'=>'Отправить как:',
+'System default (legacy)'=>'Система по умолчанию (наследие)',
+
+// Comments
 'Add a comment...'=>'Добавить комментарий ...',
-'History'=>'история',
 'Today'=>'сегодня',
 'Tomorrow'=>'завтра',
-'Comments'=>'Комментарии',
 'Post'=>'пост',
-// // // 
-// // // Misc
+
+// Misc
 'Advanced Search'=>'Расширенный поиск',
 'Clear Filters'=>'Очистить фильтры',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'Можно ввести оператор сравнения (<b> <</b>, <b> <= </b>, <b>> </b>, <b>> = </b>, <b> <> </b> или <b> = </b>) в начале каждого из ваших ценностей поиска, чтобы указать, как сравнение должно быть сделано.',
 'Fields with <span class="required">*</span> are required.'=>'Поля с <span class="required"> * </span> обязательны для заполнения.',
 'Click here to return to where you were'=>'Нажмите здесь, чтобы вернуться туда, где вы были',
-'Private'=>'частный',
 'Attach A File/Photo'=>'Прикрепить файл / Фото',
 'Attach a File'=>'Прикрепить файл',
-'None'=>'ни один',
-'Anyone'=>'кто-нибудь',
-'Share'=>'доля',
-'Link'=>'ссылка',
+'Share:'=>'Поделиться:',
 'Theme'=>'тема',
-'Account'=>'счет',
-'Opportunity'=>'возможность',
-'All'=>'все',
 'Optional'=>'необязательный',
 'Records that have been modified since your last login.'=>'Записи, которые были изменены с момента последнего входа в систему.',
-'Are you sure you want to delete this item?'=>'Вы уверены, что хотите удалить этот элемент?',
-'Columns'=>'Колонны',
-'Tools'=>'инструментарий',
 'Rights reserved.'=>'Права защищены.',
 'GNU General Public License version 3'=>'GNU общественность лицензия версии 3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'Программа поставляется как есть, без гарантии. <br> Лицензия {BSD} под.',
@@ -191,32 +118,21 @@ return array (
 'Minimize'=>'минимизировать',
 '"{X}" is not an allowed filetype.'=>'"{X}" не позволил типов файлов.',
 'Loading'=>'загрузка',
-'Edit'=>'редактировать',
 'Due'=>'должный',
 'Help'=>'Помогите',
 '---'=>'---',
 'You don\'t have any notifications.'=>'У вас нет каких-либо уведомлений.',
 'View all'=>'Просмотреть все',
 'Close'=>'закрывать',
-'Delete'=>'удалять',
 'Group?'=>'Группа?',
 'Check box'=>'Флажок',
 'results per page'=>'результатов на странице',
-'Public'=>'общественность',
-'Tags'=>'Теги',
 'Template:'=>'шаблон:',
-'Model Name'=>'название модели',
-'Model ID'=>'Идентификация модели',
 'What should the list be named?'=>'Что списке будет называться?',
 'Added items to list.'=>'Добавлены пункты к списку.',
 'Select an option'=>'Выберите один из вариантов',
 'loading...'=>'Загрузка ...',
-'Checkbox'=>'флажок',
 'New List From Selection'=>'Новый список от выбора',
-'No'=>'нет',
-'Yes'=>'да',
-'View'=>'смотреть',
-'Update'=>'обновление',
 'results per page.'=>'результатов на странице.',
 'Displaying {start}-{end} of {count} result(s).'=>'Показано {start} - {end} из {count} результат (ы).',
 'Marketing Dashboard'=>'маркетинговые приборной панели',
@@ -224,12 +140,9 @@ return array (
 'Quick Create'=>'Быстрый Создать',
 'Create a Contact, Account, and Opportunity.'=>'Создать контакт, счета, и возможность.',
 '<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'<b> Совет: </b> Вы можете использовать следующие операторы сравнения с фильтром значений для тонкой настройки вашего поиска.',
-'less than'=>'меньше, чем',
 'less than or equal to'=>'меньше или равно',
-'greater than'=>'больше',
 'greater than or equal to'=>'больше или равно',
 'equal to'=>'равно',
-'not equal to'=>'не равны',
 ' results per page'=>' результатов на странице',
 'Add to list:'=>'Добавить в список:',
 '<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'<b> {start} - {end} </b> из <b> {count} </b>',
@@ -237,7 +150,6 @@ return array (
 'Associate Account'=>'Ассоциированный счета',
 'Associate Opportunity'=>'Ассоциированный возможностей',
 'Associate Contact'=>'Свяжите Связаться',
-'Contact Attributes'=>'Связаться с Атрибуты',
 'CC:'=>'CC:',
 'BCC:'=>'BCC:',
 'What should the map be named?'=>'Что должно быть названы карту?',
@@ -248,87 +160,134 @@ return array (
 'Check Filters'=>'Проверьте фильтры',
 'Show/Hide All Comments'=>'Показать / Скрыть все комментарии',
 '{n} rows'=>'{п} строк',
-// // // 
-// // // Misc Actions
+'vs.'=>'против',
+'- Select an event type -'=>'- Выберите тип события -',
+'Simple'=>'простой',
+'Full'=>'Полный',
+'Helpful Tips'=>'Полезные советы',
+'Bug Reports'=>'Отчеты ошибке',
+'Loading...'=>'Loading ...',
+'Link Contact'=>'Ссылка Связаться',
+'Link Account'=>'Связать аккаунт',
+'Link Opportunity'=>'Ссылка Возможность',
+'Quick Note'=>'Quick Note',
+'Update:'=>'Обновление:',
+'Form'=>'Форма',
+'left'=>'оставил',
+'{n} sec'=>'{n} сек',
+'{n} min'=>'{n} мин',
+'{n} hour'=>'{n} час',
+'{n} hours'=>'{n} часа',
+'{n} day'=>'{n} день',
+'{n} month'=>'{n} месяца',
+'{n} months'=>'{n} месяца',
+'{n} year'=>'{n} года',
+'Unlimited'=>'Неограниченный',
+'Enable'=>'Включить',
+'Disable'=>'Запрещать',
+'IP Address'=>'IP-адрес',
+'Login Status'=>'Войти Статус',
+'Allowed filetypes: .csv'=>'Разрешено типы файлов:. CSV',
+'Predefined Theme'=>'Предварительно определенной темы',
+'Menu Background Color'=>'Цвет фона меню',
+'Page Header Background Color'=>'Страница Цвет фона заголовка',
+'Grid View Row Color 1'=>'Grid View цвета строк 1',
+'Grid View Row Color 2'=>'Grid View цвета строк 2',
+'stretch'=>'растягивать',
+'center'=>'центр',
+'repeat'=>'повторять',
+'repeat-x'=>'Повторить-X',
+'repeat-y'=>'Повторите-й',
+'Save Profile Settings'=>'Сохранить профиль Настройки',
+'Creating a theme will save your current theme settings as a predefined theme'=>'Создание темы будет сохранить текущие параметры тему, как предопределенная тема',
+'Theme name'=>'Название темы',
+
+// Misc Actions
 'Submit'=>'подавать',
-'Save'=>'сохранять',
 'Cancel'=>'отменить',
 'Send Email'=>'Отправить e-mail',
 'Attach A File'=>'Прикрепить файл',
 'Save Changes'=>'Сохранить изменения',
 'Save Action'=>'Сохранить действие',
 'Save Comment'=>'Сохранить комментарий',
-'Create'=>'Cоздавать',
 'Search'=>'Искать',
 'Search Results'=>'Результаты поиска',
-'Name'=>'имя',
-'Description'=>'описание',
-'Action'=>'действие',
-'Status'=>'статус',
 'E-mail'=>'E-mail',
 'Download'=>'скачать',
 'Contact Saved'=>'Связаться с Сохраненные',
 'Add Note'=>'Добавить Примечание',
 'New List'=>'Новый список',
-'Add'=>'добавлять',
-'Remove'=>'удаление',
-// // // 
-// // // Timestamps
+'Toggle Comments'=>'Переключение комментариев',
+'Show Chart'=>'представить график',
+'Hide Chart'=>'Скрыть Chart',
+'Make Sticky'=>'Сделать Sticky',
+'Load More'=>'Load More',
+'Go to Activity Feed'=>'К Лента',
+'Toggle Text'=>'Переключить текста',
+'Click to toggle showing the full text of History items.'=>'Нажмите для переключения показывает полный текст История предметов.',
+'Click to increase the number of History items shown.'=>'Нажмите, чтобы увеличить количество История отображаемых элементов.',
+'Show Less'=>'Показать меньше',
+'Click to decrease the number of History items shown.'=>'Нажмите, чтобы уменьшить количество История отображаемых элементов.',
+'Click to toggle showing actions associated with related records.'=>'Нажмите для переключения показывает действия, связанные с соответствующими записями.',
+'Email Quote'=>'E-mail Цитата',
+'Email Invoice'=>'E-mail счета',
+'Start typing to suggest...'=>'Начни печатать, чтобы предложить ...',
+'Do not delete'=>'Не удаляйте',
+
+// Timestamps
 'Just now'=>'сейчас',
 '{n} minutes ago'=>'{п} минут назад',
 '{n} hours ago'=>'{п} часов назад',
 '{n} days ago'=>'{п} дней назад',
-// // // 
-// // // Errors
+
+// Errors
 'Error creating note!'=>'Ошибка при создании Внимание!',
 'Invalid request. Please do not repeat this request again.'=>'Неверный запрос. Пожалуйста, не повторяйте эту просьбу еще раз.',
 'The requested page does not exist.'=>'Запрошенная страница не существует.',
 'Please fix the following errors:'=>'Пожалуйста, исправьте следующие ошибки:',
-// // // 
-// // // Admin Page
+
+// Admin Page
 'Administration Tools'=>'Средства администрирования',
 'Welcome to the administration tool set.'=>'Добро пожаловать в наборе инструментов управления.',
 'Links'=>'связи',
 'How To\'s'=>'Как в',
-'Gii - A Code Generation Module'=>'Gii - модуль генерации кода',
 'Send Mass E-mail'=>'Отправить массовой электронной почте',
 'How to use Gii'=>'Как использовать Gii',
 'How to add a database field'=>'Как добавить поля базы данных',
-// // // 
-// // // Activity Feed
-// // 
+
+// Activity Feed
+
 'Activity Feed'=>'Лента новостей',
-// // // Filter Headers
-'Visibility'=>'видимость',
+// Filter Headers
 'Relevant Users'=>'Соответствующие пользователей',
 'Event Types'=>'Типы событий',
 'Social Subtypes'=>'Социальная Подтипы',
-'Options'=>'опции',
 'Set Default'=>'Установить по умолчанию',
 'Apply Filters'=>'Применить фильтры',
-// // // Filter Text
-'Social Post'=>'Социальная сообщение',
-'Announcement'=>'объявление',
-'Product Info'=>'Информация о продукте',
-'Competitive Info'=>'Конкурентная информация',
-'Confidential'=>'конфиденциальный',
-// // // Event Types
+// Filter Text
+'Filter Controls'=>'Фильтр управляет',
+// Event Types
 'Social Posts'=>'Социальная сообщения',
 'Records Created'=>'записей, созданных',
 'Records Deleted'=>'удаленных записей',
-'Action Reminders'=>'Действие Напоминания',
-'Actions Completed'=>'Действия Завершен',
 'Calendar Events'=>'Календарь событий',
 'Cases Escalated'=>'случаи обострилась',
 'Emails Opened'=>'Письма открытия',
+'Doc Updates'=>'Doc обновлений',
 'Emails Sent'=>'письма, отправленные',
 'Notifications'=>'Уведомления',
 'Webleads Created'=>'Web ведет созданных',
-'Web Activity'=>'веб-активность',
 'Workflow Complete'=>'Полный рабочий процесс',
 'Workflow Reverted'=>'Рабочий процесс Возвращено',
 'Workflow Started'=>'Рабочий процесс работы',
-// // // Event Text
+'VOIP Calls'=>'VOIP звонки',
+'All Events'=>'Все события',
+'Feed Events'=>'поток событий',
+'Making an event sticky will cause it to always show up at the top of the feed.'=>'Создание события липкие приведет к его всегда появляются в верхней части канала.',
+'Undo Sticky'=>'Отменить Sticky',
+'Like Post'=>'Как и сообщение',
+'Unlike Post'=>'В отличие от сообщения',
+// Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'создан новый {actionLink} связанных с контактом {contactLink}',
 'created a new {modelName}, {modelLink}'=>'создан новый {modelName}, {modelLink}',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'создан новый {modelName}, {deletionText}. Она была удалена.',
@@ -363,14 +322,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'Действие которого обусловлено сейчас, но запись не может быть найдено.',
 'completed the following action: {actionDescription}'=>'выполнить следующие действия: {actionDescription}',
 'completed an action, but the record could not be found.'=>'завершены действия, но запись не может быть найдено.',
-// // // Model Names
+// Model Names
 'action'=>'действие',
 'contact'=>'связаться',
-'account'=>'счет',
 'opportunity'=>'возможность',
 'marketing campaign'=>'маркетинговая кампания',
-// // 
-// // // Misc. Text
+'product'=>'продукт',
+
+// Misc. Text
 'Minimize Posts'=>'Свернуть сообщения',
 'Restore Posts'=>'Восстановление сообщения',
 'My Groups'=>'Мои группы',
@@ -379,15 +338,20 @@ return array (
 'Broadcast Event'=>'Трансляция события',
 'Cancel Broadcast'=>'Отмена трансляции',
 'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'Трансляция мероприятия сделать ее видимой для любого пользователя просмотре событий на деятельность корма - независимо от типа фильтра.',
-// //
-// // Error Reporting
+'Leave colors blank for defaults.'=>'Оставьте пустым для цвета по умолчанию.',
+'Do you want to email all users?'=>'Хотите по электронной почте всех пользователей?',
+'What color should the broadcast be?'=>'Какого цвета должна трансляцию быть?',
+'What color should the font be?'=>'Какого цвета должна шрифта может быть?',
+'What color should the links be?'=>'Какого цвета должны быть ссылки?',
+'Are you sure you want to remove these items from the list?'=>'Вы уверены, что хотите удалить эти элементы из списка?',
+
+// Error Reporting
 'Bug Report Form'=>'Форма Сообщение об ошибке',
 'This is the form to manually report bugs.'=>'Это форма вручную сообщать ошибки.',
 'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'Если у вас есть ошибка сообщает, что не вызван фактической ошибки (что сделало бы форме об ошибке), пожалуйста, заполните любую информацию, вы можете дать нам и нажмите кнопку "Отправить". Мы рассмотрим этот вопрос и если вы также включить ваш адрес электронной почты, мы свяжемся с вами как можно скорее. Спасибо!',
 'Send Bug Report'=>'Отправить отчет об ошибке',
 'Here\'s a quick list of what will be included in the report:'=>'Вот краткий список того, что будет включено в отчет:',
 'Report A Bug'=>'Сообщить об ошибке',
-'Email Address'=>'Адрес электронной почты',
 'Bug Description'=>'Описание ошибка',
 'X2CRM Version:'=>'X2CRM версии:',
 'PHP Version:'=>'PHP версии:',
@@ -407,4 +371,191 @@ return array (
 'Please Note:'=>'Пожалуйста, обратите внимание:',
 'Any information in the $_GET or $_POST arrays included with the request will also be sent with the report.'=>'Любая информация в $ _GET или $ _POST массивов в комплекте с просьбой также будут отправлены в отчете.',
 'Error report sent!'=>'Сообщить об ошибке отправлено!',
+
+// About Page
+'Professional Edition'=>'Professional Edition',
+'X2Engine is a Customer Relationship Management application <br>designed by John Roberts.'=>'X2Engine является управление взаимоотношениями с клиентами приложений <br> разработан Джоном Робертсом.',
+'For customer and community support:'=>'Для поддержки клиентов и сообщества:',
+'Core Team'=>'Основная команда',
+'Special Thanks'=>'Отдельное спасибо',
+'Version Info'=>'Информация о версии',
+'Build'=>'Строить',
+'Code Base'=>'Code Base',
+'Plugins/Extensions'=>'Плагины / расширения',
+'Developer'=>'Разработчик',
+'Yii Extension'=>'Yii Расширение',
+'Powered by X2Engine'=>'Создано X2Engine',
+'X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 			to install and use this Software for your internal business purposes. 			You shall not modify, distribute, license or sublicense the Software. 			Title, ownership, and all intellectual property rights in the Software belong 			exclusively to X2Engine.'=>'X2Engine Инк предоставляет Вам бессрочную, неисключительную, не подлежащую передаче лицензию на установку и использование этого программного обеспечения для внутренних целей бизнеса. Вам не разрешается изменять, распространять, лицензировать или передавать кому-либо лицензию на программное обеспечение. Название, право собственности, и все права интеллектуальной собственности на Программное обеспечение принадлежат исключительно X2Engine.',
+'THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 		EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 		MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.'=>'ДАННОЕ ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ «КАК ЕСТЬ», БЕЗ ГАРАНТИЙ ЛЮБОГО РОДА, ЯВНЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ, ВКЛЮЧАЯ, БЕЗ ОГРАНИЧЕНИЙ, ГАРАНТИИ ПРИГОДНОСТИ ДЛЯ КОНКРЕТНЫХ ЦЕЛЕЙ И ОТСУТСТВИЯ НАРУШЕНИЯ ПРАВ СОБСТВЕННОСТИ.',
+'Our office in downtown Santa Cruz'=>'Наш офис в центре города Санта-Крус',
+'X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.'=>'X2Engine ее головной офис находится в красивой Санта-Крус, штат Калифорния. Мы действительно наслаждаемся встречу клиентам и партнерам по возможности и приглашаем Вас посетить наш офис, когда вы окажетесь в районе залива Сан-Франциско.',
+'Cannot delete admin user.  Please do not repeat this request.'=>'Невозможно удалить пользователя с правами администратора. Пожалуйста, не повторяйте эту просьбу.',
+'The "model" property cannot be empty.'=>'"Модель" собственность не может быть пустым.',
+'The "options" property cannot be empty.'=>'"Опции" собственность не может быть пустым.',
+'The "chart" property is not valid JSON.'=>'"График" свойство недопустимо JSON.',
+'The "model property is not valid'=>'"Модель свойство недопустимо',
+'Rights Reserved.'=>'Права защищены.',
+'Click to get a new image'=>'Нажмите, чтобы получить новое изображение',
+'Please enter the letters in the image above.'=>'Пожалуйста, введите буквы с картинки.',
+'Main Menu'=>'Главное меню',
+'Incorrect username or password.'=>'Неправильное имя пользователя или пароль.',
+'Email '=>'E-mail',
+'Cannot be blank.'=>'Не может быть пустым.',
+'Side Panel Settings'=>'Настройка боковой панели',
+'top'=>'верхний',
+'Sync'=>'Синхронизация',
+'anyone'=>'любой',
+'Invalid selection.'=>'Неправильный выбор.',
+'This list cannot be found.'=>'Этот список не может быть найден.',
+'You do not have permission to modify this list.'=>'У вас нет разрешения на изменение этого списка.',
+'The requested list does not exist.'=>'Запрашиваемая списка не существует.',
+'Severity'=>'Суровость',
+'Creating a theme will save your current '=>'Создание темы будет сохранить текущее',
+'Encrypted storage enabled'=>'Зашифрованные хранения включен',
+'shared system-wide'=>'общие общесистемных',
+'Set as default'=>'Установить по умолчанию',
+'Set as my default'=>'Установить в качестве моего умолчанию',
+'for'=>'для',
+'Apply'=>'Применять',
+'Add New'=>'Добавить',
+'Visible to lead routing'=>'Видна привести маршрутизации',
+'Invisible to lead routing'=>'Невидимый вести маршрутизации',
+'GNU Affero GPL v3'=>'Affero GNU GPL v3',
+'GNU Affero General Public License version 3'=>'GNU Affero General Public License версии 3',
+'Released as free software without warranties under the'=>'Выпущен как бесплатное программное обеспечение без гарантий под',
+'Make Important'=>'Принимать важные',
+'Broadcast'=>'Вещать',
+'Select at least one user to broadcast to'=>'Выберите хотя бы один пользователь на вещание',
+'Okay'=>'Хорошо',
+'Nevermind'=>'Nevermind',
+'Create Chart Setting'=>'Создать диаграмму Настройка',
+'Clear second metric'=>'Ясно второй метрических',
+'Delete predefined chart setting'=>'Удалить предопределенные настройки графика',
+'Setting Name'=>'Название настройки',
+'Select a group of users to send this event to via email or notification.'=>'Выберите группу пользователям отправлять это событие, чтобы по электронной почте или уведомления.',
+'Clear All'=>'Очистить все',
+'Designating an event as important will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'Назначение событие, как важно будет сделать ее видимой для любого пользователя просмотре событий на Лента - независимо от типа фильтров.',
+'Make Unimportant'=>'Сделать неважный',
+'Send test email'=>'Отправить тестовое письмо',
+'Register'=>'Реестр',
+'New Event Publisher'=>'Новый издатель событие',
+'Send Now'=>'Отправить сейчас',
+'Send Later'=>'Отправить позже',
+'Media Widget Settings'=>'Медиа настроек виджетов',
+'X2 Media'=>'X2 СМИ',
+'Refresh Google Drive Cache'=>'Обновить Google Drive Cache',
+'Refresh Files'=>'Обновить файлы',
+'Errors encountered in {attribute}'=>'Ошибки, обнаруженные в {attribute}',
+'Auto'=>'Автоматический',
+'Did not send email because you do not have permission to use the specified credentials.'=>'Не отправлять электронную почту, потому что вы не имеете право использовать указанные учетные данные.',
+'Inline email model missing from the request to the server.'=>'Встроенные модели E-mail отсутствует в запросе к серверу.',
+'Timezone not available'=>'Часовой пояс не доступна',
+'The requested post does not exist.'=>'Запрашиваемая сообщение не существует.',
+'Manage Credentials'=>'Управление учетными данными',
+'Edit Credentials'=>'Изменить учетные',
+'Saved'=>'Сохраненные',
+'Phone system reported inbound call from contact.'=>'Телефонная система сообщила входящего вызова от контакта.',
+'You are not authorized to perform this action.'=>'У вас нет прав для выполнения этого действия.',
+'your feed'=>'фид',
+'{name}\'s feed'=>'{name}  &#39;ы кормов',
+'GMail Account'=>'Аккаунт Gmail',
+'Email address'=>'Адрес электронной почты',
+'Server'=>'Сервер',
+'Security type'=>'Тип безопасности',
+'secured with'=>'залог',
+'Email Account'=>'Учетная запись электронной почты',
+'Bin Size'=>'Бен Размер',
+'Metric 1'=>'Метрическая 1',
+'Metric 2'=>'Метрическая 2',
+'Encryption Enabled'=>'Шифрование включено',
+'Date Created'=>'Дата создания',
+'Date Last Updated'=>'Дата последнего обновления',
+'Authentication Details'=>'Аутентификации',
+'New {service}'=>'Новый {service}',
+'Google Account'=>'Аккаунт Google',
+'Bulk Email Account'=>'Массовая e-mail аккаунт',
+'Service Case Email Account'=>'Сервисные офисы учетную запись электронной почты',
+'System Response Emailer'=>'Реакция системы Emailer',
+'System Notification Emailer'=>'Система уведомления о Emailer',
+'Notification not found'=>'Уведомление не найден',
+'A new {actionLink} associated with the contact {contactLink} has been created.'=>'Новый {actionLink} , относящиеся к контакту {contactLink} была создана.',
+'issued the {transModelName} "{modelLink}" via email'=>'выдал {transModelName} &quot; {modelLink} &quot;по электронной почте',
+'{modelLink} called.'=>'{modelLink} называется.',
+'Call from a contact whose record could not be found.'=>'Вызов от контакта чьи записи не может быть найден.',
+'A lead failed to come through Lead Capture. Check {link} to recover it.'=>'Свинца не смогли прийти через привести захват. Проверьте {link} для его восстановления.',
+'here'=>'здесь',
+'{user} posted on {link}'=>'{user} размещена на {link}',
+'{user} replied on {link}'=>'{user} ответил на {link}',
+'{name} is currently on {url}'=>'{name} в настоящее время на {url}',
+'{name} is currently on your website.'=>'{name} в настоящее время на своем сайте.',
+'Invalid email address list.'=>'Неверный список адрес электронной почты.',
+'Cannot delete. The item is in use by the system, or you do not have permission.'=>'Не удается удалить. Деталь в использовании системы, или у вас нет разрешения.',
+'You have made an invalid request, please do not repeat this.'=>'Вы сделали неверный запрос, пожалуйста, не повторяют.',
+'If this happened by clicking a Delete button on a Grid, just go back to that page and it should work now. This is a known issue we are working to fix.'=>'Если бы это случилось, нажав кнопку Удалить на сетке, просто вернуться к этой странице, и он должен работать. Это известная проблема, мы работаем, чтобы исправить.',
+'Your X2CRM session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.'=>'Ваша X2CRM сессия истекла. Вы можете выбрать "Отмена", чтобы игнорировать это сообщение и восстановить сохраненные данные с текущей страницы. В противном случае, Вы будете перенаправлены на страницу входа.',
+'Sorry, this record doesn\'t seem to exist.'=>'К сожалению, эта запись т Безразлично  &#39;, кажется, существуют.',
+'A new {modelName}, {modelLink}, has been created.'=>'Новый {modelName} , {modelLink} , была создана.',
+'A {modelName}, {deletionText}, was created. It has been deleted.'=>'{modelName} , {deletionText} , был создан. Она была удалена.',
+'A {modelName} was created, but it could not be found.'=>'{modelName} было создано, но оно не может быть найдено.',
+'A {modelType}, {text}, was deleted'=>'{modelType} , {text} , был удален',
+'deleted an {modelType}, {text}.'=>'удален {modelType} , {text} .',
+'An {modelType}, {text}, was deleted.'=>'{modelType} , {text} , был удален.',
+'issued a quote by email, but that record has been deleted.'=>'опубликовал цитату по электронной почте, но запись была удалена.',
+'issued a quote by email, but that record could not be found.'=>'опубликовал цитату по электронной почте, но этот рекорд не может быть найден.',
+'issued an invoice by email, but that record has been deleted.'=>'выписан счет по электронной почте, но запись была удалена.',
+'issued an invoice by email, but that record could not be found.'=>'выписан счет по электронной почте, но этот рекорд не может быть найден.',
+'A contact has opened {emailType}, but that contact cannot be found.'=>'Контакт открыл {emailType} , но контакт не может быть найден.',
+'updated a document, {docLink}'=>'обновленный документ, {docLink}',
+'received an email from a {transModelName}, {modelLink}'=>'получил письмо от {transModelName} , {modelLink}',
+'received an email from a {transModelName}, but that record has been deleted.'=>'получил письмо от {transModelName} , но запись была удалена.',
+'received an email from a {transModelName}, but that record could not be found.'=>'получил письмо от {transModelName} , но этот рекорд не может быть найден.',
+'A contact called, but the contact record has been deleted.'=>'Контакта называется, но контакт запись была удалена.',
+'Pressing the X button on a tag will hide it from this widget. Hidden tags can be restored from your Preferences page.'=>'Нажатие на кнопку X на метку, то будет скрывать это от этого виджета. Скрытые метки могут быть восстановлены из Вашей странице Настройки.',
+'Displaying {start}-{end} result(s).'=>'Отображение {start} - {end} результат (ы).',
+'Email Address (optional)'=>'Адрес электронной почты (обязательно)',
+'User name (if different from email address)'=>'Имя пользователя (если он отличается от адреса электронной почты)',
+'This record may be a duplicate!'=>'Эта запись может быть дубликат!',
+'Credentials stored in plain text!'=>'Учетных данных, хранящихся в виде обычного текста!',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'Если у вас есть ошибка сообщает, что не вызван фактической ошибки (что сделало бы форме об ошибке), пожалуйста, заполните любую информацию, вы можете дать нам и нажмите кнопку "Отправить". Мы рассмотрим этот вопрос и если вы также включить ваш адрес электронной почты, мы свяжемся с вами как можно скорее. Спасибо!',
+'A new version is available! Click here to update to version {version}'=>'Новая версия доступна! Нажмите здесь, чтобы обновить до версии {version}',
+'a quote email'=>'Цитировать Email',
+'an invoice email'=>'e-mail счет-фактура',
+'an email'=>'E-mail',
+' has opened {emailType}!'=>'открыл {emailType} !',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit \"Send.\" We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'Если у вас есть ошибка сообщить, что \ &#39;ы не вызвана фактической ошибки (что сделало бы погрешность формы отчета) заполнить любую информацию вы можете дать нам и нажмите \ &quot;Отправить \&quot;. Мы \ заглянуть в вопрос, и если вы также указывать свой адрес электронной мы \ свяжемся с Вами как можно скорее. Спасибо!',
+'issued the {transModelName} \"{modelLink}\" via email'=>'выдал {transModelName} \ &quot; {modelLink} \ &quot;по электронной почте',
+'What color should the event be?'=>'Какого цвета должны быть события?',
+'Do you want to email selected users?'=>'Вы хотите отправить письмо выбранных пользователей?',
+'Do you want to notify selected users?'=>'Вы хотите, чтобы уведомить выбранных пользователей?',
+'Permanently delete all notifications?'=>'Окончательное удаление всех уведомлений?',
+'Save to Google Drive?'=>'Сохранить в Google Drive?',
+'If you disable this option, administrators and users granted privilege to do so will be able to use these credentials on your behalf.'=>'Если вы отключите эту опцию, администраторам и пользователям предоставляется привилегия сделать это будет в состоянии использовать эти учетные данные от вашего имени.',
+'select a type'=>'выберите тип',
+'Owned by {user}'=>'Принадлежащий {user}',
+'Maximize Widget'=>'Развернуть Виджет',
+'Minimize Widget'=>'Свернуть Виджет',
+'Sort Widget'=>'Сортировать Виджет',
+'Close Widget'=>'Закрыть Виджет',
+'Check all'=>'Проверьте все',
+'Uncheck all'=>'Снимите флажки для всех',
+'metric(s) selected'=>'Метрика (ями), выбранным',
+'Per Hour'=>'В час',
+'Per Day'=>'В день',
+'Per Week'=>'За неделю',
+'Per Month'=>'В месяц?',
+'Tasks'=>'Задачи',
+'Calls'=>'Звонки',
+'Emails'=>'Письма',
+'Workflow Actions'=>'Действия рабочего процесса',
+'View history item'=>'Просмотр истории пункту',
+'Someone'=>'Кто-то',
+' opened a link in an email campaign and is visiting your website!'=>'открыл ссылку в кампании по электронной почте и на вашем сайте!',
+'A contact has opened a link in an email campaign, but that contact cannot be found.'=>'Контакт открыл ссылку в кампании по электронной почте, но контакт не может быть найден.',
+'Class "{class}" specified for {attribute} does not exist, so cannot create relationships with it.'=>'Класс &quot; {class} &quot;, указанный для {attribute} не существует, поэтому не может создать отношения с ним.',
+'Class "{class}" specified for {attribute} does not have X2LinkableBehavior, and thus cannot be used with relationships.'=>'Класс &quot; {class} &quot;, указанный для {attribute} не имеет X2LinkableBehavior, и поэтому не может быть использован с отношениями.',
+'Model record not found for {attribute}.'=>'Модель Запись не найдена для {attribute} .',
+'Google Email Account'=>'Учетная запись электронной почты Google',
+'Setting'=>'Установка',
+'Attach a File/Photo'=>'Прикрепить файл / Фото',
+'Select at least one broadcast method'=>'Выберите хотя бы один метод передачи',
 );

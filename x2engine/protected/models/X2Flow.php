@@ -110,14 +110,14 @@ class X2Flow extends CActiveRecord {
 	 */
 	public function attributeLabels() {
 		return array(
-			'id' => 'ID',
-			'active' => 'Active',
-			'name' => 'Name',
-			'triggerType' => 'Trigger',
-			'modelClass' => 'Type',
-			'name' => 'Name',
-			'createDate' => 'Create Date',
-			'lastUpdated' => 'Last Updated',
+			'id' => Yii::t('admin','ID'),
+			'active' => Yii::t('admin','Active'),
+			'name' => Yii::t('admin','Name'),
+			'triggerType' => Yii::t('admin','Trigger'),
+			'modelClass' => Yii::t('admin','Type'),
+			'name' => Yii::t('admin','Name'),
+			'createDate' => Yii::t('admin','Create Date'),
+			'lastUpdated' => Yii::t('admin','Last Updated'),
 		);
 	}
 
@@ -161,7 +161,7 @@ class X2Flow extends CActiveRecord {
 		if(!isset($flowData['items']) || empty($flowData['items'])) {
 			$this->addError('flow',Yii::t('studio','There must be at least one action in the flow.'));
 		}
-		
+
 		$this->lastUpdated = time();
 		if($this->isNewRecord)
 			$this->createDate = $this->lastUpdated;
@@ -188,36 +188,36 @@ class X2Flow extends CActiveRecord {
 	public static function trigger($triggerName,$params=array()) {
 		if(self::$_triggerDepth > self::MAX_TRIGGER_DEPTH)	// ...have we delved too deep?
 			return;
-		
+
 		if(isset($params['model']) && (!is_object($params['model']) || !($params['model'] instanceof X2Model)))	// Invalid model provided
 			return false;
-		
+
 		self::$_triggerDepth++;	// increment stack depth before doing anything that might call X2Flow::trigger()
-		
+
 		$flowAttributes = array('triggerType'=>$triggerName,'active'=>1);
-		
+
 		if(isset($params['model'])) {
 			$flowAttributes['modelClass'] = get_class($params['model']);
 			$params['modelClass'] = get_class($params['model']);
 		}
-		
+
 		$flowTraces = array();
 		$flows = CActiveRecord::model('X2Flow')->findAllByAttributes($flowAttributes);
-		
+
 		// find all flows matching this trigger and modelClass
 		foreach($flows as &$flow)
 			$flowTraces[] = self::executeFlow($flow,$params);
-		
-		
+
+
 		// file_put_contents('triggerLog.txt',$triggerName.":\n",FILE_APPEND);
 		// file_put_contents('triggerLog.txt',print_r($flowTraces,true).":\n",FILE_APPEND);
-		
+
 		self::$_triggerDepth--;		// this trigger call is done; decrement the stack depth
 	}
-	
-	
+
+
 	/**
-	 * Executes a flow, starting by checking the trigger, passing params to each trigger/action, and 
+	 * Executes a flow, starting by checking the trigger, passing params to each trigger/action, and
 	 * calling {@link X2Flow::executeBranch()}
 	 *
 	 * @param X2Flow &$flow the object representing the flow to run
@@ -227,14 +227,14 @@ class X2Flow extends CActiveRecord {
 	 */
 	public static function executeFlow(&$flow,&$params,$flowPath=null) {
 		$error = '';	//array($flow->name);
-		
+
 		$flowData = CJSON::decode($flow->flow);	// parse JSON flow data
 		// file_put_contents('triggerLog.txt',"\n".print_r($flowData,true),FILE_APPEND);
-		
+
 		if($flowData !== false && isset($flowData['trigger']['type'],$flowData['items'][0]['type'])) {
-			
+
 			$error = '';
-			
+
 			if($flowPath === null) {
 				$trigger = X2FlowTrigger::create($flowData['trigger']);
 				if($trigger === null)
@@ -243,7 +243,7 @@ class X2Flow extends CActiveRecord {
 					$error = 'invalid rules/params';
 				if(!$trigger->check($params))
 					$error = 'conditions not passed';
-				
+
 				if(empty($error)) {
 					try {
 						return array($flow->name,$flow->executeBranch(array(0),$flowData['items'],$params));
@@ -266,11 +266,11 @@ class X2Flow extends CActiveRecord {
 			return array($flow->name,'invalid flow data');
 		}
 	}
-	
+
 	/**
-	 * Recursive method for traversing a flow tree using $flowPath, allowing us to 
+	 * Recursive method for traversing a flow tree using $flowPath, allowing us to
 	 * instantly skip to any point in a flow. This is used for delayed execution with X2CronAction.
-	 * 
+	 *
 	 * @param array $flowPath directions to the current position in the flow tree
 	 * @param array $flowItems the items in this branch
 	 * @param array &$params an associative array of params, usually including 'model'=>$model,
@@ -285,7 +285,7 @@ class X2Flow extends CActiveRecord {
 							return array($item['type'],true,$this->traverse($flowPath,$item['trueBranch'],$params,$pathIndex+1));
 						else
 							return array($item['type'],true,$this->executeBranch($flowPath,$item['trueBranch'],$params));
-						
+
 					} elseif(!$flowPath[$pathIndex] && isset($item['falseBranch'])) {
 						if(isset($flowPath[$pathIndex+1]))
 							return array($item['type'],false,$this->traverse($flowPath,$item['falseBranch'],$params,$pathIndex+1));
@@ -299,9 +299,9 @@ class X2Flow extends CActiveRecord {
 			if(isset($flowItems[$pathIndex]))
 				return $this->executeBranch($flowPath,$flowItems,$params,$flowPath[$pathIndex]);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Executes each action in a given branch, starting at $start.
 	 *
@@ -312,23 +312,23 @@ class X2Flow extends CActiveRecord {
 	 */
 	public function executeBranch($flowPath,&$flowItems,&$params,$start=0) {
 		$results = array();
-		
+
 		for($i=$start;$i<count($flowItems);$i++) {
 			$item = &$flowItems[$i];
 			if(!isset($item['type']) || !class_exists($item['type']))
 				continue;
-			
+
 			if($item['type'] === 'X2FlowSwitch') {
 				$switch = X2FlowItem::create($item);
 				if($switch->validate($params)) {
 					array_pop($flowPath);	// flowPath only contains switch decisions and the index on the current branch
 											// now that we're at another switch, we can throw out the previous branch index
-											// eg: $flowPath = array(true,false,3) means go to true at the first fork, 
+											// eg: $flowPath = array(true,false,3) means go to true at the first fork,
 											// go to false at the second fork, then go to item 3
-					
+
 					if($switch->check($params) && isset($item['trueBranch'])) {
 						$flowPath[] = true;
-						$flowPath[] = 0;	// they're now on 
+						$flowPath[] = 0;	// they're now on
 						$results[] = array($item['type'],true,$this->executeBranch($flowPath,$item['trueBranch'],$params));
 					} elseif(isset($item['falseBranch'])) {
 						$flowPath[] = false;

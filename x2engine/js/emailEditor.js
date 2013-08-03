@@ -46,6 +46,22 @@
  */
 function createCKEditor(editorId,editorConfig,callback) {
 
+	if (x2.isAndroid) {
+		if (editorConfig) {
+			if ('height' in editorConfig) {
+				$('#' + editorId).css ('height', editorConfig['height']);
+			} else {
+				$('#' + editorId).css ('height', '95%');
+			}
+			if ('width' in editorConfig) {
+				$('#' + editorId).css ('width', editorConfig['width']);
+			} else {
+				$('#' + editorId).css ('width', '99%');
+			}
+		}
+		return null;
+	}
+
     return $('#'+editorId).ckeditor(
         function() {
             $('#cke_'+editorId).droppable({

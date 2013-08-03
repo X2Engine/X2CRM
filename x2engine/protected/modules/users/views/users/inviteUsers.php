@@ -19,6 +19,6 @@ $this->actionMenu = $this->formatMenu(array(
 <h2><?php echo Yii::t('users','Instructions'); ?></h2>
 <?php echo Yii::t('users','Please enter a list of e-mails separated by commas.'); ?>
 	<div class="row"><textarea name="emails" style="width:600px;height:150px;"></textarea></div>
-	<div class="row"><input type="submit" value="Submit" class="x2-button"></div>
+	<div class="row"><input type="submit" value="<?php echo Yii::t('app','Submit');?>" class="x2-button"></div>
 </div>
 </form>

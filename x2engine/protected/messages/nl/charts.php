@@ -1,48 +1,10 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // // Charts Translation File
 
 // // Button Text
-'Go'=>'Gaan',
 
 // // Labels
-'Start Date'=>'Startdatum',
-'End Date'=>'Einddatum',
 'Date Range'=>'Datumbereik',
 'Data Summary'=>'Gegevens Samenvatting',
 'Total Records'=>'Totaal aantal Berichten',
@@ -56,7 +18,6 @@ return array (
 'User Activity'=>'Gebruikersactiviteit',
 'Row Field'=>'Rij Field',
 'Column Field'=>'Kolomveld',
-'Total'=>'Totaal',
 'Hide empty rows/columns?'=>'Verberg lege rijen / kolommen?',
 'Cell Data Type'=>'Cel Data Type',
 'Count'=>'Tellen',
@@ -66,7 +27,6 @@ return array (
 '(none)'=>'(geen)',
 'pie'=>'taart',
 'bar'=>'bar',
-'Export to CSV'=>'Exporteren naar CSV',
 'Save Report'=>'Rapport Opslaan',
 'Print Report'=>'Rapport Afdrukken',
 'Email Report'=>'Email',
@@ -75,34 +35,47 @@ return array (
 'View Report'=>'Rapport Weergeven',
 'Grid'=>'Rooster',
 'Deal'=>'Handelen',
-'Record Type'=>'Recordtype',
-'Full Name'=>'Volledige Naam',
-'Last Login'=>'Laatst Ingelogd',
-'Records Updated'=>'Records Aangepast',
-'Actions Completed'=>'Acties Voltooid',
 'Actions Due'=>'Acties Due',
 'Lead Volume'=>'Lead Volume',
-'Marketing'=>'Verkoop',
 'Pipeline'=>'Pijpleiding',
-'Opportunities'=>'Kansen',
+'Select leads received in the last'=>'Selecteer leads ontvangen in de laatste',
+'Lead Distribution and Status'=>'Leiden Distributie en Status',
+'Lead Conversion'=>'Leiden Conversion',
+'Lead Received'=>'Leiden Ontvangen',
+'Pipeline Dashboard'=>'Pipeline Dashboard',
+'Select deals closing in'=>'Selecteer deals sluiten in',
+'Limit to confidence is'=>'Beperk het vertrouwen is',
+'Limit selected deals to'=>'Beperk geselecteerde aanbiedingen te',
+'Select deals assigned to'=>'Selecteer deals toegewezen aan',
+'Opportunities Dashboard'=>'Kansen Dashboard',
+'Select deals with status'=>'Selecteer deals met de status',
 
 // // Data Options
-'Custom'=>'Gewoonte',
-'This Week'=>'Deze Week',
-'This Month'=>'Deze Maand',
 'Last Week'=>'Laatste Week',
 'Last Month'=>'Laatste Maand',
 'This Year'=>'Dit Jaar',
 'Last Year'=>'Afgelopen Jaar',
 'All Time'=>'Aller Tijden',
+'Growing'=>'Groeiend',
+'Forecast'=>'Prognose',
+'Committed'=>'Toegewijd',
+'In The Bag'=>'In The Bag',
+'Smallest'=>'Kleinste',
+'Largest'=>'Grootste',
+'Others'=>'Anderen',
+'Deals'=>'Aanbiedingen',
+'Days To Close'=>'Dagen worden afgesloten',
+'Date Closing'=>'Sluitingsdatum',
 
 // // Report Attributes
 'Report Type'=>'Verslag Type',
-'Model'=>'Model',
-'Columns'=>'Kolommen',
 'Rows'=>'Rijen',
 'Ignore Zeros?'=>'Negeer Zeros?',
 'Data Type'=>'Gegevenstype',
-'Create Date'=>'Maak Datum',
-'Created By'=>'Gemaakt door',
+'Lead Activity'=>'Leiden Activiteit',
+'Lead Sources'=>'Leiden Bronnen',
+'Last Quarter'=>'Laatste kwartier',
+'Unknown'=>'Onbekend',
+'Limit To'=>'Beperken om',
+'Widget Dashboard'=>'Dashboard widget',
 );

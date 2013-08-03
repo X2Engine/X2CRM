@@ -41,7 +41,7 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 $title = CHtml::tag('h2',array(),Yii::t('quotes','Create Quote'));
-echo $quick?$title:CHtml::tag('div',array('class'=>'page-title'),$title);
+echo $quick?$title:CHtml::tag('div',array('class'=>'page-title icon quotes'),$title);
 ?>
 
 <?php

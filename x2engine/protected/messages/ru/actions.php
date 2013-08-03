@@ -1,71 +1,13 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Action Attributes
-'ID'=>'ID',
-'Assigned To'=>'Назначено',
 'Action Description'=>'Действие Описание',
-'Description'=>'описание',
-'Visibility'=>'видимость',
-'Association'=>'ассоциация',
-'Association Type'=>'Ассоциация Тип',
-'Association Name'=>'Ассоциация Имя',
 'Due Date'=>'Срок',
-'Priority'=>'приоритет',
 'Action Type'=>'Тип действия',
-'Create Date'=>'Дата создания',
-'Complete'=>'полный',
 'Reminder'=>'напоминание',
-'Completed By'=>'Заполняется',
 'Complete Date'=>'Полное дате',
-'Last Updated'=>'Последнее обновление',
-'Updated By'=>'Обновил',
-'Low'=>'низкий',
-'Medium'=>'среда',
-'High'=>'высокий',
-'Public'=>'общественность',
-'Private'=>'частный',
-'No'=>'нет',
-'Yes'=>'да',
 'Date Completed'=>'Дата завершения',
 'All Day'=>'Весь день',
-'Color'=>'цвет',
-'Start Date'=>'Дата начала',
-'End Date'=>'Дата окончания',
 'User\'s Group'=>'Пользователь Группа',
 
 // Colors
@@ -77,8 +19,6 @@ return array (
 
 // Actions Nav
 'All Actions'=>'Все действия',
-'Create Lead'=>'Создать Ведущий',
-'Create Action'=>'Создать действия',
 'View Action'=>'Посмотреть Действие',
 'Update Action'=>'Обновление Действие',
 'Complete Action'=>'Полное Действие',
@@ -89,14 +29,13 @@ return array (
 'New Action'=>'Новая акция',
 'New Comment'=>'Новый комментарий',
 'Publisher'=>'издатель',
-'Update'=>'обновление',
 'Complete Selected'=>'Завершить выбранные',
 'Uncomplete Selected'=>'неполное Выбранные',
 'Show Actions'=>'Показать Действия',
-'All'=>'все',
-'Delete'=>'удалять',
 'Overdue'=>'просроченный',
 'Edit Action'=>'Изменить действий',
+'Action List'=>'Список действий',
+'Switch to List'=>'Просмотр списком',
 
 // Actions Titles
 'Manage Actions'=>'Управление действиями',
@@ -105,24 +44,21 @@ return array (
 'Create a New Lead'=>'Создать новый ведущий',
 'View Action'=>'Посмотреть Действие',
 'Update Action:'=>'Обновление действий:',
-'Action'=>'действие',
 'Action: '=>'Действие:',
 'Today\'s Actions'=>'Сегодняшние действия',
-'My Actions'=>'Мои действия',
 'All My Actions'=>'Все мои действия',
 'Everyone\'s Actions'=>'У всех действий',
 'Delete Action'=>'Действие Удалить',
-'Share Action'=>'Доля Действие',
-'Create'=>'создавать',
 'New Event'=>'Дни рождения',
 'Call:'=>'Звоните:',
-'Comment'=>'комментировать',
+'Back to Top'=>'Наверх',
+'Filters'=>'Фильтры',
+'Switch to Grid'=>'Переключитесь к сетке',
 
 
 // Misc
 'Email Message:'=>'E-mail Сообщение:',
 'Attachment:'=>'Привязанность:',
-'Assigned to {name}'=>'Назначена {name} ',
 'Completed by {name}'=>'Заполняется {name}',
 'Completed {date}'=>'Завершен {date}',
 'Completion Notes'=>'Завершение отмечает',
@@ -132,30 +68,70 @@ return array (
 'FINISHED'=>'ЗАВЕРШЕНО',
 'Incomplete'=>'неполный',
 'INCOMPLETE'=>'НЕПОЛНОЙ',
-'Status'=>'статус',
-'Contact Info'=>'Контактная информация',
-'View'=>'вид',
 'Overdue {time}'=>'просроченный {time}',
 'Due {date}'=>'Благодаря {date}',
 'Please enter a description.'=>'Пожалуйста, введите описание.',
-
-// Create Action Types
-'None'=>'ни один',
-'Contact'=>'контакт',
-'Account'=>'счет',
-'Project'=>'проект',
-'Case'=>'случай',
-'Opportunity'=>'продажа',
+'This action has been marked as sticky and will remain at the top of the list.'=>'Эта акция была помечена как липкий и будет оставаться в верхней части списка.',
+'Show me'=>'Покажите мне',
+'unfinished'=>'незаконченный',
+'complete'=>'полный',
+'all'=>'все',
+'Actions assigned to'=>'Действия, назначенные',
+'me'=>'мне',
+'me or anyone'=>'меня или кого-либо',
+'everyone'=>'все',
+'that'=>'что',
+'are due'=>'обусловлены',
+'were created'=>'были созданы',
+'tomorrow'=>'завтра',
+'this week'=>'На этой неделе',
+'this month'=>'в этом месяце',
+'any time'=>'любое время',
+'between these dates'=>'между этими датами',
+'and order them by'=>'и заказать их по',
+'descending'=>'нисходящий',
+'ascending'=>'восходящий',
+'due date'=>'срок оплаты',
+'create date'=>'дате создания',
+'priority'=>'приоритет',
+'Due:'=>'Благодаря:',
+'Completed:'=>'Выполнил:',
+'Created:'=>'Дата создания:',
+'Please enter a valid association'=>'Пожалуйста, укажите действительный ассоциации',
+'Please enter a description or subject'=>'Пожалуйста, введите описание или предмет',
+'the assigned user'=>'назначенного пользователя',
+'me and the assigned user'=>'меня и назначенного пользователя',
+'1 minute'=>'1 минута',
+'5 minutes'=>'5 минут',
+'10 minutes'=>'10 минут',
+'15 minutes'=>'15 минут',
+'30 minutes'=>'30 минут',
+'1 hour'=>'1 час',
+'Create a notification reminder for {user} {time} before this action is due'=>'Создать напоминание для уведомления {user} {time} до этого действие которого обусловлено',
+'Action Backdating'=>'Действие задним числом',
+'Action:'=>'Действие:',
+'Action View Frame'=>'Рамка Action View',
+'Associated Record'=>'Связанные записи',
 
 // Action Reminder Email
 'No one'=>'никто',
 'Not specified'=>'Не указано',
 'Action Reminder:'=>'Действие Напоминание:',
 'Reminder, the following action is due'=>'Напоминание, следующее действие которого обусловлено',
-'Description'=>'описание',
-'Type'=>'тип',
 'Associations'=>'ассоциации',
 'Link to the action'=>'Ссылка на действие',
 'Link to the'=>'Ссылка',
 'Powered by '=>'Работает на ',
+'This contact visited your website'=>'Этот контакт посетил Ваш сайт',
+'No subject found'=>'Без темы найден',
+'Finished'=>'Законченный',
+'Update Event'=>'Событие обновления',
+'Link to the {type}'=>'Ссылка на {type}',
+'Action ID'=>'Действие ID',
+'Action Text'=>'Текст действия',
+'Time'=>'Время',
+'color'=>'цвет',
+'Remind Me'=>'Напомнить мне',
+'View Full Edit Page'=>'Просмотр полной Редактировать страницу',
+'(Error displaying email)'=>'(Ошибка при отображении электронной почте)',
 );

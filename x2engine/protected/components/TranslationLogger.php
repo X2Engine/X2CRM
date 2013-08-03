@@ -34,20 +34,20 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-/** 
+/**
  * Logs translation activity.
- * 
- * @package X2CRM.components 
+ *
+ * @package X2CRM.components
  */
 class TranslationLogger extends CComponent {
 	public function log($event) {
 		// create_function('$event', 'Yii::log("[".$event->language."] [".$event->message."] \'".$event->category."\'","info","translations");');
-		
+
 		$str = '['.$event->language.'/'.$event->category.'.php]';
 		for($i=0;$i<ceil(16 - (strlen($event->category))); $i++)
 			$str .= ' ';
 		$str .= '"'.$event->message.'"';
-		
+
 		Yii::log($str,'info','translations');
 	}
 }

@@ -329,6 +329,40 @@ class Quote extends X2Model {
 	}
 
 	/**
+	 * Creates an action history event record in the contact/account
+	 */
+	public function createActionRecord() {
+		$now = time();
+		$actionAttributes = array(
+			'type' => 'quotes',
+			'actionDescription' => $this->id,
+			'completeDate' => $now,
+			'dueDate' => $now,
+			'createDate' => $now,
+			'lastUpdated' => $now,
+			'complete' => 'Yes',
+			'completedBy' => $this->createdBy,
+			'updatedBy' => $this->updatedBy
+		);
+		$ids = explode(',',$this->associatedContacts);
+		if(!empty($ids)) {
+			$cid = trim($ids[0]);
+			$action = new Actions();
+			$action->attributes = $actionAttributes;
+			$action->associationType = 'contacts';
+			$action->associationId = $cid;
+			$action->save();
+		}
+		if(!empty($this->accountName)) {
+			$action = new Actions();
+			$action->attributes = $actionAttributes;
+			$action->associationType = 'accounts';
+			$action->associationId = $this->accountName;
+			$action->save();
+		}
+	}
+
+	/**
 	 * Creates an event record for the creation of the model.
 	 */
 	public function createEventRecord() {
@@ -719,8 +753,8 @@ class Quote extends X2Model {
 			$action->type = 'quotes';
 			$action->associationId = $contact->id;
 			$action->associationName = $contact->name;
-			$action->assignedTo = $this->suModel->username; //  Yii::app()->user->getName();
-			$action->completedBy = $this->suModel->username; // Yii::app()->user->getName();
+			$action->assignedTo = Yii::app()->getSuModel()->username; //  Yii::app()->user->getName();
+			$action->completedBy = Yii::app()->getSuModel()->username; // Yii::app()->user->getName();
 			$action->createDate = time();
 			$action->dueDate = time();
 			$action->completeDate = time();

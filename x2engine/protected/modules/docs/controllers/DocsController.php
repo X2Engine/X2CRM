@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.modules.docs.controllers 
+ * @package X2CRM.modules.docs.controllers
  */
 class DocsController extends x2base {
 
@@ -58,7 +58,7 @@ class DocsController extends x2base {
 	public function accessRules() {
 		return array(
 			array('allow',
-				'users'=>array('*'), 
+				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('index','view','create','createEmail','update','exportToHtml','changePermissions', 'delete', 'getItems', 'getItem'),
@@ -85,7 +85,7 @@ class DocsController extends x2base {
 
 	public function actionGetItem($id) {
         $model = $this->loadModel($id);
-        if((($model->visibility==1 || ($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) || Yii::app()->params->isAdmin)){ 
+        if((($model->visibility==1 || ($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) || Yii::app()->params->isAdmin)){
             echo $model->text;
         }
 	}
@@ -104,9 +104,9 @@ class DocsController extends x2base {
 				$editFlag=false;
 		}
 		//echo $model->visibility;exit;
-		if (!isset($model) || 
-			   !(($model->visibility==1 || 
-				($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) || 
+		if (!isset($model) ||
+			   !(($model->visibility==1 ||
+				($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) ||
 				Yii::app()->params->isAdmin|| $editFlag))
 			$this->redirect(array('docs/index'));
 
@@ -119,11 +119,11 @@ class DocsController extends x2base {
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
-	public function actionFullView($id) {
-	
+	public function actionFullView($id,$json=0) {
+
 		$model = $this->loadModel($id);
-	
-		echo $model->text;
+
+		echo $json ? CJSON::encode(array('body'=>$model->text,'subject'=>$model->subject)) : $model->text;
 	}
 
 	/**
@@ -173,7 +173,7 @@ class DocsController extends x2base {
 			'users'=>$users,
 		));
 	}
-	
+
 	/**
 	 * Creates an email template.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
@@ -185,7 +185,7 @@ class DocsController extends x2base {
 		unset($users[Yii::app()->user->getName()]);
 		$model = new Docs;
 		$model->type = 'email';
-		
+
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
@@ -211,7 +211,7 @@ class DocsController extends x2base {
 			'users'=>null,
 		));
 	}
-	
+
 	public function actionCreateQuote() {
 		$users = User::getNames();
 		unset($users['Anyone']);
@@ -219,7 +219,7 @@ class DocsController extends x2base {
 		unset($users[Yii::app()->user->getName()]);
 		$model = new Docs;
 		$model->type = 'quote';
-		
+
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
@@ -245,7 +245,7 @@ class DocsController extends x2base {
 			'users'=>null,
 		));
 	}
-	
+
 	public function actionChangePermissions($id){
 		$model = $this->loadModel($id);
 		if(Yii::app()->params->isAdmin || Yii::app()->user->getName()==$model->createdBy) {
@@ -255,17 +255,17 @@ class DocsController extends x2base {
 			$str = $model->editPermissions;
 			$pieces = explode(", ",$str);
 			$model->editPermissions=$pieces;
-			
+
 			if(isset($_POST['Docs'])) {
 				$model->attributes = $_POST['Docs'];
 				$arr=$model->editPermissions;
-				
+
 				$model->editPermissions = Accounts::parseUsers($arr);
 				if($model->save()) {
 					$this->redirect(array('view','id'=>$id));
 				}
 			}
-			
+
 			$this->render('editPermissions',array(
 				'model'=>$model,
 				'users'=>$users,
@@ -274,7 +274,7 @@ class DocsController extends x2base {
 			$this->redirect(array('view','id'=>$id));
 		}
 	}
-		
+
 	public function actionExportToHtml($id){
 		$model = $this->loadModel($id);
 		$file = 'doc.html';
@@ -309,7 +309,7 @@ class DocsController extends x2base {
 		$model = $this->loadModel($id);
 		$perm = $model->editPermissions;
 		$pieces = explode(', ',$perm);
-		if(Yii::app()->user->checkAccess('DocsAdmin') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm) {  
+		if(Yii::app()->user->checkAccess('DocsAdmin') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm) {
 			if(isset($_POST['Docs'])) {
 				$model->attributes = $_POST['Docs'];
                 $model->visibility = $_POST['Docs']['visibility'];
@@ -357,13 +357,13 @@ class DocsController extends x2base {
 	 */
 	public function actionIndex() {
 		$model = new Docs('search');
-		
+
 		$attachments=new CActiveDataProvider('Media',array(
 			'criteria'=>array(
 			'order'=>'createDate DESC',
 			'condition'=>'associationType="docs"'
 		)));
-				
+
 		$this->render('index',array(
 			'model'=>$model,
 			'attachments'=>$attachments,
@@ -380,14 +380,14 @@ class DocsController extends x2base {
 			Yii::app()->end();
 		}
 	}
-	
+
 	public function actionAutosave($id) {
 		$model = $this->loadModel($id);
 		if(isset($_POST['Docs'])) {
 			$model->attributes = $_POST['Docs'];
 			// $model = $this->updateChangeLog($model,'Edited');
 			if($model->save()) {
-				echo Yii::t('Docs', 'Saved at') . ' ' . Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('medium'), time());
+				echo Yii::t('docs', 'Saved at') . ' ' . Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('medium'), time());
 			};
 		}
 	}

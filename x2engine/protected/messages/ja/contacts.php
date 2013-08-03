@@ -1,93 +1,22 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // // Contact Form Attributes
-'Verification Code'=>'認証コード',
 // // Contact Attributes
-'ID'=>'番号',
-'First Name'=>'名前',
-'Name'=>'名前',
-'Full Name'=>'フルネーム',
-'Last Name'=>'姓',
-'Title'=>'肩書',
-'Account'=>'アカウント',
 'Work'=>'勤務先電話',
 'Cell'=>'携帯電話',
 'Work Phone'=>'勤務先電話',
-'Cell Phone'=>'携帯電話',
-'Email'=>'メール',
-'Phone'=>'電話',
 'Phone 2'=>'電話2',
 'IM'=>'インスタント·メッセージ',
-'Website'=>'ウェブサイト',
-'Address'=>'住所',
-'City'=>'市',
-'State'=>'県',
 'Zip Code'=>'郵便番号',
-'Country'=>'国',
-'Visibility'=>'可視性',
-'Assigned To'=>'割り当て',
-'Background Info'=>'背景情報',
-'Last Updated'=>'最後を更新する',
-'Updated By'=>'更新した人',
-'Lead Source'=>'リードソース',
-'Priority'=>'順位',
-'Create Date'=>'作成日',
-'Rating'=>'評価',
-'Low'=>'低',
-'Medium'=>'中',
-'High'=>'高',
-'Public'=>'公開',
-'Private'=>'秘密',
 'Twitter'=>'Twitter',
 'Linkedin'=>'Linkedin',
 'Skype'=>'Skype',
 'Googleplus'=>'Googleplus',
 'Address 2'=>'アドレス2',
-'Postal Code'=>'郵便番号',
 'Lead Date'=>'機会日付',
 'Confidence'=>'自信',
-'Facebook'=>'Facebook',
-'Lead Type'=>'機会の種類',
-'Other'=>'その他',
 'Close Date'=>'日付を閉じる',
-'Expected Close Date'=>'予想クローズ日',
 'Interest'=>'関心',
-'Deal Value'=>'取引値',
 'Lead Status'=>'機会のステータス',
 'Lead Score'=>'機会スコア',
 'Deal Status'=>'取引の状況',
@@ -96,71 +25,37 @@ return array (
 'Sales &amp; Marketing'=>'営業',
 'In Person'=>'じかに',
 'Accepted'=>'受け入れ',
-'Lost'=>'失われた',
-'None'=>'なし',
-'Web'=>'インターネット',
 'Assigned'=>'割り当てられた',
-'Won'=>'ウォン',
-'E-Mail'=>'メール',
-'Google'=>'Google',
-'Walk In'=>'で歩いた',
 'Unassigned'=>'割り当てられていない',
-'Working'=>'ワーキング',
 'Dead'=>'死んだ',
 'Rejected'=>'却下された',
-'Tags'=>'タグ',
-'Associated Contacts'=>'関連付けられている連絡先',
 'Duplicate Check'=>'重複チェック',
-'Last Activity'=>'最後の活動',
 'Timezone'=>'タイムゾーン',
 'Web Tracking Key'=>'ウェブ追跡キー',
 // // 
 // // List Attributes
-'Owner'=>'所有者',
-'Description'=>'説明',
 'Logic Type'=>'ロジックタイプ',
-'Record Type'=>'レコード·タイプ',
 'Members'=>'メンバー',
 'Dynamic'=>'ダイナミック',
 'Static'=>'静的',
 // // 
-// // List Criteria Attributes
-'List'=>'リスト',
-'Type'=>'タイプ',
-'Attribute'=>'属性',
-'Comparison'=>'比較',
-'Value'=>'値',
-// // 
-// // List Criteria Comparitors
-'equals'=>'等しい',
-'greater than'=>'よりも大きい',
-'less than'=>'以下',
-'not equal to'=>'等しくない',
-'in list'=>'リスト内の',
-'not in list'=>'ないリスト',
-'empty'=>'空の',
-'not empty'=>'空ではありません',
-'contains'=>'含まれています',
-'does not contain'=>'が含まれていません',
-// // 
 // // Misc
-'Assigned to {name}'=>'{name} に割り当て',
 'Social Networks'=>'ネットワーク',
 'Detail View'=>'詳細ビュー',
 'Simple View'=>'簡単なビュー',
-'Contact Info'=>'情報を連絡する',
 'Opportunities &amp; Marketing'=>'セールス＆マーケティング',
 'Social Media'=>'ソーシャルメディア',
-'AND'=>'アンド',
 'OR'=>'又は',
-'User'=>'ユーザー',
 'Leads'=>'リード',
 '<b>{m}</b> of <b>{n}</b>'=>'<b>{m}</b>は、<b>の{n} </b>に',
 'Create a new Opportunity associated with this Contact.'=>'この連絡先に関連付けられた新しい機会を作成します。',
 'Create a new Account associated with this Contact.'=>'この連絡先に関連付けられた新しいアカウントを作成します。',
 'Create a new Service Case associated with this Contact.'=>'この連絡先に関連付けられている新しいサービスケースを作成します。',
 'Link to Record'=>'レコードへのリンク',
-'Contact Attributes'=>'属性の問い合わせ',
+'Clicking this button will pull any relevant fields from the associated Account record and overwrite the Contact data for those fields.  This operation cannot be reversed.'=>'このボタンをクリックすると、関連付けられたアカウント·レコードから任意の関連フィールドを引き出し、それらのフィールドのための連絡先のデータを上書きします。この操作は元に戻すことはできません。',
+'Create a new Contact associated with this Contact.'=>'この先に関連付けられている新しい連絡先を作成します。',
+'Create a new Contact'=>'新しい連絡先を作成',
+'Tag Search'=>'タグ検索',
 // // 
 // // Contacts Actions
 'My Contacts'=>'私のコンタクト',
@@ -173,30 +68,20 @@ return array (
 'Update Contact:'=>'コンタクトを更新する',
 'Delete Contact'=>'コンタクトを削除する',
 'Contact Lists'=>'リストお問い合わせ',
-'Create Lead'=>'リードを作る',
 'Share Contact'=>'コンタクトを共有する',
-'Create'=>'作る',
 'Lists'=>'リスト',
 'Create List'=>'リストを作成',
-'View'=>'表示',
-'Share'=>'分かち合う',
-'Update'=>'更新',
 'View Opportunities'=>'売上高を見る',
-'Delete'=>'削除する',
-'Show All'=>'すべてを表示',
 'Hide All'=>'すべてを表示しない',
-'Show'=>'表示する',
-'Hide'=>'隠す',
 'View Relationships'=>'リレーションシップを表示',
-'Subscribe'=>'購読する',
 'View List'=>'一覧を見る',
-'Share Action'=>'共有アクション',
-'Import Contacts'=>'連絡先のインポート',
 'Contact Map'=>'マップお問い合わせ',
 'Saved Maps'=>'保存されているマップ',
+'Save Contact'=>'連絡先を保存',
 // // 
+'Edit List'=>'リストの編集',
+'Delete List'=>'リストを削除する',
 // // Contacts Titles
-'Contacts'=>'コンタクト',
 'Manage Contacts'=>'コンタクトの管理',
 'Contact:'=>'コンタクト:',
 // // 
@@ -205,14 +90,41 @@ return array (
 'Import from Template'=>'テンプレートから連絡先のインポート',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'テンプレートからコンタクトをインポートするには、当社のテンプレートファイルに必要事項を記入してください。その後、下記のフォームを使用して、ここにファイルをアップロードする。',
 'The template file can be found here:'=>'テンプレートファイルをここで見つけることができます:',
-'Export to CSV'=>'コンタクトのエクスポート',
 'Please click the link below to download contacts.'=>'連絡先をダウンロードするには、以下のリンクをクリックしてください。',
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Outlookからコンタクトをインポートするには、Outlookを開き、連絡先をエクスポートしてCSVファイル（DOS形式）を作成するには、まずしてください。その後、下記のフォームを使用して、ここにファイルをアップロードする。',
 'Upload File'=>'ファイルのアップロード',
 'Contact Record Details'=>'コンタクトのレコードの詳細',
+'Import Contacts from Template'=>'テンプレートからの連絡先のインポート',
+'To import your contacts, please fill out a CSV file where the first row contains the column headers for your records (e.g. first_name, last_name, title etc.).  A properly formatted example can be found below.'=>'あなたの連絡先をインポートするには、最初の行はあなたのレコードの列ヘッダー（例えばFIRST_NAME、LAST_NAME、タイトルなど）が含まれているCSVファイルをご記入ください。適切にフォーマットされた例を以下に記載されています。',
+'The application will attempt to automatically map your column headers to our fields in the database.  If a match is not found, you will be given the option to choose one of our fields to map to, ignore the field, or create a new field within X2.'=>'アプリケーションがデータベースに自動的に私たちのフィールドにあなたの列ヘッダーをマップしようとします。一致が見つからない場合は、あなたが、にマップするために私達のフィールドのいずれかを選択し、フィールドを無視する、またはX2内の新しいフィールドを作成するオプションが与えられます。',
+'If you decide to map the "Create Date", "Last Updated", or any other explicit date field, be sure that you have a valid date format entered so that the software can convert to a UNIX Timestamp (if it is already a UNIX Timestamp even better).  Visibility should be either "1" for Public or "0" for Private (it will default to 1 if not provided).'=>'あなたは、 &quot;作成日&quot;、 &quot;最終更新日&quot;、または任意の他の明示的な日付フィールドをマッピングすることを決定した場合は、有効な日付形式は（ソフトウェアは、UNIXタイムスタンプに変換することができるように入っていることを確認してください、それは既にUNIXの場合スタンプも良い）。可視性は、パブリックまたはプライベートのために &quot;0&quot;（提供されていない場合、それは1がデフォルトになります）のためにどちらかを &quot;1&quot;にする必要があります。',
+'Contacts Import'=>'コンタクトのインポート',
+'First, we\'ll need to make sure your fields have mapped properly for import. '=>'まず、\ &#39;llはあなたのフィールドがインポートに適切にマッピングされていることを確認する必要があります。',
+'Below is a list of our fields, the fields you provided, and a few sample records that you are importing.'=>'以下に私たちのフィールドは、指定したフィールド、およびインポートしているいくつかのサンプルレコードのリストです。',
+'If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.'=>'IDフィールドをインポートするように選択された場合は、インポートツールは、そのIDを持つ既存のレコードを上書きしようとします。あなたドン\ &#39;tはこの現象が発生する場合にIDフィールドをマップしないでください。',
+'Selecting "DO NOT MAP" will ignore the field from your CSV, and selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it.'=>'選択すると &quot;MAPにはありません&quot;あなたのCSVからフィールドを無視し、 &quot;新しいフィールドを作成&quot;を選択すると、X2内に新しいテキストフ​​ィールドを生成し、そこにあなたのフィールドをマップします。',
+'Your Field'=>'あなたのフィールド',
+'Our Field'=>'当社のフィールド',
+'Sample Contact'=>'試料接触',
+'[Prev]'=>'[前のページ]',
+'[Next]'=>'[次へ]',
+'DO NOT MAP'=>'マッピングされません',
+'CREATE NEW FIELD'=>'新しいフィールドを作成',
+'Process Import Data'=>'プロセスデータのインポート',
+'Create records for link fields?'=>'リンクフィールドのレコードを作成しますか？',
+'Automatically fill certain fields?'=>'自動的に特定のフィールドを埋める？',
+'Automatically log a comment on these records?'=>'自動的にこれらのレコードにコメントを記録？',
+'Assign records via lead-routing?'=>'鉛ルーティング経由レコードを割り当てる？',
+'Import Status'=>'インポートステータス',
+'Process Import'=>'プロセスのインポート',
+'Please click the button below to begin the export. Do not close this page until the export is finished, which may take some time if you have a large number of records. A counter will keep you updated on how many records have been successfully updated.'=>'エクスポートを開始するには、以下のボタンをクリックしてください。エクスポートが完了するまでは、大量のレコードを持っている場合、いくつかの時間がかかる場合があり、このページを閉じないでください。カウンタが正常に更新されましたどのように多くの記録には更新し続けます。',
+'You are currently exporting: '=>'あなたは、現在エクスポートされています：',
+'Exporting <b>Contact</b> data...'=>'<b>連絡先データ</b>をエクスポート...',
+'records from <b>Contacts</b> successfully exported.'=>'正常にエクスポート<b>先</b>からレコード。',
+'All Contact data successfully exported.'=>'すべての連絡先データが正常にエクスポート。',
+'Export Complete!'=>'完全エクスポート！',
 // // 
 // // Subscribe
-'Subscribe'=>'購読する',
 'The information for {name} has changed.'=>'{name}のための情報が変更されました。',
 'Receive email updates every time information for {name} changes'=>'たびに情報交換{name}の電子メールの更新を受信',
 'Unsubscribe'=>'退会',
@@ -242,8 +154,24 @@ return array (
 'Map Name'=>'マップ名',
 'Map Owner'=>'マップの所有者',
 'Zoom Level'=>'ズームレベル',
-'Parameters'=>'パラメータ',
 'Center Latitude'=>'中心の緯度',
 'Center Longitude'=>'中心の経度',
-'Contact'=>'連絡',
+'Web Form'=>'ウェブフォーム',
+'Import Contacts from Outlook'=>'Outlookから連絡先のインポート',
+'Remove From List'=>'リストから削除',
+'Today\'s Contacts'=>'今日\ &#39;sのコンタクト',
+'Directions from Corporate'=>'企業からの道順',
+'Directions from Personal Address'=>'個人アドレスからの道順',
+'Keep This Record'=>'この記録を保持',
+'This operation is disabled because the data set is too large.'=>'データセットが大きすぎるため、この操作は無効にされる。',
+'{dupes} records shown out of {count} records found.'=>'{dupes}レコードは外に示す{count}見つかったレコード。',
+'Hide This Record'=>'このレコードを隠す',
+'Delete This Record'=>'このレコードの削除',
+'Contact ID'=>'IDにお問い合わせください',
+'Latitutde'=>'Latitutde',
+'Longitude'=>'経度',
+'Are you sure you want to hide all other records?'=>'あなたは、他のすべてのレコードを非表示にしてもよろしいですか？',
+'Are you sure you want to delete all other records?'=>'あなたは、他のすべてのレコードを削除してもよろしいですか？',
+'Are you sure you want to hide this record?'=>'あなたは、このレコードを非表示にしてもよろしいですか？',
+'Are you sure you want to delete this record?'=>'あなたはこのレコードを削除してもよろしいですか？',
 );

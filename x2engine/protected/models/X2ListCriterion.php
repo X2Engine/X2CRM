@@ -103,7 +103,7 @@ class X2ListCriterion extends CActiveRecord {
 			'value' => Yii::t('contacts','Value'),
 		);
 	}
-	
+
 	/**
 	 * @return array available comparison types (value=>label)
 	 */
@@ -115,7 +115,7 @@ class X2ListCriterion extends CActiveRecord {
 			'<>'=>Yii::t('contacts','not equal to'),
 			'list'=>Yii::t('contacts','in list'),
 			'notList'=>Yii::t('contacts','not in list'),
-			'empty'=>Yii::t('empty','empty'),
+			'empty'=>Yii::t('contacts','empty'),
 			'notEmpty'=>Yii::t('contacts','not empty'),
 			'contains'=>Yii::t('contacts','contains'),
 			'noContains'=>Yii::t('contacts','does not contain'),

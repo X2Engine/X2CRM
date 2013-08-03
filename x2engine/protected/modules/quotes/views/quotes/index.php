@@ -64,7 +64,7 @@ $this->widget('application.components.X2GridView', array(
 	'id'=>'quotes-grid',
 	'title'=>Yii::t('quotes','Quotes'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
-	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
+	'template'=> '<div class="page-title icon quotes">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,

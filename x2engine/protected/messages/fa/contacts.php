@@ -1,93 +1,22 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // // Contact Form Attributes
-'Verification Code'=>'کد امنیتی',
 // // Contact Attributes
-'ID'=>'شناسه',
-'First Name'=>'نام',
-'Name'=>'نام',
-'Full Name'=>'نام کامل',
-'Last Name'=>'نام خانوادگی',
-'Title'=>'عنوان',
-'Account'=>'حساب',
 'Work'=>'کار',
 'Cell'=>'همراه',
 'Work Phone'=>'تلفن اداری',
-'Cell Phone'=>'تلفن همراه',
-'Email'=>'ای-نامه',
-'Phone'=>'تلفن',
 'Phone 2'=>'تلفن 2',
 'IM'=>'پیامبر',
-'Website'=>'پایگاه وب',
-'Address'=>'نشانی',
-'City'=>'شهر',
-'State'=>'استان',
 'Zip Code'=>'کد پستی',
-'Country'=>'کشور',
-'Visibility'=>'پدیداری',
-'Assigned To'=>'مرتبط با',
-'Background Info'=>'سوابق',
-'Last Updated'=>'آخرین بروزرسانی',
-'Updated By'=>'بروزرسانی توسط',
-'Lead Source'=>'معرف',
-'Priority'=>'اولویت',
-'Create Date'=>'تاریخ ایجاد',
-'Rating'=>'رتبه',
-'Low'=>'کم',
-'Medium'=>'متوسط',
-'High'=>'زیاد',
-'Public'=>'عمومی',
-'Private'=>'خصوصی',
 'Twitter'=>'Twitter',
 'Linkedin'=>'Linkedin',
 'Skype'=>'Skype',
 'Googleplus'=>'Googleplus',
 'Address 2'=>'نشانی 2',
-'Postal Code'=>'کد پستی',
 'Lead Date'=>'تاریخ معرفی',
 'Confidence'=>'اعتماد',
-'Facebook'=>'Facebook',
-'Lead Type'=>'نوع معرف',
-'Other'=>'سایر',
 'Close Date'=>'تاریخ بستن',
-'Expected Close Date'=>'انتظار می رود تاریخ عضویت بستن',
 'Interest'=>'علایق',
-'Deal Value'=>'ارزش معامله',
 'Lead Status'=>'وضعیت معرف',
 'Lead Score'=>'وضعیت انبار',
 'Deal Status'=>'وضعیت معامله',
@@ -96,71 +25,37 @@ return array (
 'Sales &amp; Marketing'=>'فروش و بازاریابی',
 'In Person'=>'در فرد',
 'Accepted'=>'پذیرفته',
-'Lost'=>'از دست رفته',
-'None'=>'هیچ یک',
-'Web'=>'اینترنت',
 'Assigned'=>'واگذار شده',
-'Won'=>'برنده',
-'E-Mail'=>'ایمیل',
-'Google'=>'Google',
-'Walk In'=>'راه می رفت در',
 'Unassigned'=>'اختصاص داده نشده',
-'Working'=>'کارگر',
 'Dead'=>'مرده',
 'Rejected'=>'مطرود',
-'Tags'=>'برچسب ها',
-'Associated Contacts'=>'مخابرات آسوشیتد',
 'Duplicate Check'=>'Duplicate یا کپی چک کنید',
-'Last Activity'=>'تاریخ و زمان آخرین فعالیت درسایت',
 'Timezone'=>'منطقه زمانی',
 'Web Tracking Key'=>'ردیابی وب کلید',
 // // 
 // // List Attributes
-'Owner'=>'مالک',
-'Description'=>'شرح',
 'Logic Type'=>'نوع منطق',
-'Record Type'=>'نوع رکورد',
 'Members'=>'کاربران',
 'Dynamic'=>'پویا',
 'Static'=>'ایستا',
 // // 
-// // List Criteria Attributes
-'List'=>'فهرست',
-'Type'=>'نوع',
-'Attribute'=>'صفت',
-'Comparison'=>'مقایسه',
-'Value'=>'ارزش',
-// // 
-// // List Criteria Comparitors
-'equals'=>'برابر با',
-'greater than'=>'بزرگتر از',
-'less than'=>'کمتر از',
-'not equal to'=>'برابر نیست',
-'in list'=>'در لیست',
-'not in list'=>'در فهرست',
-'empty'=>'خالی',
-'not empty'=>'خالی نیست',
-'contains'=>'شامل',
-'does not contain'=>'شامل نمی شود',
-// // 
 // // Misc
-'Assigned to {name}'=>'{name} مرتبط با',
 'Social Networks'=>'شبکه های اجتماعی',
 'Detail View'=>'نمایش جزییات',
 'Simple View'=>'نمایش ساده',
-'Contact Info'=>'اطلاعات تماس',
 'Opportunities &amp; Marketing'=>'فرصتها و بازاریابی',
 'Social Media'=>'رسانه اجتماعی',
-'AND'=>'و',
 'OR'=>'یا',
-'User'=>'کاربر',
 'Leads'=>'فرصت های',
 '<b>{m}</b> of <b>{n}</b>'=>'<b> {m} </b> از <b> {n} </b>',
 'Create a new Opportunity associated with this Contact.'=>'ایجاد فرصت های جدید مرتبط با این تماس.',
 'Create a new Account associated with this Contact.'=>'ایجاد یک حساب جدید در ارتباط با تماس با ما.',
 'Create a new Service Case associated with this Contact.'=>'ایجاد یک مورد سرویس های جدید مرتبط با این تماس.',
 'Link to Record'=>'پیوند به ضبط',
-'Contact Attributes'=>'تماس با صفات',
+'Clicking this button will pull any relevant fields from the associated Account record and overwrite the Contact data for those fields.  This operation cannot be reversed.'=>'با کلیک بر روی این دکمه خواهد هر زمینه های مربوطه را از سابقه حساب مرتبط با کشیدن و بازنویسی اطلاعات تماس برای کسانی که زمینه. این عملیات را نمی توان معکوس کرد.',
+'Create a new Contact associated with this Contact.'=>'ایجاد تماس با مرتبط با تماس با ما.',
+'Create a new Contact'=>'ایجاد تماس جدید',
+'Tag Search'=>'برچسب جستجو',
 // // 
 // // Contacts Actions
 'My Contacts'=>'تماسهای من',
@@ -173,30 +68,20 @@ return array (
 'Update Contact:'=>':بروزرسانی تماس',
 'Delete Contact'=>'حذف تماس',
 'Contact Lists'=>'تماس با ما لیست',
-'Create Lead'=>'معرف جدید',
 'Share Contact'=>'اشتراک تماس',
-'Create'=>'جدید',
 'Lists'=>'فهرستها',
 'Create List'=>'ایجاد لیست',
-'View'=>'نمایش',
-'Share'=>'سهم بردن',
-'Update'=>'بروزرسانی',
 'View Opportunities'=>'نمایش فرصتها',
-'Delete'=>'حذف',
-'Show All'=>'نمایش همه',
 'Hide All'=>'پنهان کردن همه',
-'Show'=>'نمایش',
-'Hide'=>'پنهان کردن',
 'View Relationships'=>'مشاهده روابط',
-'Subscribe'=>'اشتراک در',
 'View List'=>'مشاهده لیست',
-'Share Action'=>'اقدام به اشتراک بگذارید',
-'Import Contacts'=>'مخابرات واردات',
 'Contact Map'=>'نقشه',
 'Saved Maps'=>'ذخیره نقشه ها',
+'Save Contact'=>'صرفه جویی در تماس با',
 // // 
+'Edit List'=>'ویرایش لیست',
+'Delete List'=>'حذف لیست',
 // // Contacts Titles
-'Contacts'=>'تماسها',
 'Manage Contacts'=>'مدیریت تماسها',
 'Contact:'=>':تماس',
 // // 
@@ -205,14 +90,41 @@ return array (
 'Import from Template'=>'در یافت از پیش نویس',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'.برای دریافت از پیش نویس، لطفا ابتدا پیش نویس ما را پر کنید. سپس آن را توسط فرم زیر بارگزاری کنید',
 'The template file can be found here:'=>':فایل پیش نویس اینجا قرار دارد',
-'Export to CSV'=>'ارسال به اکسل',
 'Please click the link below to download contacts.'=>'.لطفا جهت دانلود تماسها اینجا تلیک کنید',
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'برای وارد کردن مخاطبین خود را از Outlook، لطفا ابتدا ایجاد یک فایل CSV (فرمت DOS) با باز کردن چشم انداز و صادرات از تماس با ما. سپس، آپلود فایل در اینجا با استفاده از فرم زیر وارد نمایید.',
 'Upload File'=>'ارسال فایل',
 'Contact Record Details'=>'ارتباط رکورد',
+'Import Contacts from Template'=>'وارد کردن مخاطبین از الگو',
+'To import your contacts, please fill out a CSV file where the first row contains the column headers for your records (e.g. first_name, last_name, title etc.).  A properly formatted example can be found below.'=>'برای وارد کردن مخاطبین خود، لطفا با پر کردن یک فایل CSV که در آن سطر اول شامل ستون برای سوابق خود را (به عنوان مثال FIRST_NAME LAST_NAME، و عنوان و غیره). به عنوان مثال به درستی فرمت شده را می توان در زیر یافت می شود.',
+'The application will attempt to automatically map your column headers to our fields in the database.  If a match is not found, you will be given the option to choose one of our fields to map to, ignore the field, or create a new field within X2.'=>'این برنامه تلاش خواهد کرد که به طور خودکار نقشه ستون خود را به مزارع ما در پایگاه داده. اگر یک مسابقه شده است یافت نشد، شما گزینه ای برای انتخاب یکی از رشته های ما به نقشه را به چشم پوشی از حوزه، یا ایجاد یک میدان جدید در X2 داده می شود.',
+'If you decide to map the "Create Date", "Last Updated", or any other explicit date field, be sure that you have a valid date format entered so that the software can convert to a UNIX Timestamp (if it is already a UNIX Timestamp even better).  Visibility should be either "1" for Public or "0" for Private (it will default to 1 if not provided).'=>'اگر شما تصمیم به نقشه &quot;تاریخ ایجاد&quot;، &quot;آخرین بروز رسانی&quot;، و یا هر زمینه دیگر در تاریخ صریح و روشن، مطمئن باشید که شما باید یک فرمت تاریخ معتبر وارد شده به طوری که این نرم افزار می تواند تبدیل به برچسب زمان یونیکس (اگر آن را در حال حاضر یک یونیکس برچسب حتی بهتر). دید باید به صورت &quot;1&quot; برای عمومی و یا &quot;0&quot; برای خصوصی (آن را به 1 پیش فرض اگر ارائه نشده است).',
+'Contacts Import'=>'مخابرات واردات',
+'First, we\'ll need to make sure your fields have mapped properly for import. '=>'اول، ما تخم ریزی \ &#39;نیاز به مطمئن شوید که زمینه های خود را به درستی برای واردات نقشه برداری.',
+'Below is a list of our fields, the fields you provided, and a few sample records that you are importing.'=>'در زیر یک لیست از زمین های ما، زمینه به شما ارائه شده، و مدارک چند نمونه که شما وارد است.',
+'If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.'=>'اگر فیلد ID انتخاب شده است وارد شود، از ابزار واردات تلاش خواهد کرد به بازنویسی سوابق موجود از قبل با آن ID. آیا فیلد ID نقشه نیست اگر دون تی \ &#39;می خواهم این اتفاق می افتد.',
+'Selecting "DO NOT MAP" will ignore the field from your CSV, and selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it.'=>'انتخاب &quot;نقشه&quot; آن زمینه از CSV خود را نادیده بگیرد، و انتخاب &quot;ایجاد زمینه های جدید&quot; یک فیلد متنی جدید در X2 و نقشه این زمینه خود را به آن را تولید.',
+'Your Field'=>'رشته شما',
+'Our Field'=>'این زمینه ما',
+'Sample Contact'=>'تماس با نمونه',
+'[Prev]'=>'[قبلی]',
+'[Next]'=>'[بعدی]',
+'DO NOT MAP'=>'نقشه نکنید',
+'CREATE NEW FIELD'=>'ایجاد فیلد جدید',
+'Process Import Data'=>'پردازش داده های واردات',
+'Create records for link fields?'=>'ایجاد پرونده برای مزارع لینک؟',
+'Automatically fill certain fields?'=>'زمینه های خاصی به صورت خودکار را پر کنید؟',
+'Automatically log a comment on these records?'=>'به صورت خودکار اظهار نظر در مورد این پرونده وارد شوید؟',
+'Assign records via lead-routing?'=>'اختصاص سوابق از طریق سرب مسیریابی؟',
+'Import Status'=>'واردات وضعیت',
+'Process Import'=>'واردات فرآیند',
+'Please click the button below to begin the export. Do not close this page until the export is finished, which may take some time if you have a large number of records. A counter will keep you updated on how many records have been successfully updated.'=>'لطفا با کلیک بر روی دکمه زیر برای شروع صادرات. این صفحه را بسته نمی شود تا زمانی که صادرات به پایان رسید، که ممکن است برخی از زمان اگر شما تعداد زیادی از سوابق را. شمارنده را حفظ خواهد کرد که چگونه بسیاری از پرونده شده اند با موفقیت به روز رسانی به شما به روز شده است.',
+'You are currently exporting: '=>'شما در حال حاضر:',
+'Exporting <b>Contact</b> data...'=>'صادرات اطلاعات <b>تماس</b> ...',
+'records from <b>Contacts</b> successfully exported.'=>'رکورد از <b>مخابرات با</b> موفقیت صادر شده است.',
+'All Contact data successfully exported.'=>'همه اطلاعات تماس با موفقیت صادر می شود.',
+'Export Complete!'=>'صادرات کامل!',
 // // 
 // // Subscribe
-'Subscribe'=>'اشتراک در',
 'The information for {name} has changed.'=>'{نام} تغییر کرده است.',
 'Receive email updates every time information for {name} changes'=>'دریافت به روز رسانی های ایمیل هر زمان {نام} تغییرات',
 'Unsubscribe'=>'عضویت لغو عضویت',
@@ -242,8 +154,24 @@ return array (
 'Map Name'=>'نام نقشه',
 'Map Owner'=>'مالک نقشه',
 'Zoom Level'=>'سطح زوم',
-'Parameters'=>'پارامترهای',
 'Center Latitude'=>'طول و عرض مرکز',
 'Center Longitude'=>'طول و عرض جغرافیایی مرکز',
-'Contact'=>'تماس',
+'Web Form'=>'فرم وب',
+'Import Contacts from Outlook'=>'وارد کردن مخاطبین از چشم انداز',
+'Remove From List'=>'حذف از فهرست',
+'Today\'s Contacts'=>'امروز \ &#39;تماس',
+'Directions from Corporate'=>'مسیرها از شرکت',
+'Directions from Personal Address'=>'جهت از آدرس شخصی',
+'Keep This Record'=>'نگه داشتن این رکورد',
+'This operation is disabled because the data set is too large.'=>'این عملیات غیر فعال است چرا که مجموعه داده است بیش از حد بزرگ است.',
+'{dupes} records shown out of {count} records found.'=>'{dupes} سوابق نشان داده شده است {count} ثبتی یافت نشد.',
+'Hide This Record'=>'پنهان کردن این رکورد',
+'Delete This Record'=>'این رکورد را حذف کنید',
+'Contact ID'=>'تماس با ID',
+'Latitutde'=>'Latitutde',
+'Longitude'=>'طول جغرافیایی',
+'Are you sure you want to hide all other records?'=>'آیا شما مطمئن هستید که میخواهید برای مخفی کردن تمام سوابق دیگر؟',
+'Are you sure you want to delete all other records?'=>'آیا شما مطمئن هستید که میخواهید برای حذف تمام سوابق دیگر؟',
+'Are you sure you want to hide this record?'=>'آیا شما مطمئن هستید که میخواهید این رکورد برای مخفی کردن؟',
+'Are you sure you want to delete this record?'=>'آیا شما مطمئن هستید که میخواهید این رکورد را حذف کنید؟',
 );

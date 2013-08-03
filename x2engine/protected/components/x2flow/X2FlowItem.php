@@ -58,20 +58,20 @@ abstract class X2FlowItem extends CComponent {
 	 * Checks if all all the params are ship-shape
 	 */
 	abstract public function validate(&$params=array());
-	
+
 	/**
 	 * Checks if all the config variables and runtime params are ship-shape
 	 * Ignores param requirements if $params isn't provided
 	 */
 	public function validateOptions(&$paramRules,&$params=null) {
-		
+
 		$configOptions = &$this->config['options'];
 		// die(var_dump($configOptions));
 		foreach($paramRules['options'] as &$optRule) {	// loop through options defined in paramRules() and make sure they're all set in $config
 			if(!isset($optRule['name']))		// don't worry about unnamed params
 				continue;
 			$optName = &$optRule['name'];
-			
+
 			if(!isset($configOptions[$optName]))	// each option must be present in $this->config and $params
 				continue;							// but just ignore them for future proofing
 				
@@ -95,7 +95,7 @@ abstract class X2FlowItem extends CComponent {
 			// if there's an operator setting, it must be valid
 			if(isset($optRule['operator']) && !in_array($optRule['operators'],$configOptions['operator']))
 				return false;
-			
+
 			// value must not be empty, unless it's an optional setting
 			if(!isset($option['value']) || $option['value'] === null || $option['value'] === '') {
 				if(isset($optRule['defaultVal']))		// try to use the default value
@@ -131,7 +131,7 @@ abstract class X2FlowItem extends CComponent {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Reformats and translates dropdown arrays to preserve sorting in {@link CJSON::encode()}
 	 * @param array an associative array of dropdown options ($value => $label)
@@ -140,7 +140,7 @@ abstract class X2FlowItem extends CComponent {
 	public static function dropdownForJson($options) {
 		$dropdownData = array();
 		foreach($options as $value => &$label)
-			$dropdownData[] = array($value,Yii::t('studio',$label));
+			$dropdownData[] = array($value,$label);
 		return $dropdownData;
 	}
 	

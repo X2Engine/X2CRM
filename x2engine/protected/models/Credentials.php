@@ -50,12 +50,29 @@
  * @property array $defaultSubstitutesInv (read-only) Like {@link defaultSubstitutes}
  *	but "inverted"; displays, for a given model class, the list of service types
  *	for which it can act as a stand-in.
+ * @property bool $isInUseBySystem (read-only) indicates whether the attribute
+ *	is being used for some system-wide/generic task.
  * @property array $serviceLabels (read-only) An array of UI-friendly names for service
  *	keyworkds, i.e. "Email Account" for "email".
+ * @property array $sysUseLabels (read-only) An array of labels for system-wide
+ *	uses of system-owned credentials.
  * @package X2CRM.models
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class Credentials extends CActiveRecord {
+
+	/**
+	 * When selecting a Credentials record: this as an ID indicates to use the
+	 * (legacy) system default method. This should only ever be used in scenarios
+	 * where "email" is the generic type of service being configured.
+	 */
+	const LEGACY_ID = -1;
+
+	/**
+	 * When the userId of the record is set to this value, that denotes that it
+	 * is available system-wide for generic tasks not tied to any one person.
+	 */
+	const SYS_ID = -1;
 
 	private static $_authModelLabels;
 
@@ -63,14 +80,56 @@ class Credentials extends CActiveRecord {
 
 	private static $_defaultCredentials;
 
+	private static $_sysDefaultCredentials;
+
 	/**
-	 * Labels for each type of service.
+	 * Effectively the inverse map of {@link sysUseId}; declared statically to
+	 * avoid having to generate it.
 	 * @var array
 	 */
-	private $_serviceLabels = array(
-		'email' => 'Email Account',
-//		'google' => 'Google Account'
+	public static $sysUseAlias = array(
+		-1 => 'bulkEmail',
+		-2 => 'serviceCaseEmail',
+		-3 => 'systemResponseEmail',
+		-4 => 'systemNotificationEmail'
 	);
+
+
+	/**
+	 * When selecting a user to set as the owner: values of this array as the
+	 * userId field in the x2_credentials_default record indicate that it is
+	 * it's owned by no one but can be used by anyone, and that it's the default
+	 * for a particular usage that is generic (i.e. not tied to any one user),
+	 * i.e. bulk email (which might typically use a non-personal address).
+	 *
+	 * Different values of userId derived from this array hence distinguish
+	 * different types of usage for system-wide credentials.
+	 * @var array
+	 */
+	public static $sysUseId = array(
+		'bulkEmail' => -1,
+		'serviceCaseEmail' => -2,
+		'systemResponseEmail' => -3,
+		'systemNotificationEmail' => -4
+	);
+
+	/**
+	 * For each system use type, define (as a comma-delineated list) the service
+	 * type for that system use type.
+	 * @var type
+	 */
+	public static $sysUseTypes = array(
+		-1 => 'email',
+		-2 => 'email',
+		-3 => 'email',
+		-4 => 'email'
+	);
+
+	/**
+	 * Stores {@link isInUseBySystem}
+	 * @var bool
+	 */
+	private $_isInUseBySystem;
 
 	/**
 	 * Model classes to include/list as valid for storing auth data
@@ -78,20 +137,17 @@ class Credentials extends CActiveRecord {
 	 */
 	protected $validModels = array('EmailAccount', 'GMailAccount');
 
+
 	public function attributeLabels() {
-		$attrLabels = array(
-			'name' => 'Name',
-			'userId' => 'Owner',
-			'private' => 'Private',
-			'isEncrypted' => 'Encryption Enabled',
-			'createDate' => 'Date Created',
-			'lastUpdated' => 'Date Last Updated',
-			'auth' => 'Authentication Details'
+		return array(
+			'name' => Yii::t('app','Name'),
+			'userId' => Yii::t('app','Owner'),
+			'private' => Yii::t('app','Private'),
+			'isEncrypted' => Yii::t('app','Encryption Enabled'),
+			'createDate' => Yii::t('app','Date Created'),
+			'lastUpdated' => Yii::t('app','Date Last Updated'),
+			'auth' => Yii::t('app','Authentication Details'),
 		);
-		foreach(array_keys($attrLabels) as $attr) {
-			$attrLabels[$attr] = Yii::t('app',$attrLabels[$attr]);
-		}
-		return $attrLabels;
 	}
 
 
@@ -104,6 +160,33 @@ class Credentials extends CActiveRecord {
 				'encryptedFlagAttr' => 'isEncrypted',
 			),
 		);
+	}
+
+	public function beforeDelete(){
+		Yii::app()->db->createCommand()->delete('x2_credentials_default',"credId=:id", array(':id'=>$this->id));
+		return parent::beforeDelete();
+	}
+
+	/**
+	 * Actions to take during setting of a default, especially when the default
+	 * is system-wide.
+	 * @param type $event
+	 */
+	public function defaultHooks($userId, $serviceType){
+		switch($serviceType){
+			case 'email':
+				switch($userId){
+					case self::$sysUseId['bulkEmail']:
+						Yii::app()->params->admin->emailBulkAccount = $this->id;
+						Yii::app()->params->admin->save();
+						break;
+					case self::$sysUseId['serviceCaseEmail'];
+						Yii::app()->params->admin->serviceCaseEmailAccount = $this->id;
+						Yii::app()->params->admin->save();
+						break;
+				}
+				break;
+		}
 	}
 
 	/**
@@ -194,6 +277,43 @@ class Credentials extends CActiveRecord {
 	}
 
 	/**
+	 * Gets the default service record for the user of a given type.
+	 */
+	public function getDefaultUserAccount($userId=null,$type='email'){
+		$userId = $userId === null ? Yii::app()->user->id : $userId;
+		$defaultCreds = $this->defaultCredentials;
+		if(array_key_exists($userId, $defaultCreds)){
+			$userDefaults = $defaultCreds[$userId];
+			if(array_key_exists($type, $userDefaults))
+				return $userDefaults[$type];
+		}
+		return self::LEGACY_ID;
+	}
+
+	/**
+	 * Getter for {@link sysDefaultCredentials}
+	 * @param type $refresh
+	 */
+	public function getIsInUseBySystem() {
+		if(!isset($this->_isInUseBySystem)) {
+			if($this->userId != self::SYS_ID)
+				$this->_isInUseBySystem = false;
+			else{
+				$defaults = $this->getDefaultCredentials();
+				$this->_isInUseBySystem = false;
+				foreach(self::$sysUseId as $alias => $id){
+					if(isset($defaults[$id]))
+						if(in_array($this->id, $defaults[$id])){
+							$this->_isInUseBySystem = true;
+							break;
+						}
+				}
+			}
+		}
+		return $this->_isInUseBySystem;
+	}
+
+	/**
 	 * Returns an appropriate title for create/update pages.
 	 * @return type
 	 */
@@ -214,10 +334,10 @@ class Credentials extends CActiveRecord {
 	 * @return array
 	 */
 	public function getServiceLabels(){
-		$translated = array();
-		foreach($this->_serviceLabels as $type => $label)
-			$translated[$type] = Yii::t('app', $label);
-		return $translated;
+		return array(
+			'email' => Yii::t('app', 'Email Account'),
+			// 'google' => Yii::t('app','Google Account')
+		);
 	}
 
 	/**
@@ -237,37 +357,69 @@ class Credentials extends CActiveRecord {
 	}
 
 	/**
+	 * Returns a list of labels for designated systemwide-use types.
+	 * @return type 
+	 */
+	public function getSysUseLabel(){
+		return array(
+			-1 => Yii::t('app', 'Bulk Email Account'),
+			-2 => Yii::t('app', 'Service Case Email Account'),
+			-3 => Yii::t('app', 'System Response Emailer'),
+			-4 => Yii::t('app', 'System Notification Emailer')
+		);
+	}
+
+	/**
 	 * Generates a select input for a form that includes a list of credentials
 	 * available for the current user.
 	 * @param CModel $model Model whose attribute is being used to specify a set of credentials
 	 * @param string $name Attribute storing the ID of the credentials record
 	 * @param string $type Keyword specifying the "service type" (i.e. "email" encompasess credentials with modelClass "EmailAccount" and "GMailAccount"
+	 * @param integer $uid The user ID or system role ID for which the input is being generated
+	 * @param array $htmlOptions HTML options to pass to {@link CHtml::activeDropDownList()}
+	 * @return string
 	 */
-	public static function selectorField($model,$name,$type='email') {
+	public static function selectorField($model,$name,$type='email',$uid=null,$htmlOptions=array()) {
 		// First get credentials available to the user:
-		$uid = Yii::app()->user->id;
-		$criteria = new CDbCriteria();
+		$defaultUserId = in_array($uid,self::$sysUseId) ? $uid : ($uid !==null ? $uid : Yii::app()->user->id); // The "user" (actual user or system role)
+		$uid = Yii::app()->user->id; // The actual user
+		$criteria = new CDbCriteria(array('params'=>array(':uid'=>$uid))); // Users can always use their own credentials, it's assumed
 		$staticModel = self::model();
+		$staticModel->userId = self::SYS_ID;
+		$criteria->addCondition('userId=:uid');
+		// Include system-owned credentials
+		if(Yii::app()->user->checkAccess('CredentialsSelectSystemwide',array('model'=>$staticModel))) 
+			$criteria->addCondition('userId='.self::SYS_ID,'OR');
+		else // Select the user's own default
+			$defaultUserId = $uid;
+		$staticModel->private = 0;
+		// Include non-private credentials if the user has access to them
+		if(Yii::app()->user->checkAccess('CredentialsSelectNonPrivate',array('model'=>$staticModel)))
+			$criteria->addCondition('private=0','OR');
+		// Cover only credentials for the given type of third-party service for which the selector field is being used:
 		$criteria->addInCondition('modelClass',$staticModel->defaultSubstitutes[$type]);
-		$criteria->addCondition('userId='.$uid.' OR userId IS NULL');
-		$creds = $staticModel->findAll($criteria);
+		$credRecords = $staticModel->findAll($criteria);
 		$credentials = array();
-		// Figure out which one is default:
-		$defaultCreds = $staticModel->getDefaultCredentials();
-		$selectedCredentials = -1;
-		if(array_key_exists($uid,$defaultCreds))
-			if(array_key_exists($type,$defaultCreds[$uid]))
-				$selectedCredentials = $defaultCreds[$uid][$type];
-		foreach($creds as $cred) {
+		if($model->$name == null){
+			// Figure out which one is default since it hasn't been set yet
+			$defaultCreds = $staticModel->getDefaultCredentials();
+			if($type == 'email')
+				$selectedCredentials = self::LEGACY_ID;
+			if(array_key_exists($defaultUserId, $defaultCreds))
+				if(array_key_exists($type, $defaultCreds[$defaultUserId]))
+					$selectedCredentials = $defaultCreds[$defaultUserId][$type];
+		}else{
+			// Use the one previously set
+			$selectedCredentials = $model->$name;
+		}
+		// Compose options for the selector
+		foreach($credRecords as $cred) {
 			$credentials[$cred->id] = $cred->name;
-			if($cred->id == $selectedCredentials) {
-				$credentials[$cred->id] .= ' ('.Yii::t('app','Default').')';
-			}
 			if($type == 'email')
 				$credentials[$cred->id] = Formatter::truncateText($credentials[$cred->id].' : "'.$cred->auth->senderName.'" <'.$cred->auth->email.'>',50);
 		}
-		$credentials[-1] = Yii::t('app','System default (legacy)');
-
+		if($type == 'email') // Legacy email delivery method(s)
+			$credentials[self::LEGACY_ID] = Yii::t('app','System default (legacy)');
 		$options = array();
 		foreach($credentials as $credId => $label) {
 			if($credId == $selectedCredentials) {
@@ -276,12 +428,17 @@ class Credentials extends CActiveRecord {
 				$options[$credId] = array('selected' => false);
 			}
 		}
-		return CHtml::activeDropDownList($model,$name,$credentials,array('options'=>$options));
+		if($type=='email')
+			$options[self::LEGACY_ID]['class'] = 'legacy-email';
+		
+		$htmlOptions['options']=$options;
+
+		return CHtml::activeDropDownList($model,$name,$credentials,$htmlOptions);
 	}
 
-
 	/**
-	 * Given a user id, returns an array of all service types for which the record is default.
+	 * Given a user id, returns an array of all service types for which the
+	 * current record is default.
 	 * @param integer $uid
 	 * @return array
 	 */
@@ -296,13 +453,14 @@ class Credentials extends CActiveRecord {
 		return $services;
 	}
 
-
 	/**
 	 * Set the default account for a given user to use for a given service.
 	 * @param type $userId ID of the user whose default is getting set. Null for generic/system account.
 	 * @param type $serviceType Service type, i.e. 'email'
 	 */
-	public function makeDefault($userId, $serviceType){
+	public function makeDefault($userId,$serviceType,$hooks = true){
+		if($hooks)
+			$this->defaultHooks($userId,$serviceType);
 		Yii::app()->db->createCommand()
 				->delete('x2_credentials_default', 'userId=:uid AND serviceType=:st', array(
 					':uid' => $userId,
@@ -323,7 +481,7 @@ class Credentials extends CActiveRecord {
 	public function rules() {
 		return array(
 			array('name,private,auth','safe'),
-			array('userId','safe','on'=>'admin')
+			array('userId','safe','on'=>'create')
 		);
 	}
 

@@ -43,9 +43,8 @@ $this->actionMenu = $this->formatMenu(array(
     array('label' => Yii::t('contacts', 'View')),
         ));
 ?>
-<div class="page-title icon contacts"></div>
-<h1><span style="color:#f00;font-weight:bold;"><?php echo Yii::t('app', 'This record may be a duplicate!'); ?></span></h1>
-<div class="page-title"><h2><span class="no-bold"><?php echo Yii::t('app', 'You Entered:'); ?></span> <?php echo $newRecord->name; ?></h2>
+<h1><span style="color:#f00;font-weight:bold;margin-left: 5px;"><?php echo Yii::t('app', 'This record may be a duplicate!'); ?></span></h1>
+<div class="page-title rounded-top"><h2><span class="no-bold"><?php echo Yii::t('app', 'You Entered:'); ?></span> <?php echo $newRecord->name; ?></h2>
     <?php
     if(Yii::app()->user->checkAccess('ContactsUpdate', $authParams) && $ref != 'create')
         echo CHtml::link(Yii::t('app', 'Edit'), $this->createUrl('update', array('id' => $newRecord->id)), array('class' => 'x2-button'));
@@ -120,7 +119,7 @@ if($count > count($duplicates)){
 }
 foreach($duplicates as $duplicate){
     echo '<div id="'.$duplicate->firstName.'-'.$duplicate->lastName.'-'.$duplicate->id.'">';
-    echo '<div class="page-title"><h2><span class="no-bold">', Yii::t('app', 'Possible Match:'), '</span> ';
+    echo '<div class="page-title rounded-top"><h2><span class="no-bold">', Yii::t('app', 'Possible Match:'), '</span> ';
     echo $duplicate->name, '</h2></div>';
 
     $this->renderPartial('application.components.views._detailView', array('model' => $duplicate, 'modelName' => 'contacts'));

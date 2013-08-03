@@ -58,7 +58,7 @@ $this->actionMenu = $this->formatMenu($menuItems,$authParams);
 
 ?>
 <div class="page-title icon accounts">
-	<h2><span class="no-bold"><?php echo Yii::t('accounts','Update:'); ?></span> <?php echo $model->name; ?></h2>
+	<h2><span class="no-bold"><?php echo Yii::t('app','Update:'); ?></span> <?php echo $model->name; ?></h2>
 </div>
 
 <div class="form">
@@ -66,7 +66,7 @@ $this->actionMenu = $this->formatMenu($menuItems,$authParams);
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'acocunts-form',
 	'enableAjaxValidation'=>false,
-)); 
+));
 echo ($action=='Remove')?Yii::t('accounts','Please click any new users you wish to remove.'):Yii::t('accounts','Please click any new users you wish to add.');
 ?>
 <br /><br />

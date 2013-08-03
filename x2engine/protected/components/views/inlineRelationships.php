@@ -34,6 +34,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 $themeUrl = Yii::app()->theme->getBaseUrl();
+$auth = Yii::app()->authManager;
+$actionAccess = ucfirst(Yii::app()->controller->module->name).'Update';
+$authItem = $auth->getAuthItem($actionAccess);
 // init qtip for contact names
 Yii::app()->clientScript->registerScript('contact-qtip', '
 function refreshQtip() {
@@ -167,7 +170,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 ?>
 
-<?php if(Yii::app()->user->checkAccess(ucfirst(Yii::app()->controller->module->name).'Update',array('assignedTo'=>$model->assignedTo))) { ?>
+<?php if(!isset($authItem) || Yii::app()->user->checkAccess($actionAccess,array('assignedTo'=>$model->assignedTo))) { ?>
 	<div class="form" style="width:29%;display: inline-block; margin-top: 20px;">
 		<div style="width: 170px; margin: 0 auto;">
 			<input type="hidden" id="Relationships_Contacts_id">
@@ -176,7 +179,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 				$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 					'name'=>'Relationships_Actions',
 					'source' => Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource),
-                    'value'=>'Start typing to suggest...',
+                    'value'=>Yii::t('app','Start typing to suggest...'),
 					'options' => array(
 						'minLength' => '1',
 						'select' => 'js:function( event, ui ) {
@@ -232,7 +235,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	</div>
 <?php } ?>
 
-<?php if(Yii::app()->user->checkAccess(ucfirst(Yii::app()->controller->module->name).'Update',array('assignedTo'=>$model->assignedTo))) { ?>
+<?php if(!isset($authItem) || Yii::app()->user->checkAccess($actionAccess,array('assignedTo'=>$model->assignedTo))) { ?>
 	<div class="form" style="width:29%;display: inline-block; margin-top: 20px;">
 		<div style="width: 170px; margin: 0 auto;">
 			<input type="hidden" id="Relationships_Accounts_id">
@@ -241,7 +244,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 				$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 					'name'=>'Relationships_Actions',
 					'source' => Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource),
-                    'value'=>'Start typing to suggest...',
+                    'value'=>Yii::t('app','Start typing to suggest...'),
 					'options' => array(
 						'minLength' => '1',
 						'select' => 'js:function( event, ui ) {
@@ -296,7 +299,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 <?php } ?>
 
 
-<?php if(Yii::app()->user->checkAccess(ucfirst(Yii::app()->controller->module->name).'Update',array('assignedTo'=>$model->assignedTo))) { ?>
+<?php if(!isset($authItem) || Yii::app()->user->checkAccess($actionAccess,array('assignedTo'=>$model->assignedTo))) { ?>
 
 <div class="form" style="width:29%;display: inline-block; margin-top: 20px;">
 <div style="width: 170px; margin: 0 auto;">
@@ -306,7 +309,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 		'name'=>'Relationships_Actions',
 		'source' => Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource),
-        'value'=>'Start typing to suggest...',
+        'value'=>Yii::t('app','Start typing to suggest...'),
 		'options' => array(
 			'minLength' => '1',
 			'select' => 'js:function( event, ui ) {

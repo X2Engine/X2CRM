@@ -59,7 +59,7 @@ class ProfileController extends x2base {
                     'index', 'view', 'update', 'search', 'addPost', 'deletePost', 'uploadPhoto', 'profiles',
                     'settings', 'addComment', 'deleteSound', 'deleteBackground',
                     'changePassword', 'setResultsPerPage', 'hideTag', 'unhideTag', 'resetWidgets', 'updatePost',
-                    'loadTheme', 'createTheme', 'saveTheme', 'createUpdateCredentials','manageCredentials','deleteCredentials'),
+                    'loadTheme', 'createTheme', 'saveTheme', 'createUpdateCredentials','manageCredentials','deleteCredentials','setDefaultCredentials'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -251,7 +251,7 @@ class ProfileController extends x2base {
         if (isset($_POST['Profile']) || isset($_POST['preferences'])) {
             if (isset($_POST['Profile'])) {
                 $model->attributes = $_POST['Profile'];
-    
+
                 if ($model->save()){
                     //$this->redirect(array('view','id'=>$model->id));
                 }
@@ -269,10 +269,10 @@ class ProfileController extends x2base {
             if($module->name == 'document'){
                 $menuItems[$module->title] = $module->title;
             }else{
-                $menuItems[$module->name] = $module->title;
+                $menuItems[$module->name] = Yii::t('app',$module->title);
             }
         }
-        $menuItems = array('' => Yii::t('app', "What's New")) + $menuItems;
+        $menuItems = array('' => Yii::t('app', 'What\'s New')) + $menuItems;
 
         $languageDirs = scandir('./protected/messages'); // scan for installed language folders
 
@@ -336,6 +336,7 @@ class ProfileController extends x2base {
 
 	public function actionManageCredentials() {
 		$this->pageTitle = Yii::t('app','Manage Credentials');
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/manageCredentials.js');
 		$this->render('manageCredentials',array('profile'=>Yii::app()->params->profile));
 	}
 
@@ -349,7 +350,6 @@ class ProfileController extends x2base {
 		$this->pageTitle = Yii::t('app','Edit Credentials');
 		$profile = Yii::app()->params->profile;
 		// Create or retrieve model:
-		$isAdmin = Yii::app()->user->checkAccess('AdminIndex');
 		if(empty($id)) {
 			if(empty($class))
 				throw new CHttpException(400,'Class must be specified when creating new credentials.');
@@ -359,21 +359,16 @@ class ProfileController extends x2base {
 			$model = Credentials::model()->findByPk($id);
 			if(empty($model))
 				throw new CHttpException(404);
-			if($profile->user->id != $model->userId) {
-				if(empty($model->userId)){ // Only the admin user can view/edit system-wide credentials.
-					if(!$isAdmin)
-						throw new CHttpException(403,Yii::t('app','You are not authorized to view/edit these credentials.'));
-				} else // Under no circumstances may a user view/edit another's credentials.
-					throw new CHttpException(403,Yii::t('app','You are not authorized to view/edit other users\' credentials.'));
-			}
 		}
-		if($isAdmin)
-			$model->scenario = 'admin';
+		$model->scenario = $model->isNewRecord ? 'create' : 'update';
 
 		// Apply changes if any:
 		$message = null;
 		if(isset($_POST['Credentials'])) {
 			$model->attributes = $_POST['Credentials'];
+			// Check to see if user has permission:
+			if(!Yii::app()->user->checkAccess('CredentialsCreateUpdate',array('model'=>$model)))
+				$this->denied();
 			// Save the model:
 			if($model->validate()) {
 				// Set timestamps
@@ -381,41 +376,53 @@ class ProfileController extends x2base {
 				if($model->isNewRecord)
 					$model->createDate = $time;
 				$model->lastUpdated = $time;
-				// Set owner
-				if(empty($model->userId) && !$isAdmin)
-					$model->userId = $profile->user->id;
-				$model->save();
-				$message = Yii::t('application', 'Saved').' '.Formatter::formatLongDateTime($time);
-				
-				// Set as default if applicable:
-				if(!$model->isNewRecord && isset($_POST['default'])){
-					if(!is_array($_POST['default'])){ // It's a yes or no
-						if($_POST['default']){
-							$defaults = $model->defaultSubstitutesInv[$model->modelClass];
-						}
-					}else{ // It's a selector
-						$defaults = $_POST['default'];
-					}
-					if(isset($defaults)){
-						foreach($defaults as $serviceType){
-							$model->makeDefault($profile->user->id, $serviceType);
-						}
-					}
+				if($model->save()) {
+					$message = Yii::t('app', 'Saved').' '.Formatter::formatLongDateTime($time);
+					$this->redirect(array('manageCredentials'));
 				}
-				$this->redirect(array('profile/manageCredentials'));
 			}
 		}
 		$this->render('createUpdateCredentials',array('model'=>$model,'profile'=>$profile,'message' => $message));
+	}
+
+	/**
+	 * Make a credentials record default for the active user.
+	 * @param type $id
+	 * @throws CHttpException
+	 */
+	public function actionSetDefaultCredentials($id) {
+		$model = Credentials::model()->findByPk($id);
+
+		if(!isset($_POST['userId']))
+			throw new Exception(400,'Invalid request');
+		$userId = $_POST['userId'];
+		if(empty($model))
+			throw new CHttpException(404);
+		if(!Yii::app()->user->checkAccess('CredentialsSetDefault',array('model'=>$model,'userId' => $userId)))
+			$this->denied();
+		if(!is_array($_POST['default'])){ // It's a yes or no
+			if($_POST['default']){
+				$defaults = $model->defaultSubstitutesInv[$model->modelClass];
+			}
+		}else{ // It's a selector
+			$defaults = $_POST['default'];
+		}
+
+		if(isset($defaults)){
+			foreach($defaults as $serviceType){
+				$model->makeDefault($userId, $serviceType);
+			}
+		}
+		$this->redirect(array('manageCredentials'));
 	}
 
 	public function actionDeleteCredentials($id){
 		$cred = Credentials::model()->findByPk($id);
 		if(empty($cred))
 			throw new CHttpException(404);
-		if($cred->userId != Yii::app()->user->id && !Yii::app()->user->checkAccess('AdminIndex'))
-			throw new CHttpException(403,'You cannot delete credentials that you do not own.');
+		if(!Yii::app()->user->checkAccess('CredentialsDelete',array('model'=>$cred)))
+			$this->denied();
 		$cred->delete();
-		Yii::app()->db->createCommand()->delete('x2_credentials_default','credId=:cid',array(':cid'=>$id));
 		$this->redirect(array('profile/manageCredentials'));
 	}
 

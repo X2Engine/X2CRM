@@ -1,166 +1,59 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // // Contact Form Attributes
-'Verification Code'=>'',
 // // Contact Attributes
-'ID'=>'',
-'First Name'=>'',
-'Name'=>'',
-'Full Name'=>'',
-'Last Name'=>'',
-'Title'=>'',
-'Account'=>'',
 'Work'=>'',
 'Cell'=>'',
 'Work Phone'=>'',
-'Cell Phone'=>'',
-'Email'=>'',
-'Phone'=>'',
 'Phone 2'=>'',
 'IM'=>'',
-'Website'=>'',
-'Address'=>'',
-'City'=>'',
-'State'=>'',
 'Zip Code'=>'',
-'Country'=>'',
-'Visibility'=>'',
-'Assigned To'=>'',
-'Background Info'=>'',
-'Last Updated'=>'',
-'Updated By'=>'',
-'Lead Source'=>'',
-'Priority'=>'',
-'Create Date'=>'',
-'Rating'=>'',
-'Low'=>'',
-'Medium'=>'',
-'High'=>'',
-'Public'=>'',
-'Private'=>'',
 'Twitter'=>'',
 'Linkedin'=>'',
 'Skype'=>'',
 'Googleplus'=>'',
 'Address 2'=>'',
-'Postal Code'=>'',
 'Lead Date'=>'',
-'Confidence'=>'',
-'Facebook'=>'',
-'Lead Type'=>'',
-'Other'=>'',
 'Close Date'=>'',
-'Expected Close Date'=>'',
 'Interest'=>'',
-'Deal Value'=>'',
 'Lead Status'=>'',
 'Lead Score'=>'',
-'Deal Status'=>'',
 'Do Not Call'=>'',
 'Do Not Email'=>'',
 'Sales &amp; Marketing'=>'',
 'In Person'=>'',
 'Accepted'=>'',
-'Lost'=>'',
-'None'=>'',
-'Web'=>'',
 'Assigned'=>'',
-'Won'=>'',
-'E-Mail'=>'',
-'Google'=>'',
-'Walk In'=>'',
 'Unassigned'=>'',
-'Working'=>'',
 'Dead'=>'',
 'Rejected'=>'',
-'Tags'=>'',
-'Associated Contacts'=>'',
 'Duplicate Check'=>'',
-'Last Activity'=>'',
 'Timezone'=>'',
 'Web Tracking Key'=>'',
 // // 
 // // List Attributes
-'Owner'=>'',
-'Description'=>'',
 'Logic Type'=>'',
-'Record Type'=>'',
 'Members'=>'',
 'Dynamic'=>'',
 'Static'=>'',
 // // 
-// // List Criteria Attributes
-'List'=>'',
-'Type'=>'',
-'Attribute'=>'',
-'Comparison'=>'',
-'Value'=>'',
-// // 
-// // List Criteria Comparitors
-'equals'=>'',
-'greater than'=>'',
-'less than'=>'',
-'not equal to'=>'',
-'in list'=>'',
-'not in list'=>'',
-'empty'=>'',
-'not empty'=>'',
-'contains'=>'',
-'does not contain'=>'',
-// // 
 // // Misc
-'Assigned to {name}'=>'',
 'Social Networks'=>'',
 'Detail View'=>'',
 'Simple View'=>'',
-'Contact Info'=>'',
 'Opportunities &amp; Marketing'=>'',
 'Social Media'=>'',
-'AND'=>'',
 'OR'=>'',
-'User'=>'',
 'Leads'=>'',
 '<b>{m}</b> of <b>{n}</b>'=>'',
 'Create a new Opportunity associated with this Contact.'=>'',
 'Create a new Account associated with this Contact.'=>'',
 'Create a new Service Case associated with this Contact.'=>'',
 'Link to Record'=>'',
-'Contact Attributes'=>'',
+'Clicking this button will pull any relevant fields from the associated Account record and overwrite the Contact data for those fields.  This operation cannot be reversed.'=>'',
+'Create a new Contact associated with this Contact.'=>'',
+'Create a new Contact'=>'',
+'Tag Search'=>'',
 // // 
 // // Contacts Actions
 'My Contacts'=>'',
@@ -173,30 +66,20 @@ return array (
 'Update Contact:'=>'',
 'Delete Contact'=>'',
 'Contact Lists'=>'',
-'Create Lead'=>'',
 'Share Contact'=>'',
-'Create'=>'',
 'Lists'=>'',
 'Create List'=>'',
-'View'=>'',
-'Share'=>'',
-'Update'=>'',
 'View Opportunities'=>'',
-'Delete'=>'',
-'Show All'=>'',
 'Hide All'=>'',
-'Show'=>'',
-'Hide'=>'',
 'View Relationships'=>'',
-'Subscribe'=>'',
 'View List'=>'',
-'Share Action'=>'',
-'Import Contacts'=>'',
 'Contact Map'=>'',
 'Saved Maps'=>'',
+'Save Contact'=>'',
 // // 
+'Edit List'=>'',
+'Delete List'=>'',
 // // Contacts Titles
-'Contacts'=>'',
 'Manage Contacts'=>'',
 'Contact:'=>'',
 // // 
@@ -205,14 +88,40 @@ return array (
 'Import from Template'=>'',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'',
 'The template file can be found here:'=>'',
-'Export to CSV'=>'',
 'Please click the link below to download contacts.'=>'',
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'',
 'Upload File'=>'',
 'Contact Record Details'=>'',
+'Import Contacts from Template'=>'',
+'To import your contacts, please fill out a CSV file where the first row contains the column headers for your records (e.g. first_name, last_name, title etc.).  A properly formatted example can be found below.'=>'',
+'The application will attempt to automatically map your column headers to our fields in the database.  If a match is not found, you will be given the option to choose one of our fields to map to, ignore the field, or create a new field within X2.'=>'',
+'If you decide to map the "Create Date", "Last Updated", or any other explicit date field, be sure that you have a valid date format entered so that the software can convert to a UNIX Timestamp (if it is already a UNIX Timestamp even better).  Visibility should be either "1" for Public or "0" for Private (it will default to 1 if not provided).'=>'',
+'Contacts Import'=>'',
+'First, we\'ll need to make sure your fields have mapped properly for import. '=>'',
+'Below is a list of our fields, the fields you provided, and a few sample records that you are importing.'=>'',
+'If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.'=>'',
+'Selecting "DO NOT MAP" will ignore the field from your CSV, and selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it.'=>'',
+'Your Field'=>'',
+'Our Field'=>'',
+'Sample Contact'=>'',
+'[Prev]'=>'',
+'[Next]'=>'',
+'DO NOT MAP'=>'',
+'CREATE NEW FIELD'=>'',
+'Create records for link fields?'=>'',
+'Automatically fill certain fields?'=>'',
+'Automatically log a comment on these records?'=>'',
+'Assign records via lead-routing?'=>'',
+'Import Status'=>'',
+'Process Import'=>'',
+'Please click the button below to begin the export. Do not close this page until the export is finished, which may take some time if you have a large number of records. A counter will keep you updated on how many records have been successfully updated.'=>'',
+'You are currently exporting: '=>'',
+'Exporting <b>Contact</b> data...'=>'',
+'records from <b>Contacts</b> successfully exported.'=>'',
+'All Contact data successfully exported.'=>'',
+'Export Complete!'=>'',
 // // 
 // // Subscribe
-'Subscribe'=>'',
 'The information for {name} has changed.'=>'',
 'Receive email updates every time information for {name} changes'=>'',
 'Unsubscribe'=>'',
@@ -242,8 +151,24 @@ return array (
 'Map Name'=>'',
 'Map Owner'=>'',
 'Zoom Level'=>'',
-'Parameters'=>'',
 'Center Latitude'=>'',
 'Center Longitude'=>'',
-'Contact'=>'',
+'Web Form'=>'',
+'Import Contacts from Outlook'=>'',
+'Remove From List'=>'',
+'Today\'s Contacts'=>'',
+'Directions from Corporate'=>'',
+'Directions from Personal Address'=>'',
+'Keep This Record'=>'',
+'This operation is disabled because the data set is too large.'=>'',
+'{dupes} records shown out of {count} records found.'=>'',
+'Hide This Record'=>'',
+'Delete This Record'=>'',
+'Contact ID'=>'',
+'Latitutde'=>'',
+'Longitude'=>'',
+'Are you sure you want to hide all other records?'=>'',
+'Are you sure you want to delete all other records?'=>'',
+'Are you sure you want to hide this record?'=>'',
+'Are you sure you want to delete this record?'=>'',
 );

@@ -1,39 +1,4 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Install screen
 'Install X2EngineCRM'=>'نصب X2EngineCRM',
@@ -55,7 +20,6 @@ return array (
 
 'Application Name'=>'نام برنامه',
 'Default Language'=>'زبان پیش فرض',
-'Currency'=>'پول',
 'Admin Password'=>'رمز عبور مدیریت',
 'Confirm Password'=>'تکرار رمز عبور',
 'Administrator Email'=>'ایمیل مدیر',
@@ -66,21 +30,15 @@ return array (
 'This release only supports MySQL. Please create a database before installing.'=>'این نسخه تنها پشتیبانی از خروجی زیر است. لطفا قبل از نصب، ایجاد یک پایگاه داده است.',
 'Host Name'=>'نام میزبان',
 'Database Name'=>'نام پایگاه داده',
-'Username'=>'نام کاربری',
-'Password'=>'رمز عبور',
 
 // Software updates
 'Software Updates'=>'به روز رسانی نرم افزار',
 'Notify me of software updates'=>'مرا از به روز رسانی نرم افزار',
-'First Name'=>'نام',
-'Last Name'=>'نام خانوادگی',
-'Email'=>'ایمیل',
 'Company'=>'شرکت',
 'Position'=>'موقعیت',
 'How you found X2EngineCRM'=>'چگونه شما را در بر داشت X2EngineCRM',
 'Phone Number'=>'شماره تلفن',
 'Subscribe to the newsletter'=>'اشتراک در خبرنامه',
-'Comments'=>'نظرات',
 'Request a follow-up contact'=>'درخواست تماس با پیگیری',
 'Software Updates'=>'به روز رسانی نرم افزار',
 'Please help us improve X2EngineCRM by providing the following information:'=>'لطفا کمک به بهبود X2EngineCRM ما با ارائه اطلاعات زیر:',
@@ -88,12 +46,23 @@ return array (
 'Optional Information'=>'اطلاعات اختیاری',
 'Could not connect to the updates server at this time.'=>'می تواند اتصال به سرور به روز رسانی در این زمان.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'شما می توانید در ادامه نصب نرم افزار بدون به روز رسانی را قادر می سازد و دوباره سعی کنید بعد از آن با رفتن به "تنظیمات عمومی" در زیر بخش "تنظیمات برنامه" در کنسول مدیریت است.',
+'Product Key'=>'کلید محصول',
+'Registration'=>'ثبت',
+'Software registration succeeded.'=>'نرم افزار ثبت نام موفق.',
+'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'برای دریافت به روز رسانی نرم افزار از X2Engine، به سایت لطفا از طریق این لینک ثبت نام نمائید کپی X2EngineCRM شما:',
+'For support or sales inquiries, please contact us'=>'برای حمایت یا فروش سوالات با ما تماس بگیرید',
+'If different from Administrator Email'=>'اگر متفاوت از مدیر ایمیل',
+'Intended use of X2EngineCRM, goals, etc.'=>'استفاده از X2EngineCRM، اهداف، و غیره در نظر گرفته شده',
+'Make sure you have an active internet connection. If the problem persists, please contact us'=>'اطمینان حاصل کنید که شما یک اتصال به اینترنت فعال است. اگر مشکل همچنان ادامه دارد، لطفا با ما تماس بگیرید',
+'-----'=>'-----',
+'Sourceforge'=>'سورس',
+'Github'=>'Github',
+'News Outlet'=>'خروجی اخبار',
 
 'Install'=>'نصب کردن',
 
 'For help or more information - X2Engine.com'=>'برای کمک و یا اطلاعات بیشتر - X2Engine.com',
 
-'All Rights Reserved.'=>'همه حقوق محفوظ است.',
 
 // Splash screen
 'Installation Complete!'=>'نصب و راه اندازی کامل!',
@@ -101,4 +70,49 @@ return array (
 'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine با موفقیت نصب شده بر روی سرور وب سایت شما! شما در حال حاضر ممکن است در ورود با نام کاربری "مدیر" و رمز عبور شما را در نصب ارائه شده است.',
 'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'اگر شما تصمیم به نصب از گروه II است، شما می توانید آن را <a href="index.php/gii/"> اینجا </a>.رمز عبور همان رمز عبور خود مدیر است.',
 
+'This directory is not writable by PHP processes run by the webserver.'=>'این دایرکتوری توسط فرآیندهای PHP اجرا شده توسط وب سرور قابل نوشتن نیست.',
+'PHP scripts are not permitted to run the function "chmod".'=>'اسکریپتهای پی اچ پی مجاز نیست برای اجرای تابع &quot;سطح دسترسی&quot;.',
+'Time zone widget will not work'=>'ویجت منطقه زمان کار نخواهد کرد',
+'Contact views may be inaccessible'=>'بازدید از این تماس ممکن است غیر قابل دسترس',
+'Google integration will not work'=>'ادغام گوگل کار نخواهد کرد',
+'Built-in error reporter will not work'=>'ساخته شده در خبرنگار خطا کار نخواهد کرد',
+'The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.'=>'پیکربندی پی اچ پی گزینه &quot;خاموش allow_url_fopen&quot; غیر فعال شده است. CURL خواهد شد برای ساخت تمام درخواست های HTTP در هنگام به روز رسانی استفاده می شود.',
+'This will result in the inability to import and export custom modules.'=>'این کار در ناتوانی به واردات و صادرات ماژول های سفارشی شود.',
+'Image previews and MIME info for uploaded files in the media module will not be available.'=>'پیش نمایش تصویر و اطلاعات MIME پرونده برای فایل های آپلود شده در ماژول رسانه ها در دسترس نخواهد بود.',
+'All other essential requirements were met.'=>'همه سایر الزامات ضروری در جلسه مواجه شدند.',
+'The version of the PCRE library included in this build of PHP is {thisVer}, but {reqVer} or later is required.'=>'نسخه از کتابخانه PCRE در این ساخت از پی اچ پی است {thisVer} ، {reqVer} یا بالاتر مورد نیاز است.',
+'The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will not work.'=>'پیکربندی پی اچ پی گزینه &quot;خاموش allow_url_fopen&quot; علاوه بر گسترش CURL از دست رفته را غیرفعال شده است. این به این معنی است که هیچ راهی ممکن است به درخواست HTTP وجود دارد، و در نتیجه به روز رسانی نرم افزار کار نخواهد کرد.',
+'Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will not work.'=>'سرور به روز رسانی از این وب سرور از دسترس نیست. این ممکن است یک مشکل موقتی است. در صورت تداوم آن، به روز رسانی نرم افزار کار نخواهد کرد.',
+'Could not connect to host or select database.'=>'متصل نشد به میزبان یا انتخاب پایگاه داده.',
+'cannot create tables'=>'می تواند جداول ایجاد کنید',
+'cannot insert data'=>'می تواند داده ها را وارد کنید',
+'cannot delete data'=>'می تواند داده ها را حذف کنید',
+'cannot alter tables'=>'می تواند جداول را تغییر نخواهد داد',
+'cannot drop tables'=>'می تواند جداول قطره کند',
+'Module "{module}" installed.'=>'ماژول &quot; {module} &quot;نصب شده است.',
+'Error applying initial configuration'=>'خطا در استفاده از تنظیمات اولیه',
+'Could not find database configuration script'=>'اسکریپت پیکربندی پایگاه داده را پیدا کند',
+'Could not {stage}. SQL statement "{sql}" from {file} failed'=>'نمی تواند {stage} . بیانیه SQL &quot; {sql} از {file} شکست خورد',
+'Could not {stage}'=>'نمی تواند {stage}',
+'Could not find installation stage database script'=>'مرحله نصب و راه اندازی اسکریپت پایگاه داده را پیدا کند',
+'Database connection error'=>'خطا در اتصال به پایگاه داده',
+'Installation completed {time}.'=>'نصب و راه اندازی کامل {time} .',
+'Able to connect to database'=>'قادر به اتصال به پایگاه داده',
+'Created new tables for X2Engine'=>'جدول جدید ایجاد X2Engine است',
+'Created login for admin account'=>'ورود ایجاد حساب سرپرست',
+'Created config file'=>'فایل پیکربندی ایجاد شده',
+'Next Steps'=>'گام های بعدی',
+'Log in to app'=>'ورود به برنامه',
+'Create new users'=>'ایجاد کاربران جدید',
+'Set location'=>'تنظیم مکان',
+'Explore the app'=>'کاوش نرم افزار',
+'Dropped old X2Engine tables (if any)'=>'جداول X2Engine قدیمی کاهش یافته است (در صورت وجود)',
+'Set up Cron Job to deal with action reminders (see readme)'=>'تنظیم برنامه cron برای مقابله با یادآوری عمل (نگاه کنید به صفحهی راهنمای ترجمهها)',
+'The path defined in session.save_path ({ssp}) is not writable. Uploading files via the media module will not work.'=>'مسیر تعریف شده در session.save_path ( {ssp} ) قابل نوشتن نیست. آپلود فایل از طریق ماژول رسانه ها کار نخواهد کرد.',
+'The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2CRM, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.'=>'«openssl&quot; و &quot;mcrypt&quot; کتابخانه ها در دسترس نیست. اگر هر گونه اعتبار نرم افزار (به عنوان مثال ایمیل رمز عبور حساب) به X2CRM وارد شده، آنها را در پایگاه داده را در متن ساده (بدون هیچ رمزگذاری آنچه) ذخیره می شود. بنابراین، اگر پایگاه داده است که همیشه به خطر بیافتد، آن کلمه عبور خواهد بود قابل خواندن توسط اشخاص غیر مجاز است.',
+'Connection successful!'=>'اتصال موفقیت آمیز!',
+'This webserver can run X2CRM!'=>'این وب سرور می تواند اجرا شود X2CRM!',
+'Permissions and/or ownership of uploaded files do not permit PHP processes run by the webserver to write files.'=>'مجوز و / یا مالکیت فایل های آپلود شده پروسه های پی اچ پی اجرا شده توسط وب سرور برای نوشتن فایل را اجازه نمی دهد.',
+'The function proc_open and/or the "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.'=>'تابع proc_open و / یا &quot;mysqldump&quot; و &quot;مای&quot; خط فرمان آب و برق در این سیستم در دسترس نیست. X2CRM قادر نخواهد بود به طور خودکار یک نسخه ی پشتیبان از بانک اطلاعاتی خود را در به روز رسانی نرم افزار، و یا به طور خودکار بازگرداندن پایگاه داده خود را در صورت به روز رسانی شکست خورده است.',
+'Security captchas will not work, and the media module will not be able to detect or display the dimensions of uploaded images.'=>'پازل captcha امنیتی به کار نخواهد کرد، و ماژول رسانه ها نخواهد بود قادر به تشخیص و یا صفحه نمایش ابعاد تصاویر آپلود.',
 );

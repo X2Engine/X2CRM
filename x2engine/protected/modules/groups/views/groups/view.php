@@ -35,11 +35,11 @@
  *****************************************************************************************/
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>'Manage Groups', 'url'=>array('index')),
-	array('label'=>'Create Group', 'url'=>array('create')),
-	array('label'=>'View'),
-	array('label'=>'Update Group', 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>'Delete Group', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+	array('label'=>Yii::t('groups','Group List'), 'url'=>array('index')),
+	array('label'=>Yii::t('groups','Create Group'), 'url'=>array('create')),
+	array('label'=>Yii::t('groups','View')),
+	array('label'=>Yii::t('groups','Update Group'), 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('groups','Delete Group'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 ));
 ?>
 <div class="page-title icon groups">

@@ -34,9 +34,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<h2><center><?php echo Yii::t('settings','Side Panel Settings'); ?></center></h2>
+<h2><center><?php echo Yii::t('app','Side Panel Settings'); ?></center></h2>
 <center><p>Below you see a listing of all potential widgets to be shown on the side panel. Please use this listing for setting your desired configurations of the side panel.</p></center>
-<?php 
+<?php
 $this->widget('zii.widgets.grid.CGridView',array(
     'id'=>'dashboard-grid',
     'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css',

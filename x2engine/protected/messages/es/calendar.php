@@ -1,41 +1,5 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-'Calendar'=>'Calendario',
 'Calendars'=>'Calendarios',
 // // 
 'User Calendars'=>'Calendario de Usuario',
@@ -45,27 +9,24 @@ return array (
 'My Calendar Permissions'=>'Permisos de Mi Calendario',
 'User Calendar Permissions'=>'Permisos de Calendario de Usuario',
 'Google Event'=>'Evento Google',
-'Contacts'=>'Contactos',
-'Accounts'=>'Cuentas',
-'Opportunities'=>'Oportunidades',
-'Products'=>'Productos',
-'Media'=>'Medios de Comunicación',
 'View Permission'=>'Ver Permisos',
 'These users can view your calendar.'=>'Estos usuarios pueden ver su calendario.',
 'Edit Permission'=>'Editar Permisos',
 'These users can edit your calendar.'=>'Estos usuarios pueden editar su calendario.',
+'Sync My Actions To Google Calendar'=>'Sincronizar mis acciones Google Calendar',
+'Show Actions associated with Contacts'=>'Mostrar acciones asociadas con los contactos',
+'Show Actions associated with Accounts'=>'Mostrar acciones asociadas a las cuentas',
+'Show Actions associated with Opportunities'=>'Mostrar acciones asociadas a las oportunidades',
+'Show Actions associated with Quotes'=>'Mostrar acciones asociadas a Quotes',
+'Show Actions associated with Products'=>'Mostrar acciones asociadas a los productos',
+'Show Actions associated with Media'=>'Mostrar acciones relacionadas con los medios de comunicación',
+'Show Completed Actions'=>'Mostrar acciones completadas',
+'Show Emails'=>'Mostrar mensajes de correo electrónico',
+'Show Attachments'=>'Mostrar Adjuntos',
 // // 
-'Completed'=>'Terminado',
-'Quotes'=>'Cotizaciones',
-'Email'=>'E-mail',
 'Attachment'=>'Adjunto',
 // // 
-'List'=>'Lista',
-'Delete'=>'Borrar',
-'Create'=>'Crear',
 // // button text
-'Update'=>'Actualizar',
-'today'=>'hoy',
 'month'=>'mes',
 'week'=>'semana',
 'day'=>'día',
@@ -75,7 +36,7 @@ return array (
 'February'=>'Febrero',
 'March'=>'Marzo',
 'April'=>'Abril',
-'May'=>'Mayo',
+'May'=>'May',
 'June'=>'Junio',
 'July'=>'Julio',
 'August'=>'Agosto',
@@ -115,4 +76,92 @@ return array (
 'Thu'=>'Ju',
 'Fri'=>'Vi',
 'Sat'=>'Sa',
+'Create Shared Calendar'=>'Crear calendario compartido',
+'Don\'t link to Google Calendar'=>'T vínculo Don \ &#39;a Google Calendar',
+'Link to Google Calendar'=>'Enlace a Google Calendar',
+'Back To User List'=>'Volver a la lista de usuarios',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'Sus acciones se están sincronizando con el Google Calendar &quot; {calendarName} &quot;.',
+'Don\'t Sync My Actions To Google Calendar'=>'Don \ &#39;t sincronizar mis acciones a Google Calendar',
+'Google Integration is not configured on this server.'=>'Integración de Google no está configurado en este servidor.',
+'Once'=>'Una vez',
+'Yearly'=>'Anual',
+'Google Calendar'=>'Google Calendar',
+'Google Feed'=>'Google RSS',
+'Google Calendar Name'=>'Google Calendar',
+'View Association'=>'Ver Asociación',
+'User Calendars'=>'Calendarios usuario',
+'Filter'=>'Filtrar',
+'Show Actions associated with Contacts'=>'Mostrar acciones asociadas con los contactos',
+'Show Actions associated with Accounts'=>'Mostrar acciones asociadas a las cuentas',
+'Show Actions associated with Opportunities'=>'Mostrar acciones asociadas a las oportunidades',
+'Show Actions associated with Quotes'=>'Mostrar acciones asociadas a Quotes',
+'Show Actions associated with Products'=>'Mostrar acciones asociadas a los productos',
+'Show Actions associated with Media'=>'Mostrar acciones relacionadas con los medios de comunicación',
+'Show Completed Actions'=>'Mostrar acciones completadas',
+'Show Emails'=>'Mostrar mensajes de correo electrónico',
+'Show Attachments'=>'Mostrar Adjuntos',
+'Group Calendars'=>'Calendarios de grupo',
+'Google Calendars'=>'Google Calendarios',
+'My Calendar Permissions'=>'Mis Calendario Permisos',
+'Sync My Actions To Google Calendar'=>'Sincronizar mis acciones Google Calendar',
+'Create Shared Calendar'=>'Crear calendario compartido',
+'Don\'t link to Google Calendar'=>'T vínculo Don \ &#39;a Google Calendar',
+'Link to Google Calendar'=>'Enlace a Google Calendar',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'Sus acciones se están sincronizando con el Google Calendar &quot; {calendarName} &quot;.',
+'Don\'t Sync My Actions To Google Calendar'=>'Don \ &#39;t sincronizar mis acciones a Google Calendar',
+'Google Integration is not configured on this server.'=>'Integración de Google no está configurado en este servidor.',
+'User Calendar Permissions'=>'Calendario de usuario Permisos',
+'Google Event'=>'Google Evento',
+'month'=>'mes',
+'week'=>'semana',
+'day'=>'día',
+'January'=>'Enero',
+'February'=>'Febrero',
+'March'=>'Marzo',
+'April'=>'Abril',
+'May'=>'Mayo',
+'June'=>'Junio',
+'July'=>'Julio',
+'August'=>'Agosto',
+'September'=>'Septiembre',
+'October'=>'Octubre',
+'November'=>'Noviembre',
+'December'=>'Diciembre',
+'Jan'=>'Ene',
+'Feb'=>'Febrero',
+'Mar'=>'Estropear',
+'Apr'=>'Abril',
+'Jun'=>'Junio',
+'Jul'=>'Julio',
+'Aug'=>'Agosto',
+'Sep'=>'Septiembre',
+'Oct'=>'Octubre',
+'Nov'=>'Noviembre',
+'Dec'=>'Diciembre',
+'Sunday'=>'Domingo',
+'Monday'=>'Lunes',
+'Tuesday'=>'Martes',
+'Wednesday'=>'Miércoles',
+'Thursday'=>'Jueves',
+'Friday'=>'Viernes',
+'Saturday'=>'Sábado',
+'Sun'=>'Sol',
+'Mon'=>'Mon',
+'Tue'=>'Mar',
+'Wed'=>'Casarse',
+'Thu'=>'Jue',
+'Fri'=>'Vie',
+'Sat'=>'Sáb',
+'View Permission'=>'Ver Permiso',
+'These users can view {fullname}\'s calendar.'=>'Estos usuarios pueden ver las {fullname} \ &#39;s calendario.',
+'Edit Permission'=>'Editar Permiso',
+'These users can edit {fullname}\'s calendar.'=>'Estos usuarios pueden editar el {fullname} \ &#39;s calendario.',
+'Back To User List'=>'Volver a la lista de usuarios',
+'These users can view your calendar.'=>'Estos usuarios pueden ver su calendario.',
+'These users can edit your calendar.'=>'Estos usuarios pueden editar el calendario.',
+'Google Calendar'=>'Google Calendar',
+'Google Feed'=>'Google RSS',
+'Google Calendar Name'=>'Google Calendar',
+'Once'=>'Una vez',
+'Yearly'=>'Anual',
 );

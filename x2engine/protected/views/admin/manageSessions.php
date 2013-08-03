@@ -48,25 +48,25 @@ $this->widget('zii.widgets.grid.CGridView', array(
         'IP',
         array(
             'name'=>'lastUpdated',
-            'header'=>'Last Activity',
+            'header'=>Yii::t('admin','Last Activity'),
             'type'=>'raw',
             'value'=>'Formatter::formatCompleteDate($data->lastUpdated)',
         ),
         array(
             'name'=>'status',
-            'header'=>'Status',
+            'header'=>Yii::t('admin','Status'),
             'type'=>'raw',
             'value'=>'$data->status==1?"Active":"Invisible"',
         ),
         array(
-            'header'=>'Toggle Invisible',
+            'header'=>Yii::t('admin','Toggle Invisible'),
             'type'=>'raw',
-            'value'=>"CHtml::link('Toggle','#',array('class'=>'x2-button toggle-session', 'id'=>\$data->id))"
+            'value'=>"CHtml::link(Yii::t('admin','Toggle'),'#',array('class'=>'x2-button toggle-session', 'id'=>\$data->id))"
         ),
         array(
-            'header'=>'End Session',
+            'header'=>Yii::t('admin','End Session'),
             'type'=>'raw',
-            'value'=>"CHtml::link('End','#',array('class'=>'x2-button end-session', 'title'=>\$data->id))"
+            'value'=>"CHtml::link(Yii::t('admin','End'),'#',array('class'=>'x2-button end-session', 'title'=>\$data->id))"
         ),
 	),
 ));
@@ -74,7 +74,7 @@ Yii::app()->clientScript->registerScript('session-controls','
 $(document).on("click",".toggle-session",function(e){
     e.preventDefault();
     var link=this;
-    if(confirm("Are you sure you want to toggle this session?")){
+    if(confirm('.Yii::t('admin',"Are you sure you want to toggle this session?").')){
         $.ajax({
             url:"toggleSession?id="+$(this).attr("id"),
             success:function(data){
@@ -86,12 +86,12 @@ $(document).on("click",".toggle-session",function(e){
             }
         });
     }
-});    
+});
 
 $(document).on("click",".end-session",function(e){
     e.preventDefault();
     var link=this;
-    if(confirm("Are you sure you want to end this session?")){
+    if(confirm('.Yii::t('admin',"Are you sure you want to end this session?").')){
         $.ajax({
             url:"endSession?id="+$(this).attr("title"),
             success:function(){
@@ -99,6 +99,6 @@ $(document).on("click",".end-session",function(e){
             }
         });
     }
-});  
+});
 ');
 ?>

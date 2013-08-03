@@ -52,22 +52,9 @@ abstract class BaseTagTrigger extends X2FlowTrigger {
 	}
 
 	public function check(&$params) {
-		$tags = Tags::parseTags($this->config['options']['tags']['value']);
-		$intersect = count(array_intersect($params['tags'],$tags));	// number of tags in both $params and $tags
-		
-		switch($this->config['options']['tags']['operator']) {
-			case '=':
-				$result = $intersect === count($tags);	// record must have every tag in $tags
-				break;
-			case 'list':
-				$result = $intersect > 0;	// must have at least 1 tag
-				break;
-			case 'notList':
-				$result = $intersect === 0;	// must have none
-				break;
-		}
-		if(!$result)
-			return false;
-		return $this->checkConditions($params);
+		$tags = $this->config['options']['tags'];
+		$tags = is_array($tags) ? $tags : Tags::parseTags($tags);
+		// must have at least 1 tag in the list:
+		return count(array_intersect($params['tags'],$tags)) > 0 ? $this->checkConditions($params) : false;
 	}
 }

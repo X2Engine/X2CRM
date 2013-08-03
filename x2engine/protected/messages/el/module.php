@@ -1,17 +1,6 @@
 <?php
 return array (
-// Attributes
-'ID'=>'Κώδ.',
-'Assigned To'=>'Διευθετείται Από',
-'Name'=>'Όνομα',
-'Description'=>'Περιγραφή',
-'Create Date'=>'Ημ/νία Καταχώρησης',
-'Last Updated'=>'Τελευταία Ενημέρωση',
-'Updated By'=>'Ενημερώθηκε Από',
-
 'Data fields'=>'Πεδία Δεδομένων',
-'Show'=>'Προβολή',
-'Hide'=>'Απόκρυψη',
 'Module Title'=>'Τίτλος Μονάδας',
 'The name for your new module'=>'Όνομα για την νέα μονάδα',
 'Item Name'=>'Όνομα Στοιχείου',
@@ -25,10 +14,6 @@ return array (
 'Create {X}'=>'Δημιουργία {X}',
 'Update {X}'=>'Ενημέρωση {X}',
 'Delete {X}'=>'Διαγραφή {X}',
-'View'=>'Προβολή',
-'Create'=>'Δημιουργία',
-'Update'=>'Ενημέρωση',
-'Delete'=>'Διαγραφή',
 
 // Page Titles
 'Create New Module'=>'Δημιουργία Νέας Μονάδας',
@@ -42,4 +27,5 @@ return array (
 // Misc
 'Please fill out the fields below to create a new module.'=>'Συμπληρώστε τα πεδία πιο κάτω για να δημιουργηθεί νέα μονάδα.',
 'Enter field name here'=>'Συμπληρώστε το όνομα πεδίου εδώ',
+'A module with that name already exists'=>'Μια ενότητα με αυτό το όνομα υπάρχει ήδη',
 );

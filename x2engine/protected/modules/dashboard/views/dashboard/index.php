@@ -35,9 +35,9 @@
  *****************************************************************************************/
 $this->menu=array(array('label'=>'Dashboard', 'url'=>array('admin')));
 ?>
-<h2><center><?php echo Yii::t('settings','Side Panel Settings'); ?></center></h2>
+<h2><center><?php echo Yii::t('app','Side Panel Settings'); ?></center></h2>
 <center><p>Below you see a listing of all potential widgets to be shown on the side panel. Please use this listing for setting your desired configurations of the side panel.</p></center>
-<?php 
+<?php
 $dataP = new Dashboard();
 $DPRO = $dataP->search('sp');
 $this->widget('zii.widgets.grid.CGridView',array(

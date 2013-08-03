@@ -1,41 +1,5 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-'Calendar'=>'تقویم',
 'Calendars'=>'تقویم ها',
 // // 
 'User Calendars'=>'تقویم های کاربران',
@@ -45,27 +9,24 @@ return array (
 'My Calendar Permissions'=>'دسترسیهای تقویم من',
 'User Calendar Permissions'=>'دسترسیهای تقویم کاربران',
 'Google Event'=>'رویداد گوگل',
-'Contacts'=>'مخابرات',
-'Accounts'=>'حساب',
-'Opportunities'=>'فرصت',
-'Products'=>'محصولات',
-'Media'=>'رسانه ها',
 'View Permission'=>'نمایش و ویرایش',
 'These users can view your calendar.'=>'این کاربران می توانید تقویم خود را مشاهده کنید.',
 'Edit Permission'=>'ویرایش اجازه',
 'These users can edit your calendar.'=>'این کاربران می توانند از تقویم های خود را ویرایش کنید.',
+'Sync My Actions To Google Calendar'=>'همگام سازی عملیات من به Google Calendar',
+'Show Actions associated with Contacts'=>'نمایش عملیات مرتبط با تماس با ما',
+'Show Actions associated with Accounts'=>'نمایش عملیات مرتبط با حساب',
+'Show Actions associated with Opportunities'=>'نمایش عملیات در ارتباط با فرصت های',
+'Show Actions associated with Quotes'=>'نمایش عملیات همراه با نقل قول',
+'Show Actions associated with Products'=>'نمایش عملیات مرتبط با محصولات',
+'Show Actions associated with Media'=>'نمایش عملیات در ارتباط با رسانه ها',
+'Show Completed Actions'=>'نمایش عملیات انجام شده',
+'Show Emails'=>'نمایش ایمیل',
+'Show Attachments'=>'نمایش فایل های پیوست',
 // // 
-'Completed'=>'تکمیل',
-'Quotes'=>'نقل قول',
-'Email'=>'ای-نامه',
 'Attachment'=>'پیوست',
 // // 
-'List'=>'فهرست',
-'Delete'=>'حذف',
-'Create'=>'جدید',
 // // button text
-'Update'=>'بروز رسانی',
-'today'=>'امروز',
 'month'=>'ماه',
 'week'=>'هفته',
 'day'=>'روز',
@@ -115,4 +76,92 @@ return array (
 'Thu'=>'Thu',
 'Fri'=>'Fri',
 'Sat'=>'Sat',
+'Create Shared Calendar'=>'ایجاد تقویم به اشتراک گذاشته شده',
+'Don\'t link to Google Calendar'=>'دان \ &#39;تی لینک به Google Calendar',
+'Link to Google Calendar'=>'پیوند به Google Calendar',
+'Back To User List'=>'برگشت به لیست کاربر',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'اقدامات خود را به تقویم گوگل &quot;در حال همگام سازی {calendarName} &quot;.',
+'Don\'t Sync My Actions To Google Calendar'=>'دان \ &#39;تی همگام سازی عملیات من به Google Calendar',
+'Google Integration is not configured on this server.'=>'گوگل ادغام شده است بر روی این سرور پیکربندی نشده است.',
+'Once'=>'هنگامی که',
+'Yearly'=>'سالیانه',
+'Google Calendar'=>'تقویم گوگل',
+'Google Feed'=>'خوراک گوگل',
+'Google Calendar Name'=>'تقویم گوگل نام',
+'View Association'=>'مشاهده انجمن',
+'User Calendars'=>'تقویم کاربر',
+'Filter'=>'فیلتر',
+'Show Actions associated with Contacts'=>'نمایش عملیات مرتبط با تماس با ما',
+'Show Actions associated with Accounts'=>'نمایش عملیات مرتبط با حساب',
+'Show Actions associated with Opportunities'=>'نمایش عملیات در ارتباط با فرصت های',
+'Show Actions associated with Quotes'=>'نمایش عملیات همراه با نقل قول',
+'Show Actions associated with Products'=>'نمایش عملیات مرتبط با محصولات',
+'Show Actions associated with Media'=>'نمایش عملیات در ارتباط با رسانه ها',
+'Show Completed Actions'=>'نمایش عملیات انجام شده',
+'Show Emails'=>'نمایش ایمیل',
+'Show Attachments'=>'نمایش فایل های پیوست',
+'Group Calendars'=>'تقویم گروه',
+'Google Calendars'=>'تقویم گوگل',
+'My Calendar Permissions'=>'تقویم من و ویرایش',
+'Sync My Actions To Google Calendar'=>'همگام سازی عملیات من به Google Calendar',
+'Create Shared Calendar'=>'ایجاد تقویم به اشتراک گذاشته شده',
+'Don\'t link to Google Calendar'=>'دان \ &#39;تی لینک به Google Calendar',
+'Link to Google Calendar'=>'پیوند به Google Calendar',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'اقدامات خود را به تقویم گوگل &quot;در حال همگام سازی {calendarName} &quot;.',
+'Don\'t Sync My Actions To Google Calendar'=>'دان \ &#39;تی همگام سازی عملیات من به Google Calendar',
+'Google Integration is not configured on this server.'=>'گوگل ادغام شده است بر روی این سرور پیکربندی نشده است.',
+'User Calendar Permissions'=>'تقویم کاربر و ویرایش',
+'Google Event'=>'گوگل رویداد',
+'month'=>'ماه',
+'week'=>'هفته',
+'day'=>'روز',
+'January'=>'ژانویه',
+'February'=>'فوریه',
+'March'=>'مارس',
+'April'=>'آوریل',
+'May'=>'مه',
+'June'=>'ژوئن',
+'July'=>'جولای',
+'August'=>'همایون',
+'September'=>'سپتامبر',
+'October'=>'اکتبر',
+'November'=>'نوامبر',
+'December'=>'دسامبر',
+'Jan'=>'ژان',
+'Feb'=>'فوریه',
+'Mar'=>'ضایع کردن',
+'Apr'=>'آوریل',
+'Jun'=>'ژوئن',
+'Jul'=>'ژوئیه',
+'Aug'=>'اوت',
+'Sep'=>'سپتامبر',
+'Oct'=>'اکتبر',
+'Nov'=>'نوامبر',
+'Dec'=>'دسامبر',
+'Sunday'=>'یکشنبه',
+'Monday'=>'دوشنبه',
+'Tuesday'=>'سهشنبه',
+'Wednesday'=>'چهار شنبه',
+'Thursday'=>'پنج شنبه',
+'Friday'=>'جمعه',
+'Saturday'=>'روز شنبه',
+'Sun'=>'خورشید',
+'Mon'=>'دوشنبه',
+'Tue'=>'سه شنبه',
+'Wed'=>'بحباله نکاح در اوردن',
+'Thu'=>'سه شنبه',
+'Fri'=>'پنج شنبه',
+'Sat'=>'شنبه',
+'View Permission'=>'نمایش اجازه',
+'These users can view {fullname}\'s calendar.'=>'این کاربران می توانند مشاهده و تقویم {fullname} \ &#39;.',
+'Edit Permission'=>'ویرایش اجازه',
+'These users can edit {fullname}\'s calendar.'=>'این کاربران می توانند ویرایش {fullname} تقویم \ &#39;.',
+'Back To User List'=>'برگشت به لیست کاربر',
+'These users can view your calendar.'=>'این کاربران می توانید تقویم خود را ببینید.',
+'These users can edit your calendar.'=>'این کاربران می توانید تقویم خود را ویرایش کنید.',
+'Google Calendar'=>'تقویم گوگل',
+'Google Feed'=>'خوراک گوگل',
+'Google Calendar Name'=>'تقویم گوگل نام',
+'Once'=>'هنگامی که',
+'Yearly'=>'سالیانه',
 );

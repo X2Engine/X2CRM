@@ -52,6 +52,10 @@ class ApiControllerSecurityTest extends CURLTestCase {
 		'users' => 'User',
 	);
 
+	public static function referenceFixtures(){
+		return array();
+	}
+
 	/**
 	 * Starting template for data parameters (GET or POST or otherwise)
 	 * @var type 
@@ -78,7 +82,6 @@ class ApiControllerSecurityTest extends CURLTestCase {
 	}
 	
 	public function testAuthenticate() {
-		$alias200 = array(400,401,403,500,501);
 		// This filter should be run before the validModel filter and hence,
 		// it's safe to assume that a response code of 400 when requesting 
 		// with an empty model parameter means that authentication succeeded.
@@ -89,20 +92,18 @@ class ApiControllerSecurityTest extends CURLTestCase {
 		// request, so put something in the sending parameters)
 		$param = array('foo'=>1);
 		$ch = $this->getCurlHandle($urlParam,$param);
-		curl_setopt($ch,CURLOPT_HTTP200ALIASES,$alias200);
 		$response = curl_exec($ch);
 //		file_put_contents('api_response.html',$response);
-		$this->assertEquals(401,curl_getinfo($ch,CURLINFO_HTTP_CODE));
+		$this->assertResponseCodeIs(401,$ch);
 		$this->assertRegExp('/No user credentials provided/',$response);
 
 		// Test with invalid user:
 		$param = $this->param;
 		$param['user'] = 'idonotexist';
 		$ch = $this->getCurlHandle($urlParam,$param);
-		curl_setopt($ch,CURLOPT_HTTP200ALIASES,$alias200);
 		$response = curl_exec($ch);
-//		file_put_contents('api_response.html',$response);
-		$this->assertEquals(401,curl_getinfo($ch,CURLINFO_HTTP_CODE));
+		file_put_contents('api_response.html',$response);
+		$this->assertResponseCodeIs(401,$ch,'Response is not what is expected for there being an invalid user');
 		$this->assertRegExp('/Invalid user credentials/',$response);
 		
 		// Test user with empty API key
@@ -112,10 +113,9 @@ class ApiControllerSecurityTest extends CURLTestCase {
 		$param = $this->param;
 		$param['userKey'] = '';
 		$ch = $this->getCurlHandle($urlParam,$param);
-		curl_setopt($ch,CURLOPT_HTTP200ALIASES,$alias200);
 		$response = curl_exec($ch);
 //		file_put_contents('api_response.html',$response);
-		$this->assertEquals(403,curl_getinfo($ch,CURLINFO_HTTP_CODE));
+		$this->assertResponseCodeIs(403,$ch);
 		$this->assertRegExp('/cannot use API; userKey not set/',$response);
 
 		// Test access permissions:
@@ -143,13 +143,11 @@ class ApiControllerSecurityTest extends CURLTestCase {
 	}
 	
 	public function testValidModel() {
-		$alias200 = array(400,401,403,404,500,501);
 		$urlParam = $this->urlParam;
 		$urlParam['{action}'] = 'create';
 		
 		// Missing model parameter
 		$ch = $this->getCurlHandle($urlParam,$this->param);
-		curl_setopt($ch,CURLOPT_HTTP200ALIASES,$alias200);
 		$response = curl_exec($ch);
 //		file_put_contents('api_response.html',$response);
 		$this->assertEquals(400, curl_getinfo($ch,CURLINFO_HTTP_CODE));
@@ -157,7 +155,6 @@ class ApiControllerSecurityTest extends CURLTestCase {
 		// Model class doesn't exist
 		$urlParam['{model}'] = 'CockadoodleDoo';
 		$ch = $this->getCurlHandle($urlParam,$this->param);
-		curl_setopt($ch,CURLOPT_HTTP200ALIASES,$alias200);
 		$response = curl_exec($ch);
 //		file_put_contents('api_response.html',$response);
 		$this->assertEquals(501, curl_getinfo($ch,CURLINFO_HTTP_CODE));
@@ -165,7 +162,6 @@ class ApiControllerSecurityTest extends CURLTestCase {
 		// Model class exists but isn't a child of X2Model
 		$urlParam['{model}'] = 'Admin'; // Nobody should be able to change this!
 		$ch = $this->getCurlHandle($urlParam,$this->param);
-		curl_setopt($ch,CURLOPT_HTTP200ALIASES,$alias200);
 		$response = curl_exec($ch);
 //		file_put_contents('api_response.html',$response);
 		$this->assertEquals(403, curl_getinfo($ch,CURLINFO_HTTP_CODE));
@@ -173,11 +169,12 @@ class ApiControllerSecurityTest extends CURLTestCase {
 
 	public function testListUsers() {
 		$this->_urlFormat = 'api/listUsers';
-		$alias200 = array(400,401,403,404,500,501);
 		$urlParam = array();
+		$this->users('testUser')->refresh();
+		$this->param['user'] = $this->users('testUser')->username;
+		$this->param['userKey'] = $this->users('testUser')->userKey;
 		// First test retrieving user list with nonprivileged user:
 		$ch = $this->getCurlHandle($urlParam,$this->param);
-		curl_setopt($ch,CURLOPT_HTTP200ALIASES,$alias200);
 		$list = CJSON::decode(curl_exec($ch));
 		$this->assertEquals('array',gettype($list),'Failed asserting API responded with valid JSON');
 		foreach($list as $user) {
@@ -186,10 +183,9 @@ class ApiControllerSecurityTest extends CURLTestCase {
 			}
 		}
 		// Now test getting with admin user (WARNING: will respond with API keys!)
-		$this->param['user'] = 'admin';
-		$this->param['userKey'] = '21232f297a57a5a743894a0e4a801fc3';
+		$this->param['user'] = $this->users('admin')->username;
+		$this->param['userKey'] = $this->users('admin')->userKey;
 		$ch = $this->getCurlHandle($urlParam,$this->param);
-		curl_setopt($ch,CURLOPT_HTTP200ALIASES,$alias200);
 		$list = CJSON::decode(curl_exec($ch));
 		$this->assertEquals('array',gettype($list),'Failed asserting API responded with valid JSON');
 		foreach($list as $user) {

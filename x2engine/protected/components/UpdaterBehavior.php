@@ -197,7 +197,7 @@ class UpdaterBehavior extends ResponseBehavior {
 	/**
 	 * Base URL of the web server from which to fetch data and files
 	 */
-	public $updateServer = 'http://x2planet.com/';
+	public $updateServer = 'https://x2planet.com';
 
 	/**
 	 * Version of X2CRM.
@@ -321,7 +321,7 @@ class UpdaterBehavior extends ResponseBehavior {
 	public function downloadSourceFile($file,$route=null,$maxAttempts = 5) {
 		if(empty($route)) // Auto-construct a route based on ID & edition info:
 			$route = $this->sourceFileRoute;
-		$fileUrl = "{$this->updateServer}{$route}/". strtr($file,array(' '=>'%20',"\\"=>'/'));
+		$fileUrl = "{$this->updateServer}/{$route}/". strtr($file,array(' '=>'%20',"\\"=>'/'));
 		$i = 0;
 		if ($file != "") {
 			$target = FileUtil::relpath($this->webRoot . "/temp/" . $file, $this->thisPath.'/');
@@ -511,7 +511,7 @@ class UpdaterBehavior extends ResponseBehavior {
 							$dbRestoreMessage = Yii::t('admin', 'The database has been restored to the backup copy.');
 						} else { // No recovery available; print messages instead
 							if ((bool) realpath($this->dbBackupPath)) // Backup available
-								$dbRestoreMessage = Yii::t('admin', 'To restore the database to its previous state, use the database dump file {file} stored in protected/data', array('{file}'=>self::BAKFILE));
+								$dbRestoreMessage = Yii::t('admin', 'To restore the database to its previous state, use the database dump file {file} stored in {dir}', array('{file}'=>self::BAKFILE,'{dir}'=>'protected/data'));
 							else // No backup available
 								$dbRestoreMessage = Yii::t('admin','If you made a backup of the database before running the updater, you will need to apply it manually.');
 						}
@@ -664,7 +664,7 @@ class UpdaterBehavior extends ResponseBehavior {
 			'http' => array(
 				'timeout' => 15  // Timeout in seconds
 				)));
-		return FileUtil::getContents('http://x2planet.com/installs/updates/versionCheck', 0, $context);
+		return FileUtil::getContents($this->updateServer.'/installs/updates/versionCheck', 0, $context);
 	}
 
 	/**
@@ -677,7 +677,7 @@ class UpdaterBehavior extends ResponseBehavior {
 			'http' => array(
 				'timeout' => 15  // Timeout in seconds
 				)));
-		return FileUtil::getContents($this->updateServer.'installs/updates/versionCheck', 0, $context);
+		return FileUtil::getContents($this->updateServer.'/installs/updates/versionCheck', 0, $context);
 	}
 
 	/**
@@ -736,7 +736,7 @@ class UpdaterBehavior extends ResponseBehavior {
 	 * Retrieves update data from the server.
 	 */
 	public function getUpdateData() {
-		$updateData = FileUtil::getContents($this->updateServer.$this->updateDataRoute);
+		$updateData = FileUtil::getContents($this->updateServer.'/'.$this->updateDataRoute);
 		if($updateData)
 			$updateData = CJSON::decode($updateData);
 		return $updateData;
@@ -900,7 +900,7 @@ class UpdaterBehavior extends ResponseBehavior {
 	}
 
 	/**
-	 * Rebuilds the configuration file.
+	 * Rebuilds the configuration file and performs the final few little update tasks.
 	 * 
 	 * @param type $newversion If set, change the version to this value in the resulting config file
 	 * @param type $newupdaterVersion If set, change the updater version to this value in the resulting config file
@@ -968,6 +968,9 @@ class UpdaterBehavior extends ResponseBehavior {
 					throw new Exception(Yii::t('admin',"Succeeded in setting the version info in the configuration, but failed to create a secure encryption key. The error message was: {message}",array('{message}'=>$e->getMessage())));
 				}
 			}
+			// Set permissions on encryption
+			$this->configPermissions = 100600;
+			// Finally done.
 			return true;
 		}
 	}
@@ -1108,6 +1111,20 @@ class UpdaterBehavior extends ResponseBehavior {
 	}
 
 	/**
+	 * Magic setter that changes the file permissions of sensitive files in
+	 * protected/config
+	 * @param type $value
+	 */
+	public function setConfigPermissions($value){
+		$mode = is_int($value) ? octdec($value) : octdec((int) "100$value");
+		foreach(array('encryption.key','encryption.iv') as $file) {
+			$path = Yii::app()->basePath."/config/$file";
+			if(file_exists($path))
+				chmod($path,$mode);
+		}
+	}
+
+	/**
 	 * Exits, returning SQL error messages
 	 * 
 	 * @param type $sqlRun
@@ -1207,7 +1224,7 @@ class UpdaterBehavior extends ResponseBehavior {
 		// Try to retrieve the files:
 		$failed2Retrieve = array();
 		foreach ($updaterFiles as $file) {
-			$remoteFile = $this->updateServer.$this->sourceFileRoute."/protected/$file";
+			$remoteFile = $this->updateServer.'/'.$this->sourceFileRoute."/protected/$file";
 			try {
 				$this->downloadSourceFile("protected/$file");
 			} catch (Exception $e) {

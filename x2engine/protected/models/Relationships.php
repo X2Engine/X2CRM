@@ -73,9 +73,11 @@ class Relationships extends CActiveRecord
 		return array(
 			array('firstId, secondId', 'numerical', 'integerOnly'=>true),
 			array('firstType, secondType', 'length', 'max'=>100),
+			array('firstType,secondType', 'linkables','on'=>'api'),
+			array('firstType,firstId, secondType, secondId','required','on'=>'api'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, firstType, firstId, secondType, secondId', 'safe', 'on'=>'search'),
+			array('id, firstType, firstId, secondType, secondId', 'safe', 'on'=>'search,api'),
 		);
 	}
 
@@ -156,5 +158,27 @@ class Relationships extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+
+	/**
+	 * 
+	 */
+	public function linkables($attribute, $params) {
+		if(!class_exists($this->$attribute))
+			$this->addError($attribute,Yii::t('app','Class "{class}" specified for {attribute} does not exist, so cannot create relationships with it.',array('{class}'=>$this->$attribute)));
+		// See if the active record class has the linkable behavior:
+		$staticModel = CActiveRecord::model($this->$attribute);
+		$has = false;
+		foreach($staticModel->behaviors() as $name=>$config){
+			if($config['class'] == 'X2LinkableBehavior'){
+				$has = true;
+				break;
+			}
+		}
+		if(!$has)
+			$this->addError($attribute,Yii::t('app','Class "{class}" specified for {attribute} does not have X2LinkableBehavior, and thus cannot be used with relationships.',array('{class}'=>$this->$attribute)));
+		$model = $staticModel->findByPk($attribute=='firstType' ? $this->firstId : $this->secondId);
+		if(!$model)
+			$this->addError($attribute,Yii::t('app','Model record not found for {attribute}.'));
 	}
 }

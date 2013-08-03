@@ -54,14 +54,16 @@ class GMailAccount extends EmailAccount {
 	public $server = 'smtp.gmail.com';
 	public $user = '';
 
-	protected $_attributeLabels = array(
-		'senderName' => 'Sender Name',
-		'email' => 'Google ID',
-		'password' => 'Password',
-	);
+	public function attributeLabels(){
+		return array(
+			'senderName' => Yii::t('app','Sender Name'),
+			'email' => Yii::t('app','Google ID'),
+			'password' => Yii::t('app','Password'),
+		);
+	}
 
 	public function modelLabel() {
-		return Yii::t('app','GMail Account');
+		return Yii::t('app','Google Email Account');
 	}
 
 	public function renderInputs(){

@@ -1,71 +1,13 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Action Attributes
-'ID'=>'شناسایی',
-'Assigned To'=>'واگذار شده به',
 'Action Description'=>'شرح اقدام',
-'Description'=>'شرح',
-'Visibility'=>'پدیداری',
-'Association'=>'مرتبط',
-'Association Type'=>'نوع مرتبط',
-'Association Name'=>'نام مرتبط',
 'Due Date'=>'از تاریخ',
-'Priority'=>'اولویت',
 'Action Type'=>'نوع اقدام',
-'Create Date'=>'تاریخ ایجاد',
-'Complete'=>'کامل',
 'Reminder'=>'یادآور',
-'Completed By'=>'کامل شده توسط',
 'Complete Date'=>'تاریخ تکمیل',
-'Last Updated'=>'آخرین بروزرسانی',
-'Updated By'=>'بروزرسانی توسط',
-'Low'=>'کم',
-'Medium'=>'متوسط',
-'High'=>'زیاد',
-'Public'=>'عمومی',
-'Private'=>'خصوصی',
-'No'=>'خیر',
-'Yes'=>'بله',
 'Date Completed'=>'تاریخ تکمیل',
 'All Day'=>'همه روزها',
-'Color'=>'رنگ',
-'Start Date'=>'تاریخ شروع',
-'End Date'=>'تاریخ پایان',
 'User\'s Group'=>'گروه کاربری',
 
 // Colors
@@ -77,8 +19,6 @@ return array (
 
 // Actions Nav
 'All Actions'=>'همه اقدامات',
-'Create Lead'=>'سرپرست',
-'Create Action'=>'ایجاد اقدام',
 'View Action'=>'نمایش اقدام',
 'Update Action'=>'بروزرسانی اقدام',
 'Complete Action'=>'تکمیل اقدام',
@@ -89,14 +29,13 @@ return array (
 'New Action'=>'اقدام جدید',
 'New Comment'=>'نظر جدید',
 'Publisher'=>'منتشر کننده',
-'Update'=>'بروز',
 'Complete Selected'=>'کامل انتخاب',
 'Uncomplete Selected'=>'ناتمام منتخب',
 'Show Actions'=>'نمایش عملیات',
-'All'=>'همه',
-'Delete'=>'حذف کردن',
 'Overdue'=>'سر رسیده',
 'Edit Action'=>'ویرایش اقدام',
+'Action List'=>'لیست اکشن',
+'Switch to List'=>'تغییر به لیست',
 
 // Actions Titles
 'Manage Actions'=>'مدیریت اقدامات',
@@ -105,24 +44,21 @@ return array (
 'Create a New Lead'=>'ایجاد یک سرپرست جدید',
 'View Action'=>'نمایش اقدام',
 'Update Action:'=>':بروزرسانی اقدام',
-'Action'=>'اقدام',
 'Action: '=>':اقدام',
 'Today\'s Actions'=>'اقدامات امروز',
-'My Actions'=>'اقدامات من',
 'All My Actions'=>'تمام اقدامات من',
 'Everyone\'s Actions'=>'اقدامات همه',
 'Delete Action'=>'حذف اقدام',
-'Share Action'=>'اشتراک اقدام',
-'Create'=>'ایجاد',
 'New Event'=>'رویداد جدید',
 'Call:'=>':تماس',
-'Comment'=>'توضیح',
+'Back to Top'=>'برگشت به بالا',
+'Filters'=>'فیلترها',
+'Switch to Grid'=>'سوئیچ به شبکه',
 
 
 // Misc
 'Email Message:'=>':پیام ای-نامه',
 'Attachment:'=>':پیوست',
-'Assigned to {name}'=>'{name} مرتبط با',
 'Completed by {name}'=>'{name} کامل شده توسط',
 'Completed {date}'=>'{date} کامل شده در',
 'Completion Notes'=>'یادداشت های تکمیل',
@@ -132,30 +68,70 @@ return array (
 'FINISHED'=>'پایان یافت',
 'Incomplete'=>'ناتمام',
 'INCOMPLETE'=>'ناتمام',
-'Status'=>'وضعیت',
-'Contact Info'=>'اطلاعات تماس',
-'View'=>'نمایش',
 'Overdue {time}'=>'سر رسید {time}',
 'Due {date}'=>'{date} سر رسید',
 'Please enter a description.'=>'لطفا یک توضیح را وارد کنید.',
-
-// Create Action Types
-'None'=>'هیچ',
-'Contact'=>'تماس',
-'Account'=>'حساب',
-'Project'=>'پروژه',
-'Case'=>'مورد',
-'Opportunity'=>'فرصت',
+'This action has been marked as sticky and will remain at the top of the list.'=>'این اقدام به عنوان چسبنده مشخص شده و خواهد شد در بالای لیست باقی می ماند.',
+'Show me'=>'به من نشان بده',
+'unfinished'=>'نا تمام',
+'complete'=>'کامل',
+'all'=>'تمام',
+'Actions assigned to'=>'عملیات اختصاص داده شده به',
+'me'=>'به من',
+'me or anyone'=>'من یا هر کس',
+'everyone'=>'هر کس',
+'that'=>'که',
+'are due'=>'به علت',
+'were created'=>'ایجاد شد',
+'tomorrow'=>'فردا',
+'this week'=>'این هفته',
+'this month'=>'این ماه',
+'any time'=>'هر زمان',
+'between these dates'=>'بین این تاریخ',
+'and order them by'=>'و آنها را بر اساس',
+'descending'=>'نزولی',
+'ascending'=>'صعودی',
+'due date'=>'موعد مقرر',
+'create date'=>'تاریخ ایجاد',
+'priority'=>'اولویت',
+'Due:'=>'توجه:',
+'Completed:'=>'تمام شدن سطح:',
+'Created:'=>'ایجاد شده:',
+'Please enter a valid association'=>'لطفا یک انجمن معتبر وارد کنید',
+'Please enter a description or subject'=>'لطفا شرح یا موضوع را وارد کنید',
+'the assigned user'=>'کاربر اختصاص داده',
+'me and the assigned user'=>'من و کاربر اختصاص داده',
+'1 minute'=>'1 دقیقه',
+'5 minutes'=>'5 دقیقه',
+'10 minutes'=>'10 دقیقه',
+'15 minutes'=>'15 دقیقه',
+'30 minutes'=>'30 دقیقه',
+'1 hour'=>'1 ساعت',
+'Create a notification reminder for {user} {time} before this action is due'=>'ایجاد یک آگاه شدن از طریق یادآوری برای  قبل از این اقدام است به علت',
+'Action Backdating'=>'Backdating اکشن',
+'Action:'=>'عمل:',
+'Action View Frame'=>'اکشن نمایش قاب',
+'Associated Record'=>'رکورد وجود',
 
 // Action Reminder Email
 'No one'=>'هیچ کس',
 'Not specified'=>'مشخص نشده',
 'Action Reminder:'=>':یادآوری اقدام',
 'Reminder, the following action is due'=>'یادآوری، اقدام به دلیل',
-'Description'=>'شرح',
-'Type'=>'نوع',
 'Associations'=>'در ارتباط با',
 'Link to the action'=>'پیوند به اقدام',
 'Link to the'=>'پیوند به',
 'Powered by '=>'قدرت گرفته از',
+'This contact visited your website'=>'تماس با ما وب سایت شما بازدید',
+'No subject found'=>'بدون موضوع',
+'Finished'=>'به پایان رسید',
+'Update Event'=>'بروز رویداد',
+'Link to the {type}'=>'لینک به {type}',
+'Action ID'=>'اکشن ID',
+'Action Text'=>'اکشن متن',
+'Time'=>'زمان',
+'color'=>'رنگ',
+'Remind Me'=>'به یاد من',
+'View Full Edit Page'=>'نمایش کامل صفحه ویرایش',
+'(Error displaying email)'=>'(خطا نمایش ایمیل)',
 );

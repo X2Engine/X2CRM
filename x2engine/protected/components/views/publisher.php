@@ -39,7 +39,7 @@
 <?php $form = $this->beginWidget('CActiveForm', array('id' => 'publisher-form')); ?>
 
 <div id="tabs">
-    <ul>
+    <ul <?php echo ($showNewEvent ? 'style="display: none;"' : ''); ?>>
         <li class="publisher-label">
             <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/loading.gif', Yii::t('app', 'Loading'), array('id' => 'publisher-saving-icon', 'style' => 'position: absolute; width: 14px; opacity: 0.0')); ?>
             <span class="publisher-text"> <?php echo Yii::t('actions', 'Publisher'); ?></span>
@@ -50,7 +50,12 @@
         <?php if($showNewEvent){ ?><li><a href="#new-event"><?php echo Yii::t('actions', 'New Event'); ?></a></li><?php } ?>
     </ul>
     <div class="form">
-        <div class="row">
+        <?php 
+        if ($showNewEvent) {
+            echo '<span class="publisher-widget-title">' . Yii::t('app', 'New Event Publisher') . '</span>';
+        }
+        ?>
+        <div class="row publisher-first-row">
             <b><?php echo $form->labelEx($model, 'actionDescription'); ?></b>
             <div class="text-area-wrapper">
                 <?php echo $form->textArea($model, 'actionDescription', array('rows' => 3, 'cols' => 40)); ?>
@@ -145,7 +150,7 @@
                 <div class="cell">
                     <?php echo $form->label($model, 'associationType'); ?>
                     <?php
-                    echo $form->dropDownList($model, 'associationType', array_merge(array('none' => 'None'), Admin::getModelList()), array(
+                    echo $form->dropDownList($model, 'associationType', array_merge(array('none' => Yii::t('app','None')), Admin::getModelList()), array(
                         'ajax' => array(
                             'type' => 'POST', //request type
                             'url' => Yii::app()->controller->createUrl('/actions/parseType'), //url to call.
@@ -224,9 +229,13 @@
 
 					return true; // form is sane: submit!
 				 }",
-        'success' => "function() { publisherUpdates(); resetPublisher();
-				 		\$('.publisher-text').animate({opacity: 1.0});
-						\$('#publisher-saving-icon').animate({opacity: 0.0}); }",
+        'success' => "function() { 
+			publisherUpdates(); 
+			resetPublisher();
+			//$(document).trigger ('newlyPublishedAction');
+			\$('.publisher-text').animate({opacity: 1.0});
+			\$('#publisher-saving-icon').animate({opacity: 0.0}); 
+		}",
         'type' => 'POST',
             ), array('id' => 'save-publisher', 'class' => 'x2-button'));
     ?>
@@ -262,14 +271,38 @@ if($showNewEvent == true && $showLogACall == false && $showNewComment == false &
 	";
 }
 
+if ($showNewEvent) {
+    Yii::app()->clientScript->registerCss ('calendarSpecificWidgetStyle', "
+        .publisher-widget-title {
+            color: #222;
+            font-weight: bold;
+        }
+        .publisher-first-row {
+            margin-top: 8px;
+        }
+        #publisher-form .form {
+            background: #eee;   
+        }
+        #publisher-form textarea {
+            min-width: 100%;
+            max-width: 100%;
+            width: 100%;
+        }
+    ");
+}
+
 // save default values of fields for when the publisher is submitted and then reset
 Yii::app()->clientScript->registerScript('defaultValues', "
 $(function() {
 
-	// turn on jquery taps for the publisher
-	$('#tabs').tabs({
-		select: function(event, ui) { tabSelected(event, ui); },
-	});
+    var isCalendar = " . ($showNewEvent ? 'true' : 'false') . ";
+
+    if (!isCalendar) {
+	    // turn on jquery tabs for the publisher
+	    $('#tabs').tabs({
+		    select: function(event, ui) { tabSelected(event, ui); },
+	    });
+    } 
 
 	if($('#tabs .ui-state-active').length !== 0) { // if publisher is present (prevents a javascript error if publisher is not present)
 		var selected = $('#tabs .ui-state-active').attr('aria-controls');
@@ -308,6 +341,4 @@ $(function() {
 	$('#publisher-form').data('timeformat', '$timeformat');
 	$('#publisher-form').data('ampmformat', '$ampmformat');
 	$('#publisher-form').data('region', '$region');
-
-	$eventFix
 });");

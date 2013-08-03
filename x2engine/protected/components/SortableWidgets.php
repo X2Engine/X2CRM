@@ -179,18 +179,18 @@ class SortableWidgets extends CJuiWidget {
                                                         $(\'#widget-dropdown a\').css("text-align", "none");
                                                         $(\'#widget-dropdown a\').css("text-align", "center !important");
                                                     </script>
-                                                <span style="float:left">
+                                                <span id="gear-img-container" style="float:left">
                                                     <img src="'.Yii::app()->theme->baseUrl.'/images/widgets.png" style="opacity:0.3"
                                                                 onmouseout="this.style.opacity=0.3;"
                                                                 onmouseover="this.style.opacity=1" />
                                                 </span>
                                                 <ul class="closed" id="feed-widget-gear-menu">
-                                                    <div style="text-align: left">Activity Feed Order</div>
+                                                    <div style="text-align: left">'.Yii::t('app','Activity Feed Order').'</div>
                                                     <hr>
-                                                    <div id="topDown" style="font-weight:normal; float: left; margin-right: 3px;">Top Down</div>
-                                                    <div id="bottomUp" style="font-weight:normal; float: left">Bottom Up</div>
+                                                    <div id="topDown" style="font-weight:normal; float: left; margin-right: 3px;">'.Yii::t('app','Top Down').'</div>
+                                                    <div id="bottomUp" style="font-weight:normal; float: left">'.Yii::t('app','Bottom Up').'</div>
                                                     <hr>
-                                                    <div style="text-align: left">Background Color</div>
+                                                    <div style="text-align: left">'.Yii::t('app','Background Color').'</div>
                                                     <colorPicker style="padding: 0px !important;">'.
                                 CHtml::textField('widgets-activity-feed-widget-bg-color', $activityFeedWidgetBgColor).
                                 '</colorPicker>
@@ -205,14 +205,14 @@ class SortableWidgets extends CJuiWidget {
                                                                 onmouseover="this.style.opacity=1" />
                                                 </span>
                                                 <ul class="closed" id="media-widget-gear-menu">
-                                                    <div style="text-align: left">Media Widget Settings</div>
+                                                    <div style="text-align: left">'.Yii::t('app','Media Widget Settings').'</div>
                                                     <hr>
-                                                    <div id="media-selector" style="font-weight:normal; float: left; margin-right: 3px;">X2 Media</div>
-                                                    <div id="drive-selector" style="font-weight:normal; float: left">Google Drive</div>
+                                                    <div id="media-selector" style="font-weight:normal; float: left; margin-right: 3px;">'.Yii::t('app','X2 Media').'</div>
+                                                    <div id="drive-selector" style="font-weight:normal; float: left">'.Yii::t('app','Google Drive').'</div>
                                                     <hr>
-                                                    <div style="text-align: left">Refresh Google Drive Cache</div>
+                                                    <div style="text-align: left">'.Yii::t('app','Refresh Google Drive Cache').'</div>
                                                     <hr>
-                                                    <a href="#" class="x2-button" id="drive-refresh" style="font-weight:normal; float: left">Refresh Files</a>
+                                                    <a href="#" class="x2-button" id="drive-refresh" style="font-weight:normal; float: left">'.Yii::t('app','Refresh Files').'</a>
                                                     <hr>
                                                 </ul> ';
                         }else{
@@ -248,7 +248,14 @@ class SortableWidgets extends CJuiWidget {
 }
 ?>
 <style>
-    /* override spectrum color picker css */
+
+    #gear-img-container {
+       height: 18px; 
+    }
+
+    /* 
+    override spectrum color picker css 
+    */
     #feed-widget-gear-menu .sp-replacer {
         padding: 0px !important;
     }

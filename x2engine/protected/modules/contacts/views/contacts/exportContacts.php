@@ -49,15 +49,15 @@ $this->actionMenu = $this->formatMenu(array(
 <div style="width:600px;">
     <?php echo Yii::t('contacts','Please click the button below to begin the export. Do not close this page until the export is finished, which may take some time if you have a large number of records. A counter will keep you updated on how many records have been successfully updated.') ?><br><br>
     <?php echo Yii::t('contacts','You are currently exporting: ');?><b><?php echo $listName; ?></b>
-    
-    
+
+
 </div>
 <br>
-<?php echo CHtml::button('Export',array('class'=>'x2-button','id'=>'export-button')); ?>
+<?php echo CHtml::button(Yii::t('app','Export'),array('class'=>'x2-button','id'=>'export-button')); ?>
 <div id="status-text" style="color:green">
-    
+
 </div>
-    
+
 <div style="display:none" id="download-link-box">
     <?php echo Yii::t('contacts','Please click the link below to download contacts.');?><br><br>
     <a class="x2-button" id="download-link" href="#"><?php echo Yii::t('app','Download');?>!</a>
@@ -65,25 +65,25 @@ $this->actionMenu = $this->formatMenu(array(
 <script>
 $('#export-button').on('click',function(){
     exportContactData(0);
-});   
+});
 function exportContactData(page){
     if($('#contacts-status').length==0){
-       $('#status-text').append("<div id='contacts-status'>Exporting <b>Contact</b> data...<br></div>"); 
+       $('#status-text').append("<div id='contacts-status'><?php echo Yii::t('contacts','Exporting <b>Contact</b> data...'); ?><br></div>");
     }
     $.ajax({
         url:'exportSet?page='+page,
         success:function(data){
             if(data>0){
-                $('#contacts-status').html(((data)*100)+" records from <b>Contacts</b> successfully exported.<br>");
+                $('#contacts-status').html(((data)*100)+" <?php echo Yii::t('contacts','records from <b>Contacts</b> successfully exported.');?><br>");
                 exportContactData(data);
             }else{
-                $('#contacts-status').html("All Contact data successfully exported.<br>");
+                $('#contacts-status').html("<?php echo Yii::t('contacts','All Contact data successfully exported.');?><br>");
                 $('#download-link-box').show();
-                alert("Export Complete!");
+                alert("<?php echo Yii::t('contacts','Export Complete!');?>");
             }
         }
     });
-}   
+}
 $('#download-link').click(function(e) {
     e.preventDefault();  //stop the browser from following
     window.location.href = '<?php echo $this->createUrl('/admin/downloadData',array('file'=>$_SESSION['contactExportFile'])); ?>';

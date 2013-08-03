@@ -115,7 +115,11 @@ abstract class x2base extends X2Controller {
 			Yii::app()->user->returnUrl = Yii::app()->request->url;
 			$this->redirect($this->createUrl('/site/login'));
         }else
-			throw new CHttpException(403, 'You are not authorized to perform this action.');
+			$this->denied();
+	}
+
+	public function denied() {
+		throw new CHttpException(403, Yii::t('app','You are not authorized to perform this action.'));
 	}
 
 	public function actions() {
@@ -193,7 +197,8 @@ abstract class x2base extends X2Controller {
 
         $view = false;
         $edit = false;
-        $module = $this->module;
+        $module = Yii::app()->controller->module;
+        $visField=X2Model::model('Fields')->findByAttributes(array('modelName'=>get_class($model),'type'=>'visibility'));
         if(isset($module)){
             $moduleAdmin = Yii::app()->user->checkAccess(ucfirst($module->name).'Admin');
         }else{
@@ -203,8 +208,8 @@ abstract class x2base extends X2Controller {
         if ((Yii::app()->params->isAdmin || $moduleAdmin) || !$model->hasAttribute('assignedTo') || ($model->assignedTo == 'Anyone' && ($model->hasAttribute('visibility') && $model->visibility!=0) || !$model->hasAttribute('visibility')) || $model->assignedTo == Yii::app()->user->getName()) {
 
             $edit = true;
-        } elseif (!$model->hasAttribute('visibility') || $model->visibility == 1) {
-
+        } elseif (!isset($visField) || $model->{$visField->fieldName} == 1) {
+            
             $view = true;
         } else {
             if (ctype_digit((string)$model->assignedTo) && !empty(Yii::app()->params->groups)) {  // if assignedTo is numeric, it's a group
@@ -313,7 +318,7 @@ abstract class x2base extends X2Controller {
 			->queryRow(false);
 
 		if($currentWorkflow === false || !isset($currentWorkflow[0])) {
-			
+
 			$defaultWorkflow = Yii::app()->db->createCommand()
 				->select('id')
 				->from('x2_workflows')
@@ -1000,21 +1005,41 @@ abstract class x2base extends X2Controller {
     }
 
     /**
-	 *	Send an email from X2CRM
+	 * Send an email from X2CRM, returns an array with status code/message
 	 *
-	 *	@param addresses
-	 *	@param $subject the subject for the email
-	 *	@param $message the body of the email
-	 *	@param $attachments array of attachments to send
-	 *	@param $from from and reply to address for the email array(name, address)
+	 * @param array addresses
+	 * @param string $subject the subject for the email
+	 * @param string $message the body of the email
+	 * @param array $attachments array of attachments to send
+	 * @param array|integer $from from and reply to address for the email array(name, address)
+	 * 	or, if integer, the ID of a email credentials record to use for delivery.
+	 * @return array
 	 */
-    public function sendUserEmail($addresses, $subject, $message, $attachments = null, $from = null) {
+    public function sendUserEmail($addresses, $subject, $message, $attachments = null, $from = null){
 		$eml = new InlineEmail();
-		$eml->mailingList = $addresses;
+		if(is_array($addresses) ? count($addresses)==0 : true)
+			throw new Exception('Invalid argument 1 sent to x2base.sendUserEmail(); expected a non-empty array, got instead: '.var_export($addresses,1));
+		// Set recipients:
+		if(array_key_exists('to',$addresses) || array_key_exists('cc',$addresses) || array_key_exists('bcc',$addresses)) {
+			$eml->mailingList = $addresses;
+		} else
+			return array('code'=>500,'message'=>'No recipients specified for email; array given for argument 1 of x2base.sendUserEmail does not have a "to", "cc" or "bcc" key.');
+		// Resolve sender (use stored email credentials or system default):
+		if($from === null || in_array($from,Credentials::$sysUseId)) {
+			$from = (int) Credentials::model()->getDefaultUserAccount($from);
+			// Set to the user's name/email if no valid defaults found:
+			if($from == Credentials::LEGACY_ID)
+				$from = array('name' => Yii::app()->params->profile->fullName, 'address'=> Yii::app()->params->profile->emailAddress);
+		}
+
+		if(is_numeric($from))
+			$eml->credId = $from;
+		else
+			$eml->from = $from;
+		// Set other attributes
 		$eml->subject = $subject;
 		$eml->message = $message;
 		$eml->attachments = $attachments;
-		$eml->from = $from;
 		return $eml->deliver();
 	}
 

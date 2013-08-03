@@ -38,24 +38,24 @@
 data:
   $products - active products create in the products module. This is used to
     populate the drop down menu for new line items.
-  $readOnly - a boolean which indicates whether or not the line item and 
-    adjustment fields are editable. 
+  $readOnly - a boolean which indicates whether or not the line item and
+    adjustment fields are editable.
 */
 
 
 /*
-Used to insert an image element into the DOM. 
+Used to insert an image element into the DOM.
 */
 function insertRemoveImage () {
-  echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/css/gridview/delete.png' 
+  echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/css/gridview/delete.png'
        . "' alt='[" . Yii::t('quotes', 'Delete Quote') . "]' class='item-delete-button'/>";
 }
 
 /*
-Used to insert an image element into the DOM. 
+Used to insert an image element into the DOM.
 */
 function insertArrowBothImage () {
-  echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/css/gridview/arrow_both.png' 
+  echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/css/gridview/arrow_both.png'
        . "' alt='[" . Yii::t('quotes', 'Move') . "]' class='handle arrow-both-handle'/>";
 }
 
@@ -77,7 +77,7 @@ $passVariablesToClientScript = "
   x2.quotes.lineCounter = 0; // used to differentiate name values of input fields
 ";
 
-/* 
+/*
 Send an array containing product line information. This array is used by the client to build
 the rows of the line items table.
 */
@@ -94,7 +94,7 @@ foreach ($model->productLines as $item) {
   ");";
 }
 
-/* 
+/*
 Send an array containing adjustment line information. This array is used by the client to build
 the rows of the line items table.
 */
@@ -111,7 +111,7 @@ foreach ($model->adjustmentLines as $item) {
 
 
 /*
-Send a dictionary containing translations for the types of each input field. 
+Send a dictionary containing translations for the types of each input field.
 Used for html title attributes.
 */
 $titleTranslations = array( // keys correspond to CSS classes of each input field
@@ -139,11 +139,11 @@ if (!$readOnly && isset ($products)) {
 	$passVariablesToClientScript .= "x2.quotes.productDescriptions[" . CJSON::encode($prod->name) . "] = ".CJSON::encode($prod->description).";\n";
   }
   $passVariablesToClientScript .= "
-    x2.quotes.arrowBothImageSource = '" . 
+    x2.quotes.arrowBothImageSource = '" .
       Yii::app()->request->baseUrl.'/themes/x2engine/css/gridview/arrow_both.png' . "';
-    x2.quotes.arrowDownImageSource = '" . 
+    x2.quotes.arrowDownImageSource = '" .
       Yii::app()->request->baseUrl.'/themes/x2engine/css/gridview/arrow_down.png' . "';
-    x2.quotes.deleteImageSource = '" . 
+    x2.quotes.deleteImageSource = '" .
       Yii::app()->request->baseUrl.'/themes/x2engine/css/gridview/delete.png' . "';
   ";
 
@@ -170,10 +170,10 @@ echo "<script type=\"text/javascript\">\n$passVariablesToClientScript\n</script>
 
 ?>
 
-<?php 
+<?php
 if (YII_DEBUG && $debug) {
-  echo "<div id='qunit'></div>"; 
-  echo "<div id='qunit-fixture'></div>"; 
+  echo "<div id='qunit'></div>";
+  echo "<div id='qunit-fixture'></div>";
 }
 ?>
 
@@ -202,7 +202,7 @@ if (YII_DEBUG && $debug) {
       <th class="lineitem-total"><?php echo Yii::t('products', 'Price'); ?></th>
     </tr>
   </thead>
-  <tbody id='line-items' 
+  <tbody id='line-items'
    <?php if (!$readOnly) echo 'class="sortable"' ?>>
    <!-- line items will be placed here by addLineItem() in javascript -->
   </tbody>
@@ -211,19 +211,19 @@ if (YII_DEBUG && $debug) {
     <td colspan='4'> </td>
     <td class="text-field"><span style="font-weight:bold"> Subtotal: </span></td>
     <td class="subtotal-container input-cell">
-      <input type="text" readonly='readonly' onfocus='this.blur();' 
+      <input type="text" readonly='readonly' onfocus='this.blur();'
        style="font-weight:bold" id="subtotal" name="Quote[subtotal]">
       </input>
     </td>
   </tr>
-  <tbody id='adjustments' 
+  <tbody id='adjustments'
    <?php if (!$readOnly) echo 'class="sortable"' ?>>
    <!-- adjustments will be placed here by addAdjustment() in javascript -->
   </tbody>
   <tr>
     <td class='first-cell'> </td>
     <td colspan="4"></td>
-    <td class='text-field'><span style="font-weight:bold"> Total: </span></td> 
+    <td class='text-field'><span style="font-weight:bold"> Total: </span></td>
     <td class="total-container input-cell">
       <input type="text" readonly='readonly' onfocus='this.blur();' style="font-weight:bold" id="total"  name="Quote[total]">
       </input>
@@ -231,8 +231,8 @@ if (YII_DEBUG && $debug) {
   </tr>
 </table>
 <?php if(!$readOnly): ?>
-<button type='button' class='x2-button add-line-item-button'>+&nbsp;<?php echo Yii::t('workflow', 'Add Line Item'); ?></button>
-<button type='button' class='x2-button add-adjustment-button'>+&nbsp;<?php echo Yii::t('workflow', 'Add Adjustment'); ?></button>
+<button type='button' class='x2-button add-line-item-button'>+&nbsp;<?php echo Yii::t('quotes', 'Add Line Item'); ?></button>
+<button type='button' class='x2-button add-adjustment-button'>+&nbsp;<?php echo Yii::t('quotes', 'Add Adjustment'); ?></button>
 <?php endif; ?>
 
 
@@ -242,7 +242,7 @@ if (YII_DEBUG && $debug) {
 <script>
 
   var debug = 0;
-  
+
   function consoleLog(obj) {
     if (console != undefined) {
       if(console.log != undefined && debug) {
@@ -260,7 +260,7 @@ if (YII_DEBUG && $debug) {
     a Number containing the adjusted total
   */
   function applyAdjustmentToTotal (total, subtotal, rowElement) {
-    var adjustmentType = 
+    var adjustmentType =
       $(rowElement).find (".adjustment-type").val ();
     var adjustment = getAdjustment (rowElement, adjustmentType)
 
@@ -268,7 +268,7 @@ if (YII_DEBUG && $debug) {
       total += adjustment;
     } else if (adjustmentType === 'totalPercent') {
       total += subtotal * (adjustment / 100.0);
-    } 
+    }
     return total;
   }
 
@@ -311,7 +311,7 @@ if (YII_DEBUG && $debug) {
   }
 
   /*
-  Calculate the line total using the line item's quantity, unit price, and 
+  Calculate the line total using the line item's quantity, unit price, and
   adjustments
   Parameter:
   rowElement - the row containing the line item input fields
@@ -320,12 +320,12 @@ if (YII_DEBUG && $debug) {
   */
   function calculateLineTotal (rowElement) {
     var price = getPrice (rowElement);
-    var quantity = 
+    var quantity =
       parseInt ($(rowElement).find (".quantity").val (), 10);
-    var adjustmentType = 
+    var adjustmentType =
       $(rowElement).find (".adjustment-type").val ();
     var adjustment = getAdjustment (rowElement, adjustmentType);
-    var name = 
+    var name =
       $(rowElement).find ("[name*='name']").val ();
 
     var lineTotal = price * quantity;
@@ -334,7 +334,7 @@ if (YII_DEBUG && $debug) {
       lineTotal += adjustment;
     } else if (adjustmentType === 'percent') {
       lineTotal += lineTotal * (adjustment / 100.0);
-    } 
+    }
 
     return lineTotal;
   }
@@ -352,22 +352,22 @@ if (YII_DEBUG && $debug) {
   }
 
   /*
-  For each line item row in the lineItems tbody element, fills in an 
+  For each line item row in the lineItems tbody element, fills in an
   entry for the line total.
   Parameter:
-    lineTotals - an array of Numbers, one for each line item in the line item 
+    lineTotals - an array of Numbers, one for each line item in the line item
       table
   */
   function setLineTotals (lineTotals) {
     $('.line-item').each (function (index, element) {
-      total = lineTotals.shift (); 
+      total = lineTotals.shift ();
       $(element).find ('.line-item-total').val (total).formatCurrency (
         {'region': x2.quotes.currency});
     });
   }
 
   /*
-  Helper function to convert the value of an input field containing a currency to 
+  Helper function to convert the value of an input field containing a currency to
   a float, save the float, and convert the value of the input field back to a currency.
   The converted currency is returned.
   */
@@ -379,9 +379,9 @@ if (YII_DEBUG && $debug) {
       {region: x2.quotes.currency});
     return currency;
   }
-  
+
   /*
-  extract the line item total from the row element and convert the currency to a 
+  extract the line item total from the row element and convert the currency to a
   Number
   */
   function getLineItemTotal (rowElement) {
@@ -390,7 +390,7 @@ if (YII_DEBUG && $debug) {
 
   /*
   Calculates the subtotal by summing the line item totals from the DOM
-  Precondition: setLineTotals () has been called 
+  Precondition: setLineTotals () has been called
   Returns:
     subtotal - a Number containing the calculated subtotal
   */
@@ -425,7 +425,7 @@ if (YII_DEBUG && $debug) {
   Calculates the total by applying each of the adjustments from the DOM to the
   subtotal
   Parameter:
-    subtotal - a Number 
+    subtotal - a Number
   Returns:
     a Number containing the adjusted subtotal
   */
@@ -442,7 +442,7 @@ if (YII_DEBUG && $debug) {
   */
   function addLineItem (fillLineItem, values /* set if fillLineItem is true */) {
     if (!fillLineItem) {
-        values = { // default values, 
+        values = { // default values,
             "product-name": ['' /* default input value */, false /* validation error */],
             "price": ['0', false],
             "quantity": ['1', false],
@@ -463,7 +463,7 @@ if (YII_DEBUG && $debug) {
     }
     $inputCell = lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
-        type: 'text', 
+        type: 'text',
         'class': 'line-item-field product-name',
         maxlength: '100',
         value: values['product-name'][0],
@@ -476,28 +476,28 @@ if (YII_DEBUG && $debug) {
     }
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
-        type: 'text', 
+        type: 'text',
         'class': 'line-item-field price',
         value: values['price'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][price]' }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
-        type: 'text', 
+        type: 'text',
         'class': 'line-item-field quantity',
         value: values['quantity'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][quantity]' }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
-        type: 'text', 
+        type: 'text',
         'class': 'line-item-field adjustment',
         value: values['adjustment'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][adjustment]' }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
-        type: 'text', 
+        type: 'text',
         'class': 'line-item-field description',
         maxlength: '140',
         'value': values['description'][0],
@@ -512,12 +512,12 @@ if (YII_DEBUG && $debug) {
           onfocus: 'this.blur();',
           name: 'lineitem[' + x2.quotes.lineCounter + '][total]' }),
         $("<input>", {
-          type: 'hidden', 
+          type: 'hidden',
           'class': 'adjustment-type',
           value: values['adjustment-type'][0],
           name: 'lineitem[' + x2.quotes.lineCounter + '][adjustmentType]' }),
         $("<input>", {
-          type: 'hidden', 
+          type: 'hidden',
           'class': 'line-number',
           name: 'lineitem[' + x2.quotes.lineCounter + '][lineNumber]' }))
     );
@@ -552,14 +552,14 @@ if (YII_DEBUG && $debug) {
           select: selectProductFromAutocomplete,
           open: function () {
               if ($('#product-menu').is (":visible")) {
-                  $('#product-menu').hide (); 
+                  $('#product-menu').hide ();
               }
           }
       });
       formatAutocompleteWidget (productNameInput);
       $('tbody.sortable').sortable ('refresh');
     }
-    if (!fillLineItem) { // format default input field values 
+    if (!fillLineItem) { // format default input field values
       lineItemRow.find ('.adjustment').formatCurrency (
         {region: x2.quotes.currency});
       lineItemRow.find ('.price').formatCurrency (
@@ -601,7 +601,7 @@ if (YII_DEBUG && $debug) {
     lineItemRow.append ($("<td>"));
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
-        type: 'text', 
+        type: 'text',
         'class': 'line-item-field adjustment-name',
         maxlength: '100',
         value: values['adjustment-name'][0],
@@ -609,14 +609,14 @@ if (YII_DEBUG && $debug) {
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
-        type: 'text', 
+        type: 'text',
         'class': 'line-item-field adjustment',
         value: values['adjustment'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][adjustment]' }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       $("<input>", {
-        type: 'text', 
+        type: 'text',
         'class': 'line-item-field description',
         maxlength: '140',
         value: values['description'][0],
@@ -625,12 +625,12 @@ if (YII_DEBUG && $debug) {
     lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
       //$("<span></span>", {'class': 'line-item-total'}),
       $("<input>", {
-        type: 'hidden', 
+        type: 'hidden',
         'class': 'adjustment-type',
         value: values['adjustment-type'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][adjustmentType]' }),
       $("<input>", {
-        type: 'hidden', 
+        type: 'hidden',
         'class': 'line-number',
         name: 'lineitem[' + x2.quotes.lineCounter + '][lineNumber]' }))
     );
@@ -659,7 +659,7 @@ if (YII_DEBUG && $debug) {
 
     $('#adjustments').append (lineItemRow);
 
-    if (!x2.quotes.readOnly) {  
+    if (!x2.quotes.readOnly) {
       $('tbody.sortable').sortable ('refresh');
     }
     if (!fillAdjustment) { // format default input field values
@@ -724,7 +724,7 @@ if (YII_DEBUG && $debug) {
         select: selectProductFromAutocomplete,
         open: function () {
             if ($('#product-menu').is (":visible")) {
-                $('#product-menu').hide (); 
+                $('#product-menu').hide ();
             }
         }
       });
@@ -774,22 +774,22 @@ if (YII_DEBUG && $debug) {
           $(element).parents ('.line-item').children ().find ('.line-item-total').val ("");
           calculationErrors++;
         }
-      }); 
-      if (calculationErrors > 0) 
+      });
+      if (calculationErrors > 0)
         $('#total, #subtotal').val ("");
     }
   }
 
   /*
-  Determine and set the type of adjustment (totalLinear, totalPercent, linear, 
+  Determine and set the type of adjustment (totalLinear, totalPercent, linear,
   percent) and validate the input.
   */
   function checkAdjustment (element) {
     var elemVal = $(element).val ();
-    var typeElementName = 
+    var typeElementName =
       $(element).attr ('name').replace (/adjustment/, 'adjustmentType');
 
-    if (elemVal.match (/%/)) {  
+    if (elemVal.match (/%/)) {
 
       if ($('[name="' + typeElementName + '"]').val ().match (/total/)) {
         $('[name="' + typeElementName + '"]').val ('totalPercent');
@@ -838,7 +838,7 @@ if (YII_DEBUG && $debug) {
   }
 
   /*
-  Helper function for validateAllInputs. 
+  Helper function for validateAllInputs.
   Parameter:
     element - a input field in the quotes table
   Returns:
@@ -860,7 +860,7 @@ if (YII_DEBUG && $debug) {
     } else if (elemClass.match (/adjustment-name/)) {
       errorMessage = "Adjustment Label cannot be blank.";
     } else if (elemClass.match (/adjustment/)) {
-      var temporaryElem = $("<input>", {val: 50}); 
+      var temporaryElem = $("<input>", {val: 50});
       var exampleCurrency = $(temporaryElem).
         formatCurrency ({region: x2.quotes.currency}).val ();
       errorMessage = "Adjustment must be a currency amount or a percentage (e.g. \"" +
@@ -905,9 +905,9 @@ if (YII_DEBUG && $debug) {
   }
 
   function setupValidationEvents () {
-    $('#line-items, #adjustments').on ('change', '.line-item-field.adjustment', 
+    $('#line-items, #adjustments').on ('change', '.line-item-field.adjustment',
       function (event) {
-        checkAdjustment (event.target); 
+        checkAdjustment (event.target);
         updateTotals ();
     });
     $('#line-items').on ('change', '.line-item-field.quantity', function (event) {
@@ -935,7 +935,7 @@ if (YII_DEBUG && $debug) {
 
   function deleteAdjustment (element) {
     $(element).parents ('.adjustment').remove ();
-    if ($('.quote-table').find ('tr.adjustment').length === 0) 
+    if ($('.quote-table').find ('tr.adjustment').length === 0)
       $('#subtotal-row').hide ();
     updateTotals ();
     resetLineNums ();
@@ -943,7 +943,7 @@ if (YII_DEBUG && $debug) {
 
   function deleteLineItem (element) {
     $(element).parents ('.line-item').remove ();
-    if ($('.quote-table').find ('tr.line-item').length === 0) 
+    if ($('.quote-table').find ('tr.line-item').length === 0)
       $('#subtotal-row').hide ();
     updateTotals ();
     resetLineNums ();
@@ -987,9 +987,9 @@ if (YII_DEBUG && $debug) {
     });
 
     setupProductSelectMenu ();
-    
+
     $('tbody.sortable').sortable ({
-      handle: ".handle", 
+      handle: ".handle",
       start: function (event, ui) {
         $('#product-menu').hide ();
         if ($(ui.item).hasClass ("line-item")) {
@@ -1016,10 +1016,10 @@ if (YII_DEBUG && $debug) {
     setupValidationEvents ();
 
     // add a line item if this is the create view
-    if (x2.quotes.productLines.length === 0 && 
-        x2.quotes.adjustmentLines.length === 0) { 
+    if (x2.quotes.productLines.length === 0 &&
+        x2.quotes.adjustmentLines.length === 0) {
       addLineItem ();
-    } else { 
+    } else {
       populateQuotesTable ();
     }
 
@@ -1033,7 +1033,7 @@ if (YII_DEBUG && $debug) {
       setupEditingBehavior ();
     }
 
-    if ($('.quote-table').find ('tr.adjustment').length === 0 || 
+    if ($('.quote-table').find ('tr.adjustment').length === 0 ||
         $('.quote-table').find ('tr.line-item').length === 0) {
       $('#subtotal-row').hide ();
     }

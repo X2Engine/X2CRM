@@ -70,7 +70,7 @@ $deleteButton = ' '. CHtml::ajaxLink(
 	),
 	array('id'=> "delete-quote-{$quote->id}", 'title'=>Yii::t('quotes', "Delete Quote"), 'live'=>false)
 );
-$emailButton = CHtml::link('['. Yii::t('products','Email') .']', 'javascript:void(0)', array('id'=>"email-quote-{$quote->id}", 'onClick'=>"sendQuoteEmail({$quote->id})"));
+$emailButton = CHtml::link('['. Yii::t('products','Email') .']', 'javascript:void(0)', array('id'=>"email-quote-{$quote->id}", 'onClick'=>"sendQuoteEmail({$quote->id},".json_encode($quote->template).")"));
 $printButton = CHtml::link('['. Yii::t('quotes','Print') .']', 'javascript:void(0)', array('id'=>"print-quote-{$quote->id}", 'onClick'=>"window.open('".Yii::app()->controller->createUrl('/quotes/quotes/print', array('id'=>$quote->id))."')"));
 $duplicateButton = CHtml::link('['.Yii::t('quotes','Duplicate').']','javascript:void(0)',array('id'=>"duplicate-quote-{$quote->id}",'onClick'=>"quickQuote.openForm(0,{$quote->id})"));
 $convertToInvoiceButton = '';

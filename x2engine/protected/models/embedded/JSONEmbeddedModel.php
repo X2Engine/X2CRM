@@ -115,18 +115,6 @@ abstract class JSONEmbeddedModel extends CModel {
 		return array_merge($options,array('name'=>$this->resolveName($name)));
 	}
 
-	/**
-	 * Translates attribute labels.
-	 * @return type
-	 */
-	public function attributeLabels() {
-		$translated = array();
-		foreach($this->_attributeLabels as $attr => $label) {
-			$translated[$attr] = Yii::t('app',$label);
-		}
-		return $translated;
-	}
-
 }
 
 ?>

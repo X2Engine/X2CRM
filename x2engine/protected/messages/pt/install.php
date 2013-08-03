@@ -1,39 +1,4 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Install screen
 'Install X2EngineCRM'=>'Instale X2EngineCRM',
@@ -55,7 +20,6 @@ return array (
 
 'Application Name'=>'Nome da Aplicação',
 'Default Language'=>'Idioma Padrão',
-'Currency'=>'Moeda',
 'Admin Password'=>'Senha de Administrador',
 'Confirm Password'=>'Confirme sua Senha',
 'Administrator Email'=>'Email do Administrador',
@@ -66,21 +30,15 @@ return array (
 'This release only supports MySQL. Please create a database before installing.'=>'Este lançamento só suporta MySQL. Por favor, crie um banco de dados antes de instalar.',
 'Host Name'=>'Nome do Host',
 'Database Name'=>'Nome do Banco',
-'Username'=>'Nome de Usuário',
-'Password'=>'Senha',
 
 // Software updates
 'Software Updates'=>'Atualizações de Software',
 'Notify me of software updates'=>'Notifique-me de atualizações de software',
-'First Name'=>'Nome',
-'Last Name'=>'sobrenome',
-'Email'=>'E-mail',
 'Company'=>'Companhia',
 'Position'=>'Posição',
 'How you found X2EngineCRM'=>'Como você encontrou X2EngineCRM',
 'Phone Number'=>'número de Telefone',
 'Subscribe to the newsletter'=>'Assine a boletim informativo',
-'Comments'=>'Comentários',
 'Request a follow-up contact'=>'Solicite um contato de acompanhamento',
 'Software Updates'=>'Atualizações de Software',
 'Please help us improve X2EngineCRM by providing the following information:'=>'Por favor, ajude-nos a melhorar X2EngineCRM, fornecendo as seguintes informações:',
@@ -88,12 +46,23 @@ return array (
 'Optional Information'=>'Informações Opcionais',
 'Could not connect to the updates server at this time.'=>'Não foi possível conectar ao servidor de atualizações neste momento.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'Você pode continuar a instalação do aplicativo, sem permitir atualizações e tente mais tarde, indo em "Configurações gerais" na seção "Configurações App" no console de administração.',
+'Product Key'=>'Product Key',
+'Registration'=>'Registro',
+'Software registration succeeded.'=>'Registro de Software conseguiu.',
+'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'Para receber atualizações de software da X2Engine, por favor registrar sua cópia do X2EngineCRM:',
+'For support or sales inquiries, please contact us'=>'Para suporte ou vendas de mais informações, entre em contato conosco',
+'If different from Administrator Email'=>'Se for diferente do Administrador Email',
+'Intended use of X2EngineCRM, goals, etc.'=>'Uso pretendido X2EngineCRM, metas, etc',
+'Make sure you have an active internet connection. If the problem persists, please contact us'=>'Certifique-se de ter uma conexão ativa com a internet. Se o problema persistir, por favor contacte-nos',
+'-----'=>'-----',
+'Sourceforge'=>'Sourceforge',
+'Github'=>'Github',
+'News Outlet'=>'Notícias de saída',
 
 'Install'=>'Instalar',
 
 'For help or more information - X2Engine.com'=>'Para ajuda ou mais informações - X2Engine.com',
 
-'All Rights Reserved.'=>'Todos os Direitos Reservados.',
 
 // Splash screen
 'Installation Complete!'=>'Instalação Completa!',
@@ -101,4 +70,50 @@ return array (
 'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine instalado com sucesso em seu servidor web! Agora você pode entrar com "admin" username ea senha que você forneceu durante a instalação.',
 'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'Se você optou por instalar o Gii, você pode encontrá-lo <a href="index.php/gii/">aqui</a>. A senha é a mesma que a sua senha de administrador.',
 
+'This directory is not writable by PHP processes run by the webserver.'=>'Este diretório não é gravável por processos PHP são executados pelo servidor web.',
+'PHP scripts are not permitted to run the function "chmod".'=>'Scripts PHP não estão autorizados a executar a função &quot;chmod&quot;.',
+'Time zone widget will not work'=>'Widget de fuso horário não irá funcionar',
+'Contact views may be inaccessible'=>'Vistas de contato podem ser inacessíveis',
+'Google integration will not work'=>'Integração do Google não irá funcionar',
+'Built-in error reporter will not work'=>'Built-in repórter erro não irá funcionar',
+'The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.'=>'A opção de configuração do PHP &quot;allow_url_fopen&quot; está desativado. ONDA vai ser usada para fazer todos os pedidos HTTP durante actualizações.',
+'This will result in the inability to import and export custom modules.'=>'Isso resultará na incapacidade de importar e exportar módulos personalizados.',
+'Image previews and MIME info for uploaded files in the media module will not be available.'=>'Prévias de imagens e informações MIME para arquivos carregados no módulo de mídia não estarão disponíveis.',
+'All other essential requirements were met.'=>'Todos os outros requisitos essenciais foram atendidas.',
+'The version of the PCRE library included in this build of PHP is {thisVer}, but {reqVer} or later is required.'=>'A versão da biblioteca PCRE incluídos nesta compilação do PHP é {thisVer} , mas {reqVer} ou posterior é necessário.',
+'The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will not work.'=>'A opção de configuração do PHP &quot;allow_url_fopen&quot; está desativado, além da extensão CURL faltando. Isso significa que não há nenhuma maneira possível para fazer solicitações HTTP e, portanto, atualizações de software não funcionará.',
+'Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will not work.'=>'Não foi possível alcançar o servidor de atualizações a partir deste servidor web. Isso pode ser um problema temporário. Se ele persistir, atualizações de software não funcionará.',
+'Security captchas and will not work, and the media module will not be able to detect or display the dimensions of uploaded images.'=>'Captchas de segurança e não vai funcionar, eo módulo de mídia não será capaz de detectar ou exibir as dimensões de imagens carregadas.',
+'Could not connect to host or select database.'=>'Não foi possível conectar-se a hospedar ou selecionar banco de dados.',
+'cannot create tables'=>'Não é possível criar tabelas',
+'cannot insert data'=>'Não é possível inserir dados',
+'cannot delete data'=>'Não é possível apagar os dados',
+'cannot alter tables'=>'não pode alterar tabelas',
+'cannot drop tables'=>'não pode cair tabelas',
+'Module "{module}" installed.'=>'Módulo &quot; {module} &quot;instalado.',
+'Error applying initial configuration'=>'Erro ao aplicar a configuração inicial',
+'Could not find database configuration script'=>'Não foi possível encontrar o script de configuração do banco de dados',
+'Could not {stage}. SQL statement "{sql}" from {file} failed'=>'Não podia {stage} . Instrução SQL &quot; {sql} &quot;de {file} não',
+'Could not {stage}'=>'Não poderia {stage}',
+'Could not find installation stage database script'=>'Não foi possível encontrar o script de instalação do banco de dados estágio',
+'Database connection error'=>'Erro de conexão de banco de dados',
+'Installation completed {time}.'=>'A instalação foi concluída {time} .',
+'Able to connect to database'=>'Capaz de se conectar ao banco de dados',
+'Created new tables for X2Engine'=>'Criadas novas tabelas para X2Engine',
+'Created login for admin account'=>'Entrar Criado por conta de administrador',
+'Created config file'=>'Arquivo de configuração criado',
+'Next Steps'=>'Próximos Passos',
+'Log in to app'=>'Efetue login no aplicativo',
+'Create new users'=>'Criar novos usuários',
+'Set location'=>'Definir local',
+'Explore the app'=>'Conheça o aplicativo',
+'Dropped old X2Engine tables (if any)'=>'Tabelas X2Engine velhos descartados (se houver)',
+'Set up Cron Job to deal with action reminders (see readme)'=>'Configure Cron Job para lidar com lembretes de ação (veja readme)',
+'The path defined in session.save_path ({ssp}) is not writable. Uploading files via the media module will not work.'=>'O caminho definido na session.save_path ( {ssp} ) não é gravável. Upload de arquivos através do módulo de mídia não vai funcionar.',
+'The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2CRM, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.'=>'O &quot;openssl&quot; e bibliotecas &quot;mcrypt&quot; não estão disponíveis. Se as credenciais de aplicação (ou seja, senhas de contas de e-mail) são inseridos no X2CRM, eles serão armazenados no banco de dados em texto simples (sem criptografia alguma). Assim, se o banco de dados for comprometida, as senhas poderão ser lidos por terceiros não autorizados.',
+'Connection successful!'=>'Conexão bem-sucedida!',
+'This webserver can run X2CRM!'=>'Este servidor pode executar X2CRM!',
+'Permissions and/or ownership of uploaded files do not permit PHP processes run by the webserver to write files.'=>'Permissões e / ou de propriedade dos arquivos enviados não permitem processos PHP são executados pelo servidor web para gravar arquivos.',
+'The function proc_open and/or the "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.'=>'O proc_open função e / ou a &quot;mysqldump&quot; e &quot;mysql&quot; utilitários de linha de comando não estão disponíveis no sistema. X2CRM não será capaz de fazer automaticamente uma cópia de segurança de seu banco de dados durante as atualizações de software ou restaurar automaticamente o banco de dados em caso de falha na atualização.',
+'Security captchas will not work, and the media module will not be able to detect or display the dimensions of uploaded images.'=>'Captchas de segurança não vai funcionar, eo módulo de mídia não será capaz de detectar ou exibir as dimensões de imagens carregadas.',
 );

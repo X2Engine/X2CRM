@@ -73,7 +73,7 @@ function trimText($text) {
 
 <?php $this->widget('application.components.X2GridView', array(
 	'id'=>'bugReports-grid',
-	'title'=>Yii::t('bugReports','Bug Reports'),
+	'title'=>Yii::t('app','Bug Reports'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
 	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 
@@ -98,7 +98,7 @@ function trimText($text) {
 		),
 		'description'=>array(
 			'name'=>'description',
-			'header'=>Yii::t('bugReports','Description'),
+			'header'=>Yii::t('app','Description'),
 			'value'=>'trimText($data->description)',
 			'type'=>'raw',
 		),

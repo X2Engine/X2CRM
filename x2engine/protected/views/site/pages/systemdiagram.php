@@ -37,8 +37,8 @@
 
 <?php
 $this->layout = '//layouts/column3';
-$this->pageTitle=Yii::app()->name . ' - ' . Yii::t('app','System Diagram');
-echo "<div class='page-title'><h2>".Yii::t('app','X2CRM 3.0 System Diagram')."</h2></div>";
+$this->pageTitle=Yii::app()->name . ' - ' . Yii::t('admin','System Diagram');
+echo "<div class='page-title'><h2>".Yii::t('admin','X2CRM 3.0 System Diagram')."</h2></div>";
 echo "<div class='form'>";
 echo CHtml::image(Yii::app()->theme->baseUrl.'/images/map3.png','',array('style'=>'display:block;margin-left:auto;margin-right:auto;'));
 echo "</div>";

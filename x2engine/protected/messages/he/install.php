@@ -1,39 +1,4 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Install screen
 'Install X2EngineCRM'=>'התקנה X2EngineCRM',
@@ -55,7 +20,6 @@ return array (
 
 'Application Name'=>'היישום שם',
 'Default Language'=>'שפת ברירת המחדל',
-'Currency'=>'מטבע',
 'Admin Password'=>'Admin סיסמה',
 'Confirm Password'=>'אישור סיסמה',
 'Administrator Email'=>'מנהל דוא"ל',
@@ -66,21 +30,15 @@ return array (
 'This release only supports MySQL. Please create a database before installing.'=>'מהדורה זו תומכת MySQL בלבד. אנא ליצור מסד נתונים לפני ההתקנה.',
 'Host Name'=>'שם מארח',
 'Database Name'=>'שם מסד הנתונים',
-'Username'=>'שם משתמש',
-'Password'=>'סיסמה',
 
 // Software updates
 'Software Updates'=>'עדכוני תוכנה',
 'Notify me of software updates'=>'הודע לי על עדכוני תוכנה',
-'First Name'=>'שם פרטיים',
-'Last Name'=>'שם משפחה',
-'Email'=>'דוא"ל',
 'Company'=>'חברה',
 'Position'=>'עמדה',
 'How you found X2EngineCRM'=>'X2EngineCRM איך מצא את ',
 'Phone Number'=>'מספר טלפון',
 'Subscribe to the newsletter'=>'הירשם לניוזלטר',
-'Comments'=>'תגובות',
 'Request a follow-up contact'=>'בקש מגע מעקב',
 'Software Updates'=>'עדכוני תוכנה',
 'Please help us improve X2EngineCRM by providing the following information:'=>'אנא עזרו לנו לשפר X2EngineCRM על ידי מתן המידע הבא:',
@@ -88,12 +46,23 @@ return array (
 'Optional Information'=>'מידע אופציונלי',
 'Could not connect to the updates server at this time.'=>'לא ניתן להתחבר לשרת העדכונים בשלב זה.',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'אתה יכול להמשיך בהתקנת היישום בלא לאפשר עדכונים ונסה שוב מאוחר יותר על ידי הולך לתוך "הגדרות כלליות" תחת "ההגדרות" App סעיפים בקונסולת הניהול.',
+'Product Key'=>'מפתח מוצר',
+'Registration'=>'הרשמה',
+'Software registration succeeded.'=>'רישום תוכנה הצליח.',
+'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'כדי לקבל עדכוני תוכנה מX2Engine, נא לרשום את העותק של X2EngineCRM שלך:',
+'For support or sales inquiries, please contact us'=>'לבירורים תמיכה או מכירות, אנא צור איתנו קשר',
+'If different from Administrator Email'=>'אם שונה מדואר אלקטרוני למנהל',
+'Intended use of X2EngineCRM, goals, etc.'=>'שימוש מיועד של X2EngineCRM, מטרות, וכו &#39;',
+'Make sure you have an active internet connection. If the problem persists, please contact us'=>'ודא שיש לך חיבור לאינטרנט פעיל. אם הבעיה נמשכת, נא צור עימנו קשר',
+'-----'=>'-----',
+'Sourceforge'=>'SourceForge',
+'Github'=>'GitHub',
+'News Outlet'=>'חדשות אאוטלט',
 
 'Install'=>'להתקין',
 
 'For help or more information - X2Engine.com'=>'לקבלת עזרה או מידע נוסף - X2Engine.com',
 
-'All Rights Reserved.'=>'כל הזכויות שמורות.',
 
 // Splash screen
 'Installation Complete!'=>'להשלים את ההתקנה!',
@@ -101,4 +70,49 @@ return array (
 'X2Engine successfully installed on your web server!  You may now log in with username "admin" and the password you provided during the install.'=>'X2Engine הותקן בהצלחה בשרת האינטרנט שלך! כעת ניתן להיכנס עם שם משתמש "מנהל" לבין הסיסמה שסיפקת במהלך ההתקנה.',
 'If you chose to install Gii, you can find it <a href="index.php/gii/">here</a>. The password is the same as your admin password.'=>'אם בחרת להתקין Gii, אתה יכול למצוא אותו <a href="index.php/gii/"> כאן </a>. הסיסמה זהה סיסמת המנהל שלך.',
 
+'This directory is not writable by PHP processes run by the webserver.'=>'ספרייה זו אינה ניתן לכתיבה על ידי תהליכי PHP המנוהלים על ידי שרת האינטרנט.',
+'PHP scripts are not permitted to run the function "chmod".'=>'הסקריפטים PHP אינם רשאים להפעיל את הפונקציה &quot;chmod&quot;.',
+'Time zone widget will not work'=>'יישומון אזור הזמן לא יעבוד',
+'Contact views may be inaccessible'=>'נופי קשר עשויים להיות נגישים',
+'Google integration will not work'=>'גוגל אינטגרציה לא תעבוד',
+'Built-in error reporter will not work'=>'Built-in כתב שגיאה לא יעבוד',
+'The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.'=>'האפשרות &quot;allow_url_fopen&quot; ההגדרות ה-PHP אינו זמין. CURL ישמש לביצוע כל בקשות HTTP במהלך עדכונים.',
+'This will result in the inability to import and export custom modules.'=>'זה יגרום חוסר היכולת לייבא ולייצא מודולים מותאמים אישית.',
+'Image previews and MIME info for uploaded files in the media module will not be available.'=>'תצוגה מקדימה של תמונה ומידע MIME עבור קבצים שהועלו במודול התקשורת לא יהיו זמין.',
+'All other essential requirements were met.'=>'כל הדרישות חיוניות האחרות נתקלו.',
+'The version of the PCRE library included in this build of PHP is {thisVer}, but {reqVer} or later is required.'=>'הגרסה של ספריית PCRE נכללה בזה לבנות של PHP היא {thisVer} אבל {reqVer} או גרסה מאוחרת יותר.',
+'The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will not work.'=>'האפשרות &quot;allow_url_fopen&quot; תצורת PHP מושבתים בנוסף להארכת CURL החסרה. משמעות דבר היא שאין כל דרך אפשרית כדי להפוך את בקשות HTTP, ולכן עדכוני תוכנה לא יעבדו.',
+'Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will not work.'=>'לא הצליח להגיע לשרת עדכונים מהשרת האינטרנט הזה. זו עשויה להיות בעיה זמנית. אם זה נמשך, עדכוני תוכנה לא יעבדו.',
+'Could not connect to host or select database.'=>'לא מצליח להתחבר לשרת או בחר מסד נתונים.',
+'cannot create tables'=>'לא ניתן ליצור טבלאות',
+'cannot insert data'=>'לא ניתן להוסיף נתונים',
+'cannot delete data'=>'לא יכול למחוק את הנתונים',
+'cannot alter tables'=>'לא יכול לשנות את הלוחות',
+'cannot drop tables'=>'לא יכול להוריד טבלאות',
+'Module "{module}" installed.'=>'מודול {module} מותקן.',
+'Error applying initial configuration'=>'שגיאה בעת החלת הגדרת תצורה ראשונית',
+'Could not find database configuration script'=>'לא הצליח למצוא את תסריט תצורת מסד נתונים',
+'Could not {stage}. SQL statement "{sql}" from {file} failed'=>'לא יכל {stage} משפט SQL {sql} מ {file} נכשל',
+'Could not {stage}'=>'לא יכל {stage}',
+'Could not find installation stage database script'=>'לא הצליח למצוא את תסריט מסד שלב התקנה',
+'Database connection error'=>'שגיאת חיבור למסד נתונים',
+'Installation completed {time}.'=>'התקנה הושלמה {time}',
+'Able to connect to database'=>'תוכל להתחבר למסד הנתונים',
+'Created new tables for X2Engine'=>'לוחות חדשים שנוצרו עבור X2Engine',
+'Created login for admin account'=>'כניסה נוצרה עבור חשבון מנהל',
+'Created config file'=>'יצר קובץ config',
+'Next Steps'=>'השלבים הבאים',
+'Log in to app'=>'התחבר לאפליקציה',
+'Create new users'=>'ליצור משתמשים חדשים',
+'Set location'=>'להגדיר את המיקום',
+'Explore the app'=>'חקור את האפליקציה',
+'Dropped old X2Engine tables (if any)'=>'שולחנות X2Engine ישנים ירד (אם בכלל)',
+'Set up Cron Job to deal with action reminders (see readme)'=>'להגדיר את התפקיד של Cron להתמודד עם תזכורות פעולה (ראה readme)',
+'The path defined in session.save_path ({ssp}) is not writable. Uploading files via the media module will not work.'=>'הנתיב המוגדר בsession.save_path {ssp} אינו ניתן לכתיבה. העלאת קבצים באמצעות מודול התקשורת לא יעבדו.',
+'The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2CRM, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.'=>'&quot;OpenSSL&quot; וספריות &quot;mcrypt&quot; אינם זמינים. אם כל אישורי יישומים (סיסמאות חשבון הדוא&quot;ל כלומר) הם נכנסו לתוך X2CRM, הם יאוחסנו במאגר המידע (ללא כל הצפנה כלשהי) בטקסט רגיל. לכן, אם מסד הנתונים הוא אי פעם נפגעו, סיסמאות אלה יהיו קריאים על ידי גורמים לא מורשים.',
+'Connection successful!'=>'חיבור מוצלח!',
+'This webserver can run X2CRM!'=>'שרת זה יכול לרוץ X2CRM!',
+'Permissions and/or ownership of uploaded files do not permit PHP processes run by the webserver to write files.'=>'הרשאות ו / או בעלות על קבצים שהועלו אינו מאפשרת תהליכי PHP המנוהלים על ידי שרת האינטרנט כדי לכתוב קבצים.',
+'The function proc_open and/or the "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.'=>'Proc_open התפקוד ו / או &quot;mysqldump&quot; ושירותים מקוונים &quot;MySQL&quot; הפקודה אינם זמינים במערכת זו. X2CRM לא תוכל לעשות באופן אוטומטי גיבוי של מסד הנתונים שלה במהלך עדכוני תוכנה, או באופן אוטומטי לשחזר את מסד הנתונים במקרה של עדכון שנכשל.',
+'Security captchas will not work, and the media module will not be able to detect or display the dimensions of uploaded images.'=>'captchas הביטחון לא יעבוד, ומודול התקשורת לא יהיה מסוגל לזהות או להציג את הממדים של תמונות שהועלו.',
 );

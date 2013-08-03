@@ -59,7 +59,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'type'=>'raw',
 		),
 		array(
-			'name'=>'Stages',
+			'name'=>Yii::t('workflow','Stages'),
 			'value'=>'X2Model::model("WorkflowStage")->countByAttributes(array("workflowId"=>$data->id))',
 			'type'=>'raw',
 		),

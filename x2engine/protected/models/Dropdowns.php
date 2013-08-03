@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -43,106 +44,113 @@
  * @property string $options
  */
 class Dropdowns extends CActiveRecord {
-	/**
-	 * Returns the static model of the specified AR class.
-	 * @return Dropdowns the static model class
-	 */
-	public static function model($className=__CLASS__) {
-		return parent::model($className);
-	}
 
-	/**
-	 * @return string the associated database table name
-	 */
-	public function tableName() {
-		return 'x2_dropdowns';
-	}
+    /**
+     * Returns the static model of the specified AR class.
+     * @return Dropdowns the static model class
+     */
+    public static function model($className = __CLASS__){
+        return parent::model($className);
+    }
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('name', 'length', 'max'=>250),
-			array('options', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, name, options', 'safe', 'on'=>'search'),
-		);
-	}
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName(){
+        return 'x2_dropdowns';
+    }
 
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-		);
-	}
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules(){
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('name', 'length', 'max' => 250),
+            array('options', 'safe'),
+            // The following rule is used by search().
+            // Please remove those attributes that should not be searched.
+            array('id, name, options', 'safe', 'on' => 'search'),
+        );
+    }
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels() {
-		return array(
-			'id' => 'ID',
-			'name' => 'Name',
-			'options' => 'Options',
-		);
-	}
+    /**
+     * @return array relational rules.
+     */
+    public function relations(){
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array(
+        );
+    }
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels(){
+        return array(
+            'id' => Yii::t('admin', 'ID'),
+            'name' => Yii::t('admin', 'Name'),
+            'options' => Yii::t('admin', 'Options'),
+        );
+    }
 
-		$criteria=new CDbCriteria;
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     */
+    public function search(){
+        // Warning: Please modify the following code to remove attributes that
+        // should not be searched.
 
-		$criteria->compare('id',$this->id);
-		$criteria->compare('name',$this->name,true);
-		$criteria->compare('options',$this->options,true);
+        $criteria = new CDbCriteria;
 
-		return new CActiveDataProvider(get_class($this), array(
-			'criteria'=>$criteria,
-		));
-	}
+        $criteria->compare('id', $this->id);
+        $criteria->compare('name', $this->name, true);
+        $criteria->compare('options', $this->options, true);
 
-	public static function getItems($id,$translationPack=null) {
-		$dropdowns = array();
-		$data = Yii::app()->db->createCommand()
-			->select('options')
-			->from('x2_dropdowns')
-			->where('id=:id')
-			->queryScalar(array(':id'=>$id));
-		if(isset($data)) {
-			$dropdowns = CJSON::decode($data);
-			if(!isset($dropdowns))
-				$dropdowns = array();
-		}
-		return $dropdowns;
-	}
+        return new CActiveDataProvider(get_class($this), array(
+                    'criteria' => $criteria,
+                ));
+    }
 
-	public function getDropdownValue($id,$index){
-		$arr=Dropdowns::getItems($id);
-		if(isset($arr[$index])){
-			return $arr[$index];
-		}else{
-			return $index;
-		}
-	}
+    public static function getItems($id, $translationPack = null){
+        $dropdowns = array();
+        $data = Yii::app()->db->createCommand()
+                ->select('options')
+                ->from('x2_dropdowns')
+                ->where('id=:id')
+                ->queryScalar(array(':id' => $id));
+        if(isset($data)){
+            $dropdowns = CJSON::decode($data);
+            if(!isset($dropdowns))
+                $dropdowns = array();
+            if(!empty($translationPack)){
+                foreach($dropdowns as &$item){
+                    $item = Yii::t($translationPack, $item);
+                }
+            }
+        }
+        return $dropdowns;
+    }
 
-    public function getDropdownIndex($id,$key){
-		$arr=Dropdowns::getItems($id);
-		if(array_search($key,$arr)!==false){
-			return array_search($key,$arr);
-		}else{
-			return $key;
-		}
-	}
+    public function getDropdownValue($id, $index){
+        $arr = Dropdowns::getItems($id);
+        if(isset($arr[$index])){
+            return $arr[$index];
+        }else{
+            return $index;
+        }
+    }
+
+    public function getDropdownIndex($id, $key){
+        $arr = Dropdowns::getItems($id);
+        if(array_search($key, $arr) !== false){
+            return array_search($key, $arr);
+        }else{
+            return $key;
+        }
+    }
+
 }

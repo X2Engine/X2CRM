@@ -36,32 +36,32 @@
 
 /**
  * X2FlowAction that adds, removes or clears all tags on a record
- * 
+ *
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowRecordTag extends X2FlowAction {
 	public $title = 'Add or Remove Tags';
 	public $info = 'Enter a commna-separated list of tags to add to the record';
-	
+
 	public function paramRules() {
 		$tagActions = array(
-			'add' => 'Add',
-			'remove' => 'Remove',
-			'clear' => 'Clear All',
+			'add' => Yii::t('studio','Add'),
+			'remove' => Yii::t('studio','Remove'),
+			'clear' => Yii::t('studio','Clear All'),
 		);
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
 			'modelRequired' => 1,
 			'options' => array(
-				array('name'=>'tags','label'=>'Tags','type'=>'tags'),
-				array('name'=>'action','label'=>'Action','type'=>'dropdown','options'=>$tagActions),
+				array('name'=>'tags','label'=>Yii::t('studio','Tags'),'type'=>'tags'),
+				array('name'=>'action','label'=>Yii::t('studio','Action'),'type'=>'dropdown','options'=>$tagActions),
 			));
 	}
-	
+
 	public function execute(&$params) {
 		$tags = Tags::parseTags($this->parseOption('tags',$params));
-		
+
 		switch($this->parseOption('action',$params)) {
 			case 'add':
 				return $params['model']->addTags($tags);

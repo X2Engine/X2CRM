@@ -62,33 +62,33 @@ $timeLengths = array(
 	300=>Yii::t('app','{n} min',5),
 	900=>Yii::t('app','{n} min',15),
 	1800=>Yii::t('app','{n} min',30),
-	3600=>Yii::t('app','{n} hour|{n} hours',1),
-	7200=>Yii::t('app','{n} hour|{n} hours',2),
-	28800=>Yii::t('app','{n} hour|{n} hours',8),
-	86400=>Yii::t('app','{n} day|{n} days',1),
-	172800=>Yii::t('app','{n} day|{n} days',2),
-	432000=>Yii::t('app','{n} day|{n} days',5),
-	604800=>Yii::t('app','{n} day|{n} days',7),
-	1209600=>Yii::t('app','{n} day|{n} days',14),
-	2592000=>Yii::t('app','{n} month|{n} months',1),
-	7776000=>Yii::t('app','{n} month|{n} months',3),
-	15552000=>Yii::t('app','{n} month|{n} months',6),
-	31536000=>Yii::t('app','{n} year|{n} years',1),
-	-1=>Yii::t('admin','Unlimited'),
+	3600=>Yii::t('app','{n} hour',1),
+	7200=>Yii::t('app','{n} hours',2),
+	28800=>Yii::t('app','{n} hours',8),
+	86400=>Yii::t('app','{n} day',1),
+	172800=>Yii::t('app','{n} days',2),
+	432000=>Yii::t('app','{n} days',5),
+	604800=>Yii::t('app','{n} days',7),
+	1209600=>Yii::t('app','{n} days',14),
+	2592000=>Yii::t('app','{n} month',1),
+	7776000=>Yii::t('app','{n} months',3),
+	15552000=>Yii::t('app','{n} months',6),
+	31536000=>Yii::t('app','{n} year',1),
+	-1=>Yii::t('app','Unlimited'),
 );
 $dateLengths = array(
-	1=>Yii::t('app','{n} day|{n} days',1),
-	2=>Yii::t('app','{n} day|{n} days',2),
-	3=>Yii::t('app','{n} day|{n} days',3),
-	4=>Yii::t('app','{n} day|{n} days',4),
-	5=>Yii::t('app','{n} day|{n} days',5),
-	7=>Yii::t('app','{n} day|{n} days',7),
-	14=>Yii::t('app','{n} day|{n} days',14),
-	30=>Yii::t('app','{n} month|{n} months',1),
-	90=>Yii::t('app','{n} month|{n} months',3),
-	182=>Yii::t('app','{n} month|{n} months',6),
-	365=>Yii::t('app','{n} year|{n} years',1),
-	-1=>Yii::t('admin','Unlimited'),
+	1=>Yii::t('app','{n} day',1),
+	2=>Yii::t('app','{n} days',2),
+	3=>Yii::t('app','{n} days',3),
+	4=>Yii::t('app','{n} days',4),
+	5=>Yii::t('app','{n} days',5),
+	7=>Yii::t('app','{n} days',7),
+	14=>Yii::t('app','{n} days',14),
+	30=>Yii::t('app','{n} month',1),
+	90=>Yii::t('app','{n} months',3),
+	182=>Yii::t('app','{n} months',6),
+	365=>Yii::t('app','{n} year',1),
+	-1=>Yii::t('app','Unlimited'),
 );
 
 
@@ -99,7 +99,7 @@ if($backdateWindowIndex === false)
 	$backdateWindowIndex = count($timeLengths);	// default to last value (unlimited)
 else
 	$backdateWindowIndex++;
-	
+
 $backdateRangeIndex = array_search($model->workflowBackdateRange,array_keys($dateLengths));
 if($backdateRangeIndex === false)
 	$backdateRangeIndex = count($timeLengths);
@@ -116,7 +116,7 @@ $form = $this->beginWidget('CActiveForm', array(
 ));
 ?>
 	<div class="form">
-		<?php echo $form->labelEx($model,'workflowBackdateWindow'); 
+		<?php echo $form->labelEx($model,'workflowBackdateWindow');
 		$this->widget('zii.widgets.jui.CJuiSlider', array(
 			'value'=>$backdateWindowIndex,
 			// additional javascript options for the slider plugin
@@ -168,8 +168,8 @@ $form = $this->beginWidget('CActiveForm', array(
 	</div>
 
 
-	
-	
+
+
 	<?php //echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button'))."\n";?>
 <?php $this->endWidget();?>
 </div>

@@ -355,11 +355,17 @@ Please click on the link below to create an account at X2CRM!
                 $link=(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/users/createAccount?key='.$key);
 				$mail=new InlineEmail;
                 $mail->to=$email;
+				// Get email password
+				$cred = Credentials::model()->getDefaultUserAccount(Credentials::$sysUseId['systemResponseEmail'],'email');
+				if($cred==Credentials::LEGACY_ID)
+					$cred = Credentials::model()->getDefaultUserAccount(Yii::app()->user->id,'email');
+				if($cred != Credentials::LEGACY_ID)
+					$mail->credId = $cred;
                 $mail->subject=$subject;
                 $mail->message=$body.$link;
                 $mail->contactFlag=false;
                 if($mail->prepareBody()){
-                    $mail->send();
+                    $mail->deliver();
                 }else{
                 }
 			}

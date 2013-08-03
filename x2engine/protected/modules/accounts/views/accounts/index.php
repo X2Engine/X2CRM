@@ -70,7 +70,7 @@ $this->widget('application.components.X2GridView', array(
 	'id'=>'accounts-grid',
 	'title'=>Yii::t('accounts','Accounts'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
-	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
+	'template'=> '<div class="page-title icon accounts">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,

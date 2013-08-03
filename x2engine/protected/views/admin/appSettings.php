@@ -64,7 +64,7 @@ $('#currency').change(function() {
 	'enableAjaxValidation' => false,
 	    ));
     ?>
-    
+
     <div class="form">
 	<?php
 	echo $form->labelEx($model, 'chatPollTime');
@@ -128,32 +128,32 @@ $('#currency').change(function() {
     <?php echo $form->checkBox($model,'sessionLog'); ?>
     </div>
     <div class="form">
-        <label for="Admin_quoteStrictLock"><?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?> <span class="x2-hint" title="Enabling strict lock completely disables locked quotes from being edited. While this setting is off, there will be a confirm dialog before editing a locked quote.">[?]</span></label>
+        <label for="Admin_quoteStrictLock"><?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?> <span class="x2-hint" title="<?php echo Yii::t('admin', 'Enabling strict lock completely disables locked quotes from being edited. While this setting is off, there will be a confirm dialog before editing a locked quote.'); ?>">[?]</span></label>
         <?php echo $form->checkBox($model, 'quoteStrictLock'); ?>
         <br><br>
-        <label for="Admin_userActionBackdating"><?php echo Yii::t('admin', 'Allow Users to Backdate Actions'); ?> <span class="x2-hint" title="Enabling action backdating will allow any user to change the automatically set date fields (i.e. create date). While this setting is off, only those with Admin access to the Actions module will be allowed to backdate actions.">[?]</span></label>
+        <label for="Admin_userActionBackdating"><?php echo Yii::t('admin', 'Allow Users to Backdate Actions'); ?> <span class="x2-hint" title="<?php echo Yii::t('admin', 'Enabling action backdating will allow any user to change the automatically set date fields (i.e. create date). While this setting is off, only those with Admin access to the Actions module will be allowed to backdate actions.'); ?>">[?]</span></label>
         <?php echo $form->checkBox($model, 'userActionBackdating'); ?>
     </div>
     <div class="form">
         <?php echo $form->labelEx($model,'corporateAddress'); ?>
         <?php echo Yii::t('admin','Enter your corporate address to enable directions on the Google Maps widget.') ?>
-        <?php echo $form->textArea($model, 'corporateAddress', array('id' => 'corporateAddress','style'=>'height:100px;')); ?> 
+        <?php echo $form->textArea($model, 'corporateAddress', array('id' => 'corporateAddress','style'=>'height:100px;')); ?>
     </div>
     <div class="form">
         <?php echo $form->labelEx($model,'properCaseNames'); ?>
         <?php echo Yii::t('admin','Attempt to format Contact names to have proper case?') ?><br>
-        <?php echo $form->dropDownList($model, 'properCaseNames' , array(1=>Yii::t('app','Yes'),0=>Yii::t('app','No'))); ?> 
+        <?php echo $form->dropDownList($model, 'properCaseNames' , array(1=>Yii::t('app','Yes'),0=>Yii::t('app','No'))); ?>
         <br><br>
         <?php echo $form->labelEx($model,'contactNameFormat'); ?>
         <?php echo Yii::t('admin','Select a name format to use for Contact names throughout the app.') ?><br>
-        <?php echo $form->dropDownList($model, 'contactNameFormat', array('firstName lastName'=>'{'.Yii::t('contacts','First Name').'} {'.Yii::t('contacts','Last Name').'}','lastName, firstName'=>'{'.Yii::t('contacts','Last Name').'}, {'.Yii::t('contacts','First Name').'}')); ?> 
+        <?php echo $form->dropDownList($model, 'contactNameFormat', array('firstName lastName'=>'{'.Yii::t('contacts','First Name').'} {'.Yii::t('contacts','Last Name').'}','lastName, firstName'=>'{'.Yii::t('contacts','Last Name').'}, {'.Yii::t('contacts','First Name').'}')); ?>
     </div>
-	
+
     <div class="form">
         <?php echo $form->labelEx($model,'currency'); ?>
         <?php echo Yii::t('admin','Select a default currency for quotes and invoices.') ?><br>
 			<select name="currency" id="currency">
-				<?php 
+				<?php
 				$curFound = false;
 				foreach(Yii::app()->params->supportedCurrencies as $currency): ?>
 				<option value="<?php echo $currency ?>"<?php if($model->currency==$currency) {$curFound = true;echo ' selected="true"';} ?>><?php echo $currency; ?></option>
@@ -163,7 +163,7 @@ $('#currency').change(function() {
 			<input type="text" name="currency2" id="currency2" style="width:120px;<?php if ($curFound) echo 'display:none;'; ?>" value="<?php echo $curFound?'':$model->currency; ?>" />
     </div>
 	<div class="form">
-		<?php 
+		<?php
 		foreach (array('public', 'internal') as $type) {
 			echo $form->labelEx($model, "gaTracking_$type");
 			echo $form->textField($model, "gaTracking_$type", array('id' => "gaTracking_$type"));
@@ -172,11 +172,11 @@ $('#currency').change(function() {
 		echo Yii::t('admin','Enter property IDs to enable Google Analytics tracking. The public ID will be used on publicly-accessible web lead and service case forms. The internal one will be used within X2CRM, for tracking the activity of authenticated users.');
 		?>
 	</div>
-	
+
 	<div class="error">
 		<?php echo $form->errorSummary($model); ?>
 	</div>
-	
+
     <?php echo CHtml::submitButton(Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button')) . "\n"; ?>
     <?php //echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button'))."\n"; ?>
     <?php $this->endWidget(); ?>

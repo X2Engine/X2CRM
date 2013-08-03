@@ -249,6 +249,8 @@ function completeAction(id, publisher){
                 });
             }
         },
+		show: 'fade',
+		hide: 'fade',
         height:'auto',
         width:450,
         resizable:false

@@ -1,71 +1,13 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Action Attributes
-'ID'=>'ID',
-'Assigned To'=>'Zugeordnet Zu',
 'Action Description'=>'Aktion Beschreibung',
-'Description'=>'Beschreibung',
-'Visibility'=>'Sichtbarkeit',
-'Association'=>'Verbindung',
-'Association Type'=>'Verbindungstyp',
-'Association Name'=>'Verbindungsnamen',
 'Due Date'=>'Fälligkeitsdatum',
-'Priority'=>'Priorität',
 'Action Type'=>'Aktionstyp',
-'Create Date'=>'Erstellen Datum',
-'Complete'=>'Fertig',
 'Reminder'=>'Erinnerung',
-'Completed By'=>'Ausgefüllt Von',
 'Complete Date'=>'Komplettiere Datum',
-'Last Updated'=>'Zuletzt Aktualisiert',
-'Updated By'=>'Aktualisiert Von',
-'Low'=>'Niedrig',
-'Medium'=>'Medium',
-'High'=>'Hoch',
-'Public'=>'Öffentlichkeit',
-'Private'=>'Privat',
-'No'=>'Nein',
-'Yes'=>'Ja',
 'Date Completed'=>'Abschlussdatum',
 'All Day'=>'Ganztägig',
-'Color'=>'Farbe',
-'Start Date'=>'Startdatum',
-'End Date'=>'Enddatum',
 'User\'s Group'=>'Benutzerhandbuch Gruppe',
 
 // Colors
@@ -77,8 +19,6 @@ return array (
 
 // Actions Nav
 'All Actions'=>'Alle Aktionen',
-'Create Lead'=>'Erstelle Akquise',
-'Create Action'=>'Erstelle Aktion',
 'View Action'=>'Zeige Aktion',
 'Update Action'=>'Aktualisiere Aktion',
 'Complete Action'=>'Ändere Aktion',
@@ -89,14 +29,13 @@ return array (
 'New Action'=>'Neue Aktion',
 'New Comment'=>'Neuer Kommentar',
 'Publisher'=>'Verleger',
-'Update'=>'Aktualisieren',
 'Complete Selected'=>'Füllen Gewählte',
 'Uncomplete Selected'=>'Unvollständige Gewählte',
 'Show Actions'=>'Zeige Aktionen',
-'All'=>'Alle',
-'Delete'=>'Löschen',
 'Overdue'=>'überfällig',
 'Edit Action'=>'Aktion Bearbeiten',
+'Action List'=>'Aktionsliste',
+'Switch to List'=>'Wechseln Sie zur Liste',
 
 // Actions Titles
 'Manage Actions'=>'Aktionen Verwalten',
@@ -105,24 +44,21 @@ return array (
 'Create a New Lead'=>'Erstellen eine Neue Akquise',
 'View Action'=>'Zeige Aktion',
 'Update Action:'=>'Aktualisiere Aktion:',
-'Action'=>'Aktion',
 'Action: '=>'Aktion:',
 'Today\'s Actions'=>'Heutige Aktionen',
-'My Actions'=>'Meine Aktionen',
 'All My Actions'=>'Alle Meine Aktionen',
 'Everyone\'s Actions'=>'Alle Aktionen',
 'Delete Action'=>'Aktion Löschen',
-'Share Action'=>'Teile Aktion',
-'Create'=>'Schaffen',
 'New Event'=>'Neuen Termin',
 'Call:'=>'Rufen Sie:',
-'Comment'=>'Kommentar',
+'Back to Top'=>'Zurück zum Anfang',
+'Filters'=>'Filter',
+'Switch to Grid'=>'Wechseln Sie zu Grid',
 
 
 // Misc
 'Email Message:'=>'E-Mail Nachricht:',
 'Attachment:'=>'Anhang:',
-'Assigned to {name}'=>'Zugewiesen an {name}',
 'Completed by {name}'=>'Fertiggestellt durch {name}',
 'Completed {date}'=>'Abgeschlossene {date}',
 'Completion Notes'=>'Fertigstellung Hinweise',
@@ -132,30 +68,70 @@ return array (
 'FINISHED'=>'FERTIG',
 'Incomplete'=>'Unvollständig',
 'INCOMPLETE'=>'UNVOLLSTÄNDIGE',
-'Status'=>'Status',
-'Contact Info'=>'Kontakt Info',
-'View'=>'Ansehen',
 'Overdue {time}'=>'Überfällig {time}',
 'Due {date}'=>'Aufgrund {date} ',
 'Please enter a description.'=>'Bitte geben Sie eine Beschreibung ein.',
-
-// Create Action Types
-'None'=>'Keine',
-'Contact'=>'Kontakt',
-'Account'=>'Konto',
-'Project'=>'Projekt',
-'Case'=>'Fall',
-'Opportunity'=>'Verkauf',
+'This action has been marked as sticky and will remain at the top of the list.'=>'Diese Aktion wurde als sticky markiert worden und wird am Anfang der Liste bleiben.',
+'Show me'=>'Zeigen Sie mir',
+'unfinished'=>'unvollendet',
+'complete'=>'vervollständigen',
+'all'=>'alle',
+'Actions assigned to'=>'Aktionen zugewiesen',
+'me'=>'me',
+'me or anyone'=>'mir oder jemand',
+'everyone'=>'jeder',
+'that'=>'dass',
+'are due'=>'sind aufgrund',
+'were created'=>'erstellt wurden',
+'tomorrow'=>'morgen',
+'this week'=>'diese Woche',
+'this month'=>'dieser Monat',
+'any time'=>'jederzeit',
+'between these dates'=>'zwischen diesen Daten',
+'and order them by'=>'und bestellen Sie sie durch',
+'descending'=>'absteigend',
+'ascending'=>'aufsteigend',
+'due date'=>'Fälligkeit',
+'create date'=>'Erstellungsdatum',
+'priority'=>'Priorität',
+'Due:'=>'Due:',
+'Completed:'=>'Abgeschlossen:',
+'Created:'=>'Erstellt:',
+'Please enter a valid association'=>'Bitte geben Sie eine gültige Assoziation',
+'Please enter a description or subject'=>'Bitte geben Sie eine Beschreibung oder Thema',
+'the assigned user'=>'die zugewiesene Benutzer',
+'me and the assigned user'=>'mir und dem zugeordneten Benutzer',
+'1 minute'=>'1 Minute',
+'5 minutes'=>'5 Minuten',
+'10 minutes'=>'10 Minuten',
+'15 minutes'=>'15 Minuten',
+'30 minutes'=>'30 Minuten',
+'1 hour'=>'1 Stunden',
+'Create a notification reminder for {user} {time} before this action is due'=>'Erstellen Sie eine Benachrichtigung Erinnerung für {user} {time}, bevor diese Aktion ist aufgrund',
+'Action Backdating'=>'Aktion Rückdatierung',
+'Action:'=>'Aktion:',
+'Action View Frame'=>'Action View Rahmen',
+'Associated Record'=>'Dazugehörigen Datensatz',
 
 // Action Reminder Email
 'No one'=>'Niemand',
 'Not specified'=>'Nicht angegeben',
 'Action Reminder:'=>'Aktion Erinnerung:',
 'Reminder, the following action is due'=>'Erinnerung, folgende aktion ist überfällig',
-'Description'=>'Beschreibung',
-'Type'=>'Typ',
 'Associations'=>'Verbindung',
 'Link to the action'=>'Link zur aktion',
 'Link to the'=>'Link zur',
 'Powered by '=>'Präsentiert von',
+'This contact visited your website'=>'Dieser Kontakt besucht Ihre Website',
+'No subject found'=>'Kein Titel gefunden',
+'Finished'=>'Fertig',
+'Update Event'=>'Aktualisieren Ereignis',
+'Link to the {type}'=>'Link zum {type}',
+'Action ID'=>'Aktions-ID',
+'Action Text'=>'Aktion Text',
+'Time'=>'Zeit',
+'color'=>'Farbe',
+'Remind Me'=>'Remind Me',
+'View Full Edit Page'=>'View Full Seite bearbeiten',
+'(Error displaying email)'=>'(Fehler bei der Darstellung E-Mail)',
 );

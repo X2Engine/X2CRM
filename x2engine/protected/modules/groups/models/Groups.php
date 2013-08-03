@@ -109,8 +109,8 @@ class Groups extends X2Model {
 	 */
 	public function attributeLabels() {
 		return array(
-			'id' => 'ID',
-			'name' => 'Name',
+			'id' => Yii::t('groups','ID'),
+			'name' => Yii::t('groups','Name'),
 		);
 	}
 

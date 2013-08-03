@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -40,32 +41,37 @@
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowRecordCreateAction extends X2FlowAction {
-	public $title = 'Create Action for Record';
-	public $info = 'Creates a new action associated with the record that triggered this flow.';
 
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'modelRequired' => 1,
-			'options' => array(
-				// array('name'=>'attributes'),
-				array('name'=>'subject','label'=>Yii::t('actions','Subject'),'optional'=>1),
-				array('name'=>'description','label'=>Yii::t('actions','Description'),'type'=>'text')
-			));
-	}
+    public $title = 'Create Action for Record';
+    public $info = 'Creates a new action associated with the record that triggered this flow.';
 
-	public function execute(&$params) {
-		$action = new Actions;
-		$action->associationType = lcfirst(get_class($params['model']));
-		$action->associationId = $params['model']->id;
-		$action->subject = $this->parseOption('subject',$params);
-		$action->actionDescription = $this->parseOption('description',$params);
-		$action->assignedTo = $params['model']->assignedTo;
-		$action->priority = $params['model']->priority;
-		$action->visibility = $params['model']->visibility;
+    public function paramRules(){
+        return array(
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
+            'modelRequired' => 1,
+            'options' => array(
+                // array('name'=>'attributes'),
+                array('name' => 'subject', 'label' => Yii::t('actions', 'Subject'), 'optional' => 1),
+                array('name' => 'description', 'label' => Yii::t('actions', 'Description'), 'type' => 'text')
+                ));
+    }
 
-		return $action->save();
-	}
+    public function execute(&$params){
+        $action = new Actions;
+        $action->associationType = lcfirst(get_class($params['model']));
+        $action->associationId = $params['model']->id;
+        $action->subject = $this->parseOption('subject', $params);
+        $action->actionDescription = $this->parseOption('description', $params);
+        if($params['model']->hasAttribute('assignedTo'))
+            $action->assignedTo = $params['model']->assignedTo;
+        if($params['model']->hasAttribute('priority'))
+            $action->priority = $params['model']->priority;
+        if($params['model']->hasAttribute('visibility'))
+            $action->visibility = $params['model']->visibility;
+
+        return $action->save();
+    }
+
 }
 

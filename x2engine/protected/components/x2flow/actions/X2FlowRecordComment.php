@@ -36,22 +36,22 @@
 
 /**
  * X2FlowAction that adds a comment to a record
- * 
+ *
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowRecordComment extends X2FlowAction {
 	public $title = 'Add Comment';
 	public $info = '';
-	
+
 	public function paramRules() {
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'model' => 'required',
 			'options'=>array(
-				array('name'=>'comment','label'=>'Comment','type'=>'text'),
+				array('name'=>'comment','label'=>Yii::t('studio','Comment'),'type'=>'text'),
 			));
 	}
-	
+
 	public function execute(&$params) {
 		$model = new Actions;
 		$model->type = 'note';
@@ -63,7 +63,7 @@ class X2FlowRecordComment extends X2FlowAction {
 		$model->visibility = $params['model']->visibility;
 		$action->createDate = time();
 		$action->completeDate = time();
-		
+
 		return $model->save();
 	}
 }

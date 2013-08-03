@@ -85,9 +85,9 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 	<div class="row">
             <?php echo $form->labelEx($model,'modelType'); ?>
-            <?php echo $form->dropDownList($model,'modelType',array('Actions'=>'Actions','Contacts'=>'Contacts','Opportunity'=>'Opportunities','Accounts'=>'Accounts','Quote'=>'Quotes', 'Services'=>'Services'),
+            <?php echo $form->dropDownList($model,'modelType',Admin::getModelList(),
                 array(
-                'empty'=>'Select a model',
+                'empty'=>Yii::t('admin','Select a model'),
                 'ajax' => array(
                 'type'=>'POST', //request type
                 'url'=>$this->createUrl('admin/getAttributes?criteria=1'), //url to call.
@@ -101,13 +101,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
         <div class="row">
             <?php echo $form->labelEx($model,'modelField'); ?>
-            <?php echo $form->dropDownList($model,'modelField',array(),array('empty'=>'Select a model first')); ?>
+            <?php echo $form->dropDownList($model,'modelField',array(),array('empty'=>Yii::t('admin','Select a model first'))); ?>
             <?php echo $form->error($model,'modelField'); ?>
         </div>
 
         <div class="row">
             <?php echo $form->labelEx($model,'comparisonOperator'); ?>
-            <?php echo $form->dropDownList($model,'comparisonOperator',array('='=>'=','<'=>'<','>'=>'>','change'=>'On Change'),array('empty'=>'Select a comparison operator.')); ?>
+            <?php echo $form->dropDownList($model,'comparisonOperator',array('='=>'=','<'=>'<','>'=>'>','change'=>'On Change'),array('empty'=>Yii::t('admin','Select a comparison operator.'))); ?>
             <?php echo $form->error($model,'comparisonOperator'); ?>
         </div>
 
@@ -125,7 +125,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
         <div class="row">
             <?php echo $form->labelEx($model,'type'); ?>
-            <?php echo $form->dropDownList($model,'type',array('notification'=>'Notification','action'=>'Action','assignment'=>'Assignment Change')); ?>
+            <?php echo $form->dropDownList($model,'type',array('notification'=>Yii::t('admin','Notification'),'action'=>Yii::t('admin','Action'),'assignment'=>Yii::t('admin','Assignment Change'))); ?>
             <?php echo $form->error($model,'type'); ?>
         </div>
 

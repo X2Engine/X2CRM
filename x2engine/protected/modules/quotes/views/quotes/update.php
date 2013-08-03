@@ -45,7 +45,7 @@ $this->actionMenu = $this->formatMenu(array(
 ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-<?php echo $quick?'':'<div class="page-title">'; ?>
+<?php echo $quick?'':'<div class="page-title icon quotes">'; ?>
 <h2><span class="no-bold"><?php echo ($model->type == 'invoice')? Yii::t('quotes','Update Invoice:') : Yii::t('quotes','Update Quote:'); ?></span> <?php echo $model->name==''?'#'.$model->id:$model->name; ?></h2>
 <?php if(!$quick): ?>
 <a class="x2-button right" href="javascript:void(0);" onclick="$('#save-button').click();"><?php echo Yii::t('app','Save'); ?></a>

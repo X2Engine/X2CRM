@@ -37,6 +37,7 @@
 $yii=dirname(__FILE__).'/framework/yii.php';
 defined('YII_DEBUG') or define('YII_DEBUG',true);
 defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
+defined('PRO_VERSION') or define('PRO_VERSION',true);
 
 require_once($yii);
 Yii::$enableIncludePath = false;

@@ -106,7 +106,7 @@ if(isset($associationModel) && $model->associationType=='contacts') {
 
 if($model->associationId!=0 && !is_null($associationModel)) {
 	if($model->associationType=='contacts') {
-		echo '<div class="page-title"><h2>'.Yii::t('actions','Contact Info').'</h2></div>';
+		echo '<div class="page-title rounded-top"><h2>'.Yii::t('actions','Contact Info').'</h2></div>';
 		$this->renderPartial('application.modules.contacts.views.contacts._detailViewMini',array('model'=>$associationModel,'actionModel'=>$model));
 	}
 

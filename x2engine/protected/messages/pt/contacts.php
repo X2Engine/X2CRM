@@ -1,93 +1,22 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // // Contact Form Attributes
-'Verification Code'=>'Código de Verificação',
 // // Contact Attributes
-'ID'=>'ID',
-'First Name'=>'Nome',
-'Name'=>'Nome',
-'Full Name'=>'Nome Completo',
-'Last Name'=>'Sobrenome',
-'Title'=>'Título',
-'Account'=>'Conta',
 'Work'=>'Trabalho',
 'Cell'=>'Celular',
 'Work Phone'=>'Telefone de Trabalho',
-'Cell Phone'=>'Telefone Celular',
-'Email'=>'Email',
-'Phone'=>'Telefone',
 'Phone 2'=>'Telefone 2',
 'IM'=>'IM',
-'Website'=>'Site',
-'Address'=>'Endereço',
-'City'=>'Cidade',
-'State'=>'Estado',
 'Zip Code'=>'Código Postal',
-'Country'=>'País',
-'Visibility'=>'Visibilidade',
-'Assigned To'=>'Atribuído A',
-'Background Info'=>'Informações de Fundo',
-'Last Updated'=>'Última Atualização',
-'Updated By'=>'Atualizado Por',
-'Lead Source'=>'Fonte Levar',
-'Priority'=>'Prioridade',
-'Create Date'=>'Data de Criação',
-'Rating'=>'Classificação',
-'Low'=>'Baixo',
-'Medium'=>'Médio',
-'High'=>'Alto',
-'Public'=>'Público',
-'Private'=>'Privado',
 'Twitter'=>'Twitter',
 'Linkedin'=>'Linkedin',
 'Skype'=>'Skype',
 'Googleplus'=>'Googleplus',
 'Address 2'=>'Endereço 2',
-'Postal Code'=>'Código Postal',
 'Lead Date'=>'Data Oportunidade',
 'Confidence'=>'Confiança',
-'Facebook'=>'Facebook',
-'Lead Type'=>'Chumbo Tipo',
-'Other'=>'Outro',
 'Close Date'=>'Feche Data',
-'Expected Close Date'=>'Data Prevista Fechar',
 'Interest'=>'Interesse',
-'Deal Value'=>'Valor do Negócio',
 'Lead Status'=>'Status da Oportunidade',
 'Lead Score'=>'Pontuação Oportunidade',
 'Deal Status'=>'Status do Negócio',
@@ -96,71 +25,37 @@ return array (
 'Sales &amp; Marketing'=>'Vendas e Marketing',
 'In Person'=>'Em Pessoa',
 'Accepted'=>'Aceito',
-'Lost'=>'Perdido',
-'None'=>'Nenhum',
-'Web'=>'Internet',
 'Assigned'=>'Atribuído',
-'Won'=>'Won',
-'E-Mail'=>'E-Mail',
-'Google'=>'Google',
-'Walk In'=>'Entrou',
 'Unassigned'=>'Não Atribuído',
-'Working'=>'Trabalhando',
 'Dead'=>'Morto',
 'Rejected'=>'Rejeitado',
-'Tags'=>'Etiquetas',
-'Associated Contacts'=>'Contatos Associados',
 'Duplicate Check'=>'Duplicar Confira',
-'Last Activity'=>'Última Atividade',
 'Timezone'=>'Região',
 'Web Tracking Key'=>'Chave Web Rastreamento',
 // // 
 // // List Attributes
-'Owner'=>'Proprietário',
-'Description'=>'Descrição',
 'Logic Type'=>'Tipo de Lógica',
-'Record Type'=>'Tipo de Registro',
 'Members'=>'Membros',
 'Dynamic'=>'Dinâmico',
 'Static'=>'Estático',
 // // 
-// // List Criteria Attributes
-'List'=>'Lista',
-'Type'=>'Tipo',
-'Attribute'=>'Atributo',
-'Comparison'=>'Comparação',
-'Value'=>'Valor',
-// // 
-// // List Criteria Comparitors
-'equals'=>'é igual a',
-'greater than'=>'maior do que',
-'less than'=>'menor que',
-'not equal to'=>'não é igual ao',
-'in list'=>'na lista',
-'not in list'=>'não consta da lista',
-'empty'=>'vazio',
-'not empty'=>'não vazio',
-'contains'=>'contém',
-'does not contain'=>'não contém',
-// // 
 // // Misc
-'Assigned to {name}'=>'Atribuídos a {name}',
 'Social Networks'=>'Redes Sociais',
 'Detail View'=>'Ver Detalhe',
 'Simple View'=>'Ver Simples',
-'Contact Info'=>'Informações de Contato',
 'Opportunities &amp; Marketing'=>'Vendas e Marketing',
 'Social Media'=>'Mídias Sociais',
-'AND'=>'E',
 'OR'=>'OU',
-'User'=>'Usuário',
 'Leads'=>'Leads',
 '<b>{m}</b> of <b>{n}</b>'=>'<b> {m} </b> de <b> {n} </b>',
 'Create a new Opportunity associated with this Contact.'=>'Criar uma nova oportunidade associada a este contato.',
 'Create a new Account associated with this Contact.'=>'Criar uma nova conta associada a este contato.',
 'Create a new Service Case associated with this Contact.'=>'Criar um novo caso de serviço associada a este contato.',
 'Link to Record'=>'Vincular a Record',
-'Contact Attributes'=>'Fale Atributos',
+'Clicking this button will pull any relevant fields from the associated Account record and overwrite the Contact data for those fields.  This operation cannot be reversed.'=>'Ao clicar neste botão vai puxar todos os campos relevantes do registro Conta associada e substituir os dados de contato para esses campos. Esta operação não pode ser revertida.',
+'Create a new Contact associated with this Contact.'=>'Criar um novo contato associado a este contato.',
+'Create a new Contact'=>'Criar um novo contato',
+'Tag Search'=>'Procurar Etiqueta',
 // // 
 // // Contacts Actions
 'My Contacts'=>'Meus Contatos',
@@ -173,30 +68,20 @@ return array (
 'Update Contact:'=>'Atualização Contato',
 'Delete Contact'=>'Excluir Contato',
 'Contact Lists'=>'Listas de Contatos',
-'Create Lead'=>'Criar Chumbo',
 'Share Contact'=>'Compartilhar Contato',
-'Create'=>'Criar',
 'Lists'=>'Listas',
 'Create List'=>'Criar Lista',
-'View'=>'Ver',
-'Share'=>'Compartilhar',
-'Update'=>'Atualizar',
 'View Opportunities'=>'Ver Vendas',
-'Delete'=>'Excluir',
-'Show All'=>'Mostrar Todos',
 'Hide All'=>'Ocultar Tudo',
-'Show'=>'Mostrar',
-'Hide'=>'Esconder',
 'View Relationships'=>'Ver Relacionamentos',
-'Subscribe'=>'Subscrever',
 'View List'=>'Ver Lista',
-'Share Action'=>'Ação Compartilhar',
-'Import Contacts'=>'Importar Contatos',
 'Contact Map'=>'Contato Mapa',
 'Saved Maps'=>'Mapas Salvos',
+'Save Contact'=>'Salvar Contato',
 // // 
+'Edit List'=>'Editar lista',
+'Delete List'=>'Apagar lista',
 // // Contacts Titles
-'Contacts'=>'Contactos',
 'Manage Contacts'=>'Gerenciar Contatos',
 'Contact:'=>'Contato:',
 // // 
@@ -205,14 +90,41 @@ return array (
 'Import from Template'=>'Importar Contatos do Modelo',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'Para importar seus contatos a partir do modelo, por favor preencha o nosso arquivo de modelo. Então, fazer o upload do arquivo aqui, usando o formulário abaixo.',
 'The template file can be found here:'=>'O arquivo de modelo pode ser encontrado aqui:',
-'Export to CSV'=>'Exportar Contatos',
 'Please click the link below to download contacts.'=>'Por favor, clique no link abaixo para baixar contatos.',
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'Para importar seus contatos do Outlook, por favor, primeiro criar um arquivo CSV (formato DOS), abrindo perspectivas e exportação dos contatos. Então, fazer o upload do arquivo aqui, usando o formulário abaixo.',
 'Upload File'=>'Upload de Arquivos',
 'Contact Record Details'=>'Detalhes de Contato Registro',
+'Import Contacts from Template'=>'Importar contatos do Template',
+'To import your contacts, please fill out a CSV file where the first row contains the column headers for your records (e.g. first_name, last_name, title etc.).  A properly formatted example can be found below.'=>'Para importar seus contatos, por favor preencha um arquivo CSV, onde a primeira linha contém os cabeçalhos de coluna em seus registros (por exemplo, prenome, last_name, título, etc.) Um exemplo formatado corretamente pode ser encontrado abaixo.',
+'The application will attempt to automatically map your column headers to our fields in the database.  If a match is not found, you will be given the option to choose one of our fields to map to, ignore the field, or create a new field within X2.'=>'O aplicativo irá tentar mapear automaticamente os cabeçalhos de coluna para os nossos campos no banco de dados. Se uma correspondência não for encontrada, será dada a opção de escolher um dos nossos campos para mapear a, ignore o campo, ou criar um novo campo dentro de X2.',
+'If you decide to map the "Create Date", "Last Updated", or any other explicit date field, be sure that you have a valid date format entered so that the software can convert to a UNIX Timestamp (if it is already a UNIX Timestamp even better).  Visibility should be either "1" for Public or "0" for Private (it will default to 1 if not provided).'=>'Se você decidir para mapear o &quot;Create Data&quot;, &quot;Última atualização&quot;, ou qualquer outro campo de data explícita, não se esqueça que você tem um formato de data válido inserido para que o software pode converter para um timestamp UNIX (se ele já é um UNIX Timestamp melhor ainda). Visibilidade deve ser &quot;1&quot; para Pública ou &quot;0&quot; para Privado (o padrão será 1 se não fornecido).',
+'Contacts Import'=>'Contatos Import',
+'First, we\'ll need to make sure your fields have mapped properly for import. '=>'Em primeiro lugar, nós \ &#39;ll precisa ter certeza de seus campos mapeou corretamente para importação.',
+'Below is a list of our fields, the fields you provided, and a few sample records that you are importing.'=>'Abaixo está uma lista dos nossos campos, os campos que você forneceu, e alguns registros de exemplo que você está importando.',
+'If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.'=>'Se o campo ID é selecionado para ser importado, a ferramenta de importação tentará substituir os registros pré-existentes com esse ID. Não mapear o campo ID, se você don \ &#39;t quer que isso aconteça.',
+'Selecting "DO NOT MAP" will ignore the field from your CSV, and selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it.'=>'Selecionando &quot;NÃO MAP&quot; irá ignorar o campo da CSV, e selecionar &quot;Criar novo campo&quot; vai gerar um novo campo de texto dentro de X2 e mapa de seu campo para ele.',
+'Your Field'=>'Seu campo',
+'Our Field'=>'Nosso Campo',
+'Sample Contact'=>'Amostra Contato',
+'[Prev]'=>'[Prev]',
+'[Next]'=>'[Next]',
+'DO NOT MAP'=>'Não mapeie',
+'CREATE NEW FIELD'=>'CRIAR NOVO CAMPO',
+'Process Import Data'=>'Processo de importação de dados',
+'Create records for link fields?'=>'Criar registros de campos links?',
+'Automatically fill certain fields?'=>'Preencher automaticamente alguns campos?',
+'Automatically log a comment on these records?'=>'Automaticamente registrar um comentário sobre esses registros?',
+'Assign records via lead-routing?'=>'Atribuir registros através de chumbo-routing?',
+'Import Status'=>'Import Estado',
+'Process Import'=>'Processo de Importação',
+'Please click the button below to begin the export. Do not close this page until the export is finished, which may take some time if you have a large number of records. A counter will keep you updated on how many records have been successfully updated.'=>'Por favor, clique no botão abaixo para iniciar a exportação. Não feche esta página até a exportação estiver concluída, o que pode levar algum tempo se você tem um grande número de registros. Um contador vai mantê-lo atualizado sobre quantos registros foram atualizadas com sucesso.',
+'You are currently exporting: '=>'Você está exportando atualmente:',
+'Exporting <b>Contact</b> data...'=>'Exportando dados <b>de contato</b> ...',
+'records from <b>Contacts</b> successfully exported.'=>'registros de <b>contatos</b> exportados com sucesso.',
+'All Contact data successfully exported.'=>'Todos os dados de contato exportado com sucesso.',
+'Export Complete!'=>'Exportar completa!',
 // // 
 // // Subscribe
-'Subscribe'=>'Subscrever',
 'The information for {name} has changed.'=>'As informações para {name} foi alterada.',
 'Receive email updates every time information for {name} changes'=>'Receba um alerta de Cada Tempo de troca de informações {name}',
 'Unsubscribe'=>'Anular',
@@ -242,8 +154,24 @@ return array (
 'Map Name'=>'Nome do Mapa',
 'Map Owner'=>'Proprietário Mapa',
 'Zoom Level'=>'Nível de Zoom',
-'Parameters'=>'Parâmetros',
 'Center Latitude'=>'Latitude Centro',
 'Center Longitude'=>'Longitude Centro',
-'Contact'=>'Contato',
+'Web Form'=>'Formulário Web',
+'Import Contacts from Outlook'=>'Importar contatos do Outlook',
+'Remove From List'=>'Remover da lista',
+'Today\'s Contacts'=>'Hoje \ &#39;s Contactos',
+'Directions from Corporate'=>'Direcções desde Corporativo',
+'Directions from Personal Address'=>'Direções de endereços pessoal',
+'Keep This Record'=>'Mantenha Este Registro',
+'This operation is disabled because the data set is too large.'=>'Esta operação está desativado porque o conjunto de dados é muito grande.',
+'{dupes} records shown out of {count} records found.'=>'{dupes} registros mostrado de {count} registros encontrados.',
+'Hide This Record'=>'Esconder Este Registro',
+'Delete This Record'=>'Excluir este registro',
+'Contact ID'=>'Contato ID',
+'Latitutde'=>'Latitutde',
+'Longitude'=>'Longitude',
+'Are you sure you want to hide all other records?'=>'Você tem certeza que deseja ocultar todos os outros registros?',
+'Are you sure you want to delete all other records?'=>'Tem certeza de que deseja excluir todos os outros registros?',
+'Are you sure you want to hide this record?'=>'Tem certeza de que quer ocultar este registro?',
+'Are you sure you want to delete this record?'=>'Tem certeza de que deseja excluir este registro?',
 );

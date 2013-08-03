@@ -313,7 +313,7 @@ li.special.leadrouting-indicator.visible span {background:#0f0;}
 }
 #profile-dropdown img {
 /* 	margin-top:2px; */
-	margin:-3px 5px 0 -2px;
+	margin: -2px 5px 0 -2px;
 	border-radius:			2px;
 	-moz-border-radius:		2px;
 	-webkit-border-radius:	2px;
@@ -434,6 +434,18 @@ li.special.leadrouting-indicator.visible span {background:#0f0;}
 	text-decoration:none;
 	text-shadow:none;
 }
+
+.x2-widget .widget-sort-handle {
+	height: 15px;
+	width: 15px;
+	margin-right: -8px;
+	margin-left: 2px;
+}
+
+.x2-widget.form {
+	overflow: hidden;
+}
+
 #widget-menu {
 	list-style:none;
 	margin:0;
@@ -466,6 +478,14 @@ li.special.leadrouting-indicator.visible span {background:#0f0;}
 /* #widget-menu.visible {
 	visibility: visible;
 } */
+
+/*#main-column .x2-widget.form {
+	border-right: none;
+	border-left: none;
+}
+#main-column.half-width .x2-widget.form {
+	border-right: 1px solid #ccc;
+}*/
 
 span.x2-widget-menu-item.ui-draggable {
 	padding: 0 10px;
@@ -516,7 +536,7 @@ span.x2-widget-menu-item.ui-draggable {
 	top:40px;
 	background:#f0f0f0;
 	position:absolute;
-	right:20px;
+	right:179px;
 	z-index:2000;
 	border-radius:			4px;
 	-moz-border-radius:		4px;
@@ -577,6 +597,11 @@ span.x2-widget-menu-item.ui-draggable {
 }
 #notif-view-all a { color:black;}
 #notif-view-all a:hover { text-decoration:underline; }
+
+.notif {
+	overflow: hidden !important;
+}
+
 /**
  * ------------------------ Body --------------------------
  */
@@ -766,7 +791,7 @@ body.no-widgets #content-container {margin-right:0;}
 /**
  * --------------------- Page Title -----------------------
  */
-div.page-title, table.fc-header {
+div.page-title, div.section-title, table.fc-header {
 	background-repeat:no-repeat;
 	background-position:0 -5px;
 	padding:0 5px;
@@ -784,10 +809,6 @@ div.page-title, table.fc-header {
 	/* margin-bottom:5px; */
 	/* overflow:auto; */
 	line-height:34px;
-	-moz-border-radius:		4px;
-	-o-border-radius:		4px;
-	-webkit-border-radius:	4px;
-	border-radius:			4px;
 /* 	-moz-box-shadow:		inset 0 1px 0 0 rgba(255,255,255,0.4);
 	-webkit-box-shadow:		inset 0 1px 0 0 rgba(255,255,255,0.4);
 	box-shadow:				inset 0 1px 0 0 rgba(255,255,255,0.4); */
@@ -795,7 +816,23 @@ div.page-title, table.fc-header {
 	-webkit-box-shadow:	0 1px 6px 0 rgba(0,0,0,0.5);
 	box-shadow:			0 1px 6px 0 rgba(0,0,0,0.5); */
 }
-div.page-title.icon h2 {
+div.page-title {
+	-moz-border-radius:		0 0 4px 4px;
+	-o-border-radius:		0 0 4px 4px;
+	-webkit-border-radius:	0 0 4px 4px;
+	border-radius:			0 0 4px 4px;
+}
+
+/* used when elements with page-title class are not at the top of the content box */
+div.rounded-top {
+	-moz-border-radius:		4px;
+	-o-border-radius:		4px;
+	-webkit-border-radius:	4px;
+	border-radius:			4px;
+}
+
+div.page-title.icon h2,
+table.fc-header .fc-header-title h2 {
 	display:inline-block;
 	padding-left:45px;
 	margin-left:0;
@@ -806,6 +843,7 @@ div.page-title.icon.actions h2 {background-image:url('../images/actions.png');}
 div.page-title.icon.contacts h2 {background-image:url('../images/contacts.png');}
 div.page-title.icon.accounts h2 {background-image:url('../images/accounts.png');}
 div.page-title.icon.products h2 {background-image:url('../images/products.png');}
+div.page-title.icon.quotes h2 {background-image:url('../images/quotes.png');}
 div.page-title.icon.opportunities h2 {background-image:url('../images/opportunities.png');}
 div.page-title.icon.services h2 {background-image:url('../images/services.png');}
 div.page-title.icon.workflow h2 {background-image:url('../images/workflow.png');}
@@ -815,9 +853,11 @@ div.page-title.icon.docs h2 {background-image:url('../images/docs.png');}
 div.page-title.icon.groups h2 {background-image:url('../images/groups.png');}
 div.page-title.icon.media h2 {background-image:url('../images/media.png');}
 div.page-title.icon.users h2 {background-image:url('../images/groups.png');}
+div.page-title.icon.charts h2 {background-image:url('../images/charts.png');}
+table.fc-header .fc-header-title h2 { background-image: url('../images/calendar.png'); }
 
 div.page-title.icon.activity-feed h2 {background-image:url('../images/Activity.png');}
-table.fc-header.icon.calendar h2 {background-image:url('../images/calendar.png');}
+/*table.fc-header.icon.calendar h2 {background-image:url('../images/calendar.png');}*/
 
 td.fc-header-left h2{
 	padding-left:45px;
@@ -1024,6 +1064,7 @@ div.page-title .x2-button span {display:block;height:24px;width:24px;}
 	background:url(../images/contrast-icon.png) center center no-repeat;
 	height:24px;
 	width:24px;
+    display:block;
 }
 #response-time {margin:0 0 5px 0;/* position:absolute;bottom:5px;left:10px; */}
 

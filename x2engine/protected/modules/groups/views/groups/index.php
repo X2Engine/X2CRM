@@ -35,8 +35,8 @@
  *****************************************************************************************/
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>'Manage Groups'),
-	array('label'=>'Create Group', 'url'=>array('create')),
+	array('label'=>Yii::t('groups','Group List')),
+	array('label'=>Yii::t('groups','Create Group'), 'url'=>array('create')),
 ));
 
 $this->widget('zii.widgets.grid.CGridView', array(
@@ -47,11 +47,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider'=>$dataProvider,
 	'columns'=>array(
 		array(
+            'header'=>Yii::t('groups','Name'),
 			'name'=>'name',
 			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
 		array(
+            'header'=>Yii::t('groups','Users'),
 			'name'=>'users',
 			'value'=>'count(GroupToUser::model()->findAllByAttributes(array("groupId"=>$data->id)))',
 			'type'=>'raw',

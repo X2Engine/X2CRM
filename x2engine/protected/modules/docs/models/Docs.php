@@ -39,7 +39,7 @@
 
 /**
  * This is the model class for table "x2_docs".
- * 
+ *
  * @package X2CRM.modules.docs.models
  */
 class Docs extends X2Model {
@@ -71,25 +71,6 @@ class Docs extends X2Model {
 						'defaultStickOnClear' => false
 					)
 				));
-	}
-
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('name, text, createdBy', 'required'),
-			array('createDate, lastUpdated', 'numerical', 'integerOnly' => true),
-			array('name, editPermissions, subject', 'length', 'max' => 100),
-			array('createdBy', 'length', 'max' => 60),
-			array('updatedBy', 'length', 'max' => 40),
-			array('type', 'length', 'max' => 10),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, name, text, createdBy, createDate, updatedBy, lastUpdated, editPermissions, type', 'safe', 'on' => 'search'),
-		);
 	}
 
 	/**
@@ -140,7 +121,7 @@ class Docs extends X2Model {
 			if (!empty($groupLinks))
 				$condition .= ' OR createdBy IN (' . implode(',', $groupLinks) . ')';
 
-			$condition .= 'OR (visibility=2 AND createdBy IN 
+			$condition .= 'OR (visibility=2 AND createdBy IN
 				(SELECT username FROM x2_group_to_user WHERE groupId IN
 					(SELECT groupId FROM x2_group_to_user WHERE userId=' . Yii::app()->user->getId() . ')))';
 			$criteria->addCondition($condition);
@@ -168,7 +149,7 @@ class Docs extends X2Model {
 
 	/**
 	 * Replace tokens with model attribute values.
-	 * 
+	 *
 	 * @param type $str Input text
 	 * @param X2Model $model Model to use for replacement
 	 * @param array $vars List of extra variables to replace
@@ -181,12 +162,12 @@ class Docs extends X2Model {
 				$vars[$key] = CHtml::encode($vars[$key]);
 		}
 		$str = strtr($str,$vars);	// replace any manually set variables
-		
+
 		if($model instanceof X2Model) {
 			if(get_class($model) !== 'Quote') {
 				$matches = array();
 				preg_match_all('/{\w+}/',$str,$matches);
-				
+
 				if(isset($matches[0])) {
 					$attributes = array();
 					foreach($matches[0] as &$match) {	// loop through the things (email body)
@@ -197,10 +178,10 @@ class Docs extends X2Model {
 					$str = strtr($str,$attributes);	// replace any attributes that were found
 				}
 			} else {
-				// Specialized, separate method for quotes that can use details from 
+				// Specialized, separate method for quotes that can use details from
 				// either accounts or quotes.
 				// There may still be some stray quotes with 2+ contacts on it, so
-				// explode and pick the first to be on the safe side. The most 
+				// explode and pick the first to be on the safe side. The most
 				// common use case by far is to have only one contact on the quote.
 				$contactIds = explode(' ', $model->associatedContacts);
 				$contactId = $contactIds[0];
@@ -259,7 +240,7 @@ class Docs extends X2Model {
 			if(!Yii::app()->params->isAdmin){
 				$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="'.Yii::app()->user->getName().'"';
 				/* x2temp */
-				$uid = self::model()->suID;
+				$uid = Yii::app()->getSuID();
 				if(empty($uid)){
 					if(Yii::app()->params->noSession)
 						$uid = 1;

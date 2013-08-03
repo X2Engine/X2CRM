@@ -529,11 +529,20 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 	}
 
 	public function testRegenerateConfig(){
-		$configFilename = UpdaterBehavior::$configFilename;
-		$testConfigFilename = 'X2Config-testRegen.php';
+		$configFilename = UpdaterBehavior::$configFilename; // Copy of the original filename
+		$testConfigFilename = 'X2Config-testRegen.php'; // Temporary new config filename
+		$filesThatShouldBe600 = array('encryption.key','encryption.iv'); // Files for testing that permissions are set properly
+		// Make test backups of the keys
+		foreach(array('key','iv') as $cryptExt){
+			$cryptFile = Yii::app()->basePath."/config/encryption.$cryptExt";
+			if(file_exists($cryptFile)){
+				rename($cryptFile,"$cryptFile.testbackup");
+			}
+		}
 		UpdaterBehavior::$configFilename = $testConfigFilename;
 		copy(Yii::app()->basePath."/config/$configFilename", Yii::app()->basePath."/config/$testConfigFilename");
 		$this->assertTrue(file_exists(Yii::app()->basePath.'/config/'.UpdaterBehavior::$configFilename));
+
 		$ube = $this->instantiateUBe();
 		$newversion = '3.3.3.3.3.3.3.3.3.3.3.3.3';
 		$newupdaterVersion = '2.2.2.2.2.2.2.2.2';
@@ -542,8 +551,30 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 		include(Yii::app()->basePath."/config/".$testConfigFilename);
 		foreach(array('version', 'updaterVersion', 'buildDate') as $var)
 			$this->assertEquals(${"new$var"}, ${$var});
+		// Test that permissions were set properly on the config/encryption files
+		foreach($filesThatShouldBe600 as $file) {
+			$this->assertEquals(100600,decoct(fileperms(Yii::app()->basePath."/config/$file")),"Failed asserting that $file had its permissions set properly.");
+		}
+		foreach($filesThatShouldBe600 as $file) {
+			// Forcefully change so we can properly test the permission-setting method
+			chmod(Yii::app()->basePath."/config/$file",octdec(100666));
+		}
+		// Now, run the method:
+		$ube->setConfigPermissions(100600);
+		// Test that the permissions were set back to their proper values
+		foreach($filesThatShouldBe600 as $file) {
+			$this->assertEquals(100600,decoct(fileperms(Yii::app()->basePath."/config/$file")),"Failed asserting that $file had its permissions set properly.");
+		}
+
 		UpdaterBehavior::$configFilename = $configFilename;
 		unlink(Yii::app()->basePath."/config/$testConfigFilename");
+		// Restore test backups of the keys
+		foreach(array('key','iv') as $cryptExt){
+			$cryptFile = Yii::app()->basePath."/config/encryption.$cryptExt";
+			if(file_exists("$cryptFile.testbackup")){
+				rename("$cryptFile.testbackup",$cryptFile);
+			}
+		}
 	}
 
 	public function testRemoveBackup(){

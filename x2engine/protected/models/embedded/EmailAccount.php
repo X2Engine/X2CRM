@@ -54,18 +54,20 @@ class EmailAccount extends JSONEmbeddedModel {
 	public $user = '';
 	public $password = '';
 
-	protected $_attributeLabels = array(
-		'senderName' => 'Sender Name',
-		'email' => 'Email address',
-		'server' => 'Server',
-		'port' => 'Port',
-		'security' => 'Security type',
-		'user' => 'User name (if different from email address)',
-		'password' => 'Password',
-	);
+	public function attributeLabels(){
+		return array(
+			'senderName' => Yii::t('app', 'Sender Name'),
+			'email' => Yii::t('app', 'Email address'),
+			'server' => Yii::t('app', 'Server'),
+			'port' => Yii::t('app', 'Port'),
+			'security' => Yii::t('app', 'Security type'),
+			'user' => Yii::t('app', 'User name (if different from email address)'),
+			'password' => Yii::t('app', 'Password'),
+		);
+	}
 
 	public function attributeNames() {
-		return array_keys($this->_attributeLabels);
+		return array_keys($this->attributeLabels());
 	}
 
 	public function detailView(){

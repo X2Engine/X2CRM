@@ -52,7 +52,7 @@ class MediaBox extends X2Widget {
             if(!isset($_SESSION['driveFiles']) && $auth->getAccessToken()){
                 Yii::import('application.modules.media.controllers.MediaController');
                 $mediaController = new MediaController('MediaController');
-                $_SESSION['driveFiles'] = $mediaController->printFolder('root');
+                $_SESSION['driveFiles'] = $mediaController->printFolder('root', $auth);
             }
         }
         parent::init();

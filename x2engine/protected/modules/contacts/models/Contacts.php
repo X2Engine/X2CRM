@@ -115,6 +115,10 @@ class Contacts extends X2Model {
 
 			$this->name = $str;
 		}
+		if($this->trackingKey === null) {
+			$this->trackingKey = self::getNewTrackingKey();
+		}
+
 
 		return parent::beforeSave();
 	}
@@ -160,9 +164,8 @@ class Contacts extends X2Model {
                 if(isset($subscription['user_id'])){
                     $profile = X2Model::model('Profile')->findByPk($subscription['user_id']);
                     if ($profile && $profile->emailAddress && $adminProfile && $adminProfile->emailAddress) {
-                        $to = array($profile->fullName, $profile->emailAddress);
-                        $from = array('name' => $adminProfile->fullName, 'address' => $adminProfile->emailAddress);
-                        Yii::app()->controller->sendUserEmail($to, $subject, $message, null, $from);
+                        $to = array('to'=>array(array($profile->fullName, $profile->emailAddress)));
+                        Yii::app()->controller->sendUserEmail($to, $subject, $message,null,Credentials::$sysUseId['systemNotificationEmail']);
                     }
                 }
 			}
@@ -313,7 +316,6 @@ class Contacts extends X2Model {
 		$criteria = new CDbCriteria;
 
 		$accessLevel = Yii::app()->user->checkAccess('ContactsView')? 1 : 0;
-
 		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
 
 		// $condition = 'assignedTo="'.Yii::app()->user->getName().'"';

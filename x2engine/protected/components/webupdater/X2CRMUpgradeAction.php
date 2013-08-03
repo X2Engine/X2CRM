@@ -54,7 +54,7 @@ class X2CRMUpgradeAction extends WebUpdaterAction  {
 		// backup is outdated (applies to the old version)
 		$this->removeDatabaseBackup();
 		$thisVersion = Yii::app()->params->version;
-		$currentVersion = FileUtil::getContents('http://x2planet.com/installs/updates/versionCheck');
+		$currentVersion = FileUtil::getContents($this->updateServer.'/installs/updates/versionCheck');
 		if(version_compare($thisVersion, $currentVersion) < 0){
 			$this->controller->render('updater', array(
 				'scenario' => 'error',
@@ -71,7 +71,7 @@ class X2CRMUpgradeAction extends WebUpdaterAction  {
 					)));
 
 			// Check to see if the updater has changed:
-			$updaterCheck = FileUtil::getContents('http://x2planet.com/installs/updates/updateCheck', 0, $context);
+			$updaterCheck = FileUtil::getContents($this->updateServer.'/installs/updates/updateCheck', 0, $context);
 
 			if($updaterCheck != $updaterVersion){
 				$this->runUpdateUpdater($updaterCheck, 'upgrade');

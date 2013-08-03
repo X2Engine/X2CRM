@@ -1,71 +1,13 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // Action Attributes
-'ID'=>'番号',
-'Assigned To'=>'割り当て',
 'Action Description'=>'アクション説明',
-'Description'=>'説明',
-'Visibility'=>'可視性',
-'Association'=>'関連付け',
-'Association Type'=>'関連付けの種類',
-'Association Name'=>'関連付け名前',
 'Due Date'=>'期日',
-'Priority'=>'順位',
 'Action Type'=>'アクションの種類',
-'Create Date'=>'作成日',
-'Complete'=>'完了',
 'Reminder'=>'リマインダー',
-'Completed By'=>'完成した人',
 'Complete Date'=>'終了日',
-'Last Updated'=>'最後を更新する',
-'Updated By'=>'更新した人',
-'Low'=>'低',
-'Medium'=>'中',
-'High'=>'高',
-'Public'=>'公開',
-'Private'=>'秘密',
-'No'=>'いいえ',
-'Yes'=>'はい',
 'Date Completed'=>'日付が完了しました',
 'All Day'=>'終日',
-'Color'=>'カラー',
-'Start Date'=>'開始日',
-'End Date'=>'終了日',
 'User\'s Group'=>'ユーザーズグループ',
 
 // Colors
@@ -77,8 +19,6 @@ return array (
 
 // Actions Nav
 'All Actions'=>'すべてのアクション',
-'Create Lead'=>'リードを作成する',
-'Create Action'=>'アクションを作る。',
 'View Action'=>'アクションを見る',
 'Update Action'=>'アクションを更新します。',
 'Complete Action'=>'アクションを完了する',
@@ -89,14 +29,13 @@ return array (
 'New Action'=>'新しいアクション',
 'New Comment'=>'新しいコメント',
 'Publisher'=>'出版社',
-'Update'=>'更新',
 'Complete Selected'=>'選択完了',
 'Uncomplete Selected'=>'選択完了取り消す',
 'Show Actions'=>'アクションを表示',
-'All'=>'すべて',
-'Delete'=>'削除',
 'Overdue'=>'期限を過ぎた',
 'Edit Action'=>'アクションの編集',
+'Action List'=>'動作リスト',
+'Switch to List'=>'一覧に切り替え',
 
 // Actions Titles
 'Manage Actions'=>'アクションの管理',
@@ -105,24 +44,21 @@ return array (
 'Create a New Lead'=>'新しいリードを作る',
 'View Action'=>'アクションを見る',
 'Update Action:'=>'アクションを更新します:',
-'Action'=>'アクション',
 'Action: '=>'アクション:',
 'Today\'s Actions'=>'今日のアクション',
-'My Actions'=>'私のアクション',
 'All My Actions'=>'すべて私のアクション',
 'Everyone\'s Actions'=>'みんなのアクション',
 'Delete Action'=>'アクションを削除',
-'Share Action'=>'アクションを共有する',
-'Create'=>'作る',
 'New Event'=>'新しいイベント',
 'Call:'=>'呼び出し：',
-'Comment'=>'コメント',
+'Back to Top'=>'トップへ戻る',
+'Filters'=>'フィルタ',
+'Switch to Grid'=>'グリッドに切り替え',
 
 
 // Misc
 'Email Message:'=>'メールメッセージ:',
 'Attachment:'=>'添付:',
-'Assigned to {name}'=>'{name} に割り当て',
 'Completed by {name}'=>'{name} が完了しました',
 'Completed {date}'=>'{date} に完了した',
 'Completion Notes'=>'完了のノート',
@@ -132,30 +68,70 @@ return array (
 'FINISHED'=>'完成した',
 'Incomplete'=>'不完全',
 'INCOMPLETE'=>'不完全',
-'Status'=>'状態',
-'Contact Info'=>'コンタクト情報',
-'View'=>'見る',
 'Overdue {time}'=>'{time}で延滞',
 'Due {date}'=>'{date}に起因',
 'Please enter a description.'=>'説明を入力してください。',
-
-// Create Action Types
-'None'=>'なし',
-'Contact'=>'コンタクト',
-'Account'=>'アカウント',
-'Project'=>'プロジェクト',
-'Case'=>'ケース',
-'Opportunity'=>'セール',
+'This action has been marked as sticky and will remain at the top of the list.'=>'このアクションは、スティッキーとしてマークされており、リストの一番上に残ります。',
+'Show me'=>'見せて',
+'unfinished'=>'未完',
+'complete'=>'完成',
+'all'=>'すべて',
+'Actions assigned to'=>'に割り当てられているアクション',
+'me'=>'私に',
+'me or anyone'=>'私や誰',
+'everyone'=>'誰も',
+'that'=>'その',
+'are due'=>'によるものである',
+'were created'=>'作成された',
+'tomorrow'=>'明日',
+'this week'=>'今週',
+'this month'=>'今月',
+'any time'=>'いつでも',
+'between these dates'=>'これらの日付の間に',
+'and order them by'=>'とでそれらを注文',
+'descending'=>'下行',
+'ascending'=>'上昇',
+'due date'=>'期日',
+'create date'=>'日付を作成',
+'priority'=>'優先',
+'Due:'=>'ために：',
+'Completed:'=>'完了：',
+'Created:'=>'作成：',
+'Please enter a valid association'=>'有効な関連付けを入力してください',
+'Please enter a description or subject'=>'説明または件名を入力してください',
+'the assigned user'=>'割り当てられたユーザー',
+'me and the assigned user'=>'私と割り当てられたユーザー',
+'1 minute'=>'1分',
+'5 minutes'=>'5分',
+'10 minutes'=>'10分',
+'15 minutes'=>'15分',
+'30 minutes'=>'30分',
+'1 hour'=>'1時間',
+'Create a notification reminder for {user} {time} before this action is due'=>'の通知リマインダ作成{user} {time}このアクションが原因である前に、',
+'Action Backdating'=>'アクションバックデート',
+'Action:'=>'アクション：',
+'Action View Frame'=>'アクションビューフレーム',
+'Associated Record'=>'関連付けられたレコード',
 
 // Action Reminder Email
 'No one'=>'誰も',
 'Not specified'=>'指定しない',
 'Action Reminder:'=>'アクションリマインダー:',
 'Reminder, the following action is due'=>'リマインダー：以下のアクションが原因です。',
-'Description'=>'説明',
-'Type'=>'種類',
 'Associations'=>'関連付け',
 'Link to the action'=>'アクションへのリンク',
 'Link to the'=>'リンク:',
 'Powered by '=>'搭載: ',
+'This contact visited your website'=>'この接触はあなたのウェブサイトを訪問した',
+'No subject found'=>'主題見つかりません',
+'Finished'=>'完成した',
+'Update Event'=>'イベントを更新',
+'Link to the {type}'=>'へのリンク{type}',
+'Action ID'=>'アクションID',
+'Action Text'=>'アクションテキスト',
+'Time'=>'時間',
+'color'=>'色',
+'Remind Me'=>'を思い出させる',
+'View Full Edit Page'=>'フル編集ページを見る',
+'(Error displaying email)'=>'（エラーメールを表示する）',
 );

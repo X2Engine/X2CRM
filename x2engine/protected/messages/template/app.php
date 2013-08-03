@@ -1,105 +1,45 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-// // // Language Name
+// Language Name
 'languageName'=>'Template',
-// // // Login
+// Login
 'Please log in to continue:'=>'',
-'Username'=>'',
-'Password'=>'',
 'Remember me'=>'',
 'Login'=>'',
 'Welcome to {appName}.'=>'',
-'Verification Code'=>'',
 'Login with Google'=>'',
-// // // 
-// // // Main Menu
-'Calendar'=>'',
-'Actions'=>'',
-'Contacts'=>'',
-'Opportunities'=>'',
+
+// Main Menu
 'Projects'=>'',
 'Group Chat'=>'',
-'Marketing'=>'',
 'Cases'=>'',
-'Accounts'=>'',
-'Users'=>'',
 'Admin'=>'',
-'Docs'=>'',
 'Chat'=>'',
-'Social'=>'',
 'Profile'=>'',
-'Settings'=>'',
 'Logout'=>'',
 'Login'=>'',
-'More'=>'',
 'What\'s New'=>'',
-'Quotes'=>'',
 'Dashboard'=>'',
-'Products'=>'',
-'Workflow'=>'',
-'Groups'=>'',
 'Notifications'=>'',
 'Charts'=>'',
-'Manage Users'=>'',
-'Social Feed'=>'',
 'Preferences'=>'',
 'Reports'=>'',
 'Activity'=>'',
 'Service'=>'',
 'Go Invisible'=>'',
 'Go Visible'=>'',
-// // // 
-// // // Search Bar
+
+// Search Bar
 'X2Engine CRM Groupware'=>'',
-'Go'=>'',
-'Contact'=>'',
-'Action'=>'',
 'Contact + Action'=>'',
 'Search for contact, action, deal...'=>'',
-// // // 
-// // // Footer
-'All Rights Reserved.'=>'',
+
+// Footer
 'Generated in {time} seconds.'=>'',
 'About'=>'',
 'The Program is provided AS IS, without warranty.'=>'',
-// // // 
-// // // Widgets
-'My Actions'=>'',
+
+// Widgets
 'Twitter Feed'=>'',
 'Quick Contact'=>'',
 'Google Map'=>'',
@@ -109,81 +49,68 @@ return array (
 'Just Me'=>'',
 'All Users'=>'',
 'Doc Viewer'=>'',
-'Time Zone'=>'',
 'Top Sites'=>'',
-'Media'=>'',
 'Current time in'=>'',
-'Hide'=>'',
-// // // 
+
 'Total Action|Total Actions'=>'',
 'Unfinished Action|Unfinished Actions'=>'',
 'Overdue Action|Overdue Actions'=>'',
 'Completed Action|Completed Actions'=>'',
-// // // 
+
 'Message Board'=>'',
 'Please enter a message of the day!'=>'',
 'Edit Message'=>'',
-// // // 
+
 'Note Pad'=>'',
 'Feel free to enter some notes!'=>'',
-// // // 
-'Top Contacts'=>'',
+
 'Add {name}'=>'',
-// // // 
+
 'Enter Title'=>'',
-'Title'=>'',
 'Title:'=>'',
-'Link'=>'',
 'Link:'=>'',
 'Add Site'=>'',
-'Example'=>'',
-// // // 
-// // // Chat
+
+// Chat
 'Message Body'=>'',
 'Enter text here...'=>'',
 'Send'=>'',
-// // // 
-// // // Email Form
+
+// Activity Feed
+'Activity Feed Order'=>'',
+'Top Down'=>'',
+'Bottom Up'=>'',
+
+// Email Form
 'To:'=>'',
 'Subject:'=>'',
 'Message:'=>'',
 'Error: Could not send email.'=>'',
 'Email Sent!'=>'',
-'Preview'=>'',
 'Attachments'=>'',
-// // // 
-// // // Comments
-'Add Comment'=>'',
-'Create Action'=>'',
+'Note: you have entered text into the email that will be lost. Are you sure you want to continue?'=>'',
+'From:'=>'',
+'Send As:'=>'',
+'System default (legacy)'=>'',
+
+// Comments
 'Add a comment...'=>'',
-'History'=>'',
 'Today'=>'',
 'Tomorrow'=>'',
-'Comments'=>'',
 'Post'=>'',
-// // // 
-// // // Misc
+
+// Misc
 'Advanced Search'=>'',
 'Clear Filters'=>'',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'',
 'Fields with <span class="required">*</span> are required.'=>'',
 'Click here to return to where you were'=>'',
-'Private'=>'',
 'Attach A File/Photo'=>'',
 'Attach a File'=>'',
-'None'=>'',
-'Anyone'=>'',
-'Share'=>'',
-'Link'=>'',
+'Share:'=>'',
 'Theme'=>'',
-'Account'=>'',
-'Opportunity'=>'',
-'All'=>'',
 'Optional'=>'',
 'Records that have been modified since your last login.'=>'',
-'Are you sure you want to delete this item?'=>'',
-'Columns'=>'',
-'Tools'=>'',
 'Rights reserved.'=>'',
 'GNU General Public License version 3'=>'',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'',
@@ -191,32 +118,21 @@ return array (
 'Minimize'=>'',
 '"{X}" is not an allowed filetype.'=>'',
 'Loading'=>'',
-'Edit'=>'',
 'Due'=>'',
 'Help'=>'',
 '---'=>'',
 'You don\'t have any notifications.'=>'',
 'View all'=>'',
 'Close'=>'',
-'Delete'=>'',
 'Group?'=>'',
 'Check box'=>'',
 'results per page'=>'',
-'Public'=>'',
-'Tags'=>'',
 'Template:'=>'',
-'Model Name'=>'',
-'Model ID'=>'',
 'What should the list be named?'=>'',
 'Added items to list.'=>'',
 'Select an option'=>'',
 'loading...'=>'',
-'Checkbox'=>'',
 'New List From Selection'=>'',
-'No'=>'',
-'Yes'=>'',
-'View'=>'',
-'Update'=>'',
 'results per page.'=>'',
 'Displaying {start}-{end} of {count} result(s).'=>'',
 'Marketing Dashboard'=>'',
@@ -224,12 +140,9 @@ return array (
 'Quick Create'=>'',
 'Create a Contact, Account, and Opportunity.'=>'',
 '<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'',
-'less than'=>'',
 'less than or equal to'=>'',
-'greater than'=>'',
 'greater than or equal to'=>'',
 'equal to'=>'',
-'not equal to'=>'',
 ' results per page'=>'',
 'Add to list:'=>'',
 '<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'',
@@ -237,7 +150,6 @@ return array (
 'Associate Account'=>'',
 'Associate Opportunity'=>'',
 'Associate Contact'=>'',
-'Contact Attributes'=>'',
 'CC:'=>'',
 'BCC:'=>'',
 'What should the map be named?'=>'',
@@ -248,87 +160,134 @@ return array (
 'Check Filters'=>'',
 'Show/Hide All Comments'=>'',
 '{n} rows'=>'',
-// // // 
-// // // Misc Actions
+'vs.'=>'',
+'- Select an event type -'=>'',
+'Simple'=>'',
+'Full'=>'',
+'Helpful Tips'=>'',
+'Bug Reports'=>'',
+'Loading...'=>'',
+'Link Contact'=>'',
+'Link Account'=>'',
+'Link Opportunity'=>'',
+'Quick Note'=>'',
+'Update:'=>'',
+'Form'=>'',
+'left'=>'',
+'{n} sec'=>'',
+'{n} min'=>'',
+'{n} hour'=>'',
+'{n} hours'=>'',
+'{n} day'=>'',
+'{n} month'=>'',
+'{n} months'=>'',
+'{n} year'=>'',
+'Unlimited'=>'',
+'Enable'=>'',
+'Disable'=>'',
+'IP Address'=>'',
+'Login Status'=>'',
+'Allowed filetypes: .csv'=>'',
+'Predefined Theme'=>'',
+'Menu Background Color'=>'',
+'Page Header Background Color'=>'',
+'Grid View Row Color 1'=>'',
+'Grid View Row Color 2'=>'',
+'stretch'=>'',
+'center'=>'',
+'repeat'=>'',
+'repeat-x'=>'',
+'repeat-y'=>'',
+'Save Profile Settings'=>'',
+'Creating a theme will save your current theme settings as a predefined theme'=>'',
+'Theme name'=>'',
+
+// Misc Actions
 'Submit'=>'',
-'Save'=>'',
 'Cancel'=>'',
 'Send Email'=>'',
 'Attach A File'=>'',
 'Save Changes'=>'',
 'Save Action'=>'',
 'Save Comment'=>'',
-'Create'=>'',
 'Search'=>'',
 'Search Results'=>'',
-'Name'=>'',
-'Description'=>'',
-'Action'=>'',
-'Status'=>'',
 'E-mail'=>'',
 'Download'=>'',
 'Contact Saved'=>'',
 'Add Note'=>'',
 'New List'=>'',
-'Add'=>'',
-'Remove'=>'',
-// // // 
-// // // Timestamps
+'Toggle Comments'=>'',
+'Show Chart'=>'',
+'Hide Chart'=>'',
+'Make Sticky'=>'',
+'Load More'=>'',
+'Go to Activity Feed'=>'',
+'Toggle Text'=>'',
+'Click to toggle showing the full text of History items.'=>'',
+'Click to increase the number of History items shown.'=>'',
+'Show Less'=>'',
+'Click to decrease the number of History items shown.'=>'',
+'Click to toggle showing actions associated with related records.'=>'',
+'Email Quote'=>'',
+'Email Invoice'=>'',
+'Start typing to suggest...'=>'',
+'Do not delete'=>'',
+
+// Timestamps
 'Just now'=>'',
 '{n} minutes ago'=>'',
 '{n} hours ago'=>'',
 '{n} days ago'=>'',
-// // // 
-// // // Errors
+
+// Errors
 'Error creating note!'=>'',
 'Invalid request. Please do not repeat this request again.'=>'',
 'The requested page does not exist.'=>'',
 'Please fix the following errors:'=>'',
-// // // 
-// // // Admin Page
+
+// Admin Page
 'Administration Tools'=>'',
 'Welcome to the administration tool set.'=>'',
 'Links'=>'',
 'How To\'s'=>'',
-'Gii - A Code Generation Module'=>'',
 'Send Mass E-mail'=>'',
 'How to use Gii'=>'',
 'How to add a database field'=>'',
-// // // 
-// // // Activity Feed
-// // 
+
+// Activity Feed
+
 'Activity Feed'=>'',
-// // // Filter Headers
-'Visibility'=>'',
+// Filter Headers
 'Relevant Users'=>'',
 'Event Types'=>'',
 'Social Subtypes'=>'',
-'Options'=>'',
 'Set Default'=>'',
 'Apply Filters'=>'',
-// // // Filter Text
-'Social Post'=>'',
-'Announcement'=>'',
-'Product Info'=>'',
-'Competitive Info'=>'',
-'Confidential'=>'',
-// // // Event Types
+// Filter Text
+'Filter Controls'=>'',
+// Event Types
 'Social Posts'=>'',
 'Records Created'=>'',
 'Records Deleted'=>'',
-'Action Reminders'=>'',
-'Actions Completed'=>'',
 'Calendar Events'=>'',
 'Cases Escalated'=>'',
 'Emails Opened'=>'',
+'Doc Updates'=>'',
 'Emails Sent'=>'',
 'Notifications'=>'',
 'Webleads Created'=>'',
-'Web Activity'=>'',
 'Workflow Complete'=>'',
 'Workflow Reverted'=>'',
 'Workflow Started'=>'',
-// // // Event Text
+'VOIP Calls'=>'',
+'All Events'=>'',
+'Feed Events'=>'',
+'Making an event sticky will cause it to always show up at the top of the feed.'=>'',
+'Undo Sticky'=>'',
+'Like Post'=>'',
+'Unlike Post'=>'',
+// Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'',
 'created a new {modelName}, {modelLink}'=>'',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'',
@@ -363,14 +322,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'',
 'completed the following action: {actionDescription}'=>'',
 'completed an action, but the record could not be found.'=>'',
-// // // Model Names
+// Model Names
 'action'=>'',
 'contact'=>'',
-'account'=>'',
 'opportunity'=>'',
 'marketing campaign'=>'',
-// // 
-// // // Misc. Text
+'product'=>'',
+
+// Misc. Text
 'Minimize Posts'=>'',
 'Restore Posts'=>'',
 'My Groups'=>'',
@@ -379,15 +338,20 @@ return array (
 'Broadcast Event'=>'',
 'Cancel Broadcast'=>'',
 'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'',
-// //
-// // Error Reporting
+'Leave colors blank for defaults.'=>'',
+'Do you want to email all users?'=>'',
+'What color should the broadcast be?'=>'',
+'What color should the font be?'=>'',
+'What color should the links be?'=>'',
+'Are you sure you want to remove these items from the list?'=>'',
+
+// Error Reporting
 'Bug Report Form'=>'',
 'This is the form to manually report bugs.'=>'',
 'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'',
 'Send Bug Report'=>'',
 'Here\'s a quick list of what will be included in the report:'=>'',
 'Report A Bug'=>'',
-'Email Address'=>'',
 'Bug Description'=>'',
 'X2CRM Version:'=>'',
 'PHP Version:'=>'',
@@ -407,4 +371,189 @@ return array (
 'Please Note:'=>'',
 'Any information in the $_GET or $_POST arrays included with the request will also be sent with the report.'=>'',
 'Error report sent!'=>'',
+
+// About Page
+'Professional Edition'=>'',
+'X2Engine is a Customer Relationship Management application <br>designed by John Roberts.'=>'',
+'For customer and community support:'=>'',
+'Core Team'=>'',
+'Special Thanks'=>'',
+'Version Info'=>'',
+'Build'=>'',
+'Code Base'=>'',
+'Plugins/Extensions'=>'',
+'Developer'=>'',
+'Yii Extension'=>'',
+'Powered by X2Engine'=>'',
+'X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 			to install and use this Software for your internal business purposes. 			You shall not modify, distribute, license or sublicense the Software. 			Title, ownership, and all intellectual property rights in the Software belong 			exclusively to X2Engine.'=>'',
+'THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 		EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 		MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.'=>'',
+'Our office in downtown Santa Cruz'=>'',
+'X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.'=>'',
+'Cannot delete admin user.  Please do not repeat this request.'=>'',
+'The "model" property cannot be empty.'=>'',
+'The "options" property cannot be empty.'=>'',
+'The "chart" property is not valid JSON.'=>'',
+'The "model property is not valid'=>'',
+'Rights Reserved.'=>'',
+'Click to get a new image'=>'',
+'Please enter the letters in the image above.'=>'',
+'Main Menu'=>'',
+'Incorrect username or password.'=>'',
+'Email '=>'',
+'Cannot be blank.'=>'',
+'Side Panel Settings'=>'',
+'top'=>'',
+'Sync'=>'',
+'anyone'=>'',
+'Invalid selection.'=>'',
+'This list cannot be found.'=>'',
+'You do not have permission to modify this list.'=>'',
+'The requested list does not exist.'=>'',
+'Severity'=>'',
+'Creating a theme will save your current '=>'',
+'Encrypted storage enabled'=>'',
+'shared system-wide'=>'',
+'Set as default'=>'',
+'Set as my default'=>'',
+'for'=>'',
+'Apply'=>'',
+'Add New'=>'',
+'Visible to lead routing'=>'',
+'Invisible to lead routing'=>'',
+'GNU Affero GPL v3'=>'',
+'GNU Affero General Public License version 3'=>'',
+'Released as free software without warranties under the'=>'',
+'Make Important'=>'',
+'Broadcast'=>'',
+'Select at least one user to broadcast to'=>'',
+'Okay'=>'',
+'Nevermind'=>'',
+'Create Chart Setting'=>'',
+'Clear second metric'=>'',
+'Delete predefined chart setting'=>'',
+'Setting Name'=>'',
+'Select a group of users to send this event to via email or notification.'=>'',
+'Designating an event as important will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'',
+'Make Unimportant'=>'',
+'Send test email'=>'',
+'Register'=>'',
+'New Event Publisher'=>'',
+'Send Now'=>'',
+'Send Later'=>'',
+'Media Widget Settings'=>'',
+'X2 Media'=>'',
+'Refresh Google Drive Cache'=>'',
+'Refresh Files'=>'',
+'Errors encountered in {attribute}'=>'',
+'Auto'=>'',
+'Did not send email because you do not have permission to use the specified credentials.'=>'',
+'Inline email model missing from the request to the server.'=>'',
+'Timezone not available'=>'',
+'The requested post does not exist.'=>'',
+'Manage Credentials'=>'',
+'Edit Credentials'=>'',
+'Saved'=>'',
+'Phone system reported inbound call from contact.'=>'',
+'You are not authorized to perform this action.'=>'',
+'your feed'=>'',
+'{name}\'s feed'=>'',
+'Email address'=>'',
+'Server'=>'',
+'Security type'=>'',
+'secured with'=>'',
+'Email Account'=>'',
+'Bin Size'=>'',
+'Metric 1'=>'',
+'Metric 2'=>'',
+'Encryption Enabled'=>'',
+'Date Created'=>'',
+'Date Last Updated'=>'',
+'Authentication Details'=>'',
+'New {service}'=>'',
+'Google Account'=>'',
+'Bulk Email Account'=>'',
+'Service Case Email Account'=>'',
+'System Response Emailer'=>'',
+'System Notification Emailer'=>'',
+'Notification not found'=>'',
+'A new {actionLink} associated with the contact {contactLink} has been created.'=>'',
+'issued the {transModelName} "{modelLink}" via email'=>'',
+'{modelLink} called.'=>'',
+'Call from a contact whose record could not be found.'=>'',
+'A lead failed to come through Lead Capture. Check {link} to recover it.'=>'',
+'here'=>'',
+'{user} posted on {link}'=>'',
+'{user} replied on {link}'=>'',
+'{name} is currently on {url}'=>'',
+'{name} is currently on your website.'=>'',
+'Invalid email address list.'=>'',
+'Cannot delete. The item is in use by the system, or you do not have permission.'=>'',
+'You have made an invalid request, please do not repeat this.'=>'',
+'If this happened by clicking a Delete button on a Grid, just go back to that page and it should work now. This is a known issue we are working to fix.'=>'',
+'Your X2CRM session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.'=>'',
+'Sorry, this record doesn\'t seem to exist.'=>'',
+'A new {modelName}, {modelLink}, has been created.'=>'',
+'A {modelName}, {deletionText}, was created. It has been deleted.'=>'',
+'A {modelName} was created, but it could not be found.'=>'',
+'A {modelType}, {text}, was deleted'=>'',
+'deleted an {modelType}, {text}.'=>'',
+'An {modelType}, {text}, was deleted.'=>'',
+'issued a quote by email, but that record has been deleted.'=>'',
+'issued a quote by email, but that record could not be found.'=>'',
+'issued an invoice by email, but that record has been deleted.'=>'',
+'issued an invoice by email, but that record could not be found.'=>'',
+'A contact has opened {emailType}, but that contact cannot be found.'=>'',
+'updated a document, {docLink}'=>'',
+'received an email from a {transModelName}, {modelLink}'=>'',
+'received an email from a {transModelName}, but that record has been deleted.'=>'',
+'received an email from a {transModelName}, but that record could not be found.'=>'',
+'A contact called, but the contact record has been deleted.'=>'',
+'Pressing the X button on a tag will hide it from this widget. Hidden tags can be restored from your Preferences page.'=>'',
+'Displaying {start}-{end} result(s).'=>'',
+'Email Address (optional)'=>'',
+'User name (if different from email address)'=>'',
+'This record may be a duplicate!'=>'',
+'Credentials stored in plain text!'=>'',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'',
+'A new version is available! Click here to update to version {version}'=>'',
+'a quote email'=>'',
+'an invoice email'=>'',
+'an email'=>'',
+' has opened {emailType}!'=>'',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit \"Send.\" We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'',
+'issued the {transModelName} \"{modelLink}\" via email'=>'',
+'What color should the event be?'=>'',
+'Do you want to email selected users?'=>'',
+'Do you want to notify selected users?'=>'',
+'Permanently delete all notifications?'=>'',
+'Save to Google Drive?'=>'',
+'If you disable this option, administrators and users granted privilege to do so will be able to use these credentials on your behalf.'=>'',
+'select a type'=>'',
+'Owned by {user}'=>'',
+'Maximize Widget'=>'',
+'Minimize Widget'=>'',
+'Sort Widget'=>'',
+'Close Widget'=>'',
+'Check all'=>'',
+'Uncheck all'=>'',
+'metric(s) selected'=>'',
+'Per Hour'=>'',
+'Per Day'=>'',
+'Per Week'=>'',
+'Per Month'=>'',
+'Tasks'=>'',
+'Calls'=>'',
+'Emails'=>'',
+'Workflow Actions'=>'',
+'View history item'=>'',
+'Someone'=>'',
+' opened a link in an email campaign and is visiting your website!'=>'',
+'A contact has opened a link in an email campaign, but that contact cannot be found.'=>'',
+'Class "{class}" specified for {attribute} does not exist, so cannot create relationships with it.'=>'',
+'Class "{class}" specified for {attribute} does not have X2LinkableBehavior, and thus cannot be used with relationships.'=>'',
+'Model record not found for {attribute}.'=>'',
+'Google Email Account'=>'',
+'Setting'=>'',
+'Attach a File/Photo'=>'',
+'Select at least one broadcast method'=>'',
 );

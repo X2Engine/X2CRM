@@ -74,6 +74,7 @@ class Actions extends X2Model {
                 'defaults' => array(),
                 'defaultStickOnClear' => false
             ),
+            'permissions' => array('class' => 'X2PermissionsBehavior'),
         );
     }
 
@@ -98,6 +99,14 @@ class Actions extends X2Model {
                     'workflow' => array(self::BELONGS_TO, 'Workflow', 'workflowId'),
                     'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
                 ));
+    }
+
+    public function getAttributeLabel($attribute){
+        if($attribute == 'actionDescription'){
+            return Yii::t('actions', 'Action Description');
+        }else{
+            return parent::getAttributeLabel($attribute);
+        }
     }
 
     /**
@@ -130,8 +139,10 @@ class Actions extends X2Model {
             $actionText->text = $this->actionDescriptionTemp;
             $actionText->save();
         }else{
-            $this->actionText->text=$this->actionDescriptionTemp;
-            $this->actionText->save();
+            if(!empty($this->actionDescriptionTemp) && $this->actionText->text != $this->actionDescriptionTemp){
+                $this->actionText->text = $this->actionDescriptionTemp;
+                $this->actionText->save();
+            }
         }
         return parent::beforeSave();
     }
@@ -161,7 +172,7 @@ class Actions extends X2Model {
             $event->user = $this->assignedTo;
             $event->save();
         }
-        if(Yii::app()->params->noSession || $this->assignedTo != Yii::app()->user->getName()){
+        if($this->scenario != 'noNotif' && (Yii::app()->params->noSession || $this->assignedTo != Yii::app()->user->getName())){
             $notif = new Notification;
             $notif->user = $this->assignedTo;
             $notif->createdBy = (Yii::app()->params->noSession) ? 'API' : Yii::app()->user->getName();
@@ -187,7 +198,7 @@ class Actions extends X2Model {
     public function setActionDescription($value){
         if(isset($this->actionText)){
             $this->actionDescriptionTemp = $value;
-            $this->actionText->text=$value;
+            $this->actionText->text = $value;
             $this->actionText->save();
         }else{
             $this->actionDescriptionTemp = $value;
@@ -318,6 +329,8 @@ class Actions extends X2Model {
             return false;
         if(!is_numeric($dueDate))
             $dueDate = strtotime($dueDate); // make sure $date is a proper timestamp
+
+
 
 
 

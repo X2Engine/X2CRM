@@ -36,30 +36,30 @@
 
 /**
  * X2FlowAction that creates a new record
- * 
+ *
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowRecordCreate extends X2FlowAction {
 	public $title = 'Create Record';
 	public $info = '';
-	
+
 	public function paramRules() {
 		return array(
 			'title' => $this->title,
 			'modelClass' => 'modelClass',
 			'options' => array(
 				array('name'=>'attributes'),
-				array('name'=>'modelClass','label'=>'Record Type','type'=>'dropdown','options'=>X2Model::getModelTypes(true)),
+				array('name'=>'modelClass','label'=>Yii::t('studio','Record Type'),'type'=>'dropdown','options'=>X2Model::getModelTypes(true)),
 			)
 		);
 	}
-	
+
 	public function execute(&$params) {
 		if(!is_subclass_of($params['modelClass'],'X2Model'))	// make sure this is a valid model type
 			return false;
 		if(!isset($this->config['attributes']) || empty($this->config['attributes']))
 			return false;
-		
+
 		$model = new $params['modelClass'];
 		return $this->setModelAttributes($model,$this->config['attributes'],$params) && $model->save();
 	}

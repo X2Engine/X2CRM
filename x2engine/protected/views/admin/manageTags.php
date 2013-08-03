@@ -34,38 +34,39 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin','Tag Manager'); ?></h2></div>
-<div style="width:600px;" class="form">
-    <?php echo Yii::t('admin',"This is a list of all tags currently used within the app."); ?><br />
-    <?php echo Yii::t('admin',"To delete a tag, click the delete link in the grid below.  This will remove any relationship between that tag and records, but textual references to the tag will be preserved.") ?><br /><br />
-    <?php echo Yii::t('admin','To delete all tags, use the "Delete All" button at the bottom of the grid.'); ?>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'Tag Manager'); ?></h2></div>
+<div class="form">
+    <div style="width:600px;">
+        <?php echo Yii::t('admin', "This is a list of all tags currently used within the app."); ?><br />
+        <?php echo Yii::t('admin', "To delete a tag, click the delete link in the grid below.  This will remove any relationship between that tag and records, but textual references to the tag will be preserved.") ?><br /><br />
+        <?php echo Yii::t('admin', 'To delete all tags, use the "Delete All" button at the bottom of the grid.'); ?>
+    </div>
 </div>
 <?php
-
 $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'tags-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'.Yii::t('admin','Tags').'</h2><div class="title-bar">'
-		.'{summary}</div></div>{items}{pager}',
-	'dataProvider'=>$dataProvider,
-	'columns'=>array(
+    'id' => 'tags-grid',
+    'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+    'template' => '<div class="page-title"><h2>'.Yii::t('admin', 'Tags').'</h2><div class="title-bar">'
+    .'{summary}</div></div>{items}{pager}',
+    'dataProvider' => $dataProvider,
+    'columns' => array(
         array(
-            'header'=>'Tag',
-            'name'=>'tag',
-            'type'=>'raw',
-            'value'=>"CHtml::link(\$data->tag,array('/search/search?term=%23'.substr(\$data->tag,1)), array('class'=>'x2-link x2-tag'))"
+            'header' => Yii::t('admin','Tag'),
+            'name' => 'tag',
+            'type' => 'raw',
+            'value' => "CHtml::link(\$data->tag,array('/search/search?term=%23'.substr(\$data->tag,1)), array('class'=>'x2-link x2-tag'))"
         ),
         array(
-            'header'=>'# of Records',
-            'type'=>'raw',
-            'value'=>"X2Model::model('Tags')->countByAttributes(array('tag'=>\$data->tag))"
+            'header' => Yii::t('admin','# of Records'),
+            'type' => 'raw',
+            'value' => "X2Model::model('Tags')->countByAttributes(array('tag'=>\$data->tag))"
         ),
         array(
-            'header'=>'Delete Tag',
-            'type'=>'raw',
-            'value'=>"CHtml::link('Delete Tag','#',array('class'=>'x2-button', 'submit'=>'deleteTag?tag='.\substr(\$data->tag,1),'confirm'=>'Are you sure you want to delete this tag?'))"
+            'header' => Yii::t('admin','Delete Tag'),
+            'type' => 'raw',
+            'value' => "CHtml::link(Yii::t('admin','Delete Tag'),'#',array('class'=>'x2-button', 'submit'=>'deleteTag?tag='.\substr(\$data->tag,1),'confirm'=>Yii::t('admin','Are you sure you want to delete this tag?')))"
         ),
-	),
+    ),
 ));
 ?><br>
-<?php echo CHtml::link(Yii::t('admin','Delete All'),'#',array('class'=>'x2-button', 'submit'=>'deleteTag?tag=all','confirm'=>'Are you sure you want to delete all tags?')); ?>
+<?php echo CHtml::link(Yii::t('admin', 'Delete All'), '#', array('class' => 'x2-button', 'submit' => 'deleteTag?tag=all', 'confirm' => Yii::t('admin','Are you sure you want to delete all tags?'))); ?>

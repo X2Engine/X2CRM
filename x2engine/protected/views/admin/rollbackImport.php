@@ -80,7 +80,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'link'=>array(
                 'name' => 'link',
                 'header' => Yii::t('admin', "Rollback Link"),
-                'value' => '"<a href=\'rollbackImport?importId=".$data["importId"]."\' class=\'x2-button rollback-link\'>Rollback</a>"',
+                'value' => '"<a href=\'rollbackImport?importId=".$data["importId"]."\' class=\'x2-button rollback-link\'>".Yii::t("admin","Rollback")."</a>"',
                 'type' => 'raw',
             ),
         ),
@@ -97,7 +97,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
     <?php echo CHtml::link('Begin Rollback','#',array('id'=>'rollback-link','class'=>'x2-button'));?>
 </div>
 <div class="form" style="width:600px;color:green;display:none;" id="status-box">
-    
+
 </div>
 <?php }
 ?>

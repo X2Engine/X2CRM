@@ -36,14 +36,20 @@
 
 $(function() {
 
+
+	function setupInlineEmailEditorAndroid () {
+		setupEmailAttachments('email-attachments');
+	}
+
 	/**
 	 *	Initializes CKEditor in the email form, and the datetimepicker for the "send later" dropdown.
 	 */
 	$(document).on('setupInlineEmailEditor',function(){
+
 		if(window.inlineEmailEditor)
 			window.inlineEmailEditor.destroy(true);
 		$('#email-message').val(x2.inlineEmailOriginalBody);
-		window.inlineEmailEditor = createCKEditor('email-message',{fullPage:true,tabIndex:5,insertableAttributes:x2.insertableAttributes}, function() {
+		window.inlineEmailEditor = createCKEditor('email-message',{fullPage:true,height:'300px',tabIndex:5,insertableAttributes:x2.insertableAttributes}, function() {
 			if(typeof inlineEmailEditorCallback == 'function') {
 				inlineEmailEditorCallback(); // call a callback function after the inline email editor is created (if function exists)
 			}
@@ -84,7 +90,7 @@ $(function() {
 		if(/^mailto:/.exec(this.href)) {
 			if(typeof toggleEmailForm != 'undefined') {
 				e.preventDefault();
-				$('#email-to').val(this.href.replace('mailto:',''));
+				$('#email-to').val(decodeURIComponent(this.href).replace('mailto:',''));
 				toggleEmailForm();
 			}
 		}
@@ -178,7 +184,7 @@ function setupInlineEmailForm() {
 		var template = $(this).val();
 		if(template != "0") {
 			if(inlineEmailSwitchConfirm()) {
-				window.inlineEmailEditor.updateElement();
+				if (!x2.isAndroid) window.inlineEmailEditor.updateElement();
 				jQuery.ajax({
 					'type':'POST',
 					'url':yii.scriptUrl+'/contacts/inlineEmail?ajax=1&template=1',
@@ -195,6 +201,7 @@ function setupInlineEmailForm() {
 }
 
 function inlineEmailSwitchConfirm() {
+	if (x2.isAndroid) return true;
 	var proceed = true;
 	var noChange = ! window.inlineEmailEditor.checkDirty();
 	if(!noChange)
@@ -227,7 +234,10 @@ function handleInlineEmailActionResponse(data, textStatus, jqXHR) {
 	}
 	if(data !== undefined) {
 		if(data.scenario == 'template') { // Submission was for getting new template. Fill in with template content.
-			window.inlineEmailEditor.setData(data.attributes.message);
+			if (x2.isAndroid)
+			    $('#email-message').val (data.attributes.message);	
+			else 
+				window.inlineEmailEditor.setData(data.attributes.message);
 			$('input[name="InlineEmail[subject]"]').val(data.attributes.subject);
 		} else { // Email was sent successfully. Reset everything.
 			

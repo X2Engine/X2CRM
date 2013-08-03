@@ -44,7 +44,7 @@ Yii::app()->params->profile = ProfileChild::model()->findByPk(1);
 <meta charset="UTF-8" />
 <meta name="language" content="<?php echo Yii::app()->language; ?>" />
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
-<?php $this->renderGaCode('public'); ?> 
+<?php $this->renderGaCode('public'); ?>
 
 <style type="text/css">
 html {
@@ -52,7 +52,7 @@ html {
 	/* Dear future editors:
 	  The pixel height of the iframe containing this page
 	  should equal the sum of height, padding-bottom, and 2x border size
-	  specified in this block, else the bottom border will not be at the 
+	  specified in this block, else the bottom border will not be at the
 	  bottom edge of the frame. Now it is based on 325px height for weblead,
 	  and 100px for weblist */
 
@@ -69,8 +69,8 @@ html {
 	if (!empty($_GET['bc'])) echo $_GET['bc'];
 	echo ";\n";
 
-	unset($_GET['bs']); 
-	unset($_GET['bc']); 
+	unset($_GET['bs']);
+	unset($_GET['bc']);
 	?>
 
 	-moz-border-radius: 3px;
@@ -82,11 +82,11 @@ html {
 body {
 	<?php if (!empty($_GET['fg'])) echo 'color: '. $_GET['fg'] .";\n"; unset($_GET['fg']); ?>
 	<?php if (!empty($_GET['bgc'])) echo 'background-color: '. $_GET['bgc'] .";\n"; unset($_GET['bgc']); ?>
-	<?php 
+	<?php
 	if (!empty($_GET['font'])) {
 		echo 'font-family: '. FontPickerInput::getFontCss($_GET['font']) .";\n";
-		unset($_GET['font']); 
-	} else echo "font-family: Arial, Helvetica, sans-serif;\n"; 
+		unset($_GET['font']);
+	} else echo "font-family: Arial, Helvetica, sans-serif;\n";
 	?>
 	font-size:12px;
 	width:189px;
@@ -122,12 +122,12 @@ function errorize(element) {
 	element.style['border-color'] = "#C00";
 	element.style['background-color'] = "#FEE";
 }
- 
+
 function validateField(field) {
 	var input = document.forms['<?php echo $type; ?>']['Services[' + field + ']'];
 	if (typeof field !== "undefined" && input.value.trim() == "" || (field == "email" && input.value.match(/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/) == null)) {
 		errorize(input);
-		return false; 
+		return false;
 	}
 	return true;
 }
@@ -160,7 +160,7 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 	<?php foreach ($_GET as $key=>$value) { ?>
 		<input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>" />
 	<?php } ?>
-	<input id='submit' type="submit" value="Submit" onclick="clearText(document.forms['<?php echo $type; ?>']['Services[description]']); return validate();"/>
+	<input id='submit' type="submit" value="<?php echo Yii::t('app','Submit');?>" onclick="clearText(document.forms['<?php echo $type; ?>']['Services[description]']); return validate();"/>
 </form>
 </body>
 </html>

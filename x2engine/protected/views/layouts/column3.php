@@ -92,6 +92,16 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 		// This is a list of service case statuses. When the User checks one of the corresponding checkboxes
 		// the status will be hidden in the gridview in services/index
 		if(isset($this->modelClass) && $this->modelClass == 'Services' && isset($this->serviceCaseStatuses) && $this->serviceCaseStatuses != null) {
+            Yii::app()->clientScript->registerCSS ("servicesFiltersStyle", "
+                #checkAllServiceFilters {
+                    width: 47px;
+                }
+                #uncheckAllServiceFilters {
+                    width: 47px;
+                }
+            ");
+
+
 			$hideStatus = CJSON::decode(Yii::app()->params->profile->hideCasesWithStatus); // get a list of statuses the user wants to hide
 			if(!$hideStatus) {
 				$hideStatus = array();
@@ -132,13 +142,13 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 						)
 					)
 				);
-				echo CHtml::label(CHtml::encode($status), "service-case-status-filter-$i");
+				echo CHtml::label(CHtml::encode(Yii::t('services',$status)), "service-case-status-filter-$i");
 				echo "</li>";
 				$i++;
 			}
 			echo "</ul>\n";
 			echo '<div class="x2-button-group">';
-			echo CHtml::link(Yii::t('app','All'),'javascript:void(0);',array('id'=>'checkAllServiceFilters','class'=>'x2-button','style'=>'width:48px;',
+			echo CHtml::link(Yii::t('app','All'),'javascript:void(0);',array('id'=>'checkAllServiceFilters','class'=>'x2-button',
 				'ajax'=>array(
 					'type' => 'POST', //request type
 					'url' => Yii::app()->controller->createUrl('/services/statusFilter'), //url to call
@@ -149,7 +159,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					'data' => 'js:{all:1}',
 				)
 			));
-			echo CHtml::link(Yii::t('app','None'),'javascript:void(0);',array('id'=>'uncheckAllServiceFilters','class'=>'x2-button','style'=>'width:47px;',
+			echo CHtml::link(Yii::t('app','None'),'javascript:void(0);',array('id'=>'uncheckAllServiceFilters','class'=>'x2-button',
 				'ajax'=>array(
 					'type' => 'POST', //request type
 					'url' => Yii::app()->controller->createUrl('/services/statusFilter'), //url to call
@@ -407,8 +417,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 				)
 			);
 			echo '<div class="x2-button-group">';
-			echo '<a href="#" id="simple-filters" class="x2-button'.($profile->fullFeedControls?"":" disabled-link").'" style="width:42px">Simple</a>';
-            echo '<a href="#" id="full-filters" class="x2-button'.($profile->fullFeedControls?" disabled-link":"").'" style="width:42px">Full</a>';
+			echo '<a href="#" id="simple-filters" class="x2-button'.($profile->fullFeedControls?"":" disabled-link").'" style="width:42px">'.Yii::t('app','Simple').'</a>';
+            echo '<a href="#" id="full-filters" class="x2-button'.($profile->fullFeedControls?" disabled-link":"").'" style="width:42px">'.Yii::t('app','Full').'</a>';
 			echo "</div>\n";
 			$this->endWidget();
             $filterList=json_decode($profile->feedFilters,true);
@@ -574,7 +584,7 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					'id'=>'type-filter',
 				)
 			);
-            echo CHtml::link('All','#',array('class'=>'x2-button filter-control-button','id'=>'all-button','style'=>'width:107px;'))."<br>";
+            echo CHtml::link(Yii::t('app','All'),'#',array('class'=>'x2-button filter-control-button','id'=>'all-button','style'=>'width:107px;'))."<br>";
 			foreach($eventTypes as $type=>$name) {
                 echo CHtml::link($name,'#',array('class'=>'x2-button filter-control-button','id'=>$type.'-button','style'=>'width:107px;'))."<br>";
 			}
@@ -622,7 +632,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 					pieces2=str2.split("#");
 					window.location=pieces2[0]+"?filters=true&visibility="+visibility+"&users="+users+"&types="+eventTypes+"&subtypes="+subtypes+"&default="+defaultFilters;
 				});
-                $("#full-filters").click(function(){
+                $("#full-filters").click(function(e){
+					e.preventDefault();
                     $("#simple-controls").hide();
                     $("#full-controls").show();
                     $.ajax({
@@ -631,7 +642,8 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
                     $(this).addClass("disabled-link");
                     $(this).prev().removeClass("disabled-link");
                 });
-                $("#simple-filters").click(function(){
+                $("#simple-filters").click(function(e){
+					e.preventDefault();
                     $("#full-controls").hide();
                     $("#simple-controls").show();
                     $.ajax({

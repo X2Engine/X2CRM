@@ -58,7 +58,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 	}
 
 	private $_editingUsername;
-    public $createEvent = true;
+	public $createEvent = true;
 	protected $validated = false;
 
 	/**
@@ -71,34 +71,27 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 	 * @return type
 	 */
 	public function getEditingUsername() {
-		if (!isset($this->_editingUsername)) {
-			if (Yii::app()->params->noSession) {
-				$lookupUsername = false;
-				if ($this->owner->hasProperty('suModel')) {
-					if (isset($this->owner->suModel->username))
-						$this->_editingUsername = $this->owner->suModel->username;
-					else
-						$lookupUsername = true;
-				} else
-					$lookupUsername = true;
-				if ($lookupUsername) {
-					// As a last resort, get the admin user's name and use it
-					$this->_editingUsername = User::model()->findByPk(1)->username;
-				}
-			} else {
-				$this->_editingUsername = Yii::app()->user->getName();
-			}
-		}
+		if (!isset($this->_editingUsername))
+			$this->_editingUsername = Yii::app()->suModel->username;
 		return $this->_editingUsername;
 	}
 
-    public function beforeSave($event){
-        $model=$this->getOwner();
-        if($model->hasAttribute('updatedBy')){
-            $model->updatedBy=$this->editingUsername;
-        }
-        return parent::beforeSave($event);
-    }
+	/**
+	 * Sets username fields of a model
+	 */
+	public static function usernameFieldsSet(CActiveRecord $model,$username){
+		if($model->hasAttribute('updatedBy')){
+			$model->updatedBy = $username;
+		}
+		if($model->hasAttribute('createdBy') && $model->isNewRecord)
+			$model->createdBy = $username;
+	}
+
+	public function beforeSave($event){
+		$model=$this->getOwner();
+		self::usernameFieldsSet($model,$this->editingUsername);
+		return parent::beforeSave($event);
+	}
 
 	public function afterCreate($event) {
 

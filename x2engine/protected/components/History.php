@@ -52,34 +52,40 @@ class History extends X2Widget {
     public function run(){
         if($this->filters){
             $historyTabs = array(
-                'all' => 'All',
-                'actions' => 'Actions',
-                'comments' => 'Comments',
-                'workflow' => 'Workflow',
-                'attachments' => 'Attachments',
-                'marketing' => 'Marketing',
-                'webactivity'=>'Web Activity',
+                'all' => Yii::t('app', 'All'),
+                'actions' => Yii::t('app', 'Actions'),
+                'comments' => Yii::t('app', 'Comments'),
+                'workflow' => Yii::t('app', 'Workflow'),
+                'attachments' => Yii::t('app', 'Attachments'),
+                'marketing' => Yii::t('app', 'Marketing'),
+                'webactivity' => Yii::t('app', 'Web Activity'),
             );
-            $profile=Yii::app()->params->profile;
-            $this->pageSize=$profile->historyShowAll?10000:10;
-            $this->relationships=$profile->historyShowRels;
+            $profile = Yii::app()->params->profile;
+            if(isset($profile)){
+                $this->pageSize = $profile->historyShowAll ? 10000 : 10;
+                $this->relationships = $profile->historyShowRels;
+            }
             if(isset($_GET['history']) && array_key_exists($_GET['history'], $historyTabs)){
                 $this->historyType = $_GET['history'];
             }
             if(isset($_GET['pageSize'])){
-                $this->pageSize=$_GET['pageSize'];
-                $profile->historyShowAll=$this->pageSize>10?1:0;
-                $profile->update(array('historyShowAll'));
+                $this->pageSize = $_GET['pageSize'];
+                if(isset($profile)){
+                    $profile->historyShowAll = $this->pageSize > 10 ? 1 : 0;
+                    $profile->update(array('historyShowAll'));
+                }
             }
             if(isset($_GET['relationships'])){
-                $this->relationships=$_GET['relationships'];
-                $profile->historyShowRels=$this->relationships;
-                $profile->update(array('historyShowRels'));
+                $this->relationships = $_GET['relationships'];
+                if(isset($profile)){
+                    $profile->historyShowRels = $this->relationships;
+                    $profile->update(array('historyShowRels'));
+                }
             }
         }else{
             $historyTabs = array();
         }
-        Yii::app()->clientScript->registerScript('history-tabs',"
+        Yii::app()->clientScript->registerScript('history-tabs', "
             var relationshipFlag={$this->relationships};
             var currentHistory='".$this->historyType."';
             $(document).on('change','#history-selector',function(){
@@ -110,16 +116,16 @@ class History extends X2Widget {
         $this->widget('zii.widgets.CListView', array(
             'id' => 'history',
             'dataProvider' => $this->getHistory(),
-            'viewData'=>array(
-                'relationshipFlag'=>$this->relationships,
+            'viewData' => array(
+                'relationshipFlag' => $this->relationships,
             ),
             'itemView' => 'application.modules.actions.views.actions._view',
             'htmlOptions' => array('class' => 'action list-view'),
-            'template' => '<div class="form">'.CHtml::dropDownList('history-selector',$this->historyType,$historyTabs).
-            '<span style="margin-top:5px;" class="right">'.CHtml::link('Toggle Text','#',array('id'=>'history-collapse','class'=>'x2-hint','title'=>'Click to toggle showing the full text of History items.'))
-            .' | '.CHtml::link('Show All','#',array('id'=>'show-history-link','class'=>'x2-hint','title'=>'Click to increase the number of History items shown.','style'=>$this->pageSize>10?'display:none;':''))
-            .CHtml::link('Show Less','#',array('id'=>'hide-history-link','class'=>'x2-hint','title'=>'Click to decrease the number of History items shown.','style'=>$this->pageSize>10?'':'display:none;'))
-            .((!Yii::app()->user->isGuest)?' | '.CHtml::link('Relationships','#',array('id'=>'show-relationships-link','class'=>'x2-hint','title'=>'Click to toggle showing actions associated with related records.')):'')
+            'template' => '<div class="form">'.CHtml::dropDownList('history-selector', $this->historyType, $historyTabs).
+            '<span style="margin-top:5px;" class="right">'.CHtml::link(Yii::t('app', 'Toggle Text'), '#', array('id' => 'history-collapse', 'class' => 'x2-hint', 'title' => Yii::t('app', 'Click to toggle showing the full text of History items.')))
+            .' | '.CHtml::link(Yii::t('app', 'Show All'), '#', array('id' => 'show-history-link', 'class' => 'x2-hint', 'title' => Yii::t('app', 'Click to increase the number of History items shown.'), 'style' => $this->pageSize > 10 ? 'display:none;' : ''))
+            .CHtml::link(Yii::t('app', 'Show Less'), '#', array('id' => 'hide-history-link', 'class' => 'x2-hint', 'title' => Yii::t('app', 'Click to decrease the number of History items shown.'), 'style' => $this->pageSize > 10 ? '' : 'display:none;'))
+            .((!Yii::app()->user->isGuest) ? ' | '.CHtml::link(Yii::t('app', 'Relationships'), '#', array('id' => 'show-relationships-link', 'class' => 'x2-hint', 'title' => Yii::t('app', 'Click to toggle showing actions associated with related records.'))) : '')
             .'</span></div> {sorter}{items}{pager}',
         ));
     }
@@ -133,33 +139,36 @@ class History extends X2Widget {
             'comments' => ' AND type="note"',
             'attachments' => ' AND type="attachment"',
             'marketing' => ' AND type IN ("email","webactivity","weblead","email_staged","email_opened","email_clicked","email_unsubscribed")',
-            'webactivity'=>'AND type IN ("weblead","webactivity")'
+            'webactivity' => 'AND type IN ("weblead","webactivity")'
         );
         if($this->relationships){
-            $type=$this->associationType;
-            $model=X2Model::model($type)->findByPk($this->associationId);
-            if(count($model->relatedX2Models)>0){
-                $associationCondition="((associationId={$this->associationId} AND associationType='{$this->associationType}')";
+            $type = $this->associationType;
+            $model = X2Model::model($type)->findByPk($this->associationId);
+            if(count($model->relatedX2Models) > 0){
+                $associationCondition = "((associationId={$this->associationId} AND associationType='{$this->associationType}')";
                 foreach($model->relatedX2Models as $relatedModel){
+                    if($relatedModel instanceof X2Model){
                         $associationCondition.=" OR (associationId={$relatedModel->id} AND associationType='{$relatedModel->myModelName}')";
+                    }
                 }
                 $associationCondition.=")";
             }else{
-                $associationCondition='associationId='.$this->associationId.' AND associationType="'.$this->associationType.'"';
+                $associationCondition = 'associationId='.$this->associationId.' AND associationType="'.$this->associationType.'"';
             }
         }else{
-            $associationCondition='associationId='.$this->associationId.' AND associationType="'.$this->associationType.'"';
+            $associationCondition = 'associationId='.$this->associationId.' AND associationType="'.$this->associationType.'"';
         }
-        $associationCondition=str_replace('Opportunity','opportunities',$associationCondition);
-        $associationCondition=str_replace('Quote','quotes',$associationCondition);
+        $associationCondition = str_replace('Opportunity', 'opportunities', $associationCondition);
+        $associationCondition = str_replace('Quote', 'quotes', $associationCondition);
         return new CActiveDataProvider('Actions', array(
                     'criteria' => array(
-                        'order' => 'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), IFNULL(lastUpdated,0)), GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC',
+                        'order' => 'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), IFNULL(lastUpdated,0)), GREATEST(createDate, '.
+						 			   'IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC',
                         'condition' => $associationCondition.
-					'AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")'.$historyCriteria[$this->historyType]
+                        'AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")'.$historyCriteria[$this->historyType]
                     ),
-                    'pagination'=>array(
-                        'pageSize'=>$this->pageSize,
+                    'pagination' => array(
+                        'pageSize' => $this->pageSize,
                     )
                 ));
     }

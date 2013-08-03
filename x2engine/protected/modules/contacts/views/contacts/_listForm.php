@@ -89,7 +89,7 @@ $comparisonList = array(
 	'<>'=>Yii::t('contacts','not equal to'),
 	'list'=>Yii::t('contacts','in list'),
 	'notList'=>Yii::t('contacts','not in list'),
-	'empty'=>Yii::t('empty','empty'),
+	'empty'=>Yii::t('contacts','empty'),
 	'notEmpty'=>Yii::t('contacts','not empty'),
 	'contains'=>Yii::t('contacts','contains'),
 	'noContains'=>Yii::t('contacts','does not contain'),
@@ -120,7 +120,7 @@ $headjs .= <<<EOB
 function deleteCriterion(object) {
 	if($('#list-criteria li').length == 2)	// prevent people from deleting the last criterion
 		$('#list-criteria a.del').fadeOut(300);
-	
+
 	$(object).closest('li').animate({
 		opacity: 0,
 		height: 0
@@ -330,7 +330,7 @@ function createValueCell(field) {
 				 'select':function( event, ui ) {
 					$(this).val(ui.item.value);
 					hidden.val(ui.item.id);
-					return false; 
+					return false;
 				 },
 				}
 			);
@@ -378,7 +378,7 @@ function createValueCell(field) {
 			input.attr('name', 'X2List[value][]');
 			break;
 	}
-	//prevent false positive, multiselect widgets show the top choice as being selected though nothing 
+	//prevent false positive, multiselect widgets show the top choice as being selected though nothing
 	//actually gets posted without user interaction, set val to blank to unselect
 	$(input).val('');
 	var div = $(document.createElement('div'));
@@ -407,7 +407,7 @@ $(function() {
 		axis:'y',
 		distance:10,
 	});
-		
+
 	$('#listType').change(function() {
 		if($(this).val() == 'static')
 			$('#list-criteria').fadeOut(300);
@@ -416,7 +416,7 @@ $(function() {
 		else
 			window.location.reload();
 	});
-	
+
 	//for each criteria create one, or a new blank one if none
 	if (criteria.length == 0) {
 		$('#list-criteria ol').append(createCriteriaForm());
@@ -425,7 +425,7 @@ $(function() {
 			$('#list-criteria ol').append(createPreloadCriteriaForm(criteria[i]));
 		}
 	}
-	
+
 	if ($('#list-criteria li').length == 1)	// prevent people from deleting the last criterion
 		$('#list-criteria a.del').hide();
 });
@@ -514,7 +514,7 @@ Yii::app()->clientScript->registerScript('listCriteriaJs', $headjs, CClientScrip
 		</li>
 	<?php } */ ?>
 	</ol>
-	
+
 	<a href="javascript:void(0)" onclick="addCriterion()" class="x2-sortlist-add">[<?php echo Yii::t('app','Add'); ?>]</a>
 </div>
 <?php } ?>

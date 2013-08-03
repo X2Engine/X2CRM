@@ -24,7 +24,8 @@ class InlineEmailTest extends X2DbTestCase {
 			'quote' => 'Quote',
 			'contacts' => 'Contacts',
 			'profile' => 'Profile',
-			'user' => 'User'
+			'user' => 'User',
+			'credentials'=>'Credentials'
 		);
 	}
 
@@ -43,6 +44,31 @@ class InlineEmailTest extends X2DbTestCase {
 	 * @var InlineEmail
 	 */
 	public $eml;
+
+
+	public function testGetCredentials() {
+		$this->eml = new InlineEmail();
+		$this->eml->credId = $this->credentials('gmail1')->id;
+		$this->assertTrue($this->eml->credentials instanceof Credentials);
+		$this->assertEquals($this->credentials('gmail1')->id,$this->eml->credentials->id);
+		$this->assertEquals($this->credentials('gmail1')->auth->senderName,$this->eml->credentials->auth->senderName);
+	}
+
+	/**
+	 * Test the magic PHPMailer getter
+	 */
+	public function testGetMailer() {
+		$this->eml = new InlineEmail();
+		$cred = $this->credentials('gmail1');
+		$this->eml->credId = $cred->id;
+		$mailer = $this->eml->mailer;
+		$this->assertTrue($mailer instanceof PHPMailer,'Failed asserting PHPMailer instantiated.');
+		$this->assertEquals('smtp',$mailer->Mailer);
+		$this->assertEquals($cred->auth->security,$mailer->SMTPSecure,'Security type not set properly');
+		$this->assertEquals($cred->auth->senderName,$mailer->FromName,'From name not set properly');
+		$this->assertEquals($cred->auth->email,$mailer->Sender,'Sender address not set properly');
+		$this->assertTrue($mailer->SMTPAuth,'SMTP auth not set to true and it needs to be');
+	}
 
 	public function assertActionCreated($type, $message = null){
 		$action = Actions::model()->findBySql("SELECT * FROM x2_actions WHERE type='$type' ORDER BY createDate DESC,id DESC LIMIT 1");
@@ -166,12 +192,16 @@ class InlineEmailTest extends X2DbTestCase {
 		if(self::TESTDELIVERY){
 			Yii::app()->params->admin->emailType = $this->method;
 			$this->eml = new InlineEmail();
+			try {
+				$this->eml->credId = $this->credentials('liveDeliveryTest')->id;
+			} catch(Exception $e) {
+				$this->markTestSkipped('You have not defined the liveDeliveryTest alias in protected/tests/fixtures/x2_credentials-local.php !');
+			}
 			$this->eml->userProfile = Profile::model()->findByAttributes(array('username' => 'testuser'));
 			$this->eml->mailingList = $this->recipient;
 			$this->eml->subject = 'Test email';
 			$this->eml->message = '<html><head></head><body>Test email body</body></html>';
 			$this->eml->attachments = array();
-			$this->eml->from = $this->sender;
 			$status = $this->eml->deliver();
 			$this->assertTrue(in_array('200', $status), 'Failed asserting successful return code. Status = '.CJSON::encode($status));
 			// No further assertions in this method. Chiggity check yo inbox.

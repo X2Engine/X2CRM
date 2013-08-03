@@ -37,7 +37,8 @@
 require_once('WebTestConfig.php');
 
 /**
- * Base class for running quick back & forth web tests with cURL
+ * Base class for running quick back & forth web tests with cURL, i.e. for
+ * testing X2CRM's remote API.
  * 
  * @package X2CRM.tests
  * @author Demitri Morgan <demitri@x2engine.com>

@@ -1,93 +1,22 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
 // // Contact Form Attributes
-'Verification Code'=>'קוד האימות',
 // // Contact Attributes
-'ID'=>'זהות',
-'First Name'=>'שם פרטי',
-'Name'=>'שם',
-'Full Name'=>'שם מלא',
-'Last Name'=>'שם משפחה',
-'Title'=>'כותרת',
-'Account'=>'חשבון',
 'Work'=>'לעבוד',
 'Cell'=>'תא',
 'Work Phone'=>'עבודה טלפון',
-'Cell Phone'=>'טלפון סלולרי',
-'Email'=>'דוא"ל',
-'Phone'=>'טלפון',
 'Phone 2'=>'טלפון 2',
 'IM'=>'הודעות מיידיות',
-'Website'=>'אתר אינטרנט',
-'Address'=>'כתובת',
-'City'=>'עיר',
-'State'=>'מדינה',
 'Zip Code'=>'מיקוד',
-'Country'=>'מדינה',
-'Visibility'=>'ראות',
-'Assigned To'=>'משויך אל',
-'Background Info'=>'רקע מידע',
-'Last Updated'=>'עדכון אחרון',
-'Updated By'=>'עודכן על ידי',
-'Lead Source'=>'להוביל מקור',
-'Priority'=>'עדיפות',
-'Create Date'=>'יצירת תאריך',
-'Rating'=>'דרוג',
-'Low'=>'נמוך',
-'Medium'=>'בינוני',
-'High'=>'גבוה',
-'Public'=>'אישי',
-'Private'=>'פרטי',
 'Twitter'=>'Twitter',
 'Linkedin'=>'LinkedIn',
 'Skype'=>'Skype',
 'Googleplus'=>'Googleplus',
 'Address 2'=>'כתובת 2',
-'Postal Code'=>'מיקוד',
 'Lead Date'=>'להוביל תאריך',
 'Confidence'=>'אמון',
-'Facebook'=>'Facebook',
-'Lead Type'=>'להוביל סוג',
-'Other'=>'אחר',
 'Close Date'=>'סגור תאריך',
-'Expected Close Date'=>'תאריך הסגירה צפויה',
 'Interest'=>'אינטרס',
-'Deal Value'=>'ערך העסקה',
 'Lead Status'=>'להוביל מצב',
 'Lead Score'=>'להוביל ציון',
 'Deal Status'=>'העסקה מצב',
@@ -96,71 +25,37 @@ return array (
 'Sales &amp; Marketing'=>'שיווק ומכירות',
 'In Person'=>'באופן אישי',
 'Accepted'=>'מקובל',
-'Lost'=>'אבד',
-'None'=>'אף לא אחד',
-'Web'=>'לאינטרנט',
 'Assigned'=>'מוקצה',
-'Won'=>'וון',
-'E-Mail'=>'דוא"ל',
-'Google'=>'Google',
-'Walk In'=>'נכנס',
 'Unassigned'=>'שלא הוקצה',
-'Working'=>'עבודה',
 'Dead'=>'מת',
 'Rejected'=>'נדחה',
-'Tags'=>'תגיות',
-'Associated Contacts'=>'אנשי קשר כלולים',
 'Duplicate Check'=>'בדקו שכפל',
-'Last Activity'=>'הפעילות האחרונה',
 'Timezone'=>'אזור זמן',
 'Web Tracking Key'=>'מפתח אינטרנט מעקב',
 // // 
 // // List Attributes
-'Owner'=>'בעלים',
-'Description'=>'תאור',
 'Logic Type'=>'ההיגיון סוג',
-'Record Type'=>'סוג רשומה',
 'Members'=>'משתמשים',
 'Dynamic'=>'דינמי',
 'Static'=>'סטטי',
 // // 
-// // List Criteria Attributes
-'List'=>'רשימה',
-'Type'=>'סוג',
-'Attribute'=>'תכונה',
-'Comparison'=>'השוואה',
-'Value'=>'ערך',
-// // 
-// // List Criteria Comparitors
-'equals'=>'שווה',
-'greater than'=>'יותר מ',
-'less than'=>'פחות מ',
-'not equal to'=>'לא שווה',
-'in list'=>'ברשימה',
-'not in list'=>'לא ברשימה',
-'empty'=>'ריק',
-'not empty'=>'לא ריקה',
-'contains'=>'מכיל',
-'does not contain'=>'אינו מכיל',
-// // 
 // // Misc
-'Assigned to {name}'=>'{name} שהוקצתה',
 'Social Networks'=>'רשתות חברתיות',
 'Detail View'=>'תצוגת פרטים',
 'Simple View'=>'פשוט צפה',
-'Contact Info'=>'פרטים ליצירת קשר',
 'Opportunities &amp; Marketing'=>'מכירות ושיווק',
 'Social Media'=>'מדיה חברתית',
-'AND'=>'ו',
 'OR'=>'או',
-'User'=>'משתמש',
 'Leads'=>'מוביל',
 '<b>{m}</b> of <b>{n}</b>'=>'<b>{m} </b> של <b> {n} </b>',
 'Create a new Opportunity associated with this Contact.'=>'יצירת הזדמנויות חדשות המשויכות לאיש קשר זה.',
 'Create a new Account associated with this Contact.'=>'צור חשבון חדש קשורים בקשר זה.',
 'Create a new Service Case associated with this Contact.'=>'יצירת תיק שירות חדש המשויך לאיש קשר זה.',
 'Link to Record'=>'קישור להקלט',
-'Contact Attributes'=>'צור תכונות',
+'Clicking this button will pull any relevant fields from the associated Account record and overwrite the Contact data for those fields.  This operation cannot be reversed.'=>'לחיצה על כפתור זה ימשוך את כל שדות רלוונטיים מרשומת החשבון הרלוונטית ולהחליף את הנתונים ליצירת קשר לתחומים אלה. לא יכולה להיות הפוכה פעולה זו.',
+'Create a new Contact associated with this Contact.'=>'יצירת איש קשר חדש קשור ליצירת קשר זה.',
+'Create a new Contact'=>'יצירת איש קשר חדש',
+'Tag Search'=>'חיפוש תג',
 // // 
 // // Contacts Actions
 'My Contacts'=>'אנשי הקשר שלי',
@@ -173,30 +68,20 @@ return array (
 'Update Contact:'=>':עדכון צור',
 'Delete Contact'=>'מחק צור',
 'Contact Lists'=>'צור רשימות',
-'Create Lead'=>'צור יצוקה',
 'Share Contact'=>'שתף צור קשר',
-'Create'=>'ליצור',
 'Lists'=>'רשימות',
 'Create List'=>'יצירת רשימה',
-'View'=>'לראות',
-'Share'=>'להתחלק',
-'Update'=>'לעדכן',
 'View Opportunities'=>'הצג מכירות',
-'Delete'=>'למחוק',
-'Show All'=>'הצג הכל',
 'Hide All'=>'הסתר הכל',
-'Show'=>'להראות',
-'Hide'=>'להסתיר',
 'View Relationships'=>'הצגת קשרים',
-'Subscribe'=>'הירשם',
 'View List'=>'צפו ברשימה',
-'Share Action'=>'לשתף פעולה זה',
-'Import Contacts'=>'יבוא אנשי קשר',
 'Contact Map'=>'צור מפה',
 'Saved Maps'=>'מפות שנשמרו',
+'Save Contact'=>'שמור צור',
 // // 
+'Edit List'=>'עריכת רשימה',
+'Delete List'=>'מחק את הרשימה',
 // // Contacts Titles
-'Contacts'=>'אנשי קשר',
 'Manage Contacts'=>'ניהול אנשי קשר',
 'Contact:'=>'איש קשר:',
 // // 
@@ -205,14 +90,41 @@ return array (
 'Import from Template'=>'ייבוא ​​מ תבנית',
 'To import your contacts from the template, please fill out our template file. Then, upload the file here using the form below.'=>'כדי לייבא את אנשי הקשר שלך מהתבנית, מלא את קובץ התבנית שלנו. לאחר מכן, להעלות את הקובץ כאן על ידי שימוש בטופס הבא.',
 'The template file can be found here:'=>'את קובץ התבנית ניתן למצוא כאן:',
-'Export to CSV'=>'ייצוא ל-CSV',
 'Please click the link below to download contacts.'=>'אנא לחץ על הקישור הבא כדי להוריד את הקשר.',
 'To import your contacts from Outlook, please first create a CSV file (DOS format) by opening outlook and exporting the contacts. Then, upload the file here using the form below.'=>'כדי לייבא את אנשי הקשר מ-Outlook, אנא 1 ליצור קובץ CSV (פורמט DOS) על ידי פתיחת Outlook וייצוא של אנשי הקשר. לאחר מכן, להעלות את הקובץ כאן על ידי שימוש בטופס הבא.',
 'Upload File'=>'העלאת קבצים',
 'Contact Record Details'=>'פרטי התקשרות שיא',
+'Import Contacts from Template'=>'יבוא אנשי קשר מתבנית',
+'To import your contacts, please fill out a CSV file where the first row contains the column headers for your records (e.g. first_name, last_name, title etc.).  A properly formatted example can be found below.'=>'כדי לייבא את אנשי הקשר שלך, אנא מלא את קובץ CSV שבו השורה הראשונה מכילה את כותרות העמודות עבור הרשומות שלך (למשל FIRST_NAME, LAST_NAME, כותרת וכו &#39;). ניתן למצוא דוגמה מעוצבת כהלכה בהמשך.',
+'The application will attempt to automatically map your column headers to our fields in the database.  If a match is not found, you will be given the option to choose one of our fields to map to, ignore the field, or create a new field within X2.'=>'היישום ינסה למפות כותרות העמודות שלך באופן אוטומטי לשדות שלנו במסד הנתונים. אם משחק לא נמצא, יינתן לך האפשרות לבחור אחד מהשדות שלנו למיפוי ל, להתעלם משדה, או ליצור שדה חדש בתוך X2.',
+'If you decide to map the "Create Date", "Last Updated", or any other explicit date field, be sure that you have a valid date format entered so that the software can convert to a UNIX Timestamp (if it is already a UNIX Timestamp even better).  Visibility should be either "1" for Public or "0" for Private (it will default to 1 if not provided).'=>'אם תחליט למפות את &quot;תאריך יצירה&quot;, &quot;עדכון האחרון&quot;, או בכל תחום אחר תאריך מפורש, כדי להיות בטוח שיש לך פורמט תאריך חוקי נכנס, כך שהתוכנה יכולה להמיר חותמת זמן יוניקס (אם היא כבר UNIX חותמת אפילו טובה יותר). ראות צריכה להיות או &quot;1&quot; לציבור או &quot;0&quot; לפרטיים (זה יהיה ברירת מחדל 1, אם לא מסופק).',
+'Contacts Import'=>'לייבא אנשי קשר',
+'First, we\'ll need to make sure your fields have mapped properly for import. '=>'ראשית, אנו \ &#39;ll צריכים לוודא שיש לך שדות ממופים כראוי ליבוא.',
+'Below is a list of our fields, the fields you provided, and a few sample records that you are importing.'=>'להלן רשימה של השדות שלנו, את השדות שסיפקת, ומספר רשומות לדוגמה שאתה מייבא.',
+'If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.'=>'אם השדה מזהה נבחר להיות מיובא, כלי היבוא ינסה לדרוס רשומות קיימים עם מספר זה. אל למפות את השדה מזהה אם אתה לא \ לא רוצה שזה יקרה.',
+'Selecting "DO NOT MAP" will ignore the field from your CSV, and selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it.'=>'בחירה באפשרות &quot;אינו ממפה&quot; יתעלם משדה CSV שלך, ובחירה באפשרות &quot;ליצור שדה חדש&quot; יפיק שדה טקסט חדש בתוך X2 ומפת השדה שלך אליו.',
+'Your Field'=>'השדה שלך',
+'Our Field'=>'התחום שלנו',
+'Sample Contact'=>'צור קשר עם מדגם',
+'[Prev]'=>'[קודם]',
+'[Next]'=>'[הבא]',
+'DO NOT MAP'=>'אינם ממפה',
+'CREATE NEW FIELD'=>'ליצור שדה חדש',
+'Process Import Data'=>'יבוא נתונים בתהליך',
+'Create records for link fields?'=>'צור רשומות עבור שדות קישור?',
+'Automatically fill certain fields?'=>'באופן אוטומטי למלא שדות מסוימים?',
+'Automatically log a comment on these records?'=>'באופן אוטומטי להיכנס תגובה על הרישומים האלה?',
+'Assign records via lead-routing?'=>'הקצאה באמצעות רשומות עופרת ניתוב?',
+'Import Status'=>'סטטוס יבוא',
+'Process Import'=>'יבוא תהליך',
+'Please click the button below to begin the export. Do not close this page until the export is finished, which may take some time if you have a large number of records. A counter will keep you updated on how many records have been successfully updated.'=>'אנא לחץ על הכפתור למטה כדי להתחיל את היצוא. אל תסגור את הדף עד היצוא הוא סיים, אשר עשוי לקחת קצת זמן אם יש לך מספר רב של רשומות. דלפק יהיה לעדכן אותך על כמה רשומות כבר עודכן בהצלחה.',
+'You are currently exporting: '=>'אתה נמצא כרגע יצוא:',
+'Exporting <b>Contact</b> data...'=>'יצוא נתוני אנשי <b>קשר</b> ...',
+'records from <b>Contacts</b> successfully exported.'=>'רשומות <b>מאנשי קשר</b> מיוצאים בהצלחה.',
+'All Contact data successfully exported.'=>'כל נתוני הקשר מיוצאים בהצלחה.',
+'Export Complete!'=>'יצוא הושלם!',
 // // 
 // // Subscribe
-'Subscribe'=>'הירשם',
 'The information for {name} has changed.'=>'מידע עבור {name} השתנה.',
 'Receive email updates every time information for {name} changes'=>'קבל עדכוני דוא"ל כל הזמן מידע על שינויים {name}',
 'Unsubscribe'=>'ביטול מנוי',
@@ -242,8 +154,24 @@ return array (
 'Map Name'=>'שם מפה',
 'Map Owner'=>'בעלי מפה',
 'Zoom Level'=>'רמת זום',
-'Parameters'=>'פרמטרים',
 'Center Latitude'=>'Latitude המרכז',
 'Center Longitude'=>'מרכז אורך',
-'Contact'=>'ליצור קשר עם',
+'Web Form'=>'טופס אינטרנט',
+'Import Contacts from Outlook'=>'יבוא אנשי קשר מ-Outlook',
+'Remove From List'=>'להסיר מרשימה',
+'Today\'s Contacts'=>'היום אנשי קשר \ &#39;s',
+'Directions from Corporate'=>'כיוונים מתאגידים',
+'Directions from Personal Address'=>'כיוונים מכתובות אישיות',
+'Keep This Record'=>'שמור על שיא הזה',
+'This operation is disabled because the data set is too large.'=>'פעולה זו אינה זמינה משום שערכת נתונים היא גדולה מדי.',
+'{dupes} records shown out of {count} records found.'=>'{dupes} רשומות שמוצגת מחוץ {count} נמצא רשומות.',
+'Hide This Record'=>'הסתר התקליט הזה',
+'Delete This Record'=>'למחוק רשומה זו',
+'Contact ID'=>'צור מספר',
+'Latitutde'=>'Latitutde',
+'Longitude'=>'קו אורך',
+'Are you sure you want to hide all other records?'=>'האם אתה בטוח שברצונך להסתיר את כל רשומות אחרות?',
+'Are you sure you want to delete all other records?'=>'האם אתה בטוח שברצונך למחוק את כל הרשומות אחרות?',
+'Are you sure you want to hide this record?'=>'האם אתה בטוח שאתה רוצה להסתיר את הרשומה זו?',
+'Are you sure you want to delete this record?'=>'האם אתה בטוח שברצונך למחוק רשומה זו?',
 );

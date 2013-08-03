@@ -18,7 +18,7 @@ Yii::import('application.models.*');
  */
 class ApiControllerTest extends CURLTestCase {
 
-	const TEST_LEVEL = 1;
+	const TEST_LEVEL = 2;
 
 	public $fixtures = array(
 		'accounts' => 'Accounts',
@@ -28,8 +28,15 @@ class ApiControllerTest extends CURLTestCase {
 		'opportunities' => 'Opportunity',
 		'products' => 'Product',
 		'services' => 'Services',
+		'relationships' => 'Relationships',
 		'tags' => 'Tags',
 	);
+
+	public static function referenceFixtures(){
+		return array(
+			'users'=>'User'
+		);
+	}
 
 	/**
 	 * Starting template for data parameters (GET or POST or otherwise)
@@ -98,6 +105,47 @@ class ApiControllerTest extends CURLTestCase {
 		$this->assertRegExp('/No record of model/',$cr,'Failed asserting that the error of using a nonexistent record was triggered properly.');
 	}
 
+	public function testActionRelationship() {
+		$urlParam = $this->urlParam;
+		$urlParam['{action}'] = 'relationship';
+		$urlParam['{model}'] = 'Accounts';
+		// Step 1: Test lookup:
+		$urlParam['{params}'] = '?'.http_build_query(array_merge($this->param,array('firstId'=>$this->accounts('testQuote')->id,'secondType'=>'Contacts','secondId'=>$this->contacts('testUser')->id)));
+		$ch = $this->getCurlHandle($urlParam);
+		$cr = curl_exec($ch);
+		$cr = json_decode($cr,1);
+		$this->assertTrue(is_array($cr),'Request to read relationships failed utterly');
+		$this->assertArrayNotHasKey('message',$cr,"Unsuccessful API request; unexpected message. json = ".json_encode($cr));
+		$this->assertEquals(1,count($cr),'Number of relationships is inconsistent with values expected in fixture data (might want to double-check that)');
+		foreach(Relationships::model()->attributeNames() as $name){
+			$this->assertArrayHasKey($name,$cr[0],"Attribute $name missing in returned array of relationships");
+			$this->assertEquals($this->relationships('blackMesaContact')->$name,$cr[0][$name],'API returned relationship record inconsistent with fixture data.');
+		}
+		// Step 2: Test creation:
+		$urlParam['{params}'] = '';
+		$postData = array_merge($this->param,array(
+			'firstId' => $this->accounts('testQuote')->id,
+			'secondId' => $this->contacts('testAnyone')->id,
+			'secondType' => 'Contacts',
+		));
+		$ch = $this->getCurlHandle($urlParam,$postData);
+		$cr = curl_exec($ch);
+		file_put_contents('api_response.html', $cr);
+		$cr = json_decode($cr,1);
+		$this->assertTrue(is_array($cr),'Request to put relationships failed utterly');
+		$this->assertResponseCodeIs(200,$ch,'Something went wrong.');
+		$relatedModels = $this->accounts('testQuote')->relatedX2Models;
+		$contactId = $this->contacts('testAnyone')->id;
+		$newRelated = array_filter($relatedModels,function($m)use($contactId){return get_class($m) == 'Contacts' && $m->id == $contactId;});
+		$this->assertEquals(1,count($newRelated),'Failed asserting that a new relationship was added.');
+		// Step 3: Test deletion (delete the one that was just created):
+		$urlParam['{params}'] = '?'.http_build_query($postData);
+		$ch = $this->getCurlHandle($urlParam);
+		curl_setopt($ch,CURLOPT_CUSTOMREQUEST,'DELETE');
+		$cr = curl_exec($ch);
+		$this->assertResponseCodeIs(200, $ch,"Couldn't delete. Response from server: ".$cr);
+	}
+
 	/**
 	 * Test the tags action
 	 */
@@ -124,10 +172,11 @@ class ApiControllerTest extends CURLTestCase {
 		file_put_contents('api_response.html', $cr);
 		$this->assertResponseCodeIs(200,$ch,'Failed asserting that a request to add tags succeeded.');
 		// Check that tags were added:
-		$model->refresh();
+		$model = Contacts::model()->findByPk($this->contacts['testUser']['id']);
 		$modelTags = $model->getTags();
 		$tagsNotAdded = array_diff($tags,$modelTags);
 		$this->assertEmpty($tagsNotAdded,'Failed asserting that tags were added: '.implode(',',$tagsNotAdded).'; model tags = '.json_encode($modelTags).' model id = '.$model->id);
+		
 		// Test getting tags:
 		$urlParam['{params}'] = '?'.http_build_query(array_merge($this->param, array('id'=>$model->id)));
 		$ch = $this->getCurlHandle($urlParam);
@@ -212,19 +261,12 @@ class ApiControllerTest extends CURLTestCase {
 		// Stash models in here:
 		$models = array();
 		// Users to try the actions for:
-		$users = array(
-			array(
-				'user' => 'testuser',
-				'userKey' => '5f4dcc3b5aa765d61d8327deb882cf99',
-			),
-			array(
-				'user' => 'admin',
-				'userKey' => '21232f297a57a5a743894a0e4a801fc3'
-			)
-		);
-		foreach($users as $userParam){
-			$param = $userParam;
-			$apiModel = $this->newModel($userParam['user'],$userParam['userKey']);
+		$n_users = count($this->users);
+		$i = 0;
+		foreach($this->users as $userParam){
+			$param = array('user'=>$userParam['username'],'userKey'=>$userParam['userKey']);
+			$apiModel = $this->newModel($userParam['username'],$userParam['userKey']);
+			$i++;
 			foreach($modelAttrs as $class => $attrs){
 //			echo "Testing creation of $class record through API\n";
 				$urlParam['{model}'] = $class;
@@ -232,39 +274,34 @@ class ApiControllerTest extends CURLTestCase {
 				$cr = curl_exec($ch);
 				file_put_contents('api_response.html', $cr);
 				$authAction = $classModulesMap[$class].'Create';
+				$this->assertResponseCodeIs(200,$ch,'Failed create operation. Response = '.$cr);
 				$access = $this->assertAuthControlCorrectness($authAction,$ch,$apiModel);
 				if($access){
-					$models[$class] = X2Model::model($class)->findByAttributes($attrs);
-					$this->assertTrue((bool) $models[$class], "Model of class $class not created. The response was: $cr");
+					$userAttrs = array();
+					foreach(array('createdBy','updatedBy') as $name)
+						if(X2Model::model($class)->hasAttribute($name))
+							$userAttrs[$name] = $param['user'];
+					$models[$class] = X2Model::model($class)->findByAttributes(array_merge($attrs,$userAttrs));
+					$this->assertTrue((bool) $models[$class], "Model of class $class not created properly when user = {$param['user']}. The response was: $cr.");
 					foreach($attrs as $attr => $value)
 						$this->assertEquals($value, $models[$class]->$attr);
 					// Test that createDate was set properly:
 					if($models[$class]->hasAttribute('createDate'))
 						$this->assertNotNull($models[$class]->createDate);
-					// Test that the username attributes were set properly. In the case
-					// of a service module case: test that it's assigned to whoever is
-					// assigned the contact associated with the case.
-					foreach(array('createdBy', 'assignedTo', 'updatedBy') as $attr){
-						if($models[$class]->hasAttribute($attr)){
-							// echo "$class::$attr = {$models[$class]->$attr}\n";
-							$models[$class]->refresh();
-							$this->assertEquals($this->param['user'], $models[$class]->$attr, "Failed asserting $attr was set properly on creation of {$class}");
-						}
-					}
 				}
 			}
 		}
 		
 		// We've got our models. Now let's test finding by attributes ("lookup"):
-		$urlParam['{action}'] = 'lookup';
+		$urlParam['{action}'] = 'view';
 		// We're going to need primary keys for the direct "view" read action:
 		$pkValues = array();
-		foreach($users as $userParam){
-			$param = $userParam;
-			$apiModel = $this->newModel($userParam['user'],$userParam['userKey']);
+		foreach($this->users as $userParam){
+			$param = array('user'=>$userParam['username'],'userKey'=>$userParam['userKey']);
+			$apiModel = $this->newModel($userParam['username'],$userParam['userKey']);
 			foreach($modelAttrs as $class => $attrs){
 				$urlParam['{model}'] = $class;
-				$ch = $this->getCurlHandle($urlParam, array_merge($param, $attrs));
+				$ch = $this->getCurlHandle($urlParam, array_merge($param, array('id'=>$models[$class]->id)));
 				$cr = curl_exec($ch);
 				file_put_contents('api_response.html', $cr);
 				$authAction = $classModulesMap[$class].'View';
@@ -274,9 +311,10 @@ class ApiControllerTest extends CURLTestCase {
 					$queriedModel = CJSON::decode($cr);
 					// Response must be valid JSON:
 					$this->assertEquals('array', gettype($queriedModel));
-					// Test that the attributes are all equal. This is pretty much overkill:
+					$models[$class]->refresh();
+					// Test that the attributes are all equal. This is pretty much overkill.
 					foreach($queriedModel as $attr => $value){
-						$this->assertEquals($models[$class]->$attr, $value);
+						$this->assertEquals($models[$class]->$attr, $value,"Failed asserting attribute equality for $class.$attr");
 					}
 					// This will be useful for the next tests (lookup by pk, update & delete):
 					$pkValues[$class] = $models[$class]->primaryKey;
@@ -288,7 +326,7 @@ class ApiControllerTest extends CURLTestCase {
 		// "view" action is already correct; it was tested just previously. So
 		// this test shall use the admin user:
 		$urlParam['{action}'] = 'view';
-		$param = $users[1];
+		$param = array('user'=>$userParam['username'],'userKey'=>$userParam['userKey']);
 		foreach($pkValues as $class => $pk){
 
 			$urlParam['{model}'] = $class;
@@ -343,9 +381,9 @@ class ApiControllerTest extends CURLTestCase {
 			),
 		);
 
-		foreach($users as $userParam){
-			$param = $userParam;
-			$apiModel = $this->newModel($userParam['user'],$userParam['userKey']);
+		foreach($this->users as $userParam){
+			$param = array('user'=>$userParam['username'],'userKey'=>$userParam['userKey']);
+			$apiModel = $this->newModel($userParam['username'],$userParam['userKey']);
 			foreach($pkValues as $class => $pk){
 				$urlParam['{model}'] = $class;
 				$post = array_merge($param, $modelAttrs[$class]);
@@ -371,12 +409,16 @@ class ApiControllerTest extends CURLTestCase {
 				}
 			}
 		}
+		
+		// Test errors.
+		// We'll need use the admin user to avoid unnecessary 403's.
 
 		// Test validation errors.
 		$class = 'Docs';
 		$oldModelAttrs = $modelAttrs[$class]['subject'];
 		$modelAttrs[$class]['subject'] = implode(',',range(1,10000));
 		$urlParam['{model}'] = $class;
+		$param = array('user' => $this->users('admin')->username,'userKey' => $this->users('admin')->userKey);
 		$post = array_merge($param,$modelAttrs[$class]);
 		$get = array();
 		$pk = $pkValues[$class];
@@ -432,13 +474,7 @@ class ApiControllerTest extends CURLTestCase {
 		$this->assertResponseCodeIs(400,$ch,'Failed asserting proper error code in a view operation missing primary key.');
 		
 
-		// Test deletion. We'll need use the admin user to avoid 403's. Comment
-		// out these next two lines to check that RBAC filtering works properly.
-		// When doing so, the test should fail, and the error should be "Failed
-		// asserting that 403 matches expected 200" (when attempting to delete
-		// an "Accounts" record, which ordinary users can't do).
-		$param['user'] = 'admin';
-		$param['userKey'] = '21232f297a57a5a743894a0e4a801fc3';
+		// Test deletion. 
 		$urlParam['{action}'] = 'delete';
 		$urlParam['{params}'] = '';
 		foreach($pkValues as $class => $pk){

@@ -33,11 +33,10 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-include("protected/modules/products/productConfig.php");
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName']))),
-	array('label'=>Yii::t('module','Create',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
+	array('label'=>Yii::t('products','Product List')),
+	array('label'=>Yii::t('products','Create'), 'url'=>array('create')),
 ));
 
 Yii::app()->clientScript->registerScript('search', "
@@ -70,7 +69,7 @@ function trimText($text) {
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'product-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title icon products"><h2>'.$moduleConfig['title'].'</h2><div class="x2-button-group">'
+	'template'=> '<div class="page-title icon products"><h2>'.Yii::t('products','Products').'</h2><div class="x2-button-group">'
 		.CHtml::link('<span></span>','#',array('title'=>Yii::t('app','Advanced Search'),'class'=>'x2-button search-button'))
 		.CHtml::link('<span></span>',array(Yii::app()->controller->action->id,'clearFilters'=>1),array('title'=>Yii::t('app','Clear Filters'),'class'=>'x2-button filter-button')).'</div> '
 		.X2GridView::getFilterHint()

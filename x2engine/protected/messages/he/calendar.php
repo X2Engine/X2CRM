@@ -1,41 +1,5 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-'Calendar'=>'לוח שנה',
 'Calendars'=>'לוחות שנה',
 // // 
 'User Calendars'=>'המשתמש לוחות שנה',
@@ -45,27 +9,24 @@ return array (
 'My Calendar Permissions'=>'לוח שנה הרשאות שלי',
 'User Calendar Permissions'=>'לוח שנה הרשאות המשתמש',
 'Google Event'=>'Google אירועים',
-'Contacts'=>'אנשי קשר',
-'Accounts'=>'חשבונות',
-'Opportunities'=>'הזדמנויות',
-'Products'=>'מוצרים',
-'Media'=>'כלי תקשורת',
 'View Permission'=>'צפו בהרשאות',
 'These users can view your calendar.'=>'משתמשים אלו יכולים להציג את לוח השנה שלך.',
 'Edit Permission'=>'ערוך הרשאה',
 'These users can edit your calendar.'=>'משתמשים אלו יכולים לערוך את לוח השנה שלך.',
+'Sync My Actions To Google Calendar'=>'לסנכרן את המעשים שלי ללוח השנה של Google',
+'Show Actions associated with Contacts'=>'הצג פעולות הקשורות לאנשי קשר',
+'Show Actions associated with Accounts'=>'הצג פעולות הקשורות לחשבונות',
+'Show Actions associated with Opportunities'=>'הצג פעולות הקשורות הזדמנויות',
+'Show Actions associated with Quotes'=>'הצג פעולות הקשורות לציטוטים',
+'Show Actions associated with Products'=>'הצג פעולות הקשורות למוצרים',
+'Show Actions associated with Media'=>'הצג פעולות הקשורות לתקשורת',
+'Show Completed Actions'=>'הצג פעולות שהושלמו',
+'Show Emails'=>'הצג הודעות דוא&quot;ל',
+'Show Attachments'=>'הצג קבצים מצורפים',
 // // 
-'Completed'=>'הושלם',
-'Quotes'=>'ציטוטים',
-'Email'=>'דוא"ל',
 'Attachment'=>'התקשרות',
 // // 
-'List'=>'רשימה',
-'Delete'=>'למחוק',
-'Create'=>'ליצור',
 // // button text
-'Update'=>'לעדכן',
-'today'=>'היום',
 'month'=>'חודש',
 'week'=>'שבוע',
 'day'=>'יום',
@@ -115,4 +76,92 @@ return array (
 'Thu'=>'יום חמישי',
 'Fri'=>'יום שישי',
 'Sat'=>'ש \'',
+'Create Shared Calendar'=>'צור לוח שנה משותפת',
+'Don\'t link to Google Calendar'=>'הקישור אל \ ל-Google Calendar',
+'Link to Google Calendar'=>'קישור ל-Google Calendar',
+'Back To User List'=>'חזרה לרשימת משתמש',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'הפעולות שלך מסתנכרנות עם לוח השנה של Google {calendarName}',
+'Don\'t Sync My Actions To Google Calendar'=>'דון \ לא סנכרן הפעולות שלי ללוח השנה',
+'Google Integration is not configured on this server.'=>'גוגל אינטגרציה אינה מוגדרת בשרת זה.',
+'Once'=>'פעם',
+'Yearly'=>'שנתי',
+'Google Calendar'=>'Google Calendar',
+'Google Feed'=>'גוגל Feed',
+'Google Calendar Name'=>'שם לוח השנה של Google',
+'View Association'=>'צפו באיגוד',
+'User Calendars'=>'לוחות שנה של משתמש',
+'Filter'=>'לסנן',
+'Show Actions associated with Contacts'=>'הצג פעולות הקשורות לאנשי קשר',
+'Show Actions associated with Accounts'=>'הצג פעולות הקשורות לחשבונות',
+'Show Actions associated with Opportunities'=>'הצג פעולות הקשורות הזדמנויות',
+'Show Actions associated with Quotes'=>'הצג פעולות הקשורות לציטוטים',
+'Show Actions associated with Products'=>'הצג פעולות הקשורות למוצרים',
+'Show Actions associated with Media'=>'הצג פעולות הקשורות לתקשורת',
+'Show Completed Actions'=>'הצג פעולות שהושלמו',
+'Show Emails'=>'הצג הודעות דוא&quot;ל',
+'Show Attachments'=>'הצג קבצים מצורפים',
+'Group Calendars'=>'לוחות שנה קבוצה',
+'Google Calendars'=>'Google לוחות שנה',
+'My Calendar Permissions'=>'הרשאות לוח השנה שלי',
+'Sync My Actions To Google Calendar'=>'לסנכרן את המעשים שלי ללוח השנה של Google',
+'Create Shared Calendar'=>'צור לוח שנה משותפת',
+'Don\'t link to Google Calendar'=>'הקישור אל \ ל-Google Calendar',
+'Link to Google Calendar'=>'קישור ל-Google Calendar',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'הפעולות שלך מסתנכרנות עם לוח השנה של Google {calendarName}',
+'Don\'t Sync My Actions To Google Calendar'=>'דון \ לא סנכרן הפעולות שלי ללוח השנה',
+'Google Integration is not configured on this server.'=>'גוגל אינטגרציה אינה מוגדרת בשרת זה.',
+'User Calendar Permissions'=>'הרשאות משתמשי לוח שנה',
+'Google Event'=>'גוגל אירוע',
+'month'=>'חודש',
+'week'=>'שבוע',
+'day'=>'יום',
+'January'=>'ינואר',
+'February'=>'פברואר',
+'March'=>'מרץ',
+'April'=>'אפריל',
+'May'=>'מאי',
+'June'=>'יוני',
+'July'=>'יולי',
+'August'=>'אוגוסט',
+'September'=>'ספטמבר',
+'October'=>'אוקטובר',
+'November'=>'נובמבר',
+'December'=>'דצמבר',
+'Jan'=>'יאן',
+'Feb'=>'פבואר',
+'Mar'=>'לקלקל',
+'Apr'=>'אפריל',
+'Jun'=>'יוני',
+'Jul'=>'יולי',
+'Aug'=>'אוגוסט',
+'Sep'=>'ספטמבר',
+'Oct'=>'אוקטובר',
+'Nov'=>'נובמבר',
+'Dec'=>'דצמבר',
+'Sunday'=>'יום ראשון',
+'Monday'=>'יום שני',
+'Tuesday'=>'יום שלישי',
+'Wednesday'=>'יום רביעי',
+'Thursday'=>'יום חמישי',
+'Friday'=>'יום שישי',
+'Saturday'=>'יום שבת',
+'Sun'=>'שמש',
+'Mon'=>'ב &#39;',
+'Tue'=>'ג&#39;',
+'Wed'=>'להתחתן',
+'Thu'=>'ה &#39;',
+'Fri'=>'ו &#39;',
+'Sat'=>'ישב',
+'View Permission'=>'צפה באישורים והיתרים',
+'These users can view {fullname}\'s calendar.'=>'משתמשים אלו יכולים להציג {fullname} \ &#39;s לוח שנה.',
+'Edit Permission'=>'לערוך את ההרשאות',
+'These users can edit {fullname}\'s calendar.'=>'משתמשים אלו יוכלו לערוך את {fullname} \ &#39;s לוח שנה.',
+'Back To User List'=>'חזרה לרשימת משתמש',
+'These users can view your calendar.'=>'משתמשים אלו יכולים להציג את לוח השנה שלך.',
+'These users can edit your calendar.'=>'משתמשים אלו יכולים לערוך את לוח השנה שלך.',
+'Google Calendar'=>'Google Calendar',
+'Google Feed'=>'גוגל Feed',
+'Google Calendar Name'=>'שם לוח השנה של Google',
+'Once'=>'פעם',
+'Yearly'=>'שנתי',
 );

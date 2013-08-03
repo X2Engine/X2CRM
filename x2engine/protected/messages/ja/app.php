@@ -1,105 +1,45 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
-
 return array (
-// // // Language Name
+// Language Name
 'languageName'=>'日本語',
-// // // Login
+// Login
 'Please log in to continue:'=>'続行するにはログインしてください。',
-'Username'=>'ユーザ名',
-'Password'=>'パスワード',
 'Remember me'=>'私を覚えている',
 'Login'=>'ログイン',
 'Welcome to {appName}.'=>'へようこそ{appName}。',
-'Verification Code'=>'認証コード',
 'Login with Google'=>'Googleにログイン',
-// // // 
-// // // Main Menu
-'Calendar'=>'カレンダ',
-'Actions'=>'アクション',
-'Contacts'=>'コンタクト',
-'Opportunities'=>'セールス',
+
+// Main Menu
 'Projects'=>'プロジェクト',
 'Group Chat'=>'グループチャット',
-'Marketing'=>'マーケティング',
 'Cases'=>'ケース',
-'Accounts'=>'アカウント',
-'Users'=>'ユーザー',
 'Admin'=>'管理',
-'Docs'=>'ドク',
 'Chat'=>'チャット',
-'Social'=>'社会',
 'Profile'=>'プロフィール',
-'Settings'=>'設定',
 'Logout'=>'ログアウト',
 'Login'=>'ログイン',
-'More'=>'もっと',
 'What\'s New'=>'何が新しい',
-'Quotes'=>'引用',
 'Dashboard'=>'ダッシュボード',
-'Products'=>'製品',
-'Workflow'=>'ワークフロー',
-'Groups'=>'グループ',
 'Notifications'=>'通知',
 'Charts'=>'チャート',
-'Manage Users'=>'ユーザーの管理',
-'Social Feed'=>'社会のフィード',
 'Preferences'=>'プ',
 'Reports'=>'レポート',
 'Activity'=>'活動',
 'Service'=>'サービス',
 'Go Invisible'=>'インビジブル行く',
 'Go Visible'=>'可視行く',
-// // // 
-// // // Search Bar
+
+// Search Bar
 'X2Engine CRM Groupware'=>'グループウェアのシーアールエムのX2Engine',
-'Go'=>'検索',
-'Contact'=>'コンタクト',
-'Action'=>'アクション',
 'Contact + Action'=>'コンタクト+アクション',
 'Search for contact, action, deal...'=>'コンタクト、アクション、取引のための検索...',
-// // // 
-// // // Footer
-'All Rights Reserved.'=>'すべての内容は著作権を有します。',
+
+// Footer
 'Generated in {time} seconds.'=>'{time}秒で生成',
 'About'=>'約',
 'The Program is provided AS IS, without warranty.'=>'プログラムは、保証なしで、提供されるものです。',
-// // // 
-// // // Widgets
-'My Actions'=>'私のアクション',
+
+// Widgets
 'Twitter Feed'=>'Twitterのフィード',
 'Quick Contact'=>'クイックコンタクト',
 'Google Map'=>'グーグルマップ',
@@ -109,81 +49,68 @@ return array (
 'Just Me'=>'ジャスト·ミー',
 'All Users'=>'すべてのユーザー',
 'Doc Viewer'=>'ドキュメントビューア',
-'Time Zone'=>'時間帯',
 'Top Sites'=>'トップサイト',
-'Media'=>'メディア',
 'Current time in'=>'の現在の時刻',
-'Hide'=>'隠す',
-// // // 
+
 'Total Action|Total Actions'=>'合計アクション|総アクション',
 'Unfinished Action|Unfinished Actions'=>'未完のアクション|未完のアクション',
 'Overdue Action|Overdue Actions'=>'延滞アクション|期限超過アクション',
 'Completed Action|Completed Actions'=>'完了したアクション|完了したアクション',
-// // // 
+
 'Message Board'=>'メッセージボード',
 'Please enter a message of the day!'=>'毎日のメッセージを入力してください！',
 'Edit Message'=>'メッセージを編集する',
-// // // 
+
 'Note Pad'=>'メモ帳',
 'Feel free to enter some notes!'=>'いくつかの音符を入力して自由に感じる！',
-// // // 
-'Top Contacts'=>'最高のコンタクト',
+
 'Add {name}'=>'{name}を追加する。',
-// // // 
+
 'Enter Title'=>'タイトルを入力します。',
-'Title'=>'タイトル',
 'Title:'=>'タイトル：',
-'Link'=>'リンク',
 'Link:'=>'リンク：',
 'Add Site'=>'サイトを追加',
-'Example'=>'例',
-// // // 
-// // // Chat
+
+// Chat
 'Message Body'=>'メッセージ本文',
 'Enter text here...'=>'ここにテキストを入力してください...',
 'Send'=>'送信',
-// // // 
-// // // Email Form
+
+// Activity Feed
+'Activity Feed Order'=>'アクティビティフィード注文',
+'Top Down'=>'トップダウン',
+'Bottom Up'=>'ボトムアップの',
+
+// Email Form
 'To:'=>'へ：',
 'Subject:'=>'件名：',
 'Message:'=>'メッセージ：',
 'Error: Could not send email.'=>'エラー：メールを送信できませんでした。',
 'Email Sent!'=>'メールを送信しました！',
-'Preview'=>'プレビュー',
 'Attachments'=>'添付ファイル',
-// // // 
-// // // Comments
-'Add Comment'=>'コメントを追加',
-'Create Action'=>'アクションを作る。',
+'Note: you have entered text into the email that will be lost. Are you sure you want to continue?'=>'注：あなたが失われますメールにテキストを入力しました。続行してもよろしいですか？',
+'From:'=>'から：',
+'Send As:'=>'送信者：',
+'System default (legacy)'=>'システムデフォルト（レガシー）',
+
+// Comments
 'Add a comment...'=>'コメントを追加...',
-'History'=>'歴史',
 'Today'=>'今日',
 'Tomorrow'=>'明日',
-'Comments'=>'コメント',
 'Post'=>'投稿',
-// // // 
-// // // Misc
+
+// Misc
 'Advanced Search'=>'高度な検索',
 'Clear Filters'=>'フィルタをクリア',
 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'=>'必要に応じて、比較が行われる方法を指定する検索値のそれぞれの先頭に比較演算子（<b><</b>, <b><=</b>, <b>></b>, <b>>=</b>, <b><></b>, <b>=</b>）を入力することができます。',
 'Fields with <span class="required">*</span> are required.'=>'<span class="required">*</span>のフィールドは必須です。',
 'Click here to return to where you were'=>'あなたがいた場所に戻るにはここをクリック',
-'Private'=>'プライベート',
 'Attach A File/Photo'=>'ファイル/写真を添付する',
 'Attach a File'=>'ファイルを添付する',
-'None'=>'なし',
-'Anyone'=>'誰も',
-'Share'=>'シェア',
-'Link'=>'リンク',
+'Share:'=>'シェア：',
 'Theme'=>'テーマ',
-'Account'=>'アカウント',
-'Opportunity'=>'機会',
-'All'=>'すべて',
 'Optional'=>'オプショナル',
 'Records that have been modified since your last login.'=>'そのレコードが最後にログインしてから変更された。',
-'Are you sure you want to delete this item?'=>'あなたは、この項目を削除してもよろしいですか？',
-'Columns'=>'コラム',
-'Tools'=>'ツール',
 'Rights reserved.'=>'の権利を保有。',
 'GNU General Public License version 3'=>'GNU 一般公有使用許諾バージョン3',
 'The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.'=>'プログラムは、保証なしで、提供されるものです。<br>は{BSD}の下でライセンス。',
@@ -191,32 +118,21 @@ return array (
 'Minimize'=>'最小限に抑える',
 '"{X}" is not an allowed filetype.'=>'"{X}"許可されたファイルタイプではありません。',
 'Loading'=>'積載',
-'Edit'=>'編集',
 'Due'=>'原因',
 'Help'=>'助ける',
 '---'=>'---',
 'You don\'t have any notifications.'=>'あなたはすべての通知を持っていない。',
 'View all'=>'全てを見る',
 'Close'=>'閉じる',
-'Delete'=>'削除',
 'Group?'=>'グループ？',
 'Check box'=>'チェック·ボックス',
 'results per page'=>'ページごとの結果',
-'Public'=>'公共',
-'Tags'=>'タグ',
 'Template:'=>'テンプレート:',
-'Model Name'=>'モデル名',
-'Model ID'=>'モデル同定',
 'What should the list be named?'=>'リストはどのような名前を付けることでしょうか？',
 'Added items to list.'=>'リストに追加アイテム。',
 'Select an option'=>'オプションを選択',
 'loading...'=>'読み込んでいます...',
-'Checkbox'=>'チェックボックス',
 'New List From Selection'=>'選択部分から新しいリスト',
-'No'=>'ノー',
-'Yes'=>'はい',
-'View'=>'表示',
-'Update'=>'更新',
 'results per page.'=>'ページごとの結果。',
 'Displaying {start}-{end} of {count} result(s).'=>'{start}表示 - {end} {count}が結果（S）の。',
 'Marketing Dashboard'=>'マーケティングダッシュボード',
@@ -224,12 +140,9 @@ return array (
 'Quick Create'=>'クイック作成',
 'Create a Contact, Account, and Opportunity.'=>'連絡先、アカウント、および機会を作成します。',
 '<b>Tip:</b> You can use the following comparison operators with filter values to fine-tune your search.'=>'<B>ヒント：</b>を微調整する、検索にフィルタ値を使用して、次の比較演算子を使用することができます。',
-'less than'=>'以下',
 'less than or equal to'=>'より小さいか等しい',
-'greater than'=>'越える',
 'greater than or equal to'=>'より大きいか等しい',
 'equal to'=>'に等しい',
-'not equal to'=>'等しくない',
 ' results per page'=>' ページごとの結果',
 'Add to list:'=>'リストに追加：',
 '<b>{start}&ndash;{end}</b> of <b>{count}</b>'=>'<b> {start} - {end} </b>に<b>の{count} </b>に',
@@ -237,7 +150,6 @@ return array (
 'Associate Account'=>'准アカウント',
 'Associate Opportunity'=>'准商談',
 'Associate Contact'=>'連絡先を関連付ける',
-'Contact Attributes'=>'属性の問い合わせ',
 'CC:'=>'CC：',
 'BCC:'=>'BCC：',
 'What should the map be named?'=>'マップはどのような名前を付けることでしょうか？',
@@ -248,87 +160,134 @@ return array (
 'Check Filters'=>'フィルタのチェック',
 'Show/Hide All Comments'=>'すべてのコメントを表示/非表示',
 '{n} rows'=>'{n}は行',
-// // // 
-// // // Misc Actions
+'vs.'=>'対',
+'- Select an event type -'=>'- イベントの種類を選択します -',
+'Simple'=>'シンプル',
+'Full'=>'フル',
+'Helpful Tips'=>'役立つヒント',
+'Bug Reports'=>'バグ報告',
+'Loading...'=>'読み込んでいます...',
+'Link Contact'=>'リンクお問い合わせ',
+'Link Account'=>'リンクアカウント',
+'Link Opportunity'=>'リンク·オポチュニティ',
+'Quick Note'=>'クイックメモ',
+'Update:'=>'更新日：',
+'Form'=>'フォーム',
+'left'=>'左',
+'{n} sec'=>'{n}秒',
+'{n} min'=>'{n}分',
+'{n} hour'=>'{n}時間',
+'{n} hours'=>'{n}時間',
+'{n} day'=>'{n}日',
+'{n} month'=>'{n}月',
+'{n} months'=>'{n}ヶ月',
+'{n} year'=>'{n}年',
+'Unlimited'=>'無制限の',
+'Enable'=>'可能にする',
+'Disable'=>'無効にする',
+'IP Address'=>'IPアドレス',
+'Login Status'=>'ログイン状態',
+'Allowed filetypes: .csv'=>'可ファイルタイプ：。csv形式',
+'Predefined Theme'=>'事前定義済テーマ',
+'Menu Background Color'=>'メニューの背景色',
+'Page Header Background Color'=>'ページヘッダーの背景色',
+'Grid View Row Color 1'=>'グリッドビューの行の色1',
+'Grid View Row Color 2'=>'グリッドビューの行の色2',
+'stretch'=>'ストレッチ',
+'center'=>'センター',
+'repeat'=>'繰り返し',
+'repeat-x'=>'リピート-X',
+'repeat-y'=>'リピート-Y',
+'Save Profile Settings'=>'プロファイル設定を保存します',
+'Creating a theme will save your current theme settings as a predefined theme'=>'テーマを作成すると、定義済みのテーマとして、現在のテーマの設定が保存されます',
+'Theme name'=>'テーマ名',
+
+// Misc Actions
 'Submit'=>'提出する',
-'Save'=>'貯める',
 'Cancel'=>'キャンセル',
 'Send Email'=>'メールを送信',
 'Attach A File'=>'ファイルを添付する',
 'Save Changes'=>'変更を保存',
 'Save Action'=>'アクションを保存',
 'Save Comment'=>'コメントを保存',
-'Create'=>'作る',
 'Search'=>'検索',
 'Search Results'=>'検索結果',
-'Name'=>'名前',
-'Description'=>'説明',
-'Action'=>'アクション',
-'Status'=>'ステータス',
 'E-mail'=>'メール',
 'Download'=>'ダウンロード',
 'Contact Saved'=>'保存された連絡先',
 'Add Note'=>'メモを追加',
 'New List'=>'新規リスト',
-'Add'=>'加える',
-'Remove'=>'削除する',
-// // // 
-// // // Timestamps
+'Toggle Comments'=>'トグルコメント',
+'Show Chart'=>'チャートを表示',
+'Hide Chart'=>'チャートを隠す',
+'Make Sticky'=>'スティッキー作る',
+'Load More'=>'もっと読み込む',
+'Go to Activity Feed'=>'アクティビティフィードに移動',
+'Toggle Text'=>'トグルテキスト',
+'Click to toggle showing the full text of History items.'=>'履歴項目の全文を示すトグルする場合にクリックします。',
+'Click to increase the number of History items shown.'=>'図示履歴項目の数を増やすをクリック。',
+'Show Less'=>'以下を表示',
+'Click to decrease the number of History items shown.'=>'図示履歴項目の数を減らすをクリック。',
+'Click to toggle showing actions associated with related records.'=>'関連レコードに関連付けられたアクションを示すトグルする場合にクリックします。',
+'Email Quote'=>'メール引用',
+'Email Invoice'=>'メールで請求書',
+'Start typing to suggest...'=>'示唆する入力を開始します...',
+'Do not delete'=>'削除しないでください',
+
+// Timestamps
 'Just now'=>'たった今',
 '{n} minutes ago'=>'{n}分前',
 '{n} hours ago'=>'{n}時間前',
 '{n} days ago'=>'{n}日前',
-// // // 
-// // // Errors
+
+// Errors
 'Error creating note!'=>'エラーがノートを作成！',
 'Invalid request. Please do not repeat this request again.'=>'無効な要求です。再びこの要求を繰り返してはいけない。',
 'The requested page does not exist.'=>'要求されたページは存在しません。',
 'Please fix the following errors:'=>'次のエラーを修正してください：',
-// // // 
-// // // Admin Page
+
+// Admin Page
 'Administration Tools'=>'管理ツール',
 'Welcome to the administration tool set.'=>'管理ツールセットへようこそ。',
 'Links'=>'リンクス',
 'How To\'s'=>'どのようにのへ',
-'Gii - A Code Generation Module'=>'Gii - コード生成モジュール',
 'Send Mass E-mail'=>'大量の電子メールを送信',
 'How to use Gii'=>'GIIを使用する方法',
 'How to add a database field'=>'データベースのフィールドを追加する方法',
-// // // 
-// // // Activity Feed
-// // 
+
+// Activity Feed
+
 'Activity Feed'=>'アクティビティフィード',
-// // // Filter Headers
-'Visibility'=>'視認性',
+// Filter Headers
 'Relevant Users'=>'関連したユーザー',
 'Event Types'=>'イベントの種類',
 'Social Subtypes'=>'社会的なサブタイプ',
-'Options'=>'オプション',
 'Set Default'=>'デフォルトを設定',
 'Apply Filters'=>'フィルタを適用',
-// // // Filter Text
-'Social Post'=>'ソーシャルポスト',
-'Announcement'=>'発表',
-'Product Info'=>'製品情報',
-'Competitive Info'=>'競争力のある情報',
-'Confidential'=>'秘密の',
-// // // Event Types
+// Filter Text
+'Filter Controls'=>'フィルタ·コントロール',
+// Event Types
 'Social Posts'=>'社会的な投稿',
 'Records Created'=>'レコードが作成',
 'Records Deleted'=>'レコードが削除された',
-'Action Reminders'=>'アクションリマインダ',
-'Actions Completed'=>'アクションが完了しました',
 'Calendar Events'=>'カレンダーイベント',
 'Cases Escalated'=>'ケースがエスカレート',
 'Emails Opened'=>'電子メールは、開かれた',
+'Doc Updates'=>'ドキュメントアップデート',
 'Emails Sent'=>'電子メールが送信され',
 'Notifications'=>'通知',
 'Webleads Created'=>'Webが作成リード',
-'Web Activity'=>'ウェブ·アクティビティ',
 'Workflow Complete'=>'完全なワークフロー',
 'Workflow Reverted'=>'ワークフローは差し戻し',
 'Workflow Started'=>'ワークフローが開始',
-// // // Event Text
+'VOIP Calls'=>'VOIPを呼び出し',
+'All Events'=>'すべてのイベント',
+'Feed Events'=>'フィードイベント',
+'Making an event sticky will cause it to always show up at the top of the feed.'=>'イベント付箋を作ることは、それは常にフィードの上部に現れるようになります。',
+'Undo Sticky'=>'スティッキー元に戻す',
+'Like Post'=>'ポストのように',
+'Unlike Post'=>'ポストとは異なり',
+// Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'連絡先に関連付けられた新しい{actionLink}を作成{contactLink}',
 'created a new {modelName}, {modelLink}'=>'新しい{modelName}、{modelLink}を作成',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'新しい{modelName}、{deletionText}を作成しました。それが削除されました。',
@@ -363,14 +322,14 @@ return array (
 'An action is due now, but the record could not be found.'=>'アクションが原因ですが、レコードが見つかりませんでした。',
 'completed the following action: {actionDescription}'=>'{actionDescription}：次のアクションを完了',
 'completed an action, but the record could not be found.'=>'アクションを完了したが、レコードは見つかりませんでした。',
-// // // Model Names
+// Model Names
 'action'=>'アクション',
 'contact'=>'連絡',
-'account'=>'アカウント',
 'opportunity'=>'機会',
 'marketing campaign'=>'販売キャンペーン',
-// // 
-// // // Misc. Text
+'product'=>'製品',
+
+// Misc. Text
 'Minimize Posts'=>'投稿を最小限に抑える',
 'Restore Posts'=>'投稿を復元',
 'My Groups'=>'私のグループ',
@@ -379,15 +338,20 @@ return array (
 'Broadcast Event'=>'イベントをブロードキャスト',
 'Cancel Broadcast'=>'放送をキャンセル',
 'Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'イベントをブロードキャストすると、アクティビティフィードにあなたのイベントを表示するすべてのユーザーにそれが見えるようになります - タイプにかかわらず、フィルタの。',
-// //
-// // Error Reporting
+'Leave colors blank for defaults.'=>'デフォルトの色は空白のままにします。',
+'Do you want to email all users?'=>'あなたは、すべてのユーザーにメールしたいですか？',
+'What color should the broadcast be?'=>'放送が何色であるべき？',
+'What color should the font be?'=>'フォントは何色でなければなりません？',
+'What color should the links be?'=>'リンクは何色でなければなりません？',
+'Are you sure you want to remove these items from the list?'=>'あなたはリストからこれらの項目を削除してもよろしいですか？',
+
+// Error Reporting
 'Bug Report Form'=>'バグ報告フォーム',
 'This is the form to manually report bugs.'=>'これは、手動でバグを報告するためのフォームです。',
 'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'あなたは、実際のエラー（エラー報告フォームをレンダリングすることになる）あなたは私たちを与えるとヒットすることができ、任意の情報を記入してくださいが原因ではないだことを報告するためにバグがある場合は"送信"を我々は問題に見ていきますと、また、あなたの電子メールアドレスが含まれている場合我々はできるだけ早くあなたに戻りましょう。ありがとうございます！',
 'Send Bug Report'=>'バグレポートを送る',
 'Here\'s a quick list of what will be included in the report:'=>'ここでは、レポートに含まれる内容の簡単なリストです：',
 'Report A Bug'=>'バグを報告する',
-'Email Address'=>'メールアドレス',
 'Bug Description'=>'バグの説明',
 'X2CRM Version:'=>'X2CRMバージョン：',
 'PHP Version:'=>'PHPのバージョン：',
@@ -407,4 +371,191 @@ return array (
 'Please Note:'=>'ご注意ください：',
 'Any information in the $_GET or $_POST arrays included with the request will also be sent with the report.'=>'要求に含まれて$ _GETや$ _POST配列内のすべての情報は、レポートと一緒に送信されます。',
 'Error report sent!'=>'エラーレポートを送信しました',
+
+// About Page
+'Professional Edition'=>'プロフェッショナル·エディション',
+'X2Engine is a Customer Relationship Management application <br>designed by John Roberts.'=>'X2Engineカスタマー·リレーションシップ·マネジメント·アプリケーションです<br>ジョン·ロバーツによって設計。',
+'For customer and community support:'=>'顧客やコミュニティサポートについて：',
+'Core Team'=>'コアチーム',
+'Special Thanks'=>'スペシャルサンクス',
+'Version Info'=>'バージョン情報',
+'Build'=>'ビルド',
+'Code Base'=>'コー​​ドベース',
+'Plugins/Extensions'=>'プラグイン/拡張',
+'Developer'=>'開発者',
+'Yii Extension'=>'Yiiのエクステンション',
+'Powered by X2Engine'=>'X2Engineによって供給',
+'X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 			to install and use this Software for your internal business purposes. 			You shall not modify, distribute, license or sublicense the Software. 			Title, ownership, and all intellectual property rights in the Software belong 			exclusively to X2Engine.'=>'X2Engine株式会社は、あなたの社内業務目的のために本ソフトウェアをインストールして使用するための永久、非独占的、譲渡不能のライセンスを付与します。あなたは、本ソフトウェアを変更、配布、ライセンスまたはサブライセンスしてはならない。タイトル、所有権、および本ソフトウェアのすべての知的財産権はX2Engineに排他的に帰属します。',
+'THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 		EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 		MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.'=>'本ソフトウェアは黙示商品性の保証、特定目的への適合性、タイトル、非侵害を含むがこれらに限らず、明示のどちらかを、 "AS IS" ANDいかなる保証も提供された、または暗黙的に指定されます。',
+'Our office in downtown Santa Cruz'=>'ダウンタウンサンタクルスにおける当社のオフィス',
+'X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.'=>'X2Engine株式会社は、美しいサンタクルーズ、カリフォルニア州に本社を置いています。私たちは本当に、会議のお客様およびパートナー可能な限りを楽しむあなたは、サンフランシスコのベイエリアに自分自身を見つけるときに、私たちのオフィスを訪問することをお勧めします。',
+'Cannot delete admin user.  Please do not repeat this request.'=>'adminユーザーを削除することはできません。この要求を繰り返さないでください。',
+'The "model" property cannot be empty.'=>'"モデル"プロパティは空にすることはできません。',
+'The "options" property cannot be empty.'=>'"オプション"プロパティは空にすることはできません。',
+'The "chart" property is not valid JSON.'=>'"チャート"プロパティが有効なJSONではありません。',
+'The "model property is not valid'=>'"モデルプロパティが有効ではありません',
+'Rights Reserved.'=>'の権利予約。',
+'Click to get a new image'=>'新しいイメージを取得するにはクリック',
+'Please enter the letters in the image above.'=>'上記画像の文字を入力してください。',
+'Main Menu'=>'メインメニュー',
+'Incorrect username or password.'=>'間違ったユーザー名またはパスワード。',
+'Email '=>'メール',
+'Cannot be blank.'=>'空白にすることはできません。',
+'Side Panel Settings'=>'サイドパネルの設定',
+'top'=>'トップ',
+'Sync'=>'同期する',
+'anyone'=>'誰でも',
+'Invalid selection.'=>'無効選択。',
+'This list cannot be found.'=>'このリストは見つかりません。',
+'You do not have permission to modify this list.'=>'このリストを変更する権限がありません。',
+'The requested list does not exist.'=>'要求されたリストは存在しません。',
+'Severity'=>'重症度',
+'Creating a theme will save your current '=>'テーマを作成すると、あなたの現在の内容を保存します',
+'Encrypted storage enabled'=>'暗号化されたストレージが有効',
+'shared system-wide'=>'システム全体の共有',
+'Set as default'=>'デフォルトとして設定',
+'Set as my default'=>'私のデフォルトとして設定',
+'for'=>'のために',
+'Apply'=>'適用する',
+'Add New'=>'新規追加',
+'Visible to lead routing'=>'ルーティングをリードする可視',
+'Invisible to lead routing'=>'ルーティングをリードする目に見えない',
+'GNU Affero GPL v3'=>'GNU Affero GPL v3の',
+'GNU Affero General Public License version 3'=>'GNU Affero一般公衆利用許諾書バージョン3',
+'Released as free software without warranties under the'=>'下の保証なしでフリーソフトウェアとしてリリース',
+'Make Important'=>'重要作る',
+'Broadcast'=>'ブロードキャスト',
+'Select at least one user to broadcast to'=>'にブロードキャストするには、少なくとも1つのユーザーを選択',
+'Okay'=>'オーケー',
+'Nevermind'=>'用事',
+'Create Chart Setting'=>'チャート設定を作成',
+'Clear second metric'=>'クリアメトリック秒',
+'Delete predefined chart setting'=>'事前定義されたグラフの設定を削除',
+'Setting Name'=>'名の設定',
+'Select a group of users to send this event to via email or notification.'=>'電子メールまたは通知を介して、このイベントを送信するためにユーザーのグループを選択します。',
+'Clear All'=>'すべてをクリア',
+'Designating an event as important will make it visible to any user viewing your events on the activity feed--regardless of type filters.'=>'重要として、イベントを指定すると、アクティビティフィードにあなたのイベントを表示する任意のユーザーにそれが見えるようになります - タイプに関係なくフィルタの。',
+'Make Unimportant'=>'重要でないメイク',
+'Send test email'=>'テストメールを送信',
+'Register'=>'登録',
+'New Event Publisher'=>'新規イベント出版',
+'Send Now'=>'今すぐ送信',
+'Send Later'=>'後で送信',
+'Media Widget Settings'=>'メディアウィジェット設定',
+'X2 Media'=>'X2メディア',
+'Refresh Google Drive Cache'=>'リフレッシュGoogleドライブキャッシュ',
+'Refresh Files'=>'リフレッシュファイル',
+'Errors encountered in {attribute}'=>'で発生したエラー{attribute}',
+'Auto'=>'オート',
+'Did not send email because you do not have permission to use the specified credentials.'=>'指定した資格情報を使用する権限を持っていないので、メールを送信しませんでした。',
+'Inline email model missing from the request to the server.'=>'インラインメールモデルは、サーバへのリクエストから行方不明。',
+'Timezone not available'=>'利用できない時間帯',
+'The requested post does not exist.'=>'要求された記事は存在しません。',
+'Manage Credentials'=>'資格情報を管理する',
+'Edit Credentials'=>'クレデンシャルを編集',
+'Saved'=>'保存',
+'Phone system reported inbound call from contact.'=>'電話システムは、連絡先からの着信コールを報告した。',
+'You are not authorized to perform this action.'=>'あなたは、このアクションを実行する権限がありません。',
+'your feed'=>'フィード',
+'{name}\'s feed'=>'{name}  &#39;sのフィード',
+'GMail Account'=>'Gmailアカウント',
+'Email address'=>'電子メールアドレス',
+'Server'=>'サーバ',
+'Security type'=>'セキュリティの種類',
+'secured with'=>'で固定',
+'Email Account'=>'電子メールアカウント',
+'Bin Size'=>'ビンサイズ',
+'Metric 1'=>'メトリック1',
+'Metric 2'=>'メトリック2',
+'Encryption Enabled'=>'暗号化が有効',
+'Date Created'=>'作成日',
+'Date Last Updated'=>'日最終更新日',
+'Authentication Details'=>'認証の詳細',
+'New {service}'=>'新しい{service}',
+'Google Account'=>'Googleアカウント',
+'Bulk Email Account'=>'バルク電子メールアカウント',
+'Service Case Email Account'=>'サービスケースメールアカウント',
+'System Response Emailer'=>'システムレスポンスEmailerの',
+'System Notification Emailer'=>'システム通知Emailerの',
+'Notification not found'=>'通知が見つからない',
+'A new {actionLink} associated with the contact {contactLink} has been created.'=>'新しい{actionLink}連絡先に関連付けられ{contactLink}作成されています。',
+'issued the {transModelName} "{modelLink}" via email'=>'発行{transModelName} &quot; {modelLink}電子メールを介して&quot;',
+'{modelLink} called.'=>'{modelLink}呼ばれる。',
+'Call from a contact whose record could not be found.'=>'そのレコードが見つかりませんでした接触から呼び出します。',
+'A lead failed to come through Lead Capture. Check {link} to recover it.'=>'リードがリードキャプチャを通ってくることができなかった。チェック{link}それを回復する。',
+'here'=>'ここで',
+'{user} posted on {link}'=>'{user}に掲載{link}',
+'{user} replied on {link}'=>'{user}に答え{link}',
+'{name} is currently on {url}'=>'{name}現在オンで ​​す{url}',
+'{name} is currently on your website.'=>'{name}あなたのウェブサイトに現在あります。',
+'Invalid email address list.'=>'無効な電子メールアドレスのリスト。',
+'Cannot delete. The item is in use by the system, or you do not have permission.'=>'削除することはできません。項目は、システムで使用されているか、権限がありません。',
+'You have made an invalid request, please do not repeat this.'=>'無効な要求をした、これを繰り返さないでください。',
+'If this happened by clicking a Delete button on a Grid, just go back to that page and it should work now. This is a known issue we are working to fix.'=>'これはグリッド上で[削除]ボタンをクリックすることによって起こった場合は、単にそのページに戻って、それが今では動作するはずです。これは、我々は修正するために働いている既知の問題です。',
+'Your X2CRM session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.'=>'あなたのX2CRMセッションが期限切れになっています。このメッセージを無視して、現在のページから保存されていないデータを回復するために "キャンセル"を選択することができる。そうでなければ、あなたがログインページにリダイレクトされます。',
+'Sorry, this record doesn\'t seem to exist.'=>'申し訳ありませんが、このレコードdoesnの &#39;tは存在しているように見える。',
+'A new {modelName}, {modelLink}, has been created.'=>'新しい{modelName} {modelLink} 、作成されています。',
+'A {modelName}, {deletionText}, was created. It has been deleted.'=>'{modelName} {deletionText}作成されたものです。それが削除されている。',
+'A {modelName} was created, but it could not be found.'=>'{modelName}作成されたが、それが見つかりませんでした。',
+'A {modelType}, {text}, was deleted'=>'{modelType} {text} 、削除された',
+'deleted an {modelType}, {text}.'=>'削除された{modelType} {text} 。',
+'An {modelType}, {text}, was deleted.'=>'{modelType} {text} 、削除された。',
+'issued a quote by email, but that record has been deleted.'=>'メールで見積もりを出したが、そのレコードは削除されました。',
+'issued a quote by email, but that record could not be found.'=>'メールで見積もりを出したが、そのレコードが見つかりませんでした。',
+'issued an invoice by email, but that record has been deleted.'=>'メールで請求書を発行したが、そのレコードは削除されました。',
+'issued an invoice by email, but that record could not be found.'=>'メールで請求書を発行したが、そのレコードが見つかりませんでした。',
+'A contact has opened {emailType}, but that contact cannot be found.'=>'接点がオープンしました{emailType}が、その連絡先が見つかりません。',
+'updated a document, {docLink}'=>'ドキュメントを更新した{docLink}',
+'received an email from a {transModelName}, {modelLink}'=>'からメールを受け取った{transModelName} {modelLink}',
+'received an email from a {transModelName}, but that record has been deleted.'=>'からメールを受け取った{transModelName}が、そのレコードは削除されました。',
+'received an email from a {transModelName}, but that record could not be found.'=>'からメールを受け取った{transModelName}が、そのレコードが見つかりませんでした。',
+'A contact called, but the contact record has been deleted.'=>'コンタクトと呼ばれるが、連絡先レコードが削除されている。',
+'Pressing the X button on a tag will hide it from this widget. Hidden tags can be restored from your Preferences page.'=>'タグにXボタンを押すと、このウィジェットからそれを非表示になります。隠しタグは、あなたの設定ページから復元することができます。',
+'Displaying {start}-{end} result(s).'=>'表示{start} - {end}結果（秒）。',
+'Email Address (optional)'=>'電子メールアドレス（オプション）',
+'User name (if different from email address)'=>'ユーザー名（メールアドレスと異なる場合）',
+'This record may be a duplicate!'=>'このレコードは、重複かもしれません！',
+'Credentials stored in plain text!'=>'プレーンテキストで保存されている資格情報！',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit "Send." We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'あなたは、実際のエラー（エラー報告フォームをレンダリングすることになる）あなたは私たちを与えるとヒットすることができ、任意の情報を記入してくださいが原因ではないだことを報告するためにバグがある場合は"送信"を我々は問題に見ていきますと、また、あなたの電子メールアドレスが含まれている場合我々はできるだけ早くあなたに戻りましょう。ありがとうございます！',
+'A new version is available! Click here to update to version {version}'=>'新しいバージョンが利用可能です！バージョンにアップデートするにはここをクリックして{version}',
+'a quote email'=>'見積もりの​​メール',
+'an invoice email'=>'請求メール',
+'an email'=>'メール',
+' has opened {emailType}!'=>'オープンしました{emailType}',
+'If you have a bug to report that\'s not caused by an actual error (which would render the Error Report Form) please fill out any information you can give us and hit \"Send.\" We\'ll look into the issue and if you also include your email address we\'ll get back to you as soon as possible. Thanks!'=>'あなたが報告するバグがある場合は\ &#39;実際のエラー（エラーレポートフォームをレンダリングするであろう）が原因ではないのは、あなたが私たちを与えるとヒットすることができます\いかなる情報も記入してください &quot;を送信してください。\&quot;我々は、\&#39;というのllのぞき込む問題としている場合はまた、我々は\ &#39;はできるだけ早くあなたに戻って取得llはあなたの電子メールアドレスが含まれています。ありがとう！',
+'issued the {transModelName} \"{modelLink}\" via email'=>'発行{transModelName} \ &quot; {modelLink} \ &quot;電子メールを介して',
+'What color should the event be?'=>'イベントは何色でなければなりません？',
+'Do you want to email selected users?'=>'選択したユーザーにメールしたいですか？',
+'Do you want to notify selected users?'=>'選択したユーザーに通知しますか？',
+'Permanently delete all notifications?'=>'恒久的にすべての通知を削除しますか？',
+'Save to Google Drive?'=>'Googleのドライブに保存しますか？',
+'If you disable this option, administrators and users granted privilege to do so will be able to use these credentials on your behalf.'=>'このオプションを無効にした場合、そうするために権限を付与され、管理者とユーザーは、あなたに代わってこれらの資格情報を使用することができるようになります。',
+'select a type'=>'タイプを選択',
+'Owned by {user}'=>'が所有している{user}',
+'Maximize Widget'=>'ウィジェットを最大化',
+'Minimize Widget'=>'ウィジェットを最小限に抑える',
+'Sort Widget'=>'並べウィジェット',
+'Close Widget'=>'閉じるウィジェット',
+'Check all'=>'すべてをチェック',
+'Uncheck all'=>'選択をすべて解除',
+'metric(s) selected'=>'メトリック（複数可）を選択',
+'Per Hour'=>'1時間当たり',
+'Per Day'=>'日あたり',
+'Per Week'=>'週',
+'Per Month'=>'月額',
+'Tasks'=>'タスク',
+'Calls'=>'コー​​ル',
+'Emails'=>'メール',
+'Workflow Actions'=>'ワークフローアクション',
+'View history item'=>'履歴項目を見る',
+'Someone'=>'誰か',
+' opened a link in an email campaign and is visiting your website!'=>'メールキャンペーンのリンクを開いて、あなたのウェブサイトを訪問している！',
+'A contact has opened a link in an email campaign, but that contact cannot be found.'=>'連絡先はメールキャンペーンのリンクを開いているが、その連絡先が見つかりません。',
+'Class "{class}" specified for {attribute} does not exist, so cannot create relationships with it.'=>'クラス&quot; {class}に指定された&quot;は{attribute}は存在しませんので、それとの関係を作成することはできません。',
+'Class "{class}" specified for {attribute} does not have X2LinkableBehavior, and thus cannot be used with relationships.'=>'クラス&quot; {class}に指定された&quot;は{attribute} X2LinkableBehaviorを持っていないので、関係で使用することはできません。',
+'Model record not found for {attribute}.'=>'モデルレコードがが見つかりません{attribute} 。',
+'Google Email Account'=>'Googleのメールアカウント',
+'Setting'=>'設定',
+'Attach a File/Photo'=>'ファイル/写真を添付',
+'Select at least one broadcast method'=>'1つ以上の放送方式を選択する',
 );
