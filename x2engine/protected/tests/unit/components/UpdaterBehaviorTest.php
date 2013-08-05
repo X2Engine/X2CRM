@@ -51,7 +51,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 	 * operations), but not backup tests specifically (it's assumed they work)
 	 */
 
-	const TEST_LEVEL = 0;
+	const TEST_LEVEL = 2;
 
 	/**
 	 * Array of tables used in update/upgrade SQL testing.
@@ -124,9 +124,13 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 	 * 
 	 * @throws PHPUnit_Framework_AssertionFailedError 
 	 */
-	public function enactChanges(){
-		// Test the "missing parameters" error:
+	public function assertEnactChanges(){
 		$ube = $this->instantiateUBe();
+		$lockFile = $ube->lockFile;
+		if(file_exists($lockFile))
+			unlink($lockFile);
+
+		// Test the "missing parameters" error:
 		try{
 			$ube->enactChanges('update', array());
 		}catch(Exception $e){
@@ -195,14 +199,22 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 		}catch(Exception $e){
 			$this->assertRegExp('/changes were applied prior to this failure/m', $e->getMessage());
 		}
-		$this->verifyChangesReverted($ube, 'update', $absDeletionList);
+		$this->assertChangesReverted($ube, 'update', $absDeletionList);
+		$this->assertFileNotExists($lockFile,"Failed asserting that the lock file was deleted after a failed update.");
 
+		// Test exiting with a lock file. It should not exist at this point .
+		$now = time();
+		file_put_contents($lockFile,$now);
+		$this->assertEquals($now,$ube->enactChanges('update',$params,true),"enactChanges did not exit upon finding the lockfile.");
+		unlink($lockFile);
 
 		// Now, test the updater itself (going all the way through).
 		// Begin by removing the invalid SQL:
 		array_pop($params['sqlList']);
-		$ube->enactChanges('update', $params, true);
-		$this->verifyChangesApplied($ube, 'update', $params, $absDeletionList);
+		$return = $ube->enactChanges('update', $params, true);
+		$this->assertFalse($return,"Failed asserting correct return value.");
+		$this->assertChangesApplied($ube, 'update', $params, $absDeletionList);
+		$this->assertFileNotExists($lockFile,"Failed asserting that the lock file was deleted after a successful update.");
 		$this->resetAfterChanges($ube, $absDeletionList);
 
 		// Prepare files:
@@ -220,7 +232,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 		$edition = $admin->edition;
 		$unique_id = $admin->unique_id;
 		$ube->enactChanges('upgrade', $params, true);
-		$this->verifyChangesApplied($ube, 'upgrade', $params);
+		$this->assertChangesApplied($ube, 'upgrade', $params);
 		$this->resetAfterChanges($ube, $absDeletionList);
 		// Reset edition/unique_id:
 		$admin->edition = $edition;
@@ -389,7 +401,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 	 *
 	 * @throws PHPUnit_Framework_AssertionFailedError
 	 */
-	public function verifyChangesApplied($ube, $scenario, $params, $absDeletionList = array()){
+	public function assertChangesApplied($ube, $scenario, $params, $absDeletionList = array()){
 		// Now that it's all said and done, verify: did the update/upgrade happen properly?
 		try{
 			foreach($this->testTables as $type => $tables){
@@ -444,7 +456,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 	 * @param type $scenario
 	 * @param type $absDeletionList
 	 */
-	public function verifyChangesReverted($ube, $scenario, $absDeletionList){
+	public function assertChangesReverted($ube, $scenario, $absDeletionList){
 		// Now that it's all said and done, verify: did we restore properly?
 		try{
 			foreach($this->testTables as $type => $tables){
@@ -703,7 +715,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 	 */
 	public function testEnactChanges(){
 		if(self::TEST_LEVEL == 2)
-			$this->enactChanges();
+			$this->assertEnactChanges();
 		else
 			$this->markTestSkipped('Skipping; TEST_LEVEL not set to 2 (this is a very slow test).');
 	}

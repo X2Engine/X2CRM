@@ -17,6 +17,10 @@
 * Numerous bug fixes
 * SSL-secured software updates
 
+## Changes in 3.3.1 ##
+* Safeguard against duplicate update server requests
+* Fixed bug: incorrect created by / updated by / deleted by user
+
 ## Release Notes ##
 ### 3.0 ###
 * The automation designer, while largely complete, is still in active 

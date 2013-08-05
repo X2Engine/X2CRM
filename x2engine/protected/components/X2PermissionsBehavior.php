@@ -73,7 +73,7 @@ class X2PermissionsBehavior extends CActiveRecordBehavior {
     public function getAccessLevel(){
         $module = ucfirst($this->owner->module);
 
-        if(Yii::app()->isInSession()){ // Web request
+        if(Yii::app()->isInSession){ // Web request
             $uid = Yii::app()->user->id;
         }else{ // User session not available; doing an operation through API or console
             $uid = Yii::app()->getSuID();
@@ -115,7 +115,7 @@ class X2PermissionsBehavior extends CActiveRecordBehavior {
      */
     public static function getAccessConditions($accessLevel, $useVisibility = true, $user = null){
         if($user === null){
-            if(Yii::app()->isInSession())
+            if(Yii::app()->isInSession)
                 $user = Yii::app()->user->getName();
             else
                 $user = Yii::app()->getSuModel()->username;

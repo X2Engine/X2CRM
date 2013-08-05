@@ -54,7 +54,7 @@ class X2TranslationBehavior extends CBehavior {
      * will be matched by this pattern.
      */
 
-    const REGEX = '/(?:(?<installer>installer_tr?\s*)|Yii::\s*t\s*)\(\s*(?(installer)|(?:(?<openquote1>")|\')(?<module>\w+)(?(openquote1)"|\')\s*,)\s*(?:(?<openquote2>")|\')(?<message>(?:(?(openquote2)\\\\"|\\\\\')|(?(openquote2)\'|")|\w|\s|[\(\)\{\}_\.\-\,\!\?\/])+)(?(openquote2)"|\')/';
+    const REGEX = '/(?:(?<installer>installer_tr?\s*)|Yii::\s*t\s*)\(\s*(?(installer)|(?:(?<openquote1>")|\')(?<module>\w+)(?(openquote1)"|\')\s*,)\s*(?:(?<openquote2>")|\')(?<message>(?:(?(openquote2)\\\\"|\\\\\')|(?(openquote2)\'|")|\w|\s|[\(\)\{\}_\.\-\,\!\?\/;:])+)(?(openquote2)"|\')/';
 
     /**
      * An array of redundant translations that are built up during the

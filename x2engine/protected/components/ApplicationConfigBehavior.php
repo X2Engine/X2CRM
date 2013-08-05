@@ -41,6 +41,8 @@
  *
  * @property string $externalBaseUrl (read-only) the base URL of the web application,
  * 	independent of whether there is a web request.
+ * @property integer $suID (read-only) substitute user ID in the case that no user session is available.
+ * @property User $suModel Substitute web user model in the case that no user session is available.
  * @package X2CRM.components
  */
 class ApplicationConfigBehavior extends CBehavior {
@@ -49,24 +51,24 @@ class ApplicationConfigBehavior extends CBehavior {
 
     /**
      * Substitute user ID. Used in the case of API calls and console commands
-     * when Yii::app()->user is not available (because there is no user session
-     * in such cases).
+     * when the web user component is not available (because there is no user 
+     * session in such cases).
      *
      * @var integer
      */
-    private $_suID = 1;
+    private $_suID;
 
     /**
      * Substitute user model (used in api and console scenarios)
      * @var User
      */
-    private static $_suModel;
+    private $_suModel;
 
     /**
      * Distinguishes whether the model is being used inside an actual user session.
      * @var bool
      */
-    private static $_isInSession;
+    private $_isInSession;
 
     /**
      * Declares events and the event handler methods.
@@ -98,7 +100,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 Yii::import('application.components.Formatter');
                 Yii::import('application.components.TransformedFieldStorageBehavior');
                 Yii::import('application.components.X2PermissionsBehavior');
-                if(!$this->owner->user->isGuest)
+                if(!$this->owner->user->getIsGuest())
                     $profData = $this->owner->db->createCommand()->select('timeZone, language')->from('x2_profile')->where('id='.$this->owner->user->getId())->queryRow(); // set the timezone to the admin's
                 if(isset($profData)){
                     if(isset($profData['timeZone'])){
@@ -147,10 +149,10 @@ class ApplicationConfigBehavior extends CBehavior {
         $uname = 'admin'; // Will always be admin in a console command
         if(!$noSession){
             $uname = $this->owner->user->getName();
-            $notGuest = !$this->owner->user->isGuest;
+            $notGuest = !$this->owner->user->getIsGuest();
             // Set up encryption:
-            $key = Yii::app()->basePath.'/config/encryption.key';
-            $iv = Yii::app()->basePath.'/config/encryption.iv';
+            $key = $this->owner->basePath.'/config/encryption.key';
+            $iv = $this->owner->basePath.'/config/encryption.iv';
             if(extension_loaded('openssl') && extension_loaded('mcrypt') && file_exists($key) && file_exists($iv)){
                 EncryptedFieldsBehavior::setup($key, $iv);
             }else{
@@ -232,7 +234,7 @@ class ApplicationConfigBehavior extends CBehavior {
 
         $locale = $this->owner->locale;
         $curSyms = array();
-        foreach(Yii::app()->params->supportedCurrencies as $curCode){
+        foreach($this->owner->params->supportedCurrencies as $curCode){
             $curSyms[$curCode] = $locale->getCurrencySymbol($curCode);
         }
         $this->owner->params->supportedCurrencySymbols = $curSyms; // Code to symbol
@@ -273,21 +275,21 @@ class ApplicationConfigBehavior extends CBehavior {
                 $profile = $this->owner->params->profile;
                 if(isset($profile)){
                     $where = 'fileName = "'.$profile->notificationSound.'"';
-                    $uploadedBy = Yii::app()->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
+                    $uploadedBy = $this->owner->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
                     if(!empty($uploadedBy['uploadedBy'])){
-                        $notificationSound = Yii::app()->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
+                        $notificationSound = $this->owner->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
                     }else{
-                        $notificationSound = Yii::app()->baseUrl.'/uploads/'.$profile->notificationSound;
+                        $notificationSound = $this->owner->baseUrl.'/uploads/'.$profile->notificationSound;
                     }
                     $yiiString = '
                     var	yii = {
-                        baseUrl: "'.Yii::app()->baseUrl.'",
-                        scriptUrl: "'.Yii::app()->request->scriptUrl.'",
-                        themeBaseUrl: "'.Yii::app()->theme->baseUrl.'",
-                        language: "'.(Yii::app()->language == 'en' ? '' : Yii::app()->getLanguage()).'",
+                        baseUrl: "'.$this->owner->baseUrl.'",
+                        scriptUrl: "'.$this->owner->request->scriptUrl.'",
+                        themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
+                        language: "'.($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
                         datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
                         timePickerFormat: "'.Formatter::formatTimePicker().'",
-                        profile: '.CJSON::encode(Yii::app()->params->profile->getAttributes()).',
+                        profile: '.CJSON::encode($this->owner->params->profile->getAttributes()).',
                         notificationSoundPath: "'.$notificationSound.'"
                     },
                     x2 = {};
@@ -296,10 +298,10 @@ class ApplicationConfigBehavior extends CBehavior {
                 }else{
                     $yiiString = '
                 var	yii = {
-                    baseUrl: "'.Yii::app()->baseUrl.'",
-                    scriptUrl: "'.Yii::app()->request->scriptUrl.'",
-                    themeBaseUrl: "'.Yii::app()->theme->baseUrl.'",
-                    language: "'.(Yii::app()->language == 'en' ? '' : Yii::app()->getLanguage()).'",
+                    baseUrl: "'.$this->owner->baseUrl.'",
+                    scriptUrl: "'.$this->owner->request->scriptUrl.'",
+                    themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
+                    language: "'.($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
                     datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
                     timePickerFormat: "'.Formatter::formatTimePicker().'"
                 },
@@ -310,10 +312,10 @@ class ApplicationConfigBehavior extends CBehavior {
             }else{
                 $yiiString = '
 			var	yii = {
-				baseUrl: "'.Yii::app()->baseUrl.'",
-				scriptUrl: "'.Yii::app()->request->scriptUrl.'",
-				themeBaseUrl: "'.Yii::app()->theme->baseUrl.'",
-				language: "'.(Yii::app()->language == 'en' ? '' : Yii::app()->getLanguage()).'",
+				baseUrl: "'.$this->owner->baseUrl.'",
+				scriptUrl: "'.$this->owner->request->scriptUrl.'",
+				themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
+				language: "'.($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
 				datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
 				timePickerFormat: "'.Formatter::formatTimePicker().'"
 			},
@@ -322,7 +324,7 @@ class ApplicationConfigBehavior extends CBehavior {
 			';
             }
 
-            $userAgentStr = strtolower(Yii::app()->request->userAgent);
+            $userAgentStr = strtolower($this->owner->request->userAgent);
             $isAndroid = preg_match('/android/', $userAgentStr);
             if($isAndroid){
                 define('IS_ANDROID', true);
@@ -336,10 +338,10 @@ class ApplicationConfigBehavior extends CBehavior {
 				';
             }
 
-            Yii::app()->clientScript->registerScript('setParams', $yiiString, CClientScript::POS_HEAD);
-            $cs = Yii::app()->clientScript;
-            $baseUrl = Yii::app()->request->baseUrl;
-            $jsVersion = '?'.Yii::app()->params->buildDate;
+            $this->owner->clientScript->registerScript('setParams', $yiiString, CClientScript::POS_HEAD);
+            $cs = $this->owner->clientScript;
+            $baseUrl = $this->owner->request->baseUrl;
+            $jsVersion = '?'.$this->owner->params->buildDate;
             /* $cs->scriptMap=array(
               'backgroundImage.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'json2.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
@@ -391,50 +393,52 @@ class ApplicationConfigBehavior extends CBehavior {
         return $this->_externalBaseUrl;
     }
 
-    /**
-     * Substitute user ID magic getter.
-     *
-     * If the user has already been looked up or set, method will defer to its
-     * value for id.
-     * @return type
-     */
-    public function getSuID(){
-        if($this->suModel)
-            return $this->suModel->id;
-        else
-            return $this->_suID;
-    }
+	/**
+	 * Substitute user ID magic getter.
+	 *
+	 * If the user has already been looked up or set, method will defer to its
+	 * value for id.
+	 * @return type
+	 */
+	public function getSuID(){
+		if(!isset($this->_suID)){
+			if($this->isInSession)
+				$this->_suID = $this->owner->user->getId();
+			elseif(isset($this->_suModel))
+				$this->_suID = $this->_suModel->id;
+			else
+				$this->_suID = 1;
+		}
+		return $this->_suID;
+    	}
 
     /**
      * Shortcut method for ascertaining if a user session is available
      * @return type
      */
-    public static function isInSession(){
-        if(!isset(self::$_isInSession)){
-            $app = Yii::app();
+    public function getIsInSession(){
+        if(!isset($this->_isInSession)){
+            $app = $this->owner;
             if(!$app->params->hasProperty('noSession'))
-                self::$_isInSession = true;
+                $this->_isInSession = true;
             else
-                self::$_isInSession = !Yii::app()->params->noSession;
+                $this->_isInSession = !$app->params->noSession;
         }
-        return self::$_isInSession;
+        return $this->_isInSession;
     }
 
     /**
      * Substitute user model magic getter.
      *
-     * Uses static attribute for storage so that the user won't have to be looked
-     * up for each and every model instantiated when checking permissions.
-     *
      * @return User
      */
     public function getSuModel(){
-        if(!isset(self::$_suModel)){
-            if(self::isInSession())
-                $this->_suID == $this->owner->user->id;
-            self::$_suModel = User::model()->findByPk($this->_suID);
+        if(!isset($this->_suModel)){
+            if($this->isInSession)
+                $this->_suID == $this->owner->user->getId();
+            $this->_suModel = User::model()->findByPk($this->suID);
         }
-        return self::$_suModel;
+        return $this->_suModel;
     }
 
     /**
@@ -442,7 +446,7 @@ class ApplicationConfigBehavior extends CBehavior {
      * @param User $user
      */
     public function setSuModel(User $user){
-        self::$_suModel = $user;
+        $this->_suModel = $user;
     }
 
 }

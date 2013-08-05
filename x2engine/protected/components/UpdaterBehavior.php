@@ -55,6 +55,7 @@ Yii::import('application.components.util.*');
  * @property boolean $keepDbBackup If true, updater will not remove database backup after restoring.
  * @property string $latestUpdaterVersion (read-only) The latest version of the updater utility according to the updates server
  * @property string $latestVersion (read-only)  The latest version of X2CRM according to the updates server
+ * @property string $lockFile Path to the file to use for locking when applying changes
  * @property boolean $noHalt Whether to terminate the PHP process if errors occur
  * @property string $sourceFileRoute (read-only) Route (relative URL on the updates server) from which to download source files
  * @property string $thisPath (read-only) Absolute path to the current working directory
@@ -74,6 +75,13 @@ class UpdaterBehavior extends ResponseBehavior {
 	 * SQL backup dump file
 	 */
 	const BAKFILE = 'update_backup.sql';
+
+	/**
+	 * Defines a file that (for extra security) prevents race conditions in the unlikely event that 
+	 * multiple requests to the web updater to enact file/database changes are made.
+	 */
+	const LOCKFILE = '.x2crm_update.lock';
+
 	/**
 	 * SDERR output from backup/recovery process
 	 */
@@ -402,6 +410,10 @@ class UpdaterBehavior extends ResponseBehavior {
 	 * @param array $params parameters for update or upgrade
 	 */
 	public function enactChanges($scenario, $params, $autoRestore=false) {
+		// Check for a lockfile:
+		$lockFile = $this->lockFile;
+		if(file_exists($lockFile))
+			return (int) trim(file_get_contents($lockFile));
 		// Check for valid scenario:
 		if(!in_array($scenario,array('update','upgrade')))
 			throw new Exception(Yii::t('admin', 'Cannot apply changes without specifying a valid scenario.'));
@@ -422,14 +434,27 @@ class UpdaterBehavior extends ResponseBehavior {
 			if (array_key_exists($key, $params))
 				$missingFields[$key] = false;
 		$missingFields = array_keys(array_filter($missingFields));
-		if ((bool) count($missingFields)) {
-			throw new Exception(Yii::t('admin', 'Could not enact changes; missing the following parameters: {fields}', array('{fields}' => implode(", ", $missingFields))));
-			return false;
-		}
-
+		if ((bool) count($missingFields))
+			throw new Exception(Yii::t('admin', 'Could not enact changes; missing the following parameters: {fields}', array('{fields}' => implode(", ", $missingFields))));	
+		// No turning back now. This is it!
+		// 
+		// Create the lockfile:
+		file_put_contents($lockFile,time());
+	
 		// Run the necessary database changes:
-		if((bool) count($params['sqlList']))
-			$this->enactDatabaseChanges($params['sqlList'],$autoRestore);
+		if((bool) count($params['sqlList'])){
+			try{
+				$this->enactDatabaseChanges($params['sqlList'],$autoRestore);
+			}catch(Exception $e){
+				// The operation cannot proceed and is technically finished, so
+				// there's no use keeping the lock file around except to frustrate
+				// and confuse users.
+				unlink($lockFile);
+				// Toss the Exception back up so it propagates up the stack and the caller 
+				// can use its message for responding to the user:
+				throw $e;
+			}
+		}
 
 		try{
 			// The hardest part of the update (database changes) is now done. If any
@@ -459,6 +484,9 @@ class UpdaterBehavior extends ResponseBehavior {
 			$lastException = $e;
 		}
 
+		// Remove the lock file
+		unlink($lockFile);
+
 		// Clear the cache!
 		$cache = Yii::app()->cache;
 		if(!empty($cache))
@@ -474,7 +502,7 @@ class UpdaterBehavior extends ResponseBehavior {
 			$this->removeDatabaseBackup();
 		// Done.
 		if(empty($lastException))
-			return true;
+			return false;
 		else {
 			// Put message into log.
 			$message = Yii::t('admin','Update finished, but with error(s): {message}.',array('{message}'=>$lastException->getMessage()));
@@ -681,6 +709,13 @@ class UpdaterBehavior extends ResponseBehavior {
 	}
 
 	/**
+	 * Magic getter for {@link lockFile}
+	 */
+	public function getLockFile(){
+		return implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'data',self::LOCKFILE));	
+	}
+
+	/**
 	 * Magic getter for {@link noHalt}
 	 * @return bool
 	 */
@@ -876,7 +911,7 @@ class UpdaterBehavior extends ResponseBehavior {
 					return True;
 			}
 		} else
-			throw new Exception(Yii::t('admin', 'Could not perform database backup; unable to spawn child processes on the server.'));
+			throw new Exception(Yii::t('admin', 'Could not perform database backup. {reason}',array('{reason}'=>Yii::t('admin','Unable to spawn child processes on the server because the "proc_open" function is not available.'))));
 	}
 
 	/**
@@ -1091,7 +1126,7 @@ class UpdaterBehavior extends ResponseBehavior {
 				}
 			}
 		} else
-			throw new Exception(Yii::t('admin', 'Cannot restore database; unable to spawn child process on the server.'));
+			throw new Exception(Yii::t('admin', 'Cannot restore database. {reason}',array('{reason}'=>Yii::t('admin','Unable to spawn child processes on the server because the "proc_open" function is not available.'))));
 	}
 
 	/**

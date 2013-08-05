@@ -47,7 +47,6 @@ Yii::import('application.modules.users.models.*');
  *
  * @property string $myModelName (read-only) Model name of the instance.
  * @property array $relatedX2Models (read-only) Models associated via the associations table
- * @property integer $suID (read-only) substitute user ID in the case that no user session is available.
  * @package X2CRM.models
  */
 abstract class X2Model extends CActiveRecord {

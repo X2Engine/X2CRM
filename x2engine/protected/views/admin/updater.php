@@ -73,7 +73,7 @@ var buildDate = <?php echo $scenario == isset($buildDate)?$buildDate:Yii::app()-
 //var $('#progress-errors') = $('#progress-errors'); 
 
 if (jQuery == undefined) {
-	alert('The jQuery JavaScript library is required for the updater to work, and it is missing.');
+	alert(<?php echo json_encode(Yii::t('admin','{jQuery} is required for the updater to work, and it is missing.',array('{jQuery}'=>'jQuery'))); ?>);
 }
 
 function makeBackup() {
@@ -89,7 +89,7 @@ function makeBackup() {
 		$('#backup-download-link').show();
 	}).fail(function(jqXHR,textStatus,errorMessage) {
 		if(jqXHR.status != 0)
-			alert('Backup failed: '+textStatus+' '+jqXHR.status+' '+errorMessage);
+			alert(<?php echo json_encode(Yii::t('admin','Backup failed.'));?>+' '+textStatus+' '+jqXHR.status+' '+errorMessage);
 	}).always(function() {
 		inProgress.hide();
 	});
@@ -100,7 +100,7 @@ function downloadFile(i) {
 		var proceed = true;
 		if(n_files > 0) {
 			$('#update-text').text('Download complete.');
-			proceed = confirm('All files downloaded. Proceed with {0}?'.format(scenario));
+			proceed = confirm(<?php echo json_encode(Yii::t('admin','All files downloaded. Proceed?')); ?>);
 		} else { // Case where there are no new files, only deletions and/or SQL changes
 			proceed = confirm('Proceed with {1}?'.format(scenario));
 		}
@@ -109,7 +109,7 @@ function downloadFile(i) {
 		}
 	} else { // Download next file in queue at index i
 		var currentFile = fileList[i];
-		$('#update-text').text('Downloading file {0}/{1}: {2}'.format((fileCount+1).toString(),n_files.toString(),currentFile));
+		$('#update-text').text(<?php echo json_encode(Yii::t('admin','Downloading file')); ?>+(' {0}/{1}: {2}'.format((fileCount+1).toString(),n_files.toString(),currentFile)));
 		$.ajax({
 			url: "download",
 			type: "GET",
@@ -139,13 +139,13 @@ function downloadFile(i) {
 			}
 		}).fail(function(jqXHR,textStatus,errorMessage) {
 			if(jqXHR.status != 0)
-				alert('Error: server failed to respond to request to download file '+currentFile+'; '+textStatus+' '+jqXHR.errorCode+' '+errorMessage);
+				alert(<?php echo json_encode(Yii::t('admin','Error: server failed to respond to request to download file')); ?>+' '+currentFile+'; '+textStatus+' '+jqXHR.errorCode+' '+errorMessage);
 		});
 	}
 }
 
 function enactChanges() {
-	$('#update-text').text('Applying database and file changes...');
+	$('#update-text').text('<?php echo Yii::t('admin','Applying database and file changes.');?>');
 	$('#progress-bar').hide();
 	var inProgress = $('#update-status').prepend($('#something-inprogress').clone().removeAttr('id')).find('img').show();
 	var scenarioTitle = scenario.charAt(0).toUpperCase() + scenario.slice(1);
@@ -169,14 +169,22 @@ function enactChanges() {
 			$('#update-text').text(scenarioTitle+' complete.');
 			exitUpdater(data);
 		} else {
+			if(data.locked != false){
+				// Display the lock message and exit immediately; another call is in progress.
+				// This is a special non-interrupting type of error that should not populate the 
+				// error messages box.
+				alert(data.message);
+				return false;
+			}
+			
 			inProgress.hide();
 			$('#progress-errors').html(data.message).show();
 		}
 	}).fail(function(jqXHR,textStatus,errorMessage) {
 		if (jqXHR.status != 0) {
 			inProgress.hide();
-			$('#progress-errors').text('{0} could not be completed because the request to the server failed or timed out.'.format(scenarioTitle)).show();
-			alert('{0} failed due to unsuccessful web request.'.format(scenarioTitle));
+			$('#progress-errors').text(<?php echo json_encode(Yii::t('admin','Could not complete operations because the request to the server failed or timed out.')); ?>).show();
+			alert(<?php echo json_encode(Yii::t('admin','Operations failed due to an unsuccessful web request.')); ?>);
 		}
 	});
 }
@@ -250,9 +258,13 @@ $(function() {
 
 <?php
 Yii::app()->clientScript->registerScript("updater","$('#update-button').click(function(){
-	$('#progress-bar').fadeIn(300);
-	$('#update-status').show();
-    downloadFile(0,scenario=='upgrade');
+        $('#progress-bar').fadeIn(300);
+        $(this).hide();
+        $('#update-status').show();
+        if(typeof updateLock == 'undefined'){
+		updateLock = true;
+		downloadFile(0,scenario=='upgrade');
+	}
 });",CClientScript::POS_READY);
 ?>
 <div class="span-20">
@@ -394,12 +406,13 @@ endif;
 
 <?php if (!in_array($scenario, array('message','error'))): ?>
 <div id="updates-control"<?php echo $scenario == 'upgrade'?' style="display:none"':'';?>>
-<a href="javascript:void(0);" class="x2-button" id="update-button"><?php echo ucfirst($scenario); ?></a><br />
+<a href="javascript:void(0);" class="x2-button" id="update-button"><?php echo Yii::t('app','Update'); ?></a><br />
+
 <div id="update-status">
 <div id="progress-bar" style="display:none;width:300px;height:30px;border-style:solid;border-width:2px;">
     <div id="progress"><div id="progress-text" style="height:30px;width:300px;text-align:center;font-weight:bold;font-size:15px;">0%</div></div>
 </div><br />
-<div id="update-text">Click "<?php echo ucfirst($scenario); ?>" to begin the <?php echo $scenario; ?>.</div>
+<div id="update-text"><?php echo Yii::t('admin','When ready, click the update button {stronce}, and do not navigate away from this page until all operations have been completed.',array('{stronce}'=>'<strong>'.Yii::t('admin','once').'</strong>')); ?></div>
 </div>
 <div id="progress-errors" class="form" style="display:none; color:red"></div>
 </div>

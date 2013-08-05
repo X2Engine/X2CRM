@@ -48,11 +48,15 @@ Yii::import('application.components.webupdater.*');
 class EnactX2CRMChangesAction extends WebUpdaterAction {
 
 	public function run($scenario = null, $autoRestore = false){
-		set_error_handler('ResponseBehavior::respondWithError');
-		set_exception_handler('ResponseBehavior::respondWithException');
+		set_error_handler('UpdaterBehavior::respondWithError');
+		set_exception_handler('UpdaterBehavior::respondWithException');
 		$autoRestore = (bool) $autoRestore;
-		if($this->controller->enactChanges($scenario, $_POST, $autoRestore))
-			self::respond(Yii::t('admin', ucfirst($scenario).' complete.'));
+		$locked = $this->enactChanges($scenario, $_POST, $autoRestore);
+		$this->addResponseProperty('locked',$locked);
+		if(! (bool) $locked)
+			self::respond(Yii::t('admin', 'All done.'));
+		else
+			self::respond(Yii::t('admin', 'An operation that began {t} is in progress (to apply database and file changes to X2CRM). If you are seeing this message, and the stated time is less than a minute ago, this is most likely because your web browser made a duplicate request to the server. Please stand by while the operation completes. Otherwise, you may delete the lock file {file} and try again.',array('{t}'=>strftime('%h %e, %r',$locked),'{file}'=>$this->lockFile)),1);
 	}
 
 }

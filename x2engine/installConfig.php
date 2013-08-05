@@ -1,9 +1,9 @@
 <?php
 $host = 'localhost';
-$db='x2t_3_3';
+$db='x2t_3_3_1';
 $user='x2engine';
 $pass='x2engine';
-$app='X2CRM v 3.3 opensource edition';
+$app='X2CRM v 3.3.1 opensource edition';
 $currency = 'USD';
 $lang = '';
 $timezone = 'UTC';
