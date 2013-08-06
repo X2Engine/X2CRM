@@ -51,7 +51,7 @@ class ApplicationConfigBehavior extends CBehavior {
 
     /**
      * Substitute user ID. Used in the case of API calls and console commands
-     * when the web user component is not available (because there is no user 
+     * when the web user component is not available (because there is no user
      * session in such cases).
      *
      * @var integer
@@ -402,12 +402,13 @@ class ApplicationConfigBehavior extends CBehavior {
 	 */
 	public function getSuID(){
 		if(!isset($this->_suID)){
-			if($this->isInSession)
+			if($this->isInSession){
 				$this->_suID = $this->owner->user->getId();
-			elseif(isset($this->_suModel))
+            }elseif(isset($this->_suModel)){
 				$this->_suID = $this->_suModel->id;
-			else
+            }else{
 				$this->_suID = 1;
+            }
 		}
 		return $this->_suID;
     	}
@@ -419,10 +420,14 @@ class ApplicationConfigBehavior extends CBehavior {
     public function getIsInSession(){
         if(!isset($this->_isInSession)){
             $app = $this->owner;
-            if(!$app->params->hasProperty('noSession'))
+            if(!$app->params->hasProperty('noSession')){
                 $this->_isInSession = true;
-            else
+            }else{
+                if(!isset(Yii::app()->user) || Yii::app()->user->isGuest){
+                    $app->params->noSession=true;
+                }
                 $this->_isInSession = !$app->params->noSession;
+            }
         }
         return $this->_isInSession;
     }

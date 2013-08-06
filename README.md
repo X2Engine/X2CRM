@@ -21,6 +21,9 @@
 * Safeguard against duplicate update server requests
 * Fixed bug: incorrect created by / updated by / deleted by user
 
+## Changes in 3.3.2 ## 
+* Fixed bug in web tracker & web lead form
+
 ## Release Notes ##
 ### 3.0 ###
 * The automation designer, while largely complete, is still in active 

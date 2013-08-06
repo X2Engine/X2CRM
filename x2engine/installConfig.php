@@ -1,18 +1,18 @@
 <?php
 $host = 'localhost';
-$db='x2t_3_3_1';
-$user='x2engine';
-$pass='x2engine';
-$app='X2CRM v 3.3.1 opensource edition';
+$db='';
+$user='';
+$pass='';
+$app='X2Engine';
 $currency = 'USD';
 $lang = '';
 $timezone = 'UTC';
-$adminEmail='x2crm@x2contact.com';
-$adminPassword='admin';
-$adminUsername='admin';
-$dummyData=True;
+$adminEmail = '';
+$adminPassword = 'admin';
+$adminUsername = 'admin';
+$dummyData = 0;
 $webLeadUrl = '';
-$unique_id='TTTT-TTTTT-TTTTT';
+$unique_id = 'none';
 // Default visible modules (set manually to a comma-delineated list as desired)
 $visibleModules = implode(',',(array) require(dirname(__FILE__).implode(DIRECTORY_SEPARATOR,array('','protected','data','')).'enabledModules.php'));
 // Unit & functional testing configuration (auto-config for phpunit.xml not 
