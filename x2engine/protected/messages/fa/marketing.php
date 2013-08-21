@@ -122,4 +122,8 @@ return array (
 'Email sent'=>'ایمیل فرستاده شد',
 'Header Code'=>'کد سربرگ',
 'Batch completed, sending again in '=>'دسته تکمیل، ارسال دوباره در',
+'A new web lead has been assigned to you: '=>'وب جدید منجر شده است به شما اختصاص داده شده است:',
+'Marketing Automation'=>'اتوماسیون بازاریابی',
+'Contacts for Account Report ('=>'مخابرات برای گزارش حساب (',
+'Mailing for Account Report ('=>'پستی برای گزارش حساب (',
 );

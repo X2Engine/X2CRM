@@ -36,11 +36,11 @@
 
 /**
  * Data provider class
- * 
+ *
  * A child of CActiveDataProvider made for the purposes of getting pagingation to
  * wok properly.
- * 
- * @package X2CRM.components 
+ *
+ * @package X2CRM.components
  */
 class SmartDataProvider extends CActiveDataProvider {
 	public function __construct($modelClass,$config=array()) {
@@ -77,7 +77,7 @@ class SmartDataProvider extends CActiveDataProvider {
 	}
 
 	private $_pagination;
-	
+
 	/**
 	 * Returns the pagination object.
 	 * @return CPagination the pagination object. If this is false, it means the pagination is disabled.
@@ -91,10 +91,10 @@ class SmartDataProvider extends CActiveDataProvider {
 		}
 		return $this->_pagination;
 	}
-	
+
 	/**
 	 * Fetches the data from the persistent data storage.
-	 * 
+	 *
 	 * Modified to always sort by id DESC as well as the chosen sort
 	 * @return array list of data items
 	 */
@@ -118,7 +118,7 @@ class SmartDataProvider extends CActiveDataProvider {
 				$this->model->setDbCriteria($criteria);
 			$sort->applyOrder($criteria);
 		}
-		
+
 		$orderBy = $criteria->order;
 		if(!preg_match('/\bid\b/',$orderBy)) {
 			if(!empty($orderBy))

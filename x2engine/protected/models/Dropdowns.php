@@ -69,6 +69,7 @@ class Dropdowns extends CActiveRecord {
         return array(
             array('name', 'length', 'max' => 250),
             array('options', 'safe'),
+	    array('multi','boolean'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, name, options', 'safe', 'on' => 'search'),
@@ -93,6 +94,7 @@ class Dropdowns extends CActiveRecord {
             'id' => Yii::t('admin', 'ID'),
             'name' => Yii::t('admin', 'Name'),
             'options' => Yii::t('admin', 'Options'),
+	    'multi' => Yii::t('admin','Allow multiple values'),
         );
     }
 
@@ -115,28 +117,41 @@ class Dropdowns extends CActiveRecord {
                 ));
     }
 
-    public static function getItems($id, $translationPack = null){
-        $dropdowns = array();
+    /**
+     * Retrieves items for the dropdown of given id, and whether multiple selection is allowed.
+     * @param integer $id
+     * @param string $translationPack The translation module to use, if applicable
+     * @param bool $multi wheter or not to include the "multi" column for distinguishing multiple selection from single selection
+     */
+    public static function getItems($id, $translationPack = null,$multi = false){
         $data = Yii::app()->db->createCommand()
-                ->select('options')
+                ->select('options,multi')
                 ->from('x2_dropdowns')
-                ->where('id=:id')
-                ->queryScalar(array(':id' => $id));
-        if(isset($data)){
-            $dropdowns = CJSON::decode($data);
-            if(!isset($dropdowns))
-                $dropdowns = array();
+                ->where('id=:id',array(':id' => $id))
+                ->queryRow();
+	if(isset($data)){
+	    $data['options'] = CJSON::decode($data['options']);
+	    $data['options'] = is_array($data['options']) ? $data['options'] : array();
             if(!empty($translationPack)){
-                foreach($dropdowns as &$item){
-                    $item = Yii::t($translationPack, $item);
+                foreach(array_keys($data['options']) as $item){
+                    $data['options'][$item] = Yii::t($translationPack, $data['options'][$item]);
                 }
             }
-        }
-        return $dropdowns;
+        } else
+           $data = array('options' => array(),'multi' => false);
+        return $multi ? $data : $data['options'];
     }
 
     public function getDropdownValue($id, $index){
-        $arr = Dropdowns::getItems($id);
+        $arr = Dropdowns::getItems($id,null,true);
+	if($arr['multi']){
+	    $jdIndex = CJSON::decode($index);
+	    $index = empty($jdIndex) && is_string($index) ? array($index) : $jdIndex;
+	    if(!is_array($index))
+	        $index = array();
+	    return implode(', ',array_map(function($o)use($arr){return isset($arr[$o])?$arr[$o]:$o;},$index));
+	}
+	    
         if(isset($arr[$index])){
             return $arr[$index];
         }else{

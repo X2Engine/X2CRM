@@ -39,12 +39,12 @@ $(document).ready(function(){
 	$("#actions-newCreate-form").submit(function(){
 		if($("#'.CHtml::activeId($actionModel, 'associationType').'").val()!="none"){
 			if($("#'.CHtml::activeId($actionModel, 'associationId').'").val()==""){
-				alert('.Yii::t('actions', "Please enter a valid association").');
+				alert("'.Yii::t('actions', "Please enter a valid association").'");
 				return false;
 			}
 		}
         if($("#'.CHtml::activeId($actionModel, 'actionDescription').'").val()=="" && $("#'.CHtml::activeId($actionModel, 'subject').'").val()==""){
-            alert('.Yii::t('actions', "Please enter a description or subject").');
+            alert("'.Yii::t('actions', "Please enter a description or subject").'");
             return false;
         }
 	}

@@ -93,7 +93,7 @@ $(function() {
 		var contentWidth = $contentDiv.width();
 
 		// figure out what layout mode to use
-		if(!x2.isAndroid && windowWidth <= 1040) {
+		if(!x2.isAndroid && !x2.isIPad && windowWidth <= 1040) {
 			newPageMode = 0;
 		} else {
 			if(windowWidth >= 1040 && window.enableFullWidth) {
@@ -111,8 +111,10 @@ $(function() {
 			if(pageMode == 0) {
 				$body.addClass('no-widgets');
 			} else {
-				 if(!window.fullscreen)
+				 if(!window.fullscreen) {
 					$body.removeClass('no-widgets');
+					$(document).trigger ('showWidgets');
+				}
 			}
 		}
 		
@@ -221,10 +223,12 @@ $(function() {
 		});
 		window.fullscreen = !window.fullscreen;
 
-		if (window.fullscreen)	// hide widgets
+		if (window.fullscreen) {	// hide widgets
 			$body.addClass('no-widgets');
-		else if(pageMode != 0)	// don't bring them back if the page is in compact mode
+		} else if(pageMode != 0) {	// don't bring them back if the page is in compact mode
 			$body.removeClass('no-widgets');
+			$(document).trigger ('showWidgets');
+		}
 		
 		$(window).resize();
 	});

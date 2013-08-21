@@ -35,8 +35,8 @@
  *****************************************************************************************/
 
 /**
- * X2FlowTrigger 
- * 
+ * X2FlowTrigger
+ *
  * @package X2CRM.components.x2flow.triggers
  */
 abstract class BaseTagTrigger extends X2FlowTrigger {
@@ -52,8 +52,9 @@ abstract class BaseTagTrigger extends X2FlowTrigger {
 	}
 
 	public function check(&$params) {
-		$tags = $this->config['options']['tags'];
+		$tags = $this->config['options']['tags']['value'];
 		$tags = is_array($tags) ? $tags : Tags::parseTags($tags);
+        //$params['tags']=array_map(function($item){ return str_replace('#','',$item); },$params['tags']);
 		// must have at least 1 tag in the list:
 		return count(array_intersect($params['tags'],$tags)) > 0 ? $this->checkConditions($params) : false;
 	}

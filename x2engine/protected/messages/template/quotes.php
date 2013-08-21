@@ -58,4 +58,7 @@ return array (
 'invoice'=>'',
 'Quote {id} does not exist. It may have been deleted.'=>'',
 'Date printed/emailed'=>'',
+'Could not save quote due to line item errors:'=>'',
+'Update Quote:'=>'',
+'Update Invoice:'=>'',
 );

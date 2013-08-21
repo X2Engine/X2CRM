@@ -75,8 +75,10 @@ class Admin extends CActiveRecord {
             array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
             array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
-            array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail', 'serviceType' => 'email'),
-            array('serviceCaseEmailAccount', 'setDefaultEmailAccount', 'alias' => 'serviceCaseEmail', 'serviceType' => 'email'),
+            array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail'),
+            array('serviceCaseEmailAccount', 'setDefaultEmailAccount', 'alias' => 'serviceCaseEmail'),
+	    array('webLeadEmailAccount','setDefaultEmailAccount','alias' => 'systemResponseEmail'),
+	    array('emailNotificationAccount','setDefaultEmailAccount','alias'=>'systemNotificationEmail'),
             array('emailSignature', 'length', 'max' => 512),
             array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment,emailDropbox_createContact,emailDropbox_zapLineBreaks,emailDropbox_emptyContact,emailDropbox_logging', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
@@ -105,7 +107,7 @@ class Admin extends CActiveRecord {
             'rrId' => Yii::t('admin', 'Round Robin ID'),
             'leadDistribution' => Yii::t('admin', 'Lead Distribution'),
             'onlineOnly' => Yii::t('admin', 'Online Only'),
-            'emailBulkAccount' => Yii::t('admin', 'Send As'),
+            'emailBulkAccount' => Yii::t('admin', 'Send As (when sending bulk email)'),
             'emailFromName' => Yii::t('admin', 'Sender Name'),
             'emailFromAddr' => Yii::t('admin', 'Sender Email Address'),
             'emailBatchSize' => Yii::t('admin', 'Batch Size'),
@@ -130,7 +132,7 @@ class Admin extends CActiveRecord {
             'workflowBackdateWindow' => Yii::t('admin', 'Workflow Backdate Window'),
             'workflowBackdateRange' => Yii::t('admin', 'Workflow Backdate Range'),
             'workflowBackdateReassignment' => Yii::t('admin', 'Workflow Backdate Reassignment'),
-            'serviceCaseEmailAccount' => Yii::t('admin', 'Send As'),
+            'serviceCaseEmailAccount' => Yii::t('admin', 'Send As (to service requesters)'),
             'serviceCaseFromEmailName' => Yii::t('admin', 'Sender Name'),
             'serviceCaseFromEmailAddress' => Yii::t('admin', 'Sender Email Address'),
             'serviceCaseEmailSubject' => Yii::t('admin', 'Subject'),
@@ -149,6 +151,9 @@ class Admin extends CActiveRecord {
             'properCaseNames' => Yii::t('admin', 'Proper Case Names'),
             'corporateAddress' => Yii::t('admin', 'Corporate Address'),
             'contactNameFormat' => Yii::t('admin', 'Contact Name Format'),
+	    'webLeadEmailAccount' => Yii::t('admin','Send As (to web leads)'),
+	    'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
+
         );
     }
 
@@ -178,9 +183,9 @@ class Admin extends CActiveRecord {
         if($this->$attribute != Credentials::LEGACY_ID){
             $cred = Credentials::model()->findByPk($this->$attribute);
             if($cred)
-                $cred->makeDefault(Credentials::$sysUseId[$params['alias']], $params['serviceType'], false);
+                $cred->makeDefault(Credentials::$sysUseId[$params['alias']], 'email', false);
         } else{
-            Yii::app()->db->createCommand()->delete('x2_credentials_default', 'userId=:uid AND serviceType=:st', array(':uid' => Credentials::$sysUseId[$params['alias']], ':st' => $params['serviceType']));
+            Yii::app()->db->createCommand()->delete('x2_credentials_default', 'userId=:uid AND serviceType=:st', array(':uid' => Credentials::$sysUseId[$params['alias']], ':st' => 'email'));
         }
     }
 

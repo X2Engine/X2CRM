@@ -26,6 +26,7 @@ CREATE TABLE x2_actions	(
 	color					VARCHAR(20),
 	syncGoogleCalendarEventId TEXT,
     sticky                  TINYINT         DEFAULT 0,
+    flowTriggered           TINYINT         DEFAULT 0,
 	INDEX (assignedTo),
 	INDEX (type),
 	INDEX (associationType,associationId)
@@ -58,7 +59,7 @@ VALUES
 ("Actions",	"createDate",			"Create Date",			0,		0,		"dateTime",		0,			0,		NULL,			0,		0,			""),
 ("Actions",	"complete",				"Complete",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
 ("Actions",	"reminder",				"Reminder",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
-("Actions",	"completedBy",			"Completed By",			0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"completedBy",			"Completed By",			0,		0,		"assignedTo",	0,			0,		NULL,			0,		0,			""),
 ("Actions",	"completeDate",			"Date Completed",		0,		0,		"dateTime",		0,			0,		NULL,			0,		0,			""),
 ("Actions",	"lastUpdated",			"Last Updated",			0,		0,		"dateTime",		0,			0,		NULL,			0,		0,			""),
 ("Actions",	"updatedBy",			"Updated By",			0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),

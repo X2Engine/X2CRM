@@ -49,16 +49,16 @@ $menuItems = array(
 $heading = '';
 
 if($this->route=='contacts/contacts/index') {
-	$heading = Yii::t('contacts','All Contacts'); 
+	$heading = Yii::t('contacts','All Contacts');
 	$dataProvider = $model->searchAll();
 	unset($menuItems[0]['url']);
 	unset($menuItems[3]);
 	unset($menuItems[4]);
 } elseif($this->route=='contacts/contacts/myContacts') {
-	$heading = Yii::t('contacts','My Contacts'); 
+	$heading = Yii::t('contacts','My Contacts');
 	$dataProvider = $model->searchMyContacts();
 } elseif($this->route=='contacts/contacts/newContacts') {
-	$heading = Yii::t('contacts','Today\'s Contacts'); 
+	$heading = Yii::t('contacts','Today\'s Contacts');
 	$dataProvider = $model->searchNewContacts();
 }
 
@@ -104,7 +104,7 @@ $('#createList').unbind('click').click(function() {
 });
 $('#addToList').unbind('click').click(function() {
 	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
-	
+
 	var targetList = $('#addToListTarget').val();
 
 	if(selectedItems.length > 0) {
@@ -151,7 +151,7 @@ $(function() {
 
 <div class="search-form" style="display:none">
 <?php $this->renderPartial('_search',array(
-	'model'=>$model, 
+	'model'=>$model,
 	'users'=>User::getNames(),
 )); ?>
 </div><!-- search-form -->
@@ -199,8 +199,7 @@ $this->widget('application.components.X2GridView', array(
 		'name'=>array(
 			'name'=>'name',
 			'header'=>Yii::t('contacts','Name'),
-			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id), array("class" => "contact-name"))',
-			// 'value'=>'$data->getLink()',
+			'value'=>'$data->link',
 			'type'=>'raw',
 		),
 	),

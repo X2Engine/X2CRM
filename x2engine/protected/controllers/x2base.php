@@ -85,38 +85,14 @@ abstract class x2base extends X2Controller {
 
 	public function behaviors() {
 		return array(
-			'CommonControllerBehavior' => array('class' => 'application.components.CommonControllerBehavior')
+			'CommonControllerBehavior' => array('class' => 'application.components.CommonControllerBehavior'),
+            'PermissionsBehavior' => array('class' => 'application.components.permissions.X2ControllerPermissionsBehavior'),
 		);
 	}
 
-	protected function beforeAction($action = null) {
-		// return true;
-		$auth = Yii::app()->authManager;
-		$params = array();
-		$action = $this->getAction()->getId();
-		$exceptions = array('updateStageDetails','deleteList','updateList','userCalendarPermissions','exportList','updateLocation');
-        if(class_exists($this->modelClass)){
-            $model=X2Model::model($this->modelClass);
-        }
-		if(isset($_GET['id']) && !in_array($action,$exceptions) && !Yii::app()->user->isGuest && isset($model)) {
-			if ($model->hasAttribute('assignedTo')) {
-				$model=X2Model::model($this->modelClass)->findByPk($_GET['id']);
-                if($model!==null){
-                    $params['assignedTo']=$model->assignedTo;
-                }
-            }
-		}
-
-		$actionAccess = ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
-		$authItem = $auth->getAuthItem($actionAccess);
-		if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->user->getName() == 'admin')
-			return true;
-		elseif(Yii::app()->user->isGuest){
-			Yii::app()->user->returnUrl = Yii::app()->request->url;
-			$this->redirect($this->createUrl('/site/login'));
-        }else
-			$this->denied();
-	}
+     protected function beforeAction($action = null) {
+         return $this->PermissionsBehavior->beforeAction($action);
+     }
 
 	public function denied() {
 		throw new CHttpException(403, Yii::t('app','You are not authorized to perform this action.'));
@@ -178,13 +154,14 @@ abstract class x2base extends X2Controller {
      *
      * @param mixed $model The model in question (subclass of {@link CActiveRecord} or {@link X2Model}
      * @return boolean
+     * @deprecated
      */
-    public function editPermissions(&$model) {
-        if (Yii::app()->params->isAdmin || !$model->hasAttribute('assignedTo'))
-            return true;
-        else
-            return $model->assignedTo == Yii::app()->user->getName() || in_array($model->assignedTo, Yii::app()->params->groups);
-    }
+//    public function editPermissions(&$model) {
+//        if (Yii::app()->params->isAdmin || !$model->hasAttribute('assignedTo'))
+//            return true;
+//        else
+//            return $model->assignedTo == Yii::app()->user->getName() || in_array($model->assignedTo, Yii::app()->params->groups);
+//    }
 
     /**
      * Determines if we have permission to edit something based on the assignedTo field.
@@ -194,46 +171,7 @@ abstract class x2base extends X2Controller {
      * @return boolean
      */
     public function checkPermissions(&$model, $action = null) {
-
-        $view = false;
-        $edit = false;
-        $module = Yii::app()->controller->module;
-        $visField=X2Model::model('Fields')->findByAttributes(array('modelName'=>get_class($model),'type'=>'visibility'));
-        if(isset($module)){
-            $moduleAdmin = Yii::app()->user->checkAccess(ucfirst($module->name).'Admin');
-        }else{
-            $moduleAdmin = false;
-        }
-        // if we're the admin, visibility is public, there is no visibility/assignedTo, or it's directly assigned to the user, then we're done
-        if ((Yii::app()->params->isAdmin || $moduleAdmin) || !$model->hasAttribute('assignedTo') || ($model->assignedTo == 'Anyone' && ($model->hasAttribute('visibility') && $model->visibility!=0) || !$model->hasAttribute('visibility')) || $model->assignedTo == Yii::app()->user->getName()) {
-
-            $edit = true;
-        } elseif (!isset($visField) || $model->{$visField->fieldName} == 1) {
-            
-            $view = true;
-        } else {
-            if (ctype_digit((string)$model->assignedTo) && !empty(Yii::app()->params->groups)) {  // if assignedTo is numeric, it's a group
-                $edit = in_array($model->assignedTo, Yii::app()->params->groups); // if we're in the assignedTo group we act as owners
-            } elseif ($model->visibility == 2) {  // if record is shared with owner's groups, see if we're in any of those groups
-                $view = (bool) Yii::app()->db->createCommand('SELECT COUNT(*) FROM x2_group_to_user A JOIN x2_group_to_user B
-																ON A.groupId=B.groupId AND A.username=:user1 AND B.username=:user2')
-                                ->bindValues(array(':user1' => $model->assignedTo, ':user2' => Yii::app()->user->getName()))
-                                ->queryScalar();
-            }
-        }
-
-        $view = $view || $edit; // edit permission implies view permission
-
-        if (!isset($action)) // hash of all permissions if none is specified
-            return array('view' => $view, 'edit' => $edit, 'delete' => $edit);
-        elseif ($action == 'view')
-            return $view;
-        elseif ($action == 'edit')
-            return $edit;
-        elseif ($action == 'delete')
-            return $edit;
-        else
-            return false;
+        return $this->PermissionsBehavior->checkPermissions($model, $action);
     }
 
     /**
@@ -1142,35 +1080,6 @@ abstract class x2base extends X2Controller {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
-    }
-
-
-    function formatMenu($array, $params = array()) {
-        $auth = Yii::app()->authManager;
-        foreach ($array as &$item) {
-            if (isset($item['url']) && $item['url'] != '#') {
-                $url = $item['url'][0];
-                if (preg_match('/\//', $url)) {
-                    $pieces = explode('/', $url);
-                    $action = "";
-                    foreach ($pieces as $piece) {
-                        $action.=ucfirst($piece);
-                    }
-                } else {
-                    $action = ucfirst($this->getId() . ucfirst($item['url'][0]));
-                }
-                $authItem = $auth->getAuthItem($action);
-				if(!isset($item['visible']) || $item['visible'] == true)
-					$item['visible'] = Yii::app()->user->checkAccess($action, $params) || is_null($authItem);
-            } else {
-                if (isset($item['linkOptions']['submit'])) {
-                    $action = ucfirst($this->getId() . ucfirst($item['linkOptions']['submit'][0]));
-                    $authItem = $auth->getAuthItem($action);
-                    $item['visible'] = Yii::app()->user->checkAccess($this->getId() . ucfirst($item['linkOptions']['submit'][0]), $params) || is_null($authItem);
-                }
-            }
-        }
-        return $array;
     }
 
     function Array_Search_Preg($find, $in_array, $keys_found = Array()) {

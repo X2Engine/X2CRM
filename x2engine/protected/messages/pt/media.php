@@ -37,4 +37,8 @@ return array (
 'View in Google Drive'=>'Ver no Google Drive',
 'File is hosted on Google Drive'=>'O arquivo está hospedado no Google Drive',
 'File was not sent to server.'=>'O arquivo não foi enviado para o servidor.',
+'Attachments:'=>'Anexos:',
+'Dimensions:'=>'Dimensões:',
+'MIME Info:'=>'Informações MIME:',
+'Google Drive:'=>'Google Drive:',
 );

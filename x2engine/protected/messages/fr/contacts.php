@@ -174,4 +174,7 @@ return array (
 'Are you sure you want to delete all other records?'=>'Etes-vous sûr que vous voulez supprimer tous les autres dossiers?',
 'Are you sure you want to hide this record?'=>'Etes-vous sûr que vous voulez cacher ce disque?',
 'Are you sure you want to delete this record?'=>'Etes-vous sûr de vouloir supprimer ce dossier?',
+'Your case number is: '=>'Votre numéro de dossier est le suivant:',
+'Website: '=>'Site Web:',
+'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'AVERTISSEMENT: chargement trop nombreux enregistrements sur cette page peut attacher le serveur de manière significative. Etes-vous sûr de vouloir continuer?',
 );

@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -104,7 +103,7 @@ class Profile extends CActiveRecord {
             array('timeZone', 'length', 'max' => 100),
             array('widgets, tagLine, emailAddress', 'length', 'max' => 255),
             array('widgetOrder', 'length', 'max' => 512),
-	    array('emailSignature','safe'),
+            array('emailSignature', 'safe'),
             array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
@@ -437,7 +436,7 @@ class Profile extends CActiveRecord {
             else
                 return CHtml::link(Yii::t('app', '{name}\'s feed', array('{name}' => $this->fullName)), array($this->baseRoute.'/'.$this->id));
         } else{
-			return CHtml::link($this->fullName,Yii::app()->externalBaseUrl.'/index.php'.$this->baseRoute.'/'.$this->id);
+            return CHtml::link($this->fullName, Yii::app()->externalBaseUrl.'/index.php'.$this->baseRoute.'/'.$this->id);
         }
     }
 
@@ -652,7 +651,7 @@ class Profile extends CActiveRecord {
      * @return array
      */
     function initLayout(){
-        return array(
+        $layout = array(
             'left' => array(),
             'center' => array(
                 'ActionHistoryChart' => array(
@@ -710,7 +709,7 @@ class Profile extends CActiveRecord {
                     'minimize' => false,
                 ),
                 'MediaBox' => array(
-                    'title' => 'Media',
+                    'title' => 'Files',
                     'minimize' => false,
                 ),
                 'DocViewer' => array(
@@ -729,42 +728,50 @@ class Profile extends CActiveRecord {
             'hidden' => array(),
             'hiddenRight' => array(), // x2temp, should be merged into 'hidden' when widgets can be placed anywhere
         );
+        if(Yii::app()->params->edition == 'pro'){
+            if(file_exists('protected/config/proWidgets.php')){
+                foreach(include('protected/config/proWidgets.php') as $loc=>$data){
+                    $layout[$loc] = array_merge($layout[$loc],$data);
+                }
+            }
+        }
+        return $layout;
     }
 
-	/* 
-	Private helper function to update users layout elements to match the set of layout
-	elements specified in initLayout ().
-	*/
-	private function addRemoveCenterLayoutElements ($layout, $initLayout) {
+    /*
+      Private helper function to update users layout elements to match the set of layout
+      elements specified in initLayout ().
+     */
 
-		$changed = false;
+    private function addRemoveCenterLayoutElements($layout, $initLayout){
 
-		$layoutCenterWidgets = array_merge ($layout['center'], $layout['hidden']);
-		$initLayoutCenterWidgets = array_merge ($initLayout['center'], $initLayout['hidden']);
+        $changed = false;
 
-		$arrayDiff = 
-			array_diff (array_keys ($initLayoutCenterWidgets), array_keys ($layoutCenterWidgets));
-		foreach ($arrayDiff as $elem) {
-			//$layout['center'][$elem] = $initLayout['center'][$elem];
-			$layout['center'] = array ($elem => $initLayout['center'][$elem]) + $layout['center']; // unshift key-value pair
-			$changed = true;
-		}
-		$arrayDiff = 
-			array_diff (array_keys ($layoutCenterWidgets), array_keys ($initLayoutCenterWidgets));
-		foreach ($arrayDiff as $elem) {
-			if ($layout['center'][$elem])
-				unset ($layout['center'][$elem]);
-			else if ($layout['hidden'][$elem])
-				unset ($layout['hidden'][$elem]);
-			$changed = true;
-		}
+        $layoutCenterWidgets = array_merge($layout['center'], $layout['hidden']);
+        $initLayoutCenterWidgets = array_merge($initLayout['center'], $initLayout['hidden']);
 
-		if ($changed) {
+        $arrayDiff =
+                array_diff(array_keys($initLayoutCenterWidgets), array_keys($layoutCenterWidgets));
+        foreach($arrayDiff as $elem){
+            //$layout['center'][$elem] = $initLayout['center'][$elem];
+            $layout['center'] = array($elem => $initLayout['center'][$elem]) + $layout['center']; // unshift key-value pair
+            $changed = true;
+        }
+        $arrayDiff =
+                array_diff(array_keys($layoutCenterWidgets), array_keys($initLayoutCenterWidgets));
+        foreach($arrayDiff as $elem){
+            if($layout['center'][$elem])
+                unset($layout['center'][$elem]);
+            else if($layout['hidden'][$elem])
+                unset($layout['hidden'][$elem]);
+            $changed = true;
+        }
+
+        if($changed){
             Yii::app()->params->profile->layout = json_encode($layout);
             Yii::app()->params->profile->update(array('layout'));
-		}
-
-	}
+        }
+    }
 
     /**
      * Returns the layout for the user's widgets as an associative array.
@@ -774,7 +781,7 @@ class Profile extends CActiveRecord {
     public function getLayout(){
         $layout = Yii::app()->params->profile->layout;
 
-		$initLayout = $this->initLayout(); 
+        $initLayout = $this->initLayout();
 
         if(!$layout){ // layout hasn't been initialized?
             $layout = $initLayout;
@@ -782,7 +789,7 @@ class Profile extends CActiveRecord {
             Yii::app()->params->profile->update(array('layout'));
         }else{
             $layout = json_decode($layout, true); // json to associative array
-			$this->addRemoveCenterLayoutElements ($layout, $initLayout);
+            $this->addRemoveCenterLayoutElements($layout, $initLayout);
         }
 
         return $layout;

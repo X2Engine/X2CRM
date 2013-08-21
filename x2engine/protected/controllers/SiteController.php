@@ -59,6 +59,12 @@ class SiteController extends x2base {
         return true;
     }
 
+    public function behaviors() {
+        return array_merge(parent::behaviors(),array(
+            'Updater' => array('class'=>'application.components.UpdaterBehavior')
+        ));
+    }
+
     public function accessRules(){
         return array(
             array('allow',
@@ -221,10 +227,11 @@ class SiteController extends x2base {
                     $users = explode(",", $users);
                     $userFilter = $users;
                     $users = '"'.implode('","', $users).'"';
-                    if($users != "")
+                    if($users != "") {
                         $userCondition = " AND (user NOT IN (".$users.")";
-                    else
+                    }else{
                         $userCondition = "(";
+					}
                     if(strpos($users, 'Anyone') === false){
                         $userCondition.=" OR user IS NULL)";
                     }else{
@@ -327,13 +334,6 @@ class SiteController extends x2base {
                     ));
             $_SESSION['stickyFlag'] = false;
 
-            $chartSettingsDataProvider = new CActiveDataProvider('ChartSetting', array(
-                        'criteria' => array(
-                            'condition' => 'userId='.Yii::app()->user->id,
-                            'order' => 'name ASC'
-                        )
-                    ));
-
             $usersDataProvider = new CActiveDataProvider('User', array(
                         'criteria' => array(
 							'condition' => 'status=1',
@@ -348,8 +348,7 @@ class SiteController extends x2base {
                 'firstEventId' => !empty($firstId) ? $firstId : 0,
                 'lastTimestamp' => $lastTimestamp,
                 'stickyDataProvider' => $stickyDataProvider,
-                'usersDataProvider' => $usersDataProvider,
-                'chartSettingsDataProvider' => $chartSettingsDataProvider,
+                'usersDataProvider' => $usersDataProvider
             ));
         }else{
             $this->redirect('login');
@@ -617,11 +616,9 @@ class SiteController extends x2base {
 
     public function actionBroadcastEvent($id, $email, $notify, $users){
         $event = X2Model::model('Events')->findByPk($id);
-		print_r (array ($email, $notify));
         if(isset($event)){
             $users = Profile::model()->findAllByPk(CJSON::decode($users));
             if($email === 'true'){ // broadcast via email
-				print ('emailing');
                 // Check if user has set a default account for email delivery
                 $subject = "Event Broadcast";
                 $fromName = Yii::app()->params->profile->fullName;
@@ -634,7 +631,6 @@ class SiteController extends x2base {
                 $this->sendUserEmail($recipients, $subject, $body);
             }
             if($notify === 'true'){ // broadcast via notifation
-				print ('notifying');
                 $time = time();
                 foreach($users as $user){
                     $notif = new Notification;
@@ -647,7 +643,6 @@ class SiteController extends x2base {
                     $notif->save();
                 }
             }
-			exit ();
         }
     }
 
@@ -2121,16 +2116,16 @@ class SiteController extends x2base {
             $relationship->secondType = $_POST['RelationshipModelName'];
             $relationship->secondId = $_POST['RelationshipModelId'];
             $relationship->save();
-            if($relationshipModelName == "Contacts"){
-                $results = Yii::app()->db->createCommand("SELECT * from x2_relationships WHERE (firstType='Contacts' AND firstId=$relationshipModelId AND secondType='Accounts') OR (secondType='Contacts' AND secondId=$relationshipModelId AND firstType='Accounts')")->queryAll();
-                if(sizeof($results) == 1){
-                    $model = Contacts::model()->findByPk($relationshipModelId);
-                    if($model){
-                        $model->company = $modelId;
-                        $model->update();
-                    }
-                }
-            }
+//            if($relationshipModelName == "Contacts"){
+//                $results = Yii::app()->db->createCommand("SELECT * from x2_relationships WHERE (firstType='Contacts' AND firstId=$relationshipModelId AND secondType='Accounts') OR (secondType='Contacts' AND secondId=$relationshipModelId AND firstType='Accounts')")->queryAll();
+//                if(sizeof($results) == 1){
+//                    $model = Contacts::model()->findByPk($relationshipModelId);
+//                    if($model){
+//                        $model->company = $modelId;
+//                        $model->update();
+//                    }
+//                }
+//            }
             echo "success";
             Yii::app()->end();
         }
@@ -2260,59 +2255,6 @@ class SiteController extends x2base {
         }else{
             parent::create($model, $oldAttributes, '0');
         }
-    }
-
-    /**
-     * Connects to one of the X2 update servers and sets Yii::app()->session['versionCheck']
-     * to true (up to date) or false (not up to date). Also sets Yii::app()->session['newVersion']
-     * to the latest version if not up to date.
-     */
-    protected function checkUpdates(){
-        if(ini_get('allow_url_fopen') != 1){
-            Yii::app()->session['versionCheck'] = true;
-            return;
-        }
-
-        $context = stream_context_create(array(
-            'http' => array('timeout' => 2)  // set request timeout in seconds
-                ));
-        $updateSources = array('https://x2planet.com/installs/updates/versionCheck');
-        if(in_array(Yii::app()->params->admin['edition'], array('opensource', Null))){
-            $updateSources = array(
-                'https://x2planet.com/updates/versionCheck.php',
-                'http://x2base.com/updates/versionCheck.php'
-            );
-        }
-        $newVersion = '';
-
-        foreach($updateSources as $url){
-            $sourceVersion = FileUtil::getContents($url, 0, $context);
-            if($sourceVersion !== false){
-                $newVersion = $sourceVersion;
-                break;
-            }
-        }
-        if(empty($newVersion))
-            $newVersion = Yii::app()->params->version;
-        /*
-          // check X2Planet for updates
-          $x2planetVersion = @file_get_contents('https://x2planet.com/updates/versionCheck.php',0,$context);
-          if($x2planetVersion !== false)
-          $newVersion = $x2planetVersion;
-          else {
-          // try X2Base if that didn't work
-          $x2baseVersion = @file_get_contents('http://x2base.com/updates/versionCheck.php',0,$context);
-          if($x2baseVersion !== false)
-          $newVersion=$x2baseVersion;
-          else
-          $newVersion=Yii::app()->params->version;
-          } */
-        $unique_id = Yii::app()->params->admin['unique_id'];
-        if(version_compare($newVersion, Yii::app()->params->version) > 0 && !in_array($unique_id, array('none', Null))){ // if the latest version is newer than our version
-            Yii::app()->session['versionCheck'] = false;
-            Yii::app()->session['newVersion'] = $newVersion;
-        } else
-            Yii::app()->session['versionCheck'] = true;
     }
 
     /**
@@ -2487,55 +2429,34 @@ class SiteController extends x2base {
         }
     }
 
-	public static function getChartData ($startTimestamp, $endTimestamp){
-        $command = Yii::app()->db->createCommand()
-                ->select(
-                        'type, timestamp, COUNT(type) AS count,'.
-                        'YEAR(FROM_UNIXTIME(timestamp)) AS year,'.
-                        'MONTH(FROM_UNIXTIME(timestamp)) AS month,'.
-                        'WEEK(FROM_UNIXTIME(timestamp)) AS week,'.
-                        'DAY(FROM_UNIXTIME(timestamp)) AS day,'.
-                        'HOUR(from_unixtime(timestamp)) as hour')
-                ->from('x2_events');
-        $command->where(
-                'timestamp BETWEEN :startTimestamp AND :endTimestamp', 
-				array('startTimestamp' => $startTimestamp, 'endTimestamp' => $endTimestamp));
-        $events = $command->group(
-                        'HOUR(FROM_UNIXTIME(timestamp)),'.
-                        'DAY(FROM_UNIXTIME(timestamp)),'.
-                        'WEEK(FROM_UNIXTIME(timestamp)),'.
-                        'MONTH(FROM_UNIXTIME(timestamp)),'.
-                        'YEAR(FROM_UNIXTIME(timestamp)),'.
-                        'type, timestamp')
-                ->order('year DESC, month DESC, week DESC, day DESC, hour desc')
-                ->queryAll();
-		return $events;
-	}
-
     function actionGetEventsBetween($startTimestamp, $endTimestamp){
-        echo CJSON::encode(self::getChartData ($startTimestamp, $endTimestamp));
+        echo CJSON::encode(X2Chart::getEventsData ($startTimestamp, $endTimestamp));
     }
 
     /**
       Create a new chart setting record in the chart settings table.
       Called via ajax from the chart setting creation dialog.
      */
-    function actionCreateChartSetting($chartSettingAttributes){
-        $chartSetting = new ChartSetting;
-		$chartSettingAttributesDec = CJSON::decode ($chartSettingAttributes);
-		if (is_array ($chartSettingAttributesDec) &&
-			array_key_exists ('settings', $chartSettingAttributesDec) &&
-			array_key_exists ('name', $chartSettingAttributesDec)) {
-			$chartSetting->settings = $chartSettingAttributesDec['settings'];
-			$chartSetting->name = $chartSettingAttributesDec['name'];
-			$chartSetting->userId = Yii::app()->user->id;
-			if($chartSetting->validate()){
-				if($chartSetting->save()){
-					return;
+    function actionCreateChartSetting(){
+        if (isset ($_POST['chartSettingAttributes'])){
+			$chartSettingAttributes = $_POST['chartSettingAttributes'];
+	        $chartSetting = new ChartSetting;
+			if (is_array ($chartSettingAttributes) &&
+				array_key_exists ('settings', $chartSettingAttributes) &&
+				array_key_exists ('chartType', $chartSettingAttributes) &&
+				array_key_exists ('name', $chartSettingAttributes)) {
+				$chartSetting->settings = $chartSettingAttributes['settings'];
+				$chartSetting->name = $chartSettingAttributes['name'];
+				$chartSetting->chartType = $chartSettingAttributes['chartType'];
+				$chartSetting->userId = Yii::app()->user->id;
+				if($chartSetting->validate()){
+					if($chartSetting->save()){
+						return;
+					}
 				}
+				echo CJSON::encode($chartSetting->getErrors());
+				return;
 			}
-			echo CJSON::encode($chartSetting->getErrors());
-			return;
 		}
 		echo CJSON::encode(array ('failure'));
     }
@@ -2548,13 +2469,48 @@ class SiteController extends x2base {
         $chartSetting = ChartSetting::model()->findByAttributes(array(
             'userId' => Yii::app()->user->id,
             'name' => $chartSettingName
-                ));
+        ));
         if(!empty($chartSetting) && $chartSetting->delete()){
             echo 'success';
         }else{
             echo 'failure';
         }
     }
+
+    /**
+     * Connects to the X2 update servers and sets Yii::app()->session['versionCheck']
+     * to true (up to date) or false (not up to date). Also sets Yii::app()->session['newVersion']
+     * to the latest version if not up to date.
+     *//*
+    protected function checkUpdates(){
+        if(!file_exists($secImage = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','images',base64_decode(Yii::app()->params->updaterSecurityImage)))))
+	    return;
+        $i = Yii::app()->params->admin->unique_id;
+        $v = Yii::app()->params->version;
+        $e = Yii::app()->params->admin->edition;
+        $context = stream_context_create(array(
+            'http' => array('timeout' => 4)  // set request timeout in seconds
+        ));
+
+        $updateCheckUrl = 'https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v'));
+        $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
+        if($securityKey === false)
+            return;
+        $h = hash('sha512',base64_encode(file_get_contents($secImage)).$securityKey);
+        $n = null;
+        if(!($e == 'opensource' || empty($e)))
+            $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
+        
+        $newVersion = FileUtil::getContents('https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v','h','n')),0,$context);
+        if(empty($newVersion))
+            return;
+
+        if(version_compare($newVersion, $v) > 0 && !in_array($i, array('none', Null))){ // if the latest version is newer than our version and updates are enabled
+            Yii::app()->session['versionCheck'] = false;
+            Yii::app()->session['newVersion'] = $newVersion;
+        } else
+            Yii::app()->session['versionCheck'] = true;
+    }*/
 
 }
 

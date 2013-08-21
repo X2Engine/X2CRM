@@ -113,4 +113,6 @@ return array (
 'Post Type'=>'הודעה סוג',
 'Create Notification?'=>'צור הודעה?',
 'User Active?'=>'משתמש פעיל?',
+'Tags (optional)'=>'תגיות (אופציונלי)',
+'seconds (recommended for formulas only)'=>'שניות (מומלץ לנוסחות בלבד)',
 );

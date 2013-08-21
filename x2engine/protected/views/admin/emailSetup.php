@@ -76,15 +76,12 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
 <div class="span-16">
     <div class="page-title"><h2><?php echo Yii::t('admin', 'Email Server Configuration'); ?></h2></div>
     <div class="form">
-        <?php echo Yii::t('admin', 'Ready to send email? We need some information about your mail server.'); ?>
-
         <?php
         $form = $this->beginWidget('CActiveForm', array(
             'id' => 'email-setup',
             'enableAjaxValidation' => false,
                 ));
         ?>
-        <br /><hr />
         <h4><?php echo Yii::t('admin', 'Outbound Email Server'); ?></h4>
         <p><?php
         echo Yii::t('admin', 'Define how the system sends email by default.').'<br /><br />';
@@ -211,6 +208,18 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
             <?php echo Yii::t('admin', 'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'); ?>
         </div>
 
+	<br /><hr />
+	<h4><?php echo Yii::t('admin','Notification Email Settings'); ?></h4>
+	<p><?php echo Yii::t('admin','Configure how notification emails are sent.');?></p>
+	<div class="row">
+		<div class="cell">
+			<?php
+			echo $form->labelEx($model,'emailNotificationAccount'); 
+			echo Credentials::selectorField($model,'emailNotificationAccount','email',Credentials::$sysUseId['systemNotificationEmail']);
+			?>
+		</div>
+	</div>
+
         <br /><hr />
         <h4><?php echo Yii::t('admin', 'Service Case Email Settings'); ?></h4>
         <p><?php echo Yii::t('admin', 'Configure how X2CRM sends email when responding to new service case requests.'); ?></p>
@@ -245,6 +254,13 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
                 <br>
                 <?php echo Yii::t('admin', 'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.'); ?>
             </div>
+        </div>
+	<?php
+	if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'views','admin','webLeadResponseEmailSettings.php')))){
+		$this->renderPartial('webLeadResponseEmailSettings',compact('form','model'));
+	}
+	
+	?>
         </div>
         <br>
 

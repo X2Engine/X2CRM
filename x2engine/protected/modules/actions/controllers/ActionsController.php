@@ -366,6 +366,7 @@ class ActionsController extends x2base {
             $model->dueDate = Formatter::parseDateTime($model->dueDate);
 
             if($_POST['SelectedTab'] == 'new-event'){
+                $model->disableBehavior('changelog');
                 $event = new Events;
                 $event->type = 'calendar_event';
                 $event->visibility = $model->visibility;
@@ -378,12 +379,12 @@ class ActionsController extends x2base {
                     $model->completeDate = $model->dueDate;
                 }
             }else{
-                $event = new Events;
-                $event->associationType = 'Actions';
-                $event->type = 'record_create';
-                $event->user = Yii::app()->user->getName();
-                $event->visibility = $model->visibility;
-                $model->completeDate = null;
+//                $event = new Events;
+//                $event->associationType = 'Actions';
+//                $event->type = 'record_create';
+//                $event->user = Yii::app()->user->getName();
+//                $event->visibility = $model->visibility;
+//                $model->completeDate = null;
             }
 
 
@@ -410,7 +411,6 @@ class ActionsController extends x2base {
 
             if($_POST['SelectedTab'] == 'log-a-call' || $_POST['SelectedTab'] == 'new-comment'){
 
-                $model->createDate = time();
                 $model->dueDate = time();
                 $model->completeDate = time();
                 $model->complete = 'Yes';
@@ -422,8 +422,14 @@ class ActionsController extends x2base {
                 else
                     $model->type = 'note';
             }
-            if($model->type == 'call')
+            if($model->type == 'call'){
+                $event = new Events;
+                $event->associationType = 'Actions';
+                $event->type = 'record_create';
+                $event->user = Yii::app()->user->getName();
+                $event->visibility = $model->visibility;
                 $event->subtype = 'call';
+            }
             // save model
             $model->createDate = time();
 
@@ -435,6 +441,9 @@ class ActionsController extends x2base {
                 if(isset($event)){
                     $event->associationId = $model->id;
                     $event->save();
+                }
+                if(!$model->asa('changelog')){
+                    X2Flow::trigger('RecordCreateTrigger',array('model'=>$model));
                 }
                 $model->syncGoogleCalendar('create');
             }else{

@@ -122,4 +122,8 @@ return array (
 'Email sent'=>'דוא&quot;ל שנשלח',
 'Header Code'=>'קוד הכותרת',
 'Batch completed, sending again in '=>'אצווה הושלם, שולח שוב ב',
+'A new web lead has been assigned to you: '=>'הובלה אינטרנט חדשה כבר הוקצתה לך:',
+'Marketing Automation'=>'שיווק אוטומציה',
+'Contacts for Account Report ('=>'אנשי קשר לדו&quot;ח חשבון (',
+'Mailing for Account Report ('=>'דיוור לדו&quot;ח חשבון (',
 );

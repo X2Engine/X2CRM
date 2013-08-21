@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
 $menuItems = array(
             array('label' => Yii::t('app', 'Main Menu'), 'url' => array('site/home/')),
         );
@@ -58,11 +59,11 @@ $model->lastName = $attributeLabels['lastName'];
 ?>
 
 <div class="form thin">
-	<div class="row">
-		<?php echo $form->textField($model,'firstName',array('maxlength'=>40,'tabindex'=>100,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;width:275px;')); ?>
+	<div class="row x2-mobile-narrow-input-row">
+		<?php echo $form->textField($model,'firstName',array('maxlength'=>40,'tabindex'=>100,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
 		<?php echo $form->error($model,'firstName'); ?>
 
-		<?php echo $form->textField($model,'lastName',array('maxlength'=>40,'tabindex'=>101,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;width:275px;')); ?>
+		<?php echo $form->textField($model,'lastName',array('maxlength'=>40,'tabindex'=>101,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
 		<?php echo $form->error($model,'lastName'); ?>
 	</div>
 </div>

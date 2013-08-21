@@ -113,4 +113,6 @@ return array (
 'Post Type'=>'Post Type',
 'Create Notification?'=>'Crear Notificación?',
 'User Active?'=>'Activo usuario?',
+'Tags (optional)'=>'Etiquetas (opcional)',
+'seconds (recommended for formulas only)'=>'segundos (recomendado para sólo fórmulas)',
 );

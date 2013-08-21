@@ -25,4 +25,5 @@ return array (
 'Create a new Account associated with this Opportunity.'=>'',
 'Create a new Opportunity associated with this Opportunity.'=>'',
 'Opportunities Stage'=>'',
+'Relationships for Contact: '=>'',
 );

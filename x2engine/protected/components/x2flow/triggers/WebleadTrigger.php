@@ -35,21 +35,36 @@
  *****************************************************************************************/
 
 /**
- * X2FlowTrigger 
- * 
+ * X2FlowTrigger
+ *
  * @package X2CRM.components.x2flow.triggers
  */
 class WebleadTrigger extends BaseTagTrigger {
-	public $title = 'New Web Lead';
-	public $info = 'Triggers when a new contact fills out your web lead capture form.';
-	
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'modelClass' => 'Contacts',
-			'options' => array(
-				array('name'=>'tags','label'=>Yii::t('studio','Tags'),'operators'=>array('=','list','notList'),'optional'=>1),
-			));
-	}
+
+    public $title = 'New Web Lead';
+    public $info = 'Triggers when a new contact fills out your web lead capture form.';
+
+    public function paramRules(){
+        return array(
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
+            'modelClass' => 'Contacts',
+            'options' => array(
+                array('name' => 'tags', 'label' => Yii::t('studio', 'Tags (optional)'), 'operators' => array('=', 'list', 'notList'), 'optional' => 1),
+                ));
+    }
+
+    public function check(&$params){
+        $tagOptions = $this->config['options']['tags'];
+        $tags = $tagOptions['value'];
+        $tags = is_array($tags) ? $tags : Tags::parseTags($tags);
+        if(!empty($tags)){
+            //$params['tags']=array_map(function($item){ return str_replace('#','',$item); },$params['tags']);
+            // must have at least 1 tag in the list:
+            return count(array_intersect($params['tags'], $tags)) > 0 ? $this->checkConditions($params) : false;
+        }else{
+            return true;
+        }
+    }
+
 }

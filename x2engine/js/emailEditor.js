@@ -135,7 +135,7 @@ function createCKEditor(editorId,editorConfig,callback) {
             // filebrowserBrowseUrl: '/browser/browse/type/all',
             // filebrowserUploadUrl: '/browser/upload/type/all',
             // filebrowserImageBrowseUrl: '/browser/browse/type/image',
-            filebrowserImageUploadUrl: yii.baseUrl+'/media/ajaxUpload',
+            filebrowserImageUploadUrl: yii.scriptUrl+'/media/ajaxUpload',
             filebrowserWindowWidth: 800,
             filebrowserWindowHeight: 500
         },editorConfig)

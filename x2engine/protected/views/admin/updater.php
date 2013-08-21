@@ -169,7 +169,7 @@ function enactChanges() {
 			$('#update-text').text(scenarioTitle+' complete.');
 			exitUpdater(data);
 		} else {
-			if(data.locked != false){
+			if(typeof data.locked != 'undefined' ? data.locked : false){
 				// Display the lock message and exit immediately; another call is in progress.
 				// This is a special non-interrupting type of error that should not populate the 
 				// error messages box.

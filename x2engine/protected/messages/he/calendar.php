@@ -164,4 +164,5 @@ return array (
 'Google Calendar Name'=>'שם לוח השנה של Google',
 'Once'=>'פעם',
 'Yearly'=>'שנתי',
+'Shared Calendar:'=>'לוח שנה משותפת:',
 );

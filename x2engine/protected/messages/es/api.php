@@ -9,4 +9,6 @@ return array (
 'Request type not supported for this action.'=>'Solicite tipo no soportado por su acción.',
 'Tags not added.'=>'Etiquetas no añadidas.',
 'Error'=>'Error',
+'Cannot delete; no parameters specified for finding a relationship record to delete.'=>'No se puede eliminar, sin parámetros especificados para la búsqueda de una relación de registros que desea eliminar.',
+'No relationships deleted; none were found matching specfied parameters.'=>'No hay relaciones suprimen no se encontró ninguno que emparejan parámetros specfied.',
 );

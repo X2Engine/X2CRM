@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -39,29 +38,75 @@ require_once 'protected/extensions/google-api-php-client/src/contrib/Google_Driv
 require_once 'protected/extensions/google-api-php-client/src/contrib/Google_Oauth2Service.php';
 require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
 
+/**
+ * Wrapper class for interaction with Google's API and authentication methods.
+ * This is designed to handle all user authentication and returning of Google API
+ * Client classes in an easy to use manner. Much of the code is from Google's stock
+ * PHP API examples, but it has been modified to be usable with our software and
+ * as such some of the comments/classes are Google developers' not mine.
+ */
 class GoogleAuthenticator {
 
+    /**
+     * Client ID of the Google API Project
+     * @var string
+     */
     public $clientId = '';
+
+    /**
+     * Client secret of the Google API Project
+     * @var string
+     */
     public $clientSecret = '';
+
+    /**
+     * Redirect URI for the authentication request
+     * @var string
+     */
     public $redirectUri = '';
+
+    /**
+     * A list of scopes required by the Google API to use for Google Integration
+     * within the software. This list defines the permissions that Google will ask
+     * for when a user is authenticating with them and X2.
+     * @var array
+     */
     public $scopes = array(
-        'https://www.googleapis.com/auth/plus.login',
-        'https://www.googleapis.com/auth/drive',
-        'https://www.googleapis.com/auth/userinfo.email',
-        'https://www.googleapis.com/auth/userinfo.profile',
-        'https://www.googleapis.com/auth/calendar',
-        'https://www.googleapis.com/auth/calendar.readonly',
+        'https://www.googleapis.com/auth/plus.login', // Google+ login required to login with Google
+        'https://www.googleapis.com/auth/drive', // Drive required for drive integration
+        'https://www.googleapis.com/auth/userinfo.email', // Email required for Google login
+        'https://www.googleapis.com/auth/userinfo.profile', // Basic profile info required for Google login
+        'https://www.googleapis.com/auth/calendar', // Calendar required for Calendar sync
+        'https://www.googleapis.com/auth/calendar.readonly', // Read only Calendar required for Calendar list
     );
+
+    /**
+     * An array of errors to be returned or displayed in case something goes wrong.
+     * @var array
+     */
     private $_errors;
+
+    /**
+     * Master control variable that prevents most methods being called unless
+     * Google Integration is enabled in the admin settings.
+     * @var boolean
+     */
     private $_enabled;
 
+    /**
+     * Constructor that sets up the Authenticator with all the required data to
+     * connect to Google properly.
+     * @param string $clientId Optional to override the admin settings for this property
+     * @param string $clientSecret Optional to override the admin setting for this property
+     * @param string $redirectUri Define a redirect if the user needs to authenticate again. Defaults to the URL of the current request.
+     */
     public function __construct($clientId = null, $clientSecret = null, $redirectUri = null){
-        $this->_enabled = Yii::app()->params->admin->googleIntegration;
+        $this->_enabled = Yii::app()->params->admin->googleIntegration; // Check if integration is enabled in the first place
         if($this->_enabled){
-            $this->clientId = $clientId;
+            $this->clientId = $clientId; // Set properties to the provided data/
             $this->clientSecret = $clientSecret;
             $this->redirectUri = $redirectUri;
-            if(empty($this->clientId)){
+            if(empty($this->clientId)){ // If the data provided was empty, set it to what's configured in the admin settings.
                 $this->clientId = Yii::app()->params->admin->googleClientId;
             }
             if(empty($this->clientSecret)){
@@ -90,7 +135,7 @@ class GoogleAuthenticator {
     /**
      * Store OAuth 2.0 credentials in the application's database.
      *
-     * @param String $userId User's ID.
+     * @param Integer $userId User's ID.
      * @param String $credentials Json representation of the OAuth 2.0 credentials to
       store.
      */
@@ -243,6 +288,11 @@ class GoogleAuthenticator {
         }
     }
 
+    /**
+     * Sometimes, terrible things happen. When an auth error occurs or a problem
+     * with the credentials arises, flush every place they're stored immediately
+     * to stop any errors badly provided credentials may be causing.
+     */
     public function flushCredentials(){
         if($this->_enabled){
             unset($_SESSION['access_token']);
@@ -256,6 +306,15 @@ class GoogleAuthenticator {
         }
     }
 
+    /**
+     * This function is used to get the current access token. This function is
+     * vital to the class as it allows any code using the Authenticator to discover
+     * if a connection to Google has been made and if any actions connecting to
+     * Google can procede. This function is called in a large number of places
+     * as a gate to continuing integration tasks.
+     * @param Integer $userId The ID of the current User
+     * @return String|boolean Returns either the JSON encoded access token, or false on failure
+     */
     public function getAccessToken($userId = null){
         if($this->_enabled){
             $client = new Google_Client();
@@ -264,7 +323,7 @@ class GoogleAuthenticator {
             if(empty($userId)){
                 $userId = Yii::app()->user->getId();
             }
-            if(isset($_SESSION['access_token'])){
+            if(isset($_SESSION['access_token'])){ // The access token is already stored in the session, return it.
 //            $token=json_decode($_SESSION['access_token']);
 //            $reqUrl = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token='.
 //                    $token->access_token;
@@ -276,26 +335,26 @@ class GoogleAuthenticator {
                 return $_SESSION['access_token'];
 //            }
             }
-            if(!empty($userId) && !is_null($this->getStoredCredentials($userId))){
+            if(!empty($userId) && !is_null($this->getStoredCredentials($userId))){ // We found a stored refresh token
                 $refreshToken = $this->getStoredCredentials($userId);
                 try{
-                    $client->refreshToken($refreshToken);
-                    $credentials = $client->getAccessToken();
-                    $_SESSION['token'] = $credentials;
+                    $client->refreshToken($refreshToken); // Try to get an access token based on the stored refresh token
+                    $credentials = $client->getAccessToken(); // No recursion, this is a different function
+                    $_SESSION['token'] = $credentials; // Set credentials as a session variable for quicker lookup.
                     $_SESSION['access_token'] = $credentials;
                     return $credentials;
                 }catch(Google_AuthException $e){
                     $profile = Yii::app()->params->profile;
-                    if(isset($profile)){
+                    if(isset($profile)){ // If there was an error using the refresh token, remove it from the database so it can't cause issues.
                         $profile->googleRefreshToken = null;
                         $profile->update(array('googleRefreshToken'));
                     }
                     return false;
                 }
             }
-            if(isset($_GET['code'])){
+            if(isset($_GET['code'])){ // There is a Google auth code in the GET request header.
                 try{
-                    $credentials = $this->getCredentials($_GET['code'], null);
+                    $credentials = $this->getCredentials($_GET['code'], null); // Attempt to exchange the auth code for an access token.
                     $_SESSION['token'] = $credentials;
                     $_SESSION['access_token'] = $credentials;
                     return $credentials;
@@ -304,7 +363,7 @@ class GoogleAuthenticator {
                 }
             }
         }
-        return false;
+        return false; // No token was ever returned due to data not being set or exceptions. Return false to indicate a failure.
     }
 
     public function getDriveService(){
@@ -356,6 +415,8 @@ class GoogleAuthenticator {
     }
 
 }
+
+// All code below this point is stock Google code which I have not modified.
 
 /**
  * Exception thrown when an error occurred while retrieving credentials.

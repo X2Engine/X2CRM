@@ -174,4 +174,7 @@ return array (
 'Are you sure you want to delete all other records?'=>'あなたは、他のすべてのレコードを削除してもよろしいですか？',
 'Are you sure you want to hide this record?'=>'あなたは、このレコードを非表示にしてもよろしいですか？',
 'Are you sure you want to delete this record?'=>'あなたはこのレコードを削除してもよろしいですか？',
+'Your case number is: '=>'あなたのケース番号は、次のとおりです。',
+'Website: '=>'ウェブサイト：',
+'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'警告：このページではあまりにも多くのレコードをロードするには、かなりのサーバーを占有する可能性が。続行してもよろしいですか？',
 );

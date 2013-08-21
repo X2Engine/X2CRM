@@ -121,7 +121,6 @@ $(function() {
 				if (elemLeft + elemWidth + tooltipWidth > windowWidth) {
 
 					// flip tooltip if it would go off screen
-					console.log ('gt');
 					api.set ({
 						'position.my': 'top right',
 				    	'position.at': 'bottom right'

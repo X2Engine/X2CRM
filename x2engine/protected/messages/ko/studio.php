@@ -113,4 +113,6 @@ return array (
 'Post Type'=>'형을 게시',
 'Create Notification?'=>'알림을 만들?',
 'User Active?'=>'활성 사용자?',
+'Tags (optional)'=>'태그 (옵션)',
+'seconds (recommended for formulas only)'=>'초 (수식 만 권장)',
 );

@@ -174,4 +174,7 @@ return array (
 'Are you sure you want to delete all other records?'=>'Weet u zeker dat u alle andere records te verwijderen?',
 'Are you sure you want to hide this record?'=>'Weet u zeker dat u dit record wilt verbergen?',
 'Are you sure you want to delete this record?'=>'Weet u zeker dat u dit record wilt verwijderen?',
+'Your case number is: '=>'Uw zaaknummer is:',
+'Website: '=>'Website:',
+'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'WAARSCHUWING: het laden te veel records op deze pagina kan binden de server aanzienlijk. Weet u zeker dat u wilt doorgaan?',
 );

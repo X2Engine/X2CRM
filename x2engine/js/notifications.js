@@ -464,6 +464,13 @@ $(function() {
 					});
 
 				});
+			},
+			complete: function () {
+				$('#notif-box-shadow-correct').position ({ // IE bug fix, forces repaint
+					my: "left-20 top",
+					at: "left bottom",
+					of: $(this)
+				});
 			}
 		});
 	}
@@ -560,6 +567,11 @@ $(function() {
 		$('#notifications .notif').each(function() {
 			if ($(this).data('id') == id) {
 				$(this).remove();
+				$('#notif-box-shadow-correct').position ({ // IE bug fix, forces repaint
+					my: "left-20 top",
+					at: "left bottom",
+					of: $('#notif-box')
+				});
 				return false;
 			}
 		});

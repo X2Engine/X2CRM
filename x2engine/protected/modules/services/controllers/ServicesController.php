@@ -277,8 +277,9 @@ class ServicesController extends x2base {
                 $model->addError('contactId', Yii::t('services', 'Contact does not exist'));
 
             // $this->update($model,$temp,'0');
-            $model->save();
-            $this->redirect(array('view', 'id' => $model->id));
+            if($model->save()){
+                $this->redirect(array('view', 'id' => $model->id));
+            }
         }
 
         $this->render('update', array(

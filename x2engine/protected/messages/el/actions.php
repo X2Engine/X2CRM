@@ -134,4 +134,13 @@ return array (
 'Remind Me'=>'Υπενθύμιση',
 'View Full Edit Page'=>'View Full Επεξεργασία σελίδας',
 '(Error displaying email)'=>'(Σφάλμα κατά την εμφάνιση e-mail)',
+'Due: '=>'Λόγω:',
+'Created: '=>'Δημιουργήθηκε:',
+'Email Opened:'=>'Άνοιξε Email:',
+'Contact has opened the following email:'=>'Επικοινωνία έχει ανοίξει το παρακάτω email:',
+'Update Event:'=>'Ενημέρωση Event:',
+'Action completed: {action}'=>'Η ενέργεια αυτή ολοκληρώθηκε: {action}',
+'{user} completed an action: {action}'=>'{user} ολοκληρώσει μια ενέργεια: {action}',
+'Stage {n}: {stage} was completed for {record}'=>'Στάδιο {n} : {stage} ολοκληρώθηκε για {record}',
+'{user} completed stage {n}: {stage} was completed for {record}'=>'{user} ολοκληρώσει το στάδιο {n} : {stage} ολοκληρώθηκε για {record}',
 );

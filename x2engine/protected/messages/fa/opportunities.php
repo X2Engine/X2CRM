@@ -29,4 +29,5 @@ return array (
 'Create a new Account associated with this Opportunity.'=>'ایجاد یک حساب جدید مرتبط با این فرصت.',
 'Create a new Opportunity associated with this Opportunity.'=>'ایجاد فرصت های جدید مرتبط با این فرصت.',
 'Opportunities Stage'=>'مرحله فرصت',
+'Relationships for Contact: '=>'روابط برای تماس با ما:',
 );

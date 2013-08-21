@@ -36,7 +36,7 @@
 
 /**
  * Color utilities (unused)
- * 
+ *
  * @package X2CRM.components.x2flow
  */
 abstract class X2FlowAction extends X2FlowItem {
@@ -56,7 +56,7 @@ abstract class X2FlowAction extends X2FlowItem {
 		$paramRules = $this->paramRules();
 		if(!isset($paramRules['options'],$this->config['options']))
 			return false;
-		
+
 		if(isset($paramRules['modelRequired'])) {
 			if(!isset($params['model']))	// model not provided when required
 				return false;
@@ -66,16 +66,16 @@ abstract class X2FlowAction extends X2FlowItem {
 		return $this->validateOptions($paramRules);
 	}
 
-	/* 
-	 * 
+	/*
+	 *
 	 */
 	public function parseOption($name,&$params) {
 		$options = &$this->config['options'];
 		if(!isset($options[$name]['value']))
 			return null;
-		
+
 		$type = isset($options[$name]['type'])? $options[$name]['type'] : '';
-		
+        
 		return X2Flow::parseValue($options[$name]['value'],$type,$params);
 	}
 
@@ -95,21 +95,21 @@ abstract class X2FlowAction extends X2FlowItem {
 			return $this->trigger->eventType;
 		return null;
 	}
-	
+
 	/**
 	 * Sets model fields using the provided attributes and values.
-	 * 
+	 *
 	 * @param CActiveRecord $model the model to set fields on
 	 * @param array $attributes an associative array of attributes
 	 * @param array $params the params array passed to X2Flow::trigger()
 	 * @return boolean whether or not the attributes were valid and set successfully
-	 * 
+	 *
 	 */
 	public function setModelAttributes(&$model,&$attributeList,&$params) {
 		foreach($attributeList as &$attr) {
 			if(!isset($attr['name'],$attr['value']))
 				continue;
-			
+
 			if(null !== $field = $model->getField($attr['name']))
 				$model->setAttribute($attr['name'],X2Flow::parseValue($attr['value'],$field->type,$params));	// first do variable/expression evaluation, // then process with X2Fields::parseValue()
 		}

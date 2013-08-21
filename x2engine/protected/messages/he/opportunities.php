@@ -29,4 +29,5 @@ return array (
 'Create a new Account associated with this Opportunity.'=>'צור חשבון חדש קשורים בהזדמנות זו.',
 'Create a new Opportunity associated with this Opportunity.'=>'ליצור הזדמנות חדשה הקשורים ההזדמנות הזו.',
 'Opportunities Stage'=>'שלב הזדמנויות',
+'Relationships for Contact: '=>'מערכות יחסים ליצירת קשר:',
 );

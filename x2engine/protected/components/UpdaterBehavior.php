@@ -270,6 +270,43 @@ class UpdaterBehavior extends ResponseBehavior {
 		if($refresh)
 			$this->restoreBackup('temp');
 	}
+
+    /**
+     * Securely obtain the latest version.
+     */
+    protected function checkUpdates($returnOnly = false){
+        if(!file_exists($secImage = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','images',base64_decode(Yii::app()->params->updaterSecurityImage)))))
+	        return Yii::app()->params->version;
+        $i = Yii::app()->params->admin->unique_id;
+        $v = Yii::app()->params->version;
+        $e = Yii::app()->params->admin->edition;
+        $context = stream_context_create(array(
+            'http' => array('timeout' => 4)  // set request timeout in seconds
+        ));
+
+        $updateCheckUrl = $this->updateServer.'/installs/updates/check?'.http_build_query(compact('i','v'));
+        $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
+        if($securityKey === false)
+            return Yii::app()->params->version;
+        $h = hash('sha512',base64_encode(file_get_contents($secImage)).$securityKey);
+        $n = null;
+        if(!($e == 'opensource' || empty($e)))
+            $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
+        
+        $newVersion = FileUtil::getContents($this->updateServer.'/installs/updates/check?'.http_build_query(compact('i','v','h','n')),0,$context);
+        if(empty($newVersion))
+            return;
+       
+        if(!(Yii::app()->params->noSession || $returnOnly)){
+            Yii::app()->session['versionCheck'] = true;
+            if(version_compare($newVersion, $v) > 0 && !in_array($i, array('none', Null))){ // if the latest version is newer than our version and updates are enabled
+                Yii::app()->session['versionCheck'] = false;
+                Yii::app()->session['newVersion'] = $newVersion;
+            }
+        }
+        return $newVersion;
+    }
+
 	
 	/**
 	 * Copies files out of a folder and into the live installation. 
@@ -692,20 +729,7 @@ class UpdaterBehavior extends ResponseBehavior {
 			'http' => array(
 				'timeout' => 15  // Timeout in seconds
 				)));
-		return FileUtil::getContents($this->updateServer.'/installs/updates/versionCheck', 0, $context);
-	}
-
-	/**
-	 * Gets the latest version of X2CRM
-	 *
-	 * @return type
-	 */
-	public function getLatestVersion(){
-		$context = stream_context_create(array(
-			'http' => array(
-				'timeout' => 15  // Timeout in seconds
-				)));
-		return FileUtil::getContents($this->updateServer.'/installs/updates/versionCheck', 0, $context);
+		return FileUtil::getContents($this->updateServer.'/installs/updates/updateCheck', 0, $context);
 	}
 
 	/**

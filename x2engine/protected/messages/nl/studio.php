@@ -113,4 +113,6 @@ return array (
 'Post Type'=>'Plaats Type',
 'Create Notification?'=>'Maak melding?',
 'User Active?'=>'Gebruiker Actief?',
+'Tags (optional)'=>'Tags (optioneel)',
+'seconds (recommended for formulas only)'=>'seconden (alleen aanbevolen voor formules)',
 );

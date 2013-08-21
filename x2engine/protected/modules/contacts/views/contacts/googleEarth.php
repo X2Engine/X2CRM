@@ -38,7 +38,6 @@ $menuItems = array(
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
-	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
     array('label'=>Yii::t('contacts','Import Contacts'),'url'=>array('importExcel')),
 	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('exportContacts')),
     array('label'=>Yii::t('contacts','Contact Map')),
@@ -122,20 +121,20 @@ if(isset($noHeatMap) && $noHeatMap){
             google.maps.event.addListenerOnce(map,'tilesloaded',function(){
                 var lastValidCenter = map.getCenter();
                 google.maps.event.addListener(map, 'center_changed', function() {
-                    console.debug(map.getCenter().lat());
+                    //console.debug(map.getCenter().lat());
                     if (map.getCenter().lat()<85 && map.getCenter().lat()>-85) {
                         // still within valid bounds, so save the last valid position
                         lastValidCenter = map.getCenter();
-                        return; 
+                        return;
                     }
                     // not valid anymore => return to last valid position
                     map.panTo(lastValidCenter);
                 });
             });
-            
+
         }
         initialize();
-        
+
     ");
 }
 
@@ -162,7 +161,7 @@ function refreshQtip() {
                                 content: data
                             });
                             infowindow.open(map, marker);
-                            
+
                         }
                         google.maps.event.addListener(infowindow,'domready',function(){
                             $('#corporate-directions').click(function(e){
@@ -174,7 +173,7 @@ function refreshQtip() {
                                 getDirections('personal');
                             });
                         });
-                        
+
                         google.maps.event.addListener(marker,'click',function(){
                             infowindow.open(map,marker);
                         });
@@ -197,7 +196,7 @@ function refreshQtip() {
                         });
                         if(zoom==0)
                             map.fitBounds(bounds);
-                        
+
                     }
                 });
 		}
@@ -248,7 +247,7 @@ $('#mapControlForm').submit(function(){
     $('#params_tags').val(tags);
 });
 $(window).resize(function(){
-   google.maps.event.trigger(map,'resize'); 
+   google.maps.event.trigger(map,'resize');
 });
 $('#save-button').click(function(e){
     e.preventDefault();
@@ -273,14 +272,14 @@ $('#save-button').click(function(e){
             }
         });
     }
-}); 
+});
 ");
 ?>
 
 
 <div id="controls" class="form">
-    
-<?php 
+
+<?php
    $form = $this->beginWidget('CActiveForm', array(
         'action' => 'googleMaps',
         'id' => 'mapControlForm',
@@ -290,7 +289,7 @@ $('#save-button').click(function(e){
     echo CHtml::hiddenField('contactId',isset($contactId)?$contactId:'');
     // $range = 30; //$model->dateRange;
     // echo $startDate .' '.$endDate;
-    
+
     ?>
     <div class="row">
         <div class="cell">
@@ -299,17 +298,17 @@ $('#save-button').click(function(e){
                 <a href="#" id="hide-marker-link" style="text-decoration:none;"><?php echo Yii::t('contacts','Clear Marker');?></a>
             <?php } ?>
         </div>
-        
+
         <div class="cell">
             <label><?php echo Yii::t('contacts','Assigned To'); ?></label>
             <?php echo CHtml::dropDownList('params[assignedTo]',$assignment,array_merge(array(''=>'All'),User::getNames())); ?>
         </div>
-        
+
         <div class="cell" style="width:350px;">
             <?php $this->widget('InlineTags', array('filter'=>true,'tags'=>$tags)); ?>
             <?php echo CHtml::hiddenField('params[tags]'); ?>
         </div>
-        
+
         <div class="cell">
             <?php echo CHtml::submitButton(Yii::t('charts', 'Go'), array('class' => 'x2-button', 'style' => 'margin-top:13px;')); ?>
         </div>
@@ -320,7 +319,7 @@ $('#save-button').click(function(e){
     <div class="row">
 
 
-        
+
     </div>
     <?php $this->endWidget();?>
 </div>

@@ -164,4 +164,5 @@ return array (
 'Google Calendar Name'=>'تقویم گوگل نام',
 'Once'=>'هنگامی که',
 'Yearly'=>'سالیانه',
+'Shared Calendar:'=>'تقویم به اشتراک گذاشته شده:',
 );

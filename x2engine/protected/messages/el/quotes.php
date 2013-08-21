@@ -62,4 +62,7 @@ return array (
 'invoice'=>'τιμολόγιο',
 'Quote {id} does not exist. It may have been deleted.'=>'Παράθεση {id} δεν υπάρχει. Μπορεί να έχουν διαγραφεί.',
 'Date printed/emailed'=>'Ημερομηνία εκτύπωση / μέσω e-mail',
+'Could not save quote due to line item errors:'=>'Δεν ήταν δυνατή η αποθήκευση απόσπασμα οφείλεται σε σφάλματα στοιχείο γραμμής:',
+'Update Quote:'=>'Ενημέρωση Απόσπασμα:',
+'Update Invoice:'=>'Ενημέρωση Τιμολόγιο:',
 );

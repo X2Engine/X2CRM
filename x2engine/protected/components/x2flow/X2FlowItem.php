@@ -74,16 +74,16 @@ abstract class X2FlowItem extends CComponent {
 
 			if(!isset($configOptions[$optName]))	// each option must be present in $this->config and $params
 				continue;							// but just ignore them for future proofing
-				
+
 			// if($params !== null && !isset($params[$optName]))	// if params are provided, check them for this option name
 				// return false;
-			// this is disabled because it doesn't work if every option in $options doesn't correspond to a $param. 
-			// the ultimate solution is to separate params and options completely. if a trigger/action is going to 
-			// require params, it should define this separately. the reason for the way it is now is that you can 
-			// set up an action with very little code. by assuming $params corresponds to $options, check() can 
+			// this is disabled because it doesn't work if every option in $options doesn't correspond to a $param.
+			// the ultimate solution is to separate params and options completely. if a trigger/action is going to
+			// require params, it should define this separately. the reason for the way it is now is that you can
+			// set up an action with very little code. by assuming $params corresponds to $options, check() can
 			// treat each option like a condition and compare it to the param.
-			
-			
+
+
 			$option = &$configOptions[$optName];
 			// set optional flag
 			$option['optional'] = isset($optRule['optional']) && $optRule['optional'];
@@ -143,7 +143,7 @@ abstract class X2FlowItem extends CComponent {
 			$dropdownData[] = array($value,$label);
 		return $dropdownData;
 	}
-	
+
 	/**
 	 * Calculates a time offset from a number and a unit
 	 * @param int $time the number of time units to add
@@ -152,6 +152,8 @@ abstract class X2FlowItem extends CComponent {
 	 */
 	public static function calculateTimeOffset($time,$unit) {
 		switch($unit) {
+            case 'secs':
+                return $time;
 			case 'mins':
 				return $time * 60;
 			case 'hours':

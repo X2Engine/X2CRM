@@ -118,4 +118,8 @@ return array (
 'Email sent'=>'E-mail wysłany',
 'Header Code'=>'Header Code',
 'Batch completed, sending again in '=>'Batch zakończony, wysyłając ponownie w',
+'A new web lead has been assigned to you: '=>'Nowy przywódca, web został przypisany do Ciebie:',
+'Marketing Automation'=>'Marketing Automation',
+'Contacts for Account Report ('=>'Kontakt dla raportów konto (',
+'Mailing for Account Report ('=>'Mailing do raportów konto (',
 );

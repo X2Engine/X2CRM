@@ -113,4 +113,6 @@ return array (
 'Post Type'=>'发布类型',
 'Create Notification?'=>'创建通知？',
 'User Active?'=>'用户活跃？',
+'Tags (optional)'=>'标签（可选）',
+'seconds (recommended for formulas only)'=>'秒（建议仅公式）',
 );

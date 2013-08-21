@@ -63,7 +63,8 @@ class ChartSetting extends CActiveRecord
             'JSONFieldsBehavior' => array(
                 'class' => 'application.components.JSONFieldsBehavior',
                 'transformAttributes' => array('settings' => array(
-                        'startDate', 'endDate', 'binSize', 'metric1'))
+                    'startDate', 'endDate', 'binSize', 'firstMetric', 'visibilityFilter',
+					'usersFilter', 'eventsFilter', 'socialSubtypesFilter'))
             )
         );
     }
@@ -76,7 +77,8 @@ class ChartSetting extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('name', 'required'),
-            array('name', 'UniqueAttributesValidator', 'with'=>'userId'),
+			array('chartType', 'required'),
+            array('name', 'UniqueAttributesValidator', 'with'=>'userId,chartType'),
             array('name', 'length', 'max' => 25)
         );
 	}

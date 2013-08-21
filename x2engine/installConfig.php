@@ -21,4 +21,16 @@ $visibleModules = implode(',',(array) require(dirname(__FILE__).implode(DIRECTOR
 $test_db = 0;
 $test_url = '';
 $installType = 'Silent';
+// Cron settings. 
+//
+// These settings have no effect except in X2CRM Professional Edition.
+// 
+// Set this to true to add a job to the user's cron table:
+$startCron = false;
+//
+// The cron job that will be inserted into the cron table if $startCron is true.
+// 
+// You will need to change the URL in this setting to reflect the URL of the CRM
+// (as it will be resolved from the local machine) once installed.
+$cron = '* * * * * curl http://localhost/index.php/api/x2cron &>/dev/null #@X2CRM@default#@X2CRM@Default cron job for automation delays';
 ?>

@@ -1546,7 +1546,7 @@ class AdminController extends Controller {
 
             }else{
                 if($model->save()){
-                    $sql = "ALTER TABLE $tableName ADD COLUMN $field $fieldType";
+                    $sql = "ALTER TABLE $tableName ADD COLUMN `$field` $fieldType";
                     $command = Yii::app()->db->createCommand($sql);
                     try{
                         $result = $command->query();
@@ -1568,7 +1568,7 @@ class AdminController extends Controller {
         $reservedWords = array_merge(require('protected/data/mysqlReservedWords.php'), require('protected/data/modelReservedWords.php'));
 
         if(in_arrayi($fieldName, $reservedWords)){
-            echo Yii::t('admin', 'This field is a MySQL reserved word.  Choose a different field name.');
+            echo Yii::t('admin', 'This field is a MySQL or X2CRM reserved word.  Choose a different field name.');
         }elseif(preg_match('/\W/', $fieldName) || preg_match('/^[^a-zA-Z]+/', $fieldName)){
             echo Yii::t('admin', 'Field names can only contain alphanumeric characters.');
         }else{
@@ -1595,7 +1595,7 @@ class AdminController extends Controller {
             $fieldName = strtolower($field->fieldName);
             $tableName = X2Model::model($field->modelName)->tableName();
             if($field->delete()){
-                $sql = "ALTER TABLE $tableName DROP COLUMN $fieldName";
+                $sql = "ALTER TABLE `$tableName` DROP COLUMN `$fieldName`";
                 $command = Yii::app()->db->createCommand($sql);
                 $result = $command->query();
             }
@@ -1665,7 +1665,7 @@ class AdminController extends Controller {
             (isset($_POST['Fields']['searchable']) && $_POST['Fields']['searchable'] == 1) ? $fieldModel->searchable = 1 : $fieldModel->searchable = 0;
             if($fieldModel->save()){
                 if($fieldType != $oldType){
-                    $sql = "ALTER TABLE $tableName MODIFY COLUMN $fieldName $fieldType";
+                    $sql = "ALTER TABLE `$tableName` MODIFY COLUMN `$fieldName` $fieldType";
                     $command = Yii::app()->db->createCommand($sql);
                     $result = $command->query();
                 }
@@ -2740,7 +2740,7 @@ class AdminController extends Controller {
 						<br />
 					</li>";
             }
-            echo $str;
+            echo $str.CHtml::activeLabel($model,'multi').'&nbsp;'.CHtml::activeCheckBox($model,'multi');
         }
     }
 

@@ -62,4 +62,7 @@ return array (
 'invoice'=>'فاکتور',
 'Quote {id} does not exist. It may have been deleted.'=>'نقل قول {id} وجود ندارد. ممکن است حذف شده است.',
 'Date printed/emailed'=>'تاریخ چاپ / ایمیل',
+'Could not save quote due to line item errors:'=>'اعلان را نجات دهد نه با توجه به خطاهای قلم دوم از اقلام خط:',
+'Update Quote:'=>'بروز نقل قول:',
+'Update Invoice:'=>'بروز فاکتور:',
 );

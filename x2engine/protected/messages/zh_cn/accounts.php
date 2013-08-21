@@ -30,4 +30,8 @@ return array (
 'Create a new Opportunity associated with this Account.'=>'与此帐户相关联，创建一个新的机会。',
 'Create a new Contact associated with this Account.'=>'与此帐户相关联，创建一个新的联系人。',
 'Create a new Account associated with this Account.'=>'与此帐户相关联，创建一个新的帐户。',
+'Accounts Report'=>'帐户报告',
+'Campaign Form'=>'运动形式',
+'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'这种形式可以让你产生一个运动，在下面的报告中显示的帐户与邮件相关的联系。选择“主要联系人”设置为帐户的主要联系人的电子邮件联系。选择“全部”，每个帐户上的所有相关联系人发送电子邮件。',
+'Primary Contact'=>'主要联系人',
 );

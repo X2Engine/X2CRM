@@ -37,4 +37,8 @@ return array (
 'View in Google Drive'=>'در Google Drive',
 'File is hosted on Google Drive'=>'فایل در گوگل درایو میزبانی',
 'File was not sent to server.'=>'فایل به سرور فرستاده می شود نیست.',
+'Attachments:'=>'فایل های پیوست:',
+'Dimensions:'=>'ابعاد:',
+'MIME Info:'=>'و MIME اطلاعات:',
+'Google Drive:'=>'گوگل درایو:',
 );

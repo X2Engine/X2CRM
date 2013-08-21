@@ -47,358 +47,444 @@
  * @property FlowItems[] $flowItems
  * @property FlowParams[] $flowParams
  */
-
 Yii::import('application.components.x2flow.X2FlowItem');
 Yii::import('application.components.x2flow.actions.*');
 Yii::import('application.components.x2flow.triggers.*');
 
 class X2Flow extends CActiveRecord {
-	/**
-	 * @const max number of nested calls to {@link X2Flow::trigger()}
-	 */
-	const MAX_TRIGGER_DEPTH = 0;
+    /**
+     * @const max number of nested calls to {@link X2Flow::trigger()}
+     */
 
-	/**
-	 * @var the current depth of nested trigger calls
-	 */
-	protected static $_triggerDepth = 0;
+    const MAX_TRIGGER_DEPTH = 0;
 
-	/**
-	 * Returns the static model of the specified AR class.
-	 * @param string $className active record class name.
-	 * @return X2Flow the static model class
-	 */
-	public static function model($className=__CLASS__) {
-		return parent::model($className);
-	}
+    /**
+     * @var the current depth of nested trigger calls
+     */
+    protected static $_triggerDepth = 0;
 
-	/**
-	 * @return string the associated database table name
-	 */
-	public function tableName() {
-		return 'x2_flows';
-	}
+    /**
+     * Returns the static model of the specified AR class.
+     * @param string $className active record class name.
+     * @return X2Flow the static model class
+     */
+    public static function model($className = __CLASS__){
+        return parent::model($className);
+    }
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		return array(
-			array('name, createDate, lastUpdated, triggerType, flow', 'required'),
-			array('createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
-			array('active', 'boolean'),
-			array('name', 'length', 'max'=>100),
-			array('triggerType, modelClass', 'length', 'max'=>40),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, active, name, createDate, lastUpdated', 'safe', 'on'=>'search'),
-		);
-	}
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName(){
+        return 'x2_flows';
+    }
 
-	/**
-	 * Returns a list of behaviors that this model should behave as.
-	 * @return array the behavior configurations (behavior name=>behavior configuration)
-	 */
-	public function behaviors() {
-		return array(
-			'X2TimestampBehavior' => array('class'=>'X2TimestampBehavior'),
-		);
-	}
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules(){
+        return array(
+            array('name, createDate, lastUpdated, triggerType, flow', 'required'),
+            array('createDate, lastUpdated', 'numerical', 'integerOnly' => true),
+            array('active', 'boolean'),
+            array('name', 'length', 'max' => 100),
+            array('triggerType, modelClass', 'length', 'max' => 40),
+            // The following rule is used by search().
+            // Please remove those attributes that should not be searched.
+            array('id, active, name, createDate, lastUpdated', 'safe', 'on' => 'search'),
+        );
+    }
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels() {
-		return array(
-			'id' => Yii::t('admin','ID'),
-			'active' => Yii::t('admin','Active'),
-			'name' => Yii::t('admin','Name'),
-			'triggerType' => Yii::t('admin','Trigger'),
-			'modelClass' => Yii::t('admin','Type'),
-			'name' => Yii::t('admin','Name'),
-			'createDate' => Yii::t('admin','Create Date'),
-			'lastUpdated' => Yii::t('admin','Last Updated'),
-		);
-	}
+    /**
+     * Returns a list of behaviors that this model should behave as.
+     * @return array the behavior configurations (behavior name=>behavior configuration)
+     */
+    public function behaviors(){
+        return array(
+            'X2TimestampBehavior' => array('class' => 'X2TimestampBehavior'),
+        );
+    }
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search() {
-		$criteria=new CDbCriteria;
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels(){
+        return array(
+            'id' => Yii::t('admin', 'ID'),
+            'active' => Yii::t('admin', 'Active'),
+            'name' => Yii::t('admin', 'Name'),
+            'triggerType' => Yii::t('admin', 'Trigger'),
+            'modelClass' => Yii::t('admin', 'Type'),
+            'name' => Yii::t('admin', 'Name'),
+            'createDate' => Yii::t('admin', 'Create Date'),
+            'lastUpdated' => Yii::t('admin', 'Last Updated'),
+        );
+    }
 
-		$criteria->compare('id',$this->id);
-		$criteria->compare('active',$this->active);
-		$criteria->compare('name',$this->name,true);
-		$criteria->compare('createDate',$this->createDate,true);
-		$criteria->compare('lastUpdated',$this->lastUpdated,true);
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     */
+    public function search(){
+        $criteria = new CDbCriteria;
 
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
-	}
+        $criteria->compare('id', $this->id);
+        $criteria->compare('active', $this->active);
+        $criteria->compare('name', $this->name, true);
+        $criteria->compare('createDate', $this->createDate, true);
+        $criteria->compare('lastUpdated', $this->lastUpdated, true);
 
-	/**
-	 * Validates the JSON data in $flow.
-	 * Sets createDate and lastUpdated.
-	 * @return boolean whether or not to proceed to validation
-	 */
-	public function beforeValidate() {
-		$flowData = CJSON::decode($this->flow);
+        return new CActiveDataProvider($this, array(
+                    'criteria' => $criteria,
+                ));
+    }
 
-		if($flowData === false) {
-			$this->addError('flow',Yii::t('studio','Flow configuration data appears to be corrupt.'));
-			return false;
-		}
-		if(isset($flowData['trigger']['type'])) {
-			$this->triggerType = $flowData['trigger']['type'];
-			if(isset($flowData['trigger']['modelClass']))
-				$this->modelClass = $flowData['trigger']['modelClass'];
-		} else {
-			// $this->addError('flow',Yii::t('studio','You must configure a trigger event.'));
-		}
-		if(!isset($flowData['items']) || empty($flowData['items'])) {
-			$this->addError('flow',Yii::t('studio','There must be at least one action in the flow.'));
-		}
+    /**
+     * Validates the JSON data in $flow.
+     * Sets createDate and lastUpdated.
+     * @return boolean whether or not to proceed to validation
+     */
+    public function beforeValidate(){
+        $flowData = CJSON::decode($this->flow);
 
-		$this->lastUpdated = time();
-		if($this->isNewRecord)
-			$this->createDate = $this->lastUpdated;
-		return parent::beforeValidate();
-	}
+        if($flowData === false){
+            $this->addError('flow', Yii::t('studio', 'Flow configuration data appears to be corrupt.'));
+            return false;
+        }
+        if(isset($flowData['trigger']['type'])){
+            $this->triggerType = $flowData['trigger']['type'];
+            if(isset($flowData['trigger']['modelClass']))
+                $this->modelClass = $flowData['trigger']['modelClass'];
+        } else{
+            // $this->addError('flow',Yii::t('studio','You must configure a trigger event.'));
+        }
+        if(!isset($flowData['items']) || empty($flowData['items'])){
+            $this->addError('flow', Yii::t('studio', 'There must be at least one action in the flow.'));
+        }
 
+        $this->lastUpdated = time();
+        if($this->isNewRecord)
+            $this->createDate = $this->lastUpdated;
+        return parent::beforeValidate();
+    }
 
-	/**
-	 * Returns the current trigger stack depth {@link X2Flow::$_triggerDepth}
-	 * @return int the stack depth
-	 */
-	public static function triggerDepth() {
-		return self::$_triggerDepth;
-	}
+    /**
+     * Returns the current trigger stack depth {@link X2Flow::$_triggerDepth}
+     * @return int the stack depth
+     */
+    public static function triggerDepth(){
+        return self::$_triggerDepth;
+    }
 
-	/**
-	 * Looks up and runs automation actions that match the provided trigger name and parameters.
-	 *
-	 * @param string $trigger the name of the trigger to fire
-	 * @param array $params an associative array of params, usually including 'model'=>$model,
-	 * the primary X2Model to which this trigger applies.
-	 * @staticvar int $triggerDepth the current depth of the call stack
-	 */
-	public static function trigger($triggerName,$params=array()) {
-		if(self::$_triggerDepth > self::MAX_TRIGGER_DEPTH)	// ...have we delved too deep?
-			return;
+    /**
+     * Looks up and runs automation actions that match the provided trigger name and parameters.
+     *
+     * @param string $trigger the name of the trigger to fire
+     * @param array $params an associative array of params, usually including 'model'=>$model,
+     * the primary X2Model to which this trigger applies.
+     * @staticvar int $triggerDepth the current depth of the call stack
+     */
+    public static function trigger($triggerName, $params = array()){
+        if(self::$_triggerDepth > self::MAX_TRIGGER_DEPTH) // ...have we delved too deep?
+            return;
 
-		if(isset($params['model']) && (!is_object($params['model']) || !($params['model'] instanceof X2Model)))	// Invalid model provided
-			return false;
+        if(isset($params['model']) && (!is_object($params['model']) || !($params['model'] instanceof X2Model))) // Invalid model provided
+            return false;
 
-		self::$_triggerDepth++;	// increment stack depth before doing anything that might call X2Flow::trigger()
+        self::$_triggerDepth++; // increment stack depth before doing anything that might call X2Flow::trigger()
 
-		$flowAttributes = array('triggerType'=>$triggerName,'active'=>1);
+        $flowAttributes = array('triggerType' => $triggerName, 'active' => 1);
 
-		if(isset($params['model'])) {
-			$flowAttributes['modelClass'] = get_class($params['model']);
-			$params['modelClass'] = get_class($params['model']);
-		}
+        if(isset($params['model'])){
+            $flowAttributes['modelClass'] = get_class($params['model']);
+            $params['modelClass'] = get_class($params['model']);
+        }
 
-		$flowTraces = array();
-		$flows = CActiveRecord::model('X2Flow')->findAllByAttributes($flowAttributes);
+        $flowTraces = array();
+        $flows = CActiveRecord::model('X2Flow')->findAllByAttributes($flowAttributes);
 
-		// find all flows matching this trigger and modelClass
-		foreach($flows as &$flow)
-			$flowTraces[] = self::executeFlow($flow,$params);
-
-
-		// file_put_contents('triggerLog.txt',$triggerName.":\n",FILE_APPEND);
-		// file_put_contents('triggerLog.txt',print_r($flowTraces,true).":\n",FILE_APPEND);
-
-		self::$_triggerDepth--;		// this trigger call is done; decrement the stack depth
-	}
+        // find all flows matching this trigger and modelClass
+        foreach($flows as &$flow)
+            $flowTraces[] = self::executeFlow($flow, $params);
 
 
-	/**
-	 * Executes a flow, starting by checking the trigger, passing params to each trigger/action, and
-	 * calling {@link X2Flow::executeBranch()}
-	 *
-	 * @param X2Flow &$flow the object representing the flow to run
-	 * @param array &$params an associative array of params, usually including 'model'=>$model,
-	 * @param mixed $flowPath an array of directions to a specific point in the flow. Defaults to null.
-	 * Will skip checking the trigger conditions if not null, otherwise runs the entire flow.
-	 */
-	public static function executeFlow(&$flow,&$params,$flowPath=null) {
-		$error = '';	//array($flow->name);
+        // file_put_contents('triggerLog.txt', $triggerName.":\n", FILE_APPEND);
+        // file_put_contents('triggerLog.txt', print_r($flowTraces, true).":\n", FILE_APPEND);
 
-		$flowData = CJSON::decode($flow->flow);	// parse JSON flow data
-		// file_put_contents('triggerLog.txt',"\n".print_r($flowData,true),FILE_APPEND);
+        self::$_triggerDepth--;  // this trigger call is done; decrement the stack depth
+    }
 
-		if($flowData !== false && isset($flowData['trigger']['type'],$flowData['items'][0]['type'])) {
+    /**
+     * Executes a flow, starting by checking the trigger, passing params to each trigger/action, and
+     * calling {@link X2Flow::executeBranch()}
+     *
+     * @param X2Flow &$flow the object representing the flow to run
+     * @param array &$params an associative array of params, usually including 'model'=>$model,
+     * @param mixed $flowPath an array of directions to a specific point in the flow. Defaults to null.
+     * Will skip checking the trigger conditions if not null, otherwise runs the entire flow.
+     */
+    public static function executeFlow(&$flow, &$params, $flowPath = null){
+        $error = ''; //array($flow->name);
 
-			$error = '';
+        $flowData = CJSON::decode($flow->flow); // parse JSON flow data
+        // file_put_contents('triggerLog.txt',"\n".print_r($flowData,true),FILE_APPEND);
 
-			if($flowPath === null) {
-				$trigger = X2FlowTrigger::create($flowData['trigger']);
-				if($trigger === null)
-					$error = 'failed to load trigger class';
-				if(!$trigger->validate($params))
-					$error = 'invalid rules/params';
-				if(!$trigger->check($params))
-					$error = 'conditions not passed';
+        if($flowData !== false && isset($flowData['trigger']['type'], $flowData['items'][0]['type'])){
 
-				if(empty($error)) {
-					try {
-						return array($flow->name,$flow->executeBranch(array(0),$flowData['items'],$params));
-					} catch (Exception $e) {
-						return $e->getMessage();
-						// whatever.
-					}
-				} else {
-					return array($flow->name,$error);
-				}
-			} else {	// $flowPath provided, skip to the specified position using X2Flow::traverse()
-				try {
-					return array($flow->name,$flow->traverse($flowPath,$flowData['items'],$params));
-				} catch (Exception $e) {
-					return $e->getMessage();
-					// whatever.
-				}
-			}
-		} else {
-			return array($flow->name,'invalid flow data');
-		}
-	}
+            $error = '';
 
-	/**
-	 * Recursive method for traversing a flow tree using $flowPath, allowing us to
-	 * instantly skip to any point in a flow. This is used for delayed execution with X2CronAction.
-	 *
-	 * @param array $flowPath directions to the current position in the flow tree
-	 * @param array $flowItems the items in this branch
-	 * @param array &$params an associative array of params, usually including 'model'=>$model,
-	 * @param integer $pathIndex the position $flowPath to start at (for recursion), defaults to 0
-	 */
-	public function traverse($flowPath,&$flowItems,&$params,$pathIndex=0) {
-		if(is_bool($flowPath[$pathIndex])) {	// if it's true or false, skip directly to the next true/false fork
-			foreach($flowItems as &$item) {
-				if($item['type'] === 'X2FlowSwitch') {
-					if($flowPath[$pathIndex] && isset($item['trueBranch'])) {
-						if(isset($flowPath[$pathIndex+1]))
-							return array($item['type'],true,$this->traverse($flowPath,$item['trueBranch'],$params,$pathIndex+1));
-						else
-							return array($item['type'],true,$this->executeBranch($flowPath,$item['trueBranch'],$params));
+            if($flowPath === null){
+                $trigger = X2FlowTrigger::create($flowData['trigger']);
+                if($trigger === null)
+                    $error = 'failed to load trigger class';
+                if(!$trigger->validate($params))
+                    $error = 'invalid rules/params';
+                if(!$trigger->check($params))
+                    $error = 'conditions not passed';
 
-					} elseif(!$flowPath[$pathIndex] && isset($item['falseBranch'])) {
-						if(isset($flowPath[$pathIndex+1]))
-							return array($item['type'],false,$this->traverse($flowPath,$item['falseBranch'],$params,$pathIndex+1));
-						else
-							return array($item['type'],false,$this->executeBranch($flowPath,$item['falseBranch'],$params));
-					}
-				}
-			}
-			return false;
-		} else {	// we're in the final branch, so just execute it starting at the specified index
-			if(isset($flowItems[$pathIndex]))
-				return $this->executeBranch($flowPath,$flowItems,$params,$flowPath[$pathIndex]);
-		}
+                if(empty($error)){
+                    try{
+                        return array($flow->name, $flow->executeBranch(array(0), $flowData['items'], $params));
+                    }catch(Exception $e){
+                        return $e->getMessage();
+                        // whatever.
+                    }
+                }else{
+                    return array($flow->name, $error);
+                }
+            }else{ // $flowPath provided, skip to the specified position using X2Flow::traverse()
+                try{
+                    return array($flow->name, $flow->traverse($flowPath, $flowData['items'], $params));
+                }catch(Exception $e){
+                    return $e->getMessage();
+                    // whatever.
+                }
+            }
+        }else{
+            return array($flow->name, 'invalid flow data');
+        }
+    }
 
-	}
+    /**
+     * Recursive method for traversing a flow tree using $flowPath, allowing us to
+     * instantly skip to any point in a flow. This is used for delayed execution with X2CronAction.
+     *
+     * @param array $flowPath directions to the current position in the flow tree
+     * @param array $flowItems the items in this branch
+     * @param array &$params an associative array of params, usually including 'model'=>$model,
+     * @param integer $pathIndex the position $flowPath to start at (for recursion), defaults to 0
+     */
+    public function traverse($flowPath, &$flowItems, &$params, $pathIndex = 0){
+        if(is_bool($flowPath[$pathIndex])){ // if it's true or false, skip directly to the next true/false fork
+            foreach($flowItems as &$item){
+                if($item['type'] === 'X2FlowSwitch'){
+                    if($flowPath[$pathIndex] && isset($item['trueBranch'])){
+                        if(isset($flowPath[$pathIndex + 1]))
+                            return array($item['type'], true, $this->traverse($flowPath, $item['trueBranch'], $params, $pathIndex + 1));
+                        else
+                            return array($item['type'], true, $this->executeBranch($flowPath, $item['trueBranch'], $params));
+                    } elseif(!$flowPath[$pathIndex] && isset($item['falseBranch'])){
+                        if(isset($flowPath[$pathIndex + 1]))
+                            return array($item['type'], false, $this->traverse($flowPath, $item['falseBranch'], $params, $pathIndex + 1));
+                        else
+                            return array($item['type'], false, $this->executeBranch($flowPath, $item['falseBranch'], $params));
+                    }
+                }
+            }
+            return false;
+        } else{ // we're in the final branch, so just execute it starting at the specified index
+            if(isset($flowItems[$pathIndex]))
+                return $this->executeBranch($flowPath, $flowItems, $params, $flowPath[$pathIndex]);
+        }
+    }
 
-	/**
-	 * Executes each action in a given branch, starting at $start.
-	 *
-	 * @param array $flowPath directions to the current position in the flow tree
-	 * @param array $flowItems the items in this branch
-	 * @param array &$params an associative array of params, usually including 'model'=>$model,
-	 * @param integer $start the position in the branch to start at, defaults to 0
-	 */
-	public function executeBranch($flowPath,&$flowItems,&$params,$start=0) {
-		$results = array();
+    /**
+     * Executes each action in a given branch, starting at $start.
+     *
+     * @param array $flowPath directions to the current position in the flow tree
+     * @param array $flowItems the items in this branch
+     * @param array &$params an associative array of params, usually including 'model'=>$model,
+     * @param integer $start the position in the branch to start at, defaults to 0
+     */
+    public function executeBranch($flowPath, &$flowItems, &$params, $start = 0){
+        $results = array();
 
-		for($i=$start;$i<count($flowItems);$i++) {
-			$item = &$flowItems[$i];
-			if(!isset($item['type']) || !class_exists($item['type']))
-				continue;
+        for($i = $start; $i < count($flowItems); $i++){
+            $item = &$flowItems[$i];
+            if(!isset($item['type']) || !class_exists($item['type']))
+                continue;
 
-			if($item['type'] === 'X2FlowSwitch') {
-				$switch = X2FlowItem::create($item);
-				if($switch->validate($params)) {
-					array_pop($flowPath);	// flowPath only contains switch decisions and the index on the current branch
-											// now that we're at another switch, we can throw out the previous branch index
-											// eg: $flowPath = array(true,false,3) means go to true at the first fork,
-											// go to false at the second fork, then go to item 3
+            if($item['type'] === 'X2FlowSwitch'){
+                $switch = X2FlowItem::create($item);
+                if($switch->validate($params)){
+                    array_pop($flowPath); // flowPath only contains switch decisions and the index on the current branch
+                    // now that we're at another switch, we can throw out the previous branch index
+                    // eg: $flowPath = array(true,false,3) means go to true at the first fork,
+                    // go to false at the second fork, then go to item 3
 
-					if($switch->check($params) && isset($item['trueBranch'])) {
-						$flowPath[] = true;
-						$flowPath[] = 0;	// they're now on
-						$results[] = array($item['type'],true,$this->executeBranch($flowPath,$item['trueBranch'],$params));
-					} elseif(isset($item['falseBranch'])) {
-						$flowPath[] = false;
-						$flowPath[] = 0;
-						$results[] = array($item['type'],false,$this->executeBranch($flowPath,$item['falseBranch'],$params));
-					}
-				}
-			} else {
-				$flowAction = X2FlowAction::create($item);
-				if($item['type'] === 'X2FlowWait') {
-					$flowAction->flowPath = $flowPath;
-					$flowAction->flowId = $this->id;
-					$results[] = array($item['type'],$flowAction->validate($params) && $flowAction->execute($params));
-					break;
-				} else {
-					$flowPath[count($flowPath)-1]++;	// increment the index in the current branch
-					$results[] = array($item['type'],$flowAction->validate($params) && $flowAction->execute($params));
-				}
-			}
-		}
-		return $results;
-	}
+                    if($switch->check($params) && isset($item['trueBranch'])){
+                        $flowPath[] = true;
+                        $flowPath[] = 0; // they're now on
+                        $results[] = array($item['type'], true, $this->executeBranch($flowPath, $item['trueBranch'], $params));
+                    }elseif(isset($item['falseBranch'])){
+                        $flowPath[] = false;
+                        $flowPath[] = 0;
+                        $results[] = array($item['type'], false, $this->executeBranch($flowPath, $item['falseBranch'], $params));
+                    }
+                }
+            }else{
+                $flowAction = X2FlowAction::create($item);
+                if($item['type'] === 'X2FlowWait'){
+                    $flowAction->flowPath = $flowPath;
+                    $flowAction->flowId = $this->id;
+                    $results[] = array($item['type'], $flowAction->validate($params) && $flowAction->execute($params));
+                    break;
+                }else{
+                    $flowPath[count($flowPath) - 1]++; // increment the index in the current branch
+                    $results[] = array($item['type'], $flowAction->validate($params) && $flowAction->execute($params));
+                }
+            }
+        }
+        return $results;
+    }
 
-	/*
-	 * Parses variables in curly brackets and evaluates expressions
-	 *
-	 * @param mixed $value the value as specified by 'attributes' in {@link X2FlowAction::$config}
-	 * @param string $type the X2Fields type for this value
-	 * @return mixed the parsed value
-	 */
-	public static function parseValue($value,$type,&$params=null) {
-		if($params !== null) {
-			$matches = array();
-			preg_match('/^{([a-z]\w*)}$/i',trim($value),$matches);	// check for a variable
-			if(isset($matches[1])) {
-				if(isset($params[$matches[1]])) {
-					$value = $params[$matches[1]];	// don't return
-				} elseif(isset($params['model']) && $params['model']->hasAttribute($matches[1])) {
-					if($type === '' || $type === 'text' || $type === 'richtext')
-						return $params['model']->renderAttribute($matches[1],true,true);
-					else
-						return $params['model']->getAttribute($matches[1]);
+    /*
+     * Parses variables in curly brackets and evaluates expressions
+     *
+     * @param mixed $value the value as specified by 'attributes' in {@link X2FlowAction::$config}
+     * @param string $type the X2Fields type for this value
+     * @return mixed the parsed value
+     */
 
-				}
-			}
-		}
-		// replaceVariables($str, &$model, $vars = array(), $encode = false)
+    public static function parseValue($value, $type, &$params = null){
+        if(strpos($value, '=') === 0){
+            return self::parseFormula($value, $type, $params);
+        }
+        if($params !== null){
+            if(isset($params['model'])){
+                $value = self::replaceVariables($value, $params['model'], $type, $params);
+            }
+        }
+        // replaceVariables($str, &$model, $vars = array(), $encode = false)
 
-		switch($type) {
-			case 'boolean':
-				return (bool)$value;
-			case 'time':
-			case 'date':
-			case 'dateTime':
-				if(ctype_digit((string)$value))		// must already be a timestamp
-					return $value;
-				if($type === 'date')
-					$value = Formatter::parseDate($value);
-				elseif($type === 'dateTime')
-					$value = Formatter::parseDateTime($value);
-				else
-					$value = strtotime($value);
-				return $value === false? null : $value;
-			case 'link':
-				$pieces = explode(':',$value);
-				if(count($pieces) > 1)
-					return (int)$pieces[0];
-				return $value;
-			default:
-				return $value;
-		}
-	}
+        switch($type){
+            case 'boolean':
+                return (bool) $value;
+            case 'time':
+            case 'date':
+            case 'dateTime':
+                if(ctype_digit((string) $value))  // must already be a timestamp
+                    return $value;
+                if($type === 'date')
+                    $value = Formatter::parseDate($value);
+                elseif($type === 'dateTime')
+                    $value = Formatter::parseDateTime($value);
+                else
+                    $value = strtotime($value);
+                return $value === false ? null : $value;
+            case 'link':
+                $pieces = explode('::', $value);
+                if(count($pieces) > 1)
+                    return (int) $pieces[0];
+                return $value;
+            default:
+                return $value;
+        }
+    }
+
+    public static function replaceVariables($value, $model, $type = '', $params = array()){
+        $matches = array();
+        preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
+        if(isset($matches[0])){
+            foreach($matches[0] as $match){
+                $match = substr($match, 1, -1);
+                if(strpos($match, '.') !== false){
+                    $parts = explode('.', $match);
+                    $tmpModel = $model;
+                    for($i = 0; $i < count($parts); $i++){
+                        if($i < count($parts) - 1){
+                            if($tmpModel->hasAttribute($parts[$i])){
+                                if(isset($tmpModel->{$parts[$i].'Model'})){
+                                    $tmpModel = $tmpModel->{$parts[$i].'Model'};
+                                }else{
+                                    $field = Fields::model()->findByAttributes(array('modelName' => get_class($tmpModel), 'fieldName' => $parts[$i]));
+                                    if(isset($field) && $field->type == 'assignment'){
+                                        $profile = Profile::model()->findByAttributes(array('username' => $tmpModel->$parts[$i]));
+                                        if(isset($profile)){
+                                            $tmpModel = $profile;
+                                        }
+                                    }
+                                }
+                            }
+                        }else{
+
+                            if($tmpModel->hasAttribute($parts[$i])){
+                                if($type === '' || $type === 'text' || $type === 'richtext'){
+                                    $value = preg_replace('/{'.$match.'}/i', $tmpModel->renderAttribute($parts[$i], true, true), $value);
+                                }else{
+                                    $value = preg_replace('/{'.$match.'}/i', $tmpModel->getAttribute($parts[$i]), $value);
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    if(isset($params[$match])){
+                        $value = $params[$match]; // don't return
+                    }elseif($model->hasAttribute($match)){
+                        if($type === '' || $type === 'text' || $type === 'richtext'){
+                            $value = preg_replace('/{'.$match.'}/i', $params['model']->renderAttribute($match, true, true), $value);
+                        }else{
+                            $value = preg_replace('/{'.$match.'}/i', $params['model']->getAttribute($match), $value);
+                        }
+                    }else{
+                        switch($match){
+                            case 'actionDescription':
+                                if($model instanceof Actions){
+                                    $value = preg_replace('/{'.$match.'}/i', $model->actionDescription, $value);
+                                }
+                                break;
+                            case 'link':
+                                if($model->asa('X2LinkableBehavior')){
+                                    if($model instanceof Actions){
+                                        $value = preg_replace('/{'.$match.'}/i', $model->getLink(30, false), $value);
+                                    }else{
+                                        $value = preg_replace('/{'.$match.'}/i', $model->getLink(), $value);
+                                    }
+                                }
+                                break;
+                            case 'date':
+                                $value = preg_replace('/{'.$match.'}/i', Formatter::formatDate(time(), 'long', false), $value);
+                                break;
+                            case 'time':
+                                $value = preg_replace('/{'.$match.'}/i', Formatter::formatTime(time()), $value);
+                                break;
+                            case 'dateTime':
+                                $value = preg_replace('/{'.$match.'}/i', Formatter::formatLongDateTime(time()), $value);
+                                break;
+                        }
+                    }
+                }
+            }
+            return $value;
+        }
+    }
+
+    public static function parseFormula($formula, $type = '', $params = array()){
+        $formula = substr($formula, 1);
+        if(isset($params['model'])){
+            $formula = self::replaceVariables($formula, $params['model'], 'formula', $params);
+        }
+        if(strpos($formula, ';') !== strlen($formula) - 1){
+            $formula.=';';
+        }
+        if(strpos($formula, 'return ') !== 0){
+            $formula = 'return '.$formula;
+        }
+        try{
+            return eval($formula);
+        }catch(Exception $e){
+
+        }
+    }
+
 }

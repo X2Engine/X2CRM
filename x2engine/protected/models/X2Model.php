@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -79,6 +78,7 @@ abstract class X2Model extends CActiveRecord {
     /**
      * Calls {@link queryFields()} before CActiveRecord::__constructo() is called
      */
+
     public function __construct($scenario = 'insert'){
         $this->queryFields();
 
@@ -171,6 +171,9 @@ abstract class X2Model extends CActiveRecord {
             if($_field->type === 'link')
                 $relations[$_field->fieldName.'Model'] = array(self::BELONGS_TO, $_field->linkType, $_field->fieldName);
         }
+        if(Yii::app()->params->edition == 'pro'){
+            $relations['gallery'] = array(self::HAS_ONE, 'GalleryToModel', 'modelId', 'condition' => 'modelName="'.get_class($this).'"');
+        }
         return $relations;
     }
 
@@ -179,13 +182,27 @@ abstract class X2Model extends CActiveRecord {
      * @return array the behavior configurations (behavior name=>behavior configuration)
      */
     public function behaviors(){
-        return array(
+        $behaviors = array(
             'X2LinkableBehavior' => array('class' => 'X2LinkableBehavior'),
             'X2TimestampBehavior' => array('class' => 'X2TimestampBehavior'),
             'tags' => array('class' => 'TagBehavior'),
             'changelog' => array('class' => 'X2ChangeLogBehavior'),
             'permissions' => array('class' => 'X2PermissionsBehavior'),
         );
+        if(Yii::app()->params->edition == 'pro'){
+            $behaviors['galleryBehavior'] = array(
+                'class' => 'application.extensions.gallerymanager.GalleryBehavior',
+                'idAttribute' => 'galleryId',
+                'versions' => array(
+                    'small' => array(
+                        'centeredpreview' => array(98, 98),
+                    ),
+                ),
+                'name' => true,
+                'description' => true,
+            );
+        }
+        return $behaviors;
     }
 
     /**
@@ -632,7 +649,6 @@ abstract class X2Model extends CActiveRecord {
                 'optionalAssignment', // Same as above
                 'url', // Renders an actual link
                 'text', // Uses convertUrls, which is in x2base
-                'dropdown' // This depends on the module/controller to ascertain which translation pack to use
             );
             if(in_array($field->type, $webRequestAttributes))
                 return $this->$fieldName;
@@ -884,8 +900,12 @@ abstract class X2Model extends CActiveRecord {
                             'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
                                 ), true);
             case 'dropdown':
-                $dropdowns = Dropdowns::getItems($field->linkType);
-                $dependencyCount = X2Model::model('Dropdowns')->countByAttributes(array('parent' => $field->linkType));
+                $om = Dropdowns::getItems($field->linkType,null,true); // Note: if desired to translate dropdown options, change the seecond argument to $this->module
+		$multi = (bool) $om['multi'];
+		$dropdowns = $om['options'];
+		$curVal = $multi?CJSON::decode($this->{$field->fieldName}):$this->{$field->fieldName};
+                
+		$dependencyCount = X2Model::model('Dropdowns')->countByAttributes(array('parent' => $field->linkType));
                 $fieldDependencyCount = X2Model::model('Fields')->countByAttributes(array('modelName' => $field->modelName, 'type' => 'dependentDropdown', 'linkType' => $field->linkType));
                 if($dependencyCount > 0 && $fieldDependencyCount > 0){
                     $ajaxArray = array('ajax' => array(
@@ -904,12 +924,19 @@ abstract class X2Model extends CActiveRecord {
                 }else{
                     $ajaxArray = array();
                 }
-                return CHtml::activeDropDownList($this, $field->fieldName, $dropdowns, array_merge(
-                                        array(
-                                    'title' => $field->attributeLabel,
-                                    'empty' => Yii::t('app', "Select an option"),
-                                        ), $htmlOptions, $ajaxArray
-                                ));
+		$htmlOptions = array_merge($htmlOptions,$ajaxArray,array('title'=>$field->attributeLabel));
+		if($multi){
+		    $multiSelectOptions = array();
+		    if(!is_array($curVal))
+		    	$curVal = array();
+		    foreach($curVal as $option)
+		        $multiSelectOptions[$option] = array('selected'=>'selected');
+		    $htmlOptions = array_merge($htmlOptions,array('options' => $multiSelectOptions,'multiple'=>'multiple'));
+		} else {
+		    $htmlOptions = array_merge($htmlOptions,array( 'empty' => Yii::t('app', "Select an option")));
+		}
+                return CHtml::activeDropDownList($this, $field->fieldName, $dropdowns,$htmlOptions); 
+
             case 'dependentDropdown':
                 return CHtml::activeDropDownList($this, $field->fieldName, array('' => '-'), array_merge(
                                         array(
@@ -1032,6 +1059,7 @@ abstract class X2Model extends CActiveRecord {
                                         ), $htmlOptions)).'</div>';
 
             case 'assignment':
+                $this->$fieldName = !empty($this->$fieldName) ? $this->$fieldName : Yii::app()->user->getName();
                 return CHtml::activeDropDownList($this, $fieldName, X2Model::getAssignmentOptions(true, true), array_merge(array(
                                     // 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
                                     // 'disabled'=>$item['readOnly']? 'disabled' : null,
@@ -1208,6 +1236,10 @@ abstract class X2Model extends CActiveRecord {
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function searchBase($criteria){
+        if($criteria === null)
+            $criteria = $this->getAccessCriteria();
+        else
+            $criteria->mergeWith($this->getAccessCriteria());
         $this->compareAttributes($criteria);
         $with = array();
         foreach(self::$_fields[$this->tableName()] as &$field){
@@ -1220,6 +1252,7 @@ abstract class X2Model extends CActiveRecord {
         $sort->multiSort = false;
         $sort->attributes = $this->getSort();
         $sort->defaultOrder = 't.lastUpdated DESC, t.id DESC';
+        $sort->sortVar=get_class($this)."_sort";
         $sort->applyOrder($criteria);
         return new SmartDataProvider(get_class($this), array(
                     'sort' => $sort,
@@ -1359,8 +1392,6 @@ abstract class X2Model extends CActiveRecord {
 
       return $model;
       } */
-
-
 
     /**
      * Returns a model of the appropriate type with a particular record loaded.

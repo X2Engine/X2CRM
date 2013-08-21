@@ -62,7 +62,7 @@ $fullname = Yii::app()->params->profile->fullName;
         <?php
         $myMediaItems = Yii::app()->db->createCommand()
                 ->select('id, uploadedBy, fileName, description, drive, title')
-                ->where('uploadedBy=:username AND drive=:drive', array(':username' => $username, ':drive' => $this->drive))
+                ->where('uploadedBy=:username AND drive=:drive AND associationType="none"', array(':username' => $username, ':drive' => $this->drive))
                 ->from('x2_media')
                 ->queryAll();
         ?>
@@ -94,7 +94,7 @@ $fullname = Yii::app()->params->profile->fullName;
                     $imageLink = Media::getFileUrl($path);
                     $image = CHtml::image($imageLink, '', array('class' => 'media-hover-image'));
 					$imageStr = CJSON::encode($image);
-					
+
                     if($item['description']) {
 						$content = CJSON::encode("<span style=\"max-width: 200px;\">$image $desc</span>");
                         $imageTooltips .= "$($jsSelectorId).qtip({content: $content, position: {my: 'top right', at: 'bottom left'}});\n";
@@ -125,7 +125,7 @@ $fullname = Yii::app()->params->profile->fullName;
             <?php
             $userMediaItems = Yii::app()->db->createCommand()
                     ->select('id, uploadedBy, fileName, description, private, drive, title')
-                    ->where('uploadedBy=:username', array(':username' => $user['username']))
+                    ->where('uploadedBy=:username AND associationType="none"', array(':username' => $user['username']))
                     ->from('x2_media')
                     ->queryAll();
             ?>
@@ -160,7 +160,7 @@ $fullname = Yii::app()->params->profile->fullName;
                                 $imageLink = Media::getFileUrl($path);
                                 $image = CHtml::image($imageLink, '', array('class' => 'media-hover-image'));
 								$imageStr = CJSON::encode($image);
-								
+
                                 if($item['description']) {
 									$content = CJSON::encode("<span style=\"max-width: 200px;\">$image $desc</span>");
                                     $imageTooltips .= "$($jsSelectorId).qtip({content: $content, position: {my: 'top right', at: 'bottom left'}});\n";

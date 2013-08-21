@@ -258,9 +258,9 @@ class CommandUtil {
 	public function loadCrontab() {
 		// Check to see if everything is as it should be
 		if(!$this->cmdExists('crontab'))
-			throw new Exception('The "crontab" command does not exist on this system, so there is no way to set up cron jobs.');
+			throw new Exception('The "crontab" command does not exist on this system, so there is no way to set up cron jobs.',1);
 		if($this->run('crontab -l')->complete() == -1)
-			throw new Exception('There is a cron service available on this system, but PHP is running as a system user that does not have permission to use it.');
+			throw new Exception('There is a cron service available on this system, but PHP is running as a system user that does not have permission to use it.',2);
 		// Get the existing crontab
 		return $this->run('crontab -l')->output();
 	}

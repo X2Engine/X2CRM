@@ -175,15 +175,18 @@ class Credentials extends CActiveRecord {
 	public function defaultHooks($userId, $serviceType){
 		switch($serviceType){
 			case 'email':
-				switch($userId){
-					case self::$sysUseId['bulkEmail']:
-						Yii::app()->params->admin->emailBulkAccount = $this->id;
-						Yii::app()->params->admin->save();
-						break;
-					case self::$sysUseId['serviceCaseEmail'];
-						Yii::app()->params->admin->serviceCaseEmailAccount = $this->id;
-						Yii::app()->params->admin->save();
-						break;
+				$adminAliasMap = array(
+					'bulkEmail' => 'emailBulkAccount',
+					'serviceCaseEmail' => 'serviceCaseEmailAccount',
+					'systemResponseEmail' => 'webLeadEmailAccount',
+					'systemNotificationEmail' => 'emailNotificationAccount'
+				);
+				// For these system use aliases: set the appropriate values in the admin 
+				// model for consistency with legacy configuration page in admin
+				if(array_key_exists($userId,self::$sysUseAlias)){
+					$adminAttr = $adminAliasMap[self::$sysUseAlias[$userId]];
+					Yii::app()->params->admin->{$adminAttr} = $this->id;
+					Yii::app()->params->admin->update(array($adminAttr));
 				}
 				break;
 		}

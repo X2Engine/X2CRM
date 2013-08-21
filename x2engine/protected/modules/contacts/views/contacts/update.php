@@ -49,7 +49,7 @@ $this->actionMenu = $this->formatMenu(array(
 
 ?>
 <?php
-	if (!IS_ANDROID) {
+	if (!IS_ANDROID && !IS_IPAD) {
 		echo '
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
@@ -62,7 +62,7 @@ $this->actionMenu = $this->formatMenu(array(
 			<?php echo CHtml::link(Yii::t('app','Save'),'#',array('class'=>'x2-button highlight right','onclick'=>'$("#save-button").click();return false;')); ?>
 		</div>
 <?php
-	if (!IS_ANDROID) {
+	if (!IS_ANDROID && !IS_IPAD) {
 		echo '
 	</div>
 </div>

@@ -68,6 +68,15 @@ class AccountsController extends x2base {
             'inlineEmail' => array(
                 'class' => 'InlineEmailAction',
             ),
+            'accountsReport' => array(
+                'class' => 'AccountsReportAction',
+            ),
+            'exportAccountsReport' => array(
+                'class' => 'ExportAccountsReportAction',
+            ),
+            'accountsCampaign' => array(
+                'class'=>'AccountCampaignAction',
+            ),
         );
     }
 
@@ -351,7 +360,7 @@ class AccountsController extends x2base {
         $this->render('addUser', array(
             'model' => $model,
             'users' => $users,
-            //'contacts' => $contacts, 
+            //'contacts' => $contacts,
             'action' => 'Add'
         ));
     }

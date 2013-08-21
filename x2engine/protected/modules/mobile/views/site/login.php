@@ -59,7 +59,7 @@ $this->pageTitle = Yii::app()->name . ' - Login';
         <?php echo $form->passwordField($model, 'password', array('style'=>'height:50px;')); ?>
         <?php //echo $form->error($model, 'password'); ?>
     </div>
-    <div data-role="fieldcontain">
+    <div data-role="fieldcontain" class='remember-me-checkbox-container'>
 		<?php echo $form->checkBox($model,'rememberMe',array('value'=>'1','uncheckedValue'=>'0')); ?>
 		<?php echo $form->label($model,'rememberMe',array('style'=>'font-size:10px;')); ?>
 		<?php echo $form->error($model,'rememberMe'); ?><br>

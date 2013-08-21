@@ -41,18 +41,24 @@ var x2_skip = false;
 $(document).bind("mobileinit", function(){
     //apply overrides here
     $('#site-chat').live('pagebeforehide',function(event, ui){
-        console.log('PBH<='+x2_pending);
+        //console.log('PBH<='+x2_pending);
         x2_skip = true;
         if (x2_pending != null){
             x2_pending.abort();
             x2_pending = null;
-            console.log('PBH>='+x2_pending);
+            //console.log('PBH>='+x2_pending);
         }
     });
     $('#site-chat').live('pageshow',function(event, ui){
-        console.log('PS*='+x2_latest);
+        //console.log('PS*='+x2_latest);
         x2_latest ='';
         x2_skip = false;
         setTimeout(updateChat,1000);
     });
+
+	// set up page loader
+  	$.mobile.loader.prototype.options.text = "loading";
+  	$.mobile.loader.prototype.options.textVisible = true;
+  	$.mobile.loader.prototype.options.theme = "a";
+  	$.mobile.loader.prototype.options.html = "";
 });

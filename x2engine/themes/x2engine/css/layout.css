@@ -527,6 +527,13 @@ span.x2-widget-menu-item.ui-draggable {
 	min-height: 25px;
 }
 
+#notif-box-shadow-correct {
+	width: 440px;
+	height: 40px;
+	display: block;
+	
+}
+
 #notif-box {
 	display:none;
 	width:400px;

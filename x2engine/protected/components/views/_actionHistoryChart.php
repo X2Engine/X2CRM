@@ -41,7 +41,8 @@ $this->widget('X2Chart', array (
 	'suppressChartSettings' => true,
 	'actionParams' => array (
 		'associationId' => $associationId,
-		'associationType' => $associationType 
+		'associationType' => $associationType,
+		'showRelationships' => 'false'
 	),
 	'metricTypes' => array (
 		'any'=>Yii::t('app', 'All Actions'),
@@ -56,9 +57,7 @@ $this->widget('X2Chart', array (
 		'webactivity'=>Yii::t('app', 'Web Activity'),
 		'workflow'=>Yii::t('app', 'Workflow Actions')
 	),
-	'chartType' => 'multiLine',
-	'actionsStartDate' => $actionsStartDate,
-	'chartPage' => 'recordView',
+	'chartType' => 'actionHistoryChart',
 	'getDataOnPageLoad' => true
 )); 
 

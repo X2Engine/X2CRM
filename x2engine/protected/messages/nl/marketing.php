@@ -122,4 +122,8 @@ return array (
 'Email sent'=>'E-mail verzonden',
 'Header Code'=>'Header Code',
 'Batch completed, sending again in '=>'Batch afgerond, opnieuw te verzenden in',
+'A new web lead has been assigned to you: '=>'Een nieuwe web lead is toegewezen aan u:',
+'Marketing Automation'=>'Marketing Automation',
+'Contacts for Account Report ('=>'Contacten voor Account Report (',
+'Mailing for Account Report ('=>'Mailing voor Account Report (',
 );

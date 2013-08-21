@@ -9,4 +9,6 @@ return array (
 'Request type not supported for this action.'=>'לבקש סוג אינו נתמכים עבור פעולה זו.',
 'Tags not added.'=>'תגיות לא הוסיפו.',
 'Error'=>'שגיאה',
+'Cannot delete; no parameters specified for finding a relationship record to delete.'=>'לא יכול למחוק; אין פרמטרים שצוינו למציאת רשומת יחסים למחוק.',
+'No relationships deleted; none were found matching specfied parameters.'=>'אין יחסים יימחקו; אף נמצאו התאמת הפרמטרים specfied.',
 );

@@ -176,6 +176,8 @@ class Fields extends CActiveRecord {
                 return $linkId === false ? $value : $linkId;
             case 'boolean':
                 return (bool) $value;
+	    case 'dropdown':
+	       return is_array($value)?CJSON::encode($value):$value;
             default:
                 return $value;
         }

@@ -50,7 +50,7 @@
         <?php if($showNewEvent){ ?><li><a href="#new-event"><?php echo Yii::t('actions', 'New Event'); ?></a></li><?php } ?>
     </ul>
     <div class="form">
-        <?php 
+        <?php
         if ($showNewEvent) {
             echo '<span class="publisher-widget-title">' . Yii::t('app', 'New Event Publisher') . '</span>';
         }
@@ -61,7 +61,7 @@
                 <?php echo $form->textArea($model, 'actionDescription', array('rows' => 3, 'cols' => 40)); ?>
             </div>
         </div>
-        <?php echo CHtml::hiddenField('SelectedTab', ''); // currently selected tab ?>
+        <?php echo CHtml::hiddenField('SelectedTab', $showNewEvent?'new-event':''); // currently selected tab ?>
         <?php echo $form->hiddenField($model, 'associationType'); ?>
         <?php echo $form->hiddenField($model, 'associationId'); ?>
 
@@ -229,12 +229,12 @@
 
 					return true; // form is sane: submit!
 				 }",
-        'success' => "function() { 
-			publisherUpdates(); 
+        'success' => "function() {
+			publisherUpdates();
 			resetPublisher();
 			//$(document).trigger ('newlyPublishedAction');
 			\$('.publisher-text').animate({opacity: 1.0});
-			\$('#publisher-saving-icon').animate({opacity: 0.0}); 
+			\$('#publisher-saving-icon').animate({opacity: 0.0});
 		}",
         'type' => 'POST',
             ), array('id' => 'save-publisher', 'class' => 'x2-button'));
@@ -281,7 +281,7 @@ if ($showNewEvent) {
             margin-top: 8px;
         }
         #publisher-form .form {
-            background: #eee;   
+            background: #eee;
         }
         #publisher-form textarea {
             min-width: 100%;
@@ -302,7 +302,7 @@ $(function() {
 	    $('#tabs').tabs({
 		    select: function(event, ui) { tabSelected(event, ui); },
 	    });
-    } 
+    }
 
 	if($('#tabs .ui-state-active').length !== 0) { // if publisher is present (prevents a javascript error if publisher is not present)
 		var selected = $('#tabs .ui-state-active').attr('aria-controls');

@@ -146,7 +146,7 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                             <div class="control-button icon edit-button"></div>
                         <?php } ?>
                         <?php if(Yii::app()->user->checkAccess('ActionsDelete', array('assignedTo' => $model->assignedTo))){ ?>
-                            <div class="control-button icon delete-button" style="background:url('<?php echo Yii::app()->theme->baseUrl; ?>/images/icons/Delete.png') no-repeat center center;height:21px;width:21px;"></div>
+                            <div class="control-button icon delete-button" alt="[x]"></div>
                         <?php } ?>
                         <?php if(Yii::app()->user->checkAccess('ActionsToggleSticky', array('assignedTo' => $model->assignedTo))){
                             if(!$model->sticky){

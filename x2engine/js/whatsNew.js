@@ -411,15 +411,15 @@ function setupActivityFeed () {
 
 	var checkedFlag;
 	if($(":checkbox:checked").length > ($(":checkbox").length)/2){
-		checkedFlag=true;
+		checkedFlag = true;
 	} else {
-		checkedFlag=false;
+		checkedFlag = false;
 		$("#toggle-filters-link").html("Check Filters");
 	}
 
 	$(document).on("click","#toggle-filters-link",function(e){
 		e.preventDefault();
-		checkedFlag=!checkedFlag;
+		checkedFlag =! checkedFlag;
 		if(checkedFlag){
 			$(this).html(x2.whatsNew.translations['Uncheck Filters']);
 			$(".filter-checkbox").attr("checked","checked");
@@ -448,10 +448,10 @@ function setupActivityFeed () {
 	$(document).on("click","#clear-filters-link",function(e){
 		e.preventDefault();
 		var str=window.location+"";
-		pieces=str.split("?");
-		var str2=pieces[0];
-		pieces2=str2.split("#");
-		window.location=pieces2[0]+"?filters=true&visibility=&users=&types=&subtypes=&default=false";
+		pieces = str.split("?");
+		var str2 = pieces[0];
+		pieces2 = str2.split("#");
+		window.location = pieces2[0]+"?filters=true&visibility=&users=&types=&subtypes=&default=false";
 	});
 
 	if(x2.whatsNew.minimizeFeed === true){
@@ -459,34 +459,33 @@ function setupActivityFeed () {
 	}
 	$(".date-break.first").after("<div class='list-view'><div id='new-events' class='items' style='display:none;border-bottom:solid #BABABA;'></div></div>");
 
-	var username=yii.profile.username;//"'.Yii::app()->user->getName().'";
-	var usergroups="'.$usersGroups.'";
+	var username = yii.profile.username;
 	$(document).on("click","#just-me-filter",function(e){
 		e.preventDefault();
-		var users=new Array();
+		var users = new Array();
 		$.each($(".users.filter-checkbox"),function(){
-			if($(this).attr("name")!=username){
+			if($(this).attr("name") != username){
 				users.push($(this).attr("name"));
 			}
 		});
 
-		var str=window.location+"";
-		pieces=str.split("?");
-		var str2=pieces[0];
-		pieces2=str2.split("#");
-		window.location=pieces2[0]+"?filters=true&visibility=&users="+users+"&types=&subtypes=&default=false";
+		var str = window.location+"";
+		pieces = str.split("?");
+		var str2 = pieces[0];
+		pieces2 = str2.split("#");
+		window.location = pieces2[0]+"?filters=true&visibility=&users="+users+"&types=&subtypes=&default=false";
 	});
 
 	$(document).on("click","#my-groups-filter",function(e){
 		e.preventDefault();
-		var str=window.location+"";
-		pieces=str.split("?");
-		var str2=pieces[0];
-		pieces2=str2.split("#");
-		window.location=pieces2[0]+"?filters=true&visibility=&users="+usergroups+"&types=&subtypes=&default=false";
+		var str = window.location + "";
+		pieces = str.split("?");
+		var str2 = pieces[0];
+		pieces2 = str2.split("#");
+		window.location = pieces2[0] + "?filters=true&visibility=&users=" + x2.whatsNew.usersGroups + 
+			"&types=&subtypes=&default=false";
 	});
 
-	//var commentFlag=false;
 	$(document).on("click","#toggle-all-comments",function(e){
 		e.preventDefault();
 		x2.whatsNew.commentFlag = !x2.whatsNew.commentFlag;
@@ -606,7 +605,6 @@ function setupBroadcastDialog () {
 function setupMakeImportantDialog () {
 	var link, pieces, id;
 
-
 	function clickMakeImportantButton () {
 		$.ajax({
 			url:"flagPost",
@@ -684,9 +682,9 @@ function updateEventList () {
 
 	$(document).on("click",".comment-link",function(e){
 		e.preventDefault();
-		var link=this;
-		var pieces=$(this).attr("id").split("-");
-		var id=pieces[0];
+		var link = this;
+		var pieces = $(this).attr("id").split("-");
+		var id = pieces[0];
 		$.ajax({
 			url:"loadComments",
 			data:{id:id},
@@ -704,17 +702,17 @@ function updateEventList () {
 		e.preventDefault();
 		$(this).hide();
 		$(this).prev().show();
-		var pieces=$(this).prev().attr("id").split("-");
-		var id=pieces[0];
+		var pieces = $(this).prev().attr("id").split("-");
+		var id = pieces[0];
 		$("#"+id+"-comment-box").slideUp(400);
 	});
 
 
 	$(document).on("click",".unimportant-link",function(e){
 		e.preventDefault();
-		var link=this;
-		var pieces=$(this).attr("id").split("-");
-		var id=pieces[0];
+		var link = this;
+		var pieces = $(this).attr("id").split("-");
+		var id = pieces[0];
 		$.ajax({
 			url:"flagPost",
 			data:{id:id,attr:"unimportant"},
@@ -744,8 +742,8 @@ function updateEventList () {
 	$(document).on("click",".like-button",function(e){
 		e.preventDefault();
 		var link=this;
-		var pieces=$(this).attr("id").split("-");
-		var id=pieces[0];
+		var pieces = $(this).attr("id").split("-");
+		var id = pieces[0];
 		var tmpElem = $("<span>", { "text": ($(link).text ()) });
 		$(link).after (tmpElem);
 		$(link).toggle();
@@ -765,9 +763,9 @@ function updateEventList () {
 
 	$(document).on("click",".unlike-button",function(e){
 		e.preventDefault();
-		var link=this;
-		var pieces=$(this).attr("id").split("-");
-		var id=pieces[0];
+		var link = this;
+		var pieces = $(this).attr("id").split("-");
+		var id = pieces[0];
 		var tmpElem = $("<span>", { "text": ($(link).text ()) });
 		$(link).after (tmpElem);
 		$(link).toggle();
@@ -820,8 +818,8 @@ function updateEventList () {
 	*/
 	$(document).on("click",".like-count",function(e){
 		e.preventDefault();
-		var pieces=$(this).attr("id").split("-");
-		var id=pieces[0];
+		var pieces = $(this).attr("id").split("-");
+		var id = pieces[0];
 		var likeHistoryBox = $("#" + id + "-like-history-box");
 		var likes = $("#" + id + "-likes");
 		if (likeHistoryBox.is(":visible")) {
@@ -1057,9 +1055,9 @@ function updateEventList () {
 
 	$(document).on("click",".sticky-link",function(e){
 		e.preventDefault();
-		var link=this;
-		var pieces=$(this).attr("id").split("-");
-		var id=pieces[0];
+		var link = this;
+		var pieces = $(this).attr("id").split("-");
+		var id = pieces[0];
 		var tmpElem = $("<span>", { "text": ($(link).text ()) });
 		$(link).after (tmpElem);
 		$(link).toggle();
@@ -1078,9 +1076,9 @@ function updateEventList () {
 
 	$(document).on("click",".unsticky-link",function(e){
 		e.preventDefault();
-		var link=this;
-		var pieces=$(this).attr("id").split("-");
-		var id=pieces[0];
+		var link = this;
+		var pieces = $(this).attr("id").split("-");
+		var id = pieces[0];
 		var tmpElem = $("<span>", { "text": ($(link).text ()) });
 		$(link).after (tmpElem);
 		$(link).toggle();
@@ -1139,9 +1137,9 @@ function updateEventList () {
 	updateFeed();
 
 	$(document).on("click",".delete-link",function(e){
-		var link=this;
-		pieces=$(link).attr("id").split("-");
-		id=pieces[0];
+		var link = this;
+		pieces = $(link).attr("id").split("-");
+		id = pieces[0];
 		if(confirm("Are you sure you want to delete this post?")){
 			window.location=x2.whatsNew.deletePostUrl + '?id=' + id;
 		}else{
@@ -1169,7 +1167,77 @@ function setupFeedColorPickers () {
 
 }
 
+function setUpChartHideShowBehavior () {
 
+	/*
+	Show the chart when the show chart button is clicked
+	*/
+	$('#show-chart').click (function (evt) {
+		evt.preventDefault();
+		$(this).hide ();
+		$('#hide-chart').show ();
+		var currChart = $('#chart-type-selector').val ();
+		x2[currChart].chart.show ();
+		$('#activity-feed-chart-container').slideDown (450);
+		x2[currChart].chart.replot ();
+		$('#page-title-container').addClass ('page-title-container-chart-shown');
+	});
+
+	/*
+	Hide the chart when the hide chart button is clicked
+	*/
+	$('#hide-chart').click (function (evt) {
+		evt.preventDefault();
+		$(this).hide ();
+		$('#show-chart').show ();
+		$('#activity-feed-chart-container').slideUp ({
+			duration: 450,
+			complete: function () {
+				x2['eventsChart'].chart.hide ();
+				x2['usersChart'].chart.hide ();
+				$('#page-title-container').removeClass ('page-title-container-chart-shown');
+			}
+		});	
+	});
+
+	$('#chart-type-selector').on ('change', function () {
+		var selectedChart = $(this).val ();
+		if (selectedChart === 'eventsChart') {
+			x2['usersChart'].chart.hide ();
+			x2['eventsChart'].chart.show ();
+			x2['eventsChart'].chart.replot ();
+		} else if (selectedChart === 'usersChart') {
+			x2['eventsChart'].chart.hide ();
+			x2['usersChart'].chart.show ();
+			x2['usersChart'].chart.replot ();
+		}
+		$.cookie ('feedSelectedChart', selectedChart);
+	});
+
+	var chartsReady = 0;
+	$(document).on ('usersChartReady eventsChartReady', function () { 
+		if (++chartsReady === 2)
+			checkChartShow ();
+	});
+
+	function checkChartShow () {
+		if ($.cookie (x2['eventsChart'].chart.cookiePrefix + 'chartIsShown') === 'true' ||
+			$.cookie (x2['usersChart'].chart.cookiePrefix + 'chartIsShown') === 'true') {
+
+			$('#show-chart').click ();
+		}
+	}
+
+	// set chart type using cookie
+	$('#chart-type-selector').find ('option').each (function () {
+		$(this).removeAttr ('selected');
+	});
+	$('#chart-type-selector').children ().each (function () {
+		if ($(this).val () === $.cookie ('feedSelectedChart'))
+			$(this).attr ('selected', 'selected');
+	});
+
+}
 
 $(document).on ('ready', function whatsNewMain () {
 	setupEditorBehavior ();
@@ -1179,7 +1247,7 @@ $(document).on ('ready', function whatsNewMain () {
 	updateEventList ();
 	setupFeedColorPickers ();
 	attachmentMenuBehavior ();
-	//setupChartBehavior (DEBUG, 'getEventsBetween', x2.whatsNew.translations, false);
+	setUpChartHideShowBehavior ();
 });
 
 

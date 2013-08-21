@@ -71,9 +71,10 @@ class JSONEmbeddedModelFieldsBehavior extends EncryptedFieldsBehavior {
 
 	/**
 	 * Attribute of the model class indicating whether the attribute(s) is/are encrypted.
+     * if set to false, encryption will be completely ignored.
 	 * @var type
 	 */
-	public $encryptedFlagAttr;
+	public $encryptedFlagAttr = false;
 
 	/**
 	 * Name of the attribute of the model implementing this behavior to be used
@@ -152,7 +153,8 @@ class JSONEmbeddedModelFieldsBehavior extends EncryptedFieldsBehavior {
 	 */
 	public function beforeSave($event){
 		$encryptFlag = $this->encryptedFlagAttr;
-		$this->getOwner()->$encryptFlag = self::$encrypt;
+        if($encryptFlag)
+    		$this->getOwner()->$encryptFlag = self::$encrypt;
 		parent::beforeSave($event);
 	}
 
@@ -199,7 +201,10 @@ class JSONEmbeddedModelFieldsBehavior extends EncryptedFieldsBehavior {
 		// First, fetch and decode the existing value
 		$owner = $this->getOwner();
 		$encryptedFlagAttr = $this->encryptedFlagAttr;
-		$attributes = CJSON::decode($owner->$encryptedFlagAttr && self::$encrypt ? parent::$encryption->decrypt($owner->$name) : $owner->$name);
+        if($encryptedFlagAttr && self::$encrypt)
+            $attributes = CJSON::decode($owner->$encryptedFlagAttr ? parent::$encryption->decrypt($owner->$name) : $owner->$name);
+        else
+            $attributes = CJSON::decode($owner->$name);
 		// Now the values can be loaded into the model:
 		return $this->attributeModel($name,$attributes);
 	}

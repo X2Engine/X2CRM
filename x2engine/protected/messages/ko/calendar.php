@@ -90,4 +90,5 @@ return array (
 'View Association'=>'뷰 협회',
 'These users can view {fullname}\'s calendar.'=>'이러한 사용자는 볼 수 {fullname} \ &#39;의 달력.',
 'These users can edit {fullname}\'s calendar.'=>'이러한 사용자는 편집 할 수 있습니다 {fullname} \ &#39;의 달력.',
+'Shared Calendar:'=>'공유 일정 :',
 );

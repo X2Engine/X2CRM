@@ -55,12 +55,24 @@ class GoogleMaps extends X2Widget {
 			return;
 
 		Yii::app()->clientScript->registerScript('setupGoogleMapsWidget','
-		if($("#widget_GoogleMaps .portlet-content").is(":visible"))
-			runGoogleMapsWidget();
-		else
-			$("#widget_GoogleMaps .portlet-minimize a").click(function() { runGoogleMapsWidget(); });
+		x2.googleMapsWidget = {};
+		x2.googleMapsWidget.instantiated = false;
+
+		$(document).ready (function () {
+			if($("#widget_GoogleMaps .portlet-content").is(":visible")) {
+				runGoogleMapsWidget();
+			} else {
+				$(document).on ("showWidgets", function () { 
+					if($("#widget_GoogleMaps .portlet-content").is(":visible") && 
+					   !x2.googleMapsWidget.instantiated) {
+						runGoogleMapsWidget(); 
+					} 
+				});
+			}
+		});
 		
 		function runGoogleMapsWidget() {
+			x2.googleMapsWidget.instantiated = true;
 			geocoder = new google.maps.Geocoder();
 			geocoder.geocode( {"address": "'.CJavaScript::quote($this->location).'"}, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK) {
@@ -80,8 +92,17 @@ class GoogleMaps extends X2Widget {
 						map: window.map,
 						position: results[0].geometry.location
 					});
-                    var content=\'<span><a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'],'noHeatMap'=>1)).'">'.Yii::t('contacts','View on Large Map').'</a>\
-                        <br /><br /><a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'])).'">'.Yii::t('contacts','View on Heat Map').'</a></span>\';
+                    var content = 
+						\'<span>'.
+							'<a style="text-decoration:none;"'.
+					    	' href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'],'noHeatMap'=>1)).'">'.
+								Yii::t('contacts','View on Large Map').
+							'</a>'.
+                        	'<br /><br />'.
+							'<a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'])).'">'.
+							 	Yii::t('contacts','View on Heat Map').
+							'</a>'.
+						  '</span>\';
                     var infowindow = new google.maps.InfoWindow({
                                 content:content
                             });
@@ -93,7 +114,7 @@ class GoogleMaps extends X2Widget {
 				}
 			});
 		}
-		',CClientScript::POS_READY);
+		',CClientScript::POS_HEAD);
 		if(isset($_SERVER['HTTPS'])){
             Yii::app()->clientScript->registerScriptFile('https://maps.googleapis.com/maps/api/js?sensor=false');
         }else{

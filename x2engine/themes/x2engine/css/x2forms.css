@@ -123,7 +123,7 @@ div.x2-layout .formSection:first-child .formSectionHeader {
 	border-top: none;
 }
 div.x2-layout .showSection .formSectionHeader {
-	display:block; 
+	display:block;
 	/*width:15px;*/
 }
 div.x2-layout .formSectionHeader a {
@@ -140,10 +140,10 @@ div.x2-layout .formSectionHeader a {
 }
 
 div.x2-layout .sectionTitle {
-	
+
 	/*filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand',M11=0.0, M12=1.0, M21=-1.0, M22=0.0); /* IE6, IE7 */
 	margin-left: 2px;
-	
+
 	display:inline-block;
 	white-space:nowrap;
 	padding-right:5px;
@@ -158,7 +158,7 @@ div,.x2-layout .collapsible .sectionTitle {padding-right:0;}
 div.x2-layout .showSection .sectionTitle {
 
 	height:15px;
-	
+
 	/*-webkit-transform-origin:	top left;
 	-moz-transform-origin:		top left;
 	-o-transform-origin:		top left;
@@ -271,7 +271,7 @@ div.x2-layout .formInputBox {
 	margin-right:1px;
 	padding:3px;
 	/* padding:0 10px 0 0; */
-	
+
 	padding-bottom:503px;	/* equal height columns hack */
 	margin-bottom:-500px;	/* disable */
 	/* margin-bottom:3px; */

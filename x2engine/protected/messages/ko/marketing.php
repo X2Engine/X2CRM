@@ -118,4 +118,8 @@ return array (
 'Email sent'=>'이메일 전송',
 'Header Code'=>'헤더 코드',
 'Batch completed, sending again in '=>'배치 다시 전송 완료',
+'A new web lead has been assigned to you: '=>'새로운 웹 리드에게 할당되었습니다',
+'Marketing Automation'=>'마케팅 자동화',
+'Contacts for Account Report ('=>'계정 보고서 연락처 (',
+'Mailing for Account Report ('=>'계정 보고서 우편 (',
 );

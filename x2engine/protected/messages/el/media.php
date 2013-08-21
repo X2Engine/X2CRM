@@ -37,4 +37,8 @@ return array (
 'View in Google Drive'=>'Δείτε στο Google Drive',
 'File is hosted on Google Drive'=>'Αρχείο φιλοξενείται στο Google Drive',
 'File was not sent to server.'=>'Το αρχείο δεν εστάλη στο διακομιστή.',
+'Attachments:'=>'Συνημμένα:',
+'Dimensions:'=>'Διαστάσεις:',
+'MIME Info:'=>'MIME Info:',
+'Google Drive:'=>'Google Drive:',
 );

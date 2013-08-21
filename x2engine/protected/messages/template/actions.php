@@ -133,4 +133,13 @@ return array (
 'Remind Me'=>'',
 'View Full Edit Page'=>'',
 '(Error displaying email)'=>'',
+'Due: '=>'',
+'Created: '=>'',
+'Email Opened:'=>'',
+'Contact has opened the following email:'=>'',
+'Update Event:'=>'',
+'Action completed: {action}'=>'',
+'{user} completed an action: {action}'=>'',
+'Stage {n}: {stage} was completed for {record}'=>'',
+'{user} completed stage {n}: {stage} was completed for {record}'=>'',
 );

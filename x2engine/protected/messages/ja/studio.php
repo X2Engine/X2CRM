@@ -113,4 +113,6 @@ return array (
 'Post Type'=>'投稿タイプ',
 'Create Notification?'=>'通知を作成しますか？',
 'User Active?'=>'アクティブユーザー？',
+'Tags (optional)'=>'タグ（オプション）',
+'seconds (recommended for formulas only)'=>'秒（のみ式にお勧め）',
 );

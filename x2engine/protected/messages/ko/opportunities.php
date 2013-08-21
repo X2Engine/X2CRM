@@ -25,4 +25,5 @@ return array (
 'Create a new Account associated with this Opportunity.'=>'이 기회에 연결된 새 계정을 만들 수 있습니다.',
 'Create a new Opportunity associated with this Opportunity.'=>'이 기회에 관련된 새로운 기회를 만들 수 있습니다.',
 'Opportunities Stage'=>'기회 단계',
+'Relationships for Contact: '=>'연락 관계 :',
 );

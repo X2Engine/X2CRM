@@ -55,7 +55,8 @@ class X2WidgetList extends X2Widget {
         if(!Yii::app()->user->isGuest){
 	        $this->layout = Yii::app()->params->profile->getLayout ();
         }else{
-            $this->layout = Yii::app()->params->profile->initLayout ();
+            $profile = new Profile();
+            $this->layout = $profile->initLayout ();
         }
 
         parent::init();
@@ -66,26 +67,29 @@ class X2WidgetList extends X2Widget {
         if($this->block == 'center'){
             echo '<div id="content-widgets">';
             foreach($this->layout['center'] as $name => $widget){ // list of widgets
+				$viewParams = array(
+					'widget' => $widget,
+					'name' => $name,
+					'model' => $this->model,
+					'modelType' => $this->modelType
+				);
+
 				$exclude = $this->modelType == 'BugReports' && $name != 'InlineRelationships';
-				$exclude = $exclude || 
+				$exclude = $exclude ||
 					$this->modelType == 'Quote' && $name == 'WorkflowStageDetails';
-				$exclude = $exclude || 
-					$this->modelType == 'Marketing' && 
+				$exclude = $exclude ||
+					$this->modelType == 'Marketing' &&
 					($name == 'WorkflowStageDetails' || $name === 'InlineRelationships');
-				$exclude = $exclude || 
+				$exclude = $exclude ||
 					$this->modelType == 'services' && $name == 'InlineRelationships';
-				$exclude = $exclude || 
-					$this->modelType === 'products' && 
+				$exclude = $exclude ||
+					$this->modelType === 'products' &&
 					($name === 'InlineRelationships' || $name === 'WorkflowStageDetails');
+
                 if(!$exclude){
 					$this->render(
-						'centerWidget', 
-						array(
-							'widget' => $widget, 
-							'name' => $name, 
-							'model' => $this->model, 
-							'modelType' => $this->modelType
-						)
+						'centerWidget',
+						$viewParams
 					);
                 }
             }

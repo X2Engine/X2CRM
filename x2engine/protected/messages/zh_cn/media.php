@@ -37,4 +37,8 @@ return array (
 'View in Google Drive'=>'在谷歌驱动器',
 'File is hosted on Google Drive'=>'档案托管在谷歌驱动器',
 'File was not sent to server.'=>'文件没有被发送到服务器。',
+'Attachments:'=>'附件：',
+'Dimensions:'=>'尺寸：',
+'MIME Info:'=>'MIME信息：',
+'Google Drive:'=>'谷歌驱动器：',
 );

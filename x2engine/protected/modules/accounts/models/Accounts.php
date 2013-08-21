@@ -255,20 +255,27 @@ class Accounts extends X2Model {
 		return $this->searchBase($criteria);
 	}
 
-    /**
-	 * Base search method for all data providers.
-	 * Sets up record-level security checks.
-	 *
-	 * @param CDbCriteria $criteria starting criteria for this search
-	 * @return SmartDataProvider data provider using the provided criteria and any conditions added by {@link X2Model::compareAttributes}
-	 */
-	public function searchBase($criteria=null) {
-		if($criteria === null)
-			$criteria = $this->getAccessCriteria();
-		else
-			$criteria->mergeWith($this->getAccessCriteria());
+    public function searchList($id, $pageSize=null) {
+		$list = X2List::model()->findByPk($id);
 
-		return parent::searchBase($criteria);
+		if(isset($list)) {
+			$search = $list->queryCriteria();
+
+
+			$this->compareAttributes($search);
+
+			return new SmartDataProvider('Accounts',array(
+				'criteria'=>$search,
+				'sort'=>array(
+					'defaultOrder'=>'t.lastUpdated DESC'	// true = ASC
+				),
+				'pagination'=>array(
+					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
+				),
+			));
+
+		} else {	//if list is not working, return all contacts
+			return $this->searchBase();
+		}
 	}
-
 }

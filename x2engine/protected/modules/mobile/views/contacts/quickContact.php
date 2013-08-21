@@ -60,17 +60,17 @@ $model->email = $attributeLabels['email'];
 
 ?>
 <div class="form thin">
-	<div class="row">
-		<?php echo $form->textField($model,'firstName',array('maxlength'=>40,'tabindex'=>100,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;width:275px;')); ?>
+	<div class="row x2-mobile-narrow-input-row">
+		<?php echo $form->textField($model,'firstName',array('maxlength'=>40,'tabindex'=>100,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
 		<?php echo $form->error($model,'firstName'); ?>
 
-		<?php echo $form->textField($model,'lastName',array('maxlength'=>40,'tabindex'=>101,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;width:275px;')); ?>
+		<?php echo $form->textField($model,'lastName',array('maxlength'=>40,'tabindex'=>101,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
 		<?php echo $form->error($model,'lastName'); ?>
 
-		<?php echo $form->textField($model,'phone',array('maxlength'=>40,'tabindex'=>102,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;width:275px;')); ?>
+		<?php echo $form->textField($model,'phone',array('maxlength'=>40,'tabindex'=>102,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
 		<?php echo $form->error($model,'phone'); ?>
 
-		<?php echo $form->textField($model,'email',array('maxlength'=>100,'tabindex'=>103,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'color:#aaa;width:275px;')); ?>
+		<?php echo $form->textField($model,'email',array('maxlength'=>100,'tabindex'=>103,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
 		<?php echo $form->error($model,'email'); ?>
 	</div>
 </div>

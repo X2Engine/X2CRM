@@ -174,4 +174,7 @@ return array (
 'Are you sure you want to delete all other records?'=>'你确定你要删除所有其他的记录吗？',
 'Are you sure you want to hide this record?'=>'你确定你要隐藏这个纪录吗？',
 'Are you sure you want to delete this record?'=>'你确定你要删除这个记录吗？',
+'Your case number is: '=>'您的案件编号是：',
+'Website: '=>'网址：',
+'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'警告：此页面上加载了太多的记录可能会占用服务器显著。您确定要继续吗？',
 );

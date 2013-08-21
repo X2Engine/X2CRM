@@ -32,13 +32,13 @@ return array (
 'Duplicate Check'=>'Έλεγχος Διπλότυπων',
 'Timezone'=>'Ζώνη Ώρας',
 'Web Tracking Key'=>'Κλειδί Web Tracking',
-// // 
+// //
 // // List Attributes
 'Logic Type'=>'Λογική τύπου',
 'Members'=>'Μέλη',
 'Dynamic'=>'Δυναμική',
 'Static'=>'Στατική',
-// // 
+// //
 // // Misc
 'Social Networks'=>'Κοινωνικά Δίκτυα',
 'Detail View'=>'Δείτε Λεπτομέρειες',
@@ -47,7 +47,7 @@ return array (
 'Social Media'=>'Social Media',
 'OR'=>'Ή',
 'Leads'=>'Οδηγεί',
-'<b>{m}</b> of <b>{n}</b>'=>'<b>{M}</b> του <b>{n}</b>',
+'<b>{m}</b> of <b>{n}</b>'=>'<b>{m}</b> του <b>{n}</b>',
 'Create a new Opportunity associated with this Contact.'=>'Δημιουργήστε μια νέα ευκαιρία που συνδέεται με αυτό το άτομο.',
 'Create a new Account associated with this Contact.'=>'Δημιουργήστε ένα νέο λογαριασμό που συνδέεται με αυτό το άτομο.',
 'Create a new Service Case associated with this Contact.'=>'Δημιουργήστε μια νέα περίπτωση υπηρεσία που έχει σχέση με αυτό το άτομο.',
@@ -56,7 +56,7 @@ return array (
 'Create a new Contact associated with this Contact.'=>'Δημιουργήσετε μια νέα επαφή που συνδέεται με αυτό το άτομο.',
 'Create a new Contact'=>'Δημιουργήσετε μια νέα επαφή',
 'Tag Search'=>'Αναζήτηση ετικετών',
-// // 
+// //
 // // Contacts Actions
 'My Contacts'=>'Οι Επαφές μου',
 'New Contacts'=>'Νέες Επαφές',
@@ -78,13 +78,13 @@ return array (
 'Contact Map'=>'Χάρτης Επαφής',
 'Saved Maps'=>'Αποθηκευμένοι Χάρτες',
 'Save Contact'=>'Αποθήκευση Επικοινωνία',
-// // 
+// //
 'Edit List'=>'Επεξεργασία λίστας',
 'Delete List'=>'Διαγραφή λίστας',
 // // Contacts Titles
 'Manage Contacts'=>'Διαχείριση των επαφών',
 'Contact:'=>'Επικοινωνία:',
-// // 
+// //
 // // Import from Outlook
 'Import from Outlook'=>'Εισαγωγή από το Outlook',
 'Import from Template'=>'Εισαγωγή από το πρότυπο',
@@ -123,12 +123,12 @@ return array (
 'records from <b>Contacts</b> successfully exported.'=>'εγγραφές από τις <b>Επαφές</b> εξάγονται με επιτυχία.',
 'All Contact data successfully exported.'=>'Όλα τα στοιχεία επικοινωνίας που εξάγονται με επιτυχία.',
 'Export Complete!'=>'Εξαγωγή Complete!',
-// // 
+// //
 // // Subscribe
 'The information for {name} has changed.'=>'Οι πληροφορίες για τη λειτουργία {name} έχει αλλάξει.',
 'Receive email updates every time information for {name} changes'=>'Ενημέρωση μέσω email κάθε φορά πληροφορίες για τις αλλαγές {name}',
 'Unsubscribe'=>'Διαγραφή',
-// // 
+// //
 // // Web Lead
 'Web Lead'=>'Lead Web',
 'Invalid Email Address'=>'Έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου',
@@ -174,4 +174,7 @@ return array (
 'Are you sure you want to delete all other records?'=>'Είστε σίγουροι ότι θέλετε να διαγράψετε όλα τα άλλα αρχεία;',
 'Are you sure you want to hide this record?'=>'Είστε σίγουροι ότι θέλετε να ακυρώσετε αυτό το ρεκόρ;',
 'Are you sure you want to delete this record?'=>'Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το αρχείο;',
+'Your case number is: '=>'Αριθμός περίπτωσή σας είναι:',
+'Website: '=>'Website:',
+'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'ΠΡΟΣΟΧΗ: φόρτωση πάρα πολλά αρχεία σε αυτή τη σελίδα μπορούν να δένουν το διακομιστή σημαντικά. Είστε βέβαιοι ότι θέλετε να συνεχίσετε;',
 );

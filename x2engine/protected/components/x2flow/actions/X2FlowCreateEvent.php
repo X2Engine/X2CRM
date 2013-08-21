@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -50,8 +49,8 @@ class X2FlowCreateEvent extends X2FlowAction {
         $eventTypes = Dropdowns::getItems(113, 'studio');
 
         return array(
-            'title' => Yii::t('studio',$this->title),
-            'info' => Yii::t('studio',$this->info),
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
             'options' => array(
                 array('name' => 'type', 'label' => Yii::t('studio', 'Post Type'), 'type' => 'dropdown', 'options' => $eventTypes),
                 array('name' => 'text', 'label' => Yii::t('studio', 'Text'), 'type' => 'text'),
@@ -80,7 +79,8 @@ class X2FlowCreateEvent extends X2FlowAction {
             $event->associationType = get_class($params['model']);
             $event->associationId = $params['model']->id;
             $event->type = $this->getEventType();
-            $event->visibility = $params['model']->visibility;
+            if($params['model']->hasAttribute('visibility'))
+                $event->visibility = $params['model']->visibility;
             // $event->user = $this->parseOption('user',$params);
         } else{
             $text = $this->parseOption('text', $params);

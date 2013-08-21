@@ -37,4 +37,8 @@ return array (
 'View in Google Drive'=>'グーグルドライブで表示',
 'File is hosted on Google Drive'=>'ファイルは、Googleドライブでホストされている',
 'File was not sent to server.'=>'ファイルがサーバーに送信されませんでした。',
+'Attachments:'=>'添付ファイル：',
+'Dimensions:'=>'寸法：',
+'MIME Info:'=>'MIME情報：',
+'Google Drive:'=>'グーグルドライブ：',
 );

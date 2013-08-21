@@ -34,7 +34,7 @@
  *****************************************************************************************/
 
 
-var DEBUG = x2.chart.DEBUG;
+var DEBUG = true;//x2Chart.DEBUG;
 
 /*
 Removes an error div created by createErrorBox ().  
@@ -70,17 +70,20 @@ function createErrorBox (errorHeader, errorMessages) {
 	return errorBox;
 }
 
-function setupChartBehavior (suppressChartSettings) {
+function setupChartBehavior (x2Chart) {
 
 	var eventData = null; // the ajax returned data to plot
 	var feedChart = null; // the jqplot chart object
-	var msPerHour = 3600 * 1000;
-	var msPerDay = 86400 * 1000;
-	var msPerWeek = 7 * 86400 * 1000;
-	var cookiePrefix = x2.chart.chartPage; // used to differentiate chart settings
+	var MSPERHOUR = 3600 * 1000;
+	var MSPERDAY = 86400 * 1000;
+	var MSPERWEEK = 7 * 86400 * 1000;
+	var cookiePrefix = x2Chart.chartType; // used to differentiate chart settings
 
-	if (x2.chart.chartType === 'multiLine') {
-		if (x2.chart.chartPage === 'recordView') {	
+	if (x2Chart.chartSubtype === 'multiLine') {
+		var colors;
+		if (x2Chart.chartType === 'recordView') {	
+	
+			// color palette used for lines of action history chart
 	        colors = [
 				'#7EB2E6', // pale blue
 				'#CEC415', // mustard
@@ -110,7 +113,9 @@ function setupChartBehavior (suppressChartSettings) {
 				'#D099FF',
 				'#E1A1FF',
 			];
-		} else if (x2.chart.chartPage === 'activityFeed') {	
+		} else if (x2Chart.chartType === 'eventsChart' || x2Chart.chartType === 'usersChart') {	
+
+			// color palette used for lines of feed chart
 	        colors = [
 				'#7EB2E6', // pale blue
 				'#FFC382', // pastel orange
@@ -139,10 +144,11 @@ function setupChartBehavior (suppressChartSettings) {
 				//'#8DEB10',
 				'#C87010', // red rock
 				'#1D4C8C', // dark blue-purple
-		];
+			];
 		}
-		var metricOptionsColors = {};
-		$('#first-metric').find ('option').each (function () {
+
+		var metricOptionsColors = {}; // used to pair colors with metrics
+		$('#' + x2Chart.chartType + '-first-metric').find ('option').each (function () {
 			metricOptionsColors[$(this).val ()] = colors.shift ();
 		});
 	}
@@ -154,10 +160,10 @@ function setupChartBehavior (suppressChartSettings) {
 		redraw - Boolean, determines whether plotData will clear the plot before drawing
 	*/
 	function getEventsBetweenDates (redraw) {
-		var binSize = $('#bin-size-button-set a.disabled-link').attr ('id');
-		var tsDict = getStartEndTimestamp (binSize);
+		var binSize = $('#' + x2Chart.chartType + '-bin-size-button-set a.disabled-link').attr ('id');
+		var tsDict = getStartEndTimestamp ();
 		var startTimestamp = tsDict['startTimestamp'];
-		var endTimestamp = tsDict['endTimestamp'];
+		var endTimestamp = tsDict['endTimestamp'] + MSPERDAY;
 
 		DEBUG && console.log ('getting events between ' + startTimestamp + ' and ' + endTimestamp);
 
@@ -166,22 +172,28 @@ function setupChartBehavior (suppressChartSettings) {
 			'endTimestamp': endTimestamp / 1000
 		}
 
-		if (x2.chart.actionParams) {
-			$.extend (data, x2.chart.actionParams);
+		if (x2Chart.actionParams) {
+			$.extend (data, x2Chart.actionParams);
 		}
 
-		if (x2.chart.chartData) {
-			eventData = x2.chart.chartData;
+		if (x2Chart.chartData) {
+			eventData = x2Chart.chartData;
 			plotData ({'redraw': redraw});
-			x2.chart.chartData = null;
+			x2Chart.chartData = null;
 			return;
 		}
 
+		DEBUG && console.log ('calling ' + x2Chart.getChartDataActionName + ' with params ');
+		DEBUG && console.debug (data);
+
 		$.ajax ({
-			'url': x2.chart.getChartDataActionName,
+			'url': x2Chart.getChartDataActionName,
 			'data': data,
 			'success': function (data) {
 				eventData = JSON.parse (data);
+				DEBUG && console.log ('ajax ret, eventData = ');
+				DEBUG && console.debug (eventData);
+
 				plotData ({'redraw': redraw});
 			}
 		});
@@ -222,13 +234,11 @@ function setupChartBehavior (suppressChartSettings) {
 
 		switch (interval) {
 			case 'hour':
-				var msPerHour = 3600 * 1000;
-
 				if (!showMarker) {
 					var intermediateTimestamp1 = timestamp1;
 					var intermediateTimestamp2 = timestamp2;
-					intermediateTimestamp1 += msPerHour;
-					intermediateTimestamp2 -= msPerHour;
+					intermediateTimestamp1 += MSPERHOUR;
+					intermediateTimestamp2 -= MSPERHOUR;
 					if (intermediateTimestamp1 < intermediateTimestamp2) {
 						entries.push ([intermediateTimestamp1, 0]);
 						entries.push ([intermediateTimestamp2, 0]);
@@ -241,7 +251,7 @@ function setupChartBehavior (suppressChartSettings) {
 				} else {
 					var intermediateTimestamp = timestamp1;
 					while (true) {
-						intermediateTimestamp += msPerHour;
+						intermediateTimestamp += MSPERHOUR;
 						if ((intermediateTimestamp < timestamp2 && !inclusiveEnd) ||
 							(intermediateTimestamp <= timestamp2 && inclusiveEnd)) {
 							entries.push ([intermediateTimestamp, 0]);
@@ -252,13 +262,11 @@ function setupChartBehavior (suppressChartSettings) {
 				}
 				break;
 			case 'day':
-				var msPerDay = 86400 * 1000;
-
 				if (!showMarker) {
 					var intermediateTimestamp1 = timestamp1;
 					var intermediateTimestamp2 = timestamp2;
-					intermediateTimestamp1 += msPerDay;
-					intermediateTimestamp2 -= msPerDay;
+					intermediateTimestamp1 += MSPERDAY;
+					intermediateTimestamp2 -= MSPERDAY;
 					if (intermediateTimestamp1 < intermediateTimestamp2) {
 						entries.push ([intermediateTimestamp1, 0]);
 						entries.push ([intermediateTimestamp2, 0]);
@@ -271,7 +279,7 @@ function setupChartBehavior (suppressChartSettings) {
 				} else {
 					var intermediateTimestamp = timestamp1;
 					while (true) {
-						intermediateTimestamp += msPerDay;
+						intermediateTimestamp += MSPERDAY;
 						if ((intermediateTimestamp < timestamp2 && !inclusiveEnd) ||
 							(intermediateTimestamp <= timestamp2 && inclusiveEnd)) {
 							entries.push ([intermediateTimestamp, 0]);
@@ -283,13 +291,13 @@ function setupChartBehavior (suppressChartSettings) {
 
 				break;
 			case 'week':
-				var msPerWeek = 7 * 86400 * 1000;
-
 				if (!showMarker) {
-					var intermediateTimestamp1 = timestamp1;
+					var intermediateTimestamp1 = 
+						getRoundedTimestamp (timestamp1, 'week-bin-size', false);
+					//var intermediateTimestamp1 = timestamp1;
 					var intermediateTimestamp2 = timestamp2;
-					intermediateTimestamp1 += msPerWeek;
-					intermediateTimestamp2 -= msPerWeek;
+					intermediateTimestamp1 += MSPERWEEK;
+					intermediateTimestamp2 -= MSPERWEEK;
 					if (intermediateTimestamp1 < intermediateTimestamp2) {
 						entries.push ([intermediateTimestamp1, 0]);
 						entries.push ([intermediateTimestamp2, 0]);
@@ -297,9 +305,24 @@ function setupChartBehavior (suppressChartSettings) {
 						entries.push ([intermediateTimestamp1, 0]);
 					}
 				} else {
-					var intermediateTimestamp = timestamp1;
+					DEBUG && console.log ('fillZeroEntries: week, timestamp1 = ' +
+								 timestamp1);
+					DEBUG && console.log ('timestamp2 = ' + timestamp2);
+					var rounded = false;
+					var intermediateTimestamp = 
+						getRoundedTimestamp (timestamp1, 'week-bin-size', false);
+					DEBUG && console.log ('fillZeroEntries: week, intermediateTimestamp = ' +
+								 intermediateTimestamp);
+					if (intermediateTimestamp !== timestamp1) {
+						DEBUG && console.log ('setting rounded to true');
+						rounded = true;
+					}
 					while (true) {
-						intermediateTimestamp += msPerWeek;
+						if (!rounded) {
+							intermediateTimestamp += MSPERWEEK;
+							DEBUG && console.log ('setting rounded to false');
+						}
+						rounded = false;
 						if ((intermediateTimestamp < timestamp2 && !inclusiveEnd) ||
 							(intermediateTimestamp <= timestamp2 && inclusiveEnd)) {
 							entries.push ([intermediateTimestamp, 0]);
@@ -376,7 +399,7 @@ function setupChartBehavior (suppressChartSettings) {
 		binSize - a string
 		type - a string. The type of event that will get plotted.
 	*/
-	function groupChartData (eventData, binSize, type, showMarker) { 
+	function groupChartData (eventData, binSize, type, showMarker, onlyOneBin) { 
 
 		var chartData = [];
 
@@ -434,7 +457,7 @@ function setupChartBehavior (suppressChartSettings) {
 				}
 				break;
 			case 'week-bin-size':
-				var week, year, evt, dateString, timestamp, date, day, msPerWeek, count;
+				var week, year, evt, dateString, timestamp, date, day, MSPERWEEK, count;
 				for (var i in eventData) {
 					evt = eventData[i];
 					count = evt['count'] === '0' ? 1 : parseInt (evt['count'], 10);
@@ -450,8 +473,7 @@ function setupChartBehavior (suppressChartSettings) {
 							year, evt['month'] - 1, evt['day'], 0, 0, 0, 0)).getTime ();
 						date = new Date (timestamp);
 						day = date.getDay ();
-						msPerWeek = 86400 * 1000;
-						timestamp -= day * msPerWeek;
+						timestamp -= day * MSPERDAY;
 
 						chartData.push ([timestamp, count]);
 					}
@@ -479,8 +501,20 @@ function setupChartBehavior (suppressChartSettings) {
 				break;
 		}
 
-		// insert entries with y value equal to 0 into chartData at the specified interval
 		chartData.reverse ();
+
+		var startTimestamp = 
+			($('#' + x2Chart.chartType + '-chart-datepicker-from').datepicker ('getDate').valueOf ());
+
+		// shift position of first bin forward to starting timestamp
+		if ((binSize === 'week-bin-size' || binSize === 'month-bin-size') &&
+			chartData.length !== 0 && chartData[0][0] < startTimestamp) 
+			chartData[0][0] = startTimestamp;
+
+		if (onlyOneBin && chartData.length === 0)
+			chartData.push ([startTimestamp, 0]);
+
+		// insert entries with y value equal to 0 into chartData at the specified interval
 		var chartDataIndex = 0;
 		var timestamp1, timestamp2, arr1, arr2, intermArr;
 		while (chartData.length !== 0 && chartDataIndex < chartData.length - 1) {
@@ -529,7 +563,6 @@ function setupChartBehavior (suppressChartSettings) {
 
 		}
 
-
 		return {
 			chartData: chartData
 		};
@@ -544,18 +577,16 @@ function setupChartBehavior (suppressChartSettings) {
 		switch (binSize) {
 			case 'hour-bin-size':
 			case 'day-bin-size':
-				var msPerDay = 86400 * 1000;
 				if (forward)
-					newTimestamp += msPerDay;
+					newTimestamp += MSPERDAY;
 				else
-					newTimestamp -= msPerDay;
+					newTimestamp -= MSPERDAY;
 				break;
 			case 'week-bin-size':
-				var msPerWeek = 7 * 86400 * 1000;
 				if (forward)
-					newTimestamp += msPerWeek;
+					newTimestamp += MSPERWEEK;
 				else
-					newTimestamp -= msPerWeek;
+					newTimestamp -= MSPERWEEK;
 				break;
 			case 'month-bin-size':
 				var date = new Date (timestamp);
@@ -564,7 +595,7 @@ function setupChartBehavior (suppressChartSettings) {
 				if (forward) {
 					M++;
 					if (M === 13) {
-						M = 0;
+						M = 1;
 						Y++;
 					}
 				} else {
@@ -591,10 +622,15 @@ function setupChartBehavior (suppressChartSettings) {
 	function fillZeroEntries (
 		startTimestamp, endTimestamp, binSize, chartData, showMarker) {
 
+		DEBUG && console.log ('fillZeroEntries: startTimestamp, endTimestamp = ');
+		DEBUG && console.log (startTimestamp, endTimestamp);
+
 		var binType = binSize.match (/^[^-]+/)[0];
 
 		if (chartData[0] === null) {
 			DEBUG && console.log ('data is null, filling zeroes');
+			//startTimestamp = getRoundedTimestamp (startTimestamp, binSize, true);
+			endTimestamp = getRoundedTimestamp (endTimestamp, binSize, true);
 			chartData = getZeroEntriesBetween (
 				startTimestamp, endTimestamp, binType, true, true, showMarker);
 			return chartData;
@@ -603,6 +639,7 @@ function setupChartBehavior (suppressChartSettings) {
 		var chartStartTimestamp = chartData[0][0];
 		var chartEndTimestamp = chartData[chartData.length - 1][0];
 		if (startTimestamp < chartStartTimestamp) {
+			//startTimestamp = getRoundedTimestamp (startTimestamp, binSize, true);
 			var arr = getZeroEntriesBetween (
 				startTimestamp, chartStartTimestamp, binType, true, false, showMarker);
 			if (arr.length !== 0) {
@@ -610,6 +647,7 @@ function setupChartBehavior (suppressChartSettings) {
 			}
 		}
 		if (endTimestamp > chartEndTimestamp) {
+			endTimestamp = getRoundedTimestamp (endTimestamp, binSize, true);
 			var arr = getZeroEntriesBetween (
 				chartEndTimestamp, endTimestamp, binType, false, true, showMarker);
 			if (arr.length !== 0)
@@ -624,11 +662,11 @@ function setupChartBehavior (suppressChartSettings) {
 	Returns a dictionary containing the number of hours, days, months, and years between
 	the start and end timestamps.
 	*/
-	function countHoursDaysMonthsYears (startTimestamp, endTimestamp) {
+	function countBins (startTimestamp, endTimestamp) {
+		endTimestamp += MSPERDAY;
 
 		var dateRange =
 			endTimestamp - startTimestamp;
-
 
 		// get starting and ending months and years
 		var startDate = new Date (startTimestamp);
@@ -658,29 +696,32 @@ function setupChartBehavior (suppressChartSettings) {
 		if (weeks === 0) weeks = 1;
 		if (months === 0) months = 1;
 
+		weeks = Math.ceil (days / 7);
+
 		return {
 			'hours': hours,
 			'days': days,
+			'weeks': weeks,
 			'months': months,
 			'years': yearCount + 1
 		};
 	}
 
-	// returns timestamp of nearest previous day at 12am
-	function getRoundedDayTs (timestamp, curr) {
+	// returns timestamp of nearest day at 12am
+	function getRoundedDayTs (timestamp, prev) {
 		var date = new Date (timestamp);
 		var M = date.getMonth () + 1;
 		var Y = date.getFullYear ();
 		var D = date.getDate ();
 		var newTimestamp = (new Date (Y, M - 1, D, 0, 0, 0, 0)).getTime ();
-		if (!curr) {
-			newTimestamp += msPerDay;
+		if (!prev) {
+			newTimestamp += MSPERDAY;
 		}
 		return newTimestamp;
 	}
 
-	// returns timestamp of nearest previous Sunday at 12am
-	function getRoundedWeekTs (timestamp, curr) {
+	// returns timestamp of nearest Sunday at 12am
+	function getRoundedWeekTs (timestamp, prev) {
 		var date = new Date (timestamp);
 		var M = date.getMonth () + 1;
 		var D = date.getDate ();
@@ -688,20 +729,19 @@ function setupChartBehavior (suppressChartSettings) {
 		var newTimestamp = (new Date (Y, M - 1, D, 0, 0, 0, 0)).getTime ();
 		var date = new Date (newTimestamp);
 		var day = date.getDay ();
-		var msPerWeek = 86400 * 1000;
-		newTimestamp -= day * msPerWeek;
-		if (!curr) {
-			newTimestamp += msPerWeek;
+		newTimestamp -= day * MSPERDAY;
+		if (!prev && day !== 0) {
+			newTimestamp += MSPERWEEK;
 		}
 		return newTimestamp;
 	}
 
-	// returns timestamp of nearest previous 1st of month at 12am
-	function getRoundedMonthTs (timestamp, curr) {
+	// returns timestamp of nearest 1st of month at 12am
+	function getRoundedMonthTs (timestamp, prev) {
 		var date = new Date (timestamp);
 		var M = date.getMonth () + 1;
 		var Y = date.getFullYear ();
-		if (!curr) {
+		if (!prev) {
 			M++;
 			if (M > 12) {
 				M = 1;
@@ -712,40 +752,41 @@ function setupChartBehavior (suppressChartSettings) {
 		return newTimestamp;
 	}
 
+	function getRoundedTimestamp (timestamp, binSize, prev) {
+		DEBUG && console.log ('getRoundedTimestamp: ');
+		var roundedTimestamp;
+		switch (binSize) {
+			case 'hour-bin-size':
+				roundedTimestamp = timestamp;
+				break;
+			case 'day-bin-size':
+				roundedTimestamp = getRoundedDayTs (timestamp, prev);
+				break;
+			case 'week-bin-size':
+				roundedTimestamp = getRoundedWeekTs (timestamp, prev);
+				break;
+			case 'month-bin-size':
+				roundedTimestamp = getRoundedMonthTs (timestamp, prev);
+				break;
+		}
+		DEBUG && console.log ('timestamp, roundedTimestamp = ');
+		DEBUG && console.log (timestamp, roundedTimestamp);
+		return roundedTimestamp;
+	}
+
 	/*
 	Retrieves the user selected start and end timestamps from the DOM.
 	Parameter:
 		binSize - if set, the start and end timestamps will be rounded down to the
 			nearest hour, day, week, or month, respectively
 	*/
-	function getStartEndTimestamp (binSize /* optional */) {
+	function getStartEndTimestamp () {
 		var startTimestamp =
-			($('#chart-datepicker-from').datepicker ('getDate').valueOf ());
+			($('#' + x2Chart.chartType + '-chart-datepicker-from').datepicker ('getDate').valueOf ());
 		var endTimestamp =
-			($('#chart-datepicker-to').datepicker ('getDate').valueOf ());
+			($('#' + x2Chart.chartType + '-chart-datepicker-to').datepicker ('getDate').valueOf ());
 		if (endTimestamp < startTimestamp)
 			endTimestamp = startTimestamp;
-
-
-		// round dates to nearest interval boundary
-		if (typeof binSize !== 'undefined') {
-			switch (binSize) {
-				case 'hour-bin-size':
-					break;
-				case 'day-bin-size':
-					startTimestamp = getRoundedDayTs (startTimestamp, true);
-					endTimestamp = getRoundedDayTs (endTimestamp, true) + msPerDay;
-					break;
-				case 'week-bin-size':
-					startTimestamp = getRoundedWeekTs (startTimestamp, true);
-					endTimestamp = getRoundedWeekTs (endTimestamp, true);
-					break;
-				case 'month-bin-size':
-					startTimestamp = getRoundedMonthTs (startTimestamp, true);
-					endTimestamp = getRoundedMonthTs (endTimestamp, true);
-					break;
-			}
-		}
 
 		DEBUG && console.log ('getStartEndTimestamp: ');
 		DEBUG && console.log (startTimestamp, endTimestamp);
@@ -886,29 +927,66 @@ function setupChartBehavior (suppressChartSettings) {
 	Given a format string and a timestamp, returns a label with information extracted
 	from the timestamp. Used to create tooltip text.
 	*/
-	function getTooltipFormattedLabel (formatStr, timestamp) {
+	function getTooltipFormattedLabel (formatStr, timestamp, isFirstPoint, isLastPoint) {
+		DEBUG && console.log ('getTooltipFormattedLabel: params = ');
+		DEBUG && console.log (formatStr, timestamp, isFirstPoint, isLastPoint);
 
 		var fmtLabel = '';
 		var tokens = formatStr.split (' ');
 		var date = new Date (timestamp);
 
-		var monthStr, D, M, hours, H, period, Y, endTimestamp, endDate;
+		var monthStr, D, M, hours, H, period, Y, endTimestamp, endDate ;
 		for (var i in tokens) {
 			switch (tokens[i]) {
 				case 'shortMonth':
 					M = date.getMonth () + 1;
-					monthStr = x2.chart.translations [getShortMonthName (M)];
+					monthStr = x2Chart.translations [getShortMonthName (M)];
 					fmtLabel += monthStr;
 					break;
 				case 'day':
 					D = date.getDate ();
 					fmtLabel += D;
 					break;
-				case 'plusSixDays':
-					endTimestamp = timestamp + 6 * msPerDay;
+				case 'toLastDayOfMonth':
+					if (isLastPoint) {
+						endTimestamp = ($('#' + x2Chart.chartType + '-chart-datepicker-to').datepicker ('getDate').valueOf ());
+						if (endTimestamp < timestamp)
+							endTimestamp = timestamp;
+					} else {
+						Y = date.getFullYear ();
+						M = date.getMonth () + 1;
+						M++;
+						if (M > 12) {
+							M = 0;
+							Y++;
+						}
+						DEBUG && console.log ('Y, M = ');
+						DEBUG && console.log (Y, M);
+						endTimestamp = (new Date (Y, M - 1, 1, 0, 0, 0, 0)).getTime ();
+						endTimestamp -= MSPERDAY;
+						DEBUG && console.log (endTimestamp);
+					}
 						
 					fmtLabel += '- ' + getTooltipFormattedLabel (
-						formatStr.split ('plusSixDays')[0], endTimestamp);
+						formatStr.split ('toLastDayOfMonth')[0], endTimestamp, false, false);
+					formatStr.replace (/^.*toLastDayOfMonth/, '');
+					break;
+
+				case 'plusSixDays':
+					if (isFirstPoint) {
+						var day = date.getDay ();
+						endTimestamp = timestamp + (7 - (day + 1)) * MSPERDAY;
+					} else if (isLastPoint) {
+						endTimestamp = ($('#' + x2Chart.chartType + '-chart-datepicker-to').datepicker ('getDate').valueOf ());
+						if (endTimestamp < timestamp)
+							endTimestamp = timestamp;
+					} else {
+						endTimestamp = timestamp + 6 * MSPERDAY;
+						//endTimestamp -= timestampDiff; 
+					}
+						
+					fmtLabel += '- ' + getTooltipFormattedLabel (
+						formatStr.split ('plusSixDays')[0], endTimestamp, false, false);
 					formatStr.replace (/^.*plusSixDays/, '');
 					break;
 				case 'hours':
@@ -924,7 +1002,7 @@ function setupChartBehavior (suppressChartSettings) {
 					break;
 				case 'longMonth':
 					M = date.getMonth () + 1;
-					monthStr = x2.chart.translations[getLongMonthName (M)];
+					monthStr = x2Chart.translations[getLongMonthName (M)];
 					fmtLabel += monthStr;
 					break;
 				case '':
@@ -946,7 +1024,16 @@ function setupChartBehavior (suppressChartSettings) {
 	and the ticks' labels depend on the user selected bin size and date range.
 	*/
 	function getTicks (startTimestamp, endTimestamp, binSize, countDict) {
-		DEBUG && console.log ('getTicks');	
+		DEBUG && console.log ('getTicks:');	
+
+		var rounded = false;
+		var roundedTimestamp = getRoundedTimestamp (endTimestamp, binSize, true);
+		if (roundedTimestamp !== endTimestamp)
+			rounded = true;
+		endTimestamp = roundedTimestamp;
+
+		DEBUG && console.log ('startTimestamp, endTimestamp = ');
+		DEBUG && console.log ([startTimestamp, endTimestamp]);
 
 		var hours = countDict['hours'];
 		var days = countDict['days'];
@@ -964,23 +1051,41 @@ function setupChartBehavior (suppressChartSettings) {
 			interval - the number of days between each tick
 		*/
 		function getDayTicksBetween (startTimestamp, endTimestamp, interval) {
-			var date = new Date (startTimestamp);
-			var D = date.getDate ();
-			var M = date.getMonth () + 1;
-			var monthStr = x2.chart.translations [getShortMonthName (M)];
+			var date, D, M, monthStr;
+
+			DEBUG && console.log ('getDayTicksBetween: count by ' + interval);
+
+			date = new Date (startTimestamp);
+
+			var day = date.getDay ();
+			// place dummy tick and find next week boundary
+			if (day !== 0 && interval >= MSPERWEEK) { 
+				ticks.push ([startTimestamp,'']);
+				startTimestamp += (7 - day) * MSPERDAY;
+				date = new Date (startTimestamp);
+				D = date.getDate ();
+				M = date.getMonth () + 1;
+				monthStr = x2Chart.translations [getShortMonthName (M)];
+			} else { // timestamp is at week boundary
+				D = date.getDate ();
+				M = date.getMonth () + 1;
+				monthStr = x2Chart.translations [getShortMonthName (M)];
+			}
+
 			ticks.push ([startTimestamp, monthStr + ' ' + D]);
+
 			var timestamp = startTimestamp;
 			timestamp += interval;
 			while (timestamp <= endTimestamp) {
 				date = new Date (timestamp);
 				D = date.getDate ();
 				M = date.getMonth () + 1;
-				monthStr = x2.chart.translations[getShortMonthName (M)];
+				monthStr = x2Chart.translations[getShortMonthName (M)];
 				ticks.push ([timestamp, monthStr + ' ' + D]);
 
 				timestamp += interval;
 
-				if (timestamp > endTimestamp)
+				if (timestamp > endTimestamp)// && binSize !== 'week-bin-size')
 					ticks.push ([endTimestamp, '']);
 			}
 			return ticks;
@@ -1012,7 +1117,7 @@ function setupChartBehavior (suppressChartSettings) {
 			var endYear = date2.getYear ();
 			var beginString = (M1 + '-' + 1 + '-' + Y1);
 			var endString = (M2 + '-' + 1 + '-' + Y2);
-			var monthStr = x2.chart.translations[getShortMonthName (M1)];
+			var monthStr = x2Chart.translations[getShortMonthName (M1)];
 			if (!suppressYear) monthStr += ' ' + Y1;
 			var timestamp = (new Date (Y1, M1 - 1, 1, 0, 0, 0, 0)).getTime ();
 			var roundedEndTimestamp = (new Date (Y2, M2 - 1, 1, 0, 0, 0, 0)).getTime ();
@@ -1035,14 +1140,14 @@ function setupChartBehavior (suppressChartSettings) {
 				beginString = M1 + '-' + 1 + '-' + Y1;
 
 				timestamp = (new Date (Y1, M1 - 1, 1, 0, 0, 0, 0)).getTime ();
-				monthStr = x2.chart.translations[getShortMonthName (M1)];
+				monthStr = x2Chart.translations[getShortMonthName (M1)];
 				if (!suppressYear) monthStr += ' ' + Y1;
 
 				if (beginString === endString || Y1 > Y2 || (Y1 === Y2 && M1 > M2)) {
 					if (timestamp <= endTimestamp)
 						ticks.push ([timestamp, monthStr]);
-					if (beginString !== endString || roundedEndTimestamp !== endTimestamp)
-						ticks.push ([endTimestamp, ""]);
+					/*if (beginString !== endString || roundedEndTimestamp !== endTimestamp)
+						ticks.push ([endTimestamp, ""]);*/
 					break;
 				} else {
 					ticks.push ([timestamp, monthStr]);
@@ -1060,7 +1165,7 @@ function setupChartBehavior (suppressChartSettings) {
 					var date = new Date (startTimestamp);
 					ticks.push ([startTimestamp, '12:00 AM']);
 					var timestamp = startTimestamp;
-					var interval = msPerDay / 2;
+					var interval = MSPERDAY / 2;
 					var period = 'PM';
 					timestamp += interval;
 					while (timestamp <= endTimestamp) {
@@ -1074,15 +1179,15 @@ function setupChartBehavior (suppressChartSettings) {
 					labelFormat = 'longMonth day hours';
 				} else if (days <= 7) {
 					ticks =
-						getDayTicksBetween (startTimestamp, endTimestamp, msPerDay);
+						getDayTicksBetween (startTimestamp, endTimestamp, MSPERDAY);
 					labelFormat = 'longMonth day hours';
 				} else if (days <= 62) {
 					ticks = getDayTicksBetween (
-						startTimestamp, endTimestamp, Math.ceil (days / 7) * msPerDay);
+						startTimestamp, endTimestamp, Math.ceil (days / 7) * MSPERDAY);
 					labelFormat = 'longMonth day hours';
 				} else if (days <= 182) {
 					ticks = getDayTicksBetween (
-						startTimestamp, endTimestamp, Math.ceil (weeks / 7) *  7 * msPerDay);
+						startTimestamp, endTimestamp, Math.ceil (weeks / 7) *  7 * MSPERDAY);
 					labelFormat = 'longMonth day hours';
 				} else if (days < 365) {
 					ticks =
@@ -1097,15 +1202,15 @@ function setupChartBehavior (suppressChartSettings) {
 			case 'day-bin-size':
 				if (days <= 7) {
 					ticks =
-						getDayTicksBetween (startTimestamp, endTimestamp, msPerDay);
+						getDayTicksBetween (startTimestamp, endTimestamp, MSPERDAY);
 					labelFormat = 'longMonth day';
-				} else if (days <= 62) {
+				} else if (days <= 49) {
 					ticks = getDayTicksBetween (
-						startTimestamp, endTimestamp, Math.ceil (days / 7) * msPerDay);
+						startTimestamp, endTimestamp, Math.ceil (days / 7) * MSPERDAY);
 					labelFormat = 'longMonth day';
 				} else if (days <= 182) {
 					ticks = getDayTicksBetween (
-						startTimestamp, endTimestamp, Math.ceil (weeks / 7) *  7 * msPerDay);
+						startTimestamp, endTimestamp, Math.ceil (weeks / 7) *  7 * MSPERDAY);
 					labelFormat = 'longMonth day';
 				} else if (days < 365) {
 					ticks =
@@ -1118,17 +1223,21 @@ function setupChartBehavior (suppressChartSettings) {
 				}
 				break;
 			case 'week-bin-size':
-				if (days <= 45) {
+				if (days < 21) {
+					ticks = getDayTicksBetween (
+						startTimestamp, endTimestamp, Math.ceil (days / 7) * MSPERDAY);
+					labelFormat = 'longMonth day plusSixDays';
+				} else if (days <= 49) {
 					ticks =
-						getDayTicksBetween (startTimestamp, endTimestamp, 7 * msPerDay);
+						getDayTicksBetween (startTimestamp, endTimestamp, 7 * MSPERDAY);
 					labelFormat = 'longMonth day plusSixDays';
-				} else if (days <= 62) {
+				} /*else if (days <= 62) {
 					ticks = getDayTicksBetween (
-						startTimestamp, endTimestamp, Math.ceil (days / 7) * msPerDay);
+						startTimestamp, endTimestamp, Math.ceil (days / 7) * 7 * MSPERDAY);
 					labelFormat = 'longMonth day plusSixDays';
-				} else if (days <= 182) {
+				} */else if (days <= 182) {
 					ticks = getDayTicksBetween (
-						startTimestamp, endTimestamp, Math.ceil (weeks / 7) * 7 * msPerDay);
+						startTimestamp, endTimestamp, Math.ceil (weeks / 7) * 7 * MSPERDAY);
 					labelFormat = 'longMonth day plusSixDays';
 				} else if (days < 365) {
 					ticks =
@@ -1144,11 +1253,18 @@ function setupChartBehavior (suppressChartSettings) {
 				if (days < 365) {
 					ticks = getMonthTicksBetween (
 						startTimestamp, endTimestamp, Math.ceil (months / 7), true);
-					labelFormat = 'longMonth';
+					if (ticks.length === 2 &&
+						(ticks[0][1] === '' || ticks[1][1] === '')) {
+						ticks = getTicks (
+							startTimestamp, endTimestamp, 'day-bin-size', 
+							countDict)['ticks'];
+
+					}
+					labelFormat = 'longMonth day toLastDayOfMonth';
 				} else {
 					ticks = getMonthTicksBetween (
 						startTimestamp, endTimestamp, Math.ceil (months / 7), false);
-					labelFormat = 'longMonth year';
+					labelFormat = 'longMonth day year toLastDayOfMonth';
 				}
 				break;
 			default: 
@@ -1159,15 +1275,41 @@ function setupChartBehavior (suppressChartSettings) {
 
 		return {
 			'ticks': ticks,
-			'startTimestamp': startTimestamp,
-			'endTimestamp': endTimestamp,
 			'labelFormat': labelFormat
 		}
 
 	}
 
+	function checkOnlyOneBin (binSize, countDict) {
+		var onlyOneBin = false;
+		DEBUG && console.log ('checkOnlyOneBin');
+		DEBUG && console.debug (countDict);
+		switch (binSize) {
+			case 'hour-bin-size':
+				break;
+			case 'day-bin-size':
+				if (countDict['days'] === 1)
+					onlyOneBin = true;
+				break;
+			case 'week-bin-size':
+				if (countDict['weeks'] === 1)
+					onlyOneBin = true;
+				break;
+			case 'month-bin-size':
+				if (countDict['months'] === 1)
+					onlyOneBin = true;
+				break;
+		}	
+		return onlyOneBin;
+	}
+
 	/*
 	Sets up event functions to display tooltips on point mouse over.
+	Parameters:
+		labelFormat - format string accepted by getTooltipFormattedLabel
+		showMarker - boolean
+		chartData - array of arrays
+		typesText - metric names shown in tooltips
 	*/
 	function setupTooltipBehavior (labelFormat, showMarker, chartData, typesText) {
 
@@ -1188,17 +1330,6 @@ function setupChartBehavior (suppressChartSettings) {
 
 		}
 
-		/*var pointsDictSeries0 = {};
-		var pointsDictSeries1 = {};
-		for (var i in chartData[0]) {
-			pointsDictSeries0[chartData[0][i][0]] = chartData[0][i];
-		}
-		if (chartData.length === 2) {
-			for (var i in chartData[1]) {
-				pointsDictSeries1[chartData[1][i][0]] = chartData[1][i];
-			}
-		}*/
-
 		// create a data structure to optimize searching for points by x value
 		var pointsDict = [];
 		for (var i in chartData) {
@@ -1213,8 +1344,8 @@ function setupChartBehavior (suppressChartSettings) {
 		var pointYPrev = null;
 
 		// display the tooltip
-		$('#chart').unbind ('jqplotDataHighlight');
-		$('#chart').bind ('jqplotDataHighlight', 
+		$('#' + x2Chart.chartType + '-chart').unbind ('jqplotDataHighlight');
+		$('#' + x2Chart.chartType + '-chart').bind ('jqplotDataHighlight', 
 			function (ev, seriesIndex, pointIndex, data) {
 				DEBUG && console.log ('jqplotDataHighlight');
 				DEBUG && console.log ([ev, seriesIndex, pointIndex, data]);
@@ -1224,7 +1355,7 @@ function setupChartBehavior (suppressChartSettings) {
 				var chartTop = $(this).offset ().top;
 				var	pointX = feedChart.axes.xaxis.u2p (data[0]);
 				var	pointY = feedChart.axes.yaxis.u2p (data[1]);
-				var tooltip = $('#chart-tooltip');
+				var tooltip = $('#' + x2Chart.chartType + '-chart-tooltip');
 
 				DEBUG && console.log (chartLeft, chartTop, pointX, pointY);
 
@@ -1232,19 +1363,32 @@ function setupChartBehavior (suppressChartSettings) {
 				pointXPrev = chartLeft + pointX;
 				pointYPrev = chartTop + pointY;
 
+				DEBUG && console.log ('data[0] = ' + data[0]);
+				DEBUG && console.log ('chartData[0][0] = ' + chartData[0][0][0]);
+
+				var isLastPoint = false;
+				var isFirstPoint = false;
+				if (data[0] === chartData[0][chartData[0].length - 1][0]) {
+					DEBUG && console.log ('isLastPoint');
+					isLastPoint = true;
+				} else if (data[0] === chartData[0][0][0]) {
+					DEBUG && console.log ('isFirstPoint');
+					isFirstPoint = true;
+				}
+
 				// insert tooltip text
 				DEBUG && console.log ('getTooltipFormattedLabel ret: ' + 
-					getTooltipFormattedLabel (labelFormat, data[0]));
+					getTooltipFormattedLabel (labelFormat, data[0], isFirstPoint, isLastPoint));
 				$(tooltip).html ($('<span>', {
 					class: 'chart-tooltip-date',
-					text: getTooltipFormattedLabel (labelFormat, data[0])
+					text: getTooltipFormattedLabel (labelFormat, data[0], isFirstPoint, isLastPoint)
 				}));
 				$(tooltip).append ($('<br>'));
 
 				DEBUG && console.log ('seriesIndex = ' + seriesIndex);
 
 				// only show actions with 0 y values on two line chart
-				if (x2.chart.chartType === 'twoLine' || data[1] !== 0) {
+				if (x2Chart.chartSubtype === 'twoLine' || data[1] !== 0) {
 	
 					for (var i = 0; i < feedChart.series.length; ++i) {
 						if (i === seriesIndex) {
@@ -1267,47 +1411,18 @@ function setupChartBehavior (suppressChartSettings) {
 					}
 				}
 
-				/*if (seriesIndex === 0) {
-					$(tooltip).append ($('<span>', {
-						text: $('#first-metric').find (':selected').html () + ': ' + data[1]
-					}));
-
-					if (data[1] === 0 && !showMarker && chartData.length === 2 &&
-						!pointsDict[1][data[0]]) { // overlapping point should exist
-						$(tooltip).append ($('<br>'));
-						$(tooltip).append ($('<span>', {
-							text: $('#second-metric').find (':selected').html () + 
-								': ' + data[1]
-						}));
-					}
-				} else { // look for an overlapping point on the line for the other metric
-					if ((pointsDict[0][data[0]] &&
-						 pointsDict[0][data[0]][1] === data[1]) ||
-						(data[1] === 0 && !showMarker && // overlapping point should exist
-						 !pointsDict[0][data[0]])) {
-						$(tooltip).append ($('<span>', {
-							text: $('#first-metric').find (':selected').html () + 
-								': ' + data[1]
-						}));
-						$(tooltip).append ($('<br>'));
-					}
-					$(tooltip).append ($('<span>', {
-						text: $('#second-metric').find (':selected').html () + ': ' + data[1]
-					}));
-				}*/
-
 				// determine where to place the tooltip
 				var marginLeft, marginRight;
 				marginLeft = 11;
 				marginTop = 11;
 				if (pointXPrev + pxToInt ($(tooltip).css ('width')) >
-					chartLeft + pxToInt ($('#chart').css ('width'))) {
+					chartLeft + pxToInt ($('#' + x2Chart.chartType + '-chart').css ('width'))) {
 					DEBUG && console.log ('xoverflow');
 					marginLeft = 
 						- (pxToInt ($(tooltip).css ('width')) + marginLeft);
 				}
 				if (pointYPrev + pxToInt ($(tooltip).css ('height')) >
-					chartTop + pxToInt ($('#chart').css ('height'))) {
+					chartTop + pxToInt ($('#' + x2Chart.chartType + '-chart').css ('height'))) {
 					DEBUG && console.log ('yoverflow');
 					marginTop = 
 						- (pxToInt ($(tooltip).css ('height')) + marginTop);
@@ -1333,7 +1448,7 @@ function setupChartBehavior (suppressChartSettings) {
 		function unhighlight (mouseX, mouseY) {
 			//DEBUG && console.log ('jqplotDataUnhighlight');
 
-			var tooltip = $('#chart-tooltip');
+			var tooltip = $('#' + x2Chart.chartType + '-chart-tooltip');
 
 			if ($(tooltip).is (':visible') &&
 				mouseX !== null && mouseY !== null &&
@@ -1343,44 +1458,44 @@ function setupChartBehavior (suppressChartSettings) {
 
 				DEBUG && console.log ('hiding tooltip');
 
-				//$('#chart-tooltip').empty ();
+				//$('#' + x2Chart.chartType + '-chart-tooltip').empty ();
 				$(tooltip).hide ();
 			}
 
 		}
 
-		$('#chart').unbind ('mousemove');
-		$('#chart').bind ('mousemove', function (event) {
+		$('#' + x2Chart.chartType + '-chart').unbind ('mousemove');
+		$('#' + x2Chart.chartType + '-chart').bind ('mousemove', function (event) {
 			//DEBUG && console.log ('mouse');
 			var mouseX = event.pageX;
 			var mouseY = event.pageY;
 			unhighlight (mouseX, mouseY);
 		});
 
-		$('#chart-tooltip').unbind ('mousemove');
-		$('#chart-tooltip').bind ('mousemove', function (event) {
+		$('#' + x2Chart.chartType + '-chart-tooltip').unbind ('mousemove');
+		$('#' + x2Chart.chartType + '-chart-tooltip').bind ('mousemove', function (event) {
 			//DEBUG && console.log ('chart-tooltip mouse');
 			var mouseX = event.pageX;
 			var mouseY = event.pageY;
 			unhighlight (mouseX, mouseY);
 		});
 
-		$('#chart').unbind ('mouseout');
-		$('#chart').bind ('mouseout', function (event) {
-			$('#chart-tooltip').hide ();
+		$('#' + x2Chart.chartType + '-chart').unbind ('mouseout');
+		$('#' + x2Chart.chartType + '-chart').bind ('mouseout', function (event) {
+			$('#' + x2Chart.chartType + '-chart-tooltip').hide ();
 		});
 
 	}
 
 	function buildChartLegend (typesText, color) {
-		$('#chart-legend tbody').empty ();
+		$('#' + x2Chart.chartType + '-chart-legend tbody').empty ();
 		var makeNewRow = true;
 		var currRow, currCell;
 		for (var i in typesText) {
 			if (makeNewRow) {
 				DEBUG && console.log ('make new row');
 				currRow = $('<tr>');
-				$('#chart-legend tbody').append (currRow);
+				$('#' + x2Chart.chartType + '-chart-legend tbody').append (currRow);
 				makeNewRow = false;
 			} else if ((i + 1) % 3 === 0) {
 				makeNewRow = true;
@@ -1423,10 +1538,15 @@ function setupChartBehavior (suppressChartSettings) {
 		}
 
 		// retrieve user selected values
-		var binSize = $('#bin-size-button-set a.disabled-link').attr ('id');
-		var tsDict = getStartEndTimestamp (binSize);
+		var binSize = 
+			$('#' + x2Chart.chartType + '-bin-size-button-set a.disabled-link').attr ('id').
+			replace (x2Chart.chartType + '-', '');
+		var tsDict = getStartEndTimestamp ();
 		var startTimestamp = tsDict['startTimestamp'];
 		var endTimestamp = tsDict['endTimestamp'];
+
+		DEBUG && console.log ('plotData: startTimestamp, endTimestamp = ');
+		DEBUG && console.log ([startTimestamp, endTimestamp]);
 
 		// default settings
 		var yTickCount = 3;
@@ -1434,52 +1554,69 @@ function setupChartBehavior (suppressChartSettings) {
 		var showMarker = false;
 		var tickInterval = null;
 
-		// graph at least 1 interval
-		if (startTimestamp === endTimestamp)
+		/* 
+		graph at least 1 interval, hour bin size is a special case since it is the only
+		case for which there are multiple bins when start and and timestamp are equal.
+		*/
+		if (startTimestamp === endTimestamp && binSize === 'hour-bin-size')
 			endTimestamp = shiftTimeStampOneInterval (endTimestamp, binSize, true);
 
 		var min = startTimestamp;
 		var max = endTimestamp;
 
+		var countDict = countBins (min, max);
+
+		// single bin is a special case, isolated point should be shown
+		var onlyOneBin = checkOnlyOneBin (binSize, countDict);
+		if (onlyOneBin) {
+			DEBUG && console.log ('onlyOneBin = true');
+			min = shiftTimeStampOneInterval (min, binSize, false);
+			max = shiftTimeStampOneInterval (max, binSize, true);
+			countDict = countBins (min, max); // recount for new interval
+		} else {
+			DEBUG && console.log ('onlyOneBin = false');
+		}
+
 		// determine label format and number of ticks based on data
-		var countDict = countHoursDaysMonthsYears (min, max);
-		var ticksDict = getTicks (min, max, binSize, countDict);
+		var ticksDict = getTicks (
+			min, max, binSize, countDict);
 		var ticks = ticksDict['ticks'];
 		var labelFormat = ticksDict['labelFormat'];
-		min = ticksDict['startTimestamp'];
-		max = ticksDict['endTimestamp'];
 		DEBUG && console.log ('ticks = ');
 		DEBUG && console.log (ticks);
 		showMarker = getShowMarkerSetting (binSize, countDict);
 
-		if (ticks[0][0] < min)
+		DEBUG && console.log ('min = ' + min);
+		DEBUG && console.log ('max = ' + max);
+
+		/*if (ticks[0][0] < min)
 			min = ticks[0][0]
 		if (ticks[ticks.length - 1][0] > max)
-			max = ticks[ticks.length - 1][0];
+			max = ticks[ticks.length - 1][0];*/
 
 		// get user selected metrics
 		var types;
-		if (x2.chart.chartType === 'twoLine') {
+		if (x2Chart.chartSubtype === 'twoLine') {
 			types = [];
-			types.push ($('#first-metric').val ());
-			types.push ($('#second-metric').val ());
-		} else if (x2.chart.chartType === 'multiLine') {
-			types = $('#first-metric').val ();
+			types.push ($('#' + x2Chart.chartType + '-first-metric').val ());
+			types.push ($('#' + x2Chart.chartType + '-second-metric').val ());
+		} else if (x2Chart.chartSubtype === 'multiLine') {
+			types = $('#' + x2Chart.chartType + '-first-metric').val ();
 		}
 
 		// get chartData for each user specified type
 		var color = []; 
 		var chartData = [];
-		if (x2.chart.chartType === 'twoLine') { 
-			color.push ('#7EB2E6'); // color of line 1
+		if (x2Chart.chartSubtype === 'twoLine') { 
+			color.push ('#' + x2Chart.chartType + '-7EB2E6'); // color of line 1
 			var dataDict = groupChartData (eventData, binSize, types[0], showMarker);
 			chartData.push (dataDict['chartData']);
 			if (types[1] !== '') {
-				color.push ('#C2597C'); // color of line 2
+				color.push ('#' + x2Chart.chartType + '-C2597C'); // color of line 2
 				dataDict = groupChartData (eventData, binSize, types[1], showMarker);
 				chartData.push (dataDict['chartData']);
 			}
-		} else if (x2.chart.chartType === 'multiLine') {
+		} else if (x2Chart.chartSubtype === 'multiLine') {
 			DEBUG && console.log ('types = ' + types);
 			if (types === null) {
 				chartData.push ([]);
@@ -1489,13 +1626,13 @@ function setupChartBehavior (suppressChartSettings) {
 					type = types[i];
 					DEBUG && console.log ('type = ' + type);
 					color.push (metricOptionsColors[types[i]]); // color of line 
-					dataDict = groupChartData (eventData, binSize, type, showMarker);
+					dataDict = 
+						groupChartData (eventData, binSize, type, showMarker, onlyOneBin);
 					chartData.push (dataDict['chartData']);
 				}
 			}
 			DEBUG && console.log ('metricOptionsColors = ');
 			DEBUG && console.log (metricOptionsColors);
-				
 		}
 
 		// if no chartData exists of specified type, don't plot it
@@ -1509,8 +1646,10 @@ function setupChartBehavior (suppressChartSettings) {
 		}
 
 		// pad left and right side of data with entries having y value equal to 0
-		if (x2.chart.chartType === 'twoLine' ||
-			(x2.chart.chartType === 'multiLine' && $('#first-metric').val () !== null)) {
+		if (!onlyOneBin &&
+		    (x2Chart.chartSubtype === 'twoLine' ||
+			(x2Chart.chartSubtype === 'multiLine' && $('#' + x2Chart.chartType + '-first-metric').val () !== null))) {
+			DEBUG && console.log ('filling chart data');
 			for (var i in chartData) {
 				chartData[i] = fillZeroEntries (
 					min, max, binSize, chartData[i], showMarker);
@@ -1550,18 +1689,7 @@ function setupChartBehavior (suppressChartSettings) {
 				}
 			],
 			legend: {
-				show: false,
-				/*renderer: $.jqplot.EnhancedLegendRenderer,
-				rendererOptions: {
-					numberRows: 4
-				},
-				showSwatch: true,
-				location: 's',
-				showLabels: true,
-				placement: 'outsideGrid',
-				marginTop: '200px',
-				marginLeft: '200px',
-				border: 'none'*/
+				show: false
 			},
 			grid: {
 				drawGridLines: false,
@@ -1605,11 +1733,10 @@ function setupChartBehavior (suppressChartSettings) {
 		}
 
 		// plot chartData
-		feedChart = $.jqplot ('chart', chartData, jqplotConfig);
+		feedChart = $.jqplot (x2Chart.chartType + '-chart', chartData, jqplotConfig);
 
 		DEBUG && console.log ('chartData.length = ' + chartData.length);
 		DEBUG && console.log ('labelFormat = ' + labelFormat);
-
 
 		if (redraw) {
 			feedChart.replot (); // clear previous plot and plot again
@@ -1617,19 +1744,19 @@ function setupChartBehavior (suppressChartSettings) {
 
 		// used to display type labels in tooltips and legend
 		var typesText = [];
-		if (x2.chart.chartType === 'twoLine') {
-			typesText.push ($('#first-metric').find (':selected').html ());
-			typesText.push ($('#second-metric').find (':selected').html ());
-		} else if (x2.chart.chartType === 'multiLine') {
-			$('#first-metric').find (":selected").each (function () {
+		if (x2Chart.chartSubtype === 'twoLine') {
+			typesText.push ($('#' + x2Chart.chartType + '-first-metric').find (':selected').html ());
+			typesText.push ($('#' + x2Chart.chartType + '-second-metric').find (':selected').html ());
+		} else if (x2Chart.chartSubtype === 'multiLine') {
+			$('#' + x2Chart.chartType + '-first-metric').find (":selected").each (function () {
 				typesText.push ($(this).html ());
 			});
 		}
 
-		if (!noChartData)
+		if (types !== null)
 			setupTooltipBehavior (labelFormat, showMarker, chartData, typesText);
 
-		if (x2.chart.chartType === 'multiLine')
+		if (x2Chart.chartSubtype === 'multiLine')
 			buildChartLegend (typesText, color);
 
 	}
@@ -1638,64 +1765,68 @@ function setupChartBehavior (suppressChartSettings) {
 	Changes the chart settings to match the settings specified in the parameters.
 	*/
 	function applyChartSetting (
-		startDate, endDate, binSize, firstMetric, secondMetric, chartSetting) {
+		startDate, endDate, binSize, firstMetric, secondMetric, chartSetting, 
+		showRelationships, userFilter, eventSubtypeFilter, visibilityFilter) {
+
+		function applyMultiselectSettings (selector, settings) {
+			$(selector).find ('option').each (function () {
+				$(this).removeAttr ('selected');
+			});
+			$(selector).multiselect2 ('refresh');
+			if (settings !== 'none') {
+				DEBUG && console.log ('setting settings obj');
+				if (typeof settings === 'string')
+					settings = settings.split (',');
+				DEBUG && console.log ('settings = ');
+				DEBUG && console.log (settings);
+				for (var i in settings) {
+					$(selector).find ('option').each (function () {
+						if ($(this).val () === settings[i]) {
+							$(this).attr ('selected', 'selected');
+						}
+					});
+					$(selector).multiselect2 ('refresh');
+				}
+			}
+		}
 
 		if (startDate !== null) {
 			DEBUG && console.log ('applying start date' + startDate);
 			var startDate = new Date (parseInt (startDate, 10));
-			$('#chart-datepicker-from').datepicker ('setDate', startDate);
+			$('#' + x2Chart.chartType + '-chart-datepicker-from').datepicker ('setDate', startDate);
 		}
 		if (endDate !== null) {
 			DEBUG && console.log ('applying end date');
 			var endDate = new Date (parseInt (endDate, 10));
-			$('#chart-datepicker-to').datepicker ('setDate', endDate);
+			$('#' + x2Chart.chartType + '-chart-datepicker-to').datepicker ('setDate', endDate);
 		}
 		if (binSize !== null) {
-			$('#chart-container a.disabled-link').removeClass ('disabled-link');
-			$('#chart-container #' + binSize).addClass ('disabled-link');
+			$('#' + x2Chart.chartType + '-chart-container a.disabled-link').removeClass ('disabled-link');
+			$('#' + x2Chart.chartType + '-chart-container #' + binSize).addClass ('disabled-link');
 		}
 		if (firstMetric !== null) {
 
 			DEBUG && console.log ('setting firstMetric');
 			DEBUG && console.log ('typeof firstMetric = ' + typeof firstMetric);
 
-			if (x2.chart.chartType === 'twoLine') {
-				$('#first-metric').find ('option:selected').removeAttr ('selected');
-				$('#first-metric').children ().each (function () {
+			if (x2Chart.chartSubtype === 'twoLine') {
+				$('#' + x2Chart.chartType + '-first-metric').find ('option:selected').removeAttr ('selected');
+				$('#' + x2Chart.chartType + '-first-metric').children ().each (function () {
 					if ($(this).val () === firstMetric) {
 						$(this).attr ('selected', 'selected');
 						return false;
 					}
 				});
-			} else if (x2.chart.chartType === 'multiLine') {
-
-				$('#first-metric').find ('option').each (function () {
-					$(this).removeAttr ('selected');
-				});
-				$('#first-metric').multiselect2 ('refresh');
-				if (firstMetric !== 'none') {
-					DEBUG && console.log ('setting firstMetric obj');
-					if (typeof firstMetric === 'string')
-						firstMetric = firstMetric.split (',');
-					DEBUG && console.log ('firstMetric = ');
-					DEBUG && console.log (firstMetric);
-					for (var i in firstMetric) {
-						$('#first-metric').find ('option').each (function () {
-							if ($(this).val () === firstMetric[i]) {
-								$(this).attr ('selected', 'selected');
-							}
-						});
-						$('#first-metric').multiselect2 ('refresh');
-					}
-				}
+			} else if (x2Chart.chartSubtype === 'multiLine') {
+				applyMultiselectSettings ('#' + x2Chart.chartType + '-first-metric', firstMetric);
 			}
 		}
 		if (secondMetric !== null) {
-			$('#second-metric').find ('option:selected').removeAttr ('selected');
+			$('#' + x2Chart.chartType + '-second-metric').find ('option:selected').removeAttr ('selected');
 			if (secondMetric === '') {
-				$('#second-metric').children ().first ().attr ('selected', 'selected');
+				$('#' + x2Chart.chartType + '-second-metric').children ().first ().attr ('selected', 'selected');
 			} else {
-				$('#second-metric').children ().each (function () {
+				$('#' + x2Chart.chartType + '-second-metric').children ().each (function () {
 					if ($(this).val () === secondMetric) {
 						$(this).attr ('selected', 'selected');
 						return false;
@@ -1706,6 +1837,158 @@ function setupChartBehavior (suppressChartSettings) {
 		if (chartSetting !== null) {
 			setChartSettingName (chartSetting);
 		}
+		if (showRelationships !== null) {
+			$('#' + x2Chart.chartType + '-rel-chart-data-checkbox').prop('checked', (showRelationships === 'true' ? true : false));
+		}
+		if (userFilter !== null) {
+			applyMultiselectSettings ('#' + x2Chart.chartType + '-users-chart-filter', userFilter);
+		}
+		if (eventSubtypeFilter !== null) {
+			applyMultiselectSettings ('#' + x2Chart.chartType + '-social-subtypes-chart-filter', eventSubtypeFilter);
+		}
+		if (visibilityFilter !== null) {
+			applyMultiselectSettings ('#' + x2Chart.chartType + '-visibility-chart-filter', visibilityFilter);
+		}
+	}
+
+	/*
+	Instantiate jquery datepickers and set to default values. Set up datepicker behavior.
+	*/
+	function setUpDatepickers () {
+	
+		// setup datepickers and initialize range to previous week
+		$('#' + x2Chart.chartType + '-chart-datepicker-from').datepicker({
+					constrainInput: false,
+					showOtherMonths: true,
+					selectOtherMonths: true,
+					dateFormat: yii.datePickerFormat
+		});
+		$('#' + x2Chart.chartType + '-chart-datepicker-from').datepicker('setDate', new Date ());
+
+		if (x2Chart.chartType === 'eventsChart' &&
+			$.cookie (cookiePrefix + 'startDate') === null) {
+			// default start date 
+			$('#' + x2Chart.chartType + '-chart-datepicker-from').datepicker('setDate', '-7d'); 
+			$.cookie (
+				cookiePrefix + 'startDate', 
+				$('#' + x2Chart.chartType + '-chart-datepicker-from').datepicker ('getDate').valueOf ());
+		} else if (x2Chart.actionsStartDate) { 
+			// default start date is beginning of action history
+			$('#' + x2Chart.chartType + '-chart-datepicker-from').datepicker(
+				'setDate', new Date (x2Chart.actionsStartDate));
+		}
+
+		$('#' + x2Chart.chartType + '-chart-datepicker-to').datepicker({
+					constrainInput: false,
+					showOtherMonths: true,
+					selectOtherMonths: true,
+					dateFormat: yii.datePickerFormat
+		});
+
+		if (x2Chart.chartType === 'eventsChart' &&
+			$.cookie (cookiePrefix + 'endDate') === null) {
+			// default start date 
+			$('#' + x2Chart.chartType + '-chart-datepicker-to').datepicker('setDate', new Date ()); // default end date
+			$.cookie (
+				cookiePrefix + 'endDate', 
+				$('#' + x2Chart.chartType + '-chart-datepicker-to').datepicker ('getDate').valueOf ());
+		} else if (x2Chart.chartType === 'recordView') {
+			$('#' + x2Chart.chartType + '-chart-datepicker-to').datepicker('setDate', new Date ()); // default end date
+		}
+	
+		/*
+		Save setting in cookie and replot
+		*/
+		$('#' + x2Chart.chartType + '-chart-datepicker-from').datepicker ('option', 'onSelect', function () {
+			DEBUG && console.log ('from date selected');
+			getEventsBetweenDates (true);
+			$.cookie (
+				cookiePrefix + 'startDate', 
+				$('#' + x2Chart.chartType + '-chart-datepicker-from').datepicker ('getDate').valueOf ());
+			if (!x2Chart.suppressChartSettings) {
+				setChartSettingName ('');  
+				$('#' + x2Chart.chartType + '-predefined-settings').change ();
+			}
+		});
+	
+		/*
+		Save setting in cookie and replot
+		*/
+		$('#' + x2Chart.chartType + '-chart-datepicker-to').datepicker ('option', 'onSelect', function () {
+			getEventsBetweenDates (true);
+			$.cookie (
+				cookiePrefix + 'endDate', 
+				$('#' + x2Chart.chartType + '-chart-datepicker-to').datepicker ('getDate').valueOf ());
+	
+			if (!x2Chart.suppressChartSettings) {
+				setChartSettingName ('');  
+				$('#' + x2Chart.chartType + '-predefined-settings').change ();
+			}
+		});
+	
+	}
+
+	/*
+	Instantiates metric selection elements for various chart types. Sets up metric 
+	selection behavior.
+	*/
+	function setUpMetricSelection () {
+	
+		if (x2Chart.chartSubtype === 'twoLine') {
+			// clear second metric and redraw graph using only first metric
+			$('#' + x2Chart.chartType + '-clear-metric-button').click (function (evt) {
+				evt.preventDefault();
+				$('#' + x2Chart.chartType + '-second-metric-default').attr ('selected', 'selected');
+				plotData ({redraw: true});
+				$.cookie (cookiePrefix + 'secondMetric', '');
+				if (!x2Chart.suppressChartSettings) {
+					setChartSettingName ('');  
+					$('#' + x2Chart.chartType + '-predefined-settings').change ();
+				}
+			});
+			// setup metric selectors behavior
+			$('#' + x2Chart.chartType + '-first-metric').change (function () {
+				plotData ({redraw: true});
+				$.cookie (cookiePrefix + 'firstMetric', $(this).val ());
+				if (!x2Chart.suppressChartSettings) {
+					setChartSettingName ('');  
+					$('#' + x2Chart.chartType + '-predefined-settings').change ();
+				}
+			});
+			$('#' + x2Chart.chartType + '-second-metric').change (function () {
+				plotData ({redraw: true});
+				$.cookie (cookiePrefix + 'secondMetric', $(this).val ());
+				if (!x2Chart.suppressChartSettings) {
+					setChartSettingName ('');  
+					$('#' + x2Chart.chartType + '-predefined-settings').change ();
+				}
+			});
+		} else if (x2Chart.chartSubtype === 'multiLine') {
+			// initialize dropdown checklist
+			$('#' + x2Chart.chartType + '-first-metric').multiselect2 ({
+				'checkAllText': x2Chart.translations['Check all'],
+				'uncheckAllText': x2Chart.translations['Uncheck all'],
+				'selectedText': '# ' + x2Chart.translations['metric(s) selected']
+			});
+			// setup metric selector behavior
+			$('#' + x2Chart.chartType + '-first-metric').bind ("multiselect2close", function (evt, ui) {
+				var firstMetricVal = $(this).val ();
+				firstMetricVal = firstMetricVal === null ? 'none' : firstMetricVal;
+				$.cookie (cookiePrefix + 'firstMetric', firstMetricVal);
+				DEBUG && console.log ('close multiselect');
+				plotData ({redraw: true});
+			});
+	
+			// default setting
+			if (x2Chart.chartType === 'recordView') {
+				$('#' + x2Chart.chartType + '-first-metric').children ().each (function () {
+					$(this).attr ('selected', 'selected');
+				});
+			} else if (x2Chart.chartType === 'eventsChart') {
+				$('#' + x2Chart.chartType + '-first-metric').children ().first ().attr ('selected', 'selected');
+			}
+			$('#' + x2Chart.chartType + '-first-metric').multiselect2 ('refresh');
+		}
 	}
 
 
@@ -1713,48 +1996,70 @@ function setupChartBehavior (suppressChartSettings) {
 	Extracts saved settings from cookie and sets chart settings to them.
 	*/
 	function setSettingsFromCookie () {
-		var startDate, endDate, firstMetric, secondMetric;
-		if (x2.chart.chartPage === 'activityFeed') {
+		var startDate, endDate, firstMetric, secondMetric, userFilter, eventSubtypeFilter,
+		    visibilityFilter;
+		if (x2Chart.chartType === 'eventsChart') {
 			startDate = $.cookie (cookiePrefix + 'startDate');
 			endDate = $.cookie (cookiePrefix + 'endDate');
 			firstMetric = $.cookie (cookiePrefix + 'firstMetric');
 			secondMetric = $.cookie (cookiePrefix + 'secondMetric');
-		} else if (x2.chart.chartPage === 'recordView') {
+		} else if (x2Chart.chartType === 'recordView') {
 			startDate = null;
 			endDate = null;
 			firstMetric = $.cookie (cookiePrefix + 'firstMetric');
 			secondMetric = null;
 		}
+
+		if (x2Chart.chartType === 'eventsChart') {
+			userFilter = $.cookie (cookiePrefix + 'userFilter');
+			eventSubtypeFilter = $.cookie (cookiePrefix + 'userFilter');
+			visibilityFilter = $.cookie (cookiePrefix + 'visibilityFilter');
+		} else {
+			userFilter = null;
+			eventSubtypeFilter = null;
+			visibilityFilter = null;
+		}
+
 		var binSize = $.cookie (cookiePrefix + 'binSize');
 		var chartSetting = $.cookie (cookiePrefix + 'chartSetting');
+		var showRelationships = $.cookie (cookiePrefix + 'showRelationships');
+
 		DEBUG && console.log ('applying settings ');
 		DEBUG && console.log ([
-			startDate, endDate, binSize, firstMetric, secondMetric, chartSetting]);
+			startDate, endDate, binSize, firstMetric, secondMetric, chartSetting, 
+			showRelationships, userFilter, eventSubtypeFilter, visibilityFilter]);
+
 		applyChartSetting (
-			startDate, endDate, binSize, firstMetric, secondMetric, chartSetting);
+			startDate, endDate, binSize, firstMetric, secondMetric, chartSetting, 
+			showRelationships, userFilter, eventSubtypeFilter, visibilityFilter);
 	}
 
-	if (!suppressChartSettings) {
-
-		/*
-		Selects chart setting from drop down. If the setting is not the custom setting,
-		the delete button is displayed.
-		*/
-		function setChartSettingName (chartSetting) {
-			$('#predefined-settings').find ('option:selected').removeAttr ('selected');
-			$('#predefined-settings').children ().each (function () {
-				if ($(this).val () === chartSetting) {
-					$(this).attr ('selected', 'selected');
-					return false;
-				}
-			});
-			DEBUG && console.log ('setChartSettingName: chartSetting = ' + chartSetting);
-			if (chartSetting === '') {
-				$('#delete-setting-button').hide ();
-			} else {
-				$('#delete-setting-button').fadeIn ();
+	/*
+	Selects chart setting from drop down. If the setting is not the custom setting,
+	the delete button is displayed.
+	*/
+	function setChartSettingName (chartSetting) {
+		$('#' + x2Chart.chartType + '-predefined-settings').find ('option:selected').
+			removeAttr ('selected');
+		$('#' + x2Chart.chartType + '-predefined-settings').children ().each (function () {
+			if ($(this).val () === chartSetting) {
+				$(this).attr ('selected', 'selected');
+				return false;
 			}
+		});
+		DEBUG && console.log ('setChartSettingName: chartSetting = ' + chartSetting);
+		if (chartSetting === '') {
+			$('#' + x2Chart.chartType + '-delete-setting-button').hide ();
+		} else {
+			$('#' + x2Chart.chartType + '-delete-setting-button').fadeIn ();
 		}
+	}
+
+	/*
+	Sets up behavior of ui elements related to chart setting selection, deletion, and 
+	creation. 
+	*/
+	function setUpChartSettings () {
 
 		/*
 		Performs a request to save a new chart setting to the server. Also applies
@@ -1765,16 +2070,16 @@ function setupChartBehavior (suppressChartSettings) {
 			chartSettingAttributes['name'] = settingName;
 
 			chartSettingAttributes['settings'] = {
-				'startDate' : ($('#chart-datepicker-from').datepicker ('getDate').valueOf ()) / 1000,
-				'endDate' : ($('#chart-datepicker-to').datepicker ('getDate').valueOf ()) / 1000,
-				'binSize' : $('#bin-size-button-set a.disabled-link').attr ('id')
+				'startDate' : ($('#' + x2Chart.chartType + '-chart-datepicker-from').datepicker ('getDate').valueOf ()) / 1000,
+				'endDate' : ($('#' + x2Chart.chartType + '-chart-datepicker-to').datepicker ('getDate').valueOf ()) / 1000,
+				'binSize' : $('#' + x2Chart.chartType + '-bin-size-button-set a.disabled-link').attr ('id')
 			}
 
-			if (x2.chart.chartType === 'twoLine') {
+			if (x2Chart.chartSubtype === 'twoLine') {
 				chartSettingAttributes['settings']['metric1'] = 
-					[$('#first-metric').val (), $('#second-metric').val ()];
-			} else if (x2.chart.chartType === 'multiLine') {
-				chartSettingAttributes['settings']['metric1'] = $('#first-metric').val ();
+					[$('#' + x2Chart.chartType + '-first-metric').val (), $('#second-metric').val ()];
+			} else if (x2Chart.chartSubtype === 'multiLine') {
+				chartSettingAttributes['settings']['metric1'] = $('#' + x2Chart.chartType + '-first-metric').val ();
 			}
 
 			$.ajax ({
@@ -1786,17 +2091,17 @@ function setupChartBehavior (suppressChartSettings) {
 	
 					if (data === '') { // successful creation
 						DEBUG && console.log ('createChartSetting ajax success');
-						x2.chart.chartSettings[settingName] = chartSettingAttributes;
-						$('#create-chart-setting-dialog').dialog ("close");
+						x2Chart.chartSettings[settingName] = chartSettingAttributes;
+						$('#' + x2Chart.chartType + '-create-chart-setting-dialog').dialog ("close");
 	
 						// select new chart setting from drop down
-						$('#predefined-settings').children ().removeAttr ('selected');
-						$('#predefined-settings').append ($('<option>', {
+						$('#' + x2Chart.chartType + '-predefined-settings').children ().removeAttr ('selected');
+						$('#' + x2Chart.chartType + '-predefined-settings').append ($('<option>', {
 							'value': settingName,
 							'text': settingName
 						}));
 						setChartSettingName (settingName);
-						$('#predefined-settings').change ();
+						$('#' + x2Chart.chartType + '-predefined-settings').change ();
 	
 					} else { // creation failed
 						DEBUG && console.log (data);
@@ -1806,14 +2111,14 @@ function setupChartBehavior (suppressChartSettings) {
 						DEBUG && console.log ('createChartSetting ajax failure');
 	
 						// display error messages
-						destroyErrorBox ($('#create-chart-setting-dialog'));
+						destroyErrorBox ($('#' + x2Chart.chartType + '-create-chart-setting-dialog'));
 	
 						var errMsgs = Object.keys (respObj).map (function (key) { 
 								return respObj[key]; 
 							});
 						var errorBox = createErrorBox ('', errMsgs);
 						$('.chart-setting-name-input-container').after ($(errorBox));
-						$('#chart-setting-name').addClass ('error');
+						$('#' + x2Chart.chartType + '-chart-setting-name').addClass ('error');
 	
 					}
 	
@@ -1849,38 +2154,18 @@ function setupChartBehavior (suppressChartSettings) {
 			}
 		}
 	
-		function toggleDialogButtonFocus (dialog) {
-			var $buttonpane = $(dialog).next ();
-	
-	
-			if ($buttonpane.find ('.dialog-cancel-button').
-				hasClass ('highlight')) {
-	
-				$buttonpane.find ('button').
-					removeClass ('highlight');	
-				$buttonpane.find ('.dialog-save-button').addClass ('highlight');
-			} else { /* ($buttonpane.find ('.dialog-save-button').
-				hasClass ('highlight') */
-	
-				$buttonpane.find ('button').
-					removeClass ('highlight');	
-				$buttonpane.find ('.dialog-cancel-button').addClass ('highlight');
-			}
-	
-		}
-
 		/*
 		Sets up behavior of chart creation dialog box.
 		*/
 		(function setupChartSettingCreationDialog () {
-			$('#create-chart-setting-dialog').hide();
+			$('#' + x2Chart.chartType + '-create-chart-setting-dialog').hide();
 	
 			function clickChartSettingCreateButton () {
-				var settingName = $('#chart-setting-name').val ();
+				var settingName = $('#' + x2Chart.chartType + '-chart-setting-name').val ();
 				if (settingName === '') {
-					$('#chart-setting-name').addClass ('error');
-					destroyErrorBox ($('#create-chart-setting-dialog'));
-					dialogCancelButtonFocus ($('#create-chart-setting-dialog'));
+					$('#' + x2Chart.chartType + '-chart-setting-name').addClass ('error');
+					destroyErrorBox ($('#' + x2Chart.chartType + '-create-chart-setting-dialog'));
+					dialogCancelButtonFocus ($('#' + x2Chart.chartType + '-create-chart-setting-dialog'));
 				} else {
 					createChartSetting (settingName); 
 				}
@@ -1888,13 +2173,13 @@ function setupChartBehavior (suppressChartSettings) {
 	
 			$("#create-chart-setting-dialog").find ("input").change (function () {
 				DEBUG && console.log ('change');
-				var $dialog = $('#create-chart-setting-dialog');
-				dialogSaveButtonFocus ($('#create-chart-setting-dialog'));
+				var $dialog = $('#' + x2Chart.chartType + '-create-chart-setting-dialog');
+				dialogSaveButtonFocus ($('#' + x2Chart.chartType + '-create-chart-setting-dialog'));
 			});
 	
-			$('#create-setting-button').click (function () {
+			$('#' + x2Chart.chartType + '-create-setting-button').click (function () {
 				$("#create-chart-setting-dialog").dialog ({
-					title: x2.chart.translations['Create Chart Setting'],
+					title: x2Chart.translations['Create Chart Setting'],
 					autoOpen: true,
 					height: "auto",
 					width: 850,
@@ -1903,30 +2188,30 @@ function setupChartBehavior (suppressChartSettings) {
 					hide: 'fade',
 					buttons: [
 						{ 
-							text: x2.chart.translations['Create'],
+							text: x2Chart.translations['Create'],
 							click: clickChartSettingCreateButton,
 							class: 'dialog-save-button'
 						},
 						{ 
-							text: x2.chart.translations['Cancel'],
+							text: x2Chart.translations['Cancel'],
 							click: function () {
-								$('#create-chart-setting-dialog').dialog ("close");
+								$('#' + x2Chart.chartType + '-create-chart-setting-dialog').dialog ("close");
 							},
 							class: 'highlight dialog-cancel-button'
 						}
 					],
 					close: function (event, ui) {
-						$('#chart-setting-name').removeClass ('error');
-						$('#chart-setting-name').val ('');
-						destroyErrorBox ($('#create-chart-setting-dialog'));
+						$('#' + x2Chart.chartType + '-chart-setting-name').removeClass ('error');
+						$('#' + x2Chart.chartType + '-chart-setting-name').val ('');
+						destroyErrorBox ($('#' + x2Chart.chartType + '-create-chart-setting-dialog'));
 					}
 				});
 			});
 		}) ();
 
-		$('#delete-setting-button').click (function (evt) {
+		$('#' + x2Chart.chartType + '-delete-setting-button').click (function (evt) {
 			evt.preventDefault();
-			var settingName = $('#predefined-settings').val ();
+			var settingName = $('#' + x2Chart.chartType + '-predefined-settings').val ();
 			$.ajax ({
 				url: "deleteChartSetting",
 				data: {
@@ -1937,8 +2222,8 @@ function setupChartBehavior (suppressChartSettings) {
 					DEBUG && console.log (data);
 					if (data === 'success') {
 						setChartSettingName ('');  
-						$('#predefined-settings').change ();
-						$('#predefined-settings').find (
+						$('#' + x2Chart.chartType + '-predefined-settings').change ();
+						$('#' + x2Chart.chartType + '-predefined-settings').find (
 							'[value="' + settingName + '"]').remove ();
 					} 
 				}
@@ -1948,15 +2233,17 @@ function setupChartBehavior (suppressChartSettings) {
 		/*
 		Sets up behavior for predifined chart setting selection.
 		*/
-		$('#predefined-settings').change (function () {
+		$('#' + x2Chart.chartType + '-predefined-settings').change (function () {
 			DEBUG && console.log ('predefined-settings: change');
-			if ($(this).find (':selected').attr ('id') !== 'custom-settings-option') {
-				$('#delete-setting-button').fadeIn ();
+			if ($(this).find (':selected').attr ('id') !== 
+				x2Chart.chartType + '-custom-settings-option') {
+
+				$('#' + x2Chart.chartType + '-delete-setting-button').fadeIn ();
 	
 				// extract chart settings
 				var settingName = $(this).find (':selected').val ();
 				DEBUG && console.log ('predefined-setting selected, name = ' + settingName);
-				var chartSetting = x2.chart.chartSettings[settingName]['settings'];
+				var chartSetting = x2Chart.chartSettings[settingName]['settings'];
 				DEBUG && console.debug (chartSetting);
 				var startDate = chartSetting['startDate'] * 1000;
 				var endDate = chartSetting['endDate'] * 1000;
@@ -1990,19 +2277,19 @@ function setupChartBehavior (suppressChartSettings) {
 				$.cookie (cookiePrefix + 'firstMetric', metric1);
 				//$.cookie (cookiePrefix + 'secondMetric', metric2);
 			} else {
-				$('#delete-setting-button').hide ();
+				$('#' + x2Chart.chartType + '-delete-setting-button').hide ();
 			}
 			$.cookie (cookiePrefix + 'chartSetting', $(this).val ());
 		});
 	}
-	
-	if (x2.chart.hideByDefault) {
+
+	function setUpHideShowButtonBehavior () {
 		/*
 		Show the chart when the show chart button is clicked
 		*/
 		$('#show-chart').click (function (evt) {
 			evt.preventDefault();
-			$('#chart-container').slideDown (450);
+			$('#' + x2Chart.chartType + '-chart-container').slideDown (450);
 			if (feedChart !== null)
 				feedChart.replot ({ resetAxes: false });
 			$(this).hide ();
@@ -2015,157 +2302,64 @@ function setupChartBehavior (suppressChartSettings) {
 		*/
 		$('#hide-chart').click (function (evt) {
 			evt.preventDefault();
-			$('#chart-container').slideUp (450);
+			$('#' + x2Chart.chartType + '-chart-container').slideUp (450);
 			$(this).hide ();
 			$('#show-chart').show ();
 			$.cookie (cookiePrefix + 'chartIsShown', false);
 		});
 	}
 
-	// bin size button set behavior
-	$('#chart-container a.x2-button').click (function (evt) {
-		evt.preventDefault ();
-		if (!$(this).hasClass ('disabled-link')) {
-			$('#chart-container a.disabled-link').removeClass ('disabled-link');
-			$(this).addClass ('disabled-link');
-			if (eventData !== null) {
-				plotData ({redraw: true});
-			}
-			var binSize = $('#bin-size-button-set a.disabled-link').attr ('id');
-			$.cookie (cookiePrefix + 'binSize', binSize);
-			if (!suppressChartSettings) {
-				setChartSettingName ('');  
-				$('#predefined-settings').change ();
-			}
-		}
-	});
-
-	if (x2.chart.chartType === 'twoLine') {
-		// clear second metric and redraw graph using only first metric
-		$('#clear-metric-button').click (function (evt) {
-			evt.preventDefault();
-			$('#second-metric-default').attr ('selected', 'selected');
-			plotData ({redraw: true});
-			$.cookie (cookiePrefix + 'secondMetric', '');
-			if (!suppressChartSettings) {
-				setChartSettingName ('');  
-				$('#predefined-settings').change ();
+	function setUpBinSizeSelection () {
+		$('#' + x2Chart.chartType + '-chart-container a.x2-button').click (function (evt) {
+			evt.preventDefault ();
+			if (!$(this).hasClass ('disabled-link')) {
+				$('#' + x2Chart.chartType + '-chart-container a.disabled-link').removeClass ('disabled-link');
+				$(this).addClass ('disabled-link');
+				if (eventData !== null) {
+					plotData ({redraw: true});
+				}
+				var binSize = $('#' + x2Chart.chartType + '-bin-size-button-set a.disabled-link').attr ('id');
+				$.cookie (cookiePrefix + 'binSize', binSize);
+				if (!x2Chart.suppressChartSettings) {
+					setChartSettingName ('');  
+					$('#' + x2Chart.chartType + '-predefined-settings').change ();
+				}
 			}
 		});
-		// setup metric selectors behavior
-		$('#first-metric').change (function () {
-			plotData ({redraw: true});
-			$.cookie (cookiePrefix + 'firstMetric', $(this).val ());
-			if (!suppressChartSettings) {
-				setChartSettingName ('');  
-				$('#predefined-settings').change ();
-			}
-		});
-		$('#second-metric').change (function () {
-			plotData ({redraw: true});
-			$.cookie (cookiePrefix + 'secondMetric', $(this).val ());
-			if (!suppressChartSettings) {
-				setChartSettingName ('');  
-				$('#predefined-settings').change ();
-			}
-		});
-	} else if (x2.chart.chartType === 'multiLine') {
-		// initialize dropdown checklist
-		$('#first-metric').multiselect2 ({
-			'checkAllText': x2.chart.translations['Check all'],
-			'uncheckAllText': x2.chart.translations['Uncheck all'],
-			'selectedText': '# ' + x2.chart.translations['metric(s) selected']
-		});
-		// setup metric selector behavior
-		$('#first-metric').bind ("multiselect2close", function (evt, ui) {
-			var firstMetricVal = $(this).val ();
-			firstMetricVal = firstMetricVal === null ? 'none' : firstMetricVal;
-			$.cookie (cookiePrefix + 'firstMetric', firstMetricVal);
-			DEBUG && console.log ('close multiselect');
-			plotData ({redraw: true});
-		});
-
-		// default setting
-		if (x2.chart.chartPage === 'recordView') {
-			$('#first-metric').children ().each (function () {
-				$(this).attr ('selected', 'selected');
-			});
-		} else if (x2.chart.chartPage === 'activityFeed') {
-			$('#first-metric').children ().first ().attr ('selected', 'selected');
-		}
-		$('#first-metric').multiselect2 ('refresh');
 	}
 
-	DEBUG && console.log (yii.datePickerFormat);
 
-	// setup datepickers and initialize range to previous week
-	$('#chart-datepicker-from').datepicker({
-				constrainInput: false,
-				showOtherMonths: true,
-				selectOtherMonths: true,
-				dateFormat: yii.datePickerFormat
-	});
-	$('#chart-datepicker-from').datepicker('setDate', new Date ());
-	if (x2.chart.chartPage === 'activityFeed' &&
-		$.cookie (cookiePrefix + 'startDate') === null) {
-		// default start date 
-		$('#chart-datepicker-from').datepicker('setDate', '-7d'); 
-		$.cookie (
-			cookiePrefix + 'startDate', 
-			$('#chart-datepicker-from').datepicker ('getDate').valueOf ());
-	} else if (x2.chart.actionsStartDate) { 
-		// default start date is beginning of action history
-		$('#chart-datepicker-from').datepicker(
-			'setDate', new Date (x2.chart.actionsStartDate));
-	}
-	$('#chart-datepicker-to').datepicker({
-				constrainInput: false,
-				showOtherMonths: true,
-				selectOtherMonths: true,
-				dateFormat: yii.datePickerFormat
-	});
-	if (x2.chart.chartPage === 'activityFeed' &&
-		$.cookie (cookiePrefix + 'endDate') === null) {
-		// default start date 
-		$('#chart-datepicker-to').datepicker('setDate', new Date ()); // default end date
-		$.cookie (
-			cookiePrefix + 'endDate', 
-			$('#chart-datepicker-to').datepicker ('getDate').valueOf ());
-	} else if (x2.chart.chartPage === 'recordView') {
-		$('#chart-datepicker-to').datepicker('setDate', new Date ()); // default end date
+	if (x2Chart.chartType === 'recordView') {
+		$('#' + x2Chart.chartType + '-chart-container #rel-chart-data-checkbox').on ('change', function () {
+			if (this.checked) {
+				x2Chart.actionParams['showRelationships'] = 'true';
+				getEventsBetweenDates (true);
+				$.cookie (cookiePrefix + 'showRelationships', 'true');
+			} else {
+				x2Chart.actionParams['showRelationships'] = 'false';
+				getEventsBetweenDates (true);
+				$.cookie (cookiePrefix + 'showRelationships', 'false');
+			}
+		});													   
 	}
 
-	/*
-	Save setting in cookie and replot
+	if (!x2Chart.suppressChartSettings) {
+		setUpChartSettings ();
+	}
+	
+	if (x2Chart.hideByDefault) {
+		setUpHideShowButtonBehavior ();
+	}
+
+	setUpBinSizeSelection ();
+	setUpDatepickers ();
+	setUpMetricSelection ();
+
+	/* 
+	set up event handlers which update action history chart on action 
+	creation/deletion.
 	*/
-	$('#chart-datepicker-from').datepicker ('option', 'onSelect', function () {
-		DEBUG && console.log ('from date selected');
-		getEventsBetweenDates (true);
-		$.cookie (
-			cookiePrefix + 'startDate', 
-			$('#chart-datepicker-from').datepicker ('getDate').valueOf ());
-		if (!suppressChartSettings) {
-			setChartSettingName ('');  
-			$('#predefined-settings').change ();
-		}
-	});
-
-	/*
-	Save setting in cookie and replot
-	*/
-	$('#chart-datepicker-to').datepicker ('option', 'onSelect', function () {
-		getEventsBetweenDates (true);
-		$.cookie (
-			cookiePrefix + 'endDate', 
-			$('#chart-datepicker-to').datepicker ('getDate').valueOf ());
-
-		if (!suppressChartSettings) {
-			setChartSettingName ('');  
-			$('#predefined-settings').change ();
-		}
-	});
-
-	if (x2.chart.chartPage === 'recordView') {
+	if (x2Chart.chartType === 'recordView') {
 		$(document).on ('chartWidgetMaximized', function () {
 			DEBUG && console.log ('max');
 			feedChart.replot ({ resetAxes: false });
@@ -2178,21 +2372,46 @@ function setupChartBehavior (suppressChartSettings) {
 			DEBUG && console.log ('deleted action');
 			getEventsBetweenDates (true); 
 		});
+	} else if (x2Chart.chartType === 'eventsChart') {
+		// initialize dropdown checklist
+		$('#' + x2Chart.chartType + '-users-chart-filter').multiselect2 ({
+			'checkAllText': x2Chart.translations['Check all'],
+			'uncheckAllText': x2Chart.translations['Uncheck all'],
+			'selectedText': '# ' + x2Chart.translations['metric(s) selected']
+		});
+		$('#' + x2Chart.chartType + '-users-chart-filter').multiselect2 ('checkAll');
+		$('#' + x2Chart.chartType + '-social-subtypes-chart-filter').multiselect2 ({
+			'checkAllText': x2Chart.translations['Check all'],
+			'uncheckAllText': x2Chart.translations['Uncheck all'],
+			'selectedText': '# ' + x2Chart.translations['metric(s) selected']
+		});
+		$('#' + x2Chart.chartType + '-social-subtypes-chart-filter').multiselect2 ('checkAll');
+		$('#' + x2Chart.chartType + '-visibility-chart-filter').multiselect2 ({
+			'checkAllText': x2Chart.translations['Check all'],
+			'uncheckAllText': x2Chart.translations['Uncheck all'],
+			'selectedText': '# ' + x2Chart.translations['metric(s) selected']
+		});
+		$('#' + x2Chart.chartType + '-visibility-chart-filter').multiselect2 ('checkAll');
+
+		$('#' + x2Chart.chartType + '-show-chart-filters-button').click (function () {
+			DEBUG && console.log ('show-chart-filters click');
+			$('#' + x2Chart.chartType + '-chart-container .chart-filters-container').slideToggle (200);
+		});
 	}
 
 	// redraw graph on window resize
 	$(window).on ('resize', function () {
-		if ($('#chart-container').is (':visible') && feedChart !== null)
+		if ($('#' + x2Chart.chartType + '-chart-container').is (':visible') && feedChart !== null)
 			feedChart.replot ({ resetAxes: false });
 	});
 
 	setSettingsFromCookie (); // fill settings with saved settings
 
-	if (x2.chart.chartPage === 'activityFeed' && 
+	if (x2Chart.chartType === 'eventsChart' && 
 		$.cookie (cookiePrefix + 'chartIsShown') === 'true') {
-			$('#chart-container').show ();
-			$('#show-chart').hide ();
-			$('#hide-chart').show ();
+			$('#' + x2Chart.chartType + '-chart-container').show ();
+			$('#' + x2Chart.chartType + '-show-chart').hide ();
+			$('#' + x2Chart.chartType + '-hide-chart').show ();
 	}
 
 	getEventsBetweenDates (false); // populate default graph
@@ -2200,9 +2419,6 @@ function setupChartBehavior (suppressChartSettings) {
 }
 
 
-$(document).on ('ready', function x2chartMain () {
-	setupChartBehavior (x2.chart.suppressChartSettings);
-});
 
 
 

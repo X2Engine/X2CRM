@@ -85,9 +85,19 @@ class SortableWidgets extends CJuiWidget {
 								link.html(newLink);
 
 								// slide widget open or closed
-								$('#widget_'+widget+' .portlet-content').toggle('blind',{},200,function() {
-									if(widget == 'GoogleMaps' && $(this).is(':visible'))	// for google maps, trigger a resize event
-										google.maps.event.trigger(window.map,'resize');
+								$('#widget_'+widget+' .portlet-content').toggle({
+									effect: 'blind',
+									duration: 200,
+									complete: function() {
+										// for google maps, trigger a resize event
+										if(widget === 'GoogleMaps' && $(this).is(':visible')) {
+											if (!x2.googleMapsWidget.instantiated) {
+												runGoogleMapsWidget ();
+											} else {
+												google.maps.event.trigger(window.map,'resize');
+											}
+										}
+									}
 								});
 							}
 						}

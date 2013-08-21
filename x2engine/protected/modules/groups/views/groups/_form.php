@@ -72,7 +72,7 @@ $(document).ready(function() {
 		<?php echo $form->error($model,'name'); ?>
 	</div>
         <label><?php echo Yii::t('groups','Users');?></label>
-        <?php echo CHtml::dropDownList('users[]', isset($selected)?$selected:"", $users, array('class'=>'multiselect', 'multiple'=>'multiple')); ?>
+        <?php echo CHtml::dropDownList('users[]', isset($selected)?$selected:"", X2Model::getAssignmentOptions(false, false), array('class'=>'multiselect', 'multiple'=>'multiple')); ?>
         <br />
 
 	<div class="row buttons">

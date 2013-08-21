@@ -366,15 +366,15 @@ class Quote extends X2Model {
 	 * Creates an event record for the creation of the model.
 	 */
 	public function createEventRecord() {
-		$event = new Events();
-		$event->type = 'record_create';
-		$event->subtype = 'quote';
-		$event->associationId = $this->id;
-		$event->associationType = 'Quote';
-		$event->timestamp = time();
-		$event->lastUpdated = $event->timestamp;
-		$event->user = $this->createdBy;
-		$event->save();
+//		$event = new Events();
+//		$event->type = 'record_create';
+//		$event->subtype = 'quote';
+//		$event->associationId = $this->id;
+//		$event->associationType = 'Quote';
+//		$event->timestamp = time();
+//		$event->lastUpdated = $event->timestamp;
+//		$event->user = $this->createdBy;
+//		$event->save();
 	}
 
 	public static function getStatusList() {
@@ -645,11 +645,6 @@ class Quote extends X2Model {
 		if ($dateRange !== false)
 			$criteria->addCondition('lastUpdated BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
 
-		if ($criteria === null)
-			$criteria = $this->getAccessCriteria();
-		else
-			$criteria->mergeWith($this->getAccessCriteria());
-
 		return parent::searchBase($criteria);
 	}
 
@@ -736,14 +731,14 @@ class Quote extends X2Model {
 		QuoteProduct::model()->deleteAllByAttributes(array('quoteId'=>$this->id));
 		Relationships::model()->deleteAllByAttributes(array('firstType' => 'quotes', 'firstId' => $this->id));// delete associated actions
 		Actions::model()->deleteAllByAttributes(array('associationId'=>$this->id, 'associationType'=>'quotes'));
-		$event = new Events;
-		$event->type = 'record_deleted';
-		$event->subtype = 'quote';
-		$event->associationType = $this->myModelName;
-		$event->associationId = $this->id;
-		$event->text = $this->name;
-		$event->user = $this->assignedTo;
-		$event->save();
+//		$event = new Events;
+//		$event->type = 'record_deleted';
+//		$event->subtype = 'quote';
+//		$event->associationType = $this->myModelName;
+//		$event->associationId = $this->id;
+//		$event->text = $this->name;
+//		$event->user = $this->assignedTo;
+//		$event->save();
 		$name = $this->name;
 		// generate action record, for history
 		$contact = $this->contact;

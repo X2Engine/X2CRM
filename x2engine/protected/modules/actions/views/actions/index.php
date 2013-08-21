@@ -99,7 +99,14 @@ $this->widget('zii.widgets.CListView', array(
     $(document).on('ready',function(){
         $('#advanced-controls').after('<div class="form" id="action-view-pane" style="float:right;width:0px;display:none;padding:0px;"></div>');
     });
-    $(document).on('click','.view',function(e){
+    <?php 
+	if (IS_IPAD) { 
+		echo "$(document).on('vclick', '.view', function (e) {" ;
+	} else {
+		echo "$(document).on('click','.view',function(e){";
+	}
+	?>
+		//alert ('click');
         if(!$(e.target).is('a')){
             e.preventDefault();
             if(clickedFlag){
@@ -122,7 +129,7 @@ $this->widget('zii.widgets.CListView', array(
                     lastClass=$(this).attr('id');
                     var pieces=lastClass.split('-');
                     var id=pieces[1];
-                    $('#action-view-pane').html('<iframe style="width:99%;height:800px" id="action-frame" src="actions/viewAction?id='+id+'" onload="createControls('+id+', false);"></iframe>');
+                   	$('#action-view-pane').html('<iframe id="action-frame" src="actions/viewAction?id='+id+'" onload="createControls('+id+', false);"></iframe>');
                 }
             }else{
                 $(this).addClass('important');
@@ -137,13 +144,18 @@ $this->widget('zii.widgets.CListView', array(
                 $('#action-view-pane').show();
                 $('#action-view-pane').animate({width: '59%'});;
                 clickedFlag=!clickedFlag;
-                $('#action-view-pane').html('<iframe style="width:99%;height:800px" id="action-frame" src="actions/viewAction?id='+id+'" onload="createControls('+id+', false);"></iframe>');
+                //$('#action-view-pane').html('<iframe style="width:99%;height:800px" id="action-frame" src="actions/viewAction?id='+id+'" onload="createControls('+id+', false);"></iframe>');
+                 $('#action-view-pane').html('<iframe id="action-frame" src="actions/viewAction?id='+id+'" onload="createControls('+id+', false);"></iframe>');
             }
         }
     });
 
 </script>
 <style>
+	#action-frame {
+		width:99%;
+		height:800px;
+	}
     #action-list .items{
         clear:none;
         max-height:800px;

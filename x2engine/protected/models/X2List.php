@@ -480,7 +480,7 @@ class X2List extends CActiveRecord {
 	 * @return CSqlDataProvider
 	 */
 	public function campaignDataProvider($pageSize=null) {
-		// The following line should probably be removed (in addition to the 
+		// The following line should probably be removed (in addition to the
 		// access checks in queryCriteria) because here in the model is a very
 		// inappropriate place for an access check. Access logic should be
 		// resolved in the controller (or view, and in that case only to hide UI

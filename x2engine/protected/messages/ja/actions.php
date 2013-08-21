@@ -134,4 +134,13 @@ return array (
 'Remind Me'=>'を思い出させる',
 'View Full Edit Page'=>'フル編集ページを見る',
 '(Error displaying email)'=>'（エラーメールを表示する）',
+'Due: '=>'ために：',
+'Created: '=>'作成：',
+'Email Opened:'=>'メールオープン：',
+'Contact has opened the following email:'=>'お問い合わせは、以下のメールアドレスを開設しました：',
+'Update Event:'=>'イベントを更新します。',
+'Action completed: {action}'=>'アクション完了： {action}',
+'{user} completed an action: {action}'=>'{user}アクションを完了： {action}',
+'Stage {n}: {stage} was completed for {record}'=>'ステージ{n} ： {stage}のために完成しました{record}',
+'{user} completed stage {n}: {stage} was completed for {record}'=>'{user}完了段階{n} {stage}のために完成しました{record}',
 );

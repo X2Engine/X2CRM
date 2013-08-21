@@ -171,4 +171,7 @@ return array (
 'Are you sure you want to delete all other records?'=>'당신은 다른 모든 레코드를 삭제 하시겠습니까?',
 'Are you sure you want to hide this record?'=>'당신은 당신이이 레코드를 숨기 하시겠습니까?',
 'Are you sure you want to delete this record?'=>'당신은 당신이이 레코드를 삭제 하시겠습니까?',
+'Your case number is: '=>'사건 번호는 :',
+'Website: '=>'웹 사이트 :',
+'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'경고 :이 페이지에 너무 많은 레코드를로드하는 것은 크게 서버를 묶을 수 있습니다. 당신은 당신이 계속 하시겠습니까?',
 );

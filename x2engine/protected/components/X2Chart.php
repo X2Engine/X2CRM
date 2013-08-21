@@ -34,18 +34,32 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-/**
- */
+/*
+Passes parameters to the _x2chart.php partial view and retrieves chart data or predefined
+chart settings if specified by properties.
+*/
 class X2Chart extends X2Widget {
+
+	// The name of the action called to retrieve chart data
 	public $getChartDataActionName;
+
+	// The parameters required by the action specified with getChartDataActionName
 	public $actionParams;
+
+	// If false, indicates that the chart setting feature should be enabled.
 	public $suppressChartSettings;
-	public $hideByDefault = false;
-	public $actionsStartDate = null;
+
+	// Determines which metrics can be plotted.
 	public $metricTypes;
+
 	public $chartType;
-	public $chartPage;
+
+	/* 
+	If true, retrieve chart data so the client doesn't have to make an ajax call
+ 	to initially populate the graph
+	*/
 	public $getDataOnPageLoad;
+
 
 	public function init() {
 		parent::init();
@@ -56,59 +70,270 @@ class X2Chart extends X2Widget {
 			'getChartDataActionName' => $this->getChartDataActionName,
 			'actionParams' => $this->actionParams,
 			'suppressChartSettings' => $this->suppressChartSettings,
-			'hideByDefault' => $this->hideByDefault,
 			'metricTypes' => $this->metricTypes,
-			'chartType' => $this->chartType,
-			'actionsStartDate' => $this->actionsStartDate,
-			'chartPage' => $this->chartPage
+			'chartType' => $this->chartType
 		);
+
+		$users = User::getNames ();
+		$socialSubtypes = json_decode (
+			Dropdowns::model()->findByPk(113)->options,true);
+		$visibilityFilters = array (
+			'1'=>'Public',
+			'0'=>'Private',
+		);
+		if ($this->chartType === 'eventsChart') {
+			$viewParams['userNames'] = $users;
+			$viewParams['socialSubtypes'] = $socialSubtypes;
+			$viewParams['visibilityFilters'] = $visibilityFilters;
+		} else if ($this->chartType === 'usersChart') {
+			$viewParams['socialSubtypes'] = $socialSubtypes;
+			$viewParams['visibilityFilters'] = $visibilityFilters;
+			$viewParams['eventTypes'] = Events::$eventLabels;
+			$viewParams['eventTypes'] = 
+				array ('all'=>Yii::t('app', 'All Events')) + $viewParams['eventTypes'];
+		} else if ($this->chartType === 'actionHistoryChart') {
+
+			// chart starts at first action data
+			$actionsStartDate = self::getFirstActionDate ();
+			$viewParams['actionsStartDate'] = $actionsStartDate;
+
+			// if cookie is present, override default value
+			$cookies = Yii::app()->request->cookies;
+			if ((string) $cookies['actionHistoryChartshowRelationships']) {
+				$this->actionParams['showRelationships'] = 
+					$cookies['actionHistoryChartshowRelationships']->value;
+			}
+		}
+
+		// supply view with names of predefined chart settings 
 		if (!$this->suppressChartSettings) {
-			$chartSettingsDataProvider = new CActiveDataProvider('ChartSetting', array(
-					'criteria' => array(
-						'condition' => 'userId='.Yii::app()->user->id,
-						'order' => 'name ASC'
-					)
-				));
+
+			if ($this->chartType === 'usersChart') {
+				$chartSettingsDataProvider = new CActiveDataProvider('ChartSetting', array(
+							'criteria' => array(
+								'condition' => 
+									'userId='.Yii::app()->user->id.' AND '.
+									'chartType="usersChart"',
+								'order' => 'name ASC'
+							)
+						));
+			} else if ($this->chartType === 'eventsChart') {
+				$chartSettingsDataProvider = new CActiveDataProvider('ChartSetting', array(
+							'criteria' => array(
+								'condition' => 
+									'userId='.Yii::app()->user->id.' AND '.
+									'chartType="eventsChart"',
+								'order' => 'name ASC'
+							)
+						));
+			}
+
 			$viewParams['chartSettingsDataProvider'] = $chartSettingsDataProvider;
 		}
 		
+		/*
+		Collect initial chart data so the client doesn't have to request it via ajax .
+		Decreases time before chart render after page is loaded.
+		*/
 		if ($this->getDataOnPageLoad) {
-			$secPerDay = 86400;
-			if ($this->chartPage === 'recordView'  &&
+			self::$secPerDay = 86400;
+
+			// Collect data for a record view page (i.e. the contact record view page).
+			if ($this->chartType === 'actionHistoryChart'  &&
+				$actionsStartDate !== false &&
 				is_array ($this->actionParams) &&
 				array_key_exists ('associationId', $this->actionParams) &&
+				array_key_exists ('showRelationships', $this->actionParams) &&
 				array_key_exists ('associationType', $this->actionParams)) {
-				$actions = GetActionsBetweenAction::getData (
-					$this->actionsStartDate, time () + $secPerDay,
+				$actions = self::getActionsData (
+					$actionsStartDate, time () + self::$secPerDay,
 					$this->actionParams['associationId'], 
-					$this->actionParams['associationType']);
+					$this->actionParams['associationType'],
+					$this->actionParams['showRelationships']);
 				$viewParams['chartData'] = $actions;
-			} else if ($this->chartPage === 'activityFeed') {
-				$cookies = Yii::app()->request->cookies;
-				if ((string) $cookies['activityFeedchartIsShown'] !== '' &&
-					$cookies['activityFeedchartIsShown']->value === 'true') {
 
-					$startDate;
-					$endDate;
-					if ((string) $cookies['activityFeedstartDate'] !== '') {
-						$startDate = $cookies['activityFeedstartDate']->value / 1000;
-					} else {
-						$secPerWeek = 604800;
-						$startDate = time () - $secPerWeek;
-					}
-					if ((string) $cookies['activityFeedendDate'] !== '') { 
-						$endDate = $cookies['activityFeedendDate']->value / 1000;
-					} else {
-						$endDate = time ();
-					}
-					$endDate += $secPerDay;
-					$events = SiteController::getChartData (
-						$startDate, $endDate);
-					$viewParams['chartData'] = $events;
-				}
+			// Collect data for the activity feed chart
+			} else if ($this->chartType === 'eventsChart' ||
+			           $this->chartType === 'usersChart') {
+				self::preLoadEventsData ($this->chartType, $viewParams);
 			}
 		}
 		$this->render ('_x2chart', $viewParams);
 	}
+
+	/*
+	Retrieves all events between start and end timestamp. Query results are used to
+	populate the activity feed chart.
+	*/
+	public static function getEventsData ($startTimestamp, $endTimestamp){
+        $command = Yii::app()->db->createCommand()
+                ->select(
+                        'type, subtype, visibility, user,'.
+						'timestamp, COUNT(type) AS count,'.
+                        'YEAR(FROM_UNIXTIME(timestamp)) AS year,'.
+                        'MONTH(FROM_UNIXTIME(timestamp)) AS month,'.
+                        'WEEK(FROM_UNIXTIME(timestamp)) AS week,'.
+                        'DAY(FROM_UNIXTIME(timestamp)) AS day,'.
+                        'HOUR(from_unixtime(timestamp)) as hour')
+                ->from('x2_events');
+        $command->where(
+                'timestamp BETWEEN :startTimestamp AND :endTimestamp', 
+				array('startTimestamp' => $startTimestamp, 'endTimestamp' => $endTimestamp));
+        $events = $command->group(
+                        'HOUR(FROM_UNIXTIME(timestamp)),'.
+                        'DAY(FROM_UNIXTIME(timestamp)),'.
+                        'WEEK(FROM_UNIXTIME(timestamp)),'.
+                        'MONTH(FROM_UNIXTIME(timestamp)),'.
+                        'YEAR(FROM_UNIXTIME(timestamp)),'.
+                        'timestamp, type, subtype, visibility, user')
+                ->order('year DESC, month DESC, week DESC, day DESC, hour desc')
+                ->queryAll();
+		return $events;
+	}
+
+	/*
+	Get earliest date of actions which will visible on the initial chart.
+	*/
+	private function getFirstActionDate  () {
+		$associationId = $this->actionParams['associationId'];
+		$associationType = $this->actionParams['associationType'];
+
+		$cookies = Yii::app()->request->cookies;
+		if ((string) $cookies['actionHistoryChartshowRelationships'] !== '' &&
+			$cookies['actionHistoryChartshowRelationships']->value === 'true') {
+			$associationCondition = self::getAssociationCond (
+				$associationId, $associationType, 'true');
+		} else {
+			$associationCondition = self::getAssociationCond (
+				$associationId, $associationType, 
+				$this->actionParams['showRelationships']);
+		}
+
+		$command = Yii::app()->db->createCommand()
+				->select('min(createDate)')
+				->from('x2_actions');
+		$command->where(
+				$associationCondition.' AND '.
+				'(visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")', 
+				array(
+					'associationId' => $associationId, 
+					'associationType' => $associationType
+				));
+		$actionsStartDate = $command->queryScalar();
+		return $actionsStartDate;
+	}
+
+	/*
+	Retrieves all actions of a certain type associated with particular record
+	between the start and end timestamps. Query results are used to populate the
+	action history chart. Optionally, related records' actions can also be retrieved.
+	*/
+	public static function getActionsData (
+		$startTimestamp, $endTimestamp, $associationId, $associationType, 
+		$showRelationships) {
+
+		$associationType = strtolower ($associationType);
+
+		$associationCondition = self::getAssociationCond (
+			$associationId, $associationType, $showRelationships);
+
+		$date = 
+			'IF(complete="No", '.
+				'GREATEST(createDate, IFNULL(dueDate,0), IFNULL(lastUpdated,0)), '.
+				'GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0)))';
+
+		$command = Yii::app()->db->createCommand()
+			->select(
+				'type,'.
+				'COUNT(id) AS count,'.
+				'YEAR(FROM_UNIXTIME('.$date.')) AS year,'.
+				'MONTH(FROM_UNIXTIME('.$date.')) AS month,'.
+				'WEEK(FROM_UNIXTIME('.$date.')) AS week,'.
+				'DAY(FROM_UNIXTIME('.$date.')) AS day,'.
+				'HOUR(FROM_UNIXTIME('.$date.')) AS hour')
+			->from('x2_actions');
+		$command->where(
+			$associationCondition . ' AND '.
+			'(visibility="1" OR assignedTo="'.Yii::app()->user->getName().'") AND '.
+			$date.' BETWEEN :startTimestamp AND :endTimestamp', 
+			array(
+				'startTimestamp' => $startTimestamp, 
+				'endTimestamp' => $endTimestamp
+			));
+		$actions = $command ->group(
+				'day, week, month, year, type')
+			->order('year DESC, month DESC, week DESC, day DESC, hour desc')
+			->queryAll();
+		return $actions;
+	}
+
+	private static $secPerDay = 86400;
+
+	private static function preLoadEventsData ($chartType, &$viewParams) {
+		/* 
+		Chart data only needs to be sent with initial response if chart was
+		left open.
+		*/
+		$cookies = Yii::app()->request->cookies;
+		if ((string) $cookies[$chartType.'chartIsShown'] !== '' &&
+			$cookies[$chartType.'chartIsShown']->value === 'true') {
+
+			$startDate;
+			$endDate;
+			if ((string) $cookies[$chartType.'startDate'] !== '') {
+				$startDate = $cookies[$chartType.'startDate']->value / 1000;
+			} else {
+				$secPerWeek = 604800;
+				$startDate = time () - $secPerWeek;
+			}
+			if ((string) $cookies[$chartType.'endDate'] !== '') { 
+				$endDate = $cookies[$chartType.'endDate']->value / 1000;
+			} else {
+				$endDate = time ();
+			}
+			$endDate += self::$secPerDay;
+			$events = self::getEventsData ($startDate, $endDate);
+			$viewParams['chartData'] = $events;
+		}
+	}
+
+
+	/*
+	Private helper function. Returns a SQL conditional statement used in 
+	queries to the Actions table. Restricts query results to actions of a certain
+	type, associated with a particular id, and, if specified, actions of related
+	records.
+	*/
+	private static function getAssociationCond (
+		$associationId, $associationType, $showRelationships) {
+
+        if ($showRelationships === 'true') {
+            $model = X2Model::model($associationType)->findByPk($associationId);
+            if (count($model->relatedX2Models) > 0) {
+                $associationCondition = 
+					"((associationId={$associationId} AND ".
+					"associationType='{$associationType}')";
+                foreach ($model->relatedX2Models as $relatedModel) {
+                    if ($relatedModel instanceof X2Model) {
+                        $associationCondition .=
+							" OR (associationId={$relatedModel->id} AND ".
+							"associationType='{$relatedModel->myModelName}')";
+                    }
+                }
+                $associationCondition .= ")";
+            } else {
+                $associationCondition = 
+					'associationId='.$associationId.' AND '.
+					'associationType="'.$associationType.'"';
+            }
+        } else {
+            $associationCondition = 
+				'associationId='.$associationId.' AND '.
+				'associationType="'.$associationType.'"';
+        }
+		return $associationCondition;
+	}
+
 }
+
 

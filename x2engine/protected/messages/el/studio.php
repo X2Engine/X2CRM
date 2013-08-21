@@ -113,4 +113,6 @@ return array (
 'Post Type'=>'Δημοσίευση Τύπος',
 'Create Notification?'=>'Δημιουργία ειδοποίησης;',
 'User Active?'=>'Ενεργός χρήστης;',
+'Tags (optional)'=>'Ετικέτες (προαιρετικό)',
+'seconds (recommended for formulas only)'=>'δευτερόλεπτα (συνιστάται για τους τύπους μόνο)',
 );

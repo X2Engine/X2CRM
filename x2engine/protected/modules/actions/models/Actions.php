@@ -308,12 +308,16 @@ class Actions extends X2Model {
         }
     }
 
-    public function getLink($length = 30){
+    public function getLink($length = 30, $frame=true){
 
         $text = $this->name;
         if($length && mb_strlen($text, 'UTF-8') > $length)
             $text = CHtml::encode(mb_substr($text, 0, $length, 'UTF-8').'...');
-        return CHtml::link($text, '#', array('class' => 'action-frame-link', 'data-action-id' => $this->id));
+        if($frame){
+            return CHtml::link($text, '#', array('class' => 'action-frame-link', 'data-action-id' => $this->id));
+        }else{
+            return CHtml::link($text, $this->getUrl());
+        }
     }
 
     public function getAssociationLink(){

@@ -99,7 +99,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 Yii::import('application.components.X2MessageSource');
                 Yii::import('application.components.Formatter');
                 Yii::import('application.components.TransformedFieldStorageBehavior');
-                Yii::import('application.components.X2PermissionsBehavior');
+                Yii::import('application.components.permissions.*');
                 if(!$this->owner->user->getIsGuest())
                     $profData = $this->owner->db->createCommand()->select('timeZone, language')->from('x2_profile')->where('id='.$this->owner->user->getId())->queryRow(); // set the timezone to the admin's
                 if(isset($profData)){
@@ -138,8 +138,10 @@ class ApplicationConfigBehavior extends CBehavior {
         Yii::import('application.controllers.x2base');
         Yii::import('application.components.*');
         Yii::import('application.components.util.*');
+        Yii::import('application.components.permissions.*');
         Yii::import('application.modules.media.models.Media');
         Yii::import('application.modules.groups.models.Groups');
+        Yii::import('application.extensions.gallerymanager.models.*');
         // Yii::import('application.components.ERememberFiltersBehavior');
         // Yii::import('application.components.EButtonColumnWithClearFilters');
         // $this->owner->messages->forceTranslation = true;
@@ -293,6 +295,7 @@ class ApplicationConfigBehavior extends CBehavior {
                         notificationSoundPath: "'.$notificationSound.'"
                     },
                     x2 = {};
+					x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
                     x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
                     ';
                 }else{
@@ -306,6 +309,7 @@ class ApplicationConfigBehavior extends CBehavior {
                     timePickerFormat: "'.Formatter::formatTimePicker().'"
                 },
                 x2 = {};
+				x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
                 x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
                 ';
                 }
@@ -320,6 +324,7 @@ class ApplicationConfigBehavior extends CBehavior {
 				timePickerFormat: "'.Formatter::formatTimePicker().'"
 			},
 			x2 = {};
+			x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
 			x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
 			';
             }
@@ -335,6 +340,18 @@ class ApplicationConfigBehavior extends CBehavior {
                 define('IS_ANDROID', false);
                 $yiiString .= '
 					x2.isAndroid = false;
+				';
+            }
+            $isIPad = preg_match('/ipad/', $userAgentStr);
+            if($isIPad){
+                define('IS_IPAD', true);
+                $yiiString .= '
+					x2.isIPad = true;
+				';
+            }else{
+                define('IS_IPAD', false);
+                $yiiString .= '
+					x2.isIPad = false;
 				';
             }
 

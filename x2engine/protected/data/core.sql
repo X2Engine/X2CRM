@@ -38,6 +38,7 @@ CREATE TABLE x2_admin(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	timeout					INT,
 	webLeadEmail			VARCHAR(255),
+	webLeadEmailAccount		INT NOT NULL DEFAULT -1,
 	webTrackerCooldown		INT				DEFAULT 60,
 	enableWebTracker		TINYINT			DEFAULT 1,
 	currency				VARCHAR(3)		NULL,
@@ -46,7 +47,8 @@ CREATE TABLE x2_admin(
 	rrId					INT				DEFAULT 0,
 	leadDistribution		VARCHAR(255),
 	onlineOnly				TINYINT,
-	emailBulkAccount		INT				NOT NULL DEFAULT -1,
+	emailBulkAccount		INT	NOT NULL DEFAULT -1,
+	emailNotificationAccount	INT NOT NULL DEFAULT -1,
 	emailFromName			VARCHAR(255)	NOT NULL DEFAULT "X2CRM",
 	emailFromAddr			VARCHAR(255)	NOT NULL DEFAULT '',
 	emailBatchSize			INT				NOT NULL DEFAULT 200,
@@ -96,7 +98,8 @@ CREATE TABLE x2_admin(
 	emailDropbox_createContact	TINYINT	DEFAULT 1,
 	emailDropbox_zapLineBreaks	TINYINT DEFAULT 0,
 	emailDropbox_emptyContact	TINYINT DEFAULT 1,
-	emailDropbox_logging		TINYINT DEFAULT 0
+	emailDropbox_logging		TINYINT DEFAULT 0,
+    historyPrivacy              VARCHAR(20) DEFAULT "default"
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
@@ -157,6 +160,7 @@ CREATE TABLE x2_dropdowns (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(250),
 	options					TEXT,
+	multi					TINYINT DEFAULT 0,
     parent                  INT,
     parentVal               VARCHAR(250)
 ) AUTO_INCREMENT=1000 COLLATE = utf8_general_ci;
@@ -602,7 +606,8 @@ CREATE TABLE `x2_chart_settings` (
   `id`                      int(11)         NOT NULL AUTO_INCREMENT,
   `userId`                  int(11)         NOT NULL,
   `name`                    varchar(100)    NOT NULL,
-  `settings`                 TEXT,
+  `chartType`               varchar(100)    NOT NULL,
+  `settings`                TEXT,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId` (`userId`,`name`)
 ) COLLATE = utf8_general_ci;

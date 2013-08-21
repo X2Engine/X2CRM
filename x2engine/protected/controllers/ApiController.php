@@ -61,14 +61,14 @@ class ApiController extends x2base {
 	);
 
 	public function behaviors() {
-		return array(
+		return array_merge(parent::behaviors(),array(
 			'responds' => array(
 				'class' => 'application.components.ResponseBehavior',
 				'isConsole' => false,
 				'exitNonFatal' => false,
 				'longErrorTrace' => false,
 			),
-		);
+		));
 	}
 
 	/**
@@ -162,9 +162,6 @@ class ApiController extends x2base {
 		// Get an instance of the respective model
 		$model = $this->getModel(true);
 		$model->setX2Fields($_POST);
-	        if($this->modelClass=='Actions' && isset($_POST['actionDescription'])){
-        	    $model->actionDescription=$_POST['actionDescription'];
-	        }
 
 		$setUserFields = false;
 		// $scenario = 'Changelog behavior in effect.';
@@ -187,12 +184,12 @@ class ApiController extends x2base {
 		// operations based on the model type:
 		$valid = $model->validate();
 		if($valid){
-			// First (a hack) to ensure that empty numeric fields get set 
+			// First (a hack) to ensure that empty numeric fields get set
 			// properly to avoid SQL "invalid value" errors in strict mode
 			foreach($model->fields as $fieldModel)
 				if(in_array($fieldModel->type,array('currency','float','int')) && !isset($_POST[$fieldModel->fieldName]))
 					$model->{$fieldModel->fieldName} = $fieldModel->parseValue($model->{$fieldModel->fieldName});
-			$model->save();
+			$valid = $valid && $model->save();
 		}
 		$this->addResponseProperty('model',$model->attributes);
 
@@ -201,6 +198,11 @@ class ApiController extends x2base {
 			switch ($this->modelClass) {
 				// Special extra actions to take for each model type:
 				case 'Actions':
+					// Set actionDescription manually since it's stored in a different table
+					// which is updated using the magic getter:
+					if(isset($_POST['actionDescription'])){
+        				    $model->actionDescription=$_POST['actionDescription'];
+			        	}
 					$message .= " with description {$model->actionDescription}";
 					$model->syncGoogleCalendar('create');
 					break;

@@ -62,4 +62,7 @@ return array (
 'invoice'=>'发票',
 'Quote {id} does not exist. It may have been deleted.'=>'报价{id}不存在。它可能已被删除。',
 'Date printed/emailed'=>'日期打印/电子邮件',
+'Could not save quote due to line item errors:'=>'无法保存项目错误报价：',
+'Update Quote:'=>'更新报价：',
+'Update Invoice:'=>'更新发票：',
 );

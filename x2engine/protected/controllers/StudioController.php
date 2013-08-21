@@ -80,12 +80,12 @@ class StudioController extends x2base {
 	public function actionTest() {
 		echo CRYPT_SALT_LENGTH ;
 		// var_dump($a instanceof X2Model);
-	
+
 		// $a = array();
 		// $a = array(''=>Yii::t('studio','Custom')) + Docs::getEmailTemplates();
 		// $a = Docs::getEmailTemplates();
 		// var_dump($a);
-		
+
 		// $act = new X2FlowEmail;
 		// $act->config = array (
 			// 'type' => 'X2FlowEmail',
@@ -100,10 +100,10 @@ class StudioController extends x2base {
 			// )
 		// );
 		// var_dump($act->execute($a));
-		
+
 		// $x = X2FlowTrigger::checkCondition(array('type'=>'time_of_day','operator'=>'<','value'=>'11:30'),$a);
 		// var_dump($x);
-	
+
 		/* $triggerName = 'RecordDeleteTrigger';
 		$params = array('model'=>new Contacts);
 

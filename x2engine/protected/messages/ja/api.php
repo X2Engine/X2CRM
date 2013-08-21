@@ -9,4 +9,6 @@ return array (
 'Request type not supported for this action.'=>'要求タイプは、このアクションではサポートされません。',
 'Tags not added.'=>'タグは追加されません。',
 'Error'=>'エラー',
+'Cannot delete; no parameters specified for finding a relationship record to delete.'=>'削除することはできません。はパラメータは削除するリレーションシップ·レコードを見つけるために指定されていません。',
+'No relationships deleted; none were found matching specfied parameters.'=>'いいえ関係は削除されません。いずれもspecfie​​dパラメータに一致する見つかりませんでした。',
 );

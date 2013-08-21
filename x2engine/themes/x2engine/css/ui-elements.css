@@ -134,6 +134,11 @@ body {
 	-moz-box-shadow: 	inset 0 1px 1px 0 #538400 !important;
 	-webkit-box-shadow: 	inset 0 1px 1px 0 #538400 !important;
 	box-shadow: 			inset 0 1px 1px 0 #538400 !important;
+	background: -moz-linear-gradient(top,	#579100 0%, #729C00 100%) !important;
+	background: -webkit-linear-gradient(top,	#579100 0%, #729C00 100%) !important;
+	background: -o-linear-gradient(top,		#579100 0%, #729C00 100%) !important;
+	background: -ms-linear-gradient(top,		#579100 0%, #729C00 100%) !important;
+	background: linear-gradient(to bottom,	#579100 0%, #729C00 100%) !important;
 }
 a.x2-button.urgent, input.x2-button.urgent, button.x2-button.urgent { /* , a.search-button */
 	background-color: #910000;
@@ -397,6 +402,11 @@ UI Multiselect
     font-size: 1em;
 }
 
+.ui-multiselect.ui-helper-clearfix.ui-widget {
+	padding: 0 0 0 0;
+}
+
+
 .ui-multiselect .ui-widget-header {
 	margin: -3px -3px 0 -3px !important;
 	font-weight: bold !important;
@@ -432,6 +442,10 @@ UI Multiselect
 	background: -o-linear-gradient(top,		#f0f0f0 0%, #dddddd 100%) !important;
 	background: -ms-linear-gradient(top,		#f0f0f0 0%, #dddddd 100%) !important;
 	background: linear-gradient(to bottom,	#f0f0f0 0%, #dddddd 100%) !important;
+}
+
+.form .ui-multiselect .ui-helper-clearfix.ui-widget-header {
+	margin-right: -5px !important;
 }
 
 

@@ -229,6 +229,14 @@ if(!is_writable(__FILE__)) {
 	$reqMessages[3][] = installer_t("Permissions and/or ownership of uploaded files do not permit PHP processes run by the webserver to write files.");
 }
 
+// Check that the directive open_basedir is not arbitrarily set to some restricted 
+// jail directory off in god knows where (because X2CRM uses relative file paths, and 
+// if it is set then those paths won't resolve properly)
+$basedir = ini_get('open_basedir');
+if(!(empty($basedir) || $basedir == '.' || $basedir == dirname(__FILE__)))
+	$reqMessages[3][] = installer_t('The base directory configuration directive is set, and it is not the current working directory.');
+
+
 // Check PHP version
 if(!version_compare(PHP_VERSION, "5.3.0", ">=")){
 	$reqMessages[3][] = installer_t("Your server's PHP version").': '.PHP_VERSION.'; '.installer_t("version 5.3 or later is required");
@@ -276,6 +284,18 @@ if(!extension_loaded("mbstring")){
 if(!extension_loaded('json')){
 	$reqMessages[3][] = '<a href="http://www.php.net/manual/function.json-decode.php">json extension</a>: '.$rbm;
 }
+// Check for hash:
+if(!extension_loaded('hash')){
+	$reqMessages[3][] = '<a href="http://www.php.net/manual/book.hash.php">HASH Message Digest Framework</a>: '.$rbm;
+} else {
+	$algosRequired = array('sha512');
+	$algosAvail = hash_algos();
+	$algosNotAvail = array_diff($algosRequired,$algosAvail);
+	if(!empty($algosNotAvail))
+		$reqMessages[3][] = installer_t('Some hashing algorithms required for software updates are missing on this server:').' '.implode(', ',$algosNotAvail);
+}
+
+
 // Miscellaneous functions:
 $requiredFunctions = array(
 	'mb_regex_encoding',
@@ -344,9 +364,8 @@ if($tryAccess){
 		}
 
 	}
-} else {
-
 }
+
 // Check the ability to make database backups during updates:
 $canBackup = function_exists('proc_open');
 if($canBackup){

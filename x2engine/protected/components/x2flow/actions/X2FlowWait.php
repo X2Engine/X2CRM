@@ -53,6 +53,7 @@ class X2FlowWait extends X2FlowAction {
 			'hours'=>Yii::t('studio','hours'),
 			'days'=>Yii::t('studio','days'),
 			'months'=>Yii::t('studio','months'),
+            'secs'=>Yii::t('studio','seconds (recommended for formulas only)'),
 		);
 		return array(
 			'title' => Yii::t('studio',$this->title),

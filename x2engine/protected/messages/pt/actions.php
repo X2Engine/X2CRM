@@ -134,4 +134,13 @@ return array (
 'Remind Me'=>'Remind Me',
 'View Full Edit Page'=>'Ver Editar página inteira',
 '(Error displaying email)'=>'(Erro exibindo mail)',
+'Due: '=>'Devido:',
+'Created: '=>'Criado:',
+'Email Opened:'=>'Email Inauguração:',
+'Contact has opened the following email:'=>'Contato abriu o seguinte e-mail:',
+'Update Event:'=>'Atualize Evento:',
+'Action completed: {action}'=>'Acção completada: {action}',
+'{user} completed an action: {action}'=>'{user} completou uma ação: {action}',
+'Stage {n}: {stage} was completed for {record}'=>'Stage {n} : {stage} foi concluída para {record}',
+'{user} completed stage {n}: {stage} was completed for {record}'=>'{user} concluído a fase {n} : {stage} foi concluída para {record}',
 );

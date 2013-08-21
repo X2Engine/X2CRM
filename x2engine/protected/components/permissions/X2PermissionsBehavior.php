@@ -40,9 +40,9 @@
  * X2PermissionsBehavior is a CModelBehavior which allows consistent lookup of
  * access levels and whether or not a user is allowed to view or edit a record.
  *
- * @package X2CRM.components
+ * @package X2CRM.components.permissions
  */
-class X2PermissionsBehavior extends CActiveRecordBehavior {
+class X2PermissionsBehavior extends ModelPermissionsBehavior {
 
     /**
      * Returns a CDbCriteria containing record-level access conditions.
@@ -58,8 +58,10 @@ class X2PermissionsBehavior extends CActiveRecordBehavior {
         }else{
             $visFlag = false;
         }
-
-        $criteria->addCondition(self::getAccessConditions($accessLevel, $visFlag), 'AND');
+        $conditions=$this->getAccessConditions($accessLevel, $visFlag);
+        foreach($conditions as $arr){
+            $criteria->addCondition($arr['condition'],$arr['operator']);
+        }
 
         return $criteria;
     }
@@ -82,7 +84,7 @@ class X2PermissionsBehavior extends CActiveRecordBehavior {
         if(Yii::app()->authManager->checkAccess($module.'Admin', $uid)){
             if($accessLevel < 3)
                 $accessLevel = 3;
-        }elseif(Yii::app()->authManager->checkAccess($module.'View', $uid)){
+        }elseif(Yii::app()->authManager->checkAccess($module.'ReadOnlyAccess', $uid)){
             if($accessLevel < 2)
                 $accessLevel = 2;
         }elseif(Yii::app()->authManager->checkAccess($module.'PrivateReadOnlyAccess', $uid)){
@@ -94,7 +96,7 @@ class X2PermissionsBehavior extends CActiveRecordBehavior {
             if(Yii::app()->authManager->checkAccess($module.'Admin', $role->roleId)){
                 if($accessLevel < 3)
                     $accessLevel = 3;
-            }elseif(Yii::app()->authManager->checkAccess($module.'View', $role->roleId)){
+            }elseif(Yii::app()->authManager->checkAccess($module.'ReadOnlyAccess', $role->roleId)){
                 if($accessLevel < 2)
                     $accessLevel = 2;
             }elseif(Yii::app()->authManager->checkAccess($module.'PrivateReadOnlyAccess', $role->roleId)){
@@ -113,7 +115,7 @@ class X2PermissionsBehavior extends CActiveRecordBehavior {
      * @param String $user The username to use in these checks (defaults to current user)
      * @return String The SQL conditions
      */
-    public static function getAccessConditions($accessLevel, $useVisibility = true, $user = null){
+    public function getAccessConditions($accessLevel, $useVisibility = true, $user = null){
         if($user === null){
             if(Yii::app()->isInSession)
                 $user = Yii::app()->user->getName();
@@ -123,22 +125,26 @@ class X2PermissionsBehavior extends CActiveRecordBehavior {
 
         if($accessLevel === 2 && $useVisibility === false) // level 2 access only works if we consider visibility,
             $accessLevel = 3;  // so upgrade to full access
-
+        $ret=array();
         switch($accessLevel){
             case 3:  // user can view everything
-                return 'TRUE';
+                $ret[] = array('condition'=>'TRUE', 'operator'=>'AND');
+                break;
             case 1:  // user can view records they (or one of their groups) own
-                return 't.assignedTo="'.$user.'"
-					OR t.assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")';
+                $ret[] = array('condition'=>'t.assignedTo="'.$user.'"', 'operator'=>'OR');
+                $ret[] = array('condition'=>'t.assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")', 'operator'=>'OR');
+                break;
             case 2:  // user can view any public (shared) record
-                return 't.visibility=1
-					OR t.assignedTo="'.$user.'"
-					OR t.assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")
-					OR (t.visibility=2 AND t.assignedTo IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.$user.'"))';
+                $ret[] = array('condition'=>'t.visibility=1', 'operator'=>'OR');
+                $ret[] = array('condition'=>'t.assignedTo="'.$user.'"', 'operator'=>'OR');
+                $ret[] = array('condition'=>'t.assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")', 'operator'=>'OR');
+                $ret[] = array('condition'=>'(t.visibility=2 AND t.assignedTo IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.$user.'"))', 'operator'=>'OR');
+                break;
             default:
             case 0:  // can't view anything
-                return 'FALSE';
+                $ret[] = array('condition'=>'FALSE', 'operator'=>'AND');
         }
+        return $ret;
     }
 
 }

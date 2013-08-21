@@ -164,4 +164,5 @@ return array (
 'Google Calendar Name'=>'Google Calendar',
 'Once'=>'Una vez',
 'Yearly'=>'Anual',
+'Shared Calendar:'=>'Calendario compartido:',
 );

@@ -548,29 +548,32 @@ $timezones = array(
 
                     <br /><br /><br />
 
-                    <?php
-                    include(realpath('protected/components/UpdatesForm.php'));
-                    // Configuration for the updates / optional info form:
-                    $editions = array('pro');
-                    $edition = 'opensource';
-                    foreach($editions as $ed) // Add editional prefixes as necessary
-                        if(file_exists("initialize_$ed.php"))
-                            $edition = $ed;
-                    $form = new UpdatesForm(
-                                    array(
-                                        'x2_version' => $version,
-                                        'unique_id' => getField('unique_id', 'none', True),
-                                        'formId' => 'install',
-                                        'submitButtonId' => 'install-button',
-                                        'statusId' => 'error-box',
-                                        'themeUrl' => $themeURL,
-                                        'receiveUpdates' => getField('receiveUpdates', 1, True),
-                                        'edition' => $edition,
-                                    ),
-                                    'installer_t'
-                    );
-                    require_once(realpath('protected/views/admin/stayUpdated.php'));
-                    ?>
+            <div><?php if(file_exists('install_pro.php')) include('install_pro.php'); ?></div>
+            
+            
+			<?php
+			include(realpath('protected/components/UpdatesForm.php'));
+			// Configuration for the updates / optional info form:
+			$editions = array('pro');
+			$edition = 'opensource';
+			foreach ($editions as $ed) // Add editional prefixes as necessary
+				if (file_exists("initialize_$ed.php"))
+					$edition = $ed;
+			$form = new UpdatesForm(
+							array(
+								'x2_version' => $version,
+								'unique_id' => getField('unique_id', 'none', True),
+								'formId' => 'install',
+								'submitButtonId' => 'install-button',
+								'statusId' => 'error-box',
+								'themeUrl' => $themeURL,
+								'receiveUpdates' => getField('receiveUpdates', 1, True),
+								'edition' => $edition,
+							),
+							'installer_t'
+			);
+			require_once(realpath('protected/views/admin/stayUpdated.php'));
+			?>
 
 
                         <?php $haveErrors = !empty($errorMessages); ?>

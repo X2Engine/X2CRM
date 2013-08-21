@@ -15,7 +15,6 @@ return array (
 
 // Menu
 'All Campaigns'=>'',
-'Create Campaign'=>'',
 'Newsletters'=>'',
 'Create Newsletter'=>'',
 'Web Tracker'=>'',
@@ -118,4 +117,8 @@ return array (
 'Email sent'=>'',
 'Header Code'=>'',
 'Batch completed, sending again in '=>'',
+'A new web lead has been assigned to you: '=>'',
+'Marketing Automation'=>'',
+'Contacts for Account Report ('=>'',
+'Mailing for Account Report ('=>'',
 );

@@ -259,9 +259,8 @@ class ContactsController extends x2base {
 
 	public function actionGetItems() {
         $model=new Contacts('search');
-        $accessLevel=$model->getAccessLevel();
-        $visCriteria=$model->getAccessConditions($accessLevel);
-		$sql = 'SELECT id, city, state, country, email, IF(assignedTo > 0, (SELECT name FROM x2_groups WHERE id=assignedTo), (SELECT fullname from x2_profile WHERE username=assignedTo) ) as assignedTo, CONCAT(firstName," ",lastName) as value FROM x2_contacts t WHERE (firstName LIKE :qterm OR lastName LIKE :qterm OR CONCAT(firstName," ",lastName) LIKE :qterm) AND ('.$visCriteria.') ORDER BY firstName ASC';
+        $visCriteria=$model->getAccessCriteria();
+		$sql = 'SELECT id, city, state, country, email, IF(assignedTo > 0, (SELECT name FROM x2_groups WHERE id=assignedTo), (SELECT fullname from x2_profile WHERE username=assignedTo) ) as assignedTo, CONCAT(firstName," ",lastName) as value FROM x2_contacts t WHERE (firstName LIKE :qterm OR lastName LIKE :qterm OR CONCAT(firstName," ",lastName) LIKE :qterm) AND ('.$visCriteria->condition.') ORDER BY firstName ASC';
 		$command = Yii::app()->db->createCommand($sql);
 		$qterm = $_GET['term'] . '%';
 		$command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
@@ -510,9 +509,16 @@ class ContactsController extends x2base {
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
+			
+			$emailFrom = Credentials::model()->getDefaultUserAccount(Credentials::$sysUseId['systemNotificationEmail'],'email');
+			if($emailFrom == Credentials::LEGACY_ID)
+				$emailFrom = array(
+					'name'=>Yii::app()->params->profile->fullName,
+					'address'=>Yii::app()->params->profile->emailAddress
+				);
 
 			if(empty($errors))
-				$status = $this->sendUserEmail($email, $subject, $body);
+				$status = $this->sendUserEmail($email, $subject, $body,null,$emailFrom);
 
 			if(array_search('200', $status)) {
 				$this->redirect(array('view', 'id' => $model->id));
@@ -613,6 +619,8 @@ class ContactsController extends x2base {
 						$duplicate->dupeCheck=1;
 						$duplicate->assignedTo='Anyone';
 						$duplicate->visibility=0;
+                        $duplicate->doNotCall=1;
+                        $duplicate->doNotEmail=1;
 						$duplicate->save();
 						$notif = new Notification;
 						$notif->user = 'admin';
@@ -650,6 +658,8 @@ class ContactsController extends x2base {
 						$oldRecord->dupeCheck=1;
 						$oldRecord->assignedTo='Anyone';
 						$oldRecord->visibility=0;
+                        $oldRecord->doNotCall=1;
+                        $oldRecord->doNotEmail=1;
 						$oldRecord->save();
 						$notif = new Notification;
 						$notif->user = 'admin';
@@ -686,6 +696,8 @@ class ContactsController extends x2base {
 							$oldRecord->dupeCheck=1;
 							$oldRecord->assignedTo='Anyone';
 							$oldRecord->visibility=0;
+                            $oldRecord->doNotCall=1;
+                            $oldRecord->doNotEmail=1;
 							$oldRecord->save();
 							$notif = new Notification;
 							$notif->user = 'admin';
@@ -1066,7 +1078,7 @@ class ContactsController extends x2base {
 	public function actionLists() {
         $criteria = new CDbCriteria();
 		$criteria->addCondition('type="static" OR type="dynamic"');
-        if(Yii::app()->user->getName()!='admin') {
+        if(!Yii::app()->params->isAdmin) {
 			$condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
 			/* x2temp */
 			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
@@ -1085,7 +1097,12 @@ class ContactsController extends x2base {
 		$criteria->limit = $perPage;
 		$criteria->order = 'createDate DESC';
 
-		$contactLists = new CActiveDataProvider('X2List',array('criteria'=>$criteria));
+		$contactLists = new CActiveDataProvider('X2List',array(
+            'criteria'=>$criteria,
+            'pagination' => array(
+                        'pageSize' => !Yii::app()->user->isGuest ? ProfileChild::getResultsPerPage() : 20,
+                    ),
+        ));
 
 		$totalContacts = X2Model::model('Contacts')->count();
 		$totalMyContacts = X2Model::model('Contacts')->count('assignedTo="' . Yii::app()->user->getName() . '"');
@@ -1325,7 +1342,7 @@ class ContactsController extends x2base {
 		if(!isset($list))
 			throw new CHttpException(400, Yii::t('app', 'This list cannot be found.'));
 
-		if(!$this->editPermissions($list))
+		if(!$this->checkPermissions($list, 'edit'))
 			throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
 
 		$contactModel = new Contacts;
@@ -1973,8 +1990,11 @@ class ContactsController extends x2base {
 							$_POST[$importMap[$attribute]]=$model->$importMap[$attribute];
 						}
 					}
-					if(empty($model->visibility) && ($model->visibility!==0 || $model->visibility!=="0"))
+					if(empty($model->visibility) && ($model->visibility!==0 || $model->visibility!=="0") || $model->visibility=='Public'){
 						$model->visibility=1;
+                    }elseif($model->visibility=='Private'){
+                        $model->visibility=0;
+                    }
                     if(!empty($model->createDate) || !empty($model->lastUpdated) || !empty($model->lastActivity)){
 						$model->disableBehavior('X2TimestampBehavior');
                         if(empty($model->createDate)){
@@ -2389,7 +2409,14 @@ class ContactsController extends x2base {
 					$subject = Yii::t('marketing', 'New Web Lead');
 					$message = Yii::t('marketing', 'A new web lead has been assigned to you: ') . CHtml::link($model->firstName . ' ' . $model->lastName ,array('/contacts/contacts/view','id'=>$model->id)) . '.';
 					$address = array('to'=>array(array('', $profile->emailAddress)));
-					$status = $this->sendUserEmail($address, $subject, $message);
+					$emailFrom = Credentials::model()->getDefaultUserAccount(Credentials::$sysUseId['systemNotificationEmail'],'email');
+					if($emailFrom == Credentials::LEGACY_ID)
+						$emailFrom = array(
+							'name'=>$profile->fullName,
+							'address'=>$profile->emailAddress
+						);
+
+					$status = $this->sendUserEmail($address, $subject, $message,null,$emailFrom);
 				}
 			}
 

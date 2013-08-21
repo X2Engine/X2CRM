@@ -81,3 +81,5 @@ x2_ScaleFix.init();
 function setMobileBrowserFalse() {
 	document.cookie = 'x2mobilebrowser=false; ' + new Date().toGMTString() + '; path=/';
 }
+
+

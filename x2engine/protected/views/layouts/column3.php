@@ -34,6 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
 $this->beginContent('//layouts/main');
 $themeURL = Yii::app()->theme->getBaseUrl();
 
@@ -45,7 +46,6 @@ Yii::app()->clientScript->registerScript('logos',base64_decode(
 $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->id!='site' || Yii::app()->controller->action->id=='whatsNew';
 ?>
 
-<!--<div id="sidebar-left-container">-->
 <!--<div id="sidebar-left">-->
 	<div class="sidebar-left">
 	<!-- sidebar -->
@@ -712,7 +712,6 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 	</div>
 <!--</div>-->
 <!--</div>-->
-
 <div id="flexible-content">
 	<div id="sidebar-right">
 		<?php

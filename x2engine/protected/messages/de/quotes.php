@@ -62,4 +62,7 @@ return array (
 'invoice'=>'Rechnung',
 'Quote {id} does not exist. It may have been deleted.'=>'Quote {id} existiert nicht. Es wurde möglicherweise gelöscht.',
 'Date printed/emailed'=>'Datum gedruckt / per E-Mail',
+'Could not save quote due to line item errors:'=>'Konnte nicht gespeichert werden Zitat aufgrund Posten Fehler:',
+'Update Quote:'=>'Aktualisieren Zitat:',
+'Update Invoice:'=>'Aktualisieren Rechnung:',
 );

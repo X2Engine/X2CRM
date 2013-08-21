@@ -29,4 +29,5 @@ return array (
 'Create a new Account associated with this Opportunity.'=>'创建一个新的帐户，利用这个机会。',
 'Create a new Opportunity associated with this Opportunity.'=>'创建一个新的机会，这个机会。',
 'Opportunities Stage'=>'机会阶段',
+'Relationships for Contact: '=>'联系关系：',
 );

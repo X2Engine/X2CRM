@@ -122,4 +122,8 @@ return array (
 'Email sent'=>'Στείλτε e-mail αποστέλλονται',
 'Header Code'=>'Κωδικός Header',
 'Batch completed, sending again in '=>'Batch ολοκληρωθεί, στέλνοντας και πάλι στο',
+'A new web lead has been assigned to you: '=>'Μια νέα οδηγήσει web έχει ανατεθεί σε εσάς:',
+'Marketing Automation'=>'Αυτοματοποίηση Marketing',
+'Contacts for Account Report ('=>'Επαφές Αναφορά λογαριασμού (',
+'Mailing for Account Report ('=>'Mailing για την έκθεση Λογαριασμού (',
 );

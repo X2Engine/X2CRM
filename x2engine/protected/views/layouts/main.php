@@ -102,6 +102,11 @@ $cs ->registerScriptFile($baseUrl.'/js/json2.js')
     ->registerScriptFile($baseUrl.'/js/actionFrames.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js');
 
+if (IS_IPAD) {
+    $cs->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
+}
+    //$cs->registerScriptFile($baseUrl.'/js/jquery.mobile-1.3.2.js');
+
 if(Yii::app()->session['translate'])
     $cs->registerScriptFile($baseUrl.'/js/translator.js');
 
@@ -135,6 +140,8 @@ $cs->registerCssFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.css');
 
 if (IS_ANDROID)
 	$cs->registerCssFile($themeUrl.'/css/androidLayout.css'.$jsVersion,'screen, projection');
+else if (IS_IPAD)
+	$cs->registerCssFile($themeUrl.'/css/ipadLayout.css'.$jsVersion,'screen, projection');
 
 $fullscreen = Yii::app()->user->isGuest || $profile->fullscreen;
 
@@ -410,6 +417,7 @@ $userMenu = array(
             array('label' => Yii::t('app', 'Preferences'), 'url' => array('/profile/settings')),
 			array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('/profile/manageCredentials')),
             array('label' => Yii::t('help', 'Icon Reference'), 'url' => array('/site/page/', 'view' => 'iconreference')),
+            array('label' => Yii::t('help', 'Help'), 'url' => 'http://www.x2engine.com/reference_guide','linkOptions'=>array('target'=>'_blank')),
             array('label' => Yii::t('app', 'Report A Bug'), 'url' => array('/site/bugReport')),
             array('label' => Yii::t('app', '---'), 'itemOptions' => array('class' => 'divider')),
             array('label' => Yii::app()->params->sessionStatus ? Yii::t('app', 'Go Invisible') : Yii::t('app', 'Go Visible'), 'url' => '#',
@@ -524,6 +532,8 @@ if(method_exists($this,'renderGaCode'))
 					</div><div id="notifications"></div><div id="notif-view-all"<?php if($notifCount < 11) echo ' style="display:none;"'; ?>>
 					<?php echo CHtml::link(Yii::t('app', 'View all'), array('/site/viewNotifications')); ?>
 					</div>
+				</div>
+				<div id="notif-box-shadow-correct"> <!-- IE fix, used to force repaint -->
 				</div>
 			</div>
 		</div>

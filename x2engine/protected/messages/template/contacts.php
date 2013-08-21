@@ -171,4 +171,7 @@ return array (
 'Are you sure you want to delete all other records?'=>'',
 'Are you sure you want to hide this record?'=>'',
 'Are you sure you want to delete this record?'=>'',
+'Your case number is: '=>'',
+'Website: '=>'',
+'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'',
 );

@@ -37,6 +37,7 @@
 $menuItems = array(
 	array('label'=>Yii::t('accounts','All Accounts')),
 	array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
+    array('label'=>Yii::t('accounts','Accounts Report'), 'url'=>array('accountsReport')),
 );
 
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));

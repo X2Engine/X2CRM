@@ -122,4 +122,8 @@ return array (
 'Email sent'=>'メールで送信',
 'Header Code'=>'ヘッダコード',
 'Batch completed, sending again in '=>'バッチで再度送信、完了',
+'A new web lead has been assigned to you: '=>'新しいWebリードはあなたに割り当てられている：',
+'Marketing Automation'=>'マーケティングオートメーション',
+'Contacts for Account Report ('=>'アカウントレポートの連絡先（',
+'Mailing for Account Report ('=>'アカウントレポート用メーリングリスト（',
 );

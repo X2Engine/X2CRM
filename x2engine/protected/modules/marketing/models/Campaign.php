@@ -38,7 +38,7 @@
  * A Campaign represents a one time mailing to a list of contacts.
  *
  * When a campaign is created, a contact list must be specified. When a campaing is 'launched'
- * a duplicate list is created leaving the original unchanged. The duplicate 'campaign' list 
+ * a duplicate list is created leaving the original unchanged. The duplicate 'campaign' list
  * will keep track of which contacts were sent email, who opened the mail, and who unsubscribed.
  * A campaign is 'active' after it has been launched and ready to send mail. A campaign is 'complete'
  * when all applicable email has been sent. This is the model class for table "x2_campaigns".
@@ -76,20 +76,20 @@ class Campaign extends X2Model {
 	//Similar to X2Model but we had a special case with 'marketing'
 	public function attributeLabels() {
 		$this->queryFields();
-		
+
 		$labels = array();
-			
+
 		foreach(self::$_fields[$this->tableName()] as &$_field)
 			$labels[ $_field->fieldName ] = Yii::t('marketing',$_field->attributeLabel);
 
 		return $labels;
 	}
-		
+
 	//Similar to X2Model but we had a special case with 'marketing'
 	public function getAttributeLabel($attribute) {
-	
+
 		$this->queryFields();
-		
+
 		// don't call attributeLabels(), just look in self::$_fields
 		foreach(self::$_fields[$this->tableName()] as &$_field) {
 			if($_field->fieldName == $attribute)
@@ -127,11 +127,11 @@ class Campaign extends X2Model {
 				// if(!empty($groupLinks))
 					// $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
 
-				// $condition .= 'OR (t.visibility=2 AND t.assignedTo IN 
+				// $condition .= 'OR (t.visibility=2 AND t.assignedTo IN
 					// (SELECT username FROM x2_group_to_user WHERE groupId IN
 						// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 		// }
-		
+
 		$model = X2Model::model('Campaign');
 		return $model->with('list')->findByPk((int)$id,$model->getAccessCriteria());
 	}
@@ -151,7 +151,7 @@ class Campaign extends X2Model {
 				if(!empty($groupLinks))
 					$condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
 
-				$condition .= 'OR (t.visibility=2 AND t.assignedTo IN 
+				$condition .= 'OR (t.visibility=2 AND t.assignedTo IN
 					(SELECT username FROM x2_group_to_user WHERE groupId IN
 						(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 		}
@@ -159,14 +159,14 @@ class Campaign extends X2Model {
             $criteria->addCondition($condition);
 		return $this->searchBase($criteria);
 	}
-	
+
 	/**
 	 * Returns a CDbCriteria containing record-level access conditions.
 	 * @return CDbCriteria
 	 */
 	public function getAccessCriteria() {
 		$criteria = new CDbCriteria;
-		
+
 		$accessLevel = 0;
 		if(Yii::app()->user->checkAccess('MarketingAdmin'))
 			$accessLevel = 3;
@@ -174,8 +174,11 @@ class Campaign extends X2Model {
 			$accessLevel = 2;
 		elseif(Yii::app()->user->checkAccess('MarketingViewPrivate'))
 			$accessLevel = 1;
-			
-		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
+
+        $conditions=$this->getAccessConditions($accessLevel);
+		foreach($conditions as $arr){
+            $criteria->addCondition($arr['condition'],$arr['operator']);
+        }
 
 		return $criteria;
 	}

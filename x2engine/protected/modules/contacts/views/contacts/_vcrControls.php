@@ -109,19 +109,19 @@ $vcrData = X2List::getVcrLinks($vcrDataProvider,$model->id);
 if($vcrData === false && $listId !== 'index') {
 	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/'.$path));
 	$vcrDataProvider = $searchModel->searchAll();
-	
+
 	if(empty($order))
 		$order = $vcrDataProvider->sort->getOrderBy();
 	if(!empty($order))
 		$vcrDataProvider->criteria->order = $order;
-    
-	
+
+
 	$vcrData = X2List::getVcrLinks($vcrDataProvider,$model->id);
 }
 
 if(is_array($vcrData) && count($vcrData)) {
 
-	
+
 ?>
 <div class="vcrPager">
 	<div class="summary">

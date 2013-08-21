@@ -110,6 +110,7 @@ if(!isset($specialFields))
 
 $i = 0;
 foreach($layoutData['sections'] as &$section) {
+	$noItems = true; // if no items, don't display section
 	// set defaults
 	if(!isset($section['title'])) $section['title'] = '';
 	if(!isset($section['collapsible'])) $section['collapsible'] = false;
@@ -118,41 +119,43 @@ foreach($layoutData['sections'] as &$section) {
 
 	$collapsed = !$formSettings[$i] && $section['collapsible'];
 
-	echo '<div class="formSection';
+	$htmlString = '';
+
+	$htmlString .= '<div class="formSection';
 	if($section['collapsible'])
-		echo ' collapsible';
+		$htmlString .= ' collapsible';
 	if(!$collapsed)
-		echo ' showSection';
-	echo '">';
+		$htmlString .= ' showSection';
+	$htmlString .= '">';
 
 	//if($section['collapsible'] || !empty($section['title'])) {
-		echo '<div class="formSectionHeader">';
+		$htmlString .= '<div class="formSectionHeader">';
 		if($section['collapsible']) {
-			echo '<a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>';
-			echo '<a href="javascript:void(0)" class="formSectionShow">[+]</a>';
+			$htmlString .= '<a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>';
+			$htmlString .= '<a href="javascript:void(0)" class="formSectionShow">[+]</a>';
 		}
 		/*if(!empty($section['title']))
-			echo '<span class="sectionTitle" title="',addslashes($section['title']),'">',Yii::t(strtolower(Yii::app()->controller->id),$section['title']),'</span>';*/
+			$htmlString .= '<span class="sectionTitle" title="',addslashes($section['title']),'">',Yii::t(strtolower(Yii::app()->controller->id),$section['title']),'</span>';*/
 		if(!empty($section['title'])) {
-			echo '<span class="sectionTitle" title="',addslashes($section['title']),'">',Yii::t(strtolower(Yii::app()->controller->id),$section['title']),'</span>';
+			$htmlString .= '<span class="sectionTitle" title="'.addslashes($section['title']).'">'.Yii::t(strtolower(Yii::app()->controller->id),$section['title']).'</span>';
 		} else {
-			echo '<span class="sectionTitle"></span>';
+			$htmlString .= '<span class="sectionTitle"></span>';
 		}
-		echo '</div>';
+		$htmlString .= '</div>';
 	//}
 	if(!empty($section['rows'])) {
-		echo '<div class="tableWrapper"';
+		$htmlString .= '<div class="tableWrapper"';
 		if($collapsed)
-			echo ' style="display:none;"';
-		echo '><table>';
+			$htmlString .= ' style="display:none;"';
+		$htmlString .= '><table>';
 
 		foreach($section['rows'] as &$row) {
-			echo '<tr class="formSectionRow">';
+			$htmlString .= '<tr class="formSectionRow">';
 			if(isset($row['cols'])) {
 				foreach($row['cols'] as &$col) {
 
 					$width = isset($col['width'])? ' style="width:'.$col['width'].'px"' : '';
-					echo "<td$width>";
+					$htmlString .= "<td$width>";
 					if(isset($col['items'])) {
 						foreach($col['items'] as &$item) {
 
@@ -164,8 +167,10 @@ foreach($layoutData['sections'] as &$section) {
 
 										if(isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] == 0) {
 											unset($item);
-											echo '</div></div>';
+											$htmlString .= '</div></div>';
 											continue;
+										} else {
+											$noItems = false;
 										}
 									// $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
 									// $perms=array();
@@ -181,7 +186,7 @@ foreach($layoutData['sections'] as &$section) {
 									// }
 									// if($tempPerm==0){
 										// unset($item);
-										// echo '</div></div>';
+										// $htmlString .= '</div></div>';
 										// continue;
 									// }
 
@@ -194,9 +199,9 @@ foreach($layoutData['sections'] as &$section) {
 										default:		$labelClass = 'topLabel';
 									}
 
-									echo "<div id=\"{$field->modelName}_{$field->fieldName}_field\" class=\"formItem $labelClass\">";
-									//echo '<div id="'.$modelName.'_'.$fieldName.'_inputBox" class="formItem '.$labelClass.'">';
-									echo CHtml::label($model->getAttributeLabel($field->fieldName),false);
+									$htmlString .= "<div id=\"{$field->modelName}_{$field->fieldName}_field\" class=\"formItem $labelClass\">";
+									//$htmlString .= '<div id="'.$modelName.'_'.$fieldName.'_inputBox" class="formItem '.$labelClass.'">';
+									$htmlString .= CHtml::label($model->getAttributeLabel($field->fieldName),false);
 
 
 
@@ -209,32 +214,33 @@ foreach($layoutData['sections'] as &$section) {
 
 									// if($field->type == 'text')
 										// $style .= 'min-height:'.$item['height'].'px;';
-									echo '<div class="',$class,'" style="',$style,'">';
+									$htmlString .= '<div class="'.$class.'" style="'.$style.'">';
 
 									if(isset($specialFields[$fieldName]))
 										$fieldHtml = $specialFields[$fieldName];
 									else
 										$fieldHtml = $model->renderAttribute($field->fieldName,true,false);
 									if(empty($fieldHtml))
-										echo '&nbsp;';
+										$htmlString .= '&nbsp;';
 									else
-										echo $fieldHtml;
+										$htmlString .= $fieldHtml;
 								}
 							}
 							unset($item);
-							echo '</div></div>';
+							$htmlString .= '</div></div>';
 						}
 					}
-					echo '</td>';
+					$htmlString .= '</td>';
 				}
 			}
 			unset($col);
-			echo '</tr>';
+			$htmlString .= '</tr>';
 		}
-		echo '</table></div>';
+		$htmlString .= '</table></div>';
 	}
 	unset($row);
-	echo '</div>';
+	$htmlString .= '</div>';
+	if (!$noItems) echo $htmlString;
 	$i++;
 }
 echo '</div>';

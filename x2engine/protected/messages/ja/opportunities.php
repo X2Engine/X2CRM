@@ -29,4 +29,5 @@ return array (
 'Create a new Account associated with this Opportunity.'=>'この機会に関連付けられた新しいアカウントを作成します。',
 'Create a new Opportunity associated with this Opportunity.'=>'この機会に関連付けられた新しい機会を作成します。',
 'Opportunities Stage'=>'チャンスステージ',
+'Relationships for Contact: '=>'お問い合わせのための関係：',
 );

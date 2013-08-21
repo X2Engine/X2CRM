@@ -122,4 +122,8 @@ return array (
 'Email sent'=>'Correo electrónico enviado',
 'Header Code'=>'Código de la cabecera',
 'Batch completed, sending again in '=>'Por lotes completado, el envío de nuevo en',
+'A new web lead has been assigned to you: '=>'Una nueva iniciativa web ha sido asignada a usted:',
+'Marketing Automation'=>'Automatización de marketing',
+'Contacts for Account Report ('=>'Contactos para Informe de cuenta (',
+'Mailing for Account Report ('=>'Correo para el Informe de Cuenta (',
 );

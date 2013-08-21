@@ -9,4 +9,6 @@ return array (
 'Request type not supported for this action.'=>'请求类型不支持这一行动。',
 'Tags not added.'=>'不添加标签。',
 'Error'=>'错误',
+'Cannot delete; no parameters specified for finding a relationship record to delete.'=>'无法删除，不指定任何参数，找到一个关系要删除的记录。',
+'No relationships deleted; none were found matching specfied parameters.'=>'删除没有关系，没有发现匹配的声明了参数。',
 );

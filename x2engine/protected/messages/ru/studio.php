@@ -113,4 +113,10 @@ return array (
 'Post Type'=>'Сообщение типа',
 'Create Notification?'=>'Создать уведомление?',
 'User Active?'=>'Пользователь активность?',
+'seconds (recommended for formulas only)'=>'секунд (рекомендуется для формулы только)',
+'To:'=>'To:',
+'From:'=>'От:',
+'CC:'=>'CC:',
+'BCC:'=>'BCC:',
+'Tags (optional)'=>'Тэги (опционально)',
 );

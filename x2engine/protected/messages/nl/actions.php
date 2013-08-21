@@ -134,4 +134,13 @@ return array (
 'Remind Me'=>'Remind Me',
 'View Full Edit Page'=>'Bekijk Volledig bewerken Pagina',
 '(Error displaying email)'=>'(Fout weergeven van e-mail)',
+'Due: '=>'Due:',
+'Created: '=>'Gemaakt:',
+'Email Opened:'=>'Email Geopend:',
+'Contact has opened the following email:'=>'Contact heeft het volgende e-mail geopend:',
+'Update Event:'=>'Updaten Event:',
+'Action completed: {action}'=>'Actie afgerond: {action}',
+'{user} completed an action: {action}'=>'{user} voltooide een actie: {action}',
+'Stage {n}: {stage} was completed for {record}'=>'Stage {n} : {stage} werd voltooid voor {record}',
+'{user} completed stage {n}: {stage} was completed for {record}'=>'{user} afgerond stadium {n} : {stage} werd voltooid voor {record}',
 );

@@ -62,4 +62,7 @@ return array (
 'invoice'=>'חשבונית',
 'Quote {id} does not exist. It may have been deleted.'=>'ציטוט {id} לא קיים. יכול להיות שזה נמחק.',
 'Date printed/emailed'=>'תאריך מודפס / דוא&quot;ל',
+'Could not save quote due to line item errors:'=>'לא יכל להציל את הציטוט בשל טעויות פריטי שורה:',
+'Update Quote:'=>'עדכן את ציטוט:',
+'Update Invoice:'=>'עדכן את החשבונית:',
 );

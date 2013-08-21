@@ -348,8 +348,8 @@
                 tdim = Math.max(dim, threshold+1);
                 scalefact =  (tdim-threshold)/300.0;
                 ret = $.jqplot.LinearTickGenerator(min, max, scalefact); 
-                console.log(min, max, scalefact, ret);
-                console.log(ret[0].toString(), ret[1].toString());
+                //console.log(min, max, scalefact, ret);
+                //console.log(ret[0].toString(), ret[1].toString());
                 // calculate a padded max and min, points should be less than these
                 // so that they aren't too close to the edges of the plot.
                 // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
@@ -360,7 +360,7 @@
                     tumin = min - range*(this.padMin - 1);
                     tumax = max + range*(this.padMax - 1);
                     ret = $.jqplot.LinearTickGenerator(tumin, tumax, scalefact);
-                console.log(tumin, tumax, scalefact, ret);
+                	//console.log(tumin, tumax, scalefact, ret);
                 }
 
                 this.min = ret[0];

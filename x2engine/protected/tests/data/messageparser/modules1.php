@@ -12,6 +12,9 @@ message");
 Yii::t('app','message with params and {stuff}',array('{stuff}'=>'things'));
 installer_t('installer message');
 installer_tr('installer message with {p}',array('{p}'=>'params'));
+// "Cheating" in utility classes by using a locally-defined function / looking for exceptions:
+$installer_t('Weekdays');
+throw new Exception('Exceptions too');
 
 // Miscellaneous things that were found but not parsed, and added here for extending the regex:
 Yii::t('profile','Manage Passwords for Third-Party Applications');

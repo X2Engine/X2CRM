@@ -40,30 +40,33 @@
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowRecordComment extends X2FlowAction {
-	public $title = 'Add Comment';
-	public $info = '';
 
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'model' => 'required',
-			'options'=>array(
-				array('name'=>'comment','label'=>Yii::t('studio','Comment'),'type'=>'text'),
-			));
-	}
+    public $title = 'Add Comment';
+    public $info = '';
 
-	public function execute(&$params) {
-		$model = new Actions;
-		$model->type = 'note';
-		$model->complete = 'Yes';
-		$model->associationId = $params['model']->id;
-		$model->associationType = $params['model']->module;
-		$model->actionDescription = $this->parseOption('comment',$params);
-		$model->assignedTo = $params['model']->assignedTo;
-		$model->visibility = $params['model']->visibility;
-		$action->createDate = time();
-		$action->completeDate = time();
+    public function paramRules(){
+        return array(
+            'title' => Yii::t('studio', $this->title),
+            'model' => 'required',
+            'options' => array(
+                array('name' => 'comment', 'label' => Yii::t('studio', 'Comment'), 'type' => 'text'),
+                ));
+    }
 
-		return $model->save();
-	}
+    public function execute(&$params){
+        $model = new Actions;
+        $model->type = 'note';
+        $model->complete = 'Yes';
+        $model->associationId = $params['model']->id;
+        $model->associationType = $params['model']->module;
+        $model->actionDescription = $this->parseOption('comment', $params);
+        $model->assignedTo = $params['model']->assignedTo;
+        if($params['model']->hasAttribute('visibility'))
+            $model->visibility = $params['model']->visibility;
+        $action->createDate = time();
+        $action->completeDate = time();
+
+        return $model->save();
+    }
+
 }

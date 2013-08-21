@@ -37,4 +37,8 @@ return array (
 'View in Google Drive'=>'צפה בכונן Google',
 'File is hosted on Google Drive'=>'קובץ מאוחסן על כונן Google',
 'File was not sent to server.'=>'קובץ לא נשלח לשרת.',
+'Attachments:'=>'קבצים מצורפים:',
+'Dimensions:'=>'ממדים:',
+'MIME Info:'=>'מידע MIME:',
+'Google Drive:'=>'כונן Google:',
 );

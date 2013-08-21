@@ -58,4 +58,7 @@ return array (
 'invoice'=>'송장',
 'Quote {id} does not exist. It may have been deleted.'=>'견적 {id} 존재하지 않습니다. 삭제되었을 수 있습니다.',
 'Date printed/emailed'=>'날짜 인쇄 / 이메일',
+'Could not save quote due to line item errors:'=>'미결제 항목 오류 견적을 저장할 수 없습니다 :',
+'Update Quote:'=>'견적 업데이트 :',
+'Update Invoice:'=>'송장 업데이트 :',
 );

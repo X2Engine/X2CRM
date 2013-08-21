@@ -134,4 +134,13 @@ return array (
 'Remind Me'=>'מזכיר לי',
 'View Full Edit Page'=>'צפה בעריכת דף מלא',
 '(Error displaying email)'=>'(שגיאה בהצגת דוא&quot;ל)',
+'Due: '=>'בשל:',
+'Created: '=>'נוצר:',
+'Email Opened:'=>'דוא&quot;ל נפתח:',
+'Contact has opened the following email:'=>'קשר פתח את המייל הבא:',
+'Update Event:'=>'עדכון אירוע:',
+'Action completed: {action}'=>'פעולה הושלמה: {action}',
+'{user} completed an action: {action}'=>'{user} השלים פעולה: {action}',
+'Stage {n}: {stage} was completed for {record}'=>'שלב {n} {stage} הושלם עבור {record}',
+'{user} completed stage {n}: {stage} was completed for {record}'=>'{user} שלב הושלם {n} {stage} הושלם עבור {record}',
 );

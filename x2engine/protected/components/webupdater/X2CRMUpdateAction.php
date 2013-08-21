@@ -56,7 +56,7 @@ class X2CRMUpdateAction extends WebUpdaterAction {
 		// Check to see if there's an update available. By this point in time
 		// (if this AdminController is running inside of a much older installation)
 		// FileUtil should have been downloaded and available.
-		$versionTest = $this->getLatestVersion();
+		$versionTest = $this->checkUpdates(true);
 		$updaterCheck = $this->getLatestUpdaterVersion();
 		
 		if($updaterCheck && $versionTest){

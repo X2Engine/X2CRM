@@ -134,4 +134,13 @@ return array (
 'Remind Me'=>'提醒我',
 'View Full Edit Page'=>'查看完整的编辑页面',
 '(Error displaying email)'=>'（错误显示邮件）',
+'Due: '=>'截止日期：',
+'Created: '=>'创建：',
+'Email Opened:'=>'电子邮件开业时间：',
+'Contact has opened the following email:'=>'已开通联系以下邮箱：',
+'Update Event:'=>'更新事件：',
+'Action completed: {action}'=>'行动已完成： {action}',
+'{user} completed an action: {action}'=>'{user}完成了一个动作： {action}',
+'Stage {n}: {stage} was completed for {record}'=>'完成阶段{n} {stage} {record}',
+'{user} completed stage {n}: {stage} was completed for {record}'=>'{user}完成完成阶段{n} {stage} {record}',
 );

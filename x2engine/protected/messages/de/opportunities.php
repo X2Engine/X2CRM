@@ -29,4 +29,5 @@ return array (
 'Create a new Account associated with this Opportunity.'=>'Erstellen Sie ein neues Konto mit dieser Möglichkeit verbunden.',
 'Create a new Opportunity associated with this Opportunity.'=>'Erstellen Sie eine neue Chance mit dieser Möglichkeit verbunden.',
 'Opportunities Stage'=>'Chancen Bühne',
+'Relationships for Contact: '=>'Beziehungen für Kontakt:',
 );

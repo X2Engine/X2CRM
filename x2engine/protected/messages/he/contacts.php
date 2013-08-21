@@ -32,13 +32,13 @@ return array (
 'Duplicate Check'=>'בדקו שכפל',
 'Timezone'=>'אזור זמן',
 'Web Tracking Key'=>'מפתח אינטרנט מעקב',
-// // 
+// //
 // // List Attributes
 'Logic Type'=>'ההיגיון סוג',
 'Members'=>'משתמשים',
 'Dynamic'=>'דינמי',
 'Static'=>'סטטי',
-// // 
+// //
 // // Misc
 'Social Networks'=>'רשתות חברתיות',
 'Detail View'=>'תצוגת פרטים',
@@ -47,7 +47,7 @@ return array (
 'Social Media'=>'מדיה חברתית',
 'OR'=>'או',
 'Leads'=>'מוביל',
-'<b>{m}</b> of <b>{n}</b>'=>'<b>{m} </b> של <b> {n} </b>',
+'<b>{m}</b> of <b>{n}</b>'=>'<b>{m}</b> של <b> {n} </b>',
 'Create a new Opportunity associated with this Contact.'=>'יצירת הזדמנויות חדשות המשויכות לאיש קשר זה.',
 'Create a new Account associated with this Contact.'=>'צור חשבון חדש קשורים בקשר זה.',
 'Create a new Service Case associated with this Contact.'=>'יצירת תיק שירות חדש המשויך לאיש קשר זה.',
@@ -56,7 +56,7 @@ return array (
 'Create a new Contact associated with this Contact.'=>'יצירת איש קשר חדש קשור ליצירת קשר זה.',
 'Create a new Contact'=>'יצירת איש קשר חדש',
 'Tag Search'=>'חיפוש תג',
-// // 
+// //
 // // Contacts Actions
 'My Contacts'=>'אנשי הקשר שלי',
 'New Contacts'=>'אנשי הקשר החדש',
@@ -78,13 +78,13 @@ return array (
 'Contact Map'=>'צור מפה',
 'Saved Maps'=>'מפות שנשמרו',
 'Save Contact'=>'שמור צור',
-// // 
+// //
 'Edit List'=>'עריכת רשימה',
 'Delete List'=>'מחק את הרשימה',
 // // Contacts Titles
 'Manage Contacts'=>'ניהול אנשי קשר',
 'Contact:'=>'איש קשר:',
-// // 
+// //
 // // Import from Outlook
 'Import from Outlook'=>'ייבוא ​​מ-Outlook',
 'Import from Template'=>'ייבוא ​​מ תבנית',
@@ -123,12 +123,12 @@ return array (
 'records from <b>Contacts</b> successfully exported.'=>'רשומות <b>מאנשי קשר</b> מיוצאים בהצלחה.',
 'All Contact data successfully exported.'=>'כל נתוני הקשר מיוצאים בהצלחה.',
 'Export Complete!'=>'יצוא הושלם!',
-// // 
+// //
 // // Subscribe
 'The information for {name} has changed.'=>'מידע עבור {name} השתנה.',
 'Receive email updates every time information for {name} changes'=>'קבל עדכוני דוא"ל כל הזמן מידע על שינויים {name}',
 'Unsubscribe'=>'ביטול מנוי',
-// // 
+// //
 // // Web Lead
 'Web Lead'=>'אינטרנט ליצירת קשר',
 'Invalid Email Address'=>'כתובת דוא"ל לא חוקית',
@@ -174,4 +174,7 @@ return array (
 'Are you sure you want to delete all other records?'=>'האם אתה בטוח שברצונך למחוק את כל הרשומות אחרות?',
 'Are you sure you want to hide this record?'=>'האם אתה בטוח שאתה רוצה להסתיר את הרשומה זו?',
 'Are you sure you want to delete this record?'=>'האם אתה בטוח שברצונך למחוק רשומה זו?',
+'Your case number is: '=>'מספר התיק שלך הוא:',
+'Website: '=>'אתר אינטרנט:',
+'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'אזהרה: טעינת רישומים רבים מדי בדף זה עשויה לקשור את השרת באופן משמעותי. האם אתה בטוח שברצונך להמשיך?',
 );

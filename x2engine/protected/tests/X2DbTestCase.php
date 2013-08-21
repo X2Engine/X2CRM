@@ -36,6 +36,7 @@
 
 Yii::import('application.models.*');
 Yii::import('application.components.*');
+Yii::import('application.components.permissions.*');
 Yii::import('application.components.util.*');
 
 /**

@@ -17,3 +17,8 @@ CREATE TABLE x2_group_to_user (
 INSERT INTO `x2_modules`
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
 	VALUES	("groups",			"Groups",			1,			15,				0,			0,			0,			0,		0);
+/*&*/
+INSERT INTO `x2_fields` (`modelName`, `fieldName`, `attributeLabel`, `modified`, `custom`, `type`, `required`, `readOnly`, `linkType`, `searchable`, `relevance`, `isVirtual`)
+VALUES
+('Groups', 'id',    'ID',   0, 0, 'varchar', 0, 0, NULL, 0, NULL, 0),
+('Groups', 'name',  'Name', 0, 0, 'varchar', 0, 0, NULL, 0, NULL, 0)

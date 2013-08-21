@@ -37,14 +37,11 @@
 $cs = Yii::app()->clientScript;
 $cs->scriptMap = array();
 $baseUrl = $this->module->assetsUrl;
+$cs->registerCoreScript('jquery');
 $cs->registerPackage('jquerymobile');
+$cs->registerCssFile($this->module->getAssetsUrl() . '/css/jqueryMobileCssOverrides.css');
+$cs->registerCssFile($this->module->getAssetsUrl() . '/css/main.css');
 
-// JQuery Mobile CSS framework
-//$cs->registerCssFile($baseUrl.'/css/jquery.mobile-1.0b2.css','all');
-//
-//$cs->registerScriptFile($baseUrl.'/js/jquery-1.6.2.js');
-//$cs->registerScriptFile($baseUrl.'/js/jquery.mobile-1.0b2.js');
-//
 $cs->registerScriptFile($baseUrl . '/js/x2mobile.js');
 ?><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -59,8 +56,8 @@ $cs->registerScriptFile($baseUrl . '/js/x2mobile.js');
 </head>
 <body> 
 <div id="container"> 
-	<div id="<?php echo $this->pageId; ?>" data-role="page" data-url="<?php echo $this->dataUrl; ?>/" data-theme="b">
-		<div data-role="header" data-theme="b">
+	<div id="<?php echo $this->pageId; ?>" data-role="page" data-url="<?php echo $this->dataUrl; ?>/" data-theme="a">
+		<div data-role="header" data-theme="a">
 			<div  class="figure"><a href="<?php echo $this->createUrl('site/home');?>" rel="external"><img style="margin-left:20px;" src="<?php echo $this->module->getAssetsUrl() . '/css/images/x2touch-logo.png'; ?>" alt="x2engine" /></a></div>
 		</div>
 		<div data-role="content">
@@ -68,7 +65,7 @@ $cs->registerScriptFile($baseUrl . '/js/x2mobile.js');
 			echo $content;
 			?>
 		</div>
-		<div data-role="footer" data-theme="b">
+		<div data-role="footer" data-theme="a">
 			<p>&nbsp;&nbsp;&copy; <?php echo date('Y') . ' ' . CHtml::link('X2Engine Inc.', 'http://www.x2engine.com')." ";
 				echo Yii::t('app', 'Rights Reserved.'); ?>
 				<?php echo CHtml::link(Yii::t('mobile', 'Go to Full Site'),Yii::app()->getBaseUrl().'/index.php/site/index?mobile=false',array('rel'=>'external', 'onClick'=>'setMobileBrowserFalse()')); ?>

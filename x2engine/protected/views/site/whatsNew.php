@@ -34,18 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$groups=Groups::getUserGroups(Yii::app()->user->getId());
-$tempUserList=array();
-foreach($groups as $groupId){
-	$userLinks=GroupToUser::model()->findAllByAttributes(array('groupId'=>$groupId));
-	foreach($userLinks as $link){
-		$user=User::model()->findByPk($link->userId);
-		if(isset($user)){
-			$tempUserList[]=$user->username;
-		}
-	}
-}
-
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/whatsNew.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/whatsNew.css');
@@ -57,21 +45,32 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckedi
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/emailEditor.js');
 
-/*Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/jqplot/jquery.jqplot.js');
-Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/js/jqplot/jquery.jqplot.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.categoryAxisRenderer.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.pointLabels.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.dateAxisRenderer.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.highlighter.js');
-Yii::app()->clientScript->registerCoreScript('cookie');*/
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
 Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
 
 
+$groups = Groups::getUserGroups(Yii::app()->user->getId());
+$tempUserList = array();
+foreach($groups as $groupId){
+	$userLinks = GroupToUser::model()->findAllByAttributes(array('groupId'=>$groupId));
+	foreach($userLinks as $link){
+		$user = User::model()->findByPk($link->userId);
+		if(isset($user)){
+			$tempUserList[] = $user->username;
+		}
+	}
+}
+
+$userList = array_keys(User::getNames());
+$tempUserList = array_diff($userList,$tempUserList);
+$usersGroups = implode(",",$tempUserList);
+
+
 $passVarsToClientScript = "
 	x2.whatsNew = {};
 	x2.whatsNew.DEBUG = ".(YII_DEBUG ? 'true' : 'false').";
+	x2.whatsNew.usersGroups = '".$usersGroups."';
 	x2.whatsNew.minimizeFeed = ".(Yii::app()->params->profile->minimizeFeed==1?'true':'false').";
 	x2.whatsNew.commentFlag = false;
 	x2.whatsNew.lastEventId = ".(!empty($lastEventId)?$lastEventId:0).";
@@ -92,88 +91,101 @@ $translations = array (
 	'Okay' => Yii::t('app','Okay'),
 	'Nevermind' => Yii::t('app','Nevermind'),
 	'Create' => Yii::t('app','Create'),
-	'Cancel' => Yii::t('app','Cancel'),
-	//'Create Chart Setting' => Yii::t('app','Create Chart Setting')
+	'Cancel' => Yii::t('app','Cancel')
 );
 
 // pass array of predefined theme uploadedBy attributes to client
 foreach ($translations as $key=>$val) {
 	$passVarsToClientScript .= "x2.whatsNew.translations['".
-		$key. "'] = '" . $val . "';\n";
+		$key. "'] = '" . addslashes ($val) . "';\n";
 }
-
-/*$passVarsToClientScript .= "x2.whatsNew.chartSettings = {};\n";
-
-foreach ($chartSettingsDataProvider->data as $chartSetting) {
-	$passVarsToClientScript .= 
-		"x2.whatsNew.chartSettings['" . $chartSetting->name . "'] = " .
-		CJSON::encode ($chartSetting) . ";\n";
-}*/
-
 
 Yii::app()->clientScript->registerScript(
 	'passVarsToClientScript', $passVarsToClientScript,
 	CClientScript::POS_HEAD);
 
 
-$userList=array_keys(User::getNames());
-$tempUserList=array_diff($userList,$tempUserList);
-$usersGroups=implode(",",$tempUserList);
-
-
 ?>
 
-<div class="page-title icon activity-feed"><h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
-	<div id="menu-links" class="title-bar">
-		<?php
-		echo CHtml::link(Yii::t('app','Toggle Comments'),'#',array('id'=>'toggle-all-comments','class'=>'x2-button right'));
-		echo CHtml::link(Yii::t('app','My Groups'),'#',array('id'=>'my-groups-filter','class'=>'x2-button right'));
-		echo CHtml::link(Yii::t('app','Just Me'),'#',array('id'=>'just-me-filter','class'=>'x2-button right'));
-		echo CHtml::link(Yii::t('app','Restore Posts'),'#',array('id'=>'restore-posts','style'=>'display:none;','class'=>'x2-button right'));
-		echo CHtml::link(Yii::t('app','Minimize Posts'),'#',array('id'=>'min-posts','class'=>'x2-button right'));
-		echo CHtml::link(Yii::t('app','Show Chart'),'#',array('id'=>'show-chart','class'=>'x2-button right'));
-		echo CHtml::link(Yii::t('app','Hide Chart'),'#',array('id'=>'hide-chart','class'=>'x2-button right', 'style'=>'display:none;'));
-
-
-		?>
+<div id='page-title-container'>
+	<div class="page-title icon activity-feed">
+		<h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
+		<div id="menu-links" class="title-bar">
+			<?php
+			echo CHtml::link(Yii::t('app','Toggle Comments'),'#',array('id'=>'toggle-all-comments','class'=>'x2-button right'));
+			echo CHtml::link(Yii::t('app','My Groups'),'#',array('id'=>'my-groups-filter','class'=>'x2-button right'));
+			echo CHtml::link(Yii::t('app','Just Me'),'#',array('id'=>'just-me-filter','class'=>'x2-button right'));
+			echo CHtml::link(Yii::t('app','Restore Posts'),'#',array('id'=>'restore-posts','style'=>'display:none;','class'=>'x2-button right'));
+			echo CHtml::link(Yii::t('app','Minimize Posts'),'#',array('id'=>'min-posts','class'=>'x2-button right'));
+			echo CHtml::link(Yii::t('app','Show Chart'),'#',array('id'=>'show-chart','class'=>'x2-button right'));
+			echo CHtml::link(Yii::t('app','Hide Chart'),'#',array('id'=>'hide-chart','class'=>'x2-button right', 'style'=>'display:none;'));
+	
+	
+			?>
+		</div>
 	</div>
 </div>
 
+<div id='activity-feed-chart-container' style='display: none;'>
 
-<?php 
-	$this->widget('X2Chart', array (
-		'getChartDataActionName' => 'getEventsBetween',
-		'suppressChartSettings' => false,
-		'hideByDefault' => true,
-		'actionParams' => array (),
-		'metricTypes' => array (
-			'any'=>Yii::t('app', 'All Events'),
-			'notif'=>Yii::t('app', 'Notifications'),
-			'feed'=>Yii::t('app', 'Feed Events'),
-			'comment'=>Yii::t('app', 'Comments'),
-			'record_created'=>Yii::t('app', 'Records Created'),
-			'record_deleted'=>Yii::t('app', 'Records Deleted'),
-			'weblead_create'=>Yii::t('app', 'Webleads Created'),
-			'workflow_start'=>Yii::t('app', 'Workflow Started'),
-			'workflow_complete'=>Yii::t('app', 'Workflow Complete'),
-			'workflow_revert'=>Yii::t('app', 'Workflow Reverted'),
-			'email_sent'=>Yii::t('app', 'Emails Sent'),
-			'email_opened'=>Yii::t('app', 'Emails Opened'),
-			'web_activity'=>Yii::t('app', 'Web Activity'),
-			'case_escalated'=>Yii::t('app', 'Cases Escalated'),
-			'calendar_event'=>Yii::t('app', 'Calendar Events'),
-			'action_reminder'=>Yii::t('app', 'Action Reminders'),
-			'action_complete'=>Yii::t('app', 'Actions Completed'),
-			'doc_update'=>Yii::t('app', 'Doc Updates'),
-			'email_from'=>Yii::t('app', 'Email Received'),
-			'voip_calls'=>Yii::t('app', 'VOIP Calls'),
-			'media'=>Yii::t('app', 'Media')
-		),
-		'chartType' => 'multiLine',
-		'chartPage' => 'activityFeed',
-		'getDataOnPageLoad' => true
-	)); 
-?>
+	<select id='chart-type-selector'>
+		<option value='eventsChart'>
+			<?php echo Yii::t('app', 'Events Chart'); ?>
+		</option>
+		<option value='usersChart'>
+			<?php echo Yii::t('app', 'User Events Chart'); ?>
+		</option>
+	</select>
+	
+	<?php 
+		$this->widget('X2Chart', array (
+			'getChartDataActionName' => 'getEventsBetween',
+			'suppressChartSettings' => false,
+			'actionParams' => array (),
+			'metricTypes' => array (
+				'any'=>Yii::t('app', 'All Events'),
+				'notif'=>Yii::t('app', 'Notifications'),
+				'feed'=>Yii::t('app', 'Feed Events'),
+				'comment'=>Yii::t('app', 'Comments'),
+				'record_create'=>Yii::t('app', 'Records Created'),
+				'record_deleted'=>Yii::t('app', 'Records Deleted'),
+				'weblead_create'=>Yii::t('app', 'Webleads Created'),
+				'workflow_start'=>Yii::t('app', 'Workflow Started'),
+				'workflow_complete'=>Yii::t('app', 'Workflow Complete'),
+				'workflow_revert'=>Yii::t('app', 'Workflow Reverted'),
+				'email_sent'=>Yii::t('app', 'Emails Sent'),
+				'email_opened'=>Yii::t('app', 'Emails Opened'),
+				'web_activity'=>Yii::t('app', 'Web Activity'),
+				'case_escalated'=>Yii::t('app', 'Cases Escalated'),
+				'calendar_event'=>Yii::t('app', 'Calendar Events'),
+				'action_reminder'=>Yii::t('app', 'Action Reminders'),
+				'action_complete'=>Yii::t('app', 'Actions Completed'),
+				'doc_update'=>Yii::t('app', 'Doc Updates'),
+				'email_from'=>Yii::t('app', 'Email Received'),
+				'voip_calls'=>Yii::t('app', 'VOIP Calls'),
+				'media'=>Yii::t('app', 'Media')
+			),
+			'chartType' => 'eventsChart',
+			'getDataOnPageLoad' => true
+		)); 
+	?>
+	
+	<?php 
+		$usersArr = array ();
+		foreach ($usersDataProvider->data as $user) {
+			$usersArr[$user->username] = $user->firstName.' '.$user->lastName;
+		}
+	
+		$this->widget('X2Chart', array (
+			'getChartDataActionName' => 'getEventsBetween',
+			'suppressChartSettings' => false,
+			'actionParams' => array (),
+			'metricTypes' => $usersArr,
+			'chartType' => 'usersChart',
+			'getDataOnPageLoad' => true
+		)); 
+	?>
+</div>
 
 
 
@@ -183,10 +195,6 @@ $usersGroups=implode(",",$tempUserList);
 	'id'=>'feed-form',
 	'enableAjaxValidation'=>false,
 	'method'=>'post',
-	/*'htmlOptions'=>array(
-		'onsubmit'=>'publishPost();return false;'
-	),*/
-
 	)); ?>
 	<div class="float-row" style='overflow:visible;'>
 		<?php
@@ -268,16 +276,11 @@ $this->widget('zii.widgets.CListView', array(
 
 ?>
 <div id="make-important-dialog" style="display: none;">
-	<div>
-		<?php //echo CHtml::label(Yii::t('app','Do you want to email all users?'),'emailUsers'); ?>
-		<?php //echo CHtml::checkBox('emailUsers'); ?>
-	</div>
 	<div class='dialog-explanation'>
 		<?php echo Yii::t('app','Leave colors blank for defaults.');?>
 	</div>
 	<div>
 		<?php 
-            //echo CHtml::label(Yii::t('app','What color should the broadcast be?'),'broadcastColor'); 
             echo CHtml::label(Yii::t('app','What color should the event be?'),'broadcastColor'); 
         ?>
 		<div class='row'>

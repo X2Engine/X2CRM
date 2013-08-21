@@ -30,4 +30,8 @@ return array (
 'Create a new Opportunity associated with this Account.'=>'Maak een nieuwe Opportunity in verband met deze account.',
 'Create a new Contact associated with this Account.'=>'Maak een nieuwe contactpersoon in verband met deze account.',
 'Create a new Account associated with this Account.'=>'Maak een nieuwe account gekoppeld aan dit account.',
+'Accounts Report'=>'Accounts melden',
+'Campaign Form'=>'Campagne Form',
+'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'Dit formulier kunt u een campagne om e-mail gerelateerde contacten van de rekeningen weergegeven in onderstaande rapport te genereren. Selecteer &quot;Primaire Contacten&quot; om alleen e-mail contacten die worden ingesteld als de Primaire Contactpersoon voor een account. Selecteer &quot;All&quot; om e-mail alle gerelateerde contacten op elke account.',
+'Primary Contact'=>'Primaire Contact',
 );

@@ -104,6 +104,7 @@ class X2TranslationBehaviorTest extends CTestCase {
 			array(
 				'installer message' => '',
 				'installer message with {p}' => '',
+				'Weekdays' => '',
 			),
 		);
 		$this->assertEquals($expected,$messages);
@@ -112,13 +113,11 @@ class X2TranslationBehaviorTest extends CTestCase {
 	public function testFileList(){
 		$cmpb = $this->instantiate();
 		$t0 = time();
-		$fl = $cmpb->fileList('3.2');
-		$cwd = Yii::app()->basePath.'/..';
-		foreach($fl as $file) {
-			$messages = $cmpb->parseFile("$cwd/$file");
-		}
+		$fl = $cmpb->fileList();
 		$t1 = time();
-		$this->assertLessThan(2, $t1-$t0); // Should not take super-long!
+		// Should not take super-long
+		$this->assertLessThan(2, $t1-$t0);
+
 	}
 
 }

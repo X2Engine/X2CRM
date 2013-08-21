@@ -126,6 +126,8 @@ class InlineEmailAction extends CAction {
 				} else if($model->modelName == 'Quote' && empty($model->template)) {
 					// Fill in the gap with the default / "semi-legacy" quotes view
 					$model->message = $this->controller->renderPartial('application.modules.quotes.views.quotes.print', array('model' => $model->targetModel,'email' => true), true);
+					// Add a linebreak at the beginning for user-entered notes in the email:
+					$model->insertInBody('<br />',1);
 				}
 			}
 

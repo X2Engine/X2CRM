@@ -50,7 +50,11 @@ class YiiDebugToolbarResourceUsage extends CWidget
 
         if (function_exists('mb_strlen') && isset($_SESSION))
         {
-            $resources[YiiDebug::t('Session Size')] = sprintf('%0.3F KB' ,mb_strlen(serialize($_SESSION))/1024);
+            try {
+                $resources[YiiDebug::t('Session Size')] = sprintf('%0.3F KB' ,mb_strlen(serialize($_SESSION))/1024);
+            } catch (Exception $e) {
+                $resources[YiiDebug::t('Session Size')] = 'Unknown';
+            }
         }
 
 

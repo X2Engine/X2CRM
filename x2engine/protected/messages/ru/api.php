@@ -9,4 +9,6 @@ return array (
 'Request type not supported for this action.'=>'Тип запроса не поддерживается для этого действия.',
 'Tags not added.'=>'Тэги не добавляют.',
 'Error'=>'Ошибка',
+'Cannot delete; no parameters specified for finding a relationship record to delete.'=>'Не удается удалить; никакие параметры не указаны для нахождения запись связи удалить.',
+'No relationships deleted; none were found matching specfied parameters.'=>'Не отношения исключить; не было найдено ни specfied соответствующие параметры.',
 );

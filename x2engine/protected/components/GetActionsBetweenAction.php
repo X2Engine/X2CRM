@@ -36,44 +36,14 @@
 
 class GetActionsBetweenAction extends CAction {
 
-	public static function getData ($startTimestamp, $endTimestamp, $associationId, $associationType) {
 
-		$associationType = strtolower ($associationType);
-		$date = 
-			'IF(complete="No", '.
-				'GREATEST(createDate, IFNULL(dueDate,0), IFNULL(lastUpdated,0)), '.
-				'GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0)))';
+	public function run (
+		$startTimestamp, $endTimestamp, $associationId, $associationType,
+		$showRelationships) {
 
-		$command = Yii::app()->db->createCommand()
-			->select(
-				'type, '.
-				$date.' as date, '.
-				'COUNT(id) AS count,'.
-				'YEAR(FROM_UNIXTIME('.$date.')) AS year,'.
-				'MONTH(FROM_UNIXTIME('.$date.')) AS month,'.
-				'WEEK(FROM_UNIXTIME('.$date.')) AS week,'.
-				'DAY(FROM_UNIXTIME('.$date.')) AS day,'.
-				'HOUR(FROM_UNIXTIME('.$date.')) AS hour')
-			->from('x2_actions');
-		$command->where(
-			'associationId=:associationId AND associationType=:associationType AND (visibility="1" OR assignedTo="'.
-			Yii::app()->user->getName().'") AND createDate BETWEEN :startTimestamp AND :endTimestamp', 
-			array(
-				'associationId' => $associationId, 
-				'associationType' => $associationType, 
-				'startTimestamp' => $startTimestamp, 
-				'endTimestamp' => $endTimestamp
-			));
-		$actions = $command ->group(
-				'day, week, month, year, type')
-			->order('year DESC, month DESC, week DESC, day DESC, hour desc')
-			->queryAll();
-		return $actions;
-	}
-
-	public function run ($startTimestamp, $endTimestamp, $associationId, $associationType) {
-		echo CJSON::encode(self::getData (
-			$startTimestamp, $endTimestamp, $associationId, $associationType));
+		echo CJSON::encode(X2Chart::getActionsData (
+			$startTimestamp, $endTimestamp, $associationId, $associationType,
+			$showRelationships));
 	}
 }
 

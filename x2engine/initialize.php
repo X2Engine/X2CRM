@@ -84,6 +84,9 @@ $confKeys = array(
 	'webLeadUrl',
 	'x2_version',
 	'type',
+	'startCron',
+	'cronSched',
+	'cron'
 );
 // Values that are safe to return in the configuration (in $_GET) in the case
 // that the user visits initialize.php before installing or is not using JavaScript
@@ -155,16 +158,17 @@ $confMap = array(
  * @param $message The message with which to respond
  * @param $error The error, if any
  */
-function respond($message, $error = Null) {
+function respond($message, $error = 0) {
 	global $response, $silent, $responding;
 	$responding = true;
 	if ($error)
 		$response['globalError'] = $error;
 	if ($silent) {
 		echo "$message\n";
-	} else if (isset($_GET['stage']) || isset($_POST['testDb'])) {
+	} else if (isset($_GET['stage']) || isset($_POST['testDb']) || isset($_POST['testCron'])) {
 		header('Content-Type: application/json');
 		$response['message'] = $message;
+		$response['error'] = (bool) $error;
 		echo json_encode($response);
 		exit(0);
 	}
@@ -181,7 +185,7 @@ function RIP($message) {
 		die($message . "\n");
 	} else {
 		$response['failed'] = 1;
-		respond($message);
+		respond($message,1);
 	}
 }
 
@@ -227,7 +231,6 @@ set_error_handler('respondWithError');
 set_exception_handler('respondWithException');
 register_shutdown_function('respondFatalErrorMessage');
 ini_set('display_errors',0);
-
 // Test the connection and exit:
 if (isset($_POST['testDb'])) {
 	// First open the connection
@@ -279,8 +282,19 @@ if (isset($_POST['testDb'])) {
 	}
 
 	respond(installer_t("Connection successful!"));
+}elseif(isset($_POST['testCron'])){
+    require_once 'protected/components/util/CommandUtil.php';
+    $command = new CommandUtil();
+    try{
+        $command->loadCrontab();
+        respond(installer_t('Cron can be used on this system'));
+    }catch(Exception $e){
+    	if($e->getCode() == 1)
+		RIP(installer_t('The "crontab" command does not exist on this system, so there is no way to set up cron jobs.'));
+	else
+		RIP(installer_t('There is a cron service available on this system, but PHP is running as a system user that does not have permission to use it.'));
+    }
 }
-
 
 /////////////////////////////////
 // Declare Installer Functions //
@@ -510,9 +524,8 @@ function installStage($stage) {
 			}
 			$config['webLeadUrl'] = is_int(strpos($config['webLeadUrl'], 'initialize.php')) ? substr($config['webLeadUrl'], 0, strpos($config['webLeadUrl'], 'initialize.php')) : $config['webLeadUrl'];
 			$X2Config = "<?php\n";
-			foreach (array('appName', 'email', 'host', 'user', 'pass', 'dbname', 'version') as $confKey) {
-				$X2Config .= "\$$confKey = '{$config[$confMap[$confKey]]}';\n";
-			}
+			foreach (array('appName', 'email', 'host', 'user', 'pass', 'dbname', 'version') as $confKey)
+				$X2Config .= "\$$confKey = ".var_export($config[$confMap[$confKey]],1).";\n";
 			$X2Config .= "\$buildDate = {$config['buildDate']};\n\$updaterVersion = '{$config['updaterVersion']}';\n";
 			$X2Config .= (empty($config['language'])) ? '$language=null;' : "\$language='{$config['language']}';\n?>";
 
@@ -566,6 +579,7 @@ function installStage($stage) {
 			} catch (PDOException $e) {
 				die($e->getMessage());
 			}
+//			saveCrontab();
 			break;
 		case 'finalize':
 			/**

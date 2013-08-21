@@ -239,6 +239,10 @@ div.portlet-minimize .expand-widget {
 	/* background: url(../images/icons/Expand_Widget.png) center center no-repeat; */
 }
 
+#widget_ChatBox > div.portlet-content {
+	overflow-y: hidden;
+}
+
 
 #widget_MessageBox .portlet-content {
     text-align: center;
@@ -805,10 +809,22 @@ div.img-box.email_from {
 div.img-box.email_opened {
     background-image: url(../images/eventIcons/email_opened.png);
 }
+div.img-box.email_opened_quote {
+    background-image: url(../images/eventIcons/email_opened.png);
+}
+div.img-box.email_opened_invoice {
+    background-image: url(../images/eventIcons/email_opened.png);
+}
 div.img-box.email_clicked {
     background-image: url(../images/eventIcons/web_activity.png);
 }
 div.img-box.email_sent {
+    background-image: url(../images/eventIcons/email_sent.png);
+}
+div.img-box.email_sent_quote {
+    background-image: url(../images/eventIcons/email_sent.png);
+}
+div.img-box.email_sent_invoice {
     background-image: url(../images/eventIcons/email_sent.png);
 }
 /*
@@ -853,6 +869,8 @@ div.img-box.workflow_start {
     background-image: url(../images/eventIcons/workflow_start.png);
 }
 div.img-box.plus-sign {
+    margin-top:25px;
+    margin-left:5px;
 	background-image: url(../images/Plus_sign.png);
 	height: 20px;
 	width: 65px;
@@ -886,6 +904,9 @@ div.img-box.record_create.Services-create {
 }
 div.img-box.record_create.Groups-create {
     background-image: url(../images/groups.png);
+}
+div.img-box.record_create.BugReports-create {
+    background-image: url(../images/bugreports.png);
 }
 
 .drive-icon{
@@ -1044,9 +1065,9 @@ div.control-button.icon.edit-button{
     width: 22px;
 }
 div.control-button.icon.delete-button{
-    background: url('../images/icons/Delete.png') no-repeat center center;
+    background: url('../images/icons/Delete1.png') no-repeat center center;
     height: 21px;
-    width: 22px;
+    width: 21px;
 }
 div.control-button.sticky-button{
     background: url('../images/Unsticky1.png') no-repeat center center;

@@ -34,7 +34,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-/**
+/*
+Used primarily as a ui container for the X2Chart widget. Also retrieves association id
+and association type of model and the date of the first associated action.
  */
 class ActionHistoryChart extends X2Widget {
 	public $model;

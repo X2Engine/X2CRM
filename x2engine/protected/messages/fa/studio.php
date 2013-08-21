@@ -113,4 +113,6 @@ return array (
 'Post Type'=>'نوع پست',
 'Create Notification?'=>'هشدار از طریق ایجاد؟',
 'User Active?'=>'کاربر فعال؟',
+'Tags (optional)'=>'برچسب ها (اختیاری)',
+'seconds (recommended for formulas only)'=>'(برای تنها فرمول توصیه می شود)',
 );

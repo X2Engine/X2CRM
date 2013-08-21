@@ -174,4 +174,7 @@ return array (
 'Are you sure you want to delete all other records?'=>'آیا شما مطمئن هستید که میخواهید برای حذف تمام سوابق دیگر؟',
 'Are you sure you want to hide this record?'=>'آیا شما مطمئن هستید که میخواهید این رکورد برای مخفی کردن؟',
 'Are you sure you want to delete this record?'=>'آیا شما مطمئن هستید که میخواهید این رکورد را حذف کنید؟',
+'Your case number is: '=>'شماره پرونده شما:',
+'Website: '=>'وب سایت:',
+'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'اخطار: بارگذاری بیش از حد بسیاری از پرونده در این صفحه ممکن است مقید کردن سرور به طور قابل توجهی. آیا شما مطمئن هستید که می خواهید ادامه دهید؟',
 );

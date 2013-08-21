@@ -134,4 +134,13 @@ return array (
 'Remind Me'=>'저를 생각 나게',
 'View Full Edit Page'=>'전체 편집 페이지보기',
 '(Error displaying email)'=>'(오류가 전자 메일을 표시)',
+'Due: '=>'때문에 :',
+'Created: '=>'작성 :',
+'Email Opened:'=>'이메일 오픈 :',
+'Contact has opened the following email:'=>'연락처는 다음과 같은 전자 메일을 열었습니다 :',
+'Update Event:'=>'이벤트 업데이트 :',
+'Action completed: {action}'=>'작업 완료 : {action}',
+'{user} completed an action: {action}'=>'{user} 작업을 완료 : {action}',
+'Stage {n}: {stage} was completed for {record}'=>'무대 {n} : {stage} 에 대한 완성 된 {record}',
+'{user} completed stage {n}: {stage} was completed for {record}'=>'{user} 완료 단계 {n} : {stage} 에 대한 완성 된 {record}',
 );

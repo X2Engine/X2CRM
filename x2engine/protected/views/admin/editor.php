@@ -195,7 +195,7 @@ echo CHtml::hiddenField('layout', '', array('id' => 'layoutHiddenField'));
                         $type = 'varcharIcon';
                 }
 
-                echo '<div class="formItem topLabel" id="formItem_'.$field->fieldName.'"><div class="formTabOrder"></div><label class="'.$type.'">'.X2Model::model($modelName)->getAttributeLabel($field->fieldName).'</label>';
+                echo '<div class="formItem leftLabel" id="formItem_'.$field->fieldName.'"><div class="formTabOrder"></div><label class="'.$type.'">'.X2Model::model($modelName)->getAttributeLabel($field->fieldName).'</label>';
                 echo '<div class="formInputBox">';
                 if($field->type == 'text'){
                     echo CHtml::textArea($modelName.'_'.$field->fieldName, '', array(

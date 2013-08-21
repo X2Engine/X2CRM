@@ -113,4 +113,6 @@ return array (
 'Post Type'=>'Napisz Rodzaj',
 'Create Notification?'=>'Stwórz powiadomienie?',
 'User Active?'=>'Użytkownik aktywny?',
+'Tags (optional)'=>'Tagi (opcjonalnie)',
+'seconds (recommended for formulas only)'=>'sekund (zalecany dla wzorów tylko)',
 );

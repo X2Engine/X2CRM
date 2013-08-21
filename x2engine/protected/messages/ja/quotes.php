@@ -62,4 +62,7 @@ return array (
 'invoice'=>'送り状',
 'Quote {id} does not exist. It may have been deleted.'=>'引用{id}は存在しません。それが削除された可能性があります。',
 'Date printed/emailed'=>'日付印刷/電子メールで送信',
+'Could not save quote due to line item errors:'=>'行項目エラーによる見積もりを保存できませんでした：',
+'Update Quote:'=>'見積りを更新します。',
+'Update Invoice:'=>'請求書を更新します。',
 );

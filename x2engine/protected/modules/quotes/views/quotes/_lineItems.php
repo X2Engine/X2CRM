@@ -680,7 +680,6 @@ if (YII_DEBUG && $debug) {
     $(event.target).val (lineItemName);
     var lineItemPrice = $(event.target).attr ('name').replace (/name/, 'price');
     var lineItemDescription = $(event.target).attr ('name').replace (/name/, 'description');
-	console.debug(lineItemDescription);
     $('[name="' + lineItemPrice + '"]').val (x2.quotes.productPrices[lineItemName]).
       formatCurrency ({region: x2.quotes.currency});
     $('[name="' + lineItemDescription + '"]').val (x2.quotes.productDescriptions[lineItemName]);

@@ -1,49 +1,22 @@
-# X2CRM 3.3 #
-8/2/2013
+# X2CRM 3.4 #
+8/21/2013
 ## Changes ##
-* Better translations
-  * Vastly more comprehensive coverage
-  * Added Polish language pack
-* Improved charting
-  * New action history chart provides visual timelines of activity on almost anything
-  * Improvements to the activity chart on the home page
-* Improvements to the third-party application credentials (email passwords) manager
-  * Improved, more intuitive UI
-  * More concise access control logic
-  * Web lead and service case forms can be configured to use credentials to send email
-* New REST-ful API action for adding/removing relationships between models
-* Broadcasting events now supports sending emails to any number of users
-* New event feed, action history, module header and admin console icons
-* Numerous bug fixes
-* SSL-secured software updates
-
-## Changes in 3.3.1 ##
-* Safeguard against duplicate update server requests
-* Fixed bug: incorrect created by / updated by / deleted by user
-
-## Changes in 3.3.2 ## 
-* Fixed bug in web tracker & web lead form
+* New image gallery widget
+* Dropdowns can be customized to allow selecting multiple values
+* New activity feed chart feature: can filter data display by user
+* New features in Professional Edition:
+  * Rich email editing available in the email action of X2Flow
+  * Cron task setup in installer
+  * Formulas and variables enabled in X2Flow trigger criteria & action parameters
+  * Accounts report feature: send marketing campaigns to related contacts of accounts
+* Fixed bugs: 88, 93, 95, 110, 111, 118, 121, 128, 150, 166, 170, 172 and 200
 
 ## Release Notes ##
-### 3.0 ###
-* The automation designer, while largely complete, is still in active 
-  development, and thus has been deemed a "beta" feature.
-* Quotes created before updating to 3.0 may display incorrect totals in email,
-  print and inline views. This can be easily corrected by opening the update 
-  view of the quote and saving it (even without any changes). This is due to 
-  how, in previous versions, totals weren't stored in quote records, but rather 
-  were re-calculated on-the-fly whereverthere they were displayed. This required 
-  writing and maintaining three separate versions of the code that calculated
-  totals: the default quotes update page (JavaScript), the inline quotes widget
-  in the contact view (JavaScript), and in the model where the line items table 
-  was generated (PHP). In order to improve the maintainability and reliability 
-  of the line items code (by reducing the number of places it could fail), and 
-  in keeping with the DRY (don't repeat yourself) principle, all line item 
-  calculations are now performed via client-side JavaScript in the 
-  "\_lineItems" view of the quotes module. The arithmetic, however, is only run 
-  when a quote is created or updated. Thus, to correct the total displayed on 
-  a quote, open the quote's update view so that the subtotal can be 
-  recalculated, and then save it.
+
+### 3.1 ###
+* In the deletion action of the API, the primary key can now be specified in
+  either the GET or POST parameters. This way, the "DELETE" request type can be
+  used for deletion, and not just the POST type of request.
 
 ### 3.0.1 ###
 * The API has undergone some fundamental changes in its response format:
@@ -67,10 +40,26 @@
     on the server. The source of this data is the "modelErrors" property of the
     response from the create and update actions.
 
-### 3.1 ###
-* In the deletion action of the API, the primary key can now be specified in
-  either the GET or POST parameters. This way, the "DELETE" request type can be
-  used for deletion, and not just the POST type of request.
+### 3.0 ###
+* X2Flow, the automation designer, while largely complete, is still in active 
+  development, and thus has been deemed a "beta" feature.
+* Quotes created before updating to 3.0 may display incorrect totals in email,
+  print and inline views. This can be easily corrected by opening the update 
+  view of the quote and saving it (even without any changes). This is due to 
+  how, in previous versions, totals weren't stored in quote records, but rather 
+  were re-calculated on-the-fly wherever they were displayed. This required 
+  writing and maintaining three separate versions of the code that calculated
+  totals: the default quotes update page (JavaScript), the inline quotes widget
+  in the contact view (JavaScript), and in the model where the line items table 
+  was generated (PHP). In order to improve the maintainability and reliability 
+  of the line items code (by reducing the number of places it could fail), and 
+  in keeping with the DRY (don't repeat yourself) principle, all line item 
+  calculations are now performed via client-side JavaScript in the 
+  "\_lineItems" view of the quotes module. The arithmetic, however, is only run 
+  when a quote is created or updated. Thus, to correct the total displayed on 
+  a quote, open the quote's update view so that the subtotal can be 
+  recalculated, and then save it.
+
 
 
 # Introduction #

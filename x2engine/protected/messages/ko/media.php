@@ -36,4 +36,8 @@ return array (
 'View in Google Drive'=>'구글 드라이브로보기',
 'File is hosted on Google Drive'=>'파일은 구글 드라이브에서 호스팅되는',
 'File was not sent to server.'=>'파일이 서버로 전송되지 않았습니다.',
+'Attachments:'=>'첨부 파일 :',
+'Dimensions:'=>'차원 :',
+'MIME Info:'=>'MIME 정보 :',
+'Google Drive:'=>'구글 드라이브 :',
 );

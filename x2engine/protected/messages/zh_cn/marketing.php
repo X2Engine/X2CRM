@@ -122,4 +122,8 @@ return array (
 'Email sent'=>'发送电​​子邮件',
 'Header Code'=>'头码',
 'Batch completed, sending again in '=>'批量完成，再次发送',
+'A new web lead has been assigned to you: '=>'已分配给您一个新的Web铅：',
+'Marketing Automation'=>'营销自动化',
+'Contacts for Account Report ('=>'联系帐户报告（',
+'Mailing for Account Report ('=>'邮件帐户报告（',
 );

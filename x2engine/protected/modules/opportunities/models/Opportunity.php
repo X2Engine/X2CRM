@@ -216,21 +216,5 @@ class Opportunity extends X2Model {
 		return $this->searchBase($criteria);
 	}
 
-	/**
-	 * Base search method for all data providers.
-	 * Sets up record-level security checks.
-	 *
-	 * @param CDbCriteria $criteria starting criteria for this search
-	 * @return SmartDataProvider data provider using the provided criteria and any conditions added by {@link X2Model::compareAttributes}
-	 */
-	public function searchBase($criteria=null) {
-		if($criteria === null)
-			$criteria = $this->getAccessCriteria();
-		else
-			$criteria->mergeWith($this->getAccessCriteria());
-
-		return parent::searchBase($criteria);
-	}
-
 
 }

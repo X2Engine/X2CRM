@@ -316,7 +316,10 @@ class Contacts extends X2Model {
 		$criteria = new CDbCriteria;
 
 		$accessLevel = Yii::app()->user->checkAccess('ContactsView')? 1 : 0;
-		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
+		$conditions=$this->getAccessConditions($accessLevel);
+        foreach($conditions as $arr){
+            $criteria->addCondition($arr['condition'],$arr['operator']);
+        }
 
 		// $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
 		// $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
@@ -332,7 +335,10 @@ class Contacts extends X2Model {
 		// $condition = 'assignedTo="'.Yii::app()->user->getName().'" AND createDate > '.mktime(0,0,0);
 		$condition = 't.createDate > '.mktime(0,0,0);
 		$accessLevel = Yii::app()->user->checkAccess('ContactsView')? 1 : 0;
-		$criteria->addCondition(X2Model::getAccessConditions($accessLevel));
+        $conditions=$this->getAccessConditions($accessLevel);
+        foreach($conditions as $arr){
+            $criteria->addCondition($arr['condition'],$arr['operator']);
+        }
 
 		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
 
@@ -407,23 +413,7 @@ class Contacts extends X2Model {
 			return $this->searchBase();
 		}
 	}
-
-	/**
-	 * Base search method for all data providers.
-	 * Sets up record-level security checks.
-	 *
-	 * @param CDbCriteria $criteria starting criteria for this search
-	 * @return SmartDataProvider data provider using the provided criteria and any conditions added by {@link X2Model::compareAttributes}
-	 */
-	public function searchBase($criteria=null) {
-		if($criteria === null)
-			$criteria = $this->getAccessCriteria();
-		else
-			$criteria->mergeWith($this->getAccessCriteria());
-
-		return parent::searchBase($criteria);
-	}
-
+    
 	/**
 	 * Generates a random tracking key and guarantees uniqueness
 	 * @return String $key a unique random tracking key

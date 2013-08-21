@@ -54,19 +54,17 @@ class X2TranslationBehavior extends CBehavior {
      * will be matched by this pattern.
      */
 
-    const REGEX = '/(?:(?<installer>installer_tr?\s*)|Yii::\s*t\s*)\(\s*(?(installer)|(?:(?<openquote1>")|\')(?<module>\w+)(?(openquote1)"|\')\s*,)\s*(?:(?<openquote2>")|\')(?<message>(?:(?(openquote2)\\\\"|\\\\\')|(?(openquote2)\'|")|\w|\s|[\(\)\{\}_\.\-\,\!\?\/;:])+)(?(openquote2)"|\')/';
+    const REGEX = '/(?:(?<installer>installer_tr?)\s*|Yii::\s*t\s*)\(\s*(?(installer)|(?:(?<openquote1>")|\')(?<module>\w+)(?(openquote1)"|\')\s*,)\s*(?:(?<openquote2>")|\')(?<message>(?:(?(openquote2)\\\\"|\\\\\')|(?(openquote2)\'|")|\w|\s|[\(\)\{\}_\.\-\,\!\?\/;:])+)(?(openquote2)"|\')/';
 
     /**
-     * An array of redundant translations that are built up during the
+     * @var array An array of redundant translations that are built up during the
      * consolidation process.
-     * @var array
      */
     public $intersect = array();
 
     /**
-     * An array of aggregate data about the translation process to be displayed
+     * @var array An array of aggregate data about the translation process to be displayed
      * to the user at the end.
-     * @var array
      */
     public $statistics = array(
         'newMessages' => 0, // New messages added to the translation files
@@ -75,11 +73,18 @@ class X2TranslationBehavior extends CBehavior {
         'untranslated' => 0, // How many messages needed to be translated
         'characterCount' => 0, // Number of characters to be translated via Google Translate
         'languageStats' => array(
-            // Stats about translations for individual languages are stored here.
+        // Stats about translations for individual languages are stored here.
         ),
     );
 
     /**
+     * @var array A list of all untranslated messages in the software.
+     */
+    public $untranslated = array();
+
+    /**
+     * Add missing translations to files, first step of automation.
+     *
      * Function to find all untralsated text in the software, and then take that
      * array of messages and add them to translation files for all languages.
      * Called in {@link X2TranslationAction::run} function as part of the full
@@ -93,6 +98,8 @@ class X2TranslationBehavior extends CBehavior {
     }
 
     /**
+     * Move commonly used phrases to common.php, second step of automation.
+     *
      * Function that parses translation files for all languages and consolidates
      * them. First it builds a list of redundancies between files, then loops
      * through that array, adding redundant phrases to common.php and removing
@@ -129,6 +136,8 @@ class X2TranslationBehavior extends CBehavior {
     }
 
     /**
+     * Call Google Translate API for mising translations, third step of automation.
+     *
      * This method will get a list of all messages which do not have translations
      * into the appropriate language from all of our language files. Then, it will
      * call Google Translate's API to get a base translation of the message and
@@ -160,10 +169,13 @@ class X2TranslationBehavior extends CBehavior {
     }
 
     /**
+     * Gets a list of Yii::t calls.
+     *
      * Helper function called by {@link addMissingTranslations}
      * to get a list of messages found in Yii::t calls found in the software in
      * an easily parsed array format. Also checks attribute labels of non-custom
      * modules in the x2_fields table.
+     *
      * @return array An array of messages found in the software that need to be added to the translation files.
      */
     public function getMessageList(){
@@ -193,10 +205,13 @@ class X2TranslationBehavior extends CBehavior {
     }
 
     /**
+     * Converts model name to translation file name.
+     *
      * Helper method called in {@link getMessageList} to
      * find the correct translation file for a model. This is necessary because some
      * models have class names like Quote or Opportunity but their file names are
      * quotes and opportunities.
+     *
      * @param string $modelName The name of the model to look up the related translation file for.
      * @return string|boolean Returns the name of the translation file to use, or false if a correct file cannot be found.
      */
@@ -223,8 +238,11 @@ class X2TranslationBehavior extends CBehavior {
     }
 
     /**
+     * Add missing messages to translation files.
+     *
      * Helping function called by {@link addMissingTranslations}
      * to add the messages found in Yii::t calls to the appropriate translation file.
+     *
      * @param string $file The translation file to add messages to
      * @param array $messageList A list of messages to be added to the translation files.
      */
@@ -253,6 +271,8 @@ class X2TranslationBehavior extends CBehavior {
     }
 
     /**
+     * Return Yii::t calls in a specific file
+     *
      * Helper method called in {@link getMessageList}
      * Parses a file and returns an associative array of module names to messages
      * for that file.
@@ -285,6 +305,12 @@ class X2TranslationBehavior extends CBehavior {
      * Returns true or false based on whether a path should be parsed for
      * messages.
      *
+     * Some files in the software don't need to be translated. Yii provides all
+     * of its own translations for the framework directory, and there are other
+     * files which simply have no possibility of having Yii::t calls in them.
+     * Ignoring these files speeds up the process, especially since framework is
+     * a very large directory.
+     *
      * @param string $relPath Paths to folders which should not be included in the Yii::t search
      * @return boolean True if file should be excluded from the search, false if the file is OK.
      */
@@ -302,8 +328,11 @@ class X2TranslationBehavior extends CBehavior {
     }
 
     /**
+     * Parse file structure for valid files.
+     *
      * Returns a list of all files in the codebase that are eligible for searching
      * for Yii::t calls within.
+     *
      * @param string $revision Unused, may implement comparison between Git revisions rather than searching all files.
      * @return array List of files to be parsed for Yii::t calls
      */
@@ -324,6 +353,8 @@ class X2TranslationBehavior extends CBehavior {
     }
 
     /**
+     * Get redundant translations to be merged into common.php
+     *
      * Helper function called by {@link consolidateMessages)
      * to build a list of files that have redundant messages in them, as well as a
      * list of what those messages are. Loads this data into the property
@@ -350,9 +381,12 @@ class X2TranslationBehavior extends CBehavior {
     }
 
     /**
+     * Add a message to common.php for all languages
+     *
      * Helper function called by {@link consolidateMessages}
      * to add a redundant message into common.php. The message will nto be added
      * if it already exists in common.
+     *
      * @param string $message The message to be added to common.php
      */
     public function addToCommon($message){
@@ -381,6 +415,11 @@ return array(
 
     /**
      * Deletes a message from a language file in all languages.
+     *
+     * Called as a part of the consolidation process to remove redundant messages
+     * from the files they were found in. This keeps the amount of messages lower
+     * and reduced the burden on anyone who is translating the software.
+     *
      * @param string $file The name of the file to look for the message in
      * @param string $message The message to be removed
      */
@@ -397,45 +436,52 @@ return array(
     }
 
     /**
+     * Get all untranslated messages
+     *
      * Helper function called by {@link updateTranslations}
      * to get an array of all messages which have indeces in the translation files
      * but no translated version.
+     *
      * @return array A list of all messages which have missing translations.
      */
     public function getUntranslatedText(){
-        $untranslated = array();
-        $languages = scandir('protected/messages');
-        foreach($languages as $lang){
-            if(!in_array($lang, array('template', '.', '..'))){ // Ignore current, parent, and template (all template translations are blank) directories.
-                $untranslated[$lang] = array();
-                $files = scandir('protected/messages/'.$lang); // Get all the files for the current language.
-                foreach($files as $file){
-                    if($file != '.' && $file != '..'){
-                        $untranslated[$lang][$file] = array();
-                        $translations = (include('protected/messages/'.$lang.'/'.$file)); // Include the translations.
-                        foreach($translations as $index => $message){
-                            if(empty($message)){
-                                $untranslated[$lang][$file][] = $index; // If the translated version is empty, add the message index to our unranslated array.
-                                $this->statistics['untranslated']++;
+        if(empty($this->untranslated)){
+            $languages = scandir('protected/messages');
+            foreach($languages as $lang){
+                if(!in_array($lang, array('template', '.', '..'))){ // Ignore current, parent, and template (all template translations are blank) directories.
+                    $this->untranslated[$lang] = array();
+                    $files = scandir('protected/messages/'.$lang); // Get all the files for the current language.
+                    foreach($files as $file){
+                        if($file != '.' && $file != '..'){
+                            $this->untranslated[$lang][$file] = array();
+                            $translations = (include('protected/messages/'.$lang.'/'.$file)); // Include the translations.
+                            foreach($translations as $index => $message){
+                                if(empty($message)){
+                                    $this->untranslated[$lang][$file][] = $index; // If the translated version is empty, add the message index to our unranslated array.
+                                    $this->statistics['untranslated']++;
+                                }
+                            }
+                            if(empty($this->untranslated[$lang][$file])){
+                                unset($this->untranslated[$lang][$file]); // If we don't find any untranslated messages, don't both returning that file.
                             }
                         }
-                        if(empty($untranslated[$lang][$file])){
-                            unset($untranslated[$lang][$file]); // If we don't find any untranslated messages, don't both returning that file.
-                        }
                     }
-                }
-                if(empty($untranslated[$lang])){
-                    unset($untranslated[$lang]); // The whole language is translated, no need to return it either.
+                    if(empty($this->untranslated[$lang])){
+                        unset($this->untranslated[$lang]); // The whole language is translated, no need to return it either.
+                    }
                 }
             }
         }
-        return $untranslated;
+        return $this->untranslated;
     }
 
     /**
+     * Translate a message via Google Translate API.
+     *
      * Helper function called by {@link updateTranslations}
      * to translate individual messages via the Google Translate API. Any text
      * between braces {} is preserved as is for variable replacement.
+     *
      * @param string $message The untranslated message
      * @param string $lang The language to translate to
      * @return string The translated message
@@ -464,11 +510,14 @@ return array(
         $message = trim($message, '\\/'); // Trim any harmful characters Google Translate may have moved around, like leaving a "\" at the end of the string...
         return $message;
     }
-    
+
     /**
+     * Add translated messages to translation files.
+     *
      * Helper function called by {@link updateTranslations}
      * to replace the untranslated messages in a translation file with the response
      * we got from Google.
+     *
      * @param string $lang The language we translated our messages to
      * @param string $file The file we need to put the translations in
      * @param array $translations An array of translations with the English message as the index and the translated version as the value.

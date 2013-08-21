@@ -134,4 +134,13 @@ return array (
 'Remind Me'=>'به یاد من',
 'View Full Edit Page'=>'نمایش کامل صفحه ویرایش',
 '(Error displaying email)'=>'(خطا نمایش ایمیل)',
+'Due: '=>'توجه:',
+'Created: '=>'ایجاد شده:',
+'Email Opened:'=>'پست الکترونیک افتتاح شد:',
+'Contact has opened the following email:'=>'تماس با ایمیل زیر باز کرده است:',
+'Update Event:'=>'بروز رویداد:',
+'Action completed: {action}'=>'پیشروی اقدام: {action}',
+'{user} completed an action: {action}'=>'{user} اتمام عمل: {action}',
+'Stage {n}: {stage} was completed for {record}'=>'مرحله {n} : {stage} برای تکمیل شد {record}',
+'{user} completed stage {n}: {stage} was completed for {record}'=>'{user} مرحله تکمیل شده {n} : {stage} برای تکمیل شد {record}',
 );

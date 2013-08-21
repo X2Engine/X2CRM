@@ -344,7 +344,7 @@ if(isset($contactList) && $model->launchDate) {
 		'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 		'template'=>'{summary}{items}{pager}',
 		'summaryText' => Yii::t('app','Displaying {start}-{end} result(s).')
-			. '<div class="form no-border" style="margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle;"> '
+			. '<div class="form no-border" style="margin: 0; padding: 2px 3px; display: inline-block; vertical-align: middle; overflow: hidden;"> '
 				. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
 						'ajax' => array(
 							'url' => $this->createUrl('/profile/setResultsPerPage'),

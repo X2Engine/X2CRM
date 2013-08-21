@@ -90,4 +90,5 @@ return array (
 'View Association'=>'Zobacz Association',
 'These users can view {fullname}\'s calendar.'=>'Ci użytkownicy mogą zobaczyć {fullname} kalendarz \ &#39;s.',
 'These users can edit {fullname}\'s calendar.'=>'Ci użytkownicy mogą edytować {fullname} kalendarz \ &#39;s.',
+'Shared Calendar:'=>'Wspólna Kalendarz:',
 );

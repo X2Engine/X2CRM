@@ -174,4 +174,7 @@ return array (
 'Are you sure you want to delete all other records?'=>'Tem certeza de que deseja excluir todos os outros registros?',
 'Are you sure you want to hide this record?'=>'Tem certeza de que quer ocultar este registro?',
 'Are you sure you want to delete this record?'=>'Tem certeza de que deseja excluir este registro?',
+'Your case number is: '=>'O seu número de caso é:',
+'Website: '=>'Website:',
+'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'AVISO: carregar muitos registros nesta página podem amarrar o servidor de forma significativa. Tem certeza de que deseja continuar?',
 );

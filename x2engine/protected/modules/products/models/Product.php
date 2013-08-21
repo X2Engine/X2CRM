@@ -105,30 +105,14 @@ class Product extends X2Model {
 		));*/
 		return $this->searchBase($criteria);
 	}
-    
-    /**
-	 * Base search method for all data providers.
-	 * Sets up record-level security checks.
-	 * 
-	 * @param CDbCriteria $criteria starting criteria for this search
-	 * @return SmartDataProvider data provider using the provided criteria and any conditions added by {@link X2Model::compareAttributes}
-	 */
-	public function searchBase($criteria=null) {
-		if($criteria === null)
-			$criteria = $this->getAccessCriteria();
-		else
-			$criteria->mergeWith($this->getAccessCriteria());
 
-		return parent::searchBase($criteria);
-	}
-    
 	/**
 	 *
 	 */
 	public static function activeProducts() {
 		return Product::model()->findAllByAttributes(array('status'=>'Active'));
 	}
-	
+
 	/**
 	 * Get a list of active product names indexed by id
 	 */
@@ -143,10 +127,10 @@ class Product extends X2Model {
 		$productNames = array(0 => '');
 		foreach($products as $product)
 			$productNames[$product->id] = $product->name;
-		
+
 		return $productNames;
 	}
-	
+
 	/**
 	 * Get a list of active product currencys indexed by id
 	 */
@@ -161,10 +145,10 @@ class Product extends X2Model {
 		$productCurrency = array(0 => '');
 		foreach($products as $product)
 			$productCurrency[$product->id] = $product->currency;
-		
+
 		return $productCurrency;
 	}
-	
+
 	/**
 	 * Get a list of active product currencys indexed by id
 	 */
@@ -179,7 +163,7 @@ class Product extends X2Model {
 		$productPrices = array(0 => '');
 		foreach($products as $product)
 			$productPrices[$product->id] = $product->price;
-		
+
 		return $productPrices;
 	}
 }

@@ -182,7 +182,7 @@ foreach($groupCalendars as $groupId){
 
 
 /**************************************************************
-*					   Declare Calendar					    
+*					   Declare Calendar
 **************************************************************/
 
 $(function() {
@@ -272,6 +272,15 @@ $(function() {
 			var viewAction = $('<div></div>', {id: 'dialog-content' + '_' + event.id});  // dialog box (opened at the end of this function)
 			var focusButton = 'Close';
 			var dialogWidth = 390;
+            var associations = {
+                'contacts':'<?php echo Yii::t('calendar','Contact'); ?>',
+                'accounts':'<?php echo Yii::t('calendar','Account'); ?>',
+                'opportunities':'<?php echo Yii::t('calendar','Opportunity'); ?>',
+                'campaigns':'<?php echo Yii::t('calendar','Campaign'); ?>',
+                'services':'<?php echo Yii::t('calendar','Case'); ?>',
+                'quotes':'<?php echo Yii::t('calendar','Quote'); ?>',
+                'products':'<?php echo Yii::t('calendar','Product'); ?>'
+            };
 
 			var boxButtons =  [ // buttons on bottom of dialog
 				{
@@ -327,7 +336,7 @@ $(function() {
 						text: '<?php echo Yii::t('app', 'Save'); ?>', // delete event
 						click: function() {
 	//						var description = $(eventDescription).val();
-							$.post('<?php echo $urls['saveAction']; ?>?id=' + event.id, $(viewAction).find('form').serialize(), 
+							$.post('<?php echo $urls['saveAction']; ?>?id=' + event.id, $(viewAction).find('form').serialize(),
 								function() {$('#calendar').fullCalendar('refetchEvents');}); // delete event from database
 	//						event.title = description.substring(0, 30);
 	//						event.description = description;
@@ -354,7 +363,41 @@ $(function() {
 
 				if(event.associationType == 'calendar') { // calendar event clicked
 					var boxTitle = 'Event';
-				} else if(event.associationType == 'contacts') { // action associated with a contact clicked
+				} else if(event.associationType != '' && event.associationType!='contacts'){
+                    if(typeof associations[event.associationType]!='undefined'){
+                        var associationType=associations[event.associationType];
+                    }else{
+                        var associationType=event.associationType;
+                    }
+                    viewAction.prepend('<b><a href="' + event.associationUrl + '">' + event.associationName + '</a></b><br />');
+                    boxButtons.unshift({  //prepend button
+                        text: '<?php echo Yii::t('calendar', 'View'); ?> '+associationType,
+                        click: function() {
+                            window.location = event.associationUrl;
+                        }
+                    });
+                    if(event.source.editable && event.type != 'event') {
+                        if(event.complete == 'Yes') {
+                            boxButtons.unshift({  // prepend button
+                                text: '<?php echo Yii::t('actions', 'Uncomplete'); ?>',
+                                click: function() {
+                                    $.post('<?php echo $urls['uncompleteAction']; ?>', {id: event.id});
+                                    event.complete = 'No';
+                                    $(this).dialog('close');
+                                }
+                            });
+                        } else {
+                            boxButtons.unshift({  // prepend button
+                                text: '<?php echo Yii::t('actions', 'Complete'); ?>',
+                                click: function() {
+                                    $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
+                                    event.complete = 'Yes';
+                                    $(this).dialog('close');
+                                }
+                            });
+                        }
+                    }
+                } else if(event.associationType == 'contacts') { // action associated with a contact clicked
 					if(event.type == 'event')
 						boxTitle = 'Contact Event';
 					else

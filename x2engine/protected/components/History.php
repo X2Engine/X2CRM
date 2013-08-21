@@ -44,11 +44,14 @@ class History extends X2Widget {
 
     public $associationType;  // type of record to associate actions with
     public $associationId = '';  // record to associate actions with
-    public $filters = true;
-    public $historyType = 'all';
-    public $pageSize = 10;
-    public $relationships = 0;
+    public $filters = true;  // whether or not action types can be filtered on
+    public $historyType = 'all'; // default filter type
+    public $pageSize = 10; // how many records to show per page
+    public $relationships = 0; // don't show actions on related records by default
 
+    /**
+     *
+     */
     public function run(){
         if($this->filters){
             $historyTabs = array(
@@ -61,24 +64,24 @@ class History extends X2Widget {
                 'webactivity' => Yii::t('app', 'Web Activity'),
             );
             $profile = Yii::app()->params->profile;
-            if(isset($profile)){
-                $this->pageSize = $profile->historyShowAll ? 10000 : 10;
+            if(isset($profile)){ // Load their saved preferences from the profile
+                $this->pageSize = $profile->historyShowAll ? 10000 : 10; // No way to give truly infinite pagination, fudge it by making it 10,000
                 $this->relationships = $profile->historyShowRels;
             }
-            if(isset($_GET['history']) && array_key_exists($_GET['history'], $historyTabs)){
+            if(isset($_GET['history']) && array_key_exists($_GET['history'], $historyTabs)){ // See if we can filter for what they wanted
                 $this->historyType = $_GET['history'];
             }
             if(isset($_GET['pageSize'])){
                 $this->pageSize = $_GET['pageSize'];
                 if(isset($profile)){
-                    $profile->historyShowAll = $this->pageSize > 10 ? 1 : 0;
+                    $profile->historyShowAll = $this->pageSize > 10 ? 1 : 0; // Save profile preferences
                     $profile->update(array('historyShowAll'));
                 }
             }
             if(isset($_GET['relationships'])){
                 $this->relationships = $_GET['relationships'];
                 if(isset($profile)){
-                    $profile->historyShowRels = $this->relationships;
+                    $profile->historyShowRels = $this->relationships; // Save profile preferences
                     $profile->update(array('historyShowRels'));
                 }
             }
@@ -112,12 +115,12 @@ class History extends X2Widget {
                 }
                 $.fn.yiiListView.update('history',{ data:{ relationships: relationshipFlag }});
             });
-        ");
+        "); // Script to make all the buttons on the history widget function via AJAX.
         $this->widget('zii.widgets.CListView', array(
             'id' => 'history',
             'dataProvider' => $this->getHistory(),
             'viewData' => array(
-                'relationshipFlag' => $this->relationships,
+                'relationshipFlag' => $this->relationships, // Pass relationship flag to the views so they can modify their layout slightly
             ),
             'itemView' => 'application.modules.actions.views.actions._view',
             'htmlOptions' => array('class' => 'action list-view'),
@@ -130,6 +133,10 @@ class History extends X2Widget {
         ));
     }
 
+    /**
+     *
+     * @return \CActiveDataProvider
+     */
     public function getHistory(){
 
         $historyCriteria = array(
@@ -138,34 +145,56 @@ class History extends X2Widget {
             'workflow' => ' AND type="workflow"',
             'comments' => ' AND type="note"',
             'attachments' => ' AND type="attachment"',
-            'marketing' => ' AND type IN ("email","webactivity","weblead","email_staged","email_opened","email_clicked","email_unsubscribed")',
+            'marketing' => ' AND type IN ("email","webactivity","weblead","email_staged",'.
+			                             '"email_opened","email_clicked","email_unsubscribed")',
             'webactivity' => 'AND type IN ("weblead","webactivity")'
         );
         if($this->relationships){
             $type = $this->associationType;
             $model = X2Model::model($type)->findByPk($this->associationId);
             if(count($model->relatedX2Models) > 0){
-                $associationCondition = "((associationId={$this->associationId} AND associationType='{$this->associationType}')";
+                $associationCondition = 
+					"((associationId={$this->associationId} AND ".
+					"associationType='{$this->associationType}')";
                 foreach($model->relatedX2Models as $relatedModel){
                     if($relatedModel instanceof X2Model){
-                        $associationCondition.=" OR (associationId={$relatedModel->id} AND associationType='{$relatedModel->myModelName}')";
+                        $associationCondition .=
+							" OR (associationId={$relatedModel->id} AND ".
+							"associationType='{$relatedModel->myModelName}')";
                     }
                 }
                 $associationCondition.=")";
             }else{
-                $associationCondition = 'associationId='.$this->associationId.' AND associationType="'.$this->associationType.'"';
+                $associationCondition = 
+					'associationId='.$this->associationId.' AND '.
+					'associationType="'.$this->associationType.'"';
             }
         }else{
-            $associationCondition = 'associationId='.$this->associationId.' AND associationType="'.$this->associationType.'"';
+            $associationCondition = 
+				'associationId='.$this->associationId.' AND '.
+				'associationType="'.$this->associationType.'"';
         }
-        $associationCondition = str_replace('Opportunity', 'opportunities', $associationCondition);
+        $associationCondition = 
+			str_replace('Opportunity', 'opportunities', $associationCondition);
         $associationCondition = str_replace('Quote', 'quotes', $associationCondition);
+        $visibilityCondition = '';
+        $module = isset(Yii::app()->controller->module) ? Yii::app()->controller->module->getId() : Yii::app()->controller->getId();
+        if(!Yii::app()->user->checkAccess($module.'Admin')){
+            if(Yii::app()->params->admin->historyPrivacy == 'user'){
+                $visibilityCondition = ' AND (assignedTo="'.Yii::app()->user->getName().'")';
+            }elseif(Yii::app()->params->admin->historyPrivacy == 'group'){
+                $visibilityCondition = ' AND t.assignedTo IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.Yii::app()->user->getName().'")';
+            }else{
+                $visibilityCondition = ' AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")';
+            }
+        }
         return new CActiveDataProvider('Actions', array(
                     'criteria' => array(
-                        'order' => 'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), IFNULL(lastUpdated,0)), GREATEST(createDate, '.
+                        'order' => 'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), '.
+						               'IFNULL(lastUpdated,0)), GREATEST(createDate, '.
 						 			   'IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC',
                         'condition' => $associationCondition.
-                        'AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")'.$historyCriteria[$this->historyType]
+                        $visibilityCondition.$historyCriteria[$this->historyType]
                     ),
                     'pagination' => array(
                         'pageSize' => $this->pageSize,

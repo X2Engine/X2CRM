@@ -1907,8 +1907,7 @@
 	 * @return void
 	 */
 	$.timepicker.log = function(err){
-		if(window.console)
-			console.log(err);
+		if (window.console) console.log(err);
 	};
 
 	/*

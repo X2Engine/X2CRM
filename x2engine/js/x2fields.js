@@ -370,9 +370,12 @@ x2.fieldUtils = {
 		delete attributes.value;
 	
 		var dropdown = $(document.createElement('select')).attr(attributes);
-		for(var i in options)
+		for(var i in options) {
 			$(document.createElement('option')).attr('value',options[i][0]).text(options[i][1]).appendTo(dropdown);
-		return dropdown.val(val);
+		}
+		dropdown.val(val);
+		return dropdown;
+		//return dropdown.val(val);
 	}
 }
 });

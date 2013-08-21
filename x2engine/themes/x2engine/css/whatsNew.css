@@ -206,3 +206,31 @@ a#toggle-filters-link {
     height: 200px;
 }
 
+
+
+/*
+Charts
+*/
+
+#activity-feed-chart-container {
+	background: #eee;
+}
+
+div.chart-container {
+	border-top: 1px solid #ddd !important;
+	-moz-border-radius: 0px !important;
+	-o-border-radius: 0px !important;
+	-webkit-border-radius: 0px !important;
+	border-radius: 0px !important;
+}
+
+#chart-type-selector {
+	margin: 4px 0px 4px 5px;
+}
+
+#page-title-container.page-title-container-chart-shown {
+	background: #eee !important;
+}
+
+
+

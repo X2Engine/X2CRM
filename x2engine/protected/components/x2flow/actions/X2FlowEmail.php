@@ -74,7 +74,7 @@ class X2FlowEmail extends X2FlowAction {
 		$eml->subject = $this->parseOption('subject',$params);
 
 		if(isset($options['body']['value']) && !empty($options['body']['value'])) {	// "body" option (deliberately-entered content) takes precedence over template
-			$eml->scenario = 'custom';
+            $eml->scenario = 'custom';
 			$eml->message = InlineEmail::emptyBody($this->parseOption('body',$params));
 			$eml->prepareBody();
 			// $eml->insertSignature(array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>'));

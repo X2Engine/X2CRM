@@ -259,7 +259,7 @@
 				}
 
 				function setSymbol(value){
-					if (settings.symbol != ''){
+					if (settings.symbol != '' && settings.symbol != null){
 						var operator = '';
 						if(value.length != 0 && value.charAt(0) == '-'){
 							value = value.replace('-', '');

@@ -39,10 +39,6 @@ return array (
 '2 - Critical'=>'',
 '3 - Moderate'=>'',
 '4 - Minor'=>'',
-'Date Field'=>'',
-'Advanced Filters'=>'',
-'Export Data'=>'',
-'Please click the link below to download this report.'=>'',
 
 // createWebForm
 

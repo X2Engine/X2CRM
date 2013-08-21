@@ -164,4 +164,5 @@ return array (
 'Google Calendar Name'=>'Googleカレンダー名',
 'Once'=>'一度',
 'Yearly'=>'毎年',
+'Shared Calendar:'=>'共有カレンダー：',
 );

@@ -89,7 +89,7 @@ $('#createList').unbind('click').click(function() {
 });
 $('#addToList').unbind('click').click(function() {
 	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
-	
+
 	var targetList = $('#addToListTarget').val();
 
 	if(selectedItems.length > 0) {
@@ -151,9 +151,9 @@ $(function() {
 
 <div class="search-form" style="display:none">
 <?php /* $this->renderPartial('_search',array(
-	'model'=>$model, 
+	'model'=>$model,
         'users'=>UserChild::getNames(),
-)); */ ?> 
+)); */ ?>
 </div><!-- search-form -->
 <?php
 $listActions = '<div class="list-actions">'.CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));

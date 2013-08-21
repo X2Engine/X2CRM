@@ -31,25 +31,13 @@ return array (
 'day'=>'',
 // // 
 // // month names
-'January'=>'',
 'February'=>'',
-'March'=>'',
-'April'=>'',
-'May'=>'',
-'June'=>'',
-'July'=>'',
-'August'=>'',
-'September'=>'',
-'October'=>'',
-'November'=>'',
-'December'=>'',
 // // 
 // // short month names
 'Jan'=>'',
 'Feb'=>'',
 'Mar'=>'',
 'Apr'=>'',
-'May'=>'',
 'Jun'=>'',
 'Jul'=>'',
 'Aug'=>'',
@@ -59,12 +47,6 @@ return array (
 'Dec'=>'',
 // // 
 // // day names
-'Sunday'=>'',
-'Monday'=>'',
-'Tuesday'=>'',
-'Wednesday'=>'',
-'Thursday'=>'',
-'Friday'=>'',
 'Saturday'=>'',
 // // 
 // // short day names,
@@ -90,4 +72,5 @@ return array (
 'View Association'=>'',
 'These users can view {fullname}\'s calendar.'=>'',
 'These users can edit {fullname}\'s calendar.'=>'',
+'Shared Calendar:'=>'',
 );
