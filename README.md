@@ -1,10 +1,11 @@
 # X2CRM 3.4 #
 8/21/2013
 ## Changes ##
-* New image gallery widget
+
 * Dropdowns can be customized to allow selecting multiple values
 * New activity feed chart feature: can filter data display by user
 * New features in Professional Edition:
+  * New image gallery widget
   * Rich email editing available in the email action of X2Flow
   * Cron task setup in installer
   * Formulas and variables enabled in X2Flow trigger criteria & action parameters
