@@ -125,7 +125,7 @@ Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientS
 <div class="container" id="login-page">
 	<?php echo $content; ?>
 	<span id="login-version"><?php echo Yii::app()->params->edition=='pro'? 'PROFESSIONAL EDITION' : 'OPEN SOURCE EDITION'; ?>, VERSION <?php echo Yii::app()->params->version; ?></span>
-	<br><span id="login-x2engine"><a href="http://www.x2engine.com">X2Engine, Inc.</a>&nbsp;&bull;&nbsp;<?php if(Yii::app()->params->admin->edition == 'opensource'){echo CHtml::link("LICENSE",Yii::app()->baseUrl.'/LICENSE.txt');} ?></span>
+	<br><span id="login-x2engine"><a href="http://www.x2engine.com">X2Engine, Inc.</a><?php if(Yii::app()->params->admin->edition == 'opensource'){echo '&nbsp;&bull;&nbsp;'.CHtml::link("LICENSE",Yii::app()->baseUrl.'/LICENSE.txt');} ?></span>
     </div>
 </body>
 </html>

@@ -304,7 +304,12 @@ class Actions extends X2Model {
         if(!empty($this->subject)){
             return $this->subject;
         }else{
-            return Formatter::truncateText($this->actionDescription, 40);
+            if($this->type == 'email'){
+                return Formatter::parseEmail($this->actionDescription);
+            }else{
+                return Formatter::truncateText($this->actionDescription, 40);
+            }
+
         }
     }
 

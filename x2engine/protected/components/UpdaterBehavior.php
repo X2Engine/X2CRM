@@ -91,6 +91,8 @@ class UpdaterBehavior extends ResponseBehavior {
 	 */
 	const LOGFILE = 'update.log';
 
+    const SECURITY_IMG = 'cG93ZXJlZF9ieV94MmVuZ2luZS5wbmc=';
+
 	///////////////////////
 	// STATIC PROPERTIES //
 	///////////////////////
@@ -275,7 +277,7 @@ class UpdaterBehavior extends ResponseBehavior {
      * Securely obtain the latest version.
      */
     protected function checkUpdates($returnOnly = false){
-        if(!file_exists($secImage = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','images',base64_decode(Yii::app()->params->updaterSecurityImage)))))
+        if(!file_exists($secImage = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','images',base64_decode(self::SECURITY_IMG)))))
 	        return Yii::app()->params->version;
         $i = Yii::app()->params->admin->unique_id;
         $v = Yii::app()->params->version;

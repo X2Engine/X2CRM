@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -1171,6 +1170,10 @@ class CalendarController extends x2base {
             $model->update();
         }
 
+        if(isset($_SESSION['calendarForceRefresh']) && $_SESSION['calendarForceRefresh']){
+            unset($_SESSION['calendarForceRefresh']);
+            Yii::app()->user->setFlash('error', 'Your Refresh Token was invalid and needed to be refreshed. The last action you attempted to Sync with Google did not successfully synchronize.');
+        }
         $admin = Yii::app()->params->admin;
         $googleIntegration = $admin->googleIntegration;
 

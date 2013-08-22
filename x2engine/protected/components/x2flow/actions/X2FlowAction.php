@@ -75,7 +75,7 @@ abstract class X2FlowAction extends X2FlowItem {
 			return null;
 
 		$type = isset($options[$name]['type'])? $options[$name]['type'] : '';
-        
+
 		return X2Flow::parseValue($options[$name]['value'],$type,$params);
 	}
 

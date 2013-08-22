@@ -350,7 +350,7 @@ try {
 		ob_end_clean();
 		
 		if(!empty($reqOutput)){ ?>
-			<strong><?php echo Yii::t('admin',"Note: your server may not meet all the necessary requirements to {scenario} X2CRM.",array('{scenario}'=>Yii::t('admin',$scenario)));?></strong> <a style="font-family:monospace;font-size:10px;text-decoration:none;" id="requirements-toggle-button" href="javascript:void(0)" onclick="toggleReqMessages();">[ + <?php echo Yii::t('admin','details') ?>]</a><br />
+			<span style="font-weight:bold;color:red"><?php echo Yii::t('admin',"Note: your server may not meet all the necessary requirements to {scenario} X2CRM.",array('{scenario}'=>Yii::t('admin',$scenario)));?></span> <a style="font-family:monospace;font-size:10px;text-decoration:none;" id="requirements-toggle-button" href="javascript:void(0)" onclick="toggleReqMessages();">[ + <?php echo Yii::t('admin','details') ?>]</a><br />
 			<div id="requirements-output" style="display:none; padding:5px; margin:5px; border:1px gray dashed;"><?php echo $reqOutput; ?></div>
 			<script id="requirements-output-toggle">
 				var reqMessages = $('#requirements-output');

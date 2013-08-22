@@ -248,7 +248,7 @@ CREATE TABLE x2_list_items (
 	contactId				INT				UNSIGNED,
 	listId					INT				UNSIGNED NOT NULL,
 	uniqueId				VARCHAR(32)		NULL,
-	sent					INT				UNSIGNED NOT NULL DEFAULT 0,
+	sent					INT				NOT NULL DEFAULT 0,
 	opened					INT				UNSIGNED NOT NULL DEFAULT 0,
 	clicked					INT				UNSIGNED NOT NULL DEFAULT 0,
 	unsubscribed			INT				UNSIGNED NOT NULL DEFAULT 0,

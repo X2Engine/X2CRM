@@ -36,7 +36,7 @@
 
 /**
  * This is the model class for table "x2_notifications".
- * 
+ *
  * @package X2CRM.models
  */
 class Notification extends CActiveRecord {
@@ -70,7 +70,7 @@ class Notification extends CActiveRecord {
 			array('user, createdBy, comparison, type', 'length', 'max'=>20),
 			array('type, value', 'length', 'max'=>250),
 			// array('text', 'safe'),
-			array('id, user, viewed, text, createDate, type, comparison, modelType, modelId, fieldName', 'safe', 'on'=>'search'),	//text, record, 
+			array('id, user, viewed, text, createDate, type, comparison, modelType, modelId, fieldName', 'safe', 'on'=>'search'),	//text, record,
 		);
 	}
 
@@ -135,10 +135,10 @@ class Notification extends CActiveRecord {
 			'criteria'=>$criteria,
 		));
 	}
-	
-	
+
+
 	public function getMessage() {
-		
+
 		if(empty($this->modelId) || empty($this->modelType))	// skip if there is no association
 			$record = null;
 		else {
@@ -152,21 +152,21 @@ class Notification extends CActiveRecord {
 				return null;
 			}
 		}
-		
+
 		if(!isset($record) && $this->type !== 'lead_failure' && $this->type !== 'custom') {
 			// return var_dump($this->attributes);
 			return null;
         }
 		$passive = $this->createdBy === 'API' || empty($this->createdBy);
-        
+
 		switch($this->type) {
-            
+
 			case 'action_complete':
 				if($passive)
 					return Yii::t('actions','Action completed: {action}',array('{action}'=>$record->getLink()));
 				else
 					return Yii::t('actions','{user} completed an action: {action}',array('{user}'=>User::getUserLinks($record->completedBy),'{action}'=>$record->getLink(20)));
-                
+
             case 'action_reminder':
                 return Yii::t('actions','<b>Reminder!</b> The following action is due: {action}',array('{action}'=>$record->getLink()));
 			// case 'workflow_complete':
@@ -189,7 +189,7 @@ class Notification extends CActiveRecord {
 						'{record}'=>$record->getLink(),
 						'{user}'=>(Yii::app()->user->getName()==$this->createdBy)?CHtml::link('You',array('profile/view','id'=>Yii::app()->user->getId())):User::getUserLinks($this->createdBy)
 					));
-				
+
 				} else {
 				// > < =
 					$msg = $passive? '{record}\'s {field} was changed to {value}' : '{user} changed {record}\'s {field} to {value}';
@@ -200,8 +200,8 @@ class Notification extends CActiveRecord {
 						'{record}'=>$record->getLink(),
 						'{user}'=>(Yii::app()->user->getName()==$this->createdBy)?CHtml::link('You',array('profile/view','id'=>Yii::app()->user->getId())):User::getUserLinks($this->createdBy)
 					));
-				
-				
+
+
 				}
 
 			case 'lead_failure':
@@ -237,16 +237,16 @@ class Notification extends CActiveRecord {
 
 			case 'email_clicked':
 				return Yii::t('app','{record} clicked an email link: {campaign}',array('{record}'=>$record->getLink(),'{campaign}'=>$this->value));
-			
+
 			case 'email_opened':
 				return Yii::t('app','{record} opened an email: {campaign}',array('{record}'=>$record->getLink(),'{campaign}'=>$this->value));
-			
+
 			case 'email_unsubscribed':
 				return Yii::t('app','{record} unsubscribed from a campaign: {campaign}',array('{record}'=>$record->getLink(),'{campaign}'=>$this->value));
 
 			case 'social_post':
 				return Yii::t('app','{user} posted on {link}',array('{user}'=>User::getUserLinks($this->createdBy),'{link}'=>$record->getLink()));
-				
+
 			case 'social_comment':
 				return Yii::t('app','{user} replied on {link}',array('{user}'=>User::getUserLinks($this->createdBy),'{link}'=>$record->getLink()));
 

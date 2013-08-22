@@ -464,7 +464,9 @@ class Profile extends CActiveRecord {
                     // note that the google library automatically refreshes the access token if we need a new one,
                     // we just need to check if this happend by calling a google api function that requires authorization,
                     // and, if the access token has changed, save this new access token
-                    $testCal = $googleCalendar->calendars->get($this->syncGoogleCalendarId);
+                    if(!$googleCalendar){
+                        Yii::app()->controller->redirect($auth->getAuthorizationUrl('calendar'));
+                    }
 //                    if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()){
 //                        $this->syncGoogleCalendarAccessToken = $client->getAccessToken();
 //                        $this->update(array('syncGoogleCalendarAccessToken'));
@@ -518,7 +520,7 @@ class Profile extends CActiveRecord {
                 }
             }
         }catch(Exception $e){
-            printR($e, true);
+
         }
     }
 

@@ -146,11 +146,11 @@ class Fields extends CActiveRecord {
 
     /**
      * Parses a value for table insertion using X2Fields rules
-     * @param string $type the type of field
      * @param mixed $value
+     * @param bool $filter If true, replace HTML special characters (prevents markup injection)
      * @return mixed the parsed value
      */
-    public function parseValue($value){
+    public function parseValue($value,$filter = false){
         if(in_array($this->type, array('int', 'float', 'currency', 'percentage'))){
             return self::strToNumeric($value, $this->type);
         }
@@ -178,8 +178,8 @@ class Fields extends CActiveRecord {
                 return (bool) $value;
 	    case 'dropdown':
 	       return is_array($value)?CJSON::encode($value):$value;
-            default:
-                return $value;
+        default:
+                return $filter ? CHtml::encode($value) : $value;
         }
     }
 

@@ -1707,7 +1707,7 @@ JQuery UI Dialog Theme
 .ui-dialog textarea {
     min-width: 99%;
     max-width: 99%;
-    width: 99%;
+    width: 99% !important;
 }
 
 .ui-dialog-titlebar {

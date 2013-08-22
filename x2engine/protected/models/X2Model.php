@@ -1199,8 +1199,9 @@ abstract class X2Model extends CActiveRecord {
     /**
      * Sets attributes using X2Fields
      * @param array &$data array of attributes to be set (eg. $_POST['Contacts'])
+     * @param bool $filter encode all HTML special characters in input
      */
-    public function setX2Fields(&$data){
+    public function setX2Fields(&$data,$filter = false){
         foreach(self::$_fields[$this->tableName()] as &$field){ // loop through fields to deal with special types
             $fieldName = $field->fieldName;
 
@@ -1226,7 +1227,7 @@ abstract class X2Model extends CActiveRecord {
                 }
             }
 
-            $this->$fieldName = $field->parseValue($data[$fieldName]);
+            $this->$fieldName = $field->parseValue($data[$fieldName],$filter);
         }
     }
 

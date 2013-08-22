@@ -351,7 +351,6 @@ $config = array(
         'automatedTesting' => false,
         'supportedCurrencies' => array('USD', 'EUR', 'GBP', 'CAD', 'JPY', 'CNY', 'CHF', 'INR', 'BRL', 'VND'),
         'supportedCurrencySymbols' => array(),
-	'updaterSecurityImage' => 'cG93ZXJlZF9ieV94MmVuZ2luZS5wbmc=',
     ),
 );
 if(file_exists('protected/config/proConfig.php')){

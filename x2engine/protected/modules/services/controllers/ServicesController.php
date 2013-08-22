@@ -457,8 +457,8 @@ class ServicesController extends x2base {
                         '{name}' => $fullName,
                     ));
 
-            $model->description = $description;
-            $model->email = $email;
+            $model->description = CHtml::encode($description);
+            $model->email = CHtml::encode($email);
             $model->origin = 'Web';
             $model->impact = Yii::t('services', '3 - Moderate');
             $model->status = Yii::t('services', 'New');

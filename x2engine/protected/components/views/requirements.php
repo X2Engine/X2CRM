@@ -230,11 +230,20 @@ if(!is_writable(__FILE__)) {
 }
 
 // Check that the directive open_basedir is not arbitrarily set to some restricted 
-// jail directory off in god knows where (because X2CRM uses relative file paths, and 
-// if it is set then those paths won't resolve properly)
+// jail directory off in god knows where 
 $basedir = ini_get('open_basedir');
-if(!(empty($basedir) || $basedir == '.' || $basedir == dirname(__FILE__)))
-	$reqMessages[3][] = installer_t('The base directory configuration directive is set, and it is not the current working directory.');
+$cwd = dirname(__FILE__);
+if(!empty($basedir)){
+    $basedirs = explode(':',$basedir);
+    foreach($basedirs as $dir){
+        if(strpos($cwd,$basedir) !== false){
+            $allowCwd = 1;
+            break;
+        }
+    }
+    if(empty($allowCwd))
+    	$reqMessages[3][] = installer_t('The base directory configuration directive is set, and it does not include the current working directory.');
+}
 
 
 // Check PHP version

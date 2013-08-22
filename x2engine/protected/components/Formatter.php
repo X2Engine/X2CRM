@@ -297,6 +297,22 @@ class Formatter {
         return $str;
     }
 
+    /**
+     * Returns the body of an email without any HTML markup.
+     *
+     * This function will strip out email header tags, opened email tags, and all
+     * HTML markup present in an Email type action so that the Action link can be
+     * properly displayed without looking terrible
+     * @param String $str Input string to be formatted
+     * @return String The formatted string
+     */
+    public static function parseEmail($str){
+        $str = preg_replace('/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail--!>/s', '', $str);
+        $str = preg_replace('/<\!--BeginActionHeader-->(.*?)<\!--EndActionHeader--!>/s', '', $str);
+        $str = strip_tags($str);
+        return $str;
+    }
+
 }
 
 ?>

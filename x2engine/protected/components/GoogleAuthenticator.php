@@ -215,7 +215,14 @@ class GoogleAuthenticator {
             $client = new Google_Client();
 
             $client->setClientId($this->clientId);
-            $client->setRedirectUri($this->redirectUri);
+            switch($state){
+                case 'calendar':
+                    $_SESSION['calendarForceRefresh']=1;
+                    $client->setRedirectUri((@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].Yii::app()->controller->createUrl('/calendar/syncActionsToGoogleCalendar'));
+                    break;
+                default:
+                    $client->setRedirectUri($this->redirectUri);
+            }
             $client->setAccessType('offline');
             $client->setApprovalPrompt('force');
             $client->setState($state);

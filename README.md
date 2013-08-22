@@ -1,7 +1,6 @@
 # X2CRM 3.4 #
-8/21/2013
+8/22/2013
 ## Changes ##
-
 * Dropdowns can be customized to allow selecting multiple values
 * New activity feed chart feature: can filter data display by user
 * New features in Professional Edition:
@@ -11,6 +10,10 @@
   * Formulas and variables enabled in X2Flow trigger criteria & action parameters
   * Accounts report feature: send marketing campaigns to related contacts of accounts
 * Fixed bugs: 88, 93, 95, 110, 111, 118, 121, 128, 150, 166, 170, 172 and 200
+
+## New in 3.4.1
+* Miscellaneous (unlisted) bug fixes
+* Image gallery (Professional Edition only) now works in Internet Explorer
 
 ## Release Notes ##
 

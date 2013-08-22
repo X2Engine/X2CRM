@@ -734,20 +734,33 @@ class MarketingController extends x2base {
                 }
             }catch(Exception $e){
                 $errors[] = $e->getMessage();
+                 $itemUpdateCmd->bindValues(array(':id' => $recipient['li_id'], ':sent' => -1, ':uid' => null))
+                        ->execute();
+                if(isset($eml)){
+                    $phpMail = $eml->mailer;
+                }else{
+                    $phpMail = $this->getPhpMailer($campaign->sendAs);
+                }
             }
         }
 
         //check if campaign is complete
-        //TODO: consider contacts with unsendable addresses
-        $totalCount = Yii::app()->db->createCommand('SELECT COUNT(*) FROM x2_list_items as t LEFT JOIN x2_contacts as c ON t.contactId=c.id'
-                        .' WHERE t.listId=:listId AND (c.doNotEmail IS NULL OR c.doNotEmail=0);')->queryScalar(array('listId' => $campaign->list->id));
-        $sentCount = Yii::app()->db->createCommand('SELECT COUNT(*) FROM x2_list_items as t LEFT JOIN x2_contacts as c ON t.contactId=c.id'
-                        .' WHERE t.listId=:listId AND (c.doNotEmail IS NULL OR c.doNotEmail=0) AND t.sent>0;')->queryScalar(array('listId' => $campaign->list->id));
-        if($totalCount == $sentCount){
-            $campaign->active = 0;
-            $campaign->complete = 1;
-            $campaign->save();
-        }
+        $sql = 'SELECT COUNT(*) FROM x2_list_items as t LEFT JOIN x2_contacts as c ON t.contactId=c.id WHERE t.listId=:listId '
+                .'AND t.sent=0 AND t.unsubscribed=0 AND (c.email IS NULL OR c.email="") AND (t.emailAddress IS NULL OR t.emailAddress="");';
+		$blankEmail = Yii::app()->db->createCommand($sql)->queryScalar(array('listId' => $campaign->list->id));
+		$sql = 'SELECT COUNT(*) FROM x2_list_items WHERE listId = :listId AND sent = -1';
+		$badEmail = Yii::app()->db->createCommand($sql)->queryScalar(array('listId' => $campaign->list->id));
+		$errorCount = count($errors);
+		$unsendable = $blankEmail + $badEmail +  $errorCount;
+		$totalCount = Yii::app()->db->createCommand('SELECT COUNT(*) FROM x2_list_items as t LEFT JOIN x2_contacts as c ON t.contactId=c.id'
+		                .' WHERE t.listId=:listId AND (c.doNotEmail IS NULL OR c.doNotEmail=0);')->queryScalar(array('listId' => $campaign->list->id));
+		$sentCount = Yii::app()->db->createCommand('SELECT COUNT(*) FROM x2_list_items as t LEFT JOIN x2_contacts as c ON t.contactId=c.id'
+		                .' WHERE t.listId=:listId AND (c.doNotEmail IS NULL OR c.doNotEmail=0) AND t.sent>0;')->queryScalar(array('listId' => $campaign->list->id));
+		if($totalCount == ($sentCount + $unsendable)){
+		    $campaign->active = 0;
+		    $campaign->complete = 1;
+		    $campaign->save();
+		}
 
         return array($totalSent, $errors);
     }

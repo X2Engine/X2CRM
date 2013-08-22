@@ -2299,18 +2299,19 @@ class ContactsController extends x2base {
 			$model = new Contacts;
             $model->createEvent=false;
 			$oldAttributes = $model->getAttributes();
-			$model->setX2Fields($_POST['Contacts']);
+			$model->setX2Fields($_POST['Contacts'],true);
+            
 			$now = time();
 
 			//use the submitted info to create an action
 			$action = new Actions;
 			$action->actionDescription = Yii::t('contacts','Web Lead')
-				."\n\n". Yii::t('contacts','Name') .': '. $model->firstName ." ". $model->lastName
-				."\n". Yii::t('contacts','Email') .": ". $model->email ."\n". Yii::t('contacts','Phone') .": ". $model->phone
-				."\n". Yii::t('contacts','Background Info') .": ". $model->backgroundInfo;
+				."\n\n". Yii::t('contacts','Name') .': '. CHtml::decode($model->firstName) ." ". CHtml::decode($model->lastName)
+				."\n". Yii::t('contacts','Email') .": ". CHtml::decode($model->email) ."\n". Yii::t('contacts','Phone') .": ". CHtml::decode($model->phone)
+				."\n". Yii::t('contacts','Background Info') .": ". CHtml::decode($model->backgroundInfo);
 
 			//require email field, check format
-			if(preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$model->email) == 0) {
+			if(preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$_POST['Contacts']['email']) == 0) {
 				$this->renderPartial('webleadSubmit', array('error'=>Yii::t('contacts','Invalid Email Address')));
 				return;
 			}
