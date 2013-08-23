@@ -286,7 +286,7 @@ class UpdaterBehavior extends ResponseBehavior {
             'http' => array('timeout' => 4)  // set request timeout in seconds
         ));
 
-        $updateCheckUrl = $this->updateServer.'/installs/updates/check?'.http_build_query(compact('i','v'));
+        $updateCheckUrl = $this->updateServer.'/installs/updates/check?'.http_build_query(compact('i','v'),'','&');
         $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
         if($securityKey === false)
             return Yii::app()->params->version;
@@ -295,7 +295,7 @@ class UpdaterBehavior extends ResponseBehavior {
         if(!($e == 'opensource' || empty($e)))
             $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
         
-        $newVersion = FileUtil::getContents($this->updateServer.'/installs/updates/check?'.http_build_query(compact('i','v','h','n')),0,$context);
+        $newVersion = FileUtil::getContents($this->updateServer.'/installs/updates/check?'.http_build_query(compact('i','v','h','n'),'','&'),0,$context);
         if(empty($newVersion))
             return;
        
