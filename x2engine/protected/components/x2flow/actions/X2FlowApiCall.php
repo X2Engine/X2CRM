@@ -70,7 +70,7 @@ class X2FlowApiCall extends X2FlowAction {
 		if($this->parseOption('immediate',$params) || true) {
 			$headers = array();
 			if(isset($this->config['attributes']) && !empty($this->config['attributes'])) {
-				$data = http_build_query($this->config['attributes']);
+				$data = http_build_query($this->config['attributes'],'','&');
 
 				if($method === 'GET') {
 

@@ -70,3 +70,4 @@ class TopSites extends X2Widget {
 		));
 	}
 }
+?>

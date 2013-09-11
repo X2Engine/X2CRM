@@ -14,7 +14,6 @@ return array (
 'Invite Users'=>'',
 'Delete User'=>'',
 'User:'=>'',
-'Action History'=>'',
 
 // Users Titles
 'User: {name}'=>'',

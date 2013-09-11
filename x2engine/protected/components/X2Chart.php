@@ -49,10 +49,16 @@ class X2Chart extends X2Widget {
 	// If false, indicates that the chart setting feature should be enabled.
 	public $suppressChartSettings;
 
+	public $suppressDateRangeSelector = false;
+
 	// Determines which metrics can be plotted.
 	public $metricTypes;
 
 	public $chartType;
+
+	public $widgetParams = array ();
+
+	public $hideByDefault = false;
 
 	/* 
 	If true, retrieve chart data so the client doesn't have to make an ajax call
@@ -70,10 +76,13 @@ class X2Chart extends X2Widget {
 			'getChartDataActionName' => $this->getChartDataActionName,
 			'actionParams' => $this->actionParams,
 			'suppressChartSettings' => $this->suppressChartSettings,
+			'suppressDateRangeSelector' => $this->suppressDateRangeSelector,
 			'metricTypes' => $this->metricTypes,
-			'chartType' => $this->chartType
+			'chartType' => $this->chartType,
+			'hideByDefault' => $this->hideByDefault
 		);
 
+		$cookies = Yii::app()->request->cookies;
 		$users = User::getNames ();
 		$socialSubtypes = json_decode (
 			Dropdowns::model()->findByPk(113)->options,true);
@@ -88,78 +97,48 @@ class X2Chart extends X2Widget {
 		} else if ($this->chartType === 'usersChart') {
 			$viewParams['socialSubtypes'] = $socialSubtypes;
 			$viewParams['visibilityFilters'] = $visibilityFilters;
-			$viewParams['eventTypes'] = Events::$eventLabels;
 			$viewParams['eventTypes'] = 
-				array ('all'=>Yii::t('app', 'All Events')) + $viewParams['eventTypes'];
+				array ('all'=>Yii::t('app', 'All Events')) + Events::$eventLabels;
 		} else if ($this->chartType === 'actionHistoryChart') {
 
 			// chart starts at first action data
 			$actionsStartDate = self::getFirstActionDate ();
-			$viewParams['actionsStartDate'] = $actionsStartDate;
+			$viewParams['dataStartDate'] = $actionsStartDate;
 
 			// if cookie is present, override default value
-			$cookies = Yii::app()->request->cookies;
 			if ((string) $cookies['actionHistoryChartshowRelationships']) {
 				$this->actionParams['showRelationships'] = 
 					$cookies['actionHistoryChartshowRelationships']->value;
 			}
+		} 
+
+		// Extract chart subtype from cookie to send to view
+		$chartPage;
+		if ($this->chartType === 'actionHistoryChart') {
+			$chartPage = 'recordView';
+		} else if ($this->chartType === 'eventsChart' ||
+			$this->chartType === 'usersChart') {
+			$chartPage = 'feed';
+		}
+		if ((string) $cookies[$chartPage.'ChartSelectedSubtype']) {
+			$viewParams['subtype'] = 
+				$cookies[$chartPage.'ChartSelectedSubtype']->value;
 		}
 
 		// supply view with names of predefined chart settings 
 		if (!$this->suppressChartSettings) {
-
-			if ($this->chartType === 'usersChart') {
-				$chartSettingsDataProvider = new CActiveDataProvider('ChartSetting', array(
-							'criteria' => array(
-								'condition' => 
-									'userId='.Yii::app()->user->id.' AND '.
-									'chartType="usersChart"',
-								'order' => 'name ASC'
-							)
-						));
-			} else if ($this->chartType === 'eventsChart') {
-				$chartSettingsDataProvider = new CActiveDataProvider('ChartSetting', array(
-							'criteria' => array(
-								'condition' => 
-									'userId='.Yii::app()->user->id.' AND '.
-									'chartType="eventsChart"',
-								'order' => 'name ASC'
-							)
-						));
-			}
-
-			$viewParams['chartSettingsDataProvider'] = $chartSettingsDataProvider;
+			$viewParams['chartSettingsDataProvider'] = 
+				self::getChartSettingsProvider ($this->chartType);
 		}
 		
-		/*
-		Collect initial chart data so the client doesn't have to request it via ajax .
-		Decreases time before chart render after page is loaded.
-		*/
 		if ($this->getDataOnPageLoad) {
-			self::$secPerDay = 86400;
-
-			// Collect data for a record view page (i.e. the contact record view page).
-			if ($this->chartType === 'actionHistoryChart'  &&
-				$actionsStartDate !== false &&
-				is_array ($this->actionParams) &&
-				array_key_exists ('associationId', $this->actionParams) &&
-				array_key_exists ('showRelationships', $this->actionParams) &&
-				array_key_exists ('associationType', $this->actionParams)) {
-				$actions = self::getActionsData (
-					$actionsStartDate, time () + self::$secPerDay,
-					$this->actionParams['associationId'], 
-					$this->actionParams['associationType'],
-					$this->actionParams['showRelationships']);
-				$viewParams['chartData'] = $actions;
-
-			// Collect data for the activity feed chart
-			} else if ($this->chartType === 'eventsChart' ||
-			           $this->chartType === 'usersChart') {
-				self::preLoadEventsData ($this->chartType, $viewParams);
-			}
+			$this->setInitialChartData ($viewParams);
 		}
+
 		$this->render ('_x2chart', $viewParams);
 	}
+
+	
 
 	/*
 	Retrieves all events between start and end timestamp. Query results are used to
@@ -192,38 +171,6 @@ class X2Chart extends X2Widget {
 	}
 
 	/*
-	Get earliest date of actions which will visible on the initial chart.
-	*/
-	private function getFirstActionDate  () {
-		$associationId = $this->actionParams['associationId'];
-		$associationType = $this->actionParams['associationType'];
-
-		$cookies = Yii::app()->request->cookies;
-		if ((string) $cookies['actionHistoryChartshowRelationships'] !== '' &&
-			$cookies['actionHistoryChartshowRelationships']->value === 'true') {
-			$associationCondition = self::getAssociationCond (
-				$associationId, $associationType, 'true');
-		} else {
-			$associationCondition = self::getAssociationCond (
-				$associationId, $associationType, 
-				$this->actionParams['showRelationships']);
-		}
-
-		$command = Yii::app()->db->createCommand()
-				->select('min(createDate)')
-				->from('x2_actions');
-		$command->where(
-				$associationCondition.' AND '.
-				'(visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")', 
-				array(
-					'associationId' => $associationId, 
-					'associationType' => $associationType
-				));
-		$actionsStartDate = $command->queryScalar();
-		return $actionsStartDate;
-	}
-
-	/*
 	Retrieves all actions of a certain type associated with particular record
 	between the start and end timestamps. Query results are used to populate the
 	action history chart. Optionally, related records' actions can also be retrieved.
@@ -231,6 +178,8 @@ class X2Chart extends X2Widget {
 	public static function getActionsData (
 		$startTimestamp, $endTimestamp, $associationId, $associationType, 
 		$showRelationships) {
+
+		//printR (('startdate, enddate = '.$startTimestamp.', '.$endTimestamp), true);
 
 		$associationType = strtolower ($associationType);
 
@@ -267,36 +216,176 @@ class X2Chart extends X2Widget {
 		return $actions;
 	}
 
-	private static $secPerDay = 86400;
+	public static function getChartSettingsProvider ($chartType) {
+		if ($chartType === 'usersChart') {
+			$chartSettingsDataProvider = new CActiveDataProvider('ChartSetting', array(
+						'criteria' => array(
+							'condition' => 
+								'userId='.Yii::app()->user->id.' AND '.
+								'chartType="usersChart"',
+							'order' => 'name ASC'
+						)
+					));
+		} else if ($chartType === 'eventsChart') {
+			$chartSettingsDataProvider = new CActiveDataProvider('ChartSetting', array(
+						'criteria' => array(
+							'condition' => 
+								'userId='.Yii::app()->user->id.' AND '.
+								'chartType="eventsChart"',
+							'order' => 'name ASC'
+						)
+					));
+		}
+		return $chartSettingsDataProvider;
+	}
 
-	private static function preLoadEventsData ($chartType, &$viewParams) {
+	/*
+	Collect initial chart data so the client doesn't have to request it via ajax .
+	Decreases time before chart render after page is loaded.
+	*/
+	private function setInitialChartData (&$viewParams) {
+		self::$secPerDay = 86400;
+
+		// Collect data for a record view page (i.e. the contact record view page).
+		if ($this->chartType === 'actionHistoryChart'  &&
+			$viewParams['dataStartDate'] !== false &&
+			is_array ($this->actionParams) &&
+			array_key_exists ('associationId', $this->actionParams) &&
+			array_key_exists ('showRelationships', $this->actionParams) &&
+			array_key_exists ('associationType', $this->actionParams)) {
+			$this->preLoadActionsData ($viewParams);
+			/*$actions = self::getActionsData (
+				$viewParams['dataStartDate'], mktime (0, 0, 0, date ('m'), date ('d'), date('o')) + self::$secPerDay - 1,
+				$this->actionParams['associationId'], 
+				$this->actionParams['associationType'],
+				$this->actionParams['showRelationships']);*/
+
+		// Collect data for the activity feed chart
+		} else if ($this->chartType === 'eventsChart' ||
+		           $this->chartType === 'usersChart') {
+			$this->preLoadEventsData ($viewParams);
+		} 
+	}
+
+	/*
+	Get earliest date of actions which will visible on the initial chart.
+	*/
+	private function getFirstActionDate  () {
+		$associationId = $this->actionParams['associationId'];
+		$associationType = $this->actionParams['associationType'];
+
+		$cookies = Yii::app()->request->cookies;
+		if ((string) $cookies['actionHistoryChartshowRelationships'] !== '' &&
+			$cookies['actionHistoryChartshowRelationships']->value === 'true') {
+			$associationCondition = self::getAssociationCond (
+				$associationId, $associationType, 'true');
+		} else {
+			$associationCondition = self::getAssociationCond (
+				$associationId, $associationType, 
+				$this->actionParams['showRelationships']);
+		}
+
+		$command = Yii::app()->db->createCommand()
+				->select('min(createDate)')
+				->from('x2_actions');
+		$command->where(
+				$associationCondition.' AND '.
+				'(visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")', 
+				array(
+					'associationId' => $associationId, 
+					'associationType' => $associationType
+				));
+		$actionsStartDate = $command->queryScalar();
+		return $actionsStartDate;
+	}
+
+	private static $secPerDay = 86400;
+	private static $secPerWeek = 604800;
+
+	private function getStartEndTimestampFromCookies ($defaultStartTs, $defaultEndTs) {
+		$cookies = Yii::app()->request->cookies;
+		$startDate;
+		$endDate;
+		if ((string) $cookies[$this->chartType.'dateRange'] !== '' &&
+			(string) $cookies[$this->chartType.'dateRange'] !== 'Custom') {
+			$dateRange = $cookies[$this->chartType.'dateRange'];
+			switch ($dateRange) {
+				case 'Today':
+					$startDate = time ();
+					$endDate = time ();
+					break;
+				case 'Yesterday':
+					$startDate = strtotime ('Yesterday');
+					$endDate = strtotime ('Yesterday');
+					break;
+				case 'This Week':
+					$startDate = strtotime ('Sunday this week');
+					$endDate = time ();
+					break;
+				case 'Last Week':
+					$startDate = strtotime ('-2 Sunday');
+					$endDate = strtotime ('-1 Saturday');
+					break;
+				case 'This Month':
+					$startDate = mktime (0, 0, 0, date ('m'), 1, date('o'));
+					$endDate = time ();
+					break;
+				case 'Last Month':
+				default:
+					$startDate = mktime (0, 0, 0, date ('m') - 1, 1, date('o'));
+					$endDate = mktime (0, 0, 0, date ('m'), 1, date('o')) - self::$secPerDay;
+					break;
+				/*case 'Data Domain':
+					break;*/
+			}
+		} else {
+			if ((string) $cookies[$this->chartType.'startDate'] !== '') {
+				$startDate = $cookies[$this->chartType.'startDate']->value / 1000;
+			} else {
+				$startDate = $defaultStartTs;
+			}
+			if ((string) $cookies[$this->chartType.'endDate'] !== '') { 
+				$endDate = $cookies[$this->chartType.'endDate']->value / 1000;
+			} else {
+				$endDate = $defaultEndTs;
+			}
+		}
+		$endDate += self::$secPerDay - 1;
+		return array ($startDate, $endDate);
+	}
+
+	
+
+	private function preLoadActionsData (&$viewParams) {
+		$tsDict = $this->getStartEndTimestampFromCookies (
+			$viewParams['dataStartDate'], time () + self::$secPerDay);
+		$startDate = $tsDict[0];
+		$endDate = $tsDict[1];
+		//printR (('startdate, enddate = '.$startDate.', '.$endDate), true);
+		$events = self::getActionsData ($startDate, $endDate,
+				$this->actionParams['associationId'], 
+				$this->actionParams['associationType'],
+				$this->actionParams['showRelationships']);
+		$viewParams['chartData'] = $events;
+	}
+
+	private function preLoadEventsData (&$viewParams) {
 		/* 
 		Chart data only needs to be sent with initial response if chart was
 		left open.
 		*/
 		$cookies = Yii::app()->request->cookies;
-		if ((string) $cookies[$chartType.'chartIsShown'] !== '' &&
-			$cookies[$chartType.'chartIsShown']->value === 'true') {
+		if ((string) $cookies[$this->chartType.'chartIsShown'] !== '' &&
+			$cookies[$this->chartType.'chartIsShown']->value === 'true') {
 
-			$startDate;
-			$endDate;
-			if ((string) $cookies[$chartType.'startDate'] !== '') {
-				$startDate = $cookies[$chartType.'startDate']->value / 1000;
-			} else {
-				$secPerWeek = 604800;
-				$startDate = time () - $secPerWeek;
-			}
-			if ((string) $cookies[$chartType.'endDate'] !== '') { 
-				$endDate = $cookies[$chartType.'endDate']->value / 1000;
-			} else {
-				$endDate = time ();
-			}
-			$endDate += self::$secPerDay;
+			$tsDict = $this->getStartEndTimestampFromCookies (time () - self::$secPerWeek, time ());
+			$startDate = $tsDict[0];
+			$endDate = $tsDict[1];
+			//printR (('startdate, enddate = '.$startDate.', '.$endDate), true);
 			$events = self::getEventsData ($startDate, $endDate);
 			$viewParams['chartData'] = $events;
 		}
 	}
-
 
 	/*
 	Private helper function. Returns a SQL conditional statement used in 
@@ -333,6 +422,7 @@ class X2Chart extends X2Widget {
         }
 		return $associationCondition;
 	}
+
 
 }
 

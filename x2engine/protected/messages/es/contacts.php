@@ -177,4 +177,5 @@ return array (
 'Your case number is: '=>'Su número de caso es:',
 'Website: '=>'Sitio web:',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'ADVERTENCIA: carga de demasiados registros en esta página puede atar el servidor de manera significativa. ¿Está seguro que desea continuar?',
+'Saved Searches'=>'Búsquedas guardadas',
 );

@@ -28,24 +28,24 @@ INSERT INTO `x2_modules`
 	VALUES	("services",		"Service",		1,			6,				1,			1,			0,			0,		0);
 /*&*/
 INSERT INTO x2_fields
-(modelName,			fieldName,				attributeLabel,			modified,	custom,	type,					required,	readOnly,	linkType,   	searchable,	isVirtual,	relevance)
+(modelName,			fieldName,				attributeLabel,			modified,	custom,	type,					required,	readOnly,	linkType,   	searchable,	isVirtual,	relevance, uniqueConstraint, safe)
 VALUES
-("Services",		"id",					"Case",					0,			0, 		"varchar",				0, 			0, 			NULL,			1,			0,			""			),
-("Services",		"createDate",			"Create Date",			0,			0, 		"dateTime",				0, 			1, 			NULL,			0,			0,			""			),
-("Services",		"lastUpdated",			"Last Updated",			0,			0, 		"dateTime",				0, 			1, 			NULL,			0,			0,			""			),
-("Services",		"updatedBy",			"Updated By",			0,			0, 		"varchar",				0, 			1, 			NULL,			0,			0,			""			),
-("Services",		"description",			"Description",			0,			0, 		"text",					0, 			0, 			NULL,			1,			0,			"Medium" 	),
-("Services",		"contactId",			"Contact",				0,			0, 		"link",					1, 			0, 			'Contacts', 	0,			0,			""			),
-("Services",		"assignedTo",			"Assigned To",			0,			0, 		"assignment",			0, 			0, 			NULL, 			0,			0,			""			),
-("Services",		"impact",				"Impact",				0,			0, 		"dropdown",				1, 			0, 			'108', 			0,			0,			""			),
-("Services",		"status",				"Status",				0,			0, 		"dropdown",				1, 			0, 			'109', 			0,			0,			""			),
-("Services",		"subject",				"Subject",				0,			0, 		"varchar",				0, 			0, 			NULL, 			0,			0,			""			),
-("Services",		"email",				"Email",				0,			0, 		"email",				0, 			0, 			NULL, 			0,			0,			""			),
-("Services",		"mainIssue",			"Main Issue",			0,			0, 		"dropdown",				0, 			0, 			'110', 			1,			0,			""			),
-("Services",		"nextAction",			"Next action",			0,			0, 		"text",					0, 			0, 			NULL, 			0,			0,			""			),
-("Services",		"resolution",			"Resolution",			0,			0, 		"varchar",				0, 			0, 			NULL, 			0,			0,			""			),
-("Services",		"subIssue",				"Sub Issue",			0,			0, 		"dropdown",				0, 			0, 			'111', 			0,			0,			""			),
-("Services",		"origin",				"Case Origin",			0,			0, 		"dropdown",				0, 			0, 			'112', 			0,			0,			""			),
-("Services",		"escalatedTo",			"Escalated To",			0,			0, 		"optionalAssignment",	0, 			0, 			NULL, 			0,			0,			""			),
-("Services",		"lastActivity",			"Last Activity",		0,			0, 		"dateTime",				0, 			0, 			NULL, 			0,			0,			""			),
-("Services",		"parentCase",			"Parent Case",			0,			0, 		"link",					0, 			0, 			'Services', 	1,			0,			""			);
+("Services",		"id",					"Case",					0,			0, 		"varchar",				0, 			0, 			NULL,			1,			0,			"",			1,                  1),
+("Services",		"createDate",			"Create Date",			0,			0, 		"dateTime",				0, 			1, 			NULL,			0,			0,			"",			0,                  1),
+("Services",		"lastUpdated",			"Last Updated",			0,			0, 		"dateTime",				0, 			1, 			NULL,			0,			0,			"",			0,                  1),
+("Services",		"updatedBy",			"Updated By",			0,			0, 		"varchar",				0, 			1, 			NULL,			0,			0,			"",			0,                  1),
+("Services",		"description",			"Description",			0,			0, 		"text",					0, 			0, 			NULL,			1,			0,			"Medium", 	0,                  1),
+("Services",		"contactId",			"Contact",				0,			0, 		"link",					1, 			0, 			'Contacts', 	0,			0,			"",			0,                  1),
+("Services",		"assignedTo",			"Assigned To",			0,			0, 		"assignment",			0, 			0, 			NULL, 			0,			0,			"",			0,                  1),
+("Services",		"impact",				"Impact",				0,			0, 		"dropdown",				1, 			0, 			'108', 			0,			0,			"",			0,                  1),
+("Services",		"status",				"Status",				0,			0, 		"dropdown",				1, 			0, 			'109', 			0,			0,			"",			0,                  1),
+("Services",		"subject",				"Subject",				0,			0, 		"varchar",				0, 			0, 			NULL, 			0,			0,			"",			0,                  1),
+("Services",		"email",				"Email",				0,			0, 		"email",				0, 			0, 			NULL, 			0,			0,			"",			0,                  1),
+("Services",		"mainIssue",			"Main Issue",			0,			0, 		"dropdown",				0, 			0, 			'110', 			1,			0,			"",			0,                  1),
+("Services",		"nextAction",			"Next action",			0,			0, 		"text",					0, 			0, 			NULL, 			0,			0,			"",			0,                  1),
+("Services",		"resolution",			"Resolution",			0,			0, 		"varchar",				0, 			0, 			NULL, 			0,			0,			"",			0,                  1),
+("Services",		"subIssue",				"Sub Issue",			0,			0, 		"dropdown",				0, 			0, 			'111', 			0,			0,			"",			0,                  1),
+("Services",		"origin",				"Case Origin",			0,			0, 		"dropdown",				0, 			0, 			'112', 			0,			0,			"",			0,                  1),
+("Services",		"escalatedTo",			"Escalated To",			0,			0, 		"optionalAssignment",	0, 			0, 			NULL, 			0,			0,			"",			0,                  1),
+("Services",		"lastActivity",			"Last Activity",		0,			0, 		"dateTime",				0, 			0, 			NULL, 			0,			0,			"",			0,                  1),
+("Services",		"parentCase",			"Parent Case",			0,			0, 		"link",					0, 			0, 			'Services', 	1,			0,			"",			0,                  1);

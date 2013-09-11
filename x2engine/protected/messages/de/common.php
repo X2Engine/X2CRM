@@ -310,4 +310,12 @@ return array (
 'Export Data'=>'Exportieren von Daten',
 'Please click the link below to download this report.'=>'Bitte klicken Sie auf den Link unten, um den Bericht herunterzuladen.',
 'Create Campaign'=>'Kampagne erstellen',
+'Last Week'=>'Letzte Woche',
+'Last Month'=>'Letzter Monat',
+'Doc'=>'Doc',
+'Help'=>'Hilfe',
+'Sent'=>'Sent',
+'Opened'=>'Eröffnet',
+'Unsubscribed'=>'Unsubscribed',
+'Action History'=>'Aktion History',
 );

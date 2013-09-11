@@ -310,4 +310,12 @@ return array (
 'Export Data'=>'导出数据',
 'Please click the link below to download this report.'=>'请点击下面的链接下载此报告。',
 'Create Campaign'=>'创建活动',
+'Last Week'=>'上星期',
+'Last Month'=>'上个月',
+'Doc'=>'文件',
+'Help'=>'帮助',
+'Sent'=>'发送',
+'Opened'=>'开业',
+'Unsubscribed'=>'退订',
+'Action History'=>'行动历史',
 );

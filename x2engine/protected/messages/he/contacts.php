@@ -177,4 +177,5 @@ return array (
 'Your case number is: '=>'מספר התיק שלך הוא:',
 'Website: '=>'אתר אינטרנט:',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'אזהרה: טעינת רישומים רבים מדי בדף זה עשויה לקשור את השרת באופן משמעותי. האם אתה בטוח שברצונך להמשיך?',
+'Saved Searches'=>'חיפושים שמורים',
 );

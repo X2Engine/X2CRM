@@ -90,6 +90,11 @@ class SampleDataCommand extends CConsoleCommand {
 	 * @return type 
 	 */
 	public function actionExport($args) {
+
+        if (!copy ("./data/install_timestamp", "./data/dummy_data_date")) {
+            die ("Error: actionExport: failed to copy install_timestamp to dummy_data_date");
+        }
+
 // [edition] => [array of table names]
 		$tblEditions = require(realpath(Yii::app()->basePath . '/data/nonFreeTables.php'));
 		$nonFreeEditions = require(realpath(Yii::app()->basePath . '/data/editions.php'));

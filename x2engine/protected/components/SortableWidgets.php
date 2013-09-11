@@ -72,40 +72,40 @@ class SortableWidgets extends CJuiWidget {
                         .'XskKCJhIikucmVtb3ZlQXR0cigiaHJlZiIpO2FsZXJ0KCJQbGVhc2UgcHV0IHRoZSBsb2dvIGJhY2siKX19KTs='));
 
         Yii::app()->clientScript->registerScript('toggleWidgetState', "
-			function toggleWidgetState(widget,state) {
-				if($('#widget_' + widget).hasClass('ui-sortable-helper') == false) {
-					$.ajax({
-						url: '".CHtml::normalizeUrl(array('/site/widgetState'))."',
-						type: 'GET',
-						data: 'widget='+widget+'&state='+state,
-						success: function(response) {
-							if(response=='success') {
-								var link = $('#widget_'+widget+' .portlet-minimize a.portlet-minimize-button');
-								var newLink = ($(link).find('img').attr('class')=='expand-widget')? '<img src=\"".$themeURL."/images/icons/Collapse_Widget.png\" class=\'collapse-widget\' />' : '<img src=\"".$themeURL."/images/icons/Expand_Widget.png\" class=\'expand-widget\'/>';			// toggle link between [+] and [-]
-								link.html(newLink);
+            function toggleWidgetState(widget,state) {
+                if($('#widget_' + widget).hasClass('ui-sortable-helper') == false) {
+                    $.ajax({
+                        url: '".CHtml::normalizeUrl(array('/site/widgetState'))."',
+                        type: 'GET',
+                        data: 'widget='+widget+'&state='+state,
+                        success: function(response) {
+                            if(response === 'success') {
+                                var link = $('#widget_'+widget+' .portlet-minimize a.portlet-minimize-button');
+                                var newLink = ($(link).find('img').attr('class')=='expand-widget') ? '<img src=\"".$themeURL."/images/icons/Collapse_Widget.png\" class=\'collapse-widget\' />' : '<img src=\"".$themeURL."/images/icons/Expand_Widget.png\" class=\'expand-widget\'/>';            // toggle link between [+] and [-]
+                                link.html(newLink);
 
-								// slide widget open or closed
-								$('#widget_'+widget+' .portlet-content').toggle({
-									effect: 'blind',
-									duration: 200,
-									complete: function() {
-										// for google maps, trigger a resize event
-										if(widget === 'GoogleMaps' && $(this).is(':visible')) {
-											if (!x2.googleMapsWidget.instantiated) {
-												runGoogleMapsWidget ();
-											} else {
-												google.maps.event.trigger(window.map,'resize');
-											}
-										}
-									}
-								});
-							}
-						}
-					});
-				}
+                                // slide widget open or closed
+                                $('#widget_'+widget+' .portlet-content').toggle({
+                                    effect: 'blind',
+                                    duration: 200,
+                                    complete: function() {
+                                        // for google maps, trigger a resize event
+                                        if(widget === 'GoogleMaps' && $(this).is(':visible')) {
+                                            if (!x2.googleMapsWidget.instantiated) {
+                                                runGoogleMapsWidget ();
+                                            } else {
+                                                google.maps.event.trigger(window.map,'resize');
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
 
-			}
-		", CClientScript::POS_HEAD);
+            }
+        ", CClientScript::POS_HEAD);
 
         $id = $this->getId(); //get generated id
         if(isset($this->htmlOptions['id']))
@@ -184,7 +184,7 @@ class SortableWidgets extends CJuiWidget {
                 }
                 if(!empty($widget)){
                     if($class == "ChatBox"){
-                        $header = CHtml::link(Yii::t('app', 'Activity Feed'), array('/site/whatsNew'), array('style' => 'text-decoration: none; margin-right:34px;')).'
+                        $header = CHtml::link(Yii::t('app', 'Activity Feed'), array('/site/whatsNew'), array('style' => 'text-decoration: none; margin-right:30px;')).'
                                                     <script>
                                                         $(\'#widget-dropdown a\').css("text-align", "none");
                                                         $(\'#widget-dropdown a\').css("text-align", "center !important");
@@ -239,16 +239,16 @@ class SortableWidgets extends CJuiWidget {
                     ));
                     echo $widget;
                     $this->endWidget();
-//					// echo ($t1-$t0);
+//                    // echo ($t1-$t0);
                 }else{
                     echo '<div ', CHtml::renderAttributes(array('style' => 'display;none;', 'id' => $properties['id'])), '></div>';
                 }
             }
         }
         Yii::app()->clientScript->registerScript('setWidgetState', '
-			$(document).ready(function() {
-				$("'.implode(',', $widgetHideList).'").find(".portlet-content").hide();
-			});', CClientScript::POS_HEAD);
+            $(document).ready(function() {
+                $("'.implode(',', $widgetHideList).'").find(".portlet-content").hide();
+            });', CClientScript::POS_HEAD);
         Yii::app()->clientScript->registerScriptFile(
                 Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
 
@@ -260,7 +260,8 @@ class SortableWidgets extends CJuiWidget {
 <style>
 
     #gear-img-container {
-       height: 18px; 
+        padding: 0;
+        height: 18px; 
     }
 
     /* 

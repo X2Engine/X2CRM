@@ -37,6 +37,16 @@
 Base prototype. Should not be instantiated. 
 */
 
+/*
+Select an option from a select element
+Parameters:
+	selector - a jquery selector for the select element
+	setting - the value of the option to be selected
+*/
+function selectOptionFromSelector (selector, setting) {
+	$(selector).children (':selected').removeAttr ('selected');
+	$(selector).children ('[value="' + setting + '"]').attr ('selected', 'selected');
+}
 
 /*
 Removes an error div created by createErrorBox ().  
@@ -80,36 +90,54 @@ var MSPERDAY = 86400 * 1000;
 var MSPERWEEK = 7 * 86400 * 1000;
 
 
+/*
+Set object properties. Default property values are used where an expected property value 
+is not defined.
+*/
+function applyArgs (obj, defaultArgs, args) {
+	for (var i in defaultArgs) {
+		if (args[i] === undefined) {
+			obj[i] = defaultArgs[i];
+		} else {
+			obj[i] = args[i];
+		}
+	}
+}
+
+
 function X2Chart (argsDict) {
 
-	this.chartType = argsDict['chartType'];
-	this.actionParams = argsDict['actionParams'];
-	this.actionsStartDate = argsDict['actionsStartDate'];
-	this.chartData = argsDict['chartData'];
-	this.getChartDataActionName = argsDict['getChartDataActionName'];
-	this.suppressChartSettings = argsDict['suppressChartSettings'];
-	this.translations = argsDict['translations'];
+	// properties that can be set with constructor arguments
+	var defaultArgs = {
+		chartType: null, // (e.g. campaignChart, usersChart, eventsChart)
+		actionParams: null, // parameters sent to data request action
+		chartData: null, // used to store data returned by data request action
+		getChartDataActionName: null, // name of data request action
+		suppressChartSettings: true, // suppresses ui feature
+		suppressDateRangeSelector: false, // suppresses ui feature
+		translations: null, // used for various chart text
+		chartSubtype: 'line', // (e.g. line, pie)
+		chartSettings: null // predefined chart settings
+	};
+
+	applyArgs (this, defaultArgs, argsDict);
+
 	this.metricOptionsColors = null; // set in child prototype
 	this.cookieTypes = null; // set in child prototype
 	this.filterTypes = null; // set in child prototype
-
-	this.eventData = null; // the ajax returned data to plot
+	this.eventData = null; // the ajax-returned data to plot
 	this.feedChart = null; // the jqplot chart object
 	this.cookiePrefix = this.chartType; // used to differentiate chart settings
+	this.metricTypes = this.getMetricTypes (); 
 	this.DEBUG = false;
 
 	var thisX2Chart = this;
 
-	thisX2Chart.DEBUG && console.log ('set cookiePrefix to ' + this.cookiePrefix);
+	this.setChartSubtype (this.chartSubtype, false, false, true);
+
+	//thisX2Chart.DEBUG && console.log ('set cookiePrefix to ' + this.cookiePrefix);
 	
-	if (!this.suppressChartSettings) {
-		thisX2Chart.setUpChartSettings ();
-		thisX2Chart.chartSettings = argsDict['chartSettings'];
-	}
-	
-	thisX2Chart.setUpBinSizeSelection ();
-	thisX2Chart.setUpDatepickers ();
-	thisX2Chart.setUpMetricSelection ();
+	thisX2Chart.setUpSettingsUI ();
 	
 	// redraw graph on window resize
 	$(window).on ('resize', function () {
@@ -118,8 +146,6 @@ function X2Chart (argsDict) {
 			thisX2Chart.feedChart.replot ({ resetAxes: false });
 		}
 	});
-	
-
 }
 
 
@@ -128,6 +154,1096 @@ function X2Chart (argsDict) {
 Static Methods
 ************************************************************************************/
 
+/*
+This can replace the plotData method of the X2Chart prototype. 
+If plotData is replaced with this function, an empty chart will be drawn regardless
+of user specified chart settings.
+*/
+X2Chart.plotEmptyChart = function (redraw) {
+	var thisX2Chart = this;
+
+	if (typeof args !== 'undefined') {
+		redraw = typeof args['redraw'] === 'undefined' ?
+			false : args['redraw'];
+	} else { // defaults
+		redraw = false;
+	}
+	var min = + new Date ();
+	var max = + new Date ();
+	jqplotConfig = thisX2Chart.getJqplotConfig ({
+		'ticks': [], 
+		'min': min, 
+		'max': max, 
+		'showMarker': false, 
+		'color': [],
+		'showXTicks': false
+	});
+
+	jqplotConfig.axes.yaxis['max'] = 1;
+	jqplotConfig.axes.yaxis['numberTicks'] = 2;
+
+	thisX2Chart.feedChart = 
+		$.jqplot (thisX2Chart.chartType + '-chart', [[null]], jqplotConfig);
+	if (redraw) {
+		thisX2Chart.feedChart.replot (); // clear previous plot and plot again
+	}
+};
+
+
+/*
+This can replace the getJqplotConfig method of the X2Chart prototype.
+*/
+X2Chart.getJqplotPieConfig = function (argsDict) {
+	var min = argsDict['min'];
+	var max = argsDict['max'];
+	var color = argsDict['color'];
+	var startAngle = argsDict['startAngle'];
+	var diameter = argsDict['diameter'];
+
+	var jqplotConfig = {
+		seriesDefaults: {
+			renderer: jQuery.jqplot.PieRenderer,
+			rendererOptions: {
+				//sliceMargin: 3,
+				dataLabelThreshold: 5.5,
+				diameter: diameter,
+				showDataLabels: true,
+				shadowOffset: 0,
+				shadowDepth: 0,
+				shadowAlpha: 0,
+				startAngle: startAngle
+			}
+		},
+		seriesColors: color,
+		grid: {
+			drawGridLines: false,
+			gridLineColor: '#ffffff',
+			borderWidth: 0,
+			background: '#ffffff',
+			shadow: false
+		}
+	};
+
+	return jqplotConfig;
+};
+
+/*
+This can replace the groupChartData method of the X2Chart prototype.
+Parameters:
+	thisX2Chart.eventData - an array set by getEventsBetween
+	type - a string. The type of event that will get plotted.
+*/
+X2Chart.groupPieChartData = function (eventData, type) { 
+	var thisX2Chart = this;
+
+	var chartData = [];
+
+	thisX2Chart.DEBUG && console.log ('thisX2Chart.eventData = ');
+	thisX2Chart.DEBUG && console.log (thisX2Chart.eventData);
+
+	var evt, count;
+	for (var i in thisX2Chart.eventData) {
+		evt = thisX2Chart.eventData[i];
+		count = evt['count'] === '0' ? 1 : parseInt (evt['count'], 10);
+		if (thisX2Chart.chartDataFilter (evt, type)) continue;
+		if (chartData.length > 0) {
+			chartData[1] += count;
+		} else {
+			chartData = [type, count];
+		}
+	}
+	if (chartData.length === 0) {
+		chartData = [type, 0];
+	}
+
+	return {
+		chartData: chartData
+	};
+};
+
+/*
+This can replace the plotData method of the X2Chart prototype.
+*/
+X2Chart.plotPieData = function (args /* optional */) {
+	var thisX2Chart = this;
+	if (typeof args !== 'undefined') {
+		redraw = typeof args['redraw'] === 'undefined' ?
+			false : args['redraw'];
+	} else { // defaults
+		redraw = false;
+	}
+
+	// retrieve user selected values
+	var tsDict = thisX2Chart.getStartEndTimestamp ();
+	var startTimestamp = tsDict['startTimestamp'];
+	var endTimestamp = tsDict['endTimestamp'];
+
+	thisX2Chart.DEBUG && console.log ('thisX2Chart.plotData: startTimestamp, endTimestamp = ');
+	thisX2Chart.DEBUG && console.log ([startTimestamp, endTimestamp]);
+
+	var min = startTimestamp;
+	var max = endTimestamp;
+
+	thisX2Chart.DEBUG && console.log ('min = ' + min);
+	thisX2Chart.DEBUG && console.log ('max = ' + max);
+
+	// get user selected metrics
+	var types = [];
+	var metricTypes = thisX2Chart.getMetricTypes ();
+	for (var i in metricTypes) types.push (metricTypes[i][0]);
+
+	// get chartData for each user specified type
+	var color = []; 
+	var chartData = [];
+	thisX2Chart.DEBUG && console.log ('types = ' + types);
+	if (types === null) {
+		chartData.push ([]);
+	} else {
+		var type;
+		for (var i in types) {
+			type = types[i];
+			thisX2Chart.DEBUG && console.log ('type = ' + type);
+			//color.push (thisX2Chart.metricOptionsColors[types[i]]); // color of line 
+			dataDict = thisX2Chart.groupChartData (thisX2Chart.eventData, type);
+			if (dataDict['chartData'].length !== 0) {
+				chartData.push (dataDict['chartData']);
+			} 
+		}
+	}
+
+    function chartDataCompare (elemA, elemB) {
+        thisX2Chart.DEBUG && console.log (elemA);
+        thisX2Chart.DEBUG && console.log (elemB);
+        thisX2Chart.DEBUG && console.log (elemA[1] < elemB[1]);
+        if (elemA[1] > elemB[1]) {
+            return -1;
+        } else if (elemA[1] === elemB[1]) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+    thisX2Chart.DEBUG && console.log ($.extend (true, [], chartData));
+    chartData.sort (chartDataCompare);
+    thisX2Chart.DEBUG && console.log ($.extend (true, [], chartData));
+
+	thisX2Chart.DEBUG && console.log ('chartData = ');
+	thisX2Chart.DEBUG && console.debug ($.extend (true, [], chartData));
+	
+	var unconvertedChartData = $.extend (true, [], chartData);
+
+	thisX2Chart.DEBUG && console.log ('unconvertedChartData = ');
+	thisX2Chart.DEBUG && console.debug (unconvertedChartData.toString ());
+
+	var eventCount = thisX2Chart.getEventCount (chartData);
+	thisX2Chart.convertCountsToPercents (chartData, eventCount);
+
+	thisX2Chart.DEBUG && console.log ('unconvertedChartData = ');
+	thisX2Chart.DEBUG && console.debug (unconvertedChartData.toString ());
+
+
+	thisX2Chart.DEBUG && console.log ('metricOptionsColors = ');
+	thisX2Chart.DEBUG && console.log (thisX2Chart.metricOptionsColors);
+
+	// if no chartData exists of specified type, don't plot it
+	var noChartData = true;
+
+	if (chartData.length === 0) {
+		chartData[0] = [null];
+	} else {
+		for (var i in chartData) {
+			if (chartData[i].length === 0) {
+				chartData[i] = [null];
+			} else if ((chartData[i].length === 1 && chartData[i][1] !== 0) ||
+					   chartData[i].length !== 1) {
+				noChartData = false;
+			}
+		}
+	}
+
+	thisX2Chart.DEBUG && console.log ('chartData = ');
+	thisX2Chart.DEBUG && console.debug ($.extend (true, [], chartData));
+
+	thisX2Chart.DEBUG && console.log ('min = ' + min);
+	thisX2Chart.DEBUG && console.log ('max = ' + max);
+
+	var startAngle = '-45';
+	var diameter = '200';
+	jqplotConfig = thisX2Chart.getJqplotConfig ({
+		'min': min, 
+		'max': max, 
+		'color': color,
+		'startAngle': startAngle,
+		'diameter': diameter
+	});
+
+	thisX2Chart.DEBUG && console.log ('jqplotConfig = ');
+	thisX2Chart.DEBUG && console.log (jqplotConfig);
+
+    thisX2Chart.preJqplotPlotPieData (chartData);
+
+    for (var i in chartData) {
+        color.push (thisX2Chart.metricOptionsColors[chartData[i][0]]); // color of line
+    }
+
+	// plot chartData
+	thisX2Chart.feedChart = 
+		$.jqplot (thisX2Chart.chartType + '-chart', [chartData], jqplotConfig);
+
+	thisX2Chart.DEBUG && console.log ('chartData.length = ' + chartData.length);
+	//thisX2Chart.DEBUG && console.log ('labelFormat = ' + labelFormat);
+
+	if (redraw) {
+		thisX2Chart.feedChart.replot (); // clear previous plot and plot again
+	}
+
+	// used to display type labels in tooltips and legend
+	var typesText = thisX2Chart.getMetricTypesText ();
+
+	thisX2Chart.DEBUG && console.log ('typesText = ');
+	thisX2Chart.DEBUG && console.debug ($.extend (true, {}, typesText));
+
+	if (types !== null) {
+		thisX2Chart.setupTooltipBehavior (
+			chartData, unconvertedChartData, typesText, - parseFloat (startAngle, 10), 
+			parseInt (diameter, 10));
+	}
+
+	thisX2Chart.updatePieChartEventCount (eventCount);
+
+	if (!noChartData) {
+		// remove text and colors corresponding to types with an event count of 0
+		var filteredColors = $.extend (true, [], color);
+        var filteredTypes = [];
+		var i = 0, j = 0;
+		while (true) {
+			if (chartData[j][1] === 0) {
+				filteredColors.splice (i, 1);
+			} else {
+                filteredTypes.push (chartData[j][0]);
+				++i;
+			}
+			j++;
+			if (j >= chartData.length) break;
+		}
+	
+		thisX2Chart.buildChartLegend (filteredTypes, typesText, filteredColors);
+	}
+};
+
+
+/*
+*/
+X2Chart.setupPieTooltipBehavior = function (
+	chartData, unconvertedChartData, typesText, startAngle, diameter) {
+
+	var thisX2Chart = this;
+
+	var chartData = $.extend (true, [], chartData);
+	chartData.reverse ();
+	var unconvertedChartData = unconvertedChartData.slice ();
+
+	thisX2Chart.DEBUG && console.log ('setupPieTooltipBehavior: ');
+	thisX2Chart.DEBUG && console.log (unconvertedChartData.toString ());
+	thisX2Chart.DEBUG && console.log (chartData.toString ());
+
+	thisX2Chart.DEBUG && console.log ('setupTooltipBehavior');
+
+	// remove trailing 'px'
+	function rStripPx (str) {
+		return str.replace (/px$/, '');
+	}
+
+	// convert css value in pixels to an int
+	function pxToInt (str) {
+		return parseInt (rStripPx (str), 10);
+
+	}
+
+	function getPieCenter () {
+		var pieCenterX, pieCenterY, pieOffset, pieWidth, pieHeight;
+		var pieOffset = $('#' + thisX2Chart.chartType + '-chart').offset ();
+		pieHeight = $('#' + thisX2Chart.chartType + '-chart').height ();
+		pieWidth = $('#' + thisX2Chart.chartType + '-chart').width ();
+		pieCenterY = pieOffset.top + pieHeight / 2.0;
+		pieCenterX = pieOffset.left + pieWidth / 2.0;
+		return [pieCenterX, pieCenterY];
+	}
+
+	function getTooltipLocation (type, pieCenter) {
+		thisX2Chart.DEBUG && console.log ('diameter = ' + diameter);
+		var tooltipAngle = startAngle;
+		thisX2Chart.DEBUG && console.log ('startAngle = ' + tooltipAngle);
+		thisX2Chart.DEBUG && console.log ('chartData = ');
+		thisX2Chart.DEBUG && console.log (chartData);
+		for (var i in chartData) {
+			thisX2Chart.DEBUG && console.log ('type, chartData type = ' + type + ',' + chartData[i][0]);
+			if (chartData[i][0] === type) {
+				thisX2Chart.DEBUG && console.log ('adding ' + chartData[i][1] / 2.0);
+				tooltipAngle += 360.0 * ((parseFloat (chartData[i][1], 10) / 2.0) / 100.0);
+				break;
+			} else {
+				thisX2Chart.DEBUG && console.log ('adding ' + parseFloat (chartData[i][1], 10));
+				tooltipAngle += 360.0 * (parseFloat (chartData[i][1], 10) / 100.0);
+			}
+		}
+		thisX2Chart.DEBUG && console.log ('tooltipAngle = ' + tooltipAngle);
+		tooltipAngle *= Math.PI / 180;
+		thisX2Chart.DEBUG && console.log ('tooltipAngle = ' + tooltipAngle);
+		var tooltipX, tooltipY;
+		tooltipX = pieCenter[0] + Math.cos (tooltipAngle) * (diameter / 2.4);
+		tooltipY = pieCenter[1] - 9 - Math.sin (tooltipAngle) * (diameter / 2.4);
+		thisX2Chart.DEBUG && console.log ('tooltipLoc = ');
+		thisX2Chart.DEBUG && console.log ([tooltipX, tooltipY]);
+		return [tooltipX, tooltipY];
+	}
+
+	var currType;
+
+	// display the tooltip
+	$('#' + thisX2Chart.chartType + '-chart').unbind ('jqplotDataHighlight');
+	$('#' + thisX2Chart.chartType + '-chart').bind ('jqplotDataHighlight', 
+		function (ev, seriesIndex, pointIndex, data) {
+			thisX2Chart.DEBUG && console.log ('jqthisX2Chart.plotDataHighlight');
+			thisX2Chart.DEBUG && console.log ([ev, seriesIndex, pointIndex, data]);
+
+			var tooltip = $('#' + thisX2Chart.chartType + '-chart-tooltip');
+
+			thisX2Chart.DEBUG && console.log ("$(tooltip).is (':visible')) = " + $(tooltip).is (':visible'));
+			if (currType === data[0] && $(tooltip).is (':visible')) return;
+
+			currType = data[0];
+
+			var pieCenter = getPieCenter ();
+			thisX2Chart.DEBUG && console.log ('pieCenter = ');
+			thisX2Chart.DEBUG && console.log (pieCenter);
+			var tooltipLoc = getTooltipLocation (data[0], pieCenter);
+
+			$(tooltip).empty ();
+
+			thisX2Chart.DEBUG && console.log ('highlight: tooltiptype, typesText = ' + data[0] + ', ' + typesText[data[0]]);
+
+			$(tooltip).append ($('<span>', {
+				text: typesText[data[0]] + ': ' + unconvertedChartData[pointIndex][1] + 
+					' (' + data[1].toFixed (2) + '%)'
+			}));
+			$(tooltip).append ($('<br>'));
+
+			thisX2Chart.DEBUG && console.log ('pieX = ' + pieCenter[0]);
+
+			// determine tooltip orientation
+			function getMarginLeft () {
+				var marginLeft = 0;
+				if (tooltipLoc[0] < pieCenter[0]) {
+					marginLeft = 
+						- (pxToInt ($(tooltip).css ('width')) + 
+						   2 * pxToInt ($(tooltip).css ('padding')));
+				}
+				return marginLeft;
+			}
+
+			$(tooltip).css ({
+				position: 'absolute',
+				left: tooltipLoc[0],
+				top: tooltipLoc[1],
+				'margin-left': getMarginLeft (),
+				'margin-top': 0
+			});
+
+			$(tooltip).show ();
+
+			thisX2Chart.DEBUG && console.log ("$(tooltip).is (':visible')) = " + $(tooltip).is (':visible'));
+
+		});
+
+	function isOutsideSlice (mouseX, mouseY) {
+		var pieCenter = getPieCenter ();
+		var dist = (Math.sqrt (Math.pow (mouseX - pieCenter[0], 2) + 
+					Math.pow (mouseY - pieCenter[1], 2)));
+		var a = mouseX - pieCenter[0];
+		var b = (- (mouseY - pieCenter[1]));
+		/*console.log ('a = ' + a);
+		thisX2Chart.DEBUG && console.log ('b = ' + b);
+		thisX2Chart.DEBUG && console.log ('dist = ' + dist);*/
+
+		// rotate points about center of circle
+		var aPrime = Math.cos (- startAngle * (Math.PI / 180)) * a + 
+			(- Math.sin (- startAngle * (Math.PI / 180)) * b);
+		var bPrime = Math.sin (- startAngle * (Math.PI / 180)) * a + 
+			(Math.cos (- startAngle * (Math.PI / 180)) * b);
+
+		a = aPrime;
+		b = bPrime;
+		var mouseAngle = (Math.acos (a / dist)) * (180 / Math.PI);
+
+		/*console.log ('a = ' + a);
+		thisX2Chart.DEBUG && console.log ('b = ' + b);*/
+		if (a > 0 && b > 0) {
+		} else if (a < 0 && b > 0) {
+		} else if (a < 0 && b < 0) {
+			mouseAngle = 180 + (180 - mouseAngle);
+		} else if (a > 0 && b < 0) {
+			mouseAngle = 180 + (180 - mouseAngle);
+			//mouseAngle += 180;
+		}
+
+		var currAngle = 0;
+		var typeStartAngle, typeEndAngle;
+		/*console.log ('chartData = ');
+		thisX2Chart.DEBUG && console.log (chartData);*/
+		for (var i in chartData) {
+			if (chartData[i][0] === currType) {
+				typeStartAngle = currAngle;
+				/*console.log (parseFloat (chartData[i][1], 10));
+				thisX2Chart.DEBUG && console.log ('adding ' + 360.0 * (parseFloat (chartData[i][1], 10) / 100.0));*/
+				currAngle += 360.0 * (parseFloat (chartData[i][1], 10) / 100.0);
+				typeEndAngle = currAngle;
+				break;
+			} else {
+				currAngle += 360.0 * (parseFloat (chartData[i][1], 10) / 100.0);
+			}
+		}
+
+		/*console.log ('startAngle, endAngle = ' + typeStartAngle + ',' + typeEndAngle);
+		thisX2Chart.DEBUG && console.log (typeStartAngle);
+		thisX2Chart.DEBUG && console.log (typeEndAngle);
+		thisX2Chart.DEBUG && console.log ('startAngle === endAngle = ' + typeStartAngle === typeEndAngle);
+		thisX2Chart.DEBUG && console.log ('mouseAngle = ' + mouseAngle);*/
+		if (mouseAngle > typeEndAngle || mouseAngle < typeStartAngle)
+			return true;
+		else 
+			return false;
+	}
+
+	function isOutsideCircle (mouseX, mouseY) {
+		var pieCenter = getPieCenter ();
+		var dist = (Math.sqrt (Math.pow (mouseX - pieCenter[0], 2) + 
+					Math.pow (mouseY - pieCenter[1], 2)));
+		if (dist > (diameter + 20) / 2.0)
+			return true;
+		else 
+			return false;
+	}
+
+	// hide tooltip when mouse moves away from pie slice
+	function unhighlight (mouseX, mouseY) {
+		//thisX2Chart.DEBUG && console.log ('jqthisX2Chart.plotDataUnhighlight');
+
+		var tooltip = $('#' + thisX2Chart.chartType + '-chart-tooltip');
+
+		if ($(tooltip).is (':visible') &&
+			mouseX !== null && mouseY !== null &&
+			(isOutsideCircle (mouseX, mouseY) || (isInsideToolTip && isOutsideSlice (mouseX, mouseY)))) {
+
+			thisX2Chart.DEBUG && console.log ('hiding tooltip');
+
+			//$('#' + thisX2Chart.chartType + '-chart-tooltip').empty ();
+			$(tooltip).hide ();
+		}
+	}
+
+	$('#' + thisX2Chart.chartType + '-chart').unbind ('mousemove');
+	$('#' + thisX2Chart.chartType + '-chart').bind ('mousemove', function (event) {
+		//thisX2Chart.DEBUG && console.log ('mouse');
+		var mouseX = event.pageX;
+		var mouseY = event.pageY;
+		unhighlight (mouseX, mouseY);
+	});
+
+	$('#' + thisX2Chart.chartType + '-chart-tooltip').unbind ('mousemove');
+	$('#' + thisX2Chart.chartType + '-chart-tooltip').bind ('mousemove', function (event) {
+		//thisX2Chart.DEBUG && console.log ('chart-tooltip mouse');
+		isInsideToolTip = true;
+		var mouseX = event.pageX;
+		var mouseY = event.pageY;
+		unhighlight (mouseX, mouseY);
+	});
+
+	var isInsideToolTip = false;
+	$('#' + thisX2Chart.chartType + '-chart-tooltip').unbind ('mouseout');
+	$('#' + thisX2Chart.chartType + '-chart-tooltip').bind ('mouseout', function (event) {
+		isInsideToolTip = false;
+	});
+
+	$('#' + thisX2Chart.chartType + '-chart-container').unbind ('mouseleave');
+	$('#' + thisX2Chart.chartType + '-chart-container').bind ('mouseleave', function (event) {
+		$('#' + thisX2Chart.chartType + '-chart-tooltip').hide ();
+	});
+};
+
+/*
+This can replace the plotData method of the X2Chart prototype.
+Plots event data retrieved by thisX2Chart.getEventsBetweenDates ().
+If two metrics are selected by the user, thisX2Chart.plotData will plot two lines.
+Parameter:
+	args - a dictionary containing optional parameters.
+		redraw - an optional parameter which can be contained in args. If set to
+			true, the chart will be cleared before the plotting.
+*/
+X2Chart.plotLineData = function (args /* optional */) {
+	var thisX2Chart = this;
+	if (typeof args !== 'undefined') {
+		redraw = typeof args['redraw'] === 'undefined' ?
+			false : args['redraw'];
+	} else { // defaults
+		redraw = false;
+	}
+
+	// retrieve user selected values
+	var binSize = 
+		$('#' + thisX2Chart.chartType + '-bin-size-button-set a.disabled-link').attr ('id').
+		replace (thisX2Chart.chartType + '-', '');
+	var tsDict = thisX2Chart.getStartEndTimestamp ();
+	var startTimestamp = tsDict['startTimestamp'];
+	var endTimestamp = tsDict['endTimestamp'];
+
+	thisX2Chart.DEBUG && console.log ('thisX2Chart.plotData: startTimestamp, endTimestamp = ');
+	thisX2Chart.DEBUG && console.log ([startTimestamp, endTimestamp]);
+
+	// default settings
+	var showMarker = false;
+	var tickInterval = null;
+
+	/* 
+	graph at least 1 interval, hour bin size is a special case since it is the only
+	case for which there are multiple bins when start and and timestamp are equal.
+	*/
+	if (/*startTimestamp === endTimestamp && */binSize === 'hour-bin-size')
+		endTimestamp = thisX2Chart.shiftTimeStampOneInterval (endTimestamp, binSize, true);
+
+	var min = startTimestamp;
+	var max = endTimestamp;
+
+	thisX2Chart.DEBUG && console.log ('min = ' + min);
+	thisX2Chart.DEBUG && console.log ('max = ' + max);
+
+	var countDict = thisX2Chart.countBins (min, max);
+
+	// single bin is a special case, isolated point should be shown
+	var onlyOneBin = thisX2Chart.checkOnlyOneBin (binSize, countDict);
+	if (onlyOneBin) {
+		thisX2Chart.DEBUG && console.log ('onlyOneBin = true');
+		min = thisX2Chart.shiftTimeStampOneInterval (min, binSize, false);
+		max = thisX2Chart.shiftTimeStampOneInterval (max, binSize, true);
+		countDict = thisX2Chart.countBins (min, max); // recount for new interval
+	} else {
+		thisX2Chart.DEBUG && console.log ('onlyOneBin = false');
+	}
+
+	// determine label format and number of ticks based on data
+	var ticksDict = thisX2Chart.getTicks (
+		min, max, binSize, countDict);
+	var ticks = ticksDict['ticks'];
+	var labelFormat = ticksDict['labelFormat'];
+	thisX2Chart.DEBUG && console.log ('ticks = ');
+	thisX2Chart.DEBUG && console.log (ticks);
+	showMarker = thisX2Chart.getShowMarkerSetting (binSize, countDict);
+
+	thisX2Chart.DEBUG && console.log ('min = ' + min);
+	thisX2Chart.DEBUG && console.log ('max = ' + max);
+
+	/*if (ticks[0][0] < min)
+		min = ticks[0][0]
+	if (ticks[ticks.length - 1][0] > max)
+		max = ticks[ticks.length - 1][0];*/
+
+	// get user selected metrics
+	var types;
+	types = $('#' + thisX2Chart.chartType + '-first-metric').val ();
+
+	// get chartData for each user specified type
+	var color = []; 
+	var chartData = [];
+	thisX2Chart.DEBUG && console.log ('types = ' + types);
+	if (types === null) {
+		chartData.push ([]);
+	} else {
+		var type;
+		for (var i in types) {
+			type = types[i];
+			thisX2Chart.DEBUG && console.log ('type = ' + type);
+			dataDict = thisX2Chart.groupChartData (
+				thisX2Chart.eventData, binSize, type, showMarker, onlyOneBin);
+			chartData.push (dataDict['chartData']);
+		}
+	}
+	thisX2Chart.DEBUG && console.log ('metricOptionsColors = ');
+	thisX2Chart.DEBUG && console.log (thisX2Chart.metricOptionsColors);
+
+	// if no chartData exists of specified type, don't plot it
+	var noChartData = true;
+	for (var i in chartData) {
+		if (chartData[i].length === 0) {
+			chartData[i] = [null];
+		} else if ((chartData[i].length === 1 && chartData[i][1] !== 0) ||
+				   chartData[i].length !== 1) {
+			noChartData = false;
+		}
+	}
+
+	thisX2Chart.DEBUG && console.log ('noChartData = ' + noChartData);
+	thisX2Chart.DEBUG && console.log ('chartData = ');
+	thisX2Chart.DEBUG && console.debug ($.extend (true, [], chartData));
+
+	// pad left and right side of data with entries having y value equal to 0
+	if (!onlyOneBin &&
+		$('#' + thisX2Chart.chartType + '-first-metric').val () !== null) {
+		thisX2Chart.DEBUG && console.log ('filling chart data');
+		for (var i in chartData) {
+			chartData[i] = thisX2Chart.fillZeroEntries (
+				min, max, binSize, chartData[i], showMarker);
+		}
+	}
+
+	thisX2Chart.DEBUG && console.log ('filled chartData = ');
+	thisX2Chart.DEBUG && console.debug ($.extend (true, [], chartData));
+
+	thisX2Chart.DEBUG && console.log ('min = ' + min);
+	thisX2Chart.DEBUG && console.log ('max = ' + max);
+
+	jqplotConfig = thisX2Chart.getJqplotConfig ({
+		'ticks': ticks, 
+		'min': min, 
+		'max': max, 
+		'showMarker': showMarker, 
+		'color': color,
+		'showXTicks': true
+	});
+
+	if (noChartData) {
+		jqplotConfig.axes.yaxis['max'] = 1;
+		jqplotConfig.axes.yaxis['numberTicks'] = 2;
+	}
+
+    thisX2Chart.preJqplotPlotLineData (types);
+
+    for (var i in types) {
+        color.push (thisX2Chart.metricOptionsColors[types[i]]); // color of line 
+    }
+
+	// plot chartData
+	thisX2Chart.feedChart = 
+		$.jqplot (thisX2Chart.chartType + '-chart', chartData, jqplotConfig);
+
+	thisX2Chart.DEBUG && console.log ('chartData.length = ' + chartData.length);
+	thisX2Chart.DEBUG && console.log ('labelFormat = ' + labelFormat);
+
+	if (redraw) {
+		thisX2Chart.feedChart.replot (); // clear previous plot and plot again
+	}
+
+	// used to display type labels in tooltips and legend
+	var typesTextDict = {};
+	var typesTextArr = [];
+	$('#' + thisX2Chart.chartType + '-first-metric').find (":selected").each (
+		function () {
+
+		typesTextDict[$(this).val ()] = $(this).html ();
+		typesTextArr.push ($(this).html ());
+	});
+
+	$('#' + thisX2Chart.chartType + '-chart-legend tbody').empty ();
+	if (types !== null) {
+		thisX2Chart.setupTooltipBehavior (labelFormat, showMarker, chartData, typesTextArr);
+	    thisX2Chart.buildChartLegend (types, typesTextDict, color);
+    }
+
+
+};
+
+/*
+Sets up event functions to display tooltips on point mouse over.
+Parameters:
+	labelFormat - format string accepted by thisX2Chart.getTooltipFormattedLabel
+	showMarker - boolean
+	chartData - array of arrays
+	typesText - metric names shown in tooltips
+*/
+X2Chart.setupLineTooltipBehavior = function (
+	labelFormat, showMarker, chartData, typesText) {
+
+	var thisX2Chart = this;
+
+	thisX2Chart.DEBUG && console.log ('setupTooltipBehavior');
+
+	// bypass bug in jqplot
+	for (var i in thisX2Chart.feedChart.series) {
+		thisX2Chart.feedChart.series[i].highlightMouseOver = true;
+	}
+
+	// remove trailing 'px'
+	function rStripPx (str) {
+		return str.replace (/px$/, '');
+	}
+
+	// convert css value in pixels to an int
+	function pxToInt (str) {
+		return parseInt (rStripPx (str), 10);
+
+	}
+
+	// create a data structure to optimize searching for points by x value
+	var pointsDict = [];
+	for (var i in chartData) {
+		pointsDict.push ({});
+		for (var j in chartData[i]) {
+			pointsDict[i][chartData[i][j][0]] = chartData[i][j];
+		}
+	}
+
+	// used to store location of highlighted point
+	var pointXPrev = null;
+	var pointYPrev = null;
+
+	// display the tooltip
+	$('#' + thisX2Chart.chartType + '-chart').unbind ('jqplotDataHighlight');
+	$('#' + thisX2Chart.chartType + '-chart').bind ('jqplotDataHighlight', 
+		function (ev, seriesIndex, pointIndex, data) {
+			thisX2Chart.DEBUG && console.log ('jqthisX2Chart.plotDataHighlight');
+			thisX2Chart.DEBUG && console.log ([ev, seriesIndex, pointIndex, data]);
+			thisX2Chart.DEBUG && console.log ('showmarker = ' + showMarker);
+
+			var chartLeft = $(this).offset ().left;
+			var chartTop = $(this).offset ().top;
+			var	pointX = thisX2Chart.feedChart.axes.xaxis.u2p (data[0]);
+			var	pointY = thisX2Chart.feedChart.axes.yaxis.u2p (data[1]);
+			var tooltip = $('#' + thisX2Chart.chartType + '-chart-tooltip');
+
+			thisX2Chart.DEBUG && console.log (chartLeft, chartTop, pointX, pointY);
+
+			// save for calculating distance between mouse and point
+			pointXPrev = chartLeft + pointX;
+			pointYPrev = chartTop + pointY;
+
+			thisX2Chart.DEBUG && console.log ('data[0] = ' + data[0]);
+			thisX2Chart.DEBUG && console.log ('chartData[0][0] = ' + chartData[0][0][0]);
+
+			var isLastPoint = false;
+			var isFirstPoint = false;
+			if (data[0] === chartData[0][chartData[0].length - 1][0]) {
+				thisX2Chart.DEBUG && console.log ('isLastPoint');
+				isLastPoint = true;
+			} else if (data[0] === chartData[0][0][0]) {
+				thisX2Chart.DEBUG && console.log ('isFirstPoint');
+				isFirstPoint = true;
+			}
+
+			// insert tooltip text
+			thisX2Chart.DEBUG && console.log ('thisX2Chart.getTooltipFormattedLabel ret: ' + 
+				thisX2Chart.getTooltipFormattedLabel (
+					labelFormat, data[0], isFirstPoint, isLastPoint));
+
+			$(tooltip).html ($('<span>', {
+				class: 'chart-tooltip-date',
+				text: thisX2Chart.getTooltipFormattedLabel (
+					labelFormat, data[0], isFirstPoint, isLastPoint)
+			}));
+			$(tooltip).append ($('<br>'));
+
+			thisX2Chart.DEBUG && console.log ('seriesIndex = ' + seriesIndex);
+
+			// don't show types with 0 y values 
+			if (data[1] !== 0) {
+
+				for (var i = 0; i < thisX2Chart.feedChart.series.length; ++i) {
+					if (i === seriesIndex) {
+						$(tooltip).append ($('<span>', {
+							text: typesText[i] + ': ' + data[1]
+						}));
+						$(tooltip).append ($('<br>'));
+					} else if (
+						(pointsDict[i][data[0]] &&
+						 pointsDict[i][data[0]][1] === data[1]) ||
+						// overlapping point should exist
+						(data[1] === 0 && !showMarker && 
+						 !pointsDict[i][data[0]])) {
+
+						$(tooltip).append ($('<span>', {
+							text: typesText[i] + ': ' + data[1]
+						}));
+						$(tooltip).append ($('<br>'));
+					}
+				}
+			}
+
+			// determine where to place the tooltip
+			var marginLeft, marginRight;
+			marginLeft = 11;
+			marginTop = 11;
+			if (pointXPrev + pxToInt ($(tooltip).css ('width')) >
+				chartLeft + pxToInt ($('#' + thisX2Chart.chartType + '-chart').css ('width'))) {
+				thisX2Chart.DEBUG && console.log ('xoverflow');
+				marginLeft = 
+					- (pxToInt ($(tooltip).css ('width')) + marginLeft);
+			}
+			if (pointYPrev + pxToInt ($(tooltip).css ('height')) >
+				chartTop + pxToInt ($('#' + thisX2Chart.chartType + '-chart').css ('height'))) {
+				thisX2Chart.DEBUG && console.log ('yoverflow');
+				marginTop = 
+					- (pxToInt ($(tooltip).css ('height')) + marginTop);
+			}
+
+			$(tooltip).css ({
+				position: 'absolute',
+				left: pointXPrev,
+				top: pointYPrev,
+				'margin-left': marginLeft,
+				'margin-top': marginTop
+			});
+			$(tooltip).show ();
+
+		});
+
+	function distance (x1, y1, x2, y2) {
+		var dist = (Math.sqrt (Math.pow (x1 - x2, 2) + Math.pow (y1 - y2, 2)));
+		return dist;
+	}
+
+	// hide tooltip when mouse moves away from data point
+	function unhighlight (mouseX, mouseY) {
+		//thisX2Chart.DEBUG && console.log ('jqthisX2Chart.plotDataUnhighlight');
+
+		var tooltip = $('#' + thisX2Chart.chartType + '-chart-tooltip');
+
+		if ($(tooltip).is (':visible') &&
+			mouseX !== null && mouseY !== null &&
+			pointXPrev !== null && pointYPrev !== null &&
+			distance (
+				mouseX, mouseY, pointXPrev, pointYPrev) > 12) {
+
+			thisX2Chart.DEBUG && console.log ('hiding tooltip');
+
+			//$('#' + thisX2Chart.chartType + '-chart-tooltip').empty ();
+			$(tooltip).hide ();
+		}
+
+	}
+
+	$('#' + thisX2Chart.chartType + '-chart').unbind ('mousemove');
+	$('#' + thisX2Chart.chartType + '-chart').bind ('mousemove', function (event) {
+		//thisX2Chart.DEBUG && console.log ('mouse');
+		var mouseX = event.pageX;
+		var mouseY = event.pageY;
+		unhighlight (mouseX, mouseY);
+	});
+
+	$('#' + thisX2Chart.chartType + '-chart-tooltip').unbind ('mousemove');
+	$('#' + thisX2Chart.chartType + '-chart-tooltip').bind ('mousemove', function (event) {
+		//thisX2Chart.DEBUG && console.log ('chart-tooltip mouse');
+		var mouseX = event.pageX;
+		var mouseY = event.pageY;
+		unhighlight (mouseX, mouseY);
+	});
+
+	$('#' + thisX2Chart.chartType + '-chart').unbind ('mouseout');
+	$('#' + thisX2Chart.chartType + '-chart').bind ('mouseout', function (event) {
+		$('#' + thisX2Chart.chartType + '-chart-tooltip').hide ();
+	});
+
+};
+
+/*
+This can replace the getJqplotConfig method of the X2Chart prototype.
+*/
+X2Chart.getJqplotLineConfig = function (argsDict) {
+	var ticks = argsDict['ticks'];
+	var min = argsDict['min'];
+	var max = argsDict['max'];
+	var showMarker = argsDict['showMarker'];
+	var color = argsDict['color'];
+	var showXTicks = argsDict['showXTicks'];
+
+	var jqplotConfig = {
+		seriesDefaults: {
+			showMarker: showMarker,
+			shadow: false,
+			shadowAngle: 0,
+			shadowOffset: 0,
+			shadowDepth: 0,
+			shadowAlpha: 0,
+			markerOptions: {
+				shadow: false,
+				shadowAngle: 0,
+				shadowOffset: 0,
+				shadowDepth: 0,
+				shadowAlpha: 0
+			}
+		},
+		axesDefaults: {
+			x2axis: {
+				show: false
+			}
+		},
+		seriesColors: color,
+		series:[{
+			label: 'Events',
+			}
+		],
+		legend: {
+			show: false
+		},
+		grid: {
+			drawGridLines: false,
+			gridLineColor: '#ffffff',
+			borderColor: '#999',
+			borderWidth: 1,
+			background: '#ffffff',
+			shadow: false
+		},
+		axes: {
+			xaxis: {
+				renderer: $.jqplot.DateAxisRenderer,
+				tickOptions: {
+					angle: -90
+				},
+				showTicks: showXTicks,
+				ticks: ticks,
+				min: min,
+				max: max,
+				padMin: 150,
+				padMax: 150
+			},
+			yaxis: {
+				pad: 1.05,
+				numberTicks: 3,
+				tickOptions: {formatString: '%d'},
+				min: 0
+			}
+		},
+		highlighter: {
+			show: true,
+			showTooltip: false,
+			sizeAdjust: 2.5
+
+		}
+	};
+	return jqplotConfig;
+};
+
+/*
+This can replace the groupChartData method of the X2Chart prototype.
+Returns an array which can be passed to jqplot. Each entry in the array corresponds
+to the number of events of a given type and at a certain time (hour, day, week, or
+month depending on the bin size)
+Parameters:
+	thisX2Chart.eventData - an array set by getEventsBetween
+	binSize - a string
+	type - a string. The type of event that will get plotted.
+*/
+X2Chart.groupLineChartData = function (
+	eventData, binSize, type, showMarker, onlyOneBin) { 
+	var thisX2Chart = this;
+
+	var chartData = [];
+
+	thisX2Chart.DEBUG && console.log ('thisX2Chart.eventData = ');
+	thisX2Chart.DEBUG && console.log (thisX2Chart.eventData);
+
+	// group chart data into bins and keep count of the number of entries in each bin
+	switch (binSize) {
+		case 'hour-bin-size':
+			var hour, day, month, year, evt, dateString, timestamp, count;
+			for (var i in thisX2Chart.eventData) {
+				evt = thisX2Chart.eventData[i];
+				count = evt['count'] === '0' ? 1 : parseInt (evt['count'], 10);
+				if (thisX2Chart.chartDataFilter (evt, type)) continue;
+				/*if ((!(type === 'any' || type === '') && evt['type'] !== type) ||
+					(type === '' && evt['type'] !== null)) continue;*/
+				if (evt['year'] === year &&
+					evt['month'] === month &&
+					evt['day'] === day &&
+					evt['hour'] === hour) {
+					chartData[chartData.length - 1][1] += count;
+				} else {
+					year = evt['year'];
+					month = evt['month'];
+					day = evt['day'];
+					hour = evt['hour'];
+
+					timestamp = (new Date (
+						year, month - 1, day, hour, 0, 0, 0)).getTime ();
+					chartData.push ([timestamp, count]);
+				}
+
+			}
+			break;
+		case 'day-bin-size':
+			var day, month, year, evt, dateString, timestamp, count;
+			for (var i in thisX2Chart.eventData) {
+				evt = thisX2Chart.eventData[i];
+				count = evt['count'] === '0' ? 1 : parseInt (evt['count'], 10);
+				thisX2Chart.DEBUG && console.log (count);
+				if (thisX2Chart.chartDataFilter (evt, type)) continue;
+				/*if ((!(type === 'any' || type === '') && evt['type'] !== type) ||
+					(type === '' && evt['type'] !== null)) continue;*/
+				if (evt['year'] === year &&
+					evt['month'] === month &&
+					evt['day'] === day) {
+					chartData[chartData.length - 1][1] += count;
+				} else {
+					year = evt['year'];
+					month = evt['month'];
+					day = evt['day'];
+
+					timestamp = (new Date (
+						year, month - 1, day, 0, 0, 0, 0)).getTime ();
+					chartData.push ([timestamp, count]);
+				}
+			}
+			break;
+		case 'week-bin-size':
+			var week, year, evt, dateString, timestamp, date, day, MSPERWEEK, count;
+			for (var i in thisX2Chart.eventData) {
+				evt = thisX2Chart.eventData[i];
+				count = evt['count'] === '0' ? 1 : parseInt (evt['count'], 10);
+				if (thisX2Chart.chartDataFilter (evt, type)) continue;
+				/*if ((!(type === 'any' || type === '') && evt['type'] !== type) ||
+					(type === '' && evt['type'] !== null)) continue;*/
+				if (evt['year'] === year &&
+					evt['week'] === week) {
+					chartData[chartData.length - 1][1] += count;
+				} else {
+					year = evt['year'];
+					week = evt['week'];
+					timestamp = (new Date (
+						year, evt['month'] - 1, evt['day'], 0, 0, 0, 0)).getTime ();
+					date = new Date (timestamp);
+					day = date.getDay ();
+					timestamp -= day * MSPERDAY;
+
+					chartData.push ([timestamp, count]);
+				}
+			}
+			break;
+		case 'month-bin-size':
+			var month, year, evt, dateString, timestamp, count;
+			for (var i in thisX2Chart.eventData) {
+				evt = thisX2Chart.eventData[i];
+				count = evt['count'] === '0' ? 1 : parseInt (evt['count'], 10);
+				if (thisX2Chart.chartDataFilter (evt, type)) continue;
+				/*if ((!(type === 'any' || type === '') && evt['type'] !== type) ||
+					(type === '' && evt['type'] !== null)) continue;*/
+				if (evt['year'] === year &&
+					evt['month'] === month) {
+					chartData[chartData.length - 1][1] += count;
+				} else {
+					year = evt['year'];
+					month = evt['month'];
+
+					timestamp = (new Date (
+						year, month - 1, 1, 0, 0, 0, 0)).getTime ();
+					chartData.push ([timestamp, count]);
+				}
+			}
+			break;
+	}
+
+	chartData = thisX2Chart.fillChartDataGaps (chartData, binSize, onlyOneBin, showMarker);
+
+	return {
+		chartData: chartData
+	};
+};
 
 /************************************************************************************
 Instance Methods
@@ -135,7 +1251,157 @@ Instance Methods
 
 X2Chart.prototype.setDefaultSettings = function () {}; // override in child prototype
 
+X2Chart.prototype.updatePieChartEventCount = function (eventCount) { 
+	var thisX2Chart = this;
 
+	var countContainer = $('#' + thisX2Chart.chartType + '-pie-chart-count-container');
+	$(countContainer).find ('.pie-chart-count').text (eventCount);
+};
+
+X2Chart.prototype.getMetricTypesText = function () {
+	var thisX2Chart = this;
+
+	var metricTypesText = {};
+	$('#' + thisX2Chart.chartType + '-first-metric').children ().each (function () {
+		metricTypesText[$(this).val ()] = $(this).html ();
+	});
+	return metricTypesText;
+};
+
+X2Chart.prototype.getMetricTypes = function () { 
+	var thisX2Chart = this;
+
+	var metricTypes = [];
+	$('#' + thisX2Chart.chartType + '-first-metric').children ().each (function () {
+		metricTypes.push([$(this).val (), $(this).html ()]);
+	});
+	return metricTypes;
+};
+
+X2Chart.prototype.setChartSubtype = function (chartSubtype, plot, uiSetUp, force) {
+	var thisX2Chart = this;
+
+	plot = typeof plot === 'undefined' ? true : plot;
+	uiSetUp = typeof uiSetUp === 'undefined' ? true : uiSetUp;
+	force = typeof force === 'undefined' ? true : force;
+
+	if (chartSubtype === thisX2Chart.chartSubtype && !force) return;
+	thisX2Chart.chartSubtype = chartSubtype;
+	
+	if (chartSubtype === 'line') {
+		thisX2Chart.pieChartTearDown (uiSetUp);
+		X2Chart.prototype.plotData = X2Chart.plotLineData;
+		X2Chart.prototype.getJqplotConfig = X2Chart.getJqplotLineConfig;
+		X2Chart.prototype.groupChartData = X2Chart.groupLineChartData;
+		X2Chart.prototype.setupTooltipBehavior = X2Chart.setupLineTooltipBehavior;
+		thisX2Chart.postLineChartSetUp ();
+	} else if (chartSubtype === 'pie') {
+		thisX2Chart.lineChartTearDown ();
+		X2Chart.prototype.plotData = X2Chart.plotPieData;
+		X2Chart.prototype.getJqplotConfig = X2Chart.getJqplotPieConfig;
+		X2Chart.prototype.groupChartData = X2Chart.groupPieChartData;
+		X2Chart.prototype.setupTooltipBehavior = X2Chart.setupPieTooltipBehavior;
+		thisX2Chart.postPieChartSetUp (uiSetUp);
+	}
+
+	if (plot) thisX2Chart.plotData ({redraw: true});
+};
+
+/*
+Override in child prototype
+*/
+X2Chart.prototype.postLineChartSetUp = function () {
+};
+
+X2Chart.prototype.lineChartTearDown = function () {
+	var thisX2Chart = this;
+	$('#' + thisX2Chart.chartType + '-chart').unbind ('jqplotDataHighlight');
+	$('#' + thisX2Chart.chartType + '-chart').unbind ('mousemove');
+	$('#' + thisX2Chart.chartType + '-chart-tooltip').unbind ('mousemove');
+	$('#' + thisX2Chart.chartType + '-chart').unbind ('mouseout');
+	$('#' + thisX2Chart.chartType + '-pie-chart-count-container').show ();
+	thisX2Chart.postLineChartTearDown ();
+};
+
+/*
+Override in child prototype
+*/
+X2Chart.prototype.postLineChartSetUp = function () {
+};
+
+/*
+Override in child prototype
+*/
+X2Chart.prototype.postLineChartTearDown = function () {
+};
+
+X2Chart.prototype.pieChartTearDown = function (uiSetUp) {
+	var thisX2Chart = this;
+	$('#' + thisX2Chart.chartType + '-chart').unbind ('jqplotDataHighlight');
+	$('#' + thisX2Chart.chartType + '-chart').unbind ('mousemove');
+	$('#' + thisX2Chart.chartType + '-chart-tooltip').unbind ('mousemove');
+	$('#' + thisX2Chart.chartType + '-chart-tooltip').unbind ('mouseout');
+	$('#' + thisX2Chart.chartType + '-chart-container').unbind ('mouseleave');
+	$('#' + thisX2Chart.chartType + '-pie-chart-count-container').hide ();
+	thisX2Chart.postPieChartTearDown (uiSetUp);
+};
+
+/*
+Override in child prototype
+*/
+X2Chart.prototype.postPieChartSetUp = function () {
+};
+
+/*
+Override in child prototype
+*/
+X2Chart.prototype.postPieChartTearDown = function () {
+};
+
+/*
+Used by pie chart to count the number of events between the start and end date
+*/
+X2Chart.prototype.getEventCount = function (chartData) {
+	var totalCount = 0;
+	for (var i in chartData) {
+		totalCount += chartData[i][1];
+	}
+	return totalCount;
+};
+
+/*
+Used by pie chart to convert data from event counts to percents.
+*/
+X2Chart.prototype.convertCountsToPercents = function (chartData, totalCount) {
+	if (totalCount === 0) return chartData;
+	for (var i in chartData) {
+		chartData[i][1] = (chartData[i][1] / totalCount) * 100;
+	}
+	return chartData;
+};
+
+/*
+Call setup functions for chart settings ui elements.
+*/
+X2Chart.prototype.setUpSettingsUI = function () {
+	var thisX2Chart = this;
+
+	if (!thisX2Chart.suppressChartSettings) {
+		thisX2Chart.setUpChartSettings ();
+	}
+
+	thisX2Chart.setUpBinSizeSelection ();
+	thisX2Chart.setUpDatepickers ();
+	thisX2Chart.setUpMetricSelection ();
+
+	if (!thisX2Chart.suppressDateRangeSelector) {
+		thisX2Chart.setUpDateRangeSelector ();
+	}
+};
+
+/*
+Set up initial chart settings and request chart data
+*/
 X2Chart.prototype.start = function () {
 	var thisX2Chart = this;
 
@@ -146,6 +1412,13 @@ X2Chart.prototype.start = function () {
 	thisX2Chart.getEventsBetweenDates (false); // populate default graph
 };
 
+/*
+Checks a subset of options in a jquery multiselect widget.
+Parameters:
+	selector - used to retrieve the multiselect element
+	settings - an array of strings. Each string should be the value of an option in
+		the select element
+*/
 X2Chart.prototype.applyMultiselectSettings = function (selector, settings) {
 	var thisX2Chart = this;
 	thisX2Chart.DEBUG && console.log ('applyMultiselectSettings ' + selector);
@@ -170,13 +1443,19 @@ X2Chart.prototype.applyMultiselectSettings = function (selector, settings) {
 		}
 		thisX2Chart.DEBUG && console.log ('done applyMultiselectSettings');
 	}
-}
+};
 
-
-
+/*
+Instantiates multiselect widgets for each of the filter types defined in the filterTypes
+property. Also binds event functions to those widgets.
+*/
 X2Chart.prototype.setUpFilters = function () {
 	var thisX2Chart = this;
 
+	/*
+	Event function bound to each of the filter multiselect widgets. Sets the filter property
+	and replots the chart.
+	*/
 	function multiselectCloseHandler (element, possibleVals, filterName) {
 		var checkedValues = $(element).val ();
 		var cookieVal = (checkedValues === null) ? 'none' : checkedValues;
@@ -196,7 +1475,6 @@ X2Chart.prototype.setUpFilters = function () {
 		thisX2Chart.plotData ({redraw: true});
 		if (!thisX2Chart.suppressChartSettings) {
 			thisX2Chart.setChartSettingName ('');  
-			$('#' + thisX2Chart.chartType + '-predefined-settings').change ();
 		}
 
 	}
@@ -295,7 +1573,34 @@ X2Chart.prototype.setUpFilters = function () {
 			slideUp (200);
 	});
 
+    thisX2Chart.bindFilterEvents ();
 
+};
+
+X2Chart.prototype.bindFilterEvents = function () {
+	var thisX2Chart = this;
+	$('#' + this.chartType + '-show-chart-filters-button').click (function () {
+		thisX2Chart.DEBUG && console.log ('show-chart-filters click');
+		$(this).hide ();
+		$('#' + thisX2Chart.chartType + '-hide-chart-filters-button').show ();
+		$('#' + thisX2Chart.chartType + '-chart-container .chart-filters-container').
+			slideDown (200);
+	});
+
+	$('#' + this.chartType + '-hide-chart-filters-button').click (function () {
+		thisX2Chart.DEBUG && console.log ('show-chart-filters click');
+		$(this).hide ();
+		$('#' + thisX2Chart.chartType + '-show-chart-filters-button').show ();
+		$('#' + thisX2Chart.chartType + '-chart-container .chart-filters-container').
+			slideUp (200);
+	});
+};
+
+X2Chart.prototype.rebindFilterEvents = function () {
+	var thisX2Chart = this;
+	$('#' + this.chartType + '-hide-chart-filters-button').unbind ('click');
+	$('#' + this.chartType + '-show-chart-filters-button').unbind ('click');
+    thisX2Chart.bindFilterEvents ();
 };
 
 
@@ -312,7 +1617,7 @@ X2Chart.prototype.getEventsBetweenDates = function (redraw) {
 		attr ('id').replace (thisX2Chart.chartType + '-', '');
 	var tsDict = thisX2Chart.getStartEndTimestamp ();
 	var startTimestamp = tsDict['startTimestamp'];
-	var endTimestamp = tsDict['endTimestamp'] + MSPERDAY;
+	var endTimestamp = tsDict['endTimestamp'] + MSPERDAY - 1000;
 
 	thisX2Chart.DEBUG && console.log (
 		'getting events between ' + startTimestamp + ' and ' + endTimestamp);
@@ -540,23 +1845,29 @@ X2Chart.prototype.getZeroEntriesBetween = function (
 	return entries;
 };
 
+/*
+Fills in each gap in the chart data with (x, 0) entries spaced at appropriate intervals.
+*/
 X2Chart.prototype.fillChartDataGaps = function (
 	chartData, binSize, onlyOneBin, showMarker) {
 
 	var thisX2Chart = this;
 
+	var chartData = chartData.slice ();
 	chartData.reverse ();
 
 	var startTimestamp = ($('#' + this.chartType + '-chart-datepicker-from').
 		datepicker ('getDate').valueOf ());
 
+	if (onlyOneBin && chartData.length === 0) {
+		chartData.push ([startTimestamp, 0]);
+		return chartData;
+	}
+
 	// shift position of first bin forward to starting timestamp
 	if ((binSize === 'week-bin-size' || binSize === 'month-bin-size') &&
 		chartData.length !== 0 && chartData[0][0] < startTimestamp) 
 		chartData[0][0] = startTimestamp;
-
-	if (onlyOneBin && chartData.length === 0)
-		chartData.push ([startTimestamp, 0]);
 
 	// insert entries with y value equal to 0 into chartData at the specified interval
 	var chartDataIndex = 0;
@@ -618,130 +1929,10 @@ X2Chart.prototype.chartDataFilter = function (dataPoint, type) {
 	return false;
 };
 
-
 /*
-Returns an array which can be passed to jqplot. Each entry in the array corresponds
-to the number of events of a given type and at a certain time (hour, day, week, or
-month depending on the bin size)
-Parameters:
-	thisX2Chart.eventData - an array set by getEventsBetween
-	binSize - a string
-	type - a string. The type of event that will get plotted.
+Gets replaced with respective line or pie functions based on chart subtype.
 */
-X2Chart.prototype.groupChartData = function (
-	eventData, binSize, type, showMarker, onlyOneBin) { 
-	var thisX2Chart = this;
-
-	var chartData = [];
-
-	thisX2Chart.DEBUG && console.log ('thisX2Chart.eventData = ');
-	thisX2Chart.DEBUG && console.log (thisX2Chart.eventData);
-
-	// group chart data into bins and keep count of the number of entries in each bin
-	switch (binSize) {
-		case 'hour-bin-size':
-			var hour, day, month, year, evt, dateString, timestamp, count;
-			for (var i in thisX2Chart.eventData) {
-				evt = thisX2Chart.eventData[i];
-				count = evt['count'] === '0' ? 1 : parseInt (evt['count'], 10);
-				if (thisX2Chart.chartDataFilter (evt, type)) continue;
-				/*if ((!(type === 'any' || type === '') && evt['type'] !== type) ||
-					(type === '' && evt['type'] !== null)) continue;*/
-				if (evt['year'] === year &&
-					evt['month'] === month &&
-					evt['day'] === day &&
-					evt['hour'] === hour) {
-					chartData[chartData.length - 1][1] += count;
-				} else {
-					year = evt['year'];
-					month = evt['month'];
-					day = evt['day'];
-					hour = evt['hour'];
-
-					timestamp = (new Date (
-						year, month - 1, day, hour, 0, 0, 0)).getTime ();
-					chartData.push ([timestamp, count]);
-				}
-
-			}
-			break;
-		case 'day-bin-size':
-			var day, month, year, evt, dateString, timestamp, count;
-			for (var i in thisX2Chart.eventData) {
-				evt = thisX2Chart.eventData[i];
-				count = evt['count'] === '0' ? 1 : parseInt (evt['count'], 10);
-				thisX2Chart.DEBUG && console.log (count);
-				if (thisX2Chart.chartDataFilter (evt, type)) continue;
-				/*if ((!(type === 'any' || type === '') && evt['type'] !== type) ||
-					(type === '' && evt['type'] !== null)) continue;*/
-				if (evt['year'] === year &&
-					evt['month'] === month &&
-					evt['day'] === day) {
-					chartData[chartData.length - 1][1] += count;
-				} else {
-					year = evt['year'];
-					month = evt['month'];
-					day = evt['day'];
-
-					timestamp = (new Date (
-						year, month - 1, day, 0, 0, 0, 0)).getTime ();
-					chartData.push ([timestamp, count]);
-				}
-			}
-			break;
-		case 'week-bin-size':
-			var week, year, evt, dateString, timestamp, date, day, MSPERWEEK, count;
-			for (var i in thisX2Chart.eventData) {
-				evt = thisX2Chart.eventData[i];
-				count = evt['count'] === '0' ? 1 : parseInt (evt['count'], 10);
-				if (thisX2Chart.chartDataFilter (evt, type)) continue;
-				/*if ((!(type === 'any' || type === '') && evt['type'] !== type) ||
-					(type === '' && evt['type'] !== null)) continue;*/
-				if (evt['year'] === year &&
-					evt['week'] === week) {
-					chartData[chartData.length - 1][1] += count;
-				} else {
-					year = evt['year'];
-					week = evt['week'];
-					timestamp = (new Date (
-						year, evt['month'] - 1, evt['day'], 0, 0, 0, 0)).getTime ();
-					date = new Date (timestamp);
-					day = date.getDay ();
-					timestamp -= day * MSPERDAY;
-
-					chartData.push ([timestamp, count]);
-				}
-			}
-			break;
-		case 'month-bin-size':
-			var month, year, evt, dateString, timestamp, count;
-			for (var i in thisX2Chart.eventData) {
-				evt = thisX2Chart.eventData[i];
-				count = evt['count'] === '0' ? 1 : parseInt (evt['count'], 10);
-				if (thisX2Chart.chartDataFilter (evt, type)) continue;
-				/*if ((!(type === 'any' || type === '') && evt['type'] !== type) ||
-					(type === '' && evt['type'] !== null)) continue;*/
-				if (evt['year'] === year &&
-					evt['month'] === month) {
-					chartData[chartData.length - 1][1] += count;
-				} else {
-					year = evt['year'];
-					month = evt['month'];
-
-					timestamp = (new Date (
-						year, month - 1, 1, 0, 0, 0, 0)).getTime ();
-					chartData.push ([timestamp, count]);
-				}
-			}
-			break;
-	}
-
-	chartData = thisX2Chart.fillChartDataGaps (chartData, binSize, onlyOneBin, showMarker);
-
-	return {
-		chartData: chartData
-	};
-};
+X2Chart.prototype.groupChartData = function () {};
 
 /*
 Helper function for jqplot used to widen the date range if the user selected
@@ -865,10 +2056,10 @@ the start and end timestamps.
 */
 X2Chart.prototype.countBins = function (startTimestamp, endTimestamp) {
 	var thisX2Chart = this;
-	endTimestamp += MSPERDAY;
+	endTimestamp += MSPERDAY - 1;
 
 	var dateRange =
-		endTimestamp - startTimestamp;
+		(endTimestamp + 1) - startTimestamp;
 
 	// get starting and ending months and years
 	var startDate = new Date (startTimestamp);
@@ -877,6 +2068,12 @@ X2Chart.prototype.countBins = function (startTimestamp, endTimestamp) {
 	var endDate = new Date (endTimestamp);
 	var endMonth = endDate.getMonth () + 1;
 	var endYear = endDate.getFullYear ();
+
+	thisX2Chart.DEBUG && console.log ('countBins:');
+	thisX2Chart.DEBUG && console.log ('startTimestamp = ' + startTimestamp);
+	thisX2Chart.DEBUG && console.log ('endTimestamp = ' + endTimestamp);
+	thisX2Chart.DEBUG && console.log ('startMonth = ' + startMonth);
+	thisX2Chart.DEBUG && console.log ('endMonth = ' + endMonth);
 
 
 	// count hours, days, weeks, months
@@ -927,7 +2124,7 @@ X2Chart.prototype.roundForDaylightSavings = function (timestamp) {
 	}
 
 	return timestamp;
-}
+};
 
 // returns timestamp of nearest day at 12am
 X2Chart.prototype.getRoundedDayTs = function (timestamp, prev) {
@@ -941,7 +2138,7 @@ X2Chart.prototype.getRoundedDayTs = function (timestamp, prev) {
 		newTimestamp += MSPERDAY;
 	}
 	return newTimestamp;
-}
+};
 
 // returns timestamp of nearest Sunday at 12am
 X2Chart.prototype.getRoundedWeekTs = function (timestamp, prev) {
@@ -958,7 +2155,7 @@ X2Chart.prototype.getRoundedWeekTs = function (timestamp, prev) {
 		newTimestamp += MSPERWEEK;
 	}
 	return newTimestamp;
-}
+};
 
 // returns timestamp of nearest 1st of month at 12am
 X2Chart.prototype.getRoundedMonthTs = function (timestamp, prev) {
@@ -975,7 +2172,7 @@ X2Chart.prototype.getRoundedMonthTs = function (timestamp, prev) {
 	}
 	var newTimestamp = (new Date (Y, M - 1, 1, 0, 0, 0, 0)).getTime ();
 	return newTimestamp;
-}
+};
 
 X2Chart.prototype.getRoundedTimestamp = function (timestamp, binSize, prev) {
 	var thisX2Chart = this;
@@ -998,7 +2195,7 @@ X2Chart.prototype.getRoundedTimestamp = function (timestamp, binSize, prev) {
 	//thisX2Chart.DEBUG && console.log ('timestamp, roundedTimestamp = ');
 	//thisX2Chart.DEBUG && console.log (timestamp, roundedTimestamp);
 	return roundedTimestamp;
-}
+};
 
 /*
 Retrieves the user selected start and end timestamps from the DOM.
@@ -1011,12 +2208,16 @@ X2Chart.prototype.getStartEndTimestamp = function () {
 	thisX2Chart.DEBUG && console.log ('getStartEndTimestamp: this = '); 
 	thisX2Chart.DEBUG && console.debug (thisX2Chart);
 
-	var startTimestamp =
-		($('#' + thisX2Chart.chartType + '-chart-datepicker-from').
-		datepicker ('getDate').valueOf ());
-	var endTimestamp =
-		($('#' + thisX2Chart.chartType + '-chart-datepicker-to').
-		datepicker ('getDate').valueOf ());
+	var startDate = 
+		$('#' + thisX2Chart.chartType + '-chart-datepicker-from').datepicker ('getDate');
+	var startTimestamp;
+	if (startDate) 
+		startTimestamp = startDate.valueOf ();
+	var endDate = 
+		$('#' + thisX2Chart.chartType + '-chart-datepicker-to').datepicker ('getDate');
+	var endTimestamp;
+	if (endDate) 
+		endTimestamp = endDate.valueOf ();
 	if (endTimestamp < startTimestamp)
 		endTimestamp = startTimestamp;
 
@@ -1028,7 +2229,7 @@ X2Chart.prototype.getStartEndTimestamp = function () {
 		'endTimestamp': endTimestamp
 	}
 
-}
+};
 
 /*
 Helper function for thisX2Chart.plotData. Determines the resolution of the graph.
@@ -1064,7 +2265,7 @@ X2Chart.prototype.getShowMarkerSetting = function (binSize, countDict) {
 			break;
 	}
 	return showMarker;
-}
+};
 
 X2Chart.prototype.getLongMonthName = function (monthNum) {
 	var thisX2Chart = this;
@@ -1114,7 +2315,7 @@ X2Chart.prototype.getLongMonthName = function (monthNum) {
 			break;
 	}
 	return monthName;
-}
+};
 
 X2Chart.prototype.getShortMonthName = function (monthNum) {
 	var thisX2Chart = this;
@@ -1167,7 +2368,7 @@ X2Chart.prototype.getShortMonthName = function (monthNum) {
 				'Error: thisX2Chart.getShortMonthName: default switch ' + monthNum);
 	}
 	return monthName;
-}
+};
 
 /*
 Given a format string and a timestamp, returns a label with information extracted
@@ -1268,7 +2469,7 @@ X2Chart.prototype.getTooltipFormattedLabel = function (
 	}
 	return fmtLabel;
 
-}
+};
 
 
 /*
@@ -1536,7 +2737,7 @@ X2Chart.prototype.getTicks = function (startTimestamp, endTimestamp, binSize, co
 		'labelFormat': labelFormat
 	}
 
-}
+};
 
 X2Chart.prototype.checkOnlyOneBin = function (binSize, countDict) {
 	var thisX2Chart = this;
@@ -1560,206 +2761,16 @@ X2Chart.prototype.checkOnlyOneBin = function (binSize, countDict) {
 			break;
 	}	
 	return onlyOneBin;
-}
+};
 
-/*
-Sets up event functions to display tooltips on point mouse over.
-Parameters:
-	labelFormat - format string accepted by thisX2Chart.getTooltipFormattedLabel
-	showMarker - boolean
-	chartData - array of arrays
-	typesText - metric names shown in tooltips
-*/
-X2Chart.prototype.setupTooltipBehavior = function (
-	labelFormat, showMarker, chartData, typesText) {
+X2Chart.prototype.setupTooltipBehavior = function () {};
 
-	var thisX2Chart = this;
-
-	thisX2Chart.DEBUG && console.log ('setupTooltipBehavior');
-
-	// bypass bug in jqplot
-	for (var i in thisX2Chart.feedChart.series) {
-		thisX2Chart.feedChart.series[i].highlightMouseOver = true;
-
-	}
-
-	// remove trailing 'px'
-	function rStripPx (str) {
-		return str.replace (/px$/, '');
-	}
-
-	// convert css value in pixels to an int
-	function pxToInt (str) {
-		return parseInt (rStripPx (str), 10);
-
-	}
-
-	// create a data structure to optimize searching for points by x value
-	var pointsDict = [];
-	for (var i in chartData) {
-		pointsDict.push ({});
-		for (var j in chartData[i]) {
-			pointsDict[i][chartData[i][j][0]] = chartData[i][j];
-		}
-	}
-
-	// used to store location of highlighted point
-	var pointXPrev = null;
-	var pointYPrev = null;
-
-	// display the tooltip
-	$('#' + thisX2Chart.chartType + '-chart').unbind ('jqplotDataHighlight');
-	$('#' + thisX2Chart.chartType + '-chart').bind ('jqplotDataHighlight', 
-		function (ev, seriesIndex, pointIndex, data) {
-			thisX2Chart.DEBUG && console.log ('jqthisX2Chart.plotDataHighlight');
-			thisX2Chart.DEBUG && console.log ([ev, seriesIndex, pointIndex, data]);
-			thisX2Chart.DEBUG && console.log ('showmarker = ' + showMarker);
-
-			var chartLeft = $(this).offset ().left;
-			var chartTop = $(this).offset ().top;
-			var	pointX = thisX2Chart.feedChart.axes.xaxis.u2p (data[0]);
-			var	pointY = thisX2Chart.feedChart.axes.yaxis.u2p (data[1]);
-			var tooltip = $('#' + thisX2Chart.chartType + '-chart-tooltip');
-
-			thisX2Chart.DEBUG && console.log (chartLeft, chartTop, pointX, pointY);
-
-			// save for calculating distance between mouse and point
-			pointXPrev = chartLeft + pointX;
-			pointYPrev = chartTop + pointY;
-
-			thisX2Chart.DEBUG && console.log ('data[0] = ' + data[0]);
-			thisX2Chart.DEBUG && console.log ('chartData[0][0] = ' + chartData[0][0][0]);
-
-			var isLastPoint = false;
-			var isFirstPoint = false;
-			if (data[0] === chartData[0][chartData[0].length - 1][0]) {
-				thisX2Chart.DEBUG && console.log ('isLastPoint');
-				isLastPoint = true;
-			} else if (data[0] === chartData[0][0][0]) {
-				thisX2Chart.DEBUG && console.log ('isFirstPoint');
-				isFirstPoint = true;
-			}
-
-			// insert tooltip text
-			thisX2Chart.DEBUG && console.log ('thisX2Chart.getTooltipFormattedLabel ret: ' + 
-				thisX2Chart.getTooltipFormattedLabel (
-					labelFormat, data[0], isFirstPoint, isLastPoint));
-
-			$(tooltip).html ($('<span>', {
-				class: 'chart-tooltip-date',
-				text: thisX2Chart.getTooltipFormattedLabel (
-					labelFormat, data[0], isFirstPoint, isLastPoint)
-			}));
-			$(tooltip).append ($('<br>'));
-
-			thisX2Chart.DEBUG && console.log ('seriesIndex = ' + seriesIndex);
-
-			// don't show types with 0 y values 
-			if (data[1] !== 0) {
-
-				for (var i = 0; i < thisX2Chart.feedChart.series.length; ++i) {
-					if (i === seriesIndex) {
-						$(tooltip).append ($('<span>', {
-							text: typesText[i] + ': ' + data[1]
-						}));
-						$(tooltip).append ($('<br>'));
-					} else if (
-						(pointsDict[i][data[0]] &&
-						 pointsDict[i][data[0]][1] === data[1]) ||
-						// overlapping point should exist
-						(data[1] === 0 && !showMarker && 
-						 !pointsDict[i][data[0]])) {
-
-						$(tooltip).append ($('<span>', {
-							text: typesText[i] + ': ' + data[1]
-						}));
-						$(tooltip).append ($('<br>'));
-					}
-				}
-			}
-
-			// determine where to place the tooltip
-			var marginLeft, marginRight;
-			marginLeft = 11;
-			marginTop = 11;
-			if (pointXPrev + pxToInt ($(tooltip).css ('width')) >
-				chartLeft + pxToInt ($('#' + thisX2Chart.chartType + '-chart').css ('width'))) {
-				thisX2Chart.DEBUG && console.log ('xoverflow');
-				marginLeft = 
-					- (pxToInt ($(tooltip).css ('width')) + marginLeft);
-			}
-			if (pointYPrev + pxToInt ($(tooltip).css ('height')) >
-				chartTop + pxToInt ($('#' + thisX2Chart.chartType + '-chart').css ('height'))) {
-				thisX2Chart.DEBUG && console.log ('yoverflow');
-				marginTop = 
-					- (pxToInt ($(tooltip).css ('height')) + marginTop);
-			}
-
-			$(tooltip).css ({
-				position: 'absolute',
-				left: pointXPrev,
-				top: pointYPrev,
-				'margin-left': marginLeft,
-				'margin-top': marginTop
-			});
-			$(tooltip).show ();
-
-		});
-
-	function distance (x1, y1, x2, y2) {
-		var dist = (Math.sqrt (Math.pow (x1 - x2, 2) + Math.pow (y1 - y2, 2)));
-		return dist;
-	}
-
-	// hide tooltip when mouse moves away from data point
-	function unhighlight (mouseX, mouseY) {
-		//thisX2Chart.DEBUG && console.log ('jqthisX2Chart.plotDataUnhighlight');
-
-		var tooltip = $('#' + thisX2Chart.chartType + '-chart-tooltip');
-
-		if ($(tooltip).is (':visible') &&
-			mouseX !== null && mouseY !== null &&
-			pointXPrev !== null && pointYPrev !== null &&
-			distance (
-				mouseX, mouseY, pointXPrev, pointYPrev) > 12) {
-
-			thisX2Chart.DEBUG && console.log ('hiding tooltip');
-
-			//$('#' + thisX2Chart.chartType + '-chart-tooltip').empty ();
-			$(tooltip).hide ();
-		}
-
-	}
-
-	$('#' + thisX2Chart.chartType + '-chart').unbind ('mousemove');
-	$('#' + thisX2Chart.chartType + '-chart').bind ('mousemove', function (event) {
-		//thisX2Chart.DEBUG && console.log ('mouse');
-		var mouseX = event.pageX;
-		var mouseY = event.pageY;
-		unhighlight (mouseX, mouseY);
-	});
-
-	$('#' + thisX2Chart.chartType + '-chart-tooltip').unbind ('mousemove');
-	$('#' + thisX2Chart.chartType + '-chart-tooltip').bind ('mousemove', function (event) {
-		//thisX2Chart.DEBUG && console.log ('chart-tooltip mouse');
-		var mouseX = event.pageX;
-		var mouseY = event.pageY;
-		unhighlight (mouseX, mouseY);
-	});
-
-	$('#' + thisX2Chart.chartType + '-chart').unbind ('mouseout');
-	$('#' + thisX2Chart.chartType + '-chart').bind ('mouseout', function (event) {
-		$('#' + thisX2Chart.chartType + '-chart-tooltip').hide ();
-	});
-
-}
-
-X2Chart.prototype.buildChartLegend = function (typesText, color) {
+X2Chart.prototype.buildChartLegend = function (types, typesText, color) {
 	var thisX2Chart = this;
 	$('#' + thisX2Chart.chartType + '-chart-legend tbody').empty ();
 	var makeNewRow = true;
 	var currRow, currCell;
-	for (var i in typesText) {
+	for (var i in types) {
 		if (makeNewRow) {
 			thisX2Chart.DEBUG && console.log ('make new row');
 			currRow = $('<tr>');
@@ -1775,239 +2786,25 @@ X2Chart.prototype.buildChartLegend = function (typesText, color) {
 					class: 'chart-color-swatch'
 				}),
 				$('<span>', {
-					text: typesText[i],
+					text: typesText[types[i]],
 					class: 'chart-color-label'
 				})
 			)
 		thisX2Chart.DEBUG && console.log ('setting background-color to ' + color[i]);
 		$(currCell).find ('div').css ('background-color', color[i]);
 		$(currRow).append (currCell);
+        if (i > 22) break;
 	}
-	if (typesText.length === 2) {
+	if (types.length === 2) {
 		$(currRow).append ($('<td>')); // dummy cell
 	}
-}
+};
 
+X2Chart.prototype.getJqplotConfig = function (argsDict) {};
 
-/*
-Plots event data retrieved by thisX2Chart.getEventsBetweenDates ().
-If two metrics are selected by the user, thisX2Chart.plotData will plot two lines.
-Parameter:
-	args - a dictionary containing optional parameters.
-		redraw - an optional parameter which can be contained in args. If set to
-			true, the chart will be cleared before the plotting.
-*/
-X2Chart.prototype.plotData = function (args /* optional */) {
-	var thisX2Chart = this;
-	if (typeof args !== 'undefined') {
-		redraw = typeof args['redraw'] === 'undefined' ?
-			false : args['redraw'];
-	} else { // defaults
-		redraw = false;
-	}
-
-	// retrieve user selected values
-	var binSize = 
-		$('#' + thisX2Chart.chartType + '-bin-size-button-set a.disabled-link').attr ('id').
-		replace (thisX2Chart.chartType + '-', '');
-	var tsDict = thisX2Chart.getStartEndTimestamp ();
-	var startTimestamp = tsDict['startTimestamp'];
-	var endTimestamp = tsDict['endTimestamp'];
-
-	thisX2Chart.DEBUG && console.log ('thisX2Chart.plotData: startTimestamp, endTimestamp = ');
-	thisX2Chart.DEBUG && console.log ([startTimestamp, endTimestamp]);
-
-	// default settings
-	var yTickCount = 3;
-	var showXTicks = true;
-	var showMarker = false;
-	var tickInterval = null;
-
-	/* 
-	graph at least 1 interval, hour bin size is a special case since it is the only
-	case for which there are multiple bins when start and and timestamp are equal.
-	*/
-	if (/*startTimestamp === endTimestamp && */binSize === 'hour-bin-size')
-		endTimestamp = thisX2Chart.shiftTimeStampOneInterval (endTimestamp, binSize, true);
-
-	var min = startTimestamp;
-	var max = endTimestamp;
-
-	var countDict = thisX2Chart.countBins (min, max);
-
-	// single bin is a special case, isolated point should be shown
-	var onlyOneBin = thisX2Chart.checkOnlyOneBin (binSize, countDict);
-	if (onlyOneBin) {
-		thisX2Chart.DEBUG && console.log ('onlyOneBin = true');
-		min = thisX2Chart.shiftTimeStampOneInterval (min, binSize, false);
-		max = thisX2Chart.shiftTimeStampOneInterval (max, binSize, true);
-		countDict = thisX2Chart.countBins (min, max); // recount for new interval
-	} else {
-		thisX2Chart.DEBUG && console.log ('onlyOneBin = false');
-	}
-
-	// determine label format and number of ticks based on data
-	var ticksDict = thisX2Chart.getTicks (
-		min, max, binSize, countDict);
-	var ticks = ticksDict['ticks'];
-	var labelFormat = ticksDict['labelFormat'];
-	thisX2Chart.DEBUG && console.log ('ticks = ');
-	thisX2Chart.DEBUG && console.log (ticks);
-	showMarker = thisX2Chart.getShowMarkerSetting (binSize, countDict);
-
-	thisX2Chart.DEBUG && console.log ('min = ' + min);
-	thisX2Chart.DEBUG && console.log ('max = ' + max);
-
-	/*if (ticks[0][0] < min)
-		min = ticks[0][0]
-	if (ticks[ticks.length - 1][0] > max)
-		max = ticks[ticks.length - 1][0];*/
-
-	// get user selected metrics
-	var types;
-	types = $('#' + thisX2Chart.chartType + '-first-metric').val ();
-
-	// get chartData for each user specified type
-	var color = []; 
-	var chartData = [];
-	thisX2Chart.DEBUG && console.log ('types = ' + types);
-	if (types === null) {
-		chartData.push ([]);
-	} else {
-		var type;
-		for (var i in types) {
-			type = types[i];
-			thisX2Chart.DEBUG && console.log ('type = ' + type);
-			color.push (thisX2Chart.metricOptionsColors[types[i]]); // color of line 
-			dataDict = thisX2Chart.groupChartData (
-				thisX2Chart.eventData, binSize, type, showMarker, onlyOneBin);
-			chartData.push (dataDict['chartData']);
-		}
-	}
-	thisX2Chart.DEBUG && console.log ('metricOptionsColors = ');
-	thisX2Chart.DEBUG && console.log (thisX2Chart.metricOptionsColors);
-
-	// if no chartData exists of specified type, don't plot it
-	var noChartData = true;
-	for (var i in chartData) {
-		if (chartData[i].length === 0) {
-			chartData[i] = [null];
-		} else {
-			noChartData = false;
-		}
-	}
-
-	// pad left and right side of data with entries having y value equal to 0
-	if (!onlyOneBin &&
-		$('#' + thisX2Chart.chartType + '-first-metric').val () !== null) {
-		thisX2Chart.DEBUG && console.log ('filling chart data');
-		for (var i in chartData) {
-			chartData[i] = thisX2Chart.fillZeroEntries (
-				min, max, binSize, chartData[i], showMarker);
-		}
-	}
-
-	thisX2Chart.DEBUG && console.log ('filled chartData = ');
-	thisX2Chart.DEBUG && console.debug (chartData.toString ());
-
-	thisX2Chart.DEBUG && console.log ('min = ' + min);
-	thisX2Chart.DEBUG && console.log ('max = ' + max);
-
-	jqplotConfig =  {
-		seriesDefaults: {
-			showMarker: showMarker,
-			shadow: false,
-			shadowAngle: 0,
-			shadowOffset: 0,
-			shadowDepth: 0,
-			shadowAlpha: 0,
-			markerOptions: {
-				shadow: false,
-				shadowAngle: 0,
-				shadowOffset: 0,
-				shadowDepth: 0,
-				shadowAlpha: 0
-			}
-		},
-		axesDefaults: {
-			x2axis: {
-				show: false
-			}
-		},
-		seriesColors: color,
-		series:[{
-			label: 'Events',
-			}
-		],
-		legend: {
-			show: false
-		},
-		grid: {
-			drawGridLines: false,
-			gridLineColor: '#ffffff',
-			borderColor: '#999',
-			borderWidth: 1,
-			background: '#ffffff',
-			shadow: false
-		},
-		axes: {
-			xaxis: {
-				renderer: $.jqplot.DateAxisRenderer,
-				tickOptions: {
-					angle: -90
-				},
-				showTicks: showXTicks,
-				ticks: ticks,
-				min: min,
-				max: max,
-				padMin: 150,
-				padMax: 150
-			},
-			yaxis: {
-				pad: 1.05,
-				numberTicks: yTickCount,
-				tickOptions: {formatString: '%d'},
-				min: 0
-			}
-		},
-		highlighter: {
-			show: true,
-			showTooltip: false,
-			sizeAdjust: 2.5
-
-		}
-	}
-
-	if (noChartData) {
-		jqplotConfig.axes.yaxis['max'] = 1;
-		jqplotConfig.axes.yaxis['numberTicks'] = 2;
-	}
-
-	// plot chartData
-	thisX2Chart.feedChart = 
-		$.jqplot (thisX2Chart.chartType + '-chart', chartData, jqplotConfig);
-
-	thisX2Chart.DEBUG && console.log ('chartData.length = ' + chartData.length);
-	thisX2Chart.DEBUG && console.log ('labelFormat = ' + labelFormat);
-
-	if (redraw) {
-		thisX2Chart.feedChart.replot (); // clear previous plot and plot again
-	}
-
-	// used to display type labels in tooltips and legend
-	var typesText = [];
-	$('#' + thisX2Chart.chartType + '-first-metric').find (":selected").each (
-		function () {
-
-		typesText.push ($(this).html ());
-	});
-
-	if (types !== null)
-		thisX2Chart.setupTooltipBehavior (labelFormat, showMarker, chartData, typesText);
-
-	thisX2Chart.buildChartLegend (typesText, color);
-
-}
+X2Chart.prototype.preJqplotPlotPieData = function (chartData) {};
+X2Chart.prototype.preJqplotPlotLineData = function (chartData) {};
+X2Chart.prototype.plotData = function () {};
 
 /*
 Changes the chart settings to match the settings specified in the parameters.
@@ -2030,6 +2827,12 @@ X2Chart.prototype.applyChartSetting = function (settingsDict) {
 		var endDate = new Date (parseInt (endDate, 10));
 		$('#' + thisX2Chart.chartType + '-chart-datepicker-to').
 			datepicker ('setDate', endDate);
+	}
+
+	function applyDateRange (selector, dateRange) {
+		thisX2Chart.DEBUG && console.log ('applying date range');
+		thisX2Chart.applyDateRange (dateRange);
+		selectOptionFromSelector (selector, dateRange);
 	}
 
 	function applyBinSize (binSize) {
@@ -2056,6 +2859,14 @@ X2Chart.prototype.applyChartSetting = function (settingsDict) {
 		checkedValues = checkedValues === null ? [] : checkedValues;
 		var filterVal = $(possibleVals).not (checkedValues);
 		thisX2Chart.filters[filterName] = filterVal;
+	}
+
+	// date range takes precedences over start and end date settings
+	if (settingsDict['dateRange'] !== undefined &&
+	    settingsDict['dateRange'] !== null &&
+		settingsDict['dateRange'] !== 'Custom') {
+		if (settingsDict['startDate'] !== undefined) delete settingsDict['startDate'];
+		if (settingsDict['endDate'] !== undefined) delete settingsDict['endDate'];
 	}
 
 	for (var i in settingsDict) {
@@ -2103,11 +2914,93 @@ X2Chart.prototype.applyChartSetting = function (settingsDict) {
 					selector, 'visibilityFilter', thisX2Chart.visibilityTypes,
 					settingsDict[i]);
 				break;
+			case 'dateRange':		
+				var selector = '#' + thisX2Chart.chartType + '-date-range-selector';
+				applyDateRange (selector, settingsDict[i]);
+				break;
 			default:
 				thisX2Chart.DEBUG && console.log ('Error: applyMultiselectSettings: default on switch');
 		}
 	}
-}
+};
+
+X2Chart.prototype.applyDateRange = function (dateRange) {
+	var thisX2Chart = this;
+
+	thisX2Chart.DEBUG && console.log ('dateRange = ' + dateRange);
+	var fromDatepicker = $('#' + thisX2Chart.chartType + '-chart-datepicker-from');
+	var toDatepicker = $('#' + thisX2Chart.chartType + '-chart-datepicker-to');
+
+	switch (dateRange) {
+		case 'Custom':
+			break;
+		case 'Today':
+			var date = new Date ();
+			thisX2Chart.DEBUG && console.log ('date = ' + date);
+			$(fromDatepicker).datepicker ('setDate', date);
+			$(toDatepicker).datepicker ('setDate', date);
+			break;
+		case 'Yesterday':
+			var date = (+ new Date ()) - MSPERDAY;
+			thisX2Chart.DEBUG && console.log ('date = ' + date);
+			$(fromDatepicker).datepicker ('setDate', new Date (date));
+			$(toDatepicker).datepicker ('setDate', new Date (date));
+			break;
+		case 'Last Week':
+			var date = + new Date ();
+			var startTimestamp = thisX2Chart.getRoundedWeekTs (date - MSPERWEEK, true);
+			var endTimestamp = thisX2Chart.getRoundedWeekTs (date, true) - MSPERDAY;
+			$(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
+			$(toDatepicker).datepicker ('setDate', new Date (endTimestamp));
+			break;
+		case 'This Week':
+			var date = + new Date ();
+			var startTimestamp = thisX2Chart.getRoundedWeekTs (date, true);
+			$(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
+			$(toDatepicker).datepicker ('setDate', new Date (date));
+			break;
+		case 'This Month':
+			var date = + new Date ();
+			var startTimestamp = 
+				thisX2Chart.getRoundedMonthTs (date, 'month-bin-size', true);
+			$(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
+			$(toDatepicker).datepicker ('setDate', new Date (date));
+			break;
+		case 'Last Month':
+			var date = + new Date ();
+			var startTimestamp = 
+				thisX2Chart.shiftTimeStampOneInterval (date, 'month-bin-size', false);
+			var endTimestamp = thisX2Chart.getRoundedMonthTs (date, true) - MSPERDAY;
+			$(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
+			$(toDatepicker).datepicker ('setDate', new Date (endTimestamp));
+			break;
+		/*case 'Data Domain':
+			var date = new Date ();
+			//$(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
+			$(toDatepicker).datepicker ('setDate', date);
+			break;*/
+		default:
+			thisX2Chart.DEBUG && console.log ('Error: setUpDateRangeSelector: default on switch');
+	}
+};
+
+/*
+Set up behavior of date range selector ui element. 
+Pre: setUpDatepickers has already been called.
+*/
+X2Chart.prototype.setUpDateRangeSelector = function () {
+	var thisX2Chart = this;
+
+	thisX2Chart.DEBUG && console.log ('setUpDateRangeSelector');
+
+	$('#' + thisX2Chart.chartType + '-date-range-selector').on ('change', function () {
+		var dateRange = $(this).val ();
+		thisX2Chart.applyDateRange (dateRange);
+		$.cookie (thisX2Chart.cookiePrefix + 'dateRange', dateRange);
+		thisX2Chart.getEventsBetweenDates (true);
+		thisX2Chart.setChartSettingName ('');  
+	});
+};
 
 /*
 Instantiate jquery datepickers and set to default values. Set up datepicker behavior.
@@ -2124,8 +3017,6 @@ X2Chart.prototype.setUpDatepickers = function () {
 				selectOtherMonths: true,
 				dateFormat: yii.datePickerFormat
 	});
-	$('#' + thisX2Chart.chartType + '-chart-datepicker-from').datepicker(
-		'setDate', new Date ());
 
 	$('#' + thisX2Chart.chartType + '-chart-datepicker-to').datepicker({
 				constrainInput: false,
@@ -2148,7 +3039,11 @@ X2Chart.prototype.setUpDatepickers = function () {
 				datepicker ('getDate').valueOf ());
 		if (!thisX2Chart.suppressChartSettings) {
 			thisX2Chart.setChartSettingName ('');  
-			$('#' + thisX2Chart.chartType + '-predefined-settings').change ();
+		}
+		if (!thisX2Chart.suppressDateRangeSelector) {
+			selectOptionFromSelector (
+				'#' + thisX2Chart.chartType + '-date-range-selector', 'Custom');
+	        $('#' + thisX2Chart.chartType + '-date-range-selector').trigger ('change');
 		}
 	});
 
@@ -2166,11 +3061,16 @@ X2Chart.prototype.setUpDatepickers = function () {
 
 		if (!thisX2Chart.suppressChartSettings) {
 			thisX2Chart.setChartSettingName ('');  
-			$('#' + thisX2Chart.chartType + '-predefined-settings').change ();
+		}
+
+		if (!thisX2Chart.suppressDateRangeSelector) {
+			selectOptionFromSelector (
+				'#' + thisX2Chart.chartType + '-date-range-selector', 'Custom');
+	        $('#' + thisX2Chart.chartType + '-date-range-selector').trigger ('change');
 		}
 	});
 
-}
+};
 
 /*
 Override in child prototype
@@ -2200,13 +3100,12 @@ X2Chart.prototype.setUpMetricSelection = function () {
 		thisX2Chart.plotData ({redraw: true});
 		if (!thisX2Chart.suppressChartSettings) {
 			thisX2Chart.setChartSettingName ('');  
-			$('#' + thisX2Chart.chartType + '-predefined-settings').change ();
 		}
 	});
 
 	thisX2Chart.postMetricSelectionSetup ();
 
-}
+};
 
 X2Chart.prototype.setCookiesFromSettings = function (settingsDict) {
 	var thisX2Chart = this;
@@ -2246,13 +3145,18 @@ X2Chart.prototype.setCookiesFromSettings = function (settingsDict) {
 				$.cookie (thisX2Chart.cookiePrefix + 'chartSetting', 
 					settingsDict['chartSetting']);
 				break;
+			case 'dateRange':
+				$.cookie (thisX2Chart.cookiePrefix + 'dateRange', 
+					settingsDict['dateRange']);
+				break;
 			default:
 				thisX2Chart.DEBUG && console.log ('Error: setCookiesFromSettings: default on switch');
 		}
 	}
 
-}
+};
 
+X2Chart.prototype.postSetSettingsFromCookie = function () {};
 
 /*
 Extracts saved settings from cookie and sets chart settings to them.
@@ -2301,6 +3205,10 @@ X2Chart.prototype.setSettingsFromCookie = function () {
 				settingsDict['chartSetting'] = 
 					$.cookie (thisX2Chart.cookiePrefix + 'chartSetting');
 				break;
+			case 'dateRange':
+				settingsDict['dateRange'] = 
+					$.cookie (thisX2Chart.cookiePrefix + 'dateRange');
+				break;
 			default:
 				thisX2Chart.DEBUG && console.log ('Error: setSettingsFromCookie: default on switch ' +
 					'invalid cookie type ' + thisX2Chart.cookieTypes[i]);
@@ -2311,7 +3219,8 @@ X2Chart.prototype.setSettingsFromCookie = function () {
 	thisX2Chart.DEBUG && console.log (settingsDict);
 
 	thisX2Chart.applyChartSetting (settingsDict);
-}
+    thisX2Chart.postSetSettingsFromCookie ();
+};
 
 /*
 Selects chart setting from drop down. If the setting is not the custom setting,
@@ -2335,7 +3244,8 @@ X2Chart.prototype.setChartSettingName = function (chartSetting) {
 	} else {
 		$('#' + thisX2Chart.chartType + '-delete-setting-button').fadeIn ();
 	}
-}
+	$('#' + thisX2Chart.chartType + '-predefined-settings').change ();
+};
 
 /*
 Sets up behavior of ui elements related to chart setting selection, deletion, and 
@@ -2393,6 +3303,10 @@ X2Chart.prototype.setUpChartSettings = function () {
 						$('#' + thisX2Chart.chartType + '-social-subtypes-chart-filter').
 							val ();
 					break;
+				case 'dateRange':
+					chartSettingAttributes['settings']['dateRange'] = 
+						$('#' + thisX2Chart.chartType + '-date-range-selector').val ();
+					break;
 				default: 
 					thisX2Chart.DEBUG && console.log ('Error: createChartSetting: default switch');
 			}
@@ -2425,7 +3339,6 @@ X2Chart.prototype.setUpChartSettings = function () {
 						'text': settingName
 					}));
 					thisX2Chart.setChartSettingName (settingName);
-					$('#' + thisX2Chart.chartType + '-predefined-settings').change ();
 
 				} else { // creation failed
 					thisX2Chart.DEBUG && console.log (data);
@@ -2551,7 +3464,6 @@ X2Chart.prototype.setUpChartSettings = function () {
 				thisX2Chart.DEBUG && console.log (data);
 				if (data === 'success') {
 					thisX2Chart.setChartSettingName ('');  
-					$('#' + thisX2Chart.chartType + '-predefined-settings').change ();
 					$('#' + thisX2Chart.chartType + '-predefined-settings').find (
 						'[value="' + settingName + '"]').remove ();
 				} 
@@ -2588,7 +3500,7 @@ X2Chart.prototype.setUpChartSettings = function () {
 		}
 		$.cookie (thisX2Chart.cookiePrefix + 'chartSetting', $(this).val ());
 	});
-}
+};
 
 X2Chart.prototype.hide = function () {
 	var thisX2Chart = this;
@@ -2628,11 +3540,10 @@ X2Chart.prototype.setUpBinSizeSelection = function () {
 			$.cookie (thisX2Chart.cookiePrefix + 'binSize', binSize);
 			if (!thisX2Chart.suppressChartSettings) {
 				thisX2Chart.setChartSettingName ('');  
-				$('#' + thisX2Chart.chartType + '-predefined-settings').change ();
 			}
 		}
 	});
-}
+};
 
 
 

@@ -174,4 +174,5 @@ return array (
 'Your case number is: '=>'',
 'Website: '=>'',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'',
+'Saved Searches'=>'',
 );

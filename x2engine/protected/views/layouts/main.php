@@ -88,6 +88,7 @@ $cldScript .= "\n})(jQuery);";
 
 // custom scripts
 $cs ->registerScriptFile($baseUrl.'/js/json2.js')
+	->registerScriptFile($baseUrl.'/js/auxlib.js')
 	->registerScriptFile($baseUrl.'/js/layout.js')
 	->registerScriptFile($baseUrl.'/js/publisher.js')
 	->registerScriptFile($baseUrl.'/js/media.js')
@@ -124,6 +125,7 @@ $cs->registerCoreScript('jquery');
 // blueprint CSS framework
 $cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
 	->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/auxlib.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/jquery-ui.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/dragtable.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/print.css'.$jsVersion,'print')
@@ -150,8 +152,13 @@ window.enableFullWidth = '.(!Yii::app()->user->isGuest ? ($profile->enableFullWi
 window.fullscreen = '.($fullscreen ? 'true' : 'false').';
 ', CClientScript::POS_HEAD);
 if(!$isGuest){
+$cs->registerScript ('notificationsParams', "
+    x2.notifications = {};
+    x2.notifications.translations = {};
+    x2.notifications.translations['clearAll'] = '".addslashes (Yii::t('app', 'Permanently delete all notifications?'))."';
+", CClientScript::POS_HEAD);
 $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
-        ->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion);
+   ->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion, CClientScript::POS_BEGIN);
 }
 
 if(!$isGuest && ($profile->language == 'he' || $profile->language == 'fa'))
@@ -400,8 +407,12 @@ $userMenu = array(
     array('label' => Yii::t('app', 'Users'), 'url' => array('/users/admin'), 'visible' => $isAdmin),
     array('label' => Yii::t('app', 'Users'), 'url' => array('/profile/profiles'), 'visible' => !$isAdmin),
     array('label' => $searchbarHtml, 'itemOptions' => array('id' => 'search-bar', 'class' => 'special')),
-    array('label' => CHtml::link('<span>'.$notifCount.'</span>', '#', array('id' => 'main-menu-notif', 'style' => 'z-index:999;')), 'itemOptions' => array('class' => 'special')),
-    array('label' => CHtml::link('<span>&nbsp;</span>', '#', array('class' => 'x2-button', 'id' => 'fullscreen-button')), 'itemOptions' => array('class' => 'search-bar special')),
+    array('label' => CHtml::link(
+        '<span>'.$notifCount.'</span>', '#', array('id' => 'main-menu-notif', 'style' => 'z-index:999;')), 
+        'itemOptions' => array('class' => 'special')),
+    array('label' => CHtml::link(
+        '<span>&nbsp;</span>', '#', array('class' => 'x2-button', 'id' => 'fullscreen-button')), 
+        'itemOptions' => array('class' => 'search-bar special')),
     array('label' => CHtml::link('<div class="widget-icon"></div>', '#', array(
             'id' => 'widget-button',
             'class' => 'x2-button',
@@ -529,8 +540,14 @@ if(method_exists($this,'renderGaCode'))
 				<div id="notif-box">
 					<div id="no-notifications"<?php if($notifCount > 0) echo ' style="display:none;"'; ?>>
 					<?php echo Yii::t('app', 'You don\'t have any notifications.'); ?>
-					</div><div id="notifications"></div><div id="notif-view-all"<?php if($notifCount < 11) echo ' style="display:none;"'; ?>>
-					<?php echo CHtml::link(Yii::t('app', 'View all'), array('/site/viewNotifications')); ?>
+					</div><div id="notifications"></div>
+                    <div id="notif-view-all"<?php if($notifCount < 11) echo ' style="display:none;"'; ?>>
+					    <?php echo CHtml::link(
+                            Yii::t('app', 'View all'), array('/site/viewNotifications')); ?>
+					</div>
+                    <div class='right' id="notif-clear-all"
+                     <?php if ($notifCount === '0') echo ' style="display:none;"'; ?>>
+					    <?php echo CHtml::link(Yii::t('app', 'Clear all'), '#'); ?>
 					</div>
 				</div>
 				<div id="notif-box-shadow-correct"> <!-- IE fix, used to force repaint -->

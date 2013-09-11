@@ -28,4 +28,7 @@ return array (
 'Please fill out the fields below to create a new module.'=>'새 모듈을 만들려면 아래의 필드를 기입하십시오.',
 'Enter field name here'=>'필드 이름을 여기에 입력',
 'A module with that name already exists'=>'그 이름을 가진 모듈이 이미 존재합니다',
+'Unable to create custom module directory.'=>'사용자 지정 모듈 디렉토리를 만들 수 없습니다.',
+'Unable to create config file for custom module.'=>'사용자 정의 모듈에 대한 구성 파일을 만들 수 없습니다.',
+'Unable to create table for custom module.'=>'사용자 정의 모듈의 테이블을 만들 수 없습니다.',
 );

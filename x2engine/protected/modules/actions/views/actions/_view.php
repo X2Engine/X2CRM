@@ -195,8 +195,13 @@ else if($type == 'workflow'){
         $header = $matches[1];
         $body = '';
     }else{
-        $header = "No subject found";
-        $body = "(Error displaying email)";
+        if(empty($data->subject)){
+            $header = "No subject found";
+            $body = "(Error displaying email)";
+        }else{
+            $header = $data->subject."<br>";
+            $body = $data->actionDescription;
+        }
     }
     if($type == 'emailOpened'){
         echo "Contact has opened the following email:<br />";
@@ -208,8 +213,8 @@ else if($type == 'workflow'){
     }
     echo ($legacy ? '<br />' : '').CHtml::link('[View email]', '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'email-frame'));
 }elseif($data->type == 'quotes'){
-    $quotePrint = (bool)  preg_match('/^\d+$/',$data->actionDescription); 
-    $objectId = $quotePrint ? $data->actionDescription : $data->id; 
+    $quotePrint = (bool)  preg_match('/^\d+$/',$data->actionDescription);
+    $objectId = $quotePrint ? $data->actionDescription : $data->id;
     echo CHtml::link('[View quote]', 'javascript:void(0);', array('onclick' => 'return false;', 'id' => $objectId, 'class' => $quotePrint ? 'quote-print-frame' : 'quote-frame'));
 } else
     echo Yii::app()->controller->convertUrls(CHtml::encode($data->actionDescription)); // convert LF and CRLF to <br />

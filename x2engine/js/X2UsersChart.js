@@ -48,43 +48,15 @@ function X2UsersChart (argsDict) {
 	this.visibilityTypes = argsDict['visibilityTypes'];
 	this.DEBUG = argsDict['DEBUG'];
 
-
 	// color palette used for lines of feed chart
-	this.colors = [
-		'#7EB2E6', // pale blue
-		'#FFC382', // pastel orange
-		'#E8E172', // pastel yellow
-		'#FF9CAD', // pastel pink
-		'#BAFFA1', // pastel green
-		//'#CA8613', // orange brown
-		//'#C6B019', // dark sand
-		'#94E3DF', // pastel light blue
-		'#56D6E3', // pastel mid blue
-		'#99C9FF', // pastel dark blue
-		'#FFA8CE', // pastel dark pink
-		'#D099FF', // pastel dark purple
-		'#E1A1FF', // pastel light purple
-		'#CEC415', // mustard
-		'#BC0D2C', // pomegranate
-		'#45B41D', // apple green
-		'#AB074F', // dark hot pink
-		//'#156A86', // dark blue
-		'#1B8FB5', // dark blue
-		'#3D1783', // dark purple
-		//'#5A1992',// deep purple
-		'#AACF7A',
-		'#7BB57C', // olive green
-		//'#69B10A', // dark lime green
-		//'#8DEB10',
-		'#C87010', // red rock
-		'#1D4C8C', // dark blue-purple
-	];
+	this.colors;
 
-	thisX2Chart.resetMetricOptionColors ();
+	this.metricOptionsColors = {}; // used to pair colors with metrics
+	//thisX2Chart.resetMetricOptionColors ();
 
 	this.cookieTypes = [
 		'startDate', 'endDate', 'binSize', 'firstMetric', 'chartSetting', 
-		'eventsFilter', 'socialSubtypesFilter', 'visibilityFilter'];
+		'eventsFilter', 'socialSubtypesFilter', 'visibilityFilter', 'dateRange'];
 	this.filterTypes = ['eventsFilter', 'socialSubtypesFilter', 'visibilityFilter'];
 
 	this.filters = {};
@@ -101,7 +73,119 @@ function X2UsersChart (argsDict) {
 
 }
 
+/************************************************************************************
+Static Methods
+************************************************************************************/
+
+
+/************************************************************************************
+Instance Methods
+************************************************************************************/
+
 X2UsersChart.prototype = Object.create (X2Chart.prototype);
+
+X2UsersChart.prototype.postSetSettingsFromCookie = function (userCount) {
+	var thisX2Chart = this;
+
+    var selectedMetrics = $('#' + thisX2Chart.chartType + '-first-metric').val ();
+    if (selectedMetrics === null) return;
+
+	// color palette used for lines of feed chart
+	this.colors = thisX2Chart.getColorPalette ($(selectedMetrics).length);
+	thisX2Chart.resetMetricOptionColors ();
+
+};
+
+X2UsersChart.prototype.getColorPalette = function (userCount) {
+	var thisX2Chart = this;
+
+	function leftPadZeros (str) {
+		var length = str.length;
+		for (var i = 0; i < 6 - length; ++i) str = '0' + str;
+		return str;
+	}
+
+	//var userCount = thisX2Chart.getMetricTypes ().length;
+	var minColor = 0 + 4194304;
+	var maxColor = 16777216 - 4194304;
+	var colorInterval = Math.floor ((maxColor - minColor) / userCount);
+	var colors = [];
+	var currColor = minColor;
+    var hexCode, hexRed, hexGreen, hexBlue, modColor, colorSum, colorOffset;
+	while (currColor < maxColor) {
+		thisX2Chart.DEBUG && console.log ('currColor = ' + currColor);
+        hexCode = leftPadZeros (currColor.toString (16));
+
+		thisX2Chart.DEBUG && console.log ('hexCode = ' + hexCode);
+        hexRed = parseInt (hexCode.slice (0, 2), 16);
+        hexGreen = parseInt (hexCode.slice (2, 4), 16);
+        hexBlue = parseInt (hexCode.slice (4, 6), 16);
+        thisX2Chart.DEBUG && console.log (hexRed, hexGreen, hexBlue);
+
+        /*// brighten overly dark colors
+        colorSum = hexBlue + hexRed + hexGreen;
+        if (colorSum < 300) {
+            colorOffset = Math.floor ((300 - colorSum) / 3);
+            hexBlue += colorOffset;
+            hexRed += colorOffset;
+            hexGreen += colorOffset;
+            hexBlue = hexBlue > 255 ? 255 : hexBlue;
+            hexGreen = hexGreen > 255 ? 255 : hexGreen;
+            hexBlue = hexRed > 255 ? 255 : hexRed;
+        }
+
+        // darken overly bright colors
+        if (colorSum > 620) {
+            colorOffset = Math.floor ((colorSum - 620) / 3);
+            hexBlue -= colorOffset;
+            hexRed -= colorOffset;
+            hexGreen -= colorOffset;
+            hexBlue = hexBlue < 0 ? 0 : hexBlue;
+            hexGreen = hexGreen < 0 ? 0 : hexGreen;
+            hexBlue = hexRed < 0 ? 0 : hexRed;
+        }
+        thisX2Chart.DEBUG && console.log (hexRed, hexGreen, hexBlue);
+        */
+
+        // make muddy colors less muddy
+        if (Math.abs (hexRed - 128) < 40 &&
+            Math.abs (hexGreen - 128) < 40) {
+            hexRed -= 40;
+        } else if (Math.abs (hexGreen - 128) < 40 &&
+            Math.abs (hexBlue - 128) < 40) {
+            hexGreen -= 40;
+        } else if (Math.abs (hexBlue - 128) < 40 &&
+            Math.abs (hexRed - 128) < 40) {
+            hexBlue -= 40;
+        }
+
+
+        var modColor = hexRed * Math.pow (16, 4) + hexGreen * 
+            Math.pow (16, 2) + hexBlue;
+        hexCode = leftPadZeros (modColor.toString (16));
+		colors.push ('#' + hexCode);
+		currColor += colorInterval;
+	}
+
+    // sort light to dark
+    function colorCompare (colorA, colorB) {
+        // remove '#' symbols
+        colorA = colorA.slice (1);
+        colorB = colorB.slice (1);
+        var colorSumA, colorSumB;
+        colorSumA = parseInt (colorA.slice (0, 2), 16) +
+            parseInt (colorA.slice (2, 4), 16)
+            parseInt (colorA.slice (4, 6), 16);
+        colorSumB = parseInt (colorB.slice (0, 2), 16) +
+            parseInt (colorB.slice (2, 4), 16)
+            parseInt (colorB.slice (4, 6), 16);
+        return colorSumA < colorSumB;
+    }
+
+    colors.sort (colorCompare);
+
+    return colors;
+};
 
 X2UsersChart.prototype.setDefaultSettings = function () {
 	var thisX2Chart = this;
@@ -109,7 +193,10 @@ X2UsersChart.prototype.setDefaultSettings = function () {
 	thisX2Chart.DEBUG && console.log ('setDefaultSettings: ' + this.chartType);
 
 	// start date picker default
-	if ($.cookie (thisX2Chart.cookiePrefix + 'startDate') === null) {
+	if (($.cookie (thisX2Chart.cookiePrefix + 'dateRange') === null || 
+	     $.cookie (thisX2Chart.cookiePrefix + 'dateRange') !== 'Custom') &&
+	    $.cookie (thisX2Chart.cookiePrefix + 'startDate') === null) {
+
 		// default start date 
 		$('#' + thisX2Chart.chartType + '-chart-datepicker-from').
 			datepicker('setDate', '-7d'); 
@@ -120,8 +207,11 @@ X2UsersChart.prototype.setDefaultSettings = function () {
 	}
 
 	// end date picker default
-	if ($.cookie (thisX2Chart.cookiePrefix + 'endDate') === null) {
+	if (($.cookie (thisX2Chart.cookiePrefix + 'dateRange') === null || 
+	     $.cookie (thisX2Chart.cookiePrefix + 'dateRange') !== 'Custom') &&
+		$.cookie (thisX2Chart.cookiePrefix + 'endDate') === null) {
 		thisX2Chart.DEBUG && console.log ('setting default for eventsChart to date');
+
 		// default start date 
 		$('#' + thisX2Chart.chartType + '-chart-datepicker-to').
 			datepicker('setDate', new Date ()); // default end date
@@ -131,9 +221,26 @@ X2UsersChart.prototype.setDefaultSettings = function () {
 			datepicker ('getDate').valueOf ());
 	}
 
-
 };
 
+X2UsersChart.prototype.preJqplotPlotPieData = function (chartData) {
+	var thisX2Chart = this;
+
+    //thisX2Chart.DEBUG && console.log ('preJqplotPlotPieData: ' + chartData.length);
+
+	thisX2Chart.colors = thisX2Chart.getColorPalette (
+	    chartData.length);
+    thisX2Chart.resetMetricOptionColors ();
+};
+
+X2UsersChart.prototype.preJqplotPlotLineData = function (chartData) {
+	var thisX2Chart = this;
+
+    if (chartData === null) return;
+
+    thisX2Chart.preJqplotPlotPieData (chartData);
+
+};
 
 X2UsersChart.prototype.chartDataFilter = function (dataPoint, type) {
 	var thisX2Chart = this;
@@ -164,7 +271,7 @@ X2UsersChart.prototype.resetMetricOptionColors = function () {
 	});
 };
 
-X2UsersChart.prototype.selectMetricOptionsForSelected = function (firstMetricVal) {
+X2UsersChart.prototype.selectMetricOptionColorsForSelected = function (firstMetricVal) {
 	var thisX2Chart = this;
 	thisX2Chart.metricOptionsColors = {}; 
 	for (var i in firstMetricVal) {
@@ -184,14 +291,53 @@ X2UsersChart.prototype.postMetricSelectionSetup = function () {
 			if (firstMetricVal !== null) {
 				thisX2Chart.applyMultiselectSettings (
 					$(this), firstMetricVal.slice (0, maxSelected));
-				if (firstMetricVal.length > maxSelected) {
-					thisX2Chart.selectMetricOptionsForSelected (firstMetricVal);
+				/*if (firstMetricVal.length > maxSelected) {
+					thisX2Chart.selectMetricOptionColorsForSelected (firstMetricVal);
 				} else {
 					thisX2Chart.resetMetricOptionColors ();
-				}
+				}*/
 			}
-			thisX2Chart.DEBUG && console.log ('postMetricSelectionSetup: metric1.val = ' + firstMetricVal);
+			thisX2Chart.DEBUG && console.log (
+				'postMetricSelectionSetup: metric1.val = ' + firstMetricVal);
 		});
+};
+
+X2UsersChart.prototype.postPieChartTearDown = function (uiSetUp) {
+	var thisX2Chart = this;
+	$('#' + thisX2Chart.chartType + '-chart').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-chart-legend').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-datepicker-row').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-top-button-row').removeClass ('feed-pie');
+	$('#' + thisX2Chart.chartType + '-create-setting-button').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-predefined-settings').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-first-metric-container').show ();
+	$('#' + thisX2Chart.chartType + '-bin-size-button-set').show ();
+	var filterToggleContainer = $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
+	$('#' + thisX2Chart.chartType + '-first-metric-container').after (filterToggleContainer);
+	if (uiSetUp) {
+		thisX2Chart.DEBUG && console.log ('setting up filters');
+		//thisX2Chart.setUpFilters ();
+	}
+    thisX2Chart.bindFilterEvents ();
+};
+
+X2UsersChart.prototype.postPieChartSetUp = function (uiSetUp) {
+	var thisX2Chart = this;
+	$('#' + thisX2Chart.chartType + '-chart').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-chart-legend').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-datepicker-row').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-top-button-row').addClass ('feed-pie');
+	$('#' + thisX2Chart.chartType + '-create-setting-button').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-predefined-settings').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-first-metric-container').hide ();
+	$('#' + thisX2Chart.chartType + '-bin-size-button-set').hide ();
+	var filterToggleContainer = $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
+	$('#' + thisX2Chart.chartType + '-datepicker-row').append (filterToggleContainer);
+	if (uiSetUp) {
+		thisX2Chart.DEBUG && console.log ('setting up filters');
+		//thisX2Chart.setUpFilters ();
+	}
+    thisX2Chart.bindFilterEvents ();
 };
 
 

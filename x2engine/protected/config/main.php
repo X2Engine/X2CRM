@@ -279,6 +279,7 @@ $config = array(
         'log' => array(
             'class' => 'CLogRouter',
             'routes' => array(
+            ),
             // array(
             // 'class'=>'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
             // 'ipFilters'=>array('127.0.0.1'),
@@ -293,7 +294,7 @@ $config = array(
 //					 'categories' => 'translations',
 //					 'levels' => 'missing',
 //				 ),
-            ),
+//            ),
         ),
         'messages' => array(
             'class' => 'X2MessageSource',

@@ -39,10 +39,6 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('quotes','Create Quote'), 'url'=>array('create')),
 	array('label'=>Yii::t('quotes','View Quote')),
 	array('label'=>Yii::t('quotes','Update Quote'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Add A User'), 'url'=>array('addUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Add A Contact'), 'url'=>array('addContact', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Remove A User'), 'url'=>array('removeUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Remove A Contact'), 'url'=>array('removeContact', 'id'=>$model->id)),
 	array('label'=>Yii::t('quotes','Delete Quote'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 ),$authParams);
 ?>

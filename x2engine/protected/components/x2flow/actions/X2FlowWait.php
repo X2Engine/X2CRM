@@ -41,6 +41,7 @@
  */
 class X2FlowWait extends X2FlowAction {
 	public $title = 'Wait';
+    public $requiresCron = true;
 	public $info = 'Delay execution of the remaining steps until the specified time.';
 
 	public $flowId = null;
@@ -58,6 +59,7 @@ class X2FlowWait extends X2FlowAction {
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
+            'requiresCron' => $this->requiresCron,
 			'options' => array(
 				// array('name'=>'user','label'=>'User','type'=>'assignment','options'=>$assignmentOptions),	// just users, no groups or 'anyone'
 				// array('name'=>'type','label'=>'Type','type'=>'dropdown','options'=>$notifTypes),

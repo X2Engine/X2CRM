@@ -34,8 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
-
 $this->widget('X2Chart', array (
 	'getChartDataActionName' => Yii::app()->request->getScriptUrl () . '/site/GetActionsBetweenAction',
 	'suppressChartSettings' => true,
@@ -58,7 +56,8 @@ $this->widget('X2Chart', array (
 		'workflow'=>Yii::t('app', 'Workflow Actions')
 	),
 	'chartType' => 'actionHistoryChart',
-	'getDataOnPageLoad' => true
+	'getDataOnPageLoad' => true,
+	'hideByDefault' => $hideByDefault
 )); 
 
 ?>

@@ -144,4 +144,6 @@ return array (
 'Create a cron task for X2CRM'=>'Maak een cron taak voor X2CRM',
 'Run delayed or recurring tasks within X2CRM'=>'Run vertraagde of terugkerende taken binnen X2CRM',
 'The base directory configuration directive is set, and it is not the current working directory.'=>'De basisrichtlijn directory configuratie is ingesteld, en het is niet de huidige directory.',
+'The base directory configuration directive is set, and it does not include the current working directory.'=>'De basisrichtlijn directory configuratie is ingesteld, en het omvat niet de huidige directory.',
+'Some hashing algorithms required for software updates are missing on this server:'=>'Sommige hashing algoritmen vereist voor software updates ontbreken op deze server:',
 );

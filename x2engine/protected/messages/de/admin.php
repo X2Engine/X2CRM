@@ -623,4 +623,10 @@ return array (
 'Send As (to service requesters)'=>'Senden als (zu Serviceanforderern)',
 'Send As (to web leads)'=>'Send As (auf dem Web-Leads)',
 'Send As (when notifying users)'=>'Senden als (wenn die Benutzer zu benachrichtigen)',
+'When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.'=>'Beim Ausführen von Aktionen in den Reihen, schränkt dies (Anzahl der Sekunden) die Menge der Zeit, die damit verbracht, so werden kann. Es wird empfohlen, diese niedriger als die maximale Ausführungszeit PHP auf Ihrem Webserver gesetzt.',
+'Event/Action History Privacy'=>'Ereignis / Aktion History Datenschutz',
+'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'=>'Standard ermöglicht es Benutzern, Aktionen / Veranstaltungen, die öffentlich oder ihnen zugewiesenen sind zu sehen. Nur Benutzer können Benutzer sehen nur Aktionen / Veranstaltungen zugeordnet. Gruppe Nur erlaubt Benutzern, Aktionen / Veranstaltungen zugeordnet Mitglieder ihrer Gruppen zu sehen.',
+'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.'=>'Wählen Sie eine Einstellung für die Privatsphäre Aktion History Widget und Aktivitäten-Feed. Bitte beachten Sie, dass jeder Benutzer mit Admin-Rechten auf das Modul, dass die Geschichte auf ist, wird diese Einstellung ignoriert. Nur Benutzer mit vollen Admin-Zugang wird diese Einstellung auf der Aktivitäten-Feed zu ignorieren.',
+'Web Lead Response Email Settings'=>'Web Blei Reaktionszeit Email Einstellungen',
+'Configure how X2CRM sends email when responding to new web leads.'=>'Konfigurieren der E-Mail sendet, wenn X2CRM Reaktion auf neue Web-Leads.',
 );

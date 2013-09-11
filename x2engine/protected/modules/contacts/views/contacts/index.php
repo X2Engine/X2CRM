@@ -44,6 +44,7 @@ $menuItems = array(
 	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('exportContacts')),
     array('label'=>Yii::t('contacts','Contact Map'),'url'=>array('googleMaps')),
     array('label'=>Yii::t('contacts','Saved Maps'),'url'=>array('savedMaps')),
+    //array('label'=>Yii::t('contacts','Saved Searches'),'url'=>array('savedSearches'))
 );
 
 $heading = '';
@@ -125,7 +126,7 @@ function refreshQtip() {
 	$(".contact-name").each(function (i) {
 		var contactId = $(this).attr("href").match(/\\d+$/);
 
-		if(typeof contactId != null && contactId.length) {
+		if(contactId !== null && contactId.length) {
 			$(this).qtip({
 				content: {
 					text: "'.addslashes(Yii::t('app','loading...')).'",

@@ -81,6 +81,11 @@ override spectrum color picker css
 Broadcast Dialog
 */
 
+#broadcast-dialog-user-select {
+    width: 460px;
+    height: 200px;
+}
+
 .dialog-explanation {
     margin-bottom: 8px;
     margin-top: 7px;
@@ -120,6 +125,40 @@ ckeditor
 }
 
 
+
+/*
+Charts
+*/
+
+#activity-feed-chart-container {
+	background: #eee;
+}
+
+div.chart-container {
+	border-top: 1px solid #ddd !important;
+	-moz-border-radius: 0px !important;
+	-o-border-radius: 0px !important;
+	-webkit-border-radius: 0px !important;
+	border-radius: 0px !important;
+}
+
+#chart-type-selector {
+	margin: 4px 0px 4px 5px;
+}
+
+#page-title-container.page-title-container-chart-shown {
+	background: #eee !important;
+}
+
+
+
+/*
+Miscellaneous
+*/
+
+
+
+
 .avatar-image {
     /*border: 3px solid #f8f8f8;*/
 	border: 1px;
@@ -128,7 +167,7 @@ ckeditor
 	-o-border-radius:4px;
 	border-radius:4px;
 }
-
+G
 .social-tabs a{
     text-decoration:none;
 }
@@ -201,36 +240,12 @@ a#toggle-filters-link {
     border-right: none !important;
 }
 
-#broadcast-dialog-user-select {
-    width: 460px;
-    height: 200px;
+/* Used to prevent issue with jquery expandable plugin. Allows expandable text
+to float around the truncated text. */
+.expandable-details-override {
+	display: inline !important;
 }
 
-
-
-/*
-Charts
-*/
-
-#activity-feed-chart-container {
-	background: #eee;
-}
-
-div.chart-container {
-	border-top: 1px solid #ddd !important;
-	-moz-border-radius: 0px !important;
-	-o-border-radius: 0px !important;
-	-webkit-border-radius: 0px !important;
-	border-radius: 0px !important;
-}
-
-#chart-type-selector {
-	margin: 4px 0px 4px 5px;
-}
-
-#page-title-container.page-title-container-chart-shown {
-	background: #eee !important;
-}
 
 
 

@@ -363,7 +363,7 @@ $(function() {
 
 				if(event.associationType == 'calendar') { // calendar event clicked
 					var boxTitle = 'Event';
-				} else if(event.associationType != '' && event.associationType!='contacts'){
+				} else if(event.associationType != '' && event.associationType!='contacts' && event.associationType != undefined){
                     if(typeof associations[event.associationType]!='undefined'){
                         var associationType=associations[event.associationType];
                     }else{

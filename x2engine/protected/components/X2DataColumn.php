@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -38,31 +37,47 @@
 Yii::import('zii.widgets.grid.CDataColumn');
 
 /**
- * Display column for attributes of X2Model subclasses. 
+ * Display column for attributes of X2Model subclasses.
  */
 class X2DataColumn extends CDataColumn {
 
-	/**
-	 * Renders the data cell content.
-	 * This method evaluates {@link value} or {@link name} and renders the result.
-	 * @param integer $row the row number (zero-based)
-	 * @param mixed $data the data associated with the row
-	 */
-	protected function renderDataCellContent($row,$data)
-	{
-		if($this->value!==null)
-			$value=$this->evaluateExpression($this->value,array('data'=>$data,'row'=>$row));
-		elseif($this->name!==null)
-			$value = $data->renderAttribute($this->name,false,true); // CHtml::value($data,$this->name);
-		echo $value===null ? $this->grid->nullDisplay : $value; //  $this->grid->getFormatter()->format($value,$this->type);
-	}
+    protected $_data;
 
+    /**
+     * Renders the data cell content.
+     * This method evaluates {@link value} or {@link name} and renders the result.
+     * @param integer $row the row number (zero-based)
+     * @param mixed $data the data associated with the row
+     */
+    protected function renderDataCellContent($row, $data){
+        $this->data = $data;
+        if($this->value !== null)
+            $value = $this->evaluateExpression($this->value, array('data' => $this->data, 'row' => $row));
+        elseif($this->name !== null){
+            $value = $this->data->renderAttribute($this->name, false, true); // CHtml::value($data,$this->name);
+        }
+        echo $value === null ? $this->grid->nullDisplay : $value; //  $this->grid->getFormatter()->format($value,$this->type);
+    }
 
+    public function getData(){
+        return $this->_data;
+    }
 
-
-
-
+    public function setData($data){
+        if(is_array($data)){
+            if(isset($this->grid, $this->grid->modelName)){
+                $model = X2Model::model($this->grid->modelName);
+                foreach($data as $key=>$value){
+                    if($model->hasAttribute($key)){
+                        $model->$key=$value;
+                    }
+                }
+                $this->_data = $model;
+            }
+        }else{
+            $this->_data = $data;
+        }
+    }
 
 }
-
 

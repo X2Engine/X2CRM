@@ -281,6 +281,17 @@ if (isset($_POST['testDb'])) {
 		RIP(installer_tr($permsError, array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('cannot drop tables'));
 	}
 
+	// Now test creating a table, with the InnoDB storage engine (required!):
+	try {
+		$con->exec("CREATE TABLE IF NOT EXISTS `x2_test_table` (
+			    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			    `a` varchar(10) NOT NULL,
+			    PRIMARY KEY (`id`)) ENGINE=INNODB");
+	} catch (PDOException $e) {
+		RIP(installer_tr($permsError, array('{db}' => $_POST['dbName'], '{u}' => $_POST['dbUser'])) . '; ' . installer_t('the InnoDB storage engine is not available'));
+	}
+    $con->exec("DROP TABLE `x2_test_table`");
+
 	respond(installer_t("Connection successful!"));
 }elseif(isset($_POST['testCron'])){
     require_once 'protected/components/util/CommandUtil.php';

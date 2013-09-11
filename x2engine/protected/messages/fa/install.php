@@ -144,4 +144,6 @@ return array (
 'Create a cron task for X2CRM'=>'ایجاد یک وظیفه cron را برای X2CRM را است',
 'Run delayed or recurring tasks within X2CRM'=>'اجرای وظایف تاخیر و یا مکرر در X2CRM',
 'The base directory configuration directive is set, and it is not the current working directory.'=>'پایه دایرکتوری بخشنامه پیکربندی قرار است، و آن را به دایرکتوری جاری نیست.',
+'The base directory configuration directive is set, and it does not include the current working directory.'=>'پایه دایرکتوری بخشنامه پیکربندی قرار است، و آن را از دایرکتوری جاری را شامل نمی شود.',
+'Some hashing algorithms required for software updates are missing on this server:'=>'برخی از الگوریتم های هش کردن مورد نیاز برای به روز رسانی نرم افزار از دست رفته بر روی این سرور:',
 );

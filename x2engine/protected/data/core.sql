@@ -99,7 +99,8 @@ CREATE TABLE x2_admin(
 	emailDropbox_zapLineBreaks	TINYINT DEFAULT 0,
 	emailDropbox_emptyContact	TINYINT DEFAULT 1,
 	emailDropbox_logging		TINYINT DEFAULT 0,
-    historyPrivacy              VARCHAR(20) DEFAULT "default"
+    historyPrivacy              VARCHAR(20) DEFAULT "default",
+    batchTimeout                INT DEFAULT 300
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
@@ -176,6 +177,8 @@ CREATE TABLE x2_fields (
 	custom					INT				DEFAULT 1,
 	type					VARCHAR(20)		DEFAULT "varchar",
 	required				TINYINT			DEFAULT 0,
+    uniqueConstraint        TINYINT         DEFAULT 0,
+    safe                    TINYINT         DEFAULT 1,
 	readOnly				TINYINT			DEFAULT 0,
 	linkType				VARCHAR(250),
 	searchable				TINYINT			DEFAULT 0,

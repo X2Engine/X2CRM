@@ -50,7 +50,7 @@ function X2EventsChart (argsDict) {
 
 	var colors;
 	// color palette used for lines of feed chart
-	colors = [
+	/*colors = [
 		'#7EB2E6', // pale blue
 		'#FFC382', // pastel orange
 		'#E8E172', // pastel yellow
@@ -78,6 +78,29 @@ function X2EventsChart (argsDict) {
 		//'#8DEB10',
 		'#C87010', // red rock
 		'#1D4C8C', // dark blue-purple
+	];*/
+	colors = [
+		'#7EB2E6', // pale blue
+		'#94E3DF', // pastel light blue
+		'#9BE081', // pastel green
+		'#E8E172', // pastel yellow
+		'#FFA8CE', // pastel dark pink
+		'#FF9CAD', // pastel pink
+		'#30DD81', // saturated pastel mid blue
+		'#ECBA4F', // bright orange
+		'#428DE2', // saturated pastel dark blue
+		'#D099FF', // pastel dark purple
+		'#B243E6', // saturated pastel light purple
+		'#CEC415', // mustard
+		'#BC0D2C', // pomegranate
+		'#45B41D', // apple green
+		'#AB074F', // dark hot pink
+		'#1B8FB5', // dark blue
+		'#3D1783', // dark purple
+		'#AACF7A',
+		'#7BB57C', // olive green
+		'#C87010', // red rock
+		'#1D4C8C', // dark blue-purple
 	];
 
 	this.metricOptionsColors = {}; // used to pair colors with metrics
@@ -87,7 +110,7 @@ function X2EventsChart (argsDict) {
 
 	this.cookieTypes = [
 		'startDate', 'endDate', 'binSize', 'firstMetric', 'chartSetting', 
-		'usersFilter', 'socialSubtypesFilter', 'visibilityFilter'];
+		'usersFilter', 'socialSubtypesFilter', 'visibilityFilter', 'dateRange'];
 
 	this.filterTypes = ['usersFilter', 'socialSubtypesFilter', 'visibilityFilter'];
 
@@ -111,7 +134,9 @@ X2EventsChart.prototype.setDefaultSettings = function () {
 	var thisX2Chart = this;
 
 	// start date picker default
-	if ($.cookie (thisX2Chart.cookiePrefix + 'startDate') === null) {
+	if (($.cookie (thisX2Chart.cookiePrefix + 'dateRange') === null || 
+	     $.cookie (thisX2Chart.cookiePrefix + 'dateRange') !== 'Custom') &&
+	    $.cookie (thisX2Chart.cookiePrefix + 'startDate') === null) {
 		// default start date 
 		$('#' + thisX2Chart.chartType + '-chart-datepicker-from').
 			datepicker('setDate', '-7d'); 
@@ -122,7 +147,9 @@ X2EventsChart.prototype.setDefaultSettings = function () {
 	}
 
 	// end date picker default
-	if ($.cookie (thisX2Chart.cookiePrefix + 'endDate') === null) {
+	if (($.cookie (thisX2Chart.cookiePrefix + 'dateRange') === null || 
+	     $.cookie (thisX2Chart.cookiePrefix + 'dateRange') !== 'Custom') &&
+	    $.cookie (thisX2Chart.cookiePrefix + 'endDate') === null) {
 		thisX2Chart.DEBUG && console.log ('setting default for eventsChart to date');
 		// default start date 
 		$('#' + thisX2Chart.chartType + '-chart-datepicker-to').
@@ -153,17 +180,61 @@ X2EventsChart.prototype.chartDataFilter = function (dataPoint, type) {
 			thisX2Chart.filters['socialSubtypesFilter']) !== -1) ||
 		($.inArray (dataPoint['visibility'], 
 			thisX2Chart.filters['visibilityFilter']) !== -1)) {
-
-		if (($.inArray (dataPoint['user'], thisX2Chart.filters['usersFilter']) === -1) ||
-		($.inArray (dataPoint['subtype'], thisX2Chart.filters['socialSubtypesFilter']) === -1) ||
-		($.inArray (dataPoint['visibility'], thisX2Chart.filters['visibilityFilter']) === -1)) {
-			/*console.log ('content filtered, user, subtype, visibility = ');
-			thisX2Chart.DEBUG && console.log (dataPoint['user'] + ', ' + dataPoint['subtype'] + ',' + dataPoint['visibility']);*/
-		}
 		return true;
 	} else {
 		return false;
 	}
+};
+
+X2EventsChart.prototype.postPieChartTearDown = function (uiSetUp) {
+	var thisX2Chart = this;
+	$('#' + thisX2Chart.chartType + '-chart').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-chart-legend').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-datepicker-row').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-top-button-row').removeClass ('feed-pie');
+	$('#' + thisX2Chart.chartType + '-create-setting-button').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-predefined-settings').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-first-metric-container').show ();
+	$('#' + thisX2Chart.chartType + '-bin-size-button-set').show ();
+	var filterToggleContainer = $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
+	$('#' + thisX2Chart.chartType + '-first-metric-container').after (filterToggleContainer);
+	if (uiSetUp) {
+		thisX2Chart.DEBUG && console.log ('setting up filters');
+		//thisX2Chart.setUpFilters ();
+	}
+    thisX2Chart.bindFilterEvents ();
+};
+
+X2EventsChart.prototype.getMetricTypes = function () {
+	var thisX2Chart = this;
+
+	var metricTypes = [];
+	$('#' + thisX2Chart.chartType + '-first-metric').children ().each (function () {
+		if (thisX2Chart.chartSubtype === 'pie' &&
+			$(this).val () === 'any') return;
+		metricTypes.push([$(this).val (), $(this).html ()]);
+	});
+
+	return metricTypes;
+};
+
+X2EventsChart.prototype.postPieChartSetUp = function (uiSetUp) {
+	var thisX2Chart = this;
+	$('#' + thisX2Chart.chartType + '-chart').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-chart-legend').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-datepicker-row').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-top-button-row').addClass ('feed-pie');
+	$('#' + thisX2Chart.chartType + '-create-setting-button').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-predefined-settings').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-first-metric-container').hide ();
+	$('#' + thisX2Chart.chartType + '-bin-size-button-set').hide ();
+	var filterToggleContainer = $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
+	$('#' + thisX2Chart.chartType + '-datepicker-row').append (filterToggleContainer);
+	if (uiSetUp) {
+		thisX2Chart.DEBUG && console.log ('setting up filters');
+		//thisX2Chart.setUpFilters ();
+	}
+    thisX2Chart.bindFilterEvents ();
 };
 
 

@@ -34,20 +34,17 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('zii.widgets.CPortlet');
-
+Yii::import('application.components.LeftWidget');
 
 /**
  * Widget class for displaying the "recent items" menu
  * 
  * @package X2CRM.components 
  */
-class RecentItems extends CPortlet {
-
-	public $currentAction = '';
+class RecentItems extends LeftWidget {
 
 	public function init() {
-		$this->title=Yii::t('app','Recently Viewed');
+        parent::initTitleBar ();
 		parent::init();
 	}
 

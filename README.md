@@ -1,19 +1,28 @@
-# X2CRM 3.4 #
-8/22/2013
+# X2CRM 3.5 #
+9/6/2013
 ## Changes ##
-* Dropdowns can be customized to allow selecting multiple values
-* New activity feed chart feature: can filter data display by user
-* New features in Professional Edition:
-  * New image gallery widget
-  * Rich email editing available in the email action of X2Flow
-  * Cron task setup in installer
-  * Formulas and variables enabled in X2Flow trigger criteria & action parameters
-  * Accounts report feature: send marketing campaigns to related contacts of accounts
-* Fixed bugs: 88, 93, 95, 110, 111, 118, 121, 128, 150, 166, 170, 172 and 200
-
-## New in 3.4.1
-* Miscellaneous (unlisted) bug fixes
-* Image gallery (Professional Edition only) now works in Internet Explorer
+* "Print Record" feature in nearly all modules shows print-friendly version of a record
+* "Recently Viewed" widget now includes all record types
+* Chart widget enhancements
+  * New pie chart view 
+  * Dynamic date ranges, i.e. "last week"
+* Features in Professional Edition
+  * New campaign chart
+  * New cron test and log viewer in X2Flow
+* Fixed Bugs:  
+  * [94](http://x2software.com/index.php/bugReports/94): Array to string conversion  
+  * [121](http://x2software.com/index.php/bugReports/121): "Remember Me"  
+  * [135](http://x2software.com/index.php/bugReports/135): Remove deprecated "add contact" action/menu button  
+  * [159](http://x2software.com/index.php/bugReports/159): Trying to get property of non-object  
+  * [217](http://x2software.com/index.php/bugReports/217): X2Flow Strpos Error  
+  * [219](http://x2software.com/index.php/bugReports/219): Trying to get property of non-object  
+  * [225](http://x2software.com/index.php/bugReports/225): Creating default object from empty value  
+  * [228](http://x2software.com/index.php/bugReports/228): Property "Gallery.galleryId" is not defined.  
+  * [232](http://x2software.com/index.php/bugReports/232): Grid Views break on filter click  
+  * [248](http://x2software.com/index.php/bugReports/248): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '14' for key 'PRIMARY'  
+  * [263](http://x2software.com/index.php/bugReports/263): Email campaign template selection issues  
+  * [266](http://x2software.com/index.php/bugReports/266): multi-assignment fields not preserved when returning to edit page  
+  * [277](http://x2software.com/index.php/bugReports/277): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '1001' for key 'c\_name'
 
 ## Release Notes ##
 

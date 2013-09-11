@@ -145,4 +145,6 @@ return array (
 'Create a cron task for X2CRM'=>'一个cron任务X2CRM的创建',
 'Run delayed or recurring tasks within X2CRM'=>'运行延迟或经常性的任务X2CRM',
 'The base directory configuration directive is set, and it is not the current working directory.'=>'基本目录的配置指令集，它是不是当前工作目录。',
+'The base directory configuration directive is set, and it does not include the current working directory.'=>'基本目录的配置指令，它不包括当前的工作目录。',
+'Some hashing algorithms required for software updates are missing on this server:'=>'在此服务器上缺少一些软件更新所需的哈希算法：',
 );

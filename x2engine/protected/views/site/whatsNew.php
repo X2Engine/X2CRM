@@ -39,6 +39,8 @@ Yii::app()->clientScript->registerScriptFile(
 Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/whatsNew.css');
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
+Yii::app()->clientScript->registerScriptFile(
+	Yii::app()->getBaseUrl().'/js/jquery-expander/jquery.expander.js', CClientScript::POS_END);
 
 // used for rich editing in new post text field
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
@@ -130,13 +132,21 @@ Yii::app()->clientScript->registerScript(
 
 	<select id='chart-type-selector'>
 		<option value='eventsChart'>
-			<?php echo Yii::t('app', 'Events Chart'); ?>
+			<?php echo Yii::t('app', 'Events'); ?>
 		</option>
 		<option value='usersChart'>
-			<?php echo Yii::t('app', 'User Events Chart'); ?>
+			<?php echo Yii::t('app', 'User Events'); ?>
 		</option>
 	</select>
-	
+	<select id='chart-subtype-selector'>
+		<option value='line'>
+			<?php echo Yii::t('app', 'Line Chart'); ?>
+		</option>
+		<option value='pie'>
+			<?php echo Yii::t('app', 'Pie Chart'); ?>
+		</option>
+	</select>
+
 	<?php 
 		$this->widget('X2Chart', array (
 			'getChartDataActionName' => 'getEventsBetween',
@@ -166,7 +176,8 @@ Yii::app()->clientScript->registerScript(
 				'media'=>Yii::t('app', 'Media')
 			),
 			'chartType' => 'eventsChart',
-			'getDataOnPageLoad' => true
+			'getDataOnPageLoad' => true,
+			'hideByDefault' => true
 		)); 
 	?>
 	
@@ -182,7 +193,8 @@ Yii::app()->clientScript->registerScript(
 			'actionParams' => array (),
 			'metricTypes' => $usersArr,
 			'chartType' => 'usersChart',
-			'getDataOnPageLoad' => true
+			'getDataOnPageLoad' => true,
+			'hideByDefault' => true
 		)); 
 	?>
 </div>
@@ -231,6 +243,7 @@ $this->widget('zii.widgets.CListView', array(
 					'header' => '',
 					'options'=>array(
 						'onRenderComplete'=>'js:function(){
+							makePostsExpandable ();
 							if(x2.whatsNew.minimizeFeed){
 								minimizePosts();
 							}
@@ -255,6 +268,7 @@ $this->widget('zii.widgets.CListView', array(
 					'header' => '',
 					'options'=>array(
 						'onRenderComplete'=>'js:function(){
+							makePostsExpandable ();
 							if(x2.whatsNew.minimizeFeed){
 								minimizePosts();
 							}

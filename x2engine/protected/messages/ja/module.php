@@ -28,4 +28,7 @@ return array (
 'Please fill out the fields below to create a new module.'=>'新しいモジュールを作成するには、下のフィールドにご記入ください。',
 'Enter field name here'=>'フィールド名をここに入力してください',
 'A module with that name already exists'=>'その名前のモジュールが既に存在してい',
+'Unable to create custom module directory.'=>'カスタムモジュールのディレクトリを作成できません。',
+'Unable to create config file for custom module.'=>'カスタムモジュールの設定ファイルを作成できません。',
+'Unable to create table for custom module.'=>'カスタムモジュールのためのテーブルを作成できません。',
 );

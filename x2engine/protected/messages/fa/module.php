@@ -28,4 +28,7 @@ return array (
 'Please fill out the fields below to create a new module.'=>'.لطفا فیلدهای زیر را برای ایجاد ماژول جدید پر کنید',
 'Enter field name here'=>'نام فیلد را اینجا وارد کنید',
 'A module with that name already exists'=>'ماژول با این نام در حال حاضر وجود دارد',
+'Unable to create custom module directory.'=>'قادر به ایجاد پوشه ماژول سفارشی.',
+'Unable to create config file for custom module.'=>'قادر به ایجاد فایل های پیکربندی برای ماژول های سفارشی.',
+'Unable to create table for custom module.'=>'قادر به ایجاد جدول برای ماژول سفارشی.',
 );

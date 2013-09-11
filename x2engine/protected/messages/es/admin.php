@@ -623,4 +623,10 @@ return array (
 'Send As (to service requesters)'=>'Enviar como (para los solicitantes de servicios)',
 'Send As (to web leads)'=>'Send As (que conduce web)',
 'Send As (when notifying users)'=>'Send As (cuando se notifique a los usuarios)',
+'When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.'=>'Cuando se ejecuta acciones en lotes, el (número de segundos) limita la cantidad de tiempo que se puede gastar hacerlo. Se recomienda establecer este menor que el tiempo máximo de ejecución de PHP en el servidor web.',
+'Event/Action History Privacy'=>'Evento / Acción Historia de privacidad',
+'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'=>'Por defecto los usuarios podrán ver las acciones / eventos que son públicos o que se les asigna. Sólo usuarios permitirá a los usuarios ver sólo acciones / eventos asignados. Grupo sólo permitirá a los usuarios ver las acciones / eventos asignados a los miembros de sus grupos.',
+'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.'=>'Elija una configuración de privacidad para el widget Historia Acción y Feed de actividad. Por favor, tenga en cuenta que cualquier usuario con acceso a nivel de administrador en el módulo que la historia está de ignorará este ajuste. Sólo los usuarios con acceso de administrador completo ignorará este ajuste en el Feed de actividad.',
+'Web Lead Response Email Settings'=>'Web Lead respuesta de correo electrónico Configuración',
+'Configure how X2CRM sends email when responding to new web leads.'=>'Configure cómo X2CRM envía un correo electrónico al responder a las nuevas pistas web.',
 );

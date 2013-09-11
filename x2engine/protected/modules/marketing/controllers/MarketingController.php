@@ -41,6 +41,8 @@
  */
 class MarketingController extends x2base {
 
+    const EMLLOCK = 'campaign_emailing.lock';
+    
     public $modelClass = 'Campaign';
 
     public function accessRules(){
@@ -50,8 +52,10 @@ class MarketingController extends x2base {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform the following actions
-                'actions' => array('index', 'view', 'create', 'createFromTag', 'update', 'search', 'delete', 'launch', 'toggle', 'complete', 'getItems',
-                    'inlineEmail', 'mail', 'webleadForm'),
+                'actions' => array(
+					'index', 'view', 'create', 'createFromTag', 'update', 'search', 'delete', 'launch', 
+					'toggle', 'complete', 'getItems', 'inlineEmail', 'mail', 
+					'webleadForm'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' action
@@ -104,6 +108,10 @@ class MarketingController extends x2base {
             //set this as the list we are viewing, for use by vcr controls
             Yii::app()->user->setState('contacts-list', $model->list->id);
         }
+
+        // add campaign to user's recent item list
+        User::addRecentItem('p', $id, Yii::app()->user->getId()); 
+
         $this->view($model, 'marketing', array('contactList' => $model->list));
     }
 
@@ -120,11 +128,6 @@ class MarketingController extends x2base {
             $this->redirect(array('index'));
         }
 
-        if($model->template != 0){
-            $template = X2Model::model('Docs')->findByPk($model->template);
-            if(isset($template))
-                $model->content = $template->text;
-        }
         echo $model->content;
     }
 
@@ -149,10 +152,7 @@ class MarketingController extends x2base {
         $model->type = 'Email'; //default choice for now
 
         if(isset($_POST['Campaign'])){
-            $oldAttributes = $model->attributes;
             $model->setX2Fields($_POST['Campaign']);
-            if($model->template != 0)
-                $model->content = '';
             $model->createdBy = Yii::app()->user->getName();
             if($model->save()){
                 if(isset($_POST['AttachmentFiles'])){
@@ -275,8 +275,6 @@ class MarketingController extends x2base {
         if(isset($_POST['Campaign'])){
             $oldAttributes = $model->attributes;
             $model->setX2Fields($_POST['Campaign']);
-            if($model->template != 0)
-                $model->content = '';
 
             if($model->save()){
                 CampaignAttachment::model()->deleteAllByAttributes(array('campaign' => $model->id));
@@ -292,12 +290,6 @@ class MarketingController extends x2base {
                 }
                 $this->redirect(array('view', 'id' => $model->id));
             }
-        }
-        // load the template into the content field
-        if($model->template != 0){
-            $template = X2Model::model('Docs')->findByPk($model->template);
-            if(isset($template))
-                $model->content = $template->text;
         }
 
         $this->render('update', array('model' => $model));
@@ -365,12 +357,6 @@ class MarketingController extends x2base {
      */
     public function actionLaunch($id){
         $campaign = $this->loadModel($id);
-        // check if there's a template, and load that into the content field
-        if($campaign->template != 0){
-            $template = X2Model::model('Docs')->findByPk($campaign->template);
-            if(isset($template))
-                $campaign->content = $template->text;
-        }
 
         if(!isset($campaign)){
             Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
@@ -382,7 +368,7 @@ class MarketingController extends x2base {
             $this->redirect(array('view', 'id' => $id));
         }
 
-        if(empty($campaign->subject)){
+        if(empty($campaign->subject) && $campaign->type === 'Email'){
             Yii::app()->user->setFlash('error', Yii::t('marketing', 'Subject cannot be blank.'));
             $this->redirect(array('view', 'id' => $id));
         }
@@ -461,24 +447,40 @@ class MarketingController extends x2base {
     }
 
     /**
-     * Send mail for any active campaigns
-     *
-     * This call is usually made from the context of one specific campaign, though
-     * it will always try to send mail for all active campaigns. If one campaign is
-     * specified, usually from an ajax call, the action will return a JSON object with
-     * property 'wait' indicated how many seconds to wait before making the call again,
-     * and property 'messages' containing an array of messages relevant to the specified
-     * campaign.
-     *
-     * @param integer $id The ID of the campaign to return status messages for
+     * Wrapper for {@link sendMail()}
      */
-    public function actionMail($id = null){
+    public function actionMail($id = null) {
+        header('Content-type: application/json');
+        echo CJSON::encode(self::sendMail($id));
+    }
+
+  /**
+   * Send mail for any active campaigns
+   *
+   * This call is usually made from the context of one specific campaign, though
+   * it will always try to send mail for all active campaigns. If one campaign is
+   * specified, usually from an ajax call, the action will return a JSON object with
+   * property 'wait' indicated how many seconds to wait before making the call again,
+   * and property 'messages' containing an array of messages relevant to the specified
+   * campaign.
+   *
+   * This method is made public and static to allow it to be called from elsewhere.
+   *
+   * @param integer $id The ID of the campaign to return status messages for
+   */
+   public static function sendMail($id = null,$t0 = null) {
+        if(self::emailIsLocked())
+            return array('wait'=>0,'messages' => array('Aborting batch emailing; it is already in progress by another process.'));
+        else
+            self::lockEmail();
         $batchSize = Yii::app()->params->admin->emailBatchSize;
         $interval = Yii::app()->params->admin->emailInterval;
+        $timeout = Yii::app()->params->admin->batchTimeout;
         $now = time();
-        $t0 = time();
+        $t0 = empty($t0)?time():$t0;
         $wait = $interval * 60;
         $messages = array();
+        $t_begin_send = time();
         try{
             //count all list items that were sent within last interval
             $sendCount = X2ListItem::model()->count('sent > :time', array('time' => ($now - $interval * 60)));
@@ -504,12 +506,13 @@ class MarketingController extends x2base {
                     break;
                 }
                 $t1 = time();
-                if($t1 - $t0 > 300){
+                if($t1 - $t0 > $timeout){
+                    $messages[] = Yii::t('marketing',"The batch process time limit of $timeout seconds has been reached after attempting to send $totalSent emails in ".($t1-$t_begin_send).' seconds');
                     break;
                 }
 
                 try{
-                    list($sent, $errors) = $this->campaignMailing($campaign, $sendLimit - $totalSent);
+                    list($sent, $errors) = self::campaignMailing($campaign, $sendLimit - $totalSent);
                 }catch(Exception $e){
                     if($campaign->id == $id)
                         $messages[] = $e->getMessage();
@@ -561,7 +564,7 @@ class MarketingController extends x2base {
                         $messages[] = Yii::t('marketing', 'Batch completed, sending again in ').$interval.' '.Yii::t('marketing', 'minutes').'...';
                     $messages[] = '';
 
-                    if(count($errors) > 1){
+                    if(count($errors) >= 1){
                         $messages = array_merge($messages, array_unique($errors));
                         $messages[] = '';
                     }
@@ -579,7 +582,36 @@ class MarketingController extends x2base {
             $messages[] = $e->getMessage();
         }
 
-        echo CJSON::encode(array('wait' => $wait, 'messages' => $messages));
+        self::lockEmail(false); // Release email lock
+        return array('wait' => $wait, 'messages' => $messages);
+    }
+
+    public static function emailLockFile() {
+        return implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'runtime',self::EMLLOCK));
+    }
+
+    public static function lockEmail($lock = true) {
+        $lf = self::emailLockFile();
+        if($lock)
+            file_put_contents($lf,time());
+        else
+            unlink($lf);
+    }
+
+   /**
+    * Mediates lockfile checking.
+    */
+    public static function emailIsLocked() {
+        $lf = self::emailLockFile();
+        if(file_exists($lf)) { 
+            $lock = file_get_contents($lf);
+            if(time() - (int) $lock > 3600) { // No operation should take longer than an hour
+                unlink($lf);
+                return false;
+            } else
+                return true; 
+        }
+        return false;
     }
 
     /**
@@ -590,7 +622,7 @@ class MarketingController extends x2base {
      *
      * @return Array [0]=> The number of emails sent, [1]=> array of applicable error messages
      */
-    protected function campaignMailing($campaign, $limit = null){
+    protected static function campaignMailing($campaign, $limit = null){
         //TODO: handle large mail batches that would trigger a timeout
 
         $totalSent = 0;
@@ -611,7 +643,9 @@ class MarketingController extends x2base {
                 $eml->from = array('name' => Yii::app()->params->admin->emailFromName, 'address' => Yii::app()->params->admin->emailFromAddr);
                 $phpMail = $eml->mailer;
             }else{
-                $phpMail = $this->getPhpMailer($campaign->sendAs);
+                $iem = new InlineEmail;
+                $iem->credId = $campaign->sendAs;
+                $phpMail = $iem->mailer;
             }
         }catch(Exception $e){
             throw $e;
@@ -696,12 +730,12 @@ class MarketingController extends x2base {
 
                 //insert unsubscribe links
                 $emailBody = preg_replace(
-                        '/\{_unsub\}/', '<a href="'.$this->createAbsoluteUrl('click', array('uid' => $uniqueId, 'type' => 'unsub', 'email' => $email)).'">'.Yii::t('marketing', 'unsubscribe').'</a>', $emailBody);
+                        '/\{_unsub\}/', '<a href="'.Yii::app()->createAbsoluteUrl('marketing/click').'?'.http_build_query(array('uid' => $uniqueId, 'type' => 'unsub', 'email' => $email)).'">'.Yii::t('marketing', 'unsubscribe').'</a>', $emailBody);
 
                 //replace any {attribute} tags with the contact attribute value
                 $emailBody = Docs::replaceVariables($emailBody, $contact, array('{trackingKey}' => $uniqueId)); // use the campaign key, not the general key
                 //add a link to transparent img to track when email was viewed
-                $emailBody .= '<img src="'.$this->createAbsoluteUrl('click', array('uid' => $uniqueId, 'type' => 'open')).'"/>';
+                $emailBody .= '<img src="'.Yii::app()->createAbsoluteUrl('marketing/click').'?'.http_build_query(array('uid' => $uniqueId, 'type' => 'open')).'"/>';
 
                 $phpMail->Subject = Docs::replaceVariables($campaign->subject, $contact);
 
@@ -734,12 +768,16 @@ class MarketingController extends x2base {
                 }
             }catch(Exception $e){
                 $errors[] = $e->getMessage();
-                 $itemUpdateCmd->bindValues(array(':id' => $recipient['li_id'], ':sent' => -1, ':uid' => null))
+                if($e->getCode() == 401) // Bad SMTP authentication
+                   throw $e;
+                $itemUpdateCmd->bindValues(array(':id' => $recipient['li_id'], ':sent' => -1, ':uid' => null))
                         ->execute();
                 if(isset($eml)){
                     $phpMail = $eml->mailer;
                 }else{
-                    $phpMail = $this->getPhpMailer($campaign->sendAs);
+                    $iem = new InlineEmail;
+                    $iem->credId = $campaign->sendAs;
+                    $phpMail = $iem->mailer;
                 }
             }
         }
@@ -1122,5 +1160,10 @@ class MarketingController extends x2base {
         }
         $this->render('webTracker', array('admin' => $admin));
     }
+
+	
+
+
+
 
 }

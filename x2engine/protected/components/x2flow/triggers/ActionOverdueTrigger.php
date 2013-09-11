@@ -40,6 +40,8 @@
  * @package X2CRM.components.x2flow.actions
  */
 class ActionOverdueTrigger extends X2FlowTrigger {
+
+    public $requiresCron = true;
 	public $title = 'Action Overdue';
 	public $info = 'Triggers when an action becomes overdue. Cronjob must be configured to trigger reliably.';
 	

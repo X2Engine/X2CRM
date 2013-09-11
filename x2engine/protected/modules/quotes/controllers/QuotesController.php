@@ -86,6 +86,9 @@ class QuotesController extends x2base {
 		$model->associatedContacts = Contacts::getContactLinks($model->associatedContacts);
 		$quoteProducts = $model->lineItems;
 
+        // add quote to user's recent item list
+        User::addRecentItem('q', $id, Yii::app()->user->getId()); 
+
 		parent::view($model, $type, array('orders' => $quoteProducts,
 			'contactId' => $contactId
 		));
@@ -617,7 +620,7 @@ class QuotesController extends x2base {
                                 $model->$field=$_POST['Quote'][$field];
                                 $fieldData=Fields::model()->findByAttributes(array('modelName'=>'Quote','fieldName'=>$field));
                                 if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-                                    $model->$field=Accounts::parseUsers($model->$field);
+                                    $model->$field=Fields::parseUsers($model->$field);
                                 }elseif($fieldData->type=='date'){
                                     $model->$field=Formatter::parseDate($model->$field);
                                 }

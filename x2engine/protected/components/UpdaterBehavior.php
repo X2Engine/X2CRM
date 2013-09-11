@@ -286,7 +286,7 @@ class UpdaterBehavior extends ResponseBehavior {
             'http' => array('timeout' => 4)  // set request timeout in seconds
         ));
 
-        $updateCheckUrl = $this->updateServer.'/installs/updates/check?'.http_build_query(compact('i','v'));
+        $updateCheckUrl = $this->updateServer.'/installs/updates/check?'.http_build_query(compact('i','v'),'','&');
         $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
         if($securityKey === false)
             return Yii::app()->params->version;
@@ -295,7 +295,7 @@ class UpdaterBehavior extends ResponseBehavior {
         if(!($e == 'opensource' || empty($e)))
             $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
         
-        $newVersion = FileUtil::getContents($this->updateServer.'/installs/updates/check?'.http_build_query(compact('i','v','h','n')),0,$context);
+        $newVersion = FileUtil::getContents($this->updateServer.'/installs/updates/check?'.http_build_query(compact('i','v','h','n'),'','&'),0,$context);
         if(empty($newVersion))
             return;
        
@@ -483,7 +483,7 @@ class UpdaterBehavior extends ResponseBehavior {
 		// Run the necessary database changes:
 		if((bool) count($params['sqlList'])){
 			try{
-				$this->enactDatabaseChanges($params['sqlList'],$autoRestore);
+				$this->enactDatabaseChanges($params['sqlList'],$autoRestore,$scenario);
 			}catch(Exception $e){
 				// The operation cannot proceed and is technically finished, so
 				// there's no use keeping the lock file around except to frustrate
@@ -555,24 +555,28 @@ class UpdaterBehavior extends ResponseBehavior {
 	 * 
 	 * @param array $sqlList List of commands to run
 	 * @param array $sqlRun List of commands previously run, if any
+     * @param string $scenario whether an update or upgrade
 	 */
-	public function enactDatabaseChanges($sqlList, $backup=false) {
+	public function enactDatabaseChanges($sqlList, $backup=false,$scenario='update') {
 		$pdo = Yii::app()->db->pdoInstance;
 		$sqlRun = array();
 		foreach ($sqlList as $query) {
-			if ($query != "") {
+            $sql = $scenario=='update'?$query['sql']:$query;
+			if ($sql != "") {
 				try { // Run the update SQL.
-					$command = $pdo->prepare($query);
+					$command = $pdo->prepare($sql);
 					$result = $command->execute();
 					if ($result !== false)
-						$sqlRun[] = $query;
+						$sqlRun[] = $sql;
 					else {
 						$errorInfo = $command->errorInfo();
-						$this->sqlError($query, $sqlRun, '(' . $errorInfo[0] . ') ' . $errorInfo[2]);
+						$this->sqlError($sql, $sqlRun, '(' . $errorInfo[0] . ') ' . $errorInfo[2]);
 					}
 				} catch (PDOException $e) { // A database change failed to apply
-					$sqlErr = $e->getMessage();
-					try {
+                    if($scenario=='update'?!$query['haltOnFail']:false)
+                        continue;
+    				$sqlErr = $e->getMessage();
+	    			try {
 						if ($backup) { // Run the recovery
 							$this->restoreDatabaseBackup();
 							$dbRestoreMessage = Yii::t('admin', 'The database has been restored to the backup copy.');
@@ -585,7 +589,7 @@ class UpdaterBehavior extends ResponseBehavior {
 					} catch (Exception $re) { // Database recovery failed.
 						$dbRestoreMessage = $re->getMessage();
 					}
-					$this->sqlError($query, $sqlRun, "$sqlErr\n$dbRestoreMessage");
+					$this->sqlError($sql, $sqlRun, "$sqlErr\n$dbRestoreMessage");
 				}
 			}
 		}
@@ -959,6 +963,40 @@ class UpdaterBehavior extends ResponseBehavior {
 		} else
 			throw new Exception(Yii::t('admin', 'Failed to create a backup!'));
 	}
+
+   /**
+    * Composes update data into the final form that will be used by 
+    * {@link enactChanges()} and {@link enactDatabaseChanges}.
+    *
+    * This is a temporary fix that allows using the "sqlForce" work-around 
+    * until the comprehensive new update system (applying changes in a simple, 
+    * purely one-version-at-a-time manner) is completed.
+    */
+    public function prepareData($raw) {
+        $data = array('sqlList'=>array());
+        $nVers = count($raw);
+        foreach($raw as $i=>$versionDat) {
+            foreach(array('fileList','deletionList') as $delta) {
+                $items = $versionDat[$delta];
+                if(!isset($data[$delta]))
+                    $data[$delta] = array();
+                $data[$delta] = array_merge($data[$delta],array_diff($items,$data[$delta]));
+            }
+            // Run through future file/deletion lists and eliminate superfluous entries:
+            for($j=$i;$j<$nVers;$j++) {
+                // Eliminates files deleted in a future version:
+                $data['fileList'] = array_diff($data['fileList'],$raw[$j]['deletionList']); 
+                // Eliminates deletion of files re-added in a future version:
+                $data['deletionList'] = array_diff($data['deletionList'],$raw[$j]['fileList']); 
+            }
+            foreach($versionDat['sqlForce'] as $sql)
+                $data['sqlList'][] = array('sql'=>$sql,'haltOnFail'=>0);
+            foreach($versionDat['sqlList'] as $sql)
+                $data['sqlList'][] = array('sql'=>$sql,'haltOnFail'=>1);
+        }
+
+        return $data;
+    }
 
 	/**
 	 * Rebuilds the configuration file and performs the final few little update tasks.

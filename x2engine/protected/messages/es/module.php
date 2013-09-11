@@ -28,4 +28,7 @@ return array (
 'Please fill out the fields below to create a new module.'=>'Por favor llene los siguientes campos para crear un nuevo módulo.',
 'Enter field name here'=>'Introduzca nombre de campo aquí',
 'A module with that name already exists'=>'Un módulo con ese nombre ya existe',
+'Unable to create custom module directory.'=>'No se puede crear directorio de módulo personalizado.',
+'Unable to create config file for custom module.'=>'No se puede crear el archivo de configuración para el módulo personalizado.',
+'Unable to create table for custom module.'=>'No se puede crear la tabla de módulo personalizado.',
 );

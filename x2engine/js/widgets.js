@@ -193,9 +193,9 @@ $.fn.minimizeWidget = function() {
 			} else {
 				widget.find('.x2widget-container').slideDown({
 					done: function () {
-						if (widgetName === 'ActionHistoryChart') {
+						if (widgetName === 'RecordViewChart') {
 
-							// event detected by x2chart.js
+							// event detected by centerWidget.php
 							$(document).trigger ('chartWidgetMaximized'); 
 						}
 					}

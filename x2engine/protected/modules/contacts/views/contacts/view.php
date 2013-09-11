@@ -35,9 +35,17 @@
  *****************************************************************************************/
 $this->setPageTitle(empty($model->name) ? $model->firstName." ".$model->lastName : $model->name);
 
+Yii::app()->clientScript->registerCss('contactsViewStyle', '
+	/*.page-title.icon.contacts {
+		position: relative;
+		z-index: 500;
+	}*/
+');
+
 Yii::app()->clientScript->registerScript('hints', '
     $(".hint").qtip();
 ');
+
 // find out if we are subscribed to this contact
 $result = Yii::app()->db->createCommand()
         ->select()
@@ -72,6 +80,19 @@ if($serviceModule->visible){
 
 if($opportunityModule->visible && $accountModule->visible)
     $menuItems[] = array('label' => Yii::t('app', 'Quick Create'), 'url' => array('/site/createRecords', 'ret' => 'contacts'), 'linkOptions' => array('id' => 'x2-create-multiple-records-button', 'class' => 'x2-hint', 'title' => Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+
+$menuItems[] = array(
+	'label' => Yii::t('app', 'Print Record'),
+	'url' => '#',
+	'linkOptions' => array (
+		'onClick'=>"window.open('".
+			Yii::app()->createUrl('/site/printRecord', array (
+				'modelClass' => 'Contacts',
+				'id' => $model->id,
+				'pageTitle' => Yii::t('app', 'Contact').': '.$model->name
+			))."');"
+	)
+);
 
 $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 

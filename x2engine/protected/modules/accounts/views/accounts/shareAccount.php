@@ -40,8 +40,6 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('accounts','View'), 'url'=>array('view','id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Edit Account'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Share Account')),
-	array('label'=>Yii::t('accounts','Add a User'), 'url'=>array('addUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Remove a User'), 'url'=>array('removeUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 ),$authParams);
 

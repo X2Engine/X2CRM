@@ -306,4 +306,5 @@ return array (
 'Contact ID'=>'Contact ID',
 'Latitutde'=>'Latitutde',
 'Longitude'=>'Долгота',
+'Saved Searches'=>'Сохраненные поиски',
 );

@@ -35,72 +35,100 @@
  *****************************************************************************************/
 
 $menuItems = array(
-            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('site/home/')),
-        );
+    array('label' => Yii::t('app', 'Main Menu'), 'url' => array('site/home/')),
+);
 
 $this->widget('MenuList', array(
-        'id' => 'main-menu',
-        'items' => $menuItems
-    ));
+    'id' => 'main-menu',
+    'items' => $menuItems
+));
 
-$model = new Contacts;
-$attributeLabels = $model->attributeLabels();
+// default fields
+$formFields = array (
+    'firstName' => X2Model::model('Contacts')->getAttributeLabel('firstName'),
+    'lastName' => X2Model::model('Contacts')->getAttributeLabel('lastName'),
+    'phone' => X2Model::model('Contacts')->getAttributeLabel('phone'),
+    'email' => X2Model::model('Contacts')->getAttributeLabel('email')
+);
+
+
+// get required fields not in default set
+foreach ($model->getFields () as $field) {
+    if ($field->required && 
+        !in_array (
+            $field->fieldName, 
+            array ('firstName', 'lastName', 'phone', 'email', 'visibility'))) {
+        $formFields[$field->fieldName] = 
+            X2Model::model('Contacts')->getAttributeLabel($field->fieldName);
+    }
+}
+
+foreach ($formFields as $key=>$val) {
+    if ($model->getAttribute ($key) === null)  {
+
+        // set placeholder text
+        $model->setAttribute ($key, $val);
+    }
+}
+
+$noErrors = count ($model->getErrors ()) === 0;
 
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'quick-contact-form',
-	'action'=>'',
+    'action'=>'',
 	'enableAjaxValidation'=>false,
 	'method'=>'POST',
 ));
 
-$model->firstName = $attributeLabels['firstName'];
-$model->lastName = $attributeLabels['lastName'];
-$model->phone = $attributeLabels['phone'];
-$model->email = $attributeLabels['email'];
-
 ?>
+
 <div class="form thin">
-	<div class="row x2-mobile-narrow-input-row">
-		<?php echo $form->textField($model,'firstName',array('maxlength'=>40,'tabindex'=>100,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
-		<?php echo $form->error($model,'firstName'); ?>
-
-		<?php echo $form->textField($model,'lastName',array('maxlength'=>40,'tabindex'=>101,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
-		<?php echo $form->error($model,'lastName'); ?>
-
-		<?php echo $form->textField($model,'phone',array('maxlength'=>40,'tabindex'=>102,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
-		<?php echo $form->error($model,'phone'); ?>
-
-		<?php echo $form->textField($model,'email',array('maxlength'=>100,'tabindex'=>103,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
-		<?php echo $form->error($model,'email'); ?>
+    <div class="row x2-mobile-narrow-input-row">
+        <?php 
+        $i = 0;
+        foreach ($formFields as $key=>$val) {
+            echo '<div class="input-error-container">';
+            echo $form->textField($model,$key,array(
+                'class'=> 'x2-mobile-narrow-input',
+                'tabindex'=>100 + $i,
+                'onfocus'=>'toggleText(this);',
+                'onblur'=>'toggleText(this);',
+                'title'=>$model->getAttributeLabel($key)
+            )); 
+            echo $form->error($model,$key);
+            if (!$noErrors && !$form->error($model, $key))
+                echo '<div class="err-msg-placeholder"></div>';
+            echo '</div>';
+            echo ' ';
+            ++$i;
+        }
+        echo '<div style="clear: left"></div>';
+        ?>
 	</div>
 </div>
+
 <?php
-echo CHtml::ajaxSubmitButton(
-	Yii::t('app','Create'),
-	array('/contacts/new'),
-	array('success'=>"function(response) {
-			if(response!='') {
-				alert('".Yii::t('app','Contact Saved')."');
-				$('#quick-contact-form').html(response);
-			}
-		}",
-	),
-	array('class'=>'x2-button')
+echo CHtml::submitButton(
+    Yii::t('app','Create'),
+	array(
+        'class'=>'x2-button'
+    )
 );
 $this->endWidget();
 ?>
 
 <script>
 
-	function toggleText(field) {
-		if (field.defaultValue==field.value) {
-			field.value = ''
-			field.style.color = 'black'
-		} else if (field.value=='') {
-			field.value = field.defaultValue
-			field.style.color = '#aaa'
-		}
-	}
-	
+    function toggleText(field) {
+        if (field.defaultValue==field.value) {
+            field.value = ''
+            field.style.color = 'black'
+        } else if (field.value=='') {
+            field.value = field.defaultValue
+            field.style.color = '#aaa'
+        }
+    }
+    
 </script>
-	
+    
+

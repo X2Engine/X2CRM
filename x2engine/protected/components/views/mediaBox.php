@@ -44,6 +44,7 @@ $imageTooltips = '';
 $minimizeUserMedia = '';
 $username = Yii::app()->params->profile->username;
 $fullname = Yii::app()->params->profile->fullName;
+$escapedName = preg_replace('/[@\.]/','',$username);
 ?>
 
 <div id="media-library-widget-wrapper" style="width:99%">
@@ -53,8 +54,8 @@ $fullname = Yii::app()->params->profile->fullName;
         $toggleUserMediaVisibleUrl = $this->controller->createUrl('/media/toggleUserMediaVisible')."?user=$username";
         $visible = !in_array($username, $hideUsers);
         if(!$visible)
-            $minimizeUserMedia .= "$('$username-media').hide();\n";
-        $minimizeLink = CHtml::ajaxLink($visible ? '[&ndash;]' : '[+]', $toggleUserMediaVisibleUrl, array('success' => "function(response) { toggleUserMedia($(\"#$username-media\"), $('#$username-media-showhide'), response); }", 'type' => 'GET'), array('id' => "$username-media-showhide", 'class' => 'media-library-showhide')); // javascript function togglePortletVisible defined in js/layout.js
+            $minimizeUserMedia .= "$('#".$escapedName."-media').hide();\n";
+        $minimizeLink = CHtml::ajaxLink($visible ? '[&ndash;]' : '[+]', $toggleUserMediaVisibleUrl, array('success' => "function(response) { toggleUserMedia($(\"#".$escapedName."-media\"), $('#".$escapedName."-media-showhide'), response); }", 'type' => 'GET'), array('id' => $escapedName."-media-showhide", 'class' => 'media-library-showhide')); // javascript function toggleUserMedia defined in js/media.js
         ?>
         <strong><?php echo $fullname; ?></strong>
         <?php echo $minimizeLink; ?><br>
@@ -69,10 +70,10 @@ $fullname = Yii::app()->params->profile->fullName;
         <?php //$myMediaItems = Media::model()->findAllByAttributes(array('uploadedBy'=>$username)); // get current user's media  ?>
 
 
-        <div id="<?php echo $username; ?>-media" class="user-media-list">
+        <div id="<?php echo $escapedName; ?>-media" class="user-media-list">
             <?php
             foreach($myMediaItems as $item){
-				$baseId = "$username-media-id-{$item['id']}";
+				$baseId = str_replace('@','',$username)."-media-id-{$item['id']}";
                 $jsSelectorId = CJSON::encode("#$baseId");
 				$propertyId = addslashes($baseId);
 				$desc = CHtml::encode($item['description']);
@@ -133,7 +134,7 @@ $fullname = Yii::app()->params->profile->fullName;
                 <?php $toggleUserMediaVisibleUrl = Yii::app()->controller->createUrl('/media/toggleUserMediaVisible')."?user={$user['username']}"; ?>
                 <?php $visible = !in_array($user['username'], $hideUsers); ?>
                 <?php if(!$visible) $minimizeUserMedia .= "$('#{$user['username']}-media').hide();\n"; ?>
-                <?php $minimizeLink = CHtml::ajaxLink($visible ? '[&ndash;]' : '[+]', $toggleUserMediaVisibleUrl, array('success' => "function(response) { toggleUserMedia($('#{$user['username']}-media'), $('#{$user['username']}-media-showhide'), response); }", 'type' => 'GET'), array('id' => "{$user['username']}-media-showhide", 'class' => 'media-library-showhide')); // javascript function togglePortletVisible defined in js/layout.js  ?>
+                <?php $minimizeLink = CHtml::ajaxLink($visible ? '[&ndash;]' : '[+]', $toggleUserMediaVisibleUrl, array('success' => "function(response) { toggleUserMedia($('#{$user['username']}-media'), $('#{$user['username']}-media-showhide'), response); }", 'type' => 'GET'), array('id' => "{$user['username']}-media-showhide", 'class' => 'media-library-showhide')); // javascript function toggleUserMedia defined in js/media.js  ?>
                 <strong><?php echo $user['fullName']; ?></strong>
                 <?php echo $minimizeLink; ?><br>
                 <div id="<?php echo $user['username']; ?>-media" class="user-media-list">

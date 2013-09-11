@@ -78,7 +78,8 @@ $(function() {
 					methods['stop']();
 				}
 			}
-			var newTitle = opts.message.substring(opts.titleOffset) + ' ' + opts.message.substring(0, opts.titleOffset);
+			var newTitle = opts.message.substring(opts.titleOffset) + ' ' + 
+                opts.message.substring(0, opts.titleOffset);
 
 			document.title = newTitle;
 		},
@@ -135,11 +136,12 @@ $(function() {
 	var fetchUpdates = true;
 
 
-	iwcMode = $.jStorage.storageAvailable(),
-			windowId = +new Date() + Math.floor(Math.random() * 1000), // generate ID from timestamp and random number
-			masterId = null;
+	iwcMode = $.jStorage.storageAvailable();
+    windowId = +new Date() + Math.floor(Math.random() * 1000); // generate ID from timestamp and random number
+    masterId = null;
 
 	if (iwcMode) {	// find out of this is going to work
+        x2.DEBUG && console.log ('notifications: is iwcMode');
 
 		/**
 		 * Looks for a non-expired masterId entry in local storage.
@@ -202,6 +204,9 @@ $(function() {
 		});
 		// notif deleted, remove it and add the next notif, update count
 		$.jStorage.subscribe("x2iwc_notif_delete", function(ch, payload) {
+            x2.DEBUG && console.log ('x2iwc_notif_delete: payload = ');
+            x2.DEBUG && console.log (payload);
+            x2.DEBUG && console.log (windowId);
 			if (payload.origin == windowId)
 				return;
 
@@ -211,6 +216,18 @@ $(function() {
 
 			if (payload.nextNotif)
 				addNotifications(payload.nextNotif, true);
+		});
+
+		// all notifs deleted, remove them and update count
+        x2.DEBUG && console.log ('x2iwc_notif_delete_all: setup');
+		$.jStorage.subscribe("x2iwc_notif_delete_all", function(ch, payload) {
+            x2.DEBUG && console.log ('x2iwc_notif_delete_all: payload, windowId = ');
+            x2.DEBUG && console.log (payload);
+            x2.DEBUG && console.log (windowId);
+			if (payload.origin == windowId)
+				return;
+
+			removeAllNotifications ()
 		});
 
 		// new chat message, add it
@@ -270,6 +287,25 @@ $(function() {
 		// $.fn.titleMarquee('softStop');
 	});
 
+	$('#notif-clear-all').on ('click', function (evt) {
+        evt.preventDefault ();
+        if (!window.confirm (x2.notifications.translations['clearAll'])) return;
+		$.ajax({
+			type: 'GET',
+			url: yii.scriptUrl + '/notifications/deleteAll',
+			success: function(response) {
+                removeAllNotifications ();
+			},
+			complete: function() {
+				if (iwcMode) {	// tell other windows to do the same
+					$.jStorage.publish("x2iwc_notif_delete_all", {
+						origin: windowId
+					});
+				}
+			}
+		});
+    })
+
 	/**
 	 * Deletes a notification.
 	 * Makes AJAX delete request, calls removeNotification() to remove it from
@@ -320,6 +356,14 @@ $(function() {
 		});
 	});
 
+    // Used by viewNotifications.php
+    x2.notifications.triggerNotifRemoval = function (id) {
+		$('#notifications .notif').each(function() {
+			if ($(this).data('id') === id) {
+                $(this).find ('.close').click ();
+			}
+		});
+    };
 
 	/**
 	 * Submits a chat message.
@@ -382,13 +426,15 @@ $(function() {
 						window.location = window.location;
 					}
 				}
+
+                x2.DEBUG && console.log ('ajax response');
 				
 				try {
 					var data = response; //$.parseJSON(response);
 
 					if (data.notifData.length) {
 						//notifCount = data.notifCount;
-						addNotifications(data.notifData, false);		// add new notifications to the notif box (prepend)
+						addNotifications(data.notifData, false, firstCall);		// add new notifications to the notif box (prepend)
 						var notifCount = $('#notifications').children ('.notif').length; 
 
 						if (!firstCall) {
@@ -462,10 +508,10 @@ $(function() {
 						at: "right top",
 						of: $(this)
 					});
-
 				});
 			},
 			complete: function () {
+                $('#notif-box-shadow-correct').show ();
 				$('#notif-box-shadow-correct').position ({ // IE bug fix, forces repaint
 					my: "left-20 top",
 					at: "left bottom",
@@ -481,6 +527,7 @@ $(function() {
 	function closeNotifications() {
 		clearTimeout(notifViewTimeout);
 		$('#notif-box').fadeOut(300);
+        $('#notif-box-shadow-correct').hide ();
 		// $.fn.titleMarquee('softStop');
 	}
 
@@ -500,11 +547,14 @@ $(function() {
 	 * and updates the notification count.
 	 * Also triggers x2.newNotifications event (which opens the box)
 	 */
-	function addNotifications(notifData, append) {
+	function addNotifications(notifData, append, firstCall) {
+        firstCall = typeof firstCall === 'undefined' ? false : true;
+        x2.DEBUG && console.log ('addNotifications');
 
 		var newNotif = false;
 
 		var $notifBox = $('#notifications');
+        var newNotifNum = 0;
 
 		// loop through the notifications backwards (they're ordered by ID descending, so start with the oldest)
 		for (var i = notifData.length - 1; i >= 0; --i) {
@@ -514,6 +564,7 @@ $(function() {
 			//console.log ('addNotifications: notifId = ' + notifId);
 
 			if (checkIfAreadyReceived (notifId)) continue;
+            newNotifNum++;
 			
 			if (notifData[i].type == 'voip_call' && timeNow.getTime() / 1000 - notifData[i].timestamp < 20 && 
 				windowId == masterId) { // Screen pop only if less than 20 seconds ago and master window
@@ -553,10 +604,25 @@ $(function() {
 		if (notifData.length && !append)
 			lastNotifId = notifData[0].id;
 
-		countNotifications();
+        // increment notification number if it's new
+        if (!append && !firstCall && newNotifNum > 0) incrNotif (newNotifNum);
 
 		if (newNotif && !append)
 			$(document).trigger('x2.newNotifications');
+	}
+
+	function removeAllNotifications(id) {
+		$('#notifications .notif').remove ();
+        $('#notif-box-shadow-correct').position ({ // IE bug fix, forces repaint
+            my: "left-20 top",
+            at: "left bottom",
+            of: $('#notif-box')
+        });
+
+        var notifCount = 0;
+		$('#main-menu-notif span').html(notifCount);
+
+        toggleClearAllViewAllNoNotif (notifCount);
 	}
 
 	/**
@@ -576,8 +642,46 @@ $(function() {
 			}
 		});
 
-		countNotifications();
+		//countNotifications();
+        decrNotif ();
 	}
+
+    function toggleClearAllViewAllNoNotif (notifCount) {
+		var showViewAll = false,
+			showNoNotif = false;
+
+		if (notifCount < 1)
+			showNoNotif = true;
+		else if (notifCount > 10)
+			showViewAll = true;
+
+		$("#notif-view-all").toggle(showViewAll);
+		$("#notif-clear-all").toggle(!showNoNotif);
+		$('#no-notifications').toggle(showNoNotif);
+
+    }
+
+    /*
+    Increment number in ui indicating number of notifications by newNotifNum
+    */
+    function incrNotif (newNotifNum) {
+        x2.DEBUG && console.log ('incrNotif');
+        var notifCount = parseInt ($('#main-menu-notif span').html()) + newNotifNum;
+		$('#main-menu-notif span').html(notifCount);
+
+        toggleClearAllViewAllNoNotif (notifCount);
+    }
+
+    /*
+    Decrement number in ui indicating number of notifications
+    */
+    function decrNotif () {
+        x2.DEBUG && console.log ('decrNotif');
+        var notifCount = parseInt ($('#main-menu-notif span').html()) - 1;
+		$('#main-menu-notif span').html(notifCount);
+
+        toggleClearAllViewAllNoNotif (notifCount);
+    }
 
 	/**
 	 * See how many notifications are in the list, update the counter,

@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -98,22 +97,25 @@ class AdminController extends Controller {
                     'emailDropboxSettings' => array(
                         'class' => 'EmailDropboxSettingsAction'
                     ),
-                    'automateTranslation'=>array(
-                        'class'=>'X2TranslationAction'
-                    )
+                    'automateTranslation' => array(
+                        'class' => 'X2TranslationAction'
+                    ),
+                    'viewLog' => array(
+                        'class' => 'LogViewerAction',
+                    ),
                 ));
     }
 
     public function actionCalculateMissingTranslations(){
-        $untranslated=array();
+        $untranslated = array();
         $languages = scandir('protected/messages');
         foreach($languages as $lang){
-            if(!in_array($lang,array('template','.','..'))){
-                $untranslated[$lang]=0;
+            if(!in_array($lang, array('template', '.', '..'))){
+                $untranslated[$lang] = 0;
                 $files = scandir('protected/messages/'.$lang);
                 foreach($files as $file){
                     if($file != '.' && $file != '..'){
-                        $translations=array_values(include('protected/messages/'.$lang.'/'.$file));
+                        $translations = array_values(include('protected/messages/'.$lang.'/'.$file));
                         foreach($translations as $message){
                             if(empty($message)){
                                 $untranslated[$lang]++;
@@ -121,7 +123,6 @@ class AdminController extends Controller {
                         }
                     }
                 }
-
             }
         }
         printR($untranslated);
@@ -659,7 +660,7 @@ class AdminController extends Controller {
                 $model->groupType = null;
             }
 
-            $model->users = Accounts::parseUsers($model->users);
+            $model->users = Fields::parseUsers($model->users);
             $check = LeadRouting::model()->findByAttributes(array('priority' => $model->priority));
             if(isset($check)){
                 $query = "UPDATE x2_lead_routing SET priority=priority+1 WHERE priority>='$model->priority'";
@@ -1239,13 +1240,16 @@ class AdminController extends Controller {
 
         if(isset($type)){
             foreach(X2Model::model('Fields')->findAllByAttributes(array('modelName' => $type)) as $field){
-
-                if(isset($_POST['Criteria']))
-                    $data[$field->fieldName] = $field->attributeLabel;
-                else
-                    $data[$field->id] = $field->attributeLabel;
+                if($field->fieldName != 'id'){
+                    if(isset($_POST['Criteria']))
+                        $data[$field->fieldName] = $field->attributeLabel;
+                    else
+                        $data[$field->id] = $field->attributeLabel;
+                }
             }
         }
+        asort($data);
+        $data = array('' => '-') + $data;
         $htmlOptions = array();
         echo CHtml::listOptions('', $data, $htmlOptions);
     }
@@ -1490,6 +1494,7 @@ class AdminController extends Controller {
             $model->attributes = $_POST['Fields'];
             (isset($_POST['Fields']['required']) && $_POST['Fields']['required'] == 1) ? $model->required = 1 : $model->required = 0;
             (isset($_POST['Fields']['searchable']) && $_POST['Fields']['searchable'] == 1) ? $model->searchable = 1 : $model->searchable = 0;
+            (isset($_POST['Fields']['uniqueConstraint']) && $_POST['Fields']['uniqueConstraint'] == 1) ? $model->uniqueConstraint = 1 : $model->uniqueConstraint = 0;
             $model->type = $_POST['Fields']['type'];
             // $model->visible=1;
             $model->custom = 1;
@@ -1612,7 +1617,7 @@ class AdminController extends Controller {
      */
     public function actionCustomizeFields(){
 
-        if(isset($_POST['Fields'])){
+        if(isset($_POST['Fields'], $_POST['Fields']['id']) && !empty($_POST['Fields']['id'])){
             $fieldModel = X2Model::model('Fields')->findByPk($_POST['Fields']['id']);
             $oldType = $fieldModel->type;
             $fieldModel->attributes = $_POST['Fields'];
@@ -1662,6 +1667,7 @@ class AdminController extends Controller {
             $fieldModel->modified = 1;
             $fieldName = $fieldModel->fieldName;
             (isset($_POST['Fields']['required']) && $_POST['Fields']['required'] == 1) ? $fieldModel->required = 1 : $fieldModel->required = 0;
+            (isset($_POST['Fields']['uniqueConstraint']) && $_POST['Fields']['uniqueConstraint'] == 1) ? $fieldModel->uniqueConstraint = 1 : $fieldModel->uniqueConstraint = 0;
             (isset($_POST['Fields']['searchable']) && $_POST['Fields']['searchable'] == 1) ? $fieldModel->searchable = 1 : $fieldModel->searchable = 0;
             if($fieldModel->save()){
                 if($fieldType != $oldType){
@@ -1672,6 +1678,7 @@ class AdminController extends Controller {
                 $this->redirect('manageFields');
             }
         }
+        $this->redirect('manageFields');
     }
 
     /**
@@ -1758,7 +1765,7 @@ class AdminController extends Controller {
             $model->attributes = $_POST['Docs'];
             $arr = $model->editPermissions;
             if(isset($arr))
-                $model->editPermissions = Accounts::parseUsers($arr);
+                $model->editPermissions = Fields::parseUsers($arr);
             $model->createdBy = 'admin';
             $model->createDate = time();
             $model->lastUpdated = time();
@@ -1829,10 +1836,12 @@ class AdminController extends Controller {
             $name = $_POST['name'];
 
             $moduleRecord = Modules::model()->findByAttributes(array('name' => $module, 'title' => $menuItems[$module]));
-            $moduleRecord->title = $name;
+            if(isset($moduleRecord)){
+                $moduleRecord->title = $name;
 
-            if($moduleRecord->save()){
-                $this->redirect('index');
+                if($moduleRecord->save()){
+                    $this->redirect('index');
+                }
             }
         }
 
@@ -2038,31 +2047,52 @@ class AdminController extends Controller {
             if(!is_null(Modules::model()->findByAttributes(array('title' => $title))) || !is_null(Modules::model()->findByAttributes(array('name' => $moduleName))))
                 $errors[] = Yii::t('module', 'A module with that name already exists');
             if(empty($errors)){
+                $dirFlag = false;
+                $configFlag = false;
+                $tableFlag = false;
                 try{
                     $this->createSkeletonDirectories($moduleName);
+                    $dirFlag = true;
                     $this->writeConfig($title, $moduleName, $recordName);
+                    $configFlag = true;
                     $this->createNewTable($moduleName);
+                    $tableFlag = true;
                 }catch(Exception $e){
-                    die($e->getMessage());
-                }
+                    if($dirFlag){
+                        FileUtil::rrmdir('protected/modules/'.$moduleName);
+                    }else{
+                        $errors[] = Yii::t('module', 'Unable to create custom module directory.');
+                    }
+                    if($configFlag){
 
-                $moduleRecord = new Modules;
-                $moduleRecord->name = $moduleName;
-                $moduleRecord->title = $title;
-                $moduleRecord->custom = 1;
-                $moduleRecord->visible = 1;
-                $moduleRecord->editable = $_POST['editable'];
-                $moduleRecord->adminOnly = $_POST['adminOnly'];
-                $moduleRecord->searchable = $_POST['searchable'];
-                $moduleRecord->toggleable = 1;
-                $moduleRecord->menuPosition = Modules::model()->count();
-                $moduleRecord->save();
-                $auth = Yii::app()->authManager;
-                $auth->createOperation(ucfirst($moduleName).'Index');
-                $auth->addItemChild('DefaultRole', ucfirst($moduleName).'Index');
-                $auth->createOperation(ucfirst($moduleName).'Admin');
-                $auth->addItemChild('administrator', ucfirst($moduleName).'Admin');
-                $this->redirect(array('/'.$moduleName.'/index'));
+                    }elseif($dirFlag){
+                        $errors[] = Yii::t('module', 'Unable to create config file for custom module.');
+                    }
+                    if($tableFlag){
+                        $this->deleteTable($moduleName);
+                    }elseif($dirFlag && $configFlag){
+                        $errors[] = Yii::t('module', 'Unable to create table for custom module.');
+                    }
+                }
+                if(empty($errors)){
+                    $moduleRecord = new Modules;
+                    $moduleRecord->name = $moduleName;
+                    $moduleRecord->title = $title;
+                    $moduleRecord->custom = 1;
+                    $moduleRecord->visible = 1;
+                    $moduleRecord->editable = $_POST['editable'];
+                    $moduleRecord->adminOnly = $_POST['adminOnly'];
+                    $moduleRecord->searchable = $_POST['searchable'];
+                    $moduleRecord->toggleable = 1;
+                    $moduleRecord->menuPosition = Modules::model()->count();
+                    $moduleRecord->save();
+                    $auth = Yii::app()->authManager;
+                    $auth->createOperation(ucfirst($moduleName).'Index');
+                    $auth->addItemChild('DefaultRole', ucfirst($moduleName).'Index');
+                    $auth->createOperation(ucfirst($moduleName).'Admin');
+                    $auth->addItemChild('administrator', ucfirst($moduleName).'Admin');
+                    $this->redirect(array('/'.$moduleName.'/index'));
+                }
             }
         }
 
@@ -2096,6 +2126,18 @@ class AdminController extends Controller {
             "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'createDate', 'Create Date', '0', 'date')",
             "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'lastUpdated', 'Last Updated', '0', 'date')",
             "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'updatedBy', 'Updated By', '0', 'assignment')");
+        foreach($sqlList as $sql){
+            $command = Yii::app()->db->createCommand($sql);
+            $command->execute();
+        }
+    }
+
+    private function deleteTable($moduleName){
+        $moduleTitle = ucfirst($moduleName);
+        $sqlList = array(
+            'DROP TABLE IF EXISTS `x2_'.$moduleName.'`',
+            'DELETE FOM x2_fields WHERE modelName="'.$moduleTitle.'"',
+        );
         foreach($sqlList as $sql){
             $command = Yii::app()->db->createCommand($sql);
             $command->execute();
@@ -2516,6 +2558,13 @@ class AdminController extends Controller {
             }
         }else{
             $modelName = isset($_GET['model']) ? $_GET['model'] : '';
+            if(!empty($modelName)){
+                try{
+                    $model = X2Model::model($modelName);
+                }catch(Exception $e){
+                    throw new CHttpException(400, 'The model you have requested does not exist. Please do not repeat this request.');
+                }
+            }
             $id = '';
         }
 
@@ -2740,7 +2789,7 @@ class AdminController extends Controller {
 						<br />
 					</li>";
             }
-            echo $str.CHtml::activeLabel($model,'multi').'&nbsp;'.CHtml::activeCheckBox($model,'multi');
+            echo $str.CHtml::activeLabel($model, 'multi').'&nbsp;'.CHtml::activeCheckBox($model, 'multi');
         }
     }
 
@@ -3307,15 +3356,15 @@ class AdminController extends Controller {
      * @param array $classes The missing dependencies
      */
     public function missingClassesException($classes){
-        $message = Yii::t('admin','One or more dependencies of AdminController are missing and could not be automatically retrieved. They are {classes}',array('{classes}'=>implode(', ', $classes)));
-	$message .= "\n\n".Yii::t('admin','To diagnose this error, please upload and run the requirements check script on your server.');
-	$message .= "\nhttps://x2planet.com/installs/requirements.php";
-	$message .= "\n\n".Yii::t('admin','The error is most likely due to one of the following things:');
-	$message .= "\n(1) ".Yii::t('admin','PHP processes run by the web server do not have permission to create or modify files');
-	$message .= "\n(2) ".Yii::t('admin','x2planet.com and raw.github.com are currently unavailable');
-	$message .= "\n(3) ".Yii::t('admin','This web server has no outbound internet connection. This could be because it is behind a firewall that does not permit outbound connections, operating within a private network with broken domain name resolution, or with no outbound route.');
-	$message .= "\n\n".Yii::t('admin','To stop this error from occurring, if the problem persists, restore the file {adminController} to the copy from your version of X2CRM:',array('{adminController}' => 'protected/controllers/AdminController.php'));
-	$message .= "\n"."https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engine/protected/controllers/AdminController.php";
+        $message = Yii::t('admin', 'One or more dependencies of AdminController are missing and could not be automatically retrieved. They are {classes}', array('{classes}' => implode(', ', $classes)));
+        $message .= "\n\n".Yii::t('admin', 'To diagnose this error, please upload and run the requirements check script on your server.');
+        $message .= "\nhttps://x2planet.com/installs/requirements.php";
+        $message .= "\n\n".Yii::t('admin', 'The error is most likely due to one of the following things:');
+        $message .= "\n(1) ".Yii::t('admin', 'PHP processes run by the web server do not have permission to create or modify files');
+        $message .= "\n(2) ".Yii::t('admin', 'x2planet.com and raw.github.com are currently unavailable');
+        $message .= "\n(3) ".Yii::t('admin', 'This web server has no outbound internet connection. This could be because it is behind a firewall that does not permit outbound connections, operating within a private network with broken domain name resolution, or with no outbound route.');
+        $message .= "\n\n".Yii::t('admin', 'To stop this error from occurring, if the problem persists, restore the file {adminController} to the copy from your version of X2CRM:', array('{adminController}' => 'protected/controllers/AdminController.php'));
+        $message .= "\n"."https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engine/protected/controllers/AdminController.php";
         $this->error500($message);
     }
 

@@ -175,14 +175,14 @@ class CalendarController extends x2base {
           if(isset($_POST['save-button'])) {
           if(isset($_POST['User']['calendarViewPermission'])) {
           $model->calendarViewPermission = $_POST['User']['calendarViewPermission'];
-          $model->calendarViewPermission = Accounts::parseUsers($model->calendarViewPermission);
+          $model->calendarViewPermission = Fields::parseUsers($model->calendarViewPermission);
           } else {
           $model->calendarViewPermission = '';
           }
 
           if(isset($_POST['User']['calendarEditPermission'])) {
           $model->calendarEditPermission = $_POST['User']['calendarEditPermission'];
-          $model->calendarEditPermission = Accounts::parseUsers($model->calendarEditPermission);
+          $model->calendarEditPermission = Fields::parseUsers($model->calendarEditPermission);
           } else {
           $model->calendarEditPermission = '';
           }
@@ -252,7 +252,7 @@ class CalendarController extends x2base {
                     $model->$field = $_POST['X2Calendar'][$field];
                     $fieldData = Fields::model()->findByAttributes(array('modelName' => 'Calendar', 'fieldName' => $field));
                     if(isset($fieldData) && $fieldData->type == 'assignment' && $fieldData->linkType == 'multiple'){
-                        $model->$field = Accounts::parseUsers($model->$field);
+                        $model->$field = Fields::parseUsers($model->$field);
                     }elseif(isset($fieldData) && $fieldData->type == 'date'){
                         $model->$field = strtotime($model->$field);
                     }
@@ -347,7 +347,7 @@ class CalendarController extends x2base {
                     $model->$field = $_POST['X2Calendar'][$field];
                     $fieldData = Fields::model()->findByAttributes(array('modelName' => 'Calendar', 'fieldName' => $field));
                     if($fieldData->type == 'assignment' && $fieldData->linkType == 'multiple'){
-                        $model->$field = Accounts::parseUsers($model->$field);
+                        $model->$field = Fields::parseUsers($model->$field);
                     }elseif($fieldData->type == 'date'){
                         $model->$field = strtotime($model->$field);
                     }

@@ -64,7 +64,8 @@ class ChartSetting extends CActiveRecord
                 'class' => 'application.components.JSONFieldsBehavior',
                 'transformAttributes' => array('settings' => array(
                     'startDate', 'endDate', 'binSize', 'firstMetric', 'visibilityFilter',
-					'usersFilter', 'eventsFilter', 'socialSubtypesFilter'))
+					'usersFilter', 'eventsFilter', 'socialSubtypesFilter',
+					'dateRange'))
             )
         );
     }

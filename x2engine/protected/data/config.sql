@@ -88,7 +88,7 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 	'Tech Support',
 	'Tech Support',
 	'Hello {first} {last},\n\nJust wanted to check in with you about the support case you created. It is number {case}. We will get back to you as soon as possible.',
-    7,
+    0,
     '["record_create","record_deleted","action_reminder","action_complete","calendar_event","case_escalated","email_opened","email_sent","notif","weblead_create","web_activity","workflow_complete","workflow_revert","workflow_start"]'
 );
 /*&*/

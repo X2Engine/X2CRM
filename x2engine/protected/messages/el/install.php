@@ -166,4 +166,6 @@ return array (
 'To trigger scheduled or delayed tasks automatically in X2CRM requires adding a task to the local cron table.'=>'Για να ενεργοποιήσετε ή να καθυστερήσει προγραμματισμένες εργασίες αυτόματα στο X2CRM απαιτεί την προσθήκη μιας εργασίας στο τοπικό πίνακα cron.',
 'Create a cron task for X2CRM'=>'Δημιουργήστε μια εργασία cron για X2CRM',
 'Run delayed or recurring tasks within X2CRM'=>'Εκτελέστε καθυστερημένη ή επαναλαμβανόμενες εργασίες εντός X2CRM',
+'The base directory configuration directive is set, and it does not include the current working directory.'=>'Ο κατάλογος βάσης οδηγία διαμόρφωση ρυθμίζεται και δεν περιλαμβάνει τον τρέχοντα κατάλογο εργασίας.',
+'Some hashing algorithms required for software updates are missing on this server:'=>'Μερικοί αλγόριθμοι κατακερματισμού που απαιτείται για ενημερώσεις λογισμικού λείπουν σε αυτόν το διακομιστή:',
 );

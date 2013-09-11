@@ -643,4 +643,10 @@ return array (
 'Send As (to web leads)'=>'Отправить как (на веб-провода)',
 'Send As (when notifying users)'=>'Отправить как (при уведомлении пользователей)',
 'Event Type'=>'Тип события',
+'When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.'=>'При выполнении действий в партиях, это (число секунд) ограничивает количество времени, которое можно потратить это. Рекомендуется установить это ниже, чем максимальная выполнения PHP время на вашем веб-сервере.',
+'Event/Action History Privacy'=>'Событие / действие История конфиденциальности',
+'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'=>'По умолчанию позволит пользователям видеть действия / события, которые являются государственными или возложенные на них. Пользователь только позволит пользователям видеть только действия / события, возложенные на них. Группа только позволит пользователям видеть действия / события назначены членами их групп.',
+'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.'=>'Выберите настройки конфиденциальности для виджета Действие истории и Лента. Пожалуйста, обратите внимание, что любой пользователь с правами администратора уровня доступа к модулю, что история на проигнорирует эту настройку. Только пользователи с полными правами администратора будет игнорировать этот параметр Лента.',
+'Web Lead Response Email Settings'=>'Ведущий веб Настройки ответа по электронной почте',
+'Configure how X2CRM sends email when responding to new web leads.'=>'Настройка метода X2CRM посылает письмо, когда в ответ на новые версии веб-сайтов.',
 );

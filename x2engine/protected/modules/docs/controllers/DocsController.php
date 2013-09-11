@@ -110,6 +110,9 @@ class DocsController extends x2base {
 				Yii::app()->params->isAdmin|| $editFlag))
 			$this->redirect(array('docs/index'));
 
+        // add doc to user's recent item list
+        User::addRecentItem('d', $id, Yii::app()->user->getId()); 
+
 		$this->render('view', array(
 			'model' => $model,
 		));
@@ -158,7 +161,7 @@ class DocsController extends x2base {
 			$arr = $model->editPermissions;
 			if(isset($arr))
 				if(is_array($arr))
-					$model->editPermissions = Accounts::parseUsers($arr);
+					$model->editPermissions = Fields::parseUsers($arr);
 
 			$model->createdBy = Yii::app()->user->getName();
 			$model->createDate = time();
@@ -196,7 +199,7 @@ class DocsController extends x2base {
 			$model->editPermissions = '';
 			// $arr=$model->editPermissions;
 			// if(isset($arr))
-				// $model->editPermissions=Accounts::parseUsers($arr);
+				// $model->editPermissions=Fields::parseUsers($arr);
 
 			$model->createdBy = Yii::app()->user->getName();
 			$model->createDate = time();
@@ -230,7 +233,7 @@ class DocsController extends x2base {
 			$model->editPermissions = '';
 			// $arr=$model->editPermissions;
 			// if(isset($arr))
-				// $model->editPermissions=Accounts::parseUsers($arr);
+				// $model->editPermissions=Fields::parseUsers($arr);
 
 			$model->createdBy = Yii::app()->user->getName();
 			$model->createDate = time();
@@ -260,7 +263,7 @@ class DocsController extends x2base {
 				$model->attributes = $_POST['Docs'];
 				$arr=$model->editPermissions;
 
-				$model->editPermissions = Accounts::parseUsers($arr);
+				$model->editPermissions = Fields::parseUsers($arr);
 				if($model->save()) {
 					$this->redirect(array('view','id'=>$id));
 				}

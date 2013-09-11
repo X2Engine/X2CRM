@@ -37,10 +37,18 @@
 $config = require('main.php');
 
 $custom = dirname(__FILE__).'/../../custom/protected/config/web.php';
-if($custom = realpath($custom)) {
-	include($custom);
+if($custom = realpath($custom)){
+    $customConfig = include($custom);
+    if(is_array($customConfig)){
+        foreach($customConfig as $key => $value){
+            if(isset($config[$key])){
+                $config[$key] = array_merge($config[$key], $customConfig[$key]);
+            }else{
+                $config[$key] = $customConfig[$key];
+            }
+        }
+    }
 }
 
 return $config;
-
 ?>

@@ -772,7 +772,9 @@ class InlineEmail extends CFormModel {
                 break;
             }
         }
-
+        if($attribute=='bcc'){
+            //printR($this->mailingList,true);
+        }
         if($invalid)
             $this->addError($attribute, Yii::t('app', 'Invalid email address list.'));
     }

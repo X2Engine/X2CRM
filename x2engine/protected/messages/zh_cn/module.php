@@ -28,4 +28,7 @@ return array (
 'Please fill out the fields below to create a new module.'=>'请填写下面的字段以创建一个新的模块。',
 'Enter field name here'=>'在此处输入字段名',
 'A module with that name already exists'=>'与该名称已经存在一个模块',
+'Unable to create custom module directory.'=>'无法创建自定义模块目录。',
+'Unable to create config file for custom module.'=>'无法创建自定义模块配置文件。',
+'Unable to create table for custom module.'=>'无法创建表，自定义模块。',
 );

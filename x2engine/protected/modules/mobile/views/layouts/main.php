@@ -41,7 +41,6 @@ $cs->registerCoreScript('jquery');
 $cs->registerPackage('jquerymobile');
 $cs->registerCssFile($this->module->getAssetsUrl() . '/css/jqueryMobileCssOverrides.css');
 $cs->registerCssFile($this->module->getAssetsUrl() . '/css/main.css');
-
 $cs->registerScriptFile($baseUrl . '/js/x2mobile.js');
 ?><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">

@@ -181,6 +181,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('AdminWorkflowSettings',0,'Control settings for editing workflow actions.',NULL,'N;'),
 ('AdminUpdaterSettings',0,'Control settings for the auto-updater.',NULL,'N;'),
 ('AdminUpdater',0,'',NULL,'N;'),
+('AdminViewLog',0,'',NULL,'N;'),
 ('AdminManageDropDowns',0,'General dropdown management.',NULL,'N;'),
 ('AdminManageFields',0,'Manage created fields.',NULL,'N;'),
 ('AdminManageModules',0,'Manage top bar menu items.',NULL,'N;'),

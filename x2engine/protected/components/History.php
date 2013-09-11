@@ -153,7 +153,7 @@ class History extends X2Widget {
             $type = $this->associationType;
             $model = X2Model::model($type)->findByPk($this->associationId);
             if(count($model->relatedX2Models) > 0){
-                $associationCondition = 
+                $associationCondition =
 					"((associationId={$this->associationId} AND ".
 					"associationType='{$this->associationType}')";
                 foreach($model->relatedX2Models as $relatedModel){
@@ -165,16 +165,16 @@ class History extends X2Widget {
                 }
                 $associationCondition.=")";
             }else{
-                $associationCondition = 
+                $associationCondition =
 					'associationId='.$this->associationId.' AND '.
 					'associationType="'.$this->associationType.'"';
             }
         }else{
-            $associationCondition = 
+            $associationCondition =
 				'associationId='.$this->associationId.' AND '.
 				'associationType="'.$this->associationType.'"';
         }
-        $associationCondition = 
+        $associationCondition =
 			str_replace('Opportunity', 'opportunities', $associationCondition);
         $associationCondition = str_replace('Quote', 'quotes', $associationCondition);
         $visibilityCondition = '';
@@ -183,7 +183,7 @@ class History extends X2Widget {
             if(Yii::app()->params->admin->historyPrivacy == 'user'){
                 $visibilityCondition = ' AND (assignedTo="'.Yii::app()->user->getName().'")';
             }elseif(Yii::app()->params->admin->historyPrivacy == 'group'){
-                $visibilityCondition = ' AND t.assignedTo IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.Yii::app()->user->getName().'")';
+                $visibilityCondition = ' AND (t.assignedTo IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.Yii::app()->user->getName().'") OR (t.assignedTo="'.Yii::app()->user->getName().'"))';
             }else{
                 $visibilityCondition = ' AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")';
             }

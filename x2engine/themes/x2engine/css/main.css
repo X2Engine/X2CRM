@@ -136,20 +136,21 @@ ul.filter-hint b {
     margin: 0;
 }
 
-#actions a, #recent-items a, #top-contacts a, #actions span, #recent-items span,
-#top-contacts span {
+#actions a, #recent-items .portlet-content a, #top-contacts .portlet-content a, #actions span, 
+#recent-items span, #top-contacts span {
 	display: block;
 	padding: 5px 10px;
 	font-weight: normal;
 	text-decoration: none;
 }
 
-#actions a:link, #recent-items a:link, #top-contacts a:link, #actions a:visited,
-#recent-items a:visited, #top-contacts a:visited {
+#actions a:link, #recent-items .portlet-content a:link, #top-contacts .portlet-content a:link, 
+#actions a:visited, #recent-items .portlet-content a:visited, 
+#top-contacts .portlet-content a:visited {
 	background: transparent;
 	color: black;
 }
-#actions a:hover, #recent-items a:hover, #top-contacts a:hover {
+#actions a:hover, #recent-items .portlet-content a:hover, #top-contacts .portlet-content a:hover {
 	border-top-color: #88cc88;/*#74d6ee;*/
 	background: #444;
 	color: white;
@@ -160,23 +161,23 @@ ul.filter-hint b {
 	color: white;
 	font-weight: bold;
 }
-#actions a:active, #recent-items  a:active, #top-contacts  a:active {
+#actions a:active, #recent-items .portlet-content a:active, #top-contacts  .portlet-content a:active {
     background: black;
     color: white;
 }
-#recent-items a, #top-contacts a {
+#recent-items .portlet-content a, #top-contacts .portlet-content a {
     text-decoration: none;
     font-size: 11px;
 }
-#recent-items a strong, #top-contacts a strong {
+#recent-items .portlet-content a strong, #top-contacts .portlet-content a strong {
     font-size: 12px;
 }
 
-#top-contacts a {
+#top-contacts .portlet-content a {
     float: left;
     width: 100px;
 }
-#top-contacts a.delete-link {
+#top-contacts .portlet-content a.delete-link {
 	display: block;
 	width: auto;
 	margin: 5px 5px 0 0;
@@ -185,7 +186,7 @@ ul.filter-hint b {
 	float: right;
 	background: none;
 }
-#top-contacts a.delete-link:hover {
+#top-contacts .portlet-content a.delete-link:hover {
     color: #09f;
 }
 #recent-items .portlet-content{
@@ -1624,21 +1625,6 @@ Error message container
 }
 
 
-
-/***********************************************************************
-Feedback message container
-***********************************************************************/
-
-.feedback-container {
-    margin-top: 8px;
-    text-align: left;
-    margin-bottom: 0;
-}
-
-.feedback-container span {
-    margin-bottom: 0;
-    padding: 0 0 0 0;
-}
 
 
 /***********************************************************************

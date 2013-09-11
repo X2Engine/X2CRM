@@ -47,6 +47,10 @@ class QuickContact extends X2Widget {
 	}
 
 	public function run() {
-		$this->render('quickContact');
+        $model = new Contacts;
+		$this->render('quickContact', array (
+            'model' => $model
+        ));
 	}
 }
+

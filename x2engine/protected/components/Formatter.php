@@ -1,4 +1,38 @@
 <?php
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 
 /**
  * Consolidated class for common string formatting and parsing functions.
@@ -71,7 +105,7 @@ class Formatter {
      * @return string
      */
     public static function formatDatePicker($width = ''){
-        if(Yii::app()->language == 'en'){
+        if(Yii::app()->locale->getId() == 'en'){
             if($width == 'medium')
                 return "M d, yy";
             else
@@ -133,7 +167,7 @@ class Formatter {
         if(empty($timestamp))
             return '';
         else
-        if(Yii::app()->language == 'en')
+        if(Yii::app()->locale->getId() == 'en')
             return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium').' '.Yii::app()->locale->getTimeFormat('short'), strtotime("tomorrow", $timestamp) - 60);
         else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh')
             return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short').' '.'HH:mm', strtotime("tomorrow", $timestamp) - 60);
@@ -175,7 +209,7 @@ class Formatter {
      * @param string $width A length keyword, i.e. "medium"
      * @return string
      */
-    public static function formatDate($date, $width = 'long', $informal=true){
+    public static function formatDate($date, $width = 'long', $informal = true){
         if(empty($date)){
             return '';
         }
@@ -201,7 +235,7 @@ class Formatter {
         return $ret;
     }
 
-    public static function formatTime($date, $width='medium'){
+    public static function formatTime($date, $width = 'medium'){
         return Yii::app()->dateFormatter->formatDateTime($date, null, $width);
     }
 
@@ -237,7 +271,7 @@ class Formatter {
         if(empty($timestamp))
             return '';
         else
-        if(Yii::app()->language == 'en')
+        if(Yii::app()->locale->getId() == 'en')
             return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium').' '.Yii::app()->locale->getTimeFormat('short'), $timestamp);
         else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh')
             return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short').' '.'HH:mm', $timestamp);
@@ -252,7 +286,7 @@ class Formatter {
      * @return integer
      */
     public static function parseDate($date){
-        if(Yii::app()->language == 'en')
+        if(Yii::app()->locale->getId() == 'en')
             return strtotime($date);
         else
             return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short'));
@@ -268,7 +302,7 @@ class Formatter {
             return null;
         elseif(is_numeric($date))
             return $date;
-        elseif(Yii::app()->language == 'en')
+        elseif(Yii::app()->locale->getId() == 'en')
             return strtotime($date);
         else
             return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short').' hh:mm');
@@ -311,6 +345,63 @@ class Formatter {
         $str = preg_replace('/<\!--BeginActionHeader-->(.*?)<\!--EndActionHeader--!>/s', '', $str);
         $str = strip_tags($str);
         return $str;
+    }
+
+    public static function replaceVariables($value, $model, $type = '', $params = array()){
+        $matches = array();
+        if($type === '' || $type === 'text' || $type === 'richtext'){
+            $renderFlag = true;
+        }else{
+            $renderFlag = false;
+        }
+        preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
+        if(isset($matches[0])){
+            foreach($matches[0] as $match){
+                $match = substr($match, 1, -1);
+                if(strpos($match, '.') !== false){
+                    $value = preg_replace('/{'.$match.'}/i', $model->getAttribute($match, $renderFlag), $value);
+                }else{
+                    if(isset($params[$match])){
+                        $value = $params[$match]; // don't return
+                    }elseif($model->hasAttribute($match)){
+                        $value = preg_replace('/{'.$match.'}/i', $model->getAttribute($match, $renderFlag), $value);
+                    }else{
+                        $shortCodeValue = Formatter::parseShortCode($match, $model);
+                        if(!is_null($shortCodeValue)){
+                            $value = preg_replace('/{'.$match.'}/i', $shortCodeValue, $value);
+                        }
+                    }
+                }
+            }
+            return $value;
+        }
+    }
+
+    public static function parseFormula($formula, $type = '', $params = array()){
+        $formula = substr($formula, 1);
+        if(isset($params['model'])){
+            $formula = Formatter::replaceVariables($formula, $params['model'], 'formula', $params);
+        }
+        if(strpos($formula, ';') !== strlen($formula) - 1){
+            $formula.=';';
+        }
+        if(strpos($formula, 'return ') !== 0){
+            $formula = 'return '.$formula;
+        }
+        try{
+            return eval($formula);
+        }catch(Exception $e){
+
+        }
+    }
+
+    public static function parseShortCode($key, $model){
+        $shortCodes = include('protected/components/x2flow/shortcodes.php');
+        if(isset($shortCodes[$key])){
+            return eval($shortCodes[$key]);
+        }else{
+            return null;
+        }
     }
 
 }

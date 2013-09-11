@@ -318,4 +318,12 @@ return array (
 'Export Data'=>'Экспорт данных',
 'Please click the link below to download this report.'=>'Пожалуйста, нажмите на ссылку ниже, чтобы скачать этот доклад.',
 'Create Campaign'=>'Создать кампанию',
+'Last Week'=>'Последняя неделя',
+'Last Month'=>'Последний месяц',
+'Doc'=>'Доктор',
+'Help'=>'Помощь',
+'Sent'=>'Посланный',
+'Opened'=>'Открытый',
+'Unsubscribed'=>'Отписался',
+'Action History'=>'Действие истории',
 );

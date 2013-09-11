@@ -63,7 +63,10 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'class'=>'CButtonColumn',
 			'template'=>'{delete}',
 			'deleteButtonUrl'=>'Yii::app()->controller->createUrl("/notifications/delete/".$data->id)',
-			'afterDelete'=>'function(link,success,data){ removeNotification(data); }',
+			'afterDelete'=>'function(link,success,data){ 
+                var match = $(link).attr ("href").match (/[0-9]+$/);
+                if (match !== null) x2.notifications.triggerNotifRemoval (match[0]); 
+            }',
 			'deleteConfirmation'=>false,
 			'headerHtmlOptions'=>array('style'=>'width:40px'),
 		 ),

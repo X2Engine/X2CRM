@@ -172,20 +172,20 @@ class X2List extends CActiveRecord {
 	}
 
 	public static function load($id) {
-        // if(Yii::app()->params->isAdmin) {
-            // $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
-			// /* x2temp */
-			// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-			// if(!empty($groupLinks))
-				// $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
+         if(!Yii::app()->params->isAdmin) {
+             $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
+			 /* x2temp */
+			 $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+			 if(!empty($groupLinks))
+				 $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
 
-			// $condition .= 'OR (t.visibility=2 AND t.assignedTo IN
-				// (SELECT username FROM x2_group_to_user WHERE groupId IN
-					// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-		// } else {
-			// $condition='';
-		// }
-		return self::model()->with('listItems')->findByPk((int)$id,X2Model::model('Contacts')->getAccessCriteria());
+			 $condition .= 'OR (t.visibility=2 AND t.assignedTo IN
+				 (SELECT username FROM x2_group_to_user WHERE groupId IN
+					 (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+		 } else {
+			 $condition='';
+		 }
+		return self::model()->with('listItems')->findByPk((int)$id,$condition);
 	}
 
 	/**
@@ -500,6 +500,14 @@ class X2List extends CActiveRecord {
 		// been denied access to it to begin with.
 		$conditions = X2Model::model('Campaign')->getAccessCriteria()->condition;
 		$params = array('listId'=>$this->id);
+
+		$count = Yii::app()->db->createCommand()
+			->select ('count(*)')
+			->from(X2ListItem::model()->tableName().' as list')
+			->leftJoin(X2Model::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
+			->where('list.listId=:listId AND ('.$conditions.')',array(':listId'=>$this->id))
+			->queryScalar ();
+
 		$sql = Yii::app()->db->createCommand()
 			->select('list.*, t.*')
 			->from(X2ListItem::model()->tableName().' as list')
@@ -510,6 +518,7 @@ class X2List extends CActiveRecord {
 
 		return new CSqlDataProvider($sql, array(
 			'params'=>$params,
+			'totalItemCount'=>$count,
 			'pagination'=>array(
 				'pageSize'=>!empty($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
 			),

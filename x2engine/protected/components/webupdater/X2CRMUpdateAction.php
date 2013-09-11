@@ -80,6 +80,7 @@ class X2CRMUpdateAction extends WebUpdaterAction {
 						$updateData['edition'] = 'opensource';
 						$updateData['edition'] =  $this->edition;
 						$updateData['url'] = 'x2planet';
+                        $updateData = array_merge($updateData,$this->prepareData($updateData['data']));
 						// Ready to run the updater.
 						$this->controller->render('updater', $updateData);
 					}else{ // Scenario $updateData['errors'] is set; server denied/dropped requests

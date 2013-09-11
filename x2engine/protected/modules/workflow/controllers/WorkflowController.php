@@ -94,6 +94,9 @@ class WorkflowController extends x2base {
 		else
 			$viewStage = null;
 
+        // add workflow to user's recent item list
+        User::addRecentItem('w', $id, Yii::app()->user->getId()); 
+
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),'viewStage'=>$viewStage, 'dateRange'=>$dateRange,
 		));

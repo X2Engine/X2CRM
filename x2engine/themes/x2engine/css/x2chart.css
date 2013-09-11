@@ -39,6 +39,7 @@
 	padding-bottom: 0px !important;
     padding-left: 6px !important;
     padding-right: 6px !important;
+	overflow: hidden !important;
 }
 
 .chart-container .chart {
@@ -48,6 +49,72 @@
     margin: 0 auto;
 }
 
+/* Pie chart data labels */
+.jqplot-pie-series.jqplot-data-label {
+	color: #ffffff;
+}
+
+
+/*
+Pie chart overrides
+*/
+
+.chart-container .chart.pie {
+    height: 235px !important;
+	/*margin-top: 28px;*/
+}
+
+.chart-container .chart-legend.pie {
+	margin-top: -15px;
+	/*position: relative;
+	top: 5px;*/
+}
+
+.chart-container .bin-size-button-set.pie {
+	display: none;
+}
+
+.chart-container .datepicker-row.pie {
+	/*float: right;
+	clear: none;*/
+}
+
+.chart-container .datepicker-row.action-history-pie {
+	/*float: right;
+	clear: none;
+	position: relative;
+	z-index: 100;*/
+}
+
+.chart-container .rel-chart-data-checkbox-container.pie {
+	/*clear: both;*/
+}
+
+.chart-container .top-button-row.pie {
+	/*float: left;
+	clear: none;*/
+	display: none;
+}
+
+.chart-container .top-button-row.feed-pie {
+	/*float: left;
+	clear: none;*/
+}
+
+.chart-container .create-setting-button.pie {
+	/*clear: both;
+	position: relative;
+	z-index: 100;*/
+}
+
+.chart-container .ui-multiselect.pie {
+	display: none;
+}
+
+.chart-container .predefined-settings.pie {
+	position: relative;
+	z-index: 100;
+}
 
 
 /*
@@ -235,4 +302,23 @@ advanced settings
 	font-size: 80%;
 }
 
+.chart-container .datepicker-row,
+.chart-container .top-button-row {
+	/*position: relative;
+	z-index: 100;*/
+}
+
+.chart-container .chart-datepicker-to,
+.chart-container .chart-datepicker-from {
+	width: 100px;
+}
+
+.pie-chart-count-container {
+	display: inline;
+	margin-left: 67%;
+	bottom: 50px;
+	background: #E6E6E6;
+	padding: 3px 4px;
+	position: relative;
+}
 

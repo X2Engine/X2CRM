@@ -223,7 +223,7 @@ class DashboardController extends x2base {
 				unset($pieces[$user]);
 			}
 			
-			$temp=Accounts::parseUsersTwo($pieces);
+			$temp=Fields::parseUsersTwo($pieces);
 
 			$model->assignedTo=$temp;
 			// $changes=$this->calculateChanges($temp,$model->attributes);

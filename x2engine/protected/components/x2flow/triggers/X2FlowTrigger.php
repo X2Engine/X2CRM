@@ -40,6 +40,11 @@
  * @package X2CRM.components.x2flow
  */
 abstract class X2FlowTrigger extends X2FlowItem {
+
+    /**
+     * "Cache" of instantiated triggers, for reference purposes
+     */
+    protected static $_instances;
 	/**
 	 * $var string the type of notification to create
 	 */
@@ -670,18 +675,35 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	}
 
 	/**
-	 * @param Array $vars variables to be used in this param's calculations
-	 * @return
+	 * Gets all X2Flow trigger types.
+     * 
+     * Optionally constrains the list to those with a property matching a value.
+     * @param string $queryProperty The property of each trigger to test
+     * @param mixed $queryValue The value to match trigger against
 	 */
-	public static function getTriggerTypes() {
+	public static function getTriggerTypes($queryProperty = False,$queryValue = False) {
 		$types = array();
-		foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.triggers')) as $file) {
-			if(in_array($file,array('.','..','X2FlowTrigger.php','X2FlowSwitch.php','BaseTagTrigger.php'),true))
-				continue;
-			$class = self::create(array('type'=>substr($file,0,-4)));	// remove file extension and create instance
-			if($class !== null)
-				$types[get_class($class)] = Yii::t('studio',$class->title);
+		foreach(self::getTriggerInstances() as $class) {
+            $include = true;
+            if($queryProperty)
+                $include = $class->$queryProperty == $queryValue;
+            if($include)
+    	      $types[get_class($class)] = Yii::t('studio',$class->title);
 		}
 		return $types;
 	}
+
+    public static function getTriggerInstances(){
+        if(!isset(self::$_instances)) {
+            self::$_instances = array();
+            foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.triggers')) as $file) {
+	    		if(in_array($file,array('.','..','X2FlowTrigger.php','X2FlowSwitch.php','BaseTagTrigger.php'),true))
+		    		continue;
+			    $class = self::create(array('type'=>substr($file,0,-4)));	// remove file extension and create instance
+                if($class !== null)
+                    self::$_instances[] = $class;
+            }
+        }
+        return self::$_instances;
+    }
 }

@@ -47,7 +47,7 @@ function refreshQtip() {
 	$(".media-name").each(function (i) {
 		var mediaId = $(this).attr("href").match(/\\d+$/);
 
-		if(typeof mediaId != null && mediaId.length) {
+		if(mediaId !== null && mediaId.length) {
 			$(this).qtip({
 				content: {
 					text: "'.addslashes(Yii::t('app','loading...')).'",

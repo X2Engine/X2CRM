@@ -52,6 +52,10 @@ class MediaController extends x2base {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id){
+
+        // add media object to user's recent item list
+        User::addRecentItem('m', $id, Yii::app()->user->getId()); 
+
         $this->render('view', array(
             'model' => $this->loadModel($id),
         ));
@@ -368,9 +372,14 @@ class MediaController extends x2base {
                 return false;
             }
         }catch(Google_AuthException $e){
-            $auth->flushCredentials();
-            $auth->setErrors($e->getMessage());
-            return false;
+            if(isset($_SESSION['access_token']) || isset($_SESSION['token'])){ // If these are set it's possible the token expired and there is a refresh token available
+                $auth->flushCredentials(false); // Only flush the recently received information
+                return $this->printFolder($folderId); // Try again, it will use a refresh token if available this time, otherwise it will fail.
+            }else{
+                $auth->flushCredentials();
+                $auth->setErrors($e->getMessage());
+                return false;
+            }
         }catch(Google_ServiceException $e){
             $auth->setErrors($e->getMessage());
             return false;

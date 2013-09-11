@@ -28,4 +28,7 @@ return array (
 'Please fill out the fields below to create a new module.'=>'Συμπληρώστε τα πεδία πιο κάτω για να δημιουργηθεί νέα μονάδα.',
 'Enter field name here'=>'Συμπληρώστε το όνομα πεδίου εδώ',
 'A module with that name already exists'=>'Μια ενότητα με αυτό το όνομα υπάρχει ήδη',
+'Unable to create custom module directory.'=>'Δεν είναι δυνατή η δημιουργία προσαρμοσμένων κατάλογο ενότητα.',
+'Unable to create config file for custom module.'=>'Δεν είναι δυνατή η δημιουργία αρχείου διαμόρφωσης για το custom module.',
+'Unable to create table for custom module.'=>'Δεν είναι δυνατή η δημιουργία πίνακα για την προσαρμοσμένη μονάδα.',
 );

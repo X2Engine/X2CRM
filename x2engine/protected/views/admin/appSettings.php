@@ -46,6 +46,9 @@ $('#chatPollTime').change(function() {
 $('#timeout').change(function() {
 	$('#timeoutSlider').slider('value',$(this).val());
 });
+$('#batchTimeout').change(function(){
+    $('#batchTimeoutSlider').slider('value',$(this).val());
+});
 
 $('#currency').change(function() {
 	if($('#currency').val() == 'other')
@@ -127,6 +130,33 @@ $('#currency').change(function() {
         <?php echo $form->checkBox($model, 'sessionLog'); ?>
     </div>
     <div class="form">
+        <?php 
+        echo $form->labelEx($model,'batchTimeout');
+        $this->widget('zii.widgets.jui.CJuiSlider', array(
+            'value' => $model->batchTimeout,
+            // additional javascript options for the slider plugin
+            'options' => array(
+                'min' => 5,
+                'max' => 600,
+                'step' => 5,
+                'change' => "js:function(event,ui) {
+					$('#batchTimeout').val(ui.value);
+					$('#save-button').addClass('highlight');
+				}",
+                'slide' => "js:function(event,ui) {
+					$('#batchTimeout').val(ui.value);
+				}",
+            ),
+            'htmlOptions' => array(
+                'style' => 'width:340px;margin:10px 0;',
+                'id' => 'batchTimeoutSlider'
+            ),
+        ));
+        echo $form->textField($model,'batchTimeout',array('style'=>'width:50px;','id'=>'batchTimeout'));
+        echo '<p>'.Yii::t('admin','When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.').'</p>';
+        ?>
+    </div>
+    <div class="form">
         <label for="Admin_quoteStrictLock"><?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?> <span class="x2-hint" title="<?php echo Yii::t('admin', 'Enabling strict lock completely disables locked quotes from being edited. While this setting is off, there will be a confirm dialog before editing a locked quote.'); ?>">[?]</span></label>
         <?php echo $form->checkBox($model, 'quoteStrictLock'); ?>
         <br><br>
@@ -134,7 +164,7 @@ $('#currency').change(function() {
         <?php echo $form->checkBox($model, 'userActionBackdating'); ?>
     </div>
     <div class="form">
-        <label for="Admin_historyPrivacy"><?php echo Yii::t('admin', 'Action History Privacy'); ?> <span class="x2-hint" title="<?php echo Yii::t('admin', 'Default will allow users to see actions which are public or assigned to them. User Only will allow users to only see actions assigned to them. Group Only will allow users to see actions assigned to members of their groups.') ?>">[?]</span></label>
+        <label for="Admin_historyPrivacy"><?php echo Yii::t('admin', 'Event/Action History Privacy'); ?> <span class="x2-hint" title="<?php echo Yii::t('admin', 'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.') ?>">[?]</span></label>
         <?php
         echo $form->dropDownList($model, 'historyPrivacy', array(
             'default' => Yii::t('admin', 'Default'),
@@ -143,7 +173,7 @@ $('#currency').change(function() {
         ));
         ?>
         <br><br>
-        <?php echo Yii::t('admin', 'Choose a privacy setting for the Action History widget. Please note that any user with Admin level access to the module that the History is on will ignore this setting.') ?>
+        <?php echo Yii::t('admin', 'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.') ?>
     </div>
     <div class="form">
         <?php echo $form->labelEx($model, 'corporateAddress'); ?>

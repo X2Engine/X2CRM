@@ -89,6 +89,8 @@ class ApiController extends x2base {
 			$actions['webListener'] = array('class' => 'WebListenerAction');
 		if(class_exists('X2CronAction'))
 			$actions['x2cron'] = array('class' => 'X2CronAction');
+		if(class_exists('EmailImportAction'))
+			$actions['dropbox'] = array('class'=>'EmailImportAction');
 		return $actions;
 	}
 
@@ -210,7 +212,6 @@ class ApiController extends x2base {
 					$message .= " with name {$model->name}";
 					break;
 			}
-			$this->addResponseProperty('suModel',Yii::app()->suModel->attributes);
 			$this->_sendResponse(200,$message);
 		} else { // API model creation failure
 			$this->addResponseProperty('modelErrors',$model->errors);
@@ -356,7 +357,9 @@ class ApiController extends x2base {
 		$attrs = $_POST;
 		unset($attrs['user']);
 		unset($attrs['userKey']);
-
+        $tempModel = new $this->modelClass;
+        $tempModel->setX2Fields($attrs);
+        $attrs = array_filter($tempModel->getAttributes());
 		$model = X2Model::model($this->modelClass)->findByAttributes($attrs);
 
 		// Did we find the requested model? If not, raise an error

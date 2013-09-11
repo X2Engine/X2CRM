@@ -310,4 +310,12 @@ return array (
 'Export Data'=>'Εξαγωγή δεδομένων',
 'Please click the link below to download this report.'=>'Παρακαλώ κάντε κλικ στον παρακάτω σύνδεσμο για να κατεβάσετε την έκθεση αυτή.',
 'Create Campaign'=>'Δημιουργία καμπάνιας',
+'Last Week'=>'Τελευταία εβδομάδα',
+'Last Month'=>'Τελευταίος μήνας',
+'Doc'=>'Doc',
+'Help'=>'Βοήθεια',
+'Sent'=>'Εστάλη',
+'Opened'=>'Άνοιξε',
+'Unsubscribed'=>'Αδιάθετες',
+'Action History'=>'Ιστορία Δράση',
 );

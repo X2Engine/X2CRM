@@ -1,4 +1,3 @@
-<?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -33,38 +32,18 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-$authParams['assignedTo']=$model->assignedTo;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('quotes','Quotes List'), 'url'=>array('index')),
-	array('label'=>Yii::t('quotes','Create Quote'), 'url'=>array('create')),
-	array('label'=>Yii::t('quotes','View Quote'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Update Quote'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Add A User'), 'url'=>($action=='Add')?null:array('addUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Add A Contact'), 'url'=>array('addContact', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Remove A User'), 'url'=>($action=='Remove')?null:array('removeUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Remove A Contact'), 'url'=>array('removeContact', 'id'=>$model->id)),
-),$authParams);
-?>
 
-<div class="page-title icon quotes"><h2><span class="no-bold"><?php echo Yii::t('quotes','Update Quote:'); ?></span> <?php echo $model->name; ?></h2></div>
-<div class="form">
 
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'acocunts-form',
-	'enableAjaxValidation'=>false,
-)); 
-echo ($action=='Remove')? Yii::t('quotes','Please select the users you wish to remove.') : Yii::t('quotes','Please click any new users you wish to add.');
-?>
-<br /><br />
-<div class="row">
-	<?php echo $form->dropDownList($model,'assignedTo',$users,array("multiple"=>"multiple", 'size'=>8)); ?>
-	<?php echo $form->error($model,'assignedTo'); ?>
-</div>
+.feedback-container {
+    margin-top: 0px;
+    text-align: left;
+    margin-bottom: 0;
+    margin-right: 4px;
+    margin-left: 4px;
+}
 
-<div class="row buttons">
-	<?php echo CHtml::submitButton(Yii::t('app',$action),array('class'=>'x2-button')); ?>
-</div>
+.feedback-container span {
+    margin-bottom: 0;
+    padding: 0 0 0 0;
+}
 
-<?php $this->endWidget(); ?>
-
-</div>

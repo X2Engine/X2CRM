@@ -189,7 +189,8 @@ class User extends CActiveRecord {
         $userRecord = X2Model::model('User')->findByPk(Yii::app()->user->getId());
 
         //get array of type-ID pairs
-        $recentItemsTemp = empty($userRecord->recentItems) ? array() : explode(',', $userRecord->recentItems);
+        $recentItemsTemp = 
+            empty($userRecord->recentItems) ? array() : explode(',', $userRecord->recentItems);
         $recentItems = array();
 
         //get record for each ID/type pair
@@ -197,26 +198,76 @@ class User extends CActiveRecord {
             $itemType = strtok($item, '-');
             $itemId = strtok('-');
 
-            if($itemType == 'c'){
-                $record = X2Model::model('Contacts')->findByPk($itemId);
-                if(!is_null($record)) //only include contact if the contact ID exists
-                    array_push($recentItems, array('type' => $itemType, 'model' => $record));
-            } else if($itemType == 't'){
-                $record = X2Model::model('Actions')->findByPk($itemId);
-                if(!is_null($record)) //only include action if the action ID exists
-                    array_push($recentItems, array('type' => $itemType, 'model' => $record));
+            switch ($itemType) {
+                case 'c': // contact
+                    $record = X2Model::model('Contacts')->findByPk($itemId);
+                    break;
+                case 't': // action
+                    $record = X2Model::model('Actions')->findByPk($itemId);
+                    break;
+                case 'a': // account
+                    $record = X2Model::model('Accounts')->findByPk($itemId);
+                    break;
+                case 'p': // campaign
+                    $record = X2Model::model('Campaign')->findByPk($itemId);
+                    break;
+                case 'o': // opportunity
+                    $record = X2Model::model('Opportunity')->findByPk($itemId);
+                    break;
+                case 'w': // workflow
+                    $record = X2Model::model('Workflow')->findByPk($itemId);
+                    break;
+                case 's': // service case
+                    $record = X2Model::model('Services')->findByPk($itemId);
+                    break;
+                case 'd': // document
+                    $record = X2Model::model('Docs')->findByPk($itemId);
+                    break;
+                case 'm': // media object
+                    $record = X2Model::model('Media')->findByPk($itemId);
+                    break;
+                case 'r': // product
+                    $record = X2Model::model('Product')->findByPk($itemId);
+                    break;
+                case 'q': // product
+                    $record = X2Model::model('Quote')->findByPk($itemId);
+                    break;
+                case 'g': // group
+                    $record = X2Model::model('Groups')->findByPk($itemId);
+                    break;
+                default:
+                    printR ('Warning: getRecentItems: invalid item type');
+                    continue;
             }
+            if(!is_null($record)) //only include item if the record ID exists
+                array_push($recentItems, array('type' => $itemType, 'model' => $record));
         }
         return $recentItems;
     }
 
+    private static $validRecentItemTypes = array (
+        'c', // contact
+        't', // action
+        'p', // campaign
+        'o', // opportunity
+        'w', // workflow
+        's', // service case
+        'd', // doc
+        'm', // media object
+        'r', // product
+        'q', // quote
+        'g', // group
+        'a' // account
+    );
+
     public static function addRecentItem($type, $itemId, $userId){
-        if($type == 'c' || $type == 't'){ //only proceed if a valid type is given
+        if(in_array ($type, self::$validRecentItemTypes)) { //only proceed if a valid type is given
             $newItem = $type.'-'.$itemId;
 
             $userRecord = X2Model::model('User')->findByPk($userId);
             //create an empty array if recentItems is empty
-            $recentItems = ($userRecord->recentItems == '') ? array() : explode(',', $userRecord->recentItems);
+            $recentItems = 
+                ($userRecord->recentItems == '') ? array() : explode(',', $userRecord->recentItems);
             $existingEntry = array_search($newItem, $recentItems); //check for a pre-existing entry
             if($existingEntry !== false)        //if there is one,
                 unset($recentItems[$existingEntry]);    //remove it

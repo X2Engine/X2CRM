@@ -144,4 +144,6 @@ return array (
 'Create a cron task for X2CRM'=>'X2CRMためのcronタスクを作成',
 'Run delayed or recurring tasks within X2CRM'=>'X2CRM内遅延または定期的なタスクを実行',
 'The base directory configuration directive is set, and it is not the current working directory.'=>'ベースディレクトリの設定ディレクティブが設定され、それが現在の作業ディレクトリではありません。',
+'The base directory configuration directive is set, and it does not include the current working directory.'=>'ベースディレクトリの設定ディレクティブが設定され、それが現在の作業ディレクトリが含まれていない。',
+'Some hashing algorithms required for software updates are missing on this server:'=>'ソフトウェア更新に必要ないくつかのハッシュアルゴリズムは、このサーバー上で不足しているされています：',
 );

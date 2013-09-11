@@ -28,4 +28,7 @@ return array (
 'Please fill out the fields below to create a new module.'=>'Vul de velden hier onder in om een nieuwe module te maken.',
 'Enter field name here'=>'Voer hier de veld naam in',
 'A module with that name already exists'=>'Een module met die naam al bestaat',
+'Unable to create custom module directory.'=>'Niet in staat om aangepaste module map aan te maken.',
+'Unable to create config file for custom module.'=>'Niet in staat om configuratiebestand voor aangepaste module te maken.',
+'Unable to create table for custom module.'=>'Niet in staat om tabel te maken voor aangepaste module.',
 );

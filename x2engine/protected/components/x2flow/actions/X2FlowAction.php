@@ -42,6 +42,7 @@
 abstract class X2FlowAction extends X2FlowItem {
 	public $trigger = null;
 
+    protected static $_instances;
 	/**
 	 * Runs the automation action with provided params.
 	 * @return boolean the result of the execution
@@ -75,7 +76,7 @@ abstract class X2FlowAction extends X2FlowItem {
 			return null;
 
 		$type = isset($options[$name]['type'])? $options[$name]['type'] : '';
-
+        
 		return X2Flow::parseValue($options[$name]['value'],$type,$params);
 	}
 
@@ -116,16 +117,37 @@ abstract class X2FlowAction extends X2FlowItem {
 		return true;
 	}
 
-	public static function getActionTypes() {
+    /**
+     * Gets all action types. 
+     * 
+     * Optionally limits actions to a list with a property matching a value.
+     * @param string $queryProperty The property of each action to test
+     * @param mixed $queryValue The value to match actions against
+     */
+	public static function getActionTypes($queryProperty=False,$queryValue=False) {
 		$types = array();
-		foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.actions')) as $file) {
-			if($file === '.' || $file === '..' || $file === 'X2FlowAction.php')
-				continue;
-			$class = self::create(array('type'=>substr($file,0,-4)));	// remove file extension and create instance
-			if($class !== null)
-				$types[get_class($class)] = $class->title;
+        foreach(self::getActionInstances() as $class) {
+            $include = true;
+            if($queryProperty)
+                $include = $class->$queryProperty == $queryValue;
+            if($include)
+    	        $types[get_class($class)] = $class->title;
 		}
 		ksort($types);
 		return $types;
 	}
+
+    public static function getActionInstances() {
+        if(!isset(self::$_instances)) {
+            self::$_instances = array();
+            foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.actions')) as $file) {
+	            if($file === '.' || $file === '..' || $file === 'X2FlowAction.php')
+		            continue;
+                $class = self::create(array('type'=>substr($file,0,-4)));	// remove file extension and create instance
+                if($class !== null)
+                    self::$_instances[] = $class;
+            }
+        }
+        return self::$_instances;
+    }
 }

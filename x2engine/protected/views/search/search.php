@@ -39,7 +39,7 @@ function refreshQtip() {
 	$(".contact-name").each(function (i) {
 		var contactId = $(this).attr("href").match(/\\d+$/);
 
-		if(typeof contactId != null && contactId.length) {
+		if(contactId !== null && contactId.length) {
 			$(this).qtip({
 				content: {
 					text: "'.addslashes(Yii::t('app','loading...')).'",

@@ -107,7 +107,12 @@ else
 
 $this->actionMenu[] = array('label'=>Yii::t('quotes','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?'));
 $this->actionMenu[] = array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;'));
-$this->actionMenu[] = array('label'=>($model->type == 'invoice'? Yii::t('quotes', 'Print Invoice') : Yii::t('quotes','Print Quote')), 'url'=>'#', 'linkOptions'=>array('onClick'=>"window.open('". Yii::app()->createUrl('quotes/quotes/print', array('id'=>$model->id)) ."')"));
+$this->actionMenu[] = array(
+	'label'=>($model->type == 'invoice'? Yii::t('quotes', 'Print Invoice') : Yii::t('quotes','Print Quote')), 
+	'url'=>'#', 'linkOptions'=>array(
+		'onClick'=>"window.open('". Yii::app()->createUrl('quotes/quotes/print', 
+		array('id'=>$model->id)) ."')")
+);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 ?>

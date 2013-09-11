@@ -166,4 +166,6 @@ return array (
 'To trigger scheduled or delayed tasks automatically in X2CRM requires adding a task to the local cron table.'=>'Для запуска запланированных или задержки задачи автоматически в X2CRM требует добавлении задачи в локальную таблицу хрон.',
 'Create a cron task for X2CRM'=>'Создание задач Cron для X2CRM',
 'Run delayed or recurring tasks within X2CRM'=>'Выполнить задержкой или повторяющихся задач в рамках X2CRM',
+'The base directory configuration directive is set, and it does not include the current working directory.'=>'Базовая конфигурация каталога директива установлена, и она не включает в текущем рабочем каталоге.',
+'Some hashing algorithms required for software updates are missing on this server:'=>'Некоторые алгоритмы хэширования необходимых для обновления программного обеспечения не хватает на этом сервере:',
 );

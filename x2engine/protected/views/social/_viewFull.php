@@ -45,8 +45,10 @@ $(document).ready(function() {
 $authorRecord = X2Model::model('User')->findByAttributes(array('username'=>$data->user));
 if(isset($authorRecord)){
     $author = $authorRecord->name;
+    $authorId = $authorRecord->id;
 }else{
     $author="";
+    $authorId=null;
 }
 $commentDataProvider=new CActiveDataProvider('Events', array(
 	'criteria'=>array(
@@ -63,7 +65,7 @@ $commentDataProvider=new CActiveDataProvider('Events', array(
 	<?php echo CHtml::link(Yii::t('profile','Reply'),'#',array('onclick'=>"$('#addReply-".$data->id."').toggle();",'class'=>'x2-button float')); ?>
 
 	<?php
-	if($authorRecord->id != $data->associationId && $data->associationId != 0) {
+	if($authorId != $data->associationId && $data->associationId != 0) {
 		$temp=Profile::model()->findByPk($data->associationId);
 		$recipient=$temp->fullName;
 		$modifier=' &raquo; ';
@@ -72,9 +74,9 @@ $commentDataProvider=new CActiveDataProvider('Events', array(
 		$modifier='';
 	}
 	?>
-	<?php echo CHtml::link($author,array('profile/view','id'=>$authorRecord->id)).$modifier.CHtml::link($recipient,$data->associationId); ?> <span class="comment-age"><?php echo Formatter::timestampAge(date("Y-m-d H:i:s",$data->timestamp)); ?></span><br />
+	<?php echo CHtml::link($author,array('profile/view','id'=>$authorId)).$modifier.CHtml::link($recipient,$data->associationId); ?> <span class="comment-age"><?php echo Formatter::timestampAge(date("Y-m-d H:i:s",$data->timestamp)); ?></span><br />
 	<?php echo Media::attachmentSocialText($data->text,true,true); ?><br />
-	<?php 
+	<?php
 	if(count($commentDataProvider->getData())>0){
 		$this->widget('zii.widgets.CListView', array(
 		'dataProvider'=>$commentDataProvider,
@@ -82,7 +84,7 @@ $commentDataProvider=new CActiveDataProvider('Events', array(
 		'template'=>'{items}'
 	));
 	}
-	
+
 	echo CHtml::beginForm(
 		'addComment',
 		'get',
@@ -95,8 +97,8 @@ $commentDataProvider=new CActiveDataProvider('Events', array(
 	echo CHtml::hiddenField('redirect',Yii::app()->controller->action->id);
 	echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button float'));
 	echo CHtml::endForm();
-	
-	
+
+
 	?>
 </div>
 <?php

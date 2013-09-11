@@ -35,13 +35,35 @@
  *****************************************************************************************/
 
 $themeUrl = Yii::app()->theme->getBaseUrl();
-$this->actionMenu = $this->formatMenu(array(
+
+$menuItems = array(
 	array('label'=>Yii::t('products','Product List'), 'url'=>array('index')),
 	array('label'=>Yii::t('products','Create'), 'url'=>array('create')),
 	array('label'=>Yii::t('products','View')),
 	array('label'=>Yii::t('products','Update'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('products','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
-));
+	array('label'=>Yii::t('products','Delete'), 'url'=>'#', 
+		'linkOptions'=>array(
+			'submit'=>array('delete','id'=>$model->id),
+			'confirm'=>Yii::t('app','Are you sure you want to delete this item?')
+		)
+	),
+);
+
+$menuItems[] = array(
+	'label' => Yii::t('app', 'Print Record'), 
+	'url' => '#',
+	'linkOptions' => array (
+		'onClick'=>"window.open('".
+			Yii::app()->createUrl('/site/printRecord', array (
+				'modelClass' => 'Product', 
+				'id' => $model->id, 
+				'pageTitle' => Yii::t('app', 'Product').': '.$model->name
+			))."');"
+	)
+);
+
+$this->actionMenu = $this->formatMenu($menuItems);
+
 $modelType = json_encode("Products");
 $modelId = json_encode($model->id);
 Yii::app()->clientScript->registerScript('widgetShowData', "

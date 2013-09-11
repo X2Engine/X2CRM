@@ -623,4 +623,10 @@ return array (
 'Send As (to service requesters)'=>'（サービス·リクエスターに）送信者',
 'Send As (to web leads)'=>'（ウェブ·リードに）送信者',
 'Send As (when notifying users)'=>'（ユーザーに通知する場合）として送信',
+'When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.'=>'バッチでアクションを実行する場合、これは（秒数）そう過ごしたことができる時間の量を抑制します。それはあなたのWeb​​サーバー上で最大のPHP実行時間よりも、この低く設定することをお勧めします。',
+'Event/Action History Privacy'=>'イベント/アクション履歴プライバシー',
+'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'=>'デフォルトでは、ユーザーがパブリックまたはそれらに割り当てられているアクション/イベントを見ることができます。ユーザーは、ユーザーがアクションのみ/それらに割り当てられたイベントを表示することができます。グループは、ユーザーのみが自分のグループのメンバーに割り当てられているアクション/イベントを見ることができます。',
+'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.'=>'アクション履歴ウィジェットとアクティビティフィードのプライバシー設定を選択します。歴史がオンになっているモジュールへの管理者レベルのアクセス権を持つすべてのユーザーがこの設定を無視することに注意してください。完全な管理者アクセス権を持つユーザーのみが、アクティビティフィードには、この設定を無視します。',
+'Web Lead Response Email Settings'=>'ウェブリード応答メール設定',
+'Configure how X2CRM sends email when responding to new web leads.'=>'新しいWebリードに応答するときに電子メールを送信する方法X2CRM設定します。',
 );

@@ -34,16 +34,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('zii.widgets.CPortlet');
+Yii::import('application.components.LeftWidget');
 
 /**
  * Widget for displaying the "Top Contacts" portlet
  * @package X2CRM.components 
  */
-class TopContacts extends CPortlet {
+class TopContacts extends LeftWidget {
 
 	public function init() {
-		$this->title=Yii::t('app','Top Contacts');
+        parent::initTitleBar ();
 		parent::init();
 	}
 
@@ -53,4 +53,5 @@ class TopContacts extends CPortlet {
 		));
 	}
 }
+
 ?>

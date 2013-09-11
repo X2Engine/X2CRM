@@ -177,4 +177,5 @@ return array (
 'Your case number is: '=>'您的案件编号是：',
 'Website: '=>'网址：',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'警告：此页面上加载了太多的记录可能会占用服务器显著。您确定要继续吗？',
+'Saved Searches'=>'保存的搜索',
 );

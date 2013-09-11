@@ -51,6 +51,18 @@ $menuItems = array(
 	array('label'=>Yii::t('app','Attach a File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
 	array('label'=>Yii::t('services','Create Web Form'), 'url'=>array('createWebForm')),
 );
+$menuItems[] = array(
+	'label' => Yii::t('app', 'Print Record'), 
+	'url' => '#',
+	'linkOptions' => array (
+		'onClick'=>"window.open('".
+			Yii::app()->createUrl('/site/printRecord', array (
+				'modelClass' => 'Services', 
+				'id' => $model->id, 
+				'pageTitle' => Yii::t('app', 'Service Case').': '.$model->name
+			))."');"
+	)
+);
 $modelType = json_encode("Services");
 $modelId = json_encode($model->id);
 Yii::app()->clientScript->registerScript('widgetShowData', "

@@ -175,7 +175,7 @@ class TagBehavior extends CActiveRecordBehavior {
 				$tag->itemName = $this->getOwner()->name;
 
 				if($tag->save()) {
-					$this->_tags[] = $tag;	// update tag cache
+					$this->_tags[] = $tag->tag;	// update tag cache
 					$addedTags[] = $tagName;
 					$result = true;
 				} else {

@@ -41,8 +41,6 @@ $menuItems = array(
 	array('label'=>Yii::t('opportunities','View')),
 	array('label'=>Yii::t('opportunities','Edit Opportunity'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Share Opportunity'),'url'=>array('shareOpportunity','id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Add A User'), 'url'=>array('addUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Remove A User'), 'url'=>array('removeUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('opportunities','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
 );
@@ -58,6 +56,20 @@ $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
 if($contactModule->visible && $accountModule->visible)
 	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'opportunities'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+
+
+$menuItems[] = array(
+	'label' => Yii::t('app', 'Print Record'), 
+	'url' => '#',
+	'linkOptions' => array (
+		'onClick'=>"window.open('".
+			Yii::app()->createUrl('/site/printRecord', array (
+				'modelClass' => 'Opportunity', 
+				'id' => $model->id, 
+				'pageTitle' => Yii::t('app', 'Opportunity').': '.$model->name
+			))."');"
+	)
+);
 
 $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();

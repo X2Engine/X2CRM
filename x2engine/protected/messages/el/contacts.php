@@ -177,4 +177,5 @@ return array (
 'Your case number is: '=>'Αριθμός περίπτωσή σας είναι:',
 'Website: '=>'Website:',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'ΠΡΟΣΟΧΗ: φόρτωση πάρα πολλά αρχεία σε αυτή τη σελίδα μπορούν να δένουν το διακομιστή σημαντικά. Είστε βέβαιοι ότι θέλετε να συνεχίσετε;',
+'Saved Searches'=>'Αποθηκευμένες αναζητήσεις',
 );

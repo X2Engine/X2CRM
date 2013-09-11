@@ -177,4 +177,5 @@ return array (
 'Your case number is: '=>'あなたのケース番号は、次のとおりです。',
 'Website: '=>'ウェブサイト：',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'警告：このページではあまりにも多くのレコードをロードするには、かなりのサーバーを占有する可能性が。続行してもよろしいですか？',
+'Saved Searches'=>'保存された検索',
 );

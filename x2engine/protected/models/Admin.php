@@ -74,6 +74,7 @@ class Admin extends CActiveRecord {
             array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max' => 20),
             array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
+            array('batchTimeout','numerical','integerOnly' => true),
             array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
             array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail'),
             array('serviceCaseEmailAccount', 'setDefaultEmailAccount', 'alias' => 'serviceCaseEmail'),
@@ -151,9 +152,9 @@ class Admin extends CActiveRecord {
             'properCaseNames' => Yii::t('admin', 'Proper Case Names'),
             'corporateAddress' => Yii::t('admin', 'Corporate Address'),
             'contactNameFormat' => Yii::t('admin', 'Contact Name Format'),
-	    'webLeadEmailAccount' => Yii::t('admin','Send As (to web leads)'),
-	    'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
-
+            'webLeadEmailAccount' => Yii::t('admin','Send As (to web leads)'),
+            'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
+            'batchTimeout' => Yii::t('app','Time limit on batch actions'),
         );
     }
 

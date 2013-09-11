@@ -654,10 +654,19 @@ class Profile extends CActiveRecord {
      */
     function initLayout(){
         $layout = array(
-            'left' => array(),
+            'left' => array(
+                'TopContacts' => array(
+                    'title' => 'Top Contacts',
+                    'minimize' => false,
+                ),
+                'RecentItems' => array(
+                    'title' => 'Recently Viewed',
+                    'minimize' => false,
+                ),
+            ),
             'center' => array(
-                'ActionHistoryChart' => array(
-                    'title' => 'Action History Chart',
+                'RecordViewChart' => array(
+                    'title' => '',
                     'minimize' => false,
                 ),
                 'InlineTags' => array(
@@ -745,25 +754,25 @@ class Profile extends CActiveRecord {
       elements specified in initLayout ().
      */
 
-    private function addRemoveCenterLayoutElements($layout, $initLayout){
+    private function addRemoveLayoutElements($position, $layout, $initLayout){
 
         $changed = false;
 
-        $layoutCenterWidgets = array_merge($layout['center'], $layout['hidden']);
-        $initLayoutCenterWidgets = array_merge($initLayout['center'], $initLayout['hidden']);
+        $layoutCenterWidgets = array_merge($layout[$position], $layout['hidden']);
+        $initLayoutCenterWidgets = array_merge($initLayout[$position], $initLayout['hidden']);
 
         $arrayDiff =
                 array_diff(array_keys($initLayoutCenterWidgets), array_keys($layoutCenterWidgets));
         foreach($arrayDiff as $elem){
-            //$layout['center'][$elem] = $initLayout['center'][$elem];
-            $layout['center'] = array($elem => $initLayout['center'][$elem]) + $layout['center']; // unshift key-value pair
+            //$layout[$position][$elem] = $initLayout[$position][$elem];
+            $layout[$position] = array($elem => $initLayout[$position][$elem]) + $layout[$position]; // unshift key-value pair
             $changed = true;
         }
         $arrayDiff =
                 array_diff(array_keys($layoutCenterWidgets), array_keys($initLayoutCenterWidgets));
         foreach($arrayDiff as $elem){
-            if($layout['center'][$elem])
-                unset($layout['center'][$elem]);
+            if($layout[$position][$elem])
+                unset($layout[$position][$elem]);
             else if($layout['hidden'][$elem])
                 unset($layout['hidden'][$elem]);
             $changed = true;
@@ -791,7 +800,8 @@ class Profile extends CActiveRecord {
             Yii::app()->params->profile->update(array('layout'));
         }else{
             $layout = json_decode($layout, true); // json to associative array
-            $this->addRemoveCenterLayoutElements($layout, $initLayout);
+            $this->addRemoveLayoutElements('center', $layout, $initLayout);
+            $this->addRemoveLayoutElements('left', $layout, $initLayout);
         }
 
         return $layout;

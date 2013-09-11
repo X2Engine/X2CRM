@@ -28,4 +28,7 @@ return array (
 'Please fill out the fields below to create a new module.'=>'נא למלא את השדות שלהלן כדי ליצור מודול חדש.',
 'Enter field name here'=>'הזן את שם השדה כאן',
 'A module with that name already exists'=>'מודול בשם זה כבר קיים',
+'Unable to create custom module directory.'=>'אין אפשרות ליצור ספריית מודול מותאמת אישית.',
+'Unable to create config file for custom module.'=>'אין אפשרות ליצור קובץ config עבור מודול מותאם אישית.',
+'Unable to create table for custom module.'=>'לא ניתן ליצור שולחן למודול מותאם אישית.',
 );

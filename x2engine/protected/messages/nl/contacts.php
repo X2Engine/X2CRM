@@ -177,4 +177,5 @@ return array (
 'Your case number is: '=>'Uw zaaknummer is:',
 'Website: '=>'Website:',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'WAARSCHUWING: het laden te veel records op deze pagina kan binden de server aanzienlijk. Weet u zeker dat u wilt doorgaan?',
+'Saved Searches'=>'Opgeslagen zoekopdrachten',
 );

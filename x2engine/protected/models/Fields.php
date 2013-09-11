@@ -101,6 +101,7 @@ class Fields extends CActiveRecord {
             'required' => Yii::t('admin',"Required"),
             'searchable' => Yii::t('admin',"Searchable"),
             'relevance' => Yii::t('admin','Search Relevance'),
+            'uniqueConstraint' => Yii::t('admin','Unique'),
         );
     }
 
@@ -156,7 +157,7 @@ class Fields extends CActiveRecord {
         }
         switch($this->type){
             case 'assignment':
-                return ($this->linkType === 'multiple') ? Accounts::parseUsers($value) : $value;
+                return ($this->linkType === 'multiple') ? self::parseUsers($value) : $value;
 
             case 'date':
             case 'dateTime':
@@ -243,5 +244,149 @@ class Fields extends CActiveRecord {
         } else
             return $value;
     }
+
+    public static function getFieldTypes($scenario = null){
+        $fieldTypes = array(
+            'varchar' => array(
+                'title' => Yii::t('admin', 'Single Line Text'),
+                'validator' =>'safe',
+                'columnDefinition' => 'VARCHAR(255)',
+            ),
+            'text' => array(
+                'title' => Yii::t('admin', 'Multiple Line Text Area'),
+                'validator' => 'safe',
+                'columnDefinition' => 'TEXT',
+            ),
+            'date' =>array(
+                'title'=>Yii::t('admin','Date'),
+                'validator'=>'int',
+                'columnDefinition'=>'BIGINT',
+            ),
+            'dateTime' =>array(
+                'title'=>Yii::t('admin','Date/Time'),
+                'validator'=>'int',
+                'columnDefinition'=>'BIGINT',
+            ),
+            'dropdown'=>array(
+                'title'=>Yii::t('admin','Dropdown'),
+                'validator'=>'safe',
+                'columnDefinition'=>'VARCHAR(255)',
+            ),
+            'int'=>array(
+                'title'=>Yii::t('admin','Number'),
+                'validator'=> 'int',
+                'columnDefinition'=>'BIGINT',
+            ),
+            'email'=>array(
+                'title'=>Yii::t('admin','Email'),
+                'validator'=>'email',
+                'columnDefinition'=>'VARCHAR(255)',
+            ),
+            'currency'=>array(
+                'title'=>Yii::t('admin','Currency'),
+                'validator'=>'numerical',
+                'columnDefinition'=>'DECIMAL(18,2)',
+            ),
+            'url'=>array(
+                'title'=>Yii::t('admin','URL'),
+                'validator'=>'safe',
+                'columnDefinition'=>'VARCHAR(255)',
+            ),
+            'float'=>array(
+                'title'=>Yii::t('admin','Decimal'),
+                'validator'=>'numerical',
+                'columnDefinition'=>'FLOAT'
+            ),
+            'boolean'=>array(
+                'title'=>Yii::t('admin','Checkbox'),
+                'validator'=>'boolean',
+                'columnDefinition'=>'BOOLEAN NOT NULL DEFAULT 0',
+            ),
+            'link'=>array(
+                'title'=>Yii::t('admin','Lookup'),
+                'validator'=>'safe',
+                'columnDefinition'=>'VARCHAR(255)',
+            ),
+            'rating'=>array(
+                'title'=>Yii::t('admin','Rating'),
+                'validator'=>'safe',
+                'columnDefinition'=>'VARCHAR(255)',
+            ),
+            'assignment'=>array(
+                'title'=>Yii::t('admin','Assignment'),
+                'validator'=>'safe',
+                'columnDefinition'=>'VARCHAR(255)',
+            ),
+            'visibility'=>array(
+                'title'=>Yii::t('admin','Visibility'),
+                'validator'=>'int',
+                'columnDefinition'=>'INT',
+            ),
+        );
+        if(empty($scenario)){
+            return $fieldTypes;
+        }else{
+            if(!is_array($scenario)){
+                $scenario = array($scenario);
+            }
+            $ret = array();
+            if(in_array('validator', $scenario)){
+                if(count($scenario) == 1){
+                    foreach($fieldTypes as $fieldType => $data){
+                        $ret[$fieldType] = $data['validator'];
+                    }
+                }else{
+                    foreach($fieldTypes as $fieldType => $data){
+                        $ret[$fieldType]['validator']=$data['validator'];
+                    }
+                }
+            }
+            if(in_array('title', $scenario)){
+                if(count($scenario) == 1){
+                    foreach($fieldTypes as $fieldType => $data){
+                        $ret[$fieldType] = $data['title'];
+                    }
+                }else{
+                    foreach($fieldTypes as $fieldType => $data){
+                        $ret[$fieldType]['title']=$data['title'];
+                    }
+                }
+            }
+            if(in_array('columnDefinition', $scenario)){
+                if(count($scenario) == 1){
+                    foreach($fieldTypes as $fieldType => $data){
+                        $ret[$fieldType] = $data['columnDefinition'];
+                    }
+                }else{
+                    foreach($fieldTypes as $fieldType => $data){
+                        $ret[$fieldType]['columnDefinition']=$data['columnDefinition'];
+                    }
+                }
+            }
+            return $ret;
+        }
+    }
+
+     /**
+     * Implodes an array of assignees
+     */
+    public static function parseUsers($arr){
+		$str="";
+        if(is_array($arr)){
+            $str=implode(', ',$arr);
+        } else if(is_string($arr))
+            $str = $arr;
+		return $str;
+	}
+
+	public static function parseUsersTwo($arr){
+		$str="";
+		if(is_array($arr)){
+            $arr=array_keys($arr);
+            $str=implode(', ',$arr);
+        }
+
+		return $str;
+	}
 
 }

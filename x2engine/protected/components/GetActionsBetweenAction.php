@@ -48,4 +48,3 @@ class GetActionsBetweenAction extends CAction {
 }
 
 ?>
-

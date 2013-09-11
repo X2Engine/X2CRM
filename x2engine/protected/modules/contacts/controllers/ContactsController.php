@@ -441,6 +441,12 @@ class ContactsController extends x2base {
         }
     }
 
+    /*public function actionSavedSearches (){
+        $this->render('savedSearches',array(
+            'dataProvider'=>$dataProvider,
+        ));
+    }*/
+
     public function actionSavedMaps(){
         if(Yii::app()->user->checkAccess('ContactsAdmin')){
             $dataProvider=new CActiveDataProvider('Maps');
@@ -509,7 +515,7 @@ class ContactsController extends x2base {
 				$errors[] = 'email';
 			if(empty($body))
 				$errors[] = 'body';
-			
+
 			$emailFrom = Credentials::model()->getDefaultUserAccount(Credentials::$sysUseId['systemNotificationEmail'],'email');
 			if($emailFrom == Credentials::LEGACY_ID)
 				$emailFrom = array(
@@ -869,7 +875,7 @@ class ContactsController extends x2base {
 		// collect user input data
 		if(isset($_POST['Contacts'])) {
 			// clear values that haven't been changed from the default
-            $temp=$model->attributes;
+            //$temp=$model->attributes;
 			$model->setX2Fields($_POST['Contacts']);
 
 			$model->visibility = 1;
@@ -877,10 +883,20 @@ class ContactsController extends x2base {
 			// $changes = $this->calculateChanges($temp, $model->attributes, $model);
 			// $model = $this->updateChangelog($model, $changes);
 			$model->createDate = time();
-			if($model->save()) {
-				$this->renderPartial('application.components.views.quickContact', array());
-			}
+			//if($model->validate()) {
+            if($model->save()) {
+            } else {
+                //echo CHtml::errorSummary ($model);
+                echo CJSON::encode($model->getErrors());
+            }
+            return;
+            //}
+            //echo '';
+            //echo CJSON::encode($model->getErrors());
 		}
+        $this->renderPartial('application.components.views.quickContact', array(
+            'model' => $model
+        ));
 	}
 
 
@@ -2300,7 +2316,7 @@ class ContactsController extends x2base {
             $model->createEvent=false;
 			$oldAttributes = $model->getAttributes();
 			$model->setX2Fields($_POST['Contacts'],true);
-            
+
 			$now = time();
 
 			//use the submitted info to create an action

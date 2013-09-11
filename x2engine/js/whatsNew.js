@@ -200,7 +200,7 @@ function animateEditorVerticalResize (initialHeight, newHeight,
 Remove cursor from editor by focusing on a temporary dummy input element.
 */
 function removeCursorFromEditor () {
-	$("#post-form").append ($("<input>", {"id": "dummy-input"}));//, "style":"display:none;"}));
+	$("#post-form").append ($("<input>", {"id": "dummy-input"}));
 	var x = window.scrollX;
 	var y = window.scrollY;
 	$("#dummy-input").focus ();
@@ -274,6 +274,44 @@ function setupAndroidPublisher () {
     });
 	$('#submit-button').click (publishPostAndroid);
 	$('#save-button').click (publishPostAndroid);
+}
+
+function minimizePosts(){
+	$('.items').find ('.event-text').each (function (index, element) {
+		if($(element).html().length>200){
+			var text=element;
+			var oldText=$(element).html();
+			$.ajax({
+				url:"minimizePosts",
+				type:"GET",
+				data:{"minimize":"minimize"},
+				success:function(){
+					if ($(text).find ('.expandable-details').is (':visible')) {
+						$(text).find ('.read-less').find ('a').click ();
+					}
+				}
+			});
+		}else{
+
+		}
+	});
+}
+
+//var minimize = x2.whatsNew.minimizeFeed;
+function restorePosts(){
+	$('.items').find ('.event-text').each (function (index, element) {
+		var text = element;
+		$.ajax({
+			url:"minimizePosts",
+			type:"GET",
+			data:{"minimize":"restore"},
+			success:function(){
+				if (!$(text).find ('.expandable-details').is (':visible')) {
+					$(text).find ('.read-more').find ('a').click ();
+				}
+			}
+		});
+	});
 }
 
 
@@ -370,44 +408,6 @@ function setupActivityFeed () {
 				}
 			});
 	}
-
-	function minimizePosts(){
-		$.each($(".event-text"),function(){
-			if($(this).html().length>200){
-				var text=this;
-				var oldText=$(this).html();
-				$.ajax({
-					url:"minimizePosts",
-					type:"GET",
-					data:{"minimize":"minimize"},
-					success:function(){
-						$(text).html($(text).html().slice(0,200)).after("<span class='elipsis'>...</span>");
-						oldText="<span class='old-text' style='display:none;'>"+oldText+"</span>";
-						$(text).after(oldText);
-					}
-				});
-			}else{
-
-			}
-		});
-	}
-
-	//var minimize = x2.whatsNew.minimizeFeed;
-	function restorePosts(){
-		$.ajax({
-			url:"minimizePosts",
-			type:"GET",
-			data:{"minimize":"restore"},
-			success:function(){
-				$(".elipsis").remove();
-				$.each($(".old-text"),function(){
-					var event=$(this).prev(".event-text");
-					$(event).html($(this).html());
-				});
-			}
-		});
-	}
-
 
 	var checkedFlag;
 	if($(":checkbox:checked").length > ($(":checkbox").length)/2){
@@ -521,7 +521,34 @@ function setupActivityFeed () {
 			$(this).click();
 		}
 	});
+	
+	makePostsExpandable ();
 
+}
+
+function makePostsExpandable () {
+	$('.items').find ('.event-text').each (function (index, element) {
+
+		if ($(element).hasClass ('expandable')) return;
+		$(element).addClass ('expandable');
+		$(element).expander ({
+			slicePoint: 80,
+			expandPrefix: '',
+			expandText: '...',
+			userCollapseText: '[^]',
+			expandEffect: 'show',
+			collapseEffect: 'slideUp',
+			collapseSpeed: 0,
+			expandSpeed: 0,
+			detailClass: 'expandable-details',
+			beforeExpand: function () {
+				$(element).find ('.expandable-details').addClass ('expandable-details-override');
+			},
+			onCollapse: function () {
+				$(element).find ('.expandable-details').removeClass ('expandable-details-override');
+			}
+		});
+	});
 }
 
 function setupBroadcastDialog () {
@@ -1215,6 +1242,7 @@ function setUpChartHideShowBehavior () {
 	});
 
 	var chartsReady = 0;
+	// event triggered by _x2chart.js
 	$(document).on ('usersChartReady eventsChartReady', function () { 
 		if (++chartsReady === 2)
 			checkChartShow ();
@@ -1236,6 +1264,29 @@ function setUpChartHideShowBehavior () {
 		if ($(this).val () === $.cookie ('feedSelectedChart'))
 			$(this).attr ('selected', 'selected');
 	});
+
+
+	$('#chart-subtype-selector').on ('change', function (evt) {
+		var selectedSubType = $(this).val ();
+		selectedChart = $('#chart-type-selector').val ();
+		x2['eventsChart'].chart.setChartSubtype (
+            selectedSubType, true, false, true);	
+		x2['usersChart'].chart.setChartSubtype (
+            selectedSubType, true, false, true);	
+		$.cookie ('feedChartSelectedSubtype', selectedSubType);
+	});
+
+	if ($.cookie ('feedChartSelectedSubtype')) {
+		// set chart type using cookie
+		$('#chart-subtype-selector').find ('option').each (function () {
+			$(this).removeAttr ('selected');
+		});
+		$('#chart-subtype-selector').children ().each (function () {
+			if ($(this).val () === $.cookie ('feedChartSelectedSubtype'))
+				$(this).attr ('selected', 'selected');
+		});
+	} 
+
 
 }
 

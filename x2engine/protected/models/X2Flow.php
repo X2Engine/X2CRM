@@ -357,15 +357,16 @@ class X2Flow extends CActiveRecord {
      */
 
     public static function parseValue($value, $type, &$params = null){
-        if(strpos($value, '=') === 0){
-            return self::parseFormula($value, $type, $params);
-        }
-        if($params !== null){
-            if(isset($params['model'])){
-                $value = self::replaceVariables($value, $params['model'], $type, $params);
+        if(is_string($value)){
+            if(strpos($value, '=') === 0){
+                return Formatter::parseFormula($value, $type, $params);
             }
         }
-        // replaceVariables($str, &$model, $vars = array(), $encode = false)
+        if($params !== null){
+            if(is_string($value) && isset($params['model'])){
+                $value = Formatter::replaceVariables($value, $params['model'], $type, $params);
+            }
+        }
 
         switch($type){
             case 'boolean':
@@ -391,100 +392,4 @@ class X2Flow extends CActiveRecord {
                 return $value;
         }
     }
-
-    public static function replaceVariables($value, $model, $type = '', $params = array()){
-        $matches = array();
-        preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
-        if(isset($matches[0])){
-            foreach($matches[0] as $match){
-                $match = substr($match, 1, -1);
-                if(strpos($match, '.') !== false){
-                    $parts = explode('.', $match);
-                    $tmpModel = $model;
-                    for($i = 0; $i < count($parts); $i++){
-                        if($i < count($parts) - 1){
-                            if($tmpModel->hasAttribute($parts[$i])){
-                                if(isset($tmpModel->{$parts[$i].'Model'})){
-                                    $tmpModel = $tmpModel->{$parts[$i].'Model'};
-                                }else{
-                                    $field = Fields::model()->findByAttributes(array('modelName' => get_class($tmpModel), 'fieldName' => $parts[$i]));
-                                    if(isset($field) && $field->type == 'assignment'){
-                                        $profile = Profile::model()->findByAttributes(array('username' => $tmpModel->$parts[$i]));
-                                        if(isset($profile)){
-                                            $tmpModel = $profile;
-                                        }
-                                    }
-                                }
-                            }
-                        }else{
-
-                            if($tmpModel->hasAttribute($parts[$i])){
-                                if($type === '' || $type === 'text' || $type === 'richtext'){
-                                    $value = preg_replace('/{'.$match.'}/i', $tmpModel->renderAttribute($parts[$i], true, true), $value);
-                                }else{
-                                    $value = preg_replace('/{'.$match.'}/i', $tmpModel->getAttribute($parts[$i]), $value);
-                                }
-                            }
-                        }
-                    }
-                }else{
-                    if(isset($params[$match])){
-                        $value = $params[$match]; // don't return
-                    }elseif($model->hasAttribute($match)){
-                        if($type === '' || $type === 'text' || $type === 'richtext'){
-                            $value = preg_replace('/{'.$match.'}/i', $params['model']->renderAttribute($match, true, true), $value);
-                        }else{
-                            $value = preg_replace('/{'.$match.'}/i', $params['model']->getAttribute($match), $value);
-                        }
-                    }else{
-                        switch($match){
-                            case 'actionDescription':
-                                if($model instanceof Actions){
-                                    $value = preg_replace('/{'.$match.'}/i', $model->actionDescription, $value);
-                                }
-                                break;
-                            case 'link':
-                                if($model->asa('X2LinkableBehavior')){
-                                    if($model instanceof Actions){
-                                        $value = preg_replace('/{'.$match.'}/i', $model->getLink(30, false), $value);
-                                    }else{
-                                        $value = preg_replace('/{'.$match.'}/i', $model->getLink(), $value);
-                                    }
-                                }
-                                break;
-                            case 'date':
-                                $value = preg_replace('/{'.$match.'}/i', Formatter::formatDate(time(), 'long', false), $value);
-                                break;
-                            case 'time':
-                                $value = preg_replace('/{'.$match.'}/i', Formatter::formatTime(time()), $value);
-                                break;
-                            case 'dateTime':
-                                $value = preg_replace('/{'.$match.'}/i', Formatter::formatLongDateTime(time()), $value);
-                                break;
-                        }
-                    }
-                }
-            }
-            return $value;
-        }
-    }
-
-    public static function parseFormula($formula, $type = '', $params = array()){
-        $formula = substr($formula, 1);
-        if(isset($params['model'])){
-            $formula = self::replaceVariables($formula, $params['model'], 'formula', $params);
-        }
-        if(strpos($formula, ';') !== strlen($formula) - 1){
-            $formula.=';';
-        }
-        if(strpos($formula, 'return ') !== 0){
-            $formula = 'return '.$formula;
-        }
-        try{
-            return eval($formula);
-        }catch(Exception $e){
-
-        }
-    }
-
 }

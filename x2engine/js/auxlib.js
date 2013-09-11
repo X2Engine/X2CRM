@@ -1,4 +1,3 @@
-<?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -34,39 +33,47 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$authParams['assignedTo'] = $model->assignedTo;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('opportunities','Opportunities List'), 'url'=>array('index')),
-	array('label'=>Yii::t('opportunities','Create'), 'url'=>array('create')),
-	array('label'=>Yii::t('opportunities','View'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Edit Opportunity'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Share Opportunity'),'url'=>array('shareOpportunity','id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Add A User'), 'url'=>($action=='Add')?null:array('addUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Remove A User'), 'url'=>($action=='Remove')?null:array('removeUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Remove A Contact'), 'url'=>array('removeContact', 'id'=>$model->id)),
-),$authParams);
-?>
-<div class="page-title icon opportunities">
-	<h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo $model->name; ?></h2>
-</div>
-<div class="form">
+var auxlib = {};
 
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'acocunts-form',
-	'enableAjaxValidation'=>false,
-)); 
-echo ($action=='Remove')? Yii::t('opportunities','Please select the users you wish to remove.') : Yii::t('opportunities','Please click any new users you wish to add.');
-?>
-<br /><br />
-<div class="row">
-	<?php echo $form->dropDownList($model,'assignedTo',$users,array("multiple"=>"multiple", 'size'=>8)); ?>
-	<?php echo $form->error($model,'assignedTo'); ?>
-</div>
+/*
+Creates a feedback box div containing the specified message. The feedback box is
+placed in the dom after the specified previous element. The box is faded out and,
+After a specified delay, is removed.
+Parameters:
+    prevElement - the element after which the box will get placed
+    message - a string
+    delay - the time after which the box will get removed
+*/
+auxlib.createReqFeedbackBox = function (prevElem, message, delay, classes) {
+    classes = typeof classes === 'undefined' ? [] : classes;
+    var feedbackBox = $('<div>', {'class': 'feedback-container'}).append (
+        $("<span>", { 
+            'class': "feedback-msg",
+            'text': message
+        })
+    );
+    for (var i in classes) {
+        $(feedbackBox).addClass (classes[i]);
+    }
+    $(prevElem).after (feedbackBox);
+    auxlib._startFeedbackBoxFadeOut (feedbackBox, delay, prevElem);
+    return feedbackBox;
+}
 
-<div class="row buttons">
-	<?php echo CHtml::submitButton(Yii::t('app',$action),array('class'=>'x2-button')); ?>
-</div>
+/*
+Private function.
+Removes a feedback box created by createReqFeedbackBox () after a specified delay.
+Specified button will be disabled until delay elapses.
+Parameters:
+    feedbackBox - a jQuery element created by createReqFeedbackBox ()
+    delay - in milliseconds
+*/
+auxlib._startFeedbackBoxFadeOut = function (feedbackBox, delay, button) {
+    $(button).attr ('disabled', 'disabled');
+    $(feedbackBox).children ().fadeOut (delay, function () {
+        $(feedbackBox).remove ();
+        $(button).removeAttr ('disabled');
+    });
+}
 
-<?php $this->endWidget(); ?>
 
-</div>

@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -59,10 +58,10 @@ class SiteController extends x2base {
         return true;
     }
 
-    public function behaviors() {
-        return array_merge(parent::behaviors(),array(
-            'Updater' => array('class'=>'application.components.UpdaterBehavior')
-        ));
+    public function behaviors(){
+        return array_merge(parent::behaviors(), array(
+                    'Updater' => array('class' => 'application.components.UpdaterBehavior')
+                ));
     }
 
     public function accessRules(){
@@ -75,9 +74,9 @@ class SiteController extends x2base {
                 'actions' => array('groupChat', 'newMessage', 'getMessages', 'checkNotifications', 'updateNotes', 'addPersonalNote',
                     'getNotes', 'getURLs', 'addSite', 'deleteMessage', 'fullscreen', 'pageOpacity', 'widgetState', 'widgetOrder', 'saveGridviewSettings', 'saveFormSettings',
                     'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload', 'uploadProfilePicture', 'index', 'contact',
-                    'viewNotifications', 'inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'createRecords',
+                    'viewNotifications', 'inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'printRecord', 'createRecords',
                     'whatsNew', 'toggleVisibility', 'page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
-                    'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'sendErrorReport', 'minimizePosts', 'bugReport', 'deleteRelationship', 'toggleFeedControls', 'toggleFeedFilters',
+                    'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'sendErrorReport', 'minimizePosts', 'bugReport', 'deleteRelationship', 'minMaxLeftWidget', 'toggleFeedControls', 'toggleFeedFilters',
                     'getTip', 'share', 'activityFeedOrder', 'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory',
                     'dynamicDropdown', 'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
                     'deleteChartSetting', 'GetActionsBetweenAction'),
@@ -109,9 +108,9 @@ class SiteController extends x2base {
             'inlineEmail' => array(
                 'class' => 'InlineEmailAction',
             ),
-			'GetActionsBetweenAction' => array (
-				'class' => 'GetActionsBetweenAction'
-			),
+            'GetActionsBetweenAction' => array(
+                'class' => 'GetActionsBetweenAction'
+            ),
         );
     }
 
@@ -191,6 +190,17 @@ class SiteController extends x2base {
             if(isset(Yii::app()->params->profile->defaultFeedFilters)){
                 $_SESSION['filters'] = json_decode(Yii::app()->params->profile->defaultFeedFilters, true);
             }
+            if(!Yii::app()->params->isAdmin){
+                if(Yii::app()->params->admin->historyPrivacy == 'user'){
+                    $visibilityCondition = ' AND (associationId='.Yii::app()->user->getId().' OR user="'.Yii::app()->user->getName().'")';
+                }elseif(Yii::app()->params->admin->historyPrivacy == 'group'){
+                    $visibilityCondition = ' AND user IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.Yii::app()->user->getName().'")';
+                }else{
+                    $visibilityCondition = " AND (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."' OR visibility=1)";
+                }
+            }else{
+                $visibilityCondition = "";
+            }
             if((isset($_GET['filters']) && $_GET['filters']) || isset($_SESSION['filters'])){
                 if(isset($_GET['filters'])){
                     unset($_SESSION['filters']);
@@ -211,13 +221,8 @@ class SiteController extends x2base {
                 $visibility = str_replace('Public', '1', $visibility);
                 $visibility = str_replace('Private', '0', $visibility);
                 $visibilityFilter = explode(",", $visibility);
-                if(!Yii::app()->params->isAdmin){
-                    $visibilityCondition = " AND (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."' OR visibility=1)";
-                }else{
-                    $visibilityCondition = "";
-                }
                 if($visibility != ""){
-                    $visibilityCondition.=" AND visibility NOT IN (".$visibility.")";
+                    $visibilityCondition = " AND visibility NOT IN (".$visibility.")";
                 }else{
                     $visibilityFilter = array();
                 }
@@ -227,11 +232,11 @@ class SiteController extends x2base {
                     $users = explode(",", $users);
                     $userFilter = $users;
                     $users = '"'.implode('","', $users).'"';
-                    if($users != "") {
+                    if($users != ""){
                         $userCondition = " AND (user NOT IN (".$users.")";
                     }else{
                         $userCondition = "(";
-					}
+                    }
                     if(strpos($users, 'Anyone') === false){
                         $userCondition.=" OR user IS NULL)";
                     }else{
@@ -279,7 +284,7 @@ class SiteController extends x2base {
                 $condition = "type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."') AND (type!='notif' OR user='".Yii::app()->user->getName()."')".$visibilityCondition.$userCondition.$typeCondition.$subtypeCondition;
                 $_SESSION['feed-condition'] = $condition;
             }else{
-                $condition = "type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."') AND (type!='notif' OR user='".Yii::app()->user->getName()."') AND (visibility=1 OR user='".Yii::app()->user->getName()."' OR associationId='".Yii::app()->user->getId()."')";
+                $condition = "type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."') AND (type!='notif' OR user='".Yii::app()->user->getName()."')".$visibilityCondition;
             }
             $condition.= " AND timestamp <= ".time();
             if(!isset($_SESSION['lastEventId'])){
@@ -336,7 +341,7 @@ class SiteController extends x2base {
 
             $usersDataProvider = new CActiveDataProvider('User', array(
                         'criteria' => array(
-							'condition' => 'status=1',
+                            'condition' => 'status=1',
                             'order' => 'lastName ASC'
                         )
                     ));
@@ -787,6 +792,37 @@ class SiteController extends x2base {
             $profile->fullFeedControls = !$profile->fullFeedControls;
             $profile->update(array('fullFeedControls'));
         }
+    }
+
+	/**
+     * Saves left widget minimize setting to user's profile.
+	 * @param string ('collapse' | 'expand')
+	 * @param string The name of the widget. This should match the widget name defined
+     *  in the layout stored in the user's profile.
+     * @return string 'failure' if the setting could not be saved, 'success' otherwise
+	 */
+    public function actionMinMaxLeftWidget ($action, $widgetName) {
+        $profile = Yii::app()->params->profile;
+        if(isset($profile)){
+            $layout = $profile->getLayout ();
+            $minimize;
+            if ($action === 'expand') {
+                $minimize = false;
+            } else if ($action === 'collapse') {
+                $minimize = true;
+            } else {
+                echo 'failure';
+                return;
+            }
+            if (in_array ($widgetName, array_keys ($layout['left']))) {
+                $layout['left'][$widgetName]['minimize'] = $minimize;
+                Yii::app()->params->profile->layout = json_encode($layout);
+                Yii::app()->params->profile->update(array('layout'));
+            }
+            echo 'success';
+            return;
+        }
+        echo 'failure';
     }
 
     public function actionToggleFeedFilters($filter){
@@ -1800,6 +1836,10 @@ class SiteController extends x2base {
 
         if(isset($_POST['LoginForm'])){
             $model->attributes = $_POST['LoginForm']; // get user input data
+            if($model->rememberMe){
+                foreach(array('username','rememberMe') as $attr)
+                    setcookie(CHtml::resolveName($model,$attr),$model->$attr,time()+2592000); // Expires in 30 days
+            }
 
             x2base::cleanUpSessions();
 
@@ -2131,6 +2171,27 @@ class SiteController extends x2base {
         }
     }
 
+	/*
+	Display a print-friendly version of the x2layout view associated with the specified
+	model class and id.
+	*/
+    public function actionPrintRecord ($modelClass, $id, $pageTitle='') {
+		if (isset ($id) && isset ($modelClass)) {
+			//printR ('true', false);
+			//$model = $this->getModel ($id, true, $modelClass); 
+			$model = CActiveRecord::model($modelClass)->findByPk((int) $id);
+			//printR ($model, true);
+        	echo $this->renderPartial ('printableRecord', array(
+            	'model' => $model,
+            	'modelClass' => $modelClass,
+            	'id' => $id,
+            	'pageTitle' => $pageTitle
+        	), true);
+			return;
+		}
+		//printR ('false', true);
+	}
+
     public function actionCreateRecords(){
         $contact = new Contacts;
         $account = new Accounts;
@@ -2430,7 +2491,7 @@ class SiteController extends x2base {
     }
 
     function actionGetEventsBetween($startTimestamp, $endTimestamp){
-        echo CJSON::encode(X2Chart::getEventsData ($startTimestamp, $endTimestamp));
+        echo CJSON::encode(X2Chart::getEventsData($startTimestamp, $endTimestamp));
     }
 
     /**
@@ -2438,27 +2499,27 @@ class SiteController extends x2base {
       Called via ajax from the chart setting creation dialog.
      */
     function actionCreateChartSetting(){
-        if (isset ($_POST['chartSettingAttributes'])){
-			$chartSettingAttributes = $_POST['chartSettingAttributes'];
-	        $chartSetting = new ChartSetting;
-			if (is_array ($chartSettingAttributes) &&
-				array_key_exists ('settings', $chartSettingAttributes) &&
-				array_key_exists ('chartType', $chartSettingAttributes) &&
-				array_key_exists ('name', $chartSettingAttributes)) {
-				$chartSetting->settings = $chartSettingAttributes['settings'];
-				$chartSetting->name = $chartSettingAttributes['name'];
-				$chartSetting->chartType = $chartSettingAttributes['chartType'];
-				$chartSetting->userId = Yii::app()->user->id;
-				if($chartSetting->validate()){
-					if($chartSetting->save()){
-						return;
-					}
-				}
-				echo CJSON::encode($chartSetting->getErrors());
-				return;
-			}
-		}
-		echo CJSON::encode(array ('failure'));
+        if(isset($_POST['chartSettingAttributes'])){
+            $chartSettingAttributes = $_POST['chartSettingAttributes'];
+            $chartSetting = new ChartSetting;
+            if(is_array($chartSettingAttributes) &&
+                    array_key_exists('settings', $chartSettingAttributes) &&
+                    array_key_exists('chartType', $chartSettingAttributes) &&
+                    array_key_exists('name', $chartSettingAttributes)){
+                $chartSetting->settings = $chartSettingAttributes['settings'];
+                $chartSetting->name = $chartSettingAttributes['name'];
+                $chartSetting->chartType = $chartSettingAttributes['chartType'];
+                $chartSetting->userId = Yii::app()->user->id;
+                if($chartSetting->validate()){
+                    if($chartSetting->save()){
+                        return;
+                    }
+                }
+                echo CJSON::encode($chartSetting->getErrors());
+                return;
+            }
+        }
+        echo CJSON::encode(array('failure'));
     }
 
     /**
@@ -2469,7 +2530,7 @@ class SiteController extends x2base {
         $chartSetting = ChartSetting::model()->findByAttributes(array(
             'userId' => Yii::app()->user->id,
             'name' => $chartSettingName
-        ));
+                ));
         if(!empty($chartSetting) && $chartSetting->delete()){
             echo 'success';
         }else{
@@ -2482,35 +2543,34 @@ class SiteController extends x2base {
      * to true (up to date) or false (not up to date). Also sets Yii::app()->session['newVersion']
      * to the latest version if not up to date.
      *//*
-    protected function checkUpdates(){
-        if(!file_exists($secImage = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','images',base64_decode(Yii::app()->params->updaterSecurityImage)))))
-	    return;
-        $i = Yii::app()->params->admin->unique_id;
-        $v = Yii::app()->params->version;
-        $e = Yii::app()->params->admin->edition;
-        $context = stream_context_create(array(
-            'http' => array('timeout' => 4)  // set request timeout in seconds
-        ));
+      protected function checkUpdates(){
+      if(!file_exists($secImage = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','images',base64_decode(Yii::app()->params->updaterSecurityImage)))))
+      return;
+      $i = Yii::app()->params->admin->unique_id;
+      $v = Yii::app()->params->version;
+      $e = Yii::app()->params->admin->edition;
+      $context = stream_context_create(array(
+      'http' => array('timeout' => 4)  // set request timeout in seconds
+      ));
 
-        $updateCheckUrl = 'https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v'));
-        $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
-        if($securityKey === false)
-            return;
-        $h = hash('sha512',base64_encode(file_get_contents($secImage)).$securityKey);
-        $n = null;
-        if(!($e == 'opensource' || empty($e)))
-            $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
-        
-        $newVersion = FileUtil::getContents('https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v','h','n')),0,$context);
-        if(empty($newVersion))
-            return;
+      $updateCheckUrl = 'https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v'));
+      $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
+      if($securityKey === false)
+      return;
+      $h = hash('sha512',base64_encode(file_get_contents($secImage)).$securityKey);
+      $n = null;
+      if(!($e == 'opensource' || empty($e)))
+      $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
 
-        if(version_compare($newVersion, $v) > 0 && !in_array($i, array('none', Null))){ // if the latest version is newer than our version and updates are enabled
-            Yii::app()->session['versionCheck'] = false;
-            Yii::app()->session['newVersion'] = $newVersion;
-        } else
-            Yii::app()->session['versionCheck'] = true;
-    }*/
+      $newVersion = FileUtil::getContents('https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v','h','n')),0,$context);
+      if(empty($newVersion))
+      return;
 
+      if(version_compare($newVersion, $v) > 0 && !in_array($i, array('none', Null))){ // if the latest version is newer than our version and updates are enabled
+      Yii::app()->session['versionCheck'] = false;
+      Yii::app()->session['newVersion'] = $newVersion;
+      } else
+      Yii::app()->session['versionCheck'] = true;
+      } */
 }
 

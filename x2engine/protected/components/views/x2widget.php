@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
 if(!is_null($model) && property_exists($name,'model')){
     $params = array('model'=>$model, 'modelName'=>($modelType));
 }else{
@@ -47,6 +48,16 @@ if($name == 'WorkflowStageDetails') { // workflow has an extra param
     }
 }
 
+if ($name === 'RecordViewChart') {
+
+	$params['widgetParams'] = array ();
+	$params['widgetParams']['chartType'] = 'actionHistoryChart';
+	$params['widgetParams']['hideByDefault'] = false;
+
+	
+} 
+
 $this->widget($name, $params);
+
 
 ?>

@@ -623,4 +623,10 @@ return array (
 'Send As (to service requesters)'=>'Verzenden als (naar dienst aanvragers)',
 'Send As (to web leads)'=>'Verzenden als (naar web leads)',
 'Send As (when notifying users)'=>'Verzenden als (bij kennisgeving van gebruikers)',
+'When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.'=>'Bij het uitvoeren van acties in batches, het (aantal seconden) beperkt de tijd die kan worden besteed doen. Het wordt aanbevolen om deze lagere dan de maximale PHP uitvoeringstijd op uw webserver te stellen.',
+'Event/Action History Privacy'=>'Event / Actie Geschiedenis Privacy',
+'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'=>'Standaard zal gebruikers toestaan ​​om acties / evenementen die openbaar of aan hen toegewezen zijn te zien. Gebruiker Alleen zal gebruikers toestaan ​​om alleen zie acties / evenementen aan hen toegewezen. Groep Alleen zal gebruikers toestaan ​​om acties / evenementen toegewezen aan de leden van hun groep te zien.',
+'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.'=>'Kies een privacy-instelling voor de actie Geschiedenis widget en Activity Feed. Houd er rekening mee dat elke gebruiker met Admin-niveau toegang tot de module die de geschiedenis is op deze instelling negeren. Alleen gebruikers met volledige Admin toegang zal deze instelling negeren op de Activity Feed.',
+'Web Lead Response Email Settings'=>'Web Lead Response E-mailinstellingen',
+'Configure how X2CRM sends email when responding to new web leads.'=>'Configureren hoe X2CRM stuurt e-mail wanneer het reageren op nieuwe web-leads.',
 );

@@ -83,8 +83,6 @@ class X2FlowCreateAction extends X2FlowAction {
 		if(isset($params['model']))
 			$action->assignedTo = $this->parseOption('assignedTo',$params);
 
-		// replaceVariables($str, &$model, $vars = array(), $encode = false)
-
 		// if(isset($this->config['attributes']))
 			// $this->setModelAttributes($action,$this->config['attributes'],$params);
 

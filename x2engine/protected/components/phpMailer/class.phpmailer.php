@@ -171,7 +171,7 @@ class PHPMailer {
    * @var boolean
    */
   public $UseSendmailOptions	= true;
-  
+
   /**
    * Path to PHPMailer plugins.  Useful if the SMTP class
    * is in a different directory than the PHP include path.
@@ -264,7 +264,7 @@ class PHPMailer {
    *  @var string
    */
   public $AuthType      = '';
-  
+
   /**
    *  Sets SMTP realm.
    *  @var string
@@ -491,7 +491,7 @@ class PHPMailer {
   const STOP_CONTINUE = 1; // message?, likely ok to continue processing
   const STOP_CRITICAL = 2; // message, plus full stop, critical error reached
   const CRLF = "\r\n";     // SMTP RFC specified EOL
-  
+
   /////////////////////////////////////////////////
   // METHODS, VARIABLES
   /////////////////////////////////////////////////
@@ -969,7 +969,7 @@ class PHPMailer {
     $bad_rcpt = array();
 
     if(!$this->SmtpConnect()) {
-      throw new phpmailerException($this->Lang('smtp_connect_failed'), self::STOP_CRITICAL);
+      throw new phpmailerException($this->Lang('smtp_connect_failed',401), self::STOP_CRITICAL);
     }
     $smtp_from = ($this->Sender == '') ? $this->From : $this->Sender;
     if(!$this->smtp->Mail($smtp_from)) {
@@ -1018,7 +1018,7 @@ class PHPMailer {
 
     if (count($bad_rcpt) > 0 ) { //Create error message for any bad addresses
       $badaddresses = implode(', ', $bad_rcpt);
-      throw new phpmailerException($this->Lang('recipients_failed') . $badaddresses);
+      throw new phpmailerException($this->Lang('recipients_failed') . $badaddresses,404);
     }
     if(!$this->smtp->Data($header . $body)) {
       throw new phpmailerException($this->Lang('data_not_accepted'), self::STOP_CRITICAL);
@@ -1858,7 +1858,7 @@ class PHPMailer {
         if (version_compare(PHP_VERSION, '5.3.0', '<')) {
           set_magic_quotes_runtime(0);
         } else {
-          ini_set('magic_quotes_runtime', 0); 
+          ini_set('magic_quotes_runtime', 0);
         }
       }
       $file_buffer  = file_get_contents($path);
@@ -1867,7 +1867,7 @@ class PHPMailer {
         if (version_compare(PHP_VERSION, '5.3.0', '<')) {
           set_magic_quotes_runtime($magic_quotes);
         } else {
-          ini_set('magic_quotes_runtime', $magic_quotes); 
+          ini_set('magic_quotes_runtime', $magic_quotes);
         }
       }
       return $file_buffer;
@@ -2144,13 +2144,13 @@ class PHPMailer {
         $pattern = '\075\000-\011\013\014\016-\037\077\137\177-\377' . $pattern;
         break;
     }
-    
+
     if (preg_match_all("/[{$pattern}]/", $encoded, $matches)) {
       foreach (array_unique($matches[0]) as $char) {
         $encoded = str_replace($char, '=' . sprintf('%02X', ord($char)), $encoded);
       }
     }
-    
+
     //Replace every spaces to _ (more readable than =20)
     return str_replace(' ', '_', $encoded);
 }

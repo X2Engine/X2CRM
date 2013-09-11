@@ -120,6 +120,8 @@ class ApplicationConfigBehavior extends CBehavior {
                 $this->owner->language = $language;
                 Yii::import('application.models.X2Model');
                 Yii::import('application.models.Dropdowns');
+                Yii::import('application.models.Admin');
+                $this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
                 // Yii::import('application.models.*');
                 // foreach(scandir('protected/modules') as $module){
                 // if(file_exists('protected/modules/'.$module.'/register.php'))

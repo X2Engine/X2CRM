@@ -177,4 +177,5 @@ return array (
 'Your case number is: '=>'Votre numéro de dossier est le suivant:',
 'Website: '=>'Site Web:',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'AVERTISSEMENT: chargement trop nombreux enregistrements sur cette page peut attacher le serveur de manière significative. Etes-vous sûr de vouloir continuer?',
+'Saved Searches'=>'Recherches sauvegardées',
 );

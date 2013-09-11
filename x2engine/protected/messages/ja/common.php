@@ -310,4 +310,12 @@ return array (
 'Export Data'=>'データをエクスポート',
 'Please click the link below to download this report.'=>'このレポートをダウンロードするには、以下のリンクをクリックしてください。',
 'Create Campaign'=>'キャンペーンの作成',
+'Last Week'=>'先週',
+'Last Month'=>'先月',
+'Doc'=>'ドク',
+'Help'=>'役立つ',
+'Sent'=>'送信',
+'Opened'=>'開かれた',
+'Unsubscribed'=>'登録解除',
+'Action History'=>'行動履歴',
 );

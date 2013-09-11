@@ -72,6 +72,10 @@ class GroupsController extends x2base {
 		}
 		$str=substr($str,0,-2);
 		$users=User::getUserLinks($str);
+
+		// add group to user's recent item list
+        User::addRecentItem('g', $id, Yii::app()->user->getId()); 
+
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
 			'users'=>$users,

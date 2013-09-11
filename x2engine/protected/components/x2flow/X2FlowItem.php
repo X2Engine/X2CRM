@@ -50,6 +50,10 @@ abstract class X2FlowItem extends CComponent {
 	 * $var array the config parameters for this action
 	 */
 	public $config = '';
+    /**
+     * $var bool Distinguishes whether cron is required for running the action properly.
+     */
+    public $requiresCron = false;
 	/**
 	 * @return array the param rules.
 	 */

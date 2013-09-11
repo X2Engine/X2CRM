@@ -623,4 +623,10 @@ return array (
 'Send As (to service requesters)'=>'发送（服务请求者）',
 'Send As (to web leads)'=>'发送（网络线索）',
 'Send As (when notifying users)'=>'发送（通知用户时）',
+'When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.'=>'分批运行动作时，这可以使用了这样的时间（秒数）的量限制。建议设置这低于你的web服务器上的最大的PHP执行时间。',
+'Event/Action History Privacy'=>'事件/行动历史隐私权',
+'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'=>'默认将允许用户查看公共或分配给他们的行动/事件。用户只允许用户只能看到分配给它们的行动/活动。集团仅将让用户看到分配给组成员的行动/活动。',
+'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.'=>'选择隐私设置行动历史的小工具和活动饲料。请注意，历史上的任何管理员级别的用户访问模块将忽略此设置。只有完全管理员权限的用户会忽略这个设置活动饲料。',
+'Web Lead Response Email Settings'=>'网页引线响应电子邮件设置',
+'Configure how X2CRM sends email when responding to new web leads.'=>'配置发送电子邮件X2CRM如何应对新的网络线索时。',
 );

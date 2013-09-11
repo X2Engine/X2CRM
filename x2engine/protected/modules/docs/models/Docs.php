@@ -165,18 +165,7 @@ class Docs extends X2Model {
 
 		if($model instanceof X2Model) {
 			if(get_class($model) !== 'Quote') {
-				$matches = array();
-				preg_match_all('/{\w+}/',$str,$matches);
-
-				if(isset($matches[0])) {
-					$attributes = array();
-					foreach($matches[0] as &$match) {	// loop through the things (email body)
-						$attribute = substr($match, 1, -1); // remove { and }
-						if($model->hasAttribute($attribute))
-							$attributes[$match] = $model->renderAttribute($attribute,false,true); // get the correctly formatted attribute (which is already in HTML)
-					}
-					$str = strtr($str,$attributes);	// replace any attributes that were found
-				}
+				$str = Formatter::replaceVariables($str, $model);
 			} else {
 				// Specialized, separate method for quotes that can use details from
 				// either accounts or quotes.

@@ -34,6 +34,52 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+if ($name === 'RecordViewChart') {
+	Yii::app()->clientScript->registerScript('chartShowHide', "
+		$(document).on ('chartWidgetMaximized', function () {
+			var chartName = 'actionHistoryChart';
+			".
+			
+			"
+			x2[chartName].chart.show ();
+			x2[chartName].chart.replot ();
+		});
+	");
+
+	Yii::app()->clientScript->registerScript('chartSubTypeSelection', "
+		$('#chart-subtype-selector').on ('click', function (evt) {
+			return false;
+		});
+		$('#chart-subtype-selector').on ('change', function (evt) {
+			var selectedSubType = $(this).val ();
+			var selectedChart = 'actionHistoryChart';
+			".
+			
+			"
+			x2['actionHistoryChart'].chart.setChartSubtype (
+                selectedSubType, true, false, true);	
+			$.cookie ('recordViewChartSelectedSubtype', selectedSubType);
+		});
+		if ($.cookie ('recordViewChartSelectedSubtype')) {
+			// set chart type using cookie
+			$('#chart-subtype-selector').find ('option').each (function () {
+				$(this).removeAttr ('selected');
+			});
+			$('#chart-subtype-selector').children ().each (function () {
+				if ($(this).val () === $.cookie ('recordViewChartSelectedSubtype'))
+					$(this).attr ('selected', 'selected');
+			});
+		} 
+	");
+}
+
+
+
+if ($name === 'RecordViewChart') {
+}
+
+
+
 // check if we need to load a model
 if(!isset($model) && isset($modelType) && isset($modelId)){
     // didn't get passed a model, but we have the modelType and modelId, so load the model
@@ -48,40 +94,65 @@ if($name == "InlineRelationships"){
                 'sort' => array('attributes' => array('name', 'myModelName', 'createDate', 'assignedTo')),
                 'pagination' => array('pageSize' => 10)
             ));
-    $relationshipCount = " (".count($relationshipsDataProvider->data).")";
+    $relationshipCount = " (".$relationshipsDataProvider->totalItemCount.")";
 }
 ?>
 
+
 <div class="x2-widget form" id="x2widget_<?php echo $name; ?>">
     <div class="x2widget-header" onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false">
+
+		<?php
+		if ($name === 'RecordViewChart') {
+		?>
+			<!--  -->
+			<span class="x2widget-title">
+				<b><?php echo Yii::t('app', Yii::t('app', 'Action History')); ?></b>
+			</span>
+			<!--  -->
+			<select id='chart-subtype-selector'>
+				<option value='line'>
+					<?php echo Yii::t('app', 'Line Chart'); ?>
+				</option>
+				<option value='pie'>
+					<?php echo Yii::t('app', 'Pie Chart'); ?>
+				</option>
+			</select>
+		<?php
+		} else {
+		?> 
         <span class="x2widget-title">
             <b><?php echo Yii::t('app', $widget['title']).$relationshipCount; ?></b>
         </span>
+		<?php
+		}
+		?>
+
         <?php if(!Yii::app()->user->isGuest){ ?>
             <div class="portlet-minimize">
                 <a onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false" href="#" class="x2widget-minimize">
-					<?php 
+					<?php
 					if ($widget['minimize']) {
-						echo CHtml::image($themeUrl.'/images/icons/Expand_Widget.png', Yii::t('app', 'Maximize Widget'), 
+						echo CHtml::image($themeUrl.'/images/icons/Expand_Widget.png', Yii::t('app', 'Maximize Widget'),
 							array ('title' => Yii::t('app', 'Maximize Widget')));
 					} else {
-						echo CHtml::image($themeUrl.'/images/icons/Collapse_Widget.png', Yii::t('app', 'Minimize Widget'), 
-							array ('title' => Yii::t('app', 'Minimize Widget'))); 
-					} 
+						echo CHtml::image($themeUrl.'/images/icons/Collapse_Widget.png', Yii::t('app', 'Minimize Widget'),
+							array ('title' => Yii::t('app', 'Minimize Widget')));
+					}
 					?>
 				</a>
-				<?php 
+				<?php
 					echo CHtml::image(
-						$themeUrl.'/css/gridview/arrow_both.png', 
-						Yii::t('app', 'Sort Widget'), 
+						$themeUrl.'/css/gridview/arrow_both.png',
+						Yii::t('app', 'Sort Widget'),
 						array (
 							'title' => Yii::t('app', 'Sort Widget'),
 							'class' => 'widget-sort-handle'
 						)
-					); 
+					);
 				?>
                 <a onclick="$('#x2widget_<?php echo $name; ?>').hideWidget(); return false" href="#">
-					<?php echo CHtml::image($themeUrl.'/images/icons/Close_Widget.png', Yii::t('app', 'Close Widget'), 
+					<?php echo CHtml::image($themeUrl.'/images/icons/Close_Widget.png', Yii::t('app', 'Close Widget'),
 						array ('title' => Yii::t('app', 'Close Widget'))); ?>
 				</a>
             </div>

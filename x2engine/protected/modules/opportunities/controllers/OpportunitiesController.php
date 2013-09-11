@@ -88,6 +88,10 @@ class OpportunitiesController extends x2base {
 		$model = $this->loadModel($id);
 		$model->associatedContacts = Contacts::getContactLinks($model->associatedContacts);
         if($this->checkPermissions($model,'view')){
+
+            // add opportunity to user's recent item list
+            User::addRecentItem('o', $id, Yii::app()->user->getId()); 
+
             parent::view($model, $type);
         }else{
             $this->redirect('index');
@@ -216,7 +220,7 @@ class OpportunitiesController extends x2base {
 					$model->$field=$_POST['Opportunity'][$field];
 					$fieldData=Fields::model()->findByAttributes(array('modelName'=>'Opportunity','fieldName'=>$field));
 						if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-							$model->$field=Accounts::parseUsers($model->$field);
+							$model->$field=Fields::parseUsers($model->$field);
 						}elseif($fieldData->type=='date'){
 							$model->$field=strtotime($model->$field);
 						}
@@ -298,7 +302,6 @@ class OpportunitiesController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
-		$model->assignedTo = explode(' ',$model->assignedTo);
         if(!empty($model->associatedContacts))
             $model->associatedContacts = explode(' ',$model->associatedContacts);
 
@@ -311,7 +314,8 @@ class OpportunitiesController extends x2base {
 			$model->save();
 			$this->redirect(array('view','id'=>$model->id));
 		}
-
+        // Set assignedTo back into an array only before re-rendering the input box with assignees selected
+        $model->assignedTo = array_map(function($n){return trim($n,',');},explode(' ',$model->assignedTo));
 		$this->render('update',array(
 			'model'=>$model,
 		));

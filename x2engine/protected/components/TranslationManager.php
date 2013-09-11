@@ -65,6 +65,11 @@ if(!isset($messagePath))
 
 // die($messagePath);
 $targetFile = '';
+if(isset($_GET['file'])){
+    if(strpos($_GET['file'],'/')!==false){
+        throw new CHttpException(400,'This file is not within allowed translations paths. Do not repeat this request.');
+    }
+}
 if(isset($_GET['file']) && file_exists($messagePath.'/template/'.$_GET['file']))
 	$targetFile = $_GET['file'];
 

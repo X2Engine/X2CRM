@@ -34,51 +34,57 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('zii.widgets.CPortlet');
 
 
-$menuItems = array(
-	array('label'=>Yii::t('accounts','All Accounts'), 'url'=>array('index')),
-	array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
-	array('label'=>Yii::t('accounts','View'), 'url'=>array('view','id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Edit Account'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Share Account'),'url'=>array('shareAccount','id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Add a User'), 'url'=>array('addUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Remove a User'), 'url'=>array('removeUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-);
-if($action=='Remove')
-	unset($menuItems[6]['url']);
-else
-	unset($menuItems[5]['url']);
+/**
+ * Gives a utility function to derived classes which sets up this left widgets title bar.
+ * @package X2CRM.components 
+ */
+abstract class LeftWidget extends CPortlet {
 
-$authParams['assignedTo']=$model->assignedTo;
-$this->actionMenu = $this->formatMenu($menuItems,$authParams);
+	/**
+     * The name of the widget. This should match the name used in the layout stored in
+     * the user's profile.
+	 * @var string
+	 */
+    public $widgetName;
 
+	/**
+     * The label used in this widgets title bar
+	 * @var string
+	 */
+    public $widgetLabel;
 
-
+	/**
+	 * Sets the label in the widget title and determines whether this left widget should 
+     * be hidden or shown on page load.
+	 */
+    protected function initTitleBar () {
+        $profile = Yii::app()->params->profile;
+        $isCollapsed = false;
+        if(isset($profile)){
+            $layout = $profile->getLayout ();
+            if (in_array ($this->widgetName, array_keys ($layout['left']))) {
+                $isCollapsed = $layout['left'][$this->widgetName]['minimize'];
+            }
+        }
+        $themeURL = Yii::app()->theme->getBaseUrl();
+		$this->title =
+            Yii::t('app', $this->widgetLabel).
+            CHtml::link(
+                CHtml::image(
+                    $themeURL."/images/icons/".(!$isCollapsed?"Collapse":"Expand")."_Widget.png"),
+                "#", array(
+                    'title'=>Yii::t('app', $this->widgetLabel), 
+                    'name'=>$this->widgetName, 
+                    'class'=>'left-widget-min-max',
+                    'value'=>($isCollapsed ? 'expand' : 'collapse'),
+                    'style'=>'float:right;padding-right:5px;')
+            );
+        $this->htmlOptions = array(
+            'class' => (!$isCollapsed ? "" : "hidden-filter")
+        );
+    }
+}
 ?>
-<div class="page-title icon accounts">
-	<h2><span class="no-bold"><?php echo Yii::t('app','Update:'); ?></span> <?php echo $model->name; ?></h2>
-</div>
-
-<div class="form">
-
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'acocunts-form',
-	'enableAjaxValidation'=>false,
-));
-echo ($action=='Remove')?Yii::t('accounts','Please click any new users you wish to remove.'):Yii::t('accounts','Please click any new users you wish to add.');
-?>
-<br /><br />
-<div class="row">
-	<?php echo $form->dropDownList($model,'assignedTo',$users,array("multiple"=>"multiple", 'size'=>8)); ?>
-	<?php echo $form->error($model,'assignedTo'); ?>
-</div>
-
-<div class="row buttons">
-	<?php echo CHtml::submitButton(Yii::t('app',$action),array('class'=>'x2-button highlight')); ?>
-</div>
-
-<?php $this->endWidget(); ?>
-
-</div>

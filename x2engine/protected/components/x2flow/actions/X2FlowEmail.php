@@ -51,7 +51,7 @@ class X2FlowEmail extends X2FlowAction {
 				array('name'=>'to','label'=>Yii::t('studio','To:'),'type'=>'email'),
 				array('name'=>'from','label'=>Yii::t('studio','From:'),'type'=>'email'),
 				array('name'=>'template','label'=>Yii::t('studio','Template'),'type'=>'dropdown','options'=>array(''=>Yii::t('studio','Custom'))+Docs::getEmailTemplates(),'optional'=>1),
-				array('name'=>'subject','label'=>Yii::t('studio','Subject')),
+				array('name'=>'subject','label'=>Yii::t('studio','Subject'),'optional'=>1),
 				array('name'=>'cc','label'=>Yii::t('studio','CC:'),'optional'=>1,'type'=>'email'),
 				array('name'=>'bcc','label'=>Yii::t('studio','BCC:'),'optional'=>1,'type'=>'email'),
 				array('name'=>'body','label'=>Yii::t('studio','Message'),'optional'=>1,'type'=>'richtext'),
@@ -62,12 +62,17 @@ class X2FlowEmail extends X2FlowAction {
 	public function execute(&$params) {
 		// die(var_dump(array_keys($params)));
 		$eml = new InlineEmail;
+        $historyFlag = false;
 		$options = &$this->config['options'];
-
+        if(isset($params['model'])){
+            $historyFlag = true;
+            $eml->targetModel=$params['model'];
+        }
 		if(isset($options['cc']['value']))
 			$eml->cc = $this->parseOption('cc',$params);
-		if(isset($options['bcc']['value']))
+		if(isset($options['bcc']['value'])){
 			$eml->bcc = $this->parseOption('bcc',$params);
+        }
 		$eml->to = $this->parseOption('to',$params);
 
 		$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
@@ -83,7 +88,7 @@ class X2FlowEmail extends X2FlowAction {
 			$eml->template = $this->parseOption('template',$params);
 			$eml->prepareBody();
 		}
-		$result = $eml->send(false);
+		$result = $eml->send($historyFlag);
 		// die(var_dump($result));
 		return isset($result['code']) && $result['code'] == 200;
 	}

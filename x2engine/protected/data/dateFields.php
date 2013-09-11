@@ -11,6 +11,7 @@ return array(
 	'x2_events' => array('timestamp','lastUpdated'),
 	'x2_imports' => array('timestamp'),
 	'x2_lists' => array('createDate','lastUpdated'),
+	'x2_list_items' => array('opened','sent','unsubscribed','clicked'),
 	'x2_media' => array('createDate','lastUpdated'),
 	'x2_notifications' => array('createDate'),
 	'x2_opportunities' => array('expectedCloseDate','createDate','lastUpdated','lastActivity'),

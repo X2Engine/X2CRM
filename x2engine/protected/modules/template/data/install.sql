@@ -16,13 +16,13 @@ INSERT INTO `x2_modules`
 	VALUES	('templates',		'Templates',	1,			1,				1,			1,			0,			1,		1);
 /*&*/
 INSERT INTO x2_fields
-(modelName,		fieldName,			attributeLabel,		custom,		type,		required,	readOnly, 		linkType,   searchable,	isVirtual,	relevance)
+(modelName,		fieldName,			attributeLabel,		custom,		type,		required,	readOnly, 		linkType,   searchable,	isVirtual,	relevance, uniqueConstraint, safe)
 VALUES
-("Templates",	"id",				"ID",					0,		"int",			0,			0,			NULL,		0,			0,			""			),
-("Templates",	"name",				"Name",					0,		"varchar",		0,			0,			NULL,		0,			0,			"High"		),
-("Templates",	"assignedTo",		"Assigned To",			0,		"assignment",	0,			0,			NULL,		0,			0,			""			),
-("Templates",	"description",		"Description",			0,		"text",			0,			0,			NULL,		0,			0,			"Medium"	),
-("Templates",	"createDate",		"Create Date",			0,		"dateTime",		0,			0,			NULL,		0,			0,			""			),
-("Templates",	"lastUpdated",		"Last Updated",			0,		"dateTime",		0,			0,			NULL,		0,			0,			""			),
-("Templates",	"lastActivity",		"Last Activity",		0,		"dateTime",		0,			0,			NULL,		0,			0,			""			),
-("Templates",	"updatedBy",		"Updated By",			0,		"assignment",	0,			0,			NULL,		0,			0,			""			);
+("Templates",	"id",				"ID",					0,		"int",			0,			0,			NULL,		0,			0,			"",			1,                  1),
+("Templates",	"name",				"Name",					0,		"varchar",		0,			0,			NULL,		0,			0,			"High",		0,                  1),
+("Templates",	"assignedTo",		"Assigned To",			0,		"assignment",	0,			0,			NULL,		0,			0,			"",			0,                  1),
+("Templates",	"description",		"Description",			0,		"text",			0,			0,			NULL,		0,			0,			"Medium",	0,                  1),
+("Templates",	"createDate",		"Create Date",			0,		"dateTime",		0,			0,			NULL,		0,			0,			"",			0,                  1),
+("Templates",	"lastUpdated",		"Last Updated",			0,		"dateTime",		0,			0,			NULL,		0,			0,			"",			0,                  1),
+("Templates",	"lastActivity",		"Last Activity",		0,		"dateTime",		0,			0,			NULL,		0,			0,			"",			0,                  1),
+("Templates",	"updatedBy",		"Updated By",			0,		"assignment",	0,			0,			NULL,		0,			0,			"",			0,                  1);

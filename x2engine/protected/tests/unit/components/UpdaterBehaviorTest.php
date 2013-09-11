@@ -51,7 +51,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 	 * operations), but not backup tests specifically (it's assumed they work)
 	 */
 
-	const TEST_LEVEL = 2;
+	const TEST_LEVEL = 0;
 
 	/**
 	 * Array of tables used in update/upgrade SQL testing.
@@ -143,20 +143,20 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 		foreach($this->testTables as $type => $tables){ // Compose update SQL
 			if($type == 'new'){
 				foreach($tables as $table){
-					$sqlToRun[] = $this->createTable($table);
+					$sqlToRun[] = array('sql'=>$this->createTable($table),'haltOnFail'=>1);
 				}
 			}
 			if($type == 'drop'){
 				foreach($tables as $table){
-					$sqlToRun[] = "DROP TABLE {$table['name']}";
+					$sqlToRun[] = array('sql'=>"DROP TABLE {$table['name']}",'haltOnFail'=>1);
 				}
 			}
 			foreach($tables as $table){
 				if(array_key_exists('newColumns', $table))
-					$sqlToRun[] = $this->addColumns($table);
+					$sqlToRun[] = array('sql'=>$this->addColumns($table),'haltOnFail'=>1);
 			}
 		}
-		$sqlToRun[] = 'INVALID SQL INVALID SQL INVALID SQL';
+		$sqlToRun[] = array('sql'=>'INVALID SQL INVALID SQL INVALID SQL','haltOnFail'=>1);
 
 		// Back up configuration (it will be overwritten in the test, eventually)
 		$ube->makeBackup(array('protected/config/X2Config.php'), 'confbackup');
@@ -491,6 +491,74 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 	////////////////////////
 	// BASIC TEST METHODS //
 	////////////////////////
+
+
+    public function testPrepareData() {
+        $ube = $this->instantiateUBe();
+        $input = array(
+            array(
+                'fileList' => array(
+                    'protected/a',
+                    'protected/b',
+                    'protected/c'
+                ),
+                'deletionList' => array(
+                    'protected/aa',
+                    'protected/bb'
+                ),
+                'sqlList' => array(
+                    'insert this',
+                    'update that'
+                ),
+                'sqlForce' => array(
+                    'do hardcore stuff that might fail'
+                ),
+            ),
+            array(
+                'fileList' => array(
+                    'protected/a',
+                    'protected/c',
+                    'protected/aa',
+                ),
+                'deletionList' => array(
+                    'protected/b',
+                ),
+                'sqlList' => array(
+                    'insert more of this'
+                ),
+                'sqlForce' => array(
+                    'me first!'
+                )
+
+            ),
+        );
+        $expectedOutput = array(
+            'fileList' => array(
+                'protected/a',
+                'protected/aa',
+                'protected/c'
+            ),
+            'deletionList' => array(
+                'protected/bb',
+                'protected/b'
+            ),
+            'sqlList' => array(
+                array('sql'=>'do hardcore stuff that might fail','haltOnFail'=>0),
+                array('sql'=>'insert this','haltOnFail'=>1),
+                array('sql'=>'update that','haltOnFail'=>1),
+                array('sql'=>'me first!','haltOnFail'=>0),
+                array('sql'=>'insert more of this','haltOnFail'=>1),
+            )
+        );
+        $output = $ube->prepareData($input);
+        foreach($expectedOutput as $delta => $list) {
+            $this->assertArrayHasKey($delta,$output);
+            if($delta == 'sqlList')
+                $this->assertEquals($list,$output[$delta]);
+            else
+                $this->assertEquals(0,count(array_diff($list,$output[$delta])));
+        }
+    }
 
 	public function testCheckDatabaseBackup(){
 		$ube = $this->instantiateUBe();

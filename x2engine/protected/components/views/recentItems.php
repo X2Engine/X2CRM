@@ -47,22 +47,69 @@ foreach($recentItems as $item) {
 	if(++$count > 5)
 		break;
 	echo '<li>';
-	if ($item['type']=='t') {	//item is a action
-		$description = CHtml::encode($item['model']->actionDescription);
-		if(mb_strlen($description,'UTF-8')>120)
-			$description = mb_substr($description,0,117,'UTF-8').'...';
+    switch ($item['type']) {
+        case 't': // action
+            $description = CHtml::encode($item['model']->actionDescription);
+            if(mb_strlen($description,'UTF-8')>120)
+                $description = mb_substr($description,0,117,'UTF-8').'...';
 
-		$link = '<strong>'.Yii::t('app','Due').': '.date("Y-m-d",$item['model']->dueDate).'</strong><br />'.Media::attachmentActionText($description);
-		//$link = '<strong>'.$item['model']->dueDate.'</strong><br />'.$item['model']->actionDescription;
-		echo CHtml::link($link,'#',array('class'=>'action-frame-link','data-action-id'=>$item['model']->id));
-
-	} else if ($item['type']=='c') {	//item is a contact
-
-		$link = '<strong>'.$item['model']->name.'</strong><br />'.$item['model']->phone;
-		echo CHtml::link($link,array('/contacts/'.$item['model']->id));
-
+            $link = '<strong>'.Yii::t('app','Due').': '.date("Y-m-d",$item['model']->dueDate).
+                '</strong><br />'.Media::attachmentActionText($description);
+            //$link = '<strong>'.$item['model']->dueDate.'</strong><br />'.$item['model']->actionDescription;
+            echo CHtml::link($link,'#',
+                array('class'=>'action-frame-link','data-action-id'=>$item['model']->id));
+            break;
+        case 'c': // contact
+            $link = '<strong>'.$item['model']->name.'</strong><br />'.$item['model']->phone;
+            echo CHtml::link($link,array('/contacts/'.$item['model']->id));
+            break;
+        case 'a': // account
+            $link = '<strong>'.Yii::t('app', 'Account').':<br/>'.$item['model']->name.'</strong><br />'.
+                $item['model']->phone;
+            echo CHtml::link($link,array('/accounts/'.$item['model']->id));
+            break;
+        case 'p': // campaign
+            $link = '<strong>'.Yii::t('app', 'Campaign').':<br/>'.$item['model']->name.'</strong>';
+            echo CHtml::link($link,array('/marketing/'.$item['model']->id));
+            break;
+        case 'o': // opportunity
+            $link = '<strong>'.Yii::t('app', 'Opportunity').':<br/>'.$item['model']->name.'</strong>';
+            echo CHtml::link($link,array('/opportunities/'.$item['model']->id));
+            break;
+        case 'w': // workflow
+            $link = '<strong>'.Yii::t('app', 'Workflow').':<br/>'.$item['model']->name.'</strong>';
+            echo CHtml::link($link,array('/workflow/'.$item['model']->id));
+            break;
+        case 's': // service
+            $link = '<strong>'.Yii::t('app', 'Service Case').' '.$item['model']->name.'</strong>';
+            echo CHtml::link($link,array('/services/'.$item['model']->id));
+            break;
+        case 'd': // document
+            $link = '<strong>'.Yii::t('app', 'Doc').':<br/>'.$item['model']->name.'</strong>';
+            echo CHtml::link($link,array('/docs/'.$item['model']->id));
+            break;
+        case 'm': // media object
+            $link = '<strong>'.Yii::t('app', 'File').':<br/>'.$item['model']->fileName.'</strong>';
+            echo CHtml::link($link,array('/media/'.$item['model']->id));
+            break;
+        case 'r': // product
+            $link = '<strong>'.Yii::t('app', 'Product').':<br/>'.$item['model']->name.'</strong>';
+            echo CHtml::link($link,array('/products/'.$item['model']->id));
+            break;
+        case 'q': // product
+            $link = '<strong>'.Yii::t('app', 'Quote').':<br/>'.$item['model']->name.'</strong>';
+            echo CHtml::link($link,array('/quotes/'.$item['model']->id));
+            break;
+        case 'g': // group
+            $link = '<strong>'.Yii::t('app', 'Group').':<br/>'.$item['model']->name.'</strong>';
+            echo CHtml::link($link,array('/groups/'.$item['model']->id));
+            break;
+        default:
+            printR ('Error: recentItems.php: invalid item type');
+            exit ();
 	}
 	echo "</li>\n";
 }
 ?>
 </ul>
+

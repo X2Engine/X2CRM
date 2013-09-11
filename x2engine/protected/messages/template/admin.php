@@ -612,4 +612,10 @@ return array (
 'Send As (to service requesters)'=>'',
 'Send As (to web leads)'=>'',
 'Send As (when notifying users)'=>'',
+'When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.'=>'',
+'Event/Action History Privacy'=>'',
+'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'=>'',
+'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.'=>'',
+'Web Lead Response Email Settings'=>'',
+'Configure how X2CRM sends email when responding to new web leads.'=>'',
 );

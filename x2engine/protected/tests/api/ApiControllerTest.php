@@ -110,7 +110,7 @@ class ApiControllerTest extends CURLTestCase {
 		$urlParam['{action}'] = 'relationship';
 		$urlParam['{model}'] = 'Accounts';
 		// Step 1: Test lookup:
-		$urlParam['{params}'] = '?'.http_build_query(array_merge($this->param,array('firstId'=>$this->accounts('testQuote')->id,'secondType'=>'Contacts','secondId'=>$this->contacts('testUser')->id)));
+		$urlParam['{params}'] = '?'.http_build_query(array_merge($this->param,array('firstId'=>$this->accounts('testQuote')->id,'secondType'=>'Contacts','secondId'=>$this->contacts('testUser')->id)),'','&');
 		$ch = $this->getCurlHandle($urlParam);
 		$cr = curl_exec($ch);
 		$cr = json_decode($cr,1);
@@ -139,7 +139,7 @@ class ApiControllerTest extends CURLTestCase {
 		$newRelated = array_filter($relatedModels,function($m)use($contactId){return get_class($m) == 'Contacts' && $m->id == $contactId;});
 		$this->assertEquals(1,count($newRelated),'Failed asserting that a new relationship was added.');
 		// Step 3: Test deletion (delete the one that was just created):
-		$urlParam['{params}'] = '?'.http_build_query($postData);
+		$urlParam['{params}'] = '?'.http_build_query($postData,'','&');
 		$ch = $this->getCurlHandle($urlParam);
 		curl_setopt($ch,CURLOPT_CUSTOMREQUEST,'DELETE');
 		$cr = curl_exec($ch);
@@ -178,7 +178,7 @@ class ApiControllerTest extends CURLTestCase {
 		$this->assertEmpty($tagsNotAdded,'Failed asserting that tags were added: '.implode(',',$tagsNotAdded).'; model tags = '.json_encode($modelTags).' model id = '.$model->id);
 		
 		// Test getting tags:
-		$urlParam['{params}'] = '?'.http_build_query(array_merge($this->param, array('id'=>$model->id)));
+		$urlParam['{params}'] = '?'.http_build_query(array_merge($this->param, array('id'=>$model->id)),'','&');
 		$ch = $this->getCurlHandle($urlParam);
 		$cr = curl_exec($ch);
 		file_put_contents('api_response.html', $cr);
@@ -189,7 +189,7 @@ class ApiControllerTest extends CURLTestCase {
 		
 		// Test deletion of those tags:
 		foreach($tags as $tag) {
-			$urlParam['{params}'] = '?'.http_build_query(array_merge($this->param, array('id'=>$model->id,'tag'=>ltrim($tag,'#'))));
+			$urlParam['{params}'] = '?'.http_build_query(array_merge($this->param, array('id'=>$model->id,'tag'=>ltrim($tag,'#'))),'','&');
 			$ch = $this->getCurlHandle($urlParam);
 			curl_setopt($ch,CURLOPT_CUSTOMREQUEST,'DELETE');
 			$cr = curl_exec($ch);
@@ -222,6 +222,7 @@ class ApiControllerTest extends CURLTestCase {
 			'Accounts' => array(
 				'name' => 'ApiAccount',
 				'type' => 'business',
+                'assignedTo' => 'testuser'
 			),
 			'Actions' => array(
 				'assignedTo' => 'testuser',
@@ -232,6 +233,7 @@ class ApiControllerTest extends CURLTestCase {
 				'lastName' => 'ApiContactLastName',
 				'email' => 'apiemail@address.com',
 				'visibility' => 1,
+                'assignedTo' => 'admin'
 			),
 			'Docs' => array(
 				'name' => 'Excellent birds',
@@ -240,12 +242,13 @@ class ApiControllerTest extends CURLTestCase {
 			),
 			'Opportunity' => array(
 				'name' => 'Falling snow',
-				'description' => 'Urna dolor? Sed tortor arcu mid porttitor egestas pulvinar etiam, diam? Aliquam, cras ultricies elementum?...'
+				'description' => 'Urna dolor? Sed tortor arcu mid porttitor egestas pulvinar etiam, diam? Aliquam, cras ultricies elementum?...',
+                'assignedTo' => 'testuser'
 			),
 			'Product' => array(
 				'name' => 'Excellent snow',
 				'description' => "Enim amet! Porttitor, amet pulvinar augue sed auctor, phasellus pellentesque nunc nunc amet proin...",
-				'type' => 'watch it fall',
+				'type' => 'watch it fall'
 			),
 			'Services' => array(
 				'contactId' => $this->contacts('testUser')->id,
@@ -335,7 +338,7 @@ class ApiControllerTest extends CURLTestCase {
 				$get = array_merge($get, $pk);
 			else // Single-column primary key
 				$get[$models[$class]->tableSchema->primaryKey] = $pk;
-			$urlParam['{params}'] = '?'.http_build_query($get);
+			$urlParam['{params}'] = '?'.http_build_query($get,'','&');
 			$ch = $this->getCurlHandle($urlParam, $param);
 			$cr = curl_exec($ch);
 			file_put_contents('api_response.html', $cr);
@@ -392,7 +395,7 @@ class ApiControllerTest extends CURLTestCase {
 					$get = array_merge($get, $pk);
 				else // Single-column primary key
 					$get[$models[$class]->tableSchema->primaryKey] = $pk;
-				$urlParam['{params}'] = '?'.http_build_query($get);
+				$urlParam['{params}'] = '?'.http_build_query($get,'','&');
 				$ch = $this->getCurlHandle($urlParam, $post);
 				$cr = curl_exec($ch);
 				file_put_contents('api_response.html', $cr);
@@ -426,7 +429,7 @@ class ApiControllerTest extends CURLTestCase {
 			$get = array_merge($get,$pk);
 		else // Single-column primary key
 			$get[$models[$class]->tableSchema->primaryKey] = $pk;
-		$urlParam['{params}'] = '?'.http_build_query($get);
+		$urlParam['{params}'] = '?'.http_build_query($get,'','&');
 		$ch = $this->getCurlHandle($urlParam,$post);
 		$cr = curl_exec($ch);
 		file_put_contents('api_response.html',$cr);
@@ -439,7 +442,7 @@ class ApiControllerTest extends CURLTestCase {
 		$urlParam['{model}'] = $class;
 		$get = array();
 		$get['id'] = $pk;
-		$urlParam['{params}'] = '?'.http_build_query($get);
+		$urlParam['{params}'] = '?'.http_build_query($get,'','&');
 		$ch = $this->getCurlHandle($urlParam,$post);
 		$cr = curl_exec($ch);
 		file_put_contents('api_response.html',$cr);
@@ -457,7 +460,7 @@ class ApiControllerTest extends CURLTestCase {
 
 		// Test missing primary key errors:
 		$get = array();
-		$urlParam['{params}'] = '?'.http_build_query($get);
+		$urlParam['{params}'] = '?'.http_build_query($get,'','&');
 		$ch = $this->getCurlHandle($urlParam,$post);
 		$cr = curl_exec($ch);
 		file_put_contents('api_response.html',$cr);

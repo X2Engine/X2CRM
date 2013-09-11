@@ -63,4 +63,18 @@ general css rules
 	display: inline-block;
 }
 
+div.ui-input-text.error {
+    border-color: #C00;
+    background: #FEE;
+}
+
+div.input-error-container {
+    float: left;
+    margin-right: 4px;
+}
+
+div.err-msg-placeholder {
+    height: 20px;
+}
+
 

@@ -56,6 +56,7 @@ if($modelName=='contacts' || $modelName=='opportunities'){
 	}
 	",CClientScript::POS_HEAD);
 }
+
 // $(function() {\n"
 // .($showWorkflow? "showWorkflow();\n" : "hideWorkflow()\n")
 // ."});",CClientScript::POS_HEAD);
@@ -73,11 +74,16 @@ $scenario = isset($scenario) ? $scenario : 'Default';
 if(method_exists($model,'getFields')) {
 	$fields = $model->getFields(true);
 } else {
-	foreach(X2Model::model('Fields')->findAllByAttributes(array('modelName'=>ucfirst($modelName))) as $fieldModel)
+	foreach(X2Model::model('Fields')->findAllByAttributes(
+		array('modelName'=>ucfirst($modelName))) as $fieldModel) {
+
 		$fields[$fieldModel->fieldName] = $fieldModel;
+	}
 }
+
 if($layoutData === false) {
-	$layout = FormLayout::model()->findByAttributes(array('model'=>ucfirst($modelName),'defaultView'=>1,'scenario'=>$scenario));
+	$layout = FormLayout::model()->findByAttributes(
+		array('model'=>ucfirst($modelName),'defaultView'=>1,'scenario'=>$scenario));
 
 	if(isset($layout)) {
 		$layoutData = json_decode($layout->layout,true);
@@ -87,161 +93,154 @@ if($layoutData === false) {
 
 if($layoutData !== false && isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
 ?>
-<div class="x2-layout<?php if(isset($halfWidth) && $halfWidth) echo ' half-width'; ?>">
-<?php
-$formSettings = ProfileChild::getFormSettings($modelName);
-
-$fieldPermissions = array();
-
-if(!Yii::app()->params->isAdmin && !empty(Yii::app()->params->roles)) {
-	$rolePermissions = Yii::app()->db->createCommand()
-		->select('fieldId, permission')
-		->from('x2_role_to_permission')
-		->join('x2_fields','x2_fields.modelName="'.$modelName.'" AND x2_fields.id=fieldId AND roleId IN ('.implode(',',Yii::app()->params->roles).')')
-		->queryAll();
-
-	foreach($rolePermissions as &$permission) {
-		if(!isset($fieldPermissions[$permission['fieldId']]) || $fieldPermissions[$permission['fieldId']] < (int)$permission['permission'])
-			$fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
+	<div class="x2-layout<?php if(isset($halfWidth) && $halfWidth) echo ' half-width'; ?>">
+	<?php
+	$formSettings = ProfileChild::getFormSettings($modelName);
+	
+	$fieldPermissions = array();
+	
+	if(!Yii::app()->params->isAdmin && !empty(Yii::app()->params->roles)) {
+		$rolePermissions = Yii::app()->db->createCommand()
+			->select('fieldId, permission')
+			->from('x2_role_to_permission')
+			->join('x2_fields','x2_fields.modelName="'.$modelName.
+				'" AND x2_fields.id=fieldId AND roleId IN ('.implode(',',Yii::app()->params->roles).')')
+			->queryAll();
+	
+		foreach($rolePermissions as &$permission) {
+			if(!isset($fieldPermissions[$permission['fieldId']]) || 
+			   $fieldPermissions[$permission['fieldId']] < (int)$permission['permission']) {
+				$fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
+			}
+		}
 	}
-}
-if(!isset($specialFields))
-	$specialFields = array();
 
-$i = 0;
-foreach($layoutData['sections'] as &$section) {
-	$noItems = true; // if no items, don't display section
-	// set defaults
-	if(!isset($section['title'])) $section['title'] = '';
-	if(!isset($section['collapsible'])) $section['collapsible'] = false;
-	if(!isset($section['rows'])) $section['rows'] = array();
-	if(!isset($formSettings[$i])) $formSettings[$i] = 1;
-
-	$collapsed = !$formSettings[$i] && $section['collapsible'];
-
-	$htmlString = '';
-
-	$htmlString .= '<div class="formSection';
-	if($section['collapsible'])
-		$htmlString .= ' collapsible';
-	if(!$collapsed)
-		$htmlString .= ' showSection';
-	$htmlString .= '">';
-
-	//if($section['collapsible'] || !empty($section['title'])) {
+	if(!isset($specialFields))
+		$specialFields = array();
+	if(!isset($suppressFields))
+		$suppressFields = array();
+	
+	$i = 0;
+	foreach($layoutData['sections'] as &$section) {
+		$noItems = true; // if no items, don't display section
+		// set defaults
+		if(!isset($section['title'])) $section['title'] = '';
+		if(!isset($section['collapsible'])) $section['collapsible'] = false;
+		if(!isset($section['rows'])) $section['rows'] = array();
+		if(!isset($formSettings[$i])) {
+			$formSettings[$i] = 1;
+		}
+	
+		$collapsed = !$formSettings[$i] && $section['collapsible'];
+	
+		$htmlString = '';
+	
+		$htmlString .= '<div class="formSection';
+		if($section['collapsible'])
+			$htmlString .= ' collapsible';
+		if(!$collapsed)
+			$htmlString .= ' showSection';
+		$htmlString .= '">';
+	
 		$htmlString .= '<div class="formSectionHeader">';
 		if($section['collapsible']) {
 			$htmlString .= '<a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>';
 			$htmlString .= '<a href="javascript:void(0)" class="formSectionShow">[+]</a>';
 		}
-		/*if(!empty($section['title']))
-			$htmlString .= '<span class="sectionTitle" title="',addslashes($section['title']),'">',Yii::t(strtolower(Yii::app()->controller->id),$section['title']),'</span>';*/
 		if(!empty($section['title'])) {
-			$htmlString .= '<span class="sectionTitle" title="'.addslashes($section['title']).'">'.Yii::t(strtolower(Yii::app()->controller->id),$section['title']).'</span>';
+			$htmlString .= '<span class="sectionTitle" title="'.addslashes($section['title']).'">'.
+				Yii::t(strtolower(Yii::app()->controller->id),$section['title']).'</span>';
 		} else {
 			$htmlString .= '<span class="sectionTitle"></span>';
 		}
 		$htmlString .= '</div>';
-	//}
-	if(!empty($section['rows'])) {
-		$htmlString .= '<div class="tableWrapper"';
-		if($collapsed)
-			$htmlString .= ' style="display:none;"';
-		$htmlString .= '><table>';
+	
+		if(!empty($section['rows'])) {
+			$htmlString .= '<div class="tableWrapper"';
+			if($collapsed)
+				$htmlString .= ' style="display:none;"';
+			$htmlString .= '><table>';
+	
+			foreach($section['rows'] as &$row) {
+				$htmlString .= '<tr class="formSectionRow">';
+				if(isset($row['cols'])) {
+					foreach($row['cols'] as &$col) {
+	
+						$width = isset($col['width'])? ' style="width:'.$col['width'].'px"' : '';
+						$htmlString .= "<td$width>";
+						if(isset($col['items'])) {
+							foreach($col['items'] as &$item) {
+	
+	
+								if(isset($item['name'],$item['labelType'],$item['readOnly'],$item['height'],
+									$item['width'])) {
 
-		foreach($section['rows'] as &$row) {
-			$htmlString .= '<tr class="formSectionRow">';
-			if(isset($row['cols'])) {
-				foreach($row['cols'] as &$col) {
-
-					$width = isset($col['width'])? ' style="width:'.$col['width'].'px"' : '';
-					$htmlString .= "<td$width>";
-					if(isset($col['items'])) {
-						foreach($col['items'] as &$item) {
-
-
-							if(isset($item['name'],$item['labelType'],$item['readOnly'],$item['height'],$item['width'])) {
-								$fieldName = preg_replace('/^formItem_/u','',$item['name']);
-								if(isset($fields[$fieldName])) {
-									$field = $fields[$fieldName];
-
-										if(isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] == 0) {
+									$fieldName = preg_replace('/^formItem_/u','',$item['name']);
+									if(isset($fields[$fieldName])) {
+										$field = $fields[$fieldName];
+	
+										if(in_array ($fieldName, $suppressFields) || 
+										   isset($fieldPermissions[$field->id]) && 
+										   $fieldPermissions[$field->id] == 0) {
 											unset($item);
 											$htmlString .= '</div></div>';
 											continue;
 										} else {
 											$noItems = false;
 										}
-									// $fieldPerms=RoleToPermission::model()->findAllByAttributes(array('fieldId'=>$field->id));
-									// $perms=array();
-									// foreach($fieldPerms as $permission){
-										// $perms[$permission->roleId]=$permission->permission;
-									// }
-									// $tempPerm=2;
-									// foreach(Yii::app()->params->roles as $role){
-										// if(array_search($role,array_keys($perms))!==false){
-											// if($perms[$role]<$tempPerm)
-												// $tempPerm=$perms[$role];
-										// }
-									// }
-									// if($tempPerm==0){
-										// unset($item);
-										// $htmlString .= '</div></div>';
-										// continue;
-									// }
-
-									$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
-									switch($labelType) {
-										case 'inline':	$labelClass = 'inlineLabel'; break;
-										case 'none':	$labelClass = 'noLabel'; break;
-										case 'left':	$labelClass = 'leftLabel'; break;
-										case 'top':
-										default:		$labelClass = 'topLabel';
+	
+										$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
+										switch($labelType) {
+											case 'inline':	$labelClass = 'inlineLabel'; break;
+											case 'none':	$labelClass = 'noLabel'; break;
+											case 'left':	$labelClass = 'leftLabel'; break;
+											case 'top':
+											default:		$labelClass = 'topLabel';
+										}
+	
+										$htmlString .= "<div id=\"{$field->modelName}_{$field->fieldName}_field\"".
+											" class=\"formItem $labelClass\">";
+										$htmlString .= CHtml::label($model->getAttributeLabel($field->fieldName),
+											false);
+	
+										$class = 'formInputBox';
+										$style = 'width:'.$item['width'].'px;';
+										if($field->type == 'text') {
+											$class .= ' textBox';
+											$style .= 'min-height:'.$item['height'].'px;';
+										}
+	
+										// if($field->type == 'text')
+											// $style .= 'min-height:'.$item['height'].'px;';
+										$htmlString .= '<div class="'.$class.'" style="'.$style.'">';
+	
+										if(isset($specialFields[$fieldName]))
+											$fieldHtml = $specialFields[$fieldName];
+										else
+											$fieldHtml = $model->renderAttribute($field->fieldName,true,false);
+										if(empty($fieldHtml))
+											$htmlString .= '&nbsp;';
+										else
+											$htmlString .= $fieldHtml;
 									}
-
-									$htmlString .= "<div id=\"{$field->modelName}_{$field->fieldName}_field\" class=\"formItem $labelClass\">";
-									//$htmlString .= '<div id="'.$modelName.'_'.$fieldName.'_inputBox" class="formItem '.$labelClass.'">';
-									$htmlString .= CHtml::label($model->getAttributeLabel($field->fieldName),false);
-
-
-
-									$class = 'formInputBox';
-									$style = 'width:'.$item['width'].'px;';
-									if($field->type == 'text') {
-										$class .= ' textBox';
-										$style .= 'min-height:'.$item['height'].'px;';
-									}
-
-									// if($field->type == 'text')
-										// $style .= 'min-height:'.$item['height'].'px;';
-									$htmlString .= '<div class="'.$class.'" style="'.$style.'">';
-
-									if(isset($specialFields[$fieldName]))
-										$fieldHtml = $specialFields[$fieldName];
-									else
-										$fieldHtml = $model->renderAttribute($field->fieldName,true,false);
-									if(empty($fieldHtml))
-										$htmlString .= '&nbsp;';
-									else
-										$htmlString .= $fieldHtml;
 								}
+								unset($item);
+								$htmlString .= '</div></div>';
 							}
-							unset($item);
-							$htmlString .= '</div></div>';
 						}
+						$htmlString .= '</td>';
 					}
-					$htmlString .= '</td>';
 				}
+				unset($col);
+				$htmlString .= '</tr>';
 			}
-			unset($col);
-			$htmlString .= '</tr>';
+			$htmlString .= '</table></div>';
 		}
-		$htmlString .= '</table></div>';
+		unset($row);
+		$htmlString .= '</div>';
+		if (!$noItems) echo $htmlString;
+		$i++;
 	}
-	unset($row);
-	$htmlString .= '</div>';
-	if (!$noItems) echo $htmlString;
-	$i++;
+	echo '</div>';
 }
-echo '</div>';
-}
+

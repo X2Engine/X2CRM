@@ -310,4 +310,12 @@ return array (
 'Export Data'=>'صادرات داده',
 'Please click the link below to download this report.'=>'لطفا لینک زیر برای دانلود این گزارش کلیک کنید.',
 'Create Campaign'=>'ایجاد کمپین بین المللی حقوق بشر',
+'Last Week'=>'هفته گذشته',
+'Last Month'=>'آخرین ماه',
+'Doc'=>'توضیحات',
+'Help'=>'کمک',
+'Sent'=>'فرستاده',
+'Opened'=>'افتتاح شد',
+'Unsubscribed'=>'لغو',
+'Action History'=>'تاریخچه اکشن',
 );

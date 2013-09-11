@@ -97,6 +97,10 @@ class AccountsController extends x2base {
     public function actionView($id){
         $model = $this->loadModel($id);
         if($this->checkPermissions($model, 'view')){
+
+            // add account to user's recent item list
+            User::addRecentItem('a', $id, Yii::app()->user->getId()); 
+
             parent::view($model, 'accounts');
         }else{
             $this->redirect('index');
@@ -345,7 +349,7 @@ class AccountsController extends x2base {
             $tempArr = $model->attributes;
             $model->attributes = $_POST['Accounts'];
             $arr = $_POST['Accounts']['assignedTo'];
-            $model->assignedTo = Accounts::parseUsers($arr);
+            $model->assignedTo = Fields::parseUsers($arr);
             if($temp != "")
                 $temp.=", ".$model->assignedTo;
             else
@@ -384,7 +388,7 @@ class AccountsController extends x2base {
                 unset($pieces[$user]);
             }
 
-            $temp = Accounts::parseUsersTwo($pieces);
+            $temp = Fields::parseUsersTwo($pieces);
 
             $model->assignedTo = $temp;
             // $changes=$this->calculateChanges($temp,$model->attributes);

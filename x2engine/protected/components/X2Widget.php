@@ -57,3 +57,4 @@ abstract class X2Widget extends CWidget {
 		return parent::renderFile($viewFile,$data,$return);
 	}
 }
+?>

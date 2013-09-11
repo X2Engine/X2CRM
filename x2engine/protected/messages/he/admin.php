@@ -623,4 +623,10 @@ return array (
 'Send As (to service requesters)'=>'שלח כ (למבקשי שירות)',
 'Send As (to web leads)'=>'שלח כ (למוביל באינטרנט)',
 'Send As (when notifying users)'=>'שלח כ (כשלהודיע ​​למשתמשים)',
+'When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.'=>'כאשר פועלים פעולות בקבוצות, זה (מספר שניות) מגביל את כמות הזמן שניתן בילה עושה זאת. מומלץ להגדיר את זה נמוך יותר מאשר זמן הביצוע המרבי PHP בשרת האינטרנט שלך.',
+'Event/Action History Privacy'=>'פרטיות היסטורית אירוע / פעולה',
+'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'=>'ברירת המחדל יאפשר למשתמשים לראות פעולות / אירועים שציבור או שהוקצה להם. משתמש רק יאפשר למשתמשים לראות רק את פעולות / אירועים שהוקצו להם. הקבוצה יחידה תאפשר למשתמשים לראות פעולות / אירועים שהוקצו לחברים בקבוצות שלהם.',
+'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.'=>'בחר את הגדרת פרטיות עבור יישומון היסטורית הפעולה ועדכון פעילות. שים לב שכל משתמש עם גישה לרמה ניהולי למודול שההיסטוריה היא ביתעלם הגדרה זו. רק השתמש בעלי גישה ניהולי מלאה יתעלמו מהגדרה זו בעדכון הפעילות.',
+'Web Lead Response Email Settings'=>'הגדרות דואר אלקטרוני תגובת עופרת אינטרנט',
+'Configure how X2CRM sends email when responding to new web leads.'=>'איך להגדיר X2CRM שולח בדואר אלקטרוני כאשר מגיבים למוביל אינטרנט חדש.',
 );

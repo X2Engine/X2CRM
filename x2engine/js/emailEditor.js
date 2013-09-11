@@ -62,7 +62,7 @@ function createCKEditor(editorId,editorConfig,callback) {
 		return null;
 	}
 
-    return $('#'+editorId).ckeditor(
+    var editor = $('#'+editorId).ckeditor(
         function() {
             $('#cke_'+editorId).droppable({
                 accept: '.media',
@@ -108,7 +108,7 @@ function createCKEditor(editorId,editorConfig,callback) {
                         link.setAttribute('href',mediaUrl);
                         link.setHtml(text);
                         var editorId='email-message';
-                        var editor=$('#'+editorId).ckeditorGet();
+                        //var editor=$('#'+editorId).ckeditorGet();
                         var range = editor.createRange();
                         range.moveToPosition( range.root, CKEDITOR.POSITION_BEFORE_END );
                         editor.getSelection().selectRanges( [ range ] );
@@ -122,7 +122,7 @@ function createCKEditor(editorId,editorConfig,callback) {
                         var img = new CKEDITOR.dom.element('img');
                         img.setAttribute('src',mediaUrl);
 
-                        $('#'+editorId).ckeditorGet().insertElement(img);
+                        editor.insertElement(img);
                     }
                 }
             });
@@ -140,6 +140,7 @@ function createCKEditor(editorId,editorConfig,callback) {
             filebrowserWindowHeight: 500
         },editorConfig)
         ).ckeditorGet();
+    return editor;
 }
 
 

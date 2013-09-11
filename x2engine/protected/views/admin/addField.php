@@ -73,23 +73,7 @@
     <div class="row">
         <?php echo $form->labelEx($model, 'type'); ?>
         <?php
-        echo $form->dropDownList($model, 'type', array(
-            'varchar' => Yii::t('admin', 'Single Line Text'),
-            'text' => Yii::t('admin', 'Multiple Line Text Area'),
-            'date' => Yii::t('admin', 'Date'),
-            'dateTime' => Yii::t('admin', 'Date/Time'),
-            'dropdown' => Yii::t('admin', 'Dropdown'),
-            'int' => Yii::t('admin', 'Number'),
-            'email' => Yii::t('admin', 'E-Mail'),
-            'currency' => Yii::t('admin', 'Currency'),
-            'url' => Yii::t('admin', 'URL'),
-            'float' => Yii::t('admin', 'Decimal'),
-            'boolean' => Yii::t('admin', 'Checkbox'),
-            'link' => Yii::t('admin', 'Lookup'),
-            'rating' => Yii::t('admin', 'Rating'),
-            'assignment' => Yii::t('admin', 'Assignment'),
-            'visibility' => Yii::t('admin', 'Visibility'),
-                ), array(
+        echo $form->dropDownList($model, 'type', Fields::getFieldTypes('title'), array(
             'ajax' => array(
                 'type' => 'POST', //request type
                 'url' => CController::createUrl('admin/getFieldType'), //url to call.
@@ -110,6 +94,12 @@
         <?php echo $form->labelEx($model, 'required'); ?>
         <?php echo $form->checkBox($model, 'required'); ?>
         <?php echo $form->error($model, 'required'); ?>
+    </div>
+
+    <div class="row">
+        <?php echo $form->labelEx($model, 'uniqueConstraint'); ?>
+        <?php echo $form->checkBox($model, 'uniqueConstraint'); ?>
+        <?php echo $form->error($model, 'uniqueConstraint'); ?>
     </div>
 
     <div class="row">

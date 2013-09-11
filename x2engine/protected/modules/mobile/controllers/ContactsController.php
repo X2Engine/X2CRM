@@ -87,15 +87,16 @@ class ContactsController extends MobileController{
 		$model=new Contacts;
 		$attributeLabels = $model->attributeLabels();
 		
-		if(isset($_POST['ajax']) && $_POST['ajax']=='quick-contact-form') {
+		/*if(isset($_POST['ajax']) && $_POST['ajax']=='quick-contact-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
-		}
+		}*/
 
 		// collect user input data
 		if(isset($_POST['Contacts'])) {
 			// $this->redirect('http://www.google.com/');
-			$model->attributes = $_POST['Contacts'];
+			//$model->attributes = $_POST['Contacts'];
+			$model->setX2Fields($_POST['Contacts']);
 			//
 				// $model->firstName = 'bob';
 				// $model->lastName = 'dole';
@@ -104,24 +105,26 @@ class ContactsController extends MobileController{
 			$model->visibility = 1;
 			
 			// reset to blank if it's the default value
-			if($model->firstName == $attributeLabels['firstName'])
+			/*if($model->firstName == $attributeLabels['firstName'])
 				$model->firstName = '';
 			if($model->lastName == $attributeLabels['lastName'])
 				$model->lastName = '';
 			if($model->phone == $attributeLabels['phone'])
 				$model->phone = '';
 			if($model->email == $attributeLabels['email'])
-				$model->email = '';
-			
-			// validate user input and save contact
+				$model->email = '';*/
 			
 			$model->createDate=time();
+
+			// validate user input and save contact
 			if($model->save()) {
 				echo "1";
 				$this->redirect($this->createUrl('contacts/view/?id='.$model->id));
 			} //else print_r($model->getErrors());
 		}
-		$this->render('quickContact');
+		$this->render('quickContact', array (
+            'model' => $model
+        ));
 	}
 	
 	public function actionSearch(){

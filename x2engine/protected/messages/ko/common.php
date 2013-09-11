@@ -310,4 +310,12 @@ return array (
 'Export Data'=>'데이터 내보내기',
 'Please click the link below to download this report.'=>'이 보고서를 다운로드하려면 아래 링크를 클릭하십시오.',
 'Create Campaign'=>'캠페인 만들기',
+'Last Week'=>'지난 주',
+'Last Month'=>'지난 달',
+'Doc'=>'의사',
+'Help'=>'도움',
+'Sent'=>'전송',
+'Opened'=>'오픈',
+'Unsubscribed'=>'탈퇴',
+'Action History'=>'액션 역사',
 );

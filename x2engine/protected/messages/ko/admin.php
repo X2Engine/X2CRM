@@ -613,4 +613,10 @@ return array (
 'Send As (to service requesters)'=>'(서비스 요청자까지)으로 보내기',
 'Send As (to web leads)'=>'(웹 도선)로 보내기',
 'Send As (when notifying users)'=>'(사용자를 알리는 경우)으로 보내기',
+'When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.'=>'일괄 작업을 실행할 때,이 (초 단위) 이렇게 소비 할 수있는 시간의 양을 제한합니다. 그것은 당신의 웹 서버의 최대 PHP의 실행 시간보다이 낮게 설정하는 것이 좋습니다.',
+'Event/Action History Privacy'=>'이벤트 / 액션 역사 개인 정보 보호 정책',
+'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'=>'기본적으로 사용자가 작업 / 공용 또는 할당 된 이벤트를 볼 수 있습니다. 사용자는 사용자가 작업 만 / 자신에게 할당 된 이벤트를 볼 수 있습니다. 그룹은 사용자가 조치 / 해당 그룹의 구성원에게 할당 된 이벤트를 볼 수 있습니다.',
+'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.'=>'액션 역사 위젯 및 활동 피드에 대한 개인 정보 보호 설정을 선택합니다. 역사에있는 모듈에 대한 관리자 수준의 액세스 권한을 가진 모든 사용자가이 설정을 무시합니다 유의하십시오. 전체 관리 권한이있는 사용자 만 활동 피드에서이 설정을 무시합니다.',
+'Web Lead Response Email Settings'=>'웹 리드 응답 메일 설정',
+'Configure how X2CRM sends email when responding to new web leads.'=>'새로운 웹 리드에 응답 할 때 X2CRM 이메일을 보내는 방법을 구성합니다.',
 );

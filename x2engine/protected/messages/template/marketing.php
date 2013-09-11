@@ -30,10 +30,7 @@ return array (
 'Campaign launched'=>'',
 'Campaign paused'=>'',
 'Campaign resumed'=>'',
-'Sent'=>'',
-'Opened'=>'',
 'Clicked'=>'',
-'Unsubscribed'=>'',
 
 // Mailing
 'The email sending limit has been reached.'=>'',

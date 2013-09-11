@@ -623,4 +623,10 @@ return array (
 'Send As (to service requesters)'=>'ارسال عنوان (به متقاضیان خدمات)',
 'Send As (to web leads)'=>'ارسال عنوان (به منجر وب)',
 'Send As (when notifying users)'=>'ارسال عنوان (هنگام اطلاع کاربران)',
+'When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.'=>'هنگامی که در حال اجرا عملیات در دسته (تعداد ثانیه) محدودیتهای مقدار از زمان است که می تواند صرف انجام این کار است. توصیه می شود به مجموعه ای از این پایین تر از حداکثر زمان اجرای پی اچ پی بر روی وب سرور خود را.',
+'Event/Action History Privacy'=>'رویداد / اقدام تاریخچه حریم شخصی',
+'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'=>'به طور پیش فرض کاربران اجازه می دهد برای دیدن اقدامات / رویدادی که عمومی هستند و یا به آنها اختصاص داده شده است. کاربر تنها اجازه می دهد تا کاربران را به تنها اعمال / حوادث اختصاص یافته به آنها را ببینید. گروه فقط کاربران اجازه می دهد برای دیدن اقدامات / رویدادی اختصاص داده شده به اعضای گروه خود.',
+'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.'=>'تنظیمات حریم خصوصی برای ویجت تاریخچه اکشن و خوراک فعالیت را انتخاب کنید. لطفا توجه داشته باشید که هر کاربر با سطح دسترسی مدیر به ماژول که تاریخچه این تنظیمات را نادیده بگیرید. فقط کاربران با دسترسی کامل مدیر این تنظیمات در خوراک فعالیت را نادیده گرفت.',
+'Web Lead Response Email Settings'=>'وب سایت پاسخ سرب تنظیمات ایمیل',
+'Configure how X2CRM sends email when responding to new web leads.'=>'پیکربندی چگونه X2CRM می فرستد ایمیل زمانی که پاسخ به سرنخ های جدید وب سایت است.',
 );

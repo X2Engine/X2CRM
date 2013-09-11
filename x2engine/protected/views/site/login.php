@@ -35,6 +35,8 @@
  *****************************************************************************************/
 
 $this->pageTitle=Yii::app()->name . ' - Login';
+if(isset($_COOKIE['LoginForm']))
+    $model->setAttributes($_COOKIE['LoginForm']);
 
 Yii::app()->clientScript->registerScript('loginFocus',
 	'window.onload = function() { document.getElementById("LoginForm_username").focus(); }',

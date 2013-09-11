@@ -34,36 +34,47 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->menu=array(
-	array('label'=>Yii::t('accounts','Accounts List'), 'url'=>array('index')),
-	array('label'=>Yii::t('accounts','Create'), 'url'=>array('create')),
-	array('label'=>Yii::t('accounts','View'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Update'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Add a User'), 'url'=>($action=='Add')?null:array('addUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Remove a User'), 'url'=>($action=='Remove')?null:array('removeUser', 'id'=>$model->id)),
-);
 ?>
 
-<h2><?php echo Yii::t('accounts','Update Account:'); ?> <b><?php echo $model->name; ?></b></h2>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel='stylesheet' type='text/css' 
+		 href='<?php echo Yii::app()->getTheme()->getBaseUrl().'/css/x2forms.css'; ?>'/>
+		<link rel='stylesheet' type='text/css' 
+		 href='<?php echo Yii::app()->getTheme()->getBaseUrl().'/css/printableRecord.css'; ?>'/>
+		<!--<link rel='stylesheet' type='text/css' 
+		 href='<?php //echo Yii::app()->getClientScript()->getCoreScriptUrl().'/rating/jquery.rating.css'; ?>'/>-->
+		<link rel='stylesheet' type='text/css' 
+		 href='<?php echo Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css'; ?>'/>
+		<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
+		 '/jquery.js'; ?>'></script>
+		<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
+		 '/jquery.metadata.js'; ?>'></script>
+		<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
+		 '/jquery.rating.js'; ?>'></script>
+	</head>
+	<body>
 
-<div class="form">
+	<h1 id='page-title'><?php echo addslashes ($pageTitle); ?></h1>
 
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'acocunts-form',
-	'enableAjaxValidation'=>false,
-)); 
-echo ($action=='Remove')?Yii::t('accounts','Please click any new users you wish to remove.'):Yii::t('accounts','Please click any new users you wish to add.');
-?>
-<br /><br />
-<div class="row">
-	<?php echo $form->dropDownList($model,'assignedTo',$users,array("multiple"=>"multiple", 'size'=>8)); ?>
-	<?php echo $form->error($model,'assignedTo'); ?>
-</div>
+	<?php 
+	$this->renderPartial('application.components.views._detailView', 
+		array('model' => $model, 'modelName' => $modelClass)); 
+	?>
 
-<div class="row buttons">
-	<?php echo CHtml::submitButton(Yii::t('app',$action),array('class'=>'x2-button')); ?>
-</div>
+	<script>
+		// replace stars with textual representation
+		$('span[id^="<?php echo $modelClass; ?>-<?php echo $id; ?>-rating"]').each (function () {
+			var stars = $(this).find ('[checked="checked"]').val ();
+			//console.log ('stars = ' + stars);
+			$(this).children ().remove ();
+			$(this).html (stars + '/5 <?php echo addslashes (Yii::t('app', 'Stars')); ?>');
+		});
+	</script>
 
-<?php $this->endWidget(); ?>
+	</body>
+</html>
 
-</div>
+
+

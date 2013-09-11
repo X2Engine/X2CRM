@@ -99,24 +99,7 @@
         <div class="row">
             <?php echo $form->labelEx($model, 'type'); ?>
             <?php
-            echo $form->dropDownList($model, 'type', array(
-                'varchar' => Yii::t('admin', 'Single Line Text'),
-                'text' => Yii::t('admin', 'Multiple Line Text Area'),
-                'date' => Yii::t('admin', 'Date'),
-                'dateTime' => Yii::t('admin', 'Date/Time'),
-                'dropdown' => Yii::t('admin', 'Dropdown'),
-                'int' => Yii::t('admin', 'Number'),
-                'email' => Yii::t('admin', 'E-Mail'),
-                'currency' => Yii::t('admin', 'Currency'),
-                'url' => Yii::t('admin', 'URL'),
-                'float' => Yii::t('admin', 'Decimal'),
-                'boolean' => Yii::t('admin', 'Checkbox'),
-                'link' => Yii::t('admin', 'Lookup'),
-                'rating' => Yii::t('admin', 'Rating'),
-                'assignment' => Yii::t('admin', 'Assignment'),
-                'percentage' => Yii::t('admin', 'Percentage'),
-                'visibility' => Yii::t('admin', 'Visibility'),
-                    ), array(
+            echo $form->dropDownList($model, 'type', Fields::getFieldTypes('title'), array(
                 'id' => 'fieldType',
                 'ajax' => array(
                     'type' => 'POST', //request type
@@ -138,6 +121,12 @@
             <?php echo $form->checkBox($model, 'required', array('id' => 'required')); ?>
             <?php echo $form->labelEx($model, 'required', array('style' => 'display:inline;')); ?>
             <?php echo $form->error($model, 'required'); ?>
+        </div>
+
+        <div class="row">
+            <?php echo $form->checkBox($model, 'uniqueConstraint', array('id' => 'uniqueConstraint')); ?>
+            <?php echo $form->labelEx($model, 'uniqueConstraint', array('style' => 'display:inline;')); ?>
+            <?php echo $form->error($model, 'uniqueConstraint'); ?>
         </div>
 
         <div class="row">
@@ -168,6 +157,11 @@
             $('#required').attr("checked",true);
         }else{
             $('#required').attr("checked",false);
+        }
+        if(data.uniqueConstraint==1){
+            $('#uniqueConstraint').attr("checked",true);
+        }else{
+            $('#uniqueConstraint').attr("checked",false);
         }
         if(data.searchable==1){
             $('#relevance_box_custom').show();

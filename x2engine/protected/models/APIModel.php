@@ -174,7 +174,7 @@ class APIModel {
 		$ch = $this->_curlHandle("api/tags?".http_build_query(array(
 					'model' => $modelName,
 					'id' => $modelId
-				)));
+				),'','&'));
 		return json_decode(curl_exec($ch),1);
 	}
 
@@ -261,7 +261,7 @@ class APIModel {
 	public function modelCreateUpdate($modelName,$action,$attributes=array()) {
         $ccUrl = "api/$action/model/$modelName";
 		if($action=='update')
-			$ccUrl .= '?'.http_build_query(array('id'=>$this->id));
+			$ccUrl .= '?'.http_build_query(array('id'=>$this->id),'','&');
         $this->responseObject = $this->_send($ccUrl, array_merge($this->attributes, $attributes));
 		return $this->processResponse();
 	}
@@ -365,7 +365,7 @@ class APIModel {
 			//
 			// if "?" is there already, concatenate with "&". Otherwise, "?"
 			$appendParams = strpos($url,'?') !== false; // use "&" to concatenates
-			$url .= ($appendParams ? '&' : '?').http_build_query($authOpts);
+			$url .= ($appendParams ? '&' : '?').http_build_query($authOpts,'','&');
 		}
 		// Curl handle
 		$ch = curl_init($this->_baseUrl.'/'.$url);

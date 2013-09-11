@@ -40,8 +40,6 @@ $menuItems = array(
 	array('label'=>Yii::t('accounts','View')),
 	array('label'=>Yii::t('accounts','Edit Account'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Share Account'),'url'=>array('shareAccount','id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Add a User'), 'url'=>array('addUser', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Remove a User'), 'url'=>array('removeUser', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
 //	array('label'=>Yii::t('quotes','Quotes/Invoices'),'url'=>'javascript:void(0)','linkOptions'=>array('onclick'=>'toggleQuotes(); return false;')),
@@ -58,6 +56,19 @@ $contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
 
 if($opportunityModule->visible && $contactModule->visible)
 	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'accounts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+
+$menuItems[] = array(
+	'label' => Yii::t('app', 'Print Record'), 
+	'url' => '#',
+	'linkOptions' => array (
+		'onClick'=>"window.open('".
+			Yii::app()->createUrl('/site/printRecord', array (
+				'modelClass' => 'Accounts', 
+				'id' => $model->id, 
+				'pageTitle' => Yii::t('app', 'Account').': '.$model->name
+			))."');"
+	)
+);
 
 $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();

@@ -299,14 +299,20 @@ class GoogleAuthenticator {
      * Sometimes, terrible things happen. When an auth error occurs or a problem
      * with the credentials arises, flush every place they're stored immediately
      * to stop any errors badly provided credentials may be causing.
+     *
+     * @param boolean full Whether or not to flush all credentials or just temporary
+     * ones. This is useful because the token in the session will not contain a refresh
+     * token in most cases, but the refresh token may still be valid. In that case,
+     * just clearing the session tokens will allow for another attempt using the
+     * refresh token.
      */
-    public function flushCredentials(){
+    public function flushCredentials($full = true){
         if($this->_enabled){
             unset($_SESSION['access_token']);
             unset($_SESSION['token']);
             unset($_GET['code']);
             $profile = Yii::app()->params->profile;
-            if(isset($profile)){
+            if($full && isset($profile)){
                 $profile->googleRefreshToken = null;
                 $profile->update(array('googleRefreshToken'));
             }

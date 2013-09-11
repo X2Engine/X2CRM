@@ -103,24 +103,6 @@ class Accounts extends X2Model {
 		// return $names;
 	}
 
-	public static function parseUsers($arr){
-		$str="";
-        if(is_array($arr)){
-            $str=implode(', ',$arr);
-        }
-		return $str;
-	}
-
-	public static function parseUsersTwo($arr){
-		$str="";
-		if(is_array($arr)){
-            $arr=array_keys($arr);
-            $str=implode(', ',$arr);
-        }
-
-		return $str;
-	}
-
 	public static function parseContacts($arr){
 		$str="";
 		foreach($arr as $contact){

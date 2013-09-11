@@ -42,9 +42,12 @@ Child prototype of X2Chart
 function X2ActionHistoryChart (argsDict) {
 	X2Chart.call (this, argsDict);	
 
-	this.DEBUG = argsDict['DEBUG'];
-
 	var thisX2Chart = this;
+
+	this.DEBUG = argsDict['DEBUG'];
+	this.dataStartDate = argsDict['dataStartDate'];
+
+	thisX2Chart.DEBUG && console.log ('dataStartDate = ' + this.dataStartDate);
 
 	var colors;
 	// color palette used for lines of action history chart
@@ -84,7 +87,7 @@ function X2ActionHistoryChart (argsDict) {
 	});
 
 	this.cookieTypes = [
-		'startDate', 'endDate', 'binSize', 'firstMetric', 'showRelationships'];
+		'binSize', 'firstMetric', 'showRelationships'];
 
 	/* 
 	set up event handlers which update action history chart on action 
@@ -134,10 +137,13 @@ X2ActionHistoryChart.prototype.setDefaultSettings = function () {
 	var thisX2Chart = this;
 
 	// start date picker default
-	if (thisX2Chart.actionsStartDate) { 
+	if (thisX2Chart.dataStartDate) { 
 		// default start date is beginning of action history
 		$('#' + thisX2Chart.chartType + '-chart-datepicker-from').datepicker(
-			'setDate', new Date (thisX2Chart.actionsStartDate));
+			'setDate', new Date (thisX2Chart.dataStartDate));
+	} else {
+		$('#' + thisX2Chart.chartType + '-chart-datepicker-from').datepicker(
+			'setDate', new Date ());
 	}
 
 	// end date picker default
@@ -161,6 +167,39 @@ X2ActionHistoryChart.prototype.chartDataFilter = function (dataPoint, type) {
 	} else {
 		return false;
 	}
+};
+
+X2ActionHistoryChart.prototype.getMetricTypes = function () {
+	var thisX2Chart = this;
+
+	var metricTypes = [];
+	$('#' + thisX2Chart.chartType + '-first-metric').children ().each (function () {
+		if (thisX2Chart.chartSubtype === 'pie' &&
+			$(this).val () === 'any') return;
+		metricTypes.push([$(this).val (), $(this).html ()]);
+	});
+
+	return metricTypes;
+};
+
+X2ActionHistoryChart.prototype.postPieChartTearDown = function () {
+	var thisX2Chart = this;
+	$('#' + thisX2Chart.chartType + '-chart').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-chart-legend').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-bin-size-button-set').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-datepicker-row').removeClass ('action-history-pie');
+	$('#' + thisX2Chart.chartType + '-top-button-row').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-rel-chart-data-checkbox-container').removeClass ('pie');
+};
+
+X2ActionHistoryChart.prototype.postPieChartSetUp = function () {
+	var thisX2Chart = this;
+	$('#' + thisX2Chart.chartType + '-chart').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-chart-legend').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-bin-size-button-set').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-datepicker-row').addClass ('action-history-pie');
+	$('#' + thisX2Chart.chartType + '-top-button-row').addClass ('pie');
+	$('#' + thisX2Chart.chartType + '-rel-chart-data-checkbox-container').addClass ('pie');
 };
 
 

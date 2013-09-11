@@ -613,4 +613,10 @@ return array (
 'Send As (to service requesters)'=>'Wyślij jako (do requestery usług)',
 'Send As (to web leads)'=>'Wyślij jako (do przewodów sieci)',
 'Send As (when notifying users)'=>'Wyślij jako (jeśli powiadamianie użytkowników)',
+'When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.'=>'Po uruchomieniu działania w partii, to (liczba sekund) ogranicza ilość czasu, które można wydać tego. Zaleca się, aby ustawić ten niższy niż maksymalny czas wykonania PHP na serwerze internetowym.',
+'Event/Action History Privacy'=>'Wydarzenie / Action prywatności History',
+'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'=>'Domyślnie użytkownicy będą mogli zobaczyć działania / wydarzenia, które są publiczne lub powierzone im. User Only pozwoli użytkownikom zobaczyć tylko działania / wydarzenia przypisane do nich. Grupa Only pozwoli użytkownikom zobaczyć działania / wydarzenia przypisane do członków ich grupy.',
+'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.'=>'Wybierz ustawienia prywatności dla widgetu Historia działań i pasz z działalności. Należy pamiętać, że każdy użytkownik z poziomu dostępu administratora do modułu Historia jest on ignoruje to ustawienie. Tylko użytkownicy z pełnym admina dostępu ignoruje to ustawienie na kanale aktywności.',
+'Web Lead Response Email Settings'=>'Ustawienia reakcji sieci Lead Wyślij',
+'Configure how X2CRM sends email when responding to new web leads.'=>'Konfigurowanie sposobu X2CRM wysyła email, gdy w odpowiedzi na nowe przewody internetowych.',
 );

@@ -34,7 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/X2Chart.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(
@@ -43,6 +42,7 @@ Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/X2EventsChart.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/X2UsersChart.js', CClientScript::POS_END);
+
 Yii::app()->clientScript->registerCssFile(
 	Yii::app()->getTheme()->getBaseUrl().'/css/x2chart.css');
 
@@ -50,6 +50,10 @@ Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->request->baseUrl . '/js/jqplot/jquery.jqplot.js');
 Yii::app()->clientScript->registerCssFile(
 	Yii::app()->request->baseUrl . '/js/jqplot/jquery.jqplot.css');
+
+Yii::app()->clientScript->registerScriptFile(
+	Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.pieRenderer.js');
+
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.categoryAxisRenderer.js');
 Yii::app()->clientScript->registerScriptFile(
@@ -74,11 +78,19 @@ $passVarsToClientScript = "
 	x2.".$chartType.".params.chartType = '".$chartType."';
 	x2.".$chartType.".params.suppressChartSettings = ".
 		($suppressChartSettings ? 'true' : 'false').";
+	x2.".$chartType.".params.suppressDateRangeSelector = ".
+		($suppressDateRangeSelector ? 'true' : 'false').";
 	x2.".$chartType.".params.getChartDataActionName = '".$getChartDataActionName."';
 	x2.".$chartType.".params.translations = {};
 	x2.".$chartType.".params.DEBUG = ".
-		((YII_DEBUG && $chartType === '') ? 'true' : 'false').";
+		((YII_DEBUG && $chartType === 'usersChart') ? 'true' : 'false').";
 ";
+
+if (isset ($subtype)) {
+	$passVarsToClientScript .= "
+		x2.".$chartType.".params.chartSubtype = '".$subtype."';
+	";
+}
 
 if ($chartType === 'eventsChart') {
 	$passVarsToClientScript .= "
@@ -99,9 +111,9 @@ if ($chartType === 'eventsChart') {
 	";
 }
 
-if (isset ($actionsStartDate)) {
+if (isset ($dataStartDate)) {
 	$passVarsToClientScript .= "
-		x2.".$chartType.".params.actionsStartDate = ".$actionsStartDate." * 1000;";
+		x2.".$chartType.".params.dataStartDate = ".$dataStartDate." * 1000;";
 }
 
 if (isset ($chartData)) {
@@ -133,7 +145,7 @@ if ($chartType === 'eventsChart') {
 	$translations['visibility setting(s) selected'] = Yii::t('app', 'visibility setting(s) selected');
 } else if ($chartType === 'actionHistoryChart') {
 	$translations['metric1Label'] = Yii::t('app', 'metric(s) selected');
-}
+} 
 
 $englishMonthNames =
 	array ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
@@ -161,7 +173,7 @@ if (!$suppressChartSettings) {
 	foreach ($chartSettingsDataProvider->data as $chartSetting) {
 		$passVarsToClientScript .= 
 			"x2.".$chartType.".params.".
-			"chartSettings['" . $chartSetting->name . "'] = " .
+			"chartSettings['" . addslashes ($chartSetting->name) . "'] = " .
 			CJSON::encode ($chartSetting) . ";\n";
 	}
 }
@@ -181,7 +193,7 @@ Yii::app()->clientScript->registerScript(
 ?>
 
 <div id="<?php echo $chartType; ?>-chart-container" class="chart-container form" 
- <?php echo ($chartType === 'eventsChart' || $chartType === 'usersChart') ? "style='display: none;'" : ""; ?>>
+ <?php echo ($hideByDefault ? 'style="display: none;"' : ''); ?>>
 
 	<?php
 	if ($chartType === 'eventsChart') {
@@ -269,25 +281,30 @@ Yii::app()->clientScript->registerScript(
 	}
 	?>
 
-	<div class="row top-button-row">
+	<div id="<?php echo $chartType; ?>-top-button-row" class="row top-button-row">
 
-		<select id="<?php echo $chartType; ?>-first-metric" class="first-metric left"
-		 multiple="multiple">
-
-		<?php
-		foreach ($metricTypes as $key=>$type) {
-		?>
-			<option value='<?php echo $key; ?>'>
-			<?php echo $type; ?>
-			</option>
-		<?php
-		}
-		?>
-		</select>
+		<div id="<?php echo $chartType; ?>-first-metric-container" 
+		 class="first-metric-container">
+			<select id="<?php echo $chartType; ?>-first-metric" class="first-metric left"
+			 multiple="multiple">
+	
+			<?php
+			foreach ($metricTypes as $key=>$type) {
+			?>
+				<option value='<?php echo $key; ?>'>
+				<?php echo $type; ?>
+				</option>
+			<?php
+			}
+			?>
+			</select>
+		</div>
 
 		<?php
 		if ($chartType === 'eventsChart' || $chartType === 'usersChart') {
 		?>
+		<div id="<?php echo $chartType; ?>-filter-toggle-container"
+		 class="filter-toggle-container">
 			<button id="<?php echo $chartType; ?>-show-chart-filters-button" 
 			 class="show-chart-filters-button x2-button x2-small-button left">
 				<?php echo Yii::t('app', 'Show Filters'); ?>
@@ -297,6 +314,7 @@ Yii::app()->clientScript->registerScript(
 			 style='display: none;'>
 				<?php echo Yii::t('app', 'Hide Filters'); ?>
 			</button>
+		</div>
 		<?php 
 		}
 		?>
@@ -318,13 +336,30 @@ Yii::app()->clientScript->registerScript(
 		</div>
 	</div>
 
-	<div class="row datepicker-row">
+	<div id="<?php echo $chartType; ?>-datepicker-row" class="row datepicker-row">
 		<div class="left">
-		<input id="<?php echo $chartType; ?>-chart-datepicker-from" class="chart-datepicker-from">
-		</input>
-		-
-		<input id="<?php echo $chartType; ?>-chart-datepicker-to" class="chart-datepicker-to">
-		</input>
+			<input id="<?php echo $chartType; ?>-chart-datepicker-from" class="chart-datepicker-from">
+			</input>
+			-
+			<input id="<?php echo $chartType; ?>-chart-datepicker-to" class="chart-datepicker-to">
+			</input>
+			<?php
+			if (!$suppressDateRangeSelector) {
+			?>
+			<select id="<?php echo $chartType; ?>-date-range-selector"
+			 class="date-range-selector">
+			 	<option value="Custom"><?php echo Yii::t('app', 'Custom'); ?></option>
+			 	<option value="Today"><?php echo Yii::t('app', 'Today'); ?></option>
+			 	<option value="Yesterday"><?php echo Yii::t('app', 'Yesterday'); ?></option>
+			 	<option value="This Week"><?php echo Yii::t('app', 'This Week'); ?></option>
+			 	<option value="Last Week"><?php echo Yii::t('app', 'Last Week'); ?></option>
+			 	<option value="This Month"><?php echo Yii::t('app', 'This Month'); ?></option>
+			 	<option value="Last Month"><?php echo Yii::t('app', 'Last Month'); ?></option>
+			 	<!--<option value="Data Domain"><?php //echo Yii::t('app', 'Data Domain'); ?></option>-->
+			</select>
+			<?php
+			}
+			?>
 		</div>
 
 		<?php
@@ -347,7 +382,7 @@ Yii::app()->clientScript->registerScript(
 			</option>
 			<?php foreach ($chartSettingsDataProvider->data as $chartSetting) { ?>
 			<option value="<?php echo $chartSetting->name; ?>">
-				<?php echo $chartSetting->name; ?>
+				<?php echo CHTML::encode ($chartSetting->name); ?>
 			</option>
 			<?php } ?>
 		</select>
@@ -374,6 +409,12 @@ Yii::app()->clientScript->registerScript(
 
 
 	<div id="<?php echo $chartType; ?>-chart" class="chart jqplot-target">
+	</div>
+
+	<div id="<?php echo $chartType; ?>-pie-chart-count-container" 
+	 class="pie-chart-count-container" style="display: none;">
+	 	<?php echo Yii::t('app', 'Total Event Count: '); ?>
+		<span class="pie-chart-count"></span>
 	</div>
 
 	<table id="<?php echo $chartType; ?>-chart-legend" class="chart-legend">
@@ -415,7 +456,7 @@ if (!$suppressChartSettings) {
 		<?php } else if ($chartType === 'usersChart') { ?>
 		x2.<?php echo $chartType; ?>.chart = new X2UsersChart (
 			x2.<?php echo $chartType; ?>.params);
-		<?php } ?>
+		<?php }  ?>
 		$(document).trigger ('<?php echo $chartType; ?>Ready');
 	});
 </script>

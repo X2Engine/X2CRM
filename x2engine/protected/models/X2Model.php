@@ -351,51 +351,45 @@ abstract class X2Model extends CActiveRecord {
         $fieldTypes = array(
             'required',
             'email',
+            'unique',
             'int',
-            'date',
-            'float',
+            'numerical',
+            //'date',
+            //'float',
             'boolean',
             'safe',
             'search',
-            'currency',
-            'percentage'
+            'link'
         );
         $fieldRules = array_fill_keys($fieldTypes, array());
+        $validators = Fields::getFieldTypes('validator');
 
         foreach(self::$_fields[$this->tableName()] as &$_field){
 
             $fieldRules['search'][] = $_field->fieldName;
-
-            switch($_field->type){
-                case 'varchar':
-                case 'text':
-                case 'url':
-                case 'dropdown':
-                    $fieldRules['safe'][] = $_field->fieldName; // these field types have no rules, but still need to be allowed
-                    break;
-                case 'date':
-                    $fieldRules['int'][] = $_field->fieldName;  // date is actually an int
-                    break;
-                case 'currency':
-                    $fieldRules['currency'][] = $_field->fieldName;
-                    break;
-                case 'percentage':
-                    $fieldRules['percentage'][] = $_field->fieldName;
-                default:
-                    $fieldRules[$_field->type][] = $_field->fieldName;  // otherwise use the type as the validator name
+            if(isset($validators[$_field->type]) && $_field->safe){
+                $fieldRules[$validators[$_field->type]][] = $_field->fieldName;
             }
 
-            if($_field->required)
+            if($_field->required){
                 $fieldRules['required'][] = $_field->fieldName;
+            }
+            if($_field->uniqueConstraint){
+                $fieldRules['unique'][] = $_field->fieldName;
+            }
+
+            if($_field->type == 'link' && $_field->required)
+                $fieldRules['link'][] = $_field->fieldName;
         }
 
         return array(
             array(implode(',', $fieldRules['required']), 'required'),
+            array(implode(',', $fieldRules['unique']), 'unique'),
+            array(implode(',', $fieldRules['numerical']), 'numerical'),
             array(implode(',', $fieldRules['email']), 'email'),
-            array(implode(',', $fieldRules['int'] + $fieldRules['date']), 'numerical', 'integerOnly' => true),
-            array(implode(',', $fieldRules['currency'] + $fieldRules['percentage']), 'numerical'),
-            array(implode(',', $fieldRules['float']), 'numerical'),
+            array(implode(',', $fieldRules['int']), 'numerical', 'integerOnly' => true),
             array(implode(',', $fieldRules['boolean']), 'boolean'),
+            array(implode(',', $fieldRules['link']),'validLink'),
             array(implode(',', $fieldRules['safe']), 'safe'),
             array(implode(',', $fieldRules['search']), 'safe', 'on' => 'search')
         );
@@ -408,12 +402,26 @@ abstract class X2Model extends CActiveRecord {
      * @return mixed the attribute value. Null if the attribute is not set or does not exist.
      * @see hasAttribute
      */
-    public function getAttribute($name){
+    public function getAttribute($name, $renderFlag = false){
         $nameParts = explode('.', $name); // check for a linked attribute (eg. "account.assignedTo")
-        if(count($nameParts) === 2)
-            return $this->getLinkedAttribute($nameParts[0], $nameParts[0]);
-        else
-            return parent::getAttribute($name);
+        if(count($nameParts) === 2){
+            if($renderFlag){
+                return $this->renderLinkedAttribute($nameParts[0], $nameParts[1]);
+            }else{
+                return $this->getLinkedAttribute($nameParts[0], $nameParts[1]);
+            }
+        }elseif(count($nameParts) > 2){ // We have a complicated link like "account.primaryContact.email"
+            $linkField = array_shift($nameParts); // Remove the current model
+            $linkModel = $this->getLinkedModel($linkField);
+            $name = implode('.',$nameParts); // Put the name back together e.g. primaryContact.email
+            return $linkModel->getAttribute($name, $renderFlag);
+        }else{
+            if($renderFlag){
+                return parent::renderAttribute($name);
+            }else{
+                return parent::getAttribute($name);
+            }
+        }
     }
 
     /**
@@ -429,7 +437,7 @@ abstract class X2Model extends CActiveRecord {
     }
 
     /**
-     * Looks up a linked attribute by loading the linked model and calling getAttribute() on it.
+     * Looks up a linked attribute by loading the linked model and calling renderAttribute() on it.
      * @param string $linkField the attribute of $this linking to the external model
      * @param string $attribute the attribute of the external model
      * @return mixed the properly formatted attribute value. Null if the attribute is not set or does not exist.
@@ -764,20 +772,26 @@ abstract class X2Model extends CActiveRecord {
                                     ), $this->$fieldName
                             ));
                     $oldText = $text;
+
+                    function linkReplaceCallback($matches){
+                        return stripslashes((strlen($matches[2]) > 0 ? '<a href=\"'.$matches[2].'\" target=\"_blank\">'.$matches[0].'</a>' : $matches[0]));
+                    }
+
                     $text = trim(preg_replace_callback(
                                     array(
                                 '/(?(?=<a[^>]*>.+<\/a>)(?:<a[^>]*>.+<\/a>)|([^="\']?)((?:https?|ftp|bf2|):\/\/[^<> \n\r]+))/ix',
-                                    ), function($matches){
-                                        return stripslashes((strlen($matches[2]) > 0 ? '<a href=\"'.$matches[2].'\" target=\"_blank\">'.$matches[0].'</a>' : $matches[0]));
-                                    }, $this->$fieldName
+                                    ), 'linkReplaceCallback', $this->$fieldName
                             ));
                     if($text == trim($oldText)){
+
+                        function linkReplaceCallback2($matches){
+                            return stripslashes((strlen($matches[2]) > 0 ? '<a href=\"http://'.$matches[2].'\" target=\"_blank\">'.$matches[0].'</a>' : $matches[0]));
+                        }
+
                         $text = trim(preg_replace_callback(
                                         array(
                                     '/(^|\s|>)(www.[^<> \n\r]+)/ix',
-                                        ), function($matches){
-                                            return stripslashes((strlen($matches[2]) > 0 ? '<a href=\"http://'.$matches[2].'\" target=\"_blank\">'.$matches[0].'</a>' : $matches[0]));
-                                        }, $this->$fieldName
+                                        ), 'linkReplaceCallback2', $this->$fieldName
                                 ));
                     }
                 }
@@ -900,12 +914,12 @@ abstract class X2Model extends CActiveRecord {
                             'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
                                 ), true);
             case 'dropdown':
-                $om = Dropdowns::getItems($field->linkType,null,true); // Note: if desired to translate dropdown options, change the seecond argument to $this->module
-		$multi = (bool) $om['multi'];
-		$dropdowns = $om['options'];
-		$curVal = $multi?CJSON::decode($this->{$field->fieldName}):$this->{$field->fieldName};
-                
-		$dependencyCount = X2Model::model('Dropdowns')->countByAttributes(array('parent' => $field->linkType));
+                $om = Dropdowns::getItems($field->linkType, null, true); // Note: if desired to translate dropdown options, change the seecond argument to $this->module
+                $multi = (bool) $om['multi'];
+                $dropdowns = $om['options'];
+                $curVal = $multi ? CJSON::decode($this->{$field->fieldName}) : $this->{$field->fieldName};
+
+                $dependencyCount = X2Model::model('Dropdowns')->countByAttributes(array('parent' => $field->linkType));
                 $fieldDependencyCount = X2Model::model('Fields')->countByAttributes(array('modelName' => $field->modelName, 'type' => 'dependentDropdown', 'linkType' => $field->linkType));
                 if($dependencyCount > 0 && $fieldDependencyCount > 0){
                     $ajaxArray = array('ajax' => array(
@@ -924,18 +938,18 @@ abstract class X2Model extends CActiveRecord {
                 }else{
                     $ajaxArray = array();
                 }
-		$htmlOptions = array_merge($htmlOptions,$ajaxArray,array('title'=>$field->attributeLabel));
-		if($multi){
-		    $multiSelectOptions = array();
-		    if(!is_array($curVal))
-		    	$curVal = array();
-		    foreach($curVal as $option)
-		        $multiSelectOptions[$option] = array('selected'=>'selected');
-		    $htmlOptions = array_merge($htmlOptions,array('options' => $multiSelectOptions,'multiple'=>'multiple'));
-		} else {
-		    $htmlOptions = array_merge($htmlOptions,array( 'empty' => Yii::t('app', "Select an option")));
-		}
-                return CHtml::activeDropDownList($this, $field->fieldName, $dropdowns,$htmlOptions); 
+                $htmlOptions = array_merge($htmlOptions, $ajaxArray, array('title' => $field->attributeLabel));
+                if($multi){
+                    $multiSelectOptions = array();
+                    if(!is_array($curVal))
+                        $curVal = array();
+                    foreach($curVal as $option)
+                        $multiSelectOptions[$option] = array('selected' => 'selected');
+                    $htmlOptions = array_merge($htmlOptions, array('options' => $multiSelectOptions, 'multiple' => 'multiple'));
+                } else{
+                    $htmlOptions = array_merge($htmlOptions, array('empty' => Yii::t('app', "Select an option")));
+                }
+                return CHtml::activeDropDownList($this, $field->fieldName, $dropdowns, $htmlOptions);
 
             case 'dependentDropdown':
                 return CHtml::activeDropDownList($this, $field->fieldName, array('' => '-'), array_merge(
@@ -1201,7 +1215,7 @@ abstract class X2Model extends CActiveRecord {
      * @param array &$data array of attributes to be set (eg. $_POST['Contacts'])
      * @param bool $filter encode all HTML special characters in input
      */
-    public function setX2Fields(&$data,$filter = false){
+    public function setX2Fields(&$data, $filter = false){
         foreach(self::$_fields[$this->tableName()] as &$field){ // loop through fields to deal with special types
             $fieldName = $field->fieldName;
 
@@ -1209,7 +1223,7 @@ abstract class X2Model extends CActiveRecord {
                 continue;
 
             if($data[$fieldName] == $this->getAttributeLabel($fieldName)) // eliminate placeholder values
-                $data[$fieldName] = '';
+                $data[$fieldName] = null;
 
             if($field->type === 'link'){
                 $linkId = null;
@@ -1227,7 +1241,7 @@ abstract class X2Model extends CActiveRecord {
                 }
             }
 
-            $this->$fieldName = $field->parseValue($data[$fieldName],$filter);
+            $this->$fieldName = $field->parseValue($data[$fieldName], $filter);
         }
     }
 
@@ -1253,7 +1267,7 @@ abstract class X2Model extends CActiveRecord {
         $sort->multiSort = false;
         $sort->attributes = $this->getSort();
         $sort->defaultOrder = 't.lastUpdated DESC, t.id DESC';
-        $sort->sortVar=get_class($this)."_sort";
+        $sort->sortVar = get_class($this)."_sort";
         $sort->applyOrder($criteria);
         return new SmartDataProvider(get_class($this), array(
                     'sort' => $sort,
@@ -1443,6 +1457,15 @@ abstract class X2Model extends CActiveRecord {
                 $users = $users + array('' => '--------------------') + $groups;
         }
         return $users;
+    }
+
+   /**
+    * Validator ensuring that what the user entered refers to a valid, existing record
+    */
+    public function validLink($attr,$params) {
+        if(!is_numeric($this->$attr)) {
+            $this->addError($attr,Yii::t('app','{attr} does not refer to any existing record',array('{attr}' => $this->getAttributeLabel($attr))));
+        }
     }
 
 }

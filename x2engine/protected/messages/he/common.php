@@ -310,4 +310,12 @@ return array (
 'Export Data'=>'נתוני יצוא',
 'Please click the link below to download this report.'=>'אנא לחץ על הקישור הבא כדי להוריד את הדוח הזה.',
 'Create Campaign'=>'צור את מסע הפרסום',
+'Last Week'=>'בשבוע שעבר',
+'Last Month'=>'בחודש שעבר',
+'Doc'=>'דוק',
+'Help'=>'עזרה',
+'Sent'=>'נשלח',
+'Opened'=>'נפתח',
+'Unsubscribed'=>'בטל את המנוי',
+'Action History'=>'היסטורית פעולה',
 );
