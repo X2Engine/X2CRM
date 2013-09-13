@@ -135,7 +135,8 @@ $cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
 	->registerCssFile($themeUrl.'/css/details.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection')
-	->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection');
+	->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection')
+    ->registerCoreScript('cookie');
 // $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion);
 
 $cs->registerCssFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.css');
@@ -151,14 +152,22 @@ $cs->registerScript('fullscreenToggle', '
 window.enableFullWidth = '.(!Yii::app()->user->isGuest ? ($profile->enableFullWidth ? 'true' : 'false') : 'true').';
 window.fullscreen = '.($fullscreen ? 'true' : 'false').';
 ', CClientScript::POS_HEAD);
+
+if (is_object (Yii::app()->controller->module)) {
+    $cs->registerScript ('saveCurrModule', "
+        x2.currModule = '".Yii::app()->controller->module->name."';
+    ", CClientScript::POS_HEAD);
+}
+
 if(!$isGuest){
-$cs->registerScript ('notificationsParams', "
-    x2.notifications = {};
-    x2.notifications.translations = {};
-    x2.notifications.translations['clearAll'] = '".addslashes (Yii::t('app', 'Permanently delete all notifications?'))."';
-", CClientScript::POS_HEAD);
-$cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
-   ->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion, CClientScript::POS_BEGIN);
+    $cs->registerScript ('notificationsParams', "
+        x2.notifications = {};
+        x2.notifications.translations = {};
+        x2.notifications.translations['clearAll'] = 
+            '".addslashes (Yii::t('app', 'Permanently delete all notifications?'))."';
+    ", CClientScript::POS_HEAD);
+    $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
+       ->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion, CClientScript::POS_BEGIN);
 }
 
 if(!$isGuest && ($profile->language == 'he' || $profile->language == 'fa'))

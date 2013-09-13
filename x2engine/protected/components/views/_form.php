@@ -192,9 +192,8 @@ if(isset($layout)) {
 												} elseif($fieldPermissions[$field->id] == 1) {
 													$item['readOnly']=true;
 												}
-											} else {
-												$noItems = false;
 											}
+                                            $noItems = false;
 		
 											$labelType = isset($item['labelType'])? $item['labelType'] : 'top';
 											switch($labelType) {

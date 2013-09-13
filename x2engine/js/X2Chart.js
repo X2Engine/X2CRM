@@ -138,14 +138,10 @@ function X2Chart (argsDict) {
 	//thisX2Chart.DEBUG && console.log ('set cookiePrefix to ' + this.cookiePrefix);
 	
 	thisX2Chart.setUpSettingsUI ();
-	
+
+	x2[thisX2Chart.chartType].windowResizeFunction = X2Chart.x2ChartResize (thisX2Chart);
 	// redraw graph on window resize
-	$(window).on ('resize', function () {
-		if ($('#' + thisX2Chart.chartType + '-chart-container').is (':visible') && 
-			thisX2Chart.feedChart !== null && !x2.isAndroid && !x2.isIPad) {
-			thisX2Chart.feedChart.replot ({ resetAxes: false });
-		}
-	});
+	$(window).on ('resize', x2[thisX2Chart.chartType].windowResizeFunction);
 }
 
 
@@ -153,6 +149,18 @@ function X2Chart (argsDict) {
 /************************************************************************************
 Static Methods
 ************************************************************************************/
+
+X2Chart.x2ChartResize = function (thisX2Chart) {
+    return function () {
+        thisX2Chart.DEBUG && console.log ('resize');
+        if ($('#' + thisX2Chart.chartType + '-chart-container').is (':visible') && 
+            thisX2Chart.feedChart !== null && !x2.isAndroid && !x2.isIPad) {
+            thisX2Chart.DEBUG && console.log (thisX2Chart.feedChart);
+            thisX2Chart.feedChart.replot ({ resetAxes: false });
+        }
+    };
+};
+	
 
 /*
 This can replace the plotData method of the X2Chart prototype. 
@@ -1250,6 +1258,11 @@ Instance Methods
 ************************************************************************************/
 
 X2Chart.prototype.setDefaultSettings = function () {}; // override in child prototype
+
+X2Chart.prototype.tearDown = function () { 
+	var thisX2Chart = this;
+    $(window).unbind ('resize', x2[thisX2Chart.chartType].windowResizeFunction);
+}
 
 X2Chart.prototype.updatePieChartEventCount = function (eventCount) { 
 	var thisX2Chart = this;

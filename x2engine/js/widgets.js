@@ -59,7 +59,8 @@ $(function() {
 					name: ui.draggable.attr('id'),
 					block: 'center',
 					modelType: $('body').data('modelType'),
-					modelId: $('body').data('modelId')
+					modelId: $('body').data('modelId'),
+                    moduleName: x2.currModule
 				}, 
 				function(response) {
 					$('#' + ui.draggable.attr('id')).parent().remove(); // remove widget from menu
@@ -118,14 +119,26 @@ function handleWidgetMenuItemClick(menuItem) {
 	return true;
 }
 
+function removeChartWidget () {
+    if (x2.actionHistoryChart) {
+        x2.actionHistoryChart.chart.tearDown ();
+    }
+    /*if (x2.campaignChart) {
+        delete x2.campaignChart;
+    }*/
+}
+
 
 $.fn.hideWidget = function() {
 	$(this).each(function() {
 		var widget = $(this);
 		var widgetName = $(this).attr('id').slice(9); // slice of the "x2widget_" from the id to get widget name
+
+        // console.log ('widgetName = ' + widgetName);
 		$.post(yii.scriptUrl+'/site/hideWidget', {name: widgetName}, function(response) {
 			widget.slideUp(function() {
 				widget.remove();
+                if (widgetName === 'RecordViewChart') removeChartWidget ();
 				$('#widget-menu').replaceWith(response);
 		//		$('.x2-widget-menu-item').draggable({revert: 'invalid', helper:'clone', revertDuration:200, appendTo:'#widget-menu',iframeFix:true});
 				$('.x2-widget-menu-item').click(function() {

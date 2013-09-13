@@ -85,22 +85,23 @@ function X2EventsChart (argsDict) {
 		'#9BE081', // pastel green
 		'#E8E172', // pastel yellow
 		'#FFA8CE', // pastel dark pink
-		'#FF9CAD', // pastel pink
 		'#30DD81', // saturated pastel mid blue
 		'#ECBA4F', // bright orange
+		'#A1C6D2', // light gray blue
 		'#428DE2', // saturated pastel dark blue
 		'#D099FF', // pastel dark purple
 		'#B243E6', // saturated pastel light purple
+		'#DB8B99', // dark pastel pink
 		'#CEC415', // mustard
 		'#BC0D2C', // pomegranate
 		'#45B41D', // apple green
 		'#AB074F', // dark hot pink
-		'#1B8FB5', // dark blue
+		'#6D91A5', // dark blue
 		'#3D1783', // dark purple
-		'#AACF7A',
+		'#AACF7A', // light olive green
 		'#7BB57C', // olive green
 		'#C87010', // red rock
-		'#1D4C8C', // dark blue-purple
+		'#1D4C8C' // dark blue-purple
 	];
 
 	this.metricOptionsColors = {}; // used to pair colors with metrics

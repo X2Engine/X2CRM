@@ -417,7 +417,7 @@ abstract class X2Model extends CActiveRecord {
             return $linkModel->getAttribute($name, $renderFlag);
         }else{
             if($renderFlag){
-                return parent::renderAttribute($name);
+                return $this->renderAttribute($name);
             }else{
                 return parent::getAttribute($name);
             }

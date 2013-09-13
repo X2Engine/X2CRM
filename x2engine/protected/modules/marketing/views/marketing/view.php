@@ -251,16 +251,19 @@ $this->actionMenu = $this->formatMenu(array(
 		function tryMail() {
 			newEl = $("<div id=\"mailer-status-active\">'.Yii::t('marketing', 'Attempting to send email').'...</div>");
 			newEl.prependTo($("#mailer-status")).slideDown(232);
-			$.ajax("'.$this->createUrl('mail', array('id' => $model->id)).'").done(function(data) {
-				var dataObj = JSON.parse(data);
+			$.ajax({
+                url:'.CJSON::encode($this->createUrl('mail', array('id' => $model->id))).',
+                dataTye:"json"
+            }).done(function(data) {
 				var htmlStr = "";
-				for (var i=0; i < dataObj.messages.length; i++) {
-					htmlStr += dataObj.messages[i] + "<br/>";
+				for (var i=0; i < data.messages.length; i++) {
+                    if(data.messages[i]!="")
+    					htmlStr += data.messages[i] + "<br/>";
 				}
 				newEl.html(htmlStr);
 				$("#mailer-status-active").removeAttr("id");
 				$.fn.yiiGridView.update("contacts-grid");
-				window.setTimeout(tryMail, dataObj.wait * 1000);
+				window.setTimeout(tryMail, data.wait * 1000);
 			});
 		}
 		tryMail();

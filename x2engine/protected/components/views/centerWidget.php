@@ -34,6 +34,38 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+if ($this instanceof X2WidgetList) {
+    Yii::app()->clientScript->registerCoreScript('jquery');
+    Yii::app()->clientScript->registerCoreScript('jquery.ui');
+    Yii::app()->clientScript->packages = X2WidgetList::packages ();
+    if ($name === 'GalleryWidget') {
+        Yii::import('application.extensions.gallerymanager.GalleryManager');
+        $galleryWidget = new GalleryManager ();
+        $galleryWidget->init ();
+        $galleryWidgetAssets = $galleryWidget->assets;
+        Yii::app()->clientScript->registerScriptFile(
+            $galleryWidgetAssets.'/jquery.iframe-transport.js');
+        Yii::app()->clientScript->registerScriptFile(
+            $galleryWidgetAssets.'/jquery.galleryManager.js');
+        Yii::app()->clientScript->registerPackage('GalleryWidgetJS');
+        Yii::app()->clientScript->registerPackage('GalleryWidgetCss');
+    } else if ($name === 'RecordViewChart') {
+        Yii::app()->clientScript->registerPackage('ChartWidgetExtJS');
+        Yii::app()->clientScript->registerPackage('ChartWidgetJS');
+        Yii::app()->clientScript->registerPackage('ChartWidgetCss');
+    } else if ($name === 'InlineRelationships') {
+        Yii::app()->clientScript->registerPackage('InlineRelationshipsJS');
+    }
+}
+
+if (isset ($packagesOnly) && $packagesOnly) return;
+
+// check if we need to load a model
+if(!isset($model) && isset($modelType) && isset($modelId)){
+    // didn't get passed a model, but we have the modelType and modelId, so load the model
+    $model = X2Model::model($modelType)->findByPk($modelId);
+}
+
 if ($name === 'RecordViewChart') {
 	Yii::app()->clientScript->registerScript('chartShowHide', "
 		$(document).on ('chartWidgetMaximized', function () {
@@ -80,11 +112,6 @@ if ($name === 'RecordViewChart') {
 
 
 
-// check if we need to load a model
-if(!isset($model) && isset($modelType) && isset($modelId)){
-    // didn't get passed a model, but we have the modelType and modelId, so load the model
-    $model = X2Model::model($modelType)->findByPk($modelId);
-}
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $relationshipCount = ""; // only used in InlineRelationships title; shows the number of relationships
 if($name == "InlineRelationships"){
@@ -100,7 +127,7 @@ if($name == "InlineRelationships"){
 
 
 <div class="x2-widget form" id="x2widget_<?php echo $name; ?>">
-    <div class="x2widget-header" onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false">
+    <div class="x2widget-header">
 
 		<?php
 		if ($name === 'RecordViewChart') {
@@ -159,10 +186,21 @@ if($name == "InlineRelationships"){
         <?php } ?>
     </div>
     <div class="x2widget-container" style="<?php echo $widget['minimize'] ? 'display: none;' : ''; ?>">
-        <?php if(isset($this->controller)){ // not ajax  ?>
-            <?php $this->render('x2widget', array('widget' => $widget, 'name' => $name, 'model' => $model, 'modelType' => $modelType)); ?>
-        <?php }else{ // we are in an ajax call ?>
-            <?php $this->renderPartial('application.components.views.x2widget', array('widget' => $widget, 'name' => $name, 'model' => $model, 'modelType' => $modelType)); ?>
-        <?php } ?>
+        <?php 
+        $widgetParams = array (
+            'widget' => $widget,
+            'name' => $name, 
+            'model' => $model, 
+            'modelType' => $modelType
+        ); 
+        if (isset ($moduleName)) {
+            $widgetParams['moduleName'] = $moduleName;
+        }
+        if(isset($this->controller)){ // not ajax  
+            $this->render('x2widget', $widgetParams);
+        } else{ // we are in an ajax call 
+            $this->renderPartial('application.components.views.x2widget', $widgetParams);
+        } 
+        ?>
     </div>
 </div>

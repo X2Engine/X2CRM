@@ -666,7 +666,7 @@ class Profile extends CActiveRecord {
             ),
             'center' => array(
                 'RecordViewChart' => array(
-                    'title' => '',
+                    'title' => 'Record View Chart',
                     'minimize' => false,
                 ),
                 'InlineTags' => array(
@@ -749,33 +749,62 @@ class Profile extends CActiveRecord {
         return $layout;
     }
 
+
     /*
       Private helper function to update users layout elements to match the set of layout
       elements specified in initLayout ().
      */
-
     private function addRemoveLayoutElements($position, $layout, $initLayout){
 
         $changed = false;
 
-        $layoutCenterWidgets = array_merge($layout[$position], $layout['hidden']);
-        $initLayoutCenterWidgets = array_merge($initLayout[$position], $initLayout['hidden']);
+        $layoutWidgets = array_merge($layout[$position], $layout['hidden']);
+        if ($position === 'center') {
+            $initLayoutWidgets = array_merge($initLayout[$position], $initLayout['hidden']);
+        } else {
+            $initLayoutWidgets = $initLayout[$position];
+        }
 
+        // add new widgets
         $arrayDiff =
-                array_diff(array_keys($initLayoutCenterWidgets), array_keys($layoutCenterWidgets));
+                array_diff(array_keys($initLayoutWidgets), array_keys($layoutWidgets));
         foreach($arrayDiff as $elem){
             //$layout[$position][$elem] = $initLayout[$position][$elem];
             $layout[$position] = array($elem => $initLayout[$position][$elem]) + $layout[$position]; // unshift key-value pair
             $changed = true;
         }
+
+        // remove obsolete widgets
         $arrayDiff =
-                array_diff(array_keys($layoutCenterWidgets), array_keys($initLayoutCenterWidgets));
+                array_diff(array_keys($layoutWidgets), array_keys($initLayoutWidgets));
         foreach($arrayDiff as $elem){
-            if($layout[$position][$elem])
+            if(in_array ($elem, array_keys ($layout[$position]))) {
                 unset($layout[$position][$elem]);
-            else if($layout['hidden'][$elem])
+                $changed = true;
+            } else if($position === 'center' && in_array ($elem, array_keys ($layout['hidden']))) {
                 unset($layout['hidden'][$elem]);
-            $changed = true;
+                $changed = true;
+            }
+        }
+
+        // ensure that widget properties are the same as those in the default layout
+        foreach($layout[$position] as $name=>$arr){
+            if (in_array ($name, array_keys ($initLayout[$position])) && 
+                $initLayout[$position][$name]['title'] !== $arr['title']) {
+                
+                $layout[$position][$name]['title'] = $initLayout[$position][$name]['title'];
+                $changed = true;
+            }
+        }
+        if ($position === 'center') {
+            foreach($layout['hidden'] as $name=>$arr){
+                if (in_array ($name, array_keys ($initLayout[$position])) && 
+                    $initLayout[$position][$name]['title'] !== $arr['title']) {
+
+                    $layout['hidden'][$name]['title'] = $initLayout[$position][$name]['title'];
+                    $changed = true;
+                }
+            }
         }
 
         if($changed){

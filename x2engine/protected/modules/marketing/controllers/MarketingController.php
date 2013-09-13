@@ -555,11 +555,11 @@ class MarketingController extends x2base {
                     if($unsendable > 0)
                         $messages[] = Yii::t('marketing', 'Unsendable email').': '.$unsendable;
                     if($blankEmail > 0)
-                        $messages[] = '&nbsp;'.Yii::t('marketing', 'Blank email addresses').': '.$blankEmail;
+                        $messages[] = Yii::t('marketing', 'Blank email addresses').': '.$blankEmail;
                     if($doNotEmail > 0)
-                        $messages[] = '&nbsp;'.Yii::t('marketing', '\'Do Not Email\' contacts').': '.$doNotEmail;
+                        $messages[] = Yii::t('marketing', '\'Do Not Email\' contacts').': '.$doNotEmail;
                     if($errorCount > 0)
-                        $messages[] = '&nbsp;'.Yii::t('marketing', 'Data errors').': '.$errorCount;
+                        $messages[] = Yii::t('marketing', 'Data errors').': '.$errorCount;
                     if($totalSent >= $sendLimit)
                         $messages[] = Yii::t('marketing', 'Batch completed, sending again in ').$interval.' '.Yii::t('marketing', 'minutes').'...';
                     $messages[] = '';
@@ -628,6 +628,7 @@ class MarketingController extends x2base {
         $totalSent = 0;
         $errors = array();
         $t0 = time();
+        $timeout = Yii::app()->params->admin->batchTimeout;
         //get eligible contacts from the campaign
         $sql = 'SELECT *, t.id as li_id, c.id as c_id FROM x2_list_items as t LEFT JOIN x2_contacts as c ON t.contactId=c.id WHERE t.listId=:listId '
                 .'AND t.sent=0 AND t.unsubscribed=0 AND (c.doNotEmail IS NULL OR c.doNotEmail=0) AND ((c.email IS NOT NULL AND c.email!="") OR (t.emailAddress IS NOT NULL AND t.emailAddress!=""));';
@@ -663,7 +664,7 @@ class MarketingController extends x2base {
                 break;
             }
             $t1 = time();
-            if($t1 - $t0 > 300){
+            if($t1 - $t0 > $timeout){
                 break;
             }
 

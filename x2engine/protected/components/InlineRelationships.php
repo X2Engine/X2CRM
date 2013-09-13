@@ -48,13 +48,10 @@ class InlineRelationships extends X2Widget {
 	public $model = null;
 	public $startHidden = false;
 	public $modelName = "";
+    public $moduleName = "";
 	private $_relatedModels;
 
 	public function init(){
-
-		Yii::app()->clientScript->registerScript('toggleAttachmentForm', "
-
-		", CClientScript::POS_HEAD);
 
 		parent::init();
 	}
@@ -63,7 +60,8 @@ class InlineRelationships extends X2Widget {
 		$this->render('inlineRelationships', array(
 			'model' => $this->model,
 			'modelName' => $this->model->myModelName,
-			'startHidden' => $this->startHidden
+			'startHidden' => $this->startHidden,
+            'moduleName' => $this->moduleName
 		));
 	}
 

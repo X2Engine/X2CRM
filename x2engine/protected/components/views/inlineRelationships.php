@@ -35,7 +35,15 @@
  *****************************************************************************************/
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $auth = Yii::app()->authManager;
-$actionAccess = ucfirst(Yii::app()->controller->module->name).'Update';
+//printR ((int) isset (Yii::app()->controller));
+$moduleName = '';
+if (!is_object (Yii::app()->controller->module) && isset ($moduleName)) {
+    //printR ($this->module, true);
+    $moduleName = $moduleName;
+} else {
+    $moduleName = Yii::app()->controller->module->name;
+}
+$actionAccess = ucfirst($moduleName).'Update';
 $authItem = $auth->getAuthItem($actionAccess);
 // init qtip for contact names
 Yii::app()->clientScript->registerScript('contact-qtip', '
@@ -59,7 +67,8 @@ function refreshQtip() {
 		}
 	});
 
-	if($("#Relationships_Contacts_autocomplete").length == 1) {
+	if($("#Relationships_Contacts_autocomplete").length == 1 &&
+        $("Relationships_Contacts_autocomplete").data ("uiAutocomplete")) {
 		$("#Relationships_Contacts_autocomplete").data( "uiAutocomplete" )._renderItem = function( ul, item ) {
 			var label = "<a style=\"line-height: 1;\">" + item.label;
 			label += "<span style=\"font-size: 0.7em; font-weight: bold;\">";
@@ -147,7 +156,7 @@ $columns = array(
 		'type' => 'raw'
 	),
 );
-if(Yii::app()->user->checkAccess(ucfirst(Yii::app()->controller->module->name).'Update', array('assignedTo' => $model->assignedTo)))
+if(Yii::app()->user->checkAccess(ucfirst($moduleName).'Update', array('assignedTo' => $model->assignedTo)))
 	$columns[] = array(
 		'name' => 'deletion',
 		'header' => Yii::t("contacts", 'Delete'),

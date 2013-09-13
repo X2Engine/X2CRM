@@ -1,5 +1,5 @@
-# X2CRM 3.5 #
-9/6/2013
+# X2CRM 3.5.1 #
+9/12/2013
 ## Changes ##
 * "Print Record" feature in nearly all modules shows print-friendly version of a record
 * "Recently Viewed" widget now includes all record types

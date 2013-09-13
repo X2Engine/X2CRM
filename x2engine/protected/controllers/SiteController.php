@@ -2410,6 +2410,12 @@ class SiteController extends x2base {
             $name = $_POST['name'];
             $block = $_POST['block'];
 
+            if (isset ($_POST['moduleName'])) {
+                $moduleName = $_POST['moduleName'];
+            } else {
+                $moduleName = '';
+            }
+
             if(isset($_POST['modelType']) && isset($_POST['modelId'])){
                 $modelType = $_POST['modelType'];
                 $modelId = $_POST['modelId'];
@@ -2440,8 +2446,13 @@ class SiteController extends x2base {
                         unset($layout['hidden'][$key]);
                         Yii::app()->params->profile->saveLayout($layout);
                         Yii::app()->clientScript->scriptMap['*.js'] = false;
-                        $this->renderPartial('application.components.views.centerWidget', array('widget' => $widget, 'name' => $name, 'modelType' => $modelType, 'modelId' => $modelId), false, true);
-
+                        $this->renderPartial('application.components.views.centerWidget', 
+                            array(
+                                'widget' => $widget, 
+                                'name' => $name, 
+                                'modelType' => $modelType, 
+                                'moduleName' => $moduleName,
+                                'modelId' => $modelId), false, true);
                         break;
                     }
                 }
