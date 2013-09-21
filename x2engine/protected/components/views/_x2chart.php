@@ -61,7 +61,7 @@ $passVarsToClientScript = "
     x2.".$chartType.".params.getChartDataActionName = '".$getChartDataActionName."';
     x2.".$chartType.".params.translations = {};
     x2.".$chartType.".params.DEBUG = ".
-        ((YII_DEBUG && $chartType === 'campaignChart') ? 'true' : 'false').";
+        ((YII_DEBUG && $chartType === 'eventsChart') ? 'true' : 'false').";
 ";
 
 if (isset ($subtype)) {
@@ -447,4 +447,3 @@ if (!$suppressChartSettings) {
     }
 
 </script>
-

@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
- 
+
 Yii::app()->clientScript->registerScript('getWorkflowStage',"
 
 function getStageMembers(stage) {
@@ -70,7 +70,7 @@ $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'title'=>$heading,
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,

@@ -41,8 +41,7 @@ Yii::import('application.components.JSONFieldsBehavior');
  * This is the model class for table "x2_chart_settings".
  * @package X2CRM.models
  */
-class ChartSetting extends CActiveRecord
-{
+class ChartSetting extends CActiveRecord {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Imports the static model class

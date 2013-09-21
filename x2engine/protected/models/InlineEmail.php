@@ -163,7 +163,7 @@ class InlineEmail extends CFormModel {
      * @var bool Asssociate emails with the linked Contact (true) or the record itself (false)
      */
     public $contactFlag = true;
-
+    
     /**
      * @var array
      */
@@ -677,7 +677,7 @@ class InlineEmail extends CFormModel {
             }else{
 		// This might be a console application! In that case, there's
 		// no controller application component available.
-                $url = Yii::app()->externalBaseUrl;
+                $url = rtrim(Yii::app()->externalBaseUrl,'/');
                 if(!empty($url))
                     $trackUrl = "$url/index.php/actions/emailOpened?uid={$this->uniqueId}&type=open";
                 else
@@ -878,13 +878,13 @@ class InlineEmail extends CFormModel {
     /**
      * Prepare the email body for sending or customization by the user.
      */
-    public function prepareBody(){
+    public function prepareBody($postReplace = 0){
         if(!$this->validate()){
             return false;
         }
         // Replace the existing body, if any, with a template, i.e. for initial
         // set-up or an automated email.
-        if($this->scenario === 'template'){
+        if($this->scenario === 'template' ){
             // Get the template and associated model
 
             if(!empty($this->templateModel)){
@@ -900,6 +900,9 @@ class InlineEmail extends CFormModel {
                 $this->message = self::emptyBody();
                 $this->insertSignature();
             }
+        }else if($postReplace){
+            $this->subject = Docs::replaceVariables($this->subject, $this->targetModel);
+            $this->message = Docs::replaceVariables($this->message, $this->targetModel);
         }
 
         return true;

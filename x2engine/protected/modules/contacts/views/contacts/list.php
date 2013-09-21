@@ -177,9 +177,9 @@ $listActions .= '</div>';
 $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
 	'title'=>$heading,
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> '<div class="page-title">{title}{buttons}'
-		.CHtml::link(Yii::t('app','Export'),array('/contacts/exportContacts?listId='.$listModel->id),array('class'=>'x2-button'))
+		.(Yii::app()->user->checkAccess('ContactsExportContacts')?CHtml::link(Yii::t('app','Export'),array('/contacts/exportContacts?listId='.$listModel->id),array('class'=>'x2-button')):null)
 		.CHtml::link(Yii::t('marketing','Email List'), Yii::app()->createUrl('/marketing/create?Campaign[listId]='.$listModel->id),array('class'=>'x2-button'))
 	.'{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,

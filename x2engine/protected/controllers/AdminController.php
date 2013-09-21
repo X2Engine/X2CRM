@@ -1088,6 +1088,71 @@ class AdminController extends Controller {
             $workflows[$workflow->id] = $workflow->name;
         }
 
+        $model = new Roles;
+        if(isset($_POST['Roles'])){
+            $model->attributes = $_POST['Roles'];
+            if(!isset($_POST['viewPermissions']))
+                $viewPermissions = array();
+            else
+                $viewPermissions = $_POST['viewPermissions'];
+            if(!isset($_POST['editPermissions']))
+                $editPermissions = array();
+            else
+                $editPermissions = $_POST['editPermissions'];
+            if(isset($_POST['Roles']['users']))
+                $users = $model->users;
+            else
+                $users = array();
+            $model->users = "";
+
+            if($model->save()){
+
+                foreach($users as $user){
+                    $role = new RoleToUser;
+                    $role->roleId = $model->id;
+                    if(!is_numeric($user)){
+                        $userRecord = User::model()->findByAttributes(array('username' => $user));
+                        $role->userId = $userRecord->id;
+                        $role->type = 'user';
+                    }/* x2temp */else{
+                        $role->userId = $user;
+                        $role->type = 'group';
+                    }/* end x2temp */
+                    $role->save();
+                }
+                $fields = Fields::model()->findAll();
+                $temp = array();
+                foreach($fields as $field){
+                    $temp[] = $field->id;
+                }
+                $both = array_intersect($viewPermissions, $editPermissions);
+                $view = array_diff($viewPermissions, $editPermissions);
+                $neither = array_diff($temp, $viewPermissions);
+                foreach($both as $field){
+                    $rolePerm = new RoleToPermission;
+                    $rolePerm->roleId = $model->id;
+                    $rolePerm->fieldId = $field;
+                    $rolePerm->permission = 2;
+                    $rolePerm->save();
+                }
+                foreach($view as $field){
+                    $rolePerm = new RoleToPermission;
+                    $rolePerm->roleId = $model->id;
+                    $rolePerm->fieldId = $field;
+                    $rolePerm->permission = 1;
+                    $rolePerm->save();
+                }
+                foreach($neither as $field){
+                    $rolePerm = new RoleToPermission;
+                    $rolePerm->roleId = $model->id;
+                    $rolePerm->fieldId = $field;
+                    $rolePerm->permission = 0;
+                    $rolePerm->save();
+                }
+            }
+		}
+
+
         $this->render('manageRoles', array(
             'dataProvider' => $dataProvider,
             'model' => $model,

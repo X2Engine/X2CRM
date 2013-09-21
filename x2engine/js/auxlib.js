@@ -40,12 +40,26 @@ Creates a feedback box div containing the specified message. The feedback box is
 placed in the dom after the specified previous element. The box is faded out and,
 After a specified delay, is removed.
 Parameters:
-    prevElement - the element after which the box will get placed
-    message - a string
-    delay - the time after which the box will get removed
+    argsDict - a dictionary containing arguments
+        prevElement (required) - the element after which the box will get placed
+        message (required) - a string
+        delay - the time after which the box will get removed
+        disableButton - a button which will be disabled until the feedback box fades out
+        classes - an array. css classes which will be added to the feedback box
 */
-auxlib.createReqFeedbackBox = function (prevElem, message, delay, classes) {
+auxlib.createReqFeedbackBox = function (argsDict) {
+    var prevElem = argsDict['prevElem']; // required
+    var message = argsDict['message']; // required
+    var delay = argsDict['delay'];
+    var classes = argsDict['classes'];
+    var disableButton = argsDict['disableButton'];
     classes = typeof classes === 'undefined' ? [] : classes;
+    delay = typeof delay === 'undefined' ? 2000 : delay;
+    disableButton = typeof disableButton === 'undefined' ? prevElem : disableButton;
+
+    if ((disableButton).attr ('disabled')) return;
+    $(disableButton).attr ('disabled', 'disabled');
+
     var feedbackBox = $('<div>', {'class': 'feedback-container'}).append (
         $("<span>", { 
             'class': "feedback-msg",
@@ -56,7 +70,7 @@ auxlib.createReqFeedbackBox = function (prevElem, message, delay, classes) {
         $(feedbackBox).addClass (classes[i]);
     }
     $(prevElem).after (feedbackBox);
-    auxlib._startFeedbackBoxFadeOut (feedbackBox, delay, prevElem);
+    auxlib._startFeedbackBoxFadeOut (feedbackBox, delay, prevElem, disableButton);
     return feedbackBox;
 }
 
@@ -68,12 +82,96 @@ Parameters:
     feedbackBox - a jQuery element created by createReqFeedbackBox ()
     delay - in milliseconds
 */
-auxlib._startFeedbackBoxFadeOut = function (feedbackBox, delay, button) {
-    $(button).attr ('disabled', 'disabled');
+auxlib._startFeedbackBoxFadeOut = function (feedbackBox, delay, button, disableButton) {
     $(feedbackBox).children ().fadeOut (delay, function () {
         $(feedbackBox).remove ();
-        $(button).removeAttr ('disabled');
+        $(disableButton).removeAttr ('disabled');
     });
 }
+
+
+/*
+Returns true if parent element has an error box, false otherwise.
+*/
+auxlib.errorBoxExists = function (parentElem) {
+    return ($(parentElem).find ('.error-summary-container').length > 0);
+};
+
+
+
+/*
+Removes an error div created by createErrorBox ().  
+Parameters:
+	parentElem - a jQuery element which contains the error div
+*/
+auxlib.destroyErrorBox = function (parentElem) {
+	var $errorBox = $(parentElem).find ('.error-summary-container');
+	if ($errorBox.length !== 0) {
+		$errorBox.remove ();
+	}
+}
+
+/*
+Returns a jQuery element corresponding to an error box. The error box will
+contain the specified errorHeader and a bulleted list of the specified error
+messages.
+Parameters:
+	errorHeader - a string
+	errorMessages - an array of strings
+*/
+auxlib.createErrorBox = function (errorHeader, errorMessages) {
+	var errorBox = $('<div>', {'class': 'error-summary-container'}).append (
+		$("<div>", { 'class': "error-summary"}).append (
+			$("<p>", { text: errorHeader }),
+			$("<ul>")
+	));
+	for (var i in errorMessages) {
+		var msg = errorMessages[i];
+		$(errorBox).find ('.error-summary').
+			find ('ul').append ($("<li> " + msg + " </li>"));
+	}
+	return errorBox;
+}
+
+
+
+
+/*
+Select an option from a select element
+Parameters:
+	selector - a jquery selector for the select element
+	setting - the value of the option to be selected
+*/
+auxlib.selectOptionFromSelector = function (selector, setting) {
+	$(selector).children (':selected').removeAttr ('selected');
+	$(selector).children ('[value="' + setting + '"]').attr ('selected', 'selected');
+}
+
+
+/*
+Set object properties. Default property values are used where an expected property value 
+is not defined.
+*/
+auxlib.applyArgs = function (obj, defaultArgs, args) {
+	for (var i in defaultArgs) {
+		if (args[i] === undefined) {
+			obj[i] = defaultArgs[i];
+		} else {
+			obj[i] = args[i];
+		}
+	}
+}
+
+auxlib.makeDialogClosableWithOutsideClick = function (dialogElem) {
+    $("body").on ('click', function (evt) {
+        if ($(dialogElem).closest (".ui-dialog").length &&
+            $(dialogElem).is (':visible') &&
+            $(dialogElem).dialog ("isOpen") &&
+            !$(evt.target).is ("a") &&
+            !$(evt.target).closest ('.ui-dialog').length) {
+            $(dialogElem).dialog ("close");
+        }
+    });
+};
 
 

@@ -72,7 +72,7 @@ $(function() {
 $this->widget('application.components.X2GridView', array(
 	'id' => 'media-grid',
 	'title'=>Yii::t('media','Media & File Library'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> '<div class="page-title icon media">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	/*
 	'template'=>'<div class="page-title"><h2>'.$heading.'</h2><div class="title-bar">'

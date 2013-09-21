@@ -50,35 +50,6 @@ function X2EventsChart (argsDict) {
 
 	var colors;
 	// color palette used for lines of feed chart
-	/*colors = [
-		'#7EB2E6', // pale blue
-		'#FFC382', // pastel orange
-		'#E8E172', // pastel yellow
-		'#FF9CAD', // pastel pink
-		'#BAFFA1', // pastel green
-		//'#CA8613', // orange brown
-		//'#C6B019', // dark sand
-		'#94E3DF', // pastel light blue
-		'#56D6E3', // pastel mid blue
-		'#99C9FF', // pastel dark blue
-		'#FFA8CE', // pastel dark pink
-		'#D099FF', // pastel dark purple
-		'#E1A1FF', // pastel light purple
-		'#CEC415', // mustard
-		'#BC0D2C', // pomegranate
-		'#45B41D', // apple green
-		'#AB074F', // dark hot pink
-		//'#156A86', // dark blue
-		'#1B8FB5', // dark blue
-		'#3D1783', // dark purple
-		//'#5A1992',// deep purple
-		'#AACF7A',
-		'#7BB57C', // olive green
-		//'#69B10A', // dark lime green
-		//'#8DEB10',
-		'#C87010', // red rock
-		'#1D4C8C', // dark blue-purple
-	];*/
 	colors = [
 		'#7EB2E6', // pale blue
 		'#94E3DF', // pastel light blue
@@ -117,13 +88,6 @@ function X2EventsChart (argsDict) {
 
 	this.filters = {};
 
-
-	/*if ($.cookie (thisX2Chart.cookiePrefix + 'chartIsShown') === 'true') {
-		$('#' + this.chartType + '-chart-container').show ();
-		$('#' + this.chartType + '-show-chart').hide ();
-		$('#' + this.chartType + '-hide-chart').show ();
-	}*/
-
 	thisX2Chart.setUpFilters ();
 
 	thisX2Chart.start ();
@@ -131,6 +95,9 @@ function X2EventsChart (argsDict) {
 
 X2EventsChart.prototype = Object.create (X2Chart.prototype);
 
+/*
+Sets initial state of chart setting ui elements
+*/
 X2EventsChart.prototype.setDefaultSettings = function () {
 	var thisX2Chart = this;
 
@@ -170,9 +137,13 @@ X2EventsChart.prototype.setDefaultSettings = function () {
 
 };
 
+/*
+Filter function used by groupChartData to determine how chart data should be grouped
+*/
 X2EventsChart.prototype.chartDataFilter = function (dataPoint, type) {
 	var thisX2Chart = this;
 
+    // group by type, filter out types specified in filters
 	if ((!(type === 'any' || type === '') && dataPoint['type'] !== type) ||
 		(type === '' && dataPoint['type'] !== null) ||
 		($.inArray (dataPoint['user'], thisX2Chart.filters['usersFilter']) !== -1 &&
@@ -187,25 +158,10 @@ X2EventsChart.prototype.chartDataFilter = function (dataPoint, type) {
 	}
 };
 
-X2EventsChart.prototype.postPieChartTearDown = function (uiSetUp) {
-	var thisX2Chart = this;
-	$('#' + thisX2Chart.chartType + '-chart').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-chart-legend').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-datepicker-row').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-top-button-row').removeClass ('feed-pie');
-	$('#' + thisX2Chart.chartType + '-create-setting-button').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-predefined-settings').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-first-metric-container').show ();
-	$('#' + thisX2Chart.chartType + '-bin-size-button-set').show ();
-	var filterToggleContainer = $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
-	$('#' + thisX2Chart.chartType + '-first-metric-container').after (filterToggleContainer);
-	if (uiSetUp) {
-		thisX2Chart.DEBUG && console.log ('setting up filters');
-		//thisX2Chart.setUpFilters ();
-	}
-    thisX2Chart.bindFilterEvents ();
-};
-
+/*
+Returns dictionary with keys equal to metric types and value equal to metric type
+labels
+*/
 X2EventsChart.prototype.getMetricTypes = function () {
 	var thisX2Chart = this;
 
@@ -219,6 +175,31 @@ X2EventsChart.prototype.getMetricTypes = function () {
 	return metricTypes;
 };
 
+
+/*
+Undo pie chart specific ui. Rebind filter ui element event handlers since the
+filter elements get removed from the DOM when the chart subtype is switched.
+*/
+X2EventsChart.prototype.postPieChartTearDown = function (uiSetUp) {
+	var thisX2Chart = this;
+	$('#' + thisX2Chart.chartType + '-chart').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-chart-legend').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-datepicker-row').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-top-button-row').removeClass ('feed-pie');
+	$('#' + thisX2Chart.chartType + '-create-setting-button').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-predefined-settings').removeClass ('pie');
+	$('#' + thisX2Chart.chartType + '-first-metric-container').show ();
+	$('#' + thisX2Chart.chartType + '-bin-size-button-set').show ();
+	var filterToggleContainer = 
+        $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
+	$('#' + thisX2Chart.chartType + '-first-metric-container').after (filterToggleContainer);
+    thisX2Chart.bindFilterEvents ();
+};
+
+/*
+Set up pie chart specific ui. Rebind filter ui element event handlers since the
+filter elements get removed from the DOM when the chart subtype is switched.
+*/
 X2EventsChart.prototype.postPieChartSetUp = function (uiSetUp) {
 	var thisX2Chart = this;
 	$('#' + thisX2Chart.chartType + '-chart').addClass ('pie');
@@ -229,12 +210,9 @@ X2EventsChart.prototype.postPieChartSetUp = function (uiSetUp) {
 	$('#' + thisX2Chart.chartType + '-predefined-settings').addClass ('pie');
 	$('#' + thisX2Chart.chartType + '-first-metric-container').hide ();
 	$('#' + thisX2Chart.chartType + '-bin-size-button-set').hide ();
-	var filterToggleContainer = $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
+	var filterToggleContainer = 
+        $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
 	$('#' + thisX2Chart.chartType + '-datepicker-row').append (filterToggleContainer);
-	if (uiSetUp) {
-		thisX2Chart.DEBUG && console.log ('setting up filters');
-		//thisX2Chart.setUpFilters ();
-	}
     thisX2Chart.bindFilterEvents ();
 };
 

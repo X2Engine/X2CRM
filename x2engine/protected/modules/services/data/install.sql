@@ -35,7 +35,7 @@ VALUES
 ("Services",		"lastUpdated",			"Last Updated",			0,			0, 		"dateTime",				0, 			1, 			NULL,			0,			0,			"",			0,                  1),
 ("Services",		"updatedBy",			"Updated By",			0,			0, 		"varchar",				0, 			1, 			NULL,			0,			0,			"",			0,                  1),
 ("Services",		"description",			"Description",			0,			0, 		"text",					0, 			0, 			NULL,			1,			0,			"Medium", 	0,                  1),
-("Services",		"contactId",			"Contact",				0,			0, 		"link",					1, 			0, 			'Contacts', 	0,			0,			"",			0,                  1),
+("Services",		"contactId",			"Contact",				0,			0, 		"link",					0, 			0, 			'Contacts', 	0,			0,			"",			0,                  1),
 ("Services",		"assignedTo",			"Assigned To",			0,			0, 		"assignment",			0, 			0, 			NULL, 			0,			0,			"",			0,                  1),
 ("Services",		"impact",				"Impact",				0,			0, 		"dropdown",				1, 			0, 			'108', 			0,			0,			"",			0,                  1),
 ("Services",		"status",				"Status",				0,			0, 		"dropdown",				1, 			0, 			'109', 			0,			0,			"",			0,                  1),

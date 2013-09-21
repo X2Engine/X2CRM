@@ -63,8 +63,8 @@ class X2FlowRecordComment extends X2FlowAction {
         $model->assignedTo = $params['model']->assignedTo;
         if($params['model']->hasAttribute('visibility'))
             $model->visibility = $params['model']->visibility;
-        $action->createDate = time();
-        $action->completeDate = time();
+        $model->createDate = time();
+        $model->completeDate = time();
 
         return $model->save();
     }

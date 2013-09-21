@@ -626,6 +626,7 @@ function setupBroadcastDialog () {
 
 	});
 
+    auxlib.makeDialogClosableWithOutsideClick ($("#broadcast-dialog"));
 }
 
 
@@ -702,6 +703,7 @@ function setupMakeImportantDialog () {
 
 	});
 
+    auxlib.makeDialogClosableWithOutsideClick ($("#make-important-dialog"));
 }
 
 

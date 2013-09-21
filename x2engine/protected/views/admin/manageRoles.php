@@ -62,7 +62,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 <a href="#" onclick="$('#exception').toggle();$('#addRole').hide();$('#deleteRole').hide();$('#editRole').hide();" class="x2-button">Add Exception</a>
 <br>
 <br>
-<div id="addRole" style="display:none;">
+<div id="addRole"<?php if(!$model->hasErrors()) echo ' style="display:none;"';?>>
 <?php $this->renderPartial('roleEditor',array(
     'model'=>$model,
 )); ?>

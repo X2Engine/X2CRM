@@ -274,6 +274,25 @@ class UpdaterBehavior extends ResponseBehavior {
 	}
 
     /**
+     * Checks for the existence of files on the server, i.e. before copying them
+     * into the installation when applying an update
+     * @param array $fileList
+     * @param string $baseDir
+     * @return type
+     */
+    public function checkFiles($fileList,$baseDir=null) {
+        $baseDir = empty($baseDir) ? implode(DIRECTORY_SEPARATOR,array($this->webRoot,'temp')) : $baseDir;
+        $missingFiles = array();
+        foreach($fileList as $file) {
+            $path = implode(DIRECTORY_SEPARATOR,array($baseDir,str_replace('/',DIRECTORY_SEPARATOR,$file)));
+            if(!file_exists($path))
+                $missingFiles[] = $file;
+        }
+        $this->addResponseProperty('missingFiles',$missingFiles);
+        return count($missingFiles)>0;
+    }
+
+    /**
      * Securely obtain the latest version.
      */
     protected function checkUpdates($returnOnly = false){
@@ -342,7 +361,7 @@ class UpdaterBehavior extends ResponseBehavior {
 						$copyTarget = $bottomLevel ? $object : "$path/$object";
 						$success == $success && $this->copyFile($copyTarget, $dir);
 						if (!$success)
-							throw new Exception(Yii::t('admin', 'Failed to copy {relPath}; working directory = {cwd}', array('{relPath}' => $relPath, '{cwd}' => $this->$thisPath)));
+							throw new Exception(Yii::t('admin', 'Failed to copy from {relPath}; working directory = {cwd}', array('{relPath}' => $relPath, '{cwd}' => $this->$thisPath)));
 					}
 				}
 			} else {
@@ -350,7 +369,7 @@ class UpdaterBehavior extends ResponseBehavior {
 			}
 		}
 		if (!$success)
-			throw new Exception(Yii::t('admin', 'Failed to copy {relPath} (path does not exist); working directory = {cwd}', array('{relPath}' => $relPath, '{cwd}' => $this->thisPath)));
+			throw new Exception(Yii::t('admin', 'Failed to copy from {relPath} (path does not exist); working directory = {cwd}', array('{relPath}' => $relPath, '{cwd}' => $this->thisPath)));
 		return (bool) $success;
 	}
 	
@@ -372,6 +391,9 @@ class UpdaterBehavior extends ResponseBehavior {
 		$i = 0;
 		if ($file != "") {
 			$target = FileUtil::relpath($this->webRoot . "/temp/" . $file, $this->thisPath.'/');
+            if(file_exists($target)) // Skip if it's already there
+                if(time()-filemtime($target) > 86400)
+                    return true;
 			while (!FileUtil::ccopy($fileUrl, $target) && $i < $maxAttempts) {
 				$i++;
 			}

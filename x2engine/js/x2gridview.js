@@ -59,16 +59,16 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 		grips:$(),
 		gripContainer:$(),
 	},
-	
+
 	colWidths:[],
-	
+
 	mouseStartX:0,
 	currentGrip:0,
 	colStartW:0,
-	
+
 	// hoverCell:$(),
 	// hoverTimeout:null,
-	
+
 	/**
 	 * Sets up table resizing
 	 */
@@ -78,25 +78,25 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 			this.tables = $(this.element);
 		else
 			this.tables = $(this.element).find('table.items').addClass("x2grid-resizable"); //.data('x2resizableGrid',true);
-		
+
 		this.t1.table = this.tables.eq(0);
 		this.t2.table = this.tables.eq(1);
 		this.t1.firstRow = this.t1.table.find("tr:first");
 		this.t2.firstRow = this.t2.table.find("tr:first");
 		this.t1.masterCells = this.t1.firstRow.children();
 		this.t2.masterCells = this.t2.firstRow.children();
-		
+
 		this.scanColWidths();
 		this.resetColWidths();
-		
+
 		this.t1.gripContainer = $(document.createElement("div")).addClass("x2grid-grips").insertBefore(this.t1.table);
 		this.t2.gripContainer = $(document.createElement("div")).addClass("x2grid-grips").insertBefore(this.t2.table);
 		this.createGrips();
-		
+
 		this.originalElement = this.element;
-		
+
 		this.element = this.t1.gripContainer.add(this.t2.gripContainer);	// only apply mouse handling to the grips
-		
+
 		this._mouseInit();
 	},
 	_destroy:function() {
@@ -139,7 +139,7 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 		if(typeof this.options.onResize === 'function')
 			this.options.onResize(e);
 	},
-	/* 
+	/*
 	 * Scans current real column widths
 	 */
 	scanColWidths:function() {
@@ -150,7 +150,7 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 		for(var i=0;i<colCount;i++) {
 			var cell = this.t1.masterCells.eq(i);
 			var w = Math.max(this.options.minColWidth,cell.width());
-			// if(i === 0)	// except the first one, 
+			// if(i === 0)	// except the first one,
 				// w++;	// every column has a 1px border
 			this.colWidths.push(w);
 		}
@@ -168,7 +168,7 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 				this.t1.masterCells.get(i).style.width = this.colWidths[i]+"px";
 		}
 		this.t1.firstRow.prependTo(parent);
-		
+
 		if(this.t2.masterCells.length > 1) {
 			parent = this.t2.firstRow.parent();
 			this.t2.firstRow.detach();
@@ -181,14 +181,14 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 	},
 	createGrips:function() {
 		// make sure there are the right number of grips (only create/delete as needed)
-		
+
 		var colCount = this.colWidths.length;
 		var gripCount = 0;
 		var t1Height = this.t1.table.height();
 		var t2Height = this.t2.table.height();
 		this.t1.grips = $();	// not sure why but these need to be cleared after an AJAX rerfresh
 		this.t2.grips = $();
-		
+
 		while((gripCount = this.t1.grips.length) < colCount) {
 			this.t1.grips = this.t1.grips.add($(document.createElement("div")).height(t1Height).appendTo(this.t1.gripContainer));
 			this.t2.grips = this.t2.grips.add($(document.createElement("div")).height(t2Height).appendTo(this.t2.gripContainer));
@@ -200,7 +200,7 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 		var x = -1;
 		for(var i=0;i<this.currentGrip;i++)
 			x += self.colWidths[i]+2;
-		
+
 		for(var i=this.currentGrip;i<this.t1.grips.length;i++) {
 			x += self.colWidths[i]+2;
 			this.t1.grips.get(i).style.left = x+"px";
@@ -208,7 +208,7 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 				this.t2.grips.get(i).style.left = x+"px";
 		}
 	}
-	
+
 });
 
 
@@ -218,11 +218,11 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 		start:$.noop,
 		complete:$.noop
 	},
-	
+
 	startMouseX:0,
-	
+
 	tables:$(),
-	
+
 	t1:{},
 	t2:{},
 	colgroup:$(),
@@ -236,38 +236,38 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 		width:0,
 		index:0
 	},
-	
+
 	helperTemplate:null,
 	helper:$(),
 	helperStartPos:{},
-	
+
 	hoverIndex:-1,
 	tableOffsetX:0,
-	
+
 	dragging:false,
-	
+
 	_create:function() {
 		var self = this;
 		this.tableOffsetX = $(this.element).offset().left;
 		var tables = this.element.find("table.items");
-		
+
 		this.t1.table = tables.eq(0);
 		this.t1.firstRow = this.t1.table.find("tr:first");
 		this.t1.masterCells = this.t1.firstRow.children();
-		
+
 		this.t2.table = tables.eq(1);
 		this.t2.firstRow = this.t2.table.find("tr:first");
 		this.t2.masterCells = this.t2.firstRow.children();
-		
+
 		this.helperTemplate = $('<div class="grid-view"><table class="x2grid-helper x2grid-resizable items"><thead><tr></tr></thead></table></div>');
-		
+
 		this.t1.masterCells.each(function(i,elem) {
 			$(elem).disableSelection().bind('selectstart',function(e){e.preventDefault();return false;});
 		});
-		
+
 		this.t1.firstRow.bind('mousedown.colDragging',function(startEvent) {
 			startEvent.preventDefault();
-			
+
 			if($(startEvent.target).closest('th').is(':last-child'))
 				return false;
 			self.startMouseX = startEvent.pageX;
@@ -298,13 +298,13 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 	 */
 	_mouseStart:function(e) {
 		this.options.start(e);
-		
+
 		var self = this;
 		this.dragging = true;
 		this.startMouseX = e.pageX;
-		
+
 		this.t1.masterCells = this.t1.firstRow.children();	// rescan, these cells may have been reordered
-		
+
 		this.colWidths = [];
 		this.t1.masterCells.each(function(i,elem) {
 			var w = $(elem).outerWidth();
@@ -312,35 +312,35 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 				// w++;
 			self.colWidths.push(w);
 		});
-		
+
 		this.spacers = [];
 		this.dragged.cell1 = $(e.target).closest('td,th');
 		this.dragged.index = this.dragged.cell1.index();
 		// this.dragged.cell2 = this.t2.firstRow.eq(this.dragged.index);
 		this.dragged.width = this.colWidths[this.dragged.index];
-		
+
 		this.hoverIndex = this.dragged.index;
-		
+
 		this.helperStartPos = this.dragged.cell1.offset();
-		
-		
+
+
 		this.helper = this.helperTemplate.clone().width(this.dragged.width);
 		this.helper.find('tr').append(this.dragged.cell1.clone());
 		this.helper.offset(this.helperStartPos).appendTo('body');
-		
+
 		this.dragged.t1Col = this.t1.table.find('tr').children(':nth-child('+(this.dragged.index+1)+')');
 		this.dragged.t2Col = this.t2.table.find('tr').children(':nth-child('+(this.dragged.index+1)+')');
-		
+
 		this._addSpacers();
 		this.dragged.t1Col.remove();
 		// this.dragged.t2Col.remove();
-		
+
 		this.spacers[this.dragged.index].width = this.dragged.width;
 		this.spacers[this.dragged.index].cell1.style.width = this.dragged.width+'px';
 		// this.spacers[this.dragged.index].cell2.style.width = this.dragged.width+'px';
 		this.spacers[this.dragged.index].hidden = false;
-		
-		
+
+
 		if(this.timeout === null)
 			this.timeout = setInterval(function(){ self._animate(); },20);
 	},
@@ -349,7 +349,7 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 	 */
 	_mouseDrag:function(e) {
 		this.helper.offset({top:this.helperStartPos.top,left:this.helperStartPos.left + e.pageX - this.startMouseX});
-		
+
 		// hoverIndex must be >= 0 and <= [# of cols - 2] (the last col is empty, and the dragged col has been removed)
 		this.hoverIndex = Math.max(0,Math.min(this.t1.masterCells.length-2,this._getTargetIndex(e.pageX)));
 		// if(this.hoverIndex === (this.hoverIndex = this._getTargetIndex(e.pageX))) {
@@ -362,12 +362,12 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 		this.dragging = false;
 		clearInterval(this.timeout);
 		this.timeout = null;
-		
+
 		this.t1.table.find('td.spacer,th.spacer').remove();
 		// this.t2.table.find('td.spacer,th.spacer').remove();
-		
+
 		this.helper.remove();
-		
+
 		// this.dragged.col.css('width',this.dragged.width+'px');
 		// this.dragged.cell; // /* .css('width',this.dragged.width+'px') */.removeClass('x2grid-hidden-col');
 		// if(this.dragged.index !== this.hoverIndex) {
@@ -378,27 +378,27 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 			// targetCell = this.t1.masterCells.last();
 		// }
 		// this.dragged.col.insertBefore(targetCol);
-		
+
 		// this.dragged.cell.insertBefore(targetCell);
-		
+
 		var cols = this.t1.masterCells.length;
-		
+
 		var t1cells = this.t1.table.find('tr').children();	// array of all cells
 		var t2cells = this.t2.table.find('tr').children();
-		
+
 		for(var i=0;i<this.dragged.t1Col.length;i++)
 			$(this.dragged.t1Col[i]).insertBefore(t1cells.eq(i*(cols-1) + this.hoverIndex));	// one column has been removed, so we have to use (col - 1) for the table width
-			
+
 		if(this.hoverIndex >= this.dragged.index)	// meanwhile in table 2, the original dragged column hasn't been removed so we have to add 1
 			this.hoverIndex++;						// to get the real index (if the new position is to the right of the starting position)
 		for(var i=0;i<this.dragged.t2Col.length;i++)
 			$(this.dragged.t2Col[i]).insertBefore(t2cells.eq(i*cols + this.hoverIndex));
-		
+
 		if(this.timeout !== null)
 			clearInterval(this.timeout);
-			
+
 		this.hoverIndex = -1;
-		
+
 		this.options.complete(e);
 	},
 	/**
@@ -415,18 +415,18 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 		return i;
 	},
 	/**
-	 * 
+	 *
 	 */
 	_addSpacers:function() {
 		var headerRows = this.t1.table.find("tr").not(this.t1.firstRow);
 		// var bodyRows = this.t2.table.find("tr").not(this.t2.firstRow);
-		
+
 		var headerSpacers = $(document.createElement('th')).addClass('spacer').css('width','0px').insertBefore(this.t1.masterCells);
 		// var bodySpacers = $(document.createElement('td')).addClass('spacer').css('width','0px').insertBefore(this.t2.masterCells);
-		
+
 		$(document.createElement('td')).addClass('spacer').insertBefore(headerRows.children());
 		// $(document.createElement('td')).addClass('spacer').insertBefore(bodyRows.children());
-		
+
 		for(var i=0;i<this.colWidths.length;i++) {
 			if(i === this.hoverIndex)
 				continue;
@@ -443,7 +443,7 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 		}
 	},
 	/**
-	 * Animates the sliding headers by widening the target position's spacer by 25% 
+	 * Animates the sliding headers by widening the target position's spacer by 25%
 	 * (or at least 1px) and evenly removing the width from other spacers.
 	 * Runs every 20ms until the user stops dragging.
 	 */
@@ -452,13 +452,13 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 		// if(currentSpacer === false)
 			// currentSpacer = this.spacers[this.hoverIndex-1]
 			// return;
-		
+
 		var remainingWidth = this.dragged.width - currentSpacer.width;
 		if(remainingWidth > 0) {
 			currentSpacer.hidden = false;
 			dx = Math.ceil(remainingWidth / 4.0);	// half the remaining difference, minimum 1px
 			currentSpacer.width += dx;
-			
+
 			while(dx-- > 0) {	// loop through the other spacers removing 1px at a time until we get to dx pixels
 				for(var i=0;i<this.spacers.length;i++) {
 					if(i !== this.hoverIndex && this.spacers[i] !== false && this.spacers[i].width > 0) {
@@ -473,7 +473,7 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 					spacer.cell1.style.width = spacer.width+'px';	// otherwise set the new width
 					// spacer.cell2.style.width = spacer.width+'px';
 					// spacer.col.css('width',spacer.width+'px');
-					
+
 					if(spacer.width <= 0)
 						spacer.hidden = true;
 				}
@@ -505,7 +505,7 @@ $.widget("x2.gvSettings", {
 
 		var self = this;
 		o = self.options;
-		
+
 		if(o.ajaxUpdate) {
 			this.element.find('.search-button').click(function() {
 				$('.search-form').toggle();
@@ -519,17 +519,21 @@ $.widget("x2.gvSettings", {
 			// $('#'+o.columnSelectorId).find('input').bind('change',function() { self._saveColumnSelection(this); });
 			this.element.find('.column-selector-link').bind('mousedown',function() { self._toggleColumnSelector(this,self); });
 		// }
-		
+
 		this.tables = this.element.find('table.items');
-		
+
 		this._setupGridviewResizing(self);
 		this._setupGridviewDragging(self);
 		this._compareGridviewSettings(self);
-		
+
 		this.element.find('.yiiPager').on('click','a',function() {
 			$('html,body').animate({scrollTop:0},500,'swing');
 		});
-		
+
+        this.element.find('.auto-resize-button').on('click',function() {
+			self._autoSizeColumns(self);
+		});
+
 		// var headerHeight = this.tables.eq(0).height();
 		// this.tables.eq(0).parent().css('margin-right',this.getScrollbarWidth()+'px');
 		// this.tables.eq(1).parent().css({
@@ -566,7 +570,7 @@ $.widget("x2.gvSettings", {
 	_compareGridviewSettings:function(self) {
 		var o = self.options;
 		var headerCells = this.tables.eq(0).find('tr:first th');
-		
+
 		var cols = this.tables.eq(0).find('tr').first().children();
 		var gvSettings = '{';
 		var tableData = [];
@@ -603,7 +607,7 @@ $.widget("x2.gvSettings", {
 
 
 		}
-		// console.debug(gvSettings);
+        // console.debug(gvSettings);
 		this.prevGvSettings = gvSettings;
 	},
 
@@ -620,7 +624,7 @@ $.widget("x2.gvSettings", {
 			$('#'+o.columnSelectorId).css( { 'left': xPos + 'px', 'top':yPos + 'px' } );
 		} else
 			$(".column-selector-link").removeClass('clicked');
-		
+
 		$('#'+o.columnSelectorId).fadeToggle(300,'swing',function() {
 			if($('#'+o.columnSelectorId).is(':visible')) {
 				$(document).bind('click.columnSelector',function(e) {
@@ -645,20 +649,28 @@ $.widget("x2.gvSettings", {
 			});
 		}
 	},
-	
+
 	getScrollbarWidth:function() {
 		var outer = $(document.createElement('div')).addClass('scrollbar-width-test');
 		var inner = $(document.createElement('div')).appendTo(outer);
 		outer.appendTo('body');
-		var w1 = inner[0].offsetWidth;  
+		var w1 = inner[0].offsetWidth;
 		// outer.css('overflow', 'scroll');
-		var w2 = outer[0].offsetWidth;  
+		var w2 = outer[0].offsetWidth;
 		// if(w1 == w2)
-			// w2 = outer[0].clientWidth;  
+			// w2 = outer[0].clientWidth;
 		// outer.remove();
 		// console.debug(w1);
 		// console.debug(w2);
 		return w2 - w1;
-	}
+	},
+
+    _autoSizeColumns:function(self){
+        $('.grid-view td').css('width',(100/($('.grid-view th').length)+"%"));
+        $('.grid-view th').css('width',(100/($('.grid-view th').length)+"%"));
+		this._compareGridviewSettings(self);
+        this._setupGridviewResizing(self);
+		this._setupGridviewDragging(self);
+    }
 });
 })(jQuery);

@@ -67,6 +67,7 @@ class Roles extends CActiveRecord {
 		return array(
 			array('name', 'required'),
 			array('name', 'length', 'max'=>250),
+			array('name','in','not'=>true,'range'=>array('admin','administrator'),'message'=>Yii::t('admin','The name you entered is reserved or belongs to the system.')),
 			array('users', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.

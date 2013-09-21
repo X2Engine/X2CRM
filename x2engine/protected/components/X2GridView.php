@@ -583,10 +583,14 @@ class X2GridView extends CGridView {
 					echo CHtml::link('<span></span>','#',array('title'=>Yii::t('app','Advanced Search'),'class'=>'x2-button search-button'));
 					break;
 				case 'clearFilters':
-					echo CHtml::link('<span></span>',array(Yii::app()->controller->action->id,'clearFilters'=>1),array('title'=>Yii::t('app','Clear Filters'),'class'=>'x2-button filter-button'));
+                    $url=array_merge(array(Yii::app()->controller->action->id),Yii::app()->controller->getActionParams(),array('clearFilters'=>1));
+					echo CHtml::link('<span></span>',$url,array('title'=>Yii::t('app','Clear Filters'),'class'=>'x2-button filter-button'));
 					break;
 				case 'columnSelector':
 					echo CHtml::link('<span></span>','javascript:void(0);',array('title'=>Yii::t('app','Columns'),'class'=>'column-selector-link x2-button'));
+					break;
+                case 'autoResize':
+					echo CHtml::link('<span></span>','javascript:void(0);',array('title'=>Yii::t('app','Auto-Resize Columns'),'class'=>'auto-resize-button x2-button'));
 					break;
 				default:
 					echo $button;

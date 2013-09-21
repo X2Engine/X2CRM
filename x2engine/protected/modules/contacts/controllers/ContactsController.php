@@ -1872,11 +1872,16 @@ class ContactsController extends x2base {
                             $field->modified=1;
                             $field->attributeLabel=$field->generateAttributeLabel($key);
                             if($field->save()){
-                                $fieldType="VARCHAR(250)";
-                                $sql = "ALTER TABLE x2_contacts ADD COLUMN `$columnName` $fieldType";
-                                $command = Yii::app()->db->createCommand($sql);
-                                $result = $command->query();
-                                $value=$columnName;
+                                try{
+                                    $fieldType="VARCHAR(250)";
+                                    $sql = "ALTER TABLE x2_contacts ADD COLUMN `$columnName` $fieldType";
+                                    $command = Yii::app()->db->createCommand($sql);
+                                    $result = $command->query();
+                                    $value=$columnName;
+                                }catch(CDbException $e){
+                                    $field->delete();
+                                    throw $e;
+                                }
                             }
                         }
                     }

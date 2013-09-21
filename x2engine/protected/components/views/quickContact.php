@@ -108,9 +108,12 @@ echo CHtml::ajaxSubmitButton(
             $(quickContactForm).find ('input').next ('.error-msg').remove ();
 
 			if(response === '') { // success
-                auxlib.createReqFeedbackBox (
-                    $(quickContactForm).find ('.x2-button'), 
-                    '".Yii::t('app','Contact Saved')."', 3000, ['quick-create-feedback']);
+                auxlib.createReqFeedbackBox ({
+                    prevElem: $(quickContactForm).find ('.x2-button'), 
+                    message: '".Yii::t('app','Contact Saved')."', 
+                    delay: 3000, 
+                    classes: ['quick-create-feedback']
+                });
 
                 // reset form inputs
                 $(quickContactForm).find ('input[type=\"text\"]').val ('');

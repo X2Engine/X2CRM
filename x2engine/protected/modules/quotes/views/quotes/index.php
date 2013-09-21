@@ -59,11 +59,11 @@ $('.search-form form').submit(function(){
 	'model'=>$model,
 )); ?>
 </div><!-- search-form -->
-<?php 
+<?php
 $this->widget('application.components.X2GridView', array(
 	'id'=>'quotes-grid',
 	'title'=>Yii::t('quotes','Quotes'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> '<div class="page-title icon quotes">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,

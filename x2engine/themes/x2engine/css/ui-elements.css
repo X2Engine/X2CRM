@@ -239,6 +239,8 @@ small x2-button
 */
 
 .x2-small-button  {
+    /*font-size: 80%;*/
+    height: 24px;
     padding: 0 4px 0 4px !important;
     margin: 0 0 0 0;
 }
@@ -805,4 +807,19 @@ div.x2-sortlist a.del {
 	-webkit-border-radius: 	4px 4px 4px 4px;
 	-o-border-radius: 		4px 4px 4px 4px;
 }
+
+
+
+.flush-grid-view .pager {
+    border-top: none;
+}
+
+.flush-grid-view table {
+    margin: 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid #aaa;
+}
+
 

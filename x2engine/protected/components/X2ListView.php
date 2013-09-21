@@ -33,36 +33,65 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
-Yii::import('application.components.webupdater.*');
+Yii::import('zii.widgets.CListView');
 
 /**
- * Action that applies the update.
+ * Renders a CListView
  *
- * This action takes the longest of any action to execute and is the most
- * critical point in the update process.
- * 
- * @package X2CRM.components.webupdater
- * @author Demitri Morgan <demitri@x2engine.com>
+ * @package X2CRM.components
  */
-class EnactX2CRMChangesAction extends WebUpdaterAction {
+class X2ListView extends CListView {
 
-	public function run($scenario = null, $autoRestore = false){
-        if($scenario == 'checkFiles') {
-            // Expects $_POST['fileList'] in this scenario
-            self::respond('',$this->checkFiles($_POST['fileList']));
-            return;
+    protected $ajax = false;
+
+    public function init(){
+        $this->ajax = isset($_GET['ajax']) && $_GET['ajax'] === $this->id;
+        if($this->ajax)
+            ob_clean();
+        if($this->itemView === null)
+            throw new CException(Yii::t('zii', 'The property "itemView" cannot be empty.'));
+        parent::init();
+
+        if(!isset($this->htmlOptions['class']))
+            $this->htmlOptions['class'] = 'list-view';
+
+        if($this->baseScriptUrl === null)
+            $this->baseScriptUrl = Yii::app()->getAssetManager()->publish(Yii::getPathOfAlias('zii.widgets.assets')).'/listview';
+
+        if($this->cssFile !== false){
+            if($this->cssFile === null)
+                $this->cssFile = $this->baseScriptUrl.'/styles.css';
+            Yii::app()->getClientScript()->registerCssFile($this->cssFile);
         }
-		set_error_handler('UpdaterBehavior::respondWithError');
-		set_exception_handler('UpdaterBehavior::respondWithException');
-		$autoRestore = (bool) $autoRestore;
-		$locked = $this->enactChanges($scenario, $_POST, $autoRestore);
-		$this->addResponseProperty('locked',$locked);
-		if(! (bool) $locked)
-			self::respond(Yii::t('admin', 'All done.'));
-		else
-			self::respond(Yii::t('admin', 'An operation that began {t} is in progress (to apply database and file changes to X2CRM). If you are seeing this message, and the stated time is less than a minute ago, this is most likely because your web browser made a duplicate request to the server. Please stand by while the operation completes. Otherwise, you may delete the lock file {file} and try again.',array('{t}'=>strftime('%h %e, %r',$locked),'{file}'=>$this->lockFile)),1);
-	}
+    }
+
+    public function run(){
+        $this->registerClientScript();
+
+        echo CHtml::openTag($this->tagName, $this->htmlOptions)."\n";
+
+        $this->renderContent();
+        $this->renderKeys();
+        if($this->ajax){
+            // remove any external JS and CSS files
+            Yii::app()->clientScript->scriptMap['*.js'] = false;
+            Yii::app()->clientScript->scriptMap['*.css'] = false;
+            // remove JS for gridview checkboxes and delete buttons (these events use jQuery.on() and shouldn't be reapplied)
+            Yii::app()->clientScript->registerScript('CButtonColumn#C_gvControls', null);
+            Yii::app()->clientScript->registerScript('CCheckBoxColumn#C_gvCheckbox', null);
+
+            $output = '';
+            Yii::app()->getClientScript()->renderBodyEnd($output);
+            echo $output;
+
+            echo CHtml::closeTag($this->tagName);
+            ob_flush();
+
+
+            Yii::app()->end();
+        }
+        echo CHtml::closeTag($this->tagName);
+    }
 
 }
 

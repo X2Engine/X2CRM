@@ -182,6 +182,9 @@ class Actions extends X2Model {
             $notif->modelId = $this->id;
             $notif->save();
         }
+        if(Yii::app()->params->noSession && !$this->asa('changelog')){
+            X2Flow::trigger('RecordCreateTrigger',array('model'=>$this));
+        }
         parent::afterCreate();
     }
 

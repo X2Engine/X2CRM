@@ -76,6 +76,12 @@ div#web-form .sp-preview
 	padding: 9px;
 	background: #F0F0F0;
 }
+p.fieldhelp-above {
+	color: #666;
+	font-size: 12px;
+	margin: -0.2px 0 0.8em;
+	width: 193px;
+}
 p.fieldhelp {
 	color: #666;
 	font-size: 12px;

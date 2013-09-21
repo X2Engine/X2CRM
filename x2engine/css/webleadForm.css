@@ -69,6 +69,12 @@ div#web-lead-form .sp-preview {
 	padding:9px;
 	background:#F0F0F0;
 }
+p.fieldhelp-above {
+	color:#666;
+	font-size:12px;
+	margin:-0.2px 0 0.8em;
+	width:193px;
+}
 p.fieldhelp {
 	color:#666;
 	font-size:12px;
@@ -126,4 +132,29 @@ div.web-form-fields {
 	-webkit-border-radius:	4px;
 	border-radius:			4px;
 	overflow-y: scroll;
+}
+#save {
+    margin-top: 1px;
+}
+#reset-form {
+    position: relative;
+    top: 2px;
+}
+#weblead-form-name,
+#saved-forms {
+    margin-right: 4px;
+}
+.save-html-feedback {
+    margin-top: 9px !important;
+}
+#custom-html-input-container > h4 {
+    margin-right: 4px;
+    display: inline;
+}
+#custom-html-input-container .fieldhelp {
+    margin-top: 2px;
+}
+#custom-html-hint {
+    position: relative;
+    top: -2px;
 }

@@ -118,8 +118,11 @@ abstract class X2FlowItem extends CComponent {
 	 */
 	public static function getParamRules($type) {
 		$item = self::create(array('type'=>$type));
-		if($item !== null)
-			return $item->paramRules();
+		if($item !== null) {
+			$paramRules = $item->paramRules();
+            $paramRules['class'] = get_class ($item);
+            return $paramRules;
+        }
 		return false;
 	}
 

@@ -373,16 +373,18 @@ class Credentials extends CActiveRecord {
 	}
 
 	/**
-	 * Generates a select input for a form that includes a list of credentials
-	 * available for the current user.
 	 * @param CModel $model Model whose attribute is being used to specify a set of credentials
 	 * @param string $name Attribute storing the ID of the credentials record
-	 * @param string $type Keyword specifying the "service type" (i.e. "email" encompasess credentials with modelClass "EmailAccount" and "GMailAccount"
+	 * @param string $type Keyword specifying the "service type" (i.e. "email" encompasess credentials 
+     *  with modelClass "EmailAccount" and "GMailAccount"
 	 * @param integer $uid The user ID or system role ID for which the input is being generated
 	 * @param array $htmlOptions HTML options to pass to {@link CHtml::activeDropDownList()}
-	 * @return string
+	 * @param boolean $getNameEmailsArr if true, returned array will include array indexed by credId which 
+     *  contains associated email and name
+	 * @return array containing values which can be used to instantiate an activeDropDownList.
+     *  This inludes an array of credential names as well an array of the options' selected attributes.
 	 */
-	public static function selectorField($model,$name,$type='email',$uid=null,$htmlOptions=array()) {
+	public static function getCredentialOptions ($model,$name,$type='email',$uid=null,$htmlOptions=array()){
 		// First get credentials available to the user:
 		$defaultUserId = in_array($uid,self::$sysUseId) ? $uid : ($uid !==null ? $uid : Yii::app()->user->id); // The "user" (actual user or system role)
 		$uid = Yii::app()->user->id; // The actual user
@@ -403,7 +405,7 @@ class Credentials extends CActiveRecord {
 		$criteria->addInCondition('modelClass',$staticModel->defaultSubstitutes[$type]);
 		$credRecords = $staticModel->findAll($criteria);
 		$credentials = array();
-		if($model->$name == null){
+		if($model === null || $model->$name == null){
 			// Figure out which one is default since it hasn't been set yet
 			$defaultCreds = $staticModel->getDefaultCredentials();
 			if($type == 'email')
@@ -418,11 +420,14 @@ class Credentials extends CActiveRecord {
 		// Compose options for the selector
 		foreach($credRecords as $cred) {
 			$credentials[$cred->id] = $cred->name;
-			if($type == 'email')
-				$credentials[$cred->id] = Formatter::truncateText($credentials[$cred->id].' : "'.$cred->auth->senderName.'" <'.$cred->auth->email.'>',50);
+			if($type == 'email') {
+				$credentials[$cred->id] = Formatter::truncateText($credentials[$cred->id].
+                    ' : "'.$cred->auth->senderName.'" <'.$cred->auth->email.'>',50);
+            }
 		}
-		if($type == 'email') // Legacy email delivery method(s)
+		if($type == 'email') {// Legacy email delivery method(s)
 			$credentials[self::LEGACY_ID] = Yii::t('app','System default (legacy)');
+        }
 		$options = array();
 		foreach($credentials as $credId => $label) {
 			if($credId == $selectedCredentials) {
@@ -436,6 +441,29 @@ class Credentials extends CActiveRecord {
 		
 		$htmlOptions['options']=$options;
 
+        $retDict = array (
+            'credentials' => $credentials,
+            'htmlOptions' => $htmlOptions
+        );
+        return $retDict;
+
+    }
+
+	/**
+	 * Generates a select input for a form that includes a list of credentials
+	 * available for the current user.
+	 * @param CModel $model Model whose attribute is being used to specify a set of credentials
+	 * @param string $name Attribute storing the ID of the credentials record
+	 * @param string $type Keyword specifying the "service type" (i.e. "email" encompasess credentials 
+     *  with modelClass "EmailAccount" and "GMailAccount"
+	 * @param integer $uid The user ID or system role ID for which the input is being generated
+	 * @param array $htmlOptions HTML options to pass to {@link CHtml::activeDropDownList()}
+	 * @return string
+	 */
+	public static function selectorField($model,$name,$type='email',$uid=null,$htmlOptions=array()) {
+        $retDict = self::getCredentialOptions ($model,$name,$type,$uid,$htmlOptions);
+        $credentials = $retDict['credentials'];
+        $htmlOptions = $retDict['htmlOptions'];
 		return CHtml::activeDropDownList($model,$name,$credentials,$htmlOptions);
 	}
 

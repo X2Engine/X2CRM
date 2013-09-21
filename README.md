@@ -1,6 +1,24 @@
-# X2CRM 3.5.1 #
-9/12/2013
-## Changes ##
+# X2CRM 3.5 #
+Point release 3.5.2: 9/20/2013
+
+## Changes in 3.5.2 ##
+* Fully-configurable batch timeout setting controls how much actual time can be spent in campaign emailing and cron events
+* Attribute replacement now works in the "Send a Test Email" feature of Campaigns
+* Long-overdue data validation in Role creator
+* New in X2Flow (Professional Edition only)
+  * X2Flow email actions can be configured to send using SMTP accounts stored through the credentials manager (see: "Manage Apps" in the user menu)
+  * Variable replacement in the X2Flow email actions works for arbitrary models
+  * Insertable attribute menus in X2Flow email actions automatically match those of the model type in the trigger
+  * New "unsubscribe" link short-code for X2Flow email bodies
+* Fixed Bugs:  
+  * [206](http://x2software.com/index.php/bugReports/206): Name improperly parsed/generated from email headers  
+  * [243](http://x2software.com/index.php/bugReports/243): User Report  
+  * [252](http://x2software.com/index.php/bugReports/252): X2Flow Issue with comparing two attributes  
+  * [296](http://x2software.com/index.php/bugReports/296): Send a test email to actual contacts  
+  * [308](http://x2software.com/index.php/bugReports/308): Cannot add "administrator" as a child of "DefaultRole". A loop has been detected. 
+  * [311](http://x2software.com/index.php/bugReports/311): DbCommand failed to execute the SQL statement: SQLSTATE[HY000]: General error: 1366 Incorrect decimal value: '' for column 'dealvalue
+
+## Changes in 3.5, 3.5.1 ##
 * "Print Record" feature in nearly all modules shows print-friendly version of a record
 * "Recently Viewed" widget now includes all record types
 * Chart widget enhancements

@@ -34,36 +34,24 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.webupdater.*');
-
 /**
- * Action that applies the update.
+ * Handles list/grid view rendering.
  *
- * This action takes the longest of any action to execute and is the most
- * critical point in the update process.
- * 
- * @package X2CRM.components.webupdater
- * @author Demitri Morgan <demitri@x2engine.com>
+ * @package X2CRM.components
  */
-class EnactX2CRMChangesAction extends WebUpdaterAction {
+class X2AjaxHandler extends CFilter {
 
-	public function run($scenario = null, $autoRestore = false){
-        if($scenario == 'checkFiles') {
-            // Expects $_POST['fileList'] in this scenario
-            self::respond('',$this->checkFiles($_POST['fileList']));
-            return;
+    protected function preFilter($filterChain){
+        if (Yii::app()->request->getIsAjaxRequest() && isset($_GET["ajax"])) {
+            if($_GET['ajax']=='history'){
+                if(isset($_GET['id'])){
+                    $type = strtolower($filterChain->controller->id);
+                    $filterChain->controller->widget('History', array('associationType' => $type, 'associationId' => $_GET['id']));
+                    Yii::app()->end();
+                }
+            }
         }
-		set_error_handler('UpdaterBehavior::respondWithError');
-		set_exception_handler('UpdaterBehavior::respondWithException');
-		$autoRestore = (bool) $autoRestore;
-		$locked = $this->enactChanges($scenario, $_POST, $autoRestore);
-		$this->addResponseProperty('locked',$locked);
-		if(! (bool) $locked)
-			self::respond(Yii::t('admin', 'All done.'));
-		else
-			self::respond(Yii::t('admin', 'An operation that began {t} is in progress (to apply database and file changes to X2CRM). If you are seeing this message, and the stated time is less than a minute ago, this is most likely because your web browser made a duplicate request to the server. Please stand by while the operation completes. Otherwise, you may delete the lock file {file} and try again.',array('{t}'=>strftime('%h %e, %r',$locked),'{file}'=>$this->lockFile)),1);
-	}
-
+        return true;
+    }
 }
-
 ?>

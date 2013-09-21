@@ -87,7 +87,7 @@ function X2ActionHistoryChart (argsDict) {
 	});
 
 	this.cookieTypes = [
-		'binSize', 'firstMetric', 'showRelationships'];
+		'startDate', 'endDate', 'dateRange', 'binSize', 'firstMetric', 'showRelationships'];
 
 	/* 
 	set up event handlers which update action history chart on action 
@@ -133,6 +133,9 @@ function X2ActionHistoryChart (argsDict) {
 
 X2ActionHistoryChart.prototype = Object.create (X2Chart.prototype);
 
+/*
+Sets initial state of chart setting ui elements
+*/
 X2ActionHistoryChart.prototype.setDefaultSettings = function () {
 	var thisX2Chart = this;
 
@@ -158,6 +161,9 @@ X2ActionHistoryChart.prototype.setDefaultSettings = function () {
 
 };
 
+/*
+Filter function used by groupChartData to determine how chart data should be grouped
+*/
 X2ActionHistoryChart.prototype.chartDataFilter = function (dataPoint, type) {
 	var thisX2Chart = this;
 
@@ -169,6 +175,10 @@ X2ActionHistoryChart.prototype.chartDataFilter = function (dataPoint, type) {
 	}
 };
 
+/*
+Returns dictionary with keys equal to metric types and value equal to metric type
+labels
+*/
 X2ActionHistoryChart.prototype.getMetricTypes = function () {
 	var thisX2Chart = this;
 
@@ -182,6 +192,9 @@ X2ActionHistoryChart.prototype.getMetricTypes = function () {
 	return metricTypes;
 };
 
+/*
+Add pie chart specific css rules
+*/
 X2ActionHistoryChart.prototype.postPieChartTearDown = function () {
 	var thisX2Chart = this;
 	$('#' + thisX2Chart.chartType + '-chart').removeClass ('pie');
@@ -192,6 +205,9 @@ X2ActionHistoryChart.prototype.postPieChartTearDown = function () {
 	$('#' + thisX2Chart.chartType + '-rel-chart-data-checkbox-container').removeClass ('pie');
 };
 
+/*
+Remove pie chart specific css rules
+*/
 X2ActionHistoryChart.prototype.postPieChartSetUp = function () {
 	var thisX2Chart = this;
 	$('#' + thisX2Chart.chartType + '-chart').addClass ('pie');

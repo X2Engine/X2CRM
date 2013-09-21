@@ -37,73 +37,6 @@
 Base prototype. Should not be instantiated. 
 */
 
-/*
-Select an option from a select element
-Parameters:
-	selector - a jquery selector for the select element
-	setting - the value of the option to be selected
-*/
-function selectOptionFromSelector (selector, setting) {
-	$(selector).children (':selected').removeAttr ('selected');
-	$(selector).children ('[value="' + setting + '"]').attr ('selected', 'selected');
-}
-
-/*
-Removes an error div created by createErrorBox ().  
-Parameters:
-	parentElem - a jQuery element which contains the error div
-*/
-function destroyErrorBox (parentElem) {
-	var $errorBox = $(parentElem).find ('.error-summary-container');
-	if ($errorBox.length !== 0) {
-		$errorBox.remove ();
-	}
-}
-
-/*
-Returns a jQuery element corresponding to an error box. The error box will
-contain the specified errorHeader and a bulleted list of the specified error
-messages.
-Parameters:
-	errorHeader - a string
-	errorMessages - an array of strings
-*/
-function createErrorBox (errorHeader, errorMessages) {
-	var errorBox = $('<div>', {'class': 'error-summary-container'}).append (
-		$("<div>", { 'class': "error-summary"}).append (
-			$("<p>", { text: errorHeader }),
-			$("<ul>")
-	));
-	for (var i in errorMessages) {
-		var msg = errorMessages[i];
-		$(errorBox).find ('.error-summary').
-			find ('ul').append ($("<li> " + msg + " </li>"));
-	}
-	return errorBox;
-}
-
-
-
-
-var MSPERHOUR = 3600 * 1000;
-var MSPERDAY = 86400 * 1000;
-var MSPERWEEK = 7 * 86400 * 1000;
-
-
-/*
-Set object properties. Default property values are used where an expected property value 
-is not defined.
-*/
-function applyArgs (obj, defaultArgs, args) {
-	for (var i in defaultArgs) {
-		if (args[i] === undefined) {
-			obj[i] = defaultArgs[i];
-		} else {
-			obj[i] = args[i];
-		}
-	}
-}
-
 
 function X2Chart (argsDict) {
 
@@ -120,7 +53,7 @@ function X2Chart (argsDict) {
 		chartSettings: null // predefined chart settings
 	};
 
-	applyArgs (this, defaultArgs, argsDict);
+	auxlib.applyArgs (this, defaultArgs, argsDict);
 
 	this.metricOptionsColors = null; // set in child prototype
 	this.cookieTypes = null; // set in child prototype
@@ -144,6 +77,13 @@ function X2Chart (argsDict) {
 	$(window).on ('resize', x2[thisX2Chart.chartType].windowResizeFunction);
 }
 
+/************************************************************************************
+Static Properties
+************************************************************************************/
+
+X2Chart.MSPERHOUR = 3600 * 1000;
+X2Chart.MSPERDAY = 86400 * 1000;
+X2Chart.MSPERWEEK = 7 * 86400 * 1000;
 
 
 /************************************************************************************
@@ -468,6 +408,7 @@ X2Chart.setupPieTooltipBehavior = function (
 
 	}
 
+    // returns an array containing the x and y coordinate of the center of the pie chart
 	function getPieCenter () {
 		var pieCenterX, pieCenterY, pieOffset, pieWidth, pieHeight;
 		var pieOffset = $('#' + thisX2Chart.chartType + '-chart').offset ();
@@ -478,6 +419,8 @@ X2Chart.setupPieTooltipBehavior = function (
 		return [pieCenterX, pieCenterY];
 	}
 
+    // Finds a location near the center of the current pie slice and
+    // returns an array containing x and y coordinates where the tooltip should be placed.
 	function getTooltipLocation (type, pieCenter) {
 		thisX2Chart.DEBUG && console.log ('diameter = ' + diameter);
 		var tooltipAngle = startAngle;
@@ -527,10 +470,11 @@ X2Chart.setupPieTooltipBehavior = function (
 			thisX2Chart.DEBUG && console.log (pieCenter);
 			var tooltipLoc = getTooltipLocation (data[0], pieCenter);
 
-			$(tooltip).empty ();
+			$(tooltip).empty (); // clear previous tooltip
 
 			thisX2Chart.DEBUG && console.log ('highlight: tooltiptype, typesText = ' + data[0] + ', ' + typesText[data[0]]);
 
+            // create tooltip text
 			$(tooltip).append ($('<span>', {
 				text: typesText[data[0]] + ': ' + unconvertedChartData[pointIndex][1] + 
 					' (' + data[1].toFixed (2) + '%)'
@@ -550,6 +494,7 @@ X2Chart.setupPieTooltipBehavior = function (
 				return marginLeft;
 			}
 
+            // style and position tooltip
 			$(tooltip).css ({
 				position: 'absolute',
 				left: tooltipLoc[0],
@@ -564,6 +509,12 @@ X2Chart.setupPieTooltipBehavior = function (
 
 		});
 
+    /* 
+    Used to determine when to hide/show the tooltip. This should only be used when the 
+    cursor is inside the tooltip since jqplot's built in mouseout detection is more 
+    accurate.
+    Returns true if cursor is outside of slice, false otherwise
+    */
 	function isOutsideSlice (mouseX, mouseY) {
 		var pieCenter = getPieCenter ();
 		var dist = (Math.sqrt (Math.pow (mouseX - pieCenter[0], 2) + 
@@ -623,6 +574,7 @@ X2Chart.setupPieTooltipBehavior = function (
 			return false;
 	}
 
+    // returns true if cursor is outside of pie, false otherwise
 	function isOutsideCircle (mouseX, mouseY) {
 		var pieCenter = getPieCenter ();
 		var dist = (Math.sqrt (Math.pow (mouseX - pieCenter[0], 2) + 
@@ -641,7 +593,8 @@ X2Chart.setupPieTooltipBehavior = function (
 
 		if ($(tooltip).is (':visible') &&
 			mouseX !== null && mouseY !== null &&
-			(isOutsideCircle (mouseX, mouseY) || (isInsideToolTip && isOutsideSlice (mouseX, mouseY)))) {
+			(isOutsideCircle (mouseX, mouseY) || 
+             (isInsideToolTip && isOutsideSlice (mouseX, mouseY)))) {
 
 			thisX2Chart.DEBUG && console.log ('hiding tooltip');
 
@@ -716,7 +669,7 @@ X2Chart.plotLineData = function (args /* optional */) {
 	graph at least 1 interval, hour bin size is a special case since it is the only
 	case for which there are multiple bins when start and and timestamp are equal.
 	*/
-	if (/*startTimestamp === endTimestamp && */binSize === 'hour-bin-size')
+	if (binSize === 'hour-bin-size')
 		endTimestamp = thisX2Chart.shiftTimeStampOneInterval (endTimestamp, binSize, true);
 
 	var min = startTimestamp;
@@ -1200,7 +1153,7 @@ X2Chart.groupLineChartData = function (
 			}
 			break;
 		case 'week-bin-size':
-			var week, year, evt, dateString, timestamp, date, day, MSPERWEEK, count;
+			var week, year, evt, dateString, timestamp, date, day, count;
 			for (var i in thisX2Chart.eventData) {
 				evt = thisX2Chart.eventData[i];
 				count = evt['count'] === '0' ? 1 : parseInt (evt['count'], 10);
@@ -1217,7 +1170,7 @@ X2Chart.groupLineChartData = function (
 						year, evt['month'] - 1, evt['day'], 0, 0, 0, 0)).getTime ();
 					date = new Date (timestamp);
 					day = date.getDay ();
-					timestamp -= day * MSPERDAY;
+					timestamp -= day * X2Chart.MSPERDAY;
 
 					chartData.push ([timestamp, count]);
 				}
@@ -1293,6 +1246,8 @@ X2Chart.prototype.getMetricTypes = function () {
 
 X2Chart.prototype.setChartSubtype = function (chartSubtype, plot, uiSetUp, force) {
 	var thisX2Chart = this;
+
+    thisX2Chart.DEBUG && console.log ('setChartSubtype: chartSubtype = ' + chartSubtype);
 
 	plot = typeof plot === 'undefined' ? true : plot;
 	uiSetUp = typeof uiSetUp === 'undefined' ? true : uiSetUp;
@@ -1590,6 +1545,9 @@ X2Chart.prototype.setUpFilters = function () {
 
 };
 
+/*
+Binds event functions related to filter settings ui element
+*/
 X2Chart.prototype.bindFilterEvents = function () {
 	var thisX2Chart = this;
 	$('#' + this.chartType + '-show-chart-filters-button').click (function () {
@@ -1609,6 +1567,9 @@ X2Chart.prototype.bindFilterEvents = function () {
 	});
 };
 
+/*
+Rebinds event functions related to filter settings ui element
+*/
 X2Chart.prototype.rebindFilterEvents = function () {
 	var thisX2Chart = this;
 	$('#' + this.chartType + '-hide-chart-filters-button').unbind ('click');
@@ -1630,7 +1591,7 @@ X2Chart.prototype.getEventsBetweenDates = function (redraw) {
 		attr ('id').replace (thisX2Chart.chartType + '-', '');
 	var tsDict = thisX2Chart.getStartEndTimestamp ();
 	var startTimestamp = tsDict['startTimestamp'];
-	var endTimestamp = tsDict['endTimestamp'] + MSPERDAY - 1000;
+	var endTimestamp = tsDict['endTimestamp'] + X2Chart.MSPERDAY - 1000;
 
 	thisX2Chart.DEBUG && console.log (
 		'getting events between ' + startTimestamp + ' and ' + endTimestamp);
@@ -1696,8 +1657,8 @@ X2Chart.prototype.getZeroEntriesBetween = function (
 			if (!showMarker) {
 				var intermediateTimestamp1 = timestamp1;
 				var intermediateTimestamp2 = timestamp2;
-				intermediateTimestamp1 += MSPERHOUR;
-				intermediateTimestamp2 -= MSPERHOUR;
+				intermediateTimestamp1 += X2Chart.MSPERHOUR;
+				intermediateTimestamp2 -= X2Chart.MSPERHOUR;
 				if (intermediateTimestamp1 < intermediateTimestamp2) {
 					entries.push ([intermediateTimestamp1, 0]);
 					entries.push ([intermediateTimestamp2, 0]);
@@ -1710,7 +1671,7 @@ X2Chart.prototype.getZeroEntriesBetween = function (
 			} else {
 				var intermediateTimestamp = timestamp1;
 				while (true) {
-					intermediateTimestamp += MSPERHOUR;
+					intermediateTimestamp += X2Chart.MSPERHOUR;
 					if ((intermediateTimestamp < timestamp2 && !inclusiveEnd) ||
 						(intermediateTimestamp <= timestamp2 && inclusiveEnd)) {
 						entries.push ([intermediateTimestamp, 0]);
@@ -1724,8 +1685,8 @@ X2Chart.prototype.getZeroEntriesBetween = function (
 			if (!showMarker) {
 				var intermediateTimestamp1 = timestamp1;
 				var intermediateTimestamp2 = timestamp2;
-				intermediateTimestamp1 += MSPERDAY;
-				intermediateTimestamp2 -= MSPERDAY;
+				intermediateTimestamp1 += X2Chart.MSPERDAY;
+				intermediateTimestamp2 -= X2Chart.MSPERDAY;
 				if (intermediateTimestamp1 < intermediateTimestamp2) {
 					entries.push ([intermediateTimestamp1, 0]);
 					entries.push ([intermediateTimestamp2, 0]);
@@ -1738,7 +1699,7 @@ X2Chart.prototype.getZeroEntriesBetween = function (
 			} else {
 				var intermediateTimestamp = timestamp1;
 				while (true) {
-					intermediateTimestamp += MSPERDAY;
+					intermediateTimestamp += X2Chart.MSPERDAY;
 					intermediateTimestamp = thisX2Chart.roundForDaylightSavings (intermediateTimestamp);
 
 					if ((intermediateTimestamp < timestamp2 && !inclusiveEnd) ||
@@ -1759,8 +1720,8 @@ X2Chart.prototype.getZeroEntriesBetween = function (
 					thisX2Chart.getRoundedTimestamp (timestamp1, 'week-bin-size', false);
 				//var intermediateTimestamp1 = timestamp1;
 				var intermediateTimestamp2 = timestamp2;
-				intermediateTimestamp1 += MSPERWEEK;
-				intermediateTimestamp2 -= MSPERWEEK;
+				intermediateTimestamp1 += X2Chart.MSPERWEEK;
+				intermediateTimestamp2 -= X2Chart.MSPERWEEK;
 				if (intermediateTimestamp1 < intermediateTimestamp2) {
 					entries.push ([intermediateTimestamp1, 0]);
 					entries.push ([intermediateTimestamp2, 0]);
@@ -1786,7 +1747,7 @@ X2Chart.prototype.getZeroEntriesBetween = function (
 				}
 				while (true) {
 					if (!rounded) {
-						intermediateTimestamp += MSPERWEEK;
+						intermediateTimestamp += X2Chart.MSPERWEEK;
 						intermediateTimestamp = thisX2Chart.roundForDaylightSavings (intermediateTimestamp);
 					}
 					rounded = false;
@@ -1957,24 +1918,24 @@ X2Chart.prototype.shiftTimeStampOneInterval = function (timestamp, binSize, forw
 	switch (binSize) {
 		case 'hour-bin-size':
 			if (forward) {
-				newTimestamp += (MSPERDAY);
+				newTimestamp += (X2Chart.MSPERDAY);
 				newTimestamp = thisX2Chart.roundForDaylightSavings (newTimestamp);
-				newTimestamp -= MSPERHOUR;
+				newTimestamp -= X2Chart.MSPERHOUR;
 			} else {
-				newTimestamp -= MSPERDAY;
+				newTimestamp -= X2Chart.MSPERDAY;
 			}
 			break;
 		case 'day-bin-size':
 			if (forward)
-				newTimestamp += MSPERDAY;
+				newTimestamp += X2Chart.MSPERDAY;
 			else
-				newTimestamp -= MSPERDAY;
+				newTimestamp -= X2Chart.MSPERDAY;
 			break;
 		case 'week-bin-size':
 			if (forward)
-				newTimestamp += MSPERWEEK;
+				newTimestamp += X2Chart.MSPERWEEK;
 			else
-				newTimestamp -= MSPERWEEK;
+				newTimestamp -= X2Chart.MSPERWEEK;
 			break;
 		case 'month-bin-size':
 			var date = new Date (timestamp);
@@ -2069,7 +2030,7 @@ the start and end timestamps.
 */
 X2Chart.prototype.countBins = function (startTimestamp, endTimestamp) {
 	var thisX2Chart = this;
-	endTimestamp += MSPERDAY - 1;
+	endTimestamp += X2Chart.MSPERDAY - 1;
 
 	var dateRange =
 		(endTimestamp + 1) - startTimestamp;
@@ -2124,9 +2085,9 @@ X2Chart.prototype.roundForDaylightSavings = function (timestamp) {
 	var date = new Date (timestamp);
 	var hours = date.getHours ();
 	if (hours === 1) {
-		timestamp -= MSPERHOUR;
+		timestamp -= X2Chart.MSPERHOUR;
 	} else if (hours === 23) {
-		timestamp += MSPERHOUR;
+		timestamp += X2Chart.MSPERHOUR;
 	}
 
 	date = new Date (timestamp);
@@ -2148,7 +2109,7 @@ X2Chart.prototype.getRoundedDayTs = function (timestamp, prev) {
 	var D = date.getDate ();
 	var newTimestamp = (new Date (Y, M - 1, D, 0, 0, 0, 0)).getTime ();
 	if (!prev) {
-		newTimestamp += MSPERDAY;
+		newTimestamp += X2Chart.MSPERDAY;
 	}
 	return newTimestamp;
 };
@@ -2163,9 +2124,9 @@ X2Chart.prototype.getRoundedWeekTs = function (timestamp, prev) {
 	var newTimestamp = (new Date (Y, M - 1, D, 0, 0, 0, 0)).getTime ();
 	var date = new Date (newTimestamp);
 	var day = date.getDay ();
-	newTimestamp -= day * MSPERDAY;
+	newTimestamp -= day * X2Chart.MSPERDAY;
 	if (!prev && day !== 0) {
-		newTimestamp += MSPERWEEK;
+		newTimestamp += X2Chart.MSPERWEEK;
 	}
 	return newTimestamp;
 };
@@ -2427,7 +2388,7 @@ X2Chart.prototype.getTooltipFormattedLabel = function (
 					thisX2Chart.DEBUG && console.log ('Y, M = ');
 					thisX2Chart.DEBUG && console.log (Y, M);
 					endTimestamp = (new Date (Y, M - 1, 1, 0, 0, 0, 0)).getTime ();
-					endTimestamp -= MSPERDAY;
+					endTimestamp -= X2Chart.MSPERDAY;
 					thisX2Chart.DEBUG && console.log (endTimestamp);
 				}
 					
@@ -2439,14 +2400,14 @@ X2Chart.prototype.getTooltipFormattedLabel = function (
 			case 'plusSixDays':
 				if (isFirstPoint) {
 					var day = date.getDay ();
-					endTimestamp = timestamp + (7 - (day + 1)) * MSPERDAY;
+					endTimestamp = timestamp + (7 - (day + 1)) * X2Chart.MSPERDAY;
 				} else if (isLastPoint) {
 					endTimestamp = ($('#' + thisX2Chart.chartType + '-chart-datepicker-to').
 						datepicker ('getDate').valueOf ());
 					if (endTimestamp < timestamp)
 						endTimestamp = timestamp;
 				} else {
-					endTimestamp = timestamp + 6 * MSPERDAY;
+					endTimestamp = timestamp + 6 * X2Chart.MSPERDAY;
 					//endTimestamp -= timestampDiff; 
 				}
 					
@@ -2526,9 +2487,9 @@ X2Chart.prototype.getTicks = function (startTimestamp, endTimestamp, binSize, co
 
 		var day = date.getDay ();
 		// place dummy tick and find next week boundary
-		if (day !== 0 && interval >= MSPERWEEK) { 
+		if (day !== 0 && interval >= X2Chart.MSPERWEEK) { 
 			ticks.push ([startTimestamp,'']);
-			startTimestamp += (7 - day) * MSPERDAY;
+			startTimestamp += (7 - day) * X2Chart.MSPERDAY;
 			date = new Date (startTimestamp);
 			D = date.getDate ();
 			M = date.getMonth () + 1;
@@ -2635,7 +2596,7 @@ X2Chart.prototype.getTicks = function (startTimestamp, endTimestamp, binSize, co
 				var date = new Date (startTimestamp);
 				ticks.push ([startTimestamp, '12:00 AM']);
 				var timestamp = startTimestamp;
-				var interval = MSPERDAY / 2;
+				var interval = X2Chart.MSPERDAY / 2;
 				var period = 'PM';
 				timestamp += interval;
 				while (timestamp <= endTimestamp) {
@@ -2651,15 +2612,15 @@ X2Chart.prototype.getTicks = function (startTimestamp, endTimestamp, binSize, co
 				labelFormat = 'longMonth day hours';
 			} else if (days <= 7) {
 				ticks =
-					getDayTicksBetween (startTimestamp, endTimestamp, MSPERDAY);
+					getDayTicksBetween (startTimestamp, endTimestamp, X2Chart.MSPERDAY);
 				labelFormat = 'longMonth day hours';
 			} else if (days <= 62) {
 				ticks = getDayTicksBetween (
-					startTimestamp, endTimestamp, Math.ceil (days / 7) * MSPERDAY);
+					startTimestamp, endTimestamp, Math.ceil (days / 7) * X2Chart.MSPERDAY);
 				labelFormat = 'longMonth day hours';
 			} else if (days <= 182) {
 				ticks = getDayTicksBetween (
-					startTimestamp, endTimestamp, Math.ceil (weeks / 7) *  7 * MSPERDAY);
+					startTimestamp, endTimestamp, Math.ceil (weeks / 7) *  7 * X2Chart.MSPERDAY);
 				labelFormat = 'longMonth day hours';
 			} else if (days < 365) {
 				ticks =
@@ -2674,15 +2635,15 @@ X2Chart.prototype.getTicks = function (startTimestamp, endTimestamp, binSize, co
 		case 'day-bin-size':
 			if (days <= 7) {
 				ticks =
-					getDayTicksBetween (startTimestamp, endTimestamp, MSPERDAY);
+					getDayTicksBetween (startTimestamp, endTimestamp, X2Chart.MSPERDAY);
 				labelFormat = 'longMonth day';
 			} else if (days <= 49) {
 				ticks = getDayTicksBetween (
-					startTimestamp, endTimestamp, Math.ceil (days / 7) * MSPERDAY);
+					startTimestamp, endTimestamp, Math.ceil (days / 7) * X2Chart.MSPERDAY);
 				labelFormat = 'longMonth day';
 			} else if (days <= 182) {
 				ticks = getDayTicksBetween (
-					startTimestamp, endTimestamp, Math.ceil (weeks / 7) *  7 * MSPERDAY);
+					startTimestamp, endTimestamp, Math.ceil (weeks / 7) *  7 * X2Chart.MSPERDAY);
 				labelFormat = 'longMonth day';
 			} else if (days < 365) {
 				ticks =
@@ -2697,19 +2658,19 @@ X2Chart.prototype.getTicks = function (startTimestamp, endTimestamp, binSize, co
 		case 'week-bin-size':
 			if (days < 21) {
 				ticks = getDayTicksBetween (
-					startTimestamp, endTimestamp, Math.ceil (days / 7) * MSPERDAY);
+					startTimestamp, endTimestamp, Math.ceil (days / 7) * X2Chart.MSPERDAY);
 				labelFormat = 'longMonth day plusSixDays';
 			} else if (days <= 49) {
 				ticks =
-					getDayTicksBetween (startTimestamp, endTimestamp, 7 * MSPERDAY);
+					getDayTicksBetween (startTimestamp, endTimestamp, 7 * X2Chart.MSPERDAY);
 				labelFormat = 'longMonth day plusSixDays';
 			} /*else if (days <= 62) {
 				ticks = getDayTicksBetween (
-					startTimestamp, endTimestamp, Math.ceil (days / 7) * 7 * MSPERDAY);
+					startTimestamp, endTimestamp, Math.ceil (days / 7) * 7 * X2Chart.MSPERDAY);
 				labelFormat = 'longMonth day plusSixDays';
 			} */else if (days <= 182) {
 				ticks = getDayTicksBetween (
-					startTimestamp, endTimestamp, Math.ceil (weeks / 7) * 7 * MSPERDAY);
+					startTimestamp, endTimestamp, Math.ceil (weeks / 7) * 7 * X2Chart.MSPERDAY);
 				labelFormat = 'longMonth day plusSixDays';
 			} else if (days < 365) {
 				ticks =
@@ -2752,6 +2713,9 @@ X2Chart.prototype.getTicks = function (startTimestamp, endTimestamp, binSize, co
 
 };
 
+/*
+Returns true if there is only one bin between the start and end timestamps
+*/
 X2Chart.prototype.checkOnlyOneBin = function (binSize, countDict) {
 	var thisX2Chart = this;
 	var onlyOneBin = false;
@@ -2778,6 +2742,9 @@ X2Chart.prototype.checkOnlyOneBin = function (binSize, countDict) {
 
 X2Chart.prototype.setupTooltipBehavior = function () {};
 
+/*
+Builds chart legend with an entry for each type in types. Legend is inserted into the DOM.
+*/
 X2Chart.prototype.buildChartLegend = function (types, typesText, color) {
 	var thisX2Chart = this;
 	$('#' + thisX2Chart.chartType + '-chart-legend tbody').empty ();
@@ -2813,14 +2780,20 @@ X2Chart.prototype.buildChartLegend = function (types, typesText, color) {
 	}
 };
 
+// override in child prototype
+X2Chart.prototype.preJqplotPlotPieData = function (chartData) {};
+
+// override in child prototype
+X2Chart.prototype.preJqplotPlotLineData = function (chartData) {};
+
+// gets replaced depending on chart subtype
 X2Chart.prototype.getJqplotConfig = function (argsDict) {};
 
-X2Chart.prototype.preJqplotPlotPieData = function (chartData) {};
-X2Chart.prototype.preJqplotPlotLineData = function (chartData) {};
+// gets replaced depending on chart subtype
 X2Chart.prototype.plotData = function () {};
 
 /*
-Changes the chart settings to match the settings specified in the parameters.
+Changes the chart settings to match the settings specified settingsDict
 */
 X2Chart.prototype.applyChartSetting = function (settingsDict) {
 	var thisX2Chart = this;
@@ -2845,7 +2818,7 @@ X2Chart.prototype.applyChartSetting = function (settingsDict) {
 	function applyDateRange (selector, dateRange) {
 		thisX2Chart.DEBUG && console.log ('applying date range');
 		thisX2Chart.applyDateRange (dateRange);
-		selectOptionFromSelector (selector, dateRange);
+		auxlib.selectOptionFromSelector (selector, dateRange);
 	}
 
 	function applyBinSize (binSize) {
@@ -2937,6 +2910,9 @@ X2Chart.prototype.applyChartSetting = function (settingsDict) {
 	}
 };
 
+/*
+Sets to and from date picker ui elements based on date range.
+*/
 X2Chart.prototype.applyDateRange = function (dateRange) {
 	var thisX2Chart = this;
 
@@ -2954,15 +2930,15 @@ X2Chart.prototype.applyDateRange = function (dateRange) {
 			$(toDatepicker).datepicker ('setDate', date);
 			break;
 		case 'Yesterday':
-			var date = (+ new Date ()) - MSPERDAY;
+			var date = (+ new Date ()) - X2Chart.MSPERDAY;
 			thisX2Chart.DEBUG && console.log ('date = ' + date);
 			$(fromDatepicker).datepicker ('setDate', new Date (date));
 			$(toDatepicker).datepicker ('setDate', new Date (date));
 			break;
 		case 'Last Week':
 			var date = + new Date ();
-			var startTimestamp = thisX2Chart.getRoundedWeekTs (date - MSPERWEEK, true);
-			var endTimestamp = thisX2Chart.getRoundedWeekTs (date, true) - MSPERDAY;
+			var startTimestamp = thisX2Chart.getRoundedWeekTs (date - X2Chart.MSPERWEEK, true);
+			var endTimestamp = thisX2Chart.getRoundedWeekTs (date, true) - X2Chart.MSPERDAY;
 			$(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
 			$(toDatepicker).datepicker ('setDate', new Date (endTimestamp));
 			break;
@@ -2983,7 +2959,7 @@ X2Chart.prototype.applyDateRange = function (dateRange) {
 			var date = + new Date ();
 			var startTimestamp = 
 				thisX2Chart.shiftTimeStampOneInterval (date, 'month-bin-size', false);
-			var endTimestamp = thisX2Chart.getRoundedMonthTs (date, true) - MSPERDAY;
+			var endTimestamp = thisX2Chart.getRoundedMonthTs (date, true) - X2Chart.MSPERDAY;
 			$(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
 			$(toDatepicker).datepicker ('setDate', new Date (endTimestamp));
 			break;
@@ -3054,7 +3030,7 @@ X2Chart.prototype.setUpDatepickers = function () {
 			thisX2Chart.setChartSettingName ('');  
 		}
 		if (!thisX2Chart.suppressDateRangeSelector) {
-			selectOptionFromSelector (
+			auxlib.selectOptionFromSelector (
 				'#' + thisX2Chart.chartType + '-date-range-selector', 'Custom');
 	        $('#' + thisX2Chart.chartType + '-date-range-selector').trigger ('change');
 		}
@@ -3077,7 +3053,7 @@ X2Chart.prototype.setUpDatepickers = function () {
 		}
 
 		if (!thisX2Chart.suppressDateRangeSelector) {
-			selectOptionFromSelector (
+			auxlib.selectOptionFromSelector (
 				'#' + thisX2Chart.chartType + '-date-range-selector', 'Custom');
 	        $('#' + thisX2Chart.chartType + '-date-range-selector').trigger ('change');
 		}
@@ -3120,10 +3096,17 @@ X2Chart.prototype.setUpMetricSelection = function () {
 
 };
 
+/*
+Stores all chart settings in settingsDict in the cookie. Chart settings in 
+settingsDict must be in the cookieTypes property.
+*/
 X2Chart.prototype.setCookiesFromSettings = function (settingsDict) {
 	var thisX2Chart = this;
 
 	for (var i in thisX2Chart.cookieTypes) {
+        if (settingsDict[thisX2Chart.cookieTypes[i]] === undefined) {
+            continue;
+        }
 		switch (thisX2Chart.cookieTypes[i]) {
 			case 'startDate':
 				$.cookie (thisX2Chart.cookiePrefix + 'startDate', settingsDict['startDate']);
@@ -3169,6 +3152,9 @@ X2Chart.prototype.setCookiesFromSettings = function (settingsDict) {
 
 };
 
+/*
+Override in child prototype
+*/
 X2Chart.prototype.postSetSettingsFromCookie = function () {};
 
 /*
@@ -3277,6 +3263,7 @@ X2Chart.prototype.setUpChartSettings = function () {
 	    chartSettingAttributes['chartType'] = thisX2Chart.chartType;
 		chartSettingAttributes['settings'] = {};
 
+        // collect chart settings
 		for (var i in thisX2Chart.cookieTypes) {
 			switch (thisX2Chart.cookieTypes[i]) {
 				case 'startDate':
@@ -3361,13 +3348,13 @@ X2Chart.prototype.setUpChartSettings = function () {
 					thisX2Chart.DEBUG && console.log ('createChartSetting ajax failure');
 
 					// display error messages
-					destroyErrorBox (
+					auxlib.destroyErrorBox (
 						$('#' + thisX2Chart.chartType + '-create-chart-setting-dialog'));
 
 					var errMsgs = Object.keys (respObj).map (function (key) { 
 							return respObj[key]; 
 						});
-					var errorBox = createErrorBox ('', errMsgs);
+					var errorBox = auxlib.createErrorBox ('', errMsgs);
 					$('.chart-setting-name-input-container').after ($(errorBox));
 					$('#' + thisX2Chart.chartType + '-chart-setting-name').addClass ('error');
 
@@ -3378,6 +3365,7 @@ X2Chart.prototype.setUpChartSettings = function () {
 
 	}
 
+    // highlight save button
 	function dialogSaveButtonFocus (dialog) {
 		var $buttonpane = $(dialog).next ();
 
@@ -3390,6 +3378,7 @@ X2Chart.prototype.setUpChartSettings = function () {
 		}
 	}
 
+    // highlight cancel button
 	function dialogCancelButtonFocus (dialog) {
 		thisX2Chart.DEBUG && console.log ('dialogCancelButtonFocus');
 		var $buttonpane = $(dialog).next ();
@@ -3410,11 +3399,14 @@ X2Chart.prototype.setUpChartSettings = function () {
 	(function setupChartSettingCreationDialog () {
 		$('#' + thisX2Chart.chartType + '-create-chart-setting-dialog').hide();
 
+        /*
+        Validate chart setting name. If Valid, create chart setting.
+        */
 		function clickChartSettingCreateButton () {
 			var settingName = $('#' + thisX2Chart.chartType + '-chart-setting-name').val ();
 			if (settingName === '') {
 				$('#' + thisX2Chart.chartType + '-chart-setting-name').addClass ('error');
-				destroyErrorBox (
+				auxlib.destroyErrorBox (
 					$('#' + thisX2Chart.chartType + '-create-chart-setting-dialog'));
 				dialogCancelButtonFocus (
 					$('#' + thisX2Chart.chartType + '-create-chart-setting-dialog'));
@@ -3430,6 +3422,9 @@ X2Chart.prototype.setUpChartSettings = function () {
 				$('#' + thisX2Chart.chartType + '-create-chart-setting-dialog'));
 		});
 
+        /*
+        Set up chart setting creation dialog
+        */
 		$('#' + thisX2Chart.chartType + '-create-setting-button').click (function () {
 			$('#' + thisX2Chart.chartType + '-create-chart-setting-dialog').dialog ({
 				title: thisX2Chart.translations['Create Chart Setting'],
@@ -3457,13 +3452,16 @@ X2Chart.prototype.setUpChartSettings = function () {
 				close: function (event, ui) {
 					$('#' + thisX2Chart.chartType + '-chart-setting-name').removeClass ('error');
 					$('#' + thisX2Chart.chartType + '-chart-setting-name').val ('');
-					destroyErrorBox (
+					auxlib.destroyErrorBox (
 						$('#' + thisX2Chart.chartType + '-create-chart-setting-dialog'));
 				}
 			});
 		});
 	}) ();
 
+    /*
+    Delete chart setting
+    */
 	$('#' + thisX2Chart.chartType + '-delete-setting-button').click (function (evt) {
 		evt.preventDefault();
 		var settingName = $('#' + thisX2Chart.chartType + '-predefined-settings').val ();
@@ -3515,6 +3513,9 @@ X2Chart.prototype.setUpChartSettings = function () {
 	});
 };
 
+/*
+Hide the chart
+*/
 X2Chart.prototype.hide = function () {
 	var thisX2Chart = this;
 
@@ -3522,6 +3523,9 @@ X2Chart.prototype.hide = function () {
 	$('#' + thisX2Chart.chartType + '-chart-container').hide ();
 };
 
+/*
+Show the chart
+*/
 X2Chart.prototype.show = function () {
 	var thisX2Chart = this;
 
@@ -3529,6 +3533,9 @@ X2Chart.prototype.show = function () {
 	$.cookie (thisX2Chart.cookiePrefix + 'chartIsShown', true);
 };
 
+/*
+Replot the chart
+*/
 X2Chart.prototype.replot = function () {
 	var thisX2Chart = this;
 
@@ -3536,6 +3543,9 @@ X2Chart.prototype.replot = function () {
 		thisX2Chart.feedChart.replot ({ resetAxes: false });
 };
 
+/*
+Set up behavior of bin size selection ui element
+*/
 X2Chart.prototype.setUpBinSizeSelection = function () {
 	var thisX2Chart = this;
 	$('#' + thisX2Chart.chartType + '-chart-container a.x2-button').click (function (evt) {

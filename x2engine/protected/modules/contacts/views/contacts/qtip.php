@@ -37,14 +37,14 @@
 
 <h2><?php echo $contact->name; ?></h2>
 
-<?php 
+<?php
 if(isset($_GET['fields'])){
     $fields=$_GET['fields'];
     if(count($fields)>0){
         $attrLabels=$contact->attributeLabels();
         foreach($fields as $field){
-            if($contact->hasAttribute($field)){
-                echo Yii::t('contacts', $attrLabels[$field]).": <strong> ".$contact->$field."</strong><br />";
+            if($contact->hasAttribute($field) && !empty($contact->$field)){
+                echo Yii::t('contacts', $attrLabels[$field]).": <strong> ".$contact->getAttribute($field,true)."</strong><br />";
             }else{
                 if($field=='link'){
                     echo CHtml::link(Yii::t('contacts','Link to Record'),$this->createUrl('view',array('id'=>$contact->id)),array('style'=>'text-decoration:none;'))."<br />";
@@ -52,7 +52,7 @@ if(isset($_GET['fields'])){
                     if(!empty(Yii::app()->params->admin->corporateAddress))
                         echo CHtml::link(Yii::t('contacts','Directions from Corporate'),'#',array('style'=>'text-decoration:none;','id'=>'corporate-directions','class'=>'directions'))."<br />";
                     if(!empty(Yii::app()->params->profile->address))
-                        echo CHtml::link(Yii::t('contacts','Directions from Personal Address'),'#',array('style'=>'text-decoration:none;','id'=>'personal-directions','class'=>'directions'));             
+                        echo CHtml::link(Yii::t('contacts','Directions from Personal Address'),'#',array('style'=>'text-decoration:none;','id'=>'personal-directions','class'=>'directions'));
                 }
             }
         }
@@ -66,7 +66,7 @@ if(isset($_GET['fields'])){
 	<?php if(isset($contact->email) && $contact->email != "") { ?>
 		<?php echo Yii::t('contacts', 'Email').": "; ?> <strong><?php echo $contact->email; ?></strong><br />
 	<?php } ?>
-	
+
 	<?php if(isset($contact->website) && $contact->website != "") { ?>
 		<?php echo Yii::t('contacts', 'Website: '); ?> <strong><?php echo $contact->website; ?></strong><br />
 	<?php } ?>
@@ -75,7 +75,7 @@ if(isset($_GET['fields'])){
 
 
 <?php /* Sales and Marketing */ ?>
-<?php if(isset($contact->leadtype) || 
+<?php if(isset($contact->leadtype) ||
 		isset($contact->leadstatus) ||
 		isset($contact->leadDate) ||
 		isset($contact->interest) ||
@@ -85,29 +85,29 @@ if(isset($_GET['fields'])){
 	<?php if(isset($contact->leadtype) && $contact->leadtype != "") { ?>
 	    <?php echo Yii::t('contacts', 'Lead Type').": "; ?> <strong><?php echo $contact->leadtype; ?></strong><br />
 	<?php } ?>
-	
+
 	<?php if(isset($contact->leadstatus) && $contact->leadstatus != "") { ?>
 		<?php echo Yii::t('contacts', 'Lead Status').": "; ?> <strong><?php echo $contact->leadstatus; ?></strong><br />
 	<?php } ?>
 
-	
+
 	<?php if(isset($contact->leadDate) && $contact->leadDate != "") { ?>
 		<?php echo Yii::t('contacts', 'Lead Date').": "; ?> <strong><?php echo Formatter::formatLongDate($contact->leadDate); ?></strong><br />
 	<?php } ?>
-	
-	
+
+
 	<?php if(isset($contact->interest) && $contact->interest != "") { ?>
 		<?php echo Yii::t('contacts', 'Interest').": "; ?> <strong><?php echo $contact->interest; ?></strong><br />
 	<?php } ?>
-	
+
 	<?php if(isset($contact->dalevalue) && $contact->dealvalue != "") { ?>
 		<?php echo Yii::t('contacts', 'Deal Value').": "; ?> <strong><?php echo $contact->dealvalue; ?></strong><br />
 	<?php } ?>
-	
+
 	<?php if(isset($contact->closedate) && $contact->closedate != "") { ?>
 		<?php echo Yii::t('contacts', 'Close Date').": "; ?> <strong><?php echo Formatter::formatLongDate($contact->closedate); ?></strong><br />
 	<?php } ?>
-	
+
 	<?php if(isset($contact->dealstatus) && $contact->dealstatus != "") { ?>
 		<?php echo Yii::t('contacts', 'Deal Status').": "; ?> <strong><?php echo $contact->dealstatus; ?></strong><br />
 	<?php } ?>
@@ -116,6 +116,6 @@ if(isset($_GET['fields'])){
 
 <?php if(isset($contact->backgroundInfo) && $contact->backgroundInfo != "") { ?>
 		<?php echo Yii::t('contacts', 'Background Info').": "; ?> <strong><?php echo $contact->backgroundInfo; ?></strong><br />
-<?php } 
+<?php }
 
 } ?>

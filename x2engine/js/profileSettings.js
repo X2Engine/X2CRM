@@ -457,6 +457,7 @@ function setupThemeSaving () {
     Save theme via Ajax.
     */
     function saveTheme () {
+        if ($('prefs-save-theme-button').attr ('disabled')) return;
         var themeAttributes = {};
         $.each ($("#theme-attributes").find ('.theme-attr'), function () {
             consoleDebug ($(this));
@@ -473,10 +474,12 @@ function setupThemeSaving () {
             },
             success: function (data) {
                 consoleDebug (data);
-                var feedbackBox = createReqFeedbackBox (data);
-                $('#prefs-save-theme-hint').after (feedbackBox);
-                startFeedbackBoxFadeOut (
-                    feedbackBox, 3000, $('#prefs-save-theme-button'));
+                auxlib.createReqFeedbackBox ({
+                    prevElem: $('#prefs-save-theme-hint'), 
+                    disableButton: $('#prefs-save-theme-button'), 
+                    message: data,
+                    delay: 3000
+                });
             }
         });
     }
@@ -487,37 +490,6 @@ function setupThemeSaving () {
 
 }
 
-/*
-Returns a jQuery element corresponding to a feedback box containing the 
-specified message.
-messages.
-Parameters:
-    message - a string
-*/
-function createReqFeedbackBox (message) {
-    var feedbackBox = $('<div>', {'class': 'feedback-container'}).append (
-        $("<span>", { 
-            'class': "feedback-msg",
-            'text': message
-        })
-    );
-    return feedbackBox;
-}
-
-/*
-Removes a feedback box created by createReqFeedbackBox () after a specified delay.
-Specified button will be disabled until delay elapses.
-Parameters:
-    feedbackBox - a jQuery element created by createReqFeedbackBox ()
-    delay - in milliseconds
-*/
-function startFeedbackBoxFadeOut (feedbackBox, delay, button) {
-    $(button).attr ('disabled', 'disabled');
-    $(feedbackBox).children ().fadeOut (delay, function () {
-        $(feedbackBox).remove ();
-        $(button).removeAttr ('disabled');
-    });
-}
 
 /*
 Sets up behavior for theme creation sub-menu.
@@ -544,6 +516,7 @@ function setupThemeCreation () {
     */
     function createTheme (themeName) {
         consoleLog (themeName);
+        if ($('prefs-create-theme-button').attr ('disabled')) return;
 
         // build theme attribute dictionary to send to server
         var themeAttributes = {};
@@ -580,10 +553,12 @@ function setupThemeCreation () {
                     }));
 
                     // indicate successful creation
-                    var feedbackBox = createReqFeedbackBox (respObj['msg']);
-                    $('#prefs-save-theme-hint').after (feedbackBox);
-                    startFeedbackBoxFadeOut (
-                        feedbackBox, 3000, $('#prefs-create-theme-button'));
+                    auxlib.createReqFeedbackBox ({
+                        prevElem: $('#prefs-save-theme-hint'),
+                        message: respObj['msg'],
+                        delay: 3000,
+                        disableButton: $('#prefs-create-theme-button')
+                    });
                     x2.profileSettings.uploadedByAttrs[themeName] = 
                         yii.profile.username;
 

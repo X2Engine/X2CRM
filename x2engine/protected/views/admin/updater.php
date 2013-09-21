@@ -96,13 +96,38 @@ function makeBackup() {
 }
 
 function downloadFile(i) {
-	if (fileCount == n_files) { // No files left to download
+    var skip = $('#skip-files').is(':checked');
+	if (fileCount == n_files || skip) { // No files left to download
 		var proceed = true;
-		if(n_files > 0) {
-			$('#update-text').text('Download complete.');
+		if(n_files > 0 && !skip) {
+			$('#update-text').text(<?php echo json_encode(Yii::t('admin','Download complete.')); ?>);
 			proceed = confirm(<?php echo json_encode(Yii::t('admin','All files downloaded. Proceed?')); ?>);
 		} else { // Case where there are no new files, only deletions and/or SQL changes
-			proceed = confirm('Proceed with {1}?'.format(scenario));
+            $('#progress-bar').hide();
+			proceed = skip ? confirm(<?php echo json_encode(Yii::t('admin','Have all files been downloaded?')); ?>) : true;
+            if(proceed && skip) {
+                $.ajax({
+                    url:"enactChanges?scenario=checkFiles",
+                    type:"POST",
+                    dataType: "json",
+                    data: {
+                        "fileList":fileList
+                    }
+                }).done(function(d){
+                    if(!d.error)
+                        enactChanges();
+                    else {
+                        var errorBox = $("#update-text");
+                        $('<h3>',{text:<?php echo json_encode(Yii::t('admin','Cannot apply update. The following files have not been downloaded:'));?>}).appendTo(errorBox);
+                        var missingFiles = $('<ul>');
+                        for(i in d.missingFiles)
+                            $('<li>',{text:d.missingFiles[i]}).appendTo(missingFiles);
+                        missingFiles.appendTo(errorBox);
+                        errorBox.show();
+                    }
+                });
+                return;
+            }
 		}
 		if(proceed) {
 			enactChanges();
@@ -406,6 +431,8 @@ endif;
 
 <?php if (!in_array($scenario, array('message','error'))): ?>
 <div id="updates-control"<?php echo $scenario == 'upgrade'?' style="display:none"':'';?>>
+<label for="skip-files" style="display:inline-block;margin-right:10px"><?php echo Yii::t('admin','Skip downloading files'); ?></label>
+<input type="checkbox" name="skip-files" id="skip-files" style="display:inline-block;padding:0;margin:0;vertical-align: middle" /><br /><br />
 <a href="javascript:void(0);" class="x2-button" id="update-button"><?php echo Yii::t('app','Update'); ?></a><br />
 
 <div id="update-status">

@@ -133,6 +133,7 @@ class ActionsController extends x2base {
     public function actionViewAction($id, $publisher = false){
         $action = X2Model::model('Actions')->findByPk($id);
         if(isset($action)){
+            X2Flow::trigger('RecordViewTrigger', array('model' => $action));
             $this->renderPartial('_viewFrame', array(
                 'model' => $action,
                 'publisher' => $publisher,

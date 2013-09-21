@@ -44,12 +44,18 @@ class X2FlowEmail extends X2FlowAction {
 	public $info = 'Send a template or custom email to the specified address.';
 
 	public function paramRules() {
+        $credOptsDict = Credentials::getCredentialOptions (null, true);
+        //printR ($this, true);
+        //printR ($this->nameEmailsArr, true);
+        $credOpts = $credOptsDict['credentials'];
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
 			'options' => array(
+				array('name'=>'from','label'=>Yii::t('studio','Send As:'),'type'=>'dropdown',
+                    'options'=>$credOpts),
 				array('name'=>'to','label'=>Yii::t('studio','To:'),'type'=>'email'),
-				array('name'=>'from','label'=>Yii::t('studio','From:'),'type'=>'email'),
+				//array('name'=>'from','label'=>Yii::t('studio','From:'),'type'=>'email'),
 				array('name'=>'template','label'=>Yii::t('studio','Template'),'type'=>'dropdown','options'=>array(''=>Yii::t('studio','Custom'))+Docs::getEmailTemplates(),'optional'=>1),
 				array('name'=>'subject','label'=>Yii::t('studio','Subject'),'optional'=>1),
 				array('name'=>'cc','label'=>Yii::t('studio','CC:'),'optional'=>1,'type'=>'email'),
@@ -75,12 +81,15 @@ class X2FlowEmail extends X2FlowAction {
         }
 		$eml->to = $this->parseOption('to',$params);
 
-		$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
-		$eml->subject = $this->parseOption('subject',$params);
+		//$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
+		$sysUseId = $this->parseOption('from',$params);
+        $eml->credId = $sysUseId;
+        //printR ($eml->from, true);
+		$eml->subject = Formatter::replaceVariables($this->parseOption('subject',$params),$params['model']);
 
 		if(isset($options['body']['value']) && !empty($options['body']['value'])) {	// "body" option (deliberately-entered content) takes precedence over template
             $eml->scenario = 'custom';
-			$eml->message = InlineEmail::emptyBody($this->parseOption('body',$params));
+			$eml->message = InlineEmail::emptyBody(Formatter::replaceVariables($this->parseOption('body',$params),$params['model']));
 			$eml->prepareBody();
 			// $eml->insertSignature(array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>'));
 		} elseif(!empty($options['template']['value'])) {
@@ -89,7 +98,6 @@ class X2FlowEmail extends X2FlowAction {
 			$eml->prepareBody();
 		}
 		$result = $eml->send($historyFlag);
-		// die(var_dump($result));
 		return isset($result['code']) && $result['code'] == 200;
 	}
 }

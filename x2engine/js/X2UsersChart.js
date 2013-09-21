@@ -61,12 +61,6 @@ function X2UsersChart (argsDict) {
 
 	this.filters = {};
 
-	/*if ($.cookie (thisX2Chart.cookiePrefix + 'chartIsShown') === 'true') {
-		$('#' + this.chartType + '-chart-container').show ();
-		$('#' + this.chartType + '-show-chart').hide ();
-		$('#' + this.chartType + '-hide-chart').show ();
-	}*/
-
 	thisX2Chart.setUpFilters ();
 
 	thisX2Chart.start ();
@@ -84,6 +78,9 @@ Instance Methods
 
 X2UsersChart.prototype = Object.create (X2Chart.prototype);
 
+/*
+Generate color palette after number of selected users is determined
+*/
 X2UsersChart.prototype.postSetSettingsFromCookie = function (userCount) {
 	var thisX2Chart = this;
 
@@ -96,6 +93,9 @@ X2UsersChart.prototype.postSetSettingsFromCookie = function (userCount) {
 
 };
 
+/*
+Generate an array of color hex values with a color for each user.
+*/
 X2UsersChart.prototype.getColorPalette = function (userCount) {
 	var thisX2Chart = this;
 
@@ -187,6 +187,9 @@ X2UsersChart.prototype.getColorPalette = function (userCount) {
     return colors;
 };
 
+/*
+Sets initial state of chart setting ui elements
+*/
 X2UsersChart.prototype.setDefaultSettings = function () {
 	var thisX2Chart = this;
 
@@ -223,6 +226,9 @@ X2UsersChart.prototype.setDefaultSettings = function () {
 
 };
 
+/*
+Generate color palette based on number of chart data types
+*/
 X2UsersChart.prototype.preJqplotPlotPieData = function (chartData) {
 	var thisX2Chart = this;
 
@@ -233,6 +239,9 @@ X2UsersChart.prototype.preJqplotPlotPieData = function (chartData) {
     thisX2Chart.resetMetricOptionColors ();
 };
 
+/*
+Generate color palette based on number of chart data types
+*/
 X2UsersChart.prototype.preJqplotPlotLineData = function (chartData) {
 	var thisX2Chart = this;
 
@@ -242,9 +251,13 @@ X2UsersChart.prototype.preJqplotPlotLineData = function (chartData) {
 
 };
 
+/*
+Filter function used by groupChartData to determine how chart data should be grouped
+*/
 X2UsersChart.prototype.chartDataFilter = function (dataPoint, type) {
 	var thisX2Chart = this;
 
+    // group by type, filter out types specified in filters
 	if ((!(type === 'anyone' || type === '') && dataPoint['user'] !== type) ||
 		(type === '' && dataPoint['user'] !== null) ||
 		($.inArray (dataPoint['type'], thisX2Chart.filters['eventsFilter']) !== -1 &&
@@ -259,6 +272,9 @@ X2UsersChart.prototype.chartDataFilter = function (dataPoint, type) {
 	}
 };
 
+/*
+Map colors to users
+*/
 X2UsersChart.prototype.resetMetricOptionColors = function () {
 	var thisX2Chart = this;
 	thisX2Chart.metricOptionsColors = {}; 
@@ -281,6 +297,9 @@ X2UsersChart.prototype.selectMetricOptionColorsForSelected = function (firstMetr
 	}
 };
 
+/*
+Limit number of selected users for line chart.
+*/
 X2UsersChart.prototype.postMetricSelectionSetup = function () {
 	var thisX2Chart = this;
 
@@ -302,6 +321,10 @@ X2UsersChart.prototype.postMetricSelectionSetup = function () {
 		});
 };
 
+/*
+Undo pie chart specific ui. Rebind filter ui element event handlers since the
+filter elements get removed from the DOM when the chart subtype is switched.
+*/
 X2UsersChart.prototype.postPieChartTearDown = function (uiSetUp) {
 	var thisX2Chart = this;
 	$('#' + thisX2Chart.chartType + '-chart').removeClass ('pie');
@@ -314,13 +337,13 @@ X2UsersChart.prototype.postPieChartTearDown = function (uiSetUp) {
 	$('#' + thisX2Chart.chartType + '-bin-size-button-set').show ();
 	var filterToggleContainer = $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
 	$('#' + thisX2Chart.chartType + '-first-metric-container').after (filterToggleContainer);
-	if (uiSetUp) {
-		thisX2Chart.DEBUG && console.log ('setting up filters');
-		//thisX2Chart.setUpFilters ();
-	}
     thisX2Chart.bindFilterEvents ();
 };
 
+/*
+Set up pie chart specific ui. Rebind filter ui element event handlers since the
+filter elements get removed from the DOM when the chart subtype is switched.
+*/
 X2UsersChart.prototype.postPieChartSetUp = function (uiSetUp) {
 	var thisX2Chart = this;
 	$('#' + thisX2Chart.chartType + '-chart').addClass ('pie');
@@ -333,10 +356,6 @@ X2UsersChart.prototype.postPieChartSetUp = function (uiSetUp) {
 	$('#' + thisX2Chart.chartType + '-bin-size-button-set').hide ();
 	var filterToggleContainer = $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
 	$('#' + thisX2Chart.chartType + '-datepicker-row').append (filterToggleContainer);
-	if (uiSetUp) {
-		thisX2Chart.DEBUG && console.log ('setting up filters');
-		//thisX2Chart.setUpFilters ();
-	}
     thisX2Chart.bindFilterEvents ();
 };
 

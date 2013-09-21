@@ -54,7 +54,7 @@ class X2FlowCreateEvent extends X2FlowAction {
             'options' => array(
                 array('name' => 'type', 'label' => Yii::t('studio', 'Post Type'), 'type' => 'dropdown', 'options' => $eventTypes),
                 array('name' => 'text', 'label' => Yii::t('studio', 'Text'), 'type' => 'text'),
-                // array('name'=>'user','label'=>'User','type'=>'dropdown','options'=>array(''=>'----------')+X2Model::getAssignmentOptions(false,false)),
+                array('name' => 'user', 'optional' => 1, 'label' => 'User (optional)', 'type' => 'dropdown', 'options' => array('' => '----------', 'auto' => 'Auto') + X2Model::getAssignmentOptions(false, false)),
                 array('name' => 'createNotif', 'label' => Yii::t('studio', 'Create Notification?'), 'type' => 'boolean', 'defaultVal' => true),
                 ));
     }
@@ -65,7 +65,7 @@ class X2FlowCreateEvent extends X2FlowAction {
         $event = new Events;
         $notif = new Notification;
 
-        // $event->user = $this->parseOption('user'];
+        $user = $this->parseOption('user', $params);
 
         $type = $this->parseOption('type', $params);
 
@@ -91,7 +91,13 @@ class X2FlowCreateEvent extends X2FlowAction {
             $event->type = 'feed';
             $event->subtype = $type;
             $event->text = $text;
-            $event->user = 'admin';
+            if($user == 'auto' && isset($params['model']) && $params['model']->hasAttribute('assignedTo') && !empty($params['model']->assignedTo)){
+                $event->user = $params['model']->assignedTo;
+            }elseif(!empty($user)){
+                $event->user = $user;
+            }else{
+                $event->user = 'admin';
+            }
         }
         if(!$this->parseOption('createNotif', $params))
             $notif->save();

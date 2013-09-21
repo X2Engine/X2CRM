@@ -78,7 +78,7 @@ if($field) {
 $this->widget('application.components.X2GridView', array(
 	'id'=>'services-grid',
 	'title'=>Yii::t('services','Service Cases'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> '<div class="page-title icon services">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->searchWithStatusFilter(),
 	// 'enableSorting'=>false,

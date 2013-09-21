@@ -119,7 +119,7 @@ $('.search-form form').submit(function(){
 $this->widget('application.components.X2GridView', array(
 	'id'=>'docs-grid',
 	'title'=>Yii::t('docs','Docs'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> '<div class="page-title icon docs">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,

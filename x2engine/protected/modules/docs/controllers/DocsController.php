@@ -111,8 +111,8 @@ class DocsController extends x2base {
 			$this->redirect(array('docs/index'));
 
         // add doc to user's recent item list
-        User::addRecentItem('d', $id, Yii::app()->user->getId()); 
-
+        User::addRecentItem('d', $id, Yii::app()->user->getId());
+        X2Flow::trigger('RecordViewTrigger',array('model'=>$model));
 		$this->render('view', array(
 			'model' => $model,
 		));

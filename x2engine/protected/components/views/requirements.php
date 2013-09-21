@@ -231,17 +231,18 @@ if(!is_writable(__FILE__)) {
 
 // Check that the directive open_basedir is not arbitrarily set to some restricted 
 // jail directory off in god knows where 
-$basedir = ini_get('open_basedir');
+$basedir = trim(ini_get('open_basedir'));
 $cwd = dirname(__FILE__);
 if(!empty($basedir)){
-    $basedirs = explode(':',$basedir);
+    $allowCwd = 0;
+    $basedirs = explode(PATH_SEPARATOR,$basedir);
     foreach($basedirs as $dir){
-        if(strpos($cwd,$basedir) !== false){
+        if(strpos($cwd,$dir) !== false){
             $allowCwd = 1;
             break;
         }
     }
-    if(empty($allowCwd))
+    if(!$allowCwd)
     	$reqMessages[3][] = installer_t('The base directory configuration directive is set, and it does not include the current working directory.');
 }
 

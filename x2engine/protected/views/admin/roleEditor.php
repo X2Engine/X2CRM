@@ -81,7 +81,7 @@ foreach($groups as $group){
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'role-form',
 	'enableAjaxValidation'=>false,
-        'action'=>'roleEditor',
+        'action'=>'manageRoles',
 ));
 ?>
 <div class="row">

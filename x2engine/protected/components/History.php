@@ -116,7 +116,7 @@ class History extends X2Widget {
                 $.fn.yiiListView.update('history',{ data:{ relationships: relationshipFlag }});
             });
         "); // Script to make all the buttons on the history widget function via AJAX.
-        $this->widget('zii.widgets.CListView', array(
+        $this->widget('application.components.X2ListView', array(
             'id' => 'history',
             'dataProvider' => $this->getHistory(),
             'viewData' => array(

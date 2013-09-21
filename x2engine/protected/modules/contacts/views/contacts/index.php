@@ -175,7 +175,7 @@ $listActions .= '</div>';
 $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
 	'title'=>$heading,
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> '<div class="page-title icon contacts">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,

@@ -43,7 +43,7 @@ body:before {
 	width:0;
 	margin-top:-32767px;
 }
-#page-container {min-height:100%;overflow:auto;}
+#page-container {min-height:100%;overflow:hidden;}
 #page {margin-top:32px;overflow:auto;padding-bottom:100px;}
 #header {
 	height:32px;
@@ -532,7 +532,7 @@ span.x2-widget-menu-item.ui-draggable {
 	width: 440px;
 	height: 40px;
 	display: block;
-	
+
 }
 
 #notif-box {
@@ -609,12 +609,12 @@ span.x2-widget-menu-item.ui-draggable {
 	padding:2px 2px 4px 2px;
 }
 #notif-view-all a,
-#notif-clear-all a { 
+#notif-clear-all a {
     color:black;
 }
 #notif-view-all a:hover,
-#notif-clear-all a:hover { 
-    text-decoration:underline; 
+#notif-clear-all a:hover {
+    text-decoration:underline;
 }
 
 .notif {
@@ -1011,6 +1011,7 @@ div.page-title .x2-button.icon.email span {background:url(../images/icons/email-
 div.page-title .x2-button.search-button span {background:url(../images/icons/search-button.png) 5px center no-repeat;}
 div.page-title .x2-button.filter-button span {background:url(../images/icons/filter-button.png) center center no-repeat;}
 div.page-title .x2-button.column-selector-link span {background:url(../images/icons/columns-button.png) center center no-repeat;}
+div.page-title .x2-button.auto-resize-button span {background:url(../images/icons/resize.png) center center no-repeat;}
 
 div.page-title .x2-button.right {display:block;vertical-align:top;margin:5px 5px 0 0;}
 div.page-title .x2-button.left {display:block;vertical-align:top;margin:5px 5px 0 0;}

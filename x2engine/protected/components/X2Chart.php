@@ -40,6 +40,9 @@ chart settings if specified by properties.
 */
 class X2Chart extends X2Widget {
 
+	const SECPERDAY = 86400;
+	const SECPERWEEK = 604800;
+
 	// The name of the action called to retrieve chart data
 	public $getChartDataActionName;
 
@@ -83,7 +86,6 @@ class X2Chart extends X2Widget {
 		);
 
 		$cookies = Yii::app()->request->cookies;
-		$users = User::getNames ();
 		$socialSubtypes = json_decode (
 			Dropdowns::model()->findByPk(113)->options,true);
 		$visibilityFilters = array (
@@ -91,6 +93,7 @@ class X2Chart extends X2Widget {
 			'0'=>'Private',
 		);
 		if ($this->chartType === 'eventsChart') {
+		    $users = User::getNames ();
 			$viewParams['userNames'] = $users;
 			$viewParams['socialSubtypes'] = $socialSubtypes;
 			$viewParams['visibilityFilters'] = $visibilityFilters;
@@ -216,6 +219,9 @@ class X2Chart extends X2Widget {
 		return $actions;
 	}
 
+    /*
+    Returns a data provider containing chart settings records with the specified type
+    */
 	public static function getChartSettingsProvider ($chartType) {
 		if ($chartType === 'usersChart') {
 			$chartSettingsDataProvider = new CActiveDataProvider('ChartSetting', array(
@@ -244,7 +250,6 @@ class X2Chart extends X2Widget {
 	Decreases time before chart render after page is loaded.
 	*/
 	private function setInitialChartData (&$viewParams) {
-		self::$secPerDay = 86400;
 
 		// Collect data for a record view page (i.e. the contact record view page).
 		if ($this->chartType === 'actionHistoryChart'  &&
@@ -254,11 +259,6 @@ class X2Chart extends X2Widget {
 			array_key_exists ('showRelationships', $this->actionParams) &&
 			array_key_exists ('associationType', $this->actionParams)) {
 			$this->preLoadActionsData ($viewParams);
-			/*$actions = self::getActionsData (
-				$viewParams['dataStartDate'], mktime (0, 0, 0, date ('m'), date ('d'), date('o')) + self::$secPerDay - 1,
-				$this->actionParams['associationId'], 
-				$this->actionParams['associationType'],
-				$this->actionParams['showRelationships']);*/
 
 		// Collect data for the activity feed chart
 		} else if ($this->chartType === 'eventsChart' ||
@@ -298,10 +298,13 @@ class X2Chart extends X2Widget {
 		$actionsStartDate = $command->queryScalar();
 		return $actionsStartDate;
 	}
-
-	private static $secPerDay = 86400;
-	private static $secPerWeek = 604800;
-
+    
+    /*
+    Returns an array containing a start and end timestamp.
+    If a date range cookie is set, the timestamps get generated. Otherwise start and
+    end timestamp cookies are used. Specified default timestamps will be used when
+    cookies are not set.
+    */
 	private function getStartEndTimestampFromCookies ($defaultStartTs, $defaultEndTs) {
 		$cookies = Yii::app()->request->cookies;
 		$startDate;
@@ -333,7 +336,7 @@ class X2Chart extends X2Widget {
 				case 'Last Month':
 				default:
 					$startDate = mktime (0, 0, 0, date ('m') - 1, 1, date('o'));
-					$endDate = mktime (0, 0, 0, date ('m'), 1, date('o')) - self::$secPerDay;
+					$endDate = mktime (0, 0, 0, date ('m'), 1, date('o')) - self::SECPERDAY;
 					break;
 				/*case 'Data Domain':
 					break;*/
@@ -350,15 +353,18 @@ class X2Chart extends X2Widget {
 				$endDate = $defaultEndTs;
 			}
 		}
-		$endDate += self::$secPerDay - 1;
+		$endDate += self::SECPERDAY - 1;
 		return array ($startDate, $endDate);
 	}
 
 	
 
+    /*
+    Fetches chart data and Sets chartData attribute of view parameters
+    */
 	private function preLoadActionsData (&$viewParams) {
 		$tsDict = $this->getStartEndTimestampFromCookies (
-			$viewParams['dataStartDate'], time () + self::$secPerDay);
+			$viewParams['dataStartDate'], time () + self::SECPERDAY);
 		$startDate = $tsDict[0];
 		$endDate = $tsDict[1];
 		//printR (('startdate, enddate = '.$startDate.', '.$endDate), true);
@@ -369,6 +375,9 @@ class X2Chart extends X2Widget {
 		$viewParams['chartData'] = $events;
 	}
 
+    /*
+    Fetches chart data and Sets chartData attribute of view parameters
+    */
 	private function preLoadEventsData (&$viewParams) {
 		/* 
 		Chart data only needs to be sent with initial response if chart was
@@ -378,7 +387,7 @@ class X2Chart extends X2Widget {
 		if ((string) $cookies[$this->chartType.'chartIsShown'] !== '' &&
 			$cookies[$this->chartType.'chartIsShown']->value === 'true') {
 
-			$tsDict = $this->getStartEndTimestampFromCookies (time () - self::$secPerWeek, time ());
+			$tsDict = $this->getStartEndTimestampFromCookies (time () - self::SECPERWEEK, time ());
 			$startDate = $tsDict[0];
 			$endDate = $tsDict[1];
 			//printR (('startdate, enddate = '.$startDate.', '.$endDate), true);

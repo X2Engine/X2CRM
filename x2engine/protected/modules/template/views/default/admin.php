@@ -74,7 +74,7 @@ function trimText($text) {
 <?php $this->widget('application.components.X2GridView', array(
 	'id'=>'templates-grid',
 	'title'=>'Templates',
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,

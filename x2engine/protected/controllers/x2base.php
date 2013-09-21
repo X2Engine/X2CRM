@@ -80,6 +80,9 @@ abstract class x2base extends X2Controller {
 		return array(
 			//'accessControl', // perform access control for CRUD operations
 			'setPortlets', // performs widget ordering and show/hide on each page
+            array(
+                'application.components.X2AjaxHandler',
+            ),
 		);
 	}
 
@@ -636,6 +639,31 @@ abstract class x2base extends X2Controller {
      */
     public function admin($model, $name) {
         $this->render('admin', array('model' => $model));
+    }
+
+    public function createX2Grid($options=array()){
+        if(empty($options)){
+            $options=array(
+                'id'=>'',
+                'title'=>'',
+                'buttons'=>array(),
+                'template'=>'<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
+                'dataProvder'=>null,
+                'filter'=>null,
+                'modelName'=>$this->modelClass,
+                'viewName'=>'',
+                'defaultGvSettings'=>array(
+                    'gvCheckbox' => 30,
+                    'name' => 125,
+                    'createDate' => 78,
+                    'gvControls' => 73,
+                ),
+                'specialColumns'=>array(),
+                'enableControls'=>true,
+                'fullscreen'=>true,
+            );
+        }
+        $this->widget('application.components.X2GridView', $options);
     }
 
     /**

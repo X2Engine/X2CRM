@@ -157,7 +157,7 @@ $this->widget('application.components.X2GridView', array(
 	'id'=>'actions-grid',
     'title'=>$heading,
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-    'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+    'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> '<div class="page-title icon actions">{title}{buttons}'
 		.CHtml::link(Yii::t('actions','Switch to List'),array('index','toggleView'=>1),array('class'=>'x2-button')).
         '{filterHint}{summary}</div>{items}{pager}',

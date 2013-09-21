@@ -389,7 +389,7 @@ abstract class X2Model extends CActiveRecord {
             array(implode(',', $fieldRules['email']), 'email'),
             array(implode(',', $fieldRules['int']), 'numerical', 'integerOnly' => true),
             array(implode(',', $fieldRules['boolean']), 'boolean'),
-            array(implode(',', $fieldRules['link']),'validLink'),
+            array(implode(',', $fieldRules['link']), 'validLink'),
             array(implode(',', $fieldRules['safe']), 'safe'),
             array(implode(',', $fieldRules['search']), 'safe', 'on' => 'search')
         );
@@ -413,7 +413,7 @@ abstract class X2Model extends CActiveRecord {
         }elseif(count($nameParts) > 2){ // We have a complicated link like "account.primaryContact.email"
             $linkField = array_shift($nameParts); // Remove the current model
             $linkModel = $this->getLinkedModel($linkField);
-            $name = implode('.',$nameParts); // Put the name back together e.g. primaryContact.email
+            $name = implode('.', $nameParts); // Put the name back together e.g. primaryContact.email
             return $linkModel->getAttribute($name, $renderFlag);
         }else{
             if($renderFlag){
@@ -756,7 +756,7 @@ abstract class X2Model extends CActiveRecord {
                             $text = '<a href="http://www.twitter.com/#!/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
                             break;
                         case 'linkedin':
-                            $text = '<a href="http://www.linkedin.com/pub/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
+                            $text = '<a href="http://www.linkedin.com/in/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
                             break;
                         default:
                             $text = '<a href="http://www.'.$field->linkType.'.com/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
@@ -772,9 +772,10 @@ abstract class X2Model extends CActiveRecord {
                                     ), $this->$fieldName
                             ));
                     $oldText = $text;
-
-                    function linkReplaceCallback($matches){
-                        return stripslashes((strlen($matches[2]) > 0 ? '<a href=\"'.$matches[2].'\" target=\"_blank\">'.$matches[0].'</a>' : $matches[0]));
+                    if(!function_exists('linkReplaceCallback')){
+                        function linkReplaceCallback($matches){
+                            return stripslashes((strlen($matches[2]) > 0 ? '<a href=\"'.$matches[2].'\" target=\"_blank\">'.$matches[0].'</a>' : $matches[0]));
+                        }
                     }
 
                     $text = trim(preg_replace_callback(
@@ -783,9 +784,10 @@ abstract class X2Model extends CActiveRecord {
                                     ), 'linkReplaceCallback', $this->$fieldName
                             ));
                     if($text == trim($oldText)){
-
-                        function linkReplaceCallback2($matches){
-                            return stripslashes((strlen($matches[2]) > 0 ? '<a href=\"http://'.$matches[2].'\" target=\"_blank\">'.$matches[0].'</a>' : $matches[0]));
+                        if(!function_exists('linkReplaceCallback2')){
+                            function linkReplaceCallback2($matches){
+                                return stripslashes((strlen($matches[2]) > 0 ? '<a href=\"http://'.$matches[2].'\" target=\"_blank\">'.$matches[0].'</a>' : $matches[0]));
+                            }
                         }
 
                         $text = trim(preg_replace_callback(
@@ -1459,12 +1461,12 @@ abstract class X2Model extends CActiveRecord {
         return $users;
     }
 
-   /**
-    * Validator ensuring that what the user entered refers to a valid, existing record
-    */
-    public function validLink($attr,$params) {
-        if(!is_numeric($this->$attr)) {
-            $this->addError($attr,Yii::t('app','{attr} does not refer to any existing record',array('{attr}' => $this->getAttributeLabel($attr))));
+    /**
+     * Validator ensuring that what the user entered refers to a valid, existing record
+     */
+    public function validLink($attr, $params){
+        if(!is_numeric($this->$attr)){
+            $this->addError($attr, Yii::t('app', '{attr} does not refer to any existing record', array('{attr}' => $this->getAttributeLabel($attr))));
         }
     }
 

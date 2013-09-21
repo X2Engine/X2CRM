@@ -1102,6 +1102,37 @@ class MarketingController extends x2base {
         $notif->save();  // it will simply not validate and not be saved
     }
 
+    public function actionRemoveWebLeadFormCustomHtml () {
+        if(!empty($_POST) && !empty ($_POST['id'])) {
+            $model = WebForm::model()->findByPk ($_POST['id']);
+            if ($model) {
+                $model->header = '';
+                if ($model->save ()) {
+                    echo CJSON::encode (
+                        array ('success', $model->attributes));
+                    return;
+                }
+            }
+        }
+        echo CJSON::encode (
+            array ('error', Yii::t('marketing', 'Custom HTML could not be removed.')));
+    }
+
+    public function actionSaveWebLeadFormCustomHtml () {
+        if(!empty($_POST) && !empty ($_POST['id']) && !empty ($_POST['html'])){
+            $model = WebForm::model()->findByPk ($_POST['id']);
+            if ($model) {
+                $model->header = $_POST['html'];
+                if ($model->save ()) {
+                    echo CJSON::encode (array ('success', $model->attributes));
+                    return;
+                }
+            }
+        }
+        echo CJSON::encode (
+            array ('error', Yii::t('marketing', 'Custom HTML could not be saved.')));
+    }
+
     /**
      * Create a web lead form with a custom style
      */
@@ -1123,6 +1154,7 @@ class MarketingController extends x2base {
                 $model->createdBy = Yii::app()->user->getName();
                 $model->createDate = time();
             }
+            if (isset ($_POST['header'])) $model->header = $_POST['header'];
             //grab web lead configuration and stash in 'params'
             $whitelist = array('fg', 'bgc', 'font', 'bs', 'bc', 'tags');
             $config = array_filter(array_intersect_key($_POST, array_flip($whitelist)));

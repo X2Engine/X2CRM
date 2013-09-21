@@ -1606,6 +1606,7 @@ Error message container
 */
 
 .error-summary-container {
+    clear: both;
     background: #FEE;
     border: 2px solid #C00;
     font-size: 0.9em;

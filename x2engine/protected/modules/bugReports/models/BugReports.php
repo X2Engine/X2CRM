@@ -79,8 +79,9 @@ class BugReports extends X2Model {
     public function afterFind(){
         if($this->id!=$this->name){
             $this->name=$this->id;
-            $this->save();
+            $this->update(array('name'));
         }
+        return parent::afterFind();
     }
 
     /**
