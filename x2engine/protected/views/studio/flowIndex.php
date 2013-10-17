@@ -36,8 +36,20 @@
 
 $this->actionMenu = array(
 	array('label'=>Yii::t('studio','Manage Flows')),
-	array('label'=>Yii::t('studio','Create Flow'), 'url'=>array('flowDesigner'),'visible'=>(Yii::app()->params->edition==='pro')),
+	array(
+        'label'=>Yii::t('studio','Create Flow'), 
+        'url'=>array('flowDesigner'),
+        'visible'=>(Yii::app()->params->edition==='pro')),
+    array (
+        'label' => Yii::t('studio', 'All Trigger Logs'), 
+        'url' => array ('triggerLogs'),
+        'visible' => (Yii::app()->params->edition === 'pro')
+    )
 );
+
+?>
+<div class="flush-grid-view">
+<?php 
 
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'changelog-grid',
@@ -53,7 +65,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'name'=>'name',
 			'headerHtmlOptions'=>array('style'=>'width:20%'),
-			'value'=>'CHtml::link($data->name,array("/studio/flowDesigner/".$data->id))',
+			'value'=>'CHtml::link($data->name,array("studio/flowDesigner","id"=>$data->id))',
 			'type'=>'raw',
 		),
 		array(
@@ -89,7 +101,9 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 	),
 ));
-?><br>
+?>
+</div>
+<br>
 <?php
 if(Yii::app()->params->edition==='pro')
 	echo CHtml::link(Yii::t('studio','Create New Flow'),array('/studio/flowDesigner'),array('class'=>'x2-button'));

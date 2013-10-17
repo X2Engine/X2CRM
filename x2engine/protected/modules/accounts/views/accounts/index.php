@@ -71,17 +71,26 @@ $this->widget('application.components.X2GridView', array(
 	'id'=>'accounts-grid',
 	'title'=>Yii::t('accounts','Accounts'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> '<div class="page-title icon accounts">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
-
+	'template'=>
+        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
+        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
+        '<div id="x2-gridview-page-title" '.
+         'class="page-title icon accounts x2-gridview-fixed-title">'.
+        '{title}{buttons}{filterHint}'.
+        
+        '{summary}{items}{pager}',
+    'fixedHeader'=>true,
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
+	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
 	// 'columns'=>$columns,
 	'modelName'=>'Accounts',
 	'viewName'=>'accounts',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
+		'gvCheckbox' => 30,
 		'name' => 184,
 		'type' => 153,
 		'annualRevenue' => 108,

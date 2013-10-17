@@ -62,7 +62,9 @@ function setUpTextEditor (suppressInsertableAttrs) {
 			tabIndex:5,
 			fullPage:true
 		},function(){
-			window.emailEditor.document.on("keyup",function(){ $("#Campaign_templateDropdown").val("0"); });
+			window.emailEditor.document.on("keyup",function(){ 
+                $("#Campaign_templateDropdown").val("0"); 
+            });
 		});
 	} else {
 		window.emailEditor = createCKEditor("Campaign_content",{
@@ -70,7 +72,9 @@ function setUpTextEditor (suppressInsertableAttrs) {
 			insertableAttributes:x2.insertableAttributes,
 			fullPage:true
 		},function(){
-			window.emailEditor.document.on("keyup",function(){ $("#Campaign_templateDropdown").val("0"); });
+			window.emailEditor.document.on("keyup",function(){ 
+                $("#Campaign_templateDropdown").val("0"); 
+            });
 		});
 	}
 

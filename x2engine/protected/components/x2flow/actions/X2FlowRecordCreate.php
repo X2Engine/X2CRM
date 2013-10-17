@@ -55,12 +55,18 @@ class X2FlowRecordCreate extends X2FlowAction {
 	}
 
 	public function execute(&$params) {
-		if(!is_subclass_of($params['modelClass'],'X2Model'))	// make sure this is a valid model type
-			return false;
+		if(!is_subclass_of($this->config['modelClass'],'X2Model'))	// make sure this is a valid model type
+			return array (false, "");
 		if(!isset($this->config['attributes']) || empty($this->config['attributes']))
-			return false;
+			return array (false, "");
 
-		$model = new $params['modelClass'];
-		return $this->setModelAttributes($model,$this->config['attributes'],$params) && $model->save();
+		$model = new $this->config['modelClass'];
+		if ($this->setModelAttributes($model,$this->config['attributes'],$params) && $model->save()) {
+            return array (
+                true,
+                Yii::t('studio', 'View created record: ').$model->getLink ());
+        } else {
+            return array (false, $model->getError ());
+        }
 	}
 }

@@ -46,6 +46,7 @@
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 include('WebTestConfig.php');
+Yii::import ('application.components.permissions.*');
 
 /**
  * @package X2CRM.tests

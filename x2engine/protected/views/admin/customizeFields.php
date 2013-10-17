@@ -153,6 +153,9 @@
         $('#attributeLabel').val(data.attributeLabel);
         $('#fieldType').val(data.type);
         $('#edit_dropdown').html(data.dropdown);
+        if(data.dropdown){
+            $('#link_dropdown').val(data.linkType);
+        }
         if(data.required==1){
             $('#required').attr("checked",true);
         }else{

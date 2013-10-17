@@ -38,6 +38,8 @@ if ($this instanceof X2WidgetList) {
     Yii::app()->clientScript->registerCoreScript('jquery');
     Yii::app()->clientScript->registerCoreScript('jquery.ui');
     Yii::app()->clientScript->packages = X2WidgetList::packages ();
+    Yii::app()->clientScript->registerPackage('widgetListCombinedCss');
+    Yii::app()->clientScript->registerPackage('widgetListCombinedCss2');
     if ($name === 'GalleryWidget') {
         Yii::import('application.extensions.gallerymanager.GalleryManager');
         $galleryWidget = new GalleryManager ();
@@ -48,13 +50,15 @@ if ($this instanceof X2WidgetList) {
         Yii::app()->clientScript->registerScriptFile(
             $galleryWidgetAssets.'/jquery.galleryManager.js');
         Yii::app()->clientScript->registerPackage('GalleryWidgetJS');
-        Yii::app()->clientScript->registerPackage('GalleryWidgetCss');
+        //Yii::app()->clientScript->registerPackage('GalleryWidgetCss');
     } else if ($name === 'RecordViewChart') {
         Yii::app()->clientScript->registerPackage('ChartWidgetExtJS');
         Yii::app()->clientScript->registerPackage('ChartWidgetJS');
-        Yii::app()->clientScript->registerPackage('ChartWidgetCss');
+        //Yii::app()->clientScript->registerPackage('ChartWidgetCss');
     } else if ($name === 'InlineRelationships') {
         Yii::app()->clientScript->registerPackage('InlineRelationshipsJS');
+    } else if ($name === 'InlineTags') {
+        Yii::app()->clientScript->registerPackage('InlineTagsJS');
     }
 }
 

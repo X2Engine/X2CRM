@@ -128,7 +128,7 @@ class Dropdowns extends CActiveRecord {
                 ->from('x2_dropdowns')
                 ->where('id=:id', array(':id' => $id))
                 ->queryRow();
-        if(isset($data)){
+        if(!empty($data)){
             $data['options'] = CJSON::decode($data['options']);
             $data['options'] = is_array($data['options']) ? $data['options'] : array();
             if(!empty($translationPack)){

@@ -34,44 +34,68 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-if($filter) { ?>
-<b><?php echo Yii::t('app', 'Tags'); ?></b>
-<div id="x2-inline-tags-filter" class="form">
-	<?php if(is_array($tags) && count($tags)>0) {
-		echo '<div id="x2-tag-list-filter" style="min-height:15px;">';
-		foreach($tags as $tag)
-			echo '<span class="tag link-disable"><span class="delete-tag filter">[x]</span> '.CHtml::link($tag,'#').'</span>';
-		
-		echo "</div>";
-	} else { ?>
-	<div id="x2-tag-list-filter" title="<?php echo Yii::t('contacts','Drop a tag here to filter map results.');?>" style="min-height:15px;"><?php echo Yii::t('contacts','Drop a tag here to filter map results.');?></div>
-<?php } ?>
-</div>    
-<script>initTags();</script>
-<?php 
-} else {
+
+if($filter) { 
+    Yii::app()->clientScript->registerScriptFile (
+        Yii::app()->getBaseUrl().'/js/X2Tags/TagContainer.js', CClientScript::POS_HEAD);
+    Yii::app()->clientScript->registerScriptFile (
+        Yii::app()->getBaseUrl().'/js/X2Tags/MapTagsContainer.js', CClientScript::POS_HEAD);
 ?>
-<div id="x2-inline-tags">
+<b><?php echo Yii::t('app', 'Tags'); ?></b>
+<div id="x2-tags-container" class="form">
+    <?php
+		echo '<div id="x2-tag-list" style="min-height:15px;">';
+		foreach($tags as $tag) {
+			echo '<span class="tag link-disable"><span class="delete-tag filter">[x]</span> '.
+            CHtml::link($tag,'#').'</span>';
+    } 
+    ?>
+    <span class='tag-container-placeholder' <?php echo (sizeof ($tags) > 0 ? 'style="display: none;"' : ''); ?>>
+        <?php echo Yii::t('contacts','Drop a tag here to filter map results.');?>
+    </span>
+    <?php
+		echo "</div>";
+    ?>
+</div>    
+<?php
+	Yii::app()->clientScript->registerScript('tags-list','
+	$(document).on ("ready", function () {
+        new MapTagsContainer ({
+            containerSelector: "#x2-tag-list"
+        }); 
+	});',CClientScript::POS_HEAD);
+} else {
+
+?>
+<div id="x2-tags-container">
 	<div id="x2-tag-list">
-		<?php foreach($tags as $tag) {
-			echo '<span class="tag"><span class="delete-tag">[x]</span> '.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'')).'</span>';
-		}?>
+		<?php 
+        foreach($tags as $tag) {
+            echo '<span class="tag"><span class="delete-tag">[x]</span> '.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'')).'</span>';
+        }
+        ?> 
+        <span class='tag-container-placeholder' <?php echo (sizeof ($tags) > 0 ? 'style="display: none;"' : ''); ?>>
+            <?php echo Yii::t('contacts','Drag tags here from the tag cloud widget or click to create a custom tag.');?>
+        </span>
+        <?php
+        ?>
 	</div>
 </div>
 <?php
 	// give javascript URLs, model type, and model id
-	// javascript is in /js/tags.js
 	$appendTag = $this->controller->createUrl('/site/appendTag');
 	$removeTag = $this->controller->createUrl('/site/removeTag');
 	$searchUrl = $this->controller->createUrl('/search/search');
 	
 	Yii::app()->clientScript->registerScript('tags-list','
 	$(function() {
-		initTags();
-		$("#x2-inline-tags").data("appendTagUrl", "'.$appendTag.'");
-		$("#x2-inline-tags").data("removeTagUrl", "'.$removeTag.'");
-		$("#x2-inline-tags").data("searchUrl", "'.$searchUrl.'");
-		$("#x2-inline-tags").data("type", "'.get_class($model).'");
-		$("#x2-inline-tags").data("id",'.$model->id.');
+        x2.inlineTagsContainer = new InlineTagsContainer ({
+            appendTagUrl: "'.$appendTag.'",
+            removeTagUrl: "'.$removeTag.'",
+            searchUrl: "'.$searchUrl.'",
+            modelType: "'.get_class ($model).'",
+            modelId: '.$model->id.',
+            containerSelector: "#x2-tag-list",
+        });
 	});',CClientScript::POS_HEAD);
 }

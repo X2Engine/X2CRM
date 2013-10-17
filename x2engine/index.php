@@ -42,6 +42,7 @@ defined('YII_DEBUG') or define('YII_DEBUG',false);
 defined('PRO_VERSION') or define('PRO_VERSION',false);
 // specify how many levels of call stack should be shown in each log message
 defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
+defined('YII_LOGGING') or define('YII_LOGGING',false);
 
 require_once($yii);
 Yii::$enableIncludePath = false;

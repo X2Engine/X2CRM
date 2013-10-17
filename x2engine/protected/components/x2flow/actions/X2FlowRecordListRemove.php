@@ -57,9 +57,11 @@ class X2FlowRecordListRemove extends X2FlowAction {
 
 	public function execute(&$params) {
 		$list = CActiveRecord::model('X2List')->findByPk($this->parseOption('listId',$params));
-		if($list !== null && $list->modelName === get_class($params['model']))
-			return $list->removeIds($params['model']->id);
-		else
-			return false;
+		if($list !== null && $list->modelName === get_class($params['model'])) {
+			if ($list->removeIds($params['model']->id)) {  
+                return array (true, "");
+            }
+        }
+        return array (false, "");
 	}
 }

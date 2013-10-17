@@ -38,6 +38,10 @@ $('#content').on('mouseup','#tag-search a',function(e) {
 	document.cookie = 'vcr-list=".$term."; expires=0; path=/';
 });    
 ");
+?>
+<div class='flush-grid-view'>
+<?php
+
 $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider' => $tags,
     'id'=>'tag-search',
@@ -61,3 +65,5 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 	),
 ));
+?>
+</div>

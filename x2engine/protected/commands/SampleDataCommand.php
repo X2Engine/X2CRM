@@ -220,7 +220,8 @@ class SampleDataCommand extends CConsoleCommand {
 			'x2_list_criteria' => array('x2_lists'),
 			'x2_list_items' => array('x2_lists'),
 			'x2_role_to_workflow' => array('x2_workflow_stages', 'x2_roles', 'x2_workflows'),
-			'x2_workflow_stages' => array('x2_workflows')
+			'x2_workflow_stages' => array('x2_workflows'),
+            'x2_action_text' => array('x2_actions')
 		);
 		/**
 		 * This array stores tables to be executed "next"

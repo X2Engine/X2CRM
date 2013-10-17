@@ -70,7 +70,13 @@ class ServicesController extends x2base {
     }
 
     public function actions(){
-        return array(
+        return array_merge(parent::actions(), array(
+            'webForm' => array(
+                'class' => 'WebFormAction',
+            ),
+            'createWebForm' => array(
+                'class' => 'CreateWebFormAction',
+            ),
             'inlineEmail' => array(
                 'class' => 'InlineEmailAction',
             ),
@@ -80,7 +86,7 @@ class ServicesController extends x2base {
             'exportServiceReport' => array(
                 'class' => 'ExportServiceReportAction',
             ),
-        );
+        ));
     }
 
     public function behaviors(){
@@ -350,259 +356,6 @@ class ServicesController extends x2base {
         $result = $command->queryAll();
         echo CJSON::encode($result);
         exit;
-    }
-
-    /**
-     * Create a web lead form with a custom style
-     *
-     * Currently web forms have all options passed as GET parameters. Saved web forms
-     * are saved to the table x2_web_forms. Saving, retrieving, and updating a web form
-     * all happens in this function. Someday this should be updated to be it's own module.
-     *
-     */
-    public function actionCreateWebForm(){
-        if(file_exists(__DIR__.'/pro/actionCreateWebForm.php') &&
-                Yii::app()->params->edition === 'pro'){
-            include(__DIR__.'/pro/actionCreateWebForm.php');
-            return;
-        }
-
-        if($_SERVER['REQUEST_METHOD'] === 'POST'){ // save a web form
-            if(empty($_POST['name'])){
-                echo json_encode(array('errors' => array('name' => Yii::t('marketing', 'Name cannot be blank.'))));
-                return;
-            }
-
-            $type = 'serviceCase';
-
-            // check if we are updating an existing web form
-            $model = WebForm::model()->findByAttributes(array('name' => $_POST['name'], 'type' => $type));
-            if(!isset($model)){
-                $model = new WebForm;
-                $model->name = $_POST['name'];
-                $model->type = $type;
-                $model->modelName = 'Services';
-                $model->visibility = 1;
-                $model->assignedTo = Yii::app()->user->getName();
-                $model->createdBy = Yii::app()->user->getName();
-                $model->createDate = time();
-            }
-
-            //grab web lead configuration and stash in 'params'
-            $whitelist = array('fg', 'bgc', 'font', 'bs', 'bc', 'tags');
-            $config = array_filter(array_intersect_key($_POST, array_flip($whitelist)));
-            //restrict param values, alphanumeric, # for color vals, comma for tag list
-            $config = preg_replace('/[^a-zA-Z0-9#,]/', '', $config);
-            if(!empty($config))
-                $model->params = $config;
-            else
-                $model->params = null;
-
-            $model->updatedBy = Yii::app()->user->getName();
-            $model->lastUpdated = time();
-
-            if($model->save()){
-                echo json_encode($model->attributes);
-            }else{
-                echo json_encode(array('errors' => $model->getErrors()));
-            }
-        }else{
-            if(Yii::app()->user->getName() != 'admin'){
-                $condition = ' AND visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
-                /* x2temp */
-                $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-                if(!empty($groupLinks))
-                    $condition .= ' OR assignedTo IN ('.implode(',', $groupLinks).')';
-
-                $condition .= ' OR (visibility=2 AND assignedTo IN
-					(SELECT username FROM x2_group_to_user WHERE groupId IN
-					(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-            } else{
-                $condition = '';
-            }
-            //this get request is for weblead type only, marketing/weblist/view supplies the form that posts for weblist type
-            $forms = WebForm::model()->findAll('type="serviceCase"'.$condition); // get service web forms (other option is 'weblead' used by marketing module)
-            $this->render('createWebForm', array('forms' => $forms));
-        }
-    }
-
-    /**
-     * Display a service web form
-     *
-     * This is used by an iframe to display a web form from an external webpage.
-     *
-     */
-    public function actionWebForm(){
-        if(file_exists(__DIR__.'/pro/actionWebForm.php') &&
-                Yii::app()->params->edition === 'pro'){
-            include(__DIR__.'/pro/actionWebForm.php');
-            return;
-        }
-
-        if(isset($_POST['Services'])){ // web form submitted
-            $firstName = $_POST['Services']['firstName'];
-            $lastName = $_POST['Services']['lastName'];
-            $fullName = $firstName.' '.$lastName;
-            $email = $_POST['Services']['email'];
-            $phone = $_POST['Services']['phone'];
-            $description = $_POST['Services']['description'];
-
-            $model = new Services;
-            $oldAttributes = $model->getAttributes();
-
-            $contact = Contacts::model()->findByAttributes(array('email' => $email));
-            if($contact){
-                $model->contactId = $contact->id;
-            }else{
-                $model->contactId = "Unregistered";
-            }
-
-            $model->subject = Yii::t('services', 'Web Form Case entered by {name}', array(
-                        '{name}' => $fullName,
-                    ));
-
-            $model->description = CHtml::encode($description);
-            $model->email = CHtml::encode($email);
-            $model->origin = 'Web';
-            $model->impact = Yii::t('services', '3 - Moderate');
-            $model->status = Yii::t('services', 'New');
-            $model->mainIssue = Yii::t('services', 'General Request');
-            $model->subIssue = Yii::t('services', 'Other');
-            $model->assignedTo = $this->getNextAssignee();
-            $now = time();
-            $model->createDate = $now;
-            $model->lastUpdated = $now;
-            $model->updatedBy = 'admin';
-            // if($this->create($model, $oldAttributes, 1)) {
-            if($model->save()){
-                $model->name = $model->id;
-                $model->update(array('name'));
-            }
-
-
-            // add tags
-            if(!empty($_POST['tags'])){
-                $taglist = explode(',', $_POST['tags']);
-                if($taglist !== false){
-                    foreach($taglist as &$tag){
-                        if($tag === '')
-                            continue;
-                        if(substr($tag, 0, 1) != '#')
-                            $tag = "#".$tag;
-                        $tagModel = new Tags;
-                        $tagModel->taggedBy = 'API';
-                        $tagModel->timestamp = time();
-                        $tagModel->type = 'Services';
-                        $tagModel->itemId = $model->id;
-                        $tagModel->tag = $tag;
-                        $tagModel->itemName = $model->name;
-                        $tagModel->save();
-                    }
-                }
-            }
-
-            //use the submitted info to create an action
-            $action = new Actions;
-            $action->actionDescription = Yii::t('contacts', 'Web Form')."\n\n".
-                    Yii::t('contacts', 'Name').': '.$fullName."\n".
-                    Yii::t('contacts', 'Email').": ".$email."\n".
-                    Yii::t('contacts', 'Phone').": ".$phone."\n".
-                    Yii::t('services', 'Description').": ".$description;
-
-            // create action
-            $action->type = 'note';
-            $action->assignedTo = $model->assignedTo;
-            $action->visibility = '1';
-            $action->associationType = 'services';
-            $action->associationId = $model->id;
-            $action->associationName = $model->name;
-            $action->createDate = $now;
-            $action->lastUpdated = $now;
-            $action->completeDate = $now;
-            $action->complete = 'Yes';
-            $action->updatedBy = 'admin';
-            $action->save();
-
-            //send email
-            $emailBody = Yii::t('services', 'Hello').' '.$fullName.",<br><br>";
-            $emailBody .= Yii::t('services', 'Thank you for contacting our Technical Support team. This is to verify we have received your request for Case# {casenumber}.  One of  our Technical Analysts will contact you shortly.', array(
-                        '{casenumber}' => $model->id,
-                    ));
-
-            $emailBody = Yii::app()->params->admin->serviceCaseEmailMessage;
-            $emailBody = preg_replace('/{first}/u', $firstName, $emailBody);
-            $emailBody = preg_replace('/{last}/u', $lastName, $emailBody);
-            $emailBody = preg_replace('/{phone}/u', $phone, $emailBody);
-            $emailBody = preg_replace('/{email}/u', $email, $emailBody);
-            $emailBody = preg_replace('/{description}/u', $description, $emailBody);
-            $emailBody = preg_replace('/{case}/u', $model->id, $emailBody);
-            $emailBody = preg_replace('/\n|\r\n/', "<br>", $emailBody);
-
-            $uniqueId = md5(uniqid(rand(), true));
-            $emailBody .= '<img src="'.$this->createAbsoluteUrl('actions/emailOpened', array('uid' => $uniqueId, 'type' => 'open')).'"/>';
-
-            $emailSubject = Yii::app()->params->admin->serviceCaseEmailSubject;
-            $emailSubject = preg_replace('/{first}/u', $firstName, $emailSubject);
-            $emailSubject = preg_replace('/{last}/u', $lastName, $emailSubject);
-            $emailSubject = preg_replace('/{phone}/u', $phone, $emailSubject);
-            $emailSubject = preg_replace('/{email}/u', $email, $emailSubject);
-            $emailSubject = preg_replace('/{description}/u', $description, $emailSubject);
-            $emailSubject = preg_replace('/{case}/u', $model->id, $emailSubject);
-            if(Yii::app()->params->admin->serviceCaseEmailAccount != Credentials::LEGACY_ID)
-                $from = (int) Yii::app()->params->admin->serviceCaseEmailAccount;
-            else
-                $from = array('name' => Yii::app()->params->admin->serviceCaseFromEmailName, 'address' => Yii::app()->params->admin->serviceCaseFromEmailAddress);
-            $useremail = array('to' => array(array(isset($fullName) ? $fullName : '', $email)));
-
-            $status = $this->sendUserEmail($useremail, $emailSubject, $emailBody, null, $from);
-
-            if($status['code'] == 200){
-                if($model->assignedTo != 'Anyone'){
-                    $profile = X2Model::model('Profile')->findByAttributes(array('username' => $model->assignedTo));
-                    if(isset($profile)){
-                        $useremail['to'] = array(
-                            array(
-                                $profile->fullName,
-                                $profile->emailAddress,
-                            ),
-                        );
-                        $emailSubject = 'Service Case Created';
-                        $emailBody = "A new service case, #".$model->id.", has been created in X2CRM. To view the case, click this link: ".$model->getLink();
-                        $status = $this->sendUserEmail($useremail, $emailSubject, $emailBody, null, $from);
-                    }
-                }
-                //email action
-                $action = new Actions;
-                $action->associationType = 'services';
-                $action->associationId = $model->id;
-                $action->associationName = $model->name;
-                $action->visibility = 1;
-                $action->complete = 'Yes';
-                $action->type = 'email';
-                $action->completedBy = 'admin';
-                $action->assignedTo = $model->assignedTo;
-                $action->createDate = time();
-                $action->dueDate = time();
-                $action->completeDate = time();
-                $action->actionDescription = '<b>'.$model->subject."</b>\n\n".$emailBody;
-                if($action->save()){
-                    $track = new TrackEmail;
-                    $track->actionId = $action->id;
-                    $track->uniqueId = $uniqueId;
-                    $track->save();
-                }
-            }
-
-            $this->renderPartial('webFormSubmit', array('caseNumber' => $model->id));
-        }else{
-            //sanitize get params
-            $whitelist = array('fg', 'bgc', 'font', 'bs', 'bc', 'tags');
-            $_GET = array_intersect_key($_GET, array_flip($whitelist));
-            //restrict param values, alphanumeric, # for color vals, comma for tag list
-            $_GET = preg_replace('/[^a-zA-Z0-9#,]/', '', $_GET);
-
-            $this->renderPartial('webForm', array('type' => 'webForm'));
-        }
     }
 
     /**

@@ -462,7 +462,7 @@ $timezones = array(
                 ?>
                 <form name="install" id="install" action="initialize.php" method="POST" onSubmit="return validate(this);">
                     <h2><?php echo installer_t('X2CRM Application Info'); ?></h2><hr>
-                    <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2Engine'); ?>" style="width:190px" /></div>
+                    <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2CRM'); ?>" style="width:190px" /></div>
                     <div class="row"><label for="language"><?php echo installer_t('Default Language'); ?></label>
                         <select name="language" id="language" onChange="changeLang(this.options[this.selectedIndex].value);" style="width:200px"><option value="">English</option>
                             <?php
@@ -549,8 +549,8 @@ $timezones = array(
                     <br /><br /><br />
 
             <div><?php if(file_exists('install_pro.php')) include('install_pro.php'); ?></div>
-            
-            
+
+
 			<?php
 			include(realpath('protected/components/UpdatesForm.php'));
 			// Configuration for the updates / optional info form:

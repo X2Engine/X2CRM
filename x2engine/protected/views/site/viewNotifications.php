@@ -34,6 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
+?>
+<div class="flush-grid-view">
+<?php 
+
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'actions-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -73,6 +78,10 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	),
 	'rowCssClassExpression'=>'$data->viewed? "" : "unviewed"',
 ));
+
+?>
+</div>
+<?php 
 
 foreach($dataProvider->getData() as $notif) {
 	if(!$notif->viewed) {

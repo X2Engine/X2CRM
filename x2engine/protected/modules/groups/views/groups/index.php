@@ -39,6 +39,10 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('groups','Create Group'), 'url'=>array('create')),
 ));
 
+?>
+<div class="flush-grid-view">
+<?php 
+
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'roles-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -60,3 +64,4 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 	),
 )); ?>
+</div>

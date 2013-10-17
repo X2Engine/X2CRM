@@ -29,7 +29,7 @@ class DocsTest extends X2DbTestCase {
 		$delimiter = "\n@@|@@\n";
 		foreach($this->contacts['testAnyone'] as $name=>$value) {
 			$textIn[] = '{'.$name.'}';
-			$textOutExpected[] = $contact->renderAttribute($name, false, true);
+			$textOutExpected[] = $contact->renderAttribute($name);
 		}
 		$textIn = implode($delimiter,$textIn);
 		$textOutExpected = implode($delimiter,$textOutExpected);

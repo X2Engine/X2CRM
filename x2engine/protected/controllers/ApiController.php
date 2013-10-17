@@ -77,6 +77,7 @@ class ApiController extends x2base {
 	public function filters() {
 		return array(
 			'noSession',
+            'available',
 			'authenticate - voip,webListener,x2cron',
 			'validModel + create,view,lookup,update,delete,relationships,tags',
 			'checkCRUDPermissions + create,view,lookup,update,delete',
@@ -112,6 +113,7 @@ class ApiController extends x2base {
 		if (isset($item)) {
 			$access = false; // Auth item exists; set true only through verification
 			$userId = null;
+            $access = Yii::app()->params->isAdmin;
 			$access = $authenticated->checkAccess($action);
 
 			if (!$access) { // Skip this if we already have access
@@ -704,9 +706,20 @@ class ApiController extends x2base {
 			$this->user = User::model()->findByAttributes(array('username' => $params['user'], 'userKey' => $params['userKey']));
 			if ((bool) $this->user) {
 				Yii::app()->suModel = $this->user;
-				if (!empty($this->user->userKey))
+				if(!empty($this->user->userKey)){
+                    Yii::app()->params->groups = Groups::getUserGroups($this->user->id);
+                    Yii::app()->params->roles = Roles::getUserRoles($this->user->id);
+                    // Determine if the API user is admin (so that Yii::app()->params->isAdmin gets set properly):
+                    $roles = RoleToUser::model()->findAllByAttributes(array('userId' => $this->user->id));
+                    $access = false;
+                    $auth = Yii::app()->authManager;
+					foreach ($roles as $role) {
+						$access = $access || $auth->checkAccess('AdminIndex', $role->roleId);
+					}
+                    if($access)
+                        Yii::app()->params->isAdmin = true;
 					$filterChain->run();
-				else
+                } else
 					$this->_sendResponse(403, "User \"{$this->user->username}\" cannot use API; userKey not set.");
 			} else {
 				$this->log("Authentication failed; invalid user credentials; IP = {$_SERVER['REMOTE_ADDR']}; get or post params =  " . CJSON::encode($params).'');
@@ -717,6 +730,18 @@ class ApiController extends x2base {
 			$this->_sendResponse(401, "No user credentials provided.");
 		}
 	}
+
+    /**
+     * Sends the appropriate response if X2CRM is locked.
+     * 
+     * @param type $filterChain
+     */
+    public function filterAvailable($filterChain) {
+        if(is_int(Yii::app()->locked)) {
+            $this->_sendResponse(503,"X2CRM is currently undergoing maintenance. Please try again later.");
+        }
+        $filterChain->run();
+    }
 
 	/**
 	 * Basic permissions check filter.
@@ -865,6 +890,9 @@ class ApiController extends x2base {
 				case 501:
 					$message = 'The requested method is not implemented.';
 					break;
+                case 503:
+                    $message = "X2CRM is currently unavailable.";
+                    break;
 			}
 
 			// servers don't always have a signature turned on

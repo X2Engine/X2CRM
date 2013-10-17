@@ -75,7 +75,7 @@ $order = preg_replace('/\.desc$/', ' DESC', $order);
 if(is_numeric($listId)) {
 	$list = X2Model::model('X2List')->findByPk($listId);
     if(isset($list)){
-        $listLink = CHtml::link($list->name,array('/contacts/'.$path));
+        $listLink = CHtml::link($list->name,array('/contacts/list','id'=>$listId));
         $vcrDataProvider = $searchModel->searchList($listId);
     }else{
         $listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/'.$path));	// default to All Contacts

@@ -39,10 +39,22 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','All Campaigns')),
 	array('label'=>Yii::t('marketing','Create Campaign'), 'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/lists')),
-	array('label'=>Yii::t('marketing','Newsletters'), 'url'=>array('weblist/index')),
+	array(
+        'label'=>Yii::t('marketing','Newsletters'), 
+        'url'=>array('/marketing/weblist/index'),
+        'visible'=>(Yii::app()->params->edition==='pro')
+    ),
 	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
-	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker')),
-	array('label'=>Yii::t('app','X2Flow'),'url'=>array('/studio/flowIndex'))//(Yii::app()->params->edition==='pro')),
+	array(
+        'label'=>Yii::t('marketing','Web Tracker'), 
+        'url'=>array('webTracker'),
+        'visible'=>(Yii::app()->params->edition==='pro')
+    ),
+	array(
+        'label'=>Yii::t('app','X2Flow'),
+        'url'=>array('/studio/flowIndex'),
+        'visible'=>(Yii::app()->params->edition==='pro')
+    ),
 ));
 
 Yii::app()->clientScript->registerScript('search', "
@@ -83,7 +95,15 @@ $this->widget('application.components.X2GridView', array(
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'title'=>Yii::t('marketing','Campaigns'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> '<div class="page-title icon marketing">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
+	'template'=> 
+        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
+        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
+        '<div id="x2-gridview-page-title" '.
+         'class="page-title icon marketing x2-gridview-fixed-title">'.
+        '{title}{buttons}{filterHint}'.
+        
+        '{summary}{items}{pager}',
+    'fixedHeader'=>true,
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
@@ -93,6 +113,7 @@ $this->widget('application.components.X2GridView', array(
 	'viewName'=>'campaigns',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
+        'gvCheckbox' => 30,
 		'name' => 156,
 		'listId' => 106,
 		'subject' => 271,

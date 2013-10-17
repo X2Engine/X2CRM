@@ -61,7 +61,7 @@ $(function() {
 });
 ');
 ?>
-
+<div class='flush-grid-view'>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider' => $dataProvider,
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -91,3 +91,4 @@ $(function() {
 	),
 ));
 ?>
+</div>

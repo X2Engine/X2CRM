@@ -39,13 +39,13 @@ $canEdit = $model->id==Yii::app()->user->getId() || Yii::app()->params->isAdmin;
 
 $this->actionMenu = array(
 	array('label'=>Yii::t('profile','View Profile'), 'url'=>array('view','id'=>$model->id)),
-	array('label'=>Yii::t('profile','Update Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
+	array('label'=>Yii::t('profile','Edit Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
 	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
 	array('label'=>Yii::t('profile','Change Password'),'visible'=>($model->id==Yii::app()->user->getId())),
 	array('label'=>Yii::t('profile','Manage Apps'),'url'=>array('manageCredentials'))
 );
 ?>
-<div class="page-title"><h2><?php echo Yii::t('profile','Change Password Form'); ?></h2></div>
+<div class="page-title icon profile"><h2><?php echo Yii::t('profile','Change Password Form'); ?></h2></div>
 <?php echo CHtml::form(); ?>
 <div class="form">
 	

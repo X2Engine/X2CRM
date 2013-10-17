@@ -48,16 +48,17 @@ $urlTitleHeight = $sitesSettings->urltitleHeight;
 $topsitesContainerHeight = $topsitesHeight + 2;
 $urlTitleContainerHeight = $urlTitleHeight + 30;
 $siteContainerHeight = $topsitesHeight + $urlTitleHeight + 45;
-$siteContainerFixHeight = 250;
+$siteContainerFixHeight = 315;
 ?>
 <div id="sites-container-fix" style="height:<?php echo $siteContainerFixHeight; ?>px">
 <div id="sites-container" style="height:<?php echo $siteContainerHeight; ?>px">
 <div id="top-sites-container" style="height:<?php echo $topsitesHeight;?>px; margin-bottom: 20px;">
 <div id="sites-box" style="height:<?php echo $topsitesHeight;?>px">
 <?php
-$echoSTR = "<table><tr><th>".Yii::t('app',"Title")."</th><th>".Yii::t('app',"Link")."</th></tr>";
+$echoSTR = "<table><tr><th>".Yii::t('app',"Link")."</th><th>".Yii::t('app',"Delete")."</th></tr>";
 foreach($data as $entry){
-	$echoSTR .=  "<tr><td>".$entry['title']."</td><td>".CHtml::link(Yii::t('app',"Link"),$entry['url'])."</td></tr>";
+	$echoSTR .=  "<tr><td>". CHtml::link(Yii::t('app', $entry['title']), $entry['url'], array('target'=>'_blank')) ."</td>
+                      <td>". CHtml::link(Yii::t('app',"Delete"), $entry['url'])."</td></tr>";
 }
 $echoSTR .= "</table>";
 echo $echoSTR;
@@ -92,7 +93,7 @@ $('#sites-container').resizable({
 ",CClientScript::POS_HEAD);
 ?>
 </div>
-<?php echo CHtml::beginForm();?>
+<form>
 <div id='site-url-container' style="height: <?php echo $urlTitleContainerHeight;?>px; margin-bottom:35px;">
 	<?php echo Yii::t('app','Title:').CHtml::textField('url-title', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
 	<br/>
@@ -111,6 +112,6 @@ echo CHtml::ajaxSubmitButton(
 		}",
 	),
 	array('class'=>'x2-button','id'=>'submit-button')
-);
-echo CHtml::endForm();?>
+);?>
+</form>
 </div></div></div>

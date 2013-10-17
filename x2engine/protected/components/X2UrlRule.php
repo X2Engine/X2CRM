@@ -35,8 +35,8 @@
  *****************************************************************************************/
 /**
  * Custom URL parsing class
- * 
- * @package X2CRM.components 
+ *
+ * @package X2CRM.components
  */
 class X2UrlRule extends CUrlRule
 {
@@ -173,7 +173,7 @@ class X2UrlRule extends CUrlRule
 
 		if($this->references!==array())
 			$this->routePattern='/^(?J)'.strtr($this->route,$tr2).'$/u';
-        
+
 		if(YII_DEBUG && @preg_match($this->pattern,'test')===false)
 			throw new CException(Yii::t('yii','The URL pattern "{pattern}" for route "{route}" is not a valid regular expression.',
 				array('{route}'=>$route,'{pattern}'=>$pattern)));

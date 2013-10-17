@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS x2_action_text;
+/*&*/
 DROP TABLE IF EXISTS x2_actions;
 /*&*/
 CREATE TABLE x2_actions	(
@@ -30,14 +32,15 @@ CREATE TABLE x2_actions	(
 	INDEX (assignedTo),
 	INDEX (type),
 	INDEX (associationType,associationId)
-) COLLATE = utf8_general_ci;
-/*&*/
-DROP TABLE IF EXISTS x2_action_text;
+) COLLATE = utf8_general_ci, ENGINE = INNODB;
 /*&*/
 CREATE TABLE x2_action_text	(
-	actionId				INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	text                    LONGTEXT
-) COLLATE = utf8_general_ci;
+	id				INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	text            LONGTEXT,
+    actionId        INT             UNSIGNED,
+    INDEX(actionId),
+    CONSTRAINT action_id_key FOREIGN KEY (actionId) REFERENCES x2_actions (id) ON UPDATE CASCADE ON DELETE CASCADE
+) COLLATE = utf8_general_ci, ENGINE = INNODB;
 /*&*/
 INSERT INTO `x2_modules`
 			(name,				title,				visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
@@ -49,6 +52,7 @@ VALUES
 ("Actions",	"id",					"ID",					0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         1,                  1),
 ("Actions",	"assignedTo",			"Assigned To",			0,		0,		"assignment",	0,			0,		NULL,			0,		0,			"",         0,                  1),
 ("Actions",	"subject",              "Subject",              0,		0,		"varchar",		1,			0,		NULL,			1,		0,			"High",     0,                  1),
+("Actions",	"actionDescription",    "Description",          0,		0,		"text",         0,			0,		NULL,			0,		0,			"",         0,                      1),
 ("Actions",	"visibility",			"Visibility",			0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),
 ("Actions",	"associationId",		"Contact",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),
 ("Actions",	"associationType",		"Association Type",		0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),

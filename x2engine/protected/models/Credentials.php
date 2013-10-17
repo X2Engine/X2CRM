@@ -375,33 +375,47 @@ class Credentials extends CActiveRecord {
 	/**
 	 * @param CModel $model Model whose attribute is being used to specify a set of credentials
 	 * @param string $name Attribute storing the ID of the credentials record
-	 * @param string $type Keyword specifying the "service type" (i.e. "email" encompasess credentials 
+	 * @param string $type Keyword specifying the "service type" (i.e. "email" encompasess 
+     *  credentials 
      *  with modelClass "EmailAccount" and "GMailAccount"
 	 * @param integer $uid The user ID or system role ID for which the input is being generated
 	 * @param array $htmlOptions HTML options to pass to {@link CHtml::activeDropDownList()}
-	 * @param boolean $getNameEmailsArr if true, returned array will include array indexed by credId which 
+	 * @param boolean $getNameEmailsArr if true, returned array will include array indexed by 
+     *  credId which 
      *  contains associated email and name
 	 * @return array containing values which can be used to instantiate an activeDropDownList.
-     *  This inludes an array of credential names as well an array of the options' selected attributes.
+     *  This inludes an array of credential names as well an array of the options' selected 
+     *  attributes.
 	 */
-	public static function getCredentialOptions ($model,$name,$type='email',$uid=null,$htmlOptions=array()){
+	public static function getCredentialOptions (
+        $model,$name,$type='email',$uid=null,$htmlOptions=array()){
+
 		// First get credentials available to the user:
-		$defaultUserId = in_array($uid,self::$sysUseId) ? $uid : ($uid !==null ? $uid : Yii::app()->user->id); // The "user" (actual user or system role)
+		$defaultUserId = in_array($uid,self::$sysUseId) ? 
+            $uid : 
+            ($uid !==null ? $uid : Yii::app()->user->id); // The "user" (actual user or system role)
 		$uid = Yii::app()->user->id; // The actual user
-		$criteria = new CDbCriteria(array('params'=>array(':uid'=>$uid))); // Users can always use their own credentials, it's assumed
+        // Users can always use their own credentials, it's assumed
+		$criteria = new CDbCriteria(array('params'=>array(':uid'=>$uid))); 
 		$staticModel = self::model();
 		$staticModel->userId = self::SYS_ID;
 		$criteria->addCondition('userId=:uid');
 		// Include system-owned credentials
-		if(Yii::app()->user->checkAccess('CredentialsSelectSystemwide',array('model'=>$staticModel))) 
+		if(Yii::app()->user->checkAccess(
+            'CredentialsSelectSystemwide',array('model'=>$staticModel))) {
+
 			$criteria->addCondition('userId='.self::SYS_ID,'OR');
-		else // Select the user's own default
+		} else { // Select the user's own default
 			$defaultUserId = $uid;
+        }
 		$staticModel->private = 0;
 		// Include non-private credentials if the user has access to them
-		if(Yii::app()->user->checkAccess('CredentialsSelectNonPrivate',array('model'=>$staticModel)))
+		if(Yii::app()->user->checkAccess(
+            'CredentialsSelectNonPrivate',array('model'=>$staticModel))) {
 			$criteria->addCondition('private=0','OR');
-		// Cover only credentials for the given type of third-party service for which the selector field is being used:
+        }
+		/* Cover only credentials for the given type of third-party service for which the selector 
+        field is being used: */
 		$criteria->addInCondition('modelClass',$staticModel->defaultSubstitutes[$type]);
 		$credRecords = $staticModel->findAll($criteria);
 		$credentials = array();
@@ -429,6 +443,7 @@ class Credentials extends CActiveRecord {
 			$credentials[self::LEGACY_ID] = Yii::t('app','System default (legacy)');
         }
 		$options = array();
+        $selectedOption = $selectedCredentials;
 		foreach($credentials as $credId => $label) {
 			if($credId == $selectedCredentials) {
 				$options[$credId] = array('selected'=>'selected');
@@ -443,7 +458,8 @@ class Credentials extends CActiveRecord {
 
         $retDict = array (
             'credentials' => $credentials,
-            'htmlOptions' => $htmlOptions
+            'htmlOptions' => $htmlOptions,
+            'selectedOption' => $selectedOption
         );
         return $retDict;
 
@@ -454,8 +470,8 @@ class Credentials extends CActiveRecord {
 	 * available for the current user.
 	 * @param CModel $model Model whose attribute is being used to specify a set of credentials
 	 * @param string $name Attribute storing the ID of the credentials record
-	 * @param string $type Keyword specifying the "service type" (i.e. "email" encompasess credentials 
-     *  with modelClass "EmailAccount" and "GMailAccount"
+	 * @param string $type Keyword specifying the "service type" (i.e. "email" encompasess 
+     *  credentials with modelClass "EmailAccount" and "GMailAccount"
 	 * @param integer $uid The user ID or system role ID for which the input is being generated
 	 * @param array $htmlOptions HTML options to pass to {@link CHtml::activeDropDownList()}
 	 * @return string
@@ -486,7 +502,8 @@ class Credentials extends CActiveRecord {
 
 	/**
 	 * Set the default account for a given user to use for a given service.
-	 * @param type $userId ID of the user whose default is getting set. Null for generic/system account.
+	 * @param type $userId ID of the user whose default is getting set. Null for generic/system 
+     *  account.
 	 * @param type $serviceType Service type, i.e. 'email'
 	 */
 	public function makeDefault($userId,$serviceType,$hooks = true){
@@ -512,7 +529,8 @@ class Credentials extends CActiveRecord {
 	public function rules() {
 		return array(
 			array('name,private,auth','safe'),
-			array('userId','safe','on'=>'create')
+			array('userId','safe','on'=>'create'),
+			array('name','required')
 		);
 	}
 

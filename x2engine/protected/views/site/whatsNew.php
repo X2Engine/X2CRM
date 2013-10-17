@@ -93,7 +93,9 @@ $translations = array (
 	'Okay' => Yii::t('app','Okay'),
 	'Nevermind' => Yii::t('app','Nevermind'),
 	'Create' => Yii::t('app','Create'),
-	'Cancel' => Yii::t('app','Cancel')
+	'Cancel' => Yii::t('app','Cancel'),
+	'Read more' => Yii::t('app','Read More'),
+	'Read less' => Yii::t('app','Read Less'),
 );
 
 // pass array of predefined theme uploadedBy attributes to client
@@ -114,15 +116,27 @@ Yii::app()->clientScript->registerScript(
 		<h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
 		<div id="menu-links" class="title-bar">
 			<?php
-			echo CHtml::link(Yii::t('app','Toggle Comments'),'#',array('id'=>'toggle-all-comments','class'=>'x2-button right'));
-			echo CHtml::link(Yii::t('app','My Groups'),'#',array('id'=>'my-groups-filter','class'=>'x2-button right'));
-			echo CHtml::link(Yii::t('app','Just Me'),'#',array('id'=>'just-me-filter','class'=>'x2-button right'));
-			echo CHtml::link(Yii::t('app','Restore Posts'),'#',array('id'=>'restore-posts','style'=>'display:none;','class'=>'x2-button right'));
-			echo CHtml::link(Yii::t('app','Minimize Posts'),'#',array('id'=>'min-posts','class'=>'x2-button right'));
-			echo CHtml::link(Yii::t('app','Show Chart'),'#',array('id'=>'show-chart','class'=>'x2-button right'));
-			echo CHtml::link(Yii::t('app','Hide Chart'),'#',array('id'=>'hide-chart','class'=>'x2-button right', 'style'=>'display:none;'));
-	
-	
+			echo CHtml::link(
+                Yii::t('app','Toggle Comments'),'#',
+                array('id'=>'toggle-all-comments','class'=>'x2-button right'));
+			echo CHtml::link(
+                Yii::t('app','My Groups'),'#',
+                array('id'=>'my-groups-filter','class'=>'x2-button right'));
+			echo CHtml::link(
+                Yii::t('app','Just Me'),'#',
+                array('id'=>'just-me-filter','class'=>'x2-button right'));
+			echo CHtml::link(
+                Yii::t('app','Restore Posts'),'#',
+                array('id'=>'restore-posts','style'=>'display:none;','class'=>'x2-button right'));
+			echo CHtml::link(
+                Yii::t('app','Minimize Posts'),
+                '#',array('id'=>'min-posts','class'=>'x2-button right'));
+			echo CHtml::link(
+                Yii::t('app','Show Chart'),'#',
+                array('id'=>'show-chart','class'=>'x2-button right'));
+			echo CHtml::link(
+                Yii::t('app','Hide Chart'),'#',
+                array('id'=>'hide-chart','class'=>'x2-button right', 'style'=>'display:none;'));
 			?>
 		</div>
 	</div>

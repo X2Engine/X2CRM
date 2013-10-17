@@ -42,7 +42,9 @@
 class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
     public function beforeAction($action = null) {
-		//return false;
+        if(is_int(Yii::app()->locked) && !Yii::app()->user->checkAccess('GeneralAdminSettingsTask')) {
+            $this->owner->appLockout();
+        }
 		$auth = Yii::app()->authManager;
 		$params = array();
 		$action = $this->owner->getAction()->getId();

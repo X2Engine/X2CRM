@@ -124,11 +124,20 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Update X2CRM'),array('/admin/updater')); ?><br><?php echo Yii::t('admin','The X2CRM remote update utility.');?></div>
 		<?php if (isset(Yii::app()->params->admin->edition)): ?>
 		<?php if(in_array(Yii::app()->params->admin->edition,array('opensource',Null))): ?>
-		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upgrade X2CRM'),array('/admin/upgrader')); ?><br><?php echo Yii::t('admin','Upgrade X2CRM to Professional Edition; license key required.');?></div>
+		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upgrade X2CRM'),array('/admin/updater','scenario'=>'upgrade')); ?><br><?php echo Yii::t('admin','Upgrade X2CRM to Professional Edition; license key required.');?></div>
 		<?php endif;
 		endif; ?>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Activity Feed Settings'),array('/admin/activitySettings')); ?><br><?php echo Yii::t('admin','Configure global settings for the activity feed.');?></div>
-	</div>
+        <?php
+        /* Extra Pro-Edition Only Admin Features in this row */
+        if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','LockAppAction.php')))): ?>
+    </div><!-- .row --><br />
+    <div class="row">
+            <div class="cell span-6">
+                <?php echo CHtml::link(Yii::t('admin','Lock or Unlock X2CRM'),array('/admin/lockApp')); ?><br><?php echo Yii::t('admin','Set X2CRM into maintenance mode, where only administrators can access it.');?>
+            </div><!-- .cell.span-6 -->
+        <?php endif; ?>
+	</div><!-- .row -->
 </div>
 <div class="form">
 	<div class="row">
@@ -179,6 +188,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 	<div class="row">
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Export a module'),array('/admin/exportModule')); ?><br><?php echo Yii::t('admin','Export one of your custom modules to a .zip');?></div>
 		<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Rename a module'),array('/admin/renameModules')); ?><br><?php echo Yii::t('admin','Change module titles on top bar');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Convert Modules'),array('/admin/convertCustomModules')); ?><br><?php echo Yii::t('admin','Convert your custom modules to be compatible with the latest version');?></div>
 	</div>
 </div>
 </div>

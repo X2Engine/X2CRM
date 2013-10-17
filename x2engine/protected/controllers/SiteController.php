@@ -46,7 +46,7 @@ class SiteController extends x2base {
 
     public $modelClass = 'Admin';
     public $portlets = array();
-
+    
     public function filters(){
         return array(
             'setPortlets',
@@ -55,12 +55,20 @@ class SiteController extends x2base {
     }
 
     protected function beforeAction($action = null){
+        if(is_int(Yii::app()->locked) 
+                && !Yii::app()->user->checkAccess('GeneralAdminSettingsTask')
+                && !(in_array($this->action->id,array('login','logout')) || Yii::app()->user->isGuest)) {
+            $this->appLockout();
+        }
         return true;
     }
 
     public function behaviors(){
         return array_merge(parent::behaviors(), array(
-                    'Updater' => array('class' => 'application.components.UpdaterBehavior')
+                    'Updater' => array(
+                        'class' => 'application.components.UpdaterBehavior',
+                        'isConsole' => false,
+                    ),
                 ));
     }
 
@@ -79,7 +87,7 @@ class SiteController extends x2base {
                     'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'sendErrorReport', 'minimizePosts', 'bugReport', 'deleteRelationship', 'minMaxLeftWidget', 'toggleFeedControls', 'toggleFeedFilters',
                     'getTip', 'share', 'activityFeedOrder', 'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory',
                     'dynamicDropdown', 'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
-                    'deleteChartSetting', 'GetActionsBetweenAction'),
+                    'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL'),
                 'users' => array('@'),
             ),
             array('allow',
@@ -966,6 +974,20 @@ class SiteController extends x2base {
         echo $res;
     }
 
+    public function actionDeleteURL($id, $url){
+        if(isset($id)){
+            Yii::app()->db->createCommand()->delete('x2_urls', 'id=:id', array(':id' => $id));
+        }
+        $this->redirect($url);
+    }
+
+    public function actionEditURL($id, $url)
+    {
+        //printR($this->yo, true);
+        //$entry->title = 'ggg';
+        //$this->list = array('item1','item2');
+        $this->redirect($url);
+    }
     /**
      * Gets URLs for "top sites"
      * @param string $url
@@ -974,16 +996,17 @@ class SiteController extends x2base {
         $content = URL::model()->findAllByAttributes(array('userid' => Yii::app()->user->getId()), array(
             'order' => 'timestamp DESC',
                 ));
-        $res = '<table><tr><th>'.Yii::t('app', 'Title').'</th><th>'.Yii::t('app', 'Link').'</th></tr>';
+        $res = '<table><tr><th>'.Yii::t('app', 'Link').'</th><th>Delete</th></tr>';
         if($content){
             foreach($content as $entry){
                 if(strpos($entry->url, 'http://') === false){
                     $entry->url = "http://".$entry->url;
                 }
-                $res .= '<tr><td>'.$entry->title."</td><td>".CHtml::link(Yii::t('app', 'Link'), $entry->url)."</td></tr>";
+                $res .= '<tr><td>' .  CHtml::link(Yii::t('app', $entry->title), $entry->url, array('target'=>'_blank')) . "</td>
+                             <td>" .  CHtml::link('Delete', array('site/DeleteURL', 'id' => $entry->id, 'url' => $url)). "</td></tr>";
             }
         }else{
-            $res .= "<tr><td>".Yii::t('app', 'Example')."</td><td><a href='.'>".Yii::t('app', 'Link')."</a></td></tr>";
+            $res .= "<tr><td>".CHtml::link(Yii::t('app', 'Example'), 'http://www.x2engine.com', array('target'=>'_blank'))."</td><td><a href='.'>".Yii::t('app', 'Delete')."</a></td></tr>";
         }
         echo $res;
     }
@@ -1651,7 +1674,7 @@ class SiteController extends x2base {
                         Yii::app()->end();
                     }
                 }
-                if($error['code'] == '403' || $error['code'] == '400'){
+                if(in_array($error['code'],array('403','400','503'))){
                     $this->render('errorDisplay', $error);
                     Yii::app()->end();
                 }
@@ -2018,6 +2041,12 @@ class SiteController extends x2base {
                 $this->render('googleLogin', array(
                     'failure' => $auth->getErrors(),
                 ));
+            }catch(NoUserIdException $e){
+                $auth->flushCredentials();
+                $auth->setErrors($e->getMessage());
+                $this->render('googleLogin', array(
+                    'failure' => $auth->getErrors(),
+                ));
             }
         }else{
             $this->render('googleLogin');
@@ -2178,7 +2207,7 @@ class SiteController extends x2base {
     public function actionPrintRecord ($modelClass, $id, $pageTitle='') {
 		if (isset ($id) && isset ($modelClass)) {
 			//printR ('true', false);
-			//$model = $this->getModel ($id, true, $modelClass); 
+			//$model = $this->getModel ($id, true, $modelClass);
 			$model = CActiveRecord::model($modelClass)->findByPk((int) $id);
 			//printR ($model, true);
         	echo $this->renderPartial ('printableRecord', array(
@@ -2446,11 +2475,11 @@ class SiteController extends x2base {
                         unset($layout['hidden'][$key]);
                         Yii::app()->params->profile->saveLayout($layout);
                         Yii::app()->clientScript->scriptMap['*.js'] = false;
-                        $this->renderPartial('application.components.views.centerWidget', 
+                        $this->renderPartial('application.components.views.centerWidget',
                             array(
-                                'widget' => $widget, 
-                                'name' => $name, 
-                                'modelType' => $modelType, 
+                                'widget' => $widget,
+                                'name' => $name,
+                                'modelType' => $modelType,
                                 'moduleName' => $moduleName,
                                 'modelId' => $modelId), false, true);
                         break;

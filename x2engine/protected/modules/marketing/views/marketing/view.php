@@ -98,7 +98,7 @@ $this->actionMenu = $this->formatMenu(array(
 <div class="page-title icon marketing">
     <h2><?php echo $model->name; ?></h2>
     <?php if(Yii::app()->user->checkAccess('MarketingUpdate', $authParams)){ ?>
-        <a class="x2-button icon edit right" href="<?php echo $this->createUrl('update/'.$model->id); ?>"><span></span></a>
+        <a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id)); ?>"><span></span></a>
     <?php } ?>
 </div>
 <div id="main-column" class="half-width">
@@ -114,7 +114,7 @@ $this->actionMenu = $this->formatMenu(array(
         'model' => $model,
         'modelName' => 'Campaign',
         'specialFields' => array(
-            'content' => '<div style="height:350px;"><iframe src="'.$this->createUrl('/marketing/viewContent/'.$model->id).'" id="docIframe" frameBorder="0" style="height:100%;background:#fff;"></iframe></div>'
+            'content' => '<div style="height:350px;"><iframe src="'.$this->createUrl('/marketing/viewContent/',array('id'=>$model->id)).'" id="docIframe" frameBorder="0" style="height:100%;background:#fff;"></iframe></div>'
         )
     );
     $campaignType = $model->type;

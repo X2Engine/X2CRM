@@ -62,11 +62,8 @@ class OpportunitiesController extends x2base {
 		);
 	}
 	public function actions() {
-		return array(
-			'inlineEmail'=>array(
-				'class'=>'InlineEmailAction',
-			),
-		);
+        return array_merge(parent::actions(), array(
+		));
 	}
 
 	public function actionGetItems(){

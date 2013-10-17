@@ -76,6 +76,13 @@ class Services extends X2Model {
 		));
 	}
 
+    public function rules () {
+        $parentRules = parent::rules ();
+        /*$parentRules[]= array (
+            'firstName,lastName', 'required', 'on' => 'webForm');*/
+        return $parentRules;
+    }
+
     public function afterFind(){
         if($this->name != $this->id) {
 			$this->name = $this->id;

@@ -53,6 +53,11 @@ class X2FlowRecordDelete extends X2FlowAction {
 	}
 	
 	public function execute(&$params) {
-		return $params['model']->delete();
+        if ($params['model']->delete()) {
+            return array (true, "");
+        } else {
+            return array (false, "");
+        }
+
 	}
 }

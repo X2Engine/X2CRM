@@ -48,7 +48,7 @@ $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportuni
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
 if($opportunityModule->visible && $accountModule->visible)
-	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+	$menuItems[] = array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
 
 $this->actionMenu = $this->formatMenu($menuItems);
 

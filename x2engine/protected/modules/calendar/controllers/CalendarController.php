@@ -546,7 +546,7 @@ class CalendarController extends x2base {
             if($action['visibility'] >= 1 || // don't show private actions,
                     $action['assignedTo'] == Yii::app()->user->name || // unless they belong to current user
                     Yii::app()->params->isAdmin){ // admin sees all
-                $description = $action['actionDescription'];
+                $description = $action['text'];
                 $title = mb_substr($description, 0, 30, 'UTF-8');
                 if($action['type'] == 'event'){
                     $events[] = array(

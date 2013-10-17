@@ -180,6 +180,11 @@ abstract class FileOperTestCase extends CTestCase {
 		$this->_testTime = null;
 	}
 
+    protected function tearDown() {
+        parent::tearDown();
+        $this->removeTestDirs();
+    }
+
 }
 
 ?>

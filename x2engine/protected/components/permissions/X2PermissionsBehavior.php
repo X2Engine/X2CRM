@@ -104,6 +104,15 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                     $accessLevel = 1;
             }
         }
+        /* temp */
+        // Remove this code after Custom Module refactor project.
+//        $item = Yii::app()->authManager->getAuthItem($module.'ReadOnlyAccess');
+//        if(is_null($item)){
+//            if($accessLevel < 2){
+//                $accessLevel = 2;
+//            }
+//        }
+        /* end temp */
         return $accessLevel;
     }
 

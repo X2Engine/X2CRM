@@ -148,7 +148,8 @@ class X2Flow extends CActiveRecord {
         $flowData = CJSON::decode($this->flow);
 
         if($flowData === false){
-            $this->addError('flow', Yii::t('studio', 'Flow configuration data appears to be corrupt.'));
+            $this->addError('flow', Yii::t('studio', 'Flow configuration data appears to be '.
+                'corrupt.'));
             return false;
         }
         if(isset($flowData['trigger']['type'])){
@@ -159,7 +160,8 @@ class X2Flow extends CActiveRecord {
             // $this->addError('flow',Yii::t('studio','You must configure a trigger event.'));
         }
         if(!isset($flowData['items']) || empty($flowData['items'])){
-            $this->addError('flow', Yii::t('studio', 'There must be at least one action in the flow.'));
+            $this->addError('flow', Yii::t('studio', 'There must be at least one action in the '.
+                'flow.'));
         }
 
         $this->lastUpdated = time();
@@ -188,10 +190,16 @@ class X2Flow extends CActiveRecord {
         if(self::$_triggerDepth > self::MAX_TRIGGER_DEPTH) // ...have we delved too deep?
             return;
 
-        if(isset($params['model']) && (!is_object($params['model']) || !($params['model'] instanceof X2Model))) // Invalid model provided
-            return false;
+        $triggeredAt = time ();
 
-        self::$_triggerDepth++; // increment stack depth before doing anything that might call X2Flow::trigger()
+        if(isset($params['model']) && 
+           (!is_object($params['model']) || !($params['model'] instanceof X2Model))) {
+            // Invalid model provided
+            return false;
+        }
+
+        // increment stack depth before doing anything that might call X2Flow::trigger()
+        self::$_triggerDepth++; 
 
         $flowAttributes = array('triggerType' => $triggerName, 'active' => 1);
 
@@ -203,33 +211,58 @@ class X2Flow extends CActiveRecord {
         $flowTraces = array();
         $flows = CActiveRecord::model('X2Flow')->findAllByAttributes($flowAttributes);
 
+        // collect information about trigger for the trigger log.
+        $triggerInfo = array (
+            'triggerName' => Yii::t('studio', X2FlowItem::getTitle ($triggerName))
+        );
+        if (isset ($params['model']) && is_subclass_of($params['model'],'X2Model')) {
+            $triggerInfo['modelLink'] =
+                Yii::t('studio', 'View record: ').$params['model']->getLink ();
+        }
+
         // find all flows matching this trigger and modelClass
-        foreach($flows as &$flow)
-            $flowTraces[] = self::executeFlow($flow, $params);
+        $triggerLog;
+        $flowTrace;
+        foreach($flows as &$flow) {
+            $triggerLog = new TriggerLog;
+            $triggerLog->triggeredAt = $triggeredAt;
+            $triggerLog->flowId = $flow->id;
+            $triggerLog->save ();
 
+            $flowTrace = self::executeFlow($flow, $params, null, $triggerLog->id);
+            $flowTraces[] = $flowTrace;
 
-        // file_put_contents('triggerLog.txt', $triggerName.":\n", FILE_APPEND);
-        // file_put_contents('triggerLog.txt', print_r($flowTraces, true).":\n", FILE_APPEND);
+            // save log for triggered flow
+            $triggerLog->triggerLog =
+                CJSON::encode (array_merge (array ($triggerInfo), $flowTrace));
+            $triggerLog->save ();
+        }
+
+        // old logging system, uncomment to enable file based logging
+        /*file_put_contents('triggerLog.txt', $triggerName.":\n", FILE_APPEND);
+        file_put_contents('triggerLog.txt', print_r($flowTraces, true).":\n", FILE_APPEND);*/
 
         self::$_triggerDepth--;  // this trigger call is done; decrement the stack depth
     }
 
     /**
-     * Executes a flow, starting by checking the trigger, passing params to each trigger/action, and
-     * calling {@link X2Flow::executeBranch()}
+     * Executes a flow, starting by checking the trigger, passing params to each trigger/action, 
+     * and calling {@link X2Flow::executeBranch()}
      *
      * @param X2Flow &$flow the object representing the flow to run
      * @param array &$params an associative array of params, usually including 'model'=>$model,
-     * @param mixed $flowPath an array of directions to a specific point in the flow. Defaults to null.
+     * @param mixed $flowPath an array of directions to a specific point in the flow. Defaults to 
+     *  null.
      * Will skip checking the trigger conditions if not null, otherwise runs the entire flow.
      */
-    public static function executeFlow(&$flow, &$params, $flowPath = null){
+    public static function executeFlow(&$flow, &$params, $flowPath = null, $triggerLogId=null){
         $error = ''; //array($flow->name);
 
         $flowData = CJSON::decode($flow->flow); // parse JSON flow data
         // file_put_contents('triggerLog.txt',"\n".print_r($flowData,true),FILE_APPEND);
 
-        if($flowData !== false && isset($flowData['trigger']['type'], $flowData['items'][0]['type'])){
+        if($flowData !== false && 
+           isset($flowData['trigger']['type'], $flowData['items'][0]['type'])){
 
             $error = '';
 
@@ -244,24 +277,33 @@ class X2Flow extends CActiveRecord {
 
                 if(empty($error)){
                     try{
-                        return array($flow->name, $flow->executeBranch(array(0), $flowData['items'], $params));
+                        return array (array(
+                                true, $flow->executeBranch (
+                                    array(0), $flowData['items'], $params, 0, $triggerLogId)
+                            )
+                        );
                     }catch(Exception $e){
-                        return $e->getMessage();
+                        return array (array (false, $e->getMessage()));
                         // whatever.
                     }
                 }else{
-                    return array($flow->name, $error);
+                    return array (array(false, $error));
                 }
             }else{ // $flowPath provided, skip to the specified position using X2Flow::traverse()
                 try{
-                    return array($flow->name, $flow->traverse($flowPath, $flowData['items'], $params));
+                    return array(array (
+                            true, $flow->traverse(
+                                $flowPath, $flowData['items'], $params, 0, $triggerLogId)
+                        )
+                    );
                 }catch(Exception $e){
-                    return $e->getMessage();
+                    return array (array (false, $e->getMessage())
+                    );
                     // whatever.
                 }
             }
         }else{
-            return array($flow->name, 'invalid flow data');
+            return array(array (false, 'invalid flow data'));
         }
     }
 
@@ -274,27 +316,42 @@ class X2Flow extends CActiveRecord {
      * @param array &$params an associative array of params, usually including 'model'=>$model,
      * @param integer $pathIndex the position $flowPath to start at (for recursion), defaults to 0
      */
-    public function traverse($flowPath, &$flowItems, &$params, $pathIndex = 0){
-        if(is_bool($flowPath[$pathIndex])){ // if it's true or false, skip directly to the next true/false fork
+    public function traverse($flowPath, &$flowItems, &$params, $pathIndex = 0, $triggerLogId=null){
+        
+        // if it's true or false, skip directly to the next true/false fork
+        if(is_bool($flowPath[$pathIndex])){ 
             foreach($flowItems as &$item){
                 if($item['type'] === 'X2FlowSwitch'){
                     if($flowPath[$pathIndex] && isset($item['trueBranch'])){
-                        if(isset($flowPath[$pathIndex + 1]))
-                            return array($item['type'], true, $this->traverse($flowPath, $item['trueBranch'], $params, $pathIndex + 1));
-                        else
-                            return array($item['type'], true, $this->executeBranch($flowPath, $item['trueBranch'], $params));
+                        if(isset($flowPath[$pathIndex + 1])) {
+                            return $this->traverse(
+                                    $flowPath, $item['trueBranch'], $params, $pathIndex + 1, $triggerLogId);
+                        } else {
+                            return array(
+                                $item['type'], true, 
+                                $this->executeBranch(
+                                    $flowPath, $item['trueBranch'], $params, 0, $triggerLogId)
+                            );
+                        }
                     } elseif(!$flowPath[$pathIndex] && isset($item['falseBranch'])){
-                        if(isset($flowPath[$pathIndex + 1]))
-                            return array($item['type'], false, $this->traverse($flowPath, $item['falseBranch'], $params, $pathIndex + 1));
-                        else
-                            return array($item['type'], false, $this->executeBranch($flowPath, $item['falseBranch'], $params));
+                        if(isset($flowPath[$pathIndex + 1])) {
+                            return $this->traverse(
+                                    $flowPath, $item['falseBranch'], $params, $pathIndex + 1,
+                                    $triggerLogId);
+                        } else {
+                            return array(
+                                $item['type'], false, 
+                                $this->executeBranch(
+                                    $flowPath, $item['falseBranch'], $params, 0, $triggerLogId)
+                            );
+                        }
                     }
                 }
             }
             return false;
         } else{ // we're in the final branch, so just execute it starting at the specified index
-            if(isset($flowItems[$pathIndex]))
-                return $this->executeBranch($flowPath, $flowItems, $params, $flowPath[$pathIndex]);
+            if(isset($flowPath[$pathIndex]))
+                return $this->executeBranch($flowPath, $flowItems, $params, $flowPath[$pathIndex], $triggerLogId);
         }
     }
 
@@ -306,7 +363,7 @@ class X2Flow extends CActiveRecord {
      * @param array &$params an associative array of params, usually including 'model'=>$model,
      * @param integer $start the position in the branch to start at, defaults to 0
      */
-    public function executeBranch($flowPath, &$flowItems, &$params, $start = 0){
+    public function executeBranch($flowPath, &$flowItems, &$params, $start = 0, $triggerLogId=null){
         $results = array();
 
         for($i = $start; $i < count($flowItems); $i++){
@@ -317,7 +374,10 @@ class X2Flow extends CActiveRecord {
             if($item['type'] === 'X2FlowSwitch'){
                 $switch = X2FlowItem::create($item);
                 if($switch->validate($params)){
-                    array_pop($flowPath); // flowPath only contains switch decisions and the index on the current branch
+
+                    // flowPath only contains switch decisions and the index on the current branch
+                    array_pop($flowPath); 
+
                     // now that we're at another switch, we can throw out the previous branch index
                     // eg: $flowPath = array(true,false,3) means go to true at the first fork,
                     // go to false at the second fork, then go to item 3
@@ -325,11 +385,17 @@ class X2Flow extends CActiveRecord {
                     if($switch->check($params) && isset($item['trueBranch'])){
                         $flowPath[] = true;
                         $flowPath[] = 0; // they're now on
-                        $results[] = array($item['type'], true, $this->executeBranch($flowPath, $item['trueBranch'], $params));
+                        $results[] = array(
+                            $item['type'], true, 
+                            $this->executeBranch($flowPath, $item['trueBranch'], $params, 0, $triggerLogId)
+                        );
                     }elseif(isset($item['falseBranch'])){
                         $flowPath[] = false;
                         $flowPath[] = 0;
-                        $results[] = array($item['type'], false, $this->executeBranch($flowPath, $item['falseBranch'], $params));
+                        $results[] = array(
+                            $item['type'], false, 
+                            $this->executeBranch($flowPath, $item['falseBranch'], $params, 0, $triggerLogId)
+                        );
                     }
                 }
             }else{
@@ -337,15 +403,28 @@ class X2Flow extends CActiveRecord {
                 if($item['type'] === 'X2FlowWait'){
                     $flowAction->flowPath = $flowPath;
                     $flowAction->flowId = $this->id;
-                    $results[] = array($item['type'], $flowAction->validate($params) && $flowAction->execute($params));
+                    $results[] = $this->validateAndExecute ($item, $flowAction, $params, $triggerLogId);
+                    //$results[] = array($item['type'], $flowAction->validate($params) && $flowAction->execute($params));
                     break;
                 }else{
                     $flowPath[count($flowPath) - 1]++; // increment the index in the current branch
-                    $results[] = array($item['type'], $flowAction->validate($params) && $flowAction->execute($params));
+                    //$results[] = array($item['type'], $flowAction->validate($params) && $flowAction->execute($params));
+                    $results[] = $this->validateAndExecute ($item, $flowAction, $params, $triggerLogId);
                 }
             }
         }
         return $results;
+    }
+
+    public function validateAndExecute ($item, $flowAction, $params, $triggerLogId=null) {
+        $logEntry;
+        $validationRetStatus = $flowAction->validate($params);
+        if ($validationRetStatus[0] === true) {
+            $logEntry = array ($item['type'], $flowAction->execute ($params, $triggerLogId));
+        } else {
+            $logEntry = array ($item['type'], $validationRetStatus);
+        }
+        return $logEntry;
     }
 
     /*

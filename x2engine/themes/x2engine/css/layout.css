@@ -65,6 +65,25 @@ body:before {
 	background-size:auto;
 	border-bottom:1px solid rgba(0,0,0,0.5);
 }
+
+/************************************************************/
+/* Admin flash messages; displayed at the top of every page */
+/************************************************************/
+div.admin-flash-message {
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+    height:12px;
+    width: 100%;
+    border-bottom: 1px solid #F1D031;
+    padding: 2px 0;
+    position: fixed;
+    left: 0;
+    z-index:1000;
+    text-align: center;
+    background-color: #FFFFC2;
+    color: black;
+}
+
 /**
  * ---------------------- Search Bar ----------------------
  */
@@ -789,7 +808,7 @@ body.no-widgets #sidebar-right {display:none;}
 #content-container {overflow:hidden;zoom:1;}
 body.no-widgets #content-container {margin-right:0;}
 #content {
-	margin:5px 5px 10px 0;
+	margin:5px 5px 0px 0;
 	padding-bottom:10px;
 	/* padding:0 0 0 10px; */
 	border:1px solid #999;
@@ -853,11 +872,12 @@ div.rounded-top {
 div.page-title.icon h2,
 table.fc-header .fc-header-title h2 {
 	display:inline-block;
-	padding-left:45px;
+	padding-left:49px;
 	margin-left:0;
 	background-repeat:no-repeat;
 	background-position:0px -5px;
 }
+div.page-title.icon.profile h2 {background-image:url('../images/user_icon.png');}
 div.page-title.icon.actions h2 {background-image:url('../images/actions.png');}
 div.page-title.icon.contacts h2 {background-image:url('../images/contacts.png');}
 div.page-title.icon.accounts h2 {background-image:url('../images/accounts.png');}
@@ -956,11 +976,21 @@ div.page-title-fixed-outer div.page-title {
 
 /* .no-borders.no-widgets div.page-title-fixed-outer {padding-right:18px;} */
 /* .no-widgets div.page-title-fixed-outer {padding-right:20px;} */
-.no-widgets div.page-title-fixed-inner {padding-right:0;}
-.no-widgets div.page-title-fixed-outer {padding-right:5px;}
-div.page-title-fixed-outer {padding-right:9px;}
+.no-widgets div.page-title-fixed-inner,
+.no-widgets .x2-gridview-fixed-top-bar-inner {
+    padding-right:0 !important;
+}
+.no-widgets div.page-title-fixed-outer,
+.no-widgets .x2-gridview-fixed-top-bar-outer {
+    padding-right:5px;
+}
+div.page-title-fixed-outer {
+    padding-right:9px;
+}
 
-.half-width div.page-title-fixed-outer div.page-title {margin-right:35%;}
+.half-width div.page-title-fixed-outer div.page-title {
+    margin-right:35%;
+}
 
 div.page-title h2, table.fc-header h2 {
 	display:inline;
@@ -1007,7 +1037,8 @@ div.page-title .x2-button.icon.edit span {background:url(../images/icons/Edit.pn
 div.page-title .x2-button.icon.sync span {background:url(../images/icons/Sync.png) center center no-repeat;}
 div.page-title .x2-button.icon.copy span {background:url(../images/icons/Copy.png) center center no-repeat;}
 
-div.page-title .x2-button.icon.email span {background:url(../images/icons/email-button.png) left center no-repeat;}
+/*div.page-title .x2-button.icon.email span {background:url(../images/icons/email-button.png) left center no-repeat;}*/
+div.page-title .x2-button.icon.email span {background:url(../images/icons/email_button.png) left center no-repeat;}
 div.page-title .x2-button.search-button span {background:url(../images/icons/search-button.png) 5px center no-repeat;}
 div.page-title .x2-button.filter-button span {background:url(../images/icons/filter-button.png) center center no-repeat;}
 div.page-title .x2-button.column-selector-link span {background:url(../images/icons/columns-button.png) center center no-repeat;}
@@ -1017,6 +1048,20 @@ div.page-title .x2-button.right {display:block;vertical-align:top;margin:5px 5px
 div.page-title .x2-button.left {display:block;vertical-align:top;margin:5px 5px 0 0;}
 
 div.page-title .x2-button span {display:block;height:24px;width:24px;}
+
+
+.icon.email {
+    height: 29px;
+    width: 35px;
+    margin-top: 3px !important;
+}
+.icon.email span {
+    height: 29px !important;
+    width: 35px !important;
+    margin-top: 0px;
+    background-size: cover !important;
+}
+
 
 /**
  * ------------ Fullscreen (no widgets) Rules -------------

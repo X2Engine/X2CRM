@@ -43,14 +43,31 @@ Yii::import('application.components.webupdater.*');
  * @package X2CRM.components.webupdater
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class DatabaseBackupAction extends CAction {
+class DatabaseBackupAction extends WebUpdaterAction {
 
-	public function run(){
-		set_error_handler('ResponseBehavior::respondWithError');
-		set_exception_handler('ResponseBehavior::respondWithException');
-		if($this->controller->makeDatabaseBackup())
-			$this->controller->webRespond(Yii::t('admin', 'Backup saved to').' protected/data/'.UpdaterBehavior::BAKFILE);
-	}
+    public function run($download = false){
+        set_error_handler('ResponseBehavior::respondWithError');
+        set_exception_handler('ResponseBehavior::respondWithException');
+        if(!$download){
+            if($this->controller->makeDatabaseBackup())
+                self::respond(Yii::t('admin', 'Backup saved to').' protected/data/'.UpdaterBehavior::BAKFILE);
+        } else {
+            $backup = realpath($this->dbBackupPath);
+            if((bool) $backup){
+                header("Cache-Control: public");
+                header("Content-Description: File Transfer");
+                header("Content-Disposition: attachment; filename=".UpdaterBehavior::BAKFILE);
+                header("Content-type: application/octet");
+                header("Content-Transfer-Encoding: binary");
+                readfile($backup);
+            }else{
+                if(!empty($_SERVER['HTTP_REFERER']))
+                    header("Location: {$_SERVER['HTTP_REFERER']}");
+                else
+                    $this->controller->redirect('index');
+            }
+        }
+    }
 
 }
 

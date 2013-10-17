@@ -322,3 +322,10 @@ advanced settings
 	position: relative;
 }
 
+/* ie8 fixes */
+.chart.jqplot-target {
+
+}
+
+
+

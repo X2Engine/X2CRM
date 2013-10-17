@@ -159,7 +159,7 @@ class FileUtilTest extends FileOperTestCase {
 		$endPoint   = '/home/joeschmoe/public_html/backup/protected/controllers/FatController.php';
 		$relpath = FileUtil::relpath($endPoint,$startPoint);
 		$this->assertEquals('../../backup/protected/controllers/FatController.php',$relpath);
-		
+
 	}
 }
 

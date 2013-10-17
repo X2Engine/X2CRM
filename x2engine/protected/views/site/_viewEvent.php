@@ -163,56 +163,138 @@ if($data->important && isset($data->fontColor)){
             echo Formatter::convertLineBreaks(x2base::convertUrls($data->getText()));
             ?>
         </span>
-        <span class="comment-age" id="<?php echo $data->id."-".$data->timestamp; ?>" style="<?php echo $style; ?>"><?php echo Formatter::formatFeedTimestamp($data->timestamp); ?></span> | <span>
-            <?php echo CHtml::link(Yii::t('app', 'Comments').' (<span id="'.$data->id.'-comment-count" class="comment-count" val="'.$commentCount.'">'.($commentCount > 0 ? "<b>".$commentCount."</b>" : $commentCount).'</span>)', '#', array('class' => 'comment-link', 'id' => $data->id.'-link')); ?>
-            <?php echo CHtml::link(Yii::t('app', 'Hide comments'), '#', array('class' => 'comment-hide-link', 'id' => $data->id.'-hide-link', 'style' => 'display:none;')); ?>
+    <div class='event-bottom-buttons'>
+        <span class="comment-age" id="<?php echo $data->id."-".$data->timestamp; ?>" 
+         style="<?php echo $style; ?>">
+            <?php echo Formatter::formatFeedTimestamp($data->timestamp); ?>
+        </span> | 
+            <?php echo CHtml::link(Yii::t('app', 'Comments').
+                ' (<span id="'.$data->id.'-comment-count" class="comment-count" val="'.
+                $commentCount.'">'.($commentCount > 0 ? "<b>".$commentCount."</b>" : $commentCount).
+                '</span>)', '#', array('class' => 'comment-link', 'id' => $data->id.'-link')); ?>
+            <?php echo CHtml::link(
+                Yii::t('app', 'Hide comments'), '#', 
+                array(
+                    'class' => 'comment-hide-link', 'id' => $data->id.'-hide-link',
+                    'style' => 'display:none;'
+                )
+            ); ?>
             |
             <?php
             $important = ($data->important == 1);
             //echo CHtml::link(Yii::t('app','Broadcast Event'),'#',array('class'=>'important-link x2-hint','id'=>$data->id.'-important-link','style'=>($important?'display:none;':''),'title'=>Yii::t('app','Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.')));
-            echo CHtml::link(Yii::t('app', 'Make Important'), '#', array('class' => 'important-link x2-hint', 'id' => $data->id.'-important-link', 'style' => ($important ? 'display:none;' : ''), 'title' => Yii::t('app', 'Designating an event as important will make it visible to any user viewing your events on the activity feed--regardless of type filters.')));
-            echo CHtml::link(Yii::t('app', 'Make Unimportant'), '#', array('class' => 'unimportant-link', 'id' => $data->id.'-unimportant-link', 'style' => ($important ? '' : 'display:none;')));
+            echo CHtml::link(
+                Yii::t('app', 'Make Important'), '#', 
+                array(
+                    'class' => 'important-link x2-hint', 'id' => $data->id.'-important-link',
+                    'style' => ($important ? 'display:none;' : ''), 'title' => Yii::t('app',
+                    'Designating an event as important will make it visible to any user viewing '.
+                    'your events on the activity feed--regardless of type filters.')
+                )
+            );
+            echo CHtml::link(
+                Yii::t('app', 'Make Unimportant'), '#', 
+                array(
+                    'class' => 'unimportant-link', 'id' => $data->id.'-unimportant-link',
+                    'style' => ($important ? '' : 'display:none;')
+                )
+            );
             ?>
 
             <?php
             if(Yii::app()->params->isAdmin){
                 echo " | ";
                 $sticky = ($data->sticky == 1);
-                echo CHtml::link(Yii::t('app', 'Make Sticky'), '#', array('class' => 'sticky-link x2-hint', 'id' => $data->id.'-sticky-link', 'style' => ($sticky ? 'display:none;' : ''), 'title' => Yii::t('app', 'Making an event sticky will cause it to always show up at the top of the feed.')));
-                echo CHtml::link(Yii::t('app', 'Undo Sticky'), '#', array('class' => 'unsticky-link', 'id' => $data->id.'-unsticky-link', 'style' => ($sticky ? '' : 'display:none;')));
+                echo CHtml::link(
+                    Yii::t('app', 'Make Sticky'), '#', 
+                    array(
+                        'class' => 'sticky-link x2-hint', 'id' => $data->id.'-sticky-link',
+                        'style' => ($sticky ? 'display:none;' : ''), 
+                        'title' => Yii::t('app', 'Making an event sticky will cause it to always '.
+                            'show up at the top of the feed.')
+                    )
+                );
+                echo CHtml::link(
+                    Yii::t('app', 'Undo Sticky'), '#', 
+                    array(
+                        'class' => 'unsticky-link', 'id' => $data->id.'-unsticky-link',
+                        'style' => ($sticky ? '' : 'display:none;')
+                    )
+                );
             }
             ?>
             <?php
             echo " | ";
             if($likedPost){
-                echo CHtml::link(Yii::t('app', 'Like Post'), '#', array('id' => $data->id.'-like-button',
-                    'class' => 'like-button', 'style' => 'display:none;'));
-                echo CHtml::link(Yii::t('app', 'Unlike Post'), '#', array('id' => $data->id.'-unlike-button',
-                    'class' => 'unlike-button'));
+                echo CHtml::link(
+                    Yii::t('app', 'Like Post'), '#',
+                    array(
+                        'id' => $data->id.'-like-button',
+                        'class' => 'like-button',
+                        'style' => 'display:none;'
+                    )
+                );
+                echo CHtml::link(
+                    Yii::t('app', 'Unlike Post'), '#',
+                    array(
+                        'id' => $data->id.'-unlike-button',
+                        'class' => 'unlike-button'
+                    )
+                );
             }else{
-                echo CHtml::link(Yii::t('app', 'Like Post'), '#', array('id' => $data->id.'-like-button',
-                    'class' => 'like-button'));
-                echo CHtml::link(Yii::t('app', 'Unlike Post'), '#', array('id' => $data->id.'-unlike-button',
-                    'class' => 'unlike-button', 'style' => 'display:none;'));
+                echo CHtml::link(
+                    Yii::t('app', 'Like Post'), '#',
+                    array(
+                        'id' => $data->id.'-like-button',
+                        'class' => 'like-button'
+                    )
+                );
+                echo CHtml::link(
+                    Yii::t('app', 'Unlike Post'), '#',
+                    array(
+                        'id' => $data->id.'-unlike-button',
+                        'class' => 'unlike-button', 'style' => 'display:none;'
+                    )
+                );
             }
-            echo ' '.CHtml::link('('.$likeCount.')', '#', array('id' => $data->id.'-like-count',
-                'class' => 'like-count'));
+            echo ' '.CHtml::link(
+                '('.$likeCount.')', '#',
+                array(
+                    'id' => $data->id.'-like-count',
+                    'class' => 'like-count'
+                )
+            );
             ?>
             <?php
             echo " | ";
-            echo CHtml::link(Yii::t('app', 'Broadcast Event'), '#', array('id' => $data->id.'-broadcast-button',
-                'class' => 'broadcast-button'));
+            echo CHtml::link(
+                Yii::t('app', 'Broadcast Event'), '#',
+                array(
+                    'id' => $data->id.'-broadcast-button',
+                    'class' => 'broadcast-button'
+                )
+            );
             ?>
-        </span>
+    </div>
         <?php ?>
     </div>
-    <div id="<?php echo $data->id ?>-like-history-box" class="like-history-box" style="display:none;clear:both;">
+    <div id="<?php echo $data->id ?>-like-history-box" class="like-history-box" 
+     style="display:none;clear:both;">
         <div id="<?php echo $data->id ?>-likes" ></div>
     </div>
-    <div id="<?php echo $data->id ?>-comment-box" class="comment-box" style="display:none;clear:both;">
+    <div id="<?php echo $data->id ?>-comment-box" class="comment-box" 
+     style="display:none;clear:both;">
         <div id="<?php echo $data->id ?>-comments" ></div>
         <?php
-        echo "<div style='margin-left:10px;margin-top:5px;'>".CHtml::link(CHtml::image(Yii::app()->theme->baseUrl.'/images/plus.gif')." ".Yii::t('app', "Add Comment"), '#', array('onclick' => '$(this).toggle();$("#'.$data->id.'-comment-form").show();return false;'))."</div>";
+        echo "<div style='margin-left:10px;margin-top:5px;'>".
+            CHtml::link(
+                CHtml::image(Yii::app()->theme->baseUrl.'/images/plus.gif')." ".
+                Yii::t('app', "Add Comment"), '#', 
+                array(
+                    'onclick' => '$(this).toggle();$("#'.$data->id.
+                        '-comment-form").show();return false;'
+                )
+            )."</div>";
         echo "<div style='margin-left:10px;display:none;' id='".$data->id."-comment-form'>";
         echo CHtml::beginForm(
                 '', 'get', array(
@@ -220,7 +302,8 @@ if($data->important && isset($data->fontColor)){
                 // 'onsubmit'=>'commentSubmit('.$data->id.');return false;'
         ));
         echo CHtml::textArea($data->id.'-comment', '', array('class' => 'comment-textbox'));
-        echo CHtml::submitButton(Yii::t('app', 'Submit'), array('class' => 'x2-button comment-submit'));
+        echo CHtml::submitButton(
+            Yii::t('app', 'Submit'), array('class' => 'x2-button comment-submit'));
         echo CHtml::endForm();
 
         echo "</div>";

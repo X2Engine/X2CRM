@@ -72,12 +72,19 @@ abstract class WebUpdaterAction extends CAction{
 			)
 		));
 		// Be certain we can continue safely:
-		$this->checkDependencies();
+		$this->requireDependencies();
 	}
 
     /**
 	 * Wrapper for {@link UpdaterBehavior::updateUpdater} that displays errors
 	 * in a user-friendly way and reloads the page.
+     *
+     * It contains hideous references to the controller (specifically,
+     * {@link AdminController}) only to avoid code duplication while at the same
+     * time remaining backwards-compatible with earlier versions (which will
+     * download AdminController, hence necessitating that AdminController have
+     * all the necessary functions for throwing errors in cases of missing
+     * dependencies that can't be auto-retrieved).
 	 */
 	public function runUpdateUpdater($updaterCheck, $redirect){
 		try{

@@ -60,13 +60,23 @@ class X2FlowRecordComment extends X2FlowAction {
         $model->associationId = $params['model']->id;
         $model->associationType = $params['model']->module;
         $model->actionDescription = $this->parseOption('comment', $params);
-        $model->assignedTo = $params['model']->assignedTo;
+
+        if($params['model']->hasAttribute('assignedTo')) {
+            $model->assignedTo = $params['model']->assignedTo;
+        }
+
         if($params['model']->hasAttribute('visibility'))
             $model->visibility = $params['model']->visibility;
         $model->createDate = time();
         $model->completeDate = time();
 
-        return $model->save();
+        if ($model->save()) {
+            return array (
+                true, 
+                Yii::t('studio', 'View created action: ').$model->getLink ());
+        } else {
+            return array (false, $model->getError ());
+        }
     }
 
 }

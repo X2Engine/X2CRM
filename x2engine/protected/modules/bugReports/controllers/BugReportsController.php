@@ -40,8 +40,8 @@ class BugReportsController extends x2base {
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
-        
-        
+
+
         public function actionGetItems(){
 		$sql = 'SELECT id, name as value, subject FROM x2_bug_reports WHERE name LIKE :qterm ORDER BY name ASC';
 		$command = Yii::app()->db->createCommand($sql);
@@ -71,18 +71,18 @@ class BugReportsController extends x2base {
 	public function actionCreate() {
 		$model=new BugReports;
 		$users=User::getNames();
-		
+
 		if(isset($_POST['BugReports'])) {
 			$temp = $model->attributes;
 			$model->setX2Fields($_POST['BugReports']);
 			parent::create($model, $temp, 0);
 		}
-		
+
 		$this->render('create',array(
 			'model'=>$model,
 			'users'=>$users,
 		));
-		
+
 	}
 
 	/**
@@ -93,7 +93,7 @@ class BugReportsController extends x2base {
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
 		$users = User::getNames();
-		
+
 		if(isset($_POST['BugReports'])) {
 			$temp = $model->attributes;
 			$model->setX2Fields($_POST['BugReports']);
@@ -121,7 +121,7 @@ class BugReportsController extends x2base {
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
-				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
@@ -168,7 +168,7 @@ class BugReportsController extends x2base {
 			Yii::app()->end();
 		}
 	}
-    
+
     /**
 	 *  Show or hide a certain status in the gridview
 	 *
@@ -177,14 +177,14 @@ class BugReportsController extends x2base {
 	 *
 	 */
 	public function actionStatusFilter() {
-	
+
 		if(isset($_POST['all'])) {	// show all the things!!
 			Yii::app()->params->profile->hideBugsWithStatus = CJSON::encode(array());	// hide none
 			Yii::app()->params->profile->update(array('hideBugsWithStatus'));
-			
+
 		} elseif(isset($_POST['none'])) {	// hide all the things!!!!11
 			$statuses = array();
-			
+
 			$dropdownId = Yii::app()->db->createCommand()	// get the ID of the statuses dropdown via fields table
 				->select('linkType')
 				->from('x2_fields')
@@ -192,22 +192,22 @@ class BugReportsController extends x2base {
 				->queryScalar();
 			if($dropdownId !== null)
 				$statuses = Dropdowns::getItems($dropdownId);	// get the actual statuses
-			
+
 			Yii::app()->params->profile->hideBugsWithStatus = CJSON::encode($statuses);
 			Yii::app()->params->profile->update(array('hideBugsWithStatus'));
-			
+
 		} elseif(isset($_POST['checked'])) {
-		
+
 			$checked = CJSON::decode($_POST['checked']);
 			$status = isset($_POST['status'])? $_POST['status'] : false;
-			
+
 			// var_dump($checked);
 			// var_dump($status);
-			
+
 			$hideStatuses = CJSON::decode(Yii::app()->params->profile->hideBugsWithStatus); // get a list of statuses the user wants to hide
 			if($hideStatuses === null || !is_array($hideStatuses))
 				$hideStatuses = array();
-			
+
 			// var_dump($checked);
 			// var_dump(in_array($status, $hideStatuses));
 			if($checked && ($key = array_search($status, $hideStatuses)) !== false) { // if we want to show the status, and it's not being shown
@@ -215,7 +215,7 @@ class BugReportsController extends x2base {
 			} else if(!$checked && !in_array($status, $hideStatuses)) { // if we want to hide the status, and it's not being hidden
 				$hideStatuses[] = $status;
 			}
-			
+
 			Yii::app()->params->profile->hideBugsWithStatus = CJSON::encode($hideStatuses);
 			Yii::app()->params->profile->update(array('hideBugsWithStatus'));
 		}

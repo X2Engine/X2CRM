@@ -41,7 +41,7 @@
  */
 class X2FlowRecordTag extends X2FlowAction {
 	public $title = 'Add or Remove Tags';
-	public $info = 'Enter a commna-separated list of tags to add to the record';
+	public $info = 'Enter a comma-separated list of tags to add to the record';
 
 	public function paramRules() {
 		$tagActions = array(
@@ -61,14 +61,31 @@ class X2FlowRecordTag extends X2FlowAction {
 
 	public function execute(&$params) {
 		$tags = Tags::parseTags($this->parseOption('tags',$params));
-        
+
+        $retVal;
+        $model = $params['model'];
 		switch($this->parseOption('action',$params)) {
 			case 'add':
-				return $params['model']->addTags($tags);
+				$retVal = $model->addTags($tags);
+                break;
 			case 'remove':
-				return $params['model']->removeTags($tags);
+				$retVal = $model->removeTags($tags);
+                break;
 			case 'clear':
-				return $params['model']->clearTags();
+				$retVal = $model->clearTags();
+                break;
 		}
+        if ($retVal) {
+		    if(is_subclass_of ($model,'X2Model')) {
+                return array (
+                    true,
+                    Yii::t('studio', 'View updated record: ').$model->getLink ()
+                );
+            } else {
+                return array (true, "");
+            }
+        } else {
+            return array (false, "");
+        }
 	}
 }

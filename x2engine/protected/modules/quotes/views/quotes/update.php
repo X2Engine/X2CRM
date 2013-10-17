@@ -48,7 +48,7 @@ $this->actionMenu = $this->formatMenu(array(
 <?php echo $quick?'':'<div class="page-title icon quotes">'; ?>
 <h2><span class="no-bold"><?php echo ($model->type == 'invoice')? Yii::t('quotes','Update Invoice:') : Yii::t('quotes','Update Quote:'); ?></span> <?php echo $model->name==''?'#'.$model->id:$model->name; ?></h2>
 <?php if(!$quick): ?>
-<a class="x2-button right" href="javascript:void(0);" onclick="$('#save-button').click();"><?php echo Yii::t('app','Save'); ?></a>
+<a class="x2-button right" href="javascript:void(0);" onclick="$('#quote-save-button').click();"><?php echo Yii::t('app','Update'); ?></a>
 </div>
 <?php endif; ?>
 

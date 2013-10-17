@@ -34,33 +34,24 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.webupdater.*');
+if ($this->showActions !== null) {
+    $this->beginWidget('zii.widgets.CPortlet', array(
+        'title'=>Yii::t('actions', 'Show Actions'),
+        'id'=>'actions-filter',
+    ));
+    echo '<div class="form no-border" style="text-align:center; height:25px;">';
+    echo CHtml::dropDownList('show-actions', $this->showActions,
+        array(
+            'uncomplete'=>Yii::t('actions', 'Incomplete'),
+            'complete'=>Yii::t('actions', 'Complete'),
+            'all'=>Yii::t('actions', 'All'),
+        ),
+        array(
+            'id'=>'dropdown-show-actions',
+            'onChange'=>'toggleShowActions();',
+        )
+    );
 
-/**
- * Yields the backup file to the web client.
- *
- * @package X2CRM.components.webupdater
- * @author Demitri Morgan <demitri@x2engine.com>
- */
-class DownloadDatabaseBackupAction extends WebUpdaterAction {
-
-	public function run(){
-		$backup = realpath($this->dbBackupPath);
-		if((bool) $backup){
-			header("Cache-Control: public");
-			header("Content-Description: File Transfer");
-			header("Content-Disposition: attachment; filename=".UpdaterBehavior::BAKFILE);
-			header("Content-type: application/octet");
-			header("Content-Transfer-Encoding: binary");
-			readfile($backup);
-		}else{
-			if(!empty($_SERVER['HTTP_REFERER']))
-				header("Location: {$_SERVER['HTTP_REFERER']}");
-			else
-				$this->controller->redirect('index');
-		}
-	}
-
+    echo '</div>';
+    $this->endWidget();
 }
-
-?>

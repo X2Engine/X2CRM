@@ -253,7 +253,7 @@ class ApplicationConfigBehavior extends CBehavior {
         $logo = Media::model()->findByAttributes(array('associationId' => 1, 'associationType' => 'logo'));
         if(isset($logo))
             $this->owner->params->logo = $logo->fileName;
-
+        
 
         // set edition
         if(YII_DEBUG){
@@ -420,17 +420,17 @@ class ApplicationConfigBehavior extends CBehavior {
 	 * @return type
 	 */
 	public function getSuID(){
-		if(!isset($this->_suID)){
-			if($this->isInSession){
-				$this->_suID = $this->owner->user->getId();
+        if(!isset($this->_suID)){
+            if($this->isInSession){
+                $this->_suID = $this->owner->user->getId();
             }elseif(isset($this->_suModel)){
-				$this->_suID = $this->_suModel->id;
+                $this->_suID = $this->_suModel->id;
             }else{
-				$this->_suID = 1;
+                $this->_suID = 1;
             }
-		}
-		return $this->_suID;
-    	}
+        }
+        return $this->_suID;
+    }
 
     /**
      * Shortcut method for ascertaining if a user session is available
@@ -450,7 +450,7 @@ class ApplicationConfigBehavior extends CBehavior {
         }
         return $this->_isInSession;
     }
-
+    
     /**
      * Substitute user model magic getter.
      *

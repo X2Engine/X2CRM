@@ -51,23 +51,40 @@ class X2WidgetList extends X2Widget {
 
     // widget specific javascript packages
     public static function packages () {
-        return array (
+        $packages = array (
+            'widgetListCombinedCss' => array(
+                'baseUrl' => Yii::app()->request->baseUrl,
+                'css' => array (
+                    'js/widgetListCombined.css'
+                    /*'js/gallerymanager/bootstrap/css/bootstrap.css',
+                    'js/jqplot/jquery.jqplot.css',
+                    'js/checklistDropdown/jquery.multiselect.css'*/
+                )
+            ),
+            'widgetListCombinedCss2' => array(
+                'baseUrl' => Yii::app()->getTheme ()->getBaseUrl (),
+                'css' => array (
+                    'css/widgetListCombined.css'
+                    /*'css/galleryWidgetCssOverrides.css',
+                    'css/x2chart.css'*/
+                )
+            ),
             'GalleryWidgetJS' => array(
                 'baseUrl' => Yii::app()->request->baseUrl,
                 'js' => array(
                     'js/galleryManagerDialogSetup.js',
                     'js/gallerymanager/bootstrap/js/bootstrap.js',
                 ),
-                'css' => array (
+                /*'css' => array (
                     'js/gallerymanager/bootstrap/css/bootstrap.css',
-                )
+                )*/
             ),
-            'GalleryWidgetCss' => array(
+            /*'GalleryWidgetCss' => array(
                 'baseUrl' => Yii::app()->getTheme ()->getBaseUrl (),
                 'css' => array(
                     'css/galleryWidgetCssOverrides.css',
                 )
-            ),
+            ),*/
             'ChartWidgetExtJS' => array(
                 'baseUrl' => Yii::app()->request->baseUrl,
                 'js' => array(
@@ -80,6 +97,13 @@ class X2WidgetList extends X2Widget {
                     'js/jqplot/plugins/jqplot.enhancedLegendRenderer.js',
                     'js/checklistDropdown/jquery.multiselect.js',
                 ),
+                /*'css' => array(
+                    'js/jqplot/jquery.jqplot.css',
+                    'js/checklistDropdown/jquery.multiselect.css'
+                ),*/
+            ),
+            'ChartWidgetExtCss' => array(
+                'baseUrl' => Yii::app()->request->baseUrl,
                 'css' => array(
                     'js/jqplot/jquery.jqplot.css',
                     'js/checklistDropdown/jquery.multiselect.css'
@@ -88,6 +112,7 @@ class X2WidgetList extends X2Widget {
             'ChartWidgetJS' => array(
                 'baseUrl' => Yii::app()->request->baseUrl,
                 'js' => array(
+                    'js/auxlib.js',
                     'js/X2Chart.js',
                     'js/X2ActionHistoryChart.js',
                 ),
@@ -103,8 +128,21 @@ class X2WidgetList extends X2Widget {
                 'js' => array (
                     'jquery.yiigridview.js',
                 )
-            )
+            ),
+            'InlineTagsJS' => array(
+                'baseUrl' => Yii::app()->request->baseUrl,
+                'js' => array(
+                    'js/auxlib.js',
+                    'js/X2Tags/TagContainer.js',
+                    'js/X2Tags/TagCreationContainer.js',
+                    'js/X2Tags/InlineTagsContainer.js',
+                ),
+            ),
         );
+        if (AuxLib::isIE8 ()) {
+            $packages['ChartWidgetExtJS']['js'][] = 'js/jqplot/excanvas.js';
+        }
+        return $packages;
     }
 
 
@@ -161,7 +199,7 @@ class X2WidgetList extends X2Widget {
     }
 
     private function isExcluded ($name) {
-        if ($this->modelType == 'BugReports' && $name != 'InlineRelationships' ||
+        if ($this->modelType == 'BugReports' && ($name != 'InlineRelationships' && $name!='WorkflowStageDetails') ||
             $this->modelType == 'Quote' && $name == 'WorkflowStageDetails' ||
             $this->modelType == 'Marketing' &&
             ($name == 'WorkflowStageDetails' || $name === 'InlineRelationships') ||

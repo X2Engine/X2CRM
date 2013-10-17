@@ -128,4 +128,51 @@ class FormLayout extends CActiveRecord {
 			'criteria'=>$criteria,
 		));
 	}
+
+    /**
+     * Returns fieldName, fieldLabel pairs for all fields for which the user has edit rights and
+     * which are present in the layout.
+     */
+    public function getEditableFieldsInLayout ($modelName) {
+        $editableFieldsFieldInfo = X2Model::model ($modelName)->getEditableFieldNames (false);
+
+        // Construct criteria for finding the right form layout.
+        $attributes = array('model'=>ucfirst($modelName),'defaultForm'=>1);
+
+        $layout = self::model()->findByAttributes($attributes);
+        if (!isset ($layout)) return false;
+
+	    $layoutData = json_decode($layout->layout,true);
+
+        $editableFieldsInLayout = array ();
+	    if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
+		    foreach($layoutData['sections'] as &$section) {
+				foreach($section['rows'] as &$row) {
+					if(isset($row['cols'])) {
+						foreach($row['cols'] as &$col) {
+							if(isset($col['items'])) {
+								foreach($col['items'] as &$item) {
+
+                                    if(isset($item['name'],$item['labelType'],$item['readOnly'],
+                                        $item['height'],$item['width'])) {
+        
+                                        $fieldName = preg_replace('/^formItem_/u','',$item['name']);
+        
+                                        if(in_array (
+                                            $fieldName, array_keys ($editableFieldsFieldInfo))) {
+
+                                            $editableFieldsInLayout[$fieldName] = 
+                                                $editableFieldsFieldInfo[$fieldName];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $editableFieldsInLayout;
+    }
+
 }

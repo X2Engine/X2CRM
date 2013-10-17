@@ -79,11 +79,12 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 
 	<h2><span class="no-bold"><?php echo Yii::t('accounts','Account:'); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 	<?php
-	echo CHtml::link('<span></span>','#',array('class'=>'x2-button icon email right','onclick'=>'toggleEmailForm(); return false;'));
 	if(Yii::app()->user->checkAccess('AccountsUpdate',$authParams)){ ?>
 		<a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><span></span></a>
 
-	<?php } ?>
+	<?php } 
+	echo CHtml::link('<span></span>','#',array('class'=>'x2-button icon email right','onclick'=>'toggleEmailForm(); return false;'));
+    ?>
 </div>
 <div id="main-column" class="half-width">
 <?php $form=$this->beginWidget('CActiveForm', array(

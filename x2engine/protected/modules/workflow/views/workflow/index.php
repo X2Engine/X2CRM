@@ -40,6 +40,10 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('app','Create'), 'url'=>array('create'), 'visible'=>$isAdmin),
 ));
 
+?>
+<div class='flush-grid-view'>
+<?php
+
 $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider'=>$dataProvider,
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
@@ -65,3 +69,4 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 	),
 )); ?>
+</div>

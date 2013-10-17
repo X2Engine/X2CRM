@@ -37,17 +37,35 @@
 
 $this->actionMenu = array(
 	array('label'=>Yii::t('profile','View Profile'), 'url'=>array('view','id'=>$profile->id)),
-	array('label'=>Yii::t('profile','Update Profile'),'url'=>array('update','id'=>$profile->id)),
+	array('label'=>Yii::t('profile','Edit Profile'),'url'=>array('update','id'=>$profile->id)),
 	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$profile->id),'visible'=>($profile->id==Yii::app()->user->id)),
 	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$profile->id),'visible'=>($profile->id==Yii::app()->user->id)),
 	array('label'=>Yii::t('profile','Manage Apps'))
 );
+
+Yii::app()->clientScript->registerScript ('manageCredentialsScript', "
+
+    function validate () {
+        auxlib.destroyErrorFeedbackBox ($('#class'));
+        if ($('#class').val () === '') {
+            auxlib.createErrorFeedbackBox ({
+                'prevElem': $('#class'),
+                'message': '".Yii::t ('app', 'Account type required')."'
+            });
+            return false;
+        }
+        return true;
+    }
+
+", CClientScript::POS_HEAD);
+
 ?>
 
-<div class="page-title"><h2><?php echo Yii::t('profile','Manage Passwords for Third-Party Applications'); ?></h2></div>
+<div class="page-title icon profile">
+    <h2><?php echo Yii::t('profile','Manage Passwords for Third-Party Applications'); ?></h2>
+</div>
 <div class="credentials-storage">
 <?php
-
 $crit = new CDbCriteria(array(
 		'condition'=>'userId=:uid OR userId=-1',
 		'order' => 'name ASC',
@@ -68,16 +86,32 @@ $this->widget('zii.widgets.CListView', array(
 	'itemsCssClass' => 'credentials-list',
 	'summaryText' => '',
 	'emptyText' => ''
-
-	));
+));
 ?>
 
 <?php
-echo CHtml::beginForm(array('profile/createUpdateCredentials'),'get');
-echo CHtml::submitButton(Yii::t('app','Add New'),array('class'=>'x2-button','style'=>'float:left;margin-top:0'));
+echo CHtml::beginForm(
+    array('profile/createUpdateCredentials'),
+    'get',
+    array (
+        'onSubmit' => 'return validate ();'
+    )
+);
+echo CHtml::submitButton(
+    Yii::t('app','Add New'),array('class'=>'x2-button','style'=>'float:left;margin-top:0'));
 $modelLabels = Credentials::model()->authModelLabels;
 $types = array_merge(array(null=>'- '.Yii::t('app','select a type').' -'),$modelLabels);
-echo CHtml::dropDownList('class','EmailAccount',$types,array('options'=>array_merge(array(null=>array('selected'=>'selected')),array_fill_keys(array_keys($modelLabels),array('selected'=>false)))));
+echo CHtml::dropDownList(
+    'class',
+    'EmailAccount',
+    $types,
+    array(
+        'options'=>array_merge(
+            array(null=>array('selected'=>'selected')),
+            array_fill_keys(array_keys($modelLabels),array('selected'=>false))),
+        'class' => 'left'
+    )
+);
 echo CHtml::endForm();
 
 ?>

@@ -131,7 +131,7 @@ function X2ActionHistoryChart (argsDict) {
 
 }
 
-X2ActionHistoryChart.prototype = Object.create (X2Chart.prototype);
+X2ActionHistoryChart.prototype = auxlib.create (X2Chart.prototype);
 
 /*
 Sets initial state of chart setting ui elements

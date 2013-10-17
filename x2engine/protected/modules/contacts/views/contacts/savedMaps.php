@@ -48,6 +48,10 @@ $this->actionMenu = $this->formatMenu($menuItems);
 ?>
 <?php
 
+?>
+<div class='flush-grid-view'>
+<?php
+
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'maps-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -88,3 +92,5 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
     ),
 ));
+?>
+</div>

@@ -60,7 +60,7 @@
 	else:
 		$mandatoryFields = array('unique_id', 'firstName', 'lastName', 'email');
 		if (in_array($form->config['unique_id'],array(Null,'none'))) {
-			echo $form->message['registrationSubtext'] . '<br><br>';
+			echo '<span class="registration-sub-text">'.$form->message['registrationSubtext'] . '</span>';
 			$form->textFields($mandatoryFields);
 			echo '<br>'.$form->message['registrationPostText'].': <a href="http://www.x2engine.com/contact/">x2engine.com</a><br><br>';
 		} else {

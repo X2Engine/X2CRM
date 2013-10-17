@@ -68,6 +68,7 @@ else
     ));
     ?>
 </div><!-- search-form -->
+<div class='flush-grid-view'>
 <?php
 $this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'users-grid',
@@ -77,7 +78,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
     .CHtml::link('<span></span>', array(Yii::app()->controller->action->id, 'clearFilters' => 1), array('title' => Yii::t('app', 'Clear Filters'), 'class' => 'x2-button filter-button')).'</div>'
     .CHtml::link(Yii::t('app', 'Today'), array('admin', 'offset' => '0:00'), array('class' => 'x2-button'))
     .CHtml::link(Yii::t('app', 'This Week'), array('admin', 'offset' => 'first day of this week'), array('class' => 'x2-button'))
-    .CHtml::link(Yii::t('app', 'This Month'), array('admin', 'offset' => 'first day of this month'), array('class' => 'x2-button'))
+    .CHtml::link(Yii::t('app', 'This Month'), array('admin', 'offset' => 'first day of this month'), array('class' => 'x2-button x2-last-child'))
     .X2GridView::getFilterHint()
     .'{summary}</div>{items}{pager}',
     'summaryText' => Yii::t('app', '<b>{start}&ndash;{end}</b> of <b>{count}</b>')
@@ -128,6 +129,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
     ),
 ));
 ?>
+</div>
 <?php if($count > 0){ ?>
     <br />
     <h2><?php echo Yii::t('users', "Invited Users"); ?></h2>

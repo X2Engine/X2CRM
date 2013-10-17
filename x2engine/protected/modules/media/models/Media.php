@@ -473,7 +473,7 @@ class Media extends X2Model {
             if($makeLink){
                 $str .= $media->getMediaLink();
                 if(!$media->drive){
-                    $str .= " | ".CHtml::link('[Download]', array('/media/download/'.$media->id));
+                    $str .= " | ".CHtml::link('[Download]', array('/media/download','id'=>$media->id));
                 }
             }else
                 $str .= $data[0];

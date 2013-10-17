@@ -38,13 +38,29 @@ $isGuest = Yii::app()->user->isGuest;
 $auth = Yii::app()->authManager;
 $isAdmin = !$isGuest && (Yii::app()->params->isAdmin);
 $isUser = !($isGuest || $isAdmin);
-if(Yii::app()->session['alertUpdate']){
-    ?><script>
-        alert('<?php echo addslashes(Yii::t('admin', 'A new version is available.  To update X2Engine or to turn off these notifications, please go to the Admin tab.')); ?>');
-    </script>
-    <?php
+if($isAdmin && file_exists($updateManifest = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..',UpdaterBehavior::UPDATE_DIR,'manifest.json')))) {
+    $manifest = @json_decode(file_get_contents($updateManifest),1);
+    if(isset($manifest['scenario']) && !(Yii::app()->controller->id == 'admin' && Yii::app()->controller->action->id == 'updater')) {
+        Yii::app()->user->setFlash('admin.update',Yii::t('admin', 'There is an unfinished {scenario} in progress.',array('{scenario}'=>$manifest['scenario']=='update' ? Yii::t('admin','update'):Yii::t('admin','upgrade')))
+                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Resume'),array("admin/updater",'scenario'=>$manifest['scenario']))
+                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Cancel'),array("admin/updater",'scenario'=>'delete','redirect'=>1)));
+    }
+} else if($isAdmin && Yii::app()->session['alertUpdate']){
+    Yii::app()->user->setFlash('admin.update',Yii::t('admin', 'A new version is available.')
+            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Update X2CRM'),array('admin/updater'))
+            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Updater Settings'),array('admin/updaterSettings')));
     Yii::app()->session['alertUpdate'] = false;
 }
+if(is_int(Yii::app()->locked)) {
+    $lockMsg = '<strong>'.Yii::t('admin','The application is currently locked.').'</strong>';
+    if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','LockAppAction.php')))) {
+        $lockMsg .= ' '.CHtml::link(Yii::t('admin','Unlock X2CRM'),array('admin/lockApp','toggle'=>0));
+    } else {
+        $lockMsg .= Yii::t('admin', 'You can manually unlock the application by deleting the file {file}', array('{file}' => '<em>"x2crm.lock"</em> in protected/config'));
+    }
+    Yii::app()->user->setFlash('admin.isLocked',$lockMsg);
+}
+
 
 $baseUrl = Yii::app()->getBaseUrl();
 $scriptUrl = Yii::app()->request->scriptUrl;
@@ -88,12 +104,11 @@ $cldScript .= "\n})(jQuery);";
 
 // custom scripts
 $cs ->registerScriptFile($baseUrl.'/js/json2.js')
-	->registerScriptFile($baseUrl.'/js/auxlib.js')
+	->registerScriptFile($baseUrl.'/js/auxlib.js', CClientScript::POS_HEAD)
 	->registerScriptFile($baseUrl.'/js/layout.js')
 	->registerScriptFile($baseUrl.'/js/publisher.js')
 	->registerScriptFile($baseUrl.'/js/media.js')
 	->registerScriptFile($baseUrl.'/js/x2forms.js')
-    ->registerScriptFile($baseUrl.'/js/tags.js')
 	->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js'.$jsVersion)
 	->registerScript('formatCurrency-locales',$cldScript,CCLientScript::POS_HEAD)
 	->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js')
@@ -107,6 +122,8 @@ if (IS_IPAD) {
     $cs->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
 }
     //$cs->registerScriptFile($baseUrl.'/js/jquery.mobile-1.3.2.js');
+
+$cs->registerScript($baseUrl.'/js/main.js'.$jsVersion, CCLientScript::POS_HEAD);
 
 if(Yii::app()->session['translate'])
     $cs->registerScriptFile($baseUrl.'/js/translator.js');
@@ -124,17 +141,19 @@ $cs->registerCoreScript('jquery');
 
 // blueprint CSS framework
 $cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
-	->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/print.css'.$jsVersion,'print')
+	/*->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/auxlib.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/jquery-ui.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/dragtable.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/print.css'.$jsVersion,'print')
 	->registerCssFile($themeUrl.'/css/main.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/combined.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/ui-elements.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/layout.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/details.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection')*/
+	->registerCssFile($themeUrl.'/css/combined.css'.$jsVersion,'screen, projection')
 	->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection')
     ->registerCoreScript('cookie');
 // $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion);
@@ -163,7 +182,7 @@ if(!$isGuest){
     $cs->registerScript ('notificationsParams', "
         x2.notifications = {};
         x2.notifications.translations = {};
-        x2.notifications.translations['clearAll'] = 
+        x2.notifications.translations['clearAll'] =
             '".addslashes (Yii::t('app', 'Permanently delete all notifications?'))."';
     ", CClientScript::POS_HEAD);
     $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
@@ -245,6 +264,43 @@ if ($preferences != null && $preferences['gridViewRowColorOdd']){
 	$themeCss .= 'div.x2-gridview tr.odd {
 		background: #'.$preferences['gridViewRowColorOdd'].' !important;
 	 }';
+}
+
+/* Retrieve flash messages and calculate the appropriate styles for flash messages if applicable */
+$allFlashes = Yii::app()->user->getFlashes();
+$adminFlashes = array();
+$index = 0;
+foreach($allFlashes as $key => $message){
+    if(strpos($key, 'admin') === 0){
+        $adminFlashes[$index] = $message;
+        $index++;
+    }
+}
+
+if($n_flash = count($adminFlashes)) {
+    $flashTotalHeight = 17; // See layout.css for details
+    $themeCss .= '
+div#header {
+    position:fixed;
+    top: '.($flashTotalHeight*$n_flash).'px;
+    left: 0;
+}
+div#page {
+    margin-top:'.(32 + $flashTotalHeight*$n_flash).'px !important;
+}
+div#x2-gridview-top-bar-outer {
+    position:fixed;
+    top: '.(32 +$flashTotalHeight*$n_flash).'px;
+    left: 0;
+}
+';
+    foreach($adminFlashes as $index => $message) {
+        $themeCss .= "
+div.flash-message-$index {
+        top: ".(string)($index*$flashTotalHeight)."px;
+}
+";
+    }
 }
 
 // Outputs white or black depending on input color
@@ -388,6 +444,7 @@ array_unshift($menuItems, array(
 ));
 
 
+/* Construction of the user menu */
 $notifCount = X2Model::model('Notification')->countByAttributes(array('user' => Yii::app()->user->getName()), 'createDate < '.time());
 
 $searchbarHtml = CHtml::beginForm(array('/search/search'), 'get')
@@ -417,10 +474,10 @@ $userMenu = array(
     array('label' => Yii::t('app', 'Users'), 'url' => array('/profile/profiles'), 'visible' => !$isAdmin),
     array('label' => $searchbarHtml, 'itemOptions' => array('id' => 'search-bar', 'class' => 'special')),
     array('label' => CHtml::link(
-        '<span>'.$notifCount.'</span>', '#', array('id' => 'main-menu-notif', 'style' => 'z-index:999;')), 
+        '<span>'.$notifCount.'</span>', '#', array('id' => 'main-menu-notif', 'style' => 'z-index:999;')),
         'itemOptions' => array('class' => 'special')),
     array('label' => CHtml::link(
-        '<span>&nbsp;</span>', '#', array('class' => 'x2-button', 'id' => 'fullscreen-button')), 
+        '<span>&nbsp;</span>', '#', array('class' => 'x2-button', 'id' => 'fullscreen-button')),
         'itemOptions' => array('class' => 'search-bar special')),
     array('label' => CHtml::link('<div class="widget-icon"></div>', '#', array(
             'id' => 'widget-button',
@@ -525,6 +582,12 @@ if(method_exists($this,'renderGaCode'))
 <div id="page-container">
 <div id="page">
 <?php //echo $backgroundImg; ?>
+    <?php
+    if(count($adminFlashes) > 0){
+        foreach($adminFlashes as $index => $message){
+                echo CHtml::tag('div',array('class'=>"admin-flash-message flash-message-$index"),$message);
+        }
+    } ?>
 	<div id="header" <?php echo !$preferences['menuBgColor']? 'class="defaultBg"' : ''; ?>>
 		<div id="header-inner">
 			<div id="main-menu-bar">
@@ -624,8 +687,10 @@ if(method_exists($this,'renderGaCode'))
 			echo "";
 			Yii::app()->clientScript->registerScript('playLoginSound', '
 		$("#loginSound").attr("src","'.$loginSound.'");
-		var sound = $("#loginSound")[0];
-		sound.play();
+
+        var sound = $("#loginSound")[0];
+        if (Modernizr.audio) sound.play();
+
 ');
 		}
 		?>
@@ -634,6 +699,6 @@ if(method_exists($this,'renderGaCode'))
 	<textarea id="completion-notes" style="height:110px;"></textarea>
 </div>
 </body>
-<audio id="notificationSound"></audio>
-<audio id='loginSound'></audio>
+<audio id="notificationSound"> </audio>
+<audio id='loginSound'> </audio>
 </html>

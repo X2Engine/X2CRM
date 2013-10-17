@@ -13,6 +13,6 @@ return array(
 	'adminOnly'=>false,
 	'custom'=>true,
 	'toggleable'=>true,
-	'version' => '2.8',
+	'version' => '3.6',
 );
 ?>

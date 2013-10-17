@@ -97,12 +97,22 @@ abstract class x2base extends X2Controller {
          return $this->PermissionsBehavior->beforeAction($action);
      }
 
+     public function appLockout() {
+         header("HTTP/1.1 503 Unavailable");
+         header("Content-type: text/plain; charset=utf-8");
+         echo Yii::t('app','X2CRM is undergoing maintenance; it has been locked by an administrator. Please try again later.');
+         Yii::app()->end();
+     }
+
 	public function denied() {
 		throw new CHttpException(403, Yii::t('app','You are not authorized to perform this action.'));
 	}
 
 	public function actions() {
 		return array(
+			'x2GridViewMassAction' => array(
+				'class' => 'X2GridViewMassActionAction',
+			),
 			'inlineEmail' => array(
 				'class' => 'InlineEmailAction',
 			),
@@ -1239,5 +1249,30 @@ abstract class x2base extends X2Controller {
         $return_string = preg_replace($delimiters_cleanup_replace1, $delimiters_cleanup_pattern1, $return_string);
 
         return $return_string;
+    }
+
+    /**
+     * Calls renderInput for model and input type with given names and returns the result.
+     */
+    public function actionGetX2ModelInput ($modelName, $inputName) {
+        if (!isset ($modelName) || !isset ($inputName)) {
+            echo '';
+            return;
+        }
+        $model = X2Model::model ($modelName);
+        if (!$model) {
+            echo '';
+            return;
+        }
+        $input = $model->renderInput ($inputName);
+        echo $input;
+
+        // force loading of scripts normally rendered in view
+	    echo '<br /><br /><script id="x2-model-render-input-scripts">'."\n";
+        foreach(Yii::app()->clientScript->scripts[CClientScript::POS_READY] as $id => $script) {
+            if(strpos($id,'logo')===false)
+                echo "$script\n";
+        }
+	    echo "</script>";
     }
 }

@@ -1,4 +1,3 @@
-<?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -34,29 +33,64 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.webupdater.*');
 
-/**
- * Downloads a file as a part of the updater.
- *
- * @package X2CRM.components.webupdater
- * @author Demitri Morgan <demitri@x2engine.com>
- */
-class SourceFileDownloadAction extends WebUpdaterAction {
 
-	public function run($url, $file,$edition,$unique_id){
-		set_exception_handler('ResponseBehavior::respondWithException');
-		if(Yii::app()->request->isAjaxRequest){
-			if($url == 'x2planet'){
-				if($this->downloadSourceFile($file,$this->getSourceFileRoute($edition,$unique_id)))
-					self::respond(Yii::t('admin', 'File {file} downloaded successfully.', array('{file}' => $file)));
-			} else{
-				self::respond('Update server not implemented for URL provided.', true, true);
-			}
-		}else{
-			self::respond('Update requests must be made via AJAX.',true);
-		}
-	}
+function MassActionTagsContainer (argsDict) {
+	TagCreationContainer.call (this, argsDict);	
+
+    var defaultArgs = {
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+
+    this._init ();
 }
 
-?>
+MassActionTagsContainer.prototype = auxlib.create (TagCreationContainer.prototype);
+
+/*
+Public static methods
+*/
+
+/*
+Private static methods
+*/
+
+/*
+Public instance methods
+*/
+
+/*
+Private instance methods
+*/
+
+
+MassActionTagsContainer.prototype._init = function () {
+    var that = this;    
+    x2.DEBUG && console.log ('MassActionTagsContainer _init');
+
+    $(that.containerSelector).droppable({ // allow tags to be dropped into inline tags widget
+        accept: '.x2-tag',
+        activeClass: 'x2-state-active',
+        hoverClass: 'x2-state-hover',
+        drop: function(event, ui) { // add a tag to this model            
+            // clear placeholder text
+            $(that.containerSelector).find ('.tag-container-placeholder').hide ();
+            that._appendTag(ui.draggable.context);
+            $('.link-disable a').click(function(e){
+                e.preventDefault();
+            });
+        }
+    });
+
+    // create a new tag for this model
+    $(that.containerSelector).unbind ('click');
+    $(that.containerSelector).click(function(event) { 
+        x2.DEBUG && console.log ('MassActionTagsContainer: containerSelector: click');
+        // clear placeholder text
+        $(that.containerSelector).find ('.tag-container-placeholder').hide ();
+        that._createNewTagHandler(event); 
+    });
+
+};
+
+

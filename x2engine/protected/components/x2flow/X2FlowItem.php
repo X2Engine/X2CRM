@@ -98,17 +98,23 @@ abstract class X2FlowItem extends CComponent {
 				$option['type'] = $optRule['type'];
 			// if there's an operator setting, it must be valid
 			if(isset($optRule['operator']) && !in_array($optRule['operators'],$configOptions['operator']))
-				return false;
+				return array (
+                    false,
+                    Yii::t('studio', 'Flow item validation error'));
 
 			// value must not be empty, unless it's an optional setting
 			if(!isset($option['value']) || $option['value'] === null || $option['value'] === '') {
-				if(isset($optRule['defaultVal']))		// try to use the default value
+				if(isset($optRule['defaultVal'])) {		// try to use the default value
 					$option[$optName] = $optRule['defaultVal'];
-				elseif(!$option['optional'])
-					return false;	// if not, fail if it was required
+				} elseif(!$option['optional']) {
+					// if not, fail if it was required
+				    return array (
+                        false,
+                        Yii::t('studio', 'Required flow item input missing'));
+                }
 			}
 		}
-		return true;
+		return array (true, '');
 	}
 
 	/**
@@ -125,6 +131,21 @@ abstract class X2FlowItem extends CComponent {
         }
 		return false;
 	}
+
+	/**
+	 * Gets the title property of the specified flow item
+	 * @param string $type name of action class
+	 * @return string the title property, or '' if the type is invalid of if the class
+     *  associated with the type doesn't have a title property
+     */
+    public static function getTitle ($type) {
+		$item = self::create(array('type'=>$type));
+        $title = '';
+		if ($item !== null && property_exists ($item, 'title')) {
+            $title = $item->title;
+        }
+        return $title;
+    }
 
 	/**
 	 * Creates a flow item with the provided config data

@@ -90,7 +90,11 @@ class X2FlowApiCall extends X2FlowAction {
 
 			$context = stream_context_create(array('http'=>$httpOptions));
 
-			return @FileUtil::getContents($url,false,$context);
+            if (@FileUtil::getContents($url,false,$context)) {
+                return array (true, "");
+            } else {
+                return array (false, "");
+            }
 		}
 	}
 }

@@ -1,5 +1,36 @@
 # X2CRM 3.5 #
-Point release 3.5.2: 9/20/2013
+Point release 3.5.5: 10/16/2013
+
+## Changes in 3.5.5 ##
+* Improvements to grid views:
+  * The ability to use shift+click to select ranges of records
+  * Mass tagging, field updates, record reassignments and mass deletion of selected records
+* Faster, more robust X2CRM updater with the ability to perform offline updates
+* Administrative flash message UI
+* Changes in Professional Edition:
+  * The ability to add hidden fields in the web lead form editor, filled with a user-defined value (e.g. you could set "leadsource" as a hidden field with the value "web").
+  * Application lock; the ability to lock the application through the administrative UI so that only administrators can access it
+* Fixed Bugs:  
+  * [242](http://x2software.com/index.php/bugReports/242): User Report  
+  * [245](http://x2software.com/index.php/bugReports/245): Class:  not found.  
+  * [256](http://x2software.com/index.php/bugReports/256): Changing static page title cause it to disappear  
+  * [270](http://x2software.com/index.php/bugReports/270): User Report  
+  * [287](http://x2software.com/index.php/bugReports/287): Missing Fields on Manage Notification Criteria  
+  * [327](http://x2software.com/index.php/bugReports/327): Top Sites Widget Can't Edit  
+  * [345](http://x2software.com/index.php/bugReports/345): Unable to resolve the request "tycoons (1)/index".  
+  * [361](http://x2software.com/index.php/bugReports/361): Unable to resolve the request "list/list/view".  
+  * [364](http://x2software.com/index.php/bugReports/364): Unable to resolve the request "viewContent/viewContent/view".  
+  * [365](http://x2software.com/index.php/bugReports/365): Unable to resolve the request "view/view/view".  
+  * [367](http://x2software.com/index.php/bugReports/367): Unable to resolve the request "flowDesigner/flowDesigner/view".  
+  * [368](http://x2software.com/index.php/bugReports/368): Unable to resolve the request "list/list/view".  
+  * [369](http://x2software.com/index.php/bugReports/369): Unable to resolve the request "list/list/view".  
+  * [371](http://x2software.com/index.php/bugReports/371): Unable to resolve the request "download/download/view".  
+  * [372](http://x2software.com/index.php/bugReports/372): Tools Column Error  
+  * [392](http://x2software.com/index.php/bugReports/392): Unable to resolve the request "list/list/view".  
+  * [393](http://x2software.com/index.php/bugReports/393): Unable to resolve the request "list/list/view".  
+  * [395](http://x2software.com/index.php/bugReports/395): Undefined index: multi  
+  * [405](http://x2software.com/index.php/bugReports/405): array_filter() expects parameter 2 to be a valid callback, no array or string given  
+  * [452](http://x2software.com/index.php/bugReports/452): Unable to resolve the request "update/update/view".
 
 ## Changes in 3.5.2 ##
 * Fully-configurable batch timeout setting controls how much actual time can be spent in campaign emailing and cron events

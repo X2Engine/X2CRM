@@ -61,7 +61,8 @@ center cells in the quotes table
     height: 2em;
 }
 
-.quote-table tbody:last-child 
+.quote-table tbody:last-child,
+.quote-table tbody .x2-last-child 
 {
 	border-bottom:none;	
 }

@@ -52,17 +52,19 @@ abstract class X2FlowAction extends X2FlowItem {
 	/**
 	 * Checks if all the config variables and runtime params are ship-shape
 	 * Ignores param requirements if $params isn't provided
+     * Returns an array with two elements. The first element indicates whether an error occured,
+     * the second contains a log message.
 	 */
 	public function validate(&$params=array()) {
 		$paramRules = $this->paramRules();
 		if(!isset($paramRules['options'],$this->config['options']))
-			return false;
+			return array (false, Yii::t('model', "Flow item validation error"));
 
 		if(isset($paramRules['modelRequired'])) {
 			if(!isset($params['model']))	// model not provided when required
-				return false;
+				return array (false, Yii::t('model', "Flow item validation error"));
 			if($paramRules['modelRequired'] != 1 && $paramRules['modelRequired'] !== get_class($params['model']))	// model is not the correct type
-				return false;
+				return array (false, Yii::t('model', "Flow item validation error"));
 		}
 		return $this->validateOptions($paramRules);
 	}

@@ -38,7 +38,7 @@ $canEdit = $model->id==Yii::app()->user->getId() || Yii::app()->params->isAdmin;
 
 $this->actionMenu = array(
 	array('label'=>Yii::t('profile','View Profile')),
-	array('label'=>Yii::t('profile','Update Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
+	array('label'=>Yii::t('profile','Edit Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
 	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
 	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
 	array('label'=>Yii::t('profile','Reset Widgets'),'url'=>array('resetWidgets','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
@@ -55,7 +55,7 @@ $("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
 	});
 ',CClientScript::POS_READY);
 ?>
-<div class="page-title">
+<div class="page-title icon profile">
 	<h2><span class="no-bold"><?php echo Yii::t('profile','Profile:'); ?> </span><?php echo $model->fullName; ?></h2>
 </div>
 <?php $this->renderPartial('_detailView',array('model'=>$model)); ?>

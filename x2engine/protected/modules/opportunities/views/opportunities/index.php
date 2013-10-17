@@ -71,16 +71,26 @@ $this->widget('application.components.X2GridView', array(
 	'id'=>'opportunities-grid',
 	'title'=>Yii::t('opportunities','Opportunities'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> '<div class="page-title icon opportunities">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
+	'template'=>
+        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
+        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
+        '<div id="x2-gridview-page-title" '.
+         'class="page-title icon opportunities x2-gridview-fixed-title">'.
+        '{title}{buttons}{filterHint}'.
+        
+        '{summary}{items}{pager}',
+    'fixedHeader'=>true,
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
+	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
 	// 'columns'=>$columns,
 	'modelName'=>'Opportunity',
 	'viewName'=>'opportunities',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
+        'gvCheckbox' => 30,
 		'name' => 164,
 		'quoteAmount' => 95,
 		'probability' => 77,

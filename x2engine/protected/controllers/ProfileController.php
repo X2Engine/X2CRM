@@ -457,7 +457,7 @@ class ProfileController extends x2base {
                 'accounts' => $accounts,
             ));
         }else{
-            $this->redirect(array('/profile/'.$id));
+            $this->redirect(array('/profile/view','id'=>$id));
         }
     }
 
@@ -478,7 +478,7 @@ class ProfileController extends x2base {
                         $user->password = md5($newPass);
                         $user->save();
 
-                        $this->redirect($this->createUrl('profile/'.$id));
+                        $this->redirect($this->createUrl('profile/view',array('id'=>$id)));
                     }
                 }else{
                     Yii::app()->clientScript->registerScript('alertPassWrong', "alert('Old password is incorrect.');");

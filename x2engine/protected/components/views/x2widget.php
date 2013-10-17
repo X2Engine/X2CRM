@@ -34,43 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->getBaseUrl().'/js/X2Chart.js', CClientScript::POS_HEAD);
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->getBaseUrl().'/js/X2ActionHistoryChart.js', CClientScript::POS_HEAD);
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->getBaseUrl().'/js/X2EventsChart.js', CClientScript::POS_HEAD);
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->getBaseUrl().'/js/X2UsersChart.js', CClientScript::POS_HEAD);
-
-Yii::app()->clientScript->registerCssFile(
-	Yii::app()->getTheme()->getBaseUrl().'/css/x2chart.css');
-
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->request->baseUrl . '/js/jqplot/jquery.jqplot.js');
-Yii::app()->clientScript->registerCssFile(
-	Yii::app()->request->baseUrl . '/js/jqplot/jquery.jqplot.css');
-
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.pieRenderer.js');
-
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.categoryAxisRenderer.js');
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.pointLabels.js');
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.dateAxisRenderer.js');
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.highlighter.js');
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->request->baseUrl . '/js/jqplot/plugins/jqplot.enhancedLegendRenderer.js');
-Yii::app()->clientScript->registerCoreScript('cookie');
-
-Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->request->baseUrl . '/js/checklistDropdown/jquery.multiselect.js');
-Yii::app()->clientScript->registerCssFile(
-	Yii::app()->request->baseUrl . '/js/checklistDropdown/jquery.multiselect.css');
-
 if(!is_null($model) && property_exists($name,'model')){
     $params = array('model'=>$model, 'modelName'=>($modelType));
 }else{

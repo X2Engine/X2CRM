@@ -103,6 +103,9 @@ class AdminController extends Controller {
                     'viewLog' => array(
                         'class' => 'LogViewerAction',
                     ),
+                    'lockApp' => array(
+                        'class' => 'LockAppAction'
+                    ),
                 ));
     }
 
@@ -1150,7 +1153,7 @@ class AdminController extends Controller {
                     $rolePerm->save();
                 }
             }
-		}
+        }
 
 
         $this->render('manageRoles', array(
@@ -1303,7 +1306,12 @@ class AdminController extends Controller {
         if(isset($_POST['Fields']['modelName']))
             $type = $_POST['Fields']['modelName'];
 
-        if(isset($type)){
+           if(isset($type)){
+            if($type == 'Marketing') $type = 'Campaign';
+            elseif ($type == 'Quotes') $type = 'Quote';
+            elseif ($type == 'Products') $type = 'Product';
+            elseif ($type == 'Opportunities') $type = 'Opportunity';
+           
             foreach(X2Model::model('Fields')->findAllByAttributes(array('modelName' => $type)) as $field){
                 if($field->fieldName != 'id'){
                     if(isset($_POST['Criteria']))
@@ -1779,7 +1787,7 @@ class AdminController extends Controller {
                         $arr[$dropdown->id] = $dropdown->name;
                     }
 
-                    $temparr['dropdown'] = CHtml::dropDownList('dropdown', '', $arr);
+                    $temparr['dropdown'] = CHtml::dropDownList('link_dropdown', '', $arr);
                 }
             }else{
                 $temparr['dropdown'] = "";
@@ -2069,6 +2077,179 @@ class AdminController extends Controller {
         // die('hello:'.var_dump($_POST));
     }
 
+    public function actionConvertCustomModules(){
+        $status = array();
+        if(!empty($_POST)){
+            $updateFlag = false;
+            if(isset($_POST['updateFlag']) && $_POST['updateFlag'] == "Yes"){
+                $updateFlag = true;
+            }
+            $modules = X2Model::model('Modules')->findAllByAttributes(array('custom' => 1));
+            if(count($modules)==0){
+                $status['admin']['error']=Yii::t('admin','Fatal error - No custom modules found.');
+                $status['admin']['title']=Yii::t('admin','Module Conversion');
+            }
+            foreach($modules as $module){
+                $moduleName = $module->name;
+                $ucName = ucfirst($moduleName);
+                if(is_dir('protected/modules/'.$moduleName)){
+                     $status[$moduleName]=array('title'=>$module->title,'messages'=>array(),'error'=>null);
+                     $status[$moduleName]['messages'][]=Yii::t('admin',"Module exists").": $moduleName";
+                    if(FileUtil::ccopy('protected/modules/'.$moduleName, 'backup/modules/'.$moduleName)){
+                        $backupFlag = true;
+                        $status[$moduleName]['messages'][]=Yii::t('admin','Module successfully backed up in backup/modules/{moduleName}',array(
+                            '{moduleName}'=>$moduleName
+                        ));
+                    }else{
+                        $backupFlag = false;
+                        $status[$moduleName]['messages'][]=Yii::t('admin','Backup failed. Unable to write to backup directory.');
+                    }
+                    if(file_exists('protected/modules/'.$moduleName.'/controllers/DefaultController.php')){
+                        if(rename('protected/modules/'.$moduleName.'/controllers/DefaultController.php', 'protected/modules/'.$moduleName.'/controllers/'.$ucName.'Controller.php')){
+                            $status[$moduleName]['messages'][]=Yii::t('admin','{default} still existed and was successfully renamed to {controller}.',array(
+                                '{default}'=>'DefaultController',
+                                '{controller}'=>$ucName.'Controller',
+                            ));
+                            $file = Yii::app()->file->set('protected/modules/'.$moduleName.'/controllers/'.$ucName.'Controller.php');
+                            $contents = $file->getContents();
+                            $contents = str_replace(array('DefaultController'), array($ucName.'Controller'), $contents);
+                            if($file->setContents($contents) !== false){
+                                $status[$moduleName]['messages'][]=Yii::t('admin','Class declaration successfully altered.');
+                            }else{
+                                $status[$moduleName]['error']=Yii::t('admin','Fatal error - Unable to change class delcaration. Aborting module conversion.');
+                                if($backupFlag){
+                                    FileUtil::rrmdir('protected/modules/'.$moduleName);
+                                    if(FileUtil::ccopy('backup/modules/'.$moduleName, 'protected/modules/'.$moduleName)){
+                                        $status[$moduleName]['error'].=" ".Yii::t('admin','Module backup was successfully restored.');
+                                    }
+                                }
+                            }
+                        }else{
+                            $status[$moduleName]['error']=Yii::t('admin','Fatal error - Unable to rename controller class. Aborting module conversion.');
+                            if($backupFlag){
+                                FileUtil::rrmdir('protected/modules/'.$moduleName);
+                                if(FileUtil::ccopy('backup/modules/'.$moduleName, 'protected/modules/'.$moduleName)){
+                                    $status[$moduleName]['error'].=" ".Yii::t('admin','Module backup was successfully restored.');
+                                }
+                            }
+                        }
+                    }
+                    if(is_dir('protected/modules/'.$moduleName.'/views/default')){
+                        if(rename('protected/modules/'.$moduleName.'/views/default', 'protected/modules/'.$moduleName.'/views/'.$moduleName)){
+                            $status[$moduleName]['messages'][]=Yii::t('admin','Module view folder successfully renamed.');
+                        }else{
+                            $status[$moduleName]['error']=Yii::t('admin','Fatal error - Unable to rename module view folder. Aborting module conversion.');
+                            if($backupFlag){
+                                FileUtil::rrmdir('protected/modules/'.$moduleName);
+                                if(FileUtil::ccopy('backup/modules/'.$moduleName, 'protected/modules/'.$moduleName)){
+                                    $status[$moduleName]['error'].=" ".Yii::t('admin','Module backup was successfully restored.');
+                                }
+                            }
+                        }
+                    }
+                    $auth = Yii::app()->authManager;
+                    $testItem = $auth->getAuthItem($ucName.'ReadOnlyAccess');
+                    if(is_null($testItem)){
+                        $authRule = "return Yii::app()->user->getName()==\$params['assignedTo'];";
+                        $guestSite = $auth->getAuthItem('GuestSiteFunctionsTask');
+                        $auth->removeAuthItem($ucName.'Index');
+                        $auth->removeAuthItem($ucName.'Admin');
+                        $auth->createOperation($ucName.'GetItems');  // Guest Access
+                        $auth->createOperation($ucName.'View');  // Read Only
+                        $auth->createOperation($ucName.'Create');  // Basic Access
+                        $auth->createOperation($ucName.'Update');  // Update Access
+                        $auth->createOperation($ucName.'Index');  // Minimum Requirements
+                        $auth->createOperation($ucName.'Admin');  // Admin Access
+                        $auth->createOperation($ucName.'Delete');  // Full Access
+                        $auth->createOperation($ucName.'GetTerms');  // Minimum Requirements
+                        $auth->createOperation($ucName.'DeleteNote');  // Full Access
+                        $auth->createOperation($ucName.'Search');  // Minimum Requirements
+                        // Access Group Definitions
+                        $roleAdminAccess = $auth->createTask($ucName.'AdminAccess');
+                        $roleFullAccess = $auth->createTask($ucName.'FullAccess');
+                        $rolePrivateFullAccess = $auth->createTask($ucName.'PrivateFullAccess');
+                        $roleUpdateAccess = $auth->createTask($ucName.'UpdateAccess');
+                        $rolePrivateUpdateAccess = $auth->createTask($ucName.'PrivateUpdateAccess');
+                        $roleBasicAccess = $auth->createTask($ucName.'BasicAccess');
+                        $roleReadOnlyAccess = $auth->createTask($ucName.'ReadOnlyAccess');
+                        $rolePrivateReadOnlyAccess = $auth->createTask($ucName.'PrivateReadOnlyAccess');
+                        $roleMinimumRequirements = $auth->createTask($ucName.'MinimumRequirements');
+
+                        // Private Task Definitions
+                        $rolePrivateDelete = $auth->createTask($ucName.'DeletePrivate', 'Delete their own records', $authRule);
+                        $rolePrivateDelete->addChild($ucName.'Delete');
+                        $rolePrivateDelete->addChild($ucName.'DeleteNote');
+                        $rolePrivateUpdate = $auth->createTask($ucName.'UpdatePrivate', 'Update their own records', $authRule);
+                        $rolePrivateUpdate->addChild($ucName.'Update');
+                        $rolePrivateView = $auth->createTask($ucName.'ViewPrivate', 'View their own record', $authRule);
+                        $rolePrivateView->addChild($ucName.'View');
+
+                        // Guest Requirements
+                        $guestSite->addChild($ucName.'GetItems');
+
+                        // Minimum Requirements
+                        $roleMinimumRequirements->addChild($ucName.'Index');
+                        $roleMinimumRequirements->addChild($ucName.'GetTerms');
+                        $roleMinimumRequirements->addChild($ucName.'Search');
+
+                        // Read Only
+                        $roleReadOnlyAccess->addChild($ucName.'MinimumRequirements');
+                        $roleReadOnlyAccess->addChild($ucName.'View');
+
+                        // Private Read Only
+                        $rolePrivateReadOnlyAccess->addChild($ucName.'MinimumRequirements');
+                        $rolePrivateReadOnlyAccess->addChild($ucName.'ViewPrivate');
+
+                        // Basic Access
+                        $roleBasicAccess->addChild($ucName.'ReadOnlyAccess');
+                        $roleBasicAccess->addChild($ucName.'Create');
+
+                        // Update Access
+                        $roleUpdateAccess->addChild($ucName.'BasicAccess');
+                        $roleUpdateAccess->addChild($ucName.'Update');
+
+                        // Private Update Access
+                        $rolePrivateUpdateAccess->addChild($ucName.'BasicAccess');
+                        $rolePrivateUpdateAccess->addChild($ucName.'UpdatePrivate');
+
+                        // Full Access
+                        $roleFullAccess->addChild($ucName.'UpdateAccess');
+                        $roleFullAccess->addChild($ucName.'Delete');
+                        $roleFullAccess->addChild($ucName.'DeleteNote');
+
+                        // Private Full Access
+                        $rolePrivateFullAccess->addChild($ucName.'PrivateUpdateAccess');
+                        $rolePrivateFullAccess->addChild($ucName.'DeletePrivate');
+
+                        // Admin Access
+                        $roleAdminAccess->addChild($ucName.'FullAccess');
+                        $roleAdminAccess->addChild($ucName.'Admin');
+
+                        $defaultRole = $auth->getAuthItem('DefaultRole');
+                        $defaultRole->removeChild($ucName.'Index');
+                        $defaultRole->addChild($ucName.'UpdateAccess');
+                        $adminRole = $auth->getAuthItem('administrator');
+                        $adminRole->removeChild($ucName.'Admin');
+                        $adminRole->addChild($ucName.'AdminAccess');
+                        $status[$moduleName]['messages'][]=Yii::t('admin','Permissions configuration complete.');
+                    }
+                    if($updateFlag){
+                        include('protected/modules/'.$moduleName.'/'.$moduleName.'Config.php');
+                        $this->createSkeletonDirectories($moduleName);
+                        $this->writeConfig($moduleConfig['title'], $moduleConfig['moduleName'], $moduleConfig['recordName']);
+                        $status[$moduleName]['messages'][]=Yii::t('admin','Module files updated to the latest version.');
+                    }
+                }
+            }
+            $authCache = Yii::app()->authCache;
+            if(isset($authCache))
+                $authCache->clear();
+        }
+        $this->render('convertCustomModules',array(
+            'status'=>$status,
+        ));
+    }
+
     /**
      * Creates a new custom module.
      *
@@ -2151,11 +2332,6 @@ class AdminController extends Controller {
                     $moduleRecord->toggleable = 1;
                     $moduleRecord->menuPosition = Modules::model()->count();
                     $moduleRecord->save();
-                    $auth = Yii::app()->authManager;
-                    $auth->createOperation(ucfirst($moduleName).'Index');
-                    $auth->addItemChild('DefaultRole', ucfirst($moduleName).'Index');
-                    $auth->createOperation(ucfirst($moduleName).'Admin');
-                    $auth->addItemChild('administrator', ucfirst($moduleName).'Admin');
                     $this->redirect(array('/'.$moduleName.'/index'));
                 }
             }
@@ -2195,10 +2371,92 @@ class AdminController extends Controller {
             $command = Yii::app()->db->createCommand($sql);
             $command->execute();
         }
+        $ucName = $moduleTitle;
+        $auth = Yii::app()->authManager;
+        $authRule = "return Yii::app()->user->getName()==\$params['assignedTo'];";
+        $guestSite = $auth->getAuthItem('GuestSiteFunctionsTask');
+        $auth->createOperation($ucName.'GetItems');  // Guest Access
+        $auth->createOperation($ucName.'View');  // Read Only
+        $auth->createOperation($ucName.'Create');  // Basic Access
+        $auth->createOperation($ucName.'Update');  // Update Access
+        $auth->createOperation($ucName.'Index');  // Minimum Requirements
+        $auth->createOperation($ucName.'Admin');  // Admin Access
+        $auth->createOperation($ucName.'Delete');  // Full Access
+        $auth->createOperation($ucName.'GetTerms');  // Minimum Requirements
+        $auth->createOperation($ucName.'DeleteNote');  // Full Access
+        $auth->createOperation($ucName.'Search');  // Minimum Requirements
+        // Access Group Definitions
+        $roleAdminAccess = $auth->createTask($ucName.'AdminAccess');
+        $roleFullAccess = $auth->createTask($ucName.'FullAccess');
+        $rolePrivateFullAccess = $auth->createTask($ucName.'PrivateFullAccess');
+        $roleUpdateAccess = $auth->createTask($ucName.'UpdateAccess');
+        $rolePrivateUpdateAccess = $auth->createTask($ucName.'PrivateUpdateAccess');
+        $roleBasicAccess = $auth->createTask($ucName.'BasicAccess');
+        $roleReadOnlyAccess = $auth->createTask($ucName.'ReadOnlyAccess');
+        $rolePrivateReadOnlyAccess = $auth->createTask($ucName.'PrivateReadOnlyAccess');
+        $roleMinimumRequirements = $auth->createTask($ucName.'MinimumRequirements');
+
+        // Private Task Definitions
+        $rolePrivateDelete = $auth->createTask($ucName.'DeletePrivate', 'Delete their own records', $authRule);
+        $rolePrivateDelete->addChild($ucName.'Delete');
+        $rolePrivateDelete->addChild($ucName.'DeleteNote');
+        $rolePrivateUpdate = $auth->createTask($ucName.'UpdatePrivate', 'Update their own records', $authRule);
+        $rolePrivateUpdate->addChild($ucName.'Update');
+        $rolePrivateView = $auth->createTask($ucName.'ViewPrivate', 'View their own record', $authRule);
+        $rolePrivateView->addChild($ucName.'View');
+
+        // Guest Requirements
+        $guestSite->addChild($ucName.'GetItems');
+
+        // Minimum Requirements
+        $roleMinimumRequirements->addChild($ucName.'Index');
+        $roleMinimumRequirements->addChild($ucName.'GetTerms');
+        $roleMinimumRequirements->addChild($ucName.'Search');
+
+        // Read Only
+        $roleReadOnlyAccess->addChild($ucName.'MinimumRequirements');
+        $roleReadOnlyAccess->addChild($ucName.'View');
+
+        // Private Read Only
+        $rolePrivateReadOnlyAccess->addChild($ucName.'MinimumRequirements');
+        $rolePrivateReadOnlyAccess->addChild($ucName.'ViewPrivate');
+
+        // Basic Access
+        $roleBasicAccess->addChild($ucName.'ReadOnlyAccess');
+        $roleBasicAccess->addChild($ucName.'Create');
+
+        // Update Access
+        $roleUpdateAccess->addChild($ucName.'BasicAccess');
+        $roleUpdateAccess->addChild($ucName.'Update');
+
+        // Private Update Access
+        $rolePrivateUpdateAccess->addChild($ucName.'BasicAccess');
+        $rolePrivateUpdateAccess->addChild($ucName.'UpdatePrivate');
+
+        // Full Access
+        $roleFullAccess->addChild($ucName.'UpdateAccess');
+        $roleFullAccess->addChild($ucName.'Delete');
+        $roleFullAccess->addChild($ucName.'DeleteNote');
+
+        // Private Full Access
+        $rolePrivateFullAccess->addChild($ucName.'PrivateUpdateAccess');
+        $rolePrivateFullAccess->addChild($ucName.'DeletePrivate');
+
+        // Admin Access
+        $roleAdminAccess->addChild($ucName.'FullAccess');
+        $roleAdminAccess->addChild($ucName.'Admin');
+
+        $defaultRole = $auth->getAuthItem('DefaultRole');
+        $defaultRole->removeChild($ucName.'Index');
+        $defaultRole->addChild($ucName.'UpdateAccess');
+        $adminRole = $auth->getAuthItem('administrator');
+        $adminRole->removeChild($ucName.'Admin');
+        $adminRole->addChild($ucName.'AdminAccess');
     }
 
     private function deleteTable($moduleName){
         $moduleTitle = ucfirst($moduleName);
+        $ucName = $moduleTitle;
         $sqlList = array(
             'DROP TABLE IF EXISTS `x2_'.$moduleName.'`',
             'DELETE FOM x2_fields WHERE modelName="'.$moduleTitle.'"',
@@ -2207,6 +2465,26 @@ class AdminController extends Controller {
             $command = Yii::app()->db->createCommand($sql);
             $command->execute();
         }
+        $auth = Yii::app()->authManager;
+        $auth->removeAuthItem($ucName.'GetItems');
+        $auth->removeAuthItem($ucName.'View');
+        $auth->removeAuthItem($ucName.'Create');
+        $auth->removeAuthItem($ucName.'Update');
+        $auth->removeAuthItem($ucName.'Index');
+        $auth->removeAuthItem($ucName.'Admin');
+        $auth->removeAuthItem($ucName.'Delete');
+        $auth->removeAuthItem($ucName.'GetTerms');
+        $auth->removeAuthItem($ucName.'DeleteNote');
+        $auth->removeAuthItem($ucName.'Search');
+        $auth->removeAuthItem($ucName.'AdminAccess');
+        $auth->removeAuthItem($ucName.'FullAccess');
+        $auth->removeAuthItem($ucName.'PrivateFullAccess');
+        $auth->removeAuthItem($ucName.'UpdateAccess');
+        $auth->removeAuthItem($ucName.'PrivateUpdateAccess');
+        $auth->removeAuthItem($ucName.'BasicAccess');
+        $auth->removeAuthItem($ucName.'ReadOnlyAccess');
+        $auth->removeAuthItem($ucName.'PrivateReadOnlyAccess');
+        $auth->removeAuthItem($ucName.'MinimumRequirements');
     }
 
     /**
@@ -2238,17 +2516,17 @@ class AdminController extends Controller {
             'register.php',
             'templatesConfig.php',
             'TemplatesModule.php',
-            'controllers/DefaultController.php',
+            'controllers/TemplatesController.php',
             'data/install.sql',
             'data/uninstall.sql',
             'models/Templates.php',
-            'views/default/_search.php',
-            'views/default/_view.php',
-            'views/default/admin.php',
-            'views/default/create.php',
-            'views/default/index.php',
-            'views/default/update.php',
-            'views/default/view.php',
+            'views/templates/_search.php',
+            'views/templates/_view.php',
+            'views/templates/admin.php',
+            'views/templates/create.php',
+            'views/templates/index.php',
+            'views/templates/update.php',
+            'views/templates/view.php',
         );
 
         foreach($fileNames as $fileName){
@@ -2272,6 +2550,11 @@ class AdminController extends Controller {
 
             if($file->setContents($contents) === false)
                 throw new Exception('Error modifying template file "'.$newFileName.'".');
+        }
+        if(!is_dir('protected/modules/'.$moduleName.'/views/'.$moduleName)){
+            rename('protected/modules/'.$moduleName.'/views/templates', 'protected/modules/'.$moduleName.'/views/'.$moduleName);
+        }else{
+            FileUtil::ccopy('protected/modules/'.$moduleName.'/views/templates', 'protected/modules/'.$moduleName.'/views/'.$moduleName);
         }
     }
 
@@ -2353,10 +2636,30 @@ class AdminController extends Controller {
                     X2Model::model('Fields')->updateAll(array('linkType' => null, 'type' => 'varchar'), "linkType='$moduleName'");
                     X2Model::model('FormLayout')->deleteAllByAttributes(array('model' => $moduleName));
                     $auth = Yii::app()->authManager;
-                    $auth->removeAuthItem(ucfirst($moduleName).'Index');
-                    $auth->removeAuthItem(ucfirst($moduleName).'Admin');
-                    $auth->removeItemChild('DefaultRole', ucfirst($moduleName).'Index');
-                    $auth->removeItemChild('administrator', ucfirst($moduleName).'Admin');
+                    $auth = Yii::app()->authManager;
+                    $ucName = ucfirst($moduleName);
+                    $auth->removeAuthItem($ucName.'GetItems');
+                    $auth->removeAuthItem($ucName.'View');
+                    $auth->removeAuthItem($ucName.'Create');
+                    $auth->removeAuthItem($ucName.'Update');
+                    $auth->removeAuthItem($ucName.'Index');
+                    $auth->removeAuthItem($ucName.'Admin');
+                    $auth->removeAuthItem($ucName.'Delete');
+                    $auth->removeAuthItem($ucName.'GetTerms');
+                    $auth->removeAuthItem($ucName.'DeleteNote');
+                    $auth->removeAuthItem($ucName.'Search');
+                    $auth->removeAuthItem($ucName.'AdminAccess');
+                    $auth->removeAuthItem($ucName.'FullAccess');
+                    $auth->removeAuthItem($ucName.'PrivateFullAccess');
+                    $auth->removeAuthItem($ucName.'UpdateAccess');
+                    $auth->removeAuthItem($ucName.'PrivateUpdateAccess');
+                    $auth->removeAuthItem($ucName.'BasicAccess');
+                    $auth->removeAuthItem($ucName.'ReadOnlyAccess');
+                    $auth->removeAuthItem($ucName.'PrivateReadOnlyAccess');
+                    $auth->removeAuthItem($ucName.'MinimumRequirements');
+                    $auth->removeAuthItem($ucName.'ViewPrivate');
+                    $auth->removeAuthItem($ucName.'UpdatePrivate');
+                    $auth->removeAuthItem($ucName.'DeletePrivate');
 
                     FileUtil::rrmdir('protected/modules/'.$moduleName);
                 }else{

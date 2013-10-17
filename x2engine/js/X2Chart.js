@@ -72,7 +72,13 @@ function X2Chart (argsDict) {
 	
 	thisX2Chart.setUpSettingsUI ();
 
-	x2[thisX2Chart.chartType].windowResizeFunction = X2Chart.x2ChartResize (thisX2Chart);
+    if (Modernizr.canvas) {
+	    x2[thisX2Chart.chartType].windowResizeFunction = X2Chart.x2ChartResize (thisX2Chart);
+    } else {
+	    x2[thisX2Chart.chartType].windowResizeFunction = 
+            X2Chart.x2ChartNoCanvasResize (thisX2Chart);
+    }
+
 	// redraw graph on window resize
 	$(window).on ('resize', x2[thisX2Chart.chartType].windowResizeFunction);
 }
@@ -89,6 +95,22 @@ X2Chart.MSPERWEEK = 7 * 86400 * 1000;
 /************************************************************************************
 Static Methods
 ************************************************************************************/
+
+
+X2Chart.x2ChartNoCanvasResize = function (thisX2Chart) {
+    var chartTarget = 
+        $('#' + thisX2Chart.chartType + '-chart-container').find ('.chart.jqplot-target');
+    return function () {
+        thisX2Chart.DEBUG && console.log ('resize');
+        if ($('#' + thisX2Chart.chartType + '-chart-container').is (':visible') && 
+            thisX2Chart.feedChart !== null && !x2.isAndroid && !x2.isIPad) {
+            $(chartTarget).width ($('#' + thisX2Chart.chartType + '-chart-container').width ()); 
+            thisX2Chart.DEBUG && console.log (thisX2Chart.feedChart);
+            thisX2Chart.feedChart.replot ({ resetAxes: false });
+        }
+    };
+};
+
 
 X2Chart.x2ChartResize = function (thisX2Chart) {
     return function () {
@@ -377,6 +399,10 @@ X2Chart.plotPieData = function (args /* optional */) {
 	
 		thisX2Chart.buildChartLegend (filteredTypes, typesText, filteredColors);
 	}
+
+    if (!Modernizr.canvas) {
+        thisX2Chart.resizeChartNoCanvas ();
+    }
 };
 
 
@@ -396,17 +422,6 @@ X2Chart.setupPieTooltipBehavior = function (
 	thisX2Chart.DEBUG && console.log (chartData.toString ());
 
 	thisX2Chart.DEBUG && console.log ('setupTooltipBehavior');
-
-	// remove trailing 'px'
-	function rStripPx (str) {
-		return str.replace (/px$/, '');
-	}
-
-	// convert css value in pixels to an int
-	function pxToInt (str) {
-		return parseInt (rStripPx (str), 10);
-
-	}
 
     // returns an array containing the x and y coordinate of the center of the pie chart
 	function getPieCenter () {
@@ -488,8 +503,8 @@ X2Chart.setupPieTooltipBehavior = function (
 				var marginLeft = 0;
 				if (tooltipLoc[0] < pieCenter[0]) {
 					marginLeft = 
-						- (pxToInt ($(tooltip).css ('width')) + 
-						   2 * pxToInt ($(tooltip).css ('padding')));
+						- (auxlib.pxToInt ($(tooltip).css ('width')) + 
+						   2 * auxlib.pxToInt ($(tooltip).css ('padding')));
 				}
 				return marginLeft;
 			}
@@ -809,6 +824,9 @@ X2Chart.plotLineData = function (args /* optional */) {
 	    thisX2Chart.buildChartLegend (types, typesTextDict, color);
     }
 
+    if (!Modernizr.canvas) {
+        thisX2Chart.resizeChartNoCanvas ();
+    }
 
 };
 
@@ -830,17 +848,6 @@ X2Chart.setupLineTooltipBehavior = function (
 	// bypass bug in jqplot
 	for (var i in thisX2Chart.feedChart.series) {
 		thisX2Chart.feedChart.series[i].highlightMouseOver = true;
-	}
-
-	// remove trailing 'px'
-	function rStripPx (str) {
-		return str.replace (/px$/, '');
-	}
-
-	// convert css value in pixels to an int
-	function pxToInt (str) {
-		return parseInt (rStripPx (str), 10);
-
 	}
 
 	// create a data structure to optimize searching for points by x value
@@ -895,7 +902,7 @@ X2Chart.setupLineTooltipBehavior = function (
 					labelFormat, data[0], isFirstPoint, isLastPoint));
 
 			$(tooltip).html ($('<span>', {
-				class: 'chart-tooltip-date',
+				'class': 'chart-tooltip-date',
 				text: thisX2Chart.getTooltipFormattedLabel (
 					labelFormat, data[0], isFirstPoint, isLastPoint)
 			}));
@@ -931,17 +938,19 @@ X2Chart.setupLineTooltipBehavior = function (
 			var marginLeft, marginRight;
 			marginLeft = 11;
 			marginTop = 11;
-			if (pointXPrev + pxToInt ($(tooltip).css ('width')) >
-				chartLeft + pxToInt ($('#' + thisX2Chart.chartType + '-chart').css ('width'))) {
+			if (pointXPrev + auxlib.pxToInt ($(tooltip).css ('width')) >
+				chartLeft + auxlib.pxToInt ($('#' + thisX2Chart.chartType + '-chart').
+                    css ('width'))) {
 				thisX2Chart.DEBUG && console.log ('xoverflow');
 				marginLeft = 
-					- (pxToInt ($(tooltip).css ('width')) + marginLeft);
+					- (auxlib.pxToInt ($(tooltip).css ('width')) + marginLeft);
 			}
-			if (pointYPrev + pxToInt ($(tooltip).css ('height')) >
-				chartTop + pxToInt ($('#' + thisX2Chart.chartType + '-chart').css ('height'))) {
+			if (pointYPrev + auxlib.pxToInt ($(tooltip).css ('height')) >
+				chartTop + auxlib.pxToInt ($('#' + thisX2Chart.chartType + '-chart').
+                    css ('height'))) {
 				thisX2Chart.DEBUG && console.log ('yoverflow');
 				marginTop = 
-					- (pxToInt ($(tooltip).css ('height')) + marginTop);
+					- (auxlib.pxToInt ($(tooltip).css ('height')) + marginTop);
 			}
 
 			$(tooltip).css ({
@@ -1253,18 +1262,20 @@ X2Chart.prototype.setChartSubtype = function (chartSubtype, plot, uiSetUp, force
 	uiSetUp = typeof uiSetUp === 'undefined' ? true : uiSetUp;
 	force = typeof force === 'undefined' ? true : force;
 
-	if (chartSubtype === thisX2Chart.chartSubtype && !force) return;
+    var diffChartSubtype = chartSubtype !== thisX2Chart.chartSubtype;
+	if (!diffChartSubtype && !force) return;
+
 	thisX2Chart.chartSubtype = chartSubtype;
 	
 	if (chartSubtype === 'line') {
-		thisX2Chart.pieChartTearDown (uiSetUp);
+		if (diffChartSubtype) thisX2Chart.pieChartTearDown (uiSetUp);
 		X2Chart.prototype.plotData = X2Chart.plotLineData;
 		X2Chart.prototype.getJqplotConfig = X2Chart.getJqplotLineConfig;
 		X2Chart.prototype.groupChartData = X2Chart.groupLineChartData;
 		X2Chart.prototype.setupTooltipBehavior = X2Chart.setupLineTooltipBehavior;
 		thisX2Chart.postLineChartSetUp ();
 	} else if (chartSubtype === 'pie') {
-		thisX2Chart.lineChartTearDown ();
+		if (diffChartSubtype) thisX2Chart.lineChartTearDown ();
 		X2Chart.prototype.plotData = X2Chart.plotPieData;
 		X2Chart.prototype.getJqplotConfig = X2Chart.getJqplotPieConfig;
 		X2Chart.prototype.groupChartData = X2Chart.groupPieChartData;
@@ -2763,11 +2774,11 @@ X2Chart.prototype.buildChartLegend = function (types, typesText, color) {
 		thisX2Chart.DEBUG && console.log ($(currRow));
 			currCell = $('<td>').append (
 				$('<div>', {
-					class: 'chart-color-swatch'
+					'class': 'chart-color-swatch'
 				}),
 				$('<span>', {
 					text: typesText[types[i]],
-					class: 'chart-color-label'
+					'class': 'chart-color-label'
 				})
 			)
 		thisX2Chart.DEBUG && console.log ('setting background-color to ' + color[i]);
@@ -3351,7 +3362,7 @@ X2Chart.prototype.setUpChartSettings = function () {
 					auxlib.destroyErrorBox (
 						$('#' + thisX2Chart.chartType + '-create-chart-setting-dialog'));
 
-					var errMsgs = Object.keys (respObj).map (function (key) { 
+					var errMsgs = auxlib.keys (respObj).map (function (key) { 
 							return respObj[key]; 
 						});
 					var errorBox = auxlib.createErrorBox ('', errMsgs);
@@ -3438,7 +3449,7 @@ X2Chart.prototype.setUpChartSettings = function () {
 					{ 
 						text: thisX2Chart.translations['Create'],
 						click: clickChartSettingCreateButton,
-						class: 'dialog-save-button'
+						'class': 'dialog-save-button'
 					},
 					{ 
 						text: thisX2Chart.translations['Cancel'],
@@ -3446,7 +3457,7 @@ X2Chart.prototype.setUpChartSettings = function () {
 							$('#' + thisX2Chart.chartType + '-create-chart-setting-dialog').
 								dialog ("close");
 						},
-						class: 'highlight dialog-cancel-button'
+						'class': 'highlight dialog-cancel-button'
 					}
 				],
 				close: function (event, ui) {
@@ -3528,9 +3539,20 @@ Show the chart
 */
 X2Chart.prototype.show = function () {
 	var thisX2Chart = this;
-
+    x2.DEBUG && console.log ('X2Chart.show');
 	$('#' + thisX2Chart.chartType + '-chart-container').show ();
 	$.cookie (thisX2Chart.cookiePrefix + 'chartIsShown', true);
+
+};
+
+/*
+Used to stretch chart width to size of container when canvas is not supported by browser
+*/
+X2Chart.prototype.resizeChartNoCanvas = function (thisX2Chart) {
+    var thisX2Chart = this;
+    var chartTarget = 
+        $('#' + thisX2Chart.chartType + '-chart-container').find ('.chart.jqplot-target');
+    $(chartTarget).width ($('#' + thisX2Chart.chartType + '-chart-container').width ()); 
 };
 
 /*
@@ -3539,8 +3561,12 @@ Replot the chart
 X2Chart.prototype.replot = function () {
 	var thisX2Chart = this;
 
-	if (thisX2Chart.feedChart !== null)
+	if (thisX2Chart.feedChart !== null) {
+        if (!Modernizr.canvas) {
+            thisX2Chart.resizeChartNoCanvas ();
+        }
 		thisX2Chart.feedChart.replot ({ resetAxes: false });
+    }
 };
 
 /*

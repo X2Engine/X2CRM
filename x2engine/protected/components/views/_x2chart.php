@@ -46,6 +46,7 @@ if ($chartType === 'usersChart' || $chartType === 'eventsChart') {
     Yii::app()->clientScript->registerCoreScript('jquery.ui');
     Yii::app()->clientScript->packages = X2WidgetList::packages ();
     Yii::app()->clientScript->registerPackage('ChartWidgetExtJS');
+    Yii::app()->clientScript->registerPackage('ChartWidgetExtCss');
     Yii::app()->clientScript->registerPackage('ChartWidgetCss');
 }
 
@@ -72,19 +73,19 @@ if (isset ($subtype)) {
 
 if ($chartType === 'eventsChart') {
     $passVarsToClientScript .= "
-        x2.".$chartType.".params.userNames = Object.keys (".CJSON::encode ($userNames).");
-        x2.".$chartType.".params.socialSubtypes = Object.keys (".
+        x2.".$chartType.".params.userNames = auxlib.keys (".CJSON::encode ($userNames).");
+        x2.".$chartType.".params.socialSubtypes = auxlib.keys (".
             CJSON::encode ($socialSubtypes).");
-        x2.".$chartType.".params.visibilityTypes = Object.keys ("
+        x2.".$chartType.".params.visibilityTypes = auxlib.keys ("
             .CJSON::encode ($visibilityFilters).");
     ";
 } else if ($chartType === 'usersChart') {
     $passVarsToClientScript .= "
-        x2.".$chartType.".params.socialSubtypes = Object.keys (".
+        x2.".$chartType.".params.socialSubtypes = auxlib.keys (".
             CJSON::encode ($socialSubtypes).");
-        x2.".$chartType.".params.visibilityTypes = Object.keys ("
+        x2.".$chartType.".params.visibilityTypes = auxlib.keys ("
             .CJSON::encode ($visibilityFilters).");
-        x2.".$chartType.".params.eventTypes = Object.keys ("
+        x2.".$chartType.".params.eventTypes = auxlib.keys ("
             .CJSON::encode ($eventTypes).");
     ";
 }
@@ -308,7 +309,7 @@ Yii::app()->clientScript->registerScript(
             <a href="#" id="<?php echo $chartType; ?>-week-bin-size" class="week-bin-size x2-button">
                 <?php echo Yii::t('app', 'Per Week'); ?>
             </a>
-            <a href="#" id="<?php echo $chartType; ?>-month-bin-size" class="month-bin-size x2-button">
+            <a href="#" id="<?php echo $chartType; ?>-month-bin-size" class="month-bin-size x2-button x2-last-child">
                 <?php echo Yii::t('app', 'Per Month'); ?>
             </a>
         </div>

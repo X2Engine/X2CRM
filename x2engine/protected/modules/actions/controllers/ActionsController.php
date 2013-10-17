@@ -311,7 +311,6 @@ class ActionsController extends x2base {
 
         if(isset($_POST['Actions'])){
             $model->setX2Fields($_POST['Actions']);
-            $model->actionDescription = $_POST['Actions']['actionDescription'];
             if($model->save()){
                 if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
                     $notif = new Notification;
@@ -437,7 +436,6 @@ class ActionsController extends x2base {
             if(!empty($model->type))
                 $model->disableBehavior('changelog');
 
-            $model->actionDescription = $_POST['Actions']['actionDescription'];
             if($model->save()){ // action saved to database *
                 if(isset($event)){
                     $event->associationId = $model->id;
@@ -567,7 +565,6 @@ class ActionsController extends x2base {
                         $notif2->save();
                     }
                 }
-                $model->actionDescription = $_POST['Actions']['actionDescription'];
                 $model->syncGoogleCalendar('update');
                 if(isset($_GET['redirect']) && $model->associationType != 'none'){ // if the action has an association
                     if($model->associationType == 'product' || $model->associationType == 'products')
@@ -609,7 +606,6 @@ class ActionsController extends x2base {
         $model = $this->loadModel($id);
         if(isset($_POST['Actions'])){
             $model->setX2Fields($_POST['Actions']);
-            $model->actionDescription = $_POST['Actions']['actionDescription'];
 
             $model->dueDate = Formatter::parseDateTime($model->dueDate);
             if($model->completeDate){
@@ -644,30 +640,6 @@ class ActionsController extends x2base {
      */
     public function actionUncompleteSelected(){
         $this->updateSelected('uncomplete');
-    }
-
-    /**
-     * Updates several actions at once (complete, uncomplete)
-     * @param string $operation the type of update happening
-     */
-    protected function updateSelected($operation){
-        if(isset($_POST['actionIds']) && is_array($_POST['actionIds'])){
-            foreach(CActiveRecord::model('Actions')->findAllByPk($_POST['actionIds']) as $action){
-                if($action === null)
-                    continue;
-
-                $inGroup = false;
-                if(ctype_digit((string) $action->assignedTo)) // we have an action assigned to a group? Then check if we are in the group
-                    $inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
-
-                if(Yii::app()->user->getName() == $action->assignedTo || $action->assignedTo == 'Anyone' || $action->assignedTo == '' || $inGroup || Yii::app()->params->isAdmin){ // make sure current user can edit this action
-                    if($operation === 'complete')
-                        $action->complete();  // $this->completeNotification('admin',$action->id);
-                    elseif($operation === 'uncomplete')
-                        $action->uncomplete();
-                }
-            }
-        }
     }
 
     public function actionSaveShowActions(){
@@ -1027,6 +999,11 @@ class ActionsController extends x2base {
         return $model;
     }
 
+
+    /***********************************************************************
+    * protected static methods
+    ***********************************************************************/
+
     /**
      * Performs the AJAX validation.
      * @param CModel the model to be validated
@@ -1035,6 +1012,30 @@ class ActionsController extends x2base {
         if(isset($_POST['ajax']) && $_POST['ajax'] === 'actions-form'){
             echo CActiveForm::validate($model);
             Yii::app()->end();
+        }
+    }
+
+    /**
+     * Updates several actions at once (complete, uncomplete)
+     * @param string $operation the type of update happening
+     */
+    protected function updateSelected($operation){
+        if(isset($_POST['actionIds']) && is_array($_POST['actionIds'])){
+            foreach(CActiveRecord::model('Actions')->findAllByPk($_POST['actionIds']) as $action){
+                if($action === null)
+                    continue;
+
+                $inGroup = false;
+                if(ctype_digit((string) $action->assignedTo)) // we have an action assigned to a group? Then check if we are in the group
+                    $inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
+
+                if(Yii::app()->user->getName() == $action->assignedTo || $action->assignedTo == 'Anyone' || $action->assignedTo == '' || $inGroup || Yii::app()->params->isAdmin){ // make sure current user can edit this action
+                    if($operation === 'complete')
+                        $action->complete();  // $this->completeNotification('admin',$action->id);
+                    elseif($operation === 'uncomplete')
+                        $action->uncomplete();
+                }
+            }
         }
     }
 

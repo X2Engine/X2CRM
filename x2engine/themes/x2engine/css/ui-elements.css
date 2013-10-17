@@ -321,6 +321,8 @@ small x2-button
 	-webkit-border-radius: 	3px 0 0 3px;
 	-o-border-radius: 		3px 0 0 3px;
 }
+
+.x2-button-group .x2-button.x2-last-child,
 .x2-button-group .x2-button:last-child {
 	border-right-width: 1px;
 	border-radius: 			0 3px 3px 0;
@@ -328,6 +330,15 @@ small x2-button
 	-webkit-border-radius: 	0 3px 3px 0;
 	-o-border-radius: 		0 3px 3px 0;
 }
+
+.x2-button-group .x2-button.x2-last-child {
+	border-right-width: 1px;
+	border-radius: 			0 3px 3px 0;
+	-moz-border-radius: 		0 3px 3px 0;
+	-webkit-border-radius: 	0 3px 3px 0;
+	-o-border-radius: 		0 3px 3px 0;
+}
+
 .portlet-content .x2-button-group {
     margin: 0;
 }

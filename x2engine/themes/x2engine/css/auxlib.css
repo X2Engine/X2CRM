@@ -34,7 +34,14 @@
  *****************************************************************************************/
 
 
-.feedback-container {
+
+.auxlib-error-box-msg {
+    color: red;
+    margin-left: 4px;
+}
+
+.feedback-container,
+.auxlib-error-msg-container {
     margin-top: 0px;
     text-align: left;
     margin-bottom: 0;
@@ -42,7 +49,8 @@
     margin-left: 4px;
 }
 
-.feedback-container span {
+.feedback-container span,
+.auxlib-error-msg-container {
     margin-bottom: 0;
     padding: 0 0 0 0;
 }

@@ -79,16 +79,26 @@ $this->widget('application.components.X2GridView', array(
 	'id'=>'services-grid',
 	'title'=>Yii::t('services','Service Cases'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> '<div class="page-title icon services">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
+	'template'=> 
+        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
+        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
+        '<div id="x2-gridview-page-title" '.
+         'class="page-title icon services x2-gridview-fixed-title">'.
+        '{title}{buttons}{filterHint}'.
+        
+        '{summary}{items}{pager}',
+    'fixedHeader'=>true,
 	'dataProvider'=>$model->searchWithStatusFilter(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
+	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
 	// 'columns'=>$columns,
 	'modelName'=>'Services',
 	'viewName'=>'services',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
+        'gvCheckbox' => 30,
 		'id' => 43,
 		'impact' => 80,
 		'status' => 233,

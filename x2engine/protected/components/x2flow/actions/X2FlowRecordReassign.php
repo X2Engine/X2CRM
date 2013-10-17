@@ -66,13 +66,36 @@ class X2FlowRecordReassign extends X2FlowAction {
 	}
 
 	public function execute(&$params) {
+        $model = $params['model'];
+        if(!$model->hasAttribute('assignedTo')) {
+            return array (
+                false, 
+                Yii::t('studio', 
+                    get_class ($model) . ' records have no attribute "assignedTo"')
+            );
+        }
+
 		$user = $this->parseOption('user',$params);
 		if($user === 'auto')
 			$assignedTo = $this->getNextAssignee();
 		elseif(CActiveRecord::model('User')->exists('username=?',array($user)))	// make sure the user exists
 			$assignedTo = $user;
 		else
-			return false;
-		return $params['model']->updateByPk($params['model']->id,array('assignedTo'=>$assignedTo));
+            return array (false, Yii::t('studio', 'User ' . $user . ' does not exist' ));
+
+		if ($model->updateByPk(
+            $model->id,array('assignedTo'=>$assignedTo))) {
+
+		    if(is_subclass_of($model,'X2Model')) {
+                return array (
+                    true, 
+                    Yii::t('studio', 'View updated record: ').$model->getLink ()
+                );
+            } else {
+                return array (true, "");
+            }
+        } else {
+            return array (false, "");
+        }
 	}
 }

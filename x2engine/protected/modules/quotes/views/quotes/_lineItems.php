@@ -461,7 +461,7 @@ if (YII_DEBUG && $debug) {
         $("<img>", {src: x2.quotes.arrowBothImageSource, 'class': 'handle arrow-both-handle'})
       );
     }
-    $inputCell = lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
+    $inputCell = lineItemRow.append ($("<td>", {'class': 'x2-2nd-child input-cell'}).append (
       $("<input>", {
         type: 'text',
         'class': 'line-item-field product-name',
@@ -474,28 +474,28 @@ if (YII_DEBUG && $debug) {
         $("<button>", {'class': 'product-select-button', 'type': 'button'}).append (
           $("<img>", { src: x2.quotes.arrowDownImageSource })));
     }
-    lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
+    lineItemRow.append ($("<td>", {'class': 'x2-3rd-child input-cell'}).append (
       $("<input>", {
         type: 'text',
         'class': 'line-item-field price',
         value: values['price'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][price]' }))
     );
-    lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
+    lineItemRow.append ($("<td>", {'class': 'x2-4th-child input-cell'}).append (
       $("<input>", {
         type: 'text',
         'class': 'line-item-field quantity',
         value: values['quantity'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][quantity]' }))
     );
-    lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
+    lineItemRow.append ($("<td>", {'class': 'x2-5th-child input-cell'}).append (
       $("<input>", {
         type: 'text',
         'class': 'line-item-field adjustment',
         value: values['adjustment'][0],
         name: 'lineitem[' + x2.quotes.lineCounter + '][adjustment]' }))
     );
-    lineItemRow.append ($("<td>", {'class': 'input-cell'}).append (
+    lineItemRow.append ($("<td>", {'class': 'x2-6th-child input-cell'}).append (
       $("<input>", {
         type: 'text',
         'class': 'line-item-field description',
@@ -504,7 +504,7 @@ if (YII_DEBUG && $debug) {
         name: 'lineitem[' + x2.quotes.lineCounter + '][description]' }))
     );
     lineItemRow.append ($("<td>", {
-      'class': 'input-cell line-item-field'}).append (
+      'class': 'input-cell line-item-field x2-7th-child'}).append (
         $("<input>", {
           type: 'text',
           'class': 'line-item-total',

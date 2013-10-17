@@ -56,11 +56,26 @@ class X2FlowRecordUpdate extends X2FlowAction {
     }
 
     public function execute(&$params){
-        if(!isset($this->config['attributes']) || empty($this->config['attributes']))
-            return false;
+        if(!isset($this->config['attributes']) || empty($this->config['attributes'])) {
+            return array (
+                false, 
+                Yii::t('studio', "Flow item configuration error: No attributes added"));
+        }
+        $model = $params['model'];
 
-        $this->setModelAttributes($params['model'], $this->config['attributes'], $params);
-        return $params['model']->updateByPk($params['model']->id, $params['model']->attributes);
+        $this->setModelAttributes($model, $this->config['attributes'], $params);
+        if ($model->updateByPk($model->id, $model->attributes)) {
+		    if(is_subclass_of($model,'X2Model')) {
+                return array (
+                    true,
+                    Yii::t('studio', 'View updated record: ').$model->getLink ()
+                );
+            } else {
+                return array (true, "");
+            }
+        } else {
+            return array (false, "");
+        }
     }
 
 }

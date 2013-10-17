@@ -80,7 +80,7 @@ class Admin extends CActiveRecord {
             array('serviceCaseEmailAccount', 'setDefaultEmailAccount', 'alias' => 'serviceCaseEmail'),
 	    array('webLeadEmailAccount','setDefaultEmailAccount','alias' => 'systemResponseEmail'),
 	    array('emailNotificationAccount','setDefaultEmailAccount','alias'=>'systemNotificationEmail'),
-            array('emailSignature', 'length', 'max' => 512),
+            array('emailSignature', 'length', 'max' => 4096),
             array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment,emailDropbox_createContact,emailDropbox_zapLineBreaks,emailDropbox_emptyContact,emailDropbox_logging', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array('emailDropbox_alias', 'length', 'max' => 50),

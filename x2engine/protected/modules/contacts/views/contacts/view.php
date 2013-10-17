@@ -35,13 +35,6 @@
  *****************************************************************************************/
 $this->setPageTitle(empty($model->name) ? $model->firstName." ".$model->lastName : $model->name);
 
-Yii::app()->clientScript->registerCss('contactsViewStyle', '
-	/*.page-title.icon.contacts {
-		position: relative;
-		z-index: 500;
-	}*/
-');
-
 Yii::app()->clientScript->registerScript('hints', '
     $(".hint").qtip();
 ');
@@ -140,12 +133,41 @@ if(!IS_ANDROID && !IS_IPAD){
     <h2><?php echo $model->name; ?></h2>
     <?php $this->renderPartial('_vcrControls', array('model' => $model)); ?>
     <?php
-    echo CHtml::link('<span></span>', '#', array('class' => 'x2-button icon email right', 'onclick' => 'toggleEmailForm(); return false;'));
     if(Yii::app()->user->checkAccess('ContactsUpdate', $authParams)){
-        echo CHtml::link('<span></span>', $this->createUrl('update', array('id' => $model->id)), array('class' => 'x2-button icon edit right'));
-        if(!empty($model->company) && is_numeric($model->company))
-            echo CHtml::link('<span></span>', '#', array('class' => 'x2-button icon sync right hint', 'id' => $model->id.'-account-sync', 'title' => Yii::t('contacts', 'Clicking this button will pull any relevant fields from the associated Account record and overwrite the Contact data for those fields.  This operation cannot be reversed.'), 'submit' => array('syncAccount', 'id' => $model->id), 'confirm' => 'Are you sure you want to overwrite this record\'s fields with relevant Account data?'));
+        if(!empty($model->company) && is_numeric($model->company)) {
+            echo CHtml::link(
+                '<span></span>', '#', 
+                array(
+                    'class' => 'x2-button icon sync right hint', 
+                    'id' => $model->id.'-account-sync', 
+                    'title' => Yii::t('contacts', 'Clicking this button will pull any relevant '.
+                        'fields from the associated Account record and overwrite the Contact '.
+                        'data for those fields.  This operation cannot be reversed.'), 
+                    'submit' => array(
+                        'syncAccount', 
+                        'id' => $model->id
+                    ), 
+                    'confirm' => 'Are you sure you want to overwrite this record\'s fields with '.
+                        'relevant Account data?'
+                )
+            );
+        }
+        echo CHtml::link(
+            '<span></span>', $this->createUrl('update', array('id' => $model->id)), 
+            array(
+                'class' => 'x2-button icon edit right',
+                'title' => Yii::t('app', 'Edit contact'),
+            )
+        );
     }
+    echo CHtml::link(
+        '<span></span>', '#', 
+        array(
+            'class' => 'x2-button icon email right',
+            'title' => Yii::t('app', 'Open email form'),
+            'onclick' => 'toggleEmailForm(); return false;'
+        )
+    );
     ?>
 </div>
 <?php

@@ -487,6 +487,9 @@ $.widget("x2.gvSettings", {
 	prevGvSettings: '',
 	saveGridviewSettingsTimeout: null,
 	tables:$(),
+    _lastCheckedCheckboxId: undefined, // used for multiselect
+    _shiftPressed: false, // used for multiselect
+    _SHIFTWHICH: 16, // used for multiselect
 
 	options: {
 		viewName:'gridView',
@@ -504,7 +507,7 @@ $.widget("x2.gvSettings", {
 	_create: function() {
 
 		var self = this;
-		o = self.options;
+		var o = self.options;
 
 		if(o.ajaxUpdate) {
 			this.element.find('.search-button').click(function() {
@@ -513,17 +516,22 @@ $.widget("x2.gvSettings", {
 			});
 		} else {
 			this.element.after(o.columnSelectorHtml);
-			$('#'+o.columnSelectorId).find('input').bind('change',function() { self._saveColumnSelection(this,self); });
+			$('#'+o.columnSelectorId).find('input').bind('change',function() { 
+                self._saveColumnSelection(this,self); 
+            });
 			// this.element.closest('div.grid-view').find('.column-selector-link').bind('click',function() { self._toggleColumnSelector(this); });
 		}
 			// $('#'+o.columnSelectorId).find('input').bind('change',function() { self._saveColumnSelection(this); });
-			this.element.find('.column-selector-link').bind('mousedown',function() { self._toggleColumnSelector(this,self); });
+			this.element.find('.column-selector-link').bind('mousedown',function() { 
+                self._toggleColumnSelector(this,self); 
+            });
 		// }
 
 		this.tables = this.element.find('table.items');
 
 		this._setupGridviewResizing(self);
 		this._setupGridviewDragging(self);
+		this._setupGridviewChecking(self);
 		this._compareGridviewSettings(self);
 
 		this.element.find('.yiiPager').on('click','a',function() {
@@ -544,6 +552,81 @@ $.widget("x2.gvSettings", {
 			self.tables.eq(0).parent().scrollLeft(self.tables.eq(1).parent().scrollLeft());
 		});
 	},
+
+    /*
+    Set up grid behavior which enables multiselect using shift + check
+    */
+	_setupGridviewChecking:function(self) {
+
+        // check/uncheck all boxes between first and last
+        function checkUncheckAllBetween (check, firstCheckboxId, lastCheckboxId) {
+            x2.DEBUG && console.log ('checkUncheckAllBetween: ' + check + ',' + firstCheckboxId + 
+                ',' + lastCheckboxId);
+
+            self.element.find ('[type="checkbox"]').each (function () {
+                var currCheckboxId = parseInt ($(this).attr ('id').match (/[0-9]+$/));
+                if (currCheckboxId >= firstCheckboxId && currCheckboxId <= lastCheckboxId) {
+                    if (check) {
+                        $(this).attr ('checked', 'checked');
+                    } else {
+                        $(this).removeAttr ('checked');
+                    }
+                }
+            });
+        }
+
+        // checkbox behavior
+        this.element.find ('[type="checkbox"]').on ('change', function () {
+            var checkboxId = parseInt ($(this).attr ('id').match (/[0-9]+$/));
+            if (checkboxId === null) return; // invalid checkbox
+            //x2.DEBUG && console.log ('_setupGridviewChecking: checkboxId = ' + checkboxId);
+            var checked = $(this).is (':checked');
+            //x2.DEBUG && console.log ('_setupGridviewChecking: checked = ' + checked);
+            x2.DEBUG && console.log ('_setupGridviewChecking: checkbox changed: _shiftPressed = ' +
+                self._shiftPressed);
+            if (self._shiftPressed && 
+                ((checked && checkboxId !== self._lastCheckedCheckboxId) || 
+                (!checked && checkboxId !== self._lastUncheckedCheckboxId))) {
+
+                var lastTouched;
+                if (self._lastUncheckedCheckboxId) {
+                    lastTouched = self._lastUncheckedCheckboxId;
+                } else {
+                    lastTouched = self._lastCheckedCheckboxId;
+                }
+
+                var firstCheckboxId, lastCheckboxId;
+                if (checkboxId < lastTouched) {
+                    firstCheckboxId = checkboxId;
+                    lastCheckboxId = lastTouched; 
+                } else { // checkboxId > lastTouched
+                    lastCheckboxId = checkboxId;
+                    firstCheckboxId = lastTouched; 
+                }
+                checkUncheckAllBetween (checked, firstCheckboxId, lastCheckboxId);
+            }
+
+            if (checked) {
+                self._lastCheckedCheckboxId = checkboxId; // save last checked
+                self._lastUncheckedCheckboxId = undefined;
+            } else { // !$(this).is (':checked') 
+                self._lastUncheckedCheckboxId = checkboxId; // save last unchecked
+                self._lastCheckedCheckboxId = undefined;
+            }
+        });
+        //x2.DEBUG && console.log (this.element);
+
+        // set and unset shift property
+        $(document).on ('keydown', function (evt) {
+            if (evt.which === self._SHIFTWHICH) self._shiftPressed = true;
+            //x2.DEBUG && console.log ('shift up ' + evt.which);
+        });
+        $(document).on ('keyup', function (evt) {
+            if (evt.which === self._SHIFTWHICH) self._shiftPressed = false;
+            //x2.DEBUG && console.log ('shift up ' + evt.which);
+        });
+
+    },
 	_setupGridviewResizing:function(self) {
 		if(this.element.data('x2-gridResizing') !== undefined) {
 			this.element.gridResizing("destroy");
@@ -587,7 +670,7 @@ $.widget("x2.gvSettings", {
 			links.each(function(i,elem) {
 				var link = $(elem);
 				var url = link.attr('href');
-				var startPos = url.indexOf('&viewName=');
+				var startPos = $.inArray ('&viewName=', url);
 				if(startPos > -1)
 					url = url.substr(0,startPos);
 
@@ -612,32 +695,55 @@ $.widget("x2.gvSettings", {
 	},
 
 	_toggleColumnSelector: function(object, self) {
-		var o = self.options;
-		// console.debug('ugh');
-		if(object) {
-			$(object).toggleClass('clicked');
-			// get the position of the link
-			var xPos = $(object).position().left;
-			var yPos = self.tables.eq(0).parent().position().top;
+		var options = self.options;
 
-			//show the menu directly over the placeholder
-			$('#'+o.columnSelectorId).css( { 'left': xPos + 'px', 'top':yPos + 'px' } );
-		} else
-			$(".column-selector-link").removeClass('clicked');
+        // check if fixed header is hidden
+        if ($('#x2-gridview-top-bar-outer').length && 
+            !$('#x2-gridview-top-bar-outer').is (':visible')) return;
 
-		$('#'+o.columnSelectorId).fadeToggle(300,'swing',function() {
-			if($('#'+o.columnSelectorId).is(':visible')) {
-				$(document).bind('click.columnSelector',function(e) {
-					// e.stopPropagation();
-					// console.debug($(e.target).parent().parent());
-					var clicked = $(e.target).add($(e.target).parents());
-					if(!($(e.target).parents().is('#'+o.columnSelectorId) || clicked.hasClass('column-selector-link'))) {
-						self._toggleColumnSelector(null,self);
-					}
-				});
-			} else
-				$(document).unbind('click.columnSelector');
-		});
+        var fadeOut;
+        if($('#'+options.columnSelectorId).is(':visible')) {
+            fadeOut = true;
+        } else {
+            fadeOut = false;
+        }
+
+        if (fadeOut) {
+            $('.column-selector-link').removeClass ('clicked');
+		    $('#'+options.columnSelectorId).fadeOut(300,'swing',afterFadeOut);
+
+        } else {
+            // get the position of the link
+            var xPos = $('.column-selector-link').position().left;
+            var yPos = self.tables.eq(0).parent().position().top;
+
+            //show the menu directly over the placeholder
+            //$('#'+o.columnSelectorId).css( { 'left': xPos + 'px', 'top':yPos + 'px' } );
+            $('#'+options.columnSelectorId).attr ('style', 'left: ' + xPos + 'px;');
+			$(".column-selector-link").addClass('clicked');
+		    $('#'+options.columnSelectorId).fadeIn(300,'swing',afterFadeIn);
+        }
+
+
+        function afterFadeOut () {
+            x2.DEBUG && console.log ('_toggleColumnSelector: fade toggle');
+            $(document).unbind('click.columnSelector');
+        }
+
+        function afterFadeIn () {
+
+            // enable close on click outside
+            $(document).bind('click.columnSelector',function(e) {
+                // e.stopPropagation();
+                // console.debug($(e.target).parent().parent());
+                var clicked = $(e.target).add($(e.target).parents());
+                if(!($(e.target).parents().is('#'+options.columnSelectorId) || 
+                   clicked.hasClass('column-selector-link'))) {
+                    self._toggleColumnSelector(null,self);
+                }
+            });
+        }
+
 	},
 
 	_saveColumnSelection: function(object,self) {

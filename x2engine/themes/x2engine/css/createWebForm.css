@@ -33,6 +33,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
 /* override spectrum color picker css */
 div#web-form .sp-replacer {
     padding: 0px !important;
@@ -40,11 +41,55 @@ div#web-form .sp-replacer {
 div#web-form .sp-dd {
     height: 13px !important;
 }
-div#web-form .sp-preview
-{
+div#web-form .sp-preview {
     width:20px !important;
     height: 17px !important;
     margin-right: 5px !important;
+}
+
+#sortable1, #sortable2 {
+    list-style-type: none;
+    margin: 0;
+    padding: 5px;
+    margin-right: 10px;
+    min-height: 300px;
+}
+
+#sortable1 li, #sortable2 li {
+    margin: 0 5px 5px 5px;
+    padding: 5px;
+    -moz-border-radius:        4px;
+    -o-border-radius:          4px;
+    -webkit-border-radius:     4px;
+    border-radius:             4px;
+    background:#fafafa;
+    font-size: 12px;
+    color: black;
+}
+
+#sortable1 li label, #sortable2 li label {
+    padding: 1px 5px 1px 20px;
+}
+
+.ui-state-highlight {
+    height: 1.5em;
+    line-height: 1.2em;
+}
+div.web-form-fields {
+    background: #F0F0F0;
+    border: 1px solid;
+    width: 150px;
+    height: 400px;
+    float: left;
+    margin: 0 5px;
+    clear:right;
+    width:200px;
+    border:1px solid #ccc;
+    -moz-border-radius:        4px;
+    -o-border-radius:        4px;
+    -webkit-border-radius:    4px;
+    border-radius:            4px;
+    overflow-y: scroll;
 }
 
 #embedcode {
@@ -76,23 +121,6 @@ div#web-form .sp-preview
 	padding: 9px;
 	background: #F0F0F0;
 }
-p.fieldhelp-above {
-	color: #666;
-	font-size: 12px;
-	margin: -0.2px 0 0.8em;
-	width: 193px;
-}
-p.fieldhelp {
-	color: #666;
-	font-size: 12px;
-	margin: -0.3em 0 0.8em;
-	width: 193px;
-}
-p.fieldhelp.half {
-	display: inline-block;
-	width: 79px;
-	margin: 0;
-}
 input#font, select#font {
 	width: 193px;
 }
@@ -109,4 +137,34 @@ input.half {
 }
 #custom-css {
 	height: 75px;
+}
+
+
+#save {
+    margin-top: 1px;
+}
+#reset-form {
+    position: relative;
+    top: 2px;
+}
+#web-form-name,
+#saved-forms {
+    margin-right: 4px;
+}
+.save-html-feedback {
+    margin-top: 9px !important;
+}
+#custom-html-input-container > h4 {
+    margin-right: 4px;
+    display: inline;
+}
+#custom-html-input-container .fieldhelp {
+    margin-top: 2px;
+}
+#custom-html-hint {
+    position: relative;
+    top: -2px;
+}
+.errorMessage {
+    clear: both;
 }

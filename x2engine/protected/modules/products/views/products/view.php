@@ -104,3 +104,4 @@ $this->widget('Publisher',
 
 $this->widget('History',array('associationType'=>'products','associationId'=>$model->id));
 ?>
+</div>

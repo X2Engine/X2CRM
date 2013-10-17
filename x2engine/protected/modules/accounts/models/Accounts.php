@@ -77,11 +77,11 @@ class Accounts extends X2Model {
 	 * Fixes the revenue field before validating.
 	 *
 	 * @return boolean whether validation should be executed. Defaults to true.
-	 */
+	 *//*
 	public function beforeValidate() {
 		$this->annualRevenue = Formatter::parseCurrency($this->annualRevenue,false);
 		return parent::beforeValidate();
-	}
+	}*/
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.

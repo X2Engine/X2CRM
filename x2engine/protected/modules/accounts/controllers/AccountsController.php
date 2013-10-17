@@ -64,7 +64,7 @@ class AccountsController extends x2base {
     }
 
     public function actions(){
-        return array(
+        return array_merge(parent::actions(), array(
             'inlineEmail' => array(
                 'class' => 'InlineEmailAction',
             ),
@@ -77,7 +77,7 @@ class AccountsController extends x2base {
             'accountsCampaign' => array(
                 'class'=>'AccountCampaignAction',
             ),
-        );
+        ));
     }
 
     public function actionGetItems(){
@@ -99,7 +99,7 @@ class AccountsController extends x2base {
         if($this->checkPermissions($model, 'view')){
 
             // add account to user's recent item list
-            User::addRecentItem('a', $id, Yii::app()->user->getId()); 
+            User::addRecentItem('a', $id, Yii::app()->user->getId());
 
             parent::view($model, 'accounts');
         }else{
@@ -117,7 +117,7 @@ class AccountsController extends x2base {
 <br />".Yii::t('accounts', 'Phone').": $model->phone
 <br />".Yii::t('accounts', 'Website').": $model->website
 <br />".Yii::t('accounts', 'Type').": $model->type
-<br />".Yii::t('app', 'Link').": ".CHtml::link($model->name, 'http://'.Yii::app()->request->getServerName().$this->createUrl('/accounts/'.$model->id));
+<br />".Yii::t('app', 'Link').": ".CHtml::link($model->name, 'http://'.Yii::app()->request->getServerName().$this->createUrl(array('/accounts/view','id'=>$model->id)));
         $body = trim($body);
 
         $errors = array();

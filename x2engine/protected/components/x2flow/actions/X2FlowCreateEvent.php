@@ -99,9 +99,18 @@ class X2FlowCreateEvent extends X2FlowAction {
                 $event->user = 'admin';
             }
         }
-        if(!$this->parseOption('createNotif', $params))
-            $notif->save();
-        $event->save();
+        if(!$this->parseOption('createNotif', $params)) {
+            if (!$notif->save()) {
+                return array (false, $notif->getError ());
+            } 
+        }
+
+        if ($event->save()) {
+            return array (true, "");
+        } else {
+            return array (false, $event->getError ());
+        }
+
     }
 
 }

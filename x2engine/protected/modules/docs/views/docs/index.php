@@ -44,6 +44,11 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
 ));
 
+Yii::app()->clientScript->registerCss('docsIndexCss', "
+    #attachments-grid {
+        margin-top: 17px;
+    }
+");
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
 	$('.search-form').toggle();
@@ -169,11 +174,12 @@ $this->widget('application.components.X2GridView', array(
 ));
 ?>
 <br />
+<div class='flush-grid-view'>
 <?php
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'attachments-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title icon docs"><h2>'.Yii::t('docs','Uploaded Docs').'</h2>{summary}</div>{items}{pager}',
+	'template'=> '<div class="page-title rounded-top icon docs"><h2>'.Yii::t('docs','Uploaded Docs').'</h2>{summary}</div>{items}{pager}',
 	'dataProvider'=>$attachments,
 	'columns'=>array(
 		array(
@@ -195,6 +201,7 @@ $this->widget('application.components.X2GridView', array(
 	),
 ));
 	?>
-
+</div>
+<br/>
 <?php
 $this->widget('Attachments',array('associationType'=>'docs','associationId'=>$model->id)); ?>

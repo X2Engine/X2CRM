@@ -79,7 +79,12 @@ class X2FlowCreateNotif extends X2FlowAction {
         $notif->text = $this->parseOption('text', $params);
         // }
 
-        return $notif->save();
+        if ($notif->save()) {
+            return array (true, "");
+        } else {
+            return array (false, $notif->getError ());
+        }
+
     }
 
 }

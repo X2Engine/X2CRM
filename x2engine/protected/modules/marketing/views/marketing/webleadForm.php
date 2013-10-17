@@ -34,8 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$viewFile = Yii::app()->params->edition === 'pro'? '_webleadFormPro' : '_webleadForm';
-
 $this->pageTitle = Yii::t('marketing','Web Lead Form');
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','All Campaigns'), 'url'=>array('index')),
@@ -53,5 +51,9 @@ $this->actionMenu = $this->formatMenu(array(
 	Yii::t('marketing','If no lead routing has been configured, all new contacts will be assigned to "Anyone".'); ?>
 </div>
 <?php
-$this->renderPartial($viewFile,array('forms'=>$forms));
-
+$this->renderPartial ('application.components.views._createWebForm', 
+    array(
+        'forms'=>$forms,
+        'webFormType'=>'weblead'
+    )
+);

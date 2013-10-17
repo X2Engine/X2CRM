@@ -133,7 +133,7 @@ $(function() {
 		lastEventId = 0,
 		lastTimestamp = 0;
 	
-	var fetchUpdates = true;
+	x2.fetchNotificationUpdates = true;
 
 
 	iwcMode = $.jStorage.storageAvailable();
@@ -141,7 +141,7 @@ $(function() {
     masterId = null;
 
 	if (iwcMode) {	// find out of this is going to work
-        x2.DEBUG && console.log ('notifications: is iwcMode');
+        //x2.DEBUG && console.log ('notifications: is iwcMode');
 
 		/**
 		 * Looks for a non-expired masterId entry in local storage.
@@ -204,9 +204,9 @@ $(function() {
 		});
 		// notif deleted, remove it and add the next notif, update count
 		$.jStorage.subscribe("x2iwc_notif_delete", function(ch, payload) {
-            x2.DEBUG && console.log ('x2iwc_notif_delete: payload = ');
-            x2.DEBUG && console.log (payload);
-            x2.DEBUG && console.log (windowId);
+            //x2.DEBUG && console.log ('x2iwc_notif_delete: payload = ');
+            //x2.DEBUG && console.log (payload);
+            //x2.DEBUG && console.log (windowId);
 			if (payload.origin == windowId)
 				return;
 
@@ -219,11 +219,11 @@ $(function() {
 		});
 
 		// all notifs deleted, remove them and update count
-        x2.DEBUG && console.log ('x2iwc_notif_delete_all: setup');
+        //x2.DEBUG && console.log ('x2iwc_notif_delete_all: setup');
 		$.jStorage.subscribe("x2iwc_notif_delete_all", function(ch, payload) {
-            x2.DEBUG && console.log ('x2iwc_notif_delete_all: payload, windowId = ');
-            x2.DEBUG && console.log (payload);
-            x2.DEBUG && console.log (windowId);
+            //x2.DEBUG && console.log ('x2iwc_notif_delete_all: payload, windowId = ');
+            //x2.DEBUG && console.log (payload);
+            //x2.DEBUG && console.log (windowId);
 			if (payload.origin == windowId)
 				return;
 
@@ -400,7 +400,7 @@ $(function() {
 	 * the IWC system
 	 */
 	function getUpdates(firstCall) {
-		if(fetchUpdates) {
+		if(x2.fetchNotificationUpdates) {
 			$.ajax({
 				type: 'GET',
 				url: yii.scriptUrl + '/notifications/get',
@@ -421,13 +421,13 @@ $(function() {
 					return;
 
 				if(typeof response.sessionError != 'undefined' && hasFocus) {
-					fetchUpdates = confirm(response.sessionError);
-					if(fetchUpdates) {
+					x2.fetchNotificationUpdates = confirm(response.sessionError);
+					if(x2.fetchNotificationUpdates) {
 						window.location = window.location;
 					}
 				}
 
-                x2.DEBUG && console.log ('ajax response');
+                //x2.DEBUG && console.log ('ajax response');
 				
 				try {
 					var data = response; //$.parseJSON(response);
@@ -470,10 +470,9 @@ $(function() {
 	}
 
 	function playNotificationSound(){
-
-		$('#notificationSound').attr("src", yii.notificationSoundPath);
-		var sound = $("#notificationSound")[0];
-		sound.play();
+        $('#notificationSound').attr("src", yii.notificationSoundPath);
+        var sound = $("#notificationSound")[0];
+        if (Modernizr.audio) sound.play();
 	}
 
 	/**
@@ -549,7 +548,7 @@ $(function() {
 	 */
 	function addNotifications(notifData, append, firstCall) {
         firstCall = typeof firstCall === 'undefined' ? false : true;
-        x2.DEBUG && console.log ('addNotifications');
+        //x2.DEBUG && console.log ('addNotifications');
 
 		var newNotif = false;
 
@@ -665,7 +664,7 @@ $(function() {
     Increment number in ui indicating number of notifications by newNotifNum
     */
     function incrNotif (newNotifNum) {
-        x2.DEBUG && console.log ('incrNotif');
+        //x2.DEBUG && console.log ('incrNotif');
         var notifCount = parseInt ($('#main-menu-notif span').html()) + newNotifNum;
 		$('#main-menu-notif span').html(notifCount);
 
@@ -676,7 +675,7 @@ $(function() {
     Decrement number in ui indicating number of notifications
     */
     function decrNotif () {
-        x2.DEBUG && console.log ('decrNotif');
+        //x2.DEBUG && console.log ('decrNotif');
         var notifCount = parseInt ($('#main-menu-notif span').html()) - 1;
 		$('#main-menu-notif span').html(notifCount);
 

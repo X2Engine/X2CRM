@@ -1,4 +1,3 @@
-<?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -33,34 +32,30 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-mb_internal_encoding('UTF-8');
-mb_regex_encoding('UTF-8');
-Yii::app()->params->profile = ProfileChild::model()->findByPk(1);
-?>
 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo Yii::app()->language; ?>" lang="<?php echo Yii::app()->language; ?>">
-<head>
-<meta charset="UTF-8" />
-<meta name="language" content="<?php echo Yii::app()->language; ?>" />
-<title><?php echo CHtml::encode($this->pageTitle); ?></title>
 
-<style type="text/css">
-body {
-	font-size:12px;
-	font-family: Arial, Helvetica, sans-serif;
-	width:189px;
+
+
+function ServiceWebFormDesigner (argsList) {
+	WebFormDesigner.call (this, argsList);	
 }
-</style>
-</head>
-<body>
-<?php if (!empty($error)) { ?>
-	<h1><?php echo Yii::t('contacts','We\'re Sorry!'); ?></h1>
-	<p><?php echo $error; ?></p>
-<?php } else { ?>
-	<h1><?php echo Yii::t('contacts','Thank You!'); ?></h1>
-	<p><?php echo Yii::t('contacts','Thank you for your interest!'); ?></p>
-	<p><?php echo Yii::t('contacts','Someone will be in touch shortly.'); ?></p>
-<?php } ?>
-</body>
-</html>
+
+ServiceWebFormDesigner.prototype = auxlib.create (WebFormDesigner.prototype);
+
+/*
+Public static methods
+*/
+
+/*
+Private static methods
+*/
+
+/*
+Public instance methods
+*/
+
+/*
+Private instance methods
+*/
+
+

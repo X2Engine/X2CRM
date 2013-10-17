@@ -70,7 +70,15 @@ class X2FlowRecordCreateAction extends X2FlowAction {
         if($params['model']->hasAttribute('visibility'))
             $action->visibility = $params['model']->visibility;
 
-        return $action->save();
+        if ($action->save()) {
+            return array (
+                true, 
+                Yii::t('studio', "View created action: ").$action->getLink ()
+            );
+        } else {
+            return array (false, $action->getError ());
+        }
+
     }
 
 }

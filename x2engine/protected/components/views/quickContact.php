@@ -62,7 +62,8 @@ $formFields = array (
 // get required fields not in default set
 foreach ($model->getFields () as $field) {
     if ($field->required && 
-        !in_array ($field->fieldName, array ('firstName', 'lastName', 'phone', 'email', 'visibility'))) {
+        !in_array ($field->fieldName, 
+            array ('firstName', 'lastName', 'phone', 'email', 'visibility'))) {
         $formFields[$field->fieldName] = 
             X2Model::model('Contacts')->getAttributeLabel($field->fieldName);
     }
@@ -81,15 +82,16 @@ $form = $this->beginWidget('CActiveForm', array(
 
 <div class="form thin">
 	<div id='quick-contact-form-contents-container' class="row inlineLabel">
-        <?php 
+        <?php
         $i = 0;
         foreach ($formFields as $key=>$val) {
             echo $form->textField($model,$key,array(
-                'class'=> (($key === 'firstName' || $key === 'lastName') ? 
+                'class'=> (($key === 'firstName' || $key === 'lastName') ?
                     'quick-contact-narrow' : 'quick-contact-wide'),
                 'tabindex'=>100 + $i,
-                'title'=>$model->getAttributeLabel($key)
-            )); 
+                'title'=>$model->getAttributeLabel($key),
+                'id'=>'quick_create_'.get_class($model).'_'.$key,
+            ));
             ++$i;
         }
         ?>
@@ -101,7 +103,7 @@ echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Create'),
 	array('/contacts/quickContact'),
 	array('success'=>"function(response) {
-       
+
             // clear errors
             var quickContactForm = $('#quick-contact-form');
             $(quickContactForm).find ('input').removeClass ('error');
@@ -109,9 +111,9 @@ echo CHtml::ajaxSubmitButton(
 
 			if(response === '') { // success
                 auxlib.createReqFeedbackBox ({
-                    prevElem: $(quickContactForm).find ('.x2-button'), 
-                    message: '".Yii::t('app','Contact Saved')."', 
-                    delay: 3000, 
+                    prevElem: $(quickContactForm).find ('.x2-button'),
+                    message: '".Yii::t('app','Contact Saved')."',
+                    delay: 3000,
                     classes: ['quick-create-feedback']
                 });
 
@@ -127,7 +129,7 @@ echo CHtml::ajaxSubmitButton(
                 for (var i in errors) {
                     selector = '#Contacts_' + i;
                     $(selector).after ($('<div>', {
-                        class: 'error-msg',
+                        'class': 'error-msg',
                         text: errors[i]
                     }));
                     $(selector).addClass ('error');

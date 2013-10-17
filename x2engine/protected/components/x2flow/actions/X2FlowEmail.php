@@ -45,9 +45,15 @@ class X2FlowEmail extends X2FlowAction {
 
 	public function paramRules() {
         $credOptsDict = Credentials::getCredentialOptions (null, true);
-        //printR ($this, true);
-        //printR ($this->nameEmailsArr, true);
         $credOpts = $credOptsDict['credentials'];
+        $selectedOpt = $credOptsDict['selectedOption'];
+        foreach ($credOpts as $key=>$val) {
+            if ($key == $selectedOpt) {
+                $credOpts = array ($key => $val) + $credOpts; // move to beginning of array
+                break;
+            }
+        }
+
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
@@ -82,8 +88,7 @@ class X2FlowEmail extends X2FlowAction {
 		$eml->to = $this->parseOption('to',$params);
 
 		//$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
-		$sysUseId = $this->parseOption('from',$params);
-        $eml->credId = $sysUseId;
+        $eml->credId = $this->parseOption('from',$params);
         //printR ($eml->from, true);
 		$eml->subject = Formatter::replaceVariables($this->parseOption('subject',$params),$params['model']);
 
@@ -98,7 +103,11 @@ class X2FlowEmail extends X2FlowAction {
 			$eml->prepareBody();
 		}
 		$result = $eml->send($historyFlag);
-		return isset($result['code']) && $result['code'] == 200;
+		if (isset($result['code']) && $result['code'] == 200) {
+            return array (true, "");
+        } else {
+            return array (false, Yii::t('app', "Email could not be sent"));
+        }
 	}
 }
 

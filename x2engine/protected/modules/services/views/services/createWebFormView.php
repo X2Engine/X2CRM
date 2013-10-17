@@ -34,61 +34,31 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.webupdater.*');
+$menuItems = array(
+    array('label'=>Yii::t('services','All Cases'), 'url'=>array('index')),
+    array('label'=>Yii::t('services','Create Case'), 'url'=>array('create')),
+    array('label'=>Yii::t('services','Create Web Form')),
+);
 
-/**
- * The action for running the upgrader.
- * 
- * @package X2CRM.components.webupdater
- * @author Demitri Morgan <demitri@x2engine.com>
- */
-class X2CRMUpgradeAction extends WebUpdaterAction  {
+$this->actionMenu = $this->formatMenu($menuItems);
 
-	public function run(){
-		if(isset($_GET['n_'])) {
-			echo Yii::app()->db->createCommand('SELECT COUNT(*) FROM x2_users')->queryScalar();
-			Yii::app()->end();
-		}
-		// Remove database backup; if it exists, the user most likely came here
-		// immediately after updating to the latest version, in which case the
-		// backup is outdated (applies to the old version)
-		$this->removeDatabaseBackup();
-		$thisVersion = Yii::app()->params->version;
-		$currentVersion = FileUtil::getContents($this->updateServer.'/installs/updates/versionCheck');
-		if(version_compare($thisVersion, $currentVersion) < 0){
-			$this->controller->render('updater', array(
-				'scenario' => 'error',
-				'message' => 'Update required',
-				'longMessage' => "Before upgrading, you must update to the latest version ($currentVersion). ".CHtml::link(Yii::t('app', 'Update'), 'updater', array('class' => 'x2-button'))
-			));
-		}else{
-			$configVars = $this->configVars;
-			extract($configVars);
-
-			$context = stream_context_create(array(
-				'http' => array(
-					'timeout' => 15  // Timeout in seconds
-					)));
-
-			// Check to see if the updater has changed:
-			$updaterCheck = FileUtil::getContents($this->updateServer.'/installs/updates/updateCheck', 0, $context);
-
-			if($updaterCheck != $updaterVersion){
-				$this->runUpdateUpdater($updaterCheck, 'upgrade');
-			}
-			$this->controller->render('updater', array(
-				'scenario' => 'upgrade',
-				'version' => $thisVersion,
-				'unique_id' => '',
-				'url' => 'x2planet',
-				'newVersion' => $currentVersion,
-				'updaterCheck' => $updaterCheck,
-				'updaterVersion' => $updaterVersion,
-				'edition' => Yii::app()->params->admin->edition
-			));
-		}
-	}
-
-}
-
+?>
+<div class="page-title icon services">
+    <h2><?php echo Yii::t('marketing','Service Cases Web Form'); ?></h2>
+</div>
+<div class="form">
+<?php 
+echo Yii::t('marketing',
+    'Create a public form to receive new services cases. When the form is submitted, a new '.
+    'service case will be created, and the case # will be sent to the email address '.
+    'provided in the form.'); 
+?>
+</div>
+<?php
+$this->renderPartial ('application.components.views._createWebForm', 
+    array(
+        'forms'=>$forms,
+        'webFormType'=>'service'
+    )
+);
 ?>

@@ -35,10 +35,38 @@
 
 var auxlib = {};
 
+auxlib.error = function (message) {
+    if (x2.DEBUG) console.log ('Error: ' + message);
+};
+
+// display error message in red after prevElem
+auxlib.createErrorFeedbackBox = function (argsDict) {
+    var prevElem = argsDict['prevElem']; // required
+    var message = argsDict['message']; // required
+    var classes = argsDict['classes'];
+    classes = typeof classes === 'undefined' ? [] : classes;
+
+    var feedbackBox = $('<div>', {'class': 'auxlib-error-msg-container'}).append (
+        $("<span>", { 
+            'class': "auxlib-error-box-msg",
+            'text': message
+        })
+    );
+    for (var i in classes) {
+        $(feedbackBox).addClass (classes[i]);
+    }
+    $(prevElem).after (feedbackBox);
+}
+
+// delete error message created with createErrorFeedbackBox
+auxlib.destroyErrorFeedbackBox = function (prevElem) {
+    $(prevElem).next ('.auxlib-error-msg-container').remove ();
+}
+
 /*
 Creates a feedback box div containing the specified message. The feedback box is
 placed in the dom after the specified previous element. The box is faded out and,
-After a specified delay, is removed.
+after a specified delay, is removed.
 Parameters:
     argsDict - a dictionary containing arguments
         prevElement (required) - the element after which the box will get placed
@@ -73,6 +101,7 @@ auxlib.createReqFeedbackBox = function (argsDict) {
     auxlib._startFeedbackBoxFadeOut (feedbackBox, delay, prevElem, disableButton);
     return feedbackBox;
 }
+
 
 /*
 Private function.
@@ -172,6 +201,38 @@ auxlib.makeDialogClosableWithOutsideClick = function (dialogElem) {
             $(dialogElem).dialog ("close");
         }
     });
+};
+
+
+// convert css value in pixels to an int
+auxlib.pxToInt = function (str) {
+    return parseInt (auxlib.rStripPx (str), 10);
+}
+
+// remove trailing 'px'
+auxlib.rStripPx = function (str) {
+    return str.replace (/px$/, '');
+}
+
+/*
+Used to replace Object.keys which is not available in ie8
+*/
+auxlib.keys = function (obj) {
+    if (typeof obj !== 'object') return false;
+    var keys = []; 
+    for (var key in obj) {
+        keys.push (key);
+    }
+    return keys;
+};
+
+/*
+Used to replace Object.create which is not available in ie8
+*/
+auxlib.create = function (prototype) {
+    function dummyFn () {};
+    dummyFn.prototype = prototype;
+    return new dummyFn ();
 };
 
 

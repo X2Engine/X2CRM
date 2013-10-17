@@ -91,26 +91,24 @@ $config = array(
                 // Generic restful action; capitalized first letter should always indicate model name
                 // 'api/<model:[A-Z]\w+>/<id:\d+>' => 'api/restful/model/<model>/id/<id>',
                 // 'api/<model:[A-Z]\w+>' => 'api/restful/model/<model>',
-
+                'x2touch' => 'mobile/site/home',
+                '<module:(mobile)>/<controller:\w+>/<id:\d+>' => '<module>/<controller>/view',
+                '<module:(mobile)>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
+                '<module:(mobile)>/<controller:\w+>/<action:\w+>/<id:\d+>' => '<module>/<controller>/<action>',
                 'gii' => 'gii',
                 'gii/<controller:\w+>' => 'gii/<controller>',
                 'gii/<controller:\w+>/<action:\w+>' => 'gii/<controller>/<action>',
                 '<controller:(site|admin|profile|api|search|notifications|studio|gallery)>/<id:\d+>' => '<controller>/view',
                 '<controller:(site|admin|profile|api|search|notifications|studio|gallery)>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<controller:(site|admin|profile|api|search|notifications|studio|gallery)>/<action:\w+>' => '<controller>/<action>',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports)>' => '<module>/<module>/index',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports)>/<id:\d+>' => '<module>/<module>/view',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports)>/<action:\w+>' => '<module>/<module>/<action>',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports)>/<action:\w+>/<id:\d+>' => '<module>/<module>/<action>',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports)>/<controller:\w+>/<id:\d+>' => '<module>/<module>/view',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports)>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports)>/<controller:\w+>/<action:\w+>/<id:\d+>' => '<module>/<controller>/<action>',
-                '<module:\w+>/<id:\d+>' => '<module>/default/view',
-                '<module:\w+>/<action:\w+>' => '<module>/default/<action>',
-                '<module:\w+>/<action:\w+>/<id:\d+>' => '<module>/default/<action>',
+                'weblist/<action:\w+>' => 'marketing/weblist/<action>',
+                '<module:\w+>' => '<module>/<module>/index',
+                '<module:\w+>/<id:\d+>' => '<module>/<module>/view',
+                '<module:\w+>/<action:\w+>' => '<module>/<module>/<action>',
+                '<module:\w+>/<action:\w+>/<id:\d+>' => '<module>/<module>/<action>',
+                '<module:\w+>/<controller:\w+>/<id:\d+>' => '<module>/<controller>/view',
                 '<module:\w+>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
                 '<module:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>' => '<module>/<controller>/<action>',
-                'x2touch' => 'mobile/site/home',
             /*
               // special HTTP methods for API
               array('api/view', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'GET'),
@@ -257,8 +255,8 @@ $config = array(
             'username' => $user,
             'password' => $pass,
             'charset' => 'utf8',
-            //'enableProfiling'=>true,
-            //'enableParamLogging' => true,
+            'enableProfiling'=>true,
+            'enableParamLogging' => true,
             'schemaCachingDuration' => 84600
         ),
         'authManager' => array(
@@ -278,23 +276,28 @@ $config = array(
         ),
         'log' => array(
             'class' => 'CLogRouter',
-            'routes' => array(
-            ),
+            'routes' => 
+                (YII_DEBUG && YII_LOGGING ? 
+                    array (
             // array(
             // 'class'=>'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
             // 'ipFilters'=>array('127.0.0.1'),
             // ),
-//				 array(
-//					 'class'=>'application.extensions.DbProfileLogRoute',
-//					 'countLimit' => 1, // How many times the same query should be executed to be considered inefficient
-//					 'slowQueryMin' => 0.01, // Minimum time for the query to be slow
-//				 ),
-//				 array(
-//					 'class'=>'CWebLogRoute',
-//					 'categories' => 'translations',
-//					 'levels' => 'missing',
-//				 ),
-//            ),
+                        array(
+                             'class'=>'application.extensions.DbProfileLogRoute',
+                             /* How many times the same query should be executed to be considered 
+                                inefficient */
+                             'countLimit' => 1, 
+                             'slowQueryMin' => 0.01, // Minimum time for the query to be slow
+                         ),
+        				 array(
+        					 'class'=>'CWebLogRoute',
+        					 'categories' => 'translations',
+        					 'levels' => 'missing',
+        				 ),
+                    ) 
+                    : array ()
+                ),
         ),
         'messages' => array(
             'class' => 'X2MessageSource',

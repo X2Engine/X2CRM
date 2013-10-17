@@ -81,8 +81,9 @@ function setSound(sound, id, filename, uploadedBy) {
         }else{
             $('#'+sound).attr('src',yii.baseUrl+'/uploads/'+filename);
         }
+
         var soundFile = $("#"+sound)[0];
-        soundFile.play();
+        if (Modernizr.audio) soundFile.play();
     }
 }
 
@@ -120,7 +121,7 @@ function deleteBackground(id,filename) {
 				$('#background_'+id).hide();
 
 		        // if this is the current background,
-				if($('#header').css('background-image').indexOf(filename) > -1) {
+				if($.inArray (filename, $('#header').css('background-image')) > -1) {
 
 					// remove it from the page
 					if($('#backgroundColor').val() === '') {

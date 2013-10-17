@@ -64,14 +64,20 @@ function trimText($text) {
 	'model'=>$model,
 )); ?>
 </div><!-- search-form -->
+<div class='flush-grid-view'>
 <?php
 	$canDelete = Yii::app()->params->isAdmin;
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'product-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title icon products"><h2>'.Yii::t('products','Products').'</h2><div class="x2-button-group">'
-		.CHtml::link('<span></span>','#',array('title'=>Yii::t('app','Advanced Search'),'class'=>'x2-button search-button'))
-		.CHtml::link('<span></span>',array(Yii::app()->controller->action->id,'clearFilters'=>1),array('title'=>Yii::t('app','Clear Filters'),'class'=>'x2-button filter-button')).'</div> '
+	'template'=> '<div class="page-title icon products"><h2>'.Yii::t('products','Products').
+        '</h2><div class="x2-button-group">'
+		.CHtml::link(
+            '<span></span>','#',array('title'=>Yii::t('app','Advanced Search'),
+            'class'=>'x2-button search-button'))
+		.CHtml::link(
+            '<span></span>',array(Yii::app()->controller->action->id,'clearFilters'=>1),
+            array('title'=>Yii::t('app','Clear Filters'),'class'=>'x2-button filter-button')).'</div> '
 		.X2GridView::getFilterHint()
 		.'{summary}</div>{items}{pager}',
 	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
@@ -98,7 +104,8 @@ function trimText($text) {
 		),
 		array(
 			'name'=>'createDate',
-			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
+			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), '.
+                '$data->createDate)',
 			'type'=>'raw',
 		),
 		array(
@@ -112,3 +119,4 @@ function trimText($text) {
 		),
 	),
 )); ?>
+</div>

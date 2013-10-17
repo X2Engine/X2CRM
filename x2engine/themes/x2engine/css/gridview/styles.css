@@ -38,10 +38,15 @@
 /**
  * --------------- Column Selector Dropdown ---------------
  */
+ul.column-selector.stuck {
+	position:absolute !important;
+    top: 75px !important;
+}
 ul.column-selector {
 	display:none;
-	position:absolute;
-	z-index:99;
+	position:fixed;
+    top: 68px;
+	z-index:850;
 	background:#fff;
 	padding:0;
 	border:1px solid #999;
@@ -254,9 +259,17 @@ ul.column-selector li:hover {background:#eee;}
  */
 .grid-view table.items.x2grid-resizable {
 	border-collapse:separate;
-	border:none;
 	margin-top:0;
+    border: none;
 }
+
+.grid-view .x2grid-body-container table.items.x2grid-resizable {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 1px solid #aaa;
+}
+
 .grid-view table.items.x2grid-resizable tr:first-child td{border-top:none;}
 /* .grid-view table.items.x2grid-resizable td.hover {
 	overflow:visible;
@@ -312,12 +325,17 @@ ul.column-selector li:hover {background:#eee;}
     border-top:1px solid #aaa;
 	padding:8px;
 	background:#fff;
-	margin:0; 
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 1px;
+    margin-bottom: 0;
 	text-align:right;
 /* 	border-radius:			4px 4px 4px 4px;
 	-moz-border-radius:		4px 4px 4px 4px;
 	-webkit-border-radius:	4px 4px 4px 4px;
 	-o-border-radius:		4px 4px 4px 4px; */
+    border-top: none;
+    float: right;
 }
 /**
  * ------------------------- Misc -------------------------
@@ -327,4 +345,54 @@ div.scrollbar-width-test {height:100px;width:100px;position:absolute;top:-100px;
 .grid-view > .pager .yiiPager a {
     padding: 2px 8px 2px 8px;
 }
-.yiiPager li a {background:#fff;}
+.yiiPager li a {
+    background:#fff;
+}
+
+
+/*
+fixed header
+*/
+
+.x2-gridview-fixed-top-bar-outer {
+    width: 100%;
+    position: fixed;
+    z-index: 800;
+    min-width: 880px;
+    left: 0;
+    top: 32px;
+    padding-left: 151px;
+    padding-right: 9px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-top-bar-inner {
+    width: 100%;
+    padding-right: 22% !important;
+    padding-left: 11px;
+    height: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title {
+    width: auto;
+    -moz-border-radius: 0;
+    -o-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    border-left: 1px solid #999;
+    border-right: 1px solid #999;
+}
+
+.x2-gridview-body-with-fixed-header {
+    padding-top: 75px;
+}
+
+.x2-gridview-fixed-top-bar-outer .x2grid-header-container {
+    border-left: 1px solid #999;
+    border-right: 1px solid #999;
+}

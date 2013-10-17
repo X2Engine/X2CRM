@@ -34,14 +34,14 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-class DefaultController extends x2base {
+class TemplatesController extends x2base {
 	public $modelClass = 'Templates';
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
-        
-        
+
+
         public function actionGetItems(){
 		$sql = 'SELECT id, name as value FROM x2_templates WHERE name LIKE :qterm ORDER BY name ASC';
 		$command = Yii::app()->db->createCommand($sql);
@@ -67,18 +67,18 @@ class DefaultController extends x2base {
 	public function actionCreate() {
 		$model=new Templates;
 		$users=User::getNames();
-		
+
 		if(isset($_POST['Templates'])) {
 			$temp = $model->attributes;
 			$model->setX2Fields($_POST['Templates']);
 			parent::create($model, $temp, 0);
 		}
-		
+
 		$this->render('create',array(
 			'model'=>$model,
 			'users'=>$users,
 		));
-		
+
 	}
 
 	/**
@@ -89,7 +89,7 @@ class DefaultController extends x2base {
 	public function actionUpdate($id) {
 		$model = $this->loadModel($id);
 		$users = User::getNames();
-		
+
 		if(isset($_POST['Templates'])) {
 			$temp = $model->attributes;
 			$model->setX2Fields($_POST['Templates']);
@@ -117,7 +117,7 @@ class DefaultController extends x2base {
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
-				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');

@@ -86,7 +86,13 @@ class X2FlowCreateAction extends X2FlowAction {
 		// if(isset($this->config['attributes']))
 			// $this->setModelAttributes($action,$this->config['attributes'],$params);
 
-		return $action->save();
+        if ($action->save()) {
+            return array (
+                true, 
+                Yii::t('studio', "View created action: ").$action->getLink ());
+        } else {
+            return array (false, $action->getError ());
+        }
 
 
 

@@ -43,7 +43,7 @@ create table `x2_auth_item`
    `bizrule`              text,
    `data`                 text,
    primary key (`name`)
-) COLLATE = utf8_general_ci;
+) COLLATE = utf8_general_ci, ENGINE=INNODB;
 /*&*/
 create table `x2_auth_item_child`
 (
@@ -52,7 +52,7 @@ create table `x2_auth_item_child`
    primary key (`parent`,`child`),
    foreign key (`parent`) references `x2_auth_item` (`name`) on delete cascade on update cascade,
    foreign key (`child`) references `x2_auth_item` (`name`) on delete cascade on update cascade
-) COLLATE = utf8_general_ci;
+) COLLATE = utf8_general_ci, ENGINE=INNODB;
 /*&*/
 create table `x2_auth_assignment`
 (
@@ -62,7 +62,7 @@ create table `x2_auth_assignment`
    `data`                 text,
    primary key (`itemname`,`userid`),
    foreign key (`itemname`) references `x2_auth_item` (`name`) on delete cascade on update cascade
-) COLLATE = utf8_general_ci;
+) COLLATE = utf8_general_ci, ENGINE=INNODB;
 /*&*/
 CREATE TABLE x2_auth_cache(
 	authItem			VARCHAR(100)	NOT NULL,
@@ -145,13 +145,11 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('AdminAppSettings',0,'General settings for the application.',NULL,'N;'),
 ('AdminManageSessions',0,'Manage user sessions.',NULL,'N;'),
 ('AdminToggleSession',0,'',NULL,'N;'),
-('AdminEnactChanges',0,'',NULL,'N;'),
 ('AdminEndSession',0,'',NULL,'N;'),
 ('AdminPrepareImport',0,'',NULL,'N;'),
 ('AdminGlobalImport',0,'',NULL,'N;'),
 ('AdminCleanUpImport',0,'',NULL,'N;'),
 ('AdminDownloadData',0,'',NULL,'N;'),
-('AdminDownloadDatabaseBackup',0,'',NULL,'N;'),
 ('AdminPrepareExport',0,'',NULL,'N;'),
 ('AdminGlobalExport',0,'',NULL,'N;'),
 ('AdminRollbackImport',0,'',NULL,'N;'),
@@ -181,7 +179,9 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('AdminWorkflowSettings',0,'Control settings for editing workflow actions.',NULL,'N;'),
 ('AdminUpdaterSettings',0,'Control settings for the auto-updater.',NULL,'N;'),
 ('AdminUpdater',0,'',NULL,'N;'),
+('AdminUpdateStage',0,'',NULL,'N;'),
 ('AdminViewLog',0,'',NULL,'N;'),
+('AdminLockApp',0,'',NULL,'N;'),
 ('AdminManageDropDowns',0,'General dropdown management.',NULL,'N;'),
 ('AdminManageFields',0,'Manage created fields.',NULL,'N;'),
 ('AdminManageModules',0,'Manage top bar menu items.',NULL,'N;'),
@@ -195,7 +195,6 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('AdminTranslationManager',0,'Translation manager for the application',NULL,'N;'),
 ('AdminUploadLogo',0,'Upload your own logo for the top left corner.',NULL,'N;'),
 ('AdminGetNUsers',0,'',NULL,'N;'),
-('AdminUpgrader',0,'',NULL,'N;'),
 ('AdminSaveEdition',0,'',NULL,'N;'),
 ('AdminViewChangelog',0,'View a list of all changes made by users.',NULL,'N;'),
 ('AdminViewSessionLog',0,'',NULL,'N;'),
@@ -627,7 +626,6 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('AdminDeleteFormLayout',0,'',NULL,'N;'),
 ('AdminGetDropdown',0,'',NULL,'N;'),
 ('AdminGetFieldType',0,'',NULL,'N;'),
-('AdminDownload',0,'',NULL,'N;'),
 ('AdminDelete',0,'',NULL,'N;'),
 ('AdminInstallUpdate',0,'',NULL,'N;'),
 ('AdminCleanUp',0,'',NULL,'N;'),
@@ -784,7 +782,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('GeneralAdminSettingsTask','AdminViewSessionHistory'),
 ('GeneralAdminSettingsTask','AdminBackup'),
 ('GeneralAdminSettingsTask','AdminCheckDatabaseBackup'),
-('DefaultRole','AdminDownloadData'),
+('AuthenticatedSiteFunctionsTask','AdminDownloadData'),
 ('X2StudioTask','AdminCreateModule'),
 ('GeneralAdminSettingsTask','AdminCreatePage'),
 ('FieldsTask','AdminCustomizeFields'),
@@ -809,6 +807,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('GeneralAdminSettingsTask','AdminManageModules'),
 ('GeneralAdminSettingsTask','AdminWorkflowSettings'),
 ('GeneralAdminSettingsTask','AdminUpdater'),
+('GeneralAdminSettingsTask','AdminUpdateStage'),
 ('GeneralAdminSettingsTask','AdminUpdaterSettings'),
 ('GeneralAdminSettingsTask','AdminManageSessions'),
 ('GeneralAdminSettingsTask','AdminToggleSession'),
@@ -1273,7 +1272,6 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('AuthenticatedSiteFunctionsTask','WorkflowGetStageDetails'),
 ('admin','administrator'),
 ('authenticated','DefaultRole'),
-('administrator','ReportsAdminAccess'),
 ('GeneralAdminSettingsTask','AdminCalculateTranslationRedundancy'),
 ('GeneralAdminSettingsTask','AdminFindMissingPermissions'),
 ('GeneralAdminSettingsTask','AdminGetWorkflowStages'),
@@ -1295,7 +1293,6 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('GeneralAdminSettingsTask','AdminDeleteFormLayout'),
 ('GeneralAdminSettingsTask','AdminGetDropdown'),
 ('GeneralAdminSettingsTask','AdminGetFieldType'),
-('AuthenticatedSiteFunctionsTask','AdminDownload'),
 ('GeneralAdminSettingsTask','AdminDelete'),
 ('GeneralAdminSettingsTask','AdminInstallUpdate'),
 ('GeneralAdminSettingsTask','AdminCleanUp'),

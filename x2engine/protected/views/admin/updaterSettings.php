@@ -35,8 +35,8 @@
  *****************************************************************************************/
  ?>
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Updater Settings'); ?></h2></div>
-<div class="form">
-	<div class="span-16">
+<div class="span-24">
+    <div class="form">
 		<?php
 		$form = $this->beginWidget('CActiveForm', array(
 			'id' => 'settings-form',
@@ -80,5 +80,9 @@
 		<div id="error-box" class="form" style="display:none"></div>
 		<?php echo CHtml::submitButton(Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button')) . "\n"; ?>
 		<?php $this->endWidget(); ?>
-	</div><!-- .form -->
-</div><!-- .span-16 -->
+                <?php echo Yii::t('admin','Note: to update manually, if not already at the latest version: {download}, then extract its contents into a folder in the web root called "update", then go to {updater}.',array(
+                    '{download}' => CHtml::link(Yii::t('admin','download the update package'),array('admin/updater','redirect'=>1)),
+                    '{updater}' => CHtml::link(Yii::t('admin','the updater page'),array('admin/updater')),
+                )); ?>
+    </div><!-- .span-24 -->
+</div><!-- .form -->

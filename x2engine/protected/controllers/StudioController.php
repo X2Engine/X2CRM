@@ -71,6 +71,24 @@ class StudioController extends x2base {
 		$this->render('flowIndex');
 	}
 
+	public function actionTriggerLogs($pageSize=null) {
+        $triggerLogsDataProvider = new CActiveDataProvider('TriggerLog', array(
+                    'criteria' => array(
+                        'order' => 'triggeredAt DESC'
+                    ),
+                    'pagination'=>array(
+				        'pageSize' => !empty($pageSize) ? 
+                            $pageSize : 
+                            Profile::getResultsPerPage()
+                    ),
+                ));
+        $viewParams['triggerLogsDataProvider'] = $triggerLogsDataProvider;
+		$this->render('triggerLogs', array (
+            'triggerLogsDataProvider' => $triggerLogsDataProvider
+            )
+        );
+	}
+
 	public function actionDeleteFlow($id) {
 		$model = $this->loadModel($id);
 		$model->delete();
@@ -199,4 +217,40 @@ class StudioController extends x2base {
 		}
 		echo CJSON::encode($fields);
 	}
+
+    function actionDeleteAllTriggerLogs ($flowId) {
+        if (isset ($flowId)) {
+            $triggerLogs = TriggerLog::model()->findAllByAttributes (array (
+                'flowId' => $flowId
+            ));
+            foreach ($triggerLogs as $log) {
+                $log->delete ();
+            }
+            echo "success";
+        } else {
+            echo "failure";
+        }
+    }
+
+    function actionDeleteAllTriggerLogsForAllFlows () {
+        $triggerLogs = TriggerLog::model()->findAll ();
+        foreach ($triggerLogs as $log) {
+            $log->delete ();
+        }
+        echo "success";
+    }
+
+    function actionDeleteTriggerLog ($id) {
+        if (isset ($id)) {
+            $triggerLog = TriggerLog::model()->findByAttributes (array (
+                'id' => $id
+            ));
+            if (!empty ($triggerLog)) {
+                $triggerLog->delete ();
+                echo "success";
+                return;
+            }
+        } 
+        echo "failure";
+    }
 }

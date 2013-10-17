@@ -38,10 +38,21 @@
  * X2WebApplication class file.
  * 
  * X2WebApplication extends CWebApplication to provide additional functionality.
- * 
- * @package X2CRM.modules.contacts 
+ *
+ * @property integer|bool $locked Integer (timestamp) if the application is locked; false otherwise.
+ * @property string $lockFile Path to the lock file
+ * @package X2CRM.modules.contacts
+ *
  */
 class X2WebApplication extends CWebApplication {
+
+    /**
+     * If the application is locked, this will be an integer corresponding to
+     * the date that the application was locked. Otherwise, it will be false.
+     * @var mixed
+     */
+    private $_locked;
+
 	/**
 	 * Creates a controller instance based on a route.
 	 * Modified to check in /custom for controller files.
@@ -125,4 +136,44 @@ class X2WebApplication extends CWebApplication {
 			$basePath.=DIRECTORY_SEPARATOR.$id;
 		}
 	}
+
+    /**
+     * Returns the lock status of the application.
+     * @return boolean
+     */
+    public function getLocked() {
+        if(!isset($this->_locked)){
+            $file = $this->lockFile;
+            if(!file_exists($file))
+                return false;
+            $this->_locked = (int) trim(file_get_contents($file));
+        }
+        return $this->_locked;
+    }
+
+    /**
+     * Returns the path to the application lock file
+     * @return type
+     */
+    public function getLockFile() {
+        return implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'runtime','x2crm.lock'));
+    }
+
+    /**
+     * Lock the application (non-administrative users cannot use it).
+     *
+     * If the value evaluates to false, the application will be unlocked.
+     * 
+     * @param type $value
+     */
+    public function setLocked($value) {
+        $this->_locked = $value;
+        $file = $this->lockFile;
+        if($value == false && file_exists($file)) {
+            unlink($file);
+        } elseif($value !== false) {
+            file_put_contents($this->lockFile,$value);
+        }
+
+    }
 }

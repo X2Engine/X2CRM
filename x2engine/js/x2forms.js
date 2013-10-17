@@ -137,8 +137,6 @@ $(function() {
 	});
 	$('.x2-info').qtip(); // no format qtip (.x2-hint turns text blue)
 
-	$('.x2-hint')
-
 	/*
 	$(window).resize(function() {
 		$('#sidebar-right').height($(window).height() - 79);

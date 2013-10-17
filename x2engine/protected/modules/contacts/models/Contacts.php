@@ -70,6 +70,13 @@ class Contacts extends X2Model {
 		));
 	}
 
+    public function rules () {
+        $parentRules = parent::rules ();
+        $parentRules[] = array (
+            'firstName,lastName', 'required', 'on' => 'webForm');
+        return $parentRules;
+    }
+
 	/**
 	 * Sets the name field (full name) on record lookup
 	 */

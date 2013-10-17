@@ -247,5 +247,6 @@ to float around the truncated text. */
 }
 
 
-
-
+.event-bottom-buttons {
+    margin-top: 2px;
+}

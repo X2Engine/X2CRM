@@ -69,11 +69,14 @@ class MarketingController extends x2base {
     }
 
     public function actions(){
-        return array(
+        return array_merge(parent::actions(), array(
+            'webleadForm' => array(
+                'class' => 'CreateWebFormAction',
+            ),
             'inlineEmail' => array(
                 'class' => 'InlineEmailAction',
             ),
-        );
+        ));
     }
 
     /**
@@ -1131,54 +1134,6 @@ class MarketingController extends x2base {
         }
         echo CJSON::encode (
             array ('error', Yii::t('marketing', 'Custom HTML could not be saved.')));
-    }
-
-    /**
-     * Create a web lead form with a custom style
-     */
-    public function actionWebleadForm(){
-        if(!empty($_POST)){
-            if(empty($_POST['name'])){
-                echo json_encode(array('errors' => array('name' => Yii::t('marketing', 'Name cannot be blank.'))));
-                return;
-            }
-            $type = !empty($_POST['type']) ? $_POST['type'] : 'weblead';
-            $model = WebForm::model()->findByAttributes(array('name' => $_POST['name'], 'type' => $type));
-            if($model === null){
-                $model = new WebForm;
-                $model->name = $_POST['name'];
-                $model->type = $type;
-                $model->modelName = 'Contacts';
-                $model->visibility = 1;
-                $model->assignedTo = Yii::app()->user->getName();
-                $model->createdBy = Yii::app()->user->getName();
-                $model->createDate = time();
-            }
-            if (isset ($_POST['header'])) $model->header = $_POST['header'];
-            //grab web lead configuration and stash in 'params'
-            $whitelist = array('fg', 'bgc', 'font', 'bs', 'bc', 'tags');
-            $config = array_filter(array_intersect_key($_POST, array_flip($whitelist)));
-            //restrict param values, alphanumeric, # for color vals, comma for tag list
-            $config = preg_replace('/[^a-zA-Z0-9#,]/', '', $config);
-            $model->params = empty($config) ? null : $config;
-
-            $model->updatedBy = Yii::app()->user->getName();
-            $model->lastUpdated = time();
-
-            if(file_exists(__DIR__.'/pro/actionWebleadFormPro.php') && Yii::app()->params->edition === 'pro')
-                include(__DIR__.'/pro/actionWebleadFormPro.php');
-
-            if($model->save())
-                echo json_encode($model->attributes);
-            else
-                echo json_encode(array('errors' => $model->getErrors()));
-        } else{
-            $condition = X2Model::model('Marketing')->getAccessCriteria()->condition;
-
-            //this get request is for weblead type only, marketing/weblist/view supplies the form that posts for weblist type
-            $forms = WebForm::model()->findAll('type="weblead" AND '.$condition);
-            $this->render('webleadForm', array('forms' => $forms));
-        }
     }
 
     /**

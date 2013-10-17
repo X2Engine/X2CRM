@@ -74,6 +74,8 @@ class GMailAccount extends EmailAccount {
 					echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
 					break;
 				case 'email':
+					echo '<p class="fieldhelp-thin-small">'.Yii::t('app', '(example@gmail.com)').
+                        '</p>';
 					echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
 					break;
 				case 'password':

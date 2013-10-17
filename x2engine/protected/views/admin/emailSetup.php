@@ -81,6 +81,7 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
             'id' => 'email-setup',
             'enableAjaxValidation' => false,
                 ));
+        echo $form->errorSummary($model);
         ?>
         <h4><?php echo Yii::t('admin', 'Outbound Email Server'); ?></h4>
         <p><?php

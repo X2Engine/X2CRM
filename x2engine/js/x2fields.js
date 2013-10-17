@@ -301,7 +301,7 @@ x2.fieldUtils = {
                     
                     var textValue = '';
                     if(safeAttributes.value !== undefined) {
-                        var index = safeAttributes.value.indexOf("::");
+                        var index = $.inArray ('::', safeAttributes.value);
                         if(index > 0)
                             textValue = safeAttributes.value.substr(index+2);
                         else
@@ -372,7 +372,8 @@ x2.fieldUtils = {
     
         var dropdown = $(document.createElement('select')).attr(attributes);
         for(var i in options) {
-            $(document.createElement('option')).attr('value',options[i][0]).text(options[i][1]).appendTo(dropdown);
+            $(document.createElement('option')).attr('value',options[i][0]).text(options[i][1]).
+                appendTo(dropdown);
         }
         dropdown.val(val);
         return dropdown;

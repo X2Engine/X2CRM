@@ -187,7 +187,7 @@ class Formatter {
             if($length < 3)
                 $str = '';
             else
-                $str = mb_substr($str, 0, $length - 3, 'UTF-8');
+                $str = trim(mb_substr($str, 0, $length - 3, 'UTF-8'));
             $str .= '...';
         }
         return $str;
@@ -388,6 +388,15 @@ class Formatter {
         if(strpos($formula, 'return ') !== 0){
             $formula = 'return '.$formula;
         }
+        $formula = preg_replace(array(
+            '!/\*.*?\*/!s',
+            '/\n\s*\n/',
+            '/(\S*)\w(?<!'.self::getSafeWords().')(\s*)\((.*?)\)/'
+            ),array(
+                '',
+                "\n",
+                'null'
+            ),$formula);
         try{
             return eval($formula);
         }catch(Exception $e){
@@ -402,6 +411,19 @@ class Formatter {
         }else{
             return null;
         }
+    }
+
+    private static function getSafeWords(){
+        function encapsulateWords($word){
+            return "\s".$word;
+        }
+        $safeWords = array(
+            'echo',
+            'time',
+            'return',
+        );
+        $safeWords = array_map('encapsulateWords',$safeWords);
+        return implode('|',$safeWords);
     }
 
 }

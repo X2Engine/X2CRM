@@ -34,6 +34,16 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+/**
+ * @file protected/components/views/requirements.php
+ * @author Demitri Morgan <demitri@x2engine.com>
+ *
+ * Multi-role requirements-check script. Can be included as part of another page,
+ * run as its own standalone script, or used to return requirements check data
+ * as an arrya.
+ */
+
 /////////////////
 // SET GLOBALS //
 /////////////////
@@ -42,11 +52,13 @@ $totalFailure = array(
 	"<h1>This server definitely, most certainly cannot run X2CRM.</h1><p>Not even the system requirements checker script itself could run properly on this server. It encountered the following {scenario}:</p>\n<pre style=\"overflow-x:auto;margin:5px;padding:5px;border:1px red dashed;\">\n",
 	"\n</pre>"
 );
+$mode = php_sapi_name() == 'cli' ? 'cli' : 'web';
 $responding = false;
 if(!isset($thisFile))
 	$thisFile = __FILE__;
 if(!isset($standalone))
 	$standalone = realpath($thisFile) === realpath(__FILE__);
+$returnArray = (isset($returnArray)?$returnArray:false) || $mode == 'cli';
 if(!$standalone){
 	// Check being called/included inside another script
 	$document = '{bodyContent}';
@@ -63,64 +75,65 @@ if(!$standalone){
 function RIP(){
 	global $standalone;
 	if($standalone){
-		die();
+        die();
 	}
 }
 
 // Error handler.
-function abandonAllHope($no, $st, $fi = Null, $ln = Null){
+function handleReqError($no, $st, $fi = Null, $ln = Null){
 	global $document, $totalFailure, $responding, $standalone;
-	$fatal = $no === E_ERROR;
-	if($no === E_ERROR){ // Ignore warnings...
-		$responding = true;
-		echo strtr($document, array(
-			'{headerContent}' => '',
-			'{bodyContent}' => str_replace('{scenario}', 'error', $totalFailure[0]."Error [$no]: $st $fi L$ln".$totalFailure[1])
-		));
-		RIP();
-	}
+    $fatal = $no === E_ERROR;
+    if($no === E_ERROR){ // Ignore warnings...
+        $responding = true;
+        echo strtr($document, array(
+            '{headerContent}' => '',
+            '{bodyContent}' => str_replace('{scenario}', 'error', $totalFailure[0]."Error [$no]: $st $fi L$ln".$totalFailure[1])
+        ));
+        RIP();
+    }
 }
 
 // Exception handler.
-function yeWhoEnterHere($e){
-	global $document, $totalFailure, $responding, $standalone;
-	$responding = true;
-	$message = 'Exception: "'.$e->getMessage().'" in '.$e->getFile().' L'.$e->getLine()."\n";
+function handleReqException($e){
+    global $document, $totalFailure, $responding, $standalone;
+    $responding = true;
+    $message = 'Exception: "'.$e->getMessage().'" in '.$e->getFile().' L'.$e->getLine()."\n";
 
-	foreach($e->getTrace() as $stackLevel){
-		$message .= $stackLevel['file'].' L'.$stackLevel['line'].' ';
-		if($stackLevel['class'] != ''){
-			$message .= $stackLevel['class'];
-			$message .= '->';
-		}
-		$message .= $stackLevel['function'];
-		$message .= "();\n";
-	}
-	$message = str_replace('{scenario}', 'uncaught exception', $totalFailure[0].$message.$totalFailure[1]);
-	echo strtr($document, array(
-		'{headerContent}' => '',
-		'{bodyContent}' => $message
-	));
-	RIP();
+    foreach($e->getTrace() as $stackLevel){
+        $message .= $stackLevel['file'].' L'.$stackLevel['line'].' ';
+        if($stackLevel['class'] != ''){
+            $message .= $stackLevel['class'];
+            $message .= '->';
+        }
+        $message .= $stackLevel['function'];
+        $message .= "();\n";
+    }
+    $message = str_replace('{scenario}', 'uncaught exception', $totalFailure[0].$message.$totalFailure[1]);
+    echo strtr($document, array(
+        '{headerContent}' => '',
+        '{bodyContent}' => $message
+    ));
+
+    RIP();
 }
 
 // Shutdown function (for fatal errors, i.e. call to undefined function)
-function level7(){
-	global $document, $totalFailure, $responding, $standalone;
-	$error = error_get_last();
-	if($error != null && !$responding){
-		$errno = $error["type"];
-		$errfile = $error["file"];
-		$errline = $error["line"];
-		$errstr = $error["message"];
-		$errtype = ($errno == E_PARSE ? 'parse' : 'fatal').' error';
-		$message = "PHP $errtype [$errno]: $errstr in $errfile L$errline";
-		$message = str_replace('{scenario}', $errtype, $totalFailure[0].$message.$totalFailure[1]);
-		echo strtr($document, array(
-			'{headerContent}' => '',
-			'{bodyContent}' => $message
-		));
-	}
+function reqShutdown(){
+    global $document, $totalFailure, $responding, $standalone;
+    $error = error_get_last();
+    if($error != null && !$responding){
+        $errno = $error["type"];
+        $errfile = $error["file"];
+        $errline = $error["line"];
+        $errstr = $error["message"];
+        $errtype = ($errno == E_PARSE ? 'parse' : 'fatal').' error';
+        $message = "PHP $errtype [$errno]: $errstr in $errfile L$errline";
+        $message = str_replace('{scenario}', $errtype, $totalFailure[0].$message.$totalFailure[1]);
+        echo strtr($document, array(
+            '{headerContent}' => '',
+            '{bodyContent}' => $message
+        ));
+    }
 }
 
 // Throws an exception when encountering an error for easier handling.
@@ -128,10 +141,11 @@ function exceptionForError($no, $st, $fi = Null, $ln = Null){
 	throw new Exception("Error [$no]: $st $fi L$ln");
 }
 
-set_error_handler('abandonAllHope');
-set_exception_handler('yeWhoEnterHere');
-register_shutdown_function('level7');
-
+if(!$returnArray){
+    set_error_handler('handleReqError');
+    set_exception_handler('handleReqException');
+    register_shutdown_function('reqShutdown');
+}
 //////////////////////////////
 // X2CRM Requirements Check //
 //////////////////////////////
@@ -157,11 +171,15 @@ else
 
 // Declare the function since the script is not being used from within the installer
 if(!function_exists('installer_t')){
-
-	function installer_t($msg){
+    function installer_t($msg){
 		return $msg;
 	}
 
+}
+if(!function_exists('installer_tr')) {
+    function installer_tr($msg,$params = array()){
+        return strtr($msg,$params);
+    }
 }
 
 /**
@@ -185,7 +203,7 @@ function checkServerVar($thisFile = null){
 			$missing[] = $var;
 	}
 	if(!empty($missing))
-		return installer_t('$_SERVER does not have {vars}.', array('{vars}' => implode(', ', $missing)));
+		return installer_tr('$_SERVER does not have {vars}.', array('{vars}' => implode(', ', $missing)));
 	if(empty($thisFile))
 		$thisFile = __FILE__;
 
@@ -205,6 +223,7 @@ $canInstall = True;
 $curl = true; //
 $tryAccess = true; // Attempt to access the internet from the web server.
 $reqMessages = array_fill_keys(array(1, 2, 3), array()); // Severity levels
+$requirements = array_fill_keys(array('functions','classes','classConflict','extensions','environment'),array());
 $rbm = installer_t("required but missing");
 
 //////////////////////////////////////////////
@@ -213,24 +232,32 @@ $rbm = installer_t("required but missing");
 // Check for a mismatch in directory ownership. Skip this step on Windows
 // and systems where posix functions are unavailable; in such cases there's no
 // reliable way to get the UID of the actual running process.
+$requirements['environment']['filesystem_ownership'] = 1;
 $uid = array_fill_keys(array('{id_own}', '{id_run}'), null);
 $uid['{id_own}'] = fileowner(realpath(dirname(__FILE__)));
 if(function_exists('posix_geteuid')){
 	$uid['{id_run}'] = posix_geteuid();
 	if($uid['{id_own}'] !== $uid['{id_run}']){
 		$reqMessages[3][] = strtr(installer_t("PHP is running with user ID={id_run}, but this directory is owned by the system user with ID={id_own}."), $uid);
+        $requirements['environment']['filesystem_ownership'] = 0;
 	}
 }
+
+$requirements['environment']['filesystem_permissions'] = 1;
 // Check that the directory is writable. Print an error message one way or another.
 if(!is_writable(dirname(__FILE__))){
 	$reqMessages[3][] = installer_t("This directory is not writable by PHP processes run by the webserver.");
+    $requirements['environment']['filesystem_permissions'] = 0;
 }
 if(!is_writable(__FILE__)) {
 	$reqMessages[3][] = installer_t("Permissions and/or ownership of uploaded files do not permit PHP processes run by the webserver to write files.");
+    $requirements['environment']['filesystem_permissions'] = 0;
 }
 
+
 // Check that the directive open_basedir is not arbitrarily set to some restricted 
-// jail directory off in god knows where 
+// jail directory off in god knows where
+$requirements['environment']['open_basedir'] = 1;
 $basedir = trim(ini_get('open_basedir'));
 $cwd = dirname(__FILE__);
 if(!empty($basedir)){
@@ -242,23 +269,34 @@ if(!empty($basedir)){
             break;
         }
     }
-    if(!$allowCwd)
+    if(!$allowCwd) {
     	$reqMessages[3][] = installer_t('The base directory configuration directive is set, and it does not include the current working directory.');
+        $requirements['environment']['open_basedir'] = 0;
+    }
 }
-
 
 // Check PHP version
+$requirements['environment']['php_version'] = 1;
 if(!version_compare(PHP_VERSION, "5.3.0", ">=")){
 	$reqMessages[3][] = installer_t("Your server's PHP version").': '.PHP_VERSION.'; '.installer_t("version 5.3 or later is required");
+    $requirements['environment']['php_version'] = 0;
 }
 // Check $_SERVER variable meets requirements of Yii
-if(($message = checkServerVar($thisFile)) !== ''){
-	$reqMessages[3][] = installer_t($message);
+$requirements['environment']['php_server_superglobal'] = 0;
+if($mode == 'web'){
+    if(($message = checkServerVar($thisFile)) !== ''){
+        $reqMessages[3][] = installer_t($message);
+    }else{
+        $requirements['environment']['php_server_superglobal'] = 1;
+    }
 }
+
 // Check for existence of Reflection class
-if(!class_exists('Reflection', false)){
+$requirements['extensions']['pcre'] = 0;
+$requirements['environment']['pcre_version'] = 0;
+if(!($requirements['classes']['Reflection']=class_exists('Reflection', false))){
 	$reqMessages[3][] = '<a href="http://php.net/manual/class.reflectionclass.php">PHP reflection class</a>: '.$rbm;
-}else if(extension_loaded("pcre")){
+}else if($requirements['extensions']['pcre']=extension_loaded("pcre")){
 	// Check PCRE library version
 	$pcreReflector = new ReflectionExtension("pcre");
 	ob_start();
@@ -268,34 +306,35 @@ if(!class_exists('Reflection', false)){
 	preg_match("/([\d\.]+) \d{4,}-\d{1,2}-\d{1,2}/", $pcreInfo, $matches);
 	$thisVer = $matches[1];
 	$reqVer = '7.4';
-	if(version_compare($thisVer, $reqVer) < 0){
+	if(!($requirements['environment']['pcre_version'] = version_compare($thisVer, $reqVer) >= 0)){
 		$reqMessages[3][] = strtr(installer_t("The version of the PCRE library included in this build of PHP is {thisVer}, but {reqVer} or later is required."), array('{thisVer}' => $thisVer, '{reqVer}' => $reqVer));
 	}
 }else{
 	$reqMessages[3][] = '<a href="http://www.php.net/manual/book.pcre.php">PCRE extension</a>: '.$rbm;
 }
 // Check for SPL extension
-if(!extension_loaded("SPL")){
+if(!($requirements['extensions']['SPL']=extension_loaded("SPL"))){
+
 	$reqMessages[3][] = '<a href="http://www.php.net/manual/book.spl.php">SPL</a>: '.$rbm;
 }
 // Check for MySQL connecter
-if(!extension_loaded('pdo_mysql')){
+if(!($requirements['extensions']['pdo_mysql']=extension_loaded('pdo_mysql'))){
 	$reqMessages[3][] = '<a href="http://www.php.net/manual/ref.pdo-mysql.php">PDO MySQL extension</a>: '.$rbm;
 }
 // Check for CType extension
-if(!extension_loaded("ctype")){
+if(!($requirements['extensions']['ctype']=extension_loaded('ctype'))){
 	$reqMessages[3][] = '<a href="http://www.php.net/manual/book.ctype.php">CType extension</a>: '.$rbm;
 }
 // Check for multibyte-string extension
-if(!extension_loaded("mbstring")){
+if(!($requirements['extensions']['mbstring']=extension_loaded('mbstring'))){
 	$reqMessages[3][] = '<a href="http://www.php.net/manual/book.mbstring.php">Multibyte string extension</a>: '.$rbm;
 }
 // Check for JSON extension:
-if(!extension_loaded('json')){
+if(!($requirements['extensions']['json']=extension_loaded('json'))){
 	$reqMessages[3][] = '<a href="http://www.php.net/manual/function.json-decode.php">json extension</a>: '.$rbm;
 }
 // Check for hash:
-if(!extension_loaded('hash')){
+if(!($requirements['extensions']['hash']=extension_loaded('hash'))){
 	$reqMessages[3][] = '<a href="http://www.php.net/manual/book.hash.php">HASH Message Digest Framework</a>: '.$rbm;
 } else {
 	$algosRequired = array('sha512');
@@ -310,11 +349,11 @@ if(!extension_loaded('hash')){
 $requiredFunctions = array(
 	'mb_regex_encoding',
 	'getcwd',
-	'chmod'
+	'chmod',
 );
 $missingFunctions = array();
 foreach($requiredFunctions as $function)
-	if(!function_exists($function))
+	if(!($requirements['functions'][$function]=function_exists($function)))
 		$missingFunctions[] = $function;
 if(count($missingFunctions))
 	$reqMessages[3][] = installer_t('The following required PHP function(s) is/are missing or disabled: ').implode(', ',$missingFunctions);
@@ -326,8 +365,10 @@ if(!in_array('chmod', $missingFunctions)) {
 		$fp = fileperms(__FILE__); // original permissions
 		chmod(__FILE__,octdec(100700));
 		chmod(__FILE__,$fp);
+        $requirements['environment']['chmod'] = 1;
 	}catch (Exception $e){
 		$reqMessages[3][] = installer_t('PHP scripts are not permitted to run the function "chmod".');
+        $requirements['environment']['chmod'] = 0;
 	}
 	restore_error_handler();
 }
@@ -338,6 +379,7 @@ if($standalone) {
     $classWarnings = array();
     foreach($classes as $class) {
         if(class_exists($class,false)){
+            $requirements['classConflict'][] = $class;
             $classWarnings[] = $class;
         }
     }
@@ -354,7 +396,7 @@ if($standalone) {
 // MEDIUM-PRIORITY: IMPORTANT FUNCTIONALITY REQUIREMENTS //
 ///////////////////////////////////////////////////////////
 // Check remote access methods
-$curl = extension_loaded("curl") && function_exists('curl_init') && function_exists('curl_exec');
+$curl = ($requirements['extensions']['curl']=extension_loaded("curl")) && function_exists('curl_init') && function_exists('curl_exec');
 if(!$curl){
 	$curlMissingIssues = array(
 		installer_t('Time zone widget will not work'),
@@ -364,31 +406,34 @@ if(!$curl){
 	);
 	$reqMessages[2][] = '<a href="http://php.net/manual/book.curl.php">cURL</a>: '.$rbm.'. '.installer_t('This will result in the following issues:').'<ul><li>'.implode('</li><li>', $curlMissingIssues).'</li></ul>'.installer_t('Furthermore, please note: without this extension, the requirements check script could not check the outbound internet connection of this server.');
 }
-if(!(bool) (@ini_get('allow_url_fopen'))){
+
+if(!(bool) ($requirements['environment']['allow_url_fopen']=@ini_get('allow_url_fopen'))){
 	if(!$curl){
 		$tryAccess = false;
-		$reqMessages[2][] = installer_t('The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will not work.');
+		$reqMessages[2][] = installer_t('The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will have to be performed manually.');
 	} else
 		$reqMessages[1][] = installer_t('The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.');
 }
+$requirements['environment']['updates_connection'] = 0;
+$requirements['environment']['outbound_connection'] = 0;
 if($tryAccess){
 	if(!(bool) @file_get_contents('http://google.com')){
 
-		$ch = curl_init('http://google.com');
+		$ch = curl_init('https://www.google.com');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_POST, 0);
 		$response = (bool) @curl_exec($ch);
 		curl_close($ch);
-		if(!$response){
-			$reqMessages[2][] = installer_t('This web server is effectively cut off from the internet; (1) no outbound network route exists, or (2) local DNS resolution is failing, or (3) this server is behind a firewall that is preventing outbound requests. Software updates and Google integration will not work.');
+		if(!($requirements['environment']['outbound_connection']=(bool)$response)){
+			$reqMessages[2][] = installer_t('This web server is effectively cut off from the internet; (1) no outbound network route exists, or (2) local DNS resolution is failing, or (3) this server is behind a firewall that is preventing outbound requests. Software updates will have to be performed manually, and Google integration will not work.');
 		} else {
 			$ch = curl_init('https://x2planet.com/installs/registry/reqCheck');
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_POST, 0);
 			$response = (bool) @curl_exec($ch);
 			curl_close($ch);
-			if(!$response) {
-				$reqMessages[2][] = installer_t('Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will not work.');
+			if(!($requirements['environment']['updates_connection']=(bool)$response)) {
+				$reqMessages[2][] = installer_t('Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will have to be performed manaully.');
 			}
 		}
 
@@ -396,18 +441,33 @@ if($tryAccess){
 }
 
 // Check the ability to make database backups during updates:
-$canBackup = function_exists('proc_open');
+$canBackup = $requirements['functions']['proc_open'] = function_exists('proc_open');
 if($canBackup){
 	try{
-		$ret = 0;
-		$result = exec('mysqldump --help', $ret);
-		if($ret !== 0){
-			$result = exec('mysqldump.exe --help', $ret);
-			$canBackup = $ret !== 0;
-		}
+		// Test for the availability of mysqldump:
+        $descriptor = array(
+            0 => array('pipe', 'r'),
+            1 => array('pipe', 'w'),
+            2 => array('pipe', 'w'),
+        );
+        $testProc = proc_open('mysqldump --help', $descriptor, $pipes);
+        $ret = proc_close($testProc);
+        unset($pipes);
+        
+        if($ret === 0) {
+            $prog = 'mysqldump';
+        } else if($ret !== 0){
+            $testProc = proc_open('mysqldump.exe --help', $descriptor, $pipes);
+            $ret = proc_close($testProc);
+            if($ret !== 0)
+                throw new CException(Yii::t('admin', 'Unable to perform database backup; the "mysqldump" utility is not available on this system.'));
+            else
+                $prog = 'mysqldump.exe';
+        }
 	}catch(Exception $e){
 		$canBackup = false;
 	}
+    $canBackup = isset($prog);
 }
 if(!$canBackup){
 	$reqMessages[2][] = installer_t('The function proc_open and/or the "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.');
@@ -422,19 +482,20 @@ if(!is_writable($ssp)){
 // LOW PRIORITY: MISCELLANEOUS FUNCTIONALITY REQUIREMENTS //
 ////////////////////////////////////////////////////////////
 // Check encryption methods
-if(!(extension_loaded('openssl') && extension_loaded('mcrypt'))) {
+if(!($requirements['extensions']['openssl']=extension_loaded('openssl') && $requirements['extensions']['mcrypt']=extension_loaded('mcrypt'))) {
 	$reqMessages[1][] = installer_t('The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2CRM, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.');
 }
 // Check the availability of email delivery messages.
 $canDo = array();
-$canDo['phpmail'] = @ini_get('sendmail_path') && function_exists('mail');
+$canDo['phpmail'] = $requirements['environment']['phpmail'] = (@ini_get('sendmail_path') && function_exists('mail'));
 if($canDo['phpmail']){
 	// Check for valid, existing sendmail_path
 	$smpath = explode(' ', ini_get('sendmail_path'));
 	$smpath = $smpath[0];
-	$canDo['phpmail'] = is_executable($smpath);
+	$canDo['phpmail'] = $requirements['environment']['phpmail'] = is_executable($smpath);
 }
-$canDo['shell'] = function_exists('escapeshellcmd') && function_exists('escapeshellarg') && function_exists('popen');
+
+$canDo['shell'] = $requirements['environment']['shell'] = function_exists('escapeshellcmd') && function_exists('escapeshellarg') && function_exists('popen');
 if(function_exists('is_executable')){
 	$canDo['sendmail'] = is_executable('/usr/sbin/sendmail');
 	$canDo['qmail'] = is_executable('/var/qmail/bin/sendmail');
@@ -443,15 +504,15 @@ if(function_exists('is_executable')){
 	$canDo['qmail'] = false;
 }
 // Check for Zip extension
-if(!extension_loaded('zip')){
+if(!($requirements['extensions']['zip']=extension_loaded('zip'))){
 	$reqMessages[1][] = '<a href="http://php.net/manual/book.zip.php">Zip</a>: '.$rbm.'. '.installer_t('This will result in the inability to import and export custom modules.');
 }
 // Check for fileinfo extension
-if(!extension_loaded('fileinfo')){
+if(!($requirements['extensions']['fileinfo']=extension_loaded('fileinfo'))){
 	$reqMessages[1][] = '<a href="http://php.net/manual/book.fileinfo.php">Fileinfo</a>: '.$rbm.'. '.installer_t('Image previews and MIME info for uploaded files in the media module will not be available.');
 }
 // Check for GD exension
-if(!extension_loaded('gd')){
+if(!($requirements['extensions']['gd']=extension_loaded('gd'))){
 	$reqMessages[1][] = '<a href="http://php.net/manual/book.image.php">GD</a>: '.$rbm.'. '.installer_t('Security captchas will not work, and the media module will not be able to detect or display the dimensions of uploaded images.');
 }
 
@@ -510,7 +571,6 @@ if($hasMessages){
 	$output .= '</div><br />';
 }
 
-
 if($standalone){
 	$imgData = 'iVBORw0KGgoAAAANSUhEUgAAAGkAAAAfCAYAAADk+ePmAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAADMlJREFUeNrs'.
 			'W3lwVGUS/82RZBISyMkRwhESIISjEBJAgWRQbhiuci3AqsUVarfcWlZR1xL+2HJry9oqdNUtj0UFQdSwoELCLcoKBUgOi3AkkkyCYi4SSELOSTIzyWz3N/Ne3nszCVnd2qHKNNU1'.
@@ -547,20 +607,21 @@ if($standalone){
 			'foOjqU8D2Qh62jxXLmro3t6v5Z9BfI9ot3c0sJFeamluXqXX68PDwyMoNhr6tXOfGOh2jQBZz+g8d16j+IxFbOY/wOgn/xJf9HY6nTfZQBaLJUunrPT88f7UfjX5nRr4f1NIL/8R'.
 			'YABtitvxQEn6dgAAAABJRU5ErkJggg==';
 	$output .= '<img style="display:block;margin-left:278px;float:none;" src="data:image/png;base64,'.$imgData.'"><br /><br />';
-	$output .= $phpInfoContent;
+    $output .= $phpInfoContent;
 }
-
-echo strtr($document, array(
-	'{headerContent}' => $phpInfoStyle,
-	'{bodyContent}' => $output
-));
 
 /////////
 // FIN //
 /////////
-
-$responding = true; // We made it! No need to perform the shutdown function for fatal errors.
-
-restore_error_handler();
-restore_exception_handler();
+if(!$returnArray){
+    echo strtr($document, array(
+        '{headerContent}' => $phpInfoStyle,
+        '{bodyContent}' => $output
+    ));
+    $responding = true; // We made it! No need to perform the shutdown function for fatal errors.
+    restore_error_handler();
+    restore_exception_handler();
+}else{
+    return compact('requirements','reqMessages','canInstall','hasMessages');
+}
 ?>

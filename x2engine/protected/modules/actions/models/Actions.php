@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -133,18 +132,28 @@ class Actions extends X2Model {
             $this->dueDate = Formatter::parseDateTime($this->dueDate);
             $this->completeDate = Formatter::parseDateTime($this->completeDate);
         }
+        return parent::beforeSave();
+    }
+
+    public function afterSave(){
         if(!isset($this->actionText)){
             $actionText = new ActionText;
             $actionText->actionId = $this->id;
             $actionText->text = $this->actionDescriptionTemp;
             $actionText->save();
         }else{
-            if(!empty($this->actionDescriptionTemp) && $this->actionText->text != $this->actionDescriptionTemp){
+            if($this->actionText->text != $this->actionDescriptionTemp){
                 $this->actionText->text = $this->actionDescriptionTemp;
                 $this->actionText->save();
             }
         }
-        return parent::beforeSave();
+        return parent::afterSave();
+    }
+
+    public function afterFind(){
+        if(isset($this->actionText)){
+            $this->actionDescriptionTemp = $this->actionText->text;
+        }
     }
 
     /**
@@ -183,7 +192,7 @@ class Actions extends X2Model {
             $notif->save();
         }
         if(Yii::app()->params->noSession && !$this->asa('changelog')){
-            X2Flow::trigger('RecordCreateTrigger',array('model'=>$this));
+            X2Flow::trigger('RecordCreateTrigger', array('model' => $this));
         }
         parent::afterCreate();
     }
@@ -199,13 +208,7 @@ class Actions extends X2Model {
     }
 
     public function setActionDescription($value){
-        if(isset($this->actionText)){
-            $this->actionDescriptionTemp = $value;
-            $this->actionText->text = $value;
-            $this->actionText->save();
-        }else{
-            $this->actionDescriptionTemp = $value;
-        }
+        $this->actionDescriptionTemp = $value;
     }
 
     public function getActionDescription(){
@@ -312,15 +315,14 @@ class Actions extends X2Model {
             }else{
                 return Formatter::truncateText($this->actionDescription, 40);
             }
-
         }
     }
 
-    public function getLink($length = 30, $frame=true){
+    public function getLink($length = 30, $frame = true){
 
         $text = $this->name;
         if($length && mb_strlen($text, 'UTF-8') > $length)
-            $text = CHtml::encode(mb_substr($text, 0, $length, 'UTF-8').'...');
+            $text = CHtml::encode(trim(mb_substr($text, 0, $length, 'UTF-8')).'...');
         if($frame){
             return CHtml::link($text, '#', array('class' => 'action-frame-link', 'data-action-id' => $this->id));
         }else{
@@ -341,14 +343,6 @@ class Actions extends X2Model {
             return false;
         if(!is_numeric($dueDate))
             $dueDate = strtotime($dueDate); // make sure $date is a proper timestamp
-
-
-
-
-
-//$due = getDate($dueDate);
-        //$dueDate = mktime(23,59,59,$due['mon'],$due['mday'],$due['year']); // if there is no time, give them until 11:59 PM to finish the action
-        //$dueDate += 86399;
 
         $timeLeft = $dueDate - time(); // calculate how long till due date
         if($timeLeft < 0)

@@ -241,7 +241,7 @@ refreshQtip();
 Yii::app()->clientScript->registerScript('map-controls',"
 $('#mapControlForm').submit(function(){
     var tags=new Array();
-    $.each($('#x2-tag-list-filter a'),function(){
+    $.each($('#x2-tag-list a'),function(){
         tags.push($(this).text());
     });
     $('#params_tags').val(tags);
@@ -255,7 +255,7 @@ $('#save-button').click(function(e){
     if(mapName){
         var center=map.getCenter();
         var tags=new Array();
-        $.each($('#x2-tag-list-filter a'),function(){
+        $.each($('#x2-tag-list a'),function(){
             tags.push($(this).text());
         })
         var parameters={'assignedTo':'".(empty($assignment)?"":$assignment)."','tags':tags};
@@ -284,7 +284,7 @@ $('#save-button').click(function(e){
         'action' => 'googleMaps',
         'id' => 'mapControlForm',
         'enableAjaxValidation' => false,
-        'method' => 'POST'
+        'method' => 'POST',
     ));
     echo CHtml::hiddenField('contactId',isset($contactId)?$contactId:'');
     // $range = 30; //$model->dateRange;

@@ -76,7 +76,7 @@ Static Methods
 Instance Methods
 ************************************************************************************/
 
-X2UsersChart.prototype = Object.create (X2Chart.prototype);
+X2UsersChart.prototype = auxlib.create (X2Chart.prototype);
 
 /*
 Generate color palette after number of selected users is determined

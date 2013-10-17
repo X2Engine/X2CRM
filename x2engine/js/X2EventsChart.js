@@ -93,7 +93,7 @@ function X2EventsChart (argsDict) {
 	thisX2Chart.start ();
 }
 
-X2EventsChart.prototype = Object.create (X2Chart.prototype);
+X2EventsChart.prototype = auxlib.create (X2Chart.prototype);
 
 /*
 Sets initial state of chart setting ui elements

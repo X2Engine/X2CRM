@@ -215,7 +215,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
 				else
 					return false;
 			}
-			if($modelClass !== get_class($params['model']))
+			if(!isset($params['model']) || $modelClass !== get_class($params['model']))
 				return false;
 		}
 		return $this->validateOptions($paramRules,$params);
@@ -297,7 +297,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
 
 				if($operator === 'changed') {
 					$oldAttributes = $model->getOldAttributes();
-					return !isset($oldAttributes[$attr]) || $model->getAttribute($attr) != $oldAttributes[$attr];
+					return (!isset($oldAttributes[$attr]) && $model->isNewRecord) || (isset($oldAttributes[$attr]) && $model->getAttribute($attr) != $oldAttributes[$attr]);
 				}
 
 				return self::evalComparison($model->getAttribute($attr),$operator,X2Flow::parseValue($value,$field->type,$params));
@@ -676,7 +676,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
 
 	/**
 	 * Gets all X2Flow trigger types.
-     * 
+     *
      * Optionally constrains the list to those with a property matching a value.
      * @param string $queryProperty The property of each trigger to test
      * @param mixed $queryValue The value to match trigger against

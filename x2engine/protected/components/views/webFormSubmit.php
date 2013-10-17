@@ -34,36 +34,46 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.webupdater.*');
 
-/**
- * Action that applies the update.
- *
- * This action takes the longest of any action to execute and is the most
- * critical point in the update process.
- * 
- * @package X2CRM.components.webupdater
- * @author Demitri Morgan <demitri@x2engine.com>
- */
-class EnactX2CRMChangesAction extends WebUpdaterAction {
 
-	public function run($scenario = null, $autoRestore = false){
-        if($scenario == 'checkFiles') {
-            // Expects $_POST['fileList'] in this scenario
-            self::respond('',$this->checkFiles($_POST['fileList']));
-            return;
-        }
-		set_error_handler('UpdaterBehavior::respondWithError');
-		set_exception_handler('UpdaterBehavior::respondWithException');
-		$autoRestore = (bool) $autoRestore;
-		$locked = $this->enactChanges($scenario, $_POST, $autoRestore);
-		$this->addResponseProperty('locked',$locked);
-		if(! (bool) $locked)
-			self::respond(Yii::t('admin', 'All done.'));
-		else
-			self::respond(Yii::t('admin', 'An operation that began {t} is in progress (to apply database and file changes to X2CRM). If you are seeing this message, and the stated time is less than a minute ago, this is most likely because your web browser made a duplicate request to the server. Please stand by while the operation completes. Otherwise, you may delete the lock file {file} and try again.',array('{t}'=>strftime('%h %e, %r',$locked),'{file}'=>$this->lockFile)),1);
-	}
-
-}
-
+mb_internal_encoding('UTF-8');
+mb_regex_encoding('UTF-8');
+Yii::app()->params->profile = ProfileChild::model()->findByPk(1);
 ?>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo Yii::app()->language; ?>" 
+ lang="<?php echo Yii::app()->language; ?>">
+<head>
+<meta charset="UTF-8" />
+<meta name="language" content="<?php echo Yii::app()->language; ?>" />
+<title><?php echo CHtml::encode($this->pageTitle); ?></title>
+
+<style type="text/css">
+body {
+	font-size:12px;
+	font-family: Arial, Helvetica, sans-serif;
+	width:189px;
+}
+</style>
+</head>
+<body>
+<?php 
+if (!empty($error)) { ?>
+	<h1><?php echo Yii::t('contacts','We\'re Sorry!'); ?></h1>
+	<p><?php echo $error; ?></p>
+<?php 
+} else { ?>
+	<h1><?php echo Yii::t('contacts','Thank You!'); ?></h1>
+<?php
+if ($type === 'weblead') { ?>
+	<p><?php echo Yii::t('contacts','Thank you for your interest!'); ?></p>
+<?php
+} elseif ($type === 'service') { ?>
+	<p><?php echo Yii::t('contacts','Your case number is: ') . $caseNumber; ?></p>
+<?php
+} ?>
+	<p><?php echo Yii::t('contacts','Someone will be in touch shortly.'); ?></p>
+<?php } ?>
+</body>
+</html>

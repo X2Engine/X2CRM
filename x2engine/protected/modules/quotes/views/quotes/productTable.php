@@ -83,7 +83,7 @@ function updateProduct(price, quantity, adjustments, label) {
 	price = parseFloat(price);
 	quantity = parseFloat(quantity);
 	var total = price * quantity;
-	var index = adjustments.indexOf('%');
+	var index = $.inArray ('%', adjustments);
 	if(index == -1) { // adjustment
 	    total += parseFloat(adjustments);
 	} else { // percent adjustment

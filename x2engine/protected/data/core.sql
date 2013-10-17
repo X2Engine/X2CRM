@@ -54,7 +54,7 @@ CREATE TABLE x2_admin(
 	emailBatchSize			INT				NOT NULL DEFAULT 200,
 	emailInterval			INT				NOT NULL DEFAULT 60,
 	emailUseSignature		VARCHAR(5)		DEFAULT "user",
-	emailSignature			VARCHAR(512),
+	emailSignature			TEXT,
 	emailType				VARCHAR(20)		DEFAULT "mail",
 	emailHost				VARCHAR(255),
 	emailPort				INT				DEFAULT 25,
@@ -572,19 +572,6 @@ CREATE TABLE x2_tips(
     module              VARCHAR(255)
 ) COLLATE = utf8_general_ci;
 /*&*/
-DROP TABLE IF EXISTS x2_flows;
-/*&*/
-CREATE TABLE x2_flows(
-	id						INT				AUTO_INCREMENT PRIMARY KEY,
-	active					TINYINT			NOT NULL DEFAULT 1,
-	name					VARCHAR(100)	NOT NULL,
-	triggerType				VARCHAR(40)		NOT NULL,
-	modelClass				VARCHAR(40),
-	flow					TEXT,
-	createDate				BIGINT			NOT NULL,
-	lastUpdated				BIGINT			NOT NULL
-) COLLATE = utf8_general_ci;
-/*&*/
 DROP TABLE IF EXISTS x2_like_to_post;
 /*&*/
 CREATE TABLE `x2_like_to_post` (
@@ -613,4 +600,29 @@ CREATE TABLE `x2_chart_settings` (
   `settings`                TEXT,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId` (`userId`,`name`)
+) COLLATE = utf8_general_ci;
+/*&*/
+/* This table has a foreign key constraint in it and should thus be dropped first: */
+DROP TABLE IF EXISTS x2_trigger_logs;
+/*&*/
+DROP TABLE IF EXISTS x2_flows;
+/*&*/
+CREATE TABLE x2_flows(
+	id						INT				AUTO_INCREMENT PRIMARY KEY,
+	active					TINYINT			NOT NULL DEFAULT 1,
+	name					VARCHAR(100)	NOT NULL,
+	triggerType				VARCHAR(40)		NOT NULL,
+	modelClass				VARCHAR(40),
+	flow					TEXT,
+	createDate				BIGINT			NOT NULL,
+	lastUpdated				BIGINT			NOT NULL
+) COLLATE = utf8_general_ci;
+/*&*/
+CREATE TABLE `x2_trigger_logs` (
+  `id`                          INT             NOT NULL AUTO_INCREMENT,
+  `flowId`                      INT             NOT NULL,
+  `triggeredAt`                 BIGINT          NOT NULL,
+  `triggerLog`                  TEXT,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`flowId`) REFERENCES x2_flows(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE = utf8_general_ci;

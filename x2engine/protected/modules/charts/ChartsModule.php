@@ -144,6 +144,10 @@ class ChartsModule extends CWebModule {
 				'depends' => array('jqplot'),
 			)
 		);
+        if (AuxLib::isIE8 ()) {
+            $this->packages['jqplot']['js'][] = 'js/jqplot/excanvas.js';
+        }
+
 		Yii::app()->clientScript->packages = $this->packages;
 
 		// set module layout

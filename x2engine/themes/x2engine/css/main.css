@@ -48,8 +48,6 @@ body.login {
 	/* background: url(../images/login_white_bg.png) repeat-x left center; */
 }
 
-
-
 /***********************************************************************
 General Table Rules
 ***********************************************************************/
@@ -916,7 +914,8 @@ div.img-box.record_create.BugReports-create {
     width: 16px;
 }
 
-div.loading-icon {
+div.loading-icon,
+.x2-loading-icon {
     background: url(../images/loading.gif) no-repeat;
     height: 32px;
     width: 32px;
@@ -1199,14 +1198,19 @@ div.date-box .day {
 }
 
 
+/*
+yii flash box
+*/
 
-
-div.flash-error, div.flash-notice, div.flash-success {
+div.flash-error, 
+div.flash-notice, 
+div.flash-success {
+    margin-bottom: 0;
 	padding: .8em;
-	margin-bottom: 1em;
 	border: 2px solid #ddd;
 }
-div.flash-error {
+div.flash-error, 
+ul.flash-error {
     background: #fbe3e4;
     color: #8a1f11;
     border-color: #fbc2c4;
@@ -1233,9 +1237,7 @@ div.flash-success a {
 
 div.search-form {
 	margin-left: 0px;
-	margin-bottom: 10px;
 	margin-right: 0px;
-	margin-top: 10px;
 	padding: 10px;
 	background: #eee;
 }
@@ -1418,25 +1420,6 @@ body.yii-t dt.yii-t {
 	cursor: pointer;
 	text-decoration: none;
 	float: right;
-}
-
-#widget_MediaBox .media-item a, #x2-tag-list .tag a,  #x2-tag-list-filter .tag a{
-	text-decoration: none;
-	color: black;
-}
-
-#widget_MediaBox .media-item, #x2-tag-list .tag, #x2-tag-list-filter .tag{
-	-moz-border-radius: 		4px;
-	-o-border-radius: 		4px;
-	-webkit-border-radius: 	4px;
-	border-radius: 			4px;
-	border-style: solid;
-	border-width: 1px;
-	border-color: gray;
-	margin: 2px 2px;
-	display: inline-block;
-	padding: 2px;
-	background-color: #f0f0f0;
 }
 
 /* VCR Controls */
@@ -1731,4 +1714,34 @@ JQuery UI Dialog Theme
     border-width: 1px;
 }
 
+p.fieldhelp-above {
+	color: #666;
+	font-size: 12px;
+	margin: -0.2px 0 0.8em;
+	width: 193px;
+}
+p.fieldhelp-thin-small {
+	color: #666;
+	font-size: 11px;
+    margin-bottom: 0;
+	width: 193px;
+}
+p.fieldhelp {
+	color: #666;
+	font-size: 12px;
+	margin: -0.3em 0 0.8em;
+	width: 193px;
+}
+p.fieldhelp.half {
+	display: inline-block;
+	width: 79px;
+	margin: 0;
+}
 
+span.x2-down-arrow {
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid dimGray;
+    width: 0px !important;
+    height: 0px !important;
+}

@@ -33,13 +33,13 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
 $menuItems = array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
 	array('label'=>Yii::t('contacts','View List')),
-	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
     array('label'=>Yii::t('contacts','Import Contacts'),'url'=>array('importExcel')),
 	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('exportContacts')),
     array('label'=>Yii::t('contacts','Contact Map'),'url'=>array('googleMaps')),
@@ -158,30 +158,23 @@ $(function() {
 </div><!-- search-form -->
 <form>
 <?php
-$listActions = '<div class="list-actions">'.CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));
-
-$listNames = array();
-foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {	// get all static lists
-	if($this->checkPermissions($list,'edit'))	// check permissions
-		$listNames[$list->id] = $list->name;
-}
-
-if(!empty($listNames)) {
-	$listActions .= ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'addToList','class'=>'list-action'));
-	$listActions .= CHtml::dropDownList('addToListTarget',null,$listNames, array());
-}
-$listActions .= '</div>';
 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
 	'title'=>$heading,
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> '<div class="page-title icon contacts">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
+	'template'=> 
+        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
+        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
+        '<div id="x2-gridview-page-title" '.
+         'class="page-title icon contacts x2-gridview-fixed-title">'.
+        '{title}{buttons}{filterHint}{massActionButtons}{summary}{items}{pager}',
+    'fixedHeader'=>true,
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
-	'pager'=>array('class'=>'CLinkPager','header'=>$listActions, 'maxButtonCount'=>10),
+	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
 	// 'columns'=>$columns,
 	'modelName'=>'Contacts',
 	'viewName'=>'contacts',
@@ -204,6 +197,9 @@ $this->widget('application.components.X2GridView', array(
 			'type'=>'raw',
 		),
 	),
+    'massActions'=>array(
+        'addToList', 'newList'
+    ),
 	'enableControls'=>true,
 	'enableTags'=>true,
 	'fullscreen'=>true,

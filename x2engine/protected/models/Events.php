@@ -412,7 +412,7 @@ class Events extends CActiveRecord {
                         $emailType = Yii::t('app', 'an email');
                         break;
                 }
-                if(count(X2Model::model($this->associationType)->findAllByPk($this->associationId)) > 0){
+                if(X2Model::getModelName($this->associationType) && count(X2Model::model($this->associationType)->findAllByPk($this->associationId)) > 0){
                     $text = X2Model::getModelLink($this->associationId, $this->associationType).Yii::t('app', ' has opened {emailType}!', array(
                                 '{emailType}' => $emailType,
                                 '{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType)
@@ -590,18 +590,18 @@ class Events extends CActiveRecord {
         if(!is_null($limit) && is_numeric($limit)){
             $parameters['limit'] = $limit;
         }
-        if(!Yii::app()->params->isAdmin){
+        if(!Yii::app()->params->isAdmin && !Yii::app()->user->isGuest){
             if(Yii::app()->params->admin->historyPrivacy == 'user'){
-                $visibilityCondition = ' AND (associationId='.Yii::app()->user->getId().' OR user="'.Yii::app()->user->getName().'")';
+                $visibilityCondition = ' AND (associationId='.Yii::app()->user->getId().' OR `user`="'.Yii::app()->user->getName().'")';
             }elseif(Yii::app()->params->admin->historyPrivacy == 'group'){
-                $visibilityCondition = ' AND (user IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.Yii::app()->user->getName().'") OR (associationId='.Yii::app()->user->getId().' OR user="'.Yii::app()->user->getName().'"))';
+                $visibilityCondition = ' AND (`user` IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.Yii::app()->user->getName().'") OR (associationId='.Yii::app()->user->getId().' OR `user`="'.Yii::app()->user->getName().'"))';
             }else{
-                $visibilityCondition = " AND (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."' OR visibility=1)";
+                $visibilityCondition = " AND (associationId=".Yii::app()->user->getId()." OR `user`='".Yii::app()->user->getName()."' OR visibility=1)";
             }
         }else{
             $visibilityCondition = "";
         }
-        $condition = isset($_SESSION['feed-condition']) ? $_SESSION['feed-condition']." AND timestamp < $maxTimestamp AND (type!='action_reminder' OR user='$user')  AND (type!='notif' OR user='$user') AND (id > $id OR timestamp > $timestamp)" : '(id > '.$id.' OR timestamp > '.$timestamp.') AND timestamp <= '.$maxTimestamp.'  AND type!="comment"'." AND (type!='action_reminder' OR user='$user') AND (type!='notif' OR user='".Yii::app()->user->getName()."')".$visibilityCondition;;
+        $condition = isset($_SESSION['feed-condition']) ? $_SESSION['feed-condition']." AND timestamp < $maxTimestamp AND (`type`!='action_reminder' OR `user`='$user')  AND (`type`!='notif' OR `user`='$user') AND (id > $id OR timestamp > $timestamp)" : '(id > '.$id.' OR timestamp > '.$timestamp.') AND timestamp <= '.$maxTimestamp.'  AND `type`!="comment"'." AND (`type`!='action_reminder' OR `user`='$user') AND (`type`!='notif' OR `user`='".Yii::app()->user->getName()."')".$visibilityCondition;
         $parameters['condition'] = $condition;
         $criteria->scopes = array('findAll' => array($parameters));
         return array(

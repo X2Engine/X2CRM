@@ -447,7 +447,7 @@ div.x2-layout.editMode .formInputBox {
 }
 
 
-#formEditorControls, #fieldListTitle {
+#formEditorControls, #fieldListTitle, .fieldListTitle {
 	font-size:12px;
 	display:block;
 	padding:5px 5px;

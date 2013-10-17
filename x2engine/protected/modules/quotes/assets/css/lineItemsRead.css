@@ -55,57 +55,66 @@
 
 /* line item name */
 .quote-table > thead > tr > th.line-item-name, 
-.quote-table > tbody#line-items > tr > td:nth-child(2)
+.quote-table > tbody#line-items > tr > td:nth-child(2),
+.quote-table > tbody#line-items > tr > td.x2-2nd-child
 {
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 /* line item name cell */
-.quote-table > tbody#line-items > tr > td:nth-child(2) {
+.quote-table > tbody#line-items > tr > td:nth-child(2),
+.quote-table > tbody#line-items > tr > td.x2-2nd-child {
     width: 20%;
 }
 
 
 /* line item name */
 .quote-table > thead > tr > th.line-item-name, 
-.quote-table > tbody#line-items > tr > td:nth-child(2) input
+.quote-table > tbody#line-items > tr > td:nth-child(2) input,
+.quote-table > tbody#line-items > tr > td.x2-2nd-child input
 {
     width: 95%;
 	font-size: 12px;
 }
 
 /* unit price cell */
-.quote-table > tbody#line-items > tr > td:nth-child(3) {
+.quote-table > tbody#line-items > tr > td:nth-child(3),
+.quote-table > tbody#line-items > tr > td.x2-3rd-child {
     width: 17.5%;
 }
 
 /* unit price */
-.quote-table > tbody#line-items > tr > td:nth-child(3) input {
+.quote-table > tbody#line-items > tr > td:nth-child(3) input,
+.quote-table > tbody#line-items > tr > td.x2-3rd-child input {
     width: 95%;
 	text-align: right;
 	font-size: 12px;
 }
 
 /* quantity cell */
-.quote-table > tbody#line-items > tr > td:nth-child(4) {
+.quote-table > tbody#line-items > tr > td:nth-child(4),
+.quote-table > tbody#line-items > tr > td.x2-4th-child {
     width: 15%;
 }
 
 /* quantity */
-.quote-table > tbody#line-items > tr > td:nth-child(4) input {
+.quote-table > tbody#line-items > tr > td:nth-child(4) input,
+.quote-table > tbody#line-items > tr > td.x2-4th-child input {
     width: 95%;
 	text-align: right;
 	font-size: 12px;
 }
 
 /* adjustment name cell */
-.quote-table > tbody#adjustments> tr > td:nth-child(4) {
+.quote-table > tbody#adjustments> tr > td:nth-child(4),
+.quote-table > tbody#adjustments> tr > td.x2-4th-child {
     width: 15%;
 }
 
 /* adjustment name */
-.quote-table > tbody#adjustments> tr > td:nth-child(4) input {
+.quote-table > tbody#adjustments> tr > td:nth-child(4) input,
+.quote-table > tbody#adjustments> tr > td.x2-4th-child input {
     width: 95%;
 	text-align: left;
 	font-size: 12px;
@@ -113,13 +122,17 @@
 
 /* adjustments cell */
 .quote-table > tbody#line-items > tr > td:nth-child(5),
-.quote-table > tbody#adjustments > tr > td:nth-child(5) {
+.quote-table > tbody#line-items > tr > td.x2-5th-child,
+.quote-table > tbody#adjustments > tr > td:nth-child(5),
+.quote-table > tbody#adjustments > tr > td.x2-5th-child {
     width: 15%;
 }
 
 /* adjustments */
 .quote-table > tbody#line-items > tr > td:nth-child(5) input,
-.quote-table > tbody#adjustments > tr > td:nth-child(5) input {
+.quote-table > tbody#line-items > tr > td.x2-5th-child input,
+.quote-table > tbody#adjustments > tr > td:nth-child(5) input
+.quote-table > tbody#adjustments > tr > td.x2-5th-child input {
     width: 95%;
 	font-size: 12px;
 	text-align: right;
@@ -127,26 +140,34 @@
 
 /* description cell */
 .quote-table > tbody#line-items > tr > td:nth-child(6),
-.quote-table > tbody#adjustments > tr > td:nth-child(6) {
+.quote-table > tbody#line-items > tr > td.x2-6th-child,
+.quote-table > tbody#adjustments > tr > td:nth-child(6),
+.quote-table > tbody#adjustments > tr > td.x2-6th-child {
     width: 15%;
 }
 
 /* description */
 .quote-table > tbody#line-items > tr > td:nth-child(6) input,
-.quote-table > tbody#adjustments > tr > td:nth-child(6) input {
+.quote-table > tbody#line-items > tr > td.x2-6th-child input,
+.quote-table > tbody#adjustments > tr > td:nth-child(6) input,
+.quote-table > tbody#adjustments > tr > td.x2-6th-child input {
     width: 95%;
 	font-size: 12px;
 }
 
 /* line total cell */
 .quote-table > tbody#line-items > tr > td:nth-child(7),
-.quote-table > tbody#adjustments > tr > td:nth-child(7) {
+.quote-table > tbody#line-items > tr > td.x2-7th-child,
+.quote-table > tbody#adjustments > tr > td:nth-child(7),
+.quote-table > tbody#adjustments > tr > td.x2-7th-child {
     width: 20%;
 }
 
 /* line total */
 .quote-table > tbody#line-items > tr > td:nth-child(7) input,
-.quote-table > tbody#adjustments > tr > td:nth-child(7) input {
+.quote-table > tbody#line-items > tr > td.x2-7th-child input,
+.quote-table > tbody#adjustments > tr > td:nth-child(7) input,
+.quote-table > tbody#adjustments > tr > td.x2-7th-child input {
 	text-align: left;
     width: 95%;
 	font-size: 12px;

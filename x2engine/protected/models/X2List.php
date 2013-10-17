@@ -113,7 +113,7 @@ class X2List extends CActiveRecord {
 
 	public function createLink() {
 		if(isset($this->id))
-			return CHtml::link($this->name,array($this->getDefaultRoute().'/'.$this->id));
+			return CHtml::link($this->name,array($this->getDefaultRoute(),'id'=>$this->id));
 		else
 			return $this->name;
 	}
@@ -428,13 +428,13 @@ class X2List extends CActiveRecord {
 			else
 				$vcrData['next'] = '<li class="next">'.CHtml::link('>','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
 			*/
-			if($vcrIndex > 0)		// there's a record before the current one
-				$vcrData['prev'] = CHtml::link('<',array('view/'.$vcrModels[0]['id']),array('title'=>$vcrModels[0]['name'],'class'=>'x2-button'));
+			if($vcrIndex > 0  && isset($vcrModels[0]))		// there's a record before the current one
+				$vcrData['prev'] = CHtml::link('<',array('view','id'=>$vcrModels[0]['id']),array('title'=>$vcrModels[0]['name'],'class'=>'x2-button'));
 			else
 				$vcrData['prev'] = CHtml::link('<','javascript:void(0);',array('class'=>'x2-button disabled'));
 
 			if(count($vcrModels) - 1 > $vcrIndex)	// there's a record after the current one
-				$vcrData['next'] = CHtml::link('>', array('view/'.$vcrModels[$vcrIndex+1]['id']), array('title'=>$vcrModels[$vcrIndex+1]['name'],'class'=>'x2-button'));
+				$vcrData['next'] = CHtml::link('>', array('view','id'=>$vcrModels[$vcrIndex+1]['id']), array('title'=>$vcrModels[$vcrIndex+1]['name'],'class'=>'x2-button'));
 			else
 				$vcrData['next'] = CHtml::link('>','javascript:void(0);',array('class'=>'x2-button disabled'));
 
@@ -664,6 +664,18 @@ class X2List extends CActiveRecord {
 		else if (empty($id) || $id=='my')
 			return array('/contacts/myContacts');
 		else
-			return array('/contacts/list/'.$id);
+			return array('/contacts/list','id'=>$id);
 	}
+
+    public static function getAllStaticListNames ($controller) {
+        $listNames = array();
+
+        // get all static lists
+        foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {	
+            if($controller->checkPermissions($list,'edit'))	// check permissions
+                $listNames[$list->id] = $list->name;
+        }
+        return $listNames;
+    }
+
 }

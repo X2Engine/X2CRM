@@ -44,749 +44,1352 @@ Yii::import('application.components.util.*');
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class UpdaterBehaviorTest extends FileOperTestCase {
-	/**
-	 * - Set to 0 to skip all tests that require reloading the database (fastest)
-	 * - Set to 1 to perform backup/restore tests specifically, but no higher-level tests.
-	 * - Set to 2 to perform all updater/upgrader tests (which run backup/restore 
-	 * operations), but not backup tests specifically (it's assumed they work)
-	 */
+    /**
+     * - Set to 0 to skip all tests that require reloading the database (fastest)
+     * - Set to 1 to perform backup/restore tests specifically, but no higher-level tests.
+     * - Set to 2 to perform all updater/upgrader tests (which run backup/restore
+     *      operations), but not backup tests specifically (it's assumed they work when
+     *      the test level is set to 2)
+     */
+    const TEST_LEVEL = 0;
 
-	const TEST_LEVEL = 0;
+    private $_admin;
 
-	/**
-	 * Array of tables used in update/upgrade SQL testing.
-	 * @var array 
-	 */
-	public $testTables;
+    /**
+     * For operations when the configuration will be modified, this stores its 
+     * location so that it (and the backup copy of it) can be found in any non-
+     * static method.
+     * @var type 
+     */
+    public $configFile;
 
-	//////////////////////
-	// NON-TEST METHODS //
-	//////////////////////
-	// These methods are used by test methods and assertions. They may contain
-	// assertions, but they are not called directly in PHPUnit.
+    /**
+     * Array of tables used in update/upgrade SQL testing.
+     * @var array 
+     */
+    public $testTables;
 
-	/**
-	 * Returns an alter table statement given a table description array.
-	 * @param type $table
-	 * @return type
-	 */
-	public function addColumns($table){
-		$statement = '';
-		$statement .= sprintf("ALTER TABLE {$table['name']} ADD COLUMN ");
-		$statement .= implode(', ADD COLUMN', self::colDefs($table['newColumns']));
-		return $statement;
-	}
+    //////////////////////
+    // NON-TEST METHODS //
+    //////////////////////
+    // These methods are used by test methods and assertions. They may contain
+    // assertions, but they are not called directly in PHPUnit.
 
-	public function columnExists($tblName, $colName){
-		try{
-			$col = Yii::app()->db->createCommand()->select($colName)->from($tblName)->queryAll();
-			return true;
-		}catch(CDbException $e){
-			return false;
-		}
-	}
+    /**
+     * Returns an alter table statement given a table description array.
+     * @param type $table
+     * @return type
+     */
+    public function addColumns($table){
+        $statement = '';
+        $statement .= sprintf("ALTER TABLE {$table['name']} ADD COLUMN ");
+        $statement .= implode(', ADD COLUMN', self::colDefs($table['newColumns']));
+        return $statement;
+    }
 
-	/**
-	 * Creates column definition statements.
-	 * @param type $columns
-	 * @return type 
-	 */
-	public static function colDefs($columns){
-		return array_map(function($c){
-							return "{$c[0]} {$c[1]}";
-						}, $columns);
-	}
-
-	/**
-	 * Returns a create table statement given a table description array.
-	 * @param type $table
-	 * @return type 
-	 */
-	public function createTable($table){
-		return sprintf("CREATE TABLE {$table['name']}(%s) COLLATE = utf8_general_ci;", implode(", ", self::colDefs($table['columns'])));
-	}
-
-	/**
-	 * Remove testing tables.
-	 */
-	public function dropTestTables(){
-		foreach($this->testTables as $type => $tables){
-			foreach($tables as $table){
-				Yii::app()->db->createCommand("DROP TABLE IF EXISTS {$table['name']}")->execute();
-			}
-		}
-	}
-
-	/**
-	 * Runs all the actions to perform tests on the database. Not named as a test
-	 * method to allow easier disabling 
-	 * "testEnactChanges" to make it easier to disable
-	 * 
-	 * @throws PHPUnit_Framework_AssertionFailedError 
-	 */
-	public function assertEnactChanges(){
-		$ube = $this->instantiateUBe();
-		$lockFile = $ube->lockFile;
-		if(file_exists($lockFile))
-			unlink($lockFile);
-
-		// Test the "missing parameters" error:
-		try{
-			$ube->enactChanges('update', array());
-		}catch(Exception $e){
-			$this->assertEquals('Could not enact changes; missing the following parameters: version, buildDate', $e->getMessage());
-		}
-
-		// Prepare the database:
-		$this->setupTestTables();
-		$sqlToRun = array();
-		foreach($this->testTables as $type => $tables){ // Compose update SQL
-			if($type == 'new'){
-				foreach($tables as $table){
-					$sqlToRun[] = array('sql'=>$this->createTable($table),'haltOnFail'=>1);
-				}
-			}
-			if($type == 'drop'){
-				foreach($tables as $table){
-					$sqlToRun[] = array('sql'=>"DROP TABLE {$table['name']}",'haltOnFail'=>1);
-				}
-			}
-			foreach($tables as $table){
-				if(array_key_exists('newColumns', $table))
-					$sqlToRun[] = array('sql'=>$this->addColumns($table),'haltOnFail'=>1);
-			}
-		}
-		$sqlToRun[] = array('sql'=>'INVALID SQL INVALID SQL INVALID SQL','haltOnFail'=>1);
-
-		// Back up configuration (it will be overwritten in the test, eventually)
-		$ube->makeBackup(array('protected/config/X2Config.php'), 'confbackup');
-		// Create the files to be copied in the update:
-		$this->setupTestDirs();
-		// "temp" is the backup location used for downloaded files. Copy the test
-		// files over to there.
-		$ube->makeBackup($this->fileList, 'temp');
-		// The files will be copied back into the test area from the backup at 
-		// the end of the update, but they should be removed so we can prove 
-		// the updater copies them successfully:
-		$this->removeTestDirs(false);
-		// Now, create a file that will be deleted in the update:
-		$deletionList = array('protected/tests/data/output/deleteMe');
-		foreach($deletionList as $file){
-			$abs = "{$ube->webRoot}/$file";
-			$absDeletionList[] = $abs;
-			file_put_contents($abs, 'I should be deleted in the update.');
-		}
-
-		// Make the backup (expected to happen before running enactChanges):
-		$ube->makeDatabaseBackup();
-		// Make a copy that won't get deleted until later (because we can use it 
-		// to rewind after each test):
-		$ube->makeBackup(array('protected/data/'.UpdaterBehavior::BAKFILE), 'dbbackup');
-		// Set parameters for the update:
-		$params = array(
-			'sqlList' => $sqlToRun,
-			'deletionList' => $deletionList,
-			'version' => '9.9.9.9.9.9.9.9',
-			'buildDate' => PHP_INT_MAX,
-			'unique_id' => '1234-56789-01112',
-			'edition' => 'gir'
-		);
-
-		// Test the database failure recovery mechanism (the last line of SQL 
-		// currently in sqlList should fail).
-		try{
-			$ube->enactChanges('update', $params, true);
-		}catch(Exception $e){
-			$this->assertRegExp('/changes were applied prior to this failure/m', $e->getMessage());
-		}
-		$this->assertChangesReverted($ube, 'update', $absDeletionList);
-		$this->assertFileNotExists($lockFile,"Failed asserting that the lock file was deleted after a failed update.");
-
-		// Test exiting with a lock file. It should not exist at this point .
-		$now = time();
-		file_put_contents($lockFile,$now);
-		$this->assertEquals($now,$ube->enactChanges('update',$params,true),"enactChanges did not exit upon finding the lockfile.");
-		unlink($lockFile);
-
-		// Now, test the updater itself (going all the way through).
-		// Begin by removing the invalid SQL:
-		array_pop($params['sqlList']);
-		$return = $ube->enactChanges('update', $params, true);
-		$this->assertFalse($return,"Failed asserting correct return value.");
-		$this->assertChangesApplied($ube, 'update', $params, $absDeletionList);
-		$this->assertFileNotExists($lockFile,"Failed asserting that the lock file was deleted after a successful update.");
-		$this->resetAfterChanges($ube, $absDeletionList);
-
-		// Prepare files:
-		$ube->makeBackup($this->fileList, 'temp');
-		$ube->makeDatabaseBackup();
-		$ube->makeBackup(array('protected/config/X2Config.php'), 'confbackup');
-		$ube->makeBackup(array('protected/data/'.UpdaterBehavior::BAKFILE), 'dbbackup');
-		$this->removeTestDirs(false);
-
-		// Test successful upgrade (updates and upgrades are identical in the
-		// initial stage, where database changes are applied, and thus there
-		// is no need to test a second time whether the databse restore process
-		// works properly in an upgrade):
-		$admin = Admin::model()->find();
-		$edition = $admin->edition;
-		$unique_id = $admin->unique_id;
-		$ube->enactChanges('upgrade', $params, true);
-		$this->assertChangesApplied($ube, 'upgrade', $params);
-		$this->resetAfterChanges($ube, $absDeletionList);
-		// Reset edition/unique_id:
-		$admin->edition = $edition;
-		$admin->unique_id = $unique_id;
-		$admin->save();
-
-		// All done.
-		$this->dropTestTables();
-		$this->removeTestDirs();
-	}
-
-	/**
-	 * Instantiates a new CComponent object with {@link UpdaterBehavior attached
-	 * to it, and returns it.
-	 * @return \CComponent 
-	 */
-	public function instantiateUBe(){
-		$comp = new CComponent();
-		$ubconfig = array(
-			'class' => 'UpdaterBehavior',
-			'isConsole' => true,
-			'noHalt' => true,
-			'keepDbBackup' => true,
-		);
-		$comp->attachBehavior('UpdaterBehavior', $ubconfig);
-		return $comp;
-	}
-
-	/**
-	 * Error-handling function that resets everything to the pre-test state and
-	 * ensures the test tables and test files don't end up multiplying like bunnies
-	 *
-	 * @param type $e Error caught
-	 * @param array $params "Original" parameters
-	 * @param array $absDeletionList Files in the deletion list
-	 */
-	public function resetAfterChanges($ube, $absDeletionList, $e = null){
-		// Get back to pre-changes state, with test tables:
-		$ube->restoreBackup('dbbackup');
-		$ube->restoreDatabaseBackup();
-		// Back to square one completely (if in the scope of an error)
-		if(!empty($e)){
-			$this->dropTestTables();
-			// Reset the cache of files:
-			$ube->removeBackup('temp');
-		}
-		foreach($absDeletionList as $file)
-			if(file_exists($file))
-				unlink($file);
-		// Restore the original configuration file:
-		$ube->restoreBackup('confbackup');
-
-		// Throw (to resume normal chain of assertion failure)
-		if(!empty($e))
-			throw $e;
-	}
-
-	/**
-	 * Sets up tables in the database for testing update SQL runs.
-	 *
-	 * Comment symbols in this method, what they mean:
-	 * ^1: Should exist after update, but not after failed update/restore
-	 * ^2: Should not exist after update, but should after failed update/restore
-	 * ^3: Can exist both after update and after failed update/restore
-	 */
-	public function setupTestTables(){
-		$time = $this->testTime;
-		$this->testTables = array(
-			'new' => array(// ^1
-				array(
-					'name' => sprintf('test_new_table_%d', $time),
-					'columns' => array(
-						array('id', 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY'),
-						array('type', 'VARCHAR(50) NOT NULL'),
-						array('itemId', 'INT NOT NULL')
-					),
-				),
-			),
-			'alter' => array(// ^3
-				array(
-					'name' => sprintf('test_altered_table_%d', $time),
-					'columns' => array(
-						array('id', 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY'),
-						array('type', 'VARCHAR(50) NOT NULL'),
-						array('itemId', 'INT NOT NULL')
-					),
-					'newColumns' => array(// ^1
-						array('description', 'TEXT NULL')
-					),
-				),
-			),
-			'drop' => array(// ^2
-				array(
-					'name' => sprintf('test_dropped_table_%d', $time),
-					'columns' => array(
-						array('id', 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY'),
-						array('type', 'VARCHAR(50) NOT NULL'),
-						array('itemId', 'INT NOT NULL')
-					),
-				),
-			),
-		);
-
-		$tablesUp = array();
-		try{
-			foreach($this->testTables as $type => $tables){
-				if($type != 'new'){
-					foreach($tables as $table){
-						Yii::app()->db->createCommand($this->createTable($table))->execute();
-						$tablesUp[] = $table['name'];
-					}
-				}
-			}
-		}catch(CDbException $e){
-			echo $e->getMessage();
-			// Try to delete the tables that got made successfully before
-			foreach($tablesUp as $table){
-				Yii::app()->db->createCommand("DROP TABLE $table")->execute();
-			}
-		}
-	}
-
-	/**
-	 * Returns true or false based on whether a named table exists.
-	 * @param type $tblName Table name
-	 * @return boolean
-	 */
-	public function tableExists($tblName){
-		try{
-			$description = Yii::app()->db->createCommand("DESCRIBE $tblName")->queryAll();
-			return true;
-		}catch(CDbException $e){
-			return false;
-		}
-	}
-
-	///////////////////////
-	// CUSTOM ASSERTIONS //
-	///////////////////////
-	// Shorthand functions for testing the database's contents
-
-	public function assertTableExists($tblName){
-		$this->assertTrue($this->tableExists($tblName), "Failed asserting that database table $tblName exists.");
-	}
-
-	public function assertTableNotExists($tblName){
-		$this->assertFalse($this->tableExists($tblName), "Failed asserting that database table $tblName does not exist.");
-	}
-
-	public function assertColumnExists($tblName, $colName){
-		$this->assertTrue($this->columnExists($tblName, $colName), "Failed asserting that column $tblName.$colName exists.");
-	}
-
-	public function assertColumnNotExists($tblName, $colName){
-		$this->assertFalse($this->columnExists($tblName, $colName), "Failed asserting that column $tblName.$colName does not exist.");
-	}
-
-	////////////////////////
-	// "VERIFY" FUNCTIONS //
-	////////////////////////
-	// These are a little more involved than assertions; they do resetting of
-	// data in addition to running assertions.
-
-	/**
-	 * Test that changes were applied (database and file)
-	 *
-	 * @throws PHPUnit_Framework_AssertionFailedError
-	 */
-	public function assertChangesApplied($ube, $scenario, $params, $absDeletionList = array()){
-		// Now that it's all said and done, verify: did the update/upgrade happen properly?
-		try{
-			foreach($this->testTables as $type => $tables){
-				// New tables that should be there now:
-				if($type == 'new'){
-					foreach($tables as $table){
-						$this->assertTableExists($table['name']);
-					}
-				}
-				// Dropped tables should be gone:
-				if($type == 'drop'){
-					foreach($tables as $table){
-						$this->assertTableNotExists($table['name']);
-					}
-				}
-				// New columns should be there:
-				foreach($tables as $table){
-					if(array_key_exists('newColumns', $table)){
-						foreach($table['newColumns'] as $c){
-							$this->assertColumnExists($table['name'], $c[0]);
-						}
-					}
-				}
-			}
-
-			// Verify that deletion list files were deleted.
-			foreach($absDeletionList as $file)
-				$this->assertFileNotExists($file);
-			// The test files that were deleted should now be back in place:
-			foreach($this->fileList as $file)
-				$this->assertFileExists("{$ube->webRoot}/$file");
-
-			// Now, some testing that's specific to the scenario:
-			if($scenario == 'update'){
-				// Was the configuration updated properly?
-				require(Yii::app()->basePath.'/config/X2Config.php');
-				foreach(array('version', 'buildDate') as $var)
-					$this->assertEquals($params[$var], ${$var});
-			}else if($scenario == 'upgrade'){
-				$verEd = Yii::app()->db->createCommand()->select('edition,unique_id')->from('x2_admin')->queryRow();
-				$this->assertEquals($params['unique_id'], $verEd['unique_id']);
-				$this->assertEquals($params['edition'], $verEd['edition']);
-			}
-		}catch(PHPUnit_Framework_AssertionFailedError $e){
-			$this->resetAfterChanges($ube, $absDeletionList, $e);
-		}
-	}
-
-	/**
-	 * Test whether database changes were properly reverted after a restore from a backup
-	 * @param type $ube
-	 * @param type $scenario
-	 * @param type $absDeletionList
-	 */
-	public function assertChangesReverted($ube, $scenario, $absDeletionList){
-		// Now that it's all said and done, verify: did we restore properly?
-		try{
-			foreach($this->testTables as $type => $tables){
-				// New tables aren't there yet:
-				if($type == 'new'){
-					foreach($tables as $table){
-						$this->assertTableNotExists($table['name']);
-					}
-				}
-				// Dropped tables are restored:
-				if($type == 'drop'){
-					foreach($tables as $table){
-						$this->assertTableExists($table['name']);
-					}
-				}
-				// New columns aren't there yet:
-				foreach($tables as $table){
-					if(array_key_exists('newColumns', $table)){
-						foreach($table['newColumns'] as $c){
-							$this->assertColumnNotExists($table['name'], $c[0]);
-						}
-					}
-				}
-			}
-		}catch(PHPUnit_Framework_AssertionFailedError $e){
-			// Need to clean up before exiting so that the test tables and test
-			// files don't end up multiplying like bunnies:
-			$this->resetAfterChanges($ube, $absDeletionList, $e);
-		}
-	}
-
-	////////////////////////
-	// BASIC TEST METHODS //
-	////////////////////////
-
-
-    public function testPrepareData() {
-        $ube = $this->instantiateUBe();
-        $input = array(
-            array(
-                'fileList' => array(
-                    'protected/a',
-                    'protected/b',
-                    'protected/c'
-                ),
-                'deletionList' => array(
-                    'protected/aa',
-                    'protected/bb'
-                ),
-                'sqlList' => array(
-                    'insert this',
-                    'update that'
-                ),
-                'sqlForce' => array(
-                    'do hardcore stuff that might fail'
-                ),
-            ),
-            array(
-                'fileList' => array(
-                    'protected/a',
-                    'protected/c',
-                    'protected/aa',
-                ),
-                'deletionList' => array(
-                    'protected/b',
-                ),
-                'sqlList' => array(
-                    'insert more of this'
-                ),
-                'sqlForce' => array(
-                    'me first!'
-                )
-
-            ),
-        );
-        $expectedOutput = array(
-            'fileList' => array(
-                'protected/a',
-                'protected/aa',
-                'protected/c'
-            ),
-            'deletionList' => array(
-                'protected/bb',
-                'protected/b'
-            ),
-            'sqlList' => array(
-                array('sql'=>'do hardcore stuff that might fail','haltOnFail'=>0),
-                array('sql'=>'insert this','haltOnFail'=>1),
-                array('sql'=>'update that','haltOnFail'=>1),
-                array('sql'=>'me first!','haltOnFail'=>0),
-                array('sql'=>'insert more of this','haltOnFail'=>1),
-            )
-        );
-        $output = $ube->prepareData($input);
-        foreach($expectedOutput as $delta => $list) {
-            $this->assertArrayHasKey($delta,$output);
-            if($delta == 'sqlList')
-                $this->assertEquals($list,$output[$delta]);
-            else
-                $this->assertEquals(0,count(array_diff($list,$output[$delta])));
+    /**
+     * Returns true or false based on whether a table has a named column.
+     *
+     * @param type $tblName Table name
+     * @param type $colName Column name
+     * @return boolean True if the column exists in the table, false otherwise.
+     */
+    public function columnExists($tblName, $colName){
+        try{
+            $col = Yii::app()->db->createCommand()->select($colName)->from($tblName)->queryAll();
+            return true;
+        }catch(CDbException $e){
+            return false;
         }
     }
 
-	public function testCheckDatabaseBackup(){
-		$ube = $this->instantiateUBe();
-		$file = 'nothing.file';
-		try{
-			$ube->checkDatabaseBackup($file);
-			$this->assertTrue(false, 'No exception was thrown, where one should have been (file does not exist).');
-		}catch(Exception $e){
-			$this->assertEquals(1, $e->getCode());
-		}
-		$this->setupTestDirs();
-		$oldFile = "{$this->baseDir}/{$this->relFileList[0]}";
-		touch($oldFile, time() - 86401);
-		try{
-			$ube->checkDatabaseBackup($oldFile);
-			$this->assertTrue(false, 'No exception was thrown, where one should have been (file is too old).');
-		}catch(Exception $e){
-			$this->assertEquals(2, $e->getCode());
-		}
-		$this->removeTestDirs();
-	}
+    /**
+     * Creates column definition statements.
+     * @param type $columns
+     * @return type 
+     */
+    public static function colDefs($columns){
+        return array_map(function($c){
+                            return "{$c[0]} {$c[1]}";
+                        }, $columns);
+    }
 
-	public function testDownloadSourceFile(){
-		$ube = $this->instantiateUBe();
-		$file = "requirements.php";
+    /**
+     * Returns a create table statement given a table description array.
+     * @param type $table
+     * @return type
+     */
+    public function createTable($table){
+        return sprintf("CREATE TABLE {$table['name']} (%s) COLLATE = utf8_general_ci;", implode(", ", self::colDefs($table['columns'])));
+    }
 
-		if(is_dir("{$ube->webRoot}/temp"))
-			FileUtil::rrmdir("{$ube->webRoot}/temp"); //  rename($file, "{$ube->webRoot}/requirements-original.php");
-		$ube->downloadSourceFile($file,$ube->getSourceFileRoute('opensource'));
-		$this->assertFileExists("{$ube->webRoot}/temp/$file");
-		$ube->removeBackup('temp');
-	}
+    /**
+     * Remove testing tables.
+     */
+    public function dropTestTables(){
+        foreach($this->testTables as $type => $tables){
+            foreach($tables as $table){
+                Yii::app()->db->createCommand("DROP TABLE IF EXISTS {$table['name']}")->execute();
+            }
+        }
+    }
 
-	public function testMakeBackup(){
-		$this->setupTestDirs();
-		$budir = 'backup';
-		$ube = $this->instantiateUBe();
-		$fileList = $this->fileList;
-		$buFiles = $ube->makeBackup($fileList, $budir);
-		foreach($fileList as $file){
-			$buFile = $ube->webRoot."/$budir/$file";
-			$this->assertFileExists($buFile);
-			$this->assertFileEquals($ube->webRoot."/$file", $buFile);
-		}
-		$this->removeTestDirs();
-		// Wipe it out. We're done with it.
-		FileUtil::rrmdir("{$ube->webRoot}/$budir");
-	}
+    public function getAdmin() {
+        if(!isset($this->_admin))
+            $this->_admin = Admin::model()->find();
+        return $this->_admin;
+    }
 
-	public function testRegenerateConfig(){
-		$configFilename = UpdaterBehavior::$configFilename; // Copy of the original filename
-		$testConfigFilename = 'X2Config-testRegen.php'; // Temporary new config filename
-		$filesThatShouldBe600 = array('encryption.key','encryption.iv'); // Files for testing that permissions are set properly
-		// Make test backups of the keys
-		foreach(array('key','iv') as $cryptExt){
-			$cryptFile = Yii::app()->basePath."/config/encryption.$cryptExt";
-			if(file_exists($cryptFile)){
-				rename($cryptFile,"$cryptFile.testbackup");
-			}
-		}
-		UpdaterBehavior::$configFilename = $testConfigFilename;
-		copy(Yii::app()->basePath."/config/$configFilename", Yii::app()->basePath."/config/$testConfigFilename");
-		$this->assertTrue(file_exists(Yii::app()->basePath.'/config/'.UpdaterBehavior::$configFilename));
+    /**
+     * Instantiates a new CComponent object with {@link UpdaterBehavior attached
+     * to it, and returns it.
+     * @return CComponent
+     */
+    public function instantiateUBe($properties = array()){
+        $comp = new CComponent();
+        $ubconfig = array_merge(array(
+            'class' => 'UpdaterBehavior',
+            'isConsole' => true,
+            'noHalt' => true,
+        ),$properties);
+        $comp->attachBehavior('UpdaterBehavior', $ubconfig);
+        return $comp;
+    }
 
-		$ube = $this->instantiateUBe();
-		$newversion = '3.3.3.3.3.3.3.3.3.3.3.3.3';
-		$newupdaterVersion = '2.2.2.2.2.2.2.2.2';
-		$newbuildDate = 12345678910;
-		$ube->regenerateConfig($newversion, $newupdaterVersion, $newbuildDate);
-		include(Yii::app()->basePath."/config/".$testConfigFilename);
-		foreach(array('version', 'updaterVersion', 'buildDate') as $var)
-			$this->assertEquals(${"new$var"}, ${$var});
-		// Test that permissions were set properly on the config/encryption files
-		foreach($filesThatShouldBe600 as $file) {
-			$this->assertEquals(100600,decoct(fileperms(Yii::app()->basePath."/config/$file")),"Failed asserting that $file had its permissions set properly.");
-		}
-		foreach($filesThatShouldBe600 as $file) {
-			// Forcefully change so we can properly test the permission-setting method
-			chmod(Yii::app()->basePath."/config/$file",octdec(100666));
-		}
-		// Now, run the method:
-		$ube->setConfigPermissions(100600);
-		// Test that the permissions were set back to their proper values
-		foreach($filesThatShouldBe600 as $file) {
-			$this->assertEquals(100600,decoct(fileperms(Yii::app()->basePath."/config/$file")),"Failed asserting that $file had its permissions set properly.");
-		}
+    /**
+     * Sets up or tears down some prerequisite for a test case running that are
+     * re-used in more than one test.
+     * @param type $name
+     */
+    public function prereq($ube,$name,$setUp = true) {
+        if($setUp){
+            switch($name){
+                case 'updateDir':
+                    if(!is_dir($ube->updateDir)) 
+                        mkdir($ube->updateDir);
+                    break;
+                case 'sourceDir':
+                    $this->prereq($ube,'updateDir');
+                    if(!is_dir($ube->sourceDir))
+                        mkdir($ube->sourceDir);
+                case 'checksums for parse testing':
+                    $this->prereq($ube,'updateDir');
+                    $checkSums = "c2ac53d8a42168b605d2985c82a71157  X2WebApplication.php\nac412eb98e8d8d1e7a28b95019f4d2ba  X2WebUser.php\nddc3c3563489271a10f03b4fe3f6efb0  X2WidgetList.php\ned41f84aefee9c0a566cee2bab1d167b  X2Widget.php\ned41f84aefeadfdfdfdfdfdfddaaaaaa  some/really bad/path/with spaces/in.it\n";
+                    $expect = array(
+                        'X2WebApplication.php' => 'c2ac53d8a42168b605d2985c82a71157',
+                        'X2WebUser.php' => 'ac412eb98e8d8d1e7a28b95019f4d2ba',
+                        'X2WidgetList.php' => 'ddc3c3563489271a10f03b4fe3f6efb0',
+                        'X2Widget.php' => 'ed41f84aefee9c0a566cee2bab1d167b',
+                        'some/really bad/path/with spaces/in.it' => 'ed41f84aefeadfdfdfdfdfdfddaaaaaa'
+                    );
+                    file_put_contents($ube->updateDir.DIRECTORY_SEPARATOR.'contents.md5', $checkSums);
+                    return $expect;
+                    break;
+                case 'checksums with actual files':
+                    $this->prereq($ube,'sourceDir');
+                    $md5sums = array(
+                        'b04ba88d02b42650363e8a302a9be0ef' => 'empty.php',
+                        '30490168a7a13733e66e57b826a4b6da' => 'corrupt.php',
+                        '76016fc958cb657e9ad54f92abb9da78' => 'file with spaces.js',
+                        '1bc166e024f19c3da04a00714551224a' => 'manifest.json'
+                    );
+                    // Prepare the file with digests in it
+                    foreach($md5sums as $digest => $file){
+                        copy(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'tests', 'data', 'updatemd5', $file)), $ube->updateDir.DIRECTORY_SEPARATOR.$file);
+                    }
+                    $md5sums['40490168a7a13733e66e57b826a4b6da'] = 'nonexist.php';
+                    $md5sumfile = '';
+                    foreach($md5sums as $digest => $file){
+                        $md5sumfile .= "$digest  $file\n";
+                    }
+                    file_put_contents($md5sumfilename = $ube->updateDir.DIRECTORY_SEPARATOR.'contents.md5', $md5sumfile);
+                    break;
+            }
+        }else{ // Teardowns
+            switch($name){
+                default:
+                    FileUtil::rrmdir($ube->updateDir);
+                    
+            }
+        }
+    }
 
-		UpdaterBehavior::$configFilename = $configFilename;
-		unlink(Yii::app()->basePath."/config/$testConfigFilename");
-		// Restore test backups of the keys
-		foreach(array('key','iv') as $cryptExt){
-			$cryptFile = Yii::app()->basePath."/config/encryption.$cryptExt";
-			if(file_exists("$cryptFile.testbackup")){
-				rename("$cryptFile.testbackup",$cryptFile);
-			}
-		}
-	}
+    /**
+     * Error-handling function that resets everything to the pre-test state and
+     * ensures the test tables and test files don't end up multiplying like bunnies
+     *
+     * @param type $e Error caught
+     * @param array $params "Original" parameters
+     * @param array $absDeletionList Files in the deletion list
+     */
+    public function resetAfterChanges($ube,$e = null){
+        // Get back to pre-changes state, with test tables:
+        $ube->restoreDatabaseBackup();
+        // Back to square one completely (if in the scope of an error)
+        if(!empty($e)){
+            $this->dropTestTables();
+        }
+        // Restore the original configuration file:
+        copy("{$this->configFile}.bak",$this->configFile);
 
-	public function testRemoveBackup(){
-		$this->setupTestDirs();
+        // Throw (to resume normal chain of assertion failure)
+        if(!empty($e))
+            throw $e;
+    }
 
-		$ube = $this->instantiateUbe();
-		// Test that removal works properly:
-		$budir = 'backup';
-		$ube->removeBackup($budir);
-		$fileList = $this->fileList;
-		foreach($fileList as $file){
-			$buFile = $ube->webRoot."/$budir/$file";
-			$this->assertFileNotExists($buFile);
-		}
-		$this->assertFileNotExists($ube->webRoot."/$budir");
-		$this->removeTestDirs();
-	}
+    /**
+     * Sets up tables in the database for testing update SQL runs.
+     *
+     * Comment symbols in this method, what they mean:
+     * ^1: Should exist after update, but not after failed update/restore
+     * ^2: Should not exist after update, but should after failed update/restore
+     * ^3: Can exist both after update and after failed update/restore
+     */
+    public function setupTestTables(){
+        $time = $this->testTime;
+        $this->testTables = array(
+            'new' => array(// ^1
+                array(
+                    'name' => sprintf('test_new_table_%d', $time),
+                    'columns' => array(
+                        array('id', 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY'),
+                        array('type', 'VARCHAR(50) NOT NULL'),
+                        array('itemId', 'INT NOT NULL')
+                    ),
+                ),
+            ),
+            'alter' => array(// ^3
+                array(
+                    'name' => sprintf('test_altered_table_%d', $time),
+                    'columns' => array(
+                        array('id', 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY'),
+                        array('type', 'VARCHAR(50) NOT NULL'),
+                        array('itemId', 'INT NOT NULL')
+                    ),
+                    'newColumns' => array(// ^1
+                        array('description', 'TEXT NULL')
+                    ),
+                ),
+            ),
+            'drop' => array(// ^2
+                array(
+                    'name' => sprintf('test_dropped_table_%d', $time),
+                    'columns' => array(
+                        array('id', 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY'),
+                        array('type', 'VARCHAR(50) NOT NULL'),
+                        array('itemId', 'INT NOT NULL')
+                    ),
+                ),
+            ),
+        );
 
-	/**
-	 * Test the function that processes deletionList
-	 */
-	public function testRemoveFiles(){
-		$this->setupTestDirs();
-		$ube = $this->instantiateUBe();
-		$deletionList = $this->fileList;
-		$ube->removeFiles($deletionList);
-		foreach($deletionList as $deletedFile)
-			$this->assertFileNotExists("{$ube->webRoot}/$deletedFile");
-		$this->removeTestDirs();
-	}
+        $tablesUp = array();
+        try{
+            foreach($this->testTables as $type => $tables){
+                if($type != 'new'){
+                    foreach($tables as $table){
+                        Yii::app()->db->createCommand($this->createTable($table))->execute();
+                        $tablesUp[] = $table['name'];
+                    }
+                }
+            }
+        }catch(CDbException $e){
+            echo $e->getMessage();
+            // Try to delete the tables that got made successfully before
+            foreach($tablesUp as $table){
+                Yii::app()->db->createCommand("DROP TABLE $table")->execute();
+            }
+        }
+    }
 
-	/**
-	 * Test the function that cleans out the assets folder.
-	 */
-	public function testResetAssets(){
-		$ube = $this->instantiateUBe();
-		$crcDir = sprintf('%x', crc32('cockadoodledoo'));
-		mkdir("{$ube->webRoot}/assets/$crcDir");
-		$file = "{$ube->webRoot}/assets/$crcDir/something.js";
-		file_put_contents($file, '/* cockadoodledoo */');
-		$ube->resetAssets();
-		$this->assertFileNotExists($file);
-	}
+    /**
+     * Returns true or false based on whether a named table exists.
+     * @param type $tblName Table name
+     * @return boolean
+     */
+    public function tableExists($tblName){
+        try{
+            $description = Yii::app()->db->createCommand("DESCRIBE $tblName")->queryAll();
+            return true;
+        }catch(CDbException $e){
+            return false;
+        }
+    }
 
-	public function testRestoreBackup(){
-		$this->setupTestDirs();
-		$ube = $this->instantiateUBe();
-		$fileList = $this->fileList;
-		$budir = 'backup';
-		$buFiles = $ube->makeBackup($fileList, $budir);
-		// Mess up the test files, restore the backup, and then test that they're
-		// back to normal
-		$testText = 'HAW HAW HAW';
-		foreach($fileList as $file){
-			file_put_contents("{$ube->webRoot}/$file", $testText);
-		}
-		$success = $ube->restoreBackup($budir);
-		$this->assertTrue((bool) $success);
-		foreach($fileList as $file){
-			$this->assertNotEquals($testText, file_get_contents("{$ube->webRoot}/$file"));
-			// Check that the backup file was removed properly:
-			$this->assertFileNotExists("{$ube->webRoot}/$budir/$file");
-		}
+    ///////////////////////
+    // ASSERTION METHODS //
+    ///////////////////////
 
-		// Clean up:
-		$ube->removeBackup($budir);
-		$this->removeTestDirs();
-	}
+    /**
+     * Test that changes were applied (database and file), and resets the files.
+     *
+     * @throws PHPUnit_Framework_AssertionFailedError
+     */
+    public function assertChangesApplied($ube){
+        // Now that it's all said and done, verify: did the update/upgrade happen properly?
+        try{
+            foreach($this->testTables as $type => $tables){
+                // New tables that should be there now:
+                if($type == 'new'){
+                    foreach($tables as $table){
+                        $this->assertTableExists($table['name']);
+                    }
+                }
+                // Dropped tables should be gone:
+                if($type == 'drop'){
+                    foreach($tables as $table){
+                        $this->assertTableNotExists($table['name']);
+                    }
+                }
+                // New columns should be there:
+                foreach($tables as $table){
+                    if(array_key_exists('newColumns', $table)){
+                        foreach($table['newColumns'] as $c){
+                            $this->assertColumnExists($table['name'], $c[0]);
+                        }
+                    }
+                }
+            }
 
-	/**
-	 * Tests the SQL error printer (which should never fail)
-	 *
-	 * The call to sqlError should not halt PHP execution, and there should be
-	 * no fatal errors. This test will always "pass"; it "fails" if phpunit
-	 * exits entirely, or encounters a fatal error (obviously).
-	 */
-	public function testSqlError(){
-		$ube = $this->instantiateUBe();
-		try{
-			$ube->sqlError('HOW DO I WROTE SQL', array('UPDATE x2_actions SET actionDescription="stuff and things"'), 'SQL syntax error.', true);
-		}catch(Exception $e){
-			$this->assertRegExp('/SQL syntax error/m', $e->getMessage());
-		}
-	}
+            // Now, some testing that's specific to the scenario of upgrade:
+            if($ube->scenario == 'upgrade'){
+                $verEd = Yii::app()->db->createCommand()->select('edition,unique_id')->from('x2_admin')->queryRow();
+                $this->assertEquals($ube->uniqueId, $verEd['unique_id']);
+                $this->assertEquals($ube->manifest['targetEdition'], $verEd['edition']);
+            }
+            // In the "update" scenario isn't necessary to test the
+            // configuration changes; that is already covered by
+            // testRegenerateConfig.
+        }catch(PHPUnit_Framework_AssertionFailedError $e){
+            $this->resetAfterChanges($ube, $e);
+        }
+    }
 
-	///////////////////////////
-	// DATABASE CHANGE TESTS //
-	///////////////////////////
-	// These are the most time-consuming; they involve making changes to the
-	// database, including full drop/restore functionality.
+    /**
+     * Test whether database changes were properly reverted after a restore from a backup
+     * @param type $ube
+     * @param type $scenario
+     * @param type $absDeletionList
+     */
+    public function assertChangesReverted($ube){
+        // Now that it's all said and done, verify: did we restore properly?
+        try{
+            foreach($this->testTables as $type => $tables){
+                // New tables aren't there yet:
+                if($type == 'new'){
+                    foreach($tables as $table){
+                        $this->assertTableNotExists($table['name']);
+                    }
+                }
+                // Dropped tables are restored:
+                if($type == 'drop'){
+                    foreach($tables as $table){
+                        $this->assertTableExists($table['name']);
+                    }
+                }
+                // New columns aren't there yet:
+                foreach($tables as $table){
+                    if(array_key_exists('newColumns', $table)){
+                        foreach($table['newColumns'] as $c){
+                            $this->assertColumnNotExists($table['name'], $c[0]);
+                        }
+                    }
+                }
+            }
+        }catch(PHPUnit_Framework_AssertionFailedError $e){
+            // Need to clean up before exiting so that the test tables and test
+            // files don't end up multiplying like bunnies:
+            $this->resetAfterChanges($ube,$e);
+        }
+    }
 
-	/**
-	 * Test the backup & restore functionality.
-	 * 
-	 * This won't be necessary most of the time. It is a time-consuming test.
-	 */
-	public function testDatabaseBackups(){
-		$ube = $this->instantiateUBe();
-		if(self::TEST_LEVEL == 1){
-			$this->setupTestTables();
-			$ube->makeDatabaseBackup();
-			foreach($this->testTables['new'] as $table)
-				Yii::app()->db->createCommand($this->createTable($table))->execute();
-			$ube->restoreDatabaseBackup();
-			foreach($this->testTables as $type => $tables){
-				if($type != 'new'){
-					foreach($tables as $table)
-						$this->assertTableExists($table['name']);
-				}else{
-					foreach($tables as $table)
-						$this->assertTableNotExists($table['name']);
-				}
-			}
-			$this->dropTestTables();
-		} else {
-			$this->markTestSkipped('Skipping; TEST_LEVEL not set to 1 (this is a slow test).');
-		}
-	}
+    /**
+     * Runs all the actions to perform tests on the database. Not named as a test
+     * method to allow easier disabling 
+     * "testEnactChanges" to make it easier to disable
+     *
+     * @todo UPDATE THIS ENTIRE FUNCTION SO THAT IT REFLECT THE CHANGES AS NECESSARY
+     *  THAT INCLUDES THE RUNNING OF UPDATE MIGRATION SCRIPTS
+     * 
+     * @throws PHPUnit_Framework_AssertionFailedError 
+     */
+    public function assertEnactChanges(){
+        $ube = $this->instantiateUBe(array(
+            'scenario'=>'update',
+            'version'=>'999',
+            'edition'=>'opensource'
+        ));
+        // We're going to construct it so that it just passes all the checks for
+        // compatibility and whatnot, because *those checks are covered by other
+        // test methods*.
+        $manifest = array(
+            'fromVersion' => '999',
+            'targetVersion' => '1000',
+            'updaterVersion' => '1000',
+            'buildDate' => '999999999999',
+            'fromEdition' => 'opensource',
+            'targetEdition' => 'opensource',
+            'fileList' => array(), // applyFiles is already covered in another
+            // test case and we don't want to deal with hunting down and
+            // resetting stray files that are modified by this test
+            'deletionList' => array(), // ditto
+            'scenario' => 'update',
+            'data' => array(
+                array(
+                    'fileList' => array(),
+                    'deletionList' => array(),
+                    'sqlList' => array(),
+                    'sqlForce' => array(),
+                    'version' => '1000',
+                    'edition' => 'opensource',
+                    'migrationScripts' => array(), // running migration scripts covered in testRunMigrationScripts
+                ),
+            )
+        );
+        $lockFile = $ube->lockFile;
+        if(file_exists($lockFile))
+            unlink($lockFile);
+        
+        // Prepare the database:
+        $this->setupTestTables();
+        $sqlToRun = array();
+        foreach($this->testTables as $type => $tables){ // Compose update SQL
+            if($type == 'new'){
+                foreach($tables as $table){
+                    $sqlToRun[] = $this->createTable($table);
+                }
+            }
+            if($type == 'drop'){
+                foreach($tables as $table){
+                    $sqlToRun[] = "DROP TABLE {$table['name']}";
+                }
+            }
+            foreach($tables as $table){
+                if(array_key_exists('newColumns', $table))
+                    $sqlToRun[] = $this->addColumns($table);
+            }
+        }
 
-	/**
-	 * Test the enactChanges method. 
-	 * 
-	 * This is a very time-consuming test that involves dropping and reloading the 
-	 * database multiple times, and so only if {@link TEST_LEVEL} is set to 2 will 
-	 * the test actually run.
-	 */
-	public function testEnactChanges(){
-		if(self::TEST_LEVEL == 2)
-			$this->assertEnactChanges();
-		else
-			$this->markTestSkipped('Skipping; TEST_LEVEL not set to 2 (this is a very slow test).');
-	}
+        $sqlToRun[] = 'INVALID SQL INVALID SQL INVALID SQL';
+
+        $manifest['data'][0]['sqlList'] = $sqlToRun;
+        $ube->manifest = $manifest;
+        $ube->version = $manifest['fromVersion'];
+        $ube->edition = $manifest['fromEdition'];
+
+        // Back up configuration (it will be overwritten in the test, eventually)
+        $this->configFile = implode(DIRECTORY_SEPARATOR,array($ube->webRoot,'protected','config','X2Config.php'));
+        copy($this->configFile,"{$this->configFile}.bak");
+
+        // Make the backup (expected to happen before running enactChanges):
+        $ube->makeDatabaseBackup();
+
+        // Make a copy that won't get deleted until later (because we can use it
+        // to rewind after each test):
+        $dbBackupFile = implode(DIRECTORY_SEPARATOR,array($ube->webRoot,'protected','data',UpdaterBehavior::BAKFILE));
+        copy($dbBackupFile, "$dbBackupFile.bak");
+
+        // Test the database failure recovery mechanism (the last line of SQL
+        // currently in sqlList should fail).
+        //
+        // Fake the checksums (so it ignores the bad files; it will throw an 
+        // exception as it should, and we already know it works as it should in
+        // that regard; we just need to get it past that point)
+        $this->prereq($ube,'checksums with actual files');
+        $ube->checkSums = array_intersect_key($ube->checkSums,array('manifest.json'=>$ube->checkSums['manifest.json']));
+        try{
+            $ube->enactChanges(true);
+        }catch(Exception $e){
+            $this->assertEquals(UpdaterBehavior::ERR_DATABASE, $e->getCode(),"Wrong error code thrown in an exception thrown by enactChanges. The message was: ".$e->getMessage());
+        }
+        $this->assertChangesReverted($ube);
+        $this->assertFileNotExists($lockFile, "Failed asserting that the lock file was deleted after a failed update.");
+
+        // Test exiting with a lock file. It should not exist at this point.
+        $now = time();
+        file_put_contents($lockFile, $now);
+        $exc = false;
+        try {
+            $ube->enactChanges(true);
+        } catch (Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_ISLOCKED,$e->getCode(),"enactChanges didn't throw an exception with the appropriate code. Message: ".$e->getMessage());
+            $exc = true;
+        }
+        $this->assertTrue($exc,'enactChanges did not throw exception upon finding the lockfile');
+        unlink($lockFile);
+
+        // Now, test the updater itself (going all the way through).
+        // Begin by removing the invalid SQL:
+        array_pop($manifest['data'][0]['sqlList']);
+        $ube->manifest = $manifest;
+
+        $ube->enactChanges(true);
+        $this->assertChangesApplied($ube);
+        $this->assertFileNotExists($lockFile, "Failed asserting that the lock file was deleted after a successful update.");
+        $this->resetAfterChanges($ube);
+
+        // Prepare files:
+        $ube->makeDatabaseBackup();
+        $this->removeTestDirs(false);
+
+        $this->prereq($ube,'checksums with actual files');
+        // Test successful upgrade (updates and upgrades are identical in the
+        // initial stage, where database changes are applied, and thus there
+        // is no need to test a second time whether the databse restore process
+        // works properly in an upgrade):
+        $admin = $this->getAdmin();
+        $edition = $admin->edition;
+        $unique_id = $admin->unique_id;
+        $ube->enactChanges(true);
+        $this->assertChangesApplied($ube);
+        $this->resetAfterChanges($ube);
+        // Reset edition/unique_id:
+        $admin->edition = $edition;
+        $admin->unique_id = $unique_id;
+        $admin->save();
+
+        // All done.
+        $this->dropTestTables();
+        $this->removeTestDirs();
+    }
+
+    /**
+     * Assert that a column exists in a table.
+     * @param string $tblName
+     * @param string $colName
+     */
+    public function assertColumnExists($tblName, $colName){
+        $this->assertTrue($this->columnExists($tblName, $colName), "Failed asserting that column $tblName.$colName exists.");
+    }
+
+    /**
+     * Assert that a column does not exits in a table
+     * @param type $tblName
+     * @param type $colName
+     */
+    public function assertColumnNotExists($tblName, $colName){
+        $this->assertFalse($this->columnExists($tblName, $colName), "Failed asserting that column $tblName.$colName does not exist.");
+    }
+
+    /**
+     * Assert a table exists.
+     * @param type $tblName
+     */
+    public function assertTableExists($tblName){
+        $this->assertTrue($this->tableExists($tblName), "Failed asserting that database table $tblName exists.");
+    }
+
+    /**
+     * Assert that a table does not exist.
+     * @param type $tblName
+     */
+    public function assertTableNotExists($tblName){
+        $this->assertFalse($this->tableExists($tblName), "Failed asserting that database table $tblName does not exist.");
+    }
+
+    ////////////////////////////////
+    ////// BEGIN TEST METHODS //////
+    ////////////////////////////////
+
+    /**
+     * A quick sanity check; FileUtil::rrmdir is called on the return value of 
+     * these properties, and so it is prudent to see if they return correctly.
+     */
+    public function testAllPaths() {
+        $ube = $this->instantiateUBe();
+        $webRoot = realpath(Yii::app()->basePath.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
+        if($ube->webRoot != $webRoot)
+            die('Unsafe to proceed through tests; property webRoot of UpdaterBehavior did not return the expected value; it was '.$ube->webRoot);
+        if($ube->updateDir != $webRoot.DIRECTORY_SEPARATOR.'update')
+            die('Unsafe to proceed through tests; property updateDir of UpdaterBehavior did not return the expected value; it was '.$ube->updateDir);
+        if($ube->sourceDir != $webRoot.DIRECTORY_SEPARATOR.'update'.DIRECTORY_SEPARATOR.'source')
+            die('Unsafe to proceed through tests; property sourceDir of UpdaterBehavior did not return the expected value; it was '.$ube->sourceDir);
+        $this->assertEquals($ube->webRoot.DIRECTORY_SEPARATOR.'update.zip',$ube->updatePackage);
+        $this->assertEquals(Yii::app()->basePath.DIRECTORY_SEPARATOR.'runtime'.DIRECTORY_SEPARATOR.'x2crm_update.lock',$ube->lockFile);
+    }
+
+    public function testApplyFiles() {
+        $ube = $this->instantiateUBe();
+        // Create test files (pseudo-files that will be replaced at the end of the test)
+        FileUtil::rrmdir($ube->updateDir);
+        $basePathNodes = array('protected','tests','data','output','appliedfiles');
+        FileUtil::rrmdir($newDirPath = implode(DIRECTORY_SEPARATOR,array_merge(array($ube->webRoot),$basePathNodes)));
+        $newFileContents = array(
+            'NewFileSample.php'=>'<?php class NewFileSample {} ?>',
+            'NewFileSample2.php'=>'<?php class NewFileSample2 {} ?>'
+        );
+        $copiedBasePath = implode('/',$basePathNodes);
+        $sourcePath = $ube->sourceDir;
+        $pkgFile = $ube->webRoot.DIRECTORY_SEPARATOR.UpdaterBehavior::PKGFILE;
+        // Set up all files for the test:
+        $setupApplyFiles = function() use($ube, $newDirPath, $ube, $basePathNodes, $copiedBasePath, $newFileContents,$sourcePath,$pkgFile){
+                    mkdir($ube->updateDir);
+                    mkdir($ube->sourceDir);
+                    foreach($basePathNodes as $node){
+                        $sourcePath .= DIRECTORY_SEPARATOR.$node;
+                        mkdir($sourcePath);
+                    }
+                    // Explicitly set the manifest
+                    $manifest = array('fileList' => array());
+                    foreach($newFileContents as $file => $contents){
+                        $manifest['fileList'][] = "$copiedBasePath/$file";
+                        file_put_contents($sourcePath.DIRECTORY_SEPARATOR.$file, $contents);
+                    }
+                    $manifest['fileList'][] = "$copiedBasePath/UpdaterBehavior.php";
+                    // Also, let's toss in the class itself for good measure
+                    copy(Yii::getPathOfAlias('application.components.UpdaterBehavior').'.php', $sourcePath.DIRECTORY_SEPARATOR.'UpdaterBehavior.php');
+                    // Create the package file just to test that it gets deleted:
+                    touch($pkgFile);
+                    return $manifest;
+                };
+        // Test that they got copied over properly:
+        $that = $this;
+        $testApplyFiles = function() use($newFileContents, $pkgFile, $ube,$basePathNodes,$that){
+                    foreach($newFileContents as $file => $contents){
+                        $that->assertFileExists($filePath = $ube->webRoot.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, array_merge($basePathNodes, array($file))));
+                        $that->assertEquals($contents, file_get_contents($filePath));
+                    }
+                    $that->assertFileExists($filePath = $ube->webRoot.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, array_merge($basePathNodes, array('UpdaterBehavior.php'))));
+                    $that->assertFileEquals(Yii::getPathOfAlias('application.components.UpdaterBehavior').'.php', $filePath);
+                    $that->assertFileNotExists($pkgFile);
+                    $that->assertFileNotExists($ube->sourceDir);
+                    $that->assertFileNotExists($ube->updateDir);
+                };
+
+        // Explicitly set manifest:
+        $ube->manifest = $setupApplyFiles();
+        // Let's roll!
+        $ube->applyFiles();
+        $testApplyFiles();
+        // Now test in the use case where we are copying from a temporary
+        // directory (encountered in the use case where the updater needs to do
+        // a self-update or fetch dependencies)
+        $setupApplyFiles();
+        $ube->applyFiles(UpdaterBehavior::UPDATE_DIR.DIRECTORY_SEPARATOR.'source');
+        $testApplyFiles();
+        
+        $this->prereq('updateDir',false);
+        FileUtil::rrmdir($newDirPath);
+    }
+
+    public function testCheckFiles() {
+        $ube = $this->instantiateUBe();
+        $this->prereq($ube,'checksums with actual files');
+        $this->assertEquals(array(
+            'nonexist.php'=>UpdaterBehavior::FILE_MISSING,
+            'corrupt.php' => UpdaterBehavior::FILE_CORRUPT,
+            'empty.php' => UpdaterBehavior::FILE_PRESENT,
+            'file with spaces.js' => UpdaterBehavior::FILE_PRESENT,
+            'manifest.json' => UpdaterBehavior::FILE_PRESENT,
+        ),$ube->checkFiles(),"checkFiles did not return as expected.");
+        $this->prereq($ube,'checksums with actual files',false);
+        FileUtil::rrmdir($ube->updateDir);
+    }
+
+    /**
+     * Checks the full hierarchy of checkIf functions.
+     *
+     * Expected behavior: if the return argument is false, it should throw
+     * exceptions with appropriate error codes when failing. When not failing,
+     * it should return true. Furthermore, if a condition is satisfied but
+     * one if its prerequisites is not, the exception's code should match that
+     * of its prerequisite.
+     */
+    public function testCheckIf() {
+        $ube = $this->instantiateUBe(array(
+            'scenario' => 'upgrade'
+        ));
+        // First: checkIfPackageExists, called by itself
+        $exc = false;
+        try {
+            $ube->checkIf('packageExists');
+        } catch(Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_NOUPDATE,$e->getCode(),'Wrong exception thrown (error code mismatch) in base-level checkIf; message was: '.$e->getMessage());
+            $exc = true;
+        }
+        $this->assertTrue($exc,"No exception was thrown where one should have been (1)");
+        $this->assertFalse($ube->checkIf('packageExists',false),"checkIf('packageExists',false) should have returned false.");
+
+        // Next: checkIfPackageExists should be the first thing called by all other file checks.
+        $exc = false;
+        try {
+            $ube->checkIf('packageApplies');
+        } catch(Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_NOUPDATE,$e->getCode(),'Wrong exception thrown (error code mismatch) in top-level checkIf; message was: '.$e->getMessage());
+            $exc = true;
+        }
+        $this->assertTrue($exc,"No exception was thrown where one should have been (2)");
+        $exc = false;
+        $this->assertFalse($ube->checkIf('packageApplies',false),"checkIf('packageApplies',false) should have returned false; package doesn't exist");
+
+        // Now check if the error comes from the next level up in the stack, 
+        // which is checksumsAvail, and checked when packageApplies is satisfied
+        $this->prereq($ube,'updateDir');
+        $exc = false;
+        try {
+            $ube->checkIf('packageApplies');
+        } catch (Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_CHECKSUM,$e->getCode(),'Wrong exception thrown (error code mismatch) when packageApplies satisfied but checkSums not satisfied');
+            $exc = true;
+        }
+        $this->assertTrue($exc,'No exception was thrown where one should have been (3)');
+        $this->assertFalse($ube->checkIf('packageApplies',false),"checkIf('packageApplies',false) should have returned false; checksums file missing.");
+        // Go back and check the "packageExists" checkIf:
+        $this->assertTrue($ube->checkIf('packageExists'),'checkIfPackageExists should have returned true by now.');
+        // Check persistence (storage of check already made in the private property):
+        rmdir($ube->updateDir);
+        $this->assertTrue($ube->checkIf('packageExists'),'checkIfPackageExists not storing its value in the designated property!');
+        mkdir($ube->updateDir);
+
+        // Next level up: checkSums
+        $this->prereq($ube,'checksums with actual files');
+        $checksumContent = file_get_contents($checksumFile = $ube->updateDir.DIRECTORY_SEPARATOR.'contents.md5');
+        file_put_contents($checksumFile,'');
+        $exc = false;
+        try {
+            $ube->checkIf('checksumsAvail');
+        } catch (Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_CHECKSUM,$e->getCode(),'Exception with wrong code in checkIfChecksumAvail and message: '.$e->getMessage());
+            $exc = true;
+        }
+        $this->assertTrue($exc,'No exception was thrown when one should have been (4)');
+        $this->assertFalse($ube->checkIf('checksumsAvail',false),"checkIfChecksumsAvail should have returned false; checksums file is empty.");
+        $moddedChecksumContent = str_replace('1bc166e024f19c3da04a00714551224a','ffffffffffffffffffffffffffffffff',$checksumContent);
+        // Contents present but not entirely correct: should pass.
+        file_put_contents($checksumFile,$moddedChecksumContent);
+        // Reset properties:
+        $ube->checksums = null;
+        $ube->checksumsContent = null;
+        $this->assertTrue($ube->checkIf('checksumsAvail',false),"checkIfChecksumsAvail should have returned true.");
+        file_put_contents($checksumFile,'');
+        $this->assertTrue($ube->checkIf('checksumsAvail',false),"value not retained in _checksumsAvail");
+        file_put_contents($checksumFile,$moddedChecksumContent);
+
+        $ube->checksums = null;
+        $ube->checksumsContent = null;
+        // Manifest file missing.
+        $exc = false;
+        rename($manifestFile = $ube->updateDir.DIRECTORY_SEPARATOR.'manifest.json', $modManifestFile = $ube->updateDir.DIRECTORY_SEPARATOR.'manifest.json.1');
+        try {
+            $ube->checkIf('manifestAvail');
+        } catch (Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_MANIFEST,$e->getCode(),'Exception with wrong code in checkIfManifestAvail and message: '.$e->getMessage());
+            $exc = true;
+        }
+        $this->assertTrue($exc,'No exception was thrown when one should have been (5)');
+        $this->assertFalse($ube->checkIf('manifestAvail',false),'checkIfManifestAvail should have returned false; manifest file is missing.');
+        rename($modManifestFile,$manifestFile);
+        // Manifest file corrupt.
+        $exc = false;
+        try {
+            $ube->checkIf('manifestAvail');
+        } catch (Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_MANIFEST,$e->getCode(),'Exception with wrong code in checkIfManifestAvail and message: '.$e->getMessage());
+            $exc = true;
+        }
+        $this->assertTrue($exc,'No exception was thrown when one should have been (6)');
+        $this->assertFalse($ube->checkIf('manifestAvail',false),'checkIfManifestAvail should have returned false; manifest file is corrupt. Checksums = '.var_export($ube->checksums,1));
+        // Effectively unsets checksums so they'll be re-fetched and re-parsed
+        file_put_contents($checksumFile,$checksumContent);
+        // Reset properties:
+        $ube->checksums = null;
+        $ube->checksumsContent = null;
+        // Now the manifest file is valid
+        $this->assertTrue($ube->checkIf('manifestAvail'),'checkIfManifestAvail should have returned true.');
+        file_put_contents($checksumFile,'');
+        $ube->checksums = null;
+        $ube->checksumsContent = null;
+        $this->assertTrue($ube->checkIf('manifestAvail'),'value not retained in _manifestAvail');
+        file_put_contents($checksumFile,$checksumContent);
+        $ube->checksums = null;
+        $ube->checksumsContent = null;
+
+        // Now let us say the version and edition do not apply:
+        $manifest = $ube->manifest;
+        $ube->version = '3.5';
+        $ube->edition = 'opensource';
+        $originalManifest = $manifest;
+        $manifest['fromVersion'] = '9.9';
+        $manifest['fromEdition'] = 'opensource';
+        $ube->manifest = $manifest;
+        $exc = false;
+        // Version bad, edition fine. Should fail at version first.
+        try {
+            $ube->checkIf('packageApplies');
+        } catch (Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_NOTAPPLY,$e->getCode(),'Exception with wrong code in checkIfPackageApplies (wrong version) and message: '.$e->getMessage());
+            $exc = true;
+        }
+        $this->assertTrue($exc,'No exception was thrown when one should have been (7)');
+        $manifest['fromVersion'] = '3.5';
+        $manifest['fromEdition'] = 'pro';
+        $ube->manifest = $manifest;
+        // Version fine, edition bad. Should fail at edition now.
+        $exc = false;
+        try {
+            $ube->checkIf('packageApplies');
+        } catch (Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_NOTAPPLY,$e->getCode(),'Exception with wrong code in checkIfPackageApplies (wrong edition) and message: '.$e->getMessage());
+            $exc = true;
+        }
+        $this->assertTrue($exc,'No exception was thrown when one should have been (8)');
+        $manifest['fromEdition'] = 'opensource';
+        $ube->manifest = $manifest;
+        // Version and edition fine, scenario bad. Should fail there now.
+        $exc = false;
+        try {
+            $ube->checkIf('packageApplies');
+        } catch (Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_NOTAPPLY,$e->getCode(),'Exception with wrong code in checkIfPackageApplies (wrong scenario) and message: '.$e->getMessage());
+            $exc = true;
+        }
+        $this->assertTrue($exc,'No exception was thrown when one should have been (9)');
+
+        $ube->scenario = 'update'; // Same as in mock-up of manifest
+        // Nothing wrong with package now
+        $this->assertTrue($ube->checkIf('packageApplies'),'checkIfPackageApplies should have returned true.');
+        $manifest['fromEdition'] = 'pro';
+        $this->assertTrue($ube->checkIf('packageApplies'),'value not retained in _packageApplies');
+
+        $this->prereq($ube,'updateDir',false);   
+    }
+
+    // The following methods have already been tested:
+    // 
+    // checkIfChecksumsAvail
+    // checkIfManifestAvail
+    // checkIfPackageApplies
+    // checkIfPackageExists
+
+    public function testCheckIfCanSpawnChildren() {
+        $ube = $this->instantiateUBe();
+        $this->assertTrue($ube->checkIf('canSpawnChildren'));
+    }
+
+    public function testCheckIfDatabaseBackupExists(){
+        $backupFile = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'data',UpdaterBehavior::BAKFILE));
+        $ube = $this->instantiateUBe();
+        if(file_exists($backupFile))
+            unlink($backupFile);
+        $file = 'nothing.file';
+        try{
+            $ube->checkIfDatabaseBackupExists();
+            $noExc = true;
+        }catch(Exception $e){
+            $noExc = false;
+            $this->assertEquals(UpdaterBehavior::ERR_DBNOBACK, $e->getCode(),'Wrong error code thrown; exception message was '.$e->getMessage());
+        }
+        if($noExc)
+            $this->assertTrue(false, 'No exception was thrown, where one should have been (file does not exist).');
+
+        
+        touch($backupFile, time() - 86401);
+        try{
+            $noExc = true;
+            $ube->checkIfDatabaseBackupExists();
+        }catch(Exception $e){
+            $noExc = false;
+            $this->assertEquals(UpdaterBehavior::ERR_DBOLDBAK, $e->getCode());
+        }
+
+    }
+
+    public function testCheckUpdates() {
+        $ube = $this->instantiateUBe();
+        Yii::app()->params->admin = $this->getAdmin();
+        $version = $ube->checkUpdates(true);
+        $this->assertTrue(version_compare(Yii::app()->params->version,$version)>=0);
+    }
+
+    public function testClassAliasPath() {
+        $this->assertEquals('components/UpdaterBehavior.php',UpdaterBehavior::classAliasPath('application.components.UpdaterBehavior'));
+    }
+
+    // Methods copyFile and cleanUp are already covered by testApplyFiles.
+    // UpdaterBehavior::applyFiles() calls these methods.
+
+    public function testDownloadPackage() {
+        $ube = $this->instantiateUBe(array('scenario' => 'update'));
+        $ube->downloadPackage('3.5','TTTT-TTTTT-TTTTT','pro');
+        $this->assertFileExists($ube->updatePackage);
+    }
+
+    public function testDownloadSourceFile(){
+        $ube = $this->instantiateUBe();
+        $file = "protected/components/views/requirements.php";
+
+        if(is_dir($tmpdir = $ube->webRoot.DIRECTORY_SEPARATOR.'tmp'))
+            FileUtil::rrmdir($tmpdir); //  rename($file, "{$ube->webRoot}/requirements-original.php");
+        $ube->downloadSourceFile($file, $ube->getSourceFileRoute('opensource','none'));
+        $this->assertFileExists($tmpdir.DIRECTORY_SEPARATOR.$file);
+        FileUtil::rrmdir($tmpdir);
+    }
+
+    /**
+     * Test the enactChanges method.
+     *
+     * This is a very time-consuming test that involves dropping and reloading the
+     * database multiple times, and so only if {@link TEST_LEVEL} is set to 2 will
+     * the test actually run.
+     */
+    public function testEnactChanges(){
+        if(self::TEST_LEVEL == 2)
+            $this->assertEnactChanges();
+        else
+            $this->markTestSkipped('Skipping; TEST_LEVEL not set to 2 (this is a very slow test).');
+    }
+
+    // enactDatabaseChanges is protected and called in enactChanges, so it's
+    // covered by testEnactChanges
+
+    // formatDefinitionList is more practical test manually, i.e. seeing the
+    // output, because the output is going to be markup.
+
+    ///////////////////////////
+    // GETTER FUNCTION TESTS //
+    ///////////////////////////
+    // Not needed:
+    // getChecksumsContent; covered by testGetChecksums and testCheckIf
+    // getEdition, getVersion; covered by testCheckIf
+    // getManifest; covered by testCheckIf
+    // getNoHalt; covered by testSetNoHalt
+    // getScenario; covered (sort of) by testDownloadPackage and anything
+    //  else testing a method that calls getUpdateDataRoute
+    // getSourceDir, getThisPath, getUpdateDir, getUpdatePackage
+    //  getLockFile; these are covered by testAllPaths
+    // getSourceFileRoute; this is covered by testDownloadSourceFile
+    // getUpdateData,getUpdatePackage; these are only a few small, easy to
+    //  spot-check things on top of getUpdateDataRoute, which is covered by
+    //  testGetUpdateDataRoute. The environmental factors (server connection)
+    //  also need to be tested manually.
+    //  
+
+    public function testGetChecksums(){
+        $ube = $this->instantiateUBe();
+        $expect = $this->prereq($ube,'checksums for parse testing');
+        $checkSums = $ube->getCheckSums();
+        foreach($expect as $file => $digest){
+            $this->assertArrayHasKey($file, $checkSums);
+            $this->assertEquals($digest, $checkSums[$file]);
+        }
+    }
+
+    public function testGetCompatibilityStatus(){
+        $ube = $this->instantiateUBe();
+        $ube->scenario = 'update';
+        $ube->manifest = json_decode(file_get_contents(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'tests', 'data', 'updatecompat', 'manifest.json'))), 1);
+        $expected = array(
+            'req' =>
+            array(
+                'requirements' =>
+                array(
+                    'functions' =>
+                    array(
+                        'mb_regex_encoding' => true,
+                        'getcwd' => true,
+                        'chmod' => true,
+                        'proc_open' => true,
+                    ),
+                    'classes' =>
+                    array(
+                        'Reflection' => true,
+                    ),
+                    'classConflict' =>
+                    array(
+                    ),
+                    'extensions' =>
+                    array(
+                        'pcre' => true,
+                        'SPL' => true,
+                        'pdo_mysql' => true,
+                        'ctype' => true,
+                        'mbstring' => true,
+                        'json' => true,
+                        'hash' => true,
+                        'curl' => true,
+                        'mcrypt' => true,
+                        'openssl' => true,
+                        'zip' => true,
+                        'fileinfo' => true,
+                        'gd' => true,
+                    ),
+                    'environment' =>
+                    array(
+                        'filesystem_ownership' => 1,
+                        'filesystem_permissions' => 1,
+                        'open_basedir' => 1,
+                        'php_version' => 1,
+                        'php_server_superglobal' => 0,
+                        'pcre_version' => true,
+                        'chmod' => 1,
+                        'allow_url_fopen' => '1',
+                        'updates_connection' => 0,
+                        'outbound_connection' => 0,
+                        'phpmail' => false,
+                        'shell' => true,
+                    ),
+                ),
+                'reqMessages' =>
+                array(
+                    1 =>
+                    array(
+                    ),
+                    2 =>
+                    array(
+                    ),
+                    3 =>
+                    array(
+                    ),
+                ),
+                'canInstall' => true,
+                'hasMessages' => false,
+            ),
+            'databasePermissionError' => false,
+            'modules' =>
+            array(
+            ),
+            'conflictingFields' =>
+            array(
+                'Accounts' =>
+                array(
+                    0 => 'primaryContact',
+                ),
+                'Campaign' =>
+                array(
+                    0 => 'sendAs',
+                ),
+                'Media' =>
+                array(
+                    0 => 'drive',
+                    1 => 'title',
+                ),
+                'Opportunity' =>
+                array(
+                    0 => 'visibility',
+                ),
+                'Services' =>
+                array(
+                    0 => 'email',
+                ),
+            ),
+            'customFiles' =>
+            array(
+                0 => 'protected/config/web.php',
+                1 => 'protected/config/console.php',
+            ),
+            'allClear' => false,
+        );
+
+        $this->assertEquals($expected,$ube->compatibilityStatus);
+        
+    }
+
+    public function testGetConfigVars(){
+        $ube = $this->instantiateUBe();
+        $confVars = $ube->configVars;
+        include(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'config','X2Config.php')));
+        foreach(UpdaterBehavior::$_configVarNames as $name) {
+            $this->assertEquals(${$name},$confVars[$name],"Failed asserting config variable $name imported correctly");
+        }
+    }
+
+    public function testGetDbBackupCommand(){
+        $ube = $this->instantiateUBe();
+        $this->assertEquals(0,strpos($ube->dbBackupCommand,'mysqldump'));
+    }
+
+    public function testGetDbBackupPath(){
+        $ube = $this->instantiateUBe();
+        $this->assertEquals(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'data','update_backup.sql')),$ube->dbBackupPath);
+    }
+
+    public function testGetDbCommand(){
+        $ube = $this->instantiateUBe();
+        $this->assertEquals(0,strpos($ube->dbCommand,'mysql'));
+    }
+
+    public function testGetDbParams(){
+        $ube = $this->instantiateUBe();
+        include(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'config','X2Config-test.php')));
+        $param = $ube->dbParams;
+        $this->assertEquals($host,$param['dbhost']);
+        $this->assertEquals($user,$param['dbuser']);
+        $this->assertEquals($pass,$param['dbpass']);
+        $this->assertEquals($dbname,$param['dbname']);
+    }
+
+    public function testGetFiles(){
+        $ube = $this->instantiateUBe();
+        $this->prereq($ube,'checksums with actual files');
+        $expected = array(
+            'empty.php' => 0,
+            'corrupt.php' => 1,
+            'file with spaces.js' => 0,
+            'manifest.json' => 0,
+            'nonexist.php' => 2,
+        );
+        $this->assertEquals($expected,$ube->files);
+        $this->prereq($ube,'checksums with actual files',1);
+    }
+
+    public function testGetFilesByStatus(){
+        $ube = $this->instantiateUBe();
+        $this->prereq($ube,'checksums with actual files');
+        $expected = array(
+            0 =>
+            array(
+                0 => 'empty.php',
+                1 => 'file with spaces.js',
+                2 => 'manifest.json',
+            ),
+            1 =>
+            array(
+                0 => 'corrupt.php',
+            ),
+            2 =>
+            array(
+                0 => 'nonexist.php',
+            ),
+        );
+        $this->assertEquals($expected,$ube->filesByStatus);
+        $this->prereq($ube,'checksums with actual files',1);
+    }
+
+    public function testGetFilesStatus(){
+        $ube = $this->instantiateUBe();
+        $this->prereq($ube,'checksums with actual files');
+        $expected = array(
+            0 => 3,
+            1 => 1,
+            2 => 1,
+        );
+        $this->assertEquals($expected,$ube->filesStatus);
+        $this->prereq($ube,'checksums with actual files',1);
+
+    }
+
+    public function testGetLatestUpdaterVersion(){
+        $ube = $this->instantiateUBe();
+        $this->assertEquals('string',gettype($ube->latestUpdaterVersion));
+    }
+
+    public function testGetUniqueId(){
+        $ube = $this->instantiateUBe();
+        $admin = $this->getAdmin();
+        $this->assertEquals($admin->unique_id,$ube->uniqueId);
+    }
+
+    public function testGetUpdateDataRoute(){
+        $ube = $this->instantiateUBe();
+        $ube->edition = 'pro';
+        $ube->version = '3.5';
+        $ube->scenario = 'update';
+        $ube->uniqueId = 'TTTT-TTTTT-TTTTT';
+        $this->assertEquals(0,strpos($ube->updateDataRoute,'/installs/updates/3.5/TTTT-TTTTT-TTTTT_pro_'));
+        $ube->edition = 'opensource';
+        $ube->scenario = 'upgrade';
+        $this->assertEquals(0,strpos($ube->updateDataRoute,'/installs/upgrades/TTTT-TTTTT-TTTTT/opensource_'));
+    }
+
+    public function testLog() {
+        $ube = $this->instantiateUBe();
+        $logFile = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'data',UpdaterBehavior::ERRFILE));
+        if(file_exists($logFile))
+            unlink($logFile);
+        $ube->log($expectText = '&&&Hello world&&&');        
+        $this->assertFileExists($logFile);
+        $logContents = file_get_contents($logFile);
+        unlink($logFile);
+        $this->assertNotEquals(false,strpos($logContents,$expectText));
+    }
+
+
+    /**
+     * Test the backup & restore functionality.
+     *
+     * This won't be necessary most of the time. It is a time-consuming test.
+     */
+    public function testMakeDatabaseBackup(){
+        $ube = $this->instantiateUBe();
+        if(self::TEST_LEVEL == 1){
+            $this->setupTestTables();
+            $ube->makeDatabaseBackup();
+            foreach($this->testTables['new'] as $table)
+                Yii::app()->db->createCommand($this->createTable($table))->execute();
+            $ube->restoreDatabaseBackup();
+            foreach($this->testTables as $type => $tables){
+                if($type != 'new'){
+                    foreach($tables as $table)
+                        $this->assertTableExists($table['name']);
+                }else{
+                    foreach($tables as $table)
+                        $this->assertTableNotExists($table['name']);
+                }
+            }
+            $this->dropTestTables();
+        }else{
+            $this->markTestSkipped('Skipping; TEST_LEVEL not set to 1 (this is a slow test).');
+        }
+
+    }
+
+    public function testRegenerateConfig(){
+        $configFilename = UpdaterBehavior::$configFilename; // Copy of the original filename
+        $testConfigFilename = 'X2Config-testRegen.php'; // Temporary new config filename
+        $filesThatShouldBe600 = array('encryption.key', 'encryption.iv'); // Files for testing that permissions are set properly
+        // Make test backups of the keys
+        foreach(array('key', 'iv') as $cryptExt){
+            $cryptFile = Yii::app()->basePath."/config/encryption.$cryptExt";
+            if(file_exists($cryptFile)){
+                rename($cryptFile, "$cryptFile.testbackup");
+            }
+        }
+        UpdaterBehavior::$configFilename = $testConfigFilename;
+        copy(Yii::app()->basePath."/config/$configFilename", Yii::app()->basePath."/config/$testConfigFilename");
+        $this->assertTrue(file_exists(Yii::app()->basePath.'/config/'.UpdaterBehavior::$configFilename));
+
+        $ube = $this->instantiateUBe();
+        $newversion = '3.3.3.3.3.3.3.3.3.3.3.3.3';
+        $newupdaterVersion = '2.2.2.2.2.2.2.2.2';
+        $newbuildDate = 12345678910;
+        $ube->regenerateConfig($newversion, $newupdaterVersion, $newbuildDate);
+        include(Yii::app()->basePath."/config/".$testConfigFilename);
+        foreach(array('version', 'updaterVersion', 'buildDate') as $var)
+            $this->assertEquals(${"new$var"}, ${"$var"},"Failed asserting that $var was set properly");
+        // Test that permissions were set properly on the config/encryption files
+        foreach($filesThatShouldBe600 as $file){
+            $this->assertEquals(100600, decoct(fileperms(Yii::app()->basePath."/config/$file")), "Failed asserting that $file had its permissions set properly.");
+        }
+        foreach($filesThatShouldBe600 as $file){
+            // Forcefully change so we can properly test the permission-setting method
+            chmod(Yii::app()->basePath."/config/$file", octdec(100666));
+        }
+        // Now, run the method:
+        $ube->setConfigPermissions(100600);
+        // Test that the permissions were set back to their proper values
+        foreach($filesThatShouldBe600 as $file){
+            $this->assertEquals(100600, decoct(fileperms(Yii::app()->basePath."/config/$file")), "Failed asserting that $file had its permissions set properly.");
+        }
+
+        UpdaterBehavior::$configFilename = $configFilename;
+        unlink(Yii::app()->basePath."/config/$testConfigFilename");
+        // Restore test backups of the keys
+        foreach(array('key', 'iv') as $cryptExt){
+            $cryptFile = Yii::app()->basePath."/config/encryption.$cryptExt";
+            if(file_exists("$cryptFile.testbackup")){
+                rename("$cryptFile.testbackup", $cryptFile);
+            }
+        }
+    }
+
+    /**
+     * Test the function that processes deletionList
+     */
+    public function testRemoveFiles(){
+        $this->setupTestDirs();
+        $ube = $this->instantiateUBe();
+        $deletionList = $this->fileList;
+        $ube->removeFiles($deletionList);
+        foreach($deletionList as $deletedFile)
+            $this->assertFileNotExists("{$ube->webRoot}/$deletedFile");
+        $this->removeTestDirs();
+    }
+
+    // function renderCompatibilityMessages needs manual testing (it's more
+    // a visual test of output)
+
+    // function requireDependencies messes with the live fileset and is thus
+    // really tough to replicate. However, the most essential parts of it
+    // (downloadSourceFile and applyFiles) are covered by testDownloadSourceFile.
+    
+
+    /**
+     * Test the function that cleans out the assets folder.
+     */
+    public function testResetAssets(){
+        $ube = $this->instantiateUBe();
+        $crcDir = sprintf('%x', crc32('cockadoodledoo'));
+        mkdir("{$ube->webRoot}/assets/$crcDir");
+        $file = "{$ube->webRoot}/assets/$crcDir/something.js";
+        file_put_contents($file, '/* cockadoodledoo */');
+        $ube->resetAssets();
+        $this->assertFileNotExists($file);
+    }
+
+    public function testRunMigrationScripts() {
+        $ube = $this->instantiateUBe();
+        $ran = array();
+        $this->prereq($ube,'sourceDir');
+        $nodes = array('protected','tests','data','updatemigration');
+        $allNodes = '';
+        foreach($nodes as $node) {
+            if(!is_dir($absNode = $ube->sourceDir.$allNodes.DIRECTORY_SEPARATOR.$node))
+                mkdir($absNode);
+            $allNodes .= DIRECTORY_SEPARATOR.$node;
+        }
+        $migdir = implode(DIRECTORY_SEPARATOR,array_merge(array($ube->sourceDir),$nodes));
+        $script = 'protected/tests/data/updatemigration/touch.php';
+        copy($ube->webRoot.DIRECTORY_SEPARATOR.FileUtil::rpath($script),$ube->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
+        $ube->runMigrationScripts(array($script),&$ran);
+        $this->assertEquals(1,count($ran));
+        $this->assertFileExists($testfile = $ube->webRoot.DIRECTORY_SEPARATOR.'testfile');
+        unlink($testfile);
+    }
+
+    // function restoreDatabaseBackup is covered by testEnactChanges.
+    // function testRunMigrationScripts is covered by testEnactChanges (#TODO)
+
+
+    ///////////////////////////
+    // SETTER FUNCTION TESTS //
+    ///////////////////////////
+    // Not needed:
+    // testSetChecksums,testSetChecksumsContent; covered by testCheckIf
+    // testSetConfigPermissions; covered by testEnactChanges
+    // testSetEdition, testSetManifest, testSetVersion; covered by testCheckIf
+    // testSetScenario; covered by testDownloadPackage
+
+    public function testSetNoHalt(){
+        $ube = $this->instantiateUBe();
+        $ube->setNoHalt(true);
+        $this->assertEquals(true,$ube->noHalt);
+    }
+
+    public function testSetUniqueId(){
+        $ube = $this->instantiateUBe();
+        $ube->setUniqueId($exp = 'nonenonenone');
+        $this->assertEquals($exp,$ube->uniqueId);
+    }
+    
+    /**
+     * Tests the SQL error printer (which should never fail)
+     *
+     * The call to sqlError should not halt PHP execution, and there should be
+     * no fatal errors. This test will always "pass"; it "fails" if phpunit
+     * exits entirely, or encounters a fatal error (obviously).
+     */
+    public function testSqlError(){
+        $ube = $this->instantiateUBe();
+        try{
+            $ube->sqlError('HOW DO I WROTE SQL', array('UPDATE x2_actions SET actionDescription="stuff and things"'), 'SQL syntax error.', true);
+            $this->assertFalse(true,'sqlError should throw an exception.');
+        }catch(Exception $e){
+            $this->assertRegExp('/SQL syntax error/m', $e->getMessage());
+        }
+    }
+
+    public function testUnpack () {
+        // Copy the zip file...
+        $ube = $this->instantiateUBe();
+        $this->prereq($ube,'updateDir',false);
+        copy(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'tests','data','update.zip')),$ube->webRoot.DIRECTORY_SEPARATOR.'update.zip');
+        $ube->unpack();
+        $this->assertTrue(is_dir($ube->updateDir),'Update directory not created');
+        $this->assertTrue(is_dir($ube->sourceDir),'Source directory not unpacked');
+        $this->assertFileExists($ube->updateDir.DIRECTORY_SEPARATOR.'manifest.json','Manifest file not unpacked');
+        $this->assertFileExists($ube->updateDir.DIRECTORY_SEPARATOR.'contents.md5','Contents digest file not unpacked');
+        $ube->cleanUp();
+    }
 
 }
 

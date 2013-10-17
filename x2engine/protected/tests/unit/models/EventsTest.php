@@ -40,11 +40,15 @@ Yii::import('application.models.*');
  * @package X2CRM.tests.unit.models
  * @author Jake Houser <jake@x2engine.com>
  */
-class EventsTest extends CDbTestCase {
+class EventsTest extends X2DbTestCase {
     
     public $fixtures=array(
         'event'=>'Events',
     );
+
+    public static function referenceFixtures() {
+        return array();
+    }
     
     public function testGetEvents(){
         $lastEventId=0;

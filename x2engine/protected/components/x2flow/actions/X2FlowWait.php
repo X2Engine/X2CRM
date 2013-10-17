@@ -69,26 +69,30 @@ class X2FlowWait extends X2FlowAction {
 			));
 	}
 
-	public function execute(&$params) {
+	public function execute(&$params, $triggerLogId=null) {
 		$options = &$this->config['options'];
-
+        $options['delay']['value']=$this->parseOption('delay',$params);
 		if(!is_array($this->flowPath) || !is_numeric($options['delay']['value']))
-			return false;
+			return array (false, "");
 
-		$time = X2FlowItem::calculateTimeOffset((int)$options['delay']['value'],$options['unit']['value']);
+		$time = X2FlowItem::calculateTimeOffset(
+            (int)$options['delay']['value'],$options['unit']['value']);
 
-		if($time === false)
-			return false;
+		if($time === false) {
+			return array (false, "");
+        }
 		$time += time();
 
-		$this->flowPath[count($this->flowPath)-1]++;	// add 1 to the branch position in the flow path, to skip this action
+        // add 1 to the branch position in the flow path, to skip this action
+		$this->flowPath[count($this->flowPath)-1]++;	
 
 		$cron = new CronEvent;
 		$cron->type = 'x2flow';
 		$cron->createDate = time();
 		$cronData = array(
 			'flowId'=>$this->flowId,
-			'flowPath'=>$this->flowPath
+			'flowPath'=>$this->flowPath,
+            'triggerLogId'=>$triggerLogId
 		);
 		$cron->time = $time;
 
@@ -97,8 +101,12 @@ class X2FlowWait extends X2FlowAction {
 			$cronData['modelClass'] = get_class($params['model']);
 		}
 		foreach(array_keys($params) as $param) {
-			if(is_object($params[$param]) && $params[$param] instanceof CActiveRecord)	// remove any models so the JSON doesn't get crazy long
-				unset($params['model']);
+
+            // remove any models so the JSON doesn't get crazy long
+			if(is_object($params[$param]) && $params[$param] instanceof CActiveRecord){	
+				$tmpModel = $params['model'];
+                unset($params['model']);
+            }
 		}
 
 		$cronData['params'] = $params;
@@ -106,8 +114,14 @@ class X2FlowWait extends X2FlowAction {
 		$cron->data = CJSON::encode($cronData);
 		// $cron->validate();
 		// die(var_dump($cron->getErrors()));
-
-		return $cron->save();
+        if(isset($tmpModel)){
+            $params['model']=$tmpModel;
+        }
+		if ($cron->save()) {
+			return array (true, "");
+        } else {
+			return array (false, "");
+        }
 		// $notif->user = $this->parseOption('user',$params);
 
 	}
