@@ -71,13 +71,12 @@ Private instance methods
 
 InlineTagsContainer.prototype._afterRemoveHandler = function (tag, parent) {
     var that = this;    
-
     $.post(
         that.removeTagUrl,
         {
             Type: that.modelType,
             Id: that.modelId,
-            Tag: tag.innerHTML
+            Tag: $(tag).text ()
         }, 
         function(response) {
             if(response === 'true') { // tag was removed
@@ -109,7 +108,7 @@ InlineTagsContainer.prototype._appendTag = function (tag) {
         {
             Type: that.modelType,
             Id: that.modelId,
-            Tag: tag.innerHTML
+            Tag: $(tag).text ()
         }, 
         function(response) {
             // response - JSON true if tag was created
@@ -128,16 +127,17 @@ InlineTagsContainer.prototype._appendTag = function (tag) {
 // override ancestor method
 InlineTagsContainer.prototype._afterCreateNewTag = function(textfield, value, span) {
     var that = this; 
+    
+    var link = that._convertInputToTag (textfield, value, span);
 
     $.post(
         that.appendTagUrl, 
         {
             Type: that.modelType,
             Id: that.modelId,
-            Tag: value
+            Tag: $(link).text ()
         }, 
         function(response) {
-            that._convertInputToTag (textfield, value, span);
         }
     );
 };
@@ -165,5 +165,3 @@ InlineTagsContainer.prototype._init = function () {
         that._createNewTagHandler(event); 
     });
 };
-
-

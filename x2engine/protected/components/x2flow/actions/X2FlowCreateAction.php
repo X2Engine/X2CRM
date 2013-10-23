@@ -54,7 +54,7 @@ class X2FlowCreateAction extends X2FlowAction {
 			'3' => Yii::t('actions','High')
 		);
 		// $assignmentOptions = array('{assignedTo}'=>'{'.Yii::t('studio','Owner of Record').'}') + X2Model::getAssignmentOptions(false,true);	// '{assignedTo}', groups, no 'anyone'
-		$assignmentOptions = X2Model::getAssignmentOptions(false,true);	// '{assignedTo}', groups, no 'anyone'
+		$assignmentOptions = array('{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}') + X2Model::getAssignmentOptions(false, true);	// '{assignedTo}', groups, no 'anyone'
 
 		return array(
 			'title' => Yii::t('studio',$this->title),
@@ -88,7 +88,7 @@ class X2FlowCreateAction extends X2FlowAction {
 
         if ($action->save()) {
             return array (
-                true, 
+                true,
                 Yii::t('studio', "View created action: ").$action->getLink ());
         } else {
             return array (false, $action->getError ());

@@ -480,6 +480,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         // Back up configuration (it will be overwritten in the test, eventually)
         $this->configFile = implode(DIRECTORY_SEPARATOR,array($ube->webRoot,'protected','config','X2Config.php'));
         copy($this->configFile,"{$this->configFile}.bak");
+        $ube->regenerateConfig($manifest['fromVersion'],$manifest['updaterVersion'],$manifest['buildDate']);
 
         // Make the backup (expected to happen before running enactChanges):
         $ube->makeDatabaseBackup();
@@ -497,8 +498,11 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         // that regard; we just need to get it past that point)
         $this->prereq($ube,'checksums with actual files');
         $ube->checkSums = array_intersect_key($ube->checkSums,array('manifest.json'=>$ube->checkSums['manifest.json']));
+        
         try{
+            ob_start();
             $ube->enactChanges(true);
+            ob_end_clean();
         }catch(Exception $e){
             $this->assertEquals(UpdaterBehavior::ERR_DATABASE, $e->getCode(),"Wrong error code thrown in an exception thrown by enactChanges. The message was: ".$e->getMessage());
         }
@@ -510,7 +514,9 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         file_put_contents($lockFile, $now);
         $exc = false;
         try {
+            ob_start();
             $ube->enactChanges(true);
+            ob_end_clean();
         } catch (Exception $e) {
             $this->assertEquals(UpdaterBehavior::ERR_ISLOCKED,$e->getCode(),"enactChanges didn't throw an exception with the appropriate code. Message: ".$e->getMessage());
             $exc = true;
@@ -523,7 +529,9 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         array_pop($manifest['data'][0]['sqlList']);
         $ube->manifest = $manifest;
 
+        ob_start();
         $ube->enactChanges(true);
+        ob_end_clean();
         $this->assertChangesApplied($ube);
         $this->assertFileNotExists($lockFile, "Failed asserting that the lock file was deleted after a successful update.");
         $this->resetAfterChanges($ube);
@@ -540,7 +548,9 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $admin = $this->getAdmin();
         $edition = $admin->edition;
         $unique_id = $admin->unique_id;
+        ob_start();
         $ube->enactChanges(true);
+        ob_end_clean();
         $this->assertChangesApplied($ube);
         $this->resetAfterChanges($ube);
         // Reset edition/unique_id:
@@ -804,13 +814,29 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $ube->checksums = null;
         $ube->checksumsContent = null;
 
-        // Now let us say the version and edition do not apply:
+        // Now let us say the version, edition, scenario or updater version did not apply:
+        $configVars = $ube->configVars;
         $manifest = $ube->manifest;
         $ube->version = '3.5';
         $ube->edition = 'opensource';
         $originalManifest = $manifest;
-        $manifest['fromVersion'] = '9.9';
+        $manifest['fromVersion'] = '3.5';
         $manifest['fromEdition'] = 'opensource';
+        $manifest['updaterVersion'] = '3.1415926';
+        // Updater version bad, version fine. Should fail at updater version first.
+        $ube->manifest = $manifest;
+        $exc = false;
+        try {
+            $ube->checkIf('packageApplies');
+        } catch (Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_NOTAPPLY,$e->getCode(),'Exception with wrong code in checkIfPackageApplies (wrong updater version) and message: '.$e->getMessage());
+            $exc = true;
+        }
+        $this->assertTrue($exc,'No exception was thrown when one should have been (7)');
+        
+
+        $manifest['updaterVersion'] = $configVars['updaterVersion'];
+        $manifest['fromVersion'] = '9.9';
         $ube->manifest = $manifest;
         $exc = false;
         // Version bad, edition fine. Should fail at version first.
@@ -820,7 +846,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             $this->assertEquals(UpdaterBehavior::ERR_NOTAPPLY,$e->getCode(),'Exception with wrong code in checkIfPackageApplies (wrong version) and message: '.$e->getMessage());
             $exc = true;
         }
-        $this->assertTrue($exc,'No exception was thrown when one should have been (7)');
+        $this->assertTrue($exc,'No exception was thrown when one should have been (8)');
         $manifest['fromVersion'] = '3.5';
         $manifest['fromEdition'] = 'pro';
         $ube->manifest = $manifest;
@@ -832,7 +858,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             $this->assertEquals(UpdaterBehavior::ERR_NOTAPPLY,$e->getCode(),'Exception with wrong code in checkIfPackageApplies (wrong edition) and message: '.$e->getMessage());
             $exc = true;
         }
-        $this->assertTrue($exc,'No exception was thrown when one should have been (8)');
+        $this->assertTrue($exc,'No exception was thrown when one should have been (9)');
         $manifest['fromEdition'] = 'opensource';
         $ube->manifest = $manifest;
         // Version and edition fine, scenario bad. Should fail there now.
@@ -843,7 +869,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             $this->assertEquals(UpdaterBehavior::ERR_NOTAPPLY,$e->getCode(),'Exception with wrong code in checkIfPackageApplies (wrong scenario) and message: '.$e->getMessage());
             $exc = true;
         }
-        $this->assertTrue($exc,'No exception was thrown when one should have been (9)');
+        $this->assertTrue($exc,'No exception was thrown when one should have been (10)');
 
         $ube->scenario = 'update'; // Same as in mock-up of manifest
         // Nothing wrong with package now
@@ -1025,7 +1051,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                         'allow_url_fopen' => '1',
                         'updates_connection' => 0,
                         'outbound_connection' => 0,
-                        'phpmail' => false,
                         'shell' => true,
                     ),
                 ),
@@ -1191,19 +1216,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $this->assertEquals(0,strpos($ube->updateDataRoute,'/installs/upgrades/TTTT-TTTTT-TTTTT/opensource_'));
     }
 
-    public function testLog() {
-        $ube = $this->instantiateUBe();
-        $logFile = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'data',UpdaterBehavior::ERRFILE));
-        if(file_exists($logFile))
-            unlink($logFile);
-        $ube->log($expectText = '&&&Hello world&&&');        
-        $this->assertFileExists($logFile);
-        $logContents = file_get_contents($logFile);
-        unlink($logFile);
-        $this->assertNotEquals(false,strpos($logContents,$expectText));
-    }
-
-
     /**
      * Test the backup & restore functionality.
      *
@@ -1330,7 +1342,9 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $migdir = implode(DIRECTORY_SEPARATOR,array_merge(array($ube->sourceDir),$nodes));
         $script = 'protected/tests/data/updatemigration/touch.php';
         copy($ube->webRoot.DIRECTORY_SEPARATOR.FileUtil::rpath($script),$ube->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
+        ob_start();
         $ube->runMigrationScripts(array($script),&$ran);
+        ob_end_clean();
         $this->assertEquals(1,count($ran));
         $this->assertFileExists($testfile = $ube->webRoot.DIRECTORY_SEPARATOR.'testfile');
         unlink($testfile);

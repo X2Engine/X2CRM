@@ -87,13 +87,16 @@ abstract class WebUpdaterAction extends CAction{
      * dependencies that can't be auto-retrieved).
 	 */
 	public function runUpdateUpdater($updaterCheck, $redirect){
-		try{
-			if(count($classes = $this->updateUpdater($updaterCheck)))
-				$this->controller->missingClassesException($classes);
-			$this->controller->redirect($redirect);
-		}catch(Exception $e){
-			$this->controller->error500($e->getMessage());
-		}
-	}
+        try{
+            if(count($classes = $this->updateUpdater($updaterCheck))){
+                $this->output(Yii::t('admin', 'One or more dependencies of AdminController are missing and could not be automatically retrieved. They are {classes}', array('{classes}' => implode(', ', $classes))), 'error', 1);
+                $this->controller->missingClassesException($classes);
+            }
+            $this->output(Yii::t('admin', 'The updater is now up-to-date and compliant with the updates server.'));
+            $this->controller->redirect($redirect);
+        }catch(Exception $e){
+            $this->controller->error500($e->getMessage());
+        }
+    }
 }
 ?>

@@ -641,7 +641,12 @@ function installStage($stage) {
 						$timeDiff = $time - (int) trim($dateGen);
 						foreach ($dateFields as $table => $fields) {
 							foreach ($fields as $field) {
-								$dbo->exec("UPDATE `$table` SET `$field`=`$field`+$timeDiff WHERE `$field` IS NOT NULL AND `$field`!=0 AND `$field`!=''");
+                                try {
+                                    $dbo->exec("UPDATE `$table` SET `$field`=`$field`+$timeDiff WHERE `$field` IS NOT NULL AND `$field`!=0 AND `$field`!=''");
+                                } catch (Exception $e) {
+                                    // Ignore it and move on; table/column doesn't exist.
+                                    continue;
+                                }
 							}
 							// Fix timestamps that are in the future.
 							/*

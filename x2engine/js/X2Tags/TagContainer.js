@@ -131,7 +131,7 @@ remove button ([x])
 let's the user remove a tag and all elements within it (like this button and the tag link)
 */
 TagContainer.prototype._appendRemove = function (linkContainer, suppressClickBehavior) {
-    suppressClickBehavior = suppressClickBehavior === undefined ? false : true;
+    suppressClickBehavior = typeof suppressClickBehavior === 'undefined' ? false : true;
     var that = this;    
     x2.DEBUG && console.log ('_appendRemove: suppressClickBehavior = ' + suppressClickBehavior);
     var remove = $('<span>', {
@@ -196,7 +196,7 @@ TagContainer.prototype._removeHandler = function (event) {
     var that = this;    
 
     x2.DEBUG && console.log ('_removeHandler');
-
+    
     var remove = $(event.target);
     var tag = remove.next('a'); // tag link
     tag = tag[0];
@@ -225,17 +225,14 @@ this is so if the user clicks on the tags widget after already starting to
 create a new tag, and second new tag won't pop up */
 TagContainer.prototype._lockCreateTag = function () {
     this.newTagActive = true;
-}
+};
 
 // let new tags be created when the user clicks on the tags widget
 TagContainer.prototype._unlockCreateTag = function () {
     this.newTagActive = false;
-}
+};
 
 // check if a new tag is being created
 TagContainer.prototype._creatingNewTag = function () {
     return (this.newTagActive);
-}
-
-
-
+};

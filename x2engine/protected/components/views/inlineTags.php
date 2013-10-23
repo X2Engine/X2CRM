@@ -37,20 +37,24 @@
 
 if($filter) { 
     Yii::app()->clientScript->registerScriptFile (
-        Yii::app()->getBaseUrl().'/js/X2Tags/TagContainer.js', CClientScript::POS_HEAD);
+        Yii::app()->getBaseUrl().'/js/X2Tags/TagContainer.js', CClientScript::POS_BEGIN);
     Yii::app()->clientScript->registerScriptFile (
-        Yii::app()->getBaseUrl().'/js/X2Tags/MapTagsContainer.js', CClientScript::POS_HEAD);
+        Yii::app()->getBaseUrl().'/js/X2Tags/MapTagsContainer.js', CClientScript::POS_BEGIN);
+    Yii::app()->clientScript->registerCssFile (
+        Yii::app()->getTheme()->getBaseUrl().'/css/x2tags.css');
 ?>
 <b><?php echo Yii::t('app', 'Tags'); ?></b>
 <div id="x2-tags-container" class="form">
     <?php
 		echo '<div id="x2-tag-list" style="min-height:15px;">';
 		foreach($tags as $tag) {
-			echo '<span class="tag link-disable"><span class="delete-tag filter">[x]</span> '.
-            CHtml::link($tag,'#').'</span>';
+			echo '<span class="tag link-disable"><span class="delete-tag filter">[x]</span>'.
+                    CHtml::link(CHtml::encode ($tag),'#').
+                '</span>';
     } 
     ?>
-    <span class='tag-container-placeholder' <?php echo (sizeof ($tags) > 0 ? 'style="display: none;"' : ''); ?>>
+    <span class='tag-container-placeholder' 
+     <?php echo (sizeof ($tags) > 0 ? 'style="display: none;"' : ''); ?>>
         <?php echo Yii::t('contacts','Drop a tag here to filter map results.');?>
     </span>
     <?php
@@ -71,11 +75,21 @@ if($filter) {
 	<div id="x2-tag-list">
 		<?php 
         foreach($tags as $tag) {
-            echo '<span class="tag"><span class="delete-tag">[x]</span> '.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'')).'</span>';
+            echo '<span class="tag"><span class="delete-tag">[x]</span> '.
+                     CHtml::link(
+                         CHtml::encode ($tag['tag']),
+                         array(
+                            '/search/search?term=%23'.urlencode (substr($tag['tag'],1))
+                         ),
+                         array('class'=>'')
+                     ).
+                 '</span>';
         }
         ?> 
-        <span class='tag-container-placeholder' <?php echo (sizeof ($tags) > 0 ? 'style="display: none;"' : ''); ?>>
-            <?php echo Yii::t('contacts','Drag tags here from the tag cloud widget or click to create a custom tag.');?>
+        <span class='tag-container-placeholder' 
+         <?php echo (sizeof ($tags) > 0 ? 'style="display: none;"' : ''); ?>>
+            <?php echo Yii::t('contacts','Drag tags here from the tag cloud widget or click to '.
+                'create a custom tag.');?>
         </span>
         <?php
         ?>

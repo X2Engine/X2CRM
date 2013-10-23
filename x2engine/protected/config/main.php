@@ -276,28 +276,44 @@ $config = array(
         ),
         'log' => array(
             'class' => 'CLogRouter',
-            'routes' => 
-                (YII_DEBUG && YII_LOGGING ? 
-                    array (
-            // array(
-            // 'class'=>'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
-            // 'ipFilters'=>array('127.0.0.1'),
-            // ),
-                        array(
-                             'class'=>'application.extensions.DbProfileLogRoute',
-                             /* How many times the same query should be executed to be considered 
-                                inefficient */
-                             'countLimit' => 1, 
-                             'slowQueryMin' => 0.01, // Minimum time for the query to be slow
-                         ),
-        				 array(
-        					 'class'=>'CWebLogRoute',
-        					 'categories' => 'translations',
-        					 'levels' => 'missing',
-        				 ),
-                    ) 
-                    : array ()
-                ),
+            'routes' =>
+            (YII_DEBUG && YII_LOGGING
+                // All logging enabled
+                ? array(
+                    // array(
+                    // 'class'=>'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
+                    // 'ipFilters'=>array('127.0.0.1'),
+                    // ),
+                    array(
+                        'class' => 'application.extensions.DbProfileLogRoute',
+                        /* How many times the same query should be executed to be considered inefficient */
+                        'countLimit' => 1,
+                        'slowQueryMin' => 0.01, // Minimum time for the query to be slow
+                    ),
+                    array(
+                        'class' => 'CWebLogRoute',
+                        'categories' => 'translations',
+                        'levels' => 'missing',
+                    ),
+                    array(
+                        'class' => 'CFileLogRoute',
+                        'categories' => 'application.update,system.*',
+                        'logFile' => 'updater.log',
+                        'maxLogFiles' => 10,
+                        'maxFileSize' => 128,
+                    ),
+                )
+                // Only update logging enabled.
+                : array(
+                    array(
+                        'class' => 'CFileLogRoute',
+                        'categories' => 'application.update,system.*',
+                        'logFile' => 'updater.log',
+                        'maxLogFiles' => 10,
+                        'maxFileSize' => 128,
+                    ),
+                )
+            ),
         ),
         'messages' => array(
             'class' => 'X2MessageSource',

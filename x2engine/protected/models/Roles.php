@@ -43,6 +43,22 @@
  * @property string $users
  */
 class Roles extends CActiveRecord {
+
+    private static $_authNames;
+
+    /**
+     * Retrieves a list of restricted (non-permissible) role names.
+     */
+    public static function getAuthNames() {
+        if(!isset(self::$_authNames)) {
+            self::$_authNames = Yii::app()->db->cache(3600)->createCommand()
+                    ->select('name')
+                    ->from('x2_auth_item')
+                    ->queryColumn();
+        }
+        return self::$_authNames;
+    }
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Roles the static model class
@@ -67,7 +83,10 @@ class Roles extends CActiveRecord {
 		return array(
 			array('name', 'required'),
 			array('name', 'length', 'max'=>250),
-			array('name','in','not'=>true,'range'=>array('admin','administrator'),'message'=>Yii::t('admin','The name you entered is reserved or belongs to the system.')),
+			array('name','match',
+                'not'=>true,
+                'pattern'=> '/^('.implode('|',array_map(function($n){return preg_quote($n);},self::getAuthNames())).')/i',
+                'message'=>Yii::t('admin','The name you entered is reserved or belongs to the system.')),
 			array('users', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.

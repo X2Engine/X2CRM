@@ -92,5 +92,3 @@ MassActionTagsContainer.prototype._init = function () {
     });
 
 };
-
-

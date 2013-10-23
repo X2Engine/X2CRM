@@ -1,5 +1,22 @@
 # X2CRM 3.5 #
-Point release 3.5.5: 10/16/2013
+Point release 3.5.6: 10/22/2013
+
+## Changes in 3.5.6 ##
+* Improved data validation in the role editor
+* Changes to the software updater:
+  * Bug fixes in `FileUtil::ccopy` and far more exhaustive [unit testing](https://github.com/X2Engine/X2Engine/blob/master/x2engine/protected/tests/unit/components/util/FileUtilTest.php) of that method
+  * Compatibility adjustments (that ensure relative paths used) for servers with open_basedir restriction
+  * (experimental) New command line interface for unattended updates via cron
+* Changes to the calendar:
+   * Added visibility permissions
+   * Fixed bug: events not displaying
+* Numerous, miscellaneous front-end bug fixes, including but not limited to:
+   * Tags; handling of special characters
+   * Delay of inline email button (until after instantiation of the CKEditor instance)
+   * Mass-update of rating type fields now works
+* Retroactive update migration script clears up [permissions issue that caused blank action text](http://x2community.com/topic/1073-blank-comments-call-logs-emails-etc-in-the-update-to-355/) for updating from before version 3.5.5
+* Fixed Bugs:  
+  * [425](http://x2software.com/index.php/bugReports/425): Unable to resolve the request "list/list/view".
 
 ## Changes in 3.5.5 ##
 * Improvements to grid views:
@@ -159,9 +176,11 @@ value to their customer interactions resulting in higher close rates.
 * The server must be publicly accessible for web lead capture, service requests 
   and email tracking to work
 
-X2CRM comes with a requirements check script, "requirements.php", which you can 
-upload by itself to your server. Simply visit the script in your browser to see 
-if your server will run X2CRM.
+X2CRM comes with a requirements check script, 
+[requirements.php](https://x2planet.com/installs/requirements.php) (also can be 
+found in x2engine/protected/components/views), which can be uploaded by itself 
+to your server. Simply visit the script in your browser to see if your server 
+will run X2CRM.
 
 # Installation #
 1. Upload X2Engine to the web directory of your choice. Be sure to set your FTP 
@@ -170,7 +189,7 @@ if your server will run X2CRM.
 3. Browse to the x2engine folder and you will be redirected to the installer.
 4. Fill out the form, click install, and that's it!
 5. You are now ready to use X2Engine.  If you chose to install Dummy Data,  you 
-   will have about 1100 contacts, 125 actions, and 30 accounts to play with.
+   will have numerous sample records (i.e. about 1100 contacts) to play with.
 
 
 # Creating the Action Reminder Cronjob #

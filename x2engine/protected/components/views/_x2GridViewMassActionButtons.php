@@ -184,11 +184,6 @@ more drop down list
 general mass actions styling
 */
 
-#mass-action-grid-updating-anim {
-    position: fixed;
-    z-index: 1000;
-}
-
 #mass-action-dialog-loading-anim {
     margin-right: 30px;
 }
@@ -202,23 +197,7 @@ general mass actions styling
     display: inline-block;
 }
 
-#mass-action-grid-updating-anim > .x2-loading-icon {
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    position: absolute;
-}
 
-#mass-action-grid-updating-anim {
-    width: 100%;
-    height: 100%;
-    margin: auto;
-    top: 0;
-    left: 0;
-    margin-right: 30px;
-}
 ");
 
 $gridObj->beforeGridViewUpdateJSString .= "
@@ -234,13 +213,13 @@ $gridObj->beforeGridViewUpdateJSString .= "
 
     x2.massActions.previouslySelectedRecords = selectedRecords; // save to preserve checks
 
-    $('#mass-action-grid-updating-anim').show ();
+    $('#x2-gridview-updating-anim').show ();
     $('#x2-gridview-mass-action-buttons').find ('.mass-action-button').unbind ('click');
 ";
 
 $gridObj->afterGridViewUpdateJSString .= "
     gridViewMassActionsMain (); 
-    $('#mass-action-grid-updating-anim').hide ();
+    $('#x2-gridview-updating-anim').hide ();
 ";
 
 Yii::app()->clientScript->registerScript ('massActionsScript', "
@@ -669,7 +648,7 @@ function setUpMassActions () {
 
 function checkUIShow (justChanged) {
     x2.DEBUG && console.log ('checkUIShow');
-    justChanged = justChanged === undefined ? true : justChanged;
+    justChanged = typeof justChanged === 'undefined' ? true : justChanged;
     if (justChanged) { 
 
         // do nothing if additional checkbox is checked/unchecked
@@ -796,9 +775,6 @@ function gridViewMassActionsMain () {
     }
     
     ?>
-    <div id='mass-action-grid-updating-anim' style='display: none;'>
-        <div class='x2-loading-icon'></div>
-    </div>
 </div>
 
 <!--main function must be called from script tag so it executes when grid refreshes-->

@@ -136,7 +136,7 @@ class Actions extends X2Model {
     }
 
     public function afterSave(){
-        if(!isset($this->actionText)){
+        if(!($this->actionText instanceof ActionText)){
             $actionText = new ActionText;
             $actionText->actionId = $this->id;
             $actionText->text = $this->actionDescriptionTemp;
@@ -151,7 +151,7 @@ class Actions extends X2Model {
     }
 
     public function afterFind(){
-        if(isset($this->actionText)){
+        if($this->actionText instanceof ActionText){
             $this->actionDescriptionTemp = $this->actionText->text;
         }
     }
@@ -212,7 +212,7 @@ class Actions extends X2Model {
     }
 
     public function getActionDescription(){
-        if(isset($this->actionText))
+        if($this->actionText instanceof ActionText)
             return $this->actionText->text;
         else
             return $this->actionDescriptionTemp;

@@ -35,7 +35,7 @@
  *****************************************************************************************/
 Yii::app()->clientScript->registerScript('set-tag-cookie',"
 $('#content').on('mouseup','#tag-search a',function(e) {
-	document.cookie = 'vcr-list=".$term."; expires=0; path=/';
+	document.cookie = 'vcr-list=".urlencode ($term)."; expires=0; path=/';
 });    
 ");
 ?>

@@ -34,23 +34,57 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.LeftWidget');
-
 /**
- * Widget class for displaying the "recent items" menu
+ * @file 1382469641-actionDescription-field-permission.php
  *
- * @package X2CRM.components
+ * Migration script that adds field-level permissions to Actions.actionDescription
  */
-class RecentItems extends LeftWidget {
 
-	public function init() {
-        parent::initTitleBar ();
-		parent::init();
-	}
 
-	protected function renderContent() {
-		$recentItems = User::getRecentItems(Yii::app()->user->getId());
-		$this->render('recentItems',array('recentItems'=>$recentItems));
-	}
-}
+$run = function() {
+$roleIDs = Yii::app()->db->createCommand()
+                    ->select('id')
+                    ->from('x2_roles')
+                    ->queryColumn();
+
+            if(is_array($roleIDs) && !empty($roleIDs)){
+                $fieldId = Yii::app()->db->createCommand()
+                        ->select('id')
+                        ->from('x2_fields')
+                        ->where('modelName=:modelName AND fieldName=:fieldName', array(
+                            ':modelName' => 'Actions',
+                            ':fieldName' => 'actionDescription'
+                                )
+                        )
+                        ->queryScalar();
+
+                $params = array();
+                $records = array();
+                $paramCount = 0;
+                $cols = array('roleId', 'fieldId', 'permission');
+
+                $permission = '2';
+                $fieldId = (string) $fieldId;
+
+
+                foreach($roleIDs as $roleId){
+                    $record = array();
+                    foreach($cols as $col){
+                        $param = ":$col$paramCount";
+                        $params[$param] = ${$col};
+                        $record[] = $param;
+                    }
+                    $records[] = '('.implode(',', $record).')';
+                    $roleIdParam = ":roleId$paramCount";
+                    $paramCount++;
+                }
+
+                $sql = 'INSERT INTO `x2_role_to_permission` (`'.implode('`,`',$cols).'`) VALUES '.implode(',',$records);
+                $command = Yii::app()->db->createCommand($sql);
+                $command->execute($params);
+            }
+        };
+$run();
+
+
 ?>

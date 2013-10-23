@@ -295,26 +295,35 @@ class Contacts extends X2Model {
 		// $criteria->scopes=array('findAll'=>array($parameters));
 
 		if(isset($_GET['tagField']) && !empty($_GET['tagField'])) {	// process the tags filter
-
-			$tags = explode(',',preg_replace('/\s?,\s?/',',',trim($_GET['tagField'])));	//remove any spaces around commas, then explode to array
+            
+            //remove any spaces around commas, then explode to array
+			$tags = explode(',',preg_replace('/\s?,\s?/',',',trim($_GET['tagField'])));	
+            $inQuery = array ();
+            $params = array ();
 			for($i=0; $i<count($tags); $i++) {
 				if(empty($tags[$i])) {
 					unset($tags[$i]);
 					$i--;
 					continue;
 				} else {
-					if($tags[$i][0] != '#')
+					if($tags[$i][0] != '#') {
 						$tags[$i] = '#'.$tags[$i];
-					$tags[$i] = 'b.tag = "'.$tags[$i].'"';
+                    }
+                    $inQuery[] = 'b.tag = :'.$i;
+                    $params[':'.$i] = $tags[$i];
+					//$tags[$i] = 'b.tag = "'.$tags[$i].'"';
 				}
 			}
 			// die($str);
-			$tagConditions = implode(' OR ',$tags);
+			//$tagConditions = implode(' OR ',$tags);
+			$tagConditions = implode(' OR ',$inQuery);
 
 			$criteria->distinct = true;
-			$criteria->join .= ' RIGHT JOIN x2_tags b ON (b.itemId=t.id AND b.type="Contacts" AND ('.$tagConditions.'))';
+			$criteria->join .= ' RIGHT JOIN x2_tags b ON (b.itemId=t.id AND b.type="Contacts" '.
+                'AND ('.$tagConditions.'))';
             $criteria->condition='t.id IS NOT NULL';
             $criteria->order='b.timestamp DESC';
+            $criteria->params = $params;
 		}
 		return $this->searchBase($criteria);
 	}

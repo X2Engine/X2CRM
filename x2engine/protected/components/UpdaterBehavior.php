@@ -63,6 +63,7 @@ Yii::import('application.components.util.*');
  * @property array $manifest When running an update, this is the change manifest as retrieved from the update package
  * @property boolean $noHalt Whether to terminate the PHP process if errors occur
  * @property PDO $pdo (read-only) The app's PDO instance
+ * @property array $requirements (read-only) Requirements script output.
  * @property string $scenario Usage scenario, i.e. update/upgrade
  * @property string $sourceDir (read-only) Absolute path to the base directory of source files to be applied in the update/upgrade
  * @property string $sourceFileRoute (read-only) Route (relative URL on the updates server) from which to download source files in a pinch
@@ -98,9 +99,9 @@ class UpdaterBehavior extends ResponseBehavior {
 
     const TMP_DIR = 'tmp';
 
-    const ERRFILE = 'update.err';
+    const ERRFILE = 'update_db_restore.err';
 
-    const LOGFILE = 'update.log';
+    const LOGFILE = 'update_db_restore.log';
 
     // Whatever you do, do not change this to a blank string. It WILL result in
     // all files in X2CRM getting deleted!
@@ -181,6 +182,12 @@ class UpdaterBehavior extends ResponseBehavior {
      * @var bool
      */
     public static $_isConsole = true;
+
+    /**
+     * Explicit override of default {@link ResponseBehavior::$_logCategory}
+     * @var string
+     */
+    public static $_logCategory = 'application.updater';
 
     ///////////////////////////
     // NON-STATIC PROPERTIES //
@@ -291,6 +298,12 @@ class UpdaterBehavior extends ResponseBehavior {
     private $_packageExists = false;
 
     /**
+     * Stores output of the requirements check script
+     * @var array
+     */
+    private $_requirements;
+
+    /**
      * stores {@link scenario}
      */
     private $_scenario;
@@ -336,7 +349,8 @@ class UpdaterBehavior extends ResponseBehavior {
         "components/util/FileUtil.php",
         "components/util/EncryptUtil.php",
         "components/ResponseBehavior.php",
-        "components/views/requirements.php"
+        "components/views/requirements.php",
+        "commands/UpdateCommand.php"
     );
 
     /**
@@ -543,7 +557,14 @@ class UpdaterBehavior extends ResponseBehavior {
     public function checkIfPackageApplies($throw = true) {
         if(!$this->checkIf('manifestAvail',$throw))
             return false;
-        // Wrong version
+        // Wrong updater version
+        if($this->manifest['updaterVersion'] != $this->configVars['updaterVersion']) {
+            if($throw)
+                throw new CException(Yii::t('admin','The package to be applied is not compatible with the current updater version.'),self::ERR_NOTAPPLY);
+            else
+                return false;
+        }
+        // Wrong initial app version
         if($this->manifest['fromVersion'] != $this->version) {
             if($throw)
                 throw new CException(Yii::t('admin','The package to be applied does not correspond to this version of X2CRM; it was meant for version {fv} and this installation is at version {av}.',array(
@@ -553,7 +574,7 @@ class UpdaterBehavior extends ResponseBehavior {
             else
                 return false;
         }
-        // Wrong edition
+        // Wrong initial app edition
         if($this->manifest['fromEdition'] != $this->edition) {
             if($throw)
                 throw new CException(Yii::t('admin','The package to be applied does not correspond to this edition of X2CRM; it was meant for edition "{fe}" and this installation is edition "{ae}".',array(
@@ -696,7 +717,7 @@ class UpdaterBehavior extends ResponseBehavior {
         if(empty($edition))
             $edition = $this->edition;
         $url = $this->updateServer.'/'.$this->getUpdateDataRoute($version, $uniqueId, $edition);
-        if(!FileUtil::ccopy($url,$this->updatePackage))
+        if(!FileUtil::ccopy($url,$this->updatePackage,true))
             throw new CException(Yii::t('admin','Could not download package; update server error.'),self::ERR_UPSERVER);
     }
 
@@ -825,6 +846,7 @@ class UpdaterBehavior extends ResponseBehavior {
 
         // Run the necessary database changes:
         try{
+            $this->output(Yii::t('admin','Enacting changes to the database...'));
             $this->enactDatabaseChanges($autoRestore);
         }catch(Exception $e){
             // The operation cannot proceed and is technically finished 
@@ -842,11 +864,13 @@ class UpdaterBehavior extends ResponseBehavior {
             // exceptions with appropriate messages by now.
             //
 			// Now, copy the cache of downloaded files into the live install:
+            $this->output(Yii::t('admin','Enacting changes to the fileset...'));
             $this->applyFiles();
             // Delete old files:
             $this->removeFiles($this->manifest['deletionList']);
             $lastException = null;
 
+            $this->output(Yii::t('admin','Cleaning up...'));
             if($this->scenario == 'update'){
                 $this->resetAssets();
                 // Apply configuration changes and clear out the assets folder:
@@ -881,9 +905,6 @@ class UpdaterBehavior extends ResponseBehavior {
         if(empty($lastException)) {
             return false;
         }else{
-            // Put message into log.
-            $message = Yii::t('admin', 'Database changes were applied, but errors were encountered when applying file changes: {message}.', array('{message}' => $lastException->getMessage()));
-            $this->log($message);
             throw new CException($message);
         }
     }
@@ -904,6 +925,7 @@ class UpdaterBehavior extends ResponseBehavior {
                 foreach($part[$delta] as $sql){
                     if($sql != ""){
                         try{ // Run the update SQL.
+                            $this->output(Yii::t('admin','Running SQL:').' '.$sql);
                             $command = $pdo->prepare($sql);
                             $result = $command->execute();
                             if($result !== false)
@@ -934,7 +956,10 @@ class UpdaterBehavior extends ResponseBehavior {
                     }
                 }
             }
-            $this->runMigrationScripts($part['migrationScripts'], $sqlRun);
+            if(count($part['migrationScripts'])){
+                $this->output(Yii::t('admin', 'Running migration scripts for version {ver}...', array('{ver}' => $part['version'])));
+                $this->runMigrationScripts($part['migrationScripts'], $sqlRun);
+            }
         }
         return true;
     }
@@ -1004,12 +1029,8 @@ class UpdaterBehavior extends ResponseBehavior {
             ////////////////////////////////
             // Check system requirements: //
             ////////////////////////////////
-            $returnArray = true;
-            $thisFile = Yii::app()->request->scriptFile;
-            $req = require_once(Yii::app()->basePath.'/components/views/requirements.php');
-            if(!is_array($req)){
-                self::respond(Yii::t('admin', 'Requirements check script encountered an internal error. You should try running it manually by copying it from {path} into the web root of your CRM.', array('{path}' => 'protected/components/views/requirements.php')), 1);
-            }
+            
+            $req = $this->requirements;
             $allClear = $allClear && !$req['hasMessages'];
 
             /////////////////////////////////
@@ -1360,6 +1381,25 @@ class UpdaterBehavior extends ResponseBehavior {
         return self::$_noHalt;
     }
 
+    /**
+     * Magic getter for {@link requirements}
+     * @return type
+     * @throws CException
+     */
+    public function getRequirements() {
+        if(!isset($this->_requirements)){
+            $returnArray = true;
+            $thisFile = Yii::app()->request->scriptFile;
+            $throwForError = function($errno , $errstr , $errfile , $errline , $errcontext) {
+                throw new CException(Yii::t('admin', "Requirements check script encountered an internal error. You should try running it manually by copying it from {path} into the web root of your CRM. The error was as follows:", array('{path}' => 'protected/components/views/requirements.php'))."$errstr [$errno] : $errfile L$errline; $errcontext");
+            };
+            set_error_handler($throwForError);
+            $this->_requirements = require_once(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'components', 'views', 'requirements.php')));
+            restore_error_handler();
+        }
+        return $this->_requirements;
+    }
+
     public function getScenario() {
         if(!isset($this->_scenario)) {
             throw new CException(Yii::t('admin','Scenario not set.'),self::ERR_SCENARIO);
@@ -1426,13 +1466,19 @@ class UpdaterBehavior extends ResponseBehavior {
      * Retrieves update data from the server. For previewing an update before
      * downloading it; this essentially retrieves the manifest without
      * retrieving the full package.
+     * 
+     * @param string $version Version updating/upgrading from
+     * @param string $uniqueId The identifier/product key for this installation of X2CRM
+     * @param string $edition The edition updating/upgrading from
+     * @return array
      */
     public function getUpdateData($version = null, $uniqueId = null, $edition = null){
         $updateData = FileUtil::getContents($this->updateServer.'/'.$this->getUpdateDataRoute($version,$uniqueId,$edition).'/manifest.json');
         if(!$updateData) {
             throw new CException(Yii::t('admin','Update server error.'),self::ERR_UPSERVER);
         }
-        if(!($updateData = json_decode($updateData,1))) {
+        $updateData = json_decode($updateData,1);
+        if(!(bool) $updateData || !is_array($updateData)) {
             throw new CException(Yii::t('admin','Malformed data in updates server response; invalid JSON.'));
         }
         return $updateData;
@@ -1521,17 +1567,6 @@ class UpdaterBehavior extends ResponseBehavior {
     }
 
     /**
-     * Appends a message to the error log.
-     * @param string $message
-     * @param bool $success Leave emtpy (false default) to log as an error; set to true to log success messages.
-     */
-    public function log($message){
-        $fh = fopen(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'data',self::ERRFILE)), 'a');
-        fwrite($fh, "\n".strftime('Update error %h %e, %r : ').$message);
-        fclose($fh);
-    }
-
-    /**
      * Back up the application database.
      *
      * Attempts to perform a database backup using mysqldump or any other tool
@@ -1565,7 +1600,6 @@ class UpdaterBehavior extends ResponseBehavior {
                 return True;
         }
     }
-
 
     /**
      * Rebuilds the configuration file and performs the final few little update tasks.
@@ -1823,22 +1857,23 @@ class UpdaterBehavior extends ResponseBehavior {
      * @param type $ran List of database changes and other scripts that have
      *  already been run
      */
-    public function runMigrationScripts($scripts,&$ran=array()) {
+    public function runMigrationScripts($scripts, &$ran = array()){
         $that = $this;
         $script = '';
-        $scriptExc = function($e) use(&$ran,&$script,$that) {
-            $that->sqlError(Yii::t('admin','migration script {file}',array('{file}'=>$script)), $ran, $e->getMessage());
+        $scriptExc = function($e) use(&$ran, &$script, $that){
+                    $that->sqlError(Yii::t('admin', 'migration script {file}', array('{file}' => $script)), $ran, $e->getMessage());
                 };
-        $scriptErr = function($errno , $errstr , $errfile , $errline , $errcontext) use(&$ran,&$script,$that) {
-            $that->sqlError(Yii::t('admin','migration script {file}',array('{file}'=>$script)), $ran, "$errstr [$errno] : $errfile L$errline; $errcontext");
-        };
+        $scriptErr = function($errno, $errstr, $errfile, $errline, $errcontext) use(&$ran, &$script, $that){
+                    $that->sqlError(Yii::t('admin', 'migration script {file}', array('{file}' => $script)), $ran, "$errstr [$errno] : $errfile L$errline; $errcontext");
+                };
         set_error_handler($scriptErr);
         set_exception_handler($scriptExc);
         sort($scripts);
-        foreach($scripts as $script) {
-                require_once($this->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
-            $ran[] = Yii::t('admin','migration script {file}',array('{file}'=>$script));
-            }
+        foreach($scripts as $script){
+            $this->output(Yii::t('admin', 'Running migration script: {script}', array('{script}' => $script)));
+            require_once($this->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
+            $ran[] = Yii::t('admin', 'migration script {file}', array('{file}' => $script));
+        }
         restore_exception_handler();
         restore_error_handler();
     }
@@ -1939,7 +1974,6 @@ class UpdaterBehavior extends ResponseBehavior {
         $message .= "\n\n".Yii::t('admin', "Update failed.");
         if(!$this->isConsole)
             $message = str_replace("\n", "<br />", $message);
-        $this->log(strip_tags($message));
         throw new CException($message,self::ERR_DATABASE);
     }
 
@@ -2033,7 +2067,7 @@ class UpdaterBehavior extends ResponseBehavior {
         }
 
         // Retrieve the update package contents' files' digests:
-        $md5sums = FileUtil::getContents($this->updateServer.'/'.$this->getUpdateDataRoute('update',$this->configVars['updaterVersion']).'/contents.md5');
+        $md5sums = FileUtil::getContents($this->updateServer.'/'.$this->getUpdateDataRoute().'/contents.md5');
         preg_match_all(':^(?<md5sum>[a-f0-9]{32})\s+source/protected/(?<filename>\S.*)$:m',$md5sums,$md5s);
         $md5sums = array();
         for($i=0;$i<count($md5s[0]);$i++) {
@@ -2064,11 +2098,16 @@ class UpdaterBehavior extends ResponseBehavior {
         }
 
         // Copy the files into the live install
-        if(!(bool) count($failed2Retrieve))
+        if(!(bool) count($failed2Retrieve)) {
             $this->applyFiles(self::TMP_DIR);
+            // Remove the temporary directory:
+            FileUtil::rrmdir($this->webRoot.DIRECTORY_SEPARATOR.self::TMP_DIR);
+        }
+
         // Write the new updater version into the configuration; else
         // the app will get stuck in a redirect loop
-        $this->regenerateConfig(Null, $updaterCheck, Null);
+        if(!count($failed2Retrieve))
+            $this->regenerateConfig(Null, $updaterCheck, Null);
         return $failed2Retrieve;
     }
 

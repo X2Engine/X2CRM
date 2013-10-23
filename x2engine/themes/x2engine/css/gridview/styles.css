@@ -396,3 +396,18 @@ fixed header
     border-left: 1px solid #999;
     border-right: 1px solid #999;
 }
+
+
+/*
+loading anim
+*/
+
+#x2-gridview-updating-anim {
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: fixed;
+    z-index: 1000;
+}

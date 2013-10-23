@@ -6,6 +6,7 @@
  *
  * @property boolean $exitNonFatal If true, exit on non-fatal errors.
  * @property boolean $isConsole If true, run methods as though there's no HTTP request happening.
+ * @property string $logCategory Output logging will occur; this specifies the log category.
  * @property boolean $longErrorTrace Whether to print extended error traces with errors, for debugging
  * @property array $response The response, if returning a JSON
  * @package X2CRM.components
@@ -16,6 +17,7 @@ class ResponseBehavior extends CBehavior {
 	public static $_isConsole = true;
 	public static $_longErrorTrace = false;
 	public static $_response = array();
+    public static $_logCategory = 'application';
 
 	/**
 	 * Tells whether a response is already in progress; for triggering special
@@ -54,6 +56,18 @@ class ResponseBehavior extends CBehavior {
 		self::$_isConsole = $value;
 	}
 
+    public function getLogCategory() {
+        return self::$_logCategory;
+    }
+
+    /**
+     *
+     */
+    public function setLogCategory($value) {
+        self::$_logCategory = $value;
+
+    }
+
 	/**
 	 * Magic getter for {@link longErrorTrace}
 	 * @return type
@@ -84,6 +98,28 @@ class ResponseBehavior extends CBehavior {
 		self::$_response = $response;
 	}
 
+    /**
+     * A web-safe wrapper for {@link UpdaterBehavior::respond()} for use when
+     * logging is necessary (and output, if using in a console command) but
+     * halting is not.
+     *
+     * @param string $msg Message to log/respond with
+     * @param bool $error Whether an error has occurred
+     * @param bool $halt If true (default) and the $level argument is "error",
+     *  the application will halt after printing the error message; otherwise it
+     *  will continue.
+     */
+    public function output($msg,$error=false,$fatal=false) {
+        if($this->isConsole) {
+            // Perform both logging and response:
+            self::respond($msg,$error,$fatal);
+        } else {
+            // Perform logging only:
+            Yii::log($msg,$error ? 'error' : 'trace',self::$_logCategory);
+        }
+
+    }
+
 	/**
 	 * Universal, web-agnostic response function.
 	 *
@@ -96,8 +132,9 @@ class ResponseBehavior extends CBehavior {
 	 */
 	public static function respond($message, $error = false, $fatal = false){
 		self::$_responding = true;
+        Yii::log($message,$error ? 'error' : 'trace', self::$_logCategory);
 		if(self::$_isConsole){
-			echo $message;
+			echo "$message\n";
 			if($error && $fatal && !self::$_noHalt)
 				Yii::app()->end();
 		} else{

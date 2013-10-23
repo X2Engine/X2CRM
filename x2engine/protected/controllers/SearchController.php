@@ -379,8 +379,11 @@ class SearchController extends x2base {
         }else{
             Yii::app()->user->setState('vcr-list', $term);
             $_COOKIE['vcr-list'] = $term;
+            $criteria = new CDbCriteria();
+            $criteria->addCondition ('tag=:tag');
+            $criteria->params = array (':tag' => $term);
             $results = new CActiveDataProvider('Tags', array(
-                        'criteria' => array('condition' => 'tag="'.$term.'"'),
+                        'criteria' => $criteria,
                         'pagination' => array(
                             'pageSize' => ProfileChild::getResultsPerPage(),
                         ),

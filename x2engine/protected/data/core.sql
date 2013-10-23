@@ -442,8 +442,10 @@ DROP TABLE IF EXISTS x2_role_to_permission;
 CREATE TABLE x2_role_to_permission (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	roleId					INT,
-	fieldId					INT,
-	permission				INT
+	fieldId					INT NOT NULL,
+	`permission`				INT,
+    INDEX(`fieldId`),
+    INDEX(`roleId`)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_role_to_user;
@@ -616,7 +618,7 @@ CREATE TABLE x2_flows(
 	flow					TEXT,
 	createDate				BIGINT			NOT NULL,
 	lastUpdated				BIGINT			NOT NULL
-) COLLATE = utf8_general_ci;
+) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 CREATE TABLE `x2_trigger_logs` (
   `id`                          INT             NOT NULL AUTO_INCREMENT,
@@ -625,4 +627,4 @@ CREATE TABLE `x2_trigger_logs` (
   `triggerLog`                  TEXT,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`flowId`) REFERENCES x2_flows(`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) COLLATE = utf8_general_ci;
+) ENGINE=InnoDB, COLLATE = utf8_general_ci;

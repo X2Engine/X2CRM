@@ -93,10 +93,13 @@ class X2CRMUpdateAction extends WebUpdaterAction {
             if(version_compare($updaterVersion,$updaterCheck) < 0){
                 $this->runUpdateUpdater($updaterCheck, array('updater', 'scenario' => $scenario));
             }
+            $this->output(Yii::t('admin','The updater is up-to-date and safe to use.'));
         }else{
             // Is it the fault of the webserver?
             $this->controller->checkRemoteMethods();
             // Redirect to updater with the appropriate error message.
+            $msg = Yii::t('admin', 'Could not connect to the updates server, or an error occurred on the updates server.');
+            $this->output($msg,1);
             $this->controller->render('updater', array(
                 'scenario' => 'error',
                 'message' => Yii::t('admin', 'Could not connect to the updates server, or an error occurred on the updates server.'),
@@ -126,7 +129,7 @@ class X2CRMUpdateAction extends WebUpdaterAction {
                 $this->controller->render('updater', array(
                     'scenario' => 'error',
                     'message' => 'Update required',
-                    'longMessage' => "Before upgrading, you must update to the latest version ($latestVersion). ".CHtml::link(Yii::t('app', 'Update'), array('admin/updater','scenario'=>'update'), array('class' => 'x2-button'))
+                    'longMessage' => Yii::t('admin',"Before upgrading, you must update to the latest version ({latestver}).",array('{latestVer}'=>$latestVersion)).' '.CHtml::link(Yii::t('app', 'Update'), array('admin/updater','scenario'=>'update'), array('class' => 'x2-button'))
                 ));
             }
         }else{ // If at latest version already.

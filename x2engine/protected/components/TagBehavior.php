@@ -161,13 +161,13 @@ class TagBehavior extends CActiveRecordBehavior {
 	public function addTags($tags) {
 		$result = false;
 		$addedTags = array();
-
+            
 		foreach((array)$tags as $tagName) {
 			if(empty($tagName))
 				continue;
 			if(!in_array($tagName,$this->getTags())) {	// check for duplicate tag
 				$tag = new Tags;
-                $tag->tag=$tagName;
+                $tag->tag = $tagName;
 				$tag->itemId = $this->getOwner()->id;
 				$tag->type = get_class($this->getOwner());
 				$tag->taggedBy = Yii::app()->getSuModel()->username;
@@ -209,8 +209,9 @@ class TagBehavior extends CActiveRecordBehavior {
 				'itemId'=>$this->getOwner()->id,
 				'tag'=>$tag
 			);
+			if(in_array($tag,$this->getTags()) && 
+               CActiveRecord::model('Tags')->deleteAllByAttributes($attributes) > 0) {
 
-			if(in_array($tag,$this->getTags()) && CActiveRecord::model('Tags')->deleteAllByAttributes($attributes) > 0) {
 				if(false !== $offset = array_search($tag,$this->_tags))
 					unset($this->_tags[$offset]);	// update tag cache
 

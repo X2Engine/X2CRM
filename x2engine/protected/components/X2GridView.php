@@ -310,7 +310,6 @@ class X2GridView extends CGridView {
     public function init() {
         $this->baseScriptUrl = Yii::app()->theme->getBaseUrl().'/css/gridview';
 
-        //printR ('fixedHeader = '. (int) $this->fixedHeader, true);
         if ($this->fixedHeader) $this->setUpStickyHeader ();
 
         $this->excludedColumns = empty($this->excludedColumns)?array():
@@ -774,6 +773,10 @@ class X2GridView extends CGridView {
         } else {
             $this->renderEmptyText();
         }
+
+        echo "<div id='x2-gridview-updating-anim' style='display: none;' class='x2-loading-icon'>".
+             "</div>";
+
     }
 
     /**

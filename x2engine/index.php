@@ -35,15 +35,9 @@
  *****************************************************************************************/
 
 // change the following paths if necessary
-$yii=dirname(__FILE__).'/framework/yii.php';
-// remove the following lines when in production mode
-defined('YII_DEBUG') or define('YII_DEBUG',false);
-// set YII_DEBUG to true and PRO_VERSION to false to use opensource version of pages
-defined('PRO_VERSION') or define('PRO_VERSION',false);
-// specify how many levels of call stack should be shown in each log message
-defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
-defined('YII_LOGGING') or define('YII_LOGGING',false);
-
+$constants = dirname(__FILE__).DIRECTORY_SEPARATOR.'constants.php';
+$yii = implode(DIRECTORY_SEPARATOR,array(dirname(__FILE__),'framework','yii.php'));
+require_once($constants);
 require_once($yii);
 Yii::$enableIncludePath = false;
 Yii::registerAutoloader(array('Yii','x2_autoload'));
@@ -59,10 +53,6 @@ if (!empty($_SERVER['REMOTE_ADDR'])) {
 	}
 	$config=dirname(__FILE__).'/protected/config/web.php';
 	Yii::createWebApplication($config)->run();
-} else {
-	// Command line entry script
-	$config=dirname(__FILE__).'/protected/config/console.php';
-	Yii::createConsoleApplication($config)->run();
 }
 
 function printR($obj, $die=false){

@@ -983,7 +983,6 @@ class SiteController extends x2base {
 
     public function actionEditURL($id, $url)
     {
-        //printR($this->yo, true);
         //$entry->title = 'ggg';
         //$this->list = array('item1','item2');
         $this->redirect($url);
@@ -2206,10 +2205,8 @@ class SiteController extends x2base {
 	*/
     public function actionPrintRecord ($modelClass, $id, $pageTitle='') {
 		if (isset ($id) && isset ($modelClass)) {
-			//printR ('true', false);
 			//$model = $this->getModel ($id, true, $modelClass);
 			$model = CActiveRecord::model($modelClass)->findByPk((int) $id);
-			//printR ($model, true);
         	echo $this->renderPartial ('printableRecord', array(
             	'model' => $model,
             	'modelClass' => $modelClass,
@@ -2218,7 +2215,6 @@ class SiteController extends x2base {
         	), true);
 			return;
 		}
-		//printR ('false', true);
 	}
 
     public function actionCreateRecords(){

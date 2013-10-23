@@ -182,17 +182,19 @@ TagCreationContainer.prototype._convertInputToTag = function(textfield, value, s
     var that = this; 
 
     var link = $('<a>', {
-        'href': that.searchUrl + '?term=' + 
-            value.replace(/#/g, '%23'),
         'html': value
     });
     textfield.remove();
     span.find ('.delete-tag').remove ();
     that._appendRemove (span);
     span.append(link);
+
+    $(link).attr (
+        'href', that.searchUrl + '?term=' + encodeURIComponent ($(link).text ()));
     link.click(function(e) {
         e.stopPropagation(); // prevent #x2-inline-tags click event
     });
+    return link;
 };
 
 /* resize a textfield
@@ -209,7 +211,3 @@ TagCreationContainer.prototype._resizeTag = function(textfield) {
 
     return $(textfield);
 };
-
-
-
-

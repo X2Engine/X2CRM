@@ -442,6 +442,7 @@ if($tryAccess){
 
 // Check the ability to make database backups during updates:
 $canBackup = $requirements['functions']['proc_open'] = function_exists('proc_open');
+$requirements['environment']['shell'] = $canBackup;
 if($canBackup){
 	try{
 		// Test for the availability of mysqldump:
@@ -470,6 +471,7 @@ if($canBackup){
     $canBackup = isset($prog);
 }
 if(!$canBackup){
+    $requirements['environment']['shell'] = 0;
 	$reqMessages[2][] = installer_t('The function proc_open and/or the "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.');
 }
 // Check the session save path:
@@ -485,24 +487,7 @@ if(!is_writable($ssp)){
 if(!($requirements['extensions']['openssl']=extension_loaded('openssl') && $requirements['extensions']['mcrypt']=extension_loaded('mcrypt'))) {
 	$reqMessages[1][] = installer_t('The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2CRM, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.');
 }
-// Check the availability of email delivery messages.
-$canDo = array();
-$canDo['phpmail'] = $requirements['environment']['phpmail'] = (@ini_get('sendmail_path') && function_exists('mail'));
-if($canDo['phpmail']){
-	// Check for valid, existing sendmail_path
-	$smpath = explode(' ', ini_get('sendmail_path'));
-	$smpath = $smpath[0];
-	$canDo['phpmail'] = $requirements['environment']['phpmail'] = is_executable($smpath);
-}
 
-$canDo['shell'] = $requirements['environment']['shell'] = function_exists('escapeshellcmd') && function_exists('escapeshellarg') && function_exists('popen');
-if(function_exists('is_executable')){
-	$canDo['sendmail'] = is_executable('/usr/sbin/sendmail');
-	$canDo['qmail'] = is_executable('/var/qmail/bin/sendmail');
-}else{
-	$canDo['sendmail'] = false;
-	$canDo['qmail'] = false;
-}
 // Check for Zip extension
 if(!($requirements['extensions']['zip']=extension_loaded('zip'))){
 	$reqMessages[1][] = '<a href="http://php.net/manual/book.zip.php">Zip</a>: '.$rbm.'. '.installer_t('This will result in the inability to import and export custom modules.');

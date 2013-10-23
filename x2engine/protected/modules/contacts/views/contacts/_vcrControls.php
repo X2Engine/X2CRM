@@ -39,11 +39,11 @@ $listId = Yii::app()->user->getState('vcr-list');
 if(empty($listId))
 	$listId = 'index';
 
-Yii::app()->clientScript->registerScript('vcrListCookie', "
+/*Yii::app()->clientScript->registerScript('vcrListCookie', "
 // $('#content').on('mouseup','#contacts-grid a',function(e) {
 	// document.cookie = 'vcr-list=".$listId."; expires=0; path=/';
 // });
-",CClientScript::POS_READY);
+",CClientScript::POS_READY);*/
 
 $vcrControls = array();
 $searchModel = new Contacts('search');
@@ -88,7 +88,7 @@ if(is_numeric($listId)) {
 	$listLink = CHtml::link(Yii::t('contacts','New Contacts'),array('/contacts/'.$path));
 	$vcrDataProvider = $searchModel->searchNewContacts();
 } elseif($tagFlag){
-    $listLink = CHtml::link(Yii::t('contacts','Tag Search'),array('/search/search?term='.urlencode($listId)));
+    $listLink = CHtml::link(Yii::t('contacts','Tag Search'),array('/search/search?term='.$listId));
     $_GET['tagField']=$listId;
     $vcrDataProvider = $searchModel->searchAll();
 } else {

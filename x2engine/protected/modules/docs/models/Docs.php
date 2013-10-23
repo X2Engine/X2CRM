@@ -82,20 +82,20 @@ class Docs extends X2Model {
 		return array(
 		);
 	}
-    
+
     public function rules() {
-  
+
         return array_merge(array(
             array('name','menuCheck','on'=>'menu')
         ),
                 parent::rules()
                 );
     }
-    
+
     public function menuCheck($attr,$params=array()) {
         $this->$attr;
-        $model->scenario = 'menu';
-     
+        $this->scenario = 'menu';
+
         if(sizeof(Modules::model()->findAllByAttributes(array('name'=>$this->name))) > 0)
         {
             $this->addError('name', 'That name is not available.');

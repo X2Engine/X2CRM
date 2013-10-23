@@ -33,6 +33,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+x2.inlineEmailEditor = {};
+x2.inlineEmailEditor.isSetUp = false;
 
 $(function() {
 
@@ -53,6 +55,7 @@ $(function() {
             if(typeof inlineEmailEditorCallback == 'function') {
                 inlineEmailEditorCallback(); // call a callback function after the inline email editor is created (if function exists)
             }
+            x2.inlineEmailEditor.isSetUp = true;
         });
         
         setupEmailAttachments('email-attachments');
@@ -109,6 +112,7 @@ $(function() {
  * a different model, i.e. a quote.
  */
 function toggleEmailForm(mode) {
+    if (!x2.inlineEmailEditor.isSetUp) return;
     mode = (typeof mode == 'undefined') ? 'default' : mode;
     if(typeof quickQuote != 'undefined') {
         if(quickQuote.inlineEmailMode != mode)

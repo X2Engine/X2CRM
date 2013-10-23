@@ -9,6 +9,7 @@ return array(
 	'x2_contacts' => array('lastUpdated','lastActivity','leadDate','createDate','closedate'),
 	'x2_docs' => array('createDate','lastUpdated'),
 	'x2_events' => array('timestamp','lastUpdated'),
+    'x2_flows' => array('createDate','lastUpdated'),
 	'x2_imports' => array('timestamp'),
 	'x2_lists' => array('createDate','lastUpdated'),
 	'x2_list_items' => array('opened','sent','unsubscribed','clicked'),

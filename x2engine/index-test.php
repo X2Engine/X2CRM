@@ -34,12 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$yii=dirname(__FILE__).'/framework/yii.php';
-defined('YII_DEBUG') or define('YII_DEBUG',true);
-defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
-defined('PRO_VERSION') or define('PRO_VERSION',true);
-
+$constants = dirname(__FILE__).DIRECTORY_SEPARATOR.'constants.php';
+$yii = implode(DIRECTORY_SEPARATOR,array(dirname(__FILE__),'framework','yii.php'));
+require_once($constants);
 require_once($yii);
+
 Yii::$enableIncludePath = false;
 Yii::registerAutoloader(array('Yii','x2_autoload'));
 $config=dirname(__FILE__).'/protected/config/test.php';

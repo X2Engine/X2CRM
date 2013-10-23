@@ -133,7 +133,7 @@ $(function() {
 		lastEventId = 0,
 		lastTimestamp = 0;
 	
-	x2.fetchNotificationUpdates = true;
+	x2.fetchNotificationUpdates = true;//!x2.DEBUG;
 
 
 	iwcMode = $.jStorage.storageAvailable();

@@ -46,7 +46,7 @@ class UpdateStageAction extends WebUpdaterAction {
 
 	public function run($stage,$scenario,$version,$uniqueId,$autoRestore=0){
         set_exception_handler('ResponseBehavior::respondWithException');
-        set_error_handler('UpdaterBehavior::respondWithError');
+        set_error_handler('ResponseBehavior::respondWithError');
         $this->scenario = $scenario;
 		if(Yii::app()->request->isAjaxRequest){
             switch($stage) {
@@ -67,9 +67,21 @@ class UpdateStageAction extends WebUpdaterAction {
                     // Retrive the manifest of changes pre-emptively, or load
                     // the existing manifest, for review. Check the installation
                     // and server environment for compatibility.
-                    if(!file_exists($this->updateDir.DIRECTORY_SEPARATOR.'manifest.json')) {
-                        $this->manifest = $this->getUpdateData($version,$uniqueId,$this->edition);
+                    if(!$this->checkIf('manifestAvail',false)) {
+                        // No package has yet been downloaded; if the package
+                        // were present, but the manifest not ready for use,
+                        // UpdaterBehavior would have thrown an exception by now
+                        // (the 'verify' stage, which performs the necessary
+                        // checks, should have been run first).
+                        $data = $this->getUpdateData($version,$uniqueId,$this->edition);
+                        if(array_key_exists('errors',$data)) {
+                            // The update server doesn't like us.
+                            self::respond($data['errors'],1);
+                            break;
+                        }
+                        $this->manifest = $data;
                     }
+
                     $cStatus = $this->getCompatibilityStatus();
                     $this->addResponseProperty('allClear',$cStatus['allClear']);
                     $this->addResponseProperty('manifest',$this->manifest);
@@ -84,7 +96,7 @@ class UpdateStageAction extends WebUpdaterAction {
                 case 'verify':
                     try{
                         // Check package contents.
-                        $this->checkIf('packageApplies'); // Will throw an exception and thus print the appropriate message if it doesn't apply
+                        $this->checkIf('packageApplies');
                         // The JSON returned by this action should include all the
                         // necessary data to render warning messages concerning files.
                         $this->addResponseProperty('statusCodes', array(
