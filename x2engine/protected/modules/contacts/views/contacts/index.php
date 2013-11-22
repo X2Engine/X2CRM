@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 $menuItems = array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
@@ -72,7 +58,7 @@ if($opportunityModule->visible && $accountModule->visible)
 $this->actionMenu = $this->formatMenu($menuItems);
 
 Yii::app()->clientScript->registerScript('search', "
-$('.search-button').unbind('click').click(function(){
+/*$('.search-button').unbind('click').click(function(){
 	$('.search-form').toggle();
 	return false;
 });
@@ -81,42 +67,10 @@ $('.search-form form').submit(function(){
 		data: $(this).serialize()
 	});
 	return false;
-});
+});*/
 
 $('#content').on('mouseup','#contacts-grid a',function(e) {
 	document.cookie = 'vcr-list=".$this->getAction()->getId()."; expires=0; path=/';
-});
-
-$('#createList').unbind('click').click(function() {
-	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
-	if(selectedItems.length > 0) {
-		var listName = prompt('".addslashes(Yii::t('app','What should the list be named?'))."','');
-
-		if(listName != '' && listName != null) {
-			$.ajax({
-				url:'".$this->createUrl('/contacts/createListFromSelection')."',
-				type:'post',
-				data:{listName:listName,modelName:'Contacts',gvSelection:selectedItems},
-				success:function(response) { if(response != '') window.location.href=response; }
-			});
-		}
-	}
-	return false;
-});
-$('#addToList').unbind('click').click(function() {
-	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
-
-	var targetList = $('#addToListTarget').val();
-
-	if(selectedItems.length > 0) {
-		$.ajax({
-			url:'".$this->createUrl('/contacts/addToList')."',
-			type:'post',
-			data:{listId:targetList,gvSelection:selectedItems},
-			success:function(response) { if(response=='success') alert('".addslashes(Yii::t('app','Added items to list.'))."'); else alert(response); }
-		});
-	}
-	return false;
 });
 ",CClientScript::POS_READY);
 
@@ -168,7 +122,7 @@ $this->widget('application.components.X2GridView', array(
         '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
         '<div id="x2-gridview-page-title" '.
          'class="page-title icon contacts x2-gridview-fixed-title">'.
-        '{title}{buttons}{filterHint}{massActionButtons}{summary}{items}{pager}',
+        '{title}{buttons}{filterHint}{massActionButtons}{summary}{topPager}{items}{pager}',
     'fixedHeader'=>true,
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
@@ -198,7 +152,7 @@ $this->widget('application.components.X2GridView', array(
 		),
 	),
     'massActions'=>array(
-        'addToList', 'newList'
+        /* x2prostart */'delete', 'tag', 'updateField', /* x2proend */'addToList', 'newList'
     ),
 	'enableControls'=>true,
 	'enableTags'=>true,

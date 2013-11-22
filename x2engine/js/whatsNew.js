@@ -1,44 +1,29 @@
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 
 // Globals
 x2.whatsNew.timeout = null; // used to clear timeout when editor resize animation is called
 x2.whatsNew.editorManualResize = false; // used to prevent editor resize animation on manual resize
 x2.whatsNew.editorIsExpanded = false; // used to prevent text field expansion if already expanded
-var DEBUG = x2.whatsNew.DEBUG;
 
 /*
 Removes an error div created by createErrorBox ().  
@@ -383,7 +368,7 @@ function setupEditorBehavior () {
 
 
 function setupActivityFeed () {
-    x2.DEBUG && console.log ('setupActivityFeed');
+    x2.whatsNew.DEBUG && console.log ('setupActivityFeed');
 
     function updateComments(id){
         $.ajax({
@@ -529,9 +514,9 @@ function setupActivityFeed () {
 
 function makePostExpandable (element) {
     if ($(element).hasClass ('is-expandable')) return;
-    x2.DEBUG && console.log ('makePostExpandable');
+    x2.whatsNew.DEBUG && console.log ('makePostExpandable');
     $(element).addClass ('is-expandable');
-    x2.DEBUG && console.log (element);
+    x2.whatsNew.DEBUG && console.log (element);
     $(element).expander ({
         slicePoint: 80,
         expandPrefix: '',
@@ -553,7 +538,7 @@ function makePostExpandable (element) {
         }
     });
     if (x2.whatsNew.minimizeFeed === false) {
-        x2.DEBUG && console.log ('clicking read more');
+        x2.whatsNew.DEBUG && console.log ('clicking read more');
         $(element).find ('.read-more').find ('a').click ();
     }
 }
@@ -579,7 +564,7 @@ function setupBroadcastDialog () {
         var userIdList = $('#broadcast-dialog-user-select').val ();
         var errorMsgs = [];
         if (userIdList === null) {
-            DEBUG && console.log ('clickBroadcastButton if');
+            x2.whatsNew.DEBUG && console.log ('clickBroadcastButton if');
             errorMsgs.push (x2.whatsNew.translations['broadcast error message 1']);
         }
         if ($('#email-users').attr ('checked') === undefined &&
@@ -1148,9 +1133,9 @@ function updateEventList () {
         $.ajax({
             url:"getEvents",
             type:"GET",
+            dataType: "json",
             data:{'lastEventId':lastEventId, 'lastTimestamp':lastTimestamp},
             success:function(data){
-                data=JSON.parse(data);
                 lastEventId=data[0];
                 if(data[1]){
                     var text=data[1];
@@ -1167,7 +1152,7 @@ function updateEventList () {
                            "undefined")
                             $(this).yiiListView();
                         });
-                    DEBUG && console.log ('hiding ' + text);
+                    x2.whatsNew.DEBUG && console.log ('hiding ' + text);
                     $newElem = $(text).hide().prependTo("#new-events");
                     makePostExpandable ($newElem.find ('.event-text-box').children ('.event-text'));
                     $newElem.fadeIn(1000);

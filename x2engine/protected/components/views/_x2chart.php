@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 
 if ($chartType === 'usersChart' || $chartType === 'eventsChart') {
@@ -61,8 +47,8 @@ $passVarsToClientScript = "
         ($suppressDateRangeSelector ? 'true' : 'false').";
     x2.".$chartType.".params.getChartDataActionName = '".$getChartDataActionName."';
     x2.".$chartType.".params.translations = {};
-    x2.".$chartType.".params.DEBUG = ".
-        ((YII_DEBUG && $chartType === 'eventsChart') ? 'true' : 'false').";
+    /*x2.".$chartType.".params.DEBUG = ".
+        ((YII_DEBUG && $chartType === 'eventsChart') ? 'true' : 'false').";*/
 ";
 
 if (isset ($subtype)) {
@@ -124,7 +110,9 @@ if ($chartType === 'eventsChart') {
     $translations['visibility setting(s) selected'] = Yii::t('app', 'visibility setting(s) selected');
 } else if ($chartType === 'actionHistoryChart') {
     $translations['metric1Label'] = Yii::t('app', 'metric(s) selected');
-} 
+}/* x2prostart */ else if ($chartType === 'campaignChart') {
+    $translations['metric1Label'] = Yii::t('app', 'metric(s) selected');
+}/* x2proend */ 
 
 $englishMonthNames =
     array ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
@@ -436,7 +424,10 @@ if (!$suppressChartSettings) {
         <?php } else if ($chartType === 'usersChart') { ?>
         x2.<?php echo $chartType; ?>.chart = new X2UsersChart (
             x2.<?php echo $chartType; ?>.params);
-        <?php }  ?>
+        <?php } /* x2prostart */ else if ($chartType === 'campaignChart') { ?>
+        x2.<?php echo $chartType; ?>.chart = new X2CampaignChart (
+            x2.<?php echo $chartType; ?>.params);
+        <?php } /* x2proend */ ?>
         $(document).trigger ('<?php echo $chartType; ?>Ready');
     }
     if (document.readyState === 'complete') {

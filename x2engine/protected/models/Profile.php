@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 Yii::import('application.components.X2LinkableBehavior');
 Yii::import('application.modules.users.models.*');
@@ -74,13 +60,25 @@ class Profile extends CActiveRecord {
             ),
             'JSONFieldsBehavior' => array(
                 'class' => 'application.components.JSONFieldsBehavior',
-                'transformAttributes' => array('theme' => array(
+                'transformAttributes' => array(
+                    'theme' => array(
                         'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor',
                         'pageHeaderTextColor', 'activityFeedWidgetBgColor',
                         'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling',
                         'pageOpacity', 'themeName', 'private', 'owner', 'loginSound',
-                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven')),
-            )
+                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven'),
+                ),
+            ),
+            'JSONFieldsDefaultValuesBehavior' => array(
+                'class' => 'application.components.JSONFieldsDefaultValuesBehavior',
+                'transformAttributes' => array(
+                    'miscLayoutSettings' => array(
+                        'themeSectionExpanded'=>true,
+                        'unhideTagsSectionExpanded'=>true,
+                        'x2flowShowLabels'=>true,
+                    ),
+                ),
+            ),
         );
     }
 
@@ -92,7 +90,7 @@ class Profile extends CActiveRecord {
         // will receive user inputs.
         return array(
             array('fullName, username, status', 'required'),
-            array('status, lastUpdated, allowPost, resultsPerPage', 'numerical', 'integerOnly' => true),
+            array('status, lastUpdated, disableNotifPopup, allowPost, disablePhoneLinks, resultsPerPage', 'numerical', 'integerOnly' => true),
             array('enableFullWidth,showSocialMedia,showDetailView', 'boolean'), //,showWorkflow
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
@@ -138,6 +136,8 @@ class Profile extends CActiveRecord {
             'updatedBy' => Yii::t('profile', 'Updated By'),
             'avatar' => Yii::t('profile', 'Avatar'),
             'allowPost' => Yii::t('profile', 'Allow users to post on your profile?'),
+            'disablePhoneLinks' => Yii::t('profile', 'Disable phone field links?'),
+            'disableNotifPopup' => Yii::t('profile', 'Disable notifications pop-up?'),
             'language' => Yii::t('profile', 'Language'),
             'timeZone' => Yii::t('profile', 'Time Zone'),
             'widgets' => Yii::t('profile', 'Widgets'),
@@ -189,6 +189,23 @@ class Profile extends CActiveRecord {
         return new CActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
                 ));
+    }
+
+    public static function setMiscLayoutSetting ($settingName, $settingValue) {
+        $model = Profile::model ()->findByPk (Yii::app()->user->getId());
+        $settings = $model->miscLayoutSettings;
+        if (!in_array ($settingName, array_keys ($settings))) {
+            echo 'failure'; 
+            return;
+        }
+        $settings[$settingName] = $settingValue;
+        $model->miscLayoutSettings = $settings;
+        if (!$model->save ()) {
+            AuxLib::debugLog ('Error: setMiscLayoutSetting: failed to save model'); 
+            echo 'failure';
+        } else {
+            echo 'success';
+        }
     }
 
     public static function setDetailView($value){
@@ -436,7 +453,7 @@ class Profile extends CActiveRecord {
             else
                 return CHtml::link(Yii::t('app', '{name}\'s feed', array('{name}' => $this->fullName)), array($this->baseRoute.'/'.$this->id));
         } else{
-            return CHtml::link($this->fullName, Yii::app()->externalBaseUrl.'/index.php'.$this->baseRoute.'/'.$this->id);
+            return CHtml::link($this->fullName, Yii::app()->absoluteBaseUrl.'/index.php'.$this->baseRoute.'/'.$this->id);
         }
     }
 
@@ -520,7 +537,9 @@ class Profile extends CActiveRecord {
                 }
             }
         }catch(Exception $e){
-
+            if(isset($auth)){
+                $auth->flushCredentials();
+            }
         }
     }
 
@@ -789,16 +808,16 @@ class Profile extends CActiveRecord {
 
         // ensure that widget properties are the same as those in the default layout
         foreach($layout[$position] as $name=>$arr){
-            if (in_array ($name, array_keys ($initLayout[$position])) && 
+            if (in_array ($name, array_keys ($initLayout[$position])) &&
                 $initLayout[$position][$name]['title'] !== $arr['title']) {
-                
+
                 $layout[$position][$name]['title'] = $initLayout[$position][$name]['title'];
                 $changed = true;
             }
         }
         if ($position === 'center') {
             foreach($layout['hidden'] as $name=>$arr){
-                if (in_array ($name, array_keys ($initLayout[$position])) && 
+                if (in_array ($name, array_keys ($initLayout[$position])) &&
                     $initLayout[$position][$name]['title'] !== $arr['title']) {
 
                     $layout['hidden'][$name]['title'] = $initLayout[$position][$name]['title'];

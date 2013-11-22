@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 /**
  * @package X2CRM.modules.contacts.controllers
@@ -50,7 +36,8 @@ class ContactsController extends x2base {
 
         return array(
             array('allow',
-                'actions' => array('getItems', 'getLists', 'ignoreDuplicates', 'discardNew', 'weblead', 'weblist'),
+                'actions' => array('getItems', 'getLists', 'ignoreDuplicates', 'discardNew',
+                    'weblead', 'weblist'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -151,7 +138,7 @@ class ContactsController extends x2base {
                 if(!empty($contact->email))
                     $criteria->compare('email', $contact->email, false, "OR");
                 $criteria->compare('id', "<>".$contact->id, false, "AND");
-                if(Yii::app()->user->getName() != 'admin'){
+                if(!Yii::app()->user->checkAccess('ContactsAdminAccess')){
                     $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
                     /* x2temp */
                     $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
@@ -269,7 +256,7 @@ class ContactsController extends x2base {
     }
 
     public function actionGetLists(){
-        if(Yii::app()->user->getName() != 'admin'){
+        if(!Yii::app()->user->checkAccess('ContactsAdminAccess')){
             $condition = ' AND (visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
             /* x2temp */
             $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
@@ -495,7 +482,7 @@ class ContactsController extends x2base {
 <br />".Yii::t('contacts', 'Address').": $model->address
 <br />$model->city, $model->state $model->zipcode
 <br />".Yii::t('contacts', 'Background Info').": $model->backgroundInfo
-<br />".Yii::t('app', 'Link').": ".CHtml::link($model->name, 'http://'.Yii::app()->request->getServerName().$this->createUrl(array('/contacts/view','id'=>$model->id)));
+<br />".Yii::t('app', 'Link').": ".CHtml::link($model->name, $this->createAbsoluteUrl('/contacts/contacts/view',array('id'=>$model->id)));
 
         $body = trim($body);
 
@@ -605,7 +592,7 @@ class ContactsController extends x2base {
                 if(!empty($model->email))
                     $criteria->compare('email', $model->email, false, "OR");
                 $criteria->compare('id', "<>".$model->id, false, "AND");
-                if(Yii::app()->user->getName() != 'admin'){
+                if(!Yii::app()->user->checkAccess('ContactsAdminAccess')){
                     $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
                     /* x2temp */
                     $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
@@ -804,7 +791,7 @@ class ContactsController extends x2base {
                 }
             }else{
                 if(!empty($criteria->condition)){
-                    if(Yii::app()->user->getName() != 'admin'){
+                    if(!Yii::app()->user->checkAccess('ContactsAdminAccess')){
                         $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
                         /* x2temp */
                         $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
@@ -897,19 +884,12 @@ class ContactsController extends x2base {
             'model' => $model
         ));
     }
-
-    /* 	// Updates a contact record
-      public function update($model, $oldAttributes, $api) {
-
-      if($api == 0)
-      parent::update($model, $oldAttributes, $api);
-      else
-      return parent::update($model, $oldAttributes, $api);
-      } */
-
+    /*
     public function actionTest(){
         $this->render('test');
     }
+     * 
+     */
 
     public function actionTrigger(){
         die();
@@ -1015,7 +995,7 @@ class ContactsController extends x2base {
                     $criteriaFlag = true;
                 }
                 $criteria->compare('id', "<>".$model->id, false, "AND");
-                if(Yii::app()->user->getName() != 'admin'){
+                if(!Yii::app()->user->checkAccess('ContactsAdminAccess')){
                     $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
                     /* x2temp */
                     $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
@@ -1208,53 +1188,6 @@ class ContactsController extends x2base {
         ));
     }
 
-    /*public function actionCreateListFromSelection(){
-        if(isset($_POST['gvSelection'], $_POST['listName'], $_POST['modelName']) && 
-           !empty($_POST['gvSelection']) && is_array($_POST['gvSelection']) && 
-           $_POST['listName'] != '' && class_exists($_POST['modelName'])){
-
-            foreach($_POST['gvSelection'] as &$contactId){
-                if(!ctype_digit((string) $contactId))
-                    throw new CHttpException(400, Yii::t('app', 'Invalid selection.'));
-            }
-
-            $list = new X2List;
-            $list->name = $_POST['listName'];
-            $list->modelName = $_POST['modelName'];
-            $list->type = 'static';
-            $list->assignedTo = Yii::app()->user->getName();
-            $list->visibility = 1;
-            $list->createDate = time();
-            $list->lastUpdated = time();
-
-            $itemModel = X2Model::model($_POST['modelName']);
-
-            if($list->save()){ // if the list is valid save it so we can get the ID
-                $count = 0;
-                foreach($_POST['gvSelection'] as &$itemId){
-
-                    if($itemModel->exists('id="'.$itemId.'"')){ // check if contact exists
-                        $item = new X2ListItem;
-                        $item->contactId = $itemId;
-                        $item->listId = $list->id;
-                        if($item->save()) // add all the things!
-                            $count++;
-                    }
-                }
-                $list->count = $count;
-                if($list->save()) {
-                    echo CJSON::encode (
-                        array ('success', 
-                        $this->createUrl('/contacts/list',array('id'=>$list->id))));
-                } else {
-                    echo CJSON::encode (array ('failure', $list->getError ()));
-                }
-            } else {
-                echo CJSON::encode (array ('failure', $list->getError ()));
-            }
-        }
-    }*/
-
     public function actionCreateList(){
         $list = new X2List;
         $list->modelName = 'Contacts';
@@ -1321,7 +1254,7 @@ class ContactsController extends x2base {
                                 $criterion->save();
                             }
                         }
-                        $this->redirect(array('/contacts/list','id'=>$list->id));
+                        $this->redirect(array('/contacts/contacts/list','id'=>$list->id));
                     }
                 }
             }
@@ -1409,7 +1342,7 @@ class ContactsController extends x2base {
                                 $criterion->save();
                             }
                         }
-                        $this->redirect(array('/contacts/list','id'=>$list->id));
+                        $this->redirect(array('/contacts/contacts/list','id'=>$list->id));
                     }
                 }
             }
@@ -1419,7 +1352,7 @@ class ContactsController extends x2base {
                 $list->modelName = 'Contacts';
                 $list->lastUpdated = time();
                 $list->save();
-                $this->redirect(array('/contacts/list','id'=>$list->id));
+                $this->redirect(array('/contacts/contacts/list','id'=>$list->id));
             }
         }
 
@@ -1478,7 +1411,7 @@ class ContactsController extends x2base {
             else
                 throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
         }
-        $this->redirect(array('/contacts/lists'));
+        $this->redirect(array('/contacts/contacts/lists'));
     }
 
     public function actionExportList($id){
@@ -2150,12 +2083,12 @@ class ContactsController extends x2base {
         unset($_SESSION['contactExportFile'], $_SESSION['exportContactCriteria'], $_SESSION['contactExportMeta']);
         if(is_null($listId)){
             $file = "contact_export.csv";
-            $listName = CHtml::link(Yii::t('contacts', 'All Contacts'), array('/contacts/index'), array('style' => 'text-decoration:none;'));
+            $listName = CHtml::link(Yii::t('contacts', 'All Contacts'), array('/contacts/contacts/index'), array('style' => 'text-decoration:none;'));
         }else{
             $list = X2List::load($listId);
             $_SESSION['exportContactCriteria'] = $list->queryCriteria();
             $file = "list".$listId.".csv";
-            $listName = CHtml::link(Yii::t('contacts', 'List')." $listId: ".$list->name, array('/contacts/list?id='.$listId), array('style' => 'text-decoration:none;'));
+            $listName = CHtml::link(Yii::t('contacts', 'List')." $listId: ".$list->name, array('/contacts/contacts/list','id'=>$listId), array('style' => 'text-decoration:none;'));
         }
         $_SESSION['contactExportFile'] = $file;
         $attributes = X2Model::model('Contacts')->attributes;

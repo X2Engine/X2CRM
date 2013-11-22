@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 /**
  * Widget class for displaying all available inline actions.
@@ -42,50 +28,80 @@
  * @package X2CRM.components
  */
 class Publisher extends X2Widget {
-	public $associationType;		// type of record to associate actions with
-	public $associationId = '';		// record to associate actions with
-	public $assignedTo = null;	// user actions will be assigned to by default
 
-	// show all tabs by default
-	public $showLogACall = true;
-	public $showNewAction = true;
-	public $showNewComment = true;
-	public $showNewEvent = false;
-	public $halfWidth = false;
+    public $associationType;        // type of record to associate actions with
+    public $associationId = '';        // record to associate actions with
+    public $assignedTo = null;    // user actions will be assigned to by default
+
+    // show all tabs by default
+    public $showLogACall = true;
+    public $showNewAction = true;
+    public $showNewComment = true;
+    public $showNewEvent = false;
+    public $halfWidth = false;
     public $showQuickNote = true;
+    public $showLogTimeSpent = true;
+    public $model;
 
-	public function run() {
-		$model = new Actions;
-		$model->associationType = $this->associationType;
-		$model->associationId = $this->associationId;
-		if($this->assignedTo)
-			$model->assignedTo = $this->assignedTo;
-		else
-			$model->assignedTo = Yii::app()->user->getName();
+    public $viewParams = array(
+        'halfWidth',
+        'model',
+        'showLogACall',
+        'showNewComment',
+        'showNewEvent',
+        'showNewAction',
+        'showQuickNote',
+        'showLogTimeSpent',
+    );
 
-        Yii::app()->clientScript->registerScript('loadEmails',"
-            function loadFrame(id,type){
+
+    public function run() {
+        $model = new Actions;
+        $model->associationType = $this->associationType;
+        $model->associationId = $this->associationId;
+        if($this->assignedTo)
+            $model->assignedTo = $this->assignedTo;
+        else
+            $model->assignedTo = Yii::app()->user->getName();
+
+        Yii::app()->clientScript->registerScript('loadEmails', "
+            /**
+             * Ad-hoc quasi-validation for the publisher
+             */
+            x2.publisher.beforeSubmit = function() {
+                if($('#Actions_actionDescription').val() == '') {
+                    alert('".addslashes(Yii::t('actions', 'Please enter a description.'))."');
+                    return false;
+                } else {
+                    // show saving... icon
+                    \$('.publisher-text').animate({opacity: 0.0});
+                    \$('#publisher-saving-icon').animate({opacity: 1.0});
+                }
+                return true; // form is sane: submit!
+            }
+
+            //
+            x2.publisher.loadFrame = function (id,type){
                 if(type!='Action' && type!='QuotePrint'){
-                    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/actions/viewEmail/'))."?id='+id+'\"></iframe>';
+                    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/actions/actions/viewEmail'))."?id='+id+'\"></iframe>';
                 }else if(type=='Action'){
-                    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/actions/viewAction/'))."?id='+id+'&publisher=true\"></iframe>';
+                    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/actions/actions/viewAction'))."?id='+id+'&publisher=true\"></iframe>';
                 } else if(type=='QuotePrint'){
-		    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/quotes/print'))."?id='+id+'\"></iframe>';
-
-		}
-                if(typeof x2ViewEmailDialog != 'undefined') {
-                    if($(x2ViewEmailDialog).is(':hidden')){
-                        $(x2ViewEmailDialog).remove();
+                    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/quotes/quotes/print'))."?id='+id+'\"></iframe>';
+                }
+                if(typeof x2.actionFrames.viewEmailDialog != 'undefined') {
+                    if($(x2.actionFrames.viewEmailDialog).is(':hidden')){
+                        $(x2.actionFrames.viewEmailDialog).remove();
 
                     }else{
                         return;
                     }
                 }
 
-                x2ViewEmailDialog = $('<div></div>', {id: 'x2-view-email-dialog'});
+                x2.actionFrames.viewEmailDialog = $('<div></div>', {id: 'x2-view-email-dialog'});
 
-                x2ViewEmailDialog.dialog({
-                    title: '".Yii::t('app','View history item') /* Changed to generic title from "View" +type because there's no practical way to translate javascript variables */ ."',
+                x2.actionFrames.viewEmailDialog.dialog({
+                    title: '".Yii::t('app', 'View history item') /* Changed to generic title from "View" +type because there's no practical way to translate javascript variables */."',
                     autoOpen: false,
                     resizable: true,
                     width: '650px',
@@ -101,48 +117,183 @@ class Publisher extends X2Widget {
                         }
                     });
 
-                x2ViewEmailDialog.data('inactive', true);
-                if(x2ViewEmailDialog.data('inactive')) {
-                    x2ViewEmailDialog.append(frame);
-                    x2ViewEmailDialog.dialog('open').height('400px');
-					x2ViewEmailDialog.data('inactive', false);
+                x2.actionFrames.viewEmailDialog.data('inactive', true);
+                if(x2.actionFrames.viewEmailDialog.data('inactive')) {
+                    x2.actionFrames.viewEmailDialog.append(frame);
+                    x2.actionFrames.viewEmailDialog.dialog('open').height('400px');
+                    x2.actionFrames.viewEmailDialog.data('inactive', false);
                 } else {
-                    x2ViewEmailDialog.dialog('open');
+                    x2.actionFrames.viewEmailDialog.dialog('open');
                 }
             }
+            
             $(document).on('ready',function(){
                 var t;
                 $(document).on('mouseenter','.email-frame',function(){
                     var id=$(this).attr('id');
-                    t=setTimeout(function(){loadFrame(id,'Email')},500);
+                    t=setTimeout(function(){x2.publisher.loadFrame(id,'Email')},500);
                 });
                 $(document).on('mouseleave','.email-frame',function(){
                     clearTimeout(t);
                 });
                 $('.quote-frame').mouseenter(function(){
                     var id=$(this).attr('id');
-                    t=setTimeout(function(){loadFrame(id,'Quote')},500);
+                    t=setTimeout(function(){x2.publisher.loadFrame(id,'Quote')},500);
                 }).mouseleave(function(){
                     clearTimeout(t);
                 }); // Legacy quote pop-out view
-		$('.quote-print-frame').mouseenter(function(){
-			var id=$(this).attr('id');
-			t=setTimeout(function(){loadFrame(id,'QuotePrint')},500);
-		}).mouseleave(function(){
-			clearTimeout(t);
-		}); // New quote pop-out view
+        $('.quote-print-frame').mouseenter(function(){
+            var id=$(this).attr('id');
+            t=setTimeout(function(){x2.publisher.loadFrame(id,'QuotePrint')},500);
+        }).mouseleave(function(){
+            clearTimeout(t);
+        }); // New quote pop-out view
             });
-        ",CClientScript::POS_HEAD);
+        ", CClientScript::POS_HEAD);
+        Yii::app()->clientScript->registerCss('recordViewPublisherCss', '
+            #log-time-spent-form #action-event-panel .row,
+            #log-a-call-form #action-event-panel .row {
+                max-width: 405px;
+            }
+            #action-duration {
+                margin-top: 15px;
+                margin-left: 43px;
+            }
+            #log-a-call-form .event-panel-second-cell,
+            #log-time-spent-form .event-panel-second-cell {
+                margin-left: 5px;
+            }
+            .history.half-width #log-a-call-form .cell:first-child,
+            .history.half-width #log-time-spent-form .cell:first-child {
+                margin-right: 0 !important;
+            }
+            .history.half-width #log-a-call-form .event-panel-second-cell,
+            .history.half-width #log-time-spent-form .event-panel-second-cell {
+                margin-left: 0px !important;
+                float:right !important;
+                margin-right: 0 !important;
+                width: 150px;
+            }
+            .history.half-width #action-duration {
+                margin-left: 0px !important;
+            }
+            #action-duration .action-duration-display {
+                font-size: 30px;
+                font-family: Consolas, monaco, monospace;
+            }
+            #action-duration span.action-duration-display {
+                vertical-align: top;
+            }
+            #action-duration input {
+                width: 50px;
+            }
+            #action-duration .action-duration-input {
+                display:inline-block;
+            }
+            #action-duration label {
+                font-size: 10px;
+            }
+        ');
 
-		$this->render($this->halfWidth? 'publisherHalfWidth':'publisher',
-			array(
-				'model' => $model,
-				'showLogACall'=>$this->showLogACall,
-				'showNewAction'=>$this->showNewAction,
-				'showNewComment'=>$this->showNewComment,
-				'showNewEvent'=>$this->showNewEvent,
-                'showQuickNote'=>$this->showQuickNote,
-			)
-		);
-	}
+        if($this->showNewEvent){
+            Yii::app()->clientScript->registerCss('calendarSpecificWidgetStyle', "
+        .publisher-widget-title {
+            color: #222;
+            font-weight: bold;
+        }
+        .publisher-first-row {
+            margin-top: 8px;
+        }
+        #publisher-form .form {
+            background: #eee;
+        }
+        #publisher-form textarea {
+            min-width: 100%;
+            max-width: 100%;
+            width: 100%;
+        }
+    ");
+        }
+
+        if(!$this->halfWidth){
+            // set date, time, and region format for when javascript replaces datetimepicker
+            // datetimepicker is replaced in the calendar module when the user clicks on a day
+            $dateformat = Formatter::formatDatePicker('medium');
+            $timeformat = Formatter::formatTimePicker();
+            $ampmformat = Formatter::formatAMPM();
+            $region = Yii::app()->locale->getLanguageId(Yii::app()->locale->getId());
+            if($region == 'en')
+                $region = '';
+        }
+
+        // save default values of fields for when the publisher is submitted and then reset
+        Yii::app()->clientScript->registerScript('defaultValues', "
+$(function() {
+
+    ".($this->halfWidth ? "
+    // turn on jquery tabs for the publisher
+    $('#tabs').tabs({
+        activate: function(event, ui) { x2.publisher.tabSelected(event, ui); },
+    });
+    $(document).on('change','#quickNote2',function(){
+        $('#Actions_actionDescription').val($(this).val());
+    });
+    ":"
+    x2.publisher.isCalendar = " . ($this->showNewEvent ? 'true' : 'false') . ";
+
+    if (!x2.publisher.isCalendar) {
+        $('#tabs').tabs({
+            select: function(event, ui) { x2.publisher.tabSelected(event, ui); },
+        });
+    }
+    ")."
+
+
+    if($('#tabs .ui-state-active').length !== 0) { // if publisher is present (prevents a javascript error if publisher is not present)
+        var selected = $('#tabs .ui-state-active').attr('aria-controls');
+        x2.publisher.switchToTab(selected);
+    }
+
+    $('#publisher-form select, #publisher-form input[type=text], #publisher-form textarea').each(function(i) {
+        $(this).data('defaultValue', $(this).val());
+    });
+
+    $('#publisher-form input[type=checkbox]').each(function(i) {
+        $(this).data('defaultValue', $(this).is(':checked'));
+    });
+
+    // highlight save button when something is edited in the publisher
+    $('#publisher-form input, #publisher-form select, #publisher-form textarea').focus(function(){
+        $('#save-publisher').addClass('highlight');
+        ".($this->halfWidth ? "
+        $('#publisher-form textarea').height(80);
+        $(document).unbind('click.publisher').bind('click.publisher',function(e) {
+            if(!$(e.target).parents().is('#publisher-form, .ui-datepicker')
+                && $('#publisher-form textarea').val()=='') {
+                $('#save-publisher').removeClass('highlight');
+                $('#publisher-form textarea').animate({'height':22},300);
+            }
+        });"
+        :"")."
+    });
+
+    ".($this->halfWidth?"":"
+    // position the saving icon for the publisher (which starts invisible)
+    var publisherLabelCenter = parseInt($('.publisher-label').css('width'), 10)/2;
+    var halfIconWidth = parseInt($('#publisher-saving-icon').css('width'), 10)/2;
+    var iconLeft = publisherLabelCenter - halfIconWidth;
+    $('#publisher-saving-icon').css('left', iconLeft + 'px');
+
+    // set date and time format for when datetimepicker is recreated
+    $('#publisher-form').data('dateformat', '$dateformat');
+    $('#publisher-form').data('timeformat', '$timeformat');
+    $('#publisher-form').data('ampmformat', '$ampmformat');
+    $('#publisher-form').data('region', '$region');
+    ")."
+});");
+
+        $that = $this;
+        $this->model = $model;
+        $this->render('publisher',array_combine($this->viewParams,array_map(function($p)use($that){return $that->$p;},$this->viewParams)));
+    }
 }

@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/* * *******************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ * ****************************************************************************** */
 
 /**
  * Primary/default controller for the web application.
@@ -46,7 +32,7 @@ class SiteController extends x2base {
 
     public $modelClass = 'Admin';
     public $portlets = array();
-    
+
     public function filters(){
         return array(
             'setPortlets',
@@ -55,7 +41,7 @@ class SiteController extends x2base {
     }
 
     protected function beforeAction($action = null){
-        if(is_int(Yii::app()->locked) 
+        if(is_int(Yii::app()->locked)
                 && !Yii::app()->user->checkAccess('GeneralAdminSettingsTask')
                 && !(in_array($this->action->id,array('login','logout')) || Yii::app()->user->isGuest)) {
             $this->appLockout();
@@ -75,7 +61,7 @@ class SiteController extends x2base {
     public function accessRules(){
         return array(
             array('allow',
-                'actions' => array('login', 'index', 'logout', 'warning', 'captcha', 'googleLogin', 'error', 'storeToken'),
+                'actions' => array('login', 'index', 'logout', 'warning', 'captcha', 'googleLogin', 'error', 'storeToken', 'sendErrorReport'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -84,7 +70,7 @@ class SiteController extends x2base {
                     'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload', 'uploadProfilePicture', 'index', 'contact',
                     'viewNotifications', 'inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'printRecord', 'createRecords',
                     'whatsNew', 'toggleVisibility', 'page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
-                    'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'sendErrorReport', 'minimizePosts', 'bugReport', 'deleteRelationship', 'minMaxLeftWidget', 'toggleFeedControls', 'toggleFeedFilters',
+                    'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'minimizePosts', 'bugReport', 'deleteRelationship', 'minMaxLeftWidget', 'toggleFeedControls', 'toggleFeedFilters',
                     'getTip', 'share', 'activityFeedOrder', 'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory',
                     'dynamicDropdown', 'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
                     'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL'),
@@ -566,7 +552,7 @@ class SiteController extends x2base {
 
         $likeHistoryLinks = array();
         foreach($likeHistory as $like){
-            $likeHistoryLinks[] = CHtml::link($like['concat (firstName, " ", lastName)'], array('/profile/'.$like['id']));
+            $likeHistoryLinks[] = CHtml::link($like['concat (firstName, " ", lastName)'], array('/profile/view','id'=>$like['id']));
         }
 
         echo CJSON::encode($likeHistoryLinks);
@@ -951,7 +937,19 @@ class SiteController extends x2base {
             $site->userid = Yii::app()->user->getId();
             $site->timestamp = time();
             if($site->save()){
-                echo '1';
+                echo CJSON::encode (array (
+                    CHtml::link(
+                        Yii::t('app', $site->title), $site->url, array('target'=>'_blank')),
+                    CHtml::link(
+                        '[x]', 
+                        array('/site/DeleteURL', 'id' => $site->id),
+                        array (
+                            'title' => Yii::t('app', 'Delete Link'),
+                            'class' => 'delete-top-site-link',
+                            'target' => '_blank'
+                        )
+                    )
+                ));
             }
         }
     }
@@ -966,7 +964,7 @@ class SiteController extends x2base {
                 ));
         $res = "";
         foreach($content as $item){
-            $res .= $this->convertUrls($item->data)." ".CHtml::link('[x]', array('site/deleteMessage', 'id' => $item->id, 'url' => $url)).'<br /><br />';
+            $res .= $this->convertUrls($item->data)." ".CHtml::link('[x]', array('/site/deleteMessage', 'id' => $item->id, 'url' => $url)).'<br /><br />';
         }
         if($res == ""){
             $res = Yii::t('app', "Feel free to enter some notes!");
@@ -974,11 +972,11 @@ class SiteController extends x2base {
         echo $res;
     }
 
-    public function actionDeleteURL($id, $url){
+    public function actionDeleteURL($id){
         if(isset($id)){
-            Yii::app()->db->createCommand()->delete('x2_urls', 'id=:id', array(':id' => $id));
+            Yii::app()->db->createCommand()->delete(
+                'x2_urls', 'id=:id', array(':id' => $id));
         }
-        $this->redirect($url);
     }
 
     public function actionEditURL($id, $url)
@@ -991,24 +989,41 @@ class SiteController extends x2base {
      * Gets URLs for "top sites"
      * @param string $url
      */
-    public function actionGetURLs($url){
-        $content = URL::model()->findAllByAttributes(array('userid' => Yii::app()->user->getId()), array(
-            'order' => 'timestamp DESC',
-                ));
+    /*public function actionGetURLs($url){
+        $content = URL::model()->findAllByAttributes(
+            array('userid' => Yii::app()->user->getId()), array('order' => 'timestamp DESC'));
         $res = '<table><tr><th>'.Yii::t('app', 'Link').'</th><th>Delete</th></tr>';
         if($content){
             foreach($content as $entry){
                 if(strpos($entry->url, 'http://') === false){
                     $entry->url = "http://".$entry->url;
                 }
-                $res .= '<tr><td>' .  CHtml::link(Yii::t('app', $entry->title), $entry->url, array('target'=>'_blank')) . "</td>
-                             <td>" .  CHtml::link('Delete', array('site/DeleteURL', 'id' => $entry->id, 'url' => $url)). "</td></tr>";
+                $res .=
+                    '<tr>'.
+                        '<td>' .
+                            CHtml::link(
+                                Yii::t('app', $entry->title), $entry->url,
+                                array('target'=>'_blank')) .
+                        "</td>".
+                        "<td>" .
+                            CHtml::link(
+                                'Delete', 
+                                array('/site/DeleteURL', 'id' => $entry->id, 'url' => $url)). 
+                        "</td>".
+                    "</tr>";
             }
         }else{
-            $res .= "<tr><td>".CHtml::link(Yii::t('app', 'Example'), 'http://www.x2engine.com', array('target'=>'_blank'))."</td><td><a href='.'>".Yii::t('app', 'Delete')."</a></td></tr>";
+            $res .=
+                "<tr><td>".
+                    CHtml::link(
+                        Yii::t('app', 'Example'), 'http://www.x2engine.com',
+                        array('target'=>'_blank')).
+                "</td><td>".
+                    "<a href='.'>".Yii::t('app', 'Delete')."</a>".
+                "</td></tr>";
         }
         echo $res;
-    }
+    }*/
 
     /**
      * Delete a message from the social feed.
@@ -1303,9 +1318,9 @@ class SiteController extends x2base {
                                 $event->associationId = $model->id;
                                 $event->associationType = 'Media';
                                 $event->save();
-                                $this->redirect(array('site/whatsNew'));
+                                $this->redirect(array('/site/whatsNew'));
                             }elseif($model->associationType == 'docs'){
-                                $this->redirect(array('docs/index'));
+                                $this->redirect(array('/docs/docs/index'));
                             }elseif(!empty($model->associationType) && !empty($model->associationId)){
                                 $note = new Actions;
                                 $note->createDate = time();
@@ -1333,7 +1348,7 @@ class SiteController extends x2base {
                                     $this->redirect(array($model->associationType.'/'.$model->associationId));
                                 }
                             }else{
-                                $this->redirect(array('media/'.$model->id));
+                                $this->redirect('/media/media/view',array('id'=>$model->id));
                             }
                         }else{
                             throw new CHttpException('400', 'Invalid request.');
@@ -1406,9 +1421,9 @@ class SiteController extends x2base {
                             }else{
                                 unlink('uploads/'.$name);
                             }
-                            $this->redirect(array('site/whatsNew'));
+                            $this->redirect(array('/site/whatsNew'));
                         }else if($model->associationType == 'docs'){
-                            $this->redirect(array('docs/index'));
+                            $this->redirect(array('/docs/docs/index'));
                         }else if($model->associationType == 'loginSound' || $model->associationType == 'notificationSound'){
                             /* $profile = Yii::app()->params->profile;
                               if($model->associationType == 'loginSound'){
@@ -1417,12 +1432,12 @@ class SiteController extends x2base {
                               $profile->notificationSound = $name;
                               }
                               $profile->update(array($model->associationType)); */
-                            $this->redirect(array('profile/settings', 'id' => Yii::app()->user->getId()));
+                            $this->redirect(array('/profile/settings', 'id' => Yii::app()->user->getId()));
                         }elseif($model->associationType == 'bg' || $model->associationType == 'bg-private'){
                             /* $profile = Yii::app()->params->profile;
                               $profile->backgroundImg = $name;
                               $profile->update(array('backgroundImg')); */
-                            $this->redirect(array('profile/settings', 'id' => Yii::app()->user->getId()));
+                            $this->redirect(array('/profile/settings', 'id' => Yii::app()->user->getId()));
                         }else{
                             $note = new Actions;
                             $note->createDate = time();
@@ -1452,8 +1467,8 @@ class SiteController extends x2base {
                                 unlink('uploads/'.$name);
                             }
                             if($model->associationType == 'product')
-                                $this->redirect(array('/products/'.$model->associationId));
-                            $this->redirect(array($model->associationType.'/'.$model->associationId));
+                                $this->redirect(array('/products/products/view','id'=>$model->associationId));
+                            $this->redirect(array($model->associationType.'/'.$model->associationType.'/view','id'=>$model->associationId));
                         }
                     }
                 }else{
@@ -1562,7 +1577,7 @@ class SiteController extends x2base {
             }
 
             if(empty($profile->startPage)){
-                $this->redirect(array('site/whatsNew'));
+                $this->redirect(array('/site/whatsNew'));
             }else{
                 $controller = Yii::app()->file->set('protected/controllers/'.ucfirst($profile->startPage).'Controller.php');
                 $module = Yii::app()->file->set('protected/modules/'.$profile->startPage.'/controllers/'.ucfirst($profile->startPage).'Controller.php');
@@ -1575,9 +1590,9 @@ class SiteController extends x2base {
                     $page = CActiveRecord::model('Docs')->findByAttributes(array('name' => ucfirst($profile->startPage)));
                     if(isset($page)){
                         $id = $page->id;
-                        $this->redirect('docs/'.$id.'?static=true');
+                        $this->redirect(array('/docs/docs/view','id'=>$id,'static'=>'true'));
                     }else{
-                        $this->redirect(array('site/whatsNew'));
+                        $this->redirect(array('/site/whatsNew'));
                     }
                 }
             }
@@ -1921,8 +1936,8 @@ class SiteController extends x2base {
                     $session->save();
                     SessionLog::logSession($model->username, $sessionId, 'login');
                     $_SESSION['playLoginSound'] = true;
-                    if(Yii::app()->user->returnUrl == 'site/index')
-                        $this->redirect('index');
+                    if(Yii::app()->user->returnUrl == '/site/index')
+                        $this->redirect(array('/site/index'));
                     else
                         $this->redirect(Yii::app()->user->returnUrl); // after login, redirect to wherever
                 } else{ // login failed
@@ -2022,7 +2037,7 @@ class SiteController extends x2base {
                         $session->status = 1;
 
                         if(Yii::app()->user->returnUrl == 'site/index')
-                            $this->redirect('index');
+                            $this->redirect(array('/site/index'));
                         else
                             $this->redirect(Yii::app()->user->returnUrl);
                     } else{
@@ -2260,13 +2275,13 @@ class SiteController extends x2base {
 
                     if(isset($_GET['ret'])){
                         if($_GET['ret'] == 'contacts')
-                            $this->redirect(array("/contacts/{$contact->id}"));
+                            $this->redirect(array("/contacts/contacts/view",'id'=>$contact->id));
                         else if($_GET['ret'] == 'accounts')
-                            $this->redirect(array("/accounts/{$account->id}"));
+                            $this->redirect(array("/accounts/accounts/view",'id'=>$account->id));
                         else if($_GET['ret'] == 'opportunities')
-                            $this->redirect(array("/opportunities/{$opportunity->id}"));
+                            $this->redirect(array("/opportunities/opportunities/view",'id'=>$opportunity->id));
                     } else{
-                        $this->redirect(array("/contacts/{$contact->id}"));
+                        $this->redirect(array("/contacts/contacts/view",$contact->id));
                     }
                 }
             }

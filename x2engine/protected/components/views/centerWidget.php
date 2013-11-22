@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/* * *******************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ * ****************************************************************************** */
 
 if ($this instanceof X2WidgetList) {
     Yii::app()->clientScript->registerCoreScript('jquery');
@@ -75,7 +61,9 @@ if ($name === 'RecordViewChart') {
 		$(document).on ('chartWidgetMaximized', function () {
 			var chartName = 'actionHistoryChart';
 			".
-			
+			/* x2prostart */	
+			($modelType === 'Marketing' && $model->type === 'Email' ? 'chartName = $("#chart-type-selector").val ();' : '').
+			/* x2proend */
 			"
 			x2[chartName].chart.show ();
 			x2[chartName].chart.replot ();
@@ -90,7 +78,17 @@ if ($name === 'RecordViewChart') {
 			var selectedSubType = $(this).val ();
 			var selectedChart = 'actionHistoryChart';
 			".
-			
+			/* x2prostart */	
+			($modelType === 'Marketing' && $model->type === 'Email' ? 
+			"
+			selectedChart = $('#chart-type-selector').val ();
+			x2['actionHistoryChart'].chart.setChartSubtype (
+                selectedSubType, true, false, true);	
+			x2['campaignChart'].chart.setChartSubtype (selectedSubType);	
+			$.cookie ('recordViewChartSelectedSubtype', selectedSubType);
+			return;
+			" : "")
+			./* x2proend */
 			"
 			x2['actionHistoryChart'].chart.setChartSubtype (
                 selectedSubType, true, false, true);	
@@ -109,7 +107,64 @@ if ($name === 'RecordViewChart') {
 	");
 }
 
+/* x2prostart */
+if ($name === 'RecordViewChart' && $modelType === 'Marketing' && $model->type === 'Email') {
+	Yii::app()->clientScript->registerScript('chartSelection', "
+		$('#chart-type-selector').on ('click', function (evt) {
+			return false;
+		});
+		$('#chart-type-selector').on ('change', function (evt) {
+			var selectedChart = $(this).val ();
+			if (selectedChart === 'actionHistoryChart') {
+				x2['campaignChart'].chart.hide ();
+				x2['actionHistoryChart'].chart.show ();
+				x2['actionHistoryChart'].chart.replot ();
+			} else if (selectedChart === 'campaignChart') {
+				x2['actionHistoryChart'].chart.hide ();
+				x2['campaignChart'].chart.show ();
+				x2['campaignChart'].chart.replot ();
+			}
+			$.cookie ('marketingSelectedChart', selectedChart);
+		});
 
+		var chartsReady = 0;
+		// event triggered by _x2chart.js
+		$(document).on ('actionHistoryChartReady campaignChartReady', function () { 
+			if (++chartsReady === 2)
+				checkChartShow ();
+		});
+	
+		function checkChartShow () {
+			var currChartSubtype = $('#chart-subtype-selector').val ();
+			x2['campaignChart'].chart.setChartSubtype (currChartSubtype, false);	
+			x2['actionHistoryChart'].chart.setChartSubtype (currChartSubtype, false);	
+
+			if ($.cookie (x2['actionHistoryChart'].chart.cookiePrefix + 'chartIsShown') === 
+				'true' ||
+				$.cookie (x2['campaignChart'].chart.cookiePrefix + 'chartIsShown') === 
+				'true') {
+				var currChart = $('#chart-type-selector').val ();
+				x2[currChart].chart.show ();
+				x2[currChart].chart.replot ();
+			} else {
+				x2['campaignChart'].chart.show ();
+				x2['campaignChart'].chart.replot ();
+			}
+		}
+
+		if ($.cookie ('marketingSelectedChart')) {
+			// set chart type using cookie
+			$('#chart-type-selector').find ('option').each (function () {
+				$(this).removeAttr ('selected');
+			});
+			$('#chart-type-selector').children ().each (function () {
+				if ($(this).val () === $.cookie ('marketingSelectedChart'))
+					$(this).attr ('selected', 'selected');
+			});
+		} 
+	");
+}
+/* x2proend */
 
 if ($name === 'RecordViewChart') {
 }
@@ -136,11 +191,30 @@ if($name == "InlineRelationships"){
 		<?php
 		if ($name === 'RecordViewChart') {
 		?>
-			<!--  -->
+			<!-- /* x2prostart */ -->
+			<?php 
+			if ($modelType === 'Marketing' && $model->type === 'Email') {
+			?>
+			<select id='chart-type-selector'>
+				<option value='campaignChart'>
+					<?php echo Yii::t('app', 'Campaign'); ?>
+				</option>
+				<option value='actionHistoryChart'>
+					<?php echo Yii::t('app', 'Action History'); ?>
+				</option>
+			</select>
+			<?php
+			} else {
+			?>
+			<!-- /* x2proend */ -->
 			<span class="x2widget-title">
 				<b><?php echo Yii::t('app', Yii::t('app', 'Action History')); ?></b>
 			</span>
-			<!--  -->
+			<!-- /* x2prostart */ -->
+			<?php
+			} 
+			?> 
+			<!-- /* x2proend */ -->
 			<select id='chart-subtype-selector'>
 				<option value='line'>
 					<?php echo Yii::t('app', 'Line Chart'); ?>

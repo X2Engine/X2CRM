@@ -1,81 +1,69 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/* * *******************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ * ****************************************************************************** */
 
 Yii::app()->clientScript->registerScript('toggleAuthInfo', "
-	$('#Admin_emailUseAuth').change(function() {
-		if(($(this).val() == 'admin' && $('#auth-info').is(':hidden'))
-			|| ($(this).val() != 'admin' && $('#auth-info').is(':visible'))) {
+    $('#Admin_emailUseAuth').change(function() {
+        if(($(this).val() == 'admin' && $('#auth-info').is(':hidden'))
+            || ($(this).val() != 'admin' && $('#auth-info').is(':visible'))) {
 
-			$('#auth-info').animate({
-				opacity: 'toggle',
-				height: 'toggle'
-			}, 400);
-		}
-	});
+            $('#auth-info').animate({
+                opacity: 'toggle',
+                height: 'toggle'
+            }, 400);
+        }
+    });
 
-	$('#Admin_emailType').change(function() {
-		if(($(this).val() == 'smtp' && $('#server-info').is(':hidden'))
-			|| ($(this).val() != 'smtp' && $('#server-info').is(':visible'))) {
+    $('#Admin_emailType').change(function() {
+        if(($(this).val() == 'smtp' && $('#server-info').is(':hidden'))
+            || ($(this).val() != 'smtp' && $('#server-info').is(':visible'))) {
 
-			$('#server-info').animate({
-				opacity: 'toggle',
-				height: 'toggle'
-			}, 400);
-		}
-	});
-	$('#Admin_emailUseSignature').change(function() {
-		if(($(this).val() == 'admin' && $('#signature-box').is(':hidden'))
-			|| ($(this).val() != 'admin' && $('#signature-box').is(':visible'))) {
+            $('#server-info').animate({
+                opacity: 'toggle',
+                height: 'toggle'
+            }, 400);
+        }
+    });
+    $('#Admin_emailUseSignature').change(function() {
+        if(($(this).val() == 'admin' && $('#signature-box').is(':hidden'))
+            || ($(this).val() != 'admin' && $('#signature-box').is(':visible'))) {
 
-			$('#signature-box').animate({
-				opacity: 'toggle',
-				height: 'toggle'
-			}, 400);
-		}
-	});
+            $('#signature-box').animate({
+                opacity: 'toggle',
+                height: 'toggle'
+            }, 400);
+        }
+    });
 
-	$('#email-setup input, #email-setup select, #email-setup textarea').change(function(){
-		$('#save-button').addClass('highlight'); //css('background','yellow');
-	});
+    $('#email-setup input, #email-setup select, #email-setup textarea').change(function(){
+        $('#save-button').addClass('highlight'); //css('background','yellow');
+    });
 
 ", CClientScript::POS_READY);
 ?>
 <div class="span-16">
     <div class="page-title"><h2><?php echo Yii::t('admin', 'Email Server Configuration'); ?></h2></div>
     <div class="form">
+        <p><?php echo Yii::t('admin','For more information, see {config} on the X2CRM wiki.',array('{config}'=>CHtml::link(Yii::t('admin','Email Configuration'),'http://wiki.x2engine.com/wiki/E-Mail_Configuration'))); ?></p>
+        <hr />
         <?php
         $form = $this->beginWidget('CActiveForm', array(
             'id' => 'email-setup',
@@ -83,10 +71,10 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
                 ));
         echo $form->errorSummary($model);
         ?>
-        <h4><?php echo Yii::t('admin', 'Outbound Email Server'); ?></h4>
+        <h4><?php echo Yii::t('admin', 'Default Email Delivery Method'); ?></h4>
         <p><?php
-        echo Yii::t('admin', 'Define how the system sends email by default.').'<br /><br />';
-        echo Yii::t('admin', 'Note that this will not supersede other email settings. Usage of these particular settings is a legacy feature. Unless this web server also serves as your company\'s primary mail server, it is recommended to instead use "{ma}" to set up email accounts for system usage instead.', array('{ma}' => CHtml::link(Yii::t('app', 'Manage Apps'), array('profile/manageCredentials'))));
+        echo Yii::t('admin', 'Define how the system sends email by default, when the email account is unspecified.').'<br /><br />';
+        echo Yii::t('admin', 'Note that this will not supersede other email settings. Usage of these particular settings is a legacy feature. Unless this web server also serves as the primary mail server, it is recommended to instead use "{ma}" to set up email accounts for system usage instead.', array('{ma}' => CHtml::link(Yii::t('app', 'Manage Apps'), array('/profile/manageCredentials'))));
         ?></p>
         <div class="row">
             <?php
@@ -209,17 +197,17 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
             <?php echo Yii::t('admin', 'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'); ?>
         </div>
 
-	<br /><hr />
-	<h4><?php echo Yii::t('admin','Notification Email Settings'); ?></h4>
-	<p><?php echo Yii::t('admin','Configure how notification emails are sent.');?></p>
-	<div class="row">
-		<div class="cell">
-			<?php
-			echo $form->labelEx($model,'emailNotificationAccount'); 
-			echo Credentials::selectorField($model,'emailNotificationAccount','email',Credentials::$sysUseId['systemNotificationEmail']);
-			?>
-		</div>
-	</div>
+    <br /><hr />
+    <h4><?php echo Yii::t('admin','Notification Email Settings'); ?></h4>
+    <p><?php echo Yii::t('admin','Configure how notification emails are sent.');?></p>
+    <div class="row">
+        <div class="cell">
+            <?php
+            echo $form->labelEx($model,'emailNotificationAccount');
+            echo Credentials::selectorField($model,'emailNotificationAccount','email',Credentials::$sysUseId['systemNotificationEmail']);
+            ?>
+        </div>
+    </div>
 
         <br /><hr />
         <h4><?php echo Yii::t('admin', 'Service Case Email Settings'); ?></h4>
@@ -256,12 +244,12 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
                 <?php echo Yii::t('admin', 'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.'); ?>
             </div>
         </div>
-	<?php
-	if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'views','admin','webLeadResponseEmailSettings.php')))){
-		$this->renderPartial('webLeadResponseEmailSettings',compact('form','model'));
-	}
-	
-	?>
+    <?php
+    if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'views','admin','webLeadResponseEmailSettings.php')))){
+        $this->renderPartial('webLeadResponseEmailSettings',compact('form','model'));
+    }
+
+    ?>
         </div>
         <br>
 

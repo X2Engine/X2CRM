@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
  * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
  * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 
+ * to install and use this Software for your internal business purposes.  
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong 
+ * exclusively to X2Engine.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 
 /**
@@ -200,16 +186,11 @@
 					postData.emailHash = SHA256(idEmail+SHA256(idEmail));
 				}
 				var loadingImg = $('<img src="<?php echo $form->config['themeUrl']; ?>/images/loading.gif">').css({'display':'block','margin-left':'auto','margin-right':'auto'});
-				
-				if(!isos || ((postData.unique_id == 'none' || empty(postData.unique_id)) && elts.receiveUpdates.is(":checked"))) {
-					form.find('.error').removeClass('error');
-					status.fadeIn(300).html(loadingImg);
-					$.ajax({
-						type:'POST',
-						url:'http://x2planet.com/installs/registry/<?php echo $form->os ? 'new' : 'register'; ?>',
-						data:postData,
-						dataType:'json'
-					}).done(function(data,statusObj,jqXHR) {
+                
+                /**
+                 * Response data handler
+                 */
+				var handleResponse = function(data,statusObj,jqXHR) {
 						var messages = "<h3>"+data.message+"</h3>";
 						if(data.errors != undefined || data.log != undefined) {
 							messages += '<ul id="registryerrors">';
@@ -236,10 +217,40 @@
 								elts.edition.val(data.edition);
 							setTimeout(function(){submitExternalForm();},500);
 						}
-					}).fail(function(data,statusObj,jqXHR) {
-						status.html('<?php echo str_replace("'", "\\'", '<h3>' . $form->message['connectionErrHeader'] . '</h3>' . ($form->os ? $form->message['connectionErrMessage'] : $form->message['connectionNOsMessage'])); ?>');
+					};
+                var handleErr = function() {
+                            status.html('<?php echo str_replace("'", "\\'", '<h3>' . $form->message['connectionErrHeader'] . '</h3>' . ($form->os ? $form->message['connectionErrMessage'] : $form->message['connectionNOsMessage'])); ?>');
+                        };
+                    
+                // Now it is time to connect to the updates server
+				if(!isos || ((postData.unique_id == 'none' || empty(postData.unique_id)) && elts.receiveUpdates.is(":checked"))) {
+                    var submitToUrl = 'http://x2planet.com/installs/registry/<?php echo $form->os ? 'new' : 'register'; ?>';
+					form.find('.error').removeClass('error');
+					status.fadeIn(300).html(loadingImg);
+                    if($.browser.msie || typeof window.XDomainRequest != 'undefined') {
+                        // Internet Explorer needs its own way of connecting to
+                        // the updates server 'cause it's special
+                        var xdr = new XDomainRequest();
+                        var formData = $.param(postData);
+                        xdr.onerr = handleErr;
+                        xdr.onload = function() {
+                            handleResponse(JSON.parse(xdr.responseText));
+                        }
+                        xdr.ontimeout = handleErr;
+                        xdr.timeout = 10000;
+                        xdr.open("POST", submitToUrl);
+                        xdr.send(formData);
+                        return 0;
+                    }
+                    // For every other browser it's much simpler:
+					$.ajax({
+						type:'POST',
+						url:submitToUrl,
+						data:postData,
+						dataType:'json'
+					}).done(handleResponse).fail(function(data,statusObj,jqXHR) {
+						handleErr();
 					});
-					
 				} else {
 					// Submit form as usual
 					status.fadeIn(300).html('<h3></h3><ul></ul>');

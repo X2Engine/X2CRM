@@ -1,37 +1,23 @@
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 drop table if exists `x2_auth_assignment`,`x2_auth_item_child`,`x2_auth_item`,`x2_auth_cache`;
 /*&*/
@@ -84,6 +70,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('AccountsDeletePrivate',1,'Delete their own records.','return Yii::app()->user->getName()==$params[\'assignedTo\'];','N;'),
 ('AccountsFullAccess',1,'',NULL,'N;'),
 ('AccountsGetItems',0,'',NULL,'N;'),
+('AccountsGetX2ModelInput',0,'',NULL,'N;'),
 ('AccountsIndex',0,'',NULL,'N;'),
 ('AccountsMinimumRequirements',1,'',NULL,'N;'),
 ('AccountsPrivateFullAccess',1,'',NULL,'N;'),
@@ -113,6 +100,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('ActionsDeletePrivate',1,'Delete assigned records','return Yii::app()->user->getName()==$params[\'assignedTo\'];','N;'),
 ('ActionsFullAccess',1,'The user is able to create, read, update, and delete actions but lacks adminstrative functions.',NULL,'N;'),
 ('ActionsGetTerms',0,'',NULL,'N;'),
+('ActionsGetX2ModelInput',0,'',NULL,'N;'),
 ('ActionsIndex',0,'',NULL,'N;'),
 ('ActionsInvalid',0,'',NULL,'N;'),
 ('ActionsMinimumRequirements',1,'Minimum requirements to access the actions module.',NULL,'N;'),
@@ -156,6 +144,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('AdminRollbackStage',0,'',NULL,'N;'),
 ('AdminManageTags',0,'',NULL,'N;'),
 ('AdminDeleteTag',0,'',NULL,'N;'),
+('AdminConvertCustomModules',0,'',NULL,'N;'),
 ('AdminCreateModule',0,'Create a new module.',NULL,'N;'),
 ('AdminCreatePage',0,'Create a static page for the top menu bar.',NULL,'N;'),
 ('AdminCustomizeFields',0,'Edit fields.',NULL,'N;'),
@@ -186,6 +175,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('AdminManageFields',0,'Manage created fields.',NULL,'N;'),
 ('AdminManageModules',0,'Manage top bar menu items.',NULL,'N;'),
 ('AdminManageRoles',0,'',NULL,'N;'),
+('AdminPublicInfo',0,'',NULL,'N;'),
 ('AdminRenameModules',0,'Rename a module in the top menu bar.',NULL,'N;'),
 ('AdminRoleEditor',0,'',NULL,'N;'),
 ('AdminRoleException',0,'',NULL,'N;'),
@@ -201,6 +191,8 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('AdminViewSessionHistory',0,'',NULL,'N;'),
 ('AdminUserViewLog',0,'',NULL,'N;'),
 ('AdminClearViewHistory',0,'',NULL,'N;'),
+('AdminCalculateMissingTranslations',0,'',NULL,'N;'),
+('AdminX2CronSettings',0,'',NULL,'N;'),
 ('AdminBackup',0,'',NULL,'N;'),
 ('AdminCheckDatabaseBackup',0,'',NULL,'N;'),
 ('StudioFlowIndex',0,'',NULL,'N;'),
@@ -211,6 +203,11 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('StudioGetFields',0,'',NULL,'N;'),
 ('StudioDeleteNote',0,'',NULL,'N;'),
 ('StudioSearch',0,'',NULL,'N;'),
+('StudioGetX2ModelInput',0,'',NULL,'N;'),
+('StudioTriggerLogs',0,'',NULL,'N;'),
+('StudioDeleteAllTriggerLogs',0,'',NULL,'N;'),
+('StudioDeleteAllTriggerLogsForAllFlows',0,'',NULL,'N;'),
+('StudioDeleteTriggerLog',0,'',NULL,'N;'),
 ('authenticated',2,'Authenticated user','return !Yii::app()->user->isGuest;','N;'),
 ('DefaultRole',2,'Default permission set','','N;'),
 ('AuthenticatedSiteFunctionsTask',1,'A set of permissions required to use the site while logged in.',NULL,'N;'),
@@ -226,6 +223,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('CalendarEditAction',0,'',NULL,'N;'),
 ('CalendarEditGoogleEvent',0,'',NULL,'N;'),
 ('CalendarFullAccess',1,'',NULL,'N;'),
+('CalendarGetX2ModelInput',0,'',NULL,'N;'),
 ('CalendarIndex',0,'',NULL,'N;'),
 ('CalendarJsonFeed',0,'',NULL,'N;'),
 ('CalendarJsonFeedGoogle',0,'',NULL,'N;'),
@@ -257,6 +255,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('ChartsDeleteNote',0,'',NULL,'N;'),
 ('ChartsFullAccess',1,'',NULL,'N;'),
 ('ChartsGetFieldData',0,'',NULL,'N;'),
+('ChartsGetX2ModelInput',0,'',NULL,'N;'),
 ('ChartsIndex',0,'',NULL,'N;'),
 ('ChartsLeadVolume',0,'',NULL,'N;'),
 ('ChartsMarketing',0,'',NULL,'N;'),
@@ -283,6 +282,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('ContactsGetItems',0,'',NULL,'N;'),
 ('ContactsGetLists',0,'',NULL,'N;'),
 ('ContactsGetTerms',0,'',NULL,'N;'),
+('ContactsGetX2ModelInput',0,'',NULL,'N;'),
 ('ContactsIgnoreDuplicates',0,'',NULL,'N;'),
 ('ContactsPrepareImport',0,'',NULL,'N;'),
 ('ContactsCleanUpImport',0,'',NULL,'N;'),
@@ -344,6 +344,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('DocsFullAccess',1,'',NULL,'N;'),
 ('DocsGetItem',0,'',NULL,'N;'),
 ('DocsGetItems',0,'',NULL,'N;'),
+('DocsGetX2ModelInput',0,'',NULL,'N;'),
 ('DocsIndex',0,'',NULL,'N;'),
 ('DocsMinimumRequirements',1,'',NULL,'N;'),
 ('DocsPrivateFullAccess',1,'',NULL,'N;'),
@@ -368,6 +369,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('GroupsDeleteNote',0,'',NULL,'N;'),
 ('GroupsFullAccess',1,'',NULL,'N;'),
 ('GroupsGetGroups',0,'',NULL,'N;'),
+('GroupsGetX2ModelInput',0,'',NULL,'N;'),
 ('GroupsIndex',0,'',NULL,'N;'),
 ('GroupsMinimumRequirements',1,'',NULL,'N;'),
 ('GroupsReadOnlyAccess',1,'',NULL,'N;'),
@@ -391,6 +393,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('MarketingDeletePrivate',1,'Delete their own records','return Yii::app()->user->getName()==$params[\'assignedTo\'];','N;'),
 ('MarketingFullAccess',1,'',NULL,'N;'),
 ('MarketingGetItems',0,'',NULL,'N;'),
+('MarketingGetX2ModelInput',0,'',NULL,'N;'),
 ('MarketingIndex',0,'',NULL,'N;'),
 ('MarketingLaunch',0,'',NULL,'N;'),
 ('MarketingMail',0,'',NULL,'N;'),
@@ -409,6 +412,9 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('MarketingViewPrivate',1,'View their own records','return Yii::app()->user->getName()==$params[\'assignedTo\'];','N;'),
 ('MarketingWebLeadForm',0,'Edit the lead capture form.',NULL,'N;'),
 ('MarketingWebTracker',0,'View embed code for web tracker.',NULL,'N;'),
+('MarketingRemoveWebLeadFormCustomHtml',0,'View embed code for web tracker.',NULL,'N;'),
+('MarketingSaveWebLeadFormCustomHtml',0,'View embed code for web tracker.',NULL,'N;'),
+('MarketingGetCampaignChartData',0,'View embed code for web tracker.',NULL,'N;'),
 ('MediaAdmin',0,'',NULL,'N;'),
 ('MediaAdminAccess',1,'',NULL,'N;'),
 ('MediaBasicAccess',1,'',NULL,'N;'),
@@ -440,6 +446,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('OpportunitiesFullAccess',1,'',NULL,'N;'),
 ('OpportunitiesGetItems',0,'',NULL,'N;'),
 ('OpportunitiesGetTerms',0,'',NULL,'N;'),
+('OpportunitiesGetX2ModelInput',0,'',NULL,'N;'),
 ('OpportunitiesIndex',0,'',NULL,'N;'),
 ('OpportunitiesMinimumRequirements',1,'',NULL,'N;'),
 ('OpportunitiesPrivateReadOnlyAccess',1,'',NULL,'N;'),
@@ -464,6 +471,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('ProductsDeletePrivate',1,'Delete their own records','return Yii::app()->user->getName()==$params[\'assignedTo\'];','N;'),
 ('ProductsFullAccess',1,'',NULL,'N;'),
 ('ProductsGetItems',0,'',NULL,'N;'),
+('ProductsGetX2ModelInput',0,'',NULL,'N;'),
 ('ProductsIndex',0,'',NULL,'N;'),
 ('ProductsMinimumRequirements',1,'',NULL,'N;'),
 ('ProductsPrivateFullAccess',1,'',NULL,'N;'),
@@ -490,6 +498,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('QuotesFullAccess',1,'',NULL,'N;'),
 ('QuotesGetItems',0,'',NULL,'N;'),
 ('QuotesGetTerms',0,'',NULL,'N;'),
+('QuotesGetX2ModelInput',0,'',NULL,'N;'),
 ('QuotesIndex',0,'',NULL,'N;'),
 ('QuotesMinimumRequirements',1,'',NULL,'N;'),
 ('QuotesPrint',0,'',NULL,'N;'),
@@ -518,6 +527,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('ReportsDeleteNote',0,'',NULL,'N;'),
 ('ReportsFullAccess',1,'',NULL,'N;'),
 ('ReportsGetOptions',0,'',NULL,'N;'),
+('ReportsGetX2ModelInput',0,'',NULL,'N;'),
 ('ReportsGridReport',0,'',NULL,'N;'),
 ('ReportsIndex',0,'',NULL,'N;'),
 ('ReportsLeadPerformance',0,'',NULL,'N;'),
@@ -538,6 +548,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('ServicesDeletePrivate',1,'Delete their own records.','return Yii::app()->user->getName()==$params[\'assignedTo\'];','N;'),
 ('ServicesFullAccess',1,'',NULL,'N;'),
 ('ServicesGetItems',0,'',NULL,'N;'),
+('ServicesGetX2ModelInput',0,'',NULL,'N;'),
 ('ServicesIndex',0,'',NULL,'N;'),
 ('ServicesMinimumRequirements',1,'',NULL,'N;'),
 ('ServicesPrivateFullAccess',1,'',NULL,'N;'),
@@ -568,6 +579,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('UsersDelete',0,'',NULL,'N;'),
 ('UsersDeleteNote',0,'',NULL,'N;'),
 ('UsersFullAccess',1,'',NULL,'N;'),
+('UsersGetX2ModelInput',0,'',NULL,'N;'),
 ('UsersIndex',0,'',NULL,'N;'),
 ('UsersInviteUsers',0,'',NULL,'N;'),
 ('UsersMinimumRequirements',1,'',NULL,'N;'),
@@ -582,6 +594,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('WeblistIndex',0,'',NULL,'N;'),
 ('WeblistUpdate',0,'',NULL,'N;'),
 ('WeblistView',0,'',NULL,'N;'),
+('WeblistGetX2ModelInput',0,'',NULL,'N;'),
 ('WorkflowAdmin',0,'',NULL,'N;'),
 ('WorkflowAdminAccess',1,'',NULL,'N;'),
 ('WorkflowBasicAccess',1,'',NULL,'N;'),
@@ -594,6 +607,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('WorkflowGetStageMembers',0,'',NULL,'N;'),
 ('WorkflowGetStages',0,'',NULL,'N;'),
 ('WorkflowGetWorkflow',0,'',NULL,'N;'),
+('WorkflowGetX2ModelInput',0,'',NULL,'N;'),
 ('WorkflowIndex',0,'',NULL,'N;'),
 ('WorkflowMinimumRequirements',1,'',NULL,'N;'),
 ('WorkflowReadOnlyAccess',1,'',NULL,'N;'),
@@ -650,6 +664,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('WeblistDeleteNote',0,'',NULL,'N;'),
 ('WeblistSearch',0,'',NULL,'N;'),
 ('MediaAjaxUpload',0,'',NULL,'N;'),
+('MediaGetX2ModelInput',0,'',NULL,'N;'),
 ('QuotesIndexInvoice',0,'',NULL,'N;'),
 ('QuotesConvertToInvoice',0,'',NULL,'N;'),
 ('ServicesWebForm',0,'',NULL,'N;'),
@@ -662,6 +677,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('BugReportsUpdate',0,'',NULL,'N;'),
 ('BugReportsDelete',0,'',NULL,'N;'),
 ('BugReportsGetItems',0,'',NULL,'N;'),
+('BugReportsGetX2ModelInput',0,'',NULL,'N;'),
 ('BugReportsStatusFilter',0,'',NULL,'N;'),
 ('BugReportsDeleteNote',0,'',NULL,'N;'),
 ('BugReportsSearch',0,'',NULL,'N;'),
@@ -704,6 +720,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('AccountsReadOnlyAccess','AccountsShareAccount'),
 ('AccountsViewPrivate','AccountsShareAccount'),
 ('AccountsUpdateAccess','AccountsUpdate'),
+('AccountsUpdateAccess','AccountsGetX2ModelInput'),
 ('AccountsUpdatePrivate','AccountsUpdate'),
 ('AccountsFullAccess','AccountsUpdateAccess'),
 ('DefaultRole','AccountsUpdateAccess'),
@@ -757,6 +774,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('ActionsReadOnlyAccess','ActionsUncompleteSelected'),
 ('ActionsViewPrivate','ActionsUncompleteSelected'),
 ('ActionsUpdateAccess','ActionsUpdate'),
+('ActionsUpdateAccess','ActionsGetX2ModelInput'),
 ('ActionsUpdatePrivate','ActionsUpdate'),
 ('ActionsFullAccess','ActionsUpdateAccess'),
 ('DefaultRole','ActionsPrivateFullAccess'),
@@ -776,6 +794,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('GeneralAdminSettingsTask','AdminCleanUpImport'),
 ('GeneralAdminSettingsTask','AdminPrepareExport'),
 ('GeneralAdminSettingsTask','AdminGlobalExport'),
+('GeneralAdminSettingsTask','AdminPublicInfo'),
 ('GeneralAdminSettingsTask','AdminRollbackImport'),
 ('GeneralAdminSettingsTask','AdminRollbackStage'),
 ('GeneralAdminSettingsTask','AdminViewSessionLog'),
@@ -929,6 +948,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('ContactsReadOnlyAccess','ContactsSubscribe'),
 ('ContactsViewPrivate','ContactsSubscribe'),
 ('ContactsUpdateAccess','ContactsUpdate'),
+('ContactsUpdateAccess','ContactsGetX2ModelInput'),
 ('ContactsUpdatePrivate','ContactsUpdate'),
 ('DefaultRole','ContactsUpdateAccess'),
 ('ContactsFullAccess','ContactsUpdateAccess'),
@@ -967,6 +987,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('DocsBasicAccess','DocsReadOnlyAccess'),
 ('DocsMinimumRequirements','DocsSearch'),
 ('DocsUpdateAccess','DocsUpdate'),
+('DocsUpdateAccess','DocsGetX2ModelInput'),
 ('DocsUpdatePrivate','DocsUpdate'),
 ('DefaultRole','DocsUpdateAccess'),
 ('DocsFullAccess','DocsUpdateAccess'),
@@ -1003,12 +1024,15 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('MarketingPrivateBasicAccess','MarketingBasicPrivate'),
 ('GuestSiteFunctionsTask','MarketingClick'),
 ('MarketingUpdateAccess','MarketingComplete'),
+('MarketingUpdateAccess','MarketingGetX2ModelInput'),
 ('MarketingUpdatePrivate','MarketingComplete'),
 ('MarketingBasicAccess','MarketingCreate'),
 ('MarketingPrivateBasicAccess','MarketingCreate'),
 ('MarketingBasicAccess','MarketingCreateFromTag'),
 ('MarketingPrivateBasicAccess','MarketingCreateFromTag'),
 ('MarketingDeletePrivate','MarketingDelete'),
+('MarketingFullAccess','MarketingRemoveWebLeadFormCustomHtml'),
+('MarketingFullAccess','MarketingSaveWebLeadFormCustomHtml'),
 ('MarketingFullAccess','MarketingDelete'),
 ('MarketingDeletePrivate','MarketingDeleteNote'),
 ('MarketingFullAccess','MarketingDeleteNote'),
@@ -1027,6 +1051,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('MarketingPrivateBasicAccess','MarketingReadOnlyAccess'),
 ('MarketingPrivateFullAccess','MarketingPrivateUpdateAccess'),
 ('MarketingBasicAccess','MarketingReadOnlyAccess'),
+('MarketingBasicAccess','MarketingGetCampaignChartData'),
 ('MarketingMinimumRequirements','MarketingSearch'),
 ('MarketingBasicAccess','MarketingToggle'),
 ('MarketingBasicPrivate','MarketingToggle'),
@@ -1054,6 +1079,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('MediaMinimumRequirements','MediaSearch'),
 ('AuthenticatedSiteFunctionsTask','MediaToggleUserMediaVisible'),
 ('MediaUpdateAccess','MediaUpdate'),
+('MediaUpdateAccess','MediaGetX2ModelInput'),
 ('DefaultRole','MediaUpdateAccess'),
 ('MediaFullAccess','MediaUpdateAccess'),
 ('MediaBasicAccess','MediaUpload'),
@@ -1089,6 +1115,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('OpportunitiesReadOnlyAccess','OpportunitiesShareOpportunity'),
 ('OpportunitiesViewPrivate','OpportunitiesShareOpportunity'),
 ('OpportunitiesUpdateAccess','OpportunitiesUpdate'),
+('OpportunitiesUpdateAccess','OpportunitiesGetX2ModelInput'),
 ('OpportunitiesUpdatePrivate','OpportunitiesUpdate'),
 ('DefaultRole','OpportunitiesUpdateAccess'),
 ('OpportunitiesFullAccess','OpportunitiesUpdateAccess'),
@@ -1116,6 +1143,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('ProductsMinimumRequirements','ProductsSearch'),
 ('ProductsUpdateAccess','ProductsUpdate'),
 ('ProductsUpdatePrivate','ProductsUpdate'),
+('ProductsUpdateAccess','ProductsGetX2ModelInput'),
 ('GeneralAdminSettingsTask','CredentialsAdmin'),
 ('DefaultRole','CredentialsCreateUpdateOwn'),
 ('DefaultRole','CredentialsDeleteOwn'),
@@ -1141,12 +1169,6 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('ProductsReadOnlyAccess','ProductsView'),
 ('ProductsViewPrivate','ProductsView'),
 ('ProductsPrivateReadOnlyAccess','ProductsViewPrivate'),
-('QuotesUpdateAccess','QuotesAddContact'),
-('QuotesUpdatePrivate','QuotesAddContact'),
-('QuotesUpdateAccess','QuotesAddProduct'),
-('QuotesUpdatePrivate','QuotesAddProduct'),
-('QuotesUpdateAccess','QuotesAddUser'),
-('QuotesUpdatePrivate','QuotesAddUser'),
 ('QuotesAdminAccess','QuotesAdmin'),
 ('administrator','QuotesAdminAccess'),
 ('QuotesPrivateUpdateAccess','QuotesBasicAccess'),
@@ -1174,14 +1196,13 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('QuotesUpdateAccess','QuotesQuickUpdate'),
 ('QuotesUpdatePrivate','QuotesQuickUpdate'),
 ('QuotesBasicAccess','QuotesReadOnlyAccess'),
-('QuotesUpdateAccess','QuotesRemoveContact'),
-('QuotesUpdatePrivate','QuotesRemoveContact'),
 ('QuotesUpdateAccess','QuotesRemoveUser'),
 ('QuotesUpdatePrivate','QuotesRemoveUser'),
 ('QuotesMinimumRequirements','QuotesSearch'),
 ('QuotesReadOnlyAccess','QuotesShareQuote'),
 ('QuotesViewPrivate','QuotesShareQuote'),
 ('QuotesUpdateAccess','QuotesUpdate'),
+('QuotesUpdateAccess','QuotesGetX2ModelInput'),
 ('QuotesUpdatePrivate','QuotesUpdate'),
 ('DefaultRole','QuotesUpdateAccess'),
 ('QuotesFullAccess','QuotesUpdateAccess'),
@@ -1210,6 +1231,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('ServicesBasicAccess','ServicesReadOnlyAccess'),
 ('ServicesMinimumRequirements','ServicesSearch'),
 ('ServicesUpdateAccess','ServicesUpdate'),
+('ServicesUpdateAccess','ServicesGetX2ModelInput'),
 ('ServicesUpdatePrivate','ServicesUpdate'),
 ('ServicesFullAccess','ServicesUpdateAccess'),
 ('DefaultRole','ServicesUpdateAccess'),
@@ -1301,6 +1323,8 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('GeneralAdminSettingsTask','AdminFlowDesigner'),
 ('GeneralAdminSettingsTask','AdminUserViewLog'),
 ('GeneralAdminSettingsTask','AdminClearViewHistory'),
+('GeneralAdminSettingsTask','AdminCalculateMissingTranslations'),
+('GeneralAdminSettingsTask','AdminConvertCustomModules'),
 ('ActionsReadOnlyAccess','ActionsViewEmail'),
 ('ActionsViewPrivate','ActionsViewEmail'),
 ('GuestSiteFunctionsTask','ActionsEmailOpened'),
@@ -1339,6 +1363,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('BugReportsBasicAccess','BugReportsCreate'),
 ('BugReportsBasicAccess','BugReportsReadOnlyAccess'),
 ('BugReportsUpdateAccess','BugReportsUpdate'),
+('BugReportsUpdateAccess','BugReportsGetX2ModelInput'),
 ('BugReportsUpdateAccess','BugReportsBasicAccess'),
 ('BugReportsFullAccess','BugReportsDelete'),
 ('BugReportsFullAccess','BugReportsUpdateAccess'),

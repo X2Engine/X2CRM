@@ -1,51 +1,48 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
  * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
  * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 
+ * to install and use this Software for your internal business purposes.  
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong 
+ * exclusively to X2Engine.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 /**
  * X2WebApplication class file.
  * 
  * X2WebApplication extends CWebApplication to provide additional functionality.
- *
- * @property integer|bool $locked Integer (timestamp) if the application is locked; false otherwise.
+ * @property string $absoluteBaseUrl (read-only) the base URL of the web
+ *  application, independent of whether there is a web request.
+ * @property string $externalAbsoluteBaseUrl (read-only) The absolute base URL
+ *  of the application to use when creating URLs to be viewed publicly, from
+ *  the internet (i.e. the web lead capture form, email tracking links, etc.)
+ * @property string $externalWebRoot (read-only) The web root of public-facing
+ *  URLs.
+ * @property integer|bool $locked Integer (timestamp) if the application is
+ *  locked; false otherwise.
  * @property string $lockFile Path to the lock file
  * @package X2CRM.modules.contacts
  *
  */
 class X2WebApplication extends CWebApplication {
 
+
+    private $_externalAbsoluteBaseUrl;
+    private $_absoluteBaseUrl;
+    
     /**
      * If the application is locked, this will be an integer corresponding to
      * the date that the application was locked. Otherwise, it will be false.
@@ -136,6 +133,66 @@ class X2WebApplication extends CWebApplication {
 			$basePath.=DIRECTORY_SEPARATOR.$id;
 		}
 	}
+
+    /**
+     * Creates an URL specific to 
+     * @param type $url
+     */
+    public function createExternalUrl($route,$params=array()) {
+        return $this->externalWebRoot.$this->controller->createUrl($route,$params);
+    }
+
+    /**
+     * Magic getter for {@link absoluteBaseUrl}; in the case that web request data
+     * isn't available, it uses a config file.
+     *
+     * @return type
+     */
+    public function getAbsoluteBaseUrl(){
+        if(!isset($this->_absoluteBaseUrl)){
+            if($this->params->noSession){
+                $this->_absoluteBaseUrl = '';
+                // Use the web API config file to construct the URL
+                $file = realpath($this->basePath.'/../webLeadConfig.php');
+                if($file){
+                    include($file);
+                    if(isset($url))
+                        $this->_absoluteBaseUrl = $url;
+                }
+                if(!isset($this->_absoluteBaseUrl)){
+                    $this->_absoluteBaseUrl = ''; // Default
+                    if($this->hasProperty('request')){
+                        // If this is an API request, there is still hope yet to resolve it
+                        try{
+                            $this->_absoluteBaseUrl = $this->request->getBaseUrl(1);
+                        }catch(Exception $e){
+
+                        }
+                    }
+                }
+            }else{
+                $this->_absoluteBaseUrl = $this->baseUrl;
+            }
+        }
+        return $this->_absoluteBaseUrl;
+    }
+
+    /**
+     * Resolves the public-facing absolute base url.
+     * 
+     * @return type
+     */
+    public function getExternalWebRoot() {
+        if(!isset($this->_externalAbsoluteBaseUrl)) {
+            $eabu = $this->params->admin->externalBaseUrl;
+            $this->_externalAbsoluteBaseUrl = $eabu ? $eabu : $this->request->getHostInfo();
+        }
+        return $this->_externalAbsoluteBaseUrl;
+    }
+
+    public function getExternalAbsoluteBaseUrl() {
+        return $this->externalWebRoot.$this->baseUrl;
+    }
 
     /**
      * Returns the lock status of the application.

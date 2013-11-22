@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 $isGuest = Yii::app()->user->isGuest;
 $auth = Yii::app()->authManager;
@@ -42,19 +28,19 @@ if($isAdmin && file_exists($updateManifest = implode(DIRECTORY_SEPARATOR,array(Y
     $manifest = @json_decode(file_get_contents($updateManifest),1);
     if(isset($manifest['scenario']) && !(Yii::app()->controller->id == 'admin' && Yii::app()->controller->action->id == 'updater')) {
         Yii::app()->user->setFlash('admin.update',Yii::t('admin', 'There is an unfinished {scenario} in progress.',array('{scenario}'=>$manifest['scenario']=='update' ? Yii::t('admin','update'):Yii::t('admin','upgrade')))
-                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Resume'),array("admin/updater",'scenario'=>$manifest['scenario']))
-                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Cancel'),array("admin/updater",'scenario'=>'delete','redirect'=>1)));
+                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Resume'),array("/admin/updater",'scenario'=>$manifest['scenario']))
+                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Cancel'),array("/admin/updater",'scenario'=>'delete','redirect'=>1)));
     }
 } else if($isAdmin && Yii::app()->session['alertUpdate']){
     Yii::app()->user->setFlash('admin.update',Yii::t('admin', 'A new version is available.')
-            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Update X2CRM'),array('admin/updater'))
-            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Updater Settings'),array('admin/updaterSettings')));
+            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Update X2CRM'),array('/admin/updater'))
+            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Updater Settings'),array('/admin/updaterSettings')));
     Yii::app()->session['alertUpdate'] = false;
 }
 if(is_int(Yii::app()->locked)) {
     $lockMsg = '<strong>'.Yii::t('admin','The application is currently locked.').'</strong>';
     if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','LockAppAction.php')))) {
-        $lockMsg .= ' '.CHtml::link(Yii::t('admin','Unlock X2CRM'),array('admin/lockApp','toggle'=>0));
+        $lockMsg .= ' '.CHtml::link(Yii::t('admin','Unlock X2CRM'),array('/admin/lockApp','toggle'=>0));
     } else {
         $lockMsg .= Yii::t('admin', 'You can manually unlock the application by deleting the file {file}', array('{file}' => '<em>"x2crm.lock"</em> in protected/config'));
     }
@@ -102,8 +88,16 @@ foreach(Yii::app()->params->supportedCurrencySymbols as $curCode=>$curSym) {
 }
 $cldScript .= "\n})(jQuery);";
 
+AuxLib::registerPassVarsToClientScriptScript ('auxlib',
+    array (
+        'saveMiscLayoutSettingUrl' => 
+            "'".addslashes (Yii::app()->createUrl ('/profile/saveMiscLayoutSetting'))."'" 
+    ), 'passAuxLibVars'
+);
+
 // custom scripts
 $cs ->registerScriptFile($baseUrl.'/js/json2.js')
+    ->registerScriptFile($baseUrl.'/js/main.js'.$jsVersion, CCLientScript::POS_HEAD)
 	->registerScriptFile($baseUrl.'/js/auxlib.js', CClientScript::POS_HEAD)
 	->registerScriptFile($baseUrl.'/js/layout.js')
 	->registerScriptFile($baseUrl.'/js/publisher.js')
@@ -122,8 +116,6 @@ if (IS_IPAD) {
     $cs->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
 }
     //$cs->registerScriptFile($baseUrl.'/js/jquery.mobile-1.3.2.js');
-
-$cs->registerScript($baseUrl.'/js/main.js'.$jsVersion, CCLientScript::POS_HEAD);
 
 if(Yii::app()->session['translate'])
     $cs->registerScriptFile($baseUrl.'/js/translator.js');
@@ -180,11 +172,14 @@ if (is_object (Yii::app()->controller->module)) {
 
 if(!$isGuest){
     $cs->registerScript ('notificationsParams', "
-        x2.notifications = {};
-        x2.notifications.translations = {};
-        x2.notifications.translations['clearAll'] =
-            '".addslashes (Yii::t('app', 'Permanently delete all notifications?'))."';
-    ", CClientScript::POS_HEAD);
+        x2.notifications = new x2.Notifs ({ 
+            disablePopup: ".($profile->disableNotifPopup ? 'true' : 'false').",
+            translations: {
+                clearAll: 
+                    '".addslashes (Yii::t('app', 'Permanently delete all notifications?'))."'
+            }
+        });
+    ", CClientScript::POS_READY);
     $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
        ->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion, CClientScript::POS_BEGIN);
 }
@@ -213,7 +208,7 @@ foreach($checkFiles as $key => $value){
 }
 $theme2Css = '';
 if($logoMissing)
-    $theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
+    $theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('/site/warning')).') !important;} #bg{display:none !important;}';
 
 // check for background image, use it if one is set
 // if(!$preferences['backgroundImg'])
@@ -470,7 +465,7 @@ if(!Yii::app()->user->isGuest){
 $userMenu = array(
     array('label' => Yii::t('app', 'Admin'), 'url' => array('/admin/index'), 'active' => ($module == 'admin') ? true : null, 'visible' => $isAdmin),
     array('label' => Yii::t('app', 'Activity'), 'url' => array('/site/whatsNew')),
-    array('label' => Yii::t('app', 'Users'), 'url' => array('/users/admin'), 'visible' => $isAdmin),
+    array('label' => Yii::t('app', 'Users'), 'url' => array('/users/users/admin'), 'visible' => $isAdmin),
     array('label' => Yii::t('app', 'Users'), 'url' => array('/profile/profiles'), 'visible' => !$isAdmin),
     array('label' => $searchbarHtml, 'itemOptions' => array('id' => 'search-bar', 'class' => 'special')),
     array('label' => CHtml::link(
@@ -493,7 +488,7 @@ $userMenu = array(
             array('label' => Yii::t('app', 'Notifications'), 'url' => array('/site/viewNotifications')),
             array('label' => Yii::t('app', 'Preferences'), 'url' => array('/profile/settings')),
 			array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('/profile/manageCredentials')),
-            array('label' => Yii::t('help', 'Icon Reference'), 'url' => array('/site/page/', 'view' => 'iconreference')),
+            array('label' => Yii::t('help', 'Icon Reference'), 'url' => array('/site/page', 'view' => 'iconreference')),
             array('label' => Yii::t('help', 'Help'), 'url' => 'http://www.x2engine.com/reference_guide','linkOptions'=>array('target'=>'_blank')),
             array('label' => Yii::t('app', 'Report A Bug'), 'url' => array('/site/bugReport')),
             array('label' => Yii::t('app', '---'), 'itemOptions' => array('class' => 'divider')),
@@ -557,10 +552,11 @@ if(method_exists($this,'renderGaCode'))
 
 	if ($preferences != null && $preferences['backgroundImg']) {
 
-		if(file_exists('uploads/'.$preferences['backgroundImg']))
+		if(file_exists('uploads/'.$preferences['backgroundImg'])) {
 			echo 'background-image:url('.$baseUrl.'/uploads/'.$preferences['backgroundImg'].');';
-		else
+		} else {
 			echo 'background-image:url('.$baseUrl.'/uploads/media/'.Yii::app()->user->getName().'/'.$preferences['backgroundImg'].');';
+        }
 
 		switch($bgTiling = $preferences['backgroundTiling']) {
 			case 'repeat-x':

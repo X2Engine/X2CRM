@@ -1,39 +1,25 @@
 <?php
 
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 Yii::import('application.components.ResponseBehavior');
 // Extra safeguard, in case automatic creation fails, to maintain that the
@@ -616,11 +602,10 @@ class UpdaterBehavior extends ResponseBehavior {
      * Securely obtain the latest version.
      */
     protected function checkUpdates($returnOnly = false){
-        if(!file_exists($secImage = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'images', base64_decode(self::SECURITY_IMG)))))
-            return Yii::app()->params->version;
-        $i = Yii::app()->params->admin->unique_id;
-        $v = Yii::app()->params->version;
-        $e = Yii::app()->params->admin->edition;
+        $i = $this->uniqueId;
+        $v = $this->version;
+        $e = $this->edition;
+        $secImage = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'images', base64_decode(self::SECURITY_IMG)));
         $context = stream_context_create(array(
             'http' => array('timeout' => 4)  // set request timeout in seconds
                 ));
@@ -629,7 +614,7 @@ class UpdaterBehavior extends ResponseBehavior {
         $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
         if($securityKey === false)
             return Yii::app()->params->version;
-        $h = hash('sha512', base64_encode(file_get_contents($secImage)).$securityKey);
+        $h = hash('sha512', base64_encode(file_exists($secImage) ? file_get_contents($secImage) : null).$securityKey);
         $n = null;
         if(!($e == 'opensource' || empty($e)))
             $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
@@ -638,7 +623,7 @@ class UpdaterBehavior extends ResponseBehavior {
         if(empty($newVersion))
             return;
 
-        if(!(Yii::app()->params->noSession || $returnOnly)){
+        if(!($this->isConsole || $returnOnly)){
             Yii::app()->session['versionCheck'] = true;
             if(version_compare($newVersion, $v) > 0 && !in_array($i, array('none', Null))){ // if the latest version is newer than our version and updates are enabled
                 Yii::app()->session['versionCheck'] = false;
@@ -1430,7 +1415,7 @@ class UpdaterBehavior extends ResponseBehavior {
         foreach(array('edition', 'uniqueId') as $attr)
             if(empty(${$attr}))
                 ${$attr} = $this->$attr;
-        return $edition == 'opensource' ? 'updates/x2engine' : "installs/update/$edition/$uniqueId";
+        return "installs/update/$edition/$uniqueId";
     }
 
     /**
@@ -2065,9 +2050,9 @@ class UpdaterBehavior extends ResponseBehavior {
         foreach($updaterActions as $name => $properties){
             $updaterFiles[] = self::classAliasPath($properties['class']);
         }
-
+        
         // Retrieve the update package contents' files' digests:
-        $md5sums = FileUtil::getContents($this->updateServer.'/'.$this->getUpdateDataRoute().'/contents.md5');
+        $md5sums = FileUtil::getContents($this->updateServer.'/'.$this->getUpdateDataRoute($this->configVars['updaterVersion']).'/contents.md5');
         preg_match_all(':^(?<md5sum>[a-f0-9]{32})\s+source/protected/(?<filename>\S.*)$:m',$md5sums,$md5s);
         $md5sums = array();
         for($i=0;$i<count($md5s[0]);$i++) {

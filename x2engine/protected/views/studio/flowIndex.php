@@ -1,47 +1,33 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 $this->actionMenu = array(
 	array('label'=>Yii::t('studio','Manage Flows')),
 	array(
-        'label'=>Yii::t('studio','Create Flow'), 
+        'label'=>Yii::t('studio','Create Flow'),
         'url'=>array('flowDesigner'),
         'visible'=>(Yii::app()->params->edition==='pro')),
     array (
-        'label' => Yii::t('studio', 'All Trigger Logs'), 
+        'label' => Yii::t('studio', 'All Trigger Logs'),
         'url' => array ('triggerLogs'),
         'visible' => (Yii::app()->params->edition === 'pro')
     )
@@ -49,14 +35,17 @@ $this->actionMenu = array(
 
 ?>
 <div class="flush-grid-view">
-<?php 
+<?php
 
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'changelog-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-        'template'=>'<div class="page-title icon x2flow"><h2>'.Yii::t('studio','X2Flow Automation Rules').'</h2>'
+	'baseScriptUrl'=>
+        Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+        'template'=>
+            '<div class="page-title icon x2flow">'.
+            '<h2>'.Yii::t('studio','X2Flow Automation Rules').'</h2>'
 		// .CHtml::link(Yii::t('app','Clear Filters'),array('viewChangelog','clearFilters'=>1))
-		.'{summary}</div>{items}{pager}',
+		    .'{summary}</div>{items}{pager}',
 	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
     'dataProvider'=>CActiveRecord::model('X2Flow')->search(),
     // 'filter'=>$model,
@@ -64,8 +53,8 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'columns'=>array(
 		array(
 			'name'=>'name',
-			'headerHtmlOptions'=>array('style'=>'width:20%'),
-			'value'=>'CHtml::link($data->name,array("studio/flowDesigner","id"=>$data->id))',
+			'headerHtmlOptions'=>array('style'=>'width:40%'),
+			'value'=>'CHtml::link($data->name,array("/studio/flowDesigner","id"=>$data->id))',
 			'type'=>'raw',
 		),
 		array(
@@ -76,8 +65,8 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 		array(
 			'name'=>'triggerType',
-			'headerHtmlOptions'=>array('style'=>'width:20%'),
-			'value'=>'$data->triggerType',
+			'headerHtmlOptions'=>array('style'=>'width:15%'),
+			'value'=>'X2FlowTrigger::getTriggerTitle ($data->triggerType)',
 			'type'=>'raw',
 		),
 		array(
@@ -88,6 +77,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'name'=>'createDate',
 			'header'=>Yii::t('admin','Create Date'),
+            'headerHtmlOptions'=>array('style'=>'width:12%'),
 			'value'=>'Formatter::formatDateTime($data->createDate)',
 			'type'=>'raw',
 			// 'htmlOptions'=>array('width'=>'20%'),
@@ -95,6 +85,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'name'=>'lastUpdated',
 			'header'=>Yii::t('admin','Last Updated'),
+            'headerHtmlOptions'=>array('style'=>'width:12%'),
 			'value'=>'Formatter::formatDateTime($data->lastUpdated)',
 			'type'=>'raw',
 			// 'htmlOptions'=>array('width'=>'20%'),

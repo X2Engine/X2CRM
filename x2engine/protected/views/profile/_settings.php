@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/* * *******************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ * ****************************************************************************** */
 
 Yii::app()->clientScript->registerScriptFile(
         Yii::app()->getBaseUrl().'/js/profileSettings.js', CClientScript::POS_END);
@@ -180,6 +166,7 @@ select#notificationSounds {
 ");
 
 $preferences = $model->theme;
+$miscLayoutSettings = $model->miscLayoutSettings;
 
 $passVariablesToClientScript = "
     x2.profileSettings = {};
@@ -200,7 +187,9 @@ foreach($myThemes->data as $theme){
 }
 
 Yii::app()->clientScript->registerScript(
-        'passVariablesToClientScript', $passVariablesToClientScript, CClientScript::POS_END);
+        'passVariablesToClientScript', $passVariablesToClientScript, CClientScript::POS_BEGIN);
+
+
 ?>
 
 <?php
@@ -212,7 +201,7 @@ $form = $this->beginWidget('CActiveForm', array(
 <?php echo $form->errorSummary($model); ?>
 
 <div id="profile-settings" class="form">
-    <div class="row" style="margin-bottom:10px;">
+    <div class="row">
         <div class="cell">
             <?php
             echo $form->checkBox(
@@ -231,17 +220,43 @@ $form = $this->beginWidget('CActiveForm', array(
     </div>
     <div class="row">
         <div class="cell">
+            <?php
+            echo $form->checkBox(
+                    $model, 'disablePhoneLinks', array('onchange' => 'js:highlightSave();'));
+            ?>
+            <?php
+            echo $form->labelEx(
+                    $model, 'disablePhoneLinks', array('style' => 'display:inline;'));
+            ?>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom:10px;"> 
+        <div class="cell">
+            <?php
+            echo $form->checkBox(
+                    $model, 'disableNotifPopup', array('onchange' => 'js:highlightSave();'));
+            ?>
+            <?php
+            echo $form->labelEx(
+                    $model, 'disableNotifPopup', array('style' => 'display:inline;'));
+            ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="cell">
             <?php echo $form->labelEx($model, 'startPage'); ?>
             <?php
             echo $form->dropDownList(
-                    $model, 'startPage', $menuItems, array('onchange' => 'js:highlightSave();', 'style' => 'min-width:140px;'));
+                    $model, 'startPage', $menuItems,
+                    array('onchange' => 'js:highlightSave();', 'style' => 'min-width:140px;'));
             ?>
         </div>
         <div class="cell">
             <?php echo $form->labelEx($model, 'resultsPerPage'); ?>
             <?php
             echo $form->dropDownList(
-                    $model, 'resultsPerPage', Profile::getPossibleResultsPerPage(), array('onchange' => 'js:highlightSave();', 'style' => 'width:100px'));
+                    $model, 'resultsPerPage', Profile::getPossibleResultsPerPage(),
+                    array('onchange' => 'js:highlightSave();', 'style' => 'width:100px'));
             ?>
         </div>
 
@@ -262,23 +277,23 @@ $form = $this->beginWidget('CActiveForm', array(
             <?php echo $form->labelEx($model, 'timeZone'); ?>
             <?php
             echo $form->dropDownList(
-                    $model, 'timeZone', $times, array('onchange' => 'js:highlightSave();'));
+                $model, 'timeZone', $times, array('onchange' => 'js:highlightSave();'));
             ?>
         </div>
     </div>
 </div>
-
 <div id="theme-attributes" class='form'>
     <div id="theme-attributes-title-bar" class="row prefs-title-bar">
         <h3 class="left"><?php echo Yii::t('app', 'Theme'); ?></h3>
         <div class="right minimize-arrows">
-            <img class="prefs-expand-arrow"
-                 src="<?php echo Yii::app()->theme->getBaseUrl()."/images/icons/Expand_Widget.png"; ?>" />
-            <img class="hide prefs-collapse-arrow"
-                 src="<?php echo Yii::app()->theme->getBaseUrl()."/images/icons/Collapse_Widget.png"; ?>" />
+            <img class="prefs-expand-arrow" src="<?php 
+                echo Yii::app()->theme->getBaseUrl()."/images/icons/Expand_Widget.png"; ?>" />
+            <img class="hide prefs-collapse-arrow" src="<?php 
+                echo Yii::app()->theme->getBaseUrl()."/images/icons/Collapse_Widget.png"; ?>" />
         </div>
     </div>
-    <div id="theme-attributes-body" class="row prefs-body">
+    <div id="theme-attributes-body" class="row prefs-body" <?php echo
+        ($miscLayoutSettings['themeSectionExpanded'] == false ? 'style="display: none;"' : ''); ?>>
         <div class="row">
             <label for="themeName">
                 <?php echo Yii::t('app', 'Predefined Theme') ?>
@@ -400,7 +415,8 @@ $form = $this->beginWidget('CActiveForm', array(
             <select id="backgroundTiling" name="preferences[backgroundTiling]"
                     class='theme-attr left'>
                         <?php
-                        $tilingOptions = array('stretch', 'center', 'repeat', 'repeat-x', 'repeat-y');
+                        $tilingOptions = array(
+                            'stretch', 'center', 'repeat', 'repeat-x', 'repeat-y');
                         foreach($tilingOptions as $option){
                             ?>
                     <option value="<?php echo $option; ?>"
@@ -475,18 +491,14 @@ $form = $this->beginWidget('CActiveForm', array(
                 <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
                 <?php foreach($myNotificationSounds->data as $notificationSound){ ?>
                     <option value="<?php
-                echo $notificationSound->id.",".
-                $notificationSound->fileName.",".
-                $notificationSound->uploadedBy;
-                    ?>"
-                            id="sound-<?php echo $notificationSound->id; ?>"
-                            <?php
-                            if($notificationSound->fileName == $model->notificationSound){
-                                echo "selected='selected'";
-                            }
-                            ?>>
-                                <?php echo $notificationSound->fileName; ?>
-                    </option>
+                        echo $notificationSound->id.",".$notificationSound->fileName.",".
+                            $notificationSound->uploadedBy; ?>"
+                     id="sound-<?php echo $notificationSound->id; ?>"
+                     <?php
+                     if($notificationSound->fileName == $model->notificationSound){
+                         echo "selected='selected'";
+                     }
+                     ?>><?php echo $notificationSound->fileName; ?></option>
                 <?php } ?>
             </select>
             <button type='button' class='x2-button x2-small-button'
@@ -507,17 +519,22 @@ $form = $this->beginWidget('CActiveForm', array(
         <h3 class="left"><?php echo Yii::t('profile', 'Unhide Tags'); ?></h3>
         <div class="right minimize-arrows">
             <img class="prefs-expand-arrow"
-                 src="<?php echo Yii::app()->theme->getBaseUrl() ?>/images/icons/Expand_Widget.png"/>
+                 src="<?php 
+                    echo Yii::app()->theme->getBaseUrl() ?>/images/icons/Expand_Widget.png"/>
             <img class="hide prefs-collapse-arrow"
-                 src="<?php echo Yii::app()->theme->getBaseUrl() ?>/images/icons/Collapse_Widget.png"/>
+                 src="<?php 
+                    echo Yii::app()->theme->getBaseUrl() ?>/images/icons/Collapse_Widget.png"/>
         </div>
     </div>
-    <div id="tags-body" class="row prefs-body">
+    <div id="tags-body" class="row prefs-body" <?php echo
+        ($miscLayoutSettings['unhideTagsSectionExpanded'] == false ? 
+            'style="display: none;"' : ''); ?>>
         <?php
         foreach($allTags as &$tag){
             echo '<span class="tag unhide" tag-name="'.substr($tag['tag'], 1).'">'.
-            CHtml::link($tag['tag'], array(
-                '/search/search?term=%23'.substr($tag['tag'], 1)), array('class' => 'x2-link x2-tag')).
+            CHtml::link(
+                $tag['tag'], array('/search/search','term'=>'#'.ltrim($tag['tag'], '#')),
+                array('class' => 'x2-link x2-tag')).
             '</span>';
         }
         ?>
@@ -529,8 +546,10 @@ $form = $this->beginWidget('CActiveForm', array(
     <br/>
     <div class="row buttons">
         <?php
-        echo CHtml::submitButton($model->isNewRecord ? Yii::t('app', 'Create') :
-                        Yii::t('app', 'Save Profile Settings'), array('id' => 'save-changes', 'class' => 'x2-button'));
+        echo CHtml::submitButton(
+            ($model->isNewRecord ? Yii::t('app', 'Create') :
+                Yii::t('app', 'Save Profile Settings')), 
+            array('id' => 'save-changes', 'class' => 'x2-button'));
         ?>
     </div>
 </div>
@@ -564,7 +583,7 @@ $form = $this->beginWidget('CActiveForm', array(
             <button id='create-theme-submit-button' class='x2-button submit-upload'>
                 <?php echo Yii::t('app', 'Create'); ?>
             </button>
-            <button class="x2-button cancel-upload"> <?php echo Yii::t('app', 'Cancel'); ?> </button>
+            <button class="x2-button cancel-upload"><?php echo Yii::t('app', 'Cancel'); ?></button>
         </div>
     </div>
 </div>
@@ -572,14 +591,28 @@ $form = $this->beginWidget('CActiveForm', array(
 <div class="form hide upload-box" id="upload-background-img-box">
     <div class="row">
         <h3><?php echo Yii::t('profile', 'Upload a Background Image'); ?></h3>
-        <?php echo CHtml::form(array('site/upload', 'id' => $model->id), 'post', array('enctype' => 'multipart/form-data')); ?>
-        <?php echo CHtml::dropDownList('private', 'public', array('0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions', 'Private'))); ?>
-        <?php echo CHtml::hiddenField('associationId', Yii::app()->user->getId()); ?>
-        <?php echo CHtml::hiddenField('associationType', 'bg'); ?>
-        <?php echo CHtml::fileField('upload', '', array('id' => 'background-img-file')); ?>
+        <?php echo CHtml::form(
+            array('site/upload', 'id' => $model->id), 'post',
+            array('enctype' => 'multipart/form-data'
+        )); ?>
+        <?php echo CHtml::dropDownList(
+            'private',
+            'public',
+            array(
+                '0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions',
+                'Private'
+            ))); 
+        echo CHtml::hiddenField('associationId', Yii::app()->user->getId()); 
+        echo CHtml::hiddenField('associationType', 'bg'); 
+        echo CHtml::fileField('upload', '', array('id' => 'background-img-file')); ?>
         <div class="row buttons">
-            <?php echo CHtml::submitButton(Yii::t('app', 'Upload'), array('id' => 'upload-background-img-submit-button', 'disabled' => 'disabled', 'class' => 'x2-button submit-upload')); ?>
-            <button class="x2-button cancel-upload"> <?php echo Yii::t('app', 'Cancel'); ?> </button>
+            <?php echo CHtml::submitButton(
+                Yii::t('app', 'Upload'), 
+                array(
+                    'id' => 'upload-background-img-submit-button', 'disabled' => 'disabled',
+                    'class' => 'x2-button submit-upload'
+                )); ?>
+            <button class="x2-button cancel-upload"><?php echo Yii::t('app', 'Cancel'); ?></button>
         </div>
         <?php echo CHtml::endForm(); ?>
     </div>
@@ -588,14 +621,26 @@ $form = $this->beginWidget('CActiveForm', array(
 <div class="form hide upload-box" id="upload-login-sound-box">
     <div class="row">
         <h3><?php echo Yii::t('profile', 'Upload a Login Sound'); ?></h3>
-        <?php echo CHtml::form(array('site/upload', 'id' => $model->id), 'post', array('enctype' => 'multipart/form-data')); ?>
-        <?php echo CHtml::dropDownList('private', 'public', array('0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions', 'Private'))); ?>
-        <?php echo CHtml::hiddenField('associationId', Yii::app()->user->getId()); ?>
-        <?php echo CHtml::hiddenField('associationType', 'loginSound'); ?>
-        <?php echo CHtml::fileField('upload', '', array('id' => 'login-sound-file')); ?>
+        <?php echo CHtml::form(
+            array('site/upload', 'id' => $model->id), 'post',
+            array('enctype' => 'multipart/form-data')
+        ); 
+        echo CHtml::dropDownList(
+            'private', 'public', array('0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions',
+            'Private'))); 
+        echo CHtml::hiddenField('associationId', Yii::app()->user->getId()); 
+        echo CHtml::hiddenField('associationType', 'loginSound'); 
+        echo CHtml::fileField('upload', '', array('id' => 'login-sound-file')); ?>
         <div class="row buttons">
-            <?php echo CHtml::submitButton(Yii::t('app', 'Upload'), array('id' => 'upload-login-sound-submit-button', 'disabled' => 'disabled', 'class' => 'x2-button submit-upload')); ?>
-            <button class="x2-button cancel-upload"> <?php echo Yii::t('app', 'Cancel'); ?> </button>
+            <?php echo CHtml::submitButton(
+                Yii::t('app', 'Upload'), 
+                array(
+                    'id' => 'upload-login-sound-submit-button', 'disabled' => 'disabled',
+                    'class' => 'x2-button submit-upload'
+                )
+            ); ?>
+            <button class="x2-button cancel-upload"><?php 
+                echo Yii::t('app', 'Cancel'); ?></button>
         </div>
         <?php echo CHtml::endForm(); ?>
     </div>
@@ -604,19 +649,27 @@ $form = $this->beginWidget('CActiveForm', array(
 <div class="form hide upload-box" id="upload-notification-sound-box">
     <div class="row">
         <h3><?php echo Yii::t('profile', 'Upload a Notification Sound'); ?></h3>
-        <?php echo CHtml::form(array('site/upload', 'id' => $model->id), 'post', array('enctype' => 'multipart/form-data')); ?>
-        <?php echo CHtml::dropDownList('private', 'public', array('0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions', 'Private'))); ?>
-        <?php echo CHtml::hiddenField('associationId', Yii::app()->user->getId()); ?>
-        <?php echo CHtml::hiddenField('associationType', 'notificationSound'); ?>
-        <?php echo CHtml::fileField('upload', '', array('id' => 'notification-sound-file')); ?>
+        <?php echo CHtml::form(
+            array('site/upload', 'id' => $model->id), 'post',
+            array('enctype' => 'multipart/form-data')
+        ); 
+        echo CHtml::dropDownList(
+            'private', 'public', 
+            array(
+                '0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions',
+                'Private'
+            ))); 
+        echo CHtml::hiddenField('associationId', Yii::app()->user->getId()); 
+        echo CHtml::hiddenField('associationType', 'notificationSound'); 
+        echo CHtml::fileField('upload', '', array('id' => 'notification-sound-file')); ?>
         <div class="row buttons">
-            <?php echo CHtml::submitButton(Yii::t('app', 'Upload'), array('id' => 'upload-notification-sound-submit-button', 'disabled' => 'disabled', 'class' => 'x2-button submit-upload')); ?>
-            <button class="x2-button cancel-upload"> <?php echo Yii::t('app', 'Cancel'); ?> </button>
+            <?php echo CHtml::submitButton (Yii::t('app', 'Upload'),
+                array(
+                    'id' => 'upload-notification-sound-submit-button', 'disabled' => 'disabled',
+                    'class' => 'x2-button submit-upload'
+                )); ?>
+            <button class="x2-button cancel-upload"><?php echo Yii::t('app', 'Cancel'); ?></button>
         </div>
         <?php echo CHtml::endForm(); ?>
     </div>
 </div>
-
-
-
-

@@ -1,39 +1,24 @@
 <?php
-
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/* * *******************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ * ****************************************************************************** */
 
 // Yii::import('application.models.X2Model');
 
@@ -189,8 +174,7 @@ class User extends CActiveRecord {
         $userRecord = X2Model::model('User')->findByPk(Yii::app()->user->getId());
 
         //get array of type-ID pairs
-        $recentItemsTemp = 
-            empty($userRecord->recentItems) ? array() : explode(',', $userRecord->recentItems);
+        $recentItemsTemp = empty($userRecord->recentItems) ? array() : explode(',', $userRecord->recentItems);
         $recentItems = array();
 
         //get record for each ID/type pair
@@ -198,7 +182,7 @@ class User extends CActiveRecord {
             $itemType = strtok($item, '-');
             $itemId = strtok('-');
 
-            switch ($itemType) {
+            switch($itemType){
                 case 'c': // contact
                     $record = X2Model::model('Contacts')->findByPk($itemId);
                     break;
@@ -236,7 +220,7 @@ class User extends CActiveRecord {
                     $record = X2Model::model('Groups')->findByPk($itemId);
                     break;
                 default:
-                    printR ('Warning: getRecentItems: invalid item type');
+                    printR('Warning: getRecentItems: invalid item type');
                     continue;
             }
             if(!is_null($record)) //only include item if the record ID exists
@@ -245,7 +229,7 @@ class User extends CActiveRecord {
         return $recentItems;
     }
 
-    private static $validRecentItemTypes = array (
+    private static $validRecentItemTypes = array(
         'c', // contact
         't', // action
         'p', // campaign
@@ -261,13 +245,13 @@ class User extends CActiveRecord {
     );
 
     public static function addRecentItem($type, $itemId, $userId){
-        if(in_array ($type, self::$validRecentItemTypes)) { //only proceed if a valid type is given
+        if(in_array($type, self::$validRecentItemTypes)){ //only proceed if a valid type is given
             $newItem = $type.'-'.$itemId;
 
             $userRecord = X2Model::model('User')->findByPk($userId);
             //create an empty array if recentItems is empty
-            $recentItems = 
-                ($userRecord->recentItems == '') ? array() : explode(',', $userRecord->recentItems);
+            $recentItems =
+                    ($userRecord->recentItems == '') ? array() : explode(',', $userRecord->recentItems);
             $existingEntry = array_search($newItem, $recentItems); //check for a pre-existing entry
             if($existingEntry !== false)        //if there is one,
                 unset($recentItems[$existingEntry]);    //remove it
@@ -280,7 +264,6 @@ class User extends CActiveRecord {
             $userRecord->save();
         }
     }
-
 
     /**
      * Generate a link to a user or group.
@@ -296,8 +279,8 @@ class User extends CActiveRecord {
             if(is_numeric($users)){
                 $group = Groups::model()->findByPk($users);
                 if(isset($group))
-                    //$link = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                    $link = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
+                //$link = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
+                    $link = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id))) : $group->name;
                 else
                     $link = '';
                 return $link;
@@ -315,32 +298,32 @@ class User extends CActiveRecord {
                 continue;
             }else if(is_numeric($user)){  // this is a group
                 if(isset($userCache[$user])){
-                    $group=$userCache[$user];
+                    $group = $userCache[$user];
                     //$links[] =  $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                    $links[] = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
+                    $links[] = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id))) : $group->name;
                 }else{
                     $group = Groups::model()->findByPk($user);
                     // $group = Groups::model()->findByPk($users);
                     if(isset($group)){
                         //$groupLink = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                    	$groupLink = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
+                        $groupLink = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id))) : $group->name;
                         $userCache[$user] = $group;
                         $links[] = $groupLink;
                     }
                 }
             }else{
                 if(isset($userCache[$user])){
-                    $model=$userCache[$user];
+                    $model = $userCache[$user];
                     $linkText = $useFullName ? $model->name : $user;
                     //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
-                   	$userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl ('/profile/view', array ('id' => $model->id))) : $linkText;
+                    $userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => $model->id))) : $linkText;
                     $links[] = $userLink;
                 }else{
                     $model = X2Model::model('User')->findByAttributes(array('username' => $user));
                     if(isset($model)){
                         $linkText = $useFullName ? $model->name : $user;
                         //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
-                   		$userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl ('/profile/view', array ('id' => $model->id))) : $linkText;
+                        $userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => $model->id))) : $linkText;
                         $userCache[$user] = $model;
                         $links[] = $userLink;
                     }

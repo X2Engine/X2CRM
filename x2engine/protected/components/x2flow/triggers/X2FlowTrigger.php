@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 /**
  * Color utilities (unused)
@@ -198,25 +184,40 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		}
 	}
 
+    /**
+     * Can be overriden in child class to give flow a default return value
+     */
+	public function getDefaultReturnVal ($flowId) { return null; }
+
+    /**
+     * Can be overriden in child class to extend behavior of validate method
+     */
+	public function afterValidate (&$params, $defaultErrMsg='', $flowId) { 
+        return array (false, Yii::t('studio', $defaultErrMsg)); 
+    }
+
 	/**
 	 * Checks if all all the params are ship-shape
 	 */
-	public function validate(&$params=array()) {
+	public function validate(&$params=array(), $flowId) {
 		$paramRules = $this->paramRules();
-		if(!isset($paramRules['options'],$this->config['options']))
-			return false;
+		if(!isset($paramRules['options'],$this->config['options'])) {
+			return $this->afterValidate ($params, 'invalid rules/params', $flowId);
+        }
 		$config = &$this->config['options'];
 
 		if(isset($paramRules['modelClass'])) {
 			$modelClass = $paramRules['modelClass'];
 			if($modelClass === 'modelClass') {
-				if(isset($config['modelClass'],$config['modelClass']['value']))
+				if(isset($config['modelClass'],$config['modelClass']['value'])) {
 					$modelClass = $config['modelClass']['value'];
-				else
-					return false;
+				} else {
+					return $this->afterValidate ($params, 'invalid rules/params', $flowId);
+                }
 			}
-			if(!isset($params['model']) || $modelClass !== get_class($params['model']))
-				return false;
+			if(!isset($params['model']) || $modelClass !== get_class($params['model'])) {
+                return $this->afterValidate ($params, 'invalid rules/params', $flowId);
+            }
 		}
 		return $this->validateOptions($paramRules,$params);
 	}
@@ -228,10 +229,12 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	 */
 	public function check(&$params) {
 		foreach($this->config['options'] as &$option) {
-			if(!isset($option['name']) || $option['name'] === 'modelClass')	// modelClass is a special case, ignore it
+            // modelClass is a special case, ignore it
+			if(!isset($option['name']) || $option['name'] === 'modelClass')	
 				continue;
 
-			if($option['optional'] && ($option['value'] === null || $option['value'] === ''))	// if it's optional and blank, forget about it
+            // if it's optional and blank, forget about it
+			if($option['optional'] && ($option['value'] === null || $option['value'] === ''))	
 				continue;
 
 			$value = $option['value'];
@@ -239,7 +242,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
 				$value = X2Flow::parseValue($value,$option['type'],$params);
 
 			if(!$this->evalComparison($params[$option['name']],$option['optional'],$value))
-				return false;
+				return array (false, Yii::t('studio', 'conditions not passed'));
 		}
 
 		return $this->checkConditions($params);
@@ -256,16 +259,17 @@ abstract class X2FlowTrigger extends X2FlowItem {
 					// continue;
 				$required = isset($condition['required']) && $condition['required'];
 
-				if(isset($condition['name']) && $required && !isset($params[$condition['name']]))	// required param missing
-					return false;
+                // required param missing
+				if(isset($condition['name']) && $required && !isset($params[$condition['name']]))	
+				    return array (false, Yii::t('studio', 'conditions not passed'));
 
 				if(array_key_exists($condition['type'],self::$genericConditions)) {
 					if(!self::checkCondition($condition,$params))
-						return false;
+				        return array (false, Yii::t('studio', 'conditions not passed'));
 				}
 			}
 		}
-		return true;
+		return array (true, '');
 	}
 
 	/**
@@ -297,7 +301,9 @@ abstract class X2FlowTrigger extends X2FlowItem {
 
 				if($operator === 'changed') {
 					$oldAttributes = $model->getOldAttributes();
-					return (!isset($oldAttributes[$attr]) && $model->isNewRecord) || (isset($oldAttributes[$attr]) && $model->getAttribute($attr) != $oldAttributes[$attr]);
+					return (!isset($oldAttributes[$attr]) && $model->isNewRecord) || 
+                        (in_array ($attr, array_keys ($oldAttributes)) && 
+                         $model->getAttribute($attr) != $oldAttributes[$attr]);
 				}
 
 				return self::evalComparison($model->getAttribute($attr),$operator,X2Flow::parseValue($value,$field->type,$params));
@@ -693,15 +699,42 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		return $types;
 	}
 
+	/**
+	 * Gets X2Flow trigger title.
+     * 
+     * @param string $triggerType The trigger class name
+     * @return string the empty string or the title of the trigger with the given class name
+	 */
+	public static function getTriggerTitle ($triggerType) {
+        if (isset (self::$_instances) && in_array ($triggerType, array_keys (self::$_instances))) {
+            $class = self::$_instances[$triggerType]; 
+            return Yii::t('studio', $class->title);
+        }
+		foreach(self::getTriggerInstances() as $class) {
+            if (get_class ($class) === $triggerType) {
+                return Yii::t('studio', $class->title);
+            }
+		}
+		return '';
+	}
+
     public static function getTriggerInstances(){
         if(!isset(self::$_instances)) {
             self::$_instances = array();
-            foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.triggers')) as $file) {
-	    		if(in_array($file,array('.','..','X2FlowTrigger.php','X2FlowSwitch.php','BaseTagTrigger.php'),true))
+            foreach(scandir(
+                Yii::getPathOfAlias('application.components.x2flow.triggers')) as $file) {
+
+                if(!preg_match ('/\.php$/', $file) || $file === '.' || $file === '..' || 
+                   $file === 'X2FlowTrigger.php' || $file === 'X2FlowSwitch.php' || 
+                   $file === 'BaseTagTrigger.php') {
 		    		continue;
-			    $class = self::create(array('type'=>substr($file,0,-4)));	// remove file extension and create instance
-                if($class !== null)
-                    self::$_instances[] = $class;
+                }
+
+                // remove file extension and create instance
+			    $class = self::create(array('type'=>substr($file,0,-4)));	
+                if($class !== null) {
+                    self::$_instances[$class->title] = $class;
+                }
             }
         }
         return self::$_instances;

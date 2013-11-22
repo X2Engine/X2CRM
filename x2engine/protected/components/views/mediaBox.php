@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/* * *******************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ * ****************************************************************************** */
 ?>
 
 <?php
@@ -51,7 +37,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
     <div id="media-library-widget-container">
         <?php
         echo "<div id='x2-media-list' style='".($this->drive ? 'display:none;' : '')."'>";
-        $toggleUserMediaVisibleUrl = $this->controller->createUrl('/media/toggleUserMediaVisible')."?user=$username";
+        $toggleUserMediaVisibleUrl = $this->controller->createUrl('/media/media/toggleUserMediaVisible',array('user'=>$username));
         $visible = !in_array($username, $hideUsers);
         if(!$visible)
             $minimizeUserMedia .= "$('#".$escapedName."-media').hide();\n";
@@ -83,7 +69,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
                 if(mb_strlen($filename, 'UTF-8') > 35){
                     $filename = mb_substr($filename, 0, 32, 'UTF-8').'…';
                 }
-                echo CHtml::link($filename, array('/media', 'view' => $item['id']), array(
+                echo CHtml::link($filename, array('/media/media/view', 'id'=>$item['id']), array(
                     'class' => 'x2-link media'.(Media::isImageExt($item['fileName']) ? ' image-file' : ''),
                     'id' => $baseId,
                     'style' => 'curosr:pointer;',
@@ -131,7 +117,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
                     ->queryAll();
             ?>
             <?php if($userMediaItems){ // user has any media items? ?>
-                <?php $toggleUserMediaVisibleUrl = Yii::app()->controller->createUrl('/media/toggleUserMediaVisible')."?user={$user['username']}"; ?>
+                <?php $toggleUserMediaVisibleUrl = Yii::app()->controller->createUrl('/media/media/toggleUserMediaVisible')."?user={$user['username']}"; ?>
                 <?php $visible = !in_array($user['username'], $hideUsers); ?>
                 <?php if(!$visible) $minimizeUserMedia .= "$('#{$user['username']}-media').hide();\n"; ?>
                 <?php $minimizeLink = CHtml::ajaxLink($visible ? '[&ndash;]' : '[+]', $toggleUserMediaVisibleUrl, array('success' => "function(response) { toggleUserMedia($('#{$user['username']}-media'), $('#{$user['username']}-media-showhide'), response); }", 'type' => 'GET'), array('id' => "{$user['username']}-media-showhide", 'class' => 'media-library-showhide')); // javascript function toggleUserMedia defined in js/media.js  ?>
@@ -191,7 +177,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
                     var id=$(this).attr('data-id');
                     if($('#'+id).is(':hidden')){
                         $.ajax({
-                            'url':'<?php echo Yii::app()->controller->createUrl('/media/recursiveDriveFiles') ?>',
+                            'url':'<?php echo Yii::app()->controller->createUrl('/media/media/recursiveDriveFiles') ?>',
                             'data':{'folderId':id},
                             'success':function(data){
                                 $('#'+id).html(data);

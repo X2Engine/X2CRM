@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/* * *******************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ * ****************************************************************************** */
 
 /**
  * This is the model class for table "x2_flows".
@@ -185,6 +171,7 @@ class X2Flow extends CActiveRecord {
      * @param array $params an associative array of params, usually including 'model'=>$model,
      * the primary X2Model to which this trigger applies.
      * @staticvar int $triggerDepth the current depth of the call stack
+     * @return mixed Null or return value of extractRetValFromTrace
      */
     public static function trigger($triggerName, $params = array()){
         if(self::$_triggerDepth > self::MAX_TRIGGER_DEPTH) // ...have we delved too deep?
@@ -192,14 +179,14 @@ class X2Flow extends CActiveRecord {
 
         $triggeredAt = time ();
 
-        if(isset($params['model']) && 
+        if(isset($params['model']) &&
            (!is_object($params['model']) || !($params['model'] instanceof X2Model))) {
             // Invalid model provided
             return false;
         }
 
         // increment stack depth before doing anything that might call X2Flow::trigger()
-        self::$_triggerDepth++; 
+        self::$_triggerDepth++;
 
         $flowAttributes = array('triggerType' => $triggerName, 'active' => 1);
 
@@ -223,19 +210,31 @@ class X2Flow extends CActiveRecord {
         // find all flows matching this trigger and modelClass
         $triggerLog;
         $flowTrace;
+        $flowRetVal = null;
         foreach($flows as &$flow) {
+            // if flow id is specified, only execute flow with specified id
+            if (isset ($params['flowId']) && $flow->id !== $params['flowId']) continue;
             $triggerLog = new TriggerLog;
             $triggerLog->triggeredAt = $triggeredAt;
             $triggerLog->flowId = $flow->id;
             $triggerLog->save ();
 
-            $flowTrace = self::executeFlow($flow, $params, null, $triggerLog->id);
+            //$flowTrace = self::executeFlow($flow, $params, null, $triggerLog->id);
+            //AuxLib::debugLog ('executing flow');
+            $flowRetArr = self::executeFlow($flow, $params, null, $triggerLog->id);
+            //AuxLib::debugLog ('executing flow ret');
+            $flowTrace = $flowRetArr['trace'];
+            $flowRetVal = (isset ($flowRetArr['retVal'])) ? $flowRetArr['retVal'] : null;
+            //AuxLib::debugLog ($flowRetArr);
+            //AuxLib::debugLogR ($flowRetArr);
+            //$flowRetVal = self::extractRetValFromTrace ($flowTrace[0]);
             $flowTraces[] = $flowTrace;
 
             // save log for triggered flow
             $triggerLog->triggerLog =
-                CJSON::encode (array_merge (array ($triggerInfo), $flowTrace));
+                CJSON::encode (array_merge (array ($triggerInfo), array ($flowTrace)));
             $triggerLog->save ();
+            //AuxLib::debugLog ('log save');
         }
 
         // old logging system, uncomment to enable file based logging
@@ -243,15 +242,55 @@ class X2Flow extends CActiveRecord {
         file_put_contents('triggerLog.txt', print_r($flowTraces, true).":\n", FILE_APPEND);*/
 
         self::$_triggerDepth--;  // this trigger call is done; decrement the stack depth
+        return $flowRetVal;
     }
 
     /**
-     * Executes a flow, starting by checking the trigger, passing params to each trigger/action, 
+     * Traverses the trace tree and checks if the last action has a return value. If so, that 
+     * value is returned. Otherwise, null is returned.
+     * 
+     * @param array the trace returned by executeFlow
+     * @return mixed null if there's no return value, mixed otherwise
+     */
+    private static function extractRetValFromTrace ($flowTrace) {
+        //AuxLib::debugLog ('extractRetValFromTrace');
+        // trigger itself has return val
+        if (sizeof ($flowTrace) === 3 && $flowTrace[0] && !is_array ($flowTrace[1])) {
+            return $flowTrace[2];
+        }
+
+        // ensure that initial branch executed without errors
+        if (sizeof ($flowTrace) < 2 || !$flowTrace[0] || !is_array ($flowTrace[1])) {
+            return null;
+        }
+
+        // find last action
+        $startOfBranchExecution = $flowTrace[1];
+        $lastAction = $startOfBranchExecution[sizeof ($startOfBranchExecution) - 1];
+        while (true) {
+            if ($lastAction[0] === 'X2FlowSwitch') {
+                $startOfBranchExecution = $lastAction[2];
+                if (sizeof ($startOfBranchExecution) > 0) {
+                    $lastAction = $startOfBranchExecution[sizeof ($startOfBranchExecution) - 1];
+                } else {
+                    return null;
+                }
+            } else {
+                break;
+            }
+        }
+
+        // if last action has return value, return it
+        if (sizeof ($lastAction[1]) === 3) return $lastAction[1][2];
+    }
+
+    /**
+     * Executes a flow, starting by checking the trigger, passing params to each trigger/action,
      * and calling {@link X2Flow::executeBranch()}
      *
      * @param X2Flow &$flow the object representing the flow to run
      * @param array &$params an associative array of params, usually including 'model'=>$model,
-     * @param mixed $flowPath an array of directions to a specific point in the flow. Defaults to 
+     * @param mixed $flowPath an array of directions to a specific point in the flow. Defaults to
      *  null.
      * Will skip checking the trigger conditions if not null, otherwise runs the entire flow.
      */
@@ -261,49 +300,66 @@ class X2Flow extends CActiveRecord {
         $flowData = CJSON::decode($flow->flow); // parse JSON flow data
         // file_put_contents('triggerLog.txt',"\n".print_r($flowData,true),FILE_APPEND);
 
-        if($flowData !== false && 
+        if($flowData !== false &&
            isset($flowData['trigger']['type'], $flowData['items'][0]['type'])){
 
-            $error = '';
+            $error;
 
             if($flowPath === null){
                 $trigger = X2FlowTrigger::create($flowData['trigger']);
-                if($trigger === null)
-                    $error = 'failed to load trigger class';
-                if(!$trigger->validate($params))
-                    $error = 'invalid rules/params';
-                if(!$trigger->check($params))
-                    $error = 'conditions not passed';
+                if($trigger === null) {
+                    $error = array (
+                        'trace' => array (false, 'failed to load trigger class'));
+                }
+                $validateRetArr = $trigger->validate($params, $flow->id);
+                if (!$validateRetArr[0]) {
+                    $error = $validateRetArr;
+                } else if (sizeof ($validateRetArr) === 3) { // trigger has return value
+                    return array (
+                        'trace' => $validateRetArr,
+                        'retVal' => $validateRetArr[2]
+                    );
+                }
+                $checkRetArr = $trigger->check($params);
+                if (!$checkRetArr[0]) {
+                    $error = $checkRetArr;
+                } 
 
                 if(empty($error)){
                     try{
-                        return array (array(
-                                true, $flow->executeBranch (
-                                    array(0), $flowData['items'], $params, 0, $triggerLogId)
-                            )
+                        $flowTrace = array (true, $flow->executeBranch (
+                            array(0), $flowData['items'], $params, 0, $triggerLogId));
+                        //AuxLib::debugLog ('executing branch complete');
+                        //AuxLib::debugLogR ($flowTrace);
+                        $flowRetVal = self::extractRetValFromTrace ($flowTrace);
+                        //AuxLib::debugLog ('extractRetValFromTrace ret');
+                        if (!$flowRetVal) {
+                            $flowRetVal = $trigger->getDefaultReturnVal ($flow->id); 
+                        }
+                        return array (
+                            'trace' => $flowTrace,
+                            'retVal' => $flowRetVal,
                         );
                     }catch(Exception $e){
-                        return array (array (false, $e->getMessage()));
+                        return array ('trace' => array (false, $e->getMessage()));
                         // whatever.
                     }
-                }else{
-                    return array (array(false, $error));
+                } else {
+                    return array ('trace' => $error);
                 }
             }else{ // $flowPath provided, skip to the specified position using X2Flow::traverse()
                 try{
-                    return array(array (
+                    return array (
+                        'trace' => array (
                             true, $flow->traverse(
-                                $flowPath, $flowData['items'], $params, 0, $triggerLogId)
-                        )
-                    );
-                }catch(Exception $e){
-                    return array (array (false, $e->getMessage())
-                    );
-                    // whatever.
+                                $flowPath, $flowData['items'], $params, 0, $triggerLogId)));
+                } catch(Exception $e) {
+                    return array (
+                        'trace' => array (false, $e->getMessage())); // whatever.
                 }
             }
         }else{
-            return array(array (false, 'invalid flow data'));
+            return array ('trace' => array (false, 'invalid flow data'));
         }
     }
 
@@ -317,9 +373,9 @@ class X2Flow extends CActiveRecord {
      * @param integer $pathIndex the position $flowPath to start at (for recursion), defaults to 0
      */
     public function traverse($flowPath, &$flowItems, &$params, $pathIndex = 0, $triggerLogId=null){
-        
+
         // if it's true or false, skip directly to the next true/false fork
-        if(is_bool($flowPath[$pathIndex])){ 
+        if(is_bool($flowPath[$pathIndex])){
             foreach($flowItems as &$item){
                 if($item['type'] === 'X2FlowSwitch'){
                     if($flowPath[$pathIndex] && isset($item['trueBranch'])){
@@ -328,7 +384,7 @@ class X2Flow extends CActiveRecord {
                                     $flowPath, $item['trueBranch'], $params, $pathIndex + 1, $triggerLogId);
                         } else {
                             return array(
-                                $item['type'], true, 
+                                $item['type'], true,
                                 $this->executeBranch(
                                     $flowPath, $item['trueBranch'], $params, 0, $triggerLogId)
                             );
@@ -340,7 +396,7 @@ class X2Flow extends CActiveRecord {
                                     $triggerLogId);
                         } else {
                             return array(
-                                $item['type'], false, 
+                                $item['type'], false,
                                 $this->executeBranch(
                                     $flowPath, $item['falseBranch'], $params, 0, $triggerLogId)
                             );
@@ -365,6 +421,7 @@ class X2Flow extends CActiveRecord {
      */
     public function executeBranch($flowPath, &$flowItems, &$params, $start = 0, $triggerLogId=null){
         $results = array();
+        //AuxLib::debugLog ('executeBranch');
 
         for($i = $start; $i < count($flowItems); $i++){
             $item = &$flowItems[$i];
@@ -373,27 +430,29 @@ class X2Flow extends CActiveRecord {
 
             if($item['type'] === 'X2FlowSwitch'){
                 $switch = X2FlowItem::create($item);
-                if($switch->validate($params)){
+                $validateRetArr = $switch->validate($params, $this->id);
+                if($validateRetArr[0]){
 
                     // flowPath only contains switch decisions and the index on the current branch
-                    array_pop($flowPath); 
+                    array_pop($flowPath);
 
                     // now that we're at another switch, we can throw out the previous branch index
                     // eg: $flowPath = array(true,false,3) means go to true at the first fork,
                     // go to false at the second fork, then go to item 3
 
-                    if($switch->check($params) && isset($item['trueBranch'])){
+                    $checkRetArr = $switch->check($params);
+                    if($checkRetArr[0] && isset($item['trueBranch'])){
                         $flowPath[] = true;
                         $flowPath[] = 0; // they're now on
                         $results[] = array(
-                            $item['type'], true, 
+                            $item['type'], true,
                             $this->executeBranch($flowPath, $item['trueBranch'], $params, 0, $triggerLogId)
                         );
                     }elseif(isset($item['falseBranch'])){
                         $flowPath[] = false;
                         $flowPath[] = 0;
                         $results[] = array(
-                            $item['type'], false, 
+                            $item['type'], false,
                             $this->executeBranch($flowPath, $item['falseBranch'], $params, 0, $triggerLogId)
                         );
                     }
@@ -418,9 +477,9 @@ class X2Flow extends CActiveRecord {
 
     public function validateAndExecute ($item, $flowAction, $params, $triggerLogId=null) {
         $logEntry;
-        $validationRetStatus = $flowAction->validate($params);
+        $validationRetStatus = $flowAction->validate($params, $this->id);
         if ($validationRetStatus[0] === true) {
-            $logEntry = array ($item['type'], $flowAction->execute ($params, $triggerLogId));
+            $logEntry = array ($item['type'], $flowAction->execute ($params, $triggerLogId, $this));
         } else {
             $logEntry = array ($item['type'], $validationRetStatus);
         }

@@ -1,42 +1,30 @@
 <?php
 
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/* * *******************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ * ****************************************************************************** */
+
+Yii::import('application.components.util.*');
 
 /**
- * X2CRM command line updater
+ * X2CRM command line updater.
  * 
  * @package X2CRM.commands
  * @author Demitri Morgan <demitri@x2engine.com>
@@ -52,8 +40,8 @@ class UpdateCommand extends CConsoleCommand {
             )
         ));
         $this->requireDependencies();
-        set_exception_handler('UpdaterBehavior::respondWithException');
-        set_error_handler('UpdaterBehavior::respondWithError');
+        set_exception_handler('ResponseBehavior::respondWithException');
+        set_error_handler('ResponseBehavior::respondWithError');
         return parent::beforeAction($action, $params);
     }
 
@@ -66,9 +54,9 @@ class UpdateCommand extends CConsoleCommand {
      * @param int $force "force" parameter sent to {@link runOperation}
      * @param int $backup "backup" parameter sent to {@link runOperation}
      */
-    public function actionApp($force = 0,$backup = 1) {
+    public function actionApp($force = 0,$backup = 1, $lock=0) {
         // Check updater version, update updater itself, etc.
-        $this->runOperation('update',(bool) $force, (bool) $backup);
+        $this->runOperation('update',(bool) $force, (bool) $backup, (bool) $lock);
         return 0;
     }
 
@@ -114,7 +102,7 @@ class UpdateCommand extends CConsoleCommand {
      * @param bool $backup If enabled: create database backup before running
      *  operations, and restore to the backup if operations fail.
      */
-    public function runOperation($scenario,$force=false,$backup=true) {
+    public function runOperation($scenario,$force=false,$backup=true,$lock=false) {
         $this->scenario = $scenario;
         $unpacked = $this->checkIf('packageExists',false);
         if($this->checkIf('packageApplies',false)) {
@@ -169,13 +157,33 @@ class UpdateCommand extends CConsoleCommand {
             }
         }
 
-        // Backup
-        if($backup)
-            $this->makeDatabaseBackup();
+        // Lock (if specified)
+        if($lock) {
+            $this->output(Yii::t('admin','Locking the app to prevent data entry during update.'));
+            Yii::app()->locked = time();
+        }
 
-        // Run
-        $this->enactChanges($backup);
+        try{
+            // Backup
+            if($backup)
+                $this->makeDatabaseBackup();
 
+            // Run
+            $this->enactChanges($backup);
+            
+        }catch(Exception $e){
+
+            if($lock){
+                $this->output(Yii::t('admin', 'Unlocking the app.'));
+                Yii::app()->locked = time();
+            }
+            throw $e;
+        }
+
+        if($lock) {
+            $this->output(Yii::t('admin','Unlocking the app.'));
+            Yii::app()->locked = time();
+        }
         $this->output(Yii::t('admin','All done.'));
     }
 

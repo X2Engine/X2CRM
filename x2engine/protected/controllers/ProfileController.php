@@ -1,39 +1,25 @@
 <?php
 
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 /**
  * User profiles controller
@@ -59,7 +45,7 @@ class ProfileController extends x2base {
                     'index', 'view', 'update', 'search', 'addPost', 'deletePost', 'uploadPhoto', 'profiles',
                     'settings', 'addComment', 'deleteSound', 'deleteBackground',
                     'changePassword', 'setResultsPerPage', 'hideTag', 'unhideTag', 'resetWidgets', 'updatePost',
-                    'loadTheme', 'createTheme', 'saveTheme', 'createUpdateCredentials','manageCredentials','deleteCredentials','setDefaultCredentials'),
+                    'loadTheme', 'createTheme', 'saveTheme', 'saveMiscLayoutSetting', 'createUpdateCredentials','manageCredentials','deleteCredentials','setDefaultCredentials'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -114,7 +100,7 @@ class ProfileController extends x2base {
         if(isset($_POST['Events'])){
             $post->text = $_POST['Events']['text'];
             $post->save();
-            $this->redirect(array('site/whatsNew'));
+            $this->redirect(array('/site/whatsNew'));
         }
         $commentDataProvider = new CActiveDataProvider('Events', array(
                     'criteria' => array(
@@ -150,7 +136,7 @@ class ProfileController extends x2base {
                 }
             }
         }
-        $this->redirect(array('site/whatsNew'));
+        $this->redirect(array('/site/whatsNew'));
     }
 
     /**
@@ -169,6 +155,21 @@ class ProfileController extends x2base {
             'model' => $this->loadModel($id),
             'dataProvider' => $dataProvider,
         ));
+    }
+
+    /**
+     * Saves settings as a property of the miscLayoutSettings JSON field of the profile model. This 
+     * should be used to make miscellaneous layout settings persistent.
+     * POST Parameters:
+     *  settingName - string - must be an existing property name of the JSON field
+     *  settingVal - mixed - the value to which the JSON field property will get set
+     */
+    public function actionSaveMiscLayoutSetting () {
+        if (!isset ($_POST['settingName']) || !isset ($_POST['settingVal'])) {
+            echo 'failure';
+            return;
+        }
+        Profile::setMiscLayoutSetting ($_POST['settingName'], $_POST['settingVal']);
     }
 
     /**
@@ -272,7 +273,7 @@ class ProfileController extends x2base {
                 $menuItems[$module->name] = Yii::t('app',$module->title);
             }
         }
-        $menuItems = array('' => Yii::t('app', 'What\'s New')) + $menuItems;
+        $menuItems = array('' => Yii::t('app', 'Activity Feed')) + $menuItems;
 
         $languageDirs = scandir('./protected/messages'); // scan for installed language folders
 
@@ -423,7 +424,7 @@ class ProfileController extends x2base {
 		if(!Yii::app()->user->checkAccess('CredentialsDelete',array('model'=>$cred)))
 			$this->denied();
 		$cred->delete();
-		$this->redirect(array('profile/manageCredentials'));
+		$this->redirect(array('/profile/manageCredentials'));
 	}
 
     /**
@@ -478,7 +479,7 @@ class ProfileController extends x2base {
                         $user->password = md5($newPass);
                         $user->save();
 
-                        $this->redirect($this->createUrl('profile/view',array('id'=>$id)));
+                        $this->redirect($this->createUrl('/profile/view',array('id'=>$id)));
                     }
                 }else{
                     Yii::app()->clientScript->registerScript('alertPassWrong', "alert('Old password is incorrect.');");
@@ -625,7 +626,7 @@ class ProfileController extends x2base {
         if($redirect == "view")
             $this->redirect(array('view', 'id' => $id));
         else
-            $this->redirect(array('site/whatsNew'));
+            $this->redirect(array('/site/whatsNew'));
     }
 
     /**

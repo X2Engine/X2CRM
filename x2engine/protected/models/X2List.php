@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 /**
  * This is the model class for table "x2_contact_lists".
@@ -61,8 +47,8 @@ class X2List extends CActiveRecord {
 		return array(
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
-				'baseRoute'=>'/contacts/list',
-				'autoCompleteSource'=>'/contacts/getLists',
+				'baseRoute'=>'/contacts/contacts/list',
+				'autoCompleteSource'=>'/contacts/contacts/getLists',
 			)
 		);
 	}
@@ -108,7 +94,7 @@ class X2List extends CActiveRecord {
 	}
 
 	public function getDefaultRoute() {
-		return '/contacts/list';
+		return '/contacts/contacts/list';
 	}
 
 	public function createLink() {
@@ -634,7 +620,7 @@ class X2List extends CActiveRecord {
 			return false;
 
 		$criteria = new CDbCriteria();
-		$criteria->compare('listId',$list->id);
+		$criteria->compare('listId',$this->id);
 		$criteria->addInCondition('contactId',(array)$ids);
 
 		// delete all the things!
@@ -658,20 +644,20 @@ class X2List extends CActiveRecord {
 
 	public static function getRoute($id) {
 		if($id=='all')
-			return array('/contacts/index');
+			return array('/contacts/contacts/index');
 		else if ($id=='new')
-			return array('/contacts/newContacts');
+			return array('/contacts/contacts/newContacts');
 		else if (empty($id) || $id=='my')
-			return array('/contacts/myContacts');
+			return array('/contacts/contacts/myContacts');
 		else
-			return array('/contacts/list','id'=>$id);
+			return array('/contacts/contacts/list','id'=>$id);
 	}
 
     public static function getAllStaticListNames ($controller) {
         $listNames = array();
 
         // get all static lists
-        foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {	
+        foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {
             if($controller->checkPermissions($list,'edit'))	// check permissions
                 $listNames[$list->id] = $list->name;
         }

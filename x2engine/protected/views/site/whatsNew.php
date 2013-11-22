@@ -1,38 +1,24 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/whatsNew.js', CClientScript::POS_END);
@@ -71,13 +57,13 @@ $usersGroups = implode(",",$tempUserList);
 
 $passVarsToClientScript = "
 	x2.whatsNew = {};
-	x2.whatsNew.DEBUG = ".(YII_DEBUG ? 'true' : 'false').";
+	x2.whatsNew.DEBUG = false;//".(YII_DEBUG ? 'true' : 'false').";
 	x2.whatsNew.usersGroups = '".$usersGroups."';
 	x2.whatsNew.minimizeFeed = ".(Yii::app()->params->profile->minimizeFeed==1?'true':'false').";
 	x2.whatsNew.commentFlag = false;
 	x2.whatsNew.lastEventId = ".(!empty($lastEventId)?$lastEventId:0).";
 	x2.whatsNew.lastTimestamp = ".(!empty($lastTimestamp)?$lastTimestamp:0).";
-	x2.whatsNew.deletePostUrl = '".$this->createUrl('profile/deletePost')."';
+	x2.whatsNew.deletePostUrl = '".$this->createUrl('/profile/deletePost')."';
 	x2.whatsNew.translations = {};
 ";
 
@@ -94,8 +80,8 @@ $translations = array (
 	'Nevermind' => Yii::t('app','Nevermind'),
 	'Create' => Yii::t('app','Create'),
 	'Cancel' => Yii::t('app','Cancel'),
-	'Read more' => Yii::t('app','Read More'),
-	'Read less' => Yii::t('app','Read Less'),
+	'Read more' => Yii::t('app','Read') . '&nbsp;' . Yii::t('app', 'More'),
+	'Read less' => Yii::t('app','Read') . '&nbsp;' . Yii::t('app', 'Less'),
 );
 
 // pass array of predefined theme uploadedBy attributes to client
@@ -161,7 +147,7 @@ Yii::app()->clientScript->registerScript(
 		</option>
 	</select>
 
-	<?php 
+	<?php
 		$this->widget('X2Chart', array (
 			'getChartDataActionName' => 'getEventsBetween',
 			'suppressChartSettings' => false,
@@ -192,15 +178,15 @@ Yii::app()->clientScript->registerScript(
 			'chartType' => 'eventsChart',
 			'getDataOnPageLoad' => true,
 			'hideByDefault' => true
-		)); 
+		));
 	?>
-	
-	<?php 
+
+	<?php
 		$usersArr = array ();
 		foreach ($usersDataProvider->data as $user) {
 			$usersArr[$user->username] = $user->firstName.' '.$user->lastName;
 		}
-	
+
 		$this->widget('X2Chart', array (
 			'getChartDataActionName' => 'getEventsBetween',
 			'suppressChartSettings' => false,
@@ -209,7 +195,7 @@ Yii::app()->clientScript->registerScript(
 			'chartType' => 'usersChart',
 			'getDataOnPageLoad' => true,
 			'hideByDefault' => true
-		)); 
+		));
 	?>
 </div>
 
@@ -308,8 +294,8 @@ $this->widget('zii.widgets.CListView', array(
 		<?php echo Yii::t('app','Leave colors blank for defaults.');?>
 	</div>
 	<div>
-		<?php 
-            echo CHtml::label(Yii::t('app','What color should the event be?'),'broadcastColor'); 
+		<?php
+            echo CHtml::label(Yii::t('app','What color should the event be?'),'broadcastColor');
         ?>
 		<div class='row'>
 			<?php echo CHtml::textField('broadcastColor',''); ?>

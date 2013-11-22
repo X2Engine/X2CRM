@@ -1,45 +1,39 @@
 <?php
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 /*
 Parameters:
     type - string, the web form type ('weblead' | 'weblist' | 'service')
-    model -
-    fieldList -
+    model - the model associated with the form, set to Contacts by default
 */
+/* x2prostart */
+/*
+Additional Parameters (Pro only):
+    fieldList - array of arrays - child arrays correspond to a field which should be displayed in
+        the web form. Defaults to null.
+    x2_key - optional string - The visitors's tracking key, set in this iframe's parent element's 
+        domain
+*/
+/* x2proend */
 
 
 mb_internal_encoding('UTF-8');
@@ -47,17 +41,29 @@ mb_regex_encoding('UTF-8');
 Yii::app()->params->profile = ProfileChild::model()->findByPk(1);
 if (empty($type)) $type = 'weblead';
 if (empty($model)) $model = Contacts::model ();
+/* x2prostart */
+if (empty($fieldList)) $fieldList = null;
+/* x2proend */
 
 
 if ($type === 'service') {
     $modelName = 'Services';
-} else if ($type === 'weblead')  {
+} else if ($type === 'weblead'/* x2prostart */ || $type === 'weblist'/* x2proend */)  {
     $modelName = 'Contacts';
 }
 
 
 $defaultFields;
-if ($type === 'weblead') {
+/* x2prostart */
+if ($type === 'weblist') {
+    $defaultFields = array (
+        array (
+            'fieldName' => 'email',
+            'position' => 'top',
+            'required' => 1
+        )
+    );
+} else /* x2proend */if ($type === 'weblead') {
     $defaultFields = array (
         array (
             'fieldName' => 'firstName',
@@ -117,10 +123,14 @@ if ($type === 'weblead') {
 
 $useDefaults = false;
 
-
+/* x2prostart */
+if(!PRO_VERSION || $fieldList === null) {
+/* x2proend */
     $fieldList = $defaultFields;
     $useDefaults = true;
-
+/* x2prostart */
+}
+/* x2proend */
 
 $fieldTypes = array_map (function ($elem) { if ($elem['required']) return $elem['fieldName']; }, $fieldList);
 
@@ -146,7 +156,22 @@ if ($type === 'service') {
 </script>
 
 <?php
-
+/* x2prostart */
+if (PRO_VERSION && $type !== 'weblist') {
+?>
+    <link rel="stylesheet" type="text/css"
+     href="<?php echo Yii::app()->clientScript->coreScriptUrl . '/jui/css/base/jquery-ui.css'; ?>"
+    />
+    <script type="text/javascript"
+        src="<?php echo Yii::app()->clientScript->coreScriptUrl . '/jui/js/jquery-ui.min.js'; ?>">
+    </script>
+    <script type="text/javascript"
+        src="<?php echo Yii::app()->clientScript->coreScriptUrl .
+            '/jui/js/jquery-ui-i18n.min.js'; ?>">
+    </script>
+<?php
+}
+/* x2proend */
 ?>
 
 <style type="text/css">
@@ -230,13 +255,33 @@ input[type="text"] {
     height: 30px;
 }
 <?php
-
+/* x2prostart */
+if (PRO_VERSION && $type !== 'weblist') {
+?>
+div.error label, label.error, span.error {color:#C00;}
+div.error input, div.error textarea, div.error select, input.error{
+    background:#FEE !important;
+    border-color:#C00 !important;
+}
+div.checkboxWrapper {
+    display: inline;
+}
+<?php echo $css; ?>
+<?php
+}
+/* x2proend */
 ?>
 </style>
 
 
 <?php
-
+/* x2prostart */
+if (PRO_VERSION && $type === 'weblead') {
+?>
+<?php echo $header; ?>
+<?php
+}
+/* x2proend */
 ?>
 </head>
 <body>
@@ -290,9 +335,20 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
                 $_POST['Services'][$field['fieldName']] : ''; ?>" />
             <?php
             } else {
-                
+                /* x2prostart */
+                $f = $model->getField($field['fieldName']);
+                // if date field: indicate this field needs javascript to add a date picker
+                if ($f && $f->type == 'date') {  ?>
+                <span class="needsDatePicker">
+                    <?php echo $model->renderInput($field['fieldName']); ?>
+                </span>
+                <?php
+                } else {
+                /* x2proend */
                     echo $model->renderInput($field['fieldName']);
-                
+                /* x2prostart */
+                }
+                /* x2proend */
             } ?>
             </div>
 <?php
@@ -305,10 +361,19 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
 
 renderFields ($fieldList, $type, $form, $model, $contactFields);
 
+// renders hidden tracking key field
 foreach ($_GET as $key=>$value) { ?>
     <input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>" />
     <?php
 }
+
+/* x2prostart */
+if (isset($x2_key)) {
+?>
+    <input type="hidden" name="x2_key" value="<?php echo $x2_key; ?>" />
+<?php
+}
+/* x2proend */
 
 ?>
 <div class="submit-button-row row">
@@ -378,9 +443,27 @@ function validate() {
 }
 
 <?php
-
+/* x2prostart */
+if (PRO_VERSION && $type !== 'weblist') {
 ?>
-
+$(function() {
+    $('span.needsDatePicker input').datepicker(
+        jQuery.extend(
+            {showMonthAfterYear:false},
+            jQuery.datepicker.regional[
+                '<?php echo (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(); ?>'],
+            {
+                'dateFormat':'<?php echo Formatter::formatDatePicker(); ?>',
+                'changeMonth':true,
+                'changeYear':true
+            }
+        )
+    );
+});
+<?php
+}
+/* x2proend */
+?>
 </script>
 
 </body>

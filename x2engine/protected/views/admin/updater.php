@@ -1,38 +1,24 @@
 <?php 
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
  * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
  * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 
+ * to install and use this Software for your internal business purposes.  
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong 
+ * exclusively to X2Engine.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 /**
  * @file protected/admin/updater.php
@@ -160,6 +146,15 @@ Yii::app()->clientScript->registerCss('status-messages','
     #update-info .summary.warn {
         color: red;
     }
+    #update-info .version-info-link {
+        font-weight: bold;
+    }
+    #update-info .version-info-link a {
+        text-decoration: none;
+    }
+    #update-info .version-info-link a:hover {
+        text-decoration: underline;
+    }
     #update-info .details {
         display: none;
         padding: 5px;
@@ -272,7 +267,7 @@ var errorMessages;
 var messages;
 var queuedStages = {};
 var updateLock;
-var updateStageUrl = <?php echo json_encode($this->createUrl('admin/updateStage')); ?>;
+var updateStageUrl = <?php echo json_encode($this->createUrl('/admin/updateStage')); ?>;
 var updateHeader;
 
 String.prototype.format = function() {
@@ -450,8 +445,13 @@ function stageCheck(i) {
 
         updateHeader.text(<?php echo json_encode(Yii::t('admin','Confirm Changes to be Applied:')); ?>);
         
-        // Changelog:
-        newUpdateDetailMessage(<?php echo json_encode(Yii::t('admin','Release Summary')) ?>,d.manifest.changelog,'no-style');
+        // Version info links:
+        var releaseGitBaseUrl = 'https://github.com/X2Engine/X2Engine/tree/'+d.manifest.targetVersion+'/';
+        var releaseInfoLinkContainer = $('<ul>');
+        <?php foreach(array('README','CHANGELOG','RELEASE-NOTES') as $document) { ?>
+        releaseInfoLinkContainer.append($('<li>',{'class':'version-info-link',html:$('<a>',{href:releaseGitBaseUrl+<?php echo json_encode($document.'.md'); ?>,target:'_blank',text:<?php echo json_encode(strtolower(str_replace('-',' ',$document))); ?>})}));
+        <?php } ?>
+        newUpdateDetailMessage(<?php echo json_encode(Yii::t('admin','Version Info')) ?>,releaseInfoLinkContainer.html(),'no-style');
         updateInfo.find('.no-style').siblings('a').trigger('click.toggle');
 
         // Files to copy
@@ -511,7 +511,7 @@ function stageCompletion(i) {
         if(secondsBefore==0) {
             messageState(ind,'done');
             if(scenario == 'upgrade') // Go to about page
-                window.location.href = '<?php echo CHtml::normalizeUrl(array('site/page','view'=>'about')); ?>';
+                window.location.href = '<?php echo CHtml::normalizeUrl(array('/site/page','view'=>'about')); ?>';
             else // Reload to log out
                 window.location.reload();
         } else {
@@ -593,6 +593,7 @@ function stageReview(i) {
     // Attach event handler to the "Apply" button that hides itself and runs the "enact" stage.
     $('#update-button').bind('click.nextStage',function(e){
         e.preventDefault();
+        $('#database-backup').hide();
         $('#update-cancel').hide();
         $(this).fadeOut(300,function(){
             $('html, body').animate({scrollTop:0});
@@ -713,7 +714,14 @@ $(function() {
         }
     });
 
+    if(typeof x2 == 'undefined') {
+        x2 = {Notifs:{}};
+    }
+    if(typeof x2.Notifs == 'undefined'){
+        x2.Notifs = {};
+    }
     x2.fetchNotificationUpdates = false;
+    x2.Notifs.fetchNotificationUpdates = false;
 
     // Ready-state-specific JavaScript:
     if(ready) {
@@ -797,7 +805,7 @@ window.onbeforeunload = function(e) {
     <li><?php echo Yii::t('admin', "Make a backup copy of all X2CRM's files in addition to its database, in case you want to revert to the current version."); ?></li>
     <?php if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','LockAppAction.php')))):
     if(!Yii::app()->locked): ?>
-    <li><?php echo CHtml::link(Yii::t('admin','Lock X2CRM'),array('admin/lockApp')); ?></li>
+    <li><?php echo CHtml::link(Yii::t('admin','Lock X2CRM'),array('/admin/lockApp')); ?></li>
     <?php
     endif;
     endif; ?>
@@ -853,7 +861,7 @@ try{
 ?>
 <span id="backup-state">
     <span id="backup-state-error" style="color:red;"><?php echo $msg; ?></span>
-    <span id="backup-download-link" style="<?php echo empty($msg)?'':'display:none;'; ?>"><?php echo CHtml::link('[ '.Yii::t('admin', 'Download database backup').' ]', array('admin/backup', 'download' => 1)); ?></span>
+    <span id="backup-download-link" style="<?php echo empty($msg)?'':'display:none;'; ?>"><?php echo CHtml::link('[ '.Yii::t('admin', 'Download database backup').' ]', array('/admin/backup', 'download' => 1)); ?></span>
 </span>
 <br />
 
@@ -865,7 +873,7 @@ try{
 <br />
 <hr />
 <a href="javascript:void(0);" class="x2-button" id="update-button"><?php echo Yii::t('app','Apply Changes'); ?></a>
-<?php echo CHtml::link(Yii::t('admin','Cancel'),array('admin/updater','scenario'=>'delete','redirect'=>1),array('class'=>'x2-button','id'=>'update-cancel')); ?>
+<?php echo CHtml::link(Yii::t('admin','Cancel'),array('/admin/updater','scenario'=>'delete','redirect'=>1),array('class'=>'x2-button','id'=>'update-cancel')); ?>
 
 </div><!-- #update-ready -->
 
@@ -914,7 +922,7 @@ try{
 else: // "message" or "error"
 
 if (isset($longMessage)) echo "<p>$longMessage</p>";
-echo CHtml::link(Yii::t('admin', 'Go back'), array('admin/index'),array('class'=>'x2-button'));
+echo CHtml::link(Yii::t('admin', 'Go back'), array('/admin/index'),array('class'=>'x2-button'));
 
 endif; /* in_array($scenario, array('update', 'upgrade')) */
 ?>

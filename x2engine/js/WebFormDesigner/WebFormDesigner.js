@@ -1,38 +1,24 @@
 
-/*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+/*********************************************************************************
+ * Copyright (C) 2011-2013 X2Engine Inc. All Rights Reserved.
  * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
+ * Company website: http://www.x2engine.com 
+ * Community and support website: http://www.x2community.com 
  * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 
+ * to install and use this Software for your internal business purposes.  
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong 
+ * exclusively to X2Engine.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- *****************************************************************************************/
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
 
 
 
@@ -47,8 +33,10 @@ function WebFormDesigner (argsDict) {
 	// properties that can be set with constructor arguments
 	var defaultArgs = {
 		translations: [], // used for various web form text
-		iframeSrc: '',
-		savedForms: {},
+		iframeSrc: '', 
+		externalAbsoluteBaseUrl: '', // used for specifying web form generation script source
+		saveUrl: '', // used to save the web form settings
+		savedForms: {}, // used to cache previously viewed forms
         fields: [],
         colorfields: [],
         listId: null
@@ -71,7 +59,7 @@ Private static methods
 */
 
 WebFormDesigner.sanitizeInput = function (value) {
-    return encodeURIComponent(value.trim().replace(/[^a-zA-Z0-9#,]/g, ''));
+    return encodeURIComponent(value.replace(/(^[ ]*)|([ ]*$)|([^a-zA-Z0-9#,])/g, ''));
 }
 
 /*
@@ -81,6 +69,27 @@ Public instance methods
 /*
 Private instance methods
 */
+
+
+/*
+Set up form submission behavior.
+*/
+WebFormDesigner.prototype._setUpFormSubmission = function () {
+    var that = this;
+    $('#web-form-save-button').on('click', function(evt) {
+        evt.preventDefault ();
+        var formJSON = auxlib.formToJSON ($('#web-form-designer-form'));
+        $.ajax({
+            url: that.saveUrl,
+            type: 'POST',
+            data: formJSON,
+            success: function (data, status, xhr) {
+                that.saved (data, status, xhr);
+            }
+        });
+        return false;
+    });
+};
 
 /*
 Sets up the web form designer
@@ -113,22 +122,24 @@ WebFormDesigner.prototype._init = function () {
     });
 
     // set up save web form button behavior
-    $('#save').click(function(e) {
+    $('#web-form-save-button').click(function(e) {
 
         // check form empty input
         if ($.trim($('#web-form-name').val()).length === 0) { // invalid, show errors
             $('#web-form-name').addClass('error');
             $('[for="web-form-name"]').addClass('error');
-            $('#save').after('<div class="errorMessage">'+
+            $('#web-form-save-button').after('<div class="errorMessage">'+
                 that.translations.nameRequiredMsg+'</div>');
             e.preventDefault(); //has no effect
             return false;
         } else { // name validated, remove error messages
             $('#web-form-name').removeClass('error');
             $('[for="web-form-name"]').removeClass('error');
-            $('#save').next('.errorMessage').remove ();
+            $('#web-form-save-button').next('.errorMessage').remove ();
         }
     });
+
+    //that._setUpFormSubmission ();
 
     // set up saved form selection behavior
     $('#saved-forms').on('change', function() {
@@ -186,7 +197,7 @@ WebFormDesigner.prototype._init = function () {
 
     that._afterInit ();
 
-    if (that.listId !== null) { that.updateParams(); }
+    that.updateParams();
 };
 
 // override in child prototype
@@ -194,6 +205,7 @@ WebFormDesigner.prototype._afterSavedFormsChange = function () {};
 
 // override in child prototype
 WebFormDesigner.prototype._afterInit = function () {};
+
 
 /*
 Generates a new iframe with the user-set dimensions and with GET parameters corresponding
@@ -225,12 +237,39 @@ WebFormDesigner.prototype.updateParams = function (iframeContainer) {
 
     var query = this._generateQuery(params);
 
-    var newembed = '<iframe name="web-form-iframe" src="' + $('#iframe_example').data('src') + 
+    /*var newembed = '<iframe name="web-form-iframe" src="' + $('#iframe_example').data('src') + 
         query + '" frameborder="0" scrolling="0" width="' + 
-        parseInt($('#iframe_example').width()) + '" height="' + iframeHeight + '"></iframe>';
+        parseInt($('#iframe_example').width()) + '" height="' + iframeHeight + '"></iframe>';*/
 
+    var iframeWidth;
+    if ($('#iframe_example').find ('iframe').length) {
+        iframeWidth = $('#iframe_example').width ();
+    } else {
+        iframeWidth = 200;
+    }
+
+    /* 
+    Embedded JS generates an iframe and inserts the visitor's tracking key cookie into the 
+    get parameters of the iframe source url. Generates a tracking key cookie for the visitor if
+    they don't have one already (duplicating some of the functionality of the web tracker).
+    */
+    var scriptSrc = that.externalAbsoluteBaseUrl + '/webForm.php' + query + '&iframeUrl=' + 
+        encodeURIComponent ($('#iframe_example').data ('src')) + 
+        '&iframeWidth=' + iframeWidth;
+    var newembed = '<script src="' + scriptSrc + '"></script>';
     $('#embedcode').val(newembed);
-    $('#iframe_example iframe').replaceWith(newembed);
+
+    /* generate example iframe by simulating the way that the iframe will get generated by the 
+       embed code */
+    $('#iframe_example').children ('iframe').remove ();
+    $('#iframe_example').append ($('<iframe>', {
+        src: $('#iframe_example').data('src') + query + '&x2_key=' + 
+            encodeURIComponent (document.cookie),
+        frameborder: 0,
+        scrolling: 0,
+        width: iframeWidth,
+        height: iframeHeight
+    }));
 };
 
 /*
@@ -240,7 +279,7 @@ WebFormDesigner.prototype._generateQuery = function (params) {
     var query = '';
     var first = true;
 
-    for (var i=0; i<params.length; i++) {
+    for (var i = 0; i < params.length; i++) {
         if (params[i].search(/^[^=]+=[^=]+$/) != -1) {
             if (first) {
                 query += '?'; first = false;
@@ -251,6 +290,11 @@ WebFormDesigner.prototype._generateQuery = function (params) {
             query += params[i];
         }
     }
+
+    /* x2prostart */ 
+    // add web form id to GET params so that fields can be retrieved
+    query += '&webFormId=' + encodeURIComponent($('#saved-forms').val());
+    /* x2proend */
 
     query = this._appendToQuery (query);
 
@@ -321,6 +365,7 @@ WebFormDesigner.prototype.saved = function (data, status, xhr) {
     if (typeof newForm.errors !== "undefined") { return; }
     this._cacheSavedForm (newForm);
     that.updateParams();
+    $('#web-form-save-button').removeClass ('highlight');
     alert(that.translations.formSavedMsg);
 }
 
