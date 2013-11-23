@@ -469,7 +469,7 @@ $(function() {
 					$('.ui-dialog-titlebar').css('padding', '0.2em 0.4em');
 					$('.ui-dialog-titlebar-close').css({
 						'height': '18px',
-						'widht': '18px'
+						'width': '18px'
 						});
 					$(viewAction).css('font-size', '0.75em');
 				},
