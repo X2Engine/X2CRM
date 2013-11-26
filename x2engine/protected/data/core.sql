@@ -95,15 +95,6 @@ CREATE TABLE x2_admin(
     sessionLog                  TINYINT         DEFAULT 0,
     userActionBackdating        TINYINT         DEFAULT 0,
     emailDropbox                TEXT,
-    -- The following columns to be left in until the release after when JSON storage
-    -- is implemented for emailDropbox, at which point in time they can be
-    -- safely deleted.
-	emailDropbox_alias			VARCHAR(50) DEFAULT NULL,
-	emailDropbox_createContact	TINYINT	DEFAULT 1,
-	emailDropbox_zapLineBreaks	TINYINT DEFAULT 0,
-	emailDropbox_emptyContact	TINYINT DEFAULT 1,
-	emailDropbox_logging		TINYINT DEFAULT 0,
-    -- (end email dropbox settings)
     historyPrivacy              VARCHAR(20) DEFAULT "default",
     batchTimeout                INT DEFAULT 300,
     externalBaseUrl             VARCHAR(255) DEFAULT NULL

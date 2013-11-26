@@ -44,8 +44,8 @@
  * @param String editorId The ID of the textarea to be replaced
  * @param Object editorConfig Optional config object containing options for the editor
  */
-function createCKEditor(editorId,editorConfig,callback) {
-
+function createCKEditor(editorId,editorConfig,callback, toolbar) {
+    var toolbar = typeof toolbar === 'undefined' ? 'MyEmailToolbar' : toolbar;
 	if (x2.isAndroid) {
 		if (editorConfig) {
 			if ('height' in editorConfig) {
@@ -130,7 +130,7 @@ function createCKEditor(editorId,editorConfig,callback) {
                 callback();
         },
         $.extend({
-            toolbar:'MyEmailToolbar',
+            toolbar:toolbar,
             height:300,
             // filebrowserBrowseUrl: '/browser/browse/type/all',
             // filebrowserUploadUrl: '/browser/upload/type/all',

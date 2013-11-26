@@ -1,37 +1,12 @@
 # X2CRM 3.6 #
-11/21/2013
+Point release 3.6.1
+11/22/2013
 
 New features in this release (see [CHANGELOG](CHANGELOG.md) for full history)
 
-* Improvements to user preferences
-  * User option to disable notifications popup
-  * User option to transform all phone numbers into "tel:" links for click-to-call functionality with VoIP systems
-  * Options page sections remember user's preference to be open/closed
-  * General options page UI improvements
-* Time tracking on records using the publisher
-  * New "time log" note type displays time spent on a record
-  * Specify begin time, end time and duration of logged calls
-* Interface for creating automatic, unattended software update cron task (available on compatible Linux/UNIX servers only)
-* The ability to remove contacts from static lists via mass-update action in grid view
-* "+" button to add a new account/contact on-the-fly now available in custom modules or any model with account or contact look-up fields
-* Fractional quantities in quote line items
-* "External/Public Base URL" setting controls how URLs to public-facing resources will be generated, i.e. for CRM systems hosted within private subnets or VPNs
-* New in Professional Edition:
-  * Targeted content marketing feature (beta)
-    * Embeddable, dynamic content for websites tailored to each contact
-    * X2Flow-based design interface allows unlimited sophistication in rules and criteria for targeted content
-  * Better pattern matching in email dropbox
-  * Cron table management console: one page controls all X2CRM-related server cron tasks
-  * New and improved pure-JavaScript-based website activity listener and lead capture form compatible with more web browsers
-* Fixed Bugs:  
-  * [119](http://x2software.com/index.php/bugReports/119): is_file(): open_basedir restriction in effect. File(/usr/share/pear544/Calendar.php) is not within the allowed path(s): (/usr/wwws/users/vanwean:/usr/www/users/vanwean:/usr/home/vanwean:/usr/local/rmagic:/usr/www/users/he/_system_:/usr/share/php544:/  
-  * [413](http://x2software.com/index.php/bugReports/413): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: parameter was not defined  
-  * [462](http://x2software.com/index.php/bugReports/462): Failed to create directory ../../../../backup  
-  * [469](http://x2software.com/index.php/bugReports/469): The system is unable to find the requested action "profile".  
-  * [487](http://x2software.com/index.php/bugReports/487): Unable to resolve the request "view/view/view".  
-  * [514](http://x2software.com/index.php/bugReports/514): Flagging one role as admin gives other roles admin access  
-  * [517](http://x2software.com/index.php/bugReports/517): Undefined index: id  
-  * [564](http://x2software.com/index.php/bugReports/564): The requested page does not exist.
+* Issues in the new targeted content marketing system have been resolved.
+* Corrected an API behavioral issue: contacts created via API were not invoking the "record created" trigger
+* Fixed bug: global export wasn't working for "Admin" (system settings) record
 
 # Introduction #
 Welcome to  X2CRM!

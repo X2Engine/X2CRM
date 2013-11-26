@@ -153,7 +153,7 @@ class Credentials extends CActiveRecord {
 
 	public function behaviors(){
 		return array(
-			array(
+			'JSONEmbeddedModelFieldsBehavior' => array(
 				'class' => 'application.components.JSONEmbeddedModelFieldsBehavior',
 				'transformAttributes' => array('auth'),
 				'templateAttr' => 'modelClass',

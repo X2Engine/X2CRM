@@ -1,3 +1,9 @@
+# 3.6.1 #
+11/22/2013
+* Issues in the new targeted content marketing system have been resolved.
+* Corrected an API behavioral issue: contacts created via API were not invoking the "record created" trigger
+* Fixed bug: global export wasn't working for "Admin" (system settings) record
+
 # 3.6 #
 11/21/2013
 * Improvements to user preferences

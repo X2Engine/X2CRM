@@ -1,4 +1,5 @@
 <?php
+header('P3P: CP="This site does not have a p3p policy."');
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
@@ -171,7 +172,7 @@ class ApiController extends x2base {
 
 		$setUserFields = false;
 		// $scenario = 'Changelog behavior in effect.';
-		if(!empty($model->createDate)){ // If create date is being manually set, i.e. an import, don't overwrite
+		if(!empty($_POST['createDate'])){ // If create date is being manually set, i.e. an import, don't overwrite
 			$model->disableBehavior('changelog');
 			$setUserFields = true;
 			// $scenario = 'Changelog behavior disabled; create date not empty.';

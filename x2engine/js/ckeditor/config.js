@@ -64,7 +64,19 @@ CKEDITOR.editorConfig = function(config)
 		{name: 'basicstyles',items: ['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat']},
 		{name: 'styles',items: ['Font','FontSize']},
 		{name: 'paragraph',items: ['NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock']}
-	
+	];
+    // same as toolbar_MyEmailToolbar but with source button removed
+	config.toolbar_MyTargetedContentToolbar = [
+		{name: 'insertAttributes',items:['Attribute']},
+		{name: 'clipboard',items: ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo']},
+		// {name: 'forms',items: ['Form','Checkbox','Radio','TextField','Textarea','Select','Button','HiddenField']},
+		{name: 'links',items: ['Link','Unlink','Anchor']},
+		{name: 'insert',items: ['Image','Table','HorizontalRule','SpecialChar']},
+		{name: 'colors',items: ['TextColor','BGColor']},
+		'/',
+		{name: 'basicstyles',items: ['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat']},
+		{name: 'styles',items: ['Font','FontSize']},
+		{name: 'paragraph',items: ['NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock']}
 	];
 	
 };

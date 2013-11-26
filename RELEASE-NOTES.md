@@ -1,3 +1,17 @@
+# 3.6.1 #
+11/22/2013
+* The targeted content embed method has been changed to resolve the previous 
+  issue with Internet Explorer. As such, any embed codes generated in 3.6 will
+  not work in this and future versions. To fix this issue, it will be necessary 
+  to re-generate the code and use it to replace the existing embedded code on 
+  your website.
+
+# 3.6 #
+11/21/2013
+* The targeted content feature is designated "beta" because, in this version, 
+  the embeddable code causes problems in Internet Explorer 8 and 9 when embedded
+  in pages containing multiple iframes.
+
 # 3.1 #
 6/18/2013
 * In the deletion action of the API, the primary key can now be specified in

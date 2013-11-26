@@ -3341,6 +3341,16 @@ class AdminController extends Controller {
             $pageCount = $dp->getPagination()->getPageCount(); // Total number of pages
 
             foreach($records as $record){
+                // Re-pack all unpacked attributes for writing to a file, so that
+                // they can be interpolated as strings:
+                foreach($record->behaviors() as $name => $config) {
+                    $behavior = $record->asa($name);
+                    if($behavior instanceof TransformedFieldStorageBehavior) {
+                        $behavior->packAll();
+                        $record->disableBehavior($name);
+                    }
+
+                }
                 $tempAttributes = $tempModel->attributes;
                 $tempAttributes = array_merge($tempAttributes, $record->attributes);
                 if($model == 'Actions'){
