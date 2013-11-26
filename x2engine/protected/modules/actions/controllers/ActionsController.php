@@ -378,13 +378,6 @@ class ActionsController extends x2base {
                 }else{
                     $model->completeDate = $model->dueDate;
                 }
-            }else{
-//                $event = new Events;
-//                $event->associationType = 'Actions';
-//                $event->type = 'record_create';
-//                $event->user = Yii::app()->user->getName();
-//                $event->visibility = $model->visibility;
-//                $model->completeDate = null;
             }
 
 
@@ -413,6 +406,11 @@ class ActionsController extends x2base {
                 foreach(array('dueDate','completeDate') as $attr)
                     if(empty($model->$attr))
                         $model->$attr = time();
+                if($model->dueDate > $model->completeDate) {
+                    // User specified a negative time range! Let's say that the
+                    // starting time is equal to when it ended (which is earlier)
+                    $model->dueDate = $model->completeDate;
+                }
                 $model->complete = 'Yes';
                 $model->visibility = '1';
                 $model->assignedTo = Yii::app()->user->getName();
@@ -424,7 +422,7 @@ class ActionsController extends x2base {
                 else
                     $model->type = 'note';
             }
-            if($model->type == 'call' || $model->type == 'time'){
+            if(in_array($model->type, array('call','time','note'))){
                 $event = new Events;
                 $event->associationType = 'Actions';
                 $event->type = 'record_create';

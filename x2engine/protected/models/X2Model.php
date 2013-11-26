@@ -411,7 +411,7 @@ abstract class X2Model extends CActiveRecord {
             if(isset($linkModel)){
                 return $linkModel->getAttribute($name, $renderFlag);
             }else{
-                $fieldInfo = $this->getField($linkField);
+                $fieldInfo = $this->getField($linkField); // If it's an assignment field, check the Profile model
                 if($fieldInfo instanceof Fields && $fieldInfo->type == 'assignment'){
                     $profRecord = X2Model::model('Profile')->findByAttributes(array('username' => $this->$linkField));
                     if(isset($profRecord)){
@@ -1233,14 +1233,14 @@ abstract class X2Model extends CActiveRecord {
         $editableFieldsFieldNames = $this->getEditableFieldNames ();
 
         // loop through fields to deal with special types
-        foreach(self::$_fields[$this->tableName()] as &$field){ 
+        foreach(self::$_fields[$this->tableName()] as &$field){
             $fieldName = $field->fieldName;
 
             // skip fields that are read-only or haven't been set
-            if($field->readOnly || !isset($data[$fieldName]) || 
+            if($field->readOnly || !isset($data[$fieldName]) ||
                !in_array ($fieldName, $editableFieldsFieldNames)) {
 
-                if (isset ($data[$fieldName]) && 
+                if (isset ($data[$fieldName]) &&
                     !in_array ($fieldName, $editableFieldsFieldNames)) {
 
                     if (YII_DEBUG) printR ('setX2Fields: Warning: '.$fieldName.' not set');
@@ -1249,14 +1249,14 @@ abstract class X2Model extends CActiveRecord {
             }
 
             // eliminate placeholder values
-            if($data[$fieldName] == $this->getAttributeLabel($fieldName)) 
+            if($data[$fieldName] == $this->getAttributeLabel($fieldName))
                 $data[$fieldName] = null;
 
             if($field->type === 'link'){
                 $linkId = null;
                 if(isset($data[$fieldName.'_id'])) {
                     // get the linked model's ID from the hidden autocomplete field
-                    $linkId = $data[$fieldName.'_id']; 
+                    $linkId = $data[$fieldName.'_id'];
                 }
 
                 if(ctype_digit((string) $linkId)){
@@ -1268,11 +1268,11 @@ abstract class X2Model extends CActiveRecord {
                     // make sure the linked model exists and that the name matches
                     if($linkName === $data[$fieldName]) {
                         // (ie, the hidden ID field isn't junk data)
-                        $data[$fieldName] = (int) $linkId;  
+                        $data[$fieldName] = (int) $linkId;
                     }
                 }
             }
-            
+
             $this->$fieldName = $field->parseValue($data[$fieldName], $filter);
         }
     }
@@ -1503,7 +1503,7 @@ abstract class X2Model extends CActiveRecord {
     }
 
     /**
-     * Returns an array of field names that the user has permission to edit 
+     * Returns an array of field names that the user has permission to edit
      * @param boolean if false, get attribute labels as well as field names
      * @return mixed if $suppressAttributeLabels is true, an array of field names is returned,
      *    otherwise an associative array is returned (fieldName => attributeLabel)
@@ -1531,7 +1531,7 @@ abstract class X2Model extends CActiveRecord {
         if (!$suppressAttributeLabels) {
             $editableFieldsFieldNamesTmp = array ();
             foreach ($editableFieldsFieldNames as $fieldInfo) {
-                $editableFieldsFieldNamesTmp[$fieldInfo['fieldName']] = 
+                $editableFieldsFieldNamesTmp[$fieldInfo['fieldName']] =
                     $fieldInfo['attributeLabel'];
             }
             $editableFieldsFieldNames = $editableFieldsFieldNamesTmp;

@@ -229,22 +229,15 @@ if(isset($layout)) {
 											}
 		                                    $htmlString .= "</div>";
 
-                                            if($field->type == 'link' && in_array($field->linkType,array('Accounts','Contacts'))) {
-                                                // As the design currently stands, only the Accounts and Contacts controllers'
-                                                // create actions were written to account for the use case where their forms are loaded
-                                                // via ajax. As such, only those model types get the magic "+" button for lookup-type fields.
-                                                // The way it was in version 3.5.6 and earlier was hard-coded conditional references to the
-                                                // "company" field in contacts, and "contactId" field in services (i.e. it would only show
-                                                // up next to the inputs for these two fields). The criteria were expanded in 3.6 to include
-                                                // all link type fields of contact/account link types to make the + button available in custom
-                                                // modules.
-                                                //
-                                                // It would be useful, in the future, to refactor all the code dealing with AJAX vs. full-page
-                                                // create/update forms into x2base and come up with a consolidated, unified method of loading
-                                                // forms asynchronously, and generalize the JavaScript that mediates the creation of a linked
-                                                // record on-the-fly. Needless to say, this is (again) a project for the future.
-                                                $htmlString .= '<span class="create-'.lcfirst(rtrim($field->linkType,'s')).'">+</span>';
-                                            }		
+		                                    if($field->fieldName == 'company') {
+												// add button to Acount label to create new account
+		                                        $htmlString .= '<span class="create-account">+</span>';
+											}
+		
+		                                    if($modelName == "services" && $field->fieldName == 'contactId') {
+		                                        $htmlString .= '<span id="create-contact">+</span>';
+											}
+		
 										}
 		
 									}

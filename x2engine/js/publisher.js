@@ -45,6 +45,12 @@ if(typeof x2.actionFrames == 'undefined')
 
 x2.publisher.elements = {};
 
+x2.publisher.isCalendar = false;
+
+/**
+ * "Magic getter" method which caches jQuery objects so they don't have to be
+ * looked up a second time from the DOM
+ */
 x2.publisher.getElement = function (selector) {
     if(typeof x2.publisher.elements[selector] == 'undefined')
         x2.publisher.elements[selector] = x2.publisher.form.find(selector);
@@ -62,7 +68,7 @@ x2.publisher.reset = function () {
     }
 
     // reset textarea and dropdowns
-    $('#publisher-form select, #publisher-form input[type=text], #publisher-form textarea').each(function(i) {
+    $('#publisher-form select, #publisher-form input[type=text], #publisher-form input[type=number], #publisher-form textarea').each(function(i) {
         $(this).val($(this).data('defaultValue'));
     });
 
@@ -76,18 +82,13 @@ x2.publisher.reset = function () {
 };
 
 /**
- * Switch to a tab identified by an ID
+ * Change the mode of the publisher form based on a selected tab.
  *
  * @param selectedTab ID of the tab.
  */
 x2.publisher.switchToTab = function (selectedTab) {
     // set field SelectedTab for use in POST request
     x2.publisher.getElement('#SelectedTab').val(selectedTab);
-    // Hide panels that aren't being used in the current tab:
-    if(selectedTab != 'new-action' && selectedTab != 'new-event' && selectedTab != 'log-time-spent' && selectedTab != 'log-a-call')
-        x2.publisher.getElement('#action-event-panel').css('display', 'none');
-    else
-        x2.publisher.getElement('#action-event-panel').css('display', 'block');
 
     // List of element IDs displayed in each tab
     var tabUsesIDs = [
@@ -101,10 +102,8 @@ x2.publisher.switchToTab = function (selectedTab) {
             ['action-duration','block']
         ]],
         ['new-action', [
-            ['actionsAssignedToDropdown','inline-block'],
+            ['action-assignment-dropdown','inline-block'],
             ['action-assigned-to-label','block'],
-            ['action-color-dropdown','inline-block'],
-            ['action-color-label','block'],
             ['action-due-date','inline-block'],
             ['action-due-date-label','block'],
             ['action-priority','inline-block'],
@@ -123,12 +122,24 @@ x2.publisher.switchToTab = function (selectedTab) {
             ['action-duration','block']
         ]],
         ['new-event',[
+            ['action-duration','block'],
+            ['action-assigned-to-label','block'],
+            ['action-assignment-dropdown','inline-block'],
+            ['action-color-dropdown','inline-block'],
+            ['action-color-label','block'],
+            // Priority
+            ['action-priority','inline-block'],
+            ['action-priority-label','block'],
             // Start = due date
             ['action-start-date-label','block'],
             ['action-due-date','inline-block'],
             // End = date completed
             ['action-end-date-label','block'],
-            ['action-complete-date','inline-block']
+            ['action-complete-date','inline-block'],
+            // Visibility control
+            ['action-visibility-label','block'],
+            ['action-visibility-dropdown','inline-block']
+
         ]]
     ];
 
@@ -144,12 +155,24 @@ x2.publisher.switchToTab = function (selectedTab) {
             enableIDs = usesIDs;
         } else {
             for(var i2 = 0; i2 < usesIDs.length; i2++) {
-                x2.publisher.getElement('#'+usesIDs[i2][0]).css('display','none');
+                x2.publisher.getElement('#'+usesIDs[i2][0])
+                    .css('display','none')
+                    .each(function() {
+                        if(this.nodeName == 'INPUT' || this.nodeName == 'TEXTAREA' || this.nodeName == 'SELECT') {
+                            this.disabled = true;
+                        }
+                    });
             }
         }
     }
     for(var i2 = 0; i2 < enableIDs.length; i2++) {
-        x2.publisher.getElement('#'+enableIDs[i2][0]).css('display',enableIDs[i2][1]);
+        x2.publisher.getElement('#'+enableIDs[i2][0])
+            .css('display',enableIDs[i2][1])
+            .each(function() {
+                if(this.nodeName == 'INPUT' || this.nodeName == 'TEXTAREA' || this.nodeName == 'SELECT') {
+                    this.disabled = false;
+                }
+            });
     }
 }
 
@@ -220,7 +243,7 @@ x2.publisher.updateActionEndTime = function (event) {
     } else
         endTime = endObj.datepicker('getDate');
     beginTime = beginObj.datepicker('getDate');
-    if(endTime >= currentTime || beginTime.getTime() + totalDuration > currentTime.getTime()) {
+    if(!x2.publisher.isCalendar && (endTime >= currentTime || beginTime.getTime() + totalDuration > currentTime.getTime())) {
         // Push the beginning time back so the end time doesn't go into the future:
         beginObj.datepicker('setDate',new Date(endObj.datepicker('getDate').getTime() - totalDuration));
     } else {
@@ -241,6 +264,7 @@ x2.publisher.updates = function () {
 }
 
 $(function(){
+    x2.publisher.container = $('#publisher');
     x2.publisher.form = $('#publisher-form');
 
     x2.publisher.getElement('#action-due-date').change(function(){

@@ -203,27 +203,35 @@ $(function() {
 		},
 		dayClick: function(date, allDay, jsEvent, view) { // Day Clicked!! Scroll to Publisher and set date to the day that was clicked
 
-			var scrollPublisher = $('#tabs').offset().top + $('#tabs').height() + 5 - $(window).height(); // value of window's scrollbar to make publisher visible
+			var scrollPublisher = x2.publisher.container.offset().top + x2.publisher.container.height() + 5 - $(window).height(); // value of window's scrollbar to make publisher visible
 			if($(window).scrollTop() < scrollPublisher) {
 				$('html,body').animate({ scrollTop: scrollPublisher });
 			}
 
-			$('#Actions_actionDescription').focus();
-
-			var actionDate = new Date(date.getTime());
-			var eventDate = new Date(date.getTime());
+            // Preserve hours previously set in case the user is just switching
+            // the day of the event:
+			var newDate = {
+                begin: new Date(date.getTime()),
+                end: new Date(date.getTime())
+            };
+            var oldDate = {
+                begin: x2.publisher.getElement('#action-due-date').datetimepicker('getDate'),
+                end: x2.publisher.getElement('#action-complete-date').datetimepicker('getDate')
+            };
 			if(view.name == 'month' || view.name == 'basicWeek') {
-				if($('#end-date-input').datetimepicker('getDate')) {
-					var oldEventDate = $('#end-date-input').datetimepicker('getDate');
-					eventDate.setHours(oldEventDate.getHours());
-					eventDate.setMinutes(oldEventDate.getMinutes());
-				}
+                Object.keys(oldDate).forEach(function(key){
+                    if(oldDate[key]) {
+                        newDate[key].setHours(oldDate[key].getHours())
+                        newDate[key].setMinutes(oldDate[key].getMinutes())
+                    }
+                });
 			}
 
-			var dateformat = $('#publisher-form').data('dateformat');
-			var timeformat = $('#publisher-form').data('timeformat');
-			var ampmformat = $('#publisher-form').data('ampmformat');
-			var region = $('#publisher-form').data('region');
+            
+			var dateformat = x2.publisher.getElement('#publisher-form').data('dateformat');
+			var timeformat = x2.publisher.getElement('#publisher-form').data('timeformat');
+			var ampmformat = x2.publisher.getElement('#publisher-form').data('ampmformat');
+			var region = x2.publisher.form.data('region');
 
 			if(typeof(dateformat) == 'undefined') {
 				dateformat = 'M d, yy';
@@ -238,16 +246,15 @@ $(function() {
 				region = '';
 			}
 
-			$('#Actions_dueDate').datetimepicker("destroy");
-			$('#Actions_dueDate').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[region], {'dateFormat':dateformat,'timeFormat':timeformat,'ampm':ampmformat,'changeMonth':true,'changeYear':true, 'defaultDate': actionDate}));
-			$('#Actions_dueDate').datetimepicker('setDate', actionDate);
+            x2.publisher.getElement('#action-due-date').datetimepicker("destroy");
+            x2.publisher.getElement('#action-due-date').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[region], {'dateFormat':dateformat,'timeFormat':timeformat,'ampm':ampmformat,'changeMonth':true,'changeYear':true, 'defaultDate': newDate.begin}));
+            x2.publisher.getElement('#action-due-date').datetimepicker('setDate', newDate.begin);
 
-			if($('#end-date-input').datetimepicker('getDate')) {
-				$('#end-date-input').datetimepicker("destroy");
-				$('#end-date-input').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[region], {'dateFormat':dateformat,'timeFormat':timeformat,'ampm':ampmformat,'changeMonth':true,'changeYear':true, 'defaultDate': eventDate}));
-				$('#end-date-input').datetimepicker('setDate', eventDate);
-			}
+            x2.publisher.getElement('#action-complete-date').datetimepicker("destroy");
+            x2.publisher.getElement('#action-complete-date').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional[region], {'dateFormat':dateformat,'timeFormat':timeformat,'ampm':ampmformat,'changeMonth':true,'changeYear':true, 'defaultDate': newDate.end}));
+            x2.publisher.getElement('#action-complete-date').datetimepicker('setDate', newDate.end);
 
+            x2.publisher.getElement('#action-description').focus();
 		},
 		eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc) { // drop onto a different day
 			if(event.source.source == 'google') // moving event from Google Calendar
@@ -656,13 +663,8 @@ $(function() {
 <?php
 $this->widget('Publisher', array(
     'associationType' => 'calendar',
-    'showNewEvent' => true,
-    'showLogACall' => false,
-    'showNewComment' => false,
-    'showNewAction' => false,
-    'showLogTimeSpent' => false
-        )
-);
+    'calendar' => true
+));
 ?>
 
 

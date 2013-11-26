@@ -44,7 +44,7 @@ class X2GridViewMassActionAction extends CAction {
 
 
     /**
-     * Echoes flashes in the flash arrays 
+     * Echoes flashes in the flash arrays
      */
     private static function echoFlashes () {
         echo CJSON::encode (array (
@@ -55,20 +55,36 @@ class X2GridViewMassActionAction extends CAction {
     }
 
     /**
-     * Delete selected records 
+     * Delete selected records
      */
     private function deleteSelected ($gvSelection) {
         $_GET['ajax'] = true; // prevent controller delete action from redirecting
         $updatedRecordsNum = sizeof ($gvSelection);
+        $unauthorized = 0;
         foreach ($gvSelection as $recordId) {
             if(!ctype_digit((string) $recordId))
                 throw new CHttpException(400, Yii::t('app', 'Invalid selection.'));
-            $this->controller->actionDelete ($recordId);
+            try{
+                if($this->controller->beforeAction('delete'))
+                    $this->controller->actionDelete ($recordId);
+            }catch(CHttpException $e){
+                if($e->statusCode==403)
+                    $unauthorized++;
+                else
+                    throw $e;
+            }
         }
+        $updatedRecordsNum = $updatedRecordsNum - $unauthorized;
         self::$successFlashes[] = Yii::t(
-            'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
-                ' deleted', array ('{updatedRecordsNum}' => $updatedRecordsNum)
+                        'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
+                        ' deleted', array('{updatedRecordsNum}' => $updatedRecordsNum)
         );
+        if($unauthorized > 0){
+            self::$errorFlashes[] = Yii::t(
+                            'app', 'You were not authorized to delete {unauthorized} record'.($unauthorized === 1 ? '' : 's'), array('{unauthorized}' => $unauthorized)
+            );
+        }
+
 
     }
 
@@ -76,7 +92,7 @@ class X2GridViewMassActionAction extends CAction {
      * Tag selected records
      */
     private function tagSelected ($gvSelection) {
-        if (!isset ($_POST['tags']) || !is_array ($_POST['tags']) || 
+        if (!isset ($_POST['tags']) || !is_array ($_POST['tags']) ||
             !isset ($_POST['modelType'])) {
 
             AuxLib::printTestError ('Invalid request');
@@ -113,7 +129,7 @@ class X2GridViewMassActionAction extends CAction {
         if ($updatedRecordsNum > 0) {
             self::$successFlashes[] = Yii::t(
                 'app', '{tagsAdded} tag'.($tagsAdded === 1 ? '' : 's').
-                    ' added to {updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's'), 
+                    ' added to {updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's'),
                     array (
                         '{updatedRecordsNum}' => $updatedRecordsNum,
                         '{tagsAdded}' => $tagsAdded
@@ -124,7 +140,7 @@ class X2GridViewMassActionAction extends CAction {
     }
 
     /**
-     * Update fields of selected records 
+     * Update fields of selected records
      */
     private function updateFieldsOfSelected ($gvSelection, $fieldName, $fieldVal) {
         $modelType = X2Model::Model ($this->controller->modelClass);
@@ -143,7 +159,7 @@ class X2GridViewMassActionAction extends CAction {
             $field = array ($fieldName => $fieldVal);
             $model->setX2Fields ($field);
 
-            if (!$model->save ()) { 
+            if (!$model->save ()) {
                 $errorMsg = $model->getError ($fieldName);
                 self::$noticeFlashes[] = Yii::t(
                     'app', 'Record {recordId} could not be updated'.
@@ -164,7 +180,7 @@ class X2GridViewMassActionAction extends CAction {
     }
 
     /**
-     * Add selected records to list with given id 
+     * Add selected records to list with given id
      */
     public function removeFromList($gvSelection, $listId){
         foreach($gvSelection as $contactId) {
@@ -193,7 +209,7 @@ class X2GridViewMassActionAction extends CAction {
     }
 
     /**
-     * Add selected records to list with given id 
+     * Add selected records to list with given id
      */
     public function addToList($gvSelection, $listId){
         foreach($gvSelection as &$contactId) {
@@ -223,7 +239,7 @@ class X2GridViewMassActionAction extends CAction {
     }
 
     /**
-     * Create new list with given name and add selected contacts to it 
+     * Create new list with given name and add selected contacts to it
      */
     public function createList ($gvSelection, $listName) {
         foreach($gvSelection as &$contactId){
@@ -317,7 +333,7 @@ class X2GridViewMassActionAction extends CAction {
                 $this->removeFromList ($gvSelection, $_POST['listId']);
                 break;
             case 'createList':
-                if ($this->controller->modelClass !== 'Contacts' || 
+                if ($this->controller->modelClass !== 'Contacts' ||
                     !isset ($_POST['listName']) || $_POST['listName'] === '') {
 
                     AuxLib::printTestError ('Invalid request');

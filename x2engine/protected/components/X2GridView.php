@@ -70,7 +70,7 @@ class X2GridView extends CGridView {
     public $excludedColumns;
     public $enableControls = false;
     public $enableTags = false;
-    
+
     public $fixedHeader = false;
 
     public $summaryText;
@@ -78,10 +78,10 @@ class X2GridView extends CGridView {
     public $buttons = array();
     public $title;
     public $massActions = array ();
-    
+
     // JS which will be executed before/after yiiGridView.update () updates the grid view
-    private $afterGridViewUpdateJSString = ""; 
-    private $beforeGridViewUpdateJSString = ""; 
+    private $afterGridViewUpdateJSString = "";
+    private $beforeGridViewUpdateJSString = "";
 
     protected $allFields = array();
     protected $allFieldNames = array();
@@ -128,15 +128,15 @@ class X2GridView extends CGridView {
 
     /**
      * Registers JS which makes the grid header sticky
-     * Preconditions: 
+     * Preconditions:
      *     - The CGridView template string must be set up in a highly specific way
-     *         - Example: 
+     *         - Example:
 	 *              '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">
      *               <div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">
      *               <div id="x2-gridview-page-title" class="x2-gridview-fixed-title">
      *               {items}{pager}'
      *          - there must be a pager and items.
-     *          - the three opening divs with the specified classes and ids are required. The divs 
+     *          - the three opening divs with the specified classes and ids are required. The divs
      *            get closed after the grid header is printed.
      *     - the X2GridView propert fixedHeader must be set to true
      */
@@ -158,7 +158,7 @@ class X2GridView extends CGridView {
             }
 
             x2.gridviewStickyHeader.DEBUG && console.log ('after grid update');
-            if (!x2.gridviewStickyHeader.isStuck && 
+            if (!x2.gridviewStickyHeader.isStuck &&
                 !x2.gridviewStickyHeader.checkX2GridViewHeaderSticky ()) {
 
                 $(window).
@@ -166,7 +166,7 @@ class X2GridView extends CGridView {
                         'scroll.stickyHeader',
                         x2.gridviewStickyHeader.checkX2GridViewHeaderSticky).
                     bind (
-                        'scroll.stickyHeader', 
+                        'scroll.stickyHeader',
                         x2.gridviewStickyHeader.checkX2GridViewHeaderSticky);
             }
         ";
@@ -177,13 +177,13 @@ class X2GridView extends CGridView {
             x2.gridviewStickyHeader.headerContainer =
                 $('#".$this->id."').find ('.x2grid-header-container');
             x2.gridviewStickyHeader.titleContainer = $('#x2-gridview-top-bar-outer');
-            x2.gridviewStickyHeader.bodyContainer = 
+            x2.gridviewStickyHeader.bodyContainer =
                 $('#".$this->id."').find ('.x2grid-body-container');
-            x2.gridviewStickyHeader.pagerHeight = 
-                $('#".$this->id."').find ('.pager').length ? 
+            x2.gridviewStickyHeader.pagerHeight =
+                $('#".$this->id."').find ('.pager').length ?
                     $('#".$this->id."').find ('.pager').height () : 7;
-            x2.gridviewStickyHeader.stickyHeaderHeight = 
-                $(x2.gridviewStickyHeader.headerContainer).height () + 
+            x2.gridviewStickyHeader.stickyHeaderHeight =
+                $(x2.gridviewStickyHeader.headerContainer).height () +
                 $(x2.gridviewStickyHeader.titleContainer).height ();
             x2.gridviewStickyHeader.x2TitleBarHeight = $('#header-inner').height ();
 
@@ -196,7 +196,7 @@ class X2GridView extends CGridView {
 
             x2.gridviewStickyHeader.makeSticky = function () {
                 var bodyContainer = x2.gridviewStickyHeader.bodyContainer;
-                var \$titleBar = 
+                var \$titleBar =
                     $('#x2-gridview-top-bar-outer').removeClass ('x2-gridview-fixed-top-bar-outer')
                 $(bodyContainer).find ('table').removeClass ('x2-gridview-body-with-fixed-header');
 
@@ -207,7 +207,7 @@ class X2GridView extends CGridView {
 
             x2.gridviewStickyHeader.makeUnsticky = function () {
                 var bodyContainer = x2.gridviewStickyHeader.bodyContainer;
-                var \$titleBar = 
+                var \$titleBar =
                     $('#x2-gridview-top-bar-outer').addClass ('x2-gridview-fixed-top-bar-outer')
                 $(bodyContainer).find ('table').addClass ('x2-gridview-body-with-fixed-header');
 
@@ -228,7 +228,7 @@ class X2GridView extends CGridView {
                 var x2TitleBarHeight = x2.gridviewStickyHeader.x2TitleBarHeight;
 
                 // check if none of grid view body is visible
-                if (($(bodyContainer).offset ().top + $(bodyContainer).height ()) - 
+                if (($(bodyContainer).offset ().top + $(bodyContainer).height ()) -
                     ($(window).scrollTop () + stickyHeaderHeight + x2TitleBarHeight + 5) < 0) {
 
                     //x2.gridviewStickyHeader.isStuck = true;
@@ -238,12 +238,12 @@ class X2GridView extends CGridView {
 
                     /* unfix header */
                     //$(bodyContainer).hide ();
-                    /*var \$titleBar = 
+                    /*var \$titleBar =
                         $('#x2-gridview-top-bar-outer').removeClass (
                             'x2-gridview-fixed-top-bar-outer')
                     \$titleBar.attr (
-                        'style', 'margin-top: ' + 
-                        (($(bodyContainer).height () - stickyHeaderHeight - pagerHeight) + 5) + 
+                        'style', 'margin-top: ' +
+                        (($(bodyContainer).height () - stickyHeaderHeight - pagerHeight) + 5) +
                         'px');*/
 
                     // hide mass actions dropdown
@@ -267,13 +267,13 @@ class X2GridView extends CGridView {
 
                     $(window).
                         unbind (
-                            'scroll.stickyHeader', 
+                            'scroll.stickyHeader',
                             x2.gridviewStickyHeader.checkX2GridViewHeaderSticky).
                         bind (
-                            'scroll.stickyHeader', 
+                            'scroll.stickyHeader',
                             x2.gridviewStickyHeader.checkX2GridViewHeaderUnsticky);
 
-                    x2.gridviewStickyHeader.cachedTitleContainerOffsetTop = 
+                    x2.gridviewStickyHeader.cachedTitleContainerOffsetTop =
                         $(titleContainer).offset ().top;
                 } else {
                     return false;
@@ -289,7 +289,7 @@ class X2GridView extends CGridView {
 
 
                 // check if grid header needs to be made unsticky
-                if ((($(window).scrollTop () + x2TitleBarHeight) - 
+                if ((($(window).scrollTop () + x2TitleBarHeight) -
                     x2.gridviewStickyHeader.cachedTitleContainerOffsetTop) < 20) {
                     //x2.gridviewStickyHeader.DEBUG && console.log ('unsticky');
 
@@ -298,33 +298,33 @@ class X2GridView extends CGridView {
                     /*var bodyContainer = x2.gridviewStickyHeader.bodyContainer;
                     x2.gridviewStickyHeader.isStuck = false;*/
 
-                    /* fix header */ 
-                    /*var \$titleBar = 
+                    /* fix header */
+                    /*var \$titleBar =
                         $('#x2-gridview-top-bar-outer').
-                            addClass ('x2-gridview-fixed-top-bar-outer'); 
+                            addClass ('x2-gridview-fixed-top-bar-outer');
                     \$titleBar.attr ('style', '');
                     $(bodyContainer).show ();*/
 
                     //for (var i = 0; i < 1000; ++i) console.log (i);
 
                     // show mass actions dropdown
-                    /*if (x2.gridviewStickyHeader.listWasVisible && 
+                    /*if (x2.gridviewStickyHeader.listWasVisible &&
                           $('#more-drop-down-list').length) {
                         $('#more-drop-down-list').show ();
                     }*/
-                    if (x2.gridviewStickyHeader.columnSelectorWasVisible && 
-                        $('.column-selector').length && 
+                    if (x2.gridviewStickyHeader.columnSelectorWasVisible &&
+                        $('.column-selector').length &&
                         $('.column-selector-link').hasClass ('clicked')) {
 
                         $('.column-selector').show ();
                     }
 
-                    
+
                     $(window).
                         unbind (
-                            'scroll.stickyHeader', 
+                            'scroll.stickyHeader',
                             x2.gridviewStickyHeader.checkX2GridViewHeaderUnsticky).
-                        bind ('scroll.stickyHeader', 
+                        bind ('scroll.stickyHeader',
                             x2.gridviewStickyHeader.checkX2GridViewHeaderSticky);
                 }
             };
@@ -357,7 +357,7 @@ class X2GridView extends CGridView {
         $this->columnSelectorId = $this->getId() . '-column-selector';
 
         // Get gridview settings by looking in the URL:
-        if(isset($_GET['gvSettings']) && isset($_GET['viewName']) && 
+        if(isset($_GET['gvSettings']) && isset($_GET['viewName']) &&
             $_GET['viewName'] == $this->viewName) {
 
             $this->gvSettings = json_decode($_GET['gvSettings'],true);
@@ -379,7 +379,7 @@ class X2GridView extends CGridView {
             if(isset($columnData['header'])) {
                 $this->specialColumnNames[$columnName] = $columnData['header'];
             } else {
-                $this->specialColumnNames[$columnName] = 
+                $this->specialColumnNames[$columnName] =
                     X2Model::model($this->modelName)->getAttributeLabel($columnName);
             }
         }
@@ -410,7 +410,7 @@ class X2GridView extends CGridView {
             // var_dump($rolePermissions);
 
             foreach($rolePermissions as &$permission) {
-                if(!isset($fieldPermissions[$permission['fieldId']]) || 
+                if(!isset($fieldPermissions[$permission['fieldId']]) ||
                    $fieldPermissions[$permission['fieldId']] < (int)$permission['permission']) {
 
                     $fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
@@ -431,30 +431,30 @@ class X2GridView extends CGridView {
             $this->allFieldNames['tags'] = Yii::t('app','Tags');
 
         foreach($this->allFields as $fieldName=>&$field) {
-            $this->allFieldNames[$fieldName] = 
+            $this->allFieldNames[$fieldName] =
                 X2Model::model($this->modelName)->getAttributeLabel($field->fieldName);
         }
 
         // update columns if user has submitted data
-        if(isset($_GET['columns']) && isset($_GET['viewName']) && 
+        if(isset($_GET['columns']) && isset($_GET['viewName']) &&
            $_GET['viewName'] == $this->viewName) { // has the user changed column visibility?
 
             foreach(array_keys($this->gvSettings) as $key) {
                 // search $_GET['columns'] for the column
-                $index = array_search($key,$_GET['columns']); 
+                $index = array_search($key,$_GET['columns']);
 
                 if($index === false) { // if it's not in there,
                     unset($this->gvSettings[$key]); // delete that junk
                 } else { // othwerise, remove it from $_GET['columns']
 
                     // so the next part doesn't add it a second time
-                    unset($_GET['columns'][$index]); 
+                    unset($_GET['columns'][$index]);
                 }
             }
 
             // now go through $allFieldNames and add any fields that
-            foreach(array_keys($this->allFieldNames) as $key) { 
-                if(!isset($this->gvSettings[$key]) && in_array($key,$_GET['columns'])) { 
+            foreach(array_keys($this->allFieldNames) as $key) {
+                if(!isset($this->gvSettings[$key]) && in_array($key,$_GET['columns'])) {
                     // are present in $_GET['columns'] but not already in the list
 
                     $this->gvSettings[$key] = 80; // default width of 80
@@ -480,9 +480,9 @@ class X2GridView extends CGridView {
             }
         } */
         // die(var_dump($this->gvSettings).' '.$this->viewName);
-       
+
        // save the new Gridview Settings
-        Profile::setGridviewSettings($this->gvSettings,$this->viewName); 
+        Profile::setGridviewSettings($this->gvSettings,$this->viewName);
 
         // die(var_dump($this->gvSettings));
 
@@ -530,7 +530,7 @@ class X2GridView extends CGridView {
 
                 $newColumn['name'] = $columnName;
                 $newColumn['id'] = 'C_'.$columnName;
-                $newColumn['header'] = 
+                $newColumn['header'] =
                     X2Model::model($this->modelName)->getAttributeLabel($columnName);
                 $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
 
@@ -573,7 +573,7 @@ class X2GridView extends CGridView {
                 } else {
 
                     // translate Yii date format to jquery
-                    $format = Yii::app()->locale->getDateFormat('medium'); 
+                    $format = Yii::app()->locale->getDateFormat('medium');
 
                     $format = str_replace('yy', 'y', $format);
                     $format = str_replace('MM', 'mm', $format);
@@ -652,15 +652,15 @@ class X2GridView extends CGridView {
 
             . '<div class="form no-border" style="display:inline;"> '
             . CHtml::dropDownList(
-                'resultsPerPage', Profile::getResultsPerPage(), 
+                'resultsPerPage', Profile::getResultsPerPage(),
                 Profile::getPossibleResultsPerPage(), array(
                     'ajax' => array(
                         'url' => $this->controller->createUrl('/profile/setResultsPerPage'),
                         'complete' => "function(response) {
                             ".$this->beforeGridViewUpdateJSString."
                             \$.fn.yiiGridView.update('{$this->id}', {" .
-                                (isset($this->modelName) ? 
-                                    "data: {'{$this->modelName}_page': 1}," : "") . 
+                                (isset($this->modelName) ?
+                                    "data: {'{$this->modelName}_page': 1}," : "") .
                                     "complete: function () {".$this->afterGridViewUpdateJSString .
                                     "}
                             });
@@ -675,10 +675,10 @@ class X2GridView extends CGridView {
 
         // $this->afterAjaxUpdate = 'function(id, data) { '.$datePickerJs.' }';
         // if(!empty($this->afterAjaxUpdate))
-            // $this->afterAjaxUpdate = "var callback = ".$this->afterAjaxUpdate."; 
+            // $this->afterAjaxUpdate = "var callback = ".$this->afterAjaxUpdate.";
         // if(typeof callback == 'function') callback();";
 
-        /* $this->afterAjaxUpdate = " function(id,data) { 
+        /* $this->afterAjaxUpdate = " function(id,data) {
             ".$this->afterAjaxUpdate." ".$datePickerJs;*/
 
         // if($this->enableGvSettings) {
@@ -692,12 +692,12 @@ class X2GridView extends CGridView {
         // $this->afterAjaxUpdate .= " } ";
         $this->addToAfterAjaxUpdate ("if(typeof(refreshQtip) == 'function') { refreshQtip(); }");
 
-        if(isset(Yii::app()->controller->module) && 
+        if(isset(Yii::app()->controller->module) &&
            Yii::app()->controller->module->id=='contacts'){
-            /* after user moves to a different page, make sure the tool tips get added to the 
+            /* after user moves to a different page, make sure the tool tips get added to the
             newly showing rows */
             $this->addToAfterAjaxUpdate ('
-                    $(".qtip-hint").qtip({content:false}); 
+                    $(".qtip-hint").qtip({content:false});
                     $(".x2-button-group").next (".x2-hint").qtip ();
             ');
         }
@@ -713,16 +713,16 @@ class X2GridView extends CGridView {
     }
 
     public function addToAfterAjaxUpdate ($str) {
-        $this->afterGridViewUpdateJSString .= $str; 
-        $this->afterAjaxUpdate = 
+        $this->afterGridViewUpdateJSString .= $str;
+        $this->afterAjaxUpdate =
             'js: function(id, data) {'.
                 $this->afterGridViewUpdateJSString.
             '}';
     }
 
     public function addToBeforeAjaxUpdate ($str) {
-        $this->beforeGridViewUpdateJSString .= $str; 
-        $this->beforeAjaxUpdate = 
+        $this->beforeGridViewUpdateJSString .= $str;
+        $this->beforeAjaxUpdate =
             'js: function(id, data) {'.
                 $this->beforeGridViewUpdateJSString;
             '}';
@@ -731,7 +731,7 @@ class X2GridView extends CGridView {
     public function run() {
         $this->registerClientScript();
 
-        /* give this a special class so the javascript can tell it apart from the regular, lame 
+        /* give this a special class so the javascript can tell it apart from the regular, lame
         gridviews */
         if(!isset($this->htmlOptions['class']))
             $this->htmlOptions['class'] = '';
@@ -750,7 +750,7 @@ class X2GridView extends CGridView {
             Yii::app()->clientScript->scriptMap['*.js'] = false;
             Yii::app()->clientScript->scriptMap['*.css'] = false;
 
-            /* remove JS for gridview checkboxes and delete buttons (these events use jQuery.on() 
+            /* remove JS for gridview checkboxes and delete buttons (these events use jQuery.on()
             and shouldn't be reapplied) */
             Yii::app()->clientScript->registerScript('CButtonColumn#C_gvControls',null);
             Yii::app()->clientScript->registerScript('CCheckBoxColumn#C_gvCheckbox',null);
@@ -874,8 +874,8 @@ class X2GridView extends CGridView {
                 $this->renderFilter();
 
             echo "</thead>\n";
-        } else if($this->filter!==null && 
-            ($this->filterPosition===self::FILTER_POS_HEADER || 
+        } else if($this->filter!==null &&
+            ($this->filterPosition===self::FILTER_POS_HEADER ||
              $this->filterPosition===self::FILTER_POS_BODY)) {
             // echo "<colgroup>";
             // foreach($this->columns as $column) {
@@ -896,7 +896,7 @@ class X2GridView extends CGridView {
             echo '<h2>',$this->title,'</h2>';
     }
 
-    
+
 
     public function renderButtons() {
         if(0 === $count = count($this->buttons))
@@ -965,9 +965,16 @@ class X2GridView extends CGridView {
     }
 
     /**
-     * Display mass actions ui buttons in top bar and set up related JS 
+     * Display mass actions ui buttons in top bar and set up related JS
      */
     public function renderMassActionButtons () {
+        $auth = Yii::app()->authManager;
+        $actionAccess = ucfirst(Yii::app()->controller->getId()). 'Delete';
+        $authItem = $auth->getAuthItem($actionAccess);
+        if(!is_null($authItem) && !Yii::app()->user->checkAccess($actionAccess)){
+            if(in_array('delete',$this->massActions))
+                unset($this->massActions[array_search('delete',$this->massActions)]);
+        }
         $this->controller->renderPartial (
             'application.components.views._x2GridViewMassActionButtons', array (
                 'UIType' => 'buttons',

@@ -47,25 +47,15 @@ class Publisher extends X2Widget {
     public $associationId = '';        // record to associate actions with
     public $assignedTo = null;    // user actions will be assigned to by default
 
-    // show all tabs by default
-    public $showLogACall = true;
-    public $showNewAction = true;
-    public $showNewComment = true;
-    public $showNewEvent = false;
-    public $halfWidth = false;
-    public $showQuickNote = true;
-    public $showLogTimeSpent = true;
+    public $calendar = false;
     public $model;
 
     public $viewParams = array(
-        'halfWidth',
         'model',
-        'showLogACall',
-        'showNewComment',
-        'showNewEvent',
-        'showNewAction',
-        'showQuickNote',
-        'showLogTimeSpent',
+        'associationId',
+        'associationType',
+        'calendar',
+        'associationType'
     );
 
 
@@ -83,13 +73,9 @@ class Publisher extends X2Widget {
              * Ad-hoc quasi-validation for the publisher
              */
             x2.publisher.beforeSubmit = function() {
-                if($('#Actions_actionDescription').val() == '') {
+                if(x2.publisher.getElement('#action-description').val() == '') {
                     alert('".addslashes(Yii::t('actions', 'Please enter a description.'))."');
                     return false;
-                } else {
-                    // show saving... icon
-                    \$('.publisher-text').animate({opacity: 0.0});
-                    \$('#publisher-saving-icon').animate({opacity: 1.0});
                 }
                 return true; // form is sane: submit!
             }
@@ -165,38 +151,15 @@ class Publisher extends X2Widget {
             });
         ", CClientScript::POS_HEAD);
         Yii::app()->clientScript->registerCss('recordViewPublisherCss', '
-            #log-time-spent-form #action-event-panel .row,
-            #log-a-call-form #action-event-panel .row {
-                max-width: 405px;
+            #action-event-panel {
+                margin-top: 5px;
             }
             #action-duration {
-                margin-top: 15px;
-                margin-left: 43px;
-            }
-            #log-a-call-form .event-panel-second-cell,
-            #log-time-spent-form .event-panel-second-cell {
-                margin-left: 5px;
-            }
-            .history.half-width #log-a-call-form .cell:first-child,
-            .history.half-width #log-time-spent-form .cell:first-child {
-                margin-right: 0 !important;
-            }
-            .history.half-width #log-a-call-form .event-panel-second-cell,
-            .history.half-width #log-time-spent-form .event-panel-second-cell {
-                margin-left: 0px !important;
-                float:right !important;
-                margin-right: 0 !important;
-                width: 150px;
-            }
-            .history.half-width #action-duration {
-                margin-left: 0px !important;
+                margin-right: 10px;
             }
             #action-duration .action-duration-display {
                 font-size: 30px;
                 font-family: Consolas, monaco, monospace;
-            }
-            #action-duration span.action-duration-display {
-                vertical-align: top;
             }
             #action-duration input {
                 width: 50px;
@@ -209,7 +172,7 @@ class Publisher extends X2Widget {
             }
         ');
 
-        if($this->showNewEvent){
+        if($this->calendar){
             Yii::app()->clientScript->registerCss('calendarSpecificWidgetStyle', "
         .publisher-widget-title {
             color: #222;
@@ -227,9 +190,15 @@ class Publisher extends X2Widget {
             width: 100%;
         }
     ");
+        } else {
+            Yii::app()->clientScript->registerCss('genericPublisherWidgetStyle', "
+        #publisher .text-area-wrapper {
+            margin-right: 75px;
+        }
+    ");
         }
 
-        if(!$this->halfWidth){
+        if($this->calendar){
             // set date, time, and region format for when javascript replaces datetimepicker
             // datetimepicker is replaced in the calendar module when the user clicks on a day
             $dateformat = Formatter::formatDatePicker('medium');
@@ -241,57 +210,49 @@ class Publisher extends X2Widget {
         }
 
         // save default values of fields for when the publisher is submitted and then reset
-        Yii::app()->clientScript->registerScript('defaultValues', "
-$(function() {
-
-    ".($this->halfWidth ? "
-    // turn on jquery tabs for the publisher
-    $('#tabs').tabs({
+        Yii::app()->clientScript->registerScript('defaultValues', '
+    x2.publisher.isCalendar = '.($this->calendar ? 'true' : 'false').';
+    '.($this->calendar ?'
+    // Enable fields for the calendar event publisher:
+    x2.publisher.switchToTab("new-event");
+    ':'
+    // Turn on jquery tabs for the publisher:
+    $("#publisher").tabs({
         activate: function(event, ui) { x2.publisher.tabSelected(event, ui); },
     });
-    $(document).on('change','#quickNote2',function(){
-        $('#Actions_actionDescription').val($(this).val());
+    // "Quick note" menu event handler:
+    $(document).on("change","#quickNote2",function(){
+        $("#Actions_actionDescription").val($(this).val());
     });
-    ":"
-    x2.publisher.isCalendar = " . ($this->showNewEvent ? 'true' : 'false') . ";
-
-    if (!x2.publisher.isCalendar) {
-        $('#tabs').tabs({
-            select: function(event, ui) { x2.publisher.tabSelected(event, ui); },
-        });
-    }
-    ")."
-
-
-    if($('#tabs .ui-state-active').length !== 0) { // if publisher is present (prevents a javascript error if publisher is not present)
-        var selected = $('#tabs .ui-state-active').attr('aria-controls');
+    ').'
+    if($("#publisher .ui-state-active").length !== 0) { // if publisher is present (prevents a javascript error if publisher is not present)
+        var selected = $("#publisher .ui-state-active").attr("aria-controls");
         x2.publisher.switchToTab(selected);
     }
 
-    $('#publisher-form select, #publisher-form input[type=text], #publisher-form textarea').each(function(i) {
-        $(this).data('defaultValue', $(this).val());
+    $("#publisher-form select, #publisher-form input[type=text], #publisher-form input[type=number], #publisher-form textarea").each(function(i) {
+        $(this).data("defaultValue", $(this).val());
     });
 
-    $('#publisher-form input[type=checkbox]').each(function(i) {
-        $(this).data('defaultValue', $(this).is(':checked'));
+    $("#publisher-form input[type=checkbox]").each(function(i) {
+        $(this).data("defaultValue", $(this).is(":checked"));
     });
 
-    // highlight save button when something is edited in the publisher
-    $('#publisher-form input, #publisher-form select, #publisher-form textarea').focus(function(){
-        $('#save-publisher').addClass('highlight');
-        ".($this->halfWidth ? "
-        $('#publisher-form textarea').height(80);
-        $(document).unbind('click.publisher').bind('click.publisher',function(e) {
-            if(!$(e.target).parents().is('#publisher-form, .ui-datepicker')
-                && $('#publisher-form textarea').val()=='') {
-                $('#save-publisher').removeClass('highlight');
-                $('#publisher-form textarea').animate({'height':22},300);
+    // Highlight save button when something is edited in the publisher
+    $("#publisher-form input, #publisher-form select, #publisher-form textarea, #publisher").focus(function(){
+        $("#save-publisher").addClass("highlight");
+        if(this.nodeName == "TEXTAREA" || this.nodeName == "DIV") // Expand text area; expecting user input.
+            $("#publisher-form textarea").height(80);
+        $(document).unbind("click.publisher").bind("click.publisher",function(e) {
+            if(!$(e.target).parents().is("#publisher-form, .ui-datepicker")
+                && $("#publisher-form textarea").val()=="") {
+                $("#save-publisher").removeClass("highlight");
+                $("#publisher-form textarea").animate({"height":22},300);
             }
-        });"
-        :"")."
+        });
     });
 
-    ".($this->halfWidth?"":"
+    '.($this->calendar?"
     // position the saving icon for the publisher (which starts invisible)
     var publisherLabelCenter = parseInt($('.publisher-label').css('width'), 10)/2;
     var halfIconWidth = parseInt($('#publisher-saving-icon').css('width'), 10)/2;
@@ -303,8 +264,8 @@ $(function() {
     $('#publisher-form').data('timeformat', '$timeformat');
     $('#publisher-form').data('ampmformat', '$ampmformat');
     $('#publisher-form').data('region', '$region');
-    ")."
-});");
+    ":"")."
+", CClientScript::POS_READY);
 
         $that = $this;
         $this->model = $model;

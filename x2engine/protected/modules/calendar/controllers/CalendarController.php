@@ -1293,7 +1293,7 @@ class CalendarController extends x2base {
         $criteria = $action->getAccessCriteria();
         $criteria->compare('assignedTo',$calendarUser);
         $criteria->addCondition(self::constructFilterClause($filter));
-        $criteria->addCondition("`type` IS NULL OR `type` != 'quotes'");
+        $criteria->addCondition("`type` IS NULL OR `type`='' OR `type`!='quotes'");
         $criteria->addCondition('(`dueDate` >= :start1 AND `dueDate` <= :end1) OR (`completeDate` >= :start2 AND `completeDate` <= :end2)');
         $criteria->params = array_merge($criteria->params,array(':start1'=>$start,':start2'=>$start,':end1'=>$end,':end2'=>$end));
         return Actions::model()->with('actionText')->findAll($criteria);

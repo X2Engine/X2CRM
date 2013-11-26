@@ -1,3 +1,20 @@
+# 3.6.2 #
+11/26/2013
+* Hosting one's CRM on a different domain name than one's website will increase 
+  the likelihood of public-facing resources like targeted content, web forms and
+  the web tracker not working properly in some browsers. This is due to the 
+  default privacy settings in such browsers, which have "third-party" cookies
+  disabled. To rectify this issue, see the instructions on the "Public Info 
+  Settings" page (accessed through the "Admin" page). The configurable public web
+  root URL setting allows one to specify a distinct "external" base URL to use for
+  public-facing resources. 
+* In this release, the previous changes (in 3.6) that would have allowed generic
+  applicability of the "+" button (to create new account or contact, displayed next
+  to the inputs for link-type fields of those types) have been reverted. This is
+  because, as it turns out, would require far more clean-up and refactoring of 
+  old relationships JavaScript code that there hasn't been enough time yet to 
+  perform. The "+" button was non-functional in 3.6 for this reason.
+
 # 3.6.1 #
 11/22/2013
 * The targeted content embed method has been changed to resolve the previous 

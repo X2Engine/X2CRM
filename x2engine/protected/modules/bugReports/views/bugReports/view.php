@@ -63,7 +63,7 @@ $this->widget('Publisher',
 		'associationType'=>'bugReports',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
-		'halfWidth'=>true
+		'calendar' => false
 	)
 );
 $this->widget('History',array('associationType'=>'BugReports','associationId'=>$model->id));

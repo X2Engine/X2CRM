@@ -181,7 +181,7 @@ $this->widget('Publisher',
 		'associationType'=>'accounts',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
-		'halfWidth'=>true
+		'calendar' => false
 	)
 );
 

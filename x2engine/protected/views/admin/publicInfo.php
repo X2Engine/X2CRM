@@ -48,9 +48,24 @@
     ?>
     <div class="form">
         <?php echo $form->labelEx($model, 'externalBaseUrl'); ?>
-        <p><?php echo Yii::t('admin', 'This will be the web root URL to use for generating URLs to public-facing resources, i.e. email tracking images, the web listener, etc. You should use this if the CRM is behind a firewall and you access X2CRM using a different URL than one would use to access it from the internet (i.e. a host name / IP address on a private subnet or VPN).'); ?></p>
+        <p><?php 
+        echo Yii::t('admin', 'This will be the web root URL to use for generating URLs to '.
+            'public-facing resources, i.e. email tracking images, the web tracker, targeted '.
+            'content etc.');
+        ?></p>
+        <?php
+
+?>
+        <p><?php 
+        echo Yii::t('admin', 'You ');
+         
+        echo Yii::t('admin', 'should use this if the CRM is behind a firewall and you access X2CRM using a different URL than one would use to access it from the internet (i.e. a host name / IP address on a private subnet or VPN).'); 
+        ?></p>
         <?php echo $form->textField($model, 'externalBaseUrl',array('style' => 'width: 90%')); ?>
         <?php echo CHtml::error($model, 'externalBaseUrl');?>
+<?php
+
+?>
     </div><!-- .form -->
 
     <?php echo CHtml::submitButton(Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button'))."\n"; ?>

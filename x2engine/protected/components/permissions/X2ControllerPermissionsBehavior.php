@@ -41,28 +41,44 @@
  */
 class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
+    /**
+     * Extension of a base Yii function, this method is run before every action
+     * in a controller. If true is returned, it procedes as normal, otherwise
+     * it will redirect to the login page or generate a 403 error.
+     * @param string $action The name of the action being executed.
+     * @return boolean True if the user can procede with the requested action
+     */
     public function beforeAction($action = null) {
         if(is_int(Yii::app()->locked) && !Yii::app()->user->checkAccess('GeneralAdminSettingsTask')) {
             $this->owner->appLockout();
         }
 		$auth = Yii::app()->authManager;
 		$params = array();
-		$action = $this->owner->getAction()->getId();
+        if(empty($action))
+            $action = $this->owner->getAction()->getId();
+        elseif(is_string($action)){
+            $action = $this->owner->createAction($action);
+        }
+        $actionId=$action->getId();
+        // These actions all have a model provided with them but its assignment should not be checked for an exception.
+        // They either have permission for this action or they do not.
 		$exceptions = array('updateStageDetails','deleteList','updateList','userCalendarPermissions','exportList','updateLocation');
         if(class_exists($this->owner->modelClass)){
             $model=X2Model::model($this->owner->modelClass);
         }
-		if(isset($_GET['id']) && !in_array($action,$exceptions) && !Yii::app()->user->isGuest && isset($model)) {
-			if ($model->hasAttribute('assignedTo')) {
+		if(isset($_GET['id']) && !in_array($actionId,$exceptions) && !Yii::app()->user->isGuest && isset($model)) {
+			if ($model->hasAttribute('assignedTo')) { // If we have an assignment field, we may have an exception in the permissions
 				$model=X2Model::model($this->owner->modelClass)->findByPk($_GET['id']);
-                if($model!==null){
+                if($model!==null){ // Pass the assigned to into the params array to be used for biz rules.
                     $params['assignedTo']=$model->assignedTo;
                 }
             }
 		}
-
-		$actionAccess = ucfirst($this->owner->getId()) . ucfirst($this->owner->getAction()->getId());
+        
+        // Generate the proper name for the auth item
+		$actionAccess = ucfirst($this->owner->getId()) . ucfirst($actionId);
 		$authItem = $auth->getAuthItem($actionAccess);
+        // Return true if the user is explicitly allowed to do it, or if there is no permission item, or if they are an admin
 		if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->params->isAdmin)
 			return true;
 		elseif(Yii::app()->user->isGuest){
@@ -122,6 +138,13 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
             return false;
     }
 
+    /**
+     * Format the left sidebar menu of links to remove items which a user is not
+     * allowed to perform due to role settings.
+     * @param array $array An array of menu items to be formatted
+     * @param array $params An array of special parameters to be used for a role's biz rule
+     * @return array The formatted list of menu items
+     */
     function formatMenu($array, $params = array()) {
         $auth = Yii::app()->authManager;
         foreach ($array as &$item) {

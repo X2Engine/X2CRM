@@ -280,7 +280,7 @@ if(!IS_ANDROID && !IS_IPAD){
         'associationType' => 'contacts',
         'associationId' => $model->id,
         'assignedTo' => Yii::app()->user->getName(),
-        'halfWidth' => true
+        'calendar' => false
             )
     );
 

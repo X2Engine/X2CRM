@@ -207,7 +207,7 @@ if(!$model->drive && empty($fileView)){
 		'associationType'=>'media',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
-		'halfWidth'=>true
+		'calendar' => false
 	)
 );
 $this->widget('History',array('associationType'=>'media','associationId'=>$model->id));

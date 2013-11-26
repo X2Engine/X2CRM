@@ -67,7 +67,7 @@ $this->widget('Publisher',
 		'associationType'=>'templates',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
-		'halfWidth'=>true
+		'calendar' => false
 	)
 );
 $this->widget('History',array('associationType'=>'templates','associationId'=>$model->id));

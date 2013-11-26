@@ -139,7 +139,7 @@ $this->widget('Publisher',
 		'associationType'=>'opportunities',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
-		'halfWidth'=>true
+		'calendar' => false
 	)
 );
 

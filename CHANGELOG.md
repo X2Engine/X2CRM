@@ -1,5 +1,15 @@
+# 3.6.2 #
+11/26/2013
+* Changes to the web tracker allow broader browser support; see [release notes](RELEASE-NOTES.md) for details.
+* Bug fixes and improvements to the publisher in the Calendar view:
+  * End time field was missing.
+  * Duration (hours/minutes) fields now available for better control.
+* Fixed bug in Admin model: removed old references to nonexistent fields.
+* Fixed a security hole in mass-record-deletion feature.
+
 # 3.6.1 #
 11/22/2013
+(internal release)
 * Issues in the new targeted content marketing system have been resolved.
 * Corrected an API behavioral issue: contacts created via API were not invoking the "record created" trigger
 * Fixed bug: global export wasn't working for "Admin" (system settings) record
