@@ -67,7 +67,7 @@ if(!Yii::app()->user->isGuest) {
                 'ajax' => array(
                     'type' => 'POST', //request type
                     //url to call
-                    'url' => Yii::app()->controller->createUrl('/bugReports/statusFilter'), 
+                    'url' => Yii::app()->controller->createUrl('/bugReports/bugReports/statusFilter'), 
                     //selector to update
                     'success' => 'js:function(response) { 
                         $.fn.yiiGridView.update("bugReports-grid"); }', 
@@ -97,11 +97,11 @@ if(!Yii::app()->user->isGuest) {
     echo '<div class="x2-button-group">';
     echo CHtml::link(
         Yii::t('app','All'),'javascript:void(0);',
-        array('id'=>'checkAllServiceFilters','class'=>'x2-button','style'=>'width:48px;',
+        array('id'=>'checkAllServiceFilters','class'=>'x2-button','style'=>'width:47px;',
         'ajax'=>array(
             'type' => 'POST', //request type
             //url to call
-            'url' => Yii::app()->controller->createUrl('/bugReports/statusFilter'), 
+            'url' => Yii::app()->controller->createUrl('/bugReports/bugReports/statusFilter'), 
             'success' => 'function(response) {
                 $.fn.yiiGridView.update("bugReports-grid");
                 $("#service-case-status-filter li input").attr("checked","checked");
@@ -115,7 +115,7 @@ if(!Yii::app()->user->isGuest) {
         'ajax'=>array(
             'type' => 'POST', //request type
             // url to call
-            'url' => Yii::app()->controller->createUrl('/bugReports/statusFilter'),
+            'url' => Yii::app()->controller->createUrl('/bugReports/bugReports/statusFilter'),
             'success' => 'function(response) {
                 $.fn.yiiGridView.update("bugReports-grid");
                 $("#service-case-status-filter li input").removeAttr("checked");

@@ -38,5 +38,5 @@
 
 <?php echo CHtml::button(
 	Yii::t('quotes', 'New Quote'), 
-	array('id'=>'show-new-quote-button', 'onclick'=>'quickQuote.openForm();', 'class'=>'x2-button')
+	array('id'=>'show-new-quote-button', 'onclick'=>'x2.inlineQuotes.openForm();', 'class'=>'x2-button')
 ); ?>

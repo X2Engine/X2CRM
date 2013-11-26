@@ -61,8 +61,8 @@ $passVarsToClientScript = "
         ($suppressDateRangeSelector ? 'true' : 'false').";
     x2.".$chartType.".params.getChartDataActionName = '".$getChartDataActionName."';
     x2.".$chartType.".params.translations = {};
-    x2.".$chartType.".params.DEBUG = ".
-        ((YII_DEBUG && $chartType === 'eventsChart') ? 'true' : 'false').";
+    /*x2.".$chartType.".params.DEBUG = ".
+        ((YII_DEBUG && $chartType === 'eventsChart') ? 'true' : 'false').";*/
 ";
 
 if (isset ($subtype)) {

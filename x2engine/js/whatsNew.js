@@ -38,7 +38,6 @@
 x2.whatsNew.timeout = null; // used to clear timeout when editor resize animation is called
 x2.whatsNew.editorManualResize = false; // used to prevent editor resize animation on manual resize
 x2.whatsNew.editorIsExpanded = false; // used to prevent text field expansion if already expanded
-var DEBUG = x2.whatsNew.DEBUG;
 
 /*
 Removes an error div created by createErrorBox ().  
@@ -383,7 +382,7 @@ function setupEditorBehavior () {
 
 
 function setupActivityFeed () {
-    x2.DEBUG && console.log ('setupActivityFeed');
+    x2.whatsNew.DEBUG && console.log ('setupActivityFeed');
 
     function updateComments(id){
         $.ajax({
@@ -529,9 +528,9 @@ function setupActivityFeed () {
 
 function makePostExpandable (element) {
     if ($(element).hasClass ('is-expandable')) return;
-    x2.DEBUG && console.log ('makePostExpandable');
+    x2.whatsNew.DEBUG && console.log ('makePostExpandable');
     $(element).addClass ('is-expandable');
-    x2.DEBUG && console.log (element);
+    x2.whatsNew.DEBUG && console.log (element);
     $(element).expander ({
         slicePoint: 80,
         expandPrefix: '',
@@ -553,7 +552,7 @@ function makePostExpandable (element) {
         }
     });
     if (x2.whatsNew.minimizeFeed === false) {
-        x2.DEBUG && console.log ('clicking read more');
+        x2.whatsNew.DEBUG && console.log ('clicking read more');
         $(element).find ('.read-more').find ('a').click ();
     }
 }
@@ -579,7 +578,7 @@ function setupBroadcastDialog () {
         var userIdList = $('#broadcast-dialog-user-select').val ();
         var errorMsgs = [];
         if (userIdList === null) {
-            DEBUG && console.log ('clickBroadcastButton if');
+            x2.whatsNew.DEBUG && console.log ('clickBroadcastButton if');
             errorMsgs.push (x2.whatsNew.translations['broadcast error message 1']);
         }
         if ($('#email-users').attr ('checked') === undefined &&
@@ -1148,9 +1147,9 @@ function updateEventList () {
         $.ajax({
             url:"getEvents",
             type:"GET",
+            dataType: "json",
             data:{'lastEventId':lastEventId, 'lastTimestamp':lastTimestamp},
             success:function(data){
-                data=JSON.parse(data);
                 lastEventId=data[0];
                 if(data[1]){
                     var text=data[1];
@@ -1167,7 +1166,7 @@ function updateEventList () {
                            "undefined")
                             $(this).yiiListView();
                         });
-                    DEBUG && console.log ('hiding ' + text);
+                    x2.whatsNew.DEBUG && console.log ('hiding ' + text);
                     $newElem = $(text).hide().prependTo("#new-events");
                     makePostExpandable ($newElem.find ('.event-text-box').children ('.event-text'));
                     $newElem.fadeIn(1000);

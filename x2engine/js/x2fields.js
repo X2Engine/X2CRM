@@ -107,10 +107,13 @@ x2.fieldUtils = {
      * Parses the value of the provided input. Deals with checkboxes, and 
      */
     getVal:function(elem) {
-        if($(elem).attr("type") == "checkbox")
+        if($(elem).attr("type") == "checkbox") {
             return $(elem).is(":checked");
-        else
+        } else if ($(elem).hasClass ('rich-text')) {
+            return auxlib.htmlEncode ($(elem).val ());
+        } else {
             return $(elem).val();
+        }
     },
     /** 
      *     Helper method:

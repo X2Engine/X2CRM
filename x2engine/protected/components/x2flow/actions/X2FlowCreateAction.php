@@ -60,6 +60,7 @@ class X2FlowCreateAction extends X2FlowAction {
 			'title' => Yii::t('studio',$this->title),
 			'options' => array(
 				// array('name'=>'attributes'),
+                array('name'=>'dueDate','label'=>Yii::t('actions','Due Date'),'type'=>'dateTime', 'optional'=>1),
 				array('name'=>'subject','label'=>Yii::t('actions','Subject'),'optional'=>1),
 				array('name'=>'description','label'=>Yii::t('actions','Description'),'type'=>'text'),
 				array('name'=>'assignedTo','label'=>Yii::t('actions','Assigned To'),'type'=>'dropdown','options'=>$assignmentOptions),
@@ -75,6 +76,7 @@ class X2FlowCreateAction extends X2FlowAction {
 		$action = new Actions;
 
 		$action->subject = $this->parseOption('subject',$params);
+        $action->dueDate = $this->parseOption('dueDate',$params);
 		$action->actionDescription = $this->parseOption('description',$params);
 		$action->priority = $this->parseOption('priority',$params);
 		$action->visibility = $this->parseOption('visibility',$params);
@@ -91,7 +93,7 @@ class X2FlowCreateAction extends X2FlowAction {
                 true,
                 Yii::t('studio', "View created action: ").$action->getLink ());
         } else {
-            return array (false, $action->getError ());
+            return array(false, array_shift($action->getErrors()));
         }
 
 

@@ -34,7 +34,7 @@ CREATE TABLE x2_quotes_products(
 	id						INT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	quoteId					INT,
 	productId				INT,
-	quantity				INT,
+	quantity				DECIMAL(18,2) DEFAULT 0.0,
 	name					VARCHAR(100)	NOT NULL,
 	type					VARCHAR(100),
 	price					DECIMAL(18,2) DEFAULT 0.0,

@@ -40,84 +40,71 @@
  * @package X2CRM.components.x2flow
  */
 abstract class X2FlowAction extends X2FlowItem {
-	public $trigger = null;
+    public $trigger = null;
 
     protected static $_instances;
-	/**
-	 * Runs the automation action with provided params.
-	 * @return boolean the result of the execution
-	 */
-	abstract public function execute(&$params);
+    /**
+     * Runs the automation action with provided params.
+     * @return boolean the result of the execution
+     */
+    abstract public function execute(&$params);
 
-	/**
-	 * Checks if all the config variables and runtime params are ship-shape
-	 * Ignores param requirements if $params isn't provided
+    /**
+     * Checks if all the config variables and runtime params are ship-shape
+     * Ignores param requirements if $params isn't provided
      * Returns an array with two elements. The first element indicates whether an error occured,
      * the second contains a log message.
-	 */
-	public function validate(&$params=array()) {
-		$paramRules = $this->paramRules();
-		if(!isset($paramRules['options'],$this->config['options']))
-			return array (false, Yii::t('model', "Flow item validation error"));
+     */
+    public function validate(&$params=array(), $flowId) {
+        $paramRules = $this->paramRules();
+        if(!isset($paramRules['options'],$this->config['options']))
+            return array (false, Yii::t('model', "Flow item validation error"));
 
-		if(isset($paramRules['modelRequired'])) {
-			if(!isset($params['model']))	// model not provided when required
-				return array (false, Yii::t('model', "Flow item validation error"));
-			if($paramRules['modelRequired'] != 1 && $paramRules['modelRequired'] !== get_class($params['model']))	// model is not the correct type
-				return array (false, Yii::t('model', "Flow item validation error"));
-		}
-		return $this->validateOptions($paramRules);
-	}
+        if(isset($paramRules['modelRequired'])) {
+            if(!isset($params['model']))    // model not provided when required
+                return array (false, Yii::t('model', "Flow item validation error"));
+            if($paramRules['modelRequired'] != 1 && $paramRules['modelRequired'] !== get_class($params['model']))    // model is not the correct type
+                return array (false, Yii::t('model', "Flow item validation error"));
+        }
+        return $this->validateOptions($paramRules);
+    }
 
-	/*
-	 *
-	 */
-	public function parseOption($name,&$params) {
-		$options = &$this->config['options'];
-		if(!isset($options[$name]['value']))
-			return null;
+    /**
+     * @return mixed either a string containing the notification type for this flow's trigger, or null
+     */
+    public function getNotifType() {
+        if($this->trigger !== null && !empty($this->trigger->notifType))
+            return $this->trigger->notifType;
+        return null;
+    }
+    /**
+     * @return mixed either a string containing the notification type for this flow's trigger, or null
+     */
+    public function getEventType() {
+        if($this->trigger !== null && !empty($this->trigger->eventType))
+            return $this->trigger->eventType;
+        return null;
+    }
 
-		$type = isset($options[$name]['type'])? $options[$name]['type'] : '';
-        
-		return X2Flow::parseValue($options[$name]['value'],$type,$params);
-	}
+    /**
+     * Sets model fields using the provided attributes and values.
+     *
+     * @param CActiveRecord $model the model to set fields on
+     * @param array $attributes an associative array of attributes
+     * @param array $params the params array passed to X2Flow::trigger()
+     * @return boolean whether or not the attributes were valid and set successfully
+     *
+     */
+    public function setModelAttributes(&$model,&$attributeList,&$params) {
+        foreach($attributeList as &$attr) {
+            if(!isset($attr['name'],$attr['value']))
+                continue;
 
-	/**
-	 * @return mixed either a string containing the notification type for this flow's trigger, or null
-	 */
-	public function getNotifType() {
-		if($this->trigger !== null && !empty($this->trigger->notifType))
-			return $this->trigger->notifType;
-		return null;
-	}
-	/**
-	 * @return mixed either a string containing the notification type for this flow's trigger, or null
-	 */
-	public function getEventType() {
-		if($this->trigger !== null && !empty($this->trigger->eventType))
-			return $this->trigger->eventType;
-		return null;
-	}
-
-	/**
-	 * Sets model fields using the provided attributes and values.
-	 *
-	 * @param CActiveRecord $model the model to set fields on
-	 * @param array $attributes an associative array of attributes
-	 * @param array $params the params array passed to X2Flow::trigger()
-	 * @return boolean whether or not the attributes were valid and set successfully
-	 *
-	 */
-	public function setModelAttributes(&$model,&$attributeList,&$params) {
-		foreach($attributeList as &$attr) {
-			if(!isset($attr['name'],$attr['value']))
-				continue;
-
-			if(null !== $field = $model->getField($attr['name']))
-				$model->setAttribute($attr['name'],X2Flow::parseValue($attr['value'],$field->type,$params));	// first do variable/expression evaluation, // then process with X2Fields::parseValue()
-		}
-		return true;
-	}
+            if(null !== $field = $model->getField($attr['name']))
+                $model->setAttribute($attr['name'],X2Flow::parseValue($attr['value'],$field->type,$params));    // first do variable/expression evaluation, // then process with X2Fields::parseValue()
+        }
+        return true;
+    }
 
     /**
      * Gets all action types. 
@@ -126,26 +113,29 @@ abstract class X2FlowAction extends X2FlowItem {
      * @param string $queryProperty The property of each action to test
      * @param mixed $queryValue The value to match actions against
      */
-	public static function getActionTypes($queryProperty=False,$queryValue=False) {
-		$types = array();
+    public static function getActionTypes($queryProperty=False,$queryValue=False) {
+        $types = array();
         foreach(self::getActionInstances() as $class) {
             $include = true;
             if($queryProperty)
                 $include = $class->$queryProperty == $queryValue;
             if($include)
-    	        $types[get_class($class)] = $class->title;
-		}
-		ksort($types);
-		return $types;
-	}
+                $types[get_class($class)] = $class->title;
+        }
+        ksort($types);
+        return $types;
+    }
 
     public static function getActionInstances() {
         if(!isset(self::$_instances)) {
             self::$_instances = array();
-            foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.actions')) as $file) {
-	            if($file === '.' || $file === '..' || $file === 'X2FlowAction.php')
-		            continue;
-                $class = self::create(array('type'=>substr($file,0,-4)));	// remove file extension and create instance
+            foreach(
+                scandir(Yii::getPathOfAlias('application.components.x2flow.actions')) as $file) {
+
+                if(!preg_match ('/\.php$/', $file) || $file === '.' || $file === '..' || 
+                   $file === 'X2FlowAction.php')
+                    continue;
+                $class = self::create(array('type'=>substr($file,0,-4)));    // remove file extension and create instance
                 if($class !== null)
                     self::$_instances[] = $class;
             }

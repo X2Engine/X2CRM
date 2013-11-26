@@ -43,6 +43,7 @@
 .quote-table input {
     overflow: hidden;
     text-overflow: ellipsis;
+    vertical-align:middle;
     background: none;
     border: none;
     color: black;
@@ -55,7 +56,6 @@
 
 /* line item name */
 .quote-table > thead > tr > th.line-item-name, 
-.quote-table > tbody#line-items > tr > td:nth-child(2),
 .quote-table > tbody#line-items > tr > td.x2-2nd-child
 {
     overflow: hidden;
@@ -63,7 +63,6 @@
 }
 
 /* line item name cell */
-.quote-table > tbody#line-items > tr > td:nth-child(2),
 .quote-table > tbody#line-items > tr > td.x2-2nd-child {
     width: 20%;
 }
@@ -71,7 +70,6 @@
 
 /* line item name */
 .quote-table > thead > tr > th.line-item-name, 
-.quote-table > tbody#line-items > tr > td:nth-child(2) input,
 .quote-table > tbody#line-items > tr > td.x2-2nd-child input
 {
     width: 95%;
@@ -79,13 +77,11 @@
 }
 
 /* unit price cell */
-.quote-table > tbody#line-items > tr > td:nth-child(3),
 .quote-table > tbody#line-items > tr > td.x2-3rd-child {
     width: 17.5%;
 }
 
 /* unit price */
-.quote-table > tbody#line-items > tr > td:nth-child(3) input,
 .quote-table > tbody#line-items > tr > td.x2-3rd-child input {
     width: 95%;
 	text-align: right;
@@ -93,13 +89,11 @@
 }
 
 /* quantity cell */
-.quote-table > tbody#line-items > tr > td:nth-child(4),
 .quote-table > tbody#line-items > tr > td.x2-4th-child {
     width: 15%;
 }
 
 /* quantity */
-.quote-table > tbody#line-items > tr > td:nth-child(4) input,
 .quote-table > tbody#line-items > tr > td.x2-4th-child input {
     width: 95%;
 	text-align: right;
@@ -107,13 +101,11 @@
 }
 
 /* adjustment name cell */
-.quote-table > tbody#adjustments> tr > td:nth-child(4),
 .quote-table > tbody#adjustments> tr > td.x2-4th-child {
     width: 15%;
 }
 
 /* adjustment name */
-.quote-table > tbody#adjustments> tr > td:nth-child(4) input,
 .quote-table > tbody#adjustments> tr > td.x2-4th-child input {
     width: 95%;
 	text-align: left;
@@ -121,17 +113,13 @@
 }
 
 /* adjustments cell */
-.quote-table > tbody#line-items > tr > td:nth-child(5),
 .quote-table > tbody#line-items > tr > td.x2-5th-child,
-.quote-table > tbody#adjustments > tr > td:nth-child(5),
 .quote-table > tbody#adjustments > tr > td.x2-5th-child {
     width: 15%;
 }
 
 /* adjustments */
-.quote-table > tbody#line-items > tr > td:nth-child(5) input,
 .quote-table > tbody#line-items > tr > td.x2-5th-child input,
-.quote-table > tbody#adjustments > tr > td:nth-child(5) input
 .quote-table > tbody#adjustments > tr > td.x2-5th-child input {
     width: 95%;
 	font-size: 12px;
@@ -139,34 +127,26 @@
 }
 
 /* description cell */
-.quote-table > tbody#line-items > tr > td:nth-child(6),
 .quote-table > tbody#line-items > tr > td.x2-6th-child,
-.quote-table > tbody#adjustments > tr > td:nth-child(6),
 .quote-table > tbody#adjustments > tr > td.x2-6th-child {
     width: 15%;
 }
 
 /* description */
-.quote-table > tbody#line-items > tr > td:nth-child(6) input,
 .quote-table > tbody#line-items > tr > td.x2-6th-child input,
-.quote-table > tbody#adjustments > tr > td:nth-child(6) input,
 .quote-table > tbody#adjustments > tr > td.x2-6th-child input {
     width: 95%;
 	font-size: 12px;
 }
 
 /* line total cell */
-.quote-table > tbody#line-items > tr > td:nth-child(7),
 .quote-table > tbody#line-items > tr > td.x2-7th-child,
-.quote-table > tbody#adjustments > tr > td:nth-child(7),
 .quote-table > tbody#adjustments > tr > td.x2-7th-child {
     width: 20%;
 }
 
 /* line total */
-.quote-table > tbody#line-items > tr > td:nth-child(7) input,
 .quote-table > tbody#line-items > tr > td.x2-7th-child input,
-.quote-table > tbody#adjustments > tr > td:nth-child(7) input,
 .quote-table > tbody#adjustments > tr > td.x2-7th-child input {
 	text-align: left;
     width: 95%;

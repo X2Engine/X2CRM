@@ -33,11 +33,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-var debug = 0;
+
+x2.profileSettings.debug = 0;
 
 function consoleLog (obj) {
     if (console != undefined) {
-        if(console.log != undefined && debug) {
+        if(console.log != undefined && x2.profileSettings.debug) {
             console.log(obj);
         }
     }
@@ -45,7 +46,7 @@ function consoleLog (obj) {
 
 function consoleDebug (obj) {
     if (console != undefined) {
-        if(console.debug != undefined && debug) {
+        if(console.debug != undefined && x2.profileSettings.debug) {
             console.debug (obj);
         }
     }
@@ -192,8 +193,9 @@ function checkSoundName(id) {
             break;
         }
     }
-    if(re==1){
-	    $(selector).parents ('.upload-box').find ('.submit-upload').removeAttr('disabled','disabled');
+    if(re == 1){
+	    $(selector).parents ('.upload-box').find ('.submit-upload').
+            removeAttr('disabled','disabled');
     } else { // delete the file name, disable Submit, Alert message
 	    $(selector).val('');
 	    $(selector).parents ('.upload-box').find ('.submit-upload').attr('disabled','disabled');
@@ -230,7 +232,6 @@ function toggleUploadBox (boxId) {
         $(selector).slideUp ();
     }
 }
-
 
 function setupPrefsEventListeners () {
 
@@ -355,7 +356,8 @@ function setupPrefsEventListeners () {
     $('.unhide').mouseenter(function(){
         var tag=$(this).attr('tag-name');
         var elem=$(this);
-        var content='<span class="hide-link-span"><a href="#" class="hide-link" style="color:#06C;">[+]</a></span>';
+        var content='<span class="hide-link-span">'+
+            '<a href="#" class="hide-link" style="color:#06C;">[+]</a></span>';
         $(content).hide().delay(500).appendTo($(this)).fadeIn(500);
         $('.hide-link').click(function(e){
            e.preventDefault();
@@ -380,10 +382,20 @@ function setupPrefsEventListeners () {
             $(this).find ('.prefs-expand-arrow').show ();
             $(this).find ('.prefs-collapse-arrow').hide ();
             $body.slideUp ();
+            if ($(this).attr ('id') === 'tags-title-bar') {
+                auxlib.saveMiscLayoutSetting ('unhideTagsSectionExpanded', 0);
+            } else {
+                auxlib.saveMiscLayoutSetting ('themeSectionExpanded', 0);
+            }
         } else {
             $(this).find ('.prefs-expand-arrow').hide ();
             $(this).find ('.prefs-collapse-arrow').show ();
             $body.slideDown ();
+            if ($(this).attr ('id') === 'tags-title-bar') {
+                auxlib.saveMiscLayoutSetting ('unhideTagsSectionExpanded', 1);
+            } else {
+                auxlib.saveMiscLayoutSetting ('themeSectionExpanded', 1);
+            }
         }
     });
 

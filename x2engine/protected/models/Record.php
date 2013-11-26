@@ -61,7 +61,7 @@ class Record {
             $temp=array();
             if($record->hasAttribute('assignedTo')){
                 $assignment=User::model()->findByAttributes(array('username'=>$record->assignedTo));
-                $temp['assignedTo']=isset($assignment)?CHtml::link($assignment->firstName." ".$assignment->lastName,array('profile/'.$assignment->id)):"";
+                $temp['assignedTo']=isset($assignment)?CHtml::link($assignment->firstName." ".$assignment->lastName,array('/profile/view','id'=>$assignment->id)):"";
             }else{
                 $temp['assignedTo']='';
             }
@@ -69,10 +69,10 @@ class Record {
 				$temp['id']=$record->id;
 				$temp['name']=$record->firstName.' '.$record->lastName;
 				$temp['description']=$record->backgroundInfo;
-				$temp['link']='/contacts/'.$record->id;
+				$temp['link']=array('/contacts/contacts/view','id'=>$record->id);
 				$temp['type']='Contact';
 				$temp['lastUpdated']=$record->lastUpdated;
-				$temp['updatedBy']=CHtml::link($name,array('profile/'.$userId));
+				$temp['updatedBy']=CHtml::link($name,array('/profile/view','id'=>$userId));
 				
 				while(isset($arr[$temp['lastUpdated']]))
 					$temp['lastUpdated']++;
@@ -82,7 +82,7 @@ class Record {
 				$temp['id']=$record->id;
 				$temp['name']=empty($record->type)? Yii::t('actions','Action') : Yii::t('actions','Action: ').ucfirst($record->type);
 				$temp['description']=$record->actionDescription;
-				$temp['link']='/actions/'.$record->id;
+				$temp['link']=array('/actions/actions/view','id'=>$record->id);
 				$temp['type']='Action';
 				$temp['lastUpdated']=$record->lastUpdated;
 				$temp['updatedBy']=$name;
@@ -101,18 +101,18 @@ class Record {
 				$temp['updatedBy']=$name;
 				
 				if($record instanceof Opportunity) {
-					$temp['link']='/opportunities/'.$record->id;
+					$temp['link']=array('/opportunities/opportunities/view','id'=>$record->id);
 					$temp['type']='Opportunity';
 				}
 				elseif($record instanceof Accounts) {
-					$temp['link']='/accounts/'.$record->id;
+					$temp['link']=array('/accounts/accounts/view','id'=>$record->id);
 					$temp['type']='Account';
 				} elseif($record instanceof Quote || $record instanceof Product){
                     $temp['type']=get_class($record);
-					$temp['link']='/'.strtolower(get_class($record)).'s/'.$record->id;
+					$temp['link']=array(str_repeat('/'.strtolower(get_class($record)).'s',2).'/view','id'=>$record->id);
                 }else {
                     $temp['type']=get_class($record);
-					$temp['link']='/'.strtolower(get_class($record)).'/'.$record->id;
+					$temp['link']=array(str_repeat('/'.strtolower(get_class($record)),2).'/view','id'=>$record->id);
 				}
 
 				while(isset($arr[$temp['lastUpdated']]))

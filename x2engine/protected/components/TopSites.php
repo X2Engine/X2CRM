@@ -47,22 +47,22 @@ class TopSites extends X2Widget {
 	}
 
 	public function run() {
-		$content=URL::model()->findAllByAttributes(array('userid'=>Yii::app()->user->getId()),array(
-			'order'=>'timestamp DESC',
-        ));
+		$content=URL::model()->findAllByAttributes(
+            array('userid'=>Yii::app()->user->getId()),array('order'=>'timestamp DESC'));
         $data = array();
         if(count($content)>0){
             foreach($content as $entry){
                 $dt['title'] = $entry->title;
-                if(strpos($entry->url,'http://')===false){
+                if(strpos($entry->url,'http://') === false){
                     $entry->url="http://".$entry->url;
                 }
                 $dt['url'] = $entry->url;
+                $dt['id'] = $entry->id;
                 $data[] = $dt;
             }
         }else{
             $dt['title'] = Yii::t('app',"Example");
-            $dt['url'] = ".";
+            $dt['url'] = "http://www.x2engine.com";
             $data[] = $dt;
         }
 		$this->render('topSites', array(

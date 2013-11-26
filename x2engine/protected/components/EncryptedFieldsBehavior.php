@@ -34,12 +34,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.TransformedFieldStorageBehavior');
+Yii::import('application.components.util.EncryptUtil');
+
 /**
  * Behavior class for storing encrypted values in database fields.
  * 
- * The recommended field type is "BLOB"; values returned by the encryption
- * utility are raw/binary.
- *
  * @package X2CRM.components
  * @author Demitri Morgan <demitri@x2engine.com>
  */
@@ -89,10 +89,10 @@ class EncryptedFieldsBehavior extends TransformedFieldStorageBehavior {
 	 * Checks for whether a working encryption object is available before attaching.
 	 * @throws Exception 
 	 */
-	public function attach($owner){
+    public function attach($owner){
 		if(!isset(self::$encryption) && $this->checkObject)
 			throw new Exception('Cannot use '.__CLASS__.'; encryption utility object has not been instantiated.');
-		parent::attach($owner);
+        parent::attach($owner);
 	}
 	/**
 	 * Encrypts the attribute for database storage.

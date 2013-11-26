@@ -101,7 +101,7 @@ $form = $this->beginWidget('CActiveForm', array(
 <?php
 echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Create'),
-	array('/contacts/quickContact'),
+	array('/contacts/contacts/quickContact'),
 	array('success'=>"function(response) {
 
             // clear errors
@@ -127,7 +127,7 @@ echo CHtml::ajaxSubmitButton(
                 var errors = JSON.parse (response);
                 var selector;
                 for (var i in errors) {
-                    selector = '#Contacts_' + i;
+                    selector = '#quick_create_Contacts_' + i;
                     $(selector).after ($('<div>', {
                         'class': 'error-msg',
                         text: errors[i]

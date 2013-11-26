@@ -110,14 +110,3 @@ class X2FlowEmail extends X2FlowAction {
         }
 	}
 }
-
-
-
-
-
-
-
-
-
-
-

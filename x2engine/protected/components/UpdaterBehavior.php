@@ -616,11 +616,10 @@ class UpdaterBehavior extends ResponseBehavior {
      * Securely obtain the latest version.
      */
     protected function checkUpdates($returnOnly = false){
-        if(!file_exists($secImage = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'images', base64_decode(self::SECURITY_IMG)))))
-            return Yii::app()->params->version;
-        $i = Yii::app()->params->admin->unique_id;
-        $v = Yii::app()->params->version;
-        $e = Yii::app()->params->admin->edition;
+        $i = $this->uniqueId;
+        $v = $this->version;
+        $e = $this->edition;
+        $secImage = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'images', base64_decode(self::SECURITY_IMG)));
         $context = stream_context_create(array(
             'http' => array('timeout' => 4)  // set request timeout in seconds
                 ));
@@ -629,7 +628,7 @@ class UpdaterBehavior extends ResponseBehavior {
         $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
         if($securityKey === false)
             return Yii::app()->params->version;
-        $h = hash('sha512', base64_encode(file_get_contents($secImage)).$securityKey);
+        $h = hash('sha512', base64_encode(file_exists($secImage) ? file_get_contents($secImage) : null).$securityKey);
         $n = null;
         if(!($e == 'opensource' || empty($e)))
             $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
@@ -638,7 +637,7 @@ class UpdaterBehavior extends ResponseBehavior {
         if(empty($newVersion))
             return;
 
-        if(!(Yii::app()->params->noSession || $returnOnly)){
+        if(!($this->isConsole || $returnOnly)){
             Yii::app()->session['versionCheck'] = true;
             if(version_compare($newVersion, $v) > 0 && !in_array($i, array('none', Null))){ // if the latest version is newer than our version and updates are enabled
                 Yii::app()->session['versionCheck'] = false;
@@ -1430,7 +1429,7 @@ class UpdaterBehavior extends ResponseBehavior {
         foreach(array('edition', 'uniqueId') as $attr)
             if(empty(${$attr}))
                 ${$attr} = $this->$attr;
-        return $edition == 'opensource' ? 'updates/x2engine' : "installs/update/$edition/$uniqueId";
+        return "installs/update/$edition/$uniqueId";
     }
 
     /**
@@ -2065,9 +2064,9 @@ class UpdaterBehavior extends ResponseBehavior {
         foreach($updaterActions as $name => $properties){
             $updaterFiles[] = self::classAliasPath($properties['class']);
         }
-
+        
         // Retrieve the update package contents' files' digests:
-        $md5sums = FileUtil::getContents($this->updateServer.'/'.$this->getUpdateDataRoute().'/contents.md5');
+        $md5sums = FileUtil::getContents($this->updateServer.'/'.$this->getUpdateDataRoute($this->configVars['updaterVersion']).'/contents.md5');
         preg_match_all(':^(?<md5sum>[a-f0-9]{32})\s+source/protected/(?<filename>\S.*)$:m',$md5sums,$md5s);
         $md5sums = array();
         for($i=0;$i<count($md5s[0]);$i++) {

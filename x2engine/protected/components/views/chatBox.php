@@ -35,82 +35,240 @@
  *****************************************************************************************/
 
 $saveWidgetHeight = $this->controller->createUrl('/site/saveWidgetHeight');
-Yii::app()->clientScript->registerScript('updateChatJs', "
+Yii::app()->clientScript->registerCss('updateFeedWidgetCss', "
+#feed-post-publisher {
+    padding: 5px;
+}
+#feed-post-editor {
+	height: 20px;
+    width: 98%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 5px;
+    float: none;
+    resize:none;
+    -moz-border-radius: 3px;
+    -o-border-radius: 3px;
+    -webkit-border-radius: 3px;
+	border: 1px solid #ddd;
+	background: #fff;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	overflow: hidden;
+}
+#feed-post-button {
+    margin-top: 0;
+    margin-left: 0;
+    float: left;
+}
+#feed-post-publisher select {
+    margin-right: 4px;
+}
+#feed-post-publisher .post-button-row-2 {
+    line-height: 26px;
+}
+#feed-post-subtype {
+    margin-bottom: 4px;
+}
+#feed-post-association-id {
+    margin-bottom: 4px;
+}
+");
+Yii::app()->clientScript->registerScript('updateFeedWidgetJS', "
 $(function() {
-	$('#chat-container').resizable({
+    x2.feedWidget = {};
+
+	$('#feed-container').resizable({
 		handles: 's',
 		minHeight: 75,
-		alsoResize: '#chat-container-fix, #chat-box, #chat-box-container',
+		alsoResize: '#feed-container-fix, #feed-box, #feed-box-container',
 		start: function(event, ui) {
-			// when resizing starts, calculate min size of widget based on height of two resizables inside the widget
-			$('#chat-container').resizable('option', 'minHeight', parseInt($('#chat-message-container').css('height'), 10) + 67);
 		},
 		stop: function(event, ui) {
+            $('#feed-container').css ('width', '');
+            $('#feed-container-fix').css ('width', '');
+            $('#feed-box').css ('width', '');
+            $('#feed-box-container').css ('width', '');
 			// done resizing, save height to user profile for next time user visits page
-			$.post('$saveWidgetHeight', {Widget: 'ChatBox', Height: {chatboxHeight: parseInt($('#chat-box').css('height')), chatmessageHeight: parseInt($('#chat-message').css('height'))}});
+			$.post(
+                '$saveWidgetHeight', 
+                {
+                    Widget: 'ChatBox', 
+                    Height: {
+                        chatboxHeight: parseInt($('#feed-box').css('height')), 
+                    }
+                }
+            );
 		}
 	});
-	$('#chat-message-container').resizable({
+	$('#feed-box-container').resizable({
 		handles: 's',
 		minHeight: 30,
-		alsoResize: '#chat-message, #chat-container, #chat-container-fix',
+		alsoResize: '#feed-box, #feed-container, #feed-container-fix',
 		stop: function(event, ui) {
+            $('#feed-box-container').css ('width', '');
+            $('#feed-box').css ('width', '');
+            $('#feed-container').css ('width', '');
+            $('#feed-container-fix').css ('width', '');
 			// done resizing, save height to user profile for next time user visits page
-			$.post('$saveWidgetHeight', {Widget: 'ChatBox', Height: {chatboxHeight: parseInt($('#chat-box').css('height')), chatmessageHeight: parseInt($('#chat-message').css('height'))}});
+			$.post(
+                '$saveWidgetHeight', 
+                {
+                    Widget: 'ChatBox',
+                    Height: {
+                        chatboxHeight: parseInt($('#feed-box').css('height')), 
+                    }
+                }
+            );
 		}
 	});
-	$('#chat-box-container').resizable({
-		handles: 's',
-		minHeight: 30,
-		alsoResize: '#chat-box, #chat-container, #chat-container-fix',
-		stop: function(event, ui) {
-			// done resizing, save height to user profile for next time user visits page
-			$.post('$saveWidgetHeight', {Widget: 'ChatBox', Height: {chatboxHeight: parseInt($('#chat-box').css('height')), chatmessageHeight: parseInt($('#chat-message').css('height'))}});
-		}
-	});
+
+    $('#activityFeedDropDown').change (function() {
+        var feedbox = $('#feed-box');
+        var scroll = feedbox.prop ('scrollHeight');
+    	if(parseInt (yii.profile.activityFeedOrder) === 1) {
+            yii.profile.activityFeedOrder = 0;
+        } else {
+            scroll = 0;
+            yii.profile.activityFeedOrder = 1;
+        }
+    	feedbox.children().each (function (i, child) {feedbox.prepend(child)});
+    	feedbox.prop ('scrollTop',scroll);
+    
+        feedbox.css ('background-color', feedbox.data ('background-color'));
+    
+    	$.ajax ({url:yii.baseUrl+'/index.php/site/activityFeedOrder'});
+    })
+
+    // minimizes editor unless there's unposted text
+    x2.feedWidget.minEditor = function () {
+    	if ($('#feed-post-editor').val () !== '') return;
+        feedEditorHasFocus = false;
+        $('#feed-post-editor').animate ({
+            height: '20px'
+        });
+        $('#feed-post-controls').slideUp ();
+    };
+
+    /*
+    Sets up post ui element behavior.
+    Note that click outside/tab are detected instead of blur since blur gets triggered on
+    the window resize event.
+    */
+    x2.feedWidget.setUpPostEditor = function () {
+
+        // min on click outside
+        $('body').on ('click', function (evt) {
+            if (!$(evt.target).closest ('#feed-post-publisher').length) {
+                x2.feedWidget.minEditor ();
+            }
+        });
+
+        // min on tab
+    	$('#feed-post-editor').on ('keydown', function (evt) { 
+            if (evt.which === 9) { // tab
+                x2.feedWidget.minEditor ();
+            }
+
+        });
+
+        // highlight post button if there's unposted text
+    	$('#feed-post-editor').on ('keyup', function (evt) { 
+            if ($(this).val () !== '') {
+                $('#feed-post-button').addClass ('highlight');
+            } else {
+                $('#feed-post-button').removeClass ('highlight');
+            }
+        });
+
+        // max editor on focus
+    	$('#feed-post-editor').on ('focus', function () { 
+            feedEditorHasFocus = true;
+            $(this).animate ({
+                height: '40px'
+            });
+            $('#feed-post-controls').slideDown ();
+        });
+
+        $('#feed-post-button').on ('click', function () {
+            $.ajax({
+                url:'".Yii::app()->request->getScriptUrl () . '/site/publishPost'."',
+                type:'POST',
+                data:{
+                    text:$('#feed-post-editor').val(),
+                    associationId:$('#feed-post-association-id').val(),
+                    visibility:$('#feed-post-visibility').val(),
+                    subtype:$('#feed-post-subtype').val()
+                },
+                success:function(){
+                    $('#feed-post-editor').val ('');
+                    $('#feed-post-editor').blur ();
+                    x2.feedWidget.minEditor ();
+                    $('#feed-post-button').removeClass ('highlight');
+                }
+            });
+            return false;
+        });
+    };
+
+    (function feedWidgetMain () {
+        x2.feedWidget.setUpPostEditor ();
+    }) ();
 });
 ",CClientScript::POS_HEAD);
 
 // find height of chat box, chat message, and use these to find height of widget
 $widgetSettings = ProfileChild::getWidgetSettings();
-$chatSettings = $widgetSettings->ChatBox;
+$feedWidgetSettings = $widgetSettings->ChatBox;
 
-$chatboxHeight = $chatSettings->chatboxHeight;
-$chatmessageHeight = $chatSettings->chatmessageHeight;
+$feedboxHeight = $feedWidgetSettings->chatboxHeight;
 
-$chatboxContainerHeight = $chatboxHeight + 2;
-$chatmessageContainerHeight = $chatmessageHeight + 6;
+$feedboxContainerHeight = $feedboxHeight + 2;
 
-$chatContainerHeight = $chatboxHeight + $chatmessageHeight + 45;
-$chatContainerFixHeight = $chatContainerHeight + 10;
+$feedcontainerHeight = $feedboxHeight;
+$feedcontainerFixHeight = $feedcontainerHeight + 10;
 
 ?>
+<div id="feed-container-fix" style="height:<?php echo $feedcontainerFixHeight; ?>px;">								<!--fix so that resize tab appears at bottom of widget-->
+	<div id="feed-container" style="height:<?php echo $feedcontainerHeight; ?>px;">									<!--this is the resizable for this widget-->
+		<div id="feed-box-container" 
+         style="height:<?php echo $feedcontainerHeight; ?>px; margin-bottom: 5px;">	
+         <!--resizable for feedbox-->
+			<div id="feed-box" 
+             style="padding-top:5px; height:<?php echo $feedcontainerHeight; ?>px;"></div>
 
-<script>
-$("#activityFeedDropDown").change(function() {
-
-
-    var chatbox = $('#chat-box');
-    var scroll=chatbox.prop('scrollHeight');
-	if(yii.profile.activityFeedOrder==1){
-        yii.profile.activityFeedOrder=0;
-    }else{
-        scroll=0;
-        yii.profile.activityFeedOrder=1;
-    }
-	chatbox.children().each(function(i,child){chatbox.prepend(child)});
-	chatbox.prop('scrollTop',scroll);
-
-    chatbox.css ('background-color', chatbox.data ('background-color'));
-
-	$.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
-
-})
-</script>
-<div id="chat-container-fix" style="height:<?php echo $chatContainerFixHeight; ?>px;">								<!--fix so that resize tab appears at bottom of widget-->
-	<div id="chat-container" style="height:<?php echo $chatContainerHeight; ?>px;">									<!--this is the resizable for this widget-->
-		<div id="chat-box-container" style="height:<?php echo $chatContainerHeight; ?>px; margin-bottom: 5px;">	<!--resizable for chatbox-->
-			<div id="chat-box" style="padding-top:5px; height:<?php echo $chatContainerHeight; ?>px;"></div>
 		</div>
 	</div>
 </div>
+<form id='feed-post-publisher'>
+    <textarea type='text' name='name' id='feed-post-editor' 
+     placeholder='<?php echo Yii::t('app', 'Enter text here...'); ?>'></textarea>
+    <div id='feed-post-controls' style='display:none;'>
+    <?php
+        $users = User::getUserIds();
+        $userIds = array_keys ($users);
+        $firstUser = $userIds[0];
+        echo CHtml::dropDownList(
+            'subtype',1,
+            array_map(
+                function ($item) { return Yii::t('app', $item); },
+                json_decode(Dropdowns::model()->findByPk(113)->options,true)
+            ),
+            array ('id'=>'feed-post-subtype')
+        );
+        echo CHtml::dropDownList('associationId',$firstUser,$users, 
+            array ('id'=>'feed-post-association-id'));
+        ?>
+        <div class='post-button-row-2'>
+            <button type='submit' class='x2-button' id='feed-post-button' 
+             data-inline='true'><?php echo Yii::t('app', 'Submit Post'); ?></button>
+            <?php 
+                echo CHtml::dropDownList(
+                    'visibility',1,array(
+                        1=>Yii::t('actions','Public'),0=>Yii::t('actions','Private')
+                    ), array ('id'=>'feed-post-visibility'));
+            ?>
+        </div>
+    </div>
+</form>

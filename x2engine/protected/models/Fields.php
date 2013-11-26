@@ -246,6 +246,11 @@ class Fields extends CActiveRecord {
             return $value;
     }
 
+    /**
+     *
+     * @param type $scenario
+     * @return array
+     */
     public static function getFieldTypes($scenario = null){
         $fieldTypes = array(
             'varchar' => array(

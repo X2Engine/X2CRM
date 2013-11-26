@@ -90,7 +90,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
                 'empty'=>Yii::t('admin','Select a model'),
                 'ajax' => array(
                 'type'=>'POST', //request type
-                'url'=>$this->createUrl('admin/getAttributes?criteria=1'), //url to call.
+                'url'=>$this->createUrl('/admin/getAttributes',array('criteria'=>1)), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#'.CHtml::activeId($model,'modelField'), //selector to update
                 //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'

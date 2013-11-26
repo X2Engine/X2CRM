@@ -43,7 +43,7 @@ Yii::app()->clientScript->registerScript('updateChat', "
 	function updateChat(){
 		$.ajax({
 			type: 'POST',
-			url: '".$this->createUrl('site/getMessages')."',
+			url: '".$this->createUrl('/mobile/site/getMessages')."',
 			success:
 			function (data){
 				//alert('old: '+$('#chat-box').html()+'<br><br>new: '+data);
@@ -67,7 +67,7 @@ echo CHtml::textArea('chat-message', '');
 
 echo CHtml::ajaxSubmitButton(
 	'Send',
-	array('site/newMessage'),
+	array('/site/newMessage'),
 	array(
 		'update'=>'#chat-box',
 		'success'=>"function(response) {

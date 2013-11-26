@@ -57,7 +57,7 @@ foreach($list as $dropdown){
                 'empty'=>Yii::t('admin','Select a dropdown'),
                 'ajax' => array(
                 'type'=>'POST', //request type
-                'url'=>CController::createUrl('admin/getDropdown'), //url to call.
+                'url'=>CController::createUrl('/admin/getDropdown'), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#options', //selector to update
                 //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'

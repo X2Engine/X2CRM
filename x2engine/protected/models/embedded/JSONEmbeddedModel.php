@@ -48,72 +48,77 @@
  */
 abstract class JSONEmbeddedModel extends CModel {
 
-	protected $_attributeLabels = array();
+    /**
+     * Stores derived value returned by {@link attributeNames()}
+     * @var type
+     */
+    protected $_attributeNames;
 
-	/**
-	 * Stores derived value returned by {@link attributeNames()}
-	 * @var type
-	 */
-	private $_attributeNames;
+    /**
+     * Name of the attribute in the containing model that contains this model
+     * @var type
+     */
+    public $exoAttr;
 
-	/**
-	 * Name of the attribute in the containing model that contains this model
-	 * @var type 
-	 */
-	public $exoAttr;
+    /**
+     * Form field name prefix
+     * @var type
+     */
+    public $exoFormName;
 
-	/**
-	 * Form field name prefix
-	 * @var type
-	 */
-	public $exoFormName;
+    /**
+     * The name of the model to which this embedded model belongs
+     * @var type
+     */
+    public $exoModel;
 
-	/**
-	 * The name of the model to which this embedded model belongs
-	 * @var type
-	 */
-	public $exoModel;
+    public function attributeNames() {
+        if(!isset($this->_attributeNames)) {
+            $this->_attributeNames = array_keys($this->attributeLabels());
+        }
+        return $this->_attributeNames;
+    }
 
-	/**
-	 * Child classes implementing this should generate the detail view. The
-	 * resulting markup should be echoed out, not returned.
-	 */
-	public abstract function detailView();
+    /**
+     * Child classes implementing this should generate the detail view. The
+     * resulting markup should be echoed out, not returned.
+     */
+    public abstract function detailView();
 
-	/**
-	 * A UI-friendly name that the model should be called.
-	 */
-	public abstract function modelLabel();
+    /**
+     * A UI-friendly name that the model should be called.
+     */
+    public abstract function modelLabel();
 
-	/**
-	 * Child classes implementing this should generate all necessary input form
-	 * elements for modifying fields of the embedded model. The resulting
-	 * markup should be echoed out, not returned. 
-	 */
-	public abstract function renderInputs();
+    /**
+     * Child classes implementing this should generate all necessary input form
+     * elements for modifying fields of the embedded model. The resulting
+     * markup should be echoed out, not returned.
+     */
+    public abstract function renderInputs();
 
-	/**
-	 * Generate form input name for an attribute so that the urlencoded post data
-	 * comes in a form that can be properly interpreted by setAttributes in the
-	 * container model
-	 * {@link JSONEmbeddedModelFieldsBehavior}
-	 * @param string $attribute
-	 */
-	public function resolveName($attribute) {
-		if(!isset($this->exoFormName))
-			$this->exoFormName = CHtml::resolveName($this->exoModel,$this->exoAttr);
-		return $this->exoFormName.strtr(CHtml::resolveName($this,$attribute),array(get_class($this)=>''));
-	}
+    /**
+     * Generate form input name for an attribute so that the urlencoded post data
+     * comes in a form that can be properly interpreted by setAttributes in the
+     * container model
+     * {@link JSONEmbeddedModelFieldsBehavior}
+     * @param string $attribute
+     */
+    public function resolveName($attribute) {
+        if(!isset($this->exoFormName))
+            $this->exoFormName = CHtml::resolveName($this->exoModel,$this->exoAttr);
+        return $this->exoFormName.strtr(CHtml::resolveName($this,$attribute),array(get_class($this)=>''));
+    }
 
-	/**
-	 * Generate a list of options to send to methods within {@link CHtml} that
-	 * take HTML element options/properties, so that it includes the proper name
-	 * of the input.
-	 * @param type $options
-	 */
-	public function htmlOptions($name,$options=array()) {
-		return array_merge($options,array('name'=>$this->resolveName($name)));
-	}
+    /**
+     * Generate a list of options to send to methods within {@link CHtml} that
+     * take HTML element options/properties, so that it includes the proper name
+     * of the input.
+     * @param type $options
+     */
+    public function htmlOptions($name,$options=array()) {
+        return array_merge($options,array('name'=>$this->resolveName($name)));
+    }
 
 }
 

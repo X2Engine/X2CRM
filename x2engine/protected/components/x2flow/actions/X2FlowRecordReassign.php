@@ -40,62 +40,64 @@
  * @package X2CRM.components.x2flow.actions
  */
 class X2FlowRecordReassign extends X2FlowAction {
-	public $title = 'Reassign Record';
-	public $info = 'Assign the record to a user or group, or automatically using lead routing.';
 
-	public function __construct() {
-		$this->attachBehavior('LeadRoutingBehavior',array('class'=>'LeadRoutingBehavior'));
-	}
+    public $title = 'Reassign Record';
+    public $info = 'Assign the record to a user or group, or automatically using lead routing.';
 
-	public function paramRules() {
-		$leadRoutingModes = array(
-			''=>'Free For All',
-			'roundRobin'=>'Round Robin Distribution',
-			'roundRobin'=>'Sequential Distribution',
-			'singleUser'=>'Direct User Assignment'
-		);
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'modelRequired' => 1,
-			'options' => array(
-				// array('name'=>'routeMode','label'=>'Routing Method','type'=>'dropdown','options'=>$leadRoutingModes),
-				array('name'=>'user','label'=>'User','type'=>'dropdown','multiple'=>1,'options'=>array('auto'=>Yii::t('studio','Use Lead Routing'))+X2Model::getAssignmentOptions(true,true)),
-				// array('name'=>'onlineOnly','label'=>'Online Only?','optional'=>1,'type'=>'boolean','defaultVal'=>false),
-			));
-	}
+    public function __construct(){
+        $this->attachBehavior('LeadRoutingBehavior', array('class' => 'LeadRoutingBehavior'));
+    }
 
-	public function execute(&$params) {
+    public function paramRules(){
+        $leadRoutingModes = array(
+            '' => 'Free For All',
+            'roundRobin' => 'Round Robin Distribution',
+            'roundRobin' => 'Sequential Distribution',
+            'singleUser' => 'Direct User Assignment'
+        );
+        return array(
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
+            'modelRequired' => 1,
+            'options' => array(
+                // array('name'=>'routeMode','label'=>'Routing Method','type'=>'dropdown','options'=>$leadRoutingModes),
+                array('name' => 'user', 'label' => 'User', 'type' => 'dropdown', 'multiple' => 1, 'options' => array('auto' => Yii::t('studio', 'Use Lead Routing')) + X2Model::getAssignmentOptions(true, true)),
+            // array('name'=>'onlineOnly','label'=>'Online Only?','optional'=>1,'type'=>'boolean','defaultVal'=>false),
+                ));
+    }
+
+    public function execute(&$params){
         $model = $params['model'];
-        if(!$model->hasAttribute('assignedTo')) {
-            return array (
-                false, 
-                Yii::t('studio', 
-                    get_class ($model) . ' records have no attribute "assignedTo"')
+        if(!$model->hasAttribute('assignedTo')){
+            return array(
+                false,
+                Yii::t('studio', get_class($model).' records have no attribute "assignedTo"')
             );
         }
 
-		$user = $this->parseOption('user',$params);
-		if($user === 'auto')
-			$assignedTo = $this->getNextAssignee();
-		elseif(CActiveRecord::model('User')->exists('username=?',array($user)))	// make sure the user exists
-			$assignedTo = $user;
-		else
-            return array (false, Yii::t('studio', 'User ' . $user . ' does not exist' ));
-
-		if ($model->updateByPk(
-            $model->id,array('assignedTo'=>$assignedTo))) {
-
-		    if(is_subclass_of($model,'X2Model')) {
-                return array (
-                    true, 
-                    Yii::t('studio', 'View updated record: ').$model->getLink ()
-                );
-            } else {
-                return array (true, "");
-            }
-        } else {
-            return array (false, "");
+        $user = $this->parseOption('user', $params);
+        if($user === 'auto'){
+            $assignedTo = $this->getNextAssignee();
+        }elseif(CActiveRecord::model('User')->exists('username=?', array($user)) || CActiveRecord::model('Groups')->exists('id=?', array($user))){ // make sure the user exists
+            $assignedTo = $user;
+        }else{
+            return array(false, Yii::t('studio', 'User '.$user.' does not exist'));
         }
-	}
+
+        if($model->updateByPk(
+                        $model->id, array('assignedTo' => $assignedTo))){
+
+            if(is_subclass_of($model, 'X2Model')){
+                return array(
+                    true,
+                    Yii::t('studio', 'View updated record: ').$model->getLink()
+                );
+            }else{
+                return array(true, "");
+            }
+        }else{
+            return array(false, "");
+        }
+    }
+
 }

@@ -42,7 +42,8 @@ $attributeLabels = $model->attributeLabels();
 
 $cs = Yii::app()->getClientScript();
 $cs->registerCoreScript('rating');
-$cs->registerCssFile($cs->getCoreScriptUrl().'/rating/jquery.rating.css');
+//$cs->registerCssFile($cs->getCoreScriptUrl().'/rating/jquery.rating.css');
+$cs->registerCssFile (Yii::app()->getTheme()->getBaseUrl().'/css/rating/jquery.rating.css');
 
 if($modelName=='contacts' || $modelName=='opportunities'){
 	$cs->registerScript('toggleWorkflow', "

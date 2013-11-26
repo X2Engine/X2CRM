@@ -47,7 +47,7 @@ $this->actionMenu = $this->formatMenu($menuItems);
     <div class="title-bar" style="padding-left:0px;">
         <?php echo CHtml::link(Yii::t('actions','Back to Top'),'#',array('class'=>'x2-button right','id'=>'scroll-top-button')); ?>
         <?php echo CHtml::link(Yii::t('actions','Filters'),'#',array('class'=>'controls-button x2-button right','id'=>'advanced-controls-toggle')); ?>
-        <?php echo CHtml::link(Yii::t('actions','New Action'),array('/actions/create'),array('class'=>'controls-button x2-button right','id'=>'create-button')); ?>
+        <?php echo CHtml::link(Yii::t('actions','New Action'),array('/actions/actions/create'),array('class'=>'controls-button x2-button right','id'=>'create-button')); ?>
         <?php echo CHtml::link(Yii::t('actions','Switch to Grid'),array('index','toggleView'=>1),array('class'=>'x2-button right')); ?>
     </div>
 </div>
@@ -129,7 +129,7 @@ $this->widget('zii.widgets.CListView', array(
                     lastClass=$(this).attr('id');
                     var pieces=lastClass.split('-');
                     var id=pieces[1];
-                   	$('#action-view-pane').html('<iframe id="action-frame" src="actions/viewAction?id='+id+'" onload="createControls('+id+', false);"></iframe>');
+                   	$('#action-view-pane').html('<iframe id="action-frame" src="<?php echo Yii::app()->controller->createAbsoluteUrl('/actions/actions/viewAction'); ?>?id='+id+'" onload="createControls('+id+', false);"></iframe>');
                 }
             }else{
                 $(this).addClass('important');
@@ -144,8 +144,7 @@ $this->widget('zii.widgets.CListView', array(
                 $('#action-view-pane').show();
                 $('#action-view-pane').animate({width: '59%'});;
                 clickedFlag=!clickedFlag;
-                //$('#action-view-pane').html('<iframe style="width:99%;height:800px" id="action-frame" src="actions/viewAction?id='+id+'" onload="createControls('+id+', false);"></iframe>');
-                 $('#action-view-pane').html('<iframe id="action-frame" src="actions/viewAction?id='+id+'" onload="createControls('+id+', false);"></iframe>');
+                 $('#action-view-pane').html('<iframe id="action-frame" src="<?php echo Yii::app()->controller->createAbsoluteUrl('/actions/actions/viewAction'); ?>?id='+id+'" onload="createControls('+id+', false);"></iframe>');
             }
         }
     });

@@ -160,6 +160,15 @@ Yii::app()->clientScript->registerCss('status-messages','
     #update-info .summary.warn {
         color: red;
     }
+    #update-info .version-info-link {
+        font-weight: bold;
+    }
+    #update-info .version-info-link a {
+        text-decoration: none;
+    }
+    #update-info .version-info-link a:hover {
+        text-decoration: underline;
+    }
     #update-info .details {
         display: none;
         padding: 5px;
@@ -272,7 +281,7 @@ var errorMessages;
 var messages;
 var queuedStages = {};
 var updateLock;
-var updateStageUrl = <?php echo json_encode($this->createUrl('admin/updateStage')); ?>;
+var updateStageUrl = <?php echo json_encode($this->createUrl('/admin/updateStage')); ?>;
 var updateHeader;
 
 String.prototype.format = function() {
@@ -450,8 +459,13 @@ function stageCheck(i) {
 
         updateHeader.text(<?php echo json_encode(Yii::t('admin','Confirm Changes to be Applied:')); ?>);
         
-        // Changelog:
-        newUpdateDetailMessage(<?php echo json_encode(Yii::t('admin','Release Summary')) ?>,d.manifest.changelog,'no-style');
+        // Version info links:
+        var releaseGitBaseUrl = 'https://github.com/X2Engine/X2Engine/tree/'+d.manifest.targetVersion+'/';
+        var releaseInfoLinkContainer = $('<ul>');
+        <?php foreach(array('README','CHANGELOG','RELEASE-NOTES') as $document) { ?>
+        releaseInfoLinkContainer.append($('<li>',{'class':'version-info-link',html:$('<a>',{href:releaseGitBaseUrl+<?php echo json_encode($document.'.md'); ?>,target:'_blank',text:<?php echo json_encode(strtolower(str_replace('-',' ',$document))); ?>})}));
+        <?php } ?>
+        newUpdateDetailMessage(<?php echo json_encode(Yii::t('admin','Version Info')) ?>,releaseInfoLinkContainer.html(),'no-style');
         updateInfo.find('.no-style').siblings('a').trigger('click.toggle');
 
         // Files to copy
@@ -511,7 +525,7 @@ function stageCompletion(i) {
         if(secondsBefore==0) {
             messageState(ind,'done');
             if(scenario == 'upgrade') // Go to about page
-                window.location.href = '<?php echo CHtml::normalizeUrl(array('site/page','view'=>'about')); ?>';
+                window.location.href = '<?php echo CHtml::normalizeUrl(array('/site/page','view'=>'about')); ?>';
             else // Reload to log out
                 window.location.reload();
         } else {
@@ -593,6 +607,7 @@ function stageReview(i) {
     // Attach event handler to the "Apply" button that hides itself and runs the "enact" stage.
     $('#update-button').bind('click.nextStage',function(e){
         e.preventDefault();
+        $('#database-backup').hide();
         $('#update-cancel').hide();
         $(this).fadeOut(300,function(){
             $('html, body').animate({scrollTop:0});
@@ -713,7 +728,14 @@ $(function() {
         }
     });
 
+    if(typeof x2 == 'undefined') {
+        x2 = {Notifs:{}};
+    }
+    if(typeof x2.Notifs == 'undefined'){
+        x2.Notifs = {};
+    }
     x2.fetchNotificationUpdates = false;
+    x2.Notifs.fetchNotificationUpdates = false;
 
     // Ready-state-specific JavaScript:
     if(ready) {
@@ -797,7 +819,7 @@ window.onbeforeunload = function(e) {
     <li><?php echo Yii::t('admin', "Make a backup copy of all X2CRM's files in addition to its database, in case you want to revert to the current version."); ?></li>
     <?php if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','LockAppAction.php')))):
     if(!Yii::app()->locked): ?>
-    <li><?php echo CHtml::link(Yii::t('admin','Lock X2CRM'),array('admin/lockApp')); ?></li>
+    <li><?php echo CHtml::link(Yii::t('admin','Lock X2CRM'),array('/admin/lockApp')); ?></li>
     <?php
     endif;
     endif; ?>
@@ -853,7 +875,7 @@ try{
 ?>
 <span id="backup-state">
     <span id="backup-state-error" style="color:red;"><?php echo $msg; ?></span>
-    <span id="backup-download-link" style="<?php echo empty($msg)?'':'display:none;'; ?>"><?php echo CHtml::link('[ '.Yii::t('admin', 'Download database backup').' ]', array('admin/backup', 'download' => 1)); ?></span>
+    <span id="backup-download-link" style="<?php echo empty($msg)?'':'display:none;'; ?>"><?php echo CHtml::link('[ '.Yii::t('admin', 'Download database backup').' ]', array('/admin/backup', 'download' => 1)); ?></span>
 </span>
 <br />
 
@@ -865,7 +887,7 @@ try{
 <br />
 <hr />
 <a href="javascript:void(0);" class="x2-button" id="update-button"><?php echo Yii::t('app','Apply Changes'); ?></a>
-<?php echo CHtml::link(Yii::t('admin','Cancel'),array('admin/updater','scenario'=>'delete','redirect'=>1),array('class'=>'x2-button','id'=>'update-cancel')); ?>
+<?php echo CHtml::link(Yii::t('admin','Cancel'),array('/admin/updater','scenario'=>'delete','redirect'=>1),array('class'=>'x2-button','id'=>'update-cancel')); ?>
 
 </div><!-- #update-ready -->
 
@@ -914,7 +936,7 @@ try{
 else: // "message" or "error"
 
 if (isset($longMessage)) echo "<p>$longMessage</p>";
-echo CHtml::link(Yii::t('admin', 'Go back'), array('admin/index'),array('class'=>'x2-button'));
+echo CHtml::link(Yii::t('admin', 'Go back'), array('/admin/index'),array('class'=>'x2-button'));
 
 endif; /* in_array($scenario, array('update', 'upgrade')) */
 ?>

@@ -42,19 +42,19 @@ if($isAdmin && file_exists($updateManifest = implode(DIRECTORY_SEPARATOR,array(Y
     $manifest = @json_decode(file_get_contents($updateManifest),1);
     if(isset($manifest['scenario']) && !(Yii::app()->controller->id == 'admin' && Yii::app()->controller->action->id == 'updater')) {
         Yii::app()->user->setFlash('admin.update',Yii::t('admin', 'There is an unfinished {scenario} in progress.',array('{scenario}'=>$manifest['scenario']=='update' ? Yii::t('admin','update'):Yii::t('admin','upgrade')))
-                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Resume'),array("admin/updater",'scenario'=>$manifest['scenario']))
-                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Cancel'),array("admin/updater",'scenario'=>'delete','redirect'=>1)));
+                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Resume'),array("/admin/updater",'scenario'=>$manifest['scenario']))
+                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Cancel'),array("/admin/updater",'scenario'=>'delete','redirect'=>1)));
     }
 } else if($isAdmin && Yii::app()->session['alertUpdate']){
     Yii::app()->user->setFlash('admin.update',Yii::t('admin', 'A new version is available.')
-            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Update X2CRM'),array('admin/updater'))
-            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Updater Settings'),array('admin/updaterSettings')));
+            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Update X2CRM'),array('/admin/updater'))
+            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Updater Settings'),array('/admin/updaterSettings')));
     Yii::app()->session['alertUpdate'] = false;
 }
 if(is_int(Yii::app()->locked)) {
     $lockMsg = '<strong>'.Yii::t('admin','The application is currently locked.').'</strong>';
     if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','LockAppAction.php')))) {
-        $lockMsg .= ' '.CHtml::link(Yii::t('admin','Unlock X2CRM'),array('admin/lockApp','toggle'=>0));
+        $lockMsg .= ' '.CHtml::link(Yii::t('admin','Unlock X2CRM'),array('/admin/lockApp','toggle'=>0));
     } else {
         $lockMsg .= Yii::t('admin', 'You can manually unlock the application by deleting the file {file}', array('{file}' => '<em>"x2crm.lock"</em> in protected/config'));
     }
@@ -102,8 +102,16 @@ foreach(Yii::app()->params->supportedCurrencySymbols as $curCode=>$curSym) {
 }
 $cldScript .= "\n})(jQuery);";
 
+AuxLib::registerPassVarsToClientScriptScript ('auxlib',
+    array (
+        'saveMiscLayoutSettingUrl' => 
+            "'".addslashes (Yii::app()->createUrl ('/profile/saveMiscLayoutSetting'))."'" 
+    ), 'passAuxLibVars'
+);
+
 // custom scripts
 $cs ->registerScriptFile($baseUrl.'/js/json2.js')
+    ->registerScriptFile($baseUrl.'/js/main.js'.$jsVersion, CCLientScript::POS_HEAD)
 	->registerScriptFile($baseUrl.'/js/auxlib.js', CClientScript::POS_HEAD)
 	->registerScriptFile($baseUrl.'/js/layout.js')
 	->registerScriptFile($baseUrl.'/js/publisher.js')
@@ -122,8 +130,6 @@ if (IS_IPAD) {
     $cs->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
 }
     //$cs->registerScriptFile($baseUrl.'/js/jquery.mobile-1.3.2.js');
-
-$cs->registerScript($baseUrl.'/js/main.js'.$jsVersion, CCLientScript::POS_HEAD);
 
 if(Yii::app()->session['translate'])
     $cs->registerScriptFile($baseUrl.'/js/translator.js');
@@ -180,11 +186,14 @@ if (is_object (Yii::app()->controller->module)) {
 
 if(!$isGuest){
     $cs->registerScript ('notificationsParams', "
-        x2.notifications = {};
-        x2.notifications.translations = {};
-        x2.notifications.translations['clearAll'] =
-            '".addslashes (Yii::t('app', 'Permanently delete all notifications?'))."';
-    ", CClientScript::POS_HEAD);
+        x2.notifications = new x2.Notifs ({ 
+            disablePopup: ".($profile->disableNotifPopup ? 'true' : 'false').",
+            translations: {
+                clearAll: 
+                    '".addslashes (Yii::t('app', 'Permanently delete all notifications?'))."'
+            }
+        });
+    ", CClientScript::POS_READY);
     $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
        ->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion, CClientScript::POS_BEGIN);
 }
@@ -213,7 +222,7 @@ foreach($checkFiles as $key => $value){
 }
 $theme2Css = '';
 if($logoMissing)
-    $theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
+    $theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('/site/warning')).') !important;} #bg{display:none !important;}';
 
 // check for background image, use it if one is set
 // if(!$preferences['backgroundImg'])
@@ -470,7 +479,7 @@ if(!Yii::app()->user->isGuest){
 $userMenu = array(
     array('label' => Yii::t('app', 'Admin'), 'url' => array('/admin/index'), 'active' => ($module == 'admin') ? true : null, 'visible' => $isAdmin),
     array('label' => Yii::t('app', 'Activity'), 'url' => array('/site/whatsNew')),
-    array('label' => Yii::t('app', 'Users'), 'url' => array('/users/admin'), 'visible' => $isAdmin),
+    array('label' => Yii::t('app', 'Users'), 'url' => array('/users/users/admin'), 'visible' => $isAdmin),
     array('label' => Yii::t('app', 'Users'), 'url' => array('/profile/profiles'), 'visible' => !$isAdmin),
     array('label' => $searchbarHtml, 'itemOptions' => array('id' => 'search-bar', 'class' => 'special')),
     array('label' => CHtml::link(
@@ -493,7 +502,7 @@ $userMenu = array(
             array('label' => Yii::t('app', 'Notifications'), 'url' => array('/site/viewNotifications')),
             array('label' => Yii::t('app', 'Preferences'), 'url' => array('/profile/settings')),
 			array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('/profile/manageCredentials')),
-            array('label' => Yii::t('help', 'Icon Reference'), 'url' => array('/site/page/', 'view' => 'iconreference')),
+            array('label' => Yii::t('help', 'Icon Reference'), 'url' => array('/site/page', 'view' => 'iconreference')),
             array('label' => Yii::t('help', 'Help'), 'url' => 'http://www.x2engine.com/reference_guide','linkOptions'=>array('target'=>'_blank')),
             array('label' => Yii::t('app', 'Report A Bug'), 'url' => array('/site/bugReport')),
             array('label' => Yii::t('app', '---'), 'itemOptions' => array('class' => 'divider')),
@@ -557,10 +566,11 @@ if(method_exists($this,'renderGaCode'))
 
 	if ($preferences != null && $preferences['backgroundImg']) {
 
-		if(file_exists('uploads/'.$preferences['backgroundImg']))
+		if(file_exists('uploads/'.$preferences['backgroundImg'])) {
 			echo 'background-image:url('.$baseUrl.'/uploads/'.$preferences['backgroundImg'].');';
-		else
+		} else {
 			echo 'background-image:url('.$baseUrl.'/uploads/media/'.Yii::app()->user->getName().'/'.$preferences['backgroundImg'].');';
+        }
 
 		switch($bgTiling = $preferences['backgroundTiling']) {
 			case 'repeat-x':

@@ -78,7 +78,7 @@ $this->widget('application.components.X2GridView', array(
          'class="page-title icon accounts x2-gridview-fixed-title">'.
         '{title}{buttons}{filterHint}'.
         
-        '{summary}{items}{pager}',
+        '{summary}{topPager}{items}{pager}',
     'fixedHeader'=>true,
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,

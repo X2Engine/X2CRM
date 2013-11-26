@@ -153,7 +153,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
             <?php echo $form->error($model,'users'); ?>
             <?php /* x2temp */
                             echo "<br>";
-                            $url=$this->createUrl('groups/getGroups');
+                            $url=$this->createUrl('/groups/groups/getGroups');
                             echo "<label>".Yii::t('app','Group?')."</label>";
                             echo CHtml::checkBox('group','',array(
                                 'id'=>'groupCheckbox',

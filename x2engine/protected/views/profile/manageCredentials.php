@@ -91,7 +91,7 @@ $this->widget('zii.widgets.CListView', array(
 
 <?php
 echo CHtml::beginForm(
-    array('profile/createUpdateCredentials'),
+    array('/profile/createUpdateCredentials'),
     'get',
     array (
         'onSubmit' => 'return validate ();'

@@ -187,7 +187,7 @@ class Notification extends CActiveRecord {
 						'{field}'=>$record->getAttributeLabel($this->fieldName),
 						'{value}'=>$record->renderAttribute($this->fieldName,true,true),
 						'{record}'=>$record->getLink(),
-						'{user}'=>(Yii::app()->user->getName()==$this->createdBy)?CHtml::link('You',array('profile/view','id'=>Yii::app()->user->getId())):User::getUserLinks($this->createdBy)
+						'{user}'=>(Yii::app()->user->getName()==$this->createdBy)?CHtml::link('You',array('/profile/view','id'=>Yii::app()->user->getId())):User::getUserLinks($this->createdBy)
 					));
 
 				} else {
@@ -198,7 +198,7 @@ class Notification extends CActiveRecord {
 						'{field}'=>$record->getAttributeLabel($this->fieldName),
 						'{value}'=>$record->renderAttribute($this->fieldName,true,true),
 						'{record}'=>$record->getLink(),
-						'{user}'=>(Yii::app()->user->getName()==$this->createdBy)?CHtml::link('You',array('profile/view','id'=>Yii::app()->user->getId())):User::getUserLinks($this->createdBy)
+						'{user}'=>(Yii::app()->user->getName()==$this->createdBy)?CHtml::link('You',array('/profile/view','id'=>Yii::app()->user->getId())):User::getUserLinks($this->createdBy)
 					));
 
 
@@ -206,7 +206,7 @@ class Notification extends CActiveRecord {
 
 			case 'lead_failure':
 				return Yii::t('app','A lead failed to come through Lead Capture. Check {link} to recover it.',array(
-					'{link}'=>CHtml::link(Yii::t('app','here'),Yii::app()->controller->createUrl('/contacts/cleanFailedLeads'))
+					'{link}'=>CHtml::link(Yii::t('app','here'),Yii::app()->controller->createUrl('/contacts/contacts/cleanFailedLeads'))
 				));
 			case 'assignment':
 				if($passive)

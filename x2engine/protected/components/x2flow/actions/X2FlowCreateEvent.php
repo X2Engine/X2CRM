@@ -101,14 +101,14 @@ class X2FlowCreateEvent extends X2FlowAction {
         }
         if(!$this->parseOption('createNotif', $params)) {
             if (!$notif->save()) {
-                return array (false, $notif->getError ());
-            } 
+                return array(false, array_shift($notif->getErrors()));
+            }
         }
 
         if ($event->save()) {
             return array (true, "");
         } else {
-            return array (false, $event->getError ());
+            return array(false, array_shift($event->getErrors()));
         }
 
     }

@@ -61,7 +61,7 @@
                 'empty' => Yii::t('admin', 'Select a model'),
                 'ajax' => array(
                     'type' => 'POST', //request type
-                    'url' => CController::createUrl('admin/getAttributes'), //url to call.
+                    'url' => CController::createUrl('/admin/getAttributes'), //url to call.
                     //Style: CController::createUrl('currentController/methodToCall')
                     'update' => '#dynamicFields', //selector to update
                 //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
@@ -77,8 +77,7 @@
             echo $form->dropDownList($model, 'id', array(), array('empty' => Yii::t('admin', 'Select a model first'), 'id' => 'dynamicFields',
                 'ajax' => array(
                     'type' => 'POST', //request type
-                    'url' => CController::createUrl('admin/getFieldData'), //url to call.
-                    //Style: CController::createUrl('currentController/methodToCall')
+                    'url' => CController::createUrl('/admin/getFieldData'), //url to call.
                     'success' => 'updateFields', //selector to update
                 //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
                 //leave out the data key to pass all form values through
@@ -103,10 +102,8 @@
                 'id' => 'fieldType',
                 'ajax' => array(
                     'type' => 'POST', //request type
-                    'url' => CController::createUrl('admin/getFieldType'), //url to call.
-                    //Style: CController::createUrl('currentController/methodToCall')
+                    'url' => CController::createUrl('/admin/getFieldType'), //url to call.
                     'update' => '#edit_dropdown', //selector to update
-                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
                 //leave out the data key to pass all form values through
                     )));
             ?>

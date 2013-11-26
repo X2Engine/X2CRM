@@ -70,7 +70,7 @@ abstract class x2base extends X2Controller {
 	public $breadcrumbs = array();
 	public $portlets = array(); // This is the array of widgets on the sidebar.
 	public $leftPortlets = array(); // additional menu blocks on the left mneu
-	public $modelClass = 'Admin';
+	public $modelClass;
 	public $actionMenu = array();
 
 	/**
@@ -682,7 +682,7 @@ abstract class x2base extends X2Controller {
      */
     public function actionSearch() {
         $term = $_GET['term'];
-        $this->redirect(Yii::app()->request->scriptUrl . '/search/search?term=' . $term);
+        $this->redirect(Yii::app()->controller->createAbsoluteUrl('/search/search',array('term'=>$term)));
     }
 
 	/**
@@ -1274,6 +1274,6 @@ abstract class x2base extends X2Controller {
                 echo "$script\n";
         }
 	    echo "</script>";
-        
+
     }
 }

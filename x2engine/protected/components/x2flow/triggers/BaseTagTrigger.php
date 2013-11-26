@@ -54,8 +54,15 @@ abstract class BaseTagTrigger extends X2FlowTrigger {
 	public function check(&$params) {
 		$tags = $this->config['options']['tags']['value'];
 		$tags = is_array($tags) ? $tags : Tags::parseTags($tags);
-        //$params['tags']=array_map(function($item){ return str_replace('#','',$item); },$params['tags']);
-		// must have at least 1 tag in the list:
-		return count(array_intersect($params['tags'],$tags)) > 0 ? $this->checkConditions($params) : false;
+        if(!empty($tags) && isset($params['tag'])){ // Check passed params to be sure they're set
+            if(!is_array($params['tag'])){
+                $params['tag']=explode(',',$params['tag']);
+            }
+            //$params['tags']=array_map(function($item){ return str_replace('#','',$item); },$params['tags']);
+            // must have at least 1 tag in the list:
+            return count(array_intersect($params['tag'],$tags)) > 0 ? $this->checkConditions($params) : false;
+        }else{
+            return true;
+        }
 	}
 }

@@ -51,7 +51,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
     <div id="media-library-widget-container">
         <?php
         echo "<div id='x2-media-list' style='".($this->drive ? 'display:none;' : '')."'>";
-        $toggleUserMediaVisibleUrl = $this->controller->createUrl('/media/toggleUserMediaVisible')."?user=$username";
+        $toggleUserMediaVisibleUrl = $this->controller->createUrl('/media/media/toggleUserMediaVisible',array('user'=>$username));
         $visible = !in_array($username, $hideUsers);
         if(!$visible)
             $minimizeUserMedia .= "$('#".$escapedName."-media').hide();\n";
@@ -83,7 +83,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
                 if(mb_strlen($filename, 'UTF-8') > 35){
                     $filename = mb_substr($filename, 0, 32, 'UTF-8').'…';
                 }
-                echo CHtml::link($filename, array('/media', 'view' => $item['id']), array(
+                echo CHtml::link($filename, array('/media/media/view', 'id'=>$item['id']), array(
                     'class' => 'x2-link media'.(Media::isImageExt($item['fileName']) ? ' image-file' : ''),
                     'id' => $baseId,
                     'style' => 'curosr:pointer;',
@@ -131,7 +131,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
                     ->queryAll();
             ?>
             <?php if($userMediaItems){ // user has any media items? ?>
-                <?php $toggleUserMediaVisibleUrl = Yii::app()->controller->createUrl('/media/toggleUserMediaVisible')."?user={$user['username']}"; ?>
+                <?php $toggleUserMediaVisibleUrl = Yii::app()->controller->createUrl('/media/media/toggleUserMediaVisible')."?user={$user['username']}"; ?>
                 <?php $visible = !in_array($user['username'], $hideUsers); ?>
                 <?php if(!$visible) $minimizeUserMedia .= "$('#{$user['username']}-media').hide();\n"; ?>
                 <?php $minimizeLink = CHtml::ajaxLink($visible ? '[&ndash;]' : '[+]', $toggleUserMediaVisibleUrl, array('success' => "function(response) { toggleUserMedia($('#{$user['username']}-media'), $('#{$user['username']}-media-showhide'), response); }", 'type' => 'GET'), array('id' => "{$user['username']}-media-showhide", 'class' => 'media-library-showhide')); // javascript function toggleUserMedia defined in js/media.js  ?>
@@ -191,7 +191,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
                     var id=$(this).attr('data-id');
                     if($('#'+id).is(':hidden')){
                         $.ajax({
-                            'url':'<?php echo Yii::app()->controller->createUrl('/media/recursiveDriveFiles') ?>',
+                            'url':'<?php echo Yii::app()->controller->createUrl('/media/media/recursiveDriveFiles') ?>',
                             'data':{'folderId':id},
                             'success':function(data){
                                 $('#'+id).html(data);

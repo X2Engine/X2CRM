@@ -119,7 +119,7 @@ class ContactsController extends MobileController{
 			// validate user input and save contact
 			if($model->save()) {
 				echo "1";
-				$this->redirect($this->createUrl('contacts/view/?id='.$model->id));
+				$this->redirect(array('/mobile/contacts/view','id'=>$model->id));
 			} //else print_r($model->getErrors());
 		}
 		$this->render('quickContact', array (
@@ -158,7 +158,7 @@ class ContactsController extends MobileController{
 						'condition'=>"lastName='$model->lastName'"
 				)));
 			}else{
-				$this->redirect($this->createUrl('site/home'));
+				$this->redirect($this->createUrl('/mobile/site/home'));
 			}
 			
 			$this->render('viewAll',array(

@@ -216,10 +216,11 @@ class FileUtilTest extends FileOperTestCase {
 
     public function testRelpath(){
         // Specifying both paths
-        $startPoint = Yii::app()->basePath.'/config/main.php';
-        $file = Yii::app()->basePath.'/../framework/YiiBase.php';
+        $startPoint = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'config','main.php'));
+        $file = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','framework','YiiBase.php'));
         $relpath = FileUtil::relpath($file, $startPoint);
-        $this->assertEquals('../../framework/YiiBase.php', $relpath);
+        $this->assertEquals(str_replace('/',DIRECTORY_SEPARATOR,'../../framework/YiiBase.php'), $relpath);
+        
         // Specifying only one path. The return value should originate from
         // index.php's directory!
         $relpath = FileUtil::relpath($file);
@@ -227,18 +228,18 @@ class FileUtilTest extends FileOperTestCase {
         // Test on Windows!
         $startPoint = 'C:\\Program Files (x86)\\Something\\SomethingElse\\..\\something.exe';
         $endPoint = 'C:\\Windows\\Something\\..\\Something\\SomethingMore/library.dll';
-        $relpath = FileUtil::relpath($endPoint, $startPoint);
-        $this->assertEquals('../../Windows/Something/SomethingMore/library.dll', $relpath);
+        $relpath = FileUtil::relpath($endPoint, $startPoint,DIRECTORY_SEPARATOR);
+        $this->assertEquals(FileUtil::rpath('../../Windows/Something/SomethingMore/library.dll'), $relpath);
         // Two ordinary points that don't require upward traversal...
         $startPoint = '/home/joeschmoe/public_html/';
         $endPoint = '/home/joeschmoe/public_html/protected/controllers/FatController.php';
         $relpath = FileUtil::relpath($endPoint, $startPoint);
-        $this->assertEquals('protected/controllers/FatController.php', $relpath);
+        $this->assertEquals(FileUtil::rpath('protected/controllers/FatController.php'), $relpath);
         // Two points, one in a backup dir
         $startPoint = '/home/joeschmoe/public_html/protected/controllers/FatController.php';
         $endPoint = '/home/joeschmoe/public_html/backup/protected/controllers/FatController.php';
         $relpath = FileUtil::relpath($endPoint, $startPoint);
-        $this->assertEquals('../../backup/protected/controllers/FatController.php', $relpath);
+        $this->assertEquals(FileUtil::rpath('../../backup/protected/controllers/FatController.php'), $relpath);
     }
 
 }

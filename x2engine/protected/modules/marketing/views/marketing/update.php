@@ -49,7 +49,7 @@ $this->actionMenu = $this->formatMenu(array(
             'confirm'=>Yii::t('app','Are you sure you want to delete this item?')
         )
     ),
-	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/lists')),
+	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/contacts/lists')),
 	array(
         'label'=>Yii::t('marketing','Newsletters'), 
         'url'=>array('/marketing/weblist/index'),

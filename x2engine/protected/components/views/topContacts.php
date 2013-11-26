@@ -37,7 +37,7 @@
 Yii::app()->clientScript->registerScript('topContacts',"
 function addTopContact(contactId) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('/users/addTopContact')) . "',
+		url: '" . CHtml::normalizeUrl(array('/users/users/addTopContact')) . "',
 		type: 'GET',
 		data: 'contactId='+contactId,
 		//data: 'contactId='+contactId+'&viewId='+viewId,
@@ -50,7 +50,7 @@ function addTopContact(contactId) {
 }
 function removeTopContact(contactId) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('/users/removeTopContact')) . "',
+		url: '" . CHtml::normalizeUrl(array('/users/users/removeTopContact')) . "',
 		type: 'GET',
 		data: 'contactId='+contactId,
 		// data: 'contactId='+contactId+'&viewId='+viewId,
@@ -75,7 +75,7 @@ foreach($topContacts as $contact) {
 	$contactIdList[] = $contact->id;
 	echo '<li id="contact' . $contact->id . '">';
 	$link = '<strong>'.$contact->firstName.' '.$contact->lastName.'</strong><br />'.$contact->phone;
-	echo CHtml::link($link,array('/contacts/'.$contact->id));
+	echo CHtml::link($link,array('/contacts/contacts/view','id'=>$contact->id));
 	
 	echo CHtml::link('[x]','#',array(
 		'class'=>'delete-link',

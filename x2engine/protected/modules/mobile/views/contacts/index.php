@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 $menuItems = array(
-            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('site/home/')),
+            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('/mobile/site/home')),
         );
 
 $this->widget('MenuList', array(

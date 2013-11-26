@@ -33,10 +33,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-var auxlib = {};
+if (!auxlib) var auxlib = {};
+auxlib.DEBUG = true;
 
 auxlib.error = function (message) {
-    if (x2.DEBUG) console.log ('Error: ' + message);
+    if (auxlib.DEBUG && x2.DEBUG) console.log ('Error: ' + message);
 };
 
 // display error message in red after prevElem
@@ -236,3 +237,57 @@ auxlib.create = function (prototype) {
 };
 
 
+/*
+Remove cursor from input by focusing on a temporary dummy input element.
+*/
+auxlib.removeCursorFromInput = function (elem) {
+    $(elem).append ($("<input>", {"id": "auxlib-dummy-input"}));
+    var x = window.scrollX;
+    var y = window.scrollY;
+    $("#auxlib-dummy-input").focus ();
+    window.scrollTo (x, y); // prevent scroll from focus event
+    $("#auxlib-dummy-input").remove ();
+};
+
+/*
+Returns a JSON string with form field names as keys and corresponding form field values as values
+*/
+auxlib.formToJSON = function (formElem) {
+    var arr = $(formElem).serializeArray ();
+    var JSONarr = {};
+    var name, value;
+    for (var i in arr) {
+        name = arr[i]['name'];
+        value = arr[i]['value'];
+        if (name) JSONarr[name] = value;
+    }
+    return JSONarr;
+};
+
+auxlib.htmlEncode = function (text) {
+    return $('<div>', { 'text': text }).html ();
+};
+
+auxlib.htmlDecode = function (html) {
+    return $('<div>', { 'html': html }).text ();
+};
+
+/*
+Saves settings as a property of the miscLayoutSettings JSON field of the profile model. This 
+should be used to make miscellaneous layout settings persistent.
+Parameters:
+    settingName - string - must be an existing property name of the JSON field
+    settingVal - mixed - the value to which the JSON field property will get set
+*/
+auxlib.saveMiscLayoutSetting = function (settingName, settingVal) {
+    $.ajax ({
+        url: auxlib.saveMiscLayoutSettingUrl,
+        type: 'POST',
+        data: {
+            settingName: settingName,
+            settingVal: settingVal,
+        },
+        success: function () {
+        }
+    });
+};

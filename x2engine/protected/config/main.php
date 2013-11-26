@@ -272,7 +272,7 @@ $config = array(
         // ),
         'errorHandler' => array(
             // use 'site/error' action to display errors
-            'errorAction' => 'site/error',
+            'errorAction' => '/site/error',
         ),
         'log' => array(
             'class' => 'CLogRouter',
@@ -297,7 +297,7 @@ $config = array(
                     ),
                     array(
                         'class' => 'CFileLogRoute',
-                        'categories' => 'application.update,system.*',
+                        'categories' => 'application.update',
                         'logFile' => 'updater.log',
                         'maxLogFiles' => 10,
                         'maxFileSize' => 128,
@@ -307,7 +307,7 @@ $config = array(
                 : array(
                     array(
                         'class' => 'CFileLogRoute',
-                        'categories' => 'application.update,system.*',
+                        'categories' => 'application.update',
                         'logFile' => 'updater.log',
                         'maxLogFiles' => 10,
                         'maxFileSize' => 128,

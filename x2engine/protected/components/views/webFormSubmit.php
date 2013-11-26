@@ -42,7 +42,7 @@ Yii::app()->params->profile = ProfileChild::model()->findByPk(1);
 ?>
 
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo Yii::app()->language; ?>" 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo Yii::app()->language; ?>"
  lang="<?php echo Yii::app()->language; ?>">
 <head>
 <meta charset="UTF-8" />
@@ -58,11 +58,11 @@ body {
 </style>
 </head>
 <body>
-<?php 
+<?php
 if (!empty($error)) { ?>
 	<h1><?php echo Yii::t('contacts','We\'re Sorry!'); ?></h1>
 	<p><?php echo $error; ?></p>
-<?php 
+<?php
 } else { ?>
 	<h1><?php echo Yii::t('contacts','Thank You!'); ?></h1>
 <?php

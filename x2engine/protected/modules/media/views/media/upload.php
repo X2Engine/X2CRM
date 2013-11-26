@@ -59,7 +59,7 @@ $this->actionMenu = $this->formatMenu(array(
 					<tr class="formSectionRow">
 						<td style="background: #FAFAFA;">
 							<div class="x2-file-wrapper">
-							    <input type="file" class="x2-file-input" name="upload" onChange="var validName = mediaCheckName(this); if(validName) {mediaFileUpload(this.form, $(this), '<?php echo Yii::app()->createUrl('site/tmpUpload'); ?>', '<?php echo Yii::app()->createUrl('site/removeTmpUpload'); ?>'); }">
+							    <input type="file" class="x2-file-input" name="upload" onChange="var validName = mediaCheckName(this); if(validName) {mediaFileUpload(this.form, $(this), '<?php echo Yii::app()->createUrl('/site/tmpUpload'); ?>', '<?php echo Yii::app()->createUrl('/site/removeTmpUpload'); ?>'); }">
 							    <input type="button" class="x2-button" value="<?php echo Yii::t('media', 'Choose File'); ?>">
 							    <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/loading.gif',Yii::t('app','Loading'),array('id'=>'choose-file-saving-icon', 'style'=>'position: absolute; width: 14px; height: 14px; filter: alpha(opacity=0); -moz-opacity: 0.00; opacity: 0.00;')); ?>
 							    <span class="filename"></span>

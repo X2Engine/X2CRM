@@ -58,12 +58,17 @@ class WebleadTrigger extends BaseTagTrigger {
         $tagOptions = $this->config['options']['tags'];
         $tags = $tagOptions['value'];
         $tags = is_array($tags) ? $tags : Tags::parseTags($tags);
-        if(!empty($tags)){
+        if(!empty($tags) && isset($params['tags'])){
+            if(!is_array($params['tags'])){
+                $params['tags']=explode(',',$params['tags']);
+            }
             //$params['tags']=array_map(function($item){ return str_replace('#','',$item); },$params['tags']);
             // must have at least 1 tag in the list:
-            return count(array_intersect($params['tags'], $tags)) > 0 ? $this->checkConditions($params) : false;
+            return array (
+                count(array_intersect($params['tags'], $tags)) > 0 ? 
+                    $this->checkConditions($params) : false, '');
         }else{
-            return true;
+            return array (true, '');
         }
     }
 

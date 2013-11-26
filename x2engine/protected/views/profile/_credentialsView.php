@@ -48,7 +48,7 @@
 	$webUser = Yii::app()->user;
 	$canDelete = $webUser->checkAccess('CredentialsDelete',array('model'=>$data));
 	$deleteImg = CHtml::image(Yii::app()->theme->baseUrl.'/css/gridview/delete.png',Yii::t('app','Delete'),$canDelete ? array() : array('style'=>'opacity:0.5','title'=>Yii::t('app','Cannot delete. The item is in use by the system, or you do not have permission.')));
-	$delete = $canDelete ? CHtml::link($deleteImg,array('profile/deleteCredentials','id'=>$data->id),array('class'=>'delete','confirm'=>Yii::t('app','Are you sure you want to delete this item?'))) : $deleteImg;
+	$delete = $canDelete ? CHtml::link($deleteImg,array('/profile/deleteCredentials','id'=>$data->id),array('class'=>'delete','confirm'=>Yii::t('app','Are you sure you want to delete this item?'))) : $deleteImg;
 	echo CHtml::tag('div',array('class'=>'credentials-delete'),$delete);
 	?>
 	<div class="info-display">
@@ -57,7 +57,7 @@
 	$editImg = CHtml::image(Yii::app()->theme->baseUrl.'/css/gridview/update.png',Yii::t('app','Edit'),$canAccess?array():array('style'=>'opacity:0.5'));
 	?>
 	<?php
-	echo $canAccess ? CHtml::link($editImg,array('profile/createUpdateCredentials','id'=>$data->id),array('class'=>'update')) : $editImg;
+	echo $canAccess ? CHtml::link($editImg,array('/profile/createUpdateCredentials','id'=>$data->id),array('class'=>'update')) : $editImg;
 	$encryptedState = $data->isEncrypted ? 'encrypted' : 'unencrypted';
 	$privateState = $data->private ? 'private' : 'nonprivate';
 	$message = $data->isEncrypted ? Yii::t('app','Encrypted storage enabled') : Yii::t('app','Credentials stored in plain text!');

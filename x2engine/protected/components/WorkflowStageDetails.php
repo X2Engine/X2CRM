@@ -93,33 +93,33 @@ class WorkflowStageDetails extends X2Widget {
 						$("#workflow-diagram").html(response);
 					$("#workflowStageDetails").dialog("close");
 					$("#workflowSelector").change();
-					updateHistory();
+					x2.Notifs.updateHistory();
 				}
 			});
 		}
 
 		function startWorkflowStage(workflowId,stageNumber) {
 			$.ajax({
-				url: "' . CHtml::normalizeUrl(array('/workflow/startStage')) . '",
+				url: "' . CHtml::normalizeUrl(array('/workflow/workflow/startStage')) . '",
 				type: "GET",
 				data: "workflowId="+workflowId+"&stageNumber="+stageNumber+"&modelId='.$this->model->id.'&type='.$this->modelName.'",
 				success: function(response) {
 					if(response!="")
 						$("#workflow-diagram").html(response);
-					updateHistory();
+					x2.Notifs.updateHistory();
 				}
 			});
 		}
 		'."
 		function completeWorkflowStage(workflowId,stageNumber) {
 			$.ajax({
-				url: '" . CHtml::normalizeUrl(array('/workflow/completeStage')) . "',
+				url: '" . CHtml::normalizeUrl(array('/workflow/workflow/completeStage')) . "',
 				type: 'GET',
 				data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$this->model->id."&type=".$this->modelName."',
 				success: function(response) {
 					if(response!='')
 						$('#workflow-diagram').html(response);
-					updateHistory();
+					x2.Notifs.updateHistory();
 				}
 			});
 		}
@@ -161,7 +161,7 @@ class WorkflowStageDetails extends X2Widget {
 			dialogBox.loading();
 			
 			$.ajax({
-				url: "' . CHtml::normalizeUrl(array('/workflow/getStageDetails')) . '",
+				url: "' . CHtml::normalizeUrl(array('/workflow/workflow/getStageDetails')) . '",
 				type: "GET",
 				data: "workflowId="+workflowId+"&stage="+stageNumber+"&modelId='.$this->model->id.'&type='.$this->modelName.'",
 				success: function(response) {
@@ -184,13 +184,13 @@ class WorkflowStageDetails extends X2Widget {
 				$('#workflowComment').css('border','1px solid red');
 			} else {
 				$.ajax({
-					url: '" . CHtml::normalizeUrl(array('/workflow/completeStage')) . "',
+					url: '" . CHtml::normalizeUrl(array('/workflow/workflow/completeStage')) . "',
 					type: 'GET',
 					data: 'workflowId='+$('#workflowCommentWorkflowId').val()+'&stageNumber='+$('#workflowCommentStageNumber').val()+'&modelId=".$this->model->id."&type=".$this->modelName."&comment='+encodeURI(comment),
 					success: function(response) {
 						if(response=='') return;
 						$('#workflow-diagram').html(response);
-						updateHistory();
+						x2.Notifs.updateHistory();
 					}
 				});
 				$('#workflowCommentDialog').dialog('close');
@@ -199,13 +199,13 @@ class WorkflowStageDetails extends X2Widget {
 
 		function revertWorkflowStage(workflowId,stageNumber) {
 			$.ajax({
-				url: '" . CHtml::normalizeUrl(array('/workflow/revertStage')) . "',
+				url: '" . CHtml::normalizeUrl(array('/workflow/workflow/revertStage')) . "',
 				type: 'GET',
 				data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$this->model->id."&type=".$this->modelName."',
 				success: function(response) {
 					if(response!='')
 						$('#workflow-diagram').html(response);
-					updateHistory();
+					x2.Notifs.updateHistory();
 				}
 			});
 		}

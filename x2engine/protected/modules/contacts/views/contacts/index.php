@@ -72,7 +72,7 @@ if($opportunityModule->visible && $accountModule->visible)
 $this->actionMenu = $this->formatMenu($menuItems);
 
 Yii::app()->clientScript->registerScript('search', "
-$('.search-button').unbind('click').click(function(){
+/*$('.search-button').unbind('click').click(function(){
 	$('.search-form').toggle();
 	return false;
 });
@@ -81,42 +81,10 @@ $('.search-form form').submit(function(){
 		data: $(this).serialize()
 	});
 	return false;
-});
+});*/
 
 $('#content').on('mouseup','#contacts-grid a',function(e) {
 	document.cookie = 'vcr-list=".$this->getAction()->getId()."; expires=0; path=/';
-});
-
-$('#createList').unbind('click').click(function() {
-	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
-	if(selectedItems.length > 0) {
-		var listName = prompt('".addslashes(Yii::t('app','What should the list be named?'))."','');
-
-		if(listName != '' && listName != null) {
-			$.ajax({
-				url:'".$this->createUrl('/contacts/createListFromSelection')."',
-				type:'post',
-				data:{listName:listName,modelName:'Contacts',gvSelection:selectedItems},
-				success:function(response) { if(response != '') window.location.href=response; }
-			});
-		}
-	}
-	return false;
-});
-$('#addToList').unbind('click').click(function() {
-	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
-
-	var targetList = $('#addToListTarget').val();
-
-	if(selectedItems.length > 0) {
-		$.ajax({
-			url:'".$this->createUrl('/contacts/addToList')."',
-			type:'post',
-			data:{listId:targetList,gvSelection:selectedItems},
-			success:function(response) { if(response=='success') alert('".addslashes(Yii::t('app','Added items to list.'))."'); else alert(response); }
-		});
-	}
-	return false;
 });
 ",CClientScript::POS_READY);
 
@@ -168,7 +136,7 @@ $this->widget('application.components.X2GridView', array(
         '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
         '<div id="x2-gridview-page-title" '.
          'class="page-title icon contacts x2-gridview-fixed-title">'.
-        '{title}{buttons}{filterHint}{massActionButtons}{summary}{items}{pager}',
+        '{title}{buttons}{filterHint}{massActionButtons}{summary}{topPager}{items}{pager}',
     'fixedHeader'=>true,
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,

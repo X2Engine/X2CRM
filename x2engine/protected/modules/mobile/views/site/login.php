@@ -85,3 +85,7 @@ $this->pageTitle = Yii::app()->name . ' - Login';
 
     <?php $this->endWidget(); ?>
 </div>
+<script>
+// prevent ajax form post to ensure that application config settings get set after login
+$.mobile['ajaxEnabled'] = false; 
+</script>

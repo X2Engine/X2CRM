@@ -51,26 +51,6 @@ class QuotesController extends x2base {
 
 	public $modelClass = 'Quote';
 
-	public function accessRules() {
-		return array(
-			array('allow',
-				'actions'=>array('getItems'),
-				'users'=>array('*'),
-			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index', 'view','viewInline', 'create', 'quickCreate', 'update', 'quickUpdate', 'search', 'addUser', 'addContact', 'removeUser', 'removeContact', 'saveChanges', 'print', 'delete', 'quickDelete', 'addProduct', 'deleteProduct', 'shareQuote', 'convertToInvoice', 'indexInvoice'),
-				'users'=>array('@'),
-			),
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','testScalability'),
-				'users'=>array('admin'),
-			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
-			),
-		);
-	}
-
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
@@ -749,12 +729,6 @@ class QuotesController extends x2base {
 
 		}  else
 			throw new CHttpException(400,Yii::t('app','Invalid request. Please do not repeat this request again.'));
-
-		if($_GET['contactId']) {
-			Yii::app()->clientScript->scriptMap['*.js'] = false;
-			$contact = X2Model::model('Contacts')->findByPk($_GET['contactId']);
-			$this->renderPartial('quoteFormWrapper', array('contactId'=>$contact->id,'accountName'=>$contact->company), false, true);
-		}
 	}
 
 	// delete a product from a quote

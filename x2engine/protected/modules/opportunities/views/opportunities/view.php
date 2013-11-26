@@ -109,9 +109,9 @@ if (isset($linkModel))
 	$accountName = json_encode($linkModel->name);
 else
 	$accountName = json_encode('');
-$createContactUrl = $this->createUrl('/contacts/create');
-$createAccountUrl = $this->createUrl('/accounts/create');
-$createOpportunityUrl=$this->createUrl('/opportunities/create');
+$createContactUrl = $this->createUrl('/contacts/contacts/create');
+$createAccountUrl = $this->createUrl('/accounts/accounts/create');
+$createOpportunityUrl=$this->createUrl('/opportunities/opportunities/create');
 $assignedTo = json_encode($model->assignedTo);
 $tooltip = json_encode(Yii::t('opportunities', 'Create a new Opportunity associated with this Opportunity.'));
 $contactTooltip = json_encode(Yii::t('opportunities', 'Create a new Contact associated with this Opportunity.'));

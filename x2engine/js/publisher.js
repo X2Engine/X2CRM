@@ -33,74 +33,236 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-// called when a tab is clicked
-function tabSelected(event, ui) {
-	// set field SelectedTab for use in POST request
-	$('#SelectedTab').val(ui.newTab.attr('aria-controls'));
+if(typeof x2 == 'undefined')
+    x2 = {};
 
-	if(ui.newTab.attr('aria-controls') == 'new-event') {
-		// switch labels Due Date vs Start Date
-		$('#due-date-label').css('display', 'none');
-		$('#start-date-label').css('display', 'block');
+if(typeof x2.publisher == 'undefined')
+    x2.publisher = {};
 
-		// show end date
-		$('#end-date-label').css('display', 'block');
-		$('#end-date-input').css('display', 'inline-block');
+// Dependency: actionFrames.js
+if(typeof x2.actionFrames == 'undefined')
+    x2.actionFrames = {};
 
-		// show action-event-panel
-		$('#action-event-panel').css('display', 'block');
+x2.publisher.elements = {};
 
-	} else if(ui.newTab.attr('aria-controls') == 'new-action') {
-		$('#due-date-label').css('display', 'block');
-		$('#start-date-label').css('display', 'none');
+x2.publisher.getElement = function (selector) {
+    if(typeof x2.publisher.elements[selector] == 'undefined')
+        x2.publisher.elements[selector] = x2.publisher.form.find(selector);
+    return x2.publisher.elements[selector];
+};
 
-		// hide end date
-		$('#end-date-label').css('display', 'none');
-		$('#end-date-input').css('display', 'none');
+/**
+ * Clears the publisher of input, i.e. after each use.
+ */
+x2.publisher.reset = function () {
+    
+    // reset group checkbox (if checked)
+    if(x2.publisher.getElement('#groupCheckbox').is(':checked')) {
+        x2.publisher.getElement('#groupCheckbox').click(); // unchecks group checkbox, and calls ajax function to restor Assigned To to list of users
+    }
 
-		// show action-event-panel
-		$('#action-event-panel').css('display', 'block');
-	} else if(ui.newTab.attr('aria-controls') == 'log-a-call') {
-		// hide action-event-panel
-		$('#action-event-panel').css('display', 'none');
-	} else if(ui.newTab.attr('aria-controls') == 'new-comment') {
-		// hide action-event-panel
-		$('#action-event-panel').css('display', 'none');
-	}
+    // reset textarea and dropdowns
+    $('#publisher-form select, #publisher-form input[type=text], #publisher-form textarea').each(function(i) {
+        $(this).val($(this).data('defaultValue'));
+    });
+
+    // reset checkboxes
+    x2.publisher.getElement('#publisher-form input[type=checkbox]').each(function(i) {
+        $(this).attr('checked', $(this).data('defaultValue'));
+    });
+
+    // reset save button
+    x2.publisher.getElement('#save-publisher').removeClass('highlight');
+};
+
+/**
+ * Switch to a tab identified by an ID
+ *
+ * @param selectedTab ID of the tab.
+ */
+x2.publisher.switchToTab = function (selectedTab) {
+    // set field SelectedTab for use in POST request
+    x2.publisher.getElement('#SelectedTab').val(selectedTab);
+    // Hide panels that aren't being used in the current tab:
+    if(selectedTab != 'new-action' && selectedTab != 'new-event' && selectedTab != 'log-time-spent' && selectedTab != 'log-a-call')
+        x2.publisher.getElement('#action-event-panel').css('display', 'none');
+    else
+        x2.publisher.getElement('#action-event-panel').css('display', 'block');
+
+    // List of element IDs displayed in each tab
+    var tabUsesIDs = [
+        ['log-a-call', [
+            // Start = due date
+            ['action-start-time-label','block'],
+            ['action-due-date','block'],
+            // End = date completed
+            ['action-end-time-label','block'],
+            ['action-complete-date','block'],
+            ['action-duration','block']
+        ]],
+        ['new-action', [
+            ['actionsAssignedToDropdown','inline-block'],
+            ['action-assigned-to-label','block'],
+            ['action-color-dropdown','inline-block'],
+            ['action-color-label','block'],
+            ['action-due-date','inline-block'],
+            ['action-due-date-label','block'],
+            ['action-priority','inline-block'],
+            ['action-priority-label','block'],
+            ['action-visibility-label','block'],
+            ['action-visibility-dropdown','inline-block']
+        ]],
+        ['new-comment', []],
+        ['log-time-spent', [
+            // Start = due date
+            ['action-start-time-label','block'],
+            ['action-due-date','block'],
+            // End = date completed
+            ['action-end-time-label','block'],
+            ['action-complete-date','block'],
+            ['action-duration','block']
+        ]],
+        ['new-event',[
+            // Start = due date
+            ['action-start-date-label','block'],
+            ['action-due-date','inline-block'],
+            // End = date completed
+            ['action-end-date-label','block'],
+            ['action-complete-date','inline-block']
+        ]]
+    ];
+
+    // give the container an id associated with the current tab for the purposes of tab specific
+    // css
+    $('.form.publisher').attr ('id', selectedTab + '-form');
+
+    var enableIDs;
+    for(var i1 = 0; i1 < tabUsesIDs.length; i1++) {
+        var tabID = tabUsesIDs[i1][0];
+        var usesIDs = tabUsesIDs[i1][1];
+        if(selectedTab == tabID) {
+            enableIDs = usesIDs;
+        } else {
+            for(var i2 = 0; i2 < usesIDs.length; i2++) {
+                x2.publisher.getElement('#'+usesIDs[i2][0]).css('display','none');
+            }
+        }
+    }
+    for(var i2 = 0; i2 < enableIDs.length; i2++) {
+        x2.publisher.getElement('#'+enableIDs[i2][0]).css('display',enableIDs[i2][1]);
+    }
 }
 
-// Sanity check the form before we submit
-// if sanity check fails, tell the user what's insane, and cancel submit (by returning false)
-function sanityCheck() {
-
+/**
+ * Callback associated with clicking on a tab:
+ */
+x2.publisher.tabSelected = function (event, ui) {
+    x2.publisher.switchToTab(ui.newTab.attr('aria-controls'));
 }
 
-function publisherUpdates() {
-	if($('#calendar').length !== 0) // if we are in calendar module
-		$('#calendar').fullCalendar('refetchEvents'); // refresh calendar
+/**
+ * In the time tracking feature: update the duration fields based on current
+ * values of start/end fields.
+ *
+ * @param thisId The ID of the time field (beginning or end time) currently being
+ *  modified
+ * @param otherId the ID of the time field (beginning oro end time) not currently
+ *  being modified.
+ * @param event The event object
+ */
+x2.publisher.updateActionDuration = function (thisId,otherId,event) {
+    var beginObj = x2.publisher.getElement('#action-due-date');
+    var endObj = x2.publisher.getElement('#action-complete-date');
+    var thisObj = thisId == '#action-due-date' ? beginObj : endObj;
+    var otherObj = otherId == '#action-due-date' ? beginObj : endObj;
+    var durationMin = x2.publisher.getElement('#action-duration input[name="timetrack-minutes"]');
+    var durationHour = x2.publisher.getElement('#action-duration input[name="timetrack-hours"]');
+    if(beginObj.val()=='' || endObj.val() == '') {
+        durationMin.val('');
+        durationHour.val('');
+    } else {
+        var startTime = Math.round(beginObj.datepicker('getDate').getTime()/1000);
+        var endTime = Math.round(endObj.datepicker('getDate').getTime()/1000);
+        if(startTime > endTime)
+            startTime = endTime;
+        var seconds = endTime-startTime;
+        var minutes = Math.floor(seconds/60)%60;
+        var hours = Math.floor(seconds/3600);
+        durationMin.val(minutes).trigger('change.zeropad');
+        durationHour.val(hours).trigger('change.zeropad');
+    }
+};
 
-	if($('.list-view').length !== 0)
-		$.fn.yiiListView.update($('.list-view').attr('id'));
+/**
+ * In the time tracking feature: update the end time field based on the duration
+ */
+x2.publisher.updateActionEndTime = function (event) {
+    var beginObj = x2.publisher.getElement('#action-due-date');
+    var endObj = x2.publisher.getElement('#action-complete-date');
+    var durationMin = x2.publisher.getElement('#action-duration input[name="timetrack-minutes"]');
+    var durationHour = x2.publisher.getElement('#action-duration input[name="timetrack-hours"]');
+    var currentTime = new Date;
+    var endTime,beginTime;
+    var totalDuration,init;
+    // Initialize to zero:
+    if(durationMin.val() === '')
+        durationMin.val(0);
+    if(durationHour.val() === '')
+        durationHour.val(0);
+    totalDuration = parseInt(durationMin.val())*60000 + parseInt(durationHour.val())*3600000;
+    // Initialize beginning date to now if unset:
+    if(beginObj.val() === '')
+        beginObj.datepicker('setDate',currentTime);
+    // Initialize end date to beginning date if unset:
+    if(endObj.val() == '') {
+        endTime = beginObj.datepicker('getDate');
+        endObj.datepicker('setDate',endTime);
+    } else
+        endTime = endObj.datepicker('getDate');
+    beginTime = beginObj.datepicker('getDate');
+    if(endTime >= currentTime || beginTime.getTime() + totalDuration > currentTime.getTime()) {
+        // Push the beginning time back so the end time doesn't go into the future:
+        beginObj.datepicker('setDate',new Date(endObj.datepicker('getDate').getTime() - totalDuration));
+    } else {
+        // Set the end time according to the beginning time and the duration:
+        endObj.datepicker('setDate',new Date(beginObj.datepicker('getDate').getTime() + totalDuration));
+    }
+};
+
+/**
+ *
+ */
+x2.publisher.updates = function () {
+    if($('#calendar').length !== 0) // if we are in calendar module
+        $('#calendar').fullCalendar('refetchEvents'); // refresh calendar
+
+    if($('.list-view').length !== 0)
+        $.fn.yiiListView.update($('.list-view').attr('id'));
 }
 
+$(function(){
+    x2.publisher.form = $('#publisher-form');
 
-function resetPublisher() {
-
-	// reset group checkbox (if checked)
-	if($('#groupCheckbox').is(':checked')) {
-		$('#groupCheckbox').click(); // unchecks group checkbox, and calls ajax function to restor Assigned To to list of users
-	}
-
-	// reset textarea and dropdowns
-	$('#publisher-form select, #publisher-form input[type=text], #publisher-form textarea').each(function(i) {
-		$(this).val($(this).data('defaultValue'));
-	});
-
-	// reset checkboxes
-	$('#publisher-form input[type=checkbox]').each(function(i) {
-		$(this).attr('checked', $(this).data('defaultValue'));
-	});
-
-	// reset save button
-	$('#save-publisher').removeClass('highlight');
-}
+    x2.publisher.getElement('#action-due-date').change(function(){
+        x2.publisher.updateActionDuration('#action-due-date','#action-complete-date');
+    });
+    x2.publisher.getElement('#action-complete-date').change(function(){
+        x2.publisher.updateActionDuration('#action-complete-date','#action-due-date');
+    });
+    x2.publisher.getElement('#action-duration input[name="timetrack-hours"],#action-duration input[name="timetrack-minutes"]')
+        .bind('change',x2.publisher.updateActionEndTime)
+        .bind('change.zeropad',function(event) {
+            var intValue = parseInt(event.target.value);
+            var maxValue = parseInt(event.target.getAttribute("max"));
+            if(intValue < 10) {
+                // Pad with zeros
+                event.target.value = '0'+parseInt(event.target.value);
+            }/* else if (intValue > 100 && maxValue == 99) {
+                // Trim off the first digit
+                event.target.value = event.target.value.substring(1);
+            } else if(intValue > maxValue) {
+                // Set back to zero
+                event.target.value = '0';
+            }*/
+        });
+});

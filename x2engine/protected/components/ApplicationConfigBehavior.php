@@ -39,15 +39,12 @@
  * It loads additional config paramenters that cannot be statically
  * written in config/main
  *
- * @property string $externalBaseUrl (read-only) the base URL of the web application,
- * 	independent of whether there is a web request.
  * @property integer $suID (read-only) substitute user ID in the case that no user session is available.
  * @property User $suModel Substitute web user model in the case that no user session is available.
  * @package X2CRM.components
  */
 class ApplicationConfigBehavior extends CBehavior {
 
-    private $_externalBaseUrl;
 
     /**
      * Substitute user ID. Used in the case of API calls and console commands
@@ -93,11 +90,13 @@ class ApplicationConfigBehavior extends CBehavior {
     public function beginRequest(){
         // $t0 = microtime(true);
         $noSession = $this->owner->params->noSession;
+
         if(!$noSession){
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
                 Yii::import('application.components.X2WebUser');
                 Yii::import('application.components.X2MessageSource');
                 Yii::import('application.components.Formatter');
+                Yii::import('application.components.JSONEmbeddedModelFieldsBehavior');
                 Yii::import('application.components.TransformedFieldStorageBehavior');
                 Yii::import('application.components.permissions.*');
                 if(!$this->owner->user->getIsGuest())
@@ -121,6 +120,8 @@ class ApplicationConfigBehavior extends CBehavior {
                 Yii::import('application.models.X2Model');
                 Yii::import('application.models.Dropdowns');
                 Yii::import('application.models.Admin');
+                $this->cryptInit();
+                
                 $this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
                 // Yii::import('application.models.*');
                 // foreach(scandir('protected/modules') as $module){
@@ -144,6 +145,9 @@ class ApplicationConfigBehavior extends CBehavior {
         Yii::import('application.modules.media.models.Media');
         Yii::import('application.modules.groups.models.Groups');
         Yii::import('application.extensions.gallerymanager.models.*');
+        
+        $this->cryptInit();
+        
         // Yii::import('application.components.ERememberFiltersBehavior');
         // Yii::import('application.components.EButtonColumnWithClearFilters');
         // $this->owner->messages->forceTranslation = true;
@@ -154,15 +158,6 @@ class ApplicationConfigBehavior extends CBehavior {
         if(!$noSession){
             $uname = $this->owner->user->getName();
             $notGuest = !$this->owner->user->getIsGuest();
-            // Set up encryption:
-            $key = $this->owner->basePath.'/config/encryption.key';
-            $iv = $this->owner->basePath.'/config/encryption.iv';
-            if(extension_loaded('openssl') && extension_loaded('mcrypt') && file_exists($key) && file_exists($iv)){
-                EncryptedFieldsBehavior::setup($key, $iv);
-            }else{
-                // Use unsafe method with encryption
-                EncryptedFieldsBehavior::setupUnsafe();
-            }
         }
 
         $sessionId = isset($_SESSION['sessionId']) ? $_SESSION['sessionId'] : session_id();
@@ -253,7 +248,7 @@ class ApplicationConfigBehavior extends CBehavior {
         $logo = Media::model()->findByAttributes(array('associationId' => 1, 'associationType' => 'logo'));
         if(isset($logo))
             $this->owner->params->logo = $logo->fileName;
-        
+
 
         // set edition
         if(YII_DEBUG){
@@ -295,8 +290,9 @@ class ApplicationConfigBehavior extends CBehavior {
                         timePickerFormat: "'.Formatter::formatTimePicker().'",
                         profile: '.CJSON::encode($this->owner->params->profile->getAttributes()).',
                         notificationSoundPath: "'.$notificationSound.'"
-                    },
-                    x2 = {};
+                    };
+                    if(typeof x2 == "undefined")
+                        x2 = {};
 					x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
                     x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
                     ';
@@ -309,8 +305,9 @@ class ApplicationConfigBehavior extends CBehavior {
                     language: "'.($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
                     datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
                     timePickerFormat: "'.Formatter::formatTimePicker().'"
-                },
-                x2 = {};
+                };
+                if(typeof x2 == "undefined")
+                    x2 = {};
 				x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
                 x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
                 ';
@@ -324,8 +321,9 @@ class ApplicationConfigBehavior extends CBehavior {
 				language: "'.($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
 				datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
 				timePickerFormat: "'.Formatter::formatTimePicker().'"
-			},
-			x2 = {};
+			};
+            if(typeof x2 == "undefined")
+                x2 = {};
 			x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
 			x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
 			';
@@ -361,7 +359,9 @@ class ApplicationConfigBehavior extends CBehavior {
             $cs = $this->owner->clientScript;
             $baseUrl = $this->owner->request->baseUrl;
             $jsVersion = '?'.$this->owner->params->buildDate;
-            /* $cs->scriptMap=array(
+            /**
+             * To be restored when JavaScript minification is added to the build process:
+             * $cs->scriptMap=array(
               'backgroundImage.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'json2.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'layout.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
@@ -378,39 +378,21 @@ class ApplicationConfigBehavior extends CBehavior {
     }
 
     /**
-     * Magic getter for {@link externalBaseUrl}; in the case that web request data
-     * isn't available, it uses a config file.
-     *
-     * @return type
+     * Instantiates the encryption utility object so that components depending
+     * on {@link EncryptedFieldsBehavior} can also be instantiated.
      */
-    public function getExternalBaseUrl(){
-        if(!isset($this->_externalBaseUrl)){
-            if($this->owner->params->noSession){
-                $this->_externalBaseUrl = '';
-                // Use the web API config file to construct the URL
-                $file = realpath($this->owner->basePath.'/../webLeadConfig.php');
-                if($file){
-                    include($file);
-                    if(isset($url))
-                        $this->_externalBaseUrl = $url;
-                }
-                if(!isset($this->_externalBaseUrl)){
-                    $this->_externalBaseUrl = ''; // Default
-                    if($this->owner->hasProperty('request')){
-                        // If this is an API request, there is still hope yet to resolve it
-                        try{
-                            $this->_externalBaseUrl = $this->owner->request->baseUrl;
-                        }catch(Exception $e){
-
-                        }
-                    }
-                }
-            }else{
-                $this->_externalBaseUrl = $this->owner->baseUrl;
-            }
+    public function cryptInit(){
+        Yii::import('application.components.EncryptedFieldsBehavior');
+        $key = $this->owner->basePath.'/config/encryption.key';
+        $iv = $this->owner->basePath.'/config/encryption.iv';
+        if(extension_loaded('openssl') && extension_loaded('mcrypt') && file_exists($key) && file_exists($iv)){
+            EncryptedFieldsBehavior::setup($key, $iv);
+        }else{
+            // Use unsafe method with encryption
+            EncryptedFieldsBehavior::setupUnsafe();
         }
-        return $this->_externalBaseUrl;
     }
+
 
 	/**
 	 * Substitute user ID magic getter.
@@ -450,7 +432,7 @@ class ApplicationConfigBehavior extends CBehavior {
         }
         return $this->_isInSession;
     }
-    
+
     /**
      * Substitute user model magic getter.
      *
@@ -464,7 +446,7 @@ class ApplicationConfigBehavior extends CBehavior {
         }
         return $this->_suModel;
     }
-
+    
     /**
      * Magic getter for substitute user model
      * @param User $user

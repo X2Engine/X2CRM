@@ -52,7 +52,7 @@ foreach($list as $role){
 )); ?>
 
 	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br />
-        
+
         <div class="row">
             <?php echo $form->labelEx($model,'name'); ?>
             <?php echo $form->dropDownList($model,'name',$names,array(
@@ -60,20 +60,20 @@ foreach($list as $role){
                 'id'=>'editDropdown',
                 'ajax' => array(
                 'type'=>'POST', //request type
-                'url'=>CController::createUrl('admin/getRole'), //url to call.
+                'url'=>CController::createUrl('/admin/getRole'), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#roleForm', //selector to update
                 'complete'=>"function(){
                     $('.multiselect').multiselect();
                 }"
-                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
+                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
                 //leave out the data key to pass all form values through
                 ))); ?>
             <?php echo $form->error($model,'name'); ?>
         </div>
-        
+
         <div id="roleForm">
-            
+
         </div>
         <br />
 	<div class="row buttons">

@@ -113,10 +113,12 @@ class MenuList extends X2Widget {
     protected function renderMenuItem($item) {
         if (isset($item['url'])) {
             $url = $item['url'];
-            if (!is_string($url))
-                $url = $url[0];
-            $route = $this->getController()->createUrl($url);
-            $route=$route.'/';
+            $params = array();
+            if (!is_string($url)) {
+                $route = $url[0];
+                $params = array_splice($url,1);
+            }
+            $route = $this->getController()->createUrl($route,$params);
             Yii::trace('url|route='.$url.'|'.$route);
             $label = $this->linkLabelWrapper === null ? $item['label'] : '<' . $this->linkLabelWrapper . '>' . $item['label'] . '</' . $this->linkLabelWrapper . '>';
         if (isset($item['left'])) 

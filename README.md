@@ -1,145 +1,37 @@
-# X2CRM 3.5 #
-Point release 3.5.6: 10/22/2013
+# X2CRM 3.6 #
+11/21/2013
 
-## Changes in 3.5.6 ##
-* Improved data validation in the role editor
-* Changes to the software updater:
-  * Bug fixes in `FileUtil::ccopy` and far more exhaustive [unit testing](https://github.com/X2Engine/X2Engine/blob/master/x2engine/protected/tests/unit/components/util/FileUtilTest.php) of that method
-  * Compatibility adjustments (that ensure relative paths used) for servers with open_basedir restriction
-  * (experimental) New command line interface for unattended updates via cron
-* Changes to the calendar:
-   * Added visibility permissions
-   * Fixed bug: events not displaying
-* Numerous, miscellaneous front-end bug fixes, including but not limited to:
-   * Tags; handling of special characters
-   * Delay of inline email button (until after instantiation of the CKEditor instance)
-   * Mass-update of rating type fields now works
-* Retroactive update migration script clears up [permissions issue that caused blank action text](http://x2community.com/topic/1073-blank-comments-call-logs-emails-etc-in-the-update-to-355/) for updating from before version 3.5.5
+New features in this release (see [CHANGELOG](CHANGELOG.md) for full history)
+
+* Improvements to user preferences
+  * User option to disable notifications popup
+  * User option to transform all phone numbers into "tel:" links for click-to-call functionality with VoIP systems
+  * Options page sections remember user's preference to be open/closed
+  * General options page UI improvements
+* Time tracking on records using the publisher
+  * New "time log" note type displays time spent on a record
+  * Specify begin time, end time and duration of logged calls
+* Interface for creating automatic, unattended software update cron task (available on compatible Linux/UNIX servers only)
+* The ability to remove contacts from static lists via mass-update action in grid view
+* "+" button to add a new account/contact on-the-fly now available in custom modules or any model with account or contact look-up fields
+* Fractional quantities in quote line items
+* "External/Public Base URL" setting controls how URLs to public-facing resources will be generated, i.e. for CRM systems hosted within private subnets or VPNs
+* New in Professional Edition:
+  * Targeted content marketing feature (beta)
+    * Embeddable, dynamic content for websites tailored to each contact
+    * X2Flow-based design interface allows unlimited sophistication in rules and criteria for targeted content
+  * Better pattern matching in email dropbox
+  * Cron table management console: one page controls all X2CRM-related server cron tasks
+  * New and improved pure-JavaScript-based website activity listener and lead capture form compatible with more web browsers
 * Fixed Bugs:  
-  * [425](http://x2software.com/index.php/bugReports/425): Unable to resolve the request "list/list/view".
-
-## Changes in 3.5.5 ##
-* Improvements to grid views:
-  * The ability to use shift+click to select ranges of records
-  * Mass tagging, field updates, record reassignments and mass deletion of selected records
-* Faster, more robust X2CRM updater with the ability to perform offline updates
-* Administrative flash message UI
-* Changes in Professional Edition:
-  * The ability to add hidden fields in the web lead form editor, filled with a user-defined value (e.g. you could set "leadsource" as a hidden field with the value "web").
-  * Application lock; the ability to lock the application through the administrative UI so that only administrators can access it
-* Fixed Bugs:  
-  * [242](http://x2software.com/index.php/bugReports/242): User Report  
-  * [245](http://x2software.com/index.php/bugReports/245): Class:  not found.  
-  * [256](http://x2software.com/index.php/bugReports/256): Changing static page title cause it to disappear  
-  * [270](http://x2software.com/index.php/bugReports/270): User Report  
-  * [287](http://x2software.com/index.php/bugReports/287): Missing Fields on Manage Notification Criteria  
-  * [327](http://x2software.com/index.php/bugReports/327): Top Sites Widget Can't Edit  
-  * [345](http://x2software.com/index.php/bugReports/345): Unable to resolve the request "tycoons (1)/index".  
-  * [361](http://x2software.com/index.php/bugReports/361): Unable to resolve the request "list/list/view".  
-  * [364](http://x2software.com/index.php/bugReports/364): Unable to resolve the request "viewContent/viewContent/view".  
-  * [365](http://x2software.com/index.php/bugReports/365): Unable to resolve the request "view/view/view".  
-  * [367](http://x2software.com/index.php/bugReports/367): Unable to resolve the request "flowDesigner/flowDesigner/view".  
-  * [368](http://x2software.com/index.php/bugReports/368): Unable to resolve the request "list/list/view".  
-  * [369](http://x2software.com/index.php/bugReports/369): Unable to resolve the request "list/list/view".  
-  * [371](http://x2software.com/index.php/bugReports/371): Unable to resolve the request "download/download/view".  
-  * [372](http://x2software.com/index.php/bugReports/372): Tools Column Error  
-  * [392](http://x2software.com/index.php/bugReports/392): Unable to resolve the request "list/list/view".  
-  * [393](http://x2software.com/index.php/bugReports/393): Unable to resolve the request "list/list/view".  
-  * [395](http://x2software.com/index.php/bugReports/395): Undefined index: multi  
-  * [405](http://x2software.com/index.php/bugReports/405): array_filter() expects parameter 2 to be a valid callback, no array or string given  
-  * [452](http://x2software.com/index.php/bugReports/452): Unable to resolve the request "update/update/view".
-
-## Changes in 3.5.2 ##
-* Fully-configurable batch timeout setting controls how much actual time can be spent in campaign emailing and cron events
-* Attribute replacement now works in the "Send a Test Email" feature of Campaigns
-* Long-overdue data validation in Role creator
-* New in X2Flow (Professional Edition only)
-  * X2Flow email actions can be configured to send using SMTP accounts stored through the credentials manager (see: "Manage Apps" in the user menu)
-  * Variable replacement in the X2Flow email actions works for arbitrary models
-  * Insertable attribute menus in X2Flow email actions automatically match those of the model type in the trigger
-  * New "unsubscribe" link short-code for X2Flow email bodies
-* Fixed Bugs:  
-  * [206](http://x2software.com/index.php/bugReports/206): Name improperly parsed/generated from email headers  
-  * [243](http://x2software.com/index.php/bugReports/243): User Report  
-  * [252](http://x2software.com/index.php/bugReports/252): X2Flow Issue with comparing two attributes  
-  * [296](http://x2software.com/index.php/bugReports/296): Send a test email to actual contacts  
-  * [308](http://x2software.com/index.php/bugReports/308): Cannot add "administrator" as a child of "DefaultRole". A loop has been detected. 
-  * [311](http://x2software.com/index.php/bugReports/311): DbCommand failed to execute the SQL statement: SQLSTATE[HY000]: General error: 1366 Incorrect decimal value: '' for column 'dealvalue
-
-## Changes in 3.5, 3.5.1 ##
-* "Print Record" feature in nearly all modules shows print-friendly version of a record
-* "Recently Viewed" widget now includes all record types
-* Chart widget enhancements
-  * New pie chart view 
-  * Dynamic date ranges, i.e. "last week"
-* Features in Professional Edition
-  * New campaign chart
-  * New cron test and log viewer in X2Flow
-* Fixed Bugs:  
-  * [94](http://x2software.com/index.php/bugReports/94): Array to string conversion  
-  * [121](http://x2software.com/index.php/bugReports/121): "Remember Me"  
-  * [135](http://x2software.com/index.php/bugReports/135): Remove deprecated "add contact" action/menu button  
-  * [159](http://x2software.com/index.php/bugReports/159): Trying to get property of non-object  
-  * [217](http://x2software.com/index.php/bugReports/217): X2Flow Strpos Error  
-  * [219](http://x2software.com/index.php/bugReports/219): Trying to get property of non-object  
-  * [225](http://x2software.com/index.php/bugReports/225): Creating default object from empty value  
-  * [228](http://x2software.com/index.php/bugReports/228): Property "Gallery.galleryId" is not defined.  
-  * [232](http://x2software.com/index.php/bugReports/232): Grid Views break on filter click  
-  * [248](http://x2software.com/index.php/bugReports/248): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '14' for key 'PRIMARY'  
-  * [263](http://x2software.com/index.php/bugReports/263): Email campaign template selection issues  
-  * [266](http://x2software.com/index.php/bugReports/266): multi-assignment fields not preserved when returning to edit page  
-  * [277](http://x2software.com/index.php/bugReports/277): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '1001' for key 'c\_name'
-
-## Release Notes ##
-
-### 3.1 ###
-* In the deletion action of the API, the primary key can now be specified in
-  either the GET or POST parameters. This way, the "DELETE" request type can be
-  used for deletion, and not just the POST type of request.
-
-### 3.0.1 ###
-* The API has undergone some fundamental changes in its response format:
-  * It always responds in JSON-encoded objects for all actions, with the
-    exception of checkPermissions, which responds with code 200, mimetype
-    "text/plain" and content "true" or "false" (as it always has)
-  * With the exception of the "create" and "update" actions, all actions that
-    return JSON-encoded objects shall remain unchanged in terms of the structure
-    of their responses.
-  * The attributes of the model returned in the "update" and "create" methods
-    should be in the "model" property of the response. All references to these
-    actions should thus use the "model" property of the response to get the
-    attributes of the model created/updated instead of treating the entire
-    response object as the model.
-  * API scripts that used actions which previously returned HTML pages or page
-    fragments should now refer to the "message" property of the returned object
-    for the content to be rendered.
-  * In the APIModel class, there should now be a new "modelErrors" property,
-    which stores the validation errors for each attribute of the object, returned by
-    [CActiveRecord.getErrors()](http://www.yiiframework.com/doc/api/1.1/CModel#errors-detail)
-    on the server. The source of this data is the "modelErrors" property of the
-    response from the create and update actions.
-
-### 3.0 ###
-* X2Flow, the automation designer, while largely complete, is still in active 
-  development, and thus has been deemed a "beta" feature.
-* Quotes created before updating to 3.0 may display incorrect totals in email,
-  print and inline views. This can be easily corrected by opening the update 
-  view of the quote and saving it (even without any changes). This is due to 
-  how, in previous versions, totals weren't stored in quote records, but rather 
-  were re-calculated on-the-fly wherever they were displayed. This required 
-  writing and maintaining three separate versions of the code that calculated
-  totals: the default quotes update page (JavaScript), the inline quotes widget
-  in the contact view (JavaScript), and in the model where the line items table 
-  was generated (PHP). In order to improve the maintainability and reliability 
-  of the line items code (by reducing the number of places it could fail), and 
-  in keeping with the DRY (don't repeat yourself) principle, all line item 
-  calculations are now performed via client-side JavaScript in the 
-  "\_lineItems" view of the quotes module. The arithmetic, however, is only run 
-  when a quote is created or updated. Thus, to correct the total displayed on 
-  a quote, open the quote's update view so that the subtotal can be 
-  recalculated, and then save it.
-
-
+  * [119](http://x2software.com/index.php/bugReports/119): is_file(): open_basedir restriction in effect. File(/usr/share/pear544/Calendar.php) is not within the allowed path(s): (/usr/wwws/users/vanwean:/usr/www/users/vanwean:/usr/home/vanwean:/usr/local/rmagic:/usr/www/users/he/_system_:/usr/share/php544:/  
+  * [413](http://x2software.com/index.php/bugReports/413): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: parameter was not defined  
+  * [462](http://x2software.com/index.php/bugReports/462): Failed to create directory ../../../../backup  
+  * [469](http://x2software.com/index.php/bugReports/469): The system is unable to find the requested action "profile".  
+  * [487](http://x2software.com/index.php/bugReports/487): Unable to resolve the request "view/view/view".  
+  * [514](http://x2software.com/index.php/bugReports/514): Flagging one role as admin gives other roles admin access  
+  * [517](http://x2software.com/index.php/bugReports/517): Undefined index: id  
+  * [564](http://x2software.com/index.php/bugReports/564): The requested page does not exist.
 
 # Introduction #
 Welcome to  X2CRM!

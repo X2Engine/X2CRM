@@ -73,6 +73,23 @@ class ArrayUtil {
 
 		return $fields;
 	}
+
+    /**
+     * Determines whether a given array is associative
+     *
+     * @param array $array The array for which the check is made
+     * @return bool True if $array is associative, false otherwise
+     */
+    public static function is_assoc ($array) {
+        $keys = array_keys ($array);
+        $type;
+        foreach ($keys as $key) {
+            if (gettype ($key) === 'string') {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 ?>

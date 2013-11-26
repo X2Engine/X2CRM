@@ -59,7 +59,7 @@ $menuItems = array(
     array('label' => Yii::t('contacts', 'Delete Contact'), 'url' => '#', 'linkOptions' => array('submit' => array('delete', 'id' => $model->id), 'confirm' => 'Are you sure you want to delete this item?')),
     array('label' => Yii::t('app', 'Send Email'), 'url' => '#', 'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
     array('label' => Yii::t('app', 'Attach A File/Photo'), 'url' => '#', 'linkOptions' => array('onclick' => 'toggleAttachmentForm(); return false;')),
-    array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'toggleQuotes(); return false;')),
+    array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
     array('label' => Yii::t('quotes', ($subscribed ? 'Unsubscribe' : 'Subscribe')), 'url' => '#', 'linkOptions' => array('class' => 'x2-subscribe-button', 'onclick' => 'return subscribe($(this));', 'title' => Yii::t('contacts', 'Receive email updates every time information for {name} changes', array('{name}' => $model->firstName.' '.$model->lastName)))),
 );
 $opportunityModule = Modules::model()->findByAttributes(array('name' => 'opportunities'));
@@ -136,24 +136,24 @@ if(!IS_ANDROID && !IS_IPAD){
     if(Yii::app()->user->checkAccess('ContactsUpdate', $authParams)){
         if(!empty($model->company) && is_numeric($model->company)) {
             echo CHtml::link(
-                '<span></span>', '#', 
+                '<span></span>', '#',
                 array(
-                    'class' => 'x2-button icon sync right hint', 
-                    'id' => $model->id.'-account-sync', 
+                    'class' => 'x2-button icon sync right hint',
+                    'id' => $model->id.'-account-sync',
                     'title' => Yii::t('contacts', 'Clicking this button will pull any relevant '.
                         'fields from the associated Account record and overwrite the Contact '.
-                        'data for those fields.  This operation cannot be reversed.'), 
+                        'data for those fields.  This operation cannot be reversed.'),
                     'submit' => array(
-                        'syncAccount', 
+                        'syncAccount',
                         'id' => $model->id
-                    ), 
+                    ),
                     'confirm' => 'Are you sure you want to overwrite this record\'s fields with '.
                         'relevant Account data?'
                 )
             );
         }
         echo CHtml::link(
-            '<span></span>', $this->createUrl('update', array('id' => $model->id)), 
+            '<span></span>', $this->createUrl('update', array('id' => $model->id)),
             array(
                 'class' => 'x2-button icon edit right',
                 'title' => Yii::t('app', 'Edit contact'),
@@ -161,9 +161,10 @@ if(!IS_ANDROID && !IS_IPAD){
         );
     }
     echo CHtml::link(
-        '<span></span>', '#', 
+        '<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/icons/email_button.png'.
+            '"></img>', '#',
         array(
-            'class' => 'x2-button icon email right',
+            'class' => 'x2-button icon right email',
             'title' => Yii::t('app', 'Open email form'),
             'onclick' => 'toggleEmailForm(); return false;'
         )
@@ -208,10 +209,10 @@ if(!IS_ANDROID && !IS_IPAD){
         $accountName = json_encode($linkModel->name);
     else
         $accountName = json_encode('');
-    $createContactUrl = $this->createUrl('/contacts/create');
-    $createAccountUrl = $this->createUrl('/accounts/create');
-    $createOpportunityUrl = $this->createUrl('/opportunities/create');
-    $createCaseUrl = $this->createUrl('/services/create');
+    $createContactUrl = $this->createUrl('/contacts/contacts/create');
+    $createAccountUrl = $this->createUrl('/accounts/accounts/create');
+    $createOpportunityUrl = $this->createUrl('/opportunities/opportunities/create');
+    $createCaseUrl = $this->createUrl('/services/services/create');
     $assignedTo = json_encode($model->assignedTo);
     $tooltip = json_encode(Yii::t('contacts', 'Create a new Opportunity associated with this Contact.'));
     $contactTooltip = json_encode(Yii::t('contacts', 'Create a new Contact associated with this Contact.'));

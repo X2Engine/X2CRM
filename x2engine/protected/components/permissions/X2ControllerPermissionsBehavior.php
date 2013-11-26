@@ -63,7 +63,7 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
 		$actionAccess = ucfirst($this->owner->getId()) . ucfirst($this->owner->getAction()->getId());
 		$authItem = $auth->getAuthItem($actionAccess);
-		if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->user->getName() == 'admin')
+		if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->params->isAdmin)
 			return true;
 		elseif(Yii::app()->user->isGuest){
 			Yii::app()->user->returnUrl = Yii::app()->request->url;

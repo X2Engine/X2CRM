@@ -74,8 +74,8 @@ $('#currency').change(function() {
             'value' => $model->chatPollTime,
             // additional javascript options for the slider plugin
             'options' => array(
-                'min' => 100,
-                'max' => 10000,
+                'min' => 1000,
+                'max' => 100000,
                 'step' => 100,
                 'change' => "js:function(event,ui) {
 					$('#chatPollTime').val(ui.value);
@@ -130,7 +130,7 @@ $('#currency').change(function() {
         <?php echo $form->checkBox($model, 'sessionLog'); ?>
     </div>
     <div class="form">
-        <?php 
+        <?php
         echo $form->labelEx($model,'batchTimeout');
         $this->widget('zii.widgets.jui.CJuiSlider', array(
             'value' => $model->batchTimeout,
@@ -208,16 +208,6 @@ $('#currency').change(function() {
         } ?>><?php echo Yii::t('admin', 'Other'); ?></option>
         </select>
         <input type="text" name="currency2" id="currency2" style="width:120px;<?php if($curFound) echo 'display:none;'; ?>" value="<?php echo $curFound ? '' : $model->currency; ?>" />
-    </div>
-    <div class="form">
-        <?php
-        foreach(array('public', 'internal') as $type){
-            echo $form->labelEx($model, "gaTracking_$type");
-            echo $form->textField($model, "gaTracking_$type", array('id' => "gaTracking_$type"));
-        }
-        echo '<br />';
-        echo Yii::t('admin', 'Enter property IDs to enable Google Analytics tracking. The public ID will be used on publicly-accessible web lead and service case forms. The internal one will be used within X2CRM, for tracking the activity of authenticated users.');
-        ?>
     </div>
 
     <div class="error">

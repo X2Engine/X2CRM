@@ -78,7 +78,7 @@ class ApiController extends x2base {
 		return array(
 			'noSession',
             'available',
-			'authenticate - voip,webListener,x2cron',
+			'authenticate - voip,webListener,targetedContent,x2cron',
 			'validModel + create,view,lookup,update,delete,relationships,tags',
 			'checkCRUDPermissions + create,view,lookup,update,delete',
 		);
@@ -88,6 +88,8 @@ class ApiController extends x2base {
 		$actions = array();
 		if(class_exists('WebListenerAction'))
 			$actions['webListener'] = array('class' => 'WebListenerAction');
+		if(class_exists('TargetedContentAction'))
+			$actions['targetedContent'] = array('class' => 'TargetedContentAction');
 		if(class_exists('X2CronAction'))
 			$actions['x2cron'] = array('class' => 'X2CronAction');
 		if(class_exists('EmailImportAction'))

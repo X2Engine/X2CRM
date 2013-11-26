@@ -48,7 +48,7 @@ if(!empty($avatar) && file_exists($avatar)){
 }
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $typeFile = $data->type;
-if(in_array($data->type, array('email_sent', 'email_opened', 'record_create'))){
+if(in_array($data->type, array('email_sent', 'email_opened'))){
     // The above types have special icons for sub-types
     if(in_array($data->subtype, array('quote', 'invoice')))
         $typeFile .= "_{$data->subtype}";
@@ -58,6 +58,9 @@ if($data->type == 'record_create'){
     switch($data->subtype){
         case 'call':
             $typeFile = 'voip_call';
+            break;
+        case 'time':
+            $typeFile = 'log_time';
             break;
     }
 }
@@ -152,7 +155,7 @@ if($data->important && isset($data->fontColor)){
         <div class="deleteButton">
             <?php
             if(($data->type == 'feed') && ($data->user == Yii::app()->user->getName() || Yii::app()->params->isAdmin)){
-                echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'), array('profile/updatePost', 'id' => $data->id))." ";
+                echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'), array('/profile/updatePost', 'id' => $data->id))." ";
             }
             if((($data->user == Yii::app()->user->getName() || $data->associationId == Yii::app()->user->getId()) && ($data->type == 'feed')) || Yii::app()->params->isAdmin)
                 echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'), '#', array('class' => 'delete-link', 'id' => $data->id.'-delete'));

@@ -219,11 +219,11 @@ class ActionsController extends x2base {
 
                 $subject = Yii::t('actions', 'Action Reminder:');
                 $body = Yii::t('actions', "Reminder, the following action is due today: \n Description: {description}\n Type: {type}.\n Associations: {name}.\nLink to the action: ", array('{description}' => $action->actionDescription, '{type}' => $type, '{name}' => $name))
-                        .'http://'.Yii::app()->request->getServerName().Yii::app()->request->scriptUrl.'/actions/'.$action->id;
+                        .Yii::app()->controller->createAbsoluteUrl('/actions/actions/view',array('id'=>$action->id));
                 $headers = 'From: '.Yii::app()->params['adminEmail'];
 
                 if($action->associationType != 'none')
-                    $body.="\n\n".Yii::t('actions', 'Link to the {type}', array('{type}' => ucfirst($action->associationType))).': http://'.Yii::app()->request->getServerName().Yii::app()->request->baseUrl."/index.php/".$action->associationType."/".$action->associationId;
+                    $body.="\n\n".Yii::t('actions', 'Link to the {type}', array('{type}' => ucfirst($action->associationType))).': '.Yii::app()->controller->createAbsoluteUrl(str_repeat('/'.$action->associationType,2).'/view',array('id'=>$action->associationId));
                 $body.="\n\n".Yii::t('actions', 'Powered by ').'<a href=http://x2engine.com>X2Engine</a>';
 
                 mail($email, $subject, $body, $headers);
@@ -409,26 +409,28 @@ class ActionsController extends x2base {
             if($model->associationName == 'None' && $model->associationType != 'none')
                 $model->associationName = ucfirst($model->associationType);
 
-            if($_POST['SelectedTab'] == 'log-a-call' || $_POST['SelectedTab'] == 'new-comment'){
-
-                $model->dueDate = time();
-                $model->completeDate = time();
+            if(in_array($_POST['SelectedTab'],array('log-a-call','new-comment','log-time-spent'))){
+                foreach(array('dueDate','completeDate') as $attr)
+                    if(empty($model->$attr))
+                        $model->$attr = time();
                 $model->complete = 'Yes';
                 $model->visibility = '1';
                 $model->assignedTo = Yii::app()->user->getName();
                 $model->completedBy = Yii::app()->user->getName();
                 if($_POST['SelectedTab'] == 'log-a-call')
                     $model->type = 'call';
+                elseif($_POST['SelectedTab'] == 'log-time-spent')
+                    $model->type = 'time';
                 else
                     $model->type = 'note';
             }
-            if($model->type == 'call'){
+            if($model->type == 'call' || $model->type == 'time'){
                 $event = new Events;
                 $event->associationType = 'Actions';
                 $event->type = 'record_create';
                 $event->user = Yii::app()->user->getName();
                 $event->visibility = $model->visibility;
-                $event->subtype = 'call';
+                $event->subtype = $model->type;
             }
             // save model
             $model->createDate = time();
@@ -753,7 +755,7 @@ class ActionsController extends x2base {
                     $this->redirect(array('/'.$model->associationType.'/'.$model->associationType.'/view', 'id' => $model->associationId)); // go back to the association
                 }else{ // no association
                     if($createNew)
-                        $this->redirect(array('/actions/create'));  // go to blank 'create action' page
+                        $this->redirect(array('/actions/actions/create'));  // go to blank 'create action' page
                     else
                         $this->redirect(array('index')); // view the action
                 }
@@ -765,7 +767,7 @@ class ActionsController extends x2base {
         }elseif(Yii::app()->request->isAjaxRequest){
             echo "Failure";
         }else{
-            $this->redirect(array('/actions/invalid'));
+            $this->redirect(array('/actions/actions/invalid'));
         }
     }
 

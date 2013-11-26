@@ -47,8 +47,8 @@ if (YII_DEBUG &&
     (!isset ($webFormType) ||
      $webFormType !== 'service' &&
      $webFormType !== 'weblead')) {
-    printR ('Error: _createWebForm.php: invalid $webFormType type '.$webFormType);
-    Yii::app()->end(1);
+
+    AuxLib::debugLog ('Error: _createWebForm.php: invalid $webFormType type '.$webFormType);
 }
 
 
@@ -60,15 +60,14 @@ Yii::app()->clientScript->registerScriptFile(
 
 
 if ($webFormType === 'weblead') {
-    $url = 'contacts/weblead';
+    $url = '/contacts/contacts/weblead';
 } else if ($webFormType === 'service') {
-    $url = 'services/webForm';
+    $url = '/services/services/webForm';
 }
 
 
-$iframeSource = Yii::app()->createAbsoluteUrl($url);
-$embedcode = '<iframe name="web-form-iframe" src="'. addslashes ($iframeSource) .
-    '" frameborder="0" scrolling="no" width="200" height="'. $height .'"></iframe>';
+$iframeSource = Yii::app()->createExternalUrl($url);
+$externalAbsoluteBaseUrl = Yii::app()->getExternalAbsoluteBaseUrl ();
 
 //get form attributes only for generating json
 $formAttrs = array();
@@ -112,16 +111,26 @@ if ($webFormType === 'weblead' || $webFormType === 'weblist') {
 <style>
 #iframe_example {
     height: <?php echo $height + 25; ?>px;
+    width: 200px;
 }
 </style>
 <?php
+
+$saveUrl = '';
+if ($webFormType === 'sevice') {
+    $saveUrl = Yii::app()->createAbsoluteUrl('/services/createWebForm');
+} elseif ($webFormType === 'weblead') {
+
+    $saveUrl = Yii::app()->createAbsoluteUrl('/marketing/marketing/webleadForm');
+}
 
 Yii::app()->clientScript->registerScript('webleadForm','
     x2.WebFormDesigner = '.
         'new '.$webFormDesignerProtoName.' ({'.
        'translations: x2.webFormDesigner.translations,
         iframeSrc: "'.addslashes($iframeSource).'",
-        embedcode: "'. addslashes($embedcode) .'",
+        externalAbsoluteBaseUrl: "'.addslashes($externalAbsoluteBaseUrl).'",
+        saveUrl: "'.addslashes ($saveUrl).'",
         savedForms: '.CJSON::encode($formAttrs).',
         fields: ["fg","bgc","font","bs","bc","tags"],
         colorfields: ["fg","bgc","bc"],
@@ -135,7 +144,7 @@ Yii::app()->clientScript->registerScript('webleadForm','
 <div class="row">
     <div class="cell">
         <h4><?php echo Yii::t('marketing','Embed Code') .':'; ?></h4>
-        <textarea id="embedcode"><?php echo $embedcode; ?></textarea><br/>
+        <textarea id="embedcode"></textarea><br/>
         <?php
         echo Yii::t('marketing',
             'Copy and paste this code into your website to include the web lead form.');
@@ -174,7 +183,7 @@ Yii::app()->clientScript->registerScript('webleadForm','
         </div>
     </div>
 
-    <?php echo CHtml::beginForm(); ?>
+    <?php echo CHtml::beginForm('', 'post', array ('id'=>'web-form-designer-form')); ?>
 
     <div class="cell">
         <h4 style="margin-bottom: 0;"><?php echo Yii::t('marketing','Save') .':'; ?></h4>
@@ -188,13 +197,14 @@ Yii::app()->clientScript->registerScript('webleadForm','
                 "id" => 'web-form-name',
                 "class"=>"left")
             );
-            $saveUrl = '';
-            if ($webFormType === 'sevice') {
-                $saveUrl = Yii::app()->createAbsoluteUrl('services/createWebForm');
-            } elseif ($webFormType === 'weblead') {
-
-                $saveUrl = Yii::app()->createAbsoluteUrl('marketing/webleadForm');
-            }
+            /*echo CHtml::submitButton(
+                Yii::t('marketing','Save'), 
+    	    	array(
+                    'name'=>'save',
+                    'id'=>'web-form-submit-button',
+                    'class'=>'x2-button x2-small-button'
+                )
+            );*/
             echo CHtml::ajaxSubmitButton(
                 Yii::t('marketing','Save'), $saveUrl,
                 array(
@@ -203,10 +213,12 @@ Yii::app()->clientScript->registerScript('webleadForm','
                     }',
                 ),
     	    	array(
+                    'id'=>'web-form-save-button',
                     'name'=>'save',
                     'class'=>'x2-button x2-small-button'
                 )
             );
+
             ?>
         </div>
     </div>
@@ -278,16 +290,35 @@ Yii::app()->clientScript->registerScript('webleadForm','
 <?php
 
 ?>
-
-        <div class="cell">
-            <h4><?php echo Yii::t('marketing','Preview') .':'; ?></h4>
-            <p class="fieldhelp" style="width: auto;">
-                <?php echo Yii::t('marketing', 'Live web form preview.'); ?>
-            </p>
-            <div id="iframe_example">
-                <?php echo $embedcode; ?>
-            </div>
-        </div>
+<?php
+$disclaimer;
+if ($webFormType === 'service') {
+    $disclaimer = Yii::t('marketing', 
+        'The web form must be saved for custom fields to get '.
+        'included. Changes made to the custom fields will '.
+        'not be reflected in the preview until the web form is saved.');
+} else if ($webFormType === 'weblead') {
+    $disclaimer = Yii::t('marketing', 
+        'The web form must be saved for your custom fields or custom HTML to '.
+        'get included. Changes made to the custom fields or custom HTML will '.
+        'not be reflected in the preview until the web form is saved.');
+}
+?>
+    <div class="cell">
+        <h4><?php echo Yii::t('marketing','Preview') .':'; ?></h4>
+        <p class="fieldhelp" style="width: auto;">
+            <?php echo Yii::t('marketing', 'Live web form preview.'); ?>
+            <?php
+            if (PRO_VERSION && isset($disclaimer)) {
+            ?>
+            <span class='x2-hint' title='<?php 
+             echo $disclaimer; ?>'>[<span class='x2-hint-asterisk'>*</span>]</span>
+            <?php
+            }
+            ?>
+        </p>
+        <div id="iframe_example"></div>
+    </div>
 
 <?php
 

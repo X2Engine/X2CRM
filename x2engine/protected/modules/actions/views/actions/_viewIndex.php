@@ -141,7 +141,7 @@ if($type == 'workflow') {
 		} elseif($data->type == 'call' && $data->complete=='Yes') {
 			echo Yii::t('actions','Call:').' '.Formatter::formatCompleteDate($data->completeDate); //Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"),$data->completeDate);
 		} elseif($data->type == 'event') {
-			echo '<b>'.CHtml::link(Yii::t('calendar','Event').':',array('/actions/'.$data->id)).' ';
+			echo '<b>'.CHtml::link(Yii::t('calendar','Event').':',array('/actions/actions/view','id'=>$data->id)).' ';
 			if($data->allDay) {
 				echo Formatter::formatLongDate($data->dueDate);
 				if($data->completeDate)

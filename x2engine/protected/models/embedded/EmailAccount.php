@@ -46,91 +46,87 @@ Yii::import('application.models.embedded.JSONEmbeddedModel');
  */
 class EmailAccount extends JSONEmbeddedModel {
 
-	public $senderName = '';
-	public $email = '';
-	public $port = 25;
-	public $security = '';
-	public $server = '';
-	public $user = '';
-	public $password = '';
+    public $senderName = '';
+    public $email = '';
+    public $port = 25;
+    public $security = '';
+    public $server = '';
+    public $user = '';
+    public $password = '';
 
-	public function attributeLabels(){
-		return array(
-			'senderName' => Yii::t('app', 'Sender Name'),
-			'email' => Yii::t('app', 'Email address'),
-			'server' => Yii::t('app', 'Server'),
-			'port' => Yii::t('app', 'Port'),
-			'security' => Yii::t('app', 'Security type'),
-			'user' => Yii::t('app', 'User name (if different from email address)'),
-			'password' => Yii::t('app', 'Password'),
-		);
-	}
+    public function attributeLabels(){
+        return array(
+            'senderName' => Yii::t('app', 'Sender Name'),
+            'email' => Yii::t('app', 'Email address'),
+            'server' => Yii::t('app', 'Server'),
+            'port' => Yii::t('app', 'Port'),
+            'security' => Yii::t('app', 'Security type'),
+            'user' => Yii::t('app', 'User name (if different from email address)'),
+            'password' => Yii::t('app', 'Password'),
+        );
+    }
 
-	public function attributeNames() {
-		return array_keys($this->attributeLabels());
-	}
+    public function detailView(){
+        echo "\"{$this->senderName}\" &lt;{$this->email}&gt; &nbsp;&bull;&nbsp; {$this->server}:{$this->port}".($this->security != '' ?'&nbsp;&bull;&nbsp;'.Yii::t('app','secured with')." {$this->security}" : '');
+    }
 
-	public function detailView(){
-		echo "\"{$this->senderName}\" &lt;{$this->email}&gt; &nbsp;&bull;&nbsp; {$this->server}:{$this->port}".($this->security != '' ?'&nbsp;&bull;&nbsp;'.Yii::t('app','secured with')." {$this->security}" : '');
-	}
+    public function modelLabel() {
+        return Yii::t('app','Email Account');
+    }
 
-	public function modelLabel() {
-		return Yii::t('app','Email Account');
-	}
+    /**
+     * Generate the form for the embedded model
+     */
+    public function renderInputs() {
+        foreach($this->attributeNames() as $attr){
+            echo CHtml::activeLabel($this, $attr,array('for'=>$this->resolveName($attr)));
+            switch($attr){
+                case 'senderName':
+                    echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
+                    break;
+                case 'email':
+                    echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
+                    break;
+                case 'server':
+                    echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
+                    break;
+                case 'port':
+                    echo CHtml::activeNumberField($this, $attr, $this->htmlOptions($attr));
+                    break;
+                case 'security':
+                    echo CHtml::activeDropDownList($this, $attr,array(''=>'None','tls'=>'TLS','ssl'=>'SSL'), $this->htmlOptions($attr));
+                    break;
+                case 'user':
+                    echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
+                    break;
+                case 'password':
+                    echo CHtml::activePasswordField($this, $attr, $this->htmlOptions($attr));
+                    break;
+            }
+        }
+        echo CHtml::errorSummary($this);
+    }
 
-	/**
-	 * Generate the form for the embedded model
-	 */
-	public function renderInputs() {
-		foreach($this->attributeNames() as $attr){
-			echo CHtml::activeLabel($this, $attr);
-			switch($attr){
-				case 'senderName':
-					echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
-					break;
-				case 'email':
-					echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
-					break;
-				case 'server':
-					echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
-					break;
-				case 'port':
-					echo CHtml::activeNumberField($this, $attr, $this->htmlOptions($attr));
-					break;
-				case 'security':
-					echo CHtml::activeDropDownList($this, $attr,array(''=>'None','tls'=>'TLS','ssl'=>'SSL'), $this->htmlOptions($attr));
-					break;
-				case 'user':
-					echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
-					break;
-				case 'password':
-					echo CHtml::activePasswordField($this, $attr, $this->htmlOptions($attr));
-					break;
-			}
-		}
-		echo CHtml::errorSummary($this);
-	}
+    /**
+     * Substitutes email address as username if username is empty
+     * @param type $attribute
+     * @param type $params
+     */
+    public function emailUser($attribute,$params=array()) {
+        if(empty($this->$attribute) && !empty($this->email))
+            $this->$attribute = $this->email;
+    }
 
-	/**
-	 * Substitutes email address as username if username is empty
-	 * @param type $attribute
-	 * @param type $params
-	 */
-	public function emailUser($attribute,$params=array()) {
-		if(empty($this->$attribute) && !empty($this->email))
-			$this->$attribute = $this->email;
-	}
-
-	public function rules() {
-		return array(
-			array('port','numerical','integerOnly'=>1,'min'=>1),
-			array('email','email'),
-			array('user','emailUser'),
-			array('server,user,email','length','min'=>1,'max'=>500,'allowEmpty'=>0),
-			array('password','required'),
-			array('senderName,server,port,security,user,email,password','safe'),
-		);
-	}
+    public function rules() {
+        return array(
+            array('port','numerical','integerOnly'=>1,'min'=>1),
+            array('email','email'),
+            array('user','emailUser'),
+            array('server,user,email','length','min'=>1,'max'=>500,'allowEmpty'=>0),
+            array('password','required'),
+            array('senderName,server,port,security,user,email,password','safe'),
+        );
+    }
 
 }
 

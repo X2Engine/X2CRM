@@ -61,14 +61,13 @@ abstract class X2FlowItem extends CComponent {
 	/**
 	 * Checks if all all the params are ship-shape
 	 */
-	abstract public function validate(&$params=array());
+	abstract public function validate(&$params=array(), $flowId);
 
 	/**
 	 * Checks if all the config variables and runtime params are ship-shape
 	 * Ignores param requirements if $params isn't provided
 	 */
 	public function validateOptions(&$paramRules,&$params=null) {
-
 		$configOptions = &$this->config['options'];
 		// die(var_dump($configOptions));
 		foreach($paramRules['options'] as &$optRule) {	// loop through options defined in paramRules() and make sure they're all set in $config
@@ -194,4 +193,19 @@ abstract class X2FlowItem extends CComponent {
 				return false;
 		}
 	}
+
+	/*
+	 *
+	 */
+	public function parseOption($name,&$params) {
+		$options = &$this->config['options'];
+		if(!isset($options[$name]['value']))
+			return null;
+
+		$type = isset($options[$name]['type'])? $options[$name]['type'] : '';
+        
+		return X2Flow::parseValue($options[$name]['value'],$type,$params);
+	}
+
+
 }

@@ -99,7 +99,7 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 			if((bool) Yii::app()->controller)
 				$url = Yii::app()->controller->createAbsoluteUrl ($this->viewRoute,array('id'=>$this->owner->id));
 		if(empty($url)) // Construct an absolute URL; no web request data available.
-			$url = Yii::app()->externalBaseUrl.'/index.php'.$this->viewRoute.'/'.$this->owner->id;
+			$url = Yii::app()->absoluteBaseUrl.'/index.php'.$this->viewRoute.'/'.$this->owner->id;
 		return $url;
 	}
 

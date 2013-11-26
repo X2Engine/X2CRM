@@ -35,8 +35,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.util.*');
+
 /**
- * X2CRM command line updater
+ * X2CRM command line updater.
  * 
  * @package X2CRM.commands
  * @author Demitri Morgan <demitri@x2engine.com>
@@ -52,8 +54,8 @@ class UpdateCommand extends CConsoleCommand {
             )
         ));
         $this->requireDependencies();
-        set_exception_handler('UpdaterBehavior::respondWithException');
-        set_error_handler('UpdaterBehavior::respondWithError');
+        set_exception_handler('ResponseBehavior::respondWithException');
+        set_error_handler('ResponseBehavior::respondWithError');
         return parent::beforeAction($action, $params);
     }
 
@@ -66,9 +68,9 @@ class UpdateCommand extends CConsoleCommand {
      * @param int $force "force" parameter sent to {@link runOperation}
      * @param int $backup "backup" parameter sent to {@link runOperation}
      */
-    public function actionApp($force = 0,$backup = 1) {
+    public function actionApp($force = 0,$backup = 1, $lock=0) {
         // Check updater version, update updater itself, etc.
-        $this->runOperation('update',(bool) $force, (bool) $backup);
+        $this->runOperation('update',(bool) $force, (bool) $backup, (bool) $lock);
         return 0;
     }
 
@@ -114,7 +116,7 @@ class UpdateCommand extends CConsoleCommand {
      * @param bool $backup If enabled: create database backup before running
      *  operations, and restore to the backup if operations fail.
      */
-    public function runOperation($scenario,$force=false,$backup=true) {
+    public function runOperation($scenario,$force=false,$backup=true,$lock=false) {
         $this->scenario = $scenario;
         $unpacked = $this->checkIf('packageExists',false);
         if($this->checkIf('packageApplies',false)) {
@@ -169,13 +171,33 @@ class UpdateCommand extends CConsoleCommand {
             }
         }
 
-        // Backup
-        if($backup)
-            $this->makeDatabaseBackup();
+        // Lock (if specified)
+        if($lock) {
+            $this->output(Yii::t('admin','Locking the app to prevent data entry during update.'));
+            Yii::app()->locked = time();
+        }
 
-        // Run
-        $this->enactChanges($backup);
+        try{
+            // Backup
+            if($backup)
+                $this->makeDatabaseBackup();
 
+            // Run
+            $this->enactChanges($backup);
+            
+        }catch(Exception $e){
+
+            if($lock){
+                $this->output(Yii::t('admin', 'Unlocking the app.'));
+                Yii::app()->locked = time();
+            }
+            throw $e;
+        }
+
+        if($lock) {
+            $this->output(Yii::t('admin','Unlocking the app.'));
+            Yii::app()->locked = time();
+        }
         $this->output(Yii::t('admin','All done.'));
     }
 

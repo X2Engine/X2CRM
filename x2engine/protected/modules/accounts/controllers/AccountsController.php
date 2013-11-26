@@ -117,7 +117,7 @@ class AccountsController extends x2base {
 <br />".Yii::t('accounts', 'Phone').": $model->phone
 <br />".Yii::t('accounts', 'Website').": $model->website
 <br />".Yii::t('accounts', 'Type').": $model->type
-<br />".Yii::t('app', 'Link').": ".CHtml::link($model->name, 'http://'.Yii::app()->request->getServerName().$this->createUrl(array('/accounts/view','id'=>$model->id)));
+<br />".Yii::t('app', 'Link').": ".CHtml::link($model->name, 'http://'.Yii::app()->request->getServerName().$this->createUrl(array('/accounts/accounts/view','id'=>$model->id)));
         $body = trim($body);
 
         $errors = array();

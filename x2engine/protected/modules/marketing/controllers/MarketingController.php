@@ -734,12 +734,12 @@ class MarketingController extends x2base {
 
                 //insert unsubscribe links
                 $emailBody = preg_replace(
-                        '/\{_unsub\}/', '<a href="'.Yii::app()->createAbsoluteUrl('marketing/click').'?'.http_build_query(array('uid' => $uniqueId, 'type' => 'unsub', 'email' => $email)).'">'.Yii::t('marketing', 'unsubscribe').'</a>', $emailBody);
+                        '/\{_unsub\}/', '<a href="'.Yii::app()->createExternalUrl('/marketing/marketing/click',array('uid' => $uniqueId, 'type' => 'unsub', 'email' => $email)).'">'.Yii::t('marketing', 'unsubscribe').'</a>', $emailBody);
 
                 //replace any {attribute} tags with the contact attribute value
                 $emailBody = Docs::replaceVariables($emailBody, $contact, array('{trackingKey}' => $uniqueId)); // use the campaign key, not the general key
                 //add a link to transparent img to track when email was viewed
-                $emailBody .= '<img src="'.Yii::app()->createAbsoluteUrl('marketing/click').'?'.http_build_query(array('uid' => $uniqueId, 'type' => 'open')).'"/>';
+                $emailBody .= '<img src="'.Yii::app()->createExternalUrl('/marketing/marketing/click',array('uid' => $uniqueId, 'type' => 'open')).'"/>';
 
                 $phpMail->Subject = Docs::replaceVariables($campaign->subject, $contact);
 
@@ -806,148 +806,6 @@ class MarketingController extends x2base {
 
         return array($totalSent, $errors);
     }
-
-    /* PRE WEBLIST
-      protected function campaignMailing($campaign, $limit=null) {
-      //per request batch limits, dont send enough to timeout
-      //per log cycle batch, 10 at a time or so to reduce logging sent time queries
-      //Timeouts? make sure each mail is logged individually, not waiting for the batch to finish
-      //ENSURE no duplicate mail
-
-      $totalSent = 0;
-      $errors = array();
-
-      //get eligible contacts from the campaign
-      $criteria = $campaign->list->queryCriteria();
-      $criteria->addCondition('x2_list_items.sent=0')->addCondition('x2_list_items.unsubscribed=0')
-      ->addCondition('t.email IS NOT NULL')->addCondition('t.email!=""')
-      ->addCondition('t.doNotEmail=0');
-      $contacts = X2Model::model('Contacts')->findAll($criteria);
-
-      //setup campaign email settings
-      try {
-      $phpMail = $this->getPhpMailer();
-      try {
-      //lookup current user's email address
-      $fromEmail = Yii::app()->params->profile->emailAddress;
-      $fromName = Yii::app()->params->profile->fullName;
-      } catch (Exception $e) {
-      //use site defaults otherwise
-      $fromEmail = Yii::app()->params->admin->emailFromAddr;
-      $fromName = Yii::app()->params->admin->emailFromName;
-      }
-      $phpMail->AddReplyTo($fromEmail, $fromName);
-      $phpMail->SetFrom($fromEmail, $fromName);
-      $phpMail->Subject = $campaign->subject;
-      } catch (Exception $e) {
-      throw $e;
-      }
-
-      //prepare the list item update query to be used many times later
-      $sql = 'UPDATE x2_list_items SET sent=:sent, uniqueId=:uid WHERE contactId=:cid AND listId=:lid;';
-      $itemUpdateCmd = Yii::app()->db->createCommand($sql);
-
-      foreach($contacts as $contact) {
-      try {
-      //only send up to the specified limit
-      if($limit && $totalSent >= $limit) break;
-
-      $now = time();
-      $uniqueId = md5(uniqid(rand(), true));
-      //add some newlines to prevent hitting 998 line length limit in phpmailer/rfc2821
-      $emailBody = preg_replace('/<br>/',"<br>\n",$campaign->content);
-
-      //if there is no unsubscribe link placeholder, add default
-      if(!preg_match('/\{_unsub\}/', $campaign->content)) {
-      $unsubText = "<br/>\n-----------------------<br/>\n"
-      ."To stop receiving these messages, click here: {_unsub}";
-      $emailBody .= $unsubText;
-      }
-
-      $emailBody = x2base::convertUrls($emailBody, false);
-
-      // disable this for now
-      ////replace existing links with tracking links
-      //$url = $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'click'));
-      ////profane black magic
-      //$emailBody = preg_replace(
-      //	'/(<a[^>]*href=")([^"]*)("[^>]*>)/e', "(\"\\1" . $url . "&url=\" . urlencode(\"\\2\") . \"\\3\")", $emailBody);
-      // disable end
-
-      //insert unsubscribe links
-      $emailBody = preg_replace(
-      '/\{_unsub\}/',
-      '<a href="' . $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'unsub', 'email'=>$contact->email)) . '">'. Yii::t('marketing', 'unsubscribe') .'</a>',
-      $emailBody);
-
-      //replace any {attribute} tags with the contact attribute value
-      $attrMatches = array();
-      preg_match_all('/{\w+}/', $emailBody,$attrMatches);
-
-      if(isset($attrMatches[0])) {
-      foreach($attrMatches[0] as $match) {
-      $match = substr($match,1,-1);	// remove { and }
-
-      if($contact->hasAttribute($match)) {
-      $value = $contact->renderAttribute($match, false, true);	// get the correctly formatted attribute
-      $emailBody = preg_replace('/{'.$match.'}/', $value, $emailBody);
-      }
-      }
-      }
-
-      //add a link to transparent img to track when email was viewed
-      $emailBody .= '<img src="' . $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'open')) . '"/>';
-
-      $phpMail->ClearAllRecipients();
-      $phpMail->AddAddress($contact->email, $contact->name);
-      $phpMail->MsgHTML($emailBody);
-      $phpMail->Send();
-      $totalSent++;
-
-      //record campaignid, contactid, senttime, uniqueid to save into listitem
-      $itemUpdateCmd->bindValues(array(':cid'=>$contact->id, ':lid'=>$campaign->list->id, ':sent'=>$now, ':uid'=>$uniqueId))
-      ->execute();
-
-      //create action for this email
-      $action = new Actions;
-      $action->associationType = 'contacts';
-      $action->associationId = $contact->id;
-      $action->associationName = $contact->name;
-      $action->visibility = $contact->visibility;
-      $action->complete = 'Yes';
-      $action->type = 'email';
-      $action->completedBy = Yii::app()->user->getName();
-      $action->assignedTo = $contact->assignedTo;
-      $action->createDate = $now;
-      $action->dueDate = $now;
-      $action->completeDate = $now;
-      //if($template == null)
-      $action->actionDescription = '<b>Campaign: '.$campaign->name."</b>\n\nSubject: ".$campaign->subject."\n\n".$campaign->content;
-      //else
-      //$action->actionDescription = CHtml::link($template->name,array('/docs/'.$template->id));
-
-      $action->save();
-
-      } catch (Exception $e) {
-      $errors[] = Yii::t('marketing','Error for contact') .' '. $contact->name .': '. $e->getMessage();
-      }
-      }
-
-      //check if campaign is complete
-      //TODO: consider contacts with unsendable addresses
-      $tables = X2ListItem::model()->tableName() . ' as li,' . Contacts::model()->tableName() . ' as c';
-      $totalCount = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '. $tables .' WHERE li.contactId = c.id AND c.doNotEmail=0 AND li.listId = :listid')
-      ->queryScalar(array('listid'=>$campaign->list->id));
-      $sentCount = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '. $tables .' WHERE li.contactId = c.id AND c.doNotEmail=0 AND li.listId = :listid AND li.sent > 0')
-      ->queryScalar(array('listid'=>$campaign->list->id));
-      if($totalCount == $sentCount) {
-      $campaign->active = 0;
-      $campaign->complete = 1;
-      $campaign->save();
-      }
-
-      return array($totalSent, $errors);
-      } */
 
     /**
      * Track when an email is viewed, a link is clicked, or the recipient unsubscribes

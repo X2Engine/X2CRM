@@ -352,7 +352,7 @@ Please click on the link below to create an account at X2CRM!
                     }
                 }
                 $user->save();
-                $link=CHtml::link('Create Account',(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/users/createAccount?key='.$key));
+                $link=CHtml::link('Create Account',(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/users/users/createAccount',array('key'=>$key)));
 				$mail=new InlineEmail;
                 $mail->to=$email;
 				// Get email password

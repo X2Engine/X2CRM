@@ -59,62 +59,67 @@ class InlineQuotes extends X2Widget {
 
 		if($this->startHidden) {			
 		// register css
-		Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl() .'/css/inlinequotes.css');
+		Yii::app()->clientScript->registerCss('inline-quotes-style','
+            #wide-quote-form {
+                background: #F8F8F8;
+            }
 
-		// register (lots of) javascript
-		// toggleQuotes() - show/hide the quotes form in the contact view
-		// sendQuoteEmail(quote) - fill the inline email form with some info about a quote: name, table of products, description
-		Yii::app()->clientScript->registerScript('toggleQuotes',
-			($this->startHidden? "$(document).ready(function() { $('#quotes-form').hide();
-			 });\n" : '')
-			. "function toggleQuotes() {
+            .viewQuote hr {
+            	background-color: black;
+            	overflow: visible;
+            }
 
-				var wasHidden = $('#quotes-form').is(':hidden');
-				if(wasHidden) {
-					$('.focus-mini-module').removeClass('focus-mini-module');
-					$('#quotes-form').find('.wide.form').addClass('focus-mini-module');
-					$('html,body').animate({
-						scrollTop: ($('#quote-form-wrapper').offset().top - 100)
-					}, 300);
-				}
-				$('#quotes-form').toggle('blind',300,function() {
-					$('#quotes-form').focus();
-				});
-				if(!wasHidden) {
-					$('html,body').animate({
-						scrollTop: ($('body').offset().top)
-					}, 300);
-				}
-			}
-			
-			$(function() {
-				$('#quotes-form').click(function() {
-					if(sendingQuote) {
-						sendingQuote = false;
-					} else {
-						if(!$('#quotes-form').find('.wide.form').hasClass('focus-mini-module')) {
-							$('.focus-mini-module').removeClass('focus-mini-module');
-							$('#quotes-form').find('.wide.form').addClass('focus-mini-module');
-						}
-					}
+            .product-table th {
+            	background-color: inherit;
+            }
 
-				});
-			});
-			",CClientScript::POS_HEAD);
-			
-		Yii::app()->clientScript->registerScript('emailQuote', "
-		function appendEmail(line) {
-			var email = $('#email-message');
-			email.val(email.val() + line + ".'""'.");
-		}
-		
-		var sendingQuote = false;
-		function sendQuoteEmail(quoteId,quoteTemplate) {  // fill the inline email form with some info about a quote: name, table of products, description
-			quickQuote.setInlineEmail(quoteId,quoteTemplate);
-		    sendingQuote = true; // stop quote mini-module from stealing focus away from email
-		}
-		", CClientScript::POS_HEAD);
+            .product-table tfoot {
+            	font-style: normal;
+            }
 
+            .quote-detail-table {
+            	padding: 0;
+            	width: 100%;
+            }
+
+            .quote-detail-table th {
+            	background-color: inherit;
+            	color: #666;
+            	font-weight: normal;
+            	font-size: 0.8em;
+            	padding: 5px 0 0 0;
+
+            }
+
+            .quote-detail-table td {
+            	font-weight: bold;
+            	padding: 0;
+            }
+
+            .quote-create-table {
+            	width: 100%;
+            	padding: 0;
+            }
+
+            .quote-create-table th {
+            	background-color: inherit;
+	            font-weight: bold;
+	            font-size: 0.8em;
+	            padding: 5px 0 0 0;
+            }
+
+            .quote-detail-table td {
+            	padding: 0;
+            }
+
+            .items td {
+	            border-top: none;
+	            border-bottom: none;
+            }');
+
+        if($this->startHidden)
+            Yii::app()->clientScript->registerScript('startQuotesHidden',"$('#quotes-form').hide();" ,CClientScript::POS_READY);
+        
 		$products = Product::model()->findAll(array('select'=>'id, name, price'));
 		$jsProductList = "\$(productList).append(\$('<option>', {value: 0}).append(''));\n";
 		$jsProductPrices = "var prices = [];\n";
@@ -128,73 +133,47 @@ class InlineQuotes extends X2Widget {
 		$jsonProductList = json_encode($productNames);
 
 		$region = Yii::app()->getLocale()->getId();
-		Yii::app()->clientScript->registerScript('productTable', "
-function toggleUpdateQuote(id, locked, strict) {
-	var confirmBox = $('<div></div>')
-		.html('This quote is locked. Are you sure you want to update this quote?')
-		.dialog({
-			title: 'Locked', 
-			autoOpen: false,
-			resizable: false,
-			buttons: {
-				'Yes': function() {
-					$(this).dialog('close');
-					quickQuote.openForm(id);
-				},
-				'No': function() {
-					$(this).dialog('close');
-				}
-			},
-		});
 
-	var denyBox = $('<div></div>')
-		.html('This quote is locked.')
-		.dialog({
-			title: 'Locked', 
-			autoOpen: false,
-			resizable: false,
-			buttons: {
-				'OK': function() {
-					$(this).dialog('close');
-				},
-			},
-		});
-		
-	if(locked)
-		if(strict)
-			denyBox.dialog('open');
-		else
-			confirmBox.dialog('open');
-	else {
-		quickQuote.openForm(id);
-	}
-}", CClientScript::POS_HEAD);
+        // Set up the new create form:
+        Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/inlineQuotes.js', CClientScript::POS_HEAD);
+        $quotesAssetsUrl = Yii::app()->assetManager->publish(Yii::getPathOfAlias('application.modules.quotes.assets'), false, -1, true);
+        Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsMain.css');
+        Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsWrite.css');
+        Yii::app()->clientScript->registerCoreScript('jquery.ui');
 
-			// Set up the new create form:
-			Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/quickquote.js',CClientScript::POS_HEAD);
-			$quotesAssetsUrl = Yii::app()->assetManager->publish(Yii::getPathOfAlias('application.modules.quotes.assets'), false, -1, true);
-
-			Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsMain.css');
-			Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsWrite.css');
-			Yii::app()->clientScript->registerCoreScript('jquery.ui');
-
-			$this->contact = Contacts::model()->findByPk($this->contactId);
-			$qqConfig = array(
-				'contact'=>($this->contact instanceof Contacts) ? $this->contact->name :'',
-				'account'=> $this->account,
-				'failMessage'=>Yii::t('quotes', 'Could not save quote.'),
-				'reloadAction'=>CHtml::normalizeUrl(array('quotes/viewInline'))."?contactId={$this->contactId}",
-				'createAction'=>CHtml::normalizeUrl(array('quotes/create')).'?quick=1',
-				'updateAction'=>CHtml::normalizeUrl(array('quotes/update')).'?quick=1'
-			);
-			Yii::app()->clientScript->registerScript('quickquote-vars', 'quickQuote = '.CJSON::encode($qqConfig).';', CClientScript::POS_HEAD);
-		}
-		parent::init();
+        $this->contact = Contacts::model()->findByPk($this->contactId);
+        $iqConfig = array(
+                'contact' => ($this->contact instanceof Contacts) ? $this->contact->name : '',
+                'account' => $this->account,
+                'sendingQuote' => false,
+                'lockedMessage' => Yii::t('quotes','This quote is locked. Are you sure you want to update this quote?'),
+                'deniedMessage' => Yii::t('quotes','This quote is locked.'),
+                'lockedDialogTitle' => Yii::t('quotes','Locked'),
+                'failMessage' => Yii::t('quotes', 'Could not save quote.'),
+                'reloadAction' => CHtml::normalizeUrl(array('/quotes/quotes/viewInline', 'contactId' => $this->contactId)),
+                'createAction' => CHtml::normalizeUrl(array('/quotes/quotes/create', 'quick' => 1)),
+                'updateAction' => CHtml::normalizeUrl(array('/quotes/quotes/update', 'quick' => 1)),
+            );
+            Yii::app()->clientScript->registerScript('quickquote-vars', '
+                if(typeof x2 == "undefined"){
+                    x2 = {};
+                }
+                var iqConfig = '.CJSON::encode($iqConfig).';
+                if(typeof x2.inlineQuotes=="undefined") {
+                    x2.inlineQuotes = iqConfig;
+                } else {
+                    $.extend(x2.inlineQuotes,iqConfig);
+                }', CClientScript::POS_HEAD);
+        }
+        parent::init();
 	}
 
 	public function run() {
-	
-//		Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->getBaseUrl() .'/css/gridview/jquery.yiigridview.js');
+        // Permissions that affect the behavior of the widget:
+        $canDo = array();
+        foreach(array('QuickDelete','QuickUpdate','QuickCreate') as $subAction) {
+            $canDo[$subAction] = Yii::app()->user->checkAccess('Quotes'.$subAction);
+        }
 
 		$relationships = Relationships::model()->findAllByAttributes(array(
 			'firstType'=>'quotes', 
@@ -211,13 +190,15 @@ function toggleUpdateQuote(id, locked, strict) {
 		// Mini Create Quote Form
 		$model = new Quote;
 
-		$this->render('createQuote', array(
-			'model'=>$model,
-			'contactId'=>$this->contactId,
-			// 'productNames'=>$productNames,
-	//		'showNewQuote'=>$showNewQuote,
-		));
-		echo '<br /><hr />';
+        if($canDo['QuickCreate']){
+            $this->render('createQuote', array(
+                'model' => $model,
+                'contactId' => $this->contactId,
+                    // 'productNames'=>$productNames,
+                    //		'showNewQuote'=>$showNewQuote,
+            ));
+            echo '<br /><hr />';
+        }
 
 		// get a list of products for adding to quotes
 		$products = Product::model()->findAll(array('select'=>'id, name'));
@@ -227,6 +208,8 @@ function toggleUpdateQuote(id, locked, strict) {
 		// }	
 		
 		$quotes = Quote::model()->findAll("associatedContacts=:associatedContacts AND (type IS NULL OR type!='invoice')", array(':associatedContacts'=>$this->contactId));
+        
+        
 		foreach($quotes as $quote) {
 			$products = Product::model()->findAll(array('select'=>'id, name, price'));
 			$quoteProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
@@ -272,6 +255,7 @@ function toggleUpdateQuote(id, locked, strict) {
 				// 'productNames'=>$productNames,
 				'orders'=>$quoteProducts,
 				'total'=>$total,
+                'canDo' => $canDo
 			));
 		}
 		
@@ -327,6 +311,7 @@ function toggleUpdateQuote(id, locked, strict) {
 				// 'productNames'=>$productNames,
 				'orders'=>$quoteProducts,
 				'total'=>$total,
+                'canDo' => $canDo,
 			));
 		}
 

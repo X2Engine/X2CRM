@@ -55,14 +55,17 @@ class JSONEmbeddedModelFieldsBehaviorTest extends CActiveRecordBehaviorTestCase 
 		EncryptedFieldsBehavior::setupUnsafe();
 	}
 	
-	public function newModelAndBehavior() {
+	public function newModelAndBehavior($config = array()) {
 		$model = new CActiveMock;
 		$model->bar = 'mock';
-		$jemfb = new JSONEmbeddedModelFieldsBehavior();
-		$jemfb->templateAttr = 'bar';
-		$jemfb->transformAttributes = array('foo');
-		$jemfb->encryptedFlagAttr = 'flag';
-		$jemfb->attach($model);
+        $model->attachBehaviors(array(
+            'JSONEmbeddedModelFieldsBehavior' => array_merge(array(
+                'class' => 'JSONEmbeddedModelFieldsBehavior',
+                'templateAttr' => 'bar',
+                'transformAttributes' => array('foo'),
+                'encryptedFlagAttr' => 'flag'
+            ),$config)));
+        $jemfb = $model->asa('JSONEmbeddedModelFieldsBehavior');
 		return array($model,$jemfb);
 	}
 
@@ -71,7 +74,7 @@ class JSONEmbeddedModelFieldsBehaviorTest extends CActiveRecordBehaviorTestCase 
 	}
 
 	/**
-	 * Test instantiation of new model during instantiation
+	 * Test instantiation/pack
 	 */
 	public function testPackAttribute_new() {
 		$blankModel = new EmbeddedModelMock();
@@ -107,6 +110,31 @@ class JSONEmbeddedModelFieldsBehaviorTest extends CActiveRecordBehaviorTestCase 
 		$this->assertTrue(is_array($embAttr),$encFail);
 		$this->assertEquals($expected,$embAttr,'Failed asserting attributes of embedded model were set properly.');
 	}
+
+	/**
+	 * Test instantiation with fixed model fields
+	 */
+	public function testFixedModelFields() {
+		list($model,$jemfb) = $this->newModelAndBehavior(array(
+            'fixedModelFields' => array('foo'=>'EmbeddedModelMock'),
+            'templateAttr' => null,
+        ));
+        $model->instantiateField('foo');
+        $this->assertTrue($model->foo instanceof EmbeddedModelMock,'Model improperly instantiated/selected');
+	}
+
+    /**
+     * Test instantiation with embedded model class fields defined in array fashion
+     */
+    public function testTemplateAttrArray() {
+        list($model,$jemfb) = $this->newModelAndBehavior(array(
+            'templateAttr' => array('foo'=>'bar'),
+        ));
+        $model->bar = 'EmbeddedModelMock';
+        $model->instantiateField('foo');
+        $this->assertTrue($model->foo instanceof EmbeddedModelMock,'Model improperly instantiated/selected');
+        
+    }
 
 	public function testUnpackAttribute() {
 		list($model,$jemfb) = $this->newModelAndBehavior();

@@ -39,7 +39,9 @@ class WebFormAction extends CAction {
 
     public static function sanitizeGetParams () {
         //sanitize get params
-        $whitelist = array('fg', 'bgc', 'font', 'bs', 'bc', 'tags', 'iframeHeight');
+        $whitelist = array(
+            'fg', 'bgc', 'font', 'bs', 'bc', 'tags', 'iframeHeight'
+        );
         $_GET = array_intersect_key($_GET, array_flip($whitelist));
         //restrict param values, alphanumeric, # for color vals, comma for tag list, . for decimals
         $_GET = preg_replace('/[^a-zA-Z0-9#,.]/', '', $_GET);
@@ -75,9 +77,10 @@ class WebFormAction extends CAction {
 
     
 
+    
+
     private function handleWebleadFormSubmission ($model, $extractedParams) {
         if(isset($_POST['Contacts'])) {
-
             $model->createEvent = false;
             $model->setX2Fields($_POST['Contacts'], true);
             $now = time();
@@ -99,7 +102,7 @@ class WebFormAction extends CAction {
 
             if(!$model->hasErrors()){
 
-                $duplicates = 0;
+                $duplicates = array ();
                 if(!empty($model->email)){
 
                     //find any existing contacts with the same contact info
@@ -109,9 +112,10 @@ class WebFormAction extends CAction {
                 }
 
                 if(count($duplicates) > 0){ //use existing record, update background info
+                    $newBgInfo = $model->backgroundInfo;
                     $model = $duplicates[0];
-                    $backgroundInfo = $model->backgroundInfo;
-                    $model->backgroundInfo .= "\n".$backgroundInfo;
+                    $oldBgInfo = $model->backgroundInfo;
+                    $model->backgroundInfo .= (($oldBgInfo && $newBgInfo) ? "\n" : '') . $newBgInfo;
 
                     
 
@@ -131,8 +135,8 @@ class WebFormAction extends CAction {
 
                 if($success){
                     self::addTags ($model);
-
-                    X2Flow::trigger('WebleadTrigger', array('model' => $model));
+                    $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ? array() : explode(',',$_POST['tags']));
+                    X2Flow::trigger('WebleadTrigger', array('model' => $model, 'tags' => $tags));
 
                     //use the submitted info to create an action
                     $action = new Actions;
@@ -214,9 +218,7 @@ class WebFormAction extends CAction {
                     
                 } else {
                     $errMsg = 'Error: WebListenerAction.php: model failed to save';
-                    if (YII_DEBUG) {
-                        printR ($errMsg, true);
-                    }
+                    AuxLib::debugLog ($errMsg);
                     Yii::log ($errMsg, '', 'application.debug');
                 }
 
@@ -364,7 +366,7 @@ class WebFormAction extends CAction {
 
                         $uniqueId = md5(uniqid(rand(), true));
                         $emailBody .= '<img src="'.$this->controller->createAbsoluteUrl(
-                            'actions/emailOpened', array('uid' => $uniqueId, 'type' => 'open')).'"/>';
+                            '/actions/actions/emailOpened', array('uid' => $uniqueId, 'type' => 'open')).'"/>';
 
                         $emailSubject = Yii::app()->params->admin->serviceCaseEmailSubject;
                         if(isset($firstName))
@@ -376,9 +378,11 @@ class WebFormAction extends CAction {
                         if(isset($email))
                             $emailSubject = preg_replace('/{email}/u', $email, $emailSubject);
                         if(isset($description))
-                            $emailSubject = preg_replace('/{description}/u', $description, $emailSubject);
+                            $emailSubject = preg_replace('/{description}/u', $description,
+                                $emailSubject);
                         $emailSubject = preg_replace('/{case}/u', $model->id, $emailSubject);
-                        if(Yii::app()->params->admin->serviceCaseEmailAccount != Credentials::LEGACY_ID) {
+                        if(Yii::app()->params->admin->serviceCaseEmailAccount != 
+                           Credentials::LEGACY_ID) {
                             $from = (int) Yii::app()->params->admin->serviceCaseEmailAccount;
                         } else {
                             $from = array(
@@ -405,8 +409,8 @@ class WebFormAction extends CAction {
                                     );
                                     $emailSubject = 'Service Case Created';
                                     $emailBody = "A new service case, #".$model->id.
-                                        ", has been created in X2CRM. To view the case, click this link: ".
-                                        $model->getLink();
+                                        ", has been created in X2CRM. To view the case, click ".
+                                        "this link: ".$model->getLink();
                                     $status = $this->controller->sendUserEmail(
                                         $useremail, $emailSubject, $emailBody, null, $from);
                                 }
@@ -424,7 +428,8 @@ class WebFormAction extends CAction {
                             $action->createDate = time();
                             $action->dueDate = time();
                             $action->completeDate = time();
-                            $action->actionDescription = '<b>'.$model->subject."</b>\n\n".$emailBody;
+                            $action->actionDescription = '<b>'.$model->subject."</b>\n\n".
+                                $emailBody;
                             if($action->save()){
                                 $track = new TrackEmail;
                                 $track->actionId = $action->id;
@@ -433,9 +438,7 @@ class WebFormAction extends CAction {
                             }
                         } else {
                             $errMsg = 'Error: actionWebForm.php: sendUserEmail failed';
-                            if (YII_DEBUG) {
-                                printR ($errMsg);
-                            }
+                            AuxLib::debugLog ($errMsg);
                             Yii::log ($errMsg, '', 'application.debug');
                         }
                     }
@@ -451,7 +454,7 @@ class WebFormAction extends CAction {
 
         
             $this->controller->renderPartial (
-                'application.components.views.webForm', 
+                'application.components.views.webForm',
                 array('model' => $model, 'type' => 'service'));
         
     }

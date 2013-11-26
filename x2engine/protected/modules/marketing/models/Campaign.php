@@ -119,19 +119,6 @@ class Campaign extends X2Model {
 	 * @return Campaign
 	 */
 	public static function load($id) {
-		// $condition = '';
-		// if(Yii::app()->user->getName() != 'admin') {
-			// $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
-				// /* x2temp */
-				// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-				// if(!empty($groupLinks))
-					// $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
-
-				// $condition .= 'OR (t.visibility=2 AND t.assignedTo IN
-					// (SELECT username FROM x2_group_to_user WHERE groupId IN
-						// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-		// }
-
 		$model = X2Model::model('Campaign');
 		return $model->with('list')->findByPk((int)$id,$model->getAccessCriteria());
 	}
@@ -144,7 +131,7 @@ class Campaign extends X2Model {
 	public function search() {
 		$criteria=new CDbCriteria;
 		$condition = '';
-		if(Yii::app()->user->getName() != 'admin') {
+		if(!Yii::app()->user->checkAccess('MarketingAdminAccess')) {
 			$condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
 				/* x2temp */
 				$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
@@ -155,7 +142,7 @@ class Campaign extends X2Model {
 					(SELECT username FROM x2_group_to_user WHERE groupId IN
 						(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
 		}
-        if(Yii::app()->user->getName()!='admin')
+        if(!Yii::app()->user->checkAccess('MarketingAdminAccess'))
             $criteria->addCondition($condition);
 		return $this->searchBase($criteria);
 	}

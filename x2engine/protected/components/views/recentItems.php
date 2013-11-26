@@ -61,52 +61,51 @@ foreach($recentItems as $item) {
             break;
         case 'c': // contact
             $link = '<strong>'.$item['model']->name.'</strong><br />'.$item['model']->phone;
-            echo CHtml::link($link,array('/contacts/'.$item['model']->id));
+            echo CHtml::link($link,array('/contacts/contacts/view','id'=>$item['model']->id));
             break;
         case 'a': // account
             $link = '<strong>'.Yii::t('app', 'Account').':<br/>'.$item['model']->name.'</strong><br />'.
                 $item['model']->phone;
-            echo CHtml::link($link,array('/accounts/'.$item['model']->id));
+            echo CHtml::link($link,array('/accounts/accounts/view','id'=>$item['model']->id));
             break;
         case 'p': // campaign
             $link = '<strong>'.Yii::t('app', 'Campaign').':<br/>'.$item['model']->name.'</strong>';
-            echo CHtml::link($link,array('/marketing/'.$item['model']->id));
+            echo CHtml::link($link,array('/marketing/marketing/view','id'=>$item['model']->id));
             break;
         case 'o': // opportunity
             $link = '<strong>'.Yii::t('app', 'Opportunity').':<br/>'.$item['model']->name.'</strong>';
-            echo CHtml::link($link,array('/opportunities/'.$item['model']->id));
+            echo CHtml::link($link,array('/opportunities/opportunities/view','id'=>$item['model']->id));
             break;
         case 'w': // workflow
             $link = '<strong>'.Yii::t('app', 'Workflow').':<br/>'.$item['model']->name.'</strong>';
-            echo CHtml::link($link,array('/workflow/'.$item['model']->id));
+            echo CHtml::link($link,array('/workflow/workflow/view','id'=>$item['model']->id));
             break;
         case 's': // service
             $link = '<strong>'.Yii::t('app', 'Service Case').' '.$item['model']->name.'</strong>';
-            echo CHtml::link($link,array('/services/'.$item['model']->id));
+            echo CHtml::link($link,array('/services/services/view','id'=>$item['model']->id));
             break;
         case 'd': // document
             $link = '<strong>'.Yii::t('app', 'Doc').':<br/>'.$item['model']->name.'</strong>';
-            echo CHtml::link($link,array('/docs/'.$item['model']->id));
+            echo CHtml::link($link,array('/docs/docs/view','id'=>$item['model']->id));
             break;
         case 'm': // media object
             $link = '<strong>'.Yii::t('app', 'File').':<br/>'.$item['model']->fileName.'</strong>';
-            echo CHtml::link($link,array('/media/'.$item['model']->id));
+            echo CHtml::link($link,array('/media/media/view','id'=>$item['model']->id));
             break;
         case 'r': // product
             $link = '<strong>'.Yii::t('app', 'Product').':<br/>'.$item['model']->name.'</strong>';
-            echo CHtml::link($link,array('/products/'.$item['model']->id));
+            echo CHtml::link($link,array('/products/products/view','id'=>$item['model']->id));
             break;
         case 'q': // product
             $link = '<strong>'.Yii::t('app', 'Quote').':<br/>'.$item['model']->name.'</strong>';
-            echo CHtml::link($link,array('/quotes/'.$item['model']->id));
+            echo CHtml::link($link,array('/quotes/quotes/view','id'=>$item['model']->id));
             break;
         case 'g': // group
             $link = '<strong>'.Yii::t('app', 'Group').':<br/>'.$item['model']->name.'</strong>';
-            echo CHtml::link($link,array('/groups/'.$item['model']->id));
+            echo CHtml::link($link,array('/groups/groups/view','id'=>$item['model']->id));
             break;
         default:
-            printR ('Error: recentItems.php: invalid item type');
-            exit ();
+            echo ('Error: recentItems.php: invalid item type');
 	}
 	echo "</li>\n";
 }

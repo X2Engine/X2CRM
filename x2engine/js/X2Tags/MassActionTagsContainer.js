@@ -66,7 +66,6 @@ Private instance methods
 
 MassActionTagsContainer.prototype._init = function () {
     var that = this;    
-    x2.DEBUG && console.log ('MassActionTagsContainer _init');
 
     $(that.containerSelector).droppable({ // allow tags to be dropped into inline tags widget
         accept: '.x2-tag',
@@ -85,7 +84,6 @@ MassActionTagsContainer.prototype._init = function () {
     // create a new tag for this model
     $(that.containerSelector).unbind ('click');
     $(that.containerSelector).click(function(event) { 
-        x2.DEBUG && console.log ('MassActionTagsContainer: containerSelector: click');
         // clear placeholder text
         $(that.containerSelector).find ('.tag-container-placeholder').hide ();
         that._createNewTagHandler(event); 

@@ -33,7 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-//
 ?>
 
 <?php
@@ -57,22 +56,23 @@ $viewButton = CHtml::link(
 	array('title'=>'View Quote')
 );
 $strict = Yii::app()->params['admin']['quoteStrictLock'];
-$updateButton = ' '. CHtml::link(
+$updateButton = $canDo['QuickUpdate'] ? ' '. CHtml::link(
 	'['. Yii::t('products', 'Update') .']',
 	'javascript:void(0);',
-	array('title'=>'Update Quote', 'onclick'=>"toggleUpdateQuote({$quote->id}, {$quote->locked}, $strict);")
-);
-$deleteButton = ' '. CHtml::ajaxLink(
+	array('title'=>'Update Quote', 'onclick'=>"x2.inlineQuotes.toggleUpdateQuote({$quote->id}, {$quote->locked}, $strict);")
+):'';
+$deleteButton = $canDo['QuickDelete'] ? ' '. CHtml::ajaxLink(
 	'['. Yii::t('quotes', 'Delete') .']', 
 	Yii::app()->createUrl('/quotes/quotes/quickDelete', array('id'=>$quote->id, 'contactId'=>$contactId)),
 	array(
-		'success' => "function(html) { quickQuote.reloadAll(); }",
+		'success' => "function(html) { x2.inlineQuotes.reloadAll(); }",
+        'beforeSend' => 'function(){return confirm('.json_encode(Yii::t('quotes','Are you sure you want to delete this quote?')).');}'
 	),
 	array('id'=> "delete-quote-{$quote->id}", 'title'=>Yii::t('quotes', "Delete Quote"), 'live'=>false)
-);
-$emailButton = CHtml::link('['. Yii::t('products','Email') .']', 'javascript:void(0)', array('id'=>"email-quote-{$quote->id}", 'onClick'=>"sendQuoteEmail({$quote->id},".json_encode($quote->template).")"));
+):'';
+$emailButton = CHtml::link('['. Yii::t('products','Email') .']', 'javascript:void(0)', array('id'=>"email-quote-{$quote->id}", 'onClick'=>"x2.inlineQuotes.sendEmail({$quote->id},".json_encode($quote->template).")"));
 $printButton = CHtml::link('['. Yii::t('quotes','Print') .']', 'javascript:void(0)', array('id'=>"print-quote-{$quote->id}", 'onClick'=>"window.open('".Yii::app()->controller->createUrl('/quotes/quotes/print', array('id'=>$quote->id))."')"));
-$duplicateButton = CHtml::link('['.Yii::t('quotes','Duplicate').']','javascript:void(0)',array('id'=>"duplicate-quote-{$quote->id}",'onClick'=>"quickQuote.openForm(0,{$quote->id})"));
+$duplicateButton = CHtml::link('['.Yii::t('quotes','Duplicate').']','javascript:void(0)',array('id'=>"duplicate-quote-{$quote->id}",'onClick'=>"x2.inlineQuotes.openForm(0,{$quote->id})"));
 $convertToInvoiceButton = '';
 
 if($quote->type != 'invoice') {
@@ -80,7 +80,7 @@ if($quote->type != 'invoice') {
 	'['. Yii::t('quotes', 'Invoice') .']', 
 	Yii::app()->createUrl('/quotes/quotes/convertToInvoice', array('id'=>$quote->id, 'contactId'=>$contactId)),
 	     array(
-	     	'success'=>"function(html) { quickQuote.reloadAll()}",
+	     	'success'=>"function(html) { x2.inlineQuotes.reloadAll()}",
 	     ),
 	     array('id'=>"convert-to-invoice-quote-{$quote->id}", 'title'=> Yii::t('quotes', 'Convert To Invoice'), 'live'=>false)
 	);

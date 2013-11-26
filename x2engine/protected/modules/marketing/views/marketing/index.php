@@ -38,7 +38,7 @@ $this->pageTitle = Yii::t('marketing','Campaigns');
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','All Campaigns')),
 	array('label'=>Yii::t('marketing','Create Campaign'), 'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/lists')),
+	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/contacts/lists')),
 	array(
         'label'=>Yii::t('marketing','Newsletters'), 
         'url'=>array('/marketing/weblist/index'),
@@ -102,7 +102,7 @@ $this->widget('application.components.X2GridView', array(
          'class="page-title icon marketing x2-gridview-fixed-title">'.
         '{title}{buttons}{filterHint}'.
         
-        '{summary}{items}{pager}',
+        '{summary}{topPager}{items}{pager}',
     'fixedHeader'=>true,
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,

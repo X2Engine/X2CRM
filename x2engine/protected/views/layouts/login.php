@@ -65,7 +65,7 @@ foreach($checkFiles as $key=>$value) {
 }
 $theme2Css = '';
 if($checkResult)
-	$theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
+	$theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('/site/warning')).') !important;} #bg{display:none !important;}';
 
 // check for background image, use it if one is set
 if(empty(Yii::app()->params->profile->backgroundImg))

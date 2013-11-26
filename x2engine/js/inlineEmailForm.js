@@ -32,6 +32,8 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+if(typeof x2 == 'undefined')
+    x2 = {};
 
 x2.inlineEmailEditor = {};
 x2.inlineEmailEditor.isSetUp = false;
@@ -114,9 +116,11 @@ $(function() {
 function toggleEmailForm(mode) {
     if (!x2.inlineEmailEditor.isSetUp) return;
     mode = (typeof mode == 'undefined') ? 'default' : mode;
-    if(typeof quickQuote != 'undefined') {
-        if(quickQuote.inlineEmailMode != mode)
-            quickQuote.resetInlineEmail();
+    if(typeof x2.inlineQuotes != 'undefined') {
+        if(typeof x2.inlineQuotes.inlineEmailConfig == 'undefined')
+            x2.inlineQuotes.setInlineEmailConfig();
+        if(x2.inlineQuotes.inlineEmailMode != mode)
+            x2.inlineQuotes.resetInlineEmail();
     }
     
     if($('#inline-email-form .wide.form').hasClass('hidden')) {
@@ -251,7 +255,7 @@ function handleInlineEmailActionResponse(data, textStatus, jqXHR) {
             $('#email-template').val(0);            
             $('input[name="InlineEmail[subject]"]').val('');
             toggleEmailForm();
-            updateHistory();
+            x2.Notifs.updateHistory();
             
         }
     }

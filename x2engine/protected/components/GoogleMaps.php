@@ -77,7 +77,7 @@ class GoogleMaps extends X2Widget {
 			geocoder.geocode( {"address": "'.CJavaScript::quote($this->location).'"}, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK) {
                     $.ajax({
-                        url:"'.Yii::app()->controller->createUrl('/contacts/updateLocation').'",
+                        url:"'.Yii::app()->controller->createUrl('/contacts/contacts/updateLocation').'",
                         type:"GET",
                         data:{contactId:'.$_GET['id'].',lat:results[0].geometry.location.lat(),lon:results[0].geometry.location.lng()},
                     });

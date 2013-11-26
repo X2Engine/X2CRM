@@ -76,7 +76,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
         array(
             'name'=>'contactId',
             'type'=>'raw',
-            'value'=>'!is_null(Contacts::model()->findByPk($data->contactId))?CHtml::link(Contacts::model()->findByPk($data->contactId)->name,Yii::app()->controller->createUrl("/contacts/contacts/view/",array("id"=>$data->contactId))):"None"',
+            'value'=>'!is_null(Contacts::model()->findByPk($data->contactId))?CHtml::link(Contacts::model()->findByPk($data->contactId)->name,array("/contacts/contacts/view","id"=>$data->contactId)):"None"',
         ),
         'zoom',
         array(

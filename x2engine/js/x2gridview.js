@@ -519,9 +519,11 @@ $.widget("x2.gvSettings", {
 			$('#'+o.columnSelectorId).find('input').bind('change',function() { 
                 self._saveColumnSelection(this,self); 
             });
-			// this.element.closest('div.grid-view').find('.column-selector-link').bind('click',function() { self._toggleColumnSelector(this); });
+			/* this.element.closest('div.grid-view').find('.column-selector-link').bind(
+                   'click',function() { self._toggleColumnSelector(this); }); */
 		}
-			// $('#'+o.columnSelectorId).find('input').bind('change',function() { self._saveColumnSelection(this); });
+			/* $('#'+o.columnSelectorId).find('input').bind(
+                   'change',function() { self._saveColumnSelection(this); }); */
 			this.element.find('.column-selector-link').bind('mousedown',function() { 
                 self._toggleColumnSelector(this,self); 
             });
@@ -542,6 +544,15 @@ $.widget("x2.gvSettings", {
 			self._autoSizeColumns(self);
 		});
 
+        this.element.find ('.filter-button').on ('click', function (evt) {
+            evt.preventDefault ();
+            return self._clearFilters (self);
+        });
+
+        this.element.find ('.search-button').on ('click', function () {
+            x2.DEBUG && console.log ('search-button');
+        });
+
 		// var headerHeight = this.tables.eq(0).height();
 		// this.tables.eq(0).parent().css('margin-right',this.getScrollbarWidth()+'px');
 		// this.tables.eq(1).parent().css({
@@ -552,7 +563,27 @@ $.widget("x2.gvSettings", {
 			self.tables.eq(0).parent().scrollLeft(self.tables.eq(1).parent().scrollLeft());
 		});
 	},
-
+    /*
+    Clear column filters via ajax and update the grid
+    */
+    _clearFilters: function (self) {
+        $('#x2-gridview-updating-anim').show ();
+        var url = $(this).attr ('href');
+        $.ajax ({
+            url: url,
+            type: 'GET',
+            success: function () {
+                x2.DEBUG && console.log ('filters cleared');
+                x2.DEBUG && console.log (self.element.attr('id'));
+                self.element.find ('.x2grid-resizable').find ('.filters').find ('input').
+                    each (function () { $(this).val (''); });
+                self.element.find ('.x2grid-resizable').find ('.filters').find ('input').
+                    first ().change (); // force update of gridview
+                $('#x2-gridview-updating-anim').hide ();
+            },
+        });
+        return false;
+    },
     /*
     Set up grid behavior which enables multiselect using shift + check
     */

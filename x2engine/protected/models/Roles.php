@@ -51,10 +51,15 @@ class Roles extends CActiveRecord {
      */
     public static function getAuthNames() {
         if(!isset(self::$_authNames)) {
-            self::$_authNames = Yii::app()->db->cache(3600)->createCommand()
+            $x2Roles = Yii::app()->db->createCommand()
+                    ->select('name')
+                    ->from('x2_roles')
+                    ->queryColumn();
+            $authRoles = Yii::app()->db->createCommand()
                     ->select('name')
                     ->from('x2_auth_item')
                     ->queryColumn();
+            self::$_authNames = array_diff($authRoles, $x2Roles);
         }
         return self::$_authNames;
     }

@@ -50,11 +50,13 @@ Yii::app()->clientScript->registerScript('logos',base64_decode(
     <?php
 
         $echoedFirstSideBarLeft = false;
-        // Echoes sidebar left container div if it hasn't already been echoed. 
-        function echoFirstSideBarLeft (&$echoedFirstSideBarLeft) {
-            if (!$echoedFirstSideBarLeft) {
-                echo '<div class="sidebar-left">';
-                $echoedFirstSideBarLeft = true;
+        // Echoes sidebar left container div if it hasn't already been echoed.
+        if(!function_exists('echoFirstSideBarLeft')){
+            function echoFirstSideBarLeft (&$echoedFirstSideBarLeft) {
+                if (!$echoedFirstSideBarLeft) {
+                    echo '<div class="sidebar-left">';
+                    $echoedFirstSideBarLeft = true;
+                }
             }
         }
 
@@ -77,7 +79,7 @@ Yii::app()->clientScript->registerScript('logos',base64_decode(
             $this->endWidget();
         }
 
-        if(isset($this->modelClass) && 
+        if(isset($this->modelClass) &&
            ($this->modelClass == 'Services' || $this->modelClass == 'Actions' ||
             $this->modelClass == 'BugReports' || $this->modelClass == 'X2Calendar' ||
             ($this->id=='site' && $this->action->id=='whatsNew'))) {

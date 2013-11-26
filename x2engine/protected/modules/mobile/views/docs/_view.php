@@ -38,7 +38,7 @@
 <div class="view">
 
 	<b><?php echo Yii::t('docs','Title'); ?>:</b>
-	<?php echo CHtml::link(CHtml::encode($data->name),$this->createUrl('docs/view?id='.$data->id)); ?>
+	<?php echo CHtml::link(CHtml::encode($data->name),array('/mobile/docs/view','id'=>$data->id)); ?>
 	<br />
 	
 	<b><?php echo Yii::t('docs','Created By'); ?>:</b>

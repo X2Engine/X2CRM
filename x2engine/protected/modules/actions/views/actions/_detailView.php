@@ -96,7 +96,7 @@ if($model->type=='note' || $model->type=='attachment') {
     <?php if($model->type=='email' || $model->type=='emailOpened') { ?>
         <tr>
             <td colspan="6" class="text-field">
-                <iframe style="width:100%;height:600px" src="actions/viewEmail/<?php echo $model->id ?>"></iframe>
+                <iframe style="width:100%;height:600px" src="<?php echo Yii::app()->controller->createAbsoluteUrl('/actions/actions/viewEmail',array('id'=>$model->id)); ?>"></iframe>
             </td>
         </tr>
     <?php } else { ?>

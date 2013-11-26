@@ -50,7 +50,7 @@ if(!empty($status)) {
 }
 ?>
 <div class="wide form">
-	<?php echo CHtml::beginForm(array('site/inlineEmail'),'post'); ?>
+	<?php echo CHtml::beginForm(array('/site/inlineEmail'),'post'); ?>
 	<?php echo CHtml::hiddenField('redirect',$redirect); ?>
 	<?php //echo CHtml::hiddenField('redirectId',$redirectId); ?>
 	<div class="row">
@@ -82,7 +82,7 @@ if(!empty($status)) {
 
 	echo CHtml::ajaxSubmitButton(
 		Yii::t('app','Send'),
-		array('site/inlineEmail','ajax'=>1),
+		array('/site/inlineEmail','ajax'=>1),
 		array(
 			'update'=>'#email-form'
 		

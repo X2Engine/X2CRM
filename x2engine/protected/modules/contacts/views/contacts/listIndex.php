@@ -127,5 +127,5 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	),
 )); ?>
 <div class="form">
-<?php echo CHtml::link('<span class="add-button">'.Yii::t('app','New List').'</span>',array('/contacts/createList'),array('class'=>'x2-button')); ?>
+<?php echo CHtml::link('<span class="add-button">'.Yii::t('app','New List').'</span>',array('/contacts/contacts/createList'),array('class'=>'x2-button')); ?>
 </div>

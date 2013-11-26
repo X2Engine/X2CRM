@@ -37,9 +37,9 @@
 /*
 Parameters:
     type - string, the web form type ('weblead' | 'weblist' | 'service')
-    model -
-    fieldList -
+    model - the model associated with the form, set to Contacts by default
 */
+
 
 
 mb_internal_encoding('UTF-8');
@@ -47,6 +47,7 @@ mb_regex_encoding('UTF-8');
 Yii::app()->params->profile = ProfileChild::model()->findByPk(1);
 if (empty($type)) $type = 'weblead';
 if (empty($model)) $model = Contacts::model ();
+
 
 
 if ($type === 'service') {
@@ -305,10 +306,13 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
 
 renderFields ($fieldList, $type, $form, $model, $contactFields);
 
+// renders hidden tracking key field
 foreach ($_GET as $key=>$value) { ?>
     <input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>" />
     <?php
 }
+
+
 
 ?>
 <div class="submit-button-row row">
@@ -380,7 +384,6 @@ function validate() {
 <?php
 
 ?>
-
 </script>
 
 </body>

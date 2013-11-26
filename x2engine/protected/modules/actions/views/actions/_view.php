@@ -132,7 +132,9 @@ if(empty($data->type) || $data->type == 'weblead'){
 }elseif($data->type == 'note'){
     echo Formatter::formatCompleteDate($data->completeDate);
 }elseif($data->type == 'call'){
-    echo Yii::t('actions', 'Call:').' '.Formatter::formatCompleteDate($data->completeDate); //Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"),$data->completeDate);
+    echo Yii::t('actions', 'Call:').' '.($data->completeDate == $data->dueDate
+            ? Formatter::formatCompleteDate($data->completeDate)
+            : Formatter::formatTimeInterval($data->dueDate,$data->completeDate,'{start}; {decHours} '.Yii::t('app','hours')));
 }elseif($data->type == 'event'){
     echo '<b>'.CHtml::link(Yii::t('calendar', 'Event').': ', '#', array('class' => 'action-frame-link', 'data-action-id' => $data->id));
     if($data->allDay){
@@ -145,21 +147,27 @@ if(empty($data->type) || $data->type == 'weblead'){
             echo ' - '.Formatter::formatLongDateTime($data->completeDate);
     }
     echo '</b>';
+}elseif($data->type == 'time'){
+    echo Formatter::formatTimeInterval($data->dueDate,$data->completeDate);
 }
 ?>
         <div class="buttons">
         <?php
         if(!Yii::app()->user->isGuest){
             if(empty($data->type) || $data->type == 'weblead'){
-                if($data->complete == 'Yes')
+                if($data->complete == 'Yes' && Yii::app()->user->checkAccess('ActionsUncomplete',array('assignedTo'=>$data->assignedTo)))
                     echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Uncomplete.png'), '#', array('class' => 'uncomplete-button', 'title' => $data->id, 'data-action-id' => $data->id));
-                else{
+                elseif(Yii::app()->user->checkAccess('ActionsComplete',array('assignedTo'=>$data->assignedTo))){
                     echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Complete.png'), '#', array('class' => 'complete-button', 'title' => $data->id, 'data-action-id' => $data->id));
                 }
             }
             if($data->type != 'workflow'){
-                echo $data->type != 'attachment' ? ' '.CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'), array('/actions/actions/update', 'id' => $data->id, 'redirect' => 1), array()).' ' : "";
-                echo ' '.CHtml::link(CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'), '#', array('onclick' => 'deleteAction('.$data->id.'); return false'));
+                if(Yii::app()->user->checkAccess('ActionsUpdate',array('assignedTo'=>$data->assignedTo))){
+                    echo $data->type != 'attachment' ? ' '.CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'), array('/actions/actions/update', 'id' => $data->id, 'redirect' => 1), array()).' ' : "";
+                }
+                if(Yii::app()->user->checkAccess('ActionsDelete',array('assignedTo'=>$data->assignedTo))){
+                    echo ' '.CHtml::link(CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'), '#', array('onclick' => 'deleteAction('.$data->id.'); return false'));
+                }
             }
         }
         ?>
@@ -235,7 +243,7 @@ else if($type == 'workflow'){
                 $userLink = empty($userLink) ? Yii::t('actions', 'Anyone') : $userLink;
                 echo Yii::t('actions', 'Assigned to {name}', array('{name}' => $userLink)).$relString;
             }
-        }else if($data->type == 'note' || $data->type == 'call' || $data->type == 'emailOpened'){
+        }else if(in_array($data->type,array('note','call','emailOpened','time'))){
             echo $data->completedBy == 'Guest' ? "Guest" : User::getUserLinks($data->completedBy).$relString;
             // echo ' '.Formatter::formatDate($data->completeDate);
         }else if($data->type == 'attachment' && $data->completedBy != 'Email'){

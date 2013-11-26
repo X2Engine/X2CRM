@@ -49,7 +49,7 @@ class AuxLib {
      *  dictiory 
      */
     public static function registerTranslationsScript (
-        $namespace, $messages, $translationFile='app', $scriptName='passVarsToClientScript') {
+        $namespace, $messages, $translationFile='app', $scriptName='passMsgsToClientScript') {
 
         $passVarsToClientScript = "
             if (!x2.".$namespace.") x2.".$namespace." = {};
@@ -60,7 +60,28 @@ class AuxLib {
                 $key. "'] = '" . addslashes (Yii::t($translationFile, $val)) . "';\n";
         }
         Yii::app()->clientScript->registerScript(
-            'passVarsToClientScript', $passVarsToClientScript,
+            $scriptName, $passVarsToClientScript,
+            CClientScript::POS_HEAD);
+    }
+
+    /**
+     * @param array $messages An associateive array (<var name> => <var value>)
+     * @param string $namespace The name of the JS object which will contain the translations 
+     *  dictionary 
+     * @param string $scriptName The name of the script which will be registered
+     *   and which will be a property of the global JS object x2.
+     */
+    public static function registerPassVarsToClientScriptScript (
+        $namespace, $vars, $scriptName='passVarsToClientScript') {
+
+        $passVarsToClientScript = "
+            if (!".$namespace.") ".$namespace." = {};
+        ";
+        foreach ($vars as $key=>$val) {
+            $passVarsToClientScript .= $namespace.".".$key." = ".$val.";";
+        }
+        Yii::app()->clientScript->registerScript(
+            $scriptName, $passVarsToClientScript,
             CClientScript::POS_HEAD);
     }
 
@@ -69,7 +90,7 @@ class AuxLib {
      * Used for testing purposes only.
      */
     public static function printTestError ($message) {
-        if (YII_DEBUG) echo CJSON::encode (array ('failure', Yii::t('app', $message)));
+        if (YII_DEBUG) echo CJSON::encode (array ('error' => array (Yii::t('app', $message))));
     }
 
     /**
@@ -91,6 +112,12 @@ class AuxLib {
      */
     public static function debugLog ($message) {
         if (YII_DEBUG) Yii::log ($message, '', 'application.debug');
+    }
+
+    public static function debugLogR ($arr) {
+        if (!YII_DEBUG) return;
+        $logMessage = print_r ($arr, true);
+        Yii::log ($logMessage, '', 'application.debug');
     }
     
     public static function isIE8 () {

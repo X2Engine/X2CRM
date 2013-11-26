@@ -47,7 +47,7 @@ $inlineForm = (isset($inlineForm)); // true if this is in the InlineActionForm
 $quickCreate = $inlineForm? false : ($this->getAction()->getId() == 'quickCreate');	// true if we're inside the quickCreate view
 if(isset($_GET['inline']))
     $inlineForm=$_GET['inline'];
-$action = $inlineForm? array('/actions/create','inline'=>1) : null;
+$action = $inlineForm? array('/actions/actions/create','inline'=>1) : null;
 
 ?>
 <script>
@@ -106,7 +106,7 @@ echo $form->errorSummary($actionModel);
 			array(
 				'ajax' => array(
 					'type'=>'POST', //request type
-					'url'=>CController::createUrl('/actions/parseType'), //url to call.
+					'url'=>CController::createUrl('/actions/actions/parseType'), //url to call.
 					//Style: CController::createUrl('currentController/methodToCall')
 					'update'=>'#', //selector to update
 					'success'=>'function(data){
@@ -123,7 +123,7 @@ echo $form->errorSummary($actionModel);
 			$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 				'name'=>'auto_select',
 				'value'=>$actionModel->associationName,
-				'source' => $this->createUrl('/actions/getTerms',array('type'=>$actionModel->associationType)),
+				'source' => $this->createUrl('/actions/actions/getTerms',array('type'=>$actionModel->associationType)),
 				'options'=>array(
 					'minLength'=>'2',
 					'select'=>'js:function( event, ui ) {
@@ -175,9 +175,9 @@ echo $form->errorSummary($actionModel);
 		<?php /* x2temp */
 			echo "<br />";
 			if($this instanceof ActionsController){
-				$url=$this->createUrl('groups/getGroups');
+				$url=$this->createUrl('/groups/groups/getGroups');
 			}else{
-				$url=$this->controller->createUrl('groups/getGroups');
+				$url=$this->controller->createUrl('/groups/groups/getGroups');
 			}
 			echo "<label>Group?</label>";
 			echo CHtml::checkBox('group','',array(

@@ -57,6 +57,7 @@ abstract class X2Model extends CActiveRecord {
      */
     public static $associationModels = array(
         'actions' => 'Actions',
+        'calendar' => 'X2Calendar',
         'contacts' => 'Contacts',
         'accounts' => 'Accounts',
         'product' => 'Product',
@@ -86,10 +87,9 @@ abstract class X2Model extends CActiveRecord {
     }
 
     public static function model($className = 'CActiveRecord'){
-        if(class_exists($className)){
-            return parent::model($className);
-        }elseif(class_exists(X2Model::getModelName($className))){
-            return parent::model(X2Model::getModelName($className));
+        $modelName = self::getModelName($className);
+        if(class_exists($modelName)){
+            return parent::model($modelName);
         }else{
             throw new CHttpException(500, 'Class: '.$className." not found.");
         }
@@ -739,6 +739,10 @@ abstract class X2Model extends CActiveRecord {
                     if(isset($phoneCheck) && strlen($phoneCheck->number) == 10){
                         $temp = $phoneCheck->number;
                         $this->$fieldName = "(".substr($temp, 0, 3).") ".substr($temp, 3, 3)."-".substr($temp, 6, 4);
+                        $profile = Yii::app()->params->profile;
+                        if ($makeLinks && !$profile->disablePhoneLinks) {
+                            return '<a href="tel:+1'.$phoneCheck->number.'">'.$this->$fieldName.'</a>';
+                        }
                     }
                     return $this->$fieldName;
                 }

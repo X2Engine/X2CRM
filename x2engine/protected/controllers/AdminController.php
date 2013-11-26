@@ -39,10 +39,6 @@ Yii::import('application.components.util.*');
 /**
  * Administrative, app-wide configuration actions.
  *
- * Note: when running {@link actionUpdater}, if a new version is available on the
- * remote updates server, this file will be overwritten by the new file, which
- * is downloaded upon running the action (route admin/updater).
- *
  * @package X2CRM.controllers
  * @property boolean $noRemoteAccess (Read-only) true indicates there's no way to automatically retrieve files.
  */
@@ -88,9 +84,11 @@ class AdminController extends Controller {
      */
     public function actions(){
         return array_merge($this->webUpdaterActions, array(
+                    // Helper method for professional edition role manager
                     'getRoleAccess' => array(
                         'class' => 'GetRoleAccessAction',
                     ),
+                    // The professional edition role manager
                     'editRoleAccess' => array(
                         'class' => 'EditRoleAccessAction',
                     ),
@@ -106,9 +104,21 @@ class AdminController extends Controller {
                     'lockApp' => array(
                         'class' => 'LockAppAction'
                     ),
+                    'x2CronSettings' => array(
+                        'class' => 'X2CronSettingsAction'
+                    ),
                 ));
     }
 
+    /**
+     * @deprecated
+     * This is mostly a developer function used for viewing information about
+     * translation files.
+     *
+     * This method will find a list of messages which have an entry in the translation
+     * files but do not have corresponding translations. Since the advent of the
+     * translation automation feature, this method should be largely unnecessary.
+     */
     public function actionCalculateMissingTranslations(){
         $untranslated = array();
         $languages = scandir('protected/messages');
@@ -131,6 +141,16 @@ class AdminController extends Controller {
         printR($untranslated);
     }
 
+    /**
+     * @deprecated
+     * Another function for analyzing the translation files.
+     *
+     * This method will display the "redundancy" of translation files. That is to say,
+     * if a word is contained in two separate files, that word is considered
+     * redundant and could be refactored into the "common.php" message file.
+     * As of the advent of the translation automation function, redundancy
+     * cleanup is a part of that process and this method should be unnecessary.
+     */
     public function actionCalculateTranslationRedundancy(){
         $max = array('file1' => 'null', 'file2' => 'null', 'redundancy' => 0);
         $files = scandir('protected/messages/template');
@@ -167,6 +187,17 @@ class AdminController extends Controller {
         echo "There are ".count($totalWords)." entries in the translation files.";
     }
 
+    /**
+     * A function to print a list of actions which are present in controller files
+     * but no corresponding permission exists in the database.
+     *
+     * This function should ideally be run before each release as a developer tool
+     * to view what permissions are missing from the software. Any controller action
+     * with no permission associated with it is assumed to be allowed so this is
+     * a good way to look for potential security holes. Please note that all
+     * relevant controllers must be specified by name in the array at the top
+     * of the function.
+     */
     public function actionFindMissingPermissions(){
         $controllers = array(
             'AdminController' => 'application.controllers.AdminController',
@@ -194,15 +225,15 @@ class AdminController extends Controller {
         $auth = Yii::app()->authManager;
         foreach($controllers as $class => $controller){
             Yii::import($controller);
-            $methods = get_class_methods($class);
+            $methods = get_class_methods($class); // Grab all functions from the controller
             $arr = explode('Controller', $class);
             $name = $arr[0];
             if(is_array($methods)){
                 foreach($methods as $method){
-                    if(strpos($method, 'action') === 0 && $method != 'actions'){
+                    if(strpos($method, 'action') === 0 && $method != 'actions'){ // Only look for methods that start with "action"
                         $method = $name.substr($method, 6);
                         $authItem = $auth->getAuthItem($method);
-                        if(is_null($authItem))
+                        if(is_null($authItem)) // We can't find a permission, add it to the list of missing ones
                             $missingPermissions[] = $method;
                     }
                 }
@@ -215,8 +246,8 @@ class AdminController extends Controller {
      * View the main admin menu
      */
     public function actionIndex(){
-        if(isset($_GET['translateMode']))
-            Yii::app()->session['translate'] = $_GET['translateMode'] == 1;
+        //if(isset($_GET['translateMode'])) // Old feature Matthew implemented to better visualize missing translations, no longer used.
+            //Yii::app()->session['translate'] = $_GET['translateMode'] == 1;
         $this->render('index');
     }
 
@@ -224,7 +255,7 @@ class AdminController extends Controller {
      * An overridden Yii method that happens before an action.
      *
      * This method handles authorization on an attempt by a user to access an action.
-     * The same method is defined in {@link X2Base::beforeAction} with a few minor differences.
+     * A slightly modified version of method is included in X2Base as a behavior.
      *
      * @param string $action A paramter passed by Yii's internal action handling.
      * @return boolean True if the action is allowed to continue, otherwise throw exception.
@@ -295,12 +326,6 @@ class AdminController extends Controller {
      * It will download missing files (including classes that aren't behaviors)
      * if any that are defined in {@link $behaviorClasses} are missing from the
      * local filesystem.
-     *
-     * The reason for all this is that in older versions, the updater utility,
-     * when updating itself, will download the latest version of
-     * AdminController. This necessitates downloading all of its dependencies,
-     * so that AdminController can still run properly, in order to be backwards-
-     * compatible.
      *
      * The reason for all this is that in older versions, the updater utility,
      * when updating itself, will download the latest version of
@@ -507,6 +532,14 @@ class AdminController extends Controller {
       'criteria' => $criteria,
       ));
       } */
+
+    /**
+     * The tag manager page of the administrative section.
+     *
+     * This page allows for the admin user to view a list of tags and how many
+     * records have that tag. From here, the admin can mass delete individual tags
+     * or remove all tags.
+     */
     public function actionManageTags(){
         $dataProvider = new CActiveDataProvider('Tags', array(
                     'criteria' => array(
@@ -522,6 +555,10 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * This function is called via AJAX by Manage Tags to remove a tag.
+     * @param string $tag The name of the tag to be deleted.
+     */
     public function actionDeleteTag($tag){
         if(!empty($tag)){
             if($tag != 'all'){
@@ -534,6 +571,10 @@ class AdminController extends Controller {
         $this->redirect('manageTags');
     }
 
+    /**
+     * An administrative page to see a list of all current sessions. From here,
+     * the admin can toggle visible/invisible or end any user session.
+     */
     public function actionManageSessions(){
         $dataProvider = new CActiveDataProvider('Session');
 
@@ -542,6 +583,10 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * An AJAX called function to set a particular session to visible or invisible
+     * @param $id The ID of the session to be toggled.
+     */
     public function actionToggleSession($id){
         if(isset($_GET['id'])){
             $id = $_GET['id'];
@@ -556,10 +601,25 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * An AJAX called function to allow the admin to forcibly end a session,
+     * logging the user out.
+     * @param $id The ID of the session.
+     */
     public function actionEndSession($id){
         echo Session::model()->deleteByPk($id);
     }
 
+    /**
+     * An administrative function to view a historical list of sessions and events
+     * associated with them.
+     *
+     * If the admin has turned on the "Session Logging" feature in the General
+     * Settings page, all sessions are logged in the session log here. Specific
+     * timestamps for login/logout as well as going visible or invisible are provided
+     * here. The admin can also click into a session to load the full history
+     * of session related activity for that session.
+     */
     public function actionViewSessionLog(){
         $sessionLog = new CActiveDataProvider('SessionLog', array(
                     'sort' => array(
@@ -574,6 +634,11 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * An AJAX called function which will return HTML containing a full history
+     * of a particular session, from login to logout.
+     * @param $id The ID of the session
+     */
     public function actionViewSessionHistory($id){
         $sessions = X2Model::model('SessionLog')->findAllByAttributes(array('sessionId' => $id));
         $firstTimestamp = 0;
@@ -590,6 +655,10 @@ class AdminController extends Controller {
         echo $str;
     }
 
+    /**
+     * An administrative function to display a grid of user view data--that is a
+     * log of when a user viewed a particular record.
+     */
     public function actionUserViewLog(){
         $dataProvider = new CActiveDataProvider('ViewLog', array(
                     'sort' => array(
@@ -604,6 +673,9 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Delete all ViewLog entries from the database.
+     */
     public function actionClearViewHistory(){
         X2model::model('ViewLog')->deleteAll();
         $this->redirect('userViewLog');
@@ -766,7 +838,7 @@ class AdminController extends Controller {
      */
     public function actionDeleteRole(){
         $auth = Yii::app()->authManager;
-        if(isset($_POST['role'])){
+        if(isset($_POST['role']) && !in_array($_POST['role'], array('authenticated', 'guest', 'admin'))){
             $id = $_POST['role'];
             $role = Roles::model()->findByAttributes(array('name' => $id));
             $id = $role->id;
@@ -1201,7 +1273,7 @@ class AdminController extends Controller {
      * Render the changelog.
      *
      * This action renders the user changelog page, which contains a list of all
-     * changed made by users within the app.
+     * changes made by users within the app.
      */
     public function actionViewChangelog(){
 
@@ -1218,6 +1290,9 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Delete all changelog entries from the database.
+     */
     public function actionClearChangelog(){
         Changelog::model()->deleteAll();
         $this->redirect('viewChangelog');
@@ -1271,8 +1346,7 @@ class AdminController extends Controller {
      */
     public function actionDeleteCriteria($id){
 
-        $model = Criteria::model()->findByPk($id);
-        $model->delete();
+        Criteria::model()->deleteByPk($id);
         $this->redirect(array('addCriteria'));
     }
 
@@ -1285,8 +1359,7 @@ class AdminController extends Controller {
      */
     public function actionDeleteRouting($id){
 
-        $model = LeadRouting::model()->findByPk($id);
-        $model->delete();
+        LeadRouting::model()->deleteByPk($id);
         $this->redirect(array('roundRobinRules'));
     }
 
@@ -1311,7 +1384,7 @@ class AdminController extends Controller {
             elseif ($type == 'Quotes') $type = 'Quote';
             elseif ($type == 'Products') $type = 'Product';
             elseif ($type == 'Opportunities') $type = 'Opportunity';
-           
+
             foreach(X2Model::model('Fields')->findAllByAttributes(array('modelName' => $type)) as $field){
                 if($field->fieldName != 'id'){
                     if(isset($_POST['Criteria']))
@@ -1377,10 +1450,12 @@ class AdminController extends Controller {
       } */
 
     /**
-     * Control chat polling and session timeout.
+     * Control general settings for the software.
      *
-     * This method renders a page with settings for user session timeout and chat
-     * request polling.  These settings are application wide and not per user.
+     * This method renders a page with settings for a variety of admin options.
+     * This includes things like Contact name formatting, session timeout and
+     * notification poll times, and basic privacy the for action history.
+     * These settings are application wide and not per user.
      */
     public function actionAppSettings(){
 
@@ -1424,6 +1499,14 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Render a page with options for activity feed settings.
+     *
+     * The administrator is allowed to configure what sort of information should
+     * be displayed in the activity feed and for how long. This page sets options
+     * for automated deletion of any chosen types after a set time period to help
+     * keep the database cleaner.
+     */
     public function actionActivitySettings(){
 
         $admin = &Yii::app()->params->admin;
@@ -1508,7 +1591,7 @@ class AdminController extends Controller {
      * Configure google integration.
      *
      * This method provides a form for the entry of Google Apps data.  This will
-     * allow for users to log in with their google account and sync X2CRM's calendars
+     * allow for users to log in with their Google account and sync X2CRM's calendars
      * with their Google Calendar.
      */
     public function actionGoogleIntegration(){
@@ -1579,31 +1662,11 @@ class AdminController extends Controller {
                 $model->fieldName = "c_{$model->fieldName}";
 
             $fieldType = $model->type;
-            switch($fieldType){
-                case "boolean":
-                    $fieldType = "BOOLEAN NOT NULL DEFAULT 0";
-                    break;
-                case "float":
-                    $fieldType = "FLOAT";
-                    break;
-                case "int":
-                    $fieldType = "BIGINT";
-                    break;
-                case "text":
-                    $fieldType = "TEXT";
-                    break;
-                case "date":
-                    $fieldType = "BIGINT";
-                    break;
-                case "dateTime":
-                    $fieldType = "BIGINT";
-                    break;
-                case "currency":
-                    $fieldType = "DECIMAL(18,2)";
-                    break;
-                default:
-                    $fieldType = 'VARCHAR(250)';
-                    break;
+            $columnDefinitions = Fields::getFieldTypes('columnDefinition');
+            if(isset($columnDefinitions[$fieldType])){
+                $fieldType = $columnDefinitions[$fieldType];
+            }else{
+                $fieldType = 'VARCHAR(250)';
             }
 
             if($model->type == 'dropdown'){
@@ -1629,7 +1692,7 @@ class AdminController extends Controller {
                     try{
                         $result = $command->query();
                     }catch(CDbException $e){
-                        $model->delete();
+                        $model->delete(); // If the SQL failed, remove the x2_fields record of it to prevent issues.
                     }
                 }
             }
@@ -1637,6 +1700,16 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Validate a field before allowing it to be added to a model as a custom field.
+     *
+     * This function will check a field name against a list of disallowed fields
+     * within the software. This includes model / field combinations already in
+     * existence (e.g. Contacts & "First Name"), MySQL reserved words, and X2
+     * reserved words.
+     * @param string $fieldName The name of the field being added
+     * @param string $modelName The name of the model the field is being added to
+     */
     public function actionValidateField($fieldName, $modelName){
 
         function in_arrayi($needle, $haystack){
@@ -1708,34 +1781,13 @@ class AdminController extends Controller {
                 }
             }
             $fieldType = $fieldModel->type;
-            if($fieldType != $oldType){
-                switch($fieldType){
-                    case "boolean":
-                        $fieldType = "BOOLEAN";
-                        break;
-                    case "float":
-                        $fieldType = "DECIMAl";
-                        break;
-                    case "int":
-                        $fieldType = "BIGINT";
-                        break;
-                    case "text":
-                        $fieldType = "TEXT";
-                        break;
-                    case "date":
-                        $fieldType = "BIGINT";
-                        break;
-                    case "dateTime":
-                        $fieldType = "BIGINT";
-                        break;
-                    case "currency":
-                        $fieldType = "DECIMAL(18,2)";
-                        break;
-                    default:
-                        $fieldType = 'VARCHAR(250)';
-                        break;
-                }
+            $columnDefinitions = Fields::getFieldTypes('columnDefinition');
+            if(isset($columnDefinitions[$fieldType])){
+                $fieldType = $columnDefinitions[$fieldType];
+            }else{
+                $fieldType = 'VARCHAR(250)';
             }
+
             $tableName = X2Model::model($fieldModel->modelName)->tableName();
             $fieldModel->modified = 1;
             $fieldName = $fieldModel->fieldName;
@@ -1858,7 +1910,7 @@ class AdminController extends Controller {
             if($module->save()){
 
                 if($model->save()){
-                    $this->redirect(array('/docs/'.$model->id.'?static=true'));
+                    $this->redirect('/docs/docs/view',array('id'=>$model->id,'static'=>'true'));
                 }
             }
         }
@@ -1870,18 +1922,20 @@ class AdminController extends Controller {
     }
 
     /**
+     * @deprecated
      * View a page that has been created.
      *
      * This method is what is called when a user clicks the top bar link to a static
      * page that has been previously created.  Nearly identical to a document view
-     * but without the widgets in the layout.
+     * but without the widgets in the layout. This function is no longer used in
+     * favor of the document view action.
      *
      * @param int $id The ID of the page being viewed.
      */
     public function actionViewPage($id){
         $model = CActiveRecord::model('Docs')->findByPk($id);
         if(!isset($model))
-            $this->redirect(array('docs/index'));
+            $this->redirect(array('/docs/docs/index'));
 
         $this->render('viewTemplate', array(
             'model' => $model,
@@ -2077,15 +2131,24 @@ class AdminController extends Controller {
         // die('hello:'.var_dump($_POST));
     }
 
+    /**
+     * Function to convert custom modules to be in line with the current codebase.
+     *
+     * This function takes any pre-3.5.1 custom module and performs all necessary
+     * operations to make the module compatible with the latest version. Additionally
+     * an optional "updateFlag" parameter can be passed, in which case the custom
+     * module will have its file contents re-generated to be at the latest version
+     * of the template files.
+     */
     public function actionConvertCustomModules(){
         $status = array();
         if(!empty($_POST)){
             $updateFlag = false;
             if(isset($_POST['updateFlag']) && $_POST['updateFlag'] == "Yes"){
-                $updateFlag = true;
+                $updateFlag = true; // We need to update file contents as well.
             }
             $modules = X2Model::model('Modules')->findAllByAttributes(array('custom' => 1));
-            if(count($modules)==0){
+            if(count($modules)==0){ // There are no custom modules...
                 $status['admin']['error']=Yii::t('admin','Fatal error - No custom modules found.');
                 $status['admin']['title']=Yii::t('admin','Module Conversion');
             }
@@ -2093,9 +2156,9 @@ class AdminController extends Controller {
                 $moduleName = $module->name;
                 $ucName = ucfirst($moduleName);
                 if(is_dir('protected/modules/'.$moduleName)){
-                     $status[$moduleName]=array('title'=>$module->title,'messages'=>array(),'error'=>null);
+                     $status[$moduleName]=array('title'=>$module->title,'messages'=>array(),'error'=>null); // Log everything in the "status" array
                      $status[$moduleName]['messages'][]=Yii::t('admin',"Module exists").": $moduleName";
-                    if(FileUtil::ccopy('protected/modules/'.$moduleName, 'backup/modules/'.$moduleName)){
+                    if(FileUtil::ccopy('protected/modules/'.$moduleName, 'backup/modules/'.$moduleName)){ // Attempt to make a backup
                         $backupFlag = true;
                         $status[$moduleName]['messages'][]=Yii::t('admin','Module successfully backed up in backup/modules/{moduleName}',array(
                             '{moduleName}'=>$moduleName
@@ -2104,7 +2167,7 @@ class AdminController extends Controller {
                         $backupFlag = false;
                         $status[$moduleName]['messages'][]=Yii::t('admin','Backup failed. Unable to write to backup directory.');
                     }
-                    if(file_exists('protected/modules/'.$moduleName.'/controllers/DefaultController.php')){
+                    if(file_exists('protected/modules/'.$moduleName.'/controllers/DefaultController.php')){ // Controller needs to be updated to the new format
                         if(rename('protected/modules/'.$moduleName.'/controllers/DefaultController.php', 'protected/modules/'.$moduleName.'/controllers/'.$ucName.'Controller.php')){
                             $status[$moduleName]['messages'][]=Yii::t('admin','{default} still existed and was successfully renamed to {controller}.',array(
                                 '{default}'=>'DefaultController',
@@ -2124,7 +2187,7 @@ class AdminController extends Controller {
                                     }
                                 }
                             }
-                        }else{
+                        }else{ // Fail for this module, restore from backup if we were able to.
                             $status[$moduleName]['error']=Yii::t('admin','Fatal error - Unable to rename controller class. Aborting module conversion.');
                             if($backupFlag){
                                 FileUtil::rrmdir('protected/modules/'.$moduleName);
@@ -2134,7 +2197,7 @@ class AdminController extends Controller {
                             }
                         }
                     }
-                    if(is_dir('protected/modules/'.$moduleName.'/views/default')){
+                    if(is_dir('protected/modules/'.$moduleName.'/views/default')){ // The view files need to be updated to the new format
                         if(rename('protected/modules/'.$moduleName.'/views/default', 'protected/modules/'.$moduleName.'/views/'.$moduleName)){
                             $status[$moduleName]['messages'][]=Yii::t('admin','Module view folder successfully renamed.');
                         }else{
@@ -2148,8 +2211,8 @@ class AdminController extends Controller {
                         }
                     }
                     $auth = Yii::app()->authManager;
-                    $testItem = $auth->getAuthItem($ucName.'ReadOnlyAccess');
-                    if(is_null($testItem)){
+                    $testItem = $auth->getAuthItem($ucName.'ReadOnlyAccess'); // Check for a common access item's existence
+                    if(is_null($testItem)){ // It doesn't exist, we need to create permissions for this module.
                         $authRule = "return Yii::app()->user->getName()==\$params['assignedTo'];";
                         $guestSite = $auth->getAuthItem('GuestSiteFunctionsTask');
                         $auth->removeAuthItem($ucName.'Index');
@@ -2164,6 +2227,7 @@ class AdminController extends Controller {
                         $auth->createOperation($ucName.'GetTerms');  // Minimum Requirements
                         $auth->createOperation($ucName.'DeleteNote');  // Full Access
                         $auth->createOperation($ucName.'Search');  // Minimum Requirements
+
                         // Access Group Definitions
                         $roleAdminAccess = $auth->createTask($ucName.'AdminAccess');
                         $roleFullAccess = $auth->createTask($ucName.'FullAccess');
@@ -2234,6 +2298,7 @@ class AdminController extends Controller {
                         $status[$moduleName]['messages'][]=Yii::t('admin','Permissions configuration complete.');
                     }
                     if($updateFlag){
+                        // If they specified we need to update, re-generate the custom module from the template files.
                         include('protected/modules/'.$moduleName.'/'.$moduleName.'Config.php');
                         $this->createSkeletonDirectories($moduleName);
                         $this->writeConfig($moduleConfig['title'], $moduleConfig['moduleName'], $moduleConfig['recordName']);
@@ -2242,7 +2307,7 @@ class AdminController extends Controller {
                 }
             }
             $authCache = Yii::app()->authCache;
-            if(isset($authCache))
+            if(isset($authCache)) // Auth cache needs to be cleared to reset cached permissions
                 $authCache->clear();
         }
         $this->render('convertCustomModules',array(
@@ -2298,19 +2363,25 @@ class AdminController extends Controller {
                 $tableFlag = false;
                 try{
                     $this->createSkeletonDirectories($moduleName);
-                    $dirFlag = true;
+                    $dirFlag = true; // Try to create the fileset
                     $this->writeConfig($title, $moduleName, $recordName);
-                    $configFlag = true;
+                    $configFlag = true; // Write the configuration
                     $this->createNewTable($moduleName);
-                    $tableFlag = true;
+                    $tableFlag = true; // Create the DB table
                 }catch(Exception $e){
+                    /*
+                     * If any of the operations in the try block fail, we need
+                     * to roll back whatever successfully happened before that.
+                     * The flag variables below indicate which rollback operations
+                     * to take.
+                     */
                     if($dirFlag){
                         FileUtil::rrmdir('protected/modules/'.$moduleName);
                     }else{
                         $errors[] = Yii::t('module', 'Unable to create custom module directory.');
                     }
                     if($configFlag){
-
+                        // Nothing, already taken care of by the file delete above
                     }elseif($dirFlag){
                         $errors[] = Yii::t('module', 'Unable to create config file for custom module.');
                     }
@@ -2454,6 +2525,11 @@ class AdminController extends Controller {
         $adminRole->addChild($ucName.'AdminAccess');
     }
 
+    /**
+     * Cleanup operation for custom modules. This is run on deletion to remove
+     * the database table.
+     * @param string $moduleName The name of the module being deleted
+     */
     private function deleteTable($moduleName){
         $moduleTitle = ucfirst($moduleName);
         $ucName = $moduleTitle;
@@ -2666,7 +2742,7 @@ class AdminController extends Controller {
                     $module->delete();
                 }
             }
-            $this->redirect(array('admin/index'));
+            $this->redirect(array('/admin/index'));
         }
 
         $arr = array();
@@ -2707,22 +2783,11 @@ class AdminController extends Controller {
             foreach($fields as $field){
                 if(array_search($field->fieldName, $disallow) === false){
                     $fieldType = $field->type;
-                    switch($fieldType){
-                        case "boolean":
-                            $fieldType = "BOOLEAN";
-                            break;
-                        case "float":
-                            $fieldType = "DECIMAL";
-                            break;
-                        case "int":
-                            $fieldType = "BIGINT";
-                            break;
-                        case "text":
-                            $fieldType = "TEXT";
-                            break;
-                        default:
-                            $fieldType = 'VARCHAR(250)';
-                            break;
+                    $columnDefinitions = Fields::getFieldTypes('columnDefinition');
+                    if(isset($columnDefinitions[$fieldType])){
+                        $fieldType = $columnDefinitions[$fieldType];
+                    }else{
+                        $fieldType = 'VARCHAR(250)';
                     }
                     $sql.="/*&*/ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName $fieldType;/*&*/INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, linkType) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1', '$field->type', '$field->linkType');";
                 }
@@ -2809,10 +2874,14 @@ class AdminController extends Controller {
     }
 
     /**
+     * @deprecated
      * DO NOT USE
      *
      * Testing method used for a prototype system of managing modules in a more
      * modular fashion.  This is NOT ready for use and should not be accessed.
+     * This is intended to actually allow turning on/off of modules and installation.
+     * This has been mostly superceded by the import/export feature but a use may
+     * yet be found for it.
      */
     public function actionRegisterModules(){
 
@@ -2833,13 +2902,14 @@ class AdminController extends Controller {
     }
 
     /**
+     * @deprecated
      * DO NOT USE
      *
      * Like {@link actionRegisterModules} this method is not yet ready for use.
      * Please refrain from attempting to use this module or it will likely create
      * issues in your installation.
      *
-     * @param string $module The name of the moduel being toggled.
+     * @param string $module The name of the module being toggled.
      */
     public function actionToggleModule($module){
 
@@ -3214,7 +3284,7 @@ class AdminController extends Controller {
                     $model = $controller->modelClass;
                     if(class_exists($model)){
                         $recordCount = X2Model::model($model)->count();
-                        if($recordCount > 0){
+                        if($recordCount > 0){ // Only display modules we actually have data for...
                             $modelList[$model] = array('name' => Yii::t('app', $module->title), 'count' => $recordCount);
                         }
                     }
@@ -3226,6 +3296,9 @@ class AdminController extends Controller {
         ));
     }
 
+    /**
+     * Helper function to generate the necessary CSV via ajax and insert version data.
+     */
     public function actionPrepareExport(){
         $file = 'data.csv';
         $fp = fopen($file, 'w+');
@@ -3234,10 +3307,14 @@ class AdminController extends Controller {
     }
 
     /**
-     * Private method to handle the export
+     * An AJAX called method to export module data.
      *
-     * This method actually prepares all the data and the CSV for export before
-     * rending the page with the download.
+     * This method actually prepares all the data via recursive AJAX requests
+     * until all data has been exported. This exports each module into the CSV
+     * by class, using pagination to cut down on request time.
+     *
+     * @param string $model The name of the current model being exported
+     * @param int $page The page of data which the data provider's paginator is on
      */
     public function actionGlobalExport($model, $page){
         if(class_exists($model)){
@@ -3251,17 +3328,17 @@ class AdminController extends Controller {
             }
             $meta[] = $model;
             if($page == 0)
-                fputcsv($fp, $meta);
+                fputcsv($fp, $meta); // If we're on the first page for this model, need to add metadata.
             $dp = new CActiveDataProvider($model, array(
                         'pagination' => array(
                             'pageSize' => 100,
                         ),
                     ));
             $pg = $dp->getPagination();
-            $pg->setCurrentPage($page);
-            $dp->setPagination($pg);
+            $pg->setCurrentPage($page); // These two lines will set the data provider
+            $dp->setPagination($pg); // paginator to the requested page of data
             $records = $dp->getData();
-            $pageCount = $dp->getPagination()->getPageCount();
+            $pageCount = $dp->getPagination()->getPageCount(); // Total number of pages
 
             foreach($records as $record){
                 $tempAttributes = $tempModel->attributes;
@@ -3273,18 +3350,22 @@ class AdminController extends Controller {
                     $tempAttributes['theme'] = json_encode($record->theme);
                 }
                 $tempAttributes[] = $model;
-                fputcsv($fp, $tempAttributes);
+                fputcsv($fp, $tempAttributes); // Export the data to CSV
             }
 
             unset($tempModel, $dp);
 
             fclose($fp);
             if($page + 1 < $pageCount){
-                echo $page + 1;
+                echo $page + 1; // If there are still more pages to go, echo the next page number
             }
         }
     }
 
+    /**
+     * Helper function called in a lot of places to download a file
+     * @param string $file Filepath of the requested file
+     */
     public function actionDownloadData($file){
         if(!preg_match('/\.\./', $file)){
             $file = Yii::app()->file->set($file);
@@ -3292,24 +3373,39 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * An AJAX called function used to rollback a data import.
+     *
+     * This function is called several times with different parameters as a part
+     * of the rollback process and runs a variety of SQL queries to remove data
+     * created as part of the import process.
+     * @param string $model The name of the model Class
+     * @param string $stage The stage to be run for this step
+     * @param int $importId The ID of the import being rolled back
+     */
     public function actionRollbackStage($model, $stage, $importId){
         $stages = array(
+            // Delete all tag data
             "tags" => "DELETE a FROM x2_tags a
                 INNER JOIN
                 x2_imports b ON b.modelId=a.itemId AND b.modelType=a.type
                 WHERE b.modelType='$model' AND b.importId='$importId'",
+            // Delete all relationship data
             "relationships" => "DELETE a FROM x2_relationships a
                 INNER JOIN
                 x2_imports b ON b.modelId=a.firstId AND b.modelType=a.firstType
                 WHERE b.modelType='$model' AND b.importId='$importId'",
+            // Delete any associated actions
             "actions" => "DELETE a FROM x2_actions a
                 INNER JOIN
                 x2_imports b ON b.modelId=a.associationId AND b.modelType=a.associationType
                 WHERE b.modelType='$model' AND b.importId='$importId'",
+            // Delete the records themselves
             "records" => "DELETE a FROM ".X2Model::model($model)->tableName()." a
                 INNER JOIN
                 x2_imports b ON b.modelId=a.id
                 WHERE b.modelType='$model' AND b.importId='$importId'",
+            // Delete the log of the records being imported
             "import" => "DELETE FROM x2_imports WHERE modelType='$model' AND importId='$importId'",
         );
         $sqlQuery = $stages[$stage];
@@ -3318,7 +3414,11 @@ class AdminController extends Controller {
         echo $result;
     }
 
+    /**
+     * An administrative view to rollback any data imports which have been conducted.
+     */
     public function actionRollbackImport(){
+        // If an import ID is passed, load specific information about this import
         if(isset($_GET['importId'])){
             $importId = $_GET['importId'];
             $types = Yii::app()->db->createCommand()
@@ -3344,6 +3444,7 @@ class AdminController extends Controller {
                 'count' => $count,
             ));
         }else{
+            // Otherwise, load a list of imports to choose from
             $data = array();
             $imports = Yii::app()->db->createCommand()
                     ->select('importId')
@@ -3379,11 +3480,13 @@ class AdminController extends Controller {
     }
 
     /**
-     * Import data from an export
+     * Import data from a CSV
      *
      * This method allows for the import of data by the admin into the software.
-     * The import is compatible with the format from an X2 export only at the moment,
-     * so that CSV should be used as a template for how to format the data.
+     * This import expects machine readable data (i.e. data which would be directly
+     * inserted into the database like unix timestamps) and the final column of
+     * each row should be the type of record being imported (e.g. Contacts, Actions, etc.)
+     * This particular function merely renders the upload page.
      */
     public function actionImport(){
         if(isset($_FILES['data'])){
@@ -3396,59 +3499,119 @@ class AdminController extends Controller {
             $_SESSION['failed'] = 0;
             $temp = CUploadedFile::getInstanceByName('data');
             $temp->saveAs('data.csv');
+            // If we have post data, render the import processing page
             $this->render('processImport', array(
                 'overwrite' => $overwrite,
             ));
-            //$this->globalImport('data.csv', $overwrite);
         }else{
             $this->render('import');
         }
     }
 
+    /**
+     * Helper function to prepare a lot of the necessary information for a data
+     * import. A large amount of this data is stored in the session so as to be
+     * preserved between the AJAX requests which will occur as a part of the import
+     * process.
+     */
     public function actionPrepareImport(){
         $fp = fopen('data.csv', 'r+');
-        $version = fgetcsv($fp);
+        $version = fgetcsv($fp); // The first row should be just the version number of the data
         $version = $version[0];
         $tempMeta = fgetcsv($fp);
-        while("" === end($tempMeta)){
+        while("" === end($tempMeta)){ // Clear all blank rows from the metadata
             array_pop($tempMeta);
         }
-        $model = array_pop($tempMeta);
-        $_SESSION['metaData'] = $tempMeta;
-        $_SESSION['model'] = $model;
+        $model = array_pop($tempMeta); // The last column should be the model class
+        $_SESSION['metaData'] = $tempMeta; // Store the current metadata
+        $_SESSION['model'] = $model; // Store the current class
         $_SESSION['lastFailed'] = "";
+        /*
+         * THIS IS ESSENTIAL. The ftell function reads the current position in the
+         * file so we know where to start from next time. All AJAX based imports
+         * will neeed to use this function.
+         */
         $_SESSION['offset'] = ftell($fp);
         fclose($fp);
         $criteria = new CDbCriteria;
         $criteria->order = "importId DESC";
         $criteria->limit = 1;
         $import = Imports::model()->find($criteria);
-        if(isset($import)){
+        if(isset($import)){ // Set the ID of the current import to be 1 higher than the last one
             $_SESSION['importId'] = $import->importId + 1;
         }else{
             $_SESSION['importId'] = 1;
         }
-        $failedImport = fopen('failedImport.csv', 'w+');
+        $failedImport = fopen('failedImport.csv', 'w+'); // Prepare a CSV for any failed records
         fputcsv($failedImport, array(Yii::app()->params->version));
         fclose($failedImport);
         echo json_encode(array($version));
     }
 
+    /**
+     * Allows for control of setting the externally visible URL for the CRM.
+     * This function is in the wrong place (in the middle of all the import functions)
+     * and should be cleaned up (or possibly refactored, see my notes on the Admin
+     * Controller refactor) but I'm only writing comments right now and trying
+     * not to make code modifications.
+     */
+    public function actionPublicInfo(){
+        $admin = &Yii::app()->params->admin;
+        if(isset($_POST['Admin'])){
+            $admin->attributes = $_POST['Admin'];
+            if($admin->save()){
+                $this->redirect('publicInfo');
+            }
+        }
+        if($admin->externalBaseUrl == '' && !$admin->hasErrors('externalBaseUrl'))
+            $admin->externalBaseUrl = Yii::app()->request->getHostInfo();
+        $this->render('publicInfo', array(
+            'model' => $admin,
+        ));
+    }
+
+    /**
+     * Import a set of CSV data into the software.
+     *
+     * This function is called via AJAX and is the meat of the global import process.
+     * It takes the variable "count" as POST data to determine how many records
+     * it should import in this step, which is usually 50, but is arbitrary
+     * except for server load considerations. It reads data out of the "data.csv"
+     * file and imports it. See inline comments for details of what's going on.
+     *
+     * @return null A return statement to cease further execution, could probably be cleaned up & removed
+     */
     public function actionGlobalImport(){
         if(isset($_POST['count']) && file_exists('data.csv')){
-            $metaData = $_SESSION['metaData'];
-            $modelType = $_SESSION['model'];
+            $metaData = $_SESSION['metaData']; // Grab the most recent metadata
+            $modelType = $_SESSION['model']; // And model
             $count = $_POST['count'];
             $fp = fopen('data.csv', 'r+');
+            /*
+             * THIS IS ESSENTIAL. As with the above block noted as essential,
+             * this was KEY to figuring out how to do an AJAX based CSV read.
+             * The fseek function will move the file pointer to the specified offset,
+             * which we always store in the $_SESSION['offset'] variable.
+             */
             fseek($fp, $_SESSION['offset']);
-            for($i = 0; $i < $count; $i++){
-                $arr = fgetcsv($fp);
+            for($i = 0; $i < $count; $i++){ // Loop up to the speficied count.
+                $arr = fgetcsv($fp); // Grab the next row
                 if($arr !== false && !is_null($arr)){
-                    while("" === end($arr)){
+                    while("" === end($arr)){ // Remove blank space from the end
                         array_pop($arr);
                     }
-                    $newType = array_pop($arr);
+                    $newType = array_pop($arr); // Pull the last column to check the model type
                     if($newType != $modelType){
+                        /*
+                         * If this is the first row of a new model type, the data
+                         * in the last column will be a different class name. In that
+                         * case, we assume this new row consists of the metadata
+                         * for this new model class and that the next set of records
+                         * will be of this model type. This information is stored
+                         * in the session in case a set of 50 records breaks
+                         * unevenly across model types (e.g. the system needs to import
+                         * more than 50 of a given record).
+                         */
                         $_SESSION['model'] = $newType;
                         $_SESSION['metaData'] = $arr;
                         $modelType = $_SESSION['model'];
@@ -3456,10 +3619,20 @@ class AdminController extends Controller {
                     }else{
                         $attributes = array_combine($metaData, $arr);
                         if($modelType == "Actions" && (isset($attributes['type']) && $attributes['type'] == 'workflow')){
+                            // In the event that we're importing workflow, we need a special scenario.
                             $model = new Actions('workflow');
                         }else{
                             $model = new $modelType;
                         }
+                        /*
+                         * This loops through and sets the attributes manually.
+                         * Realistically, this could be refactored to use the
+                         * SetX2Fields function, but you'd need to be sure the
+                         * data wasn't double formatted (e.g. it's already a unix
+                         * timestamp, not a date string, and doesn't need to be
+                         * converted again) due to the fact that a user could supply
+                         * either human readable or machine readable data.
+                         */
                         foreach($attributes as $key => $value){
                             if($model->hasAttribute($key) && isset($value)){
                                 if($value == "")
@@ -3467,24 +3640,38 @@ class AdminController extends Controller {
                                 $model->$key = $value;
                             }
                         }
+                        // Don't make a changelog record.
                         $model->disableBehavior('changelog');
+                        // Don't manually set the timestamp fields
                         $model->disableBehavior('X2TimestampBehavior');
                         if($model instanceof User || $model instanceof Profile){
                             if($model->id == '1'){
+                                /*
+                                 * If a model of type User with the ID of one is
+                                 * being imported skip so that we DO NOT
+                                 * OVERWRITE THE CURRENT ADMIN USER.
+                                 */
                                 continue;
                             }
+                            // Users & Profile normally require special validation, set a scenario for import
                             $model->setScenario('import');
                         }
+                        // If an ID was provided, check if there's already a model with that ID
                         $lookup = X2Model::model($modelType)->findByPk($model->id);
                         $lookupFlag = isset($lookup);
+                        /*
+                         * I'm not sure if "validate" will succeed anymore given the
+                         * change made to ID being a "unique" field in X2Model's rules
+                         * This should be investigated at some point.
+                         */
                         if($model->validate() || $modelType == "User" || $modelType == 'Profile'){
                             $saveFlag = true;
                             if($lookupFlag){
-                                if($_SESSION['overwrite'] == 1){
+                                if($_SESSION['overwrite'] == 1){ // If the user specified to overwrite, delete the old lookup
                                     $lookup->disableBehavior('changelog');
                                     $lookup->delete();
                                 }else{
-                                    $saveFlag = false;
+                                    $saveFlag = false; // Otherwise, note a failure in the logging section that we were unable to overwrite a record.
                                     isset($_SESSION['overwriteFailure'][$modelType]) ? $_SESSION['overwriteFailure'][$modelType]++ : $_SESSION['overwriteFailure'][$modelType] = 1;
                                 }
                                 if(!$model->validate()){
@@ -3492,7 +3679,7 @@ class AdminController extends Controller {
                                     $failedImport = fopen('failedImport.csv', 'a+');
                                     $lastFailed = $_SESSION['lastFailed'];
                                     if($lastFailed != $modelType){
-                                        $tempMeta = $metaData;
+                                        $tempMeta = $metaData; // Keep track of the metadata of failed records
                                         $tempMeta[] = $modelType;
                                         fputcsv($failedImport, $tempMeta);
                                     }
@@ -3501,12 +3688,13 @@ class AdminController extends Controller {
                                     $attr = array_merge($tempAttributes, $attr);
                                     $attr[] = $modelType;
                                     fputcsv($failedImport, $attr);
-                                    $_SESSION['lastFailed'] = $modelType;
+                                    $_SESSION['lastFailed'] = $modelType; // Specify the most recent model type failure in case metadata needs to be changed
                                     isset($_SESSION['failed']) ? $_SESSION['failed']++ : $_SESSION['failed'] = 1;
                                 }
                             }
                             if($saveFlag && $model->save()){
                                 if($modelType != "Admin" && !(($modelType == "User" || $modelType == "Profile") && ($model->id == '1' || $model->username == 'api'))){
+                                    // Generate a new "Imports" model in case of rollback
                                     $importLink = new Imports;
                                     $importLink->modelType = $modelType;
                                     $importLink->modelId = $model->id;
@@ -3514,9 +3702,11 @@ class AdminController extends Controller {
                                     $importLink->timestamp = time();
                                     $importLink->save();
                                 }
+                                // Relic of when action description wasn't a field, not sure if necessary.
                                 if($modelType == 'Actions' && isset($attributes['actionDescription'])){
                                     $model->actionDescription = $attributes['actionDescription'];
                                 }
+                                // Update counts in the session logging variables.
                                 isset($_SESSION['counts'][$modelType]) ? $_SESSION['counts'][$modelType]++ : $_SESSION['counts'][$modelType] = 1;
                                 if($lookupFlag){
                                     isset($_SESSION['overwriten'][$modelType]) ? $_SESSION['overwriten'][$modelType]++ : $_SESSION['overwriten'][$modelType] = 1;
@@ -3525,6 +3715,7 @@ class AdminController extends Controller {
                                 }
                             }
                         }else{
+                            // Put the failed lead into the failed import CSV
                             $failedImport = fopen('failedImport.csv', 'a+');
                             $lastFailed = $_SESSION['lastFailed'];
                             if($lastFailed != $modelType){
@@ -3542,6 +3733,8 @@ class AdminController extends Controller {
                         }
                     }
                 }else{
+                    // "0" at the beginning means we reached the end of the file
+                    // and don't need to do another set.
                     echo json_encode(array(
                         0,
                         json_encode($_SESSION['counts']),
@@ -3552,9 +3745,10 @@ class AdminController extends Controller {
                     return;
                 }
             }
+            // Update the file offset pointer in the session.
             $_SESSION['offset'] = ftell($fp);
             echo json_encode(array(
-                1,
+                1, // The "1" indicated we need to keep going.
                 json_encode($_SESSION['counts']),
                 json_encode($_SESSION['overwriten']),
                 json_encode($_SESSION['failed']),
@@ -3563,6 +3757,10 @@ class AdminController extends Controller {
         }
     }
 
+    /**
+     * Post-processing function for the import tool, unset session variables
+     * and delete the uploaded data file.
+     */
     public function actionCleanUpImport(){
         unlink('data.csv');
         unset($_SESSION['counts']);
@@ -3581,7 +3779,6 @@ class AdminController extends Controller {
      * This method controls the update interval setting for the application.
      */
     public function actionUpdaterSettings(){
-        // $this->layout = '//layouts/column1';
         $admin = &Yii::app()->params->admin;
         if(isset($_POST['Admin'])){
             $admin->setAttributes($_POST['Admin']);
@@ -3589,6 +3786,15 @@ class AdminController extends Controller {
                 if(isset($_POST['unique_id']))
                     $admin->$var = $_POST[$var];
             if($admin->save()){
+                // Save new updater cron settings in crontab
+                $cf = new CronForm;
+                $cf->jobs = array(
+                    'app_update' => array(
+                        'cmd' => Yii::app()->basePath.DIRECTORY_SEPARATOR.'yiic update app --lock=1',
+                        'desc' => Yii::t('admin', 'Automatic software updates cron job'),
+                    ),
+                );
+                $cf->save($_POST);
                 $this->redirect('updaterSettings');
             }
         }
@@ -3736,6 +3942,9 @@ class AdminController extends Controller {
         $this->error500($message);
     }
 
+    /**
+     * Function written by Matthew to display a tree-like hierarchy of the roles
+     */
     public function actionAuthGraph(){
 
         if(!Yii::app()->params->isAdmin)

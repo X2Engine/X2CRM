@@ -401,7 +401,7 @@ class Workflow extends CActiveRecord {
 			
 			$funnelStr .= '<div class="workflow-funnel-stage" style="width:'.$width.'px;background:'.$color.';"><span class="name">';
 				
-			$funnelStr .= CHtml::link($workflowStatus['stages'][$i]['name'],array('workflow/view','id'=>$workflowStatus['id'],'stage'=>$i,'start'=>Formatter::formatDate($dateRange['start']),'end'=>Formatter::formatDate($dateRange['end']),'range'=>$dateRange['range'],$user),
+			$funnelStr .= CHtml::link($workflowStatus['stages'][$i]['name'],array('/workflow/workflow/view','id'=>$workflowStatus['id'],'stage'=>$i,'start'=>Formatter::formatDate($dateRange['start']),'end'=>Formatter::formatDate($dateRange['end']),'range'=>$dateRange['range'],$user),
 				array('onclick'=>'getStageMembers('.$i.'); return false;')
 			);
 			

@@ -75,10 +75,10 @@ $docContainerOuterHeight .= 'px';
 Yii::app()->clientScript->registerScript('docViewerLoad',
 "$('#docview-title').autocomplete(
 	{'minLength':'1',
-	 'source':'" . Yii::app()->createUrl("/docs/getItems") . "',
+	 'source':'" . Yii::app()->createUrl("/docs/docs/getItems") . "',
 	 'select':function( event, ui ) {
 		$(this).val(ui.item.value);
-		$('#docview-box').load('" . Yii::app()->createUrl("/docs/getItem") . "?id=' + ui.item.id);
+		$('#docview-box').load('" . Yii::app()->createUrl("/docs/docs/getItem") . "?id=' + ui.item.id);
 		return false; 
 	 }
 	});"

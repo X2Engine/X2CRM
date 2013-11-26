@@ -38,7 +38,7 @@ Yii::app()->clientScript->registerScript('updateWorkflow',"
 
 function startWorkflowStage(workflowId,stageNumber) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('workflow/startStage')) . "',
+		url: '" . CHtml::normalizeUrl(array('/workflow/workflow/startStage')) . "',
 		type: 'GET',
 		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=quotes',
 		success: function(response) {
@@ -50,7 +50,7 @@ function startWorkflowStage(workflowId,stageNumber) {
 
 function completeWorkflowStage(workflowId,stageNumber) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('workflow/completeStage')) . "',
+		url: '" . CHtml::normalizeUrl(array('/workflow/workflow/completeStage')) . "',
 		type: 'GET',
 		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=quotes',
 		success: function(response) {
@@ -62,7 +62,7 @@ function completeWorkflowStage(workflowId,stageNumber) {
 
 function revertWorkflowStage(workflowId,stageNumber) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('workflow/revertStage')) . "',
+		url: '" . CHtml::normalizeUrl(array('/workflow/workflow/revertStage')) . "',
 		type: 'GET',
 		data: 'workflowId='+workflowId+'&stageNumber='+stageNumber+'&modelId=".$model->id."&type=quotes',
 		success: function(response) {
@@ -104,7 +104,7 @@ $relationships = Relationships::model()->findAllByAttributes(
 $associatedContacts = array();
 foreach($relationships as $relationship) {
 	$contact = X2Model::model('Contacts')->findByPk($relationship->secondId);
-	$associatedContacts[] = CHtml::link($contact->name, array('/contacts/view', 'id'=>$contact->id));
+	$associatedContacts[] = CHtml::link($contact->name, array('/contacts/contacts/view', 'id'=>$contact->id));
 }
 $associatedContacts = implode(', ', $associatedContacts);
 
@@ -146,14 +146,14 @@ $associatedContacts = implode(', ', $associatedContacts);
 	<tr>
 		<td class="label" width="20%"><?php echo CHtml::link($model->getAttributeLabel('associatedContacts'),array('addContact', 'id'=>$model->id)); ?></td>
 		<td><?php echo $associatedContacts; ?></td>
-		<td class="label"><?php echo ($model->accountId==0)? $model->getAttributeLabel('accountName') : CHtml::link($model->getAttributeLabel('accountName'),array('accounts/view','id'=>$model->accountId)); ?></td>
+		<td class="label"><?php echo ($model->accountId==0)? $model->getAttributeLabel('accountName') : CHtml::link($model->getAttributeLabel('accountName'),array('/accounts/accounts/view','id'=>$model->accountId)); ?></td>
 		<td colspan="3" id="accountName" onclick="showField(this,true);">
 			<div class="detail-field"><b><?php echo $model->accountName; ?></b></div>
 			<div class="detail-form"><?php echo $form->hiddenField($model, 'accountName');
 				$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 				'name'=>'companyAutoComplete',
 				'value'=>$model->accountName,
-				'source' => $this->createUrl('/contacts/getTerms'),
+				'source' => $this->createUrl('/contacts/contacts/getTerms'),
 				'htmlOptions'=>array('size'=>35,'maxlength'=>100,'tabindex'=>3),
 				'options'=>array(
 					'minLength'=>'2',
@@ -184,7 +184,7 @@ $associatedContacts = implode(', ', $associatedContacts);
 				array(
 					'ajax' => array(
 						'type'=>'GET', //request type
-						'url'=>CHtml::normalizeUrl(array('workflow/getWorkflow','modelId'=>$model->id,'type'=>'quotes')), //url to call.
+						'url'=>CHtml::normalizeUrl(array('/workflow/workflow/getWorkflow','modelId'=>$model->id,'type'=>'quotes')), //url to call.
 						//Style: CController::createUrl('currentController/methodToCall')
 						'update'=>'#workflow-diagram', //selector to update
 						//'data'=>'js:javascript statement'

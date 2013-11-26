@@ -43,7 +43,7 @@ Yii::import('application.models.X2LinkableBehavior');
 class ContactList extends X2List {
 
 	public static $modelName = 'Contacts';
-	public static $linkRoute = '/contacts/list';
+	public static $linkRoute = '/contacts/contacts/list';
 
 	/**
 	 * Behaviors for the model.
@@ -53,9 +53,9 @@ class ContactList extends X2List {
 		return array(
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
-				'baseRoute'=>'/contacts',
-				'viewRoute'=>'/contacts/list',
-				'autoCompleteSource'=>'/contacts/getLists'
+				'baseRoute'=>'/contacts/contacts',
+				'viewRoute'=>'/contacts/contacts/list',
+				'autoCompleteSource'=>'/contacts/contacts/getLists'
 			)
 		);
 	}
@@ -75,11 +75,11 @@ class ContactList extends X2List {
 	 */
 	public static function getRoute($id) {
 		if($id=='all')
-			return array('contacts/index');
+			return array('/contacts/contacts/index');
 		else if (empty($id) || $id=='my')
-			return array('contacts/viewMy');
+			return array('/contacts/contacts/viewMy');
 		else
-			return array('contacts/list','id'=>$id);
+			return array('/contacts/contacts/list','id'=>$id);
 	}
 	
 	/**
@@ -89,7 +89,7 @@ class ContactList extends X2List {
 	 */
 	public function createLink() {
 		if(isset($this->id))
-			return CHtml::link($this->name,array($this->getDefaultRoute().'/'.$this->id));
+			return CHtml::link($this->name,array($this->getDefaultRoute(),'id'=>$this->id));
 		else
 			return $this->name;
 	}

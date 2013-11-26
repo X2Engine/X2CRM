@@ -37,52 +37,84 @@
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Updater Settings'); ?></h2></div>
 <div class="span-24">
     <div class="form">
-		<?php
-		$form = $this->beginWidget('CActiveForm', array(
-			'id' => 'settings-form',
-			'enableAjaxValidation' => false,
-				));
-		?><?php
-		Yii::app()->clientScript->registerScriptfile(Yii::app()->baseUrl.'/js/webtoolkit.sha256.js');
-		$updatesForm = new UpdatesForm(
-						array(
-							'x2_version' => Yii::app()->params['version'],
-							'unique_id' => $model->unique_id,
-							'formId' => 'settings-form',
-							'submitButtonId' => 'save-button',
-							'statusId' => 'error-box',
-							'themeUrl' => Yii::app()->theme->baseUrl,
-							'serverInfo' => True,
-							'edition' => $model->edition,
-							'titleWrap' => array('<span style="display: block;font-size: 11px;font-weight: bold;">', '</span>'),
-							'receiveUpdates' => isset($_POST['receiveUpdates']) ? $_POST['receiveUpdates'] : 0,
-						),
-						'Yii::t',
-						array('install')
-		);
-		$this->renderPartial('stayUpdated', array('form' => $updatesForm));
-		?>
-		<input type="hidden" id="adminEmail" name="adminEmail" value="<?php echo $model->emailFromAddr; ?>" />
-		<input type="hidden" id="language" name="language" value="<?php echo Yii::app()->language; ?>" />
-		<input type="hidden" id="currency" name="currency" value="<?php echo $model->currency; ?>" />
-		<input type="hidden" id="timezone" name="timezone" value="<?php echo Yii::app()->params['profile']->timeZone; ?>" />
+        <?php
+        $form = $this->beginWidget('CActiveForm', array(
+            'id' => 'settings-form',
+            'enableAjaxValidation' => false,
+                ));
+        ?><?php
+        Yii::app()->clientScript->registerScriptfile(Yii::app()->baseUrl.'/js/webtoolkit.sha256.js');
+        $updatesForm = new UpdatesForm(
+                        array(
+                            'x2_version' => Yii::app()->params['version'],
+                            'unique_id' => $model->unique_id,
+                            'formId' => 'settings-form',
+                            'submitButtonId' => 'save-button',
+                            'statusId' => 'error-box',
+                            'themeUrl' => Yii::app()->theme->baseUrl,
+                            'serverInfo' => True,
+                            'edition' => $model->edition,
+                            'titleWrap' => array('<span class="mock-x2-form-label">', '</span>'),
+                            'receiveUpdates' => isset($_POST['receiveUpdates']) ? $_POST['receiveUpdates'] : 0,
+                        ),
+                        'Yii::t',
+                        array('install')
+        );
+        $this->renderPartial('stayUpdated', array('form' => $updatesForm));
+        ?>
+        <input type="hidden" id="adminEmail" name="adminEmail" value="<?php echo $model->emailFromAddr; ?>" />
+        <input type="hidden" id="language" name="language" value="<?php echo Yii::app()->language; ?>" />
+        <input type="hidden" id="currency" name="currency" value="<?php echo $model->currency; ?>" />
+        <input type="hidden" id="timezone" name="timezone" value="<?php echo Yii::app()->params['profile']->timeZone; ?>" />
+        <div id="error-box" class="form" style="display:none"></div>
+        <hr />
 
-		<?php
-		echo $form->labelEx($model, 'updateInterval');
-		echo $form->dropDownList($model, 'updateInterval', array(
-			'0' => Yii::t('admin', 'Every Login'),
-			'86400' => Yii::t('admin', 'Daily'),
-			'604800' => Yii::t('admin', 'Weekly'),
-			'2592000' => Yii::t('admin', 'Monthly'),
-			'-1' => Yii::t('admin', 'Never'),
-		));
-		?>
-		<div id="error-box" class="form" style="display:none"></div>
-		<?php echo CHtml::submitButton(Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button')) . "\n"; ?>
-		<?php $this->endWidget(); ?>
-                <?php echo Yii::t('admin','Note: to update manually, if not already at the latest version: {download}, then extract its contents into a folder in the web root called "update", then go to {updater}.',array(
-                    '{download}' => CHtml::link(Yii::t('admin','download the update package'),array('admin/updater','redirect'=>1)),
-                    '{updater}' => CHtml::link(Yii::t('admin','the updater page'),array('admin/updater')),
-                )); ?>
-    </div><!-- .span-24 -->
-</div><!-- .form -->
+        <?php
+        echo $form->labelEx($model, 'updateInterval');
+        echo $form->dropDownList($model, 'updateInterval', array(
+            '0' => Yii::t('admin', 'Every Login'),
+            '86400' => Yii::t('admin', 'Daily'),
+            '604800' => Yii::t('admin', 'Weekly'),
+            '2592000' => Yii::t('admin', 'Monthly'),
+            '-1' => Yii::t('admin', 'Never'),
+        ));
+        ?>
+        <p><?php echo Yii::t('admin','As often as specified, X2CRM will check for updates and display a system notification message if a new version is available.'); ?></p>
+        <hr /><?php
+
+        //////////////////////////////////////////////////
+        // Auto-updater cron job schedule form elements //
+        //////////////////////////////////////////////////
+        $this->widget('CronForm',array(
+            'formData' => $_POST,
+            'jobs' => array(
+                'app_update' => array(
+                    'title' => Yii::t('admin', 'Update Automatically'),
+                    'longdesc' => Yii::t('admin', 'If enabled, X2CRM will periodically check for updates and update automatically if a new version is available.'),
+                    'instructions' => Yii::t('admin', 'Specify an update schedule below. Note, X2CRM will be locked when the update is being applied, and so it is recommended to schedule updates at times when the application will encounter the least use. If any compatibility issues are detected, the update package will not be applied, but will be retrieved and unpacked for manual review and confirmation.'),
+                )
+            ),
+        ));
+
+        ?>
+        <hr />
+        <span class="mock-x2-form-label"><?php echo Yii::t('admin','Manual / Offline Update'); ?></span><br />
+                <?php
+                echo CHtml::tag('p',array(),Yii::t('admin','To update manually, if using X2CRM offline or if something goes wrong, see the instructions given in {wikilink}.',array(
+                    '{wikilink}' => CHtml::link(Yii::t('admin','The X2CRM Update Guide'),'http://wiki.x2engine.com')
+                )));
+                echo CHtml::tag('p',array(),Yii::t('admin','Download links you will need:'));
+                $edition = Yii::app()->params->admin->edition;
+                $uniqueId = Yii::app()->params->admin->unique_id;
+                ?>
+                <ul>
+                    <li><?php echo CHtml::link(Yii::t('admin','Latest Update Package for Version {version}',array('{version}'=>Yii::app()->params->version)),array('/admin/updater','redirect'=>1)); ?></li>
+                    <li><?php echo CHtml::link(Yii::t('admin','Latest Updater Utility Patch'),$edition=='opensource' ? "https://x2planet.com/installs/updater.zip" : "https://x2planet.com/installs/{$uniqueId}/updater-{$edition}.zip");?></li>
+                    <li><?php echo CHtml::link(Yii::t('admin','File Set Refresh Package'),$edition=='opensource'?"https://x2planet.com/installs/refresh.zip":"https://x2planet.com/installs/{$uniqueId}/refresh-{$edition}.zip");?></li>
+                </ul>
+        <hr />
+        <?php echo CHtml::submitButton(Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button')) . "\n"; ?>
+           <?php $this->endWidget(); ?>
+
+    </div><!-- .form -->
+</div><!-- .span-24 -->

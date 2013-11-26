@@ -120,6 +120,34 @@ class Formatter {
     }
 
     /**
+     * Formats a time interval.
+     * 
+     * @param integer $start Beginning of the interval
+     * @param integer $duration Length of the interval
+     */
+    public static function formatTimeInterval($start,$end,$style=null) {
+        $duration = $end-$start;
+        $decHours = $duration/3600;
+        $intHours = (int) $decHours;
+        $intMinutes = (int) (($duration % 3600) / 60);
+        if(empty($style)){
+            // Default format
+            $style = Yii::t('app', '{decHours} hours, starting {start}');
+        }
+        // Custom format
+        return strtr($style, array(
+                    '{decHours}' => sprintf('%0.2f', $decHours),
+                    '{hoursColMinutes}' => sprintf('%d:%d',$intHours,$intMinutes),
+                    '{hours}' => $intHours,
+                    '{minutes}' => $intMinutes,
+                    '{hoursMinutes}' => $intHours ? sprintf('%d %s %d %s', $intHours, Yii::t('app', 'hours'), $intMinutes, Yii::t('app', 'minutes')) : sprintf('%d %s', $intMinutes, Yii::t('app', 'minutes')),
+                    '{quarterDecHours}' => sprintf('%0.2f '.Yii::t('app', 'hours'), round($duration / 900.0) * 0.25),
+                    '{start}' => self::formatCompleteDate($start),
+                    '{end}' => self::formatCompleteDate($end)
+                ));
+    }
+
+    /**
      * Formats time for the time picker.
      *
      * @param string $width
@@ -179,9 +207,10 @@ class Formatter {
      * Cuts string short.
      * @param string $str String to be truncated.
      * @param integer $length Maximum length of the string
+     * @param bool $encode Encode HTML special characters if true
      * @return string
      */
-    public static function truncateText($str, $length = 30){
+    public static function truncateText($str, $length = 30, $encode=false){
 
         if(mb_strlen($str, 'UTF-8') > $length - 3){
             if($length < 3)
@@ -190,7 +219,7 @@ class Formatter {
                 $str = trim(mb_substr($str, 0, $length - 3, 'UTF-8'));
             $str .= '...';
         }
-        return $str;
+        return $encode?CHtml::encode($str):$str;
     }
 
     /**
@@ -347,6 +376,25 @@ class Formatter {
         return $str;
     }
 
+    /**
+     * Replace variables in dynamic text blocks.
+     *
+     * This function takes text with dynamic attributes such as {firstName} or
+     * {company.symbol} or {time} and replaces them with appropriate values in
+     * the text. It is possible to directly access attributes of the model,
+     * attributes of related models to the model, or "short codes" which are
+     * fixed variables, so to speak. That is the variable {time} corresponds
+     * to a defined piece of code which returns the current time.
+     *
+     * @param String $value The text which should be searched for dynamic attributes.
+     * @param X2Model $model The model which attributes should be taken from
+     * @param String $type Optional, the type of content we're expecting to get. This
+     * can determine if we should render what comes back via the {@link X2Model::renderAttribute}
+     * function or just display what we get as is.
+     * @param Array $params Optional extra parameters which may include default values
+     * for the attributes in question.
+     * @return String A modified version of $value with attributes replaced.
+     */
     public static function replaceVariables($value, $model, $type = '', $params = array()){
         $matches = array();
         if($type === '' || $type === 'text' || $type === 'richtext'){
@@ -354,18 +402,27 @@ class Formatter {
         }else{
             $renderFlag = false;
         }
+        // Pattern will match {attr}, {attr1.attr2}, {attr1.attr2.attr3}, etc.
         preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
         if(isset($matches[0])){
             foreach($matches[0] as $match){
-                $match = substr($match, 1, -1);
-                if(strpos($match, '.') !== false){
-                    $value = preg_replace('/{'.$match.'}/i', $model->getAttribute($match, $renderFlag), $value);
-                }else{
-                    if(isset($params[$match])){
-                        $value = $params[$match]; // don't return
-                    }elseif($model->hasAttribute($match)){
+                $match = substr($match, 1, -1); // Remove the "{" and "}" characters
+                $attr = $match;
+                if(strpos($match, '.') !== false){ // We found a link attribute (i.e. {company.name})
+                    $pieces = explode('.',$match);
+                    $first = array_shift($pieces);
+                    $tmpModel = Formatter::parseShortCode($first, $model); // First check if the first piece is part of a short code, like "user"
+                    if(isset($tmpModel) && $tmpModel instanceof CActiveRecord){
+                        $model = $tmpModel; // If we got a model from our short code, use that
+                        $attr = implode('.',$pieces); // Also, set the attribute to have the first item removed.
+                    }
+                    $value = preg_replace('/{'.$match.'}/i', $model->getAttribute($attr, $renderFlag), $value); // Replaced the matched value with the attribute
+                }else{ // Standard attribute
+                    if(isset($params[$match])){ // First check if we provided a value for this attribute
+                        $value = $params[$match];
+                    }elseif($model->hasAttribute($match)){ // Next ensure the attribute exists on the model
                         $value = preg_replace('/{'.$match.'}/i', $model->getAttribute($match, $renderFlag), $value);
-                    }else{
+                    }else{ // Finally, try to parse it as a short code if nothing else worked
                         $shortCodeValue = Formatter::parseShortCode($match, $model);
                         if(!is_null($shortCodeValue)){
                             $value = preg_replace('/{'.$match.'}/i', $shortCodeValue, $value);
@@ -377,33 +434,61 @@ class Formatter {
         }
     }
 
+    /**
+     * Parses a "formula" for the flow.
+     *
+     * If the first character in a string value in X2Flow is the "=" character, it
+     * will be treated as valid PHP code to be executed. This function uses {@link getSafeWords}
+     * to determine a list of functions which the user can execute in the code,
+     * and strip any which are not allowed. This should generally be used for
+     * mathematical operations, like calculating dynamic date offsets.
+     *
+     * @param String $formula The code to be executed
+     * @param String $type Deprecated variable which is preserved here for compatibility
+     * @param Array $params Optional extra parameters, notably the Model triggering the flow
+     * @return String The parsed value to be used in flow execution
+     */
     public static function parseFormula($formula, $type = '', $params = array()){
-        $formula = substr($formula, 1);
-        if(isset($params['model'])){
+        $formula = substr($formula, 1); // Remove the "=" character from in front
+        if(isset($params['model'])){ // If we find a model, relace any variables inside of our formula (i.e. {lastUpdated})
             $formula = Formatter::replaceVariables($formula, $params['model'], 'formula', $params);
         }
         if(strpos($formula, ';') !== strlen($formula) - 1){
-            $formula.=';';
+            $formula.=';'; // Eval required a ";" at the end to execute properly, make sure on exists.
         }
         if(strpos($formula, 'return ') !== 0){
-            $formula = 'return '.$formula;
+            $formula = 'return '.$formula; // Eval requries a "return" at the front.
         }
         $formula = preg_replace(array(
-            '!/\*.*?\*/!s',
-            '/\n\s*\n/',
-            '/(\S*)\w(?<!'.self::getSafeWords().')(\s*)\((.*?)\)/'
+            '!/\*.*?\*/!s', // Match comments where malicious code could be injected
+            '/\n\s*\n/', // Match lines with only whitespace
+            '/(\S*)\w(?<!'.self::getSafeWords().')(\s*)\((.*?)\)/' // Remove functions not listed in safe words.
             ),array(
                 '',
                 "\n",
                 'null'
             ),$formula);
         try{
-            return eval($formula);
+            return eval($formula); // Execute our sanitized formula.
         }catch(Exception $e){
-
+            // Hide errors from badly written user input.
         }
     }
 
+    /**
+     * Parses a "short code" as a part of variable replacement.
+     *
+     * Short codes are defined in the file protected/components/x2flow/shortcodes.php
+     * and are a list of manually defined pieces of code to be run in variable replacement.
+     * Because they are stored in a protected directory, validation on allowed
+     * functions is not performed, as it is the user's responsibility to edit this file.
+     *
+     * @param String $key The key of the short code to be used
+     * @param X2Model $model The model having variables replaced, some short codes
+     * use a model
+     * @return String|null Returns the result of code evaluation if a short code
+     * existed for the index $key, otherwise null
+     */
     public static function parseShortCode($key, $model){
         $shortCodes = include('protected/components/x2flow/shortcodes.php');
         if(isset($shortCodes[$key])){
@@ -413,6 +498,15 @@ class Formatter {
         }
     }
 
+    /**
+     * Returns a list of safe functions for formula parsing
+     *
+     * This function will generate a string to be inserted into the regex defined
+     * in the {@link parseFormula} function, where each function not listed in the
+     * $safeWords array here will be stripped from code execution.
+     * @return String A string with each function listed as to be inserted into
+     * a regular expression.
+     */
     private static function getSafeWords(){
         function encapsulateWords($word){
             return "\s".$word;

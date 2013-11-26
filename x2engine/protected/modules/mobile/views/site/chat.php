@@ -36,7 +36,7 @@
 
 $this->pageTitle = Yii::app()->name . ' - Group Chat';
 $menuItems = array(
-            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('site/home/')),
+            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('/mobile/site/home')),
         );
 
 $this->widget('MenuList', array(
@@ -54,7 +54,7 @@ $this->widget('MenuList', array(
         //console.log('L='+x2_latest);
         x2_pending = $.ajax({
             type: 'POST',
-            url: '<?php echo $this->createUrl('site/getMessages'); ?>?latest='+x2_latest,
+            url: '<?php echo $this->createUrl('/site/getMessages'); ?>?latest='+x2_latest,
             success:
                 function (data){
                 var recs = $.parseJSON(data);
@@ -89,7 +89,7 @@ if(x2_pending != null){
     x2_pending.abort();
     x2_pending=null;
 }
-$.ajax({'type':'POST','url':'<?php echo $this->createUrl('site/newMessage'); ?>','cache':false,'data':$("#x2chatform").serialize()});$("textarea#message").val('');return false;
+$.ajax({'type':'POST','url':'<?php echo $this->createUrl('/site/newMessage'); ?>','cache':false,'data':$("#x2chatform").serialize()});$("textarea#message").val('');return false;
 });
 
 </script>    

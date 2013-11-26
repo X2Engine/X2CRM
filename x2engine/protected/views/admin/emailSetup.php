@@ -35,47 +35,49 @@
  *****************************************************************************************/
 
 Yii::app()->clientScript->registerScript('toggleAuthInfo', "
-	$('#Admin_emailUseAuth').change(function() {
-		if(($(this).val() == 'admin' && $('#auth-info').is(':hidden'))
-			|| ($(this).val() != 'admin' && $('#auth-info').is(':visible'))) {
+    $('#Admin_emailUseAuth').change(function() {
+        if(($(this).val() == 'admin' && $('#auth-info').is(':hidden'))
+            || ($(this).val() != 'admin' && $('#auth-info').is(':visible'))) {
 
-			$('#auth-info').animate({
-				opacity: 'toggle',
-				height: 'toggle'
-			}, 400);
-		}
-	});
+            $('#auth-info').animate({
+                opacity: 'toggle',
+                height: 'toggle'
+            }, 400);
+        }
+    });
 
-	$('#Admin_emailType').change(function() {
-		if(($(this).val() == 'smtp' && $('#server-info').is(':hidden'))
-			|| ($(this).val() != 'smtp' && $('#server-info').is(':visible'))) {
+    $('#Admin_emailType').change(function() {
+        if(($(this).val() == 'smtp' && $('#server-info').is(':hidden'))
+            || ($(this).val() != 'smtp' && $('#server-info').is(':visible'))) {
 
-			$('#server-info').animate({
-				opacity: 'toggle',
-				height: 'toggle'
-			}, 400);
-		}
-	});
-	$('#Admin_emailUseSignature').change(function() {
-		if(($(this).val() == 'admin' && $('#signature-box').is(':hidden'))
-			|| ($(this).val() != 'admin' && $('#signature-box').is(':visible'))) {
+            $('#server-info').animate({
+                opacity: 'toggle',
+                height: 'toggle'
+            }, 400);
+        }
+    });
+    $('#Admin_emailUseSignature').change(function() {
+        if(($(this).val() == 'admin' && $('#signature-box').is(':hidden'))
+            || ($(this).val() != 'admin' && $('#signature-box').is(':visible'))) {
 
-			$('#signature-box').animate({
-				opacity: 'toggle',
-				height: 'toggle'
-			}, 400);
-		}
-	});
+            $('#signature-box').animate({
+                opacity: 'toggle',
+                height: 'toggle'
+            }, 400);
+        }
+    });
 
-	$('#email-setup input, #email-setup select, #email-setup textarea').change(function(){
-		$('#save-button').addClass('highlight'); //css('background','yellow');
-	});
+    $('#email-setup input, #email-setup select, #email-setup textarea').change(function(){
+        $('#save-button').addClass('highlight'); //css('background','yellow');
+    });
 
 ", CClientScript::POS_READY);
 ?>
 <div class="span-16">
     <div class="page-title"><h2><?php echo Yii::t('admin', 'Email Server Configuration'); ?></h2></div>
     <div class="form">
+        <p><?php echo Yii::t('admin','For more information, see {config} on the X2CRM wiki.',array('{config}'=>CHtml::link(Yii::t('admin','Email Configuration'),'http://wiki.x2engine.com/wiki/E-Mail_Configuration'))); ?></p>
+        <hr />
         <?php
         $form = $this->beginWidget('CActiveForm', array(
             'id' => 'email-setup',
@@ -83,10 +85,10 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
                 ));
         echo $form->errorSummary($model);
         ?>
-        <h4><?php echo Yii::t('admin', 'Outbound Email Server'); ?></h4>
+        <h4><?php echo Yii::t('admin', 'Default Email Delivery Method'); ?></h4>
         <p><?php
-        echo Yii::t('admin', 'Define how the system sends email by default.').'<br /><br />';
-        echo Yii::t('admin', 'Note that this will not supersede other email settings. Usage of these particular settings is a legacy feature. Unless this web server also serves as your company\'s primary mail server, it is recommended to instead use "{ma}" to set up email accounts for system usage instead.', array('{ma}' => CHtml::link(Yii::t('app', 'Manage Apps'), array('profile/manageCredentials'))));
+        echo Yii::t('admin', 'Define how the system sends email by default, when the email account is unspecified.').'<br /><br />';
+        echo Yii::t('admin', 'Note that this will not supersede other email settings. Usage of these particular settings is a legacy feature. Unless this web server also serves as the primary mail server, it is recommended to instead use "{ma}" to set up email accounts for system usage instead.', array('{ma}' => CHtml::link(Yii::t('app', 'Manage Apps'), array('/profile/manageCredentials'))));
         ?></p>
         <div class="row">
             <?php
@@ -209,17 +211,17 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
             <?php echo Yii::t('admin', 'You can use the following variables in this template: {first}, {last}, {phone} and {email}.'); ?>
         </div>
 
-	<br /><hr />
-	<h4><?php echo Yii::t('admin','Notification Email Settings'); ?></h4>
-	<p><?php echo Yii::t('admin','Configure how notification emails are sent.');?></p>
-	<div class="row">
-		<div class="cell">
-			<?php
-			echo $form->labelEx($model,'emailNotificationAccount'); 
-			echo Credentials::selectorField($model,'emailNotificationAccount','email',Credentials::$sysUseId['systemNotificationEmail']);
-			?>
-		</div>
-	</div>
+    <br /><hr />
+    <h4><?php echo Yii::t('admin','Notification Email Settings'); ?></h4>
+    <p><?php echo Yii::t('admin','Configure how notification emails are sent.');?></p>
+    <div class="row">
+        <div class="cell">
+            <?php
+            echo $form->labelEx($model,'emailNotificationAccount');
+            echo Credentials::selectorField($model,'emailNotificationAccount','email',Credentials::$sysUseId['systemNotificationEmail']);
+            ?>
+        </div>
+    </div>
 
         <br /><hr />
         <h4><?php echo Yii::t('admin', 'Service Case Email Settings'); ?></h4>
@@ -256,12 +258,12 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
                 <?php echo Yii::t('admin', 'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.'); ?>
             </div>
         </div>
-	<?php
-	if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'views','admin','webLeadResponseEmailSettings.php')))){
-		$this->renderPartial('webLeadResponseEmailSettings',compact('form','model'));
-	}
-	
-	?>
+    <?php
+    if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'views','admin','webLeadResponseEmailSettings.php')))){
+        $this->renderPartial('webLeadResponseEmailSettings',compact('form','model'));
+    }
+
+    ?>
         </div>
         <br>
 

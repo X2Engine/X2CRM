@@ -34,6 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$isGuest = Yii::app()->user->isGuest;
 $cs = Yii::app()->clientScript;
 $cs->scriptMap = array();
 $baseUrl = $this->module->assetsUrl;
@@ -42,6 +43,14 @@ $cs->registerPackage('jquerymobile');
 $cs->registerCssFile($this->module->getAssetsUrl() . '/css/jqueryMobileCssOverrides.css');
 $cs->registerCssFile($this->module->getAssetsUrl() . '/css/main.css');
 $cs->registerScriptFile($baseUrl . '/js/x2mobile.js');
+
+$jsVersion = '?'.Yii::app()->params->buildDate;
+$cs->registerScriptFile(Yii::app()->getBaseUrl ().'/js/auxlib.js'.$jsVersion);
+$cs->registerScriptFile(Yii::app()->getBaseUrl ().'/js/jstorage.min.js'.$jsVersion)
+   ->registerScriptFile(Yii::app()->getBaseUrl ().'/js/notifications.js'.$jsVersion, 
+     CClientScript::POS_BEGIN);
+
+
 ?><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -57,7 +66,7 @@ $cs->registerScriptFile($baseUrl . '/js/x2mobile.js');
 <div id="container"> 
 	<div id="<?php echo $this->pageId; ?>" data-role="page" data-url="<?php echo $this->dataUrl; ?>/" data-theme="a">
 		<div data-role="header" data-theme="a">
-			<div  class="figure"><a href="<?php echo $this->createUrl('site/home');?>" rel="external"><img style="margin-left:20px;" src="<?php echo $this->module->getAssetsUrl() . '/css/images/x2touch-logo.png'; ?>" alt="x2engine" /></a></div>
+			<div  class="figure"><a href="<?php echo $this->createUrl('/mobile/site/home');?>" rel="external"><img style="margin-left:20px;" src="<?php echo $this->module->getAssetsUrl() . '/css/images/x2touch-logo.png'; ?>" alt="x2engine" /></a></div>
 		</div>
 		<div data-role="content">
 			<?php

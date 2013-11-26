@@ -55,14 +55,14 @@ $menuItems = array(
 	array('label'=>Yii::t('actions','Create'),'url'=>array('create')),
 );
 
-if($this->route=='actions/actions/index') {
+if($this->route=='/actions/actions/index') {
 	$heading = Yii::t('actions','Today\'s Actions');
 	$dataProvider=$model->searchIndex();
 	$dataProvider2=$model->searchComplete();
 
 	unset($menuItems[0]['url']);
 
-} elseif($this->route=='actions/actions/viewAll') {
+} elseif($this->route=='/actions/actions/viewAll') {
 	$heading = Yii::t('actions','All My Actions');
 	$dataProvider=$model->searchAll();
 	$dataProvider2=$model->searchComplete();
@@ -104,7 +104,7 @@ function uncompleteSelected() {
 
 function toggleShowActions() {
 	var show = $('#dropdown-show-actions').val(); // value of dropdown (which actions to show)
-	$.post('actions/saveShowActions', {ShowActions: show}, function() {
+	$.post(".json_encode(Yii::app()->controller->createUrl('/actions/actions/saveShowActions')).", {ShowActions: show}, function() {
 		$.fn.yiiGridView.update('actions-grid', {data: $.param($('#actions-grid input[name=\"Actions[complete]\"]'))});
 	});
 }

@@ -115,8 +115,7 @@ class Events extends CActiveRecord {
         $text = "";
         $authorText = "";
         if(Yii::app()->user->getName() == $this->user){
-            //$authorText = CHtml::link(Yii::t('app', 'You'), array('profile/view', 'id' => Yii::app()->user->getId()))." ";
-            $authorText = CHtml::link(Yii::t('app', 'You'), Yii::app()->controller->createAbsoluteUrl('profile/view', array('id' => Yii::app()->user->getId())));
+            $authorText = CHtml::link(Yii::t('app', 'You'), Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => Yii::app()->user->getId())));
         }else{
             $authorText = User::getUserLinks($this->user);
         }
@@ -138,19 +137,36 @@ class Events extends CActiveRecord {
                     if(count(X2Model::model($this->associationType)->findAllByPk($this->associationId)) > 0){
                         if($this->associationType == 'Actions'){
                             $action = X2Model::model('Actions')->findByPk($this->associationId);
-                            if(isset($action) && strcasecmp($action->associationType, 'Contacts') === 0){
+                            if(isset($action) && (strcasecmp($action->associationType, 'contacts') === 0 || in_array($action->type,array('call','note','time')))){
+                                // Special considerations for publisher-created actions, i.e. call, note, time, and anything associated with a contact
                                 $actionFlag = true;
                             }
                         }
                         if($actionFlag){
+                            $authorText = empty($authorText) ? Yii::t('app', 'Someone') : $authorText;
                             switch($action->type){
                                 case 'call':
-                                    $authorText = empty($authorText) ? Yii::t('app', 'Someone') : $authorText;
-                                    $text = Yii::t('app', '{authorText} logged a call with {contactLink}: "{logAbbrev}"', array('{authorText}' => $authorText, '{contactLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl), '{logAbbrev}' => Formatter::truncateText($action->actionDescription)));
+                                    $text = Yii::t('app', '{authorText} logged a call ({duration}) with {modelLink}: "{logAbbrev}"', array(
+                                                '{authorText}' => $authorText,
+                                                '{duration}' => empty($action->dueDate) || empty($action->completeDate) ? Yii::t('app', 'duration unknown') : Formatter::formatTimeInterval($action->dueDate, $action->completeDate, '{hoursMinutes}'),
+                                                '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl),
+                                                '{logAbbrev}' => Formatter::truncateText($action->actionDescription,60)
+                                            ));
                                     break;
                                 case 'note':
-                                    $authorText = empty($authorText) ? Yii::t('app', 'Someone') : $authorText;
-                                    $text = Yii::t('app', '{authorText} posted a comment on {contactLink}: "{noteAbbrev}"', array('{authorText}' => $authorText, '{contactLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl), '{noteAbbrev}' => Formatter::truncateText($action->actionDescription)));
+                                    $text = Yii::t('app', '{authorText} posted a comment on {modelLink}: "{noteAbbrev}"', array(
+                                                '{authorText}' => $authorText,
+                                                '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl),
+                                                '{noteAbbrev}' => Formatter::truncateText($action->actionDescription,60)
+                                            ));
+                                    break;
+                                case 'time':
+                                    $text = Yii::t('app', '{authorText} logged {time} on {modelLink}: "{noteAbbrev}"', array(
+                                                '{authorText}' => $authorText,
+                                                '{time}' => Formatter::formatTimeInterval($action->dueDate, $action->completeDate, '{hoursMinutes}'),
+                                                '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType)),
+                                                '{noteAbbrev}' => Formatter::truncateText($action->actionDescription,60)
+                                            ));
                                     break;
                                 default:
                                     if(!empty($authorText)){
@@ -320,8 +336,7 @@ class Events extends CActiveRecord {
                 break;
             case 'feed':
                 if(Yii::app()->user->getName() == $this->user){
-                    //$author = CHtml::link(Yii::t('app', 'You'), array('profile/view', 'id' => Yii::app()->user->getId()));
-                    $author = CHtml::link(Yii::t('app', 'You'), Yii::app()->controller->createAbsoluteUrl('profile/view', array('id' => Yii::app()->user->getId())))." ";
+                    $author = CHtml::link(Yii::t('app', 'You'), Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => Yii::app()->user->getId())))." ";
                 }else{
                     $author = User::getUserLinks($this->user);
                 }
@@ -452,14 +467,12 @@ class Events extends CActiveRecord {
                 $action = X2Model::model('Actions')->findByPk($this->associationId);
                 if(isset($action)){
                     $text = Yii::t('app', "{calendarText} event: {actionDescription}", array(
-                                //'{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), array('calendar/index')),
-                                '{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), Yii::app()->controller->createAbsoluteUrl('calendar/index')),
+                                '{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), Yii::app()->controller->createAbsoluteUrl('/calendar/calendar/index')),
                                 '{actionDescription}' => $action->actionDescription
                             ));
                 }else{
                     $text = Yii::t('app', "{calendarText} event: event not found.", array(
-                                //'{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), array('calendar/index')),
-                                '{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), Yii::app()->controller->createAbsoluteUrl('calendar/index')),
+                                '{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), Yii::app()->controller->createAbsoluteUrl('/calendar/calendar/index')),
                             ));
                 }
                 break;

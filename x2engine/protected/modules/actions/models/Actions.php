@@ -268,7 +268,7 @@ class Actions extends X2Model {
             $event->associationId = $this->id;
 
             // notify the admin
-            if($event->save() && Yii::app()->user->getName() !== 'admin'){
+            if($event->save() && !Yii::app()->user->checkAccess('ActionsAdminAccess')){
                 $notif = new Notification;
                 $notif->type = 'action_complete';
                 $notif->modelType = 'Actions';

@@ -55,7 +55,7 @@ $this->actionMenu = $this->formatMenu($menuItems);
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts')); ?>
 
 <?php
-$createAccountUrl = $this->createUrl('/accounts/create');
+$createAccountUrl = $this->createUrl('/accounts/accounts/create');
 Yii::app()->clientScript->registerScript('create-account', "
 	$(function() {
 		$('.create-account').data('createAccountUrl', '$createAccountUrl');

@@ -79,7 +79,7 @@ if(isset($this->serviceCaseStatuses) && $this->serviceCaseStatuses != null) {
                 'ajax' => array(
                     'type' => 'POST', //request type
                     'url' => Yii::app()->controller->createUrl(
-                        '/services/statusFilter'), //url to call
+                        '/services/services/statusFilter'), //url to call
                     'success' => 'js:function(response) { 
                         $.fn.yiiGridView.update("services-grid"); }', //selector to update
                     'data' => 'js:{checked: $(this).attr("checked")=="checked", status:"'.
@@ -112,7 +112,7 @@ if(isset($this->serviceCaseStatuses) && $this->serviceCaseStatuses != null) {
         'ajax'=>array(
             'type' => 'POST', //request type
             'url' => Yii::app()->controller->createUrl(
-                '/services/statusFilter'), //url to call
+                '/services/services/statusFilter'), //url to call
             'success' => 'function(response) {
                 $.fn.yiiGridView.update("services-grid");
                 $("#service-case-status-filter li input").attr("checked","checked");
@@ -126,7 +126,7 @@ if(isset($this->serviceCaseStatuses) && $this->serviceCaseStatuses != null) {
         'ajax'=>array(
             'type' => 'POST', //request type
             'url' => Yii::app()->controller->createUrl(
-                '/services/statusFilter'), //url to call
+                '/services/services/statusFilter'), //url to call
             'success' => 'function(response) {
                 $.fn.yiiGridView.update("services-grid");
                 $("#service-case-status-filter li input").removeAttr("checked");

@@ -49,7 +49,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
     'columns' => array(
         array(
             'header' => Yii::t('admin', 'History'),
-            'value' => '$data->type=="Contacts"?CHtml::link(Yii::t("app","View"),Yii::app()->controller->createUrl("/contacts/revisions?id=$data->itemId&timestamp=$data->timestamp"),array("class"=>"x2-hint","title"=>Yii::t("admin","Click to view the record at this point in its history."))):""',
+            'value' => '$data->type=="Contacts"?CHtml::link(Yii::t("app","View"),array("/contacts/contacts/revisions","id"=>$data->itemId,"timestamp"=>$data->timestamp),array("class"=>"x2-hint","title"=>Yii::t("admin","Click to view the record at this point in its history."))):""',
             'type' => 'raw',
         ),
         array(

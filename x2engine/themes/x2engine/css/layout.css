@@ -1038,7 +1038,13 @@ div.page-title .x2-button.icon.sync span {background:url(../images/icons/Sync.pn
 div.page-title .x2-button.icon.copy span {background:url(../images/icons/Copy.png) center center no-repeat;}
 
 /*div.page-title .x2-button.icon.email span {background:url(../images/icons/email-button.png) left center no-repeat;}*/
-div.page-title .x2-button.icon.email span {background:url(../images/icons/email_button.png) left center no-repeat;}
+div.page-title .x2-button.icon.email img {
+    max-width: 36px !important;
+}
+div.page-title .x2-button.icon.email {
+    width: 36px;
+    margin-top: 2px !important;
+}
 div.page-title .x2-button.search-button span {background:url(../images/icons/search-button.png) 5px center no-repeat;}
 div.page-title .x2-button.filter-button span {background:url(../images/icons/filter-button.png) center center no-repeat;}
 div.page-title .x2-button.column-selector-link span {background:url(../images/icons/columns-button.png) center center no-repeat;}
@@ -1135,5 +1141,12 @@ div.page-title .x2-button span {display:block;height:24px;width:24px;}
 
 .x2-hint {
 	color: #06C;
+}
+
+.x2-hint-asterisk {
+    line-height: 0;
+    font-size: 20px;
+    position: relative;
+    top: 7px;
 }
 

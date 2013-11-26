@@ -77,8 +77,8 @@ class StudioController extends x2base {
                         'order' => 'triggeredAt DESC'
                     ),
                     'pagination'=>array(
-				        'pageSize' => !empty($pageSize) ? 
-                            $pageSize : 
+				        'pageSize' => !empty($pageSize) ?
+                            $pageSize :
                             Profile::getResultsPerPage()
                     ),
                 ));
@@ -153,14 +153,16 @@ class StudioController extends x2base {
 
 	public function actionGetParams($name,$type) {
 
-		if($type === 'action')
+		if($type === 'action') {
 			$paramRules = X2FlowAction::getParamRules($name);	// X2Flow Actions
-		elseif($type === 'trigger')
+		} elseif($type === 'trigger') {
 			$paramRules = X2FlowTrigger::getParamRules($name);	// X2Flow Triggers
-		elseif($type === 'condition')
-			$paramRules = X2FlowTrigger::getGenericCondition($name); // generic conditions (for triggers and switches)
-		else
+		} elseif($type === 'condition') {
+            // generic conditions (for triggers and switches)
+			$paramRules = X2FlowTrigger::getGenericCondition($name); 
+		} else {
 			$paramRules = false;
+        }
 
 		if($paramRules !== false) {
 			if($type === 'condition') {
@@ -198,7 +200,7 @@ class StudioController extends x2base {
 			if($field->readOnly)
 				$data['readOnly'] = 1;
 			if($field->type === 'assignment' || $field->type === 'optionalAssignment' ) {
-				$data['options'] = X2FlowAction::dropdownForJson(User::getNames());
+				$data['options'] = X2FlowAction::dropdownForJson(X2Model::getAssignmentOptions(true, true));
 			} elseif($field->type === 'dropdown') {
 				$data['linkType'] = $field->linkType;
 				$data['options'] = X2FlowAction::dropdownForJson(Dropdowns::getItems($field->linkType));
@@ -250,7 +252,7 @@ class StudioController extends x2base {
                 echo "success";
                 return;
             }
-        } 
+        }
         echo "failure";
     }
 }

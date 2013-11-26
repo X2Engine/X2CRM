@@ -71,13 +71,13 @@ $usersGroups = implode(",",$tempUserList);
 
 $passVarsToClientScript = "
 	x2.whatsNew = {};
-	x2.whatsNew.DEBUG = ".(YII_DEBUG ? 'true' : 'false').";
+	x2.whatsNew.DEBUG = false;//".(YII_DEBUG ? 'true' : 'false').";
 	x2.whatsNew.usersGroups = '".$usersGroups."';
 	x2.whatsNew.minimizeFeed = ".(Yii::app()->params->profile->minimizeFeed==1?'true':'false').";
 	x2.whatsNew.commentFlag = false;
 	x2.whatsNew.lastEventId = ".(!empty($lastEventId)?$lastEventId:0).";
 	x2.whatsNew.lastTimestamp = ".(!empty($lastTimestamp)?$lastTimestamp:0).";
-	x2.whatsNew.deletePostUrl = '".$this->createUrl('profile/deletePost')."';
+	x2.whatsNew.deletePostUrl = '".$this->createUrl('/profile/deletePost')."';
 	x2.whatsNew.translations = {};
 ";
 
@@ -94,8 +94,8 @@ $translations = array (
 	'Nevermind' => Yii::t('app','Nevermind'),
 	'Create' => Yii::t('app','Create'),
 	'Cancel' => Yii::t('app','Cancel'),
-	'Read more' => Yii::t('app','Read More'),
-	'Read less' => Yii::t('app','Read Less'),
+	'Read more' => Yii::t('app','Read') . '&nbsp;' . Yii::t('app', 'More'),
+	'Read less' => Yii::t('app','Read') . '&nbsp;' . Yii::t('app', 'Less'),
 );
 
 // pass array of predefined theme uploadedBy attributes to client
@@ -161,7 +161,7 @@ Yii::app()->clientScript->registerScript(
 		</option>
 	</select>
 
-	<?php 
+	<?php
 		$this->widget('X2Chart', array (
 			'getChartDataActionName' => 'getEventsBetween',
 			'suppressChartSettings' => false,
@@ -192,15 +192,15 @@ Yii::app()->clientScript->registerScript(
 			'chartType' => 'eventsChart',
 			'getDataOnPageLoad' => true,
 			'hideByDefault' => true
-		)); 
+		));
 	?>
-	
-	<?php 
+
+	<?php
 		$usersArr = array ();
 		foreach ($usersDataProvider->data as $user) {
 			$usersArr[$user->username] = $user->firstName.' '.$user->lastName;
 		}
-	
+
 		$this->widget('X2Chart', array (
 			'getChartDataActionName' => 'getEventsBetween',
 			'suppressChartSettings' => false,
@@ -209,7 +209,7 @@ Yii::app()->clientScript->registerScript(
 			'chartType' => 'usersChart',
 			'getDataOnPageLoad' => true,
 			'hideByDefault' => true
-		)); 
+		));
 	?>
 </div>
 
@@ -308,8 +308,8 @@ $this->widget('zii.widgets.CListView', array(
 		<?php echo Yii::t('app','Leave colors blank for defaults.');?>
 	</div>
 	<div>
-		<?php 
-            echo CHtml::label(Yii::t('app','What color should the event be?'),'broadcastColor'); 
+		<?php
+            echo CHtml::label(Yii::t('app','What color should the event be?'),'broadcastColor');
         ?>
 		<div class='row'>
 			<?php echo CHtml::textField('broadcastColor',''); ?>

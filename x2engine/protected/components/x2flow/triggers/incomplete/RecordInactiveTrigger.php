@@ -57,11 +57,13 @@ class RecordInactiveTrigger extends X2FlowTrigger {
 	public static function checkCondition($condition,&$params) {
 		if(isset($condition['name']) && $condition['name'] === 'duration') {
 			if($params['model']->hasAttribute('lastActivity'))
-				return $params['model']->lastActivity < time() - (int)$condition->value;
+				return array ($params['model']->lastActivity < time() - (int)$condition->value,
+                    '');
 			elseif($params['model']->hasAttribute('lastUpdated'))
-				return $params['model']->lastUpdated < time() - (int)$condition->value;
+				return array ($params['model']->lastUpdated < time() - (int)$condition->value,
+                    '');
 			else
-				return false;
+				return array (false, '');
 		} else {
 			return parent::checkCondition($condition,$params);
 		}

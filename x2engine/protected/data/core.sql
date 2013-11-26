@@ -94,13 +94,19 @@ CREATE TABLE x2_admin(
 	gaTracking_internal			VARCHAR(20) NULL,
     sessionLog                  TINYINT         DEFAULT 0,
     userActionBackdating        TINYINT         DEFAULT 0,
+    emailDropbox                TEXT,
+    -- The following columns to be left in until the release after when JSON storage
+    -- is implemented for emailDropbox, at which point in time they can be
+    -- safely deleted.
 	emailDropbox_alias			VARCHAR(50) DEFAULT NULL,
 	emailDropbox_createContact	TINYINT	DEFAULT 1,
 	emailDropbox_zapLineBreaks	TINYINT DEFAULT 0,
 	emailDropbox_emptyContact	TINYINT DEFAULT 1,
 	emailDropbox_logging		TINYINT DEFAULT 0,
+    -- (end email dropbox settings)
     historyPrivacy              VARCHAR(20) DEFAULT "default",
-    batchTimeout                INT DEFAULT 300
+    batchTimeout                INT DEFAULT 300,
+    externalBaseUrl             VARCHAR(255) DEFAULT NULL
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
@@ -350,6 +356,8 @@ CREATE TABLE x2_profile(
 	updatedBy				VARCHAR(255),
 	avatar					TEXT,
 	allowPost				TINYINT			DEFAULT 1,
+	disablePhoneLinks       TINYINT			DEFAULT 0,
+	disableNotifPopup		TINYINT			DEFAULT 0,
 	language				VARCHAR(40)		DEFAULT "",
 	timeZone				VARCHAR(100)	DEFAULT "",
 	resultsPerPage			INT DEFAULT		20,
@@ -368,6 +376,7 @@ CREATE TABLE x2_profile(
 	backgroundTiling		VARCHAR(10)		NULL DEFAULT "",
 	pageOpacity				INT				NULL,*/
     theme                   TEXT,
+    miscLayoutSettings      TEXT,
     notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",
     loginSound              VARCHAR(100)    NULL DEFAULT "",
 	startPage				VARCHAR(30)		NULL,

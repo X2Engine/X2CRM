@@ -34,30 +34,29 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+//render home page
+$app=Yii::app();
+$isGuest=$app->user->isGuest;
+$isAdmin = !$isGuest && $app->params->isAdmin;
+$isUser = !($isGuest || $isAdmin);
+$module = $app->controller->id;
+
 $this->pageTitle = Yii::app()->name . ' - Home';
 ?>
 <div>
     <?php
-    //render home page
-    $app=Yii::app();
-    $isGuest=$app->user->isGuest;
-    $isAdmin = !$isGuest && $app->params->isAdmin;
-    $isUser = !($isGuest || $isAdmin);
-    $module = $app->controller->id;
-
     if ($isUser || $isAdmin) {
         $menuItems = array(
-            array('label' => Yii::t('app', 'Top Contacts'), 'url' => array('contacts/index/')),
-            //array('label' => Yii::t('app', 'Chat'), 'url' => array('site/chat/')),
-            array('label' => Yii::t('mobile', 'New Record'), 'url' => array('contacts/new/')),
-            array('label' => Yii::t('mobile', 'Find Contacts'), 'url' => array('contacts/search/')),
-            array('label' => Yii::t('mobile', 'People'), 'url' => array('site/people/')),
-            array('label' => Yii::t('mobile', 'Who\'s Online'), 'url' => array('site/online/')),
-            //array('label' => Yii::t('mobile', 'More'), 'url' => array('site/more/')),
+            array('label' => Yii::t('mobile', 'Activity Feed'), 'url' => array('/mobile/site/activity')),
+            array('label' => Yii::t('app', 'Top Contacts'), 'url' => array('/mobile/contacts/index')),
+            array('label' => Yii::t('mobile', 'New Record'), 'url' => array('/mobile/contacts/new')),
+            array('label' => Yii::t('mobile', 'Find Contacts'), 'url' => array('/mobile/contacts/search')),
+            array('label' => Yii::t('mobile', 'People'), 'url' => array('/mobile/site/people')),
+            array('label' => Yii::t('mobile', 'Who\'s Online'), 'url' => array('/mobile/site/online')),
         );
     } else {
         $menuItems = array(
-            array('label' => Yii::t('app', 'Login'), 'url' => array('site/login/'))
+            array('label' => Yii::t('app', 'Login'), 'url' => array('/site/login'))
         );
     }
 
@@ -74,7 +73,7 @@ $this->pageTitle = Yii::app()->name . ' - Home';
     }
 
     $userMenu = array(
-        array('label' => Yii::t('mobile', 'Logout ({username})', array('{username}' => Yii::app()->user->name)), 'url' => array('site/logout/'), 'left'=>true)
+        array('label' => Yii::t('mobile', 'Logout ({username})', array('{username}' => Yii::app()->user->name)), 'url' => array('/mobile/site/logout'), 'left'=>true)
     );
 
     //render main menu items

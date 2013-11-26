@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -189,8 +188,7 @@ class User extends CActiveRecord {
         $userRecord = X2Model::model('User')->findByPk(Yii::app()->user->getId());
 
         //get array of type-ID pairs
-        $recentItemsTemp = 
-            empty($userRecord->recentItems) ? array() : explode(',', $userRecord->recentItems);
+        $recentItemsTemp = empty($userRecord->recentItems) ? array() : explode(',', $userRecord->recentItems);
         $recentItems = array();
 
         //get record for each ID/type pair
@@ -198,7 +196,7 @@ class User extends CActiveRecord {
             $itemType = strtok($item, '-');
             $itemId = strtok('-');
 
-            switch ($itemType) {
+            switch($itemType){
                 case 'c': // contact
                     $record = X2Model::model('Contacts')->findByPk($itemId);
                     break;
@@ -236,7 +234,7 @@ class User extends CActiveRecord {
                     $record = X2Model::model('Groups')->findByPk($itemId);
                     break;
                 default:
-                    printR ('Warning: getRecentItems: invalid item type');
+                    printR('Warning: getRecentItems: invalid item type');
                     continue;
             }
             if(!is_null($record)) //only include item if the record ID exists
@@ -245,7 +243,7 @@ class User extends CActiveRecord {
         return $recentItems;
     }
 
-    private static $validRecentItemTypes = array (
+    private static $validRecentItemTypes = array(
         'c', // contact
         't', // action
         'p', // campaign
@@ -261,13 +259,13 @@ class User extends CActiveRecord {
     );
 
     public static function addRecentItem($type, $itemId, $userId){
-        if(in_array ($type, self::$validRecentItemTypes)) { //only proceed if a valid type is given
+        if(in_array($type, self::$validRecentItemTypes)){ //only proceed if a valid type is given
             $newItem = $type.'-'.$itemId;
 
             $userRecord = X2Model::model('User')->findByPk($userId);
             //create an empty array if recentItems is empty
-            $recentItems = 
-                ($userRecord->recentItems == '') ? array() : explode(',', $userRecord->recentItems);
+            $recentItems =
+                    ($userRecord->recentItems == '') ? array() : explode(',', $userRecord->recentItems);
             $existingEntry = array_search($newItem, $recentItems); //check for a pre-existing entry
             if($existingEntry !== false)        //if there is one,
                 unset($recentItems[$existingEntry]);    //remove it
@@ -280,7 +278,6 @@ class User extends CActiveRecord {
             $userRecord->save();
         }
     }
-
 
     /**
      * Generate a link to a user or group.
@@ -296,8 +293,8 @@ class User extends CActiveRecord {
             if(is_numeric($users)){
                 $group = Groups::model()->findByPk($users);
                 if(isset($group))
-                    //$link = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                    $link = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
+                //$link = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
+                    $link = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id))) : $group->name;
                 else
                     $link = '';
                 return $link;
@@ -315,32 +312,32 @@ class User extends CActiveRecord {
                 continue;
             }else if(is_numeric($user)){  // this is a group
                 if(isset($userCache[$user])){
-                    $group=$userCache[$user];
+                    $group = $userCache[$user];
                     //$links[] =  $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                    $links[] = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
+                    $links[] = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id))) : $group->name;
                 }else{
                     $group = Groups::model()->findByPk($user);
                     // $group = Groups::model()->findByPk($users);
                     if(isset($group)){
                         //$groupLink = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                    	$groupLink = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
+                        $groupLink = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id))) : $group->name;
                         $userCache[$user] = $group;
                         $links[] = $groupLink;
                     }
                 }
             }else{
                 if(isset($userCache[$user])){
-                    $model=$userCache[$user];
+                    $model = $userCache[$user];
                     $linkText = $useFullName ? $model->name : $user;
                     //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
-                   	$userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl ('/profile/view', array ('id' => $model->id))) : $linkText;
+                    $userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => $model->id))) : $linkText;
                     $links[] = $userLink;
                 }else{
                     $model = X2Model::model('User')->findByAttributes(array('username' => $user));
                     if(isset($model)){
                         $linkText = $useFullName ? $model->name : $user;
                         //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
-                   		$userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl ('/profile/view', array ('id' => $model->id))) : $linkText;
+                        $userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => $model->id))) : $linkText;
                         $userCache[$user] = $model;
                         $links[] = $userLink;
                     }

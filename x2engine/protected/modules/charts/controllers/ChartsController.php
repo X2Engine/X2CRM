@@ -182,11 +182,11 @@ class ChartsController extends x2base {
 	}
 
 	public function actionAdmin() {
-		$this->redirect($this->createUrl('/charts/index'));
+		$this->redirect($this->createUrl('/charts/charts/index'));
 	}
 
 	public function actionIndex() {
-		$this->redirect($this->createUrl('/charts/leadVolume'));
+		$this->redirect($this->createUrl('/charts/charts/leadVolume'));
 	}
 
 	public function actionMarketing() {

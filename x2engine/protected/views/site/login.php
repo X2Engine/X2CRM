@@ -104,7 +104,7 @@ CClientScript::POS_HEAD);
 				(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . 
 				((substr($_SERVER['HTTP_HOST'],0,4)=='www.')?substr($_SERVER['HTTP_HOST'],4):$_SERVER['HTTP_HOST']) . 
 				$this->createUrl('/site/googleLogin'),array('class'=>'x2touch-link')); ?>
-		<?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/mobile.png" id="mobile-icon" /> X2Touch Mobile',Yii::app()->getBaseUrl() . '/index.php/x2touch',array('class'=>'x2touch-link')); ?>
+		<?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/mobile.png" id="mobile-icon" /> X2Touch Mobile',Yii::app()->getBaseUrl() . '/index.php/mobile/site/login',array('class'=>'x2touch-link')); ?>
 	</div>
 </div>
 <!--<div id="login-logo"></div>-->

@@ -87,7 +87,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->par
                     echo $form->dropDownList($actionModel, 'associationType', array_merge(array('none' => Yii::t('app','None')), $modelList), array(
                         'ajax' => array(
                             'type' => 'POST', //request type
-                            'url' => CController::createUrl('/actions/parseType'), //url to call.
+                            'url' => CController::createUrl('/actions/actions/parseType'), //url to call.
                             //Style: CController::createUrl('currentController/methodToCall')
                             'update' => '#', //selector to update
                             'success' => 'function(data){

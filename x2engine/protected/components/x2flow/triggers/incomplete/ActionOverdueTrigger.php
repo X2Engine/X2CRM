@@ -62,6 +62,6 @@ class ActionOverdueTrigger extends X2FlowTrigger {
 	}
 	
 	public function check(&$params) {
-		return true;
+		return array (true, '');
 	}
 }

@@ -74,13 +74,25 @@ class Profile extends CActiveRecord {
             ),
             'JSONFieldsBehavior' => array(
                 'class' => 'application.components.JSONFieldsBehavior',
-                'transformAttributes' => array('theme' => array(
+                'transformAttributes' => array(
+                    'theme' => array(
                         'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor',
                         'pageHeaderTextColor', 'activityFeedWidgetBgColor',
                         'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling',
                         'pageOpacity', 'themeName', 'private', 'owner', 'loginSound',
-                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven')),
-            )
+                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven'),
+                ),
+            ),
+            'JSONFieldsDefaultValuesBehavior' => array(
+                'class' => 'application.components.JSONFieldsDefaultValuesBehavior',
+                'transformAttributes' => array(
+                    'miscLayoutSettings' => array(
+                        'themeSectionExpanded'=>true,
+                        'unhideTagsSectionExpanded'=>true,
+                        'x2flowShowLabels'=>true,
+                    ),
+                ),
+            ),
         );
     }
 
@@ -92,7 +104,7 @@ class Profile extends CActiveRecord {
         // will receive user inputs.
         return array(
             array('fullName, username, status', 'required'),
-            array('status, lastUpdated, allowPost, resultsPerPage', 'numerical', 'integerOnly' => true),
+            array('status, lastUpdated, disableNotifPopup, allowPost, disablePhoneLinks, resultsPerPage', 'numerical', 'integerOnly' => true),
             array('enableFullWidth,showSocialMedia,showDetailView', 'boolean'), //,showWorkflow
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
@@ -138,6 +150,8 @@ class Profile extends CActiveRecord {
             'updatedBy' => Yii::t('profile', 'Updated By'),
             'avatar' => Yii::t('profile', 'Avatar'),
             'allowPost' => Yii::t('profile', 'Allow users to post on your profile?'),
+            'disablePhoneLinks' => Yii::t('profile', 'Disable phone field links?'),
+            'disableNotifPopup' => Yii::t('profile', 'Disable notifications pop-up?'),
             'language' => Yii::t('profile', 'Language'),
             'timeZone' => Yii::t('profile', 'Time Zone'),
             'widgets' => Yii::t('profile', 'Widgets'),
@@ -189,6 +203,23 @@ class Profile extends CActiveRecord {
         return new CActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
                 ));
+    }
+
+    public static function setMiscLayoutSetting ($settingName, $settingValue) {
+        $model = Profile::model ()->findByPk (Yii::app()->user->getId());
+        $settings = $model->miscLayoutSettings;
+        if (!in_array ($settingName, array_keys ($settings))) {
+            echo 'failure'; 
+            return;
+        }
+        $settings[$settingName] = $settingValue;
+        $model->miscLayoutSettings = $settings;
+        if (!$model->save ()) {
+            AuxLib::debugLog ('Error: setMiscLayoutSetting: failed to save model'); 
+            echo 'failure';
+        } else {
+            echo 'success';
+        }
     }
 
     public static function setDetailView($value){
@@ -436,7 +467,7 @@ class Profile extends CActiveRecord {
             else
                 return CHtml::link(Yii::t('app', '{name}\'s feed', array('{name}' => $this->fullName)), array($this->baseRoute.'/'.$this->id));
         } else{
-            return CHtml::link($this->fullName, Yii::app()->externalBaseUrl.'/index.php'.$this->baseRoute.'/'.$this->id);
+            return CHtml::link($this->fullName, Yii::app()->absoluteBaseUrl.'/index.php'.$this->baseRoute.'/'.$this->id);
         }
     }
 
@@ -520,7 +551,9 @@ class Profile extends CActiveRecord {
                 }
             }
         }catch(Exception $e){
-
+            if(isset($auth)){
+                $auth->flushCredentials();
+            }
         }
     }
 
@@ -789,16 +822,16 @@ class Profile extends CActiveRecord {
 
         // ensure that widget properties are the same as those in the default layout
         foreach($layout[$position] as $name=>$arr){
-            if (in_array ($name, array_keys ($initLayout[$position])) && 
+            if (in_array ($name, array_keys ($initLayout[$position])) &&
                 $initLayout[$position][$name]['title'] !== $arr['title']) {
-                
+
                 $layout[$position][$name]['title'] = $initLayout[$position][$name]['title'];
                 $changed = true;
             }
         }
         if ($position === 'center') {
             foreach($layout['hidden'] as $name=>$arr){
-                if (in_array ($name, array_keys ($initLayout[$position])) && 
+                if (in_array ($name, array_keys ($initLayout[$position])) &&
                     $initLayout[$position][$name]['title'] !== $arr['title']) {
 
                     $layout['hidden'][$name]['title'] = $initLayout[$position][$name]['title'];

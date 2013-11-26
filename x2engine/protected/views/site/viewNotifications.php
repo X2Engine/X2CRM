@@ -37,7 +37,7 @@
 
 ?>
 <div class="flush-grid-view">
-<?php 
+<?php
 
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'actions-grid',
@@ -67,10 +67,10 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'class'=>'CButtonColumn',
 			'template'=>'{delete}',
-			'deleteButtonUrl'=>'Yii::app()->controller->createUrl("/notifications/delete/".$data->id)',
-			'afterDelete'=>'function(link,success,data){ 
+			'deleteButtonUrl'=>'Yii::app()->controller->createUrl("/notifications/delete",array("id"=>$data->id))',
+			'afterDelete'=>'function(link,success,data){
                 var match = $(link).attr ("href").match (/[0-9]+$/);
-                if (match !== null) x2.notifications.triggerNotifRemoval (match[0]); 
+                if (match !== null) x2.Notifs.triggerNotifRemoval (match[0]);
             }',
 			'deleteConfirmation'=>false,
 			'headerHtmlOptions'=>array('style'=>'width:40px'),
@@ -81,7 +81,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 ?>
 </div>
-<?php 
+<?php
 
 foreach($dataProvider->getData() as $notif) {
 	if(!$notif->viewed) {

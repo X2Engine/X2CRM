@@ -1020,9 +1020,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                     array(
                         'Reflection' => true,
                     ),
-                    'classConflict' =>
-                    array(
-                    ),
                     'extensions' =>
                     array(
                         'pcre' => true,

@@ -78,7 +78,7 @@
         $('#error-report-link').hide();
         $('#loading-text').show();
         $.ajax({
-            url:'<?php echo $this->createUrl('site/sendErrorReport'); ?>',
+            url:'<?php echo $this->createUrl('/site/sendErrorReport'); ?>',
             type:'POST',
             data:{'report':data,'email':email,'bugDescription':bugDescription},
             success:function(){

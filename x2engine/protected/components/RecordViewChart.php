@@ -57,10 +57,7 @@ class RecordViewChart extends X2Widget {
 
 		if ($this->widgetParams['chartType'] === 'actionHistoryChart') {
 			$associationId = $this->model->id;
-			$associationType = strtolower ($this->modelName);//Yii::app()->controller->module->id;
-            //printR ($associationType);
-            /*printR (Yii::app()->controller->module->id);
-            printR ($this->modelName);*/
+			$associationType = strtolower ($this->modelName);
 			$viewParams['associationId'] = $associationId;
 			$viewParams['associationType'] = $associationType;
 			$this->render ('_actionHistoryChart', $viewParams);

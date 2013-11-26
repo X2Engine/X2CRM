@@ -128,10 +128,9 @@ if(!empty($this->model->status)){
     <?php } ?>
 <?php } ?>
                 <div class="next-attachment">
-                <?php //echo CHtml::fileField('upload','',array('onchange'=>'checkName(this, "#submitAttach"); if($("#submitAttach").attr("disabled") != "disabled") {fileUpload(this.form, $(this), "'. Yii::app()->createUrl('site/tmpUpload') .'", "'. Yii::app()->createUrl('site/removeTmpUpload') .'"); }')); ?>
                     <span class="upload-wrapper">
                         <span class="x2-file-wrapper">
-                            <input type="file" class="x2-file-input" name="upload" onChange="checkName(this, '#submitAttach'); if($('#submitAttach').attr('disabled') != 'disabled') {fileUpload(this.form, $(this), '<?php echo Yii::app()->createUrl('site/tmpUpload'); ?>', '<?php echo Yii::app()->createUrl('site/removeTmpUpload'); ?>'); }">
+                            <input type="file" class="x2-file-input" name="upload" onChange="checkName(this, '#submitAttach'); if($('#submitAttach').attr('disabled') != 'disabled') {fileUpload(this.form, $(this), '<?php echo Yii::app()->createUrl('/site/tmpUpload'); ?>', '<?php echo Yii::app()->createUrl('/site/removeTmpUpload'); ?>'); }">
                             <input type="button" class="x2-button" value="Choose File">
 <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/loading.gif', Yii::t('app', 'Loading'), array('id' => 'choose-file-saving-icon', 'style' => 'position: absolute; width: 14px; height: 14px; filter: alpha(opacity=0); -moz-opacity: 0.00; opacity: 0.00;')); ?>
                         </span>

@@ -55,5 +55,5 @@ if(Yii::app()->user->checkAccess('DocsUpdate') && (Yii::app()->user->checkAccess
 echo "<br>\n";
 ?>
 </div>
-<iframe src="<?php echo $this->createUrl('/docs/docs/fullView/'.$model->id); ?>" id="docIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>
+<iframe src="<?php echo $this->createUrl('/docs/docs/fullView',array('id'=>$model->id)); ?>" id="docIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>
 

@@ -79,7 +79,7 @@ if($filter) {
                      CHtml::link(
                          CHtml::encode ($tag['tag']),
                          array(
-                            '/search/search?term=%23'.urlencode (substr($tag['tag'],1))
+                            '/search/search','term'=>'#'.ltrim($tag['tag'],'#')
                          ),
                          array('class'=>'')
                      ).

@@ -52,7 +52,7 @@ $this->actionMenu = $this->formatMenu(array(
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users, 'modelName'=>'services')); ?>
 
 <?php
-$createContactUrl = $this->createUrl('/contacts/create');
+$createContactUrl = $this->createUrl('/contacts/contacts/create');
 $contactTooltip = json_encode(Yii::t('contacts', 'Create a new Contact'));
 
 Yii::app()->clientScript->registerScript('create-model', "

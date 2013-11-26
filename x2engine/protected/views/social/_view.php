@@ -40,7 +40,7 @@
 		<?php
 		$parent=Events::model()->findByPk($data->associationId);
 		if($data->user==Yii::app()->user->getName() || $parent->associationId==Yii::app()->user->getId() || Yii::app()->params->isAdmin)
-			echo CHtml::link('[x]',array('profile/deletePost','id'=>$data->id,'redirect'=>Yii::app()->controller->action->id)); //,array('class'=>'x2-button') ?>
+			echo CHtml::link('[x]',array('/profile/deletePost','id'=>$data->id,'redirect'=>Yii::app()->controller->action->id)); //,array('class'=>'x2-button') ?>
 	</div>
 	<?php echo User::getUserLinks($data->user) ?> <span class="comment-age"><?php echo Formatter::formatFeedTimestamp($data->timestamp); ?></span><br />
 	<?php echo $data->text; ?>

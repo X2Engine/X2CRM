@@ -49,14 +49,17 @@ Parameters:
 $massActionLabels = array (
     'newList' => Yii::t ('app', 'New list from selection'),
     'addToList' => Yii::t ('app', 'Add selected to list'),
+    'removeFromList' => Yii::t ('app', 'Remove selected from list'),
 
 );
 
 AuxLib::registerTranslationsScript ('massActions', array (
     'addedItems' => 'Added items to list',
     'addToList' => 'Add selected to list',
+    'removeFromList' => 'Remove selected from list',
     'newList' => 'Create new list from selected',
     'add' => 'Add to list',
+    'remove' => 'Remove from list',
     'noticeFlashList' => 'Mass action exectuted with',
     'errorFlashList' => 'Mass action exectuted with',
     'noticeItemName' => 'warnings',
@@ -196,31 +199,29 @@ general mass actions styling
     margin: 0 5px 0 0;
     display: inline-block;
 }
-
-
 ");
 
-$gridObj->beforeGridViewUpdateJSString .= "
+$gridObj->addToBeforeAjaxUpdate ("
     
     
     $('.mass-action-dialog').each (function () {
-        x2.DEBUG && console.log ('destroying dialog loop');
+        x2.massActions.DEBUG && console.log ('destroying dialog loop');
         if ($(this).closest ('.ui-dialog').length) {
-            x2.DEBUG && console.log ('destroying dialog');
+            x2.massActions.DEBUG && console.log ('destroying dialog');
             $(this).dialog ('destroy');
         }
     });
 
-    x2.massActions.previouslySelectedRecords = selectedRecords; // save to preserve checks
+    x2.massActions._previouslySelectedRecords = selectedRecords; // save to preserve checks
 
     $('#x2-gridview-updating-anim').show ();
     $('#x2-gridview-mass-action-buttons').find ('.mass-action-button').unbind ('click');
-";
+");
 
-$gridObj->afterGridViewUpdateJSString .= "
+$gridObj->addToAfterAjaxUpdate ("
     gridViewMassActionsMain (); 
     $('#x2-gridview-updating-anim').hide ();
-";
+");
 
 Yii::app()->clientScript->registerScript ('massActionsScript', "
 
@@ -235,8 +236,8 @@ Parameters:
     key - string - the type of flash ('notice' | 'error' | 'success')
     flashes - array of strings - flash messages which will be displayed
 */
-function displayKeyFlashes (key, flashes) {
-    x2.DEBUG && console.log ('displayKeyFlashes');
+x2.massActions._displayKeyFlashes = function (key, flashes) {
+    x2.massActions.DEBUG && console.log ('x2.massActions._displayKeyFlashes');
     var flashNum = flashes.length;
     var hideList = false;
 
@@ -290,7 +291,7 @@ function displayKeyFlashes (key, flashes) {
         style: (hideList ? 'display: none;' : '')
     }));
     for (var i in flashes) {
-        x2.DEBUG && console.log ('displayKeyFlashes: i = ' + i);
+        x2.massActions.DEBUG && console.log ('x2.massActions._displayKeyFlashes: i = ' + i);
         $('#x2-gridview-flashes-' + key + '-list').append ($('<li>', {
             text: flashes[i]
         }));
@@ -298,16 +299,15 @@ function displayKeyFlashes (key, flashes) {
 
     if (key === 'success') { // other types of flash containers have close buttons
         if (x2.massActions.timeout) window.clearTimeout (x2.massActions.timeout);
-        x2.massActions.timeout = 
-            setTimeout (function () { $('#x2-gridview-flash-' + key + '-container').fadeOut (3000); },
-                2000);
+        x2.massActions.timeout = setTimeout (
+            function () { $('#x2-gridview-flash-' + key + '-container').fadeOut (3000); }, 2000);
     }
 }
 
 /*
 Append flash section container div to parent element
 */
-function appendFlashSectionContainer (key, parent) {
+x2.massActions._appendFlashSectionContainer = function (key, parent) {
     $(parent).append (
         $('<div>', {
             id: 'x2-gridview-flash-' + key + '-container',
@@ -332,14 +332,14 @@ function appendFlashSectionContainer (key, parent) {
             $('#x2-gridview-flash-' + key + '-container').fadeOut ();
         });
     }
-}
+};
 
 /*
 Build the flash container, fill it with given flashes
 */
-function displayFlashes (flashes) {
-    x2.DEBUG && console.log ('displayFlashes: flashes = ');
-    x2.DEBUG && console.log (flashes);
+x2.massActions._displayFlashes = function (flashes) {
+    x2.massActions.DEBUG && console.log ('x2.massActions._displayFlashes: flashes = ');
+    x2.massActions.DEBUG && console.log (flashes);
     if (!flashes['success'] && !flashes['notice'] && !flashes['error']) return;
 
     // remove previous flashes container
@@ -356,19 +356,21 @@ function displayFlashes (flashes) {
     
     // fill container with flashes
     if (flashes['success'] && flashes['success'].length > 0) {
-        appendFlashSectionContainer ('success', $('#x2-gridview-flashes-container'));
+        x2.massActions._appendFlashSectionContainer (
+            'success', $('#x2-gridview-flashes-container'));
         var successFlashes = flashes['success'];
-        displayKeyFlashes ('success', successFlashes);
+        x2.massActions._displayKeyFlashes ('success', successFlashes);
     }
     if (flashes['notice'] && flashes['notice'].length > 0) {
-        appendFlashSectionContainer ('notice', $('#x2-gridview-flashes-container'));
+        x2.massActions._appendFlashSectionContainer (
+            'notice', $('#x2-gridview-flashes-container'));
         var noticeFlashes = flashes['notice'];
-        displayKeyFlashes ('notice', noticeFlashes);
+        x2.massActions._displayKeyFlashes ('notice', noticeFlashes);
     }
     if (flashes['error'] && flashes['error'].length > 0) {
-        appendFlashSectionContainer ('error', $('#x2-gridview-flashes-container'));
+        x2.massActions._appendFlashSectionContainer ('error', $('#x2-gridview-flashes-container'));
         var errorFlashes = flashes['error'];
-        displayKeyFlashes ('error', errorFlashes);
+        x2.massActions._displayKeyFlashes ('error', errorFlashes);
     }
 
     var flashesContainer = $('#x2-gridview-flashes-container');
@@ -379,61 +381,91 @@ function displayFlashes (flashes) {
         $(flashesContainer).width ($('#content-container').width () - 5);
     });
 
-    x2.DEBUG && console.log ('$(flashesContainer).positoin ().top = ');
-    x2.DEBUG && console.log ($(flashesContainer).position ().top);
+    x2.massActions.DEBUG && console.log ('$(flashesContainer).positoin ().top = ');
+    x2.massActions.DEBUG && console.log ($(flashesContainer).position ().top);
 
-    if (!checkFlashesUnsticky ()) {
-        $(window).unbind ('scroll', checkFlashesUnsticky).bind ('scroll', checkFlashesUnsticky);
+    if (!x2.massActions._checkFlashesUnsticky ()) {
+        $(window).unbind ('scroll', x2.massActions._checkFlashesUnsticky).
+            bind ('scroll', x2.massActions._checkFlashesUnsticky);
     }
-}
+};
 
-function checkFlashesSticky () {
+x2.massActions._checkFlashesSticky = function () {
     var flashesContainer = $('#x2-gridview-flashes-container');
 
     if ($(flashesContainer).position ().top > 
         $('#content-container').position ().top + $('#content-container').height ()) {
          $(flashesContainer).removeClass ('fixed-flashes-container');
-        $(window).unbind ('scroll', checkFlashesUnsticky).bind ('scroll', checkFlashesUnsticky);
+        $(window).unbind ('scroll', x2.massActions._checkFlashesUnsticky).
+            bind ('scroll', x2.massActions._checkFlashesUnsticky);
     }
-}
+};
 
-function checkFlashesUnsticky () {
+x2.massActions._checkFlashesUnsticky = function () {
     var flashesContainer = $('#x2-gridview-flashes-container');
 
     if ($(flashesContainer).offset ().top - $(window).scrollTop () >
         ($(window).height () - 5) - $(flashesContainer).height ()) {
 
         $(flashesContainer).addClass ('fixed-flashes-container');
-        $(window).unbind ('scroll', checkFlashesSticky).bind ('scroll', checkFlashesSticky);
+        $(window).unbind ('scroll', x2.massActions._checkFlashesSticky).
+            bind ('scroll', x2.massActions._checkFlashesSticky);
     } else {
         return false;
     }
-}
+};
 
 
 /*
 Removes objects which will get reconstructed after the grid updates and then updates the grid
 */
-function updateGrid (selectedRecords) {
-    ".$gridObj->beforeGridViewUpdateJSString."
+x2.massActions._updateGrid = function (selectedRecords) {
+    ".$gridObj->getBeforeAjaxUpdateStr ()."
     $('#".$gridId."').yiiGridView ('update', {
         complete: function () {
-            x2.DEBUG && console.log ('updateGrid complete');
-            ".$gridObj->afterGridViewUpdateJSString."
+            x2.massActions.DEBUG && console.log ('x2.massActions._updateGrid complete');
+            ".$gridObj->getAfterAjaxUpdateStr ()."
             /*gridViewMassActionsMain (); 
-            $('#mass-action-grid-updating-anim').hide ();*/
+            $('#x2-gridview-updating-anim').hide ();*/
         }
     });
-}
+};
 
 /***********************************************************************
 * Execute mass actions functions 
 ***********************************************************************/
 
+
+
 /*
 Execute add to list mass action
 */
-function executeAddToList (selectedRecords, dialog) {
+x2.massActions._executeRemoveFromList = function (selectedRecords, dialog) {
+    var listId = window.location.search.replace (/(?:^[?]id=([^&]+))/, '$1');
+    $.ajax({
+        url:'".$this->createUrl ('x2GridViewMassAction')."',
+        type:'post',
+        data:{
+            massAction: 'removeFromList',
+            listId: listId,
+            gvSelection: selectedRecords
+        },
+        success: function (data) { 
+            x2.massActions.DEBUG && console.log ('_executeRemoveFromList: ajax ret: ' + data);
+            var response = JSON.parse (data);
+            $(dialog).dialog ('close');
+            x2.massActions._displayFlashes (response);
+            if (response['success']) {
+                x2.massActions._updateGrid (selectedRecords);
+            }
+        }
+    });
+};
+
+/*
+Execute add to list mass action
+*/
+x2.massActions._executeAddToList = function (selectedRecords, dialog) {
 	var targetList = $('#addToListTarget').val();
     $.ajax({
         url:'".$this->createUrl ('x2GridViewMassAction')."',
@@ -444,18 +476,18 @@ function executeAddToList (selectedRecords, dialog) {
             gvSelection: selectedRecords
         },
         success: function (data) { 
-            x2.DEBUG && console.log ('executeDeleteSelected: ajax ret: ' + data);
+            x2.massActions.DEBUG && console.log ('executeDeleteSelected: ajax ret: ' + data);
             var response = JSON.parse (data);
             $(dialog).dialog ('close');
-            displayFlashes (response);
+            x2.massActions._displayFlashes (response);
         }
     });
-}
+};
 
 /*
 Execute create new list mass action
 */
-function executeCreateNewList (selectedRecords, dialog) {
+x2.massActions._executeCreateNewList = function (selectedRecords, dialog) {
     auxlib.destroyErrorFeedbackBox ($('#x2-gridview-mass-action-list-name'));
     var listName = $('#x2-gridview-mass-action-list-name').val ();
     if(listName !== '' && listName !== null) {
@@ -468,10 +500,10 @@ function executeCreateNewList (selectedRecords, dialog) {
                 gvSelection: selectedRecords
             },
             success: function (data) { 
-                x2.DEBUG && console.log ('executeDeleteSelected: ajax ret: ' + data);
+                x2.massActions.DEBUG && console.log ('executeDeleteSelected: ajax ret: ' + data);
                 var response = JSON.parse (data);
                 $(dialog).dialog ('close');
-                displayFlashes (response);
+                x2.massActions._displayFlashes (response);
             }
         });
     } else {
@@ -482,7 +514,7 @@ function executeCreateNewList (selectedRecords, dialog) {
         $('#mass-action-dialog-loading-anim').remove ();
         $(dialog).dialog ('widget').find ('.x2-dialog-go-button').show ();
     }
-}
+};
 
 
 
@@ -490,7 +522,7 @@ function executeCreateNewList (selectedRecords, dialog) {
 /*
 Open dialog for mass action form
 */
-function massActionDialog (argsList) {
+x2.massActions._massActionDialog = function (argsList) {
     var dialog = argsList['dialogElem'];
     $('#x2-gridview-mass-action-buttons .mass-action-button').attr ('disabled', 'disabled');
 
@@ -536,13 +568,13 @@ function massActionDialog (argsList) {
         }
     });
 
-}
+};
 
 /*
 Call function which opens dialog for specified mass action
 */
-function executeMassAction (massAction) {
-    x2.DEBUG && console.log ('executeMassAction: massAction = ' + massAction);
+x2.massActions._executeMassAction = function (massAction) {
+    x2.massActions.DEBUG && console.log ('executeMassAction: massAction = ' + massAction);
     var selectedRecords = $.fn.yiiGridView.getChecked('".$gridId."', 'C_gvCheckbox');
     if(selectedRecords.length === 0) {
         return;
@@ -550,20 +582,29 @@ function executeMassAction (massAction) {
 
     switch (massAction) {
         case 'newList':
-            massActionDialog ({
+            x2.massActions._massActionDialog ({
                 dialogElem: $('#x2-gridview-new-list-dialog'),
                 title: x2.massActions.translations['newList'],
                 goButtonLabel: x2.massActions.translations['create'],
-                goFunction: executeCreateNewList,
+                goFunction: x2.massActions._executeCreateNewList,
                 selectedRecords: selectedRecords,
             });
             break;
         case 'addToList':
-            massActionDialog ({
+            x2.massActions._massActionDialog ({
                 dialogElem: $('#x2-gridview-add-to-list-dialog'),
                 title: x2.massActions.translations['addToList'],
                 goButtonLabel: x2.massActions.translations['add'],
-                goFunction: executeAddToList,
+                goFunction: x2.massActions._executeAddToList,
+                selectedRecords: selectedRecords,
+            });
+            break;
+        case 'removeFromList':
+            x2.massActions._massActionDialog ({
+                dialogElem: $('#x2-gridview-remove-from-list-dialog'),
+                title: x2.massActions.translations['removeFromList'],
+                goButtonLabel: x2.massActions.translations['remove'],
+                goFunction: x2.massActions._executeRemoveFromList,
                 selectedRecords: selectedRecords,
             });
             break;
@@ -572,21 +613,21 @@ function executeMassAction (massAction) {
             auxlib.error ('executeMassAction: default on switch');
             break;
     }
-}
+};
 
 
 
 /*
 Recheck records whose checkboxes were cleared by ajax update
 */
-function checkX2GridViewRows () {
-    var idsOfchecked = x2.massActions.previouslySelectedRecords;
+x2.massActions._checkX2GridViewRows = function () {
+    var idsOfchecked = x2.massActions._previouslySelectedRecords;
 
     // create a dictionary for O(1) access
     var dictOfIdsOfChecked = {};
     for (var i in idsOfchecked) dictOfIdsOfChecked[idsOfchecked[i]] = true;
-    x2.DEBUG && console.log ('checkX2GridViewRows:  dictOfIdsOfChecked = ');
-    x2.DEBUG && console.log (dictOfIdsOfChecked);
+    x2.massActions.DEBUG && console.log ('checkX2GridViewRows:  dictOfIdsOfChecked = ');
+    x2.massActions.DEBUG && console.log (dictOfIdsOfChecked);
 
     $('#".$gridId."').find ('[type=\"checkbox\"]').each (function () {
         if (dictOfIdsOfChecked[$(this).val ().toString ()]) {
@@ -594,13 +635,13 @@ function checkX2GridViewRows () {
         }
     });
 
-    x2.massActions.previouslySelectedRecords = undefined;
-}
+    x2.massActions._previouslySelectedRecords = undefined;
+};
 
 /*
 Sets up open/close behavior of more actions list
 */
-function setUpMoreButtonBehavior () {
+x2.massActions._setUpMoreButtonBehavior = function () {
 
     // action more button behavior
     function massActionMoreButtonBehavior () {
@@ -613,7 +654,7 @@ function setUpMoreButtonBehavior () {
             !$(x2.gridviewStickyHeader.titleContainer).is (':visible')) return false;
 
         $('#more-drop-down-list').show ();
-        x2.DEBUG && console.log ('massActionMoreButtonBehavior');
+        x2.massActions.DEBUG && console.log ('massActionMoreButtonBehavior');
         $('#more-drop-down-list').attr ('style', 'left: ' + $(this).position ().left + 'px;');
             /*my: 'left',
             at: 'left',
@@ -625,13 +666,13 @@ function setUpMoreButtonBehavior () {
     $(document).on ('click.moreDropDownList', function () { $('#more-drop-down-list').hide (); });
 
     $('#mass-action-more-button').unbind ('click').click (massActionMoreButtonBehavior);
-}
+};
 
 
 /*
 Set up mass action button behavior and initialize content within dialogs
 */
-function setUpMassActions () {
+x2.massActions._setUpMassActions = function () {
 
 
 
@@ -639,14 +680,14 @@ function setUpMassActions () {
         $('#more-drop-down-list').find ('li').on ('click', function () {
             $('#more-drop-down-list').hide ();
             var massAction = $(this).attr ('id').match (/[^-]+$/)[0];
-            executeMassAction (massAction);
+            x2.massActions._executeMassAction (massAction);
             return false;
         });
     }
-}
+};
 
 
-function checkUIShow (justChanged) {
+x2.massActions._checkUIShow = function (justChanged) {
     x2.DEBUG && console.log ('checkUIShow');
     justChanged = typeof justChanged === 'undefined' ? true : justChanged;
     if (justChanged) { 
@@ -670,39 +711,109 @@ function checkUIShow (justChanged) {
     var foundChecked = false; 
     $('#".$gridId."').find ('[type=\"checkbox\"]').each (function () {
         if ($(this).is (':checked')) {
-            x2.DEBUG && console.log ('found checked');
+            x2.massActions.DEBUG && console.log ('found checked');
             foundChecked = true;
             return;
         }
     });
     if (foundChecked) {
         $('#x2-gridview-mass-action-buttons').show ();
+        if (x2.topPager && x2.topPager.condenseExpandTitleBar) {
+            x2.topPager.condenseExpandTitleBar ($('#x2-gridview-top-pager').position ().top);
+        }
     } else  {
         $('#x2-gridview-mass-action-buttons').hide ();
     }
-}
+};
 
-function setUpUIHideShowBehavior () {
-    x2.DEBUG && console.log ('setUpUIHideShowBehavior');
-    $('#".$gridId."').on ('change', '[type=\"checkbox\"]', checkUIShow);
-}
+x2.massActions._setUpUIHideShowBehavior = function () {
+    x2.massActions.DEBUG && console.log ('setUpUIHideShowBehavior');
+    $('#".$gridId."').on ('change', '[type=\"checkbox\"]', x2.massActions._checkUIShow);
+};
 
+/*
+Public function for condensing interface
+*/
+x2.massActions.moveButtonIntoMoreMenu = function () {
+    var moreButton = $('#mass-action-more-button');
+    var buttons = $('#mass-action-button-set').children ();
+    var visibleCount = 0;
+
+    // get last visible button
+    $(buttons).each (function () {
+        x2.massActions.DEBUG && console.log ($(this));
+        if ($(this).attr ('style') !== 'display: none;') {
+            lastButton = $(this); 
+            visibleCount++;
+        }
+    });
+    if (typeof lastButton === 'undefined') return false;
+
+    $(lastButton).hide (); // hide button in button group
+
+    // give a solitary button proper styling
+    if (visibleCount === 2) $(buttons).first ().addClass ('pseudo-only-child');
+
+    // show button in list
+    var lastButtonAction = $(lastButton).attr ('id').match (/[^-]+$/)[0];
+    $('#mass-action-' + lastButtonAction).show ();
+
+    return true;
+};
+
+/*
+Public function for expanding interface
+*/
+x2.massActions.moveMoreButtonMenuItemIntoButtons = function () {
+    var buttons = $('#mass-action-button-set').children ();
+    var moreButton = $('#mass-action-more-button');
+    var listItems = $('#more-drop-down-list').children ();
+    var firstItem;
+
+    // get first non hidden element in button list 
+    $(listItems).each (function () {
+        x2.massActions.DEBUG && console.log ($(this));
+        if ($(this).attr ('style') !== 'display: none;') {
+            firstItem = $(this); 
+            return false;
+        }
+    });
+    if (typeof firstItem === 'undefined') return false;
+
+    // hiden button list item and show button set button
+    $(firstItem).hide ();
+    var lastButtonAction = $(firstItem).attr ('id').match (/[^-]+$/)[0];
+    $('#mass-action-button-' + lastButtonAction).show ();
+
+    if ($(buttons).length - 
+        $('#mass-action-button-set').children ('[style=\"display: none;\"]').length !== 1) {
+
+        $(buttons).first ('.pseudo-only-child').removeClass ('pseudo-only-child');
+    } else {
+        $('#mass-action-button-' + lastButtonAction).addClass ('pseudo-only-child');
+    }
+
+    return true;
+};
 
 /*
 set up mass action ui behavior, this gets run on every grid update
 */
 function gridViewMassActionsMain () {
-    x2.DEBUG && console.log ('main');
+    if (!x2.massActions) {
+        x2.massActions = {};
+    }
+    x2.massActions.DEBUG = false;
+    x2.massActions.DEBUG && console.log ('main');
 
-    if (x2.massActions.previouslySelectedRecords) checkX2GridViewRows ();
+    if (x2.massActions._previouslySelectedRecords) x2.massActions._checkX2GridViewRows ();
 
-    if (!x2.massActions) x2.massActions = {};
-    x2.massActions.massActions = ".CJSON::encode ($massActions).";
+    x2.massActions._massActions = ".CJSON::encode ($massActions).";
     
-    checkUIShow (false);
-    setUpMoreButtonBehavior ();
-    setUpMassActions ();
-    setUpUIHideShowBehavior ();
+    x2.massActions._checkUIShow (false);
+    x2.massActions._setUpMoreButtonBehavior ();
+    x2.massActions._setUpMassActions ();
+    x2.massActions._setUpUIHideShowBehavior ();
 }
 
 ", CClientScript::POS_HEAD);
@@ -732,9 +843,12 @@ function gridViewMassActionsMain () {
         </div>
         <ul id='more-drop-down-list' style='display: none;'> 
         <?php
-        foreach ($moreActions as $action) {
+        foreach ($massActions as $action) {
         ?>
-            <li class='mass-action-button' id='mass-action-<?php echo $action; ?>'>
+            <li class='mass-action-button' 
+             <?php echo ($action === 'tag' || $action === 'delete' ? 
+              'style="display: none;"' : ''); ?> 
+             id='mass-action-<?php echo $action; ?>'>
               <?php echo $massActionLabels[$action]; ?>
             </li>
         <?php
@@ -770,6 +884,16 @@ function gridViewMassActionsMain () {
         </span>
         <?php echo CHtml::dropDownList (
             'addToListTarget', null, X2List::getAllStaticListNames ($this)); ?>
+    </div>
+    <?php
+    }
+    if (in_array ('removeFromList', $massActions)) {
+    ?>
+    <div class='mass-action-dialog' id="x2-gridview-remove-from-list-dialog" 
+     style="display: none;">
+        <span>
+            <?php echo Yii::t('app', 'Remove all selected records from this list?'); ?> 
+        </span>
     </div>
     <?php
     }

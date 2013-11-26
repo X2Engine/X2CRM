@@ -54,7 +54,7 @@ $this->pageTitle = Yii::app()->name . ' - Profile';
 
     <?php
     $menuItems = array();
-    $menuItems[] = array('label' => Yii::t('mobile', 'Back'), 'url' => array('site/people/'), 'left'=>true);
+    $menuItems[] = array('label' => Yii::t('mobile', 'Back'), 'url' => array('/mobile/site/people'), 'left'=>true);
 
     //render main menu items
     $this->widget('MenuList', array(

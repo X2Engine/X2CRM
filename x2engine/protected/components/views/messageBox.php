@@ -36,7 +36,7 @@
 ?>
 <div id="motd-box"><?php echo Yii::t('app',$content);?></div>
 <?php
-if(Yii::app()->user->getName()=='admin')
+if(Yii::app()->params->isAdmin)
 	echo CHtml::link(Yii::t('app','Edit Message'),'#',array('onclick'=>"$('#motd-form').show(); $('#motd-link').hide(); return false;",'id'=>'motdLink'));
 ?>
 <div id="motd-form" style="display:none;">

@@ -47,9 +47,9 @@ echo '<div class="form">';
 
 $action = null;
 if($model->isNewRecord)
-	$action = array('profile/createUpdateCredentials','class'=>$model->modelClass);
+	$action = array('/profile/createUpdateCredentials','class'=>$model->modelClass);
 else
-	$action = array('profile/createUpdateCredentials','id'=>$model->id);
+	$action = array('/profile/createUpdateCredentials','id'=>$model->id);
 
 echo CHtml::beginForm($action);
 ?>
@@ -93,7 +93,7 @@ $this->widget('EmbeddedModelForm', array(
 <div class="credentials-buttons">
 <?php
 echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button credentials-save','style'=>'display:inline-block;margin-top:0;'));
-echo CHtml::link(Yii::t('app','Cancel'),array('profile/manageCredentials'),array('class'=>'x2-button credentials-cancel'));
+echo CHtml::link(Yii::t('app','Cancel'),array('/profile/manageCredentials'),array('class'=>'x2-button credentials-cancel'));
 ?></div><?php
 echo CHtml::endForm();
 ?>

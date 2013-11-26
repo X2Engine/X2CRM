@@ -58,7 +58,7 @@ class X2WebUser extends CWebUser {
 		}
 		// $GLOBALS['access'][] = $operation;
 
-		$result = Yii::app()->getAuthManager()->checkAccess($operation,$this->getId(),$params);
+		$result = Yii::app()->getAuthManager()->checkAccess($operation,$this->getName(),$params);
 		foreach(Yii::app()->params['roles'] as $roleId) {
 			if($result = ($result || Yii::app()->getAuthManager()->checkAccess($operation,$roleId,$params)))
 				break;

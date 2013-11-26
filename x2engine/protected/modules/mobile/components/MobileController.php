@@ -65,7 +65,7 @@ class MobileController extends Controller {
     public function filterAccessControl($filterChain){
         $user = Yii::app()->getUser();
         if ($user != null)
-            $user->loginUrl=$this->createUrl('site/login/');
+            $user->loginUrl=$this->createUrl('/site/login');
         parent::filterAccessControl($filterChain);
     }
     /**

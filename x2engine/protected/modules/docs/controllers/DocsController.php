@@ -108,7 +108,7 @@ class DocsController extends x2base {
 			   !(($model->visibility==1 ||
 				($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) ||
 				Yii::app()->params->isAdmin|| $editFlag))
-			$this->redirect(array('docs/index'));
+			$this->redirect(array('/docs/docs/index'));
 
         // add doc to user's recent item list
         User::addRecentItem('d', $id, Yii::app()->user->getId());

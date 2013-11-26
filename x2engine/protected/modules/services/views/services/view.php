@@ -79,7 +79,18 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	<h2><?php echo Yii::t('services','Case {n}',array('{n}'=>$model->id)); ?></h2>
 	<?php //if(Yii::app()->user->checkAccess('ServicesUpdate',$authParams)){ ?>
 	<a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><span></span></a>
-	<a class="x2-button icon email right" href="#" onclick="toggleEmailForm(); return false;" <?php if(empty($model->contactId)){echo ' style="display:none"';}?>><span></span></a>
+    <?php
+    echo CHtml::link(
+        '<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/icons/email_button.png'.
+            '"></img>', '#',
+        array(
+            'class' => 'x2-button icon right email',
+            'title' => Yii::t('app', 'Open email form'),
+            'onclick' => 'toggleEmailForm(); return false;',
+            'style' => (empty($model->contactId) ? "display:none" : '')
+        )
+    );
+    ?>
 	<?php //} ?>
 </div>
 <div id="main-column" class="half-width">

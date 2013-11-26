@@ -41,12 +41,10 @@ $this->pageTitle = Yii::app()->name . ' - People';
     
     $menuItems = array();
     foreach($users as $user) {
-    	if($user->username != 'admin' && $user->username != 'api') {
-    		$menuItems[] = array('label' => $user->firstName .' '. $user->lastName, 'url' => array("site/profile/{$user->id}"));
-    	}
+        $menuItems[] = array('label' => $user->firstName .' '. $user->lastName, 'url' => array("/mobile/site/profile",'id'=>$user->id));
     }
     
-    $menuItems[] = array('label' => Yii::t('mobile', 'Back'), 'url' => array('site/home/'), 'left'=>true);
+    $menuItems[] = array('label' => Yii::t('mobile', 'Back'), 'url' => array('/mobile/site/home'), 'left'=>true);
 
     //render main menu items
     $this->widget('MenuList', array(

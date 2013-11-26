@@ -115,7 +115,7 @@ class X2CRMUpdateAction extends WebUpdaterAction {
                 // $redirect=1, the user is using the download link.
                 if($redirect){
                     // Redirect to the download link
-                    $this->controller->redirect($this->updateServer.'/'.$this->getUpdateDataRoute($scenario, $version, $unique_id, $edition));
+                    $this->controller->redirect($this->updateServer.'/'.$this->getUpdateDataRoute($version, $unique_id, $edition));
                 } else
                     $this->controller->render('updater',$viewParams);
             }else{ 
@@ -129,7 +129,7 @@ class X2CRMUpdateAction extends WebUpdaterAction {
                 $this->controller->render('updater', array(
                     'scenario' => 'error',
                     'message' => 'Update required',
-                    'longMessage' => Yii::t('admin',"Before upgrading, you must update to the latest version ({latestver}).",array('{latestVer}'=>$latestVersion)).' '.CHtml::link(Yii::t('app', 'Update'), array('admin/updater','scenario'=>'update'), array('class' => 'x2-button'))
+                    'longMessage' => Yii::t('admin',"Before upgrading, you must update to the latest version ({latestver}).",array('{latestVer}'=>$latestVersion)).' '.CHtml::link(Yii::t('app', 'Update'), array('/admin/updater','scenario'=>'update'), array('class' => 'x2-button'))
                 ));
             }
         }else{ // If at latest version already.

@@ -32,6 +32,10 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+if(typeof x2 == 'undefined')
+    x2 = {};
+if (typeof x2.actionFrames == 'undefined')
+    x2.actionFrames = {};
 
 function createControls(id, publisher){
     if(!publisher){
@@ -86,7 +90,7 @@ function createControls(id, publisher){
                             $('#'+lastClass).remove();
                         }else if(typeof $.fn.yiiListView.settings['history']!='undefined'){
                             $.fn.yiiListView.update('history');
-                            $(x2ViewEmailDialog).remove();
+                            $(x2.actionFrames.viewEmailDialog).remove();
                         }
                     }
                 }
@@ -112,20 +116,20 @@ function createControls(id, publisher){
 function loadActionFrame(id){
     var publisher=($('#publisher-form').html()!=null);
     var frame='<iframe id="action-frame" style="width:99%;height:99%" src="'+yii.baseUrl+'/index.php/actions/viewAction?id='+id+'&publisher='+publisher+'" onload="createControls('+id+', true);"></iframe>';
-    if(typeof x2ViewEmailDialog != 'undefined') {
-        if($(x2ViewEmailDialog).is(':hidden')){
-            $(x2ViewEmailDialog).remove();
+    if(typeof x2.actionFrames.viewEmailDialog != 'undefined') {
+        if($(x2.actionFrames.viewEmailDialog).is(':hidden')){
+            $(x2.actionFrames.viewEmailDialog).remove();
 
         }else{
             return;
         }
     }
 
-    x2ViewEmailDialog = $('<div></div>', {
+    x2.actionFrames.viewEmailDialog = $('<div></div>', {
         id: 'x2-view-email-dialog'
     });
 
-    x2ViewEmailDialog.dialog({
+    x2.actionFrames.viewEmailDialog.dialog({
         title: 'View Action',
         autoOpen: false,
         resizable: true,
@@ -142,13 +146,13 @@ function loadActionFrame(id){
         }
     });
 
-    x2ViewEmailDialog.data('inactive', true);
-    if(x2ViewEmailDialog.data('inactive')) {
-        x2ViewEmailDialog.append(frame);
-        x2ViewEmailDialog.dialog('open').height('400px');
-        x2ViewEmailDialog.data('inactive', false);
+    x2.actionFrames.viewEmailDialog.data('inactive', true);
+    if(x2.actionFrames.viewEmailDialog.data('inactive')) {
+        x2.actionFrames.viewEmailDialog.append(frame);
+        x2.actionFrames.viewEmailDialog.dialog('open').height('400px');
+        x2.actionFrames.viewEmailDialog.data('inactive', false);
     } else {
-        x2ViewEmailDialog.dialog('open');
+        x2.actionFrames.viewEmailDialog.dialog('open');
     }
 }
 function uncompleteAction(id, publisher){

@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 $menuItems = array(
-            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('site/home/')),
+            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('/mobile/site/home')),
         );
 
 $this->widget('MenuList', array(
@@ -70,7 +70,7 @@ $model->lastName = $attributeLabels['lastName'];
 <?php
 echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Search'),
-	array('/contacts/viewAll'),
+	array('/mobile/contacts/viewAll'),
 	array('success'=>"function(response) {
 			if(response!='') {
 				alert('".Yii::t('app','Contact Saved')."');

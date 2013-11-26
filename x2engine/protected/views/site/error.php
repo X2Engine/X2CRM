@@ -83,7 +83,7 @@ $this->pageTitle=Yii::app()->name . ' - ' . $errorTitle;
         $('#loading-text').show();
         var email=$('#email').val();
         $.ajax({
-            url:'<?php echo $this->createUrl('site/sendErrorReport'); ?>',
+            url:'<?php echo $this->createUrl('/site/sendErrorReport'); ?>',
             type:'POST',
             data:{'report':data,'email':email},
             success:function(){

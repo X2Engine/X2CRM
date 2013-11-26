@@ -35,11 +35,12 @@
  *****************************************************************************************/
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/profile')),
+	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/site/whatsNew')),
 	array('label'=>Yii::t('users','Manage Users'), 'url'=>array('admin')),
 	array('label'=>Yii::t('users','Create User'), 'url'=>array('create')),
 	array('label'=>Yii::t('users','Invite Users'), 'url'=>array('inviteUsers')),
 	array('label'=>Yii::t('users','View User'), 'url'=>array('view', 'id'=>$model->id)),
+  	array('label'=>Yii::t('profile','View Profile'),'url'=>array('/profile/view','id'=>$model->id)),
 	array('label'=>Yii::t('users','Update User')),
 	array('label'=>Yii::t('users','Delete User'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 

@@ -47,7 +47,7 @@ if(isset($_SESSION['access_token'])){
         var id=$(this).attr('data-id');
         if($('#'+id).is(':hidden')){
             $.ajax({
-                'url':'<?php echo Yii::app()->controller->createUrl('/media/recursiveDriveFiles') ?>',
+                'url':'<?php echo Yii::app()->controller->createUrl('/media/media/recursiveDriveFiles') ?>',
                 'data':{'folderId':id},
                 'success':function(data){
                     $('#'+id).html(data);

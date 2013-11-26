@@ -39,7 +39,7 @@
 	<?php $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'feed-form',
 	'enableAjaxValidation'=>false,
-	'action'=>array('profile/addPost','id'=>Yii::app()->user->getId()),
+	'action'=>array('/profile/addPost','id'=>Yii::app()->user->getId()),
 	
 	)); ?>	
 	<div class="float-row">

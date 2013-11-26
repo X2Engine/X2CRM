@@ -44,6 +44,7 @@
 .quote-table input {
     overflow: hidden;
     text-overflow: ellipsis;
+    vertical-align:middle;
     margin: 0 0 0 0;
 }
 
@@ -137,9 +138,7 @@
 	border-radius: 3px;
 }
 
-.quote-table > tbody#line-items > tr > td:nth-child(7) input,
 .quote-table > tbody#line-items > tr > td.x2-7th-child input,
-.quote-table > tbody#adjustments > tr > td:nth-child(7) input, 
 .quote-table > tbody#adjustments > tr > td.x2-7th-child input, 
 .quote-table input#total,
 .quote-table input#subtotal {
@@ -161,7 +160,6 @@ set width of input fields in the quotes table
 }
 
 /* line item name cell */
-.quote-table > tbody#line-items > tr > td:nth-child(2),
 .quote-table > tbody#line-items > tr > td.x2-2nd-child {
 	text-align: left;
     width: 22%;
@@ -171,7 +169,6 @@ set width of input fields in the quotes table
 
 /* line item name */
 .quote-table > thead > tr > th.line-item-name, 
-.quote-table > tbody#line-items > tr > td:nth-child(2) input,
 .quote-table > tbody#line-items > tr > td.x2-2nd-child input {
     margin: 0 0 0 0;
     width: 85%;
@@ -196,14 +193,12 @@ set width of input fields in the quotes table
 }
 
 /* unit price cell */
-.quote-table > tbody#line-items > tr > td:nth-child(3),
 .quote-table > tbody#line-items > tr > td.x2-3rd-child {
 	text-align: left;
     width: 16%;
 }
 
 /* unit price */
-.quote-table > tbody#line-items > tr > td:nth-child(3) input,
 .quote-table > tbody#line-items > tr > td.x2-3rd-child input {
     width: 100%;
 	text-align: right;
@@ -211,16 +206,13 @@ set width of input fields in the quotes table
 }
 
 /* quantity cell */
-.quote-table > tbody#line-items > tr > td:nth-child(4),
 .quote-table > tbody#line-items > tr > td.x2-4th-child,
-.quote-table > tbody#adjustments> tr > td:nth-child(4),
 .quote-table > tbody#adjustments> tr > td.x2-4th-child {
 	text-align: left;
     width: 12%;
 }
 
 /* quantity */
-.quote-table > tbody#line-items > tr > td:nth-child(4) input,
 .quote-table > tbody#line-items > tr > td.x2-4th-child input {
     width: 100%;
 	text-align: right;
@@ -228,7 +220,6 @@ set width of input fields in the quotes table
 }
 
 /* adjustment name */
-.quote-table > tbody#adjustments> tr > td:nth-child(4) input,
 .quote-table > tbody#adjustments> tr > td.x2-4th-child input {
     width: 100%;
 	text-align: left;
@@ -236,18 +227,14 @@ set width of input fields in the quotes table
 }
 
 /* adjustments cell */
-.quote-table > tbody#line-items > tr > td:nth-child(5),
 .quote-table > tbody#line-items > tr > td.x2-5th-child,
-.quote-table > tbody#adjustments > tr > td:nth-child(5),
 .quote-table > tbody#adjustments > tr > td.x2-5th-child {
 	text-align: left;
     width: 12%;
 }
 
 /* adjustments */
-.quote-table > tbody#line-items > tr > td:nth-child(5) input,
 .quote-table > tbody#line-items > tr > td.x2-5th-child input,
-.quote-table > tbody#adjustments > tr > td:nth-child(5) input,
 .quote-table > tbody#adjustments > tr > td.x2-5th-child input {
     width: 100%;
 	font-size: 12px;
@@ -255,36 +242,28 @@ set width of input fields in the quotes table
 }
 
 /* description cell */
-.quote-table > tbody#line-items > tr > td:nth-child(6),
 .quote-table > tbody#line-items > tr > td.x2-6th-child,
-.quote-table > tbody#adjustments > tr > td:nth-child(6),
 .quote-table > tbody#adjustments > tr > td.x2-6th-child {
 	text-align: left;
     width: 12%;
 }
 
 /* description */
-.quote-table > tbody#line-items > tr > td:nth-child(6) input,
 .quote-table > tbody#line-items > tr > td.x2-6th-child input,
-.quote-table > tbody#adjustments > tr > td:nth-child(6) input,
 .quote-table > tbody#adjustments > tr > td.x2-6th-child input {
     width: 100%;
 	font-size: 12px;
 }
 
 /* line total cell */
-.quote-table > tbody#line-items > tr > td:nth-child(7),
 .quote-table > tbody#line-items > tr > td.x2-7th-child,
-.quote-table > tbody#adjustments > tr > td:nth-child(7),
 .quote-table > tbody#adjustments > tr > td.x2-7th-child {
 	text-align: left;
     width: 24%;
 }
 
 /* line total */
-.quote-table > tbody#line-items > tr > td:nth-child(7) input,
 .quote-table > tbody#line-items > tr > td.x2-7th-child input,
-.quote-table > tbody#adjustments > tr > td:nth-child(7) input,
 .quote-table > tbody#adjustments > tr > td.x2-7th-child input {
     width: 100%;
 	font-size: 12px;

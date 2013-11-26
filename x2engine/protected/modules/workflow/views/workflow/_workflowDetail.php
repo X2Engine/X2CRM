@@ -34,14 +34,14 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
- 
+
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 
 $users = User::getNames();
 if($editable) {
 	$form = $this->beginWidget('CActiveForm', array(
 		'id'=>'workflowDetailsForm',
-		'action'=>array('/workflow/updateStageDetails/'.$model->id),
+		'action'=>array('/workflow/workflow/updateStageDetails','id'=>$model->id),
 	));
 }
 ?>

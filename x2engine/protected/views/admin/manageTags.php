@@ -54,7 +54,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'header' => Yii::t('admin','Tag'),
             'name' => 'tag',
             'type' => 'raw',
-            'value' => "CHtml::link(\$data->tag,array('/search/search?term=%23'.substr(\$data->tag,1)), array('class'=>'x2-link x2-tag'))"
+            'value' => "CHtml::link(\$data->tag,array('/search/search','term'=>'#'.ltrim(\$data->tag,'#')), array('class'=>'x2-link x2-tag'))"
         ),
         array(
             'header' => Yii::t('admin','# of Records'),

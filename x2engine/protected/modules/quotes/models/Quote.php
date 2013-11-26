@@ -541,7 +541,7 @@ class Quote extends X2Model {
 
 		$links = array();
 		foreach ($quotesList as $model) {
-			$links[] = CHtml::link($model->name, array('quotes/view', 'id' => $model->id));
+			$links[] = CHtml::link($model->name, array('/quotes/quotes/view', 'id' => $model->id));
 		}
 		return implode(', ', $links);
 	}

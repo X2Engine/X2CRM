@@ -59,7 +59,7 @@ class ProfileController extends x2base {
                     'index', 'view', 'update', 'search', 'addPost', 'deletePost', 'uploadPhoto', 'profiles',
                     'settings', 'addComment', 'deleteSound', 'deleteBackground',
                     'changePassword', 'setResultsPerPage', 'hideTag', 'unhideTag', 'resetWidgets', 'updatePost',
-                    'loadTheme', 'createTheme', 'saveTheme', 'createUpdateCredentials','manageCredentials','deleteCredentials','setDefaultCredentials'),
+                    'loadTheme', 'createTheme', 'saveTheme', 'saveMiscLayoutSetting', 'createUpdateCredentials','manageCredentials','deleteCredentials','setDefaultCredentials'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -114,7 +114,7 @@ class ProfileController extends x2base {
         if(isset($_POST['Events'])){
             $post->text = $_POST['Events']['text'];
             $post->save();
-            $this->redirect(array('site/whatsNew'));
+            $this->redirect(array('/site/whatsNew'));
         }
         $commentDataProvider = new CActiveDataProvider('Events', array(
                     'criteria' => array(
@@ -150,7 +150,7 @@ class ProfileController extends x2base {
                 }
             }
         }
-        $this->redirect(array('site/whatsNew'));
+        $this->redirect(array('/site/whatsNew'));
     }
 
     /**
@@ -169,6 +169,21 @@ class ProfileController extends x2base {
             'model' => $this->loadModel($id),
             'dataProvider' => $dataProvider,
         ));
+    }
+
+    /**
+     * Saves settings as a property of the miscLayoutSettings JSON field of the profile model. This 
+     * should be used to make miscellaneous layout settings persistent.
+     * POST Parameters:
+     *  settingName - string - must be an existing property name of the JSON field
+     *  settingVal - mixed - the value to which the JSON field property will get set
+     */
+    public function actionSaveMiscLayoutSetting () {
+        if (!isset ($_POST['settingName']) || !isset ($_POST['settingVal'])) {
+            echo 'failure';
+            return;
+        }
+        Profile::setMiscLayoutSetting ($_POST['settingName'], $_POST['settingVal']);
     }
 
     /**
@@ -272,7 +287,7 @@ class ProfileController extends x2base {
                 $menuItems[$module->name] = Yii::t('app',$module->title);
             }
         }
-        $menuItems = array('' => Yii::t('app', 'What\'s New')) + $menuItems;
+        $menuItems = array('' => Yii::t('app', 'Activity Feed')) + $menuItems;
 
         $languageDirs = scandir('./protected/messages'); // scan for installed language folders
 
@@ -423,7 +438,7 @@ class ProfileController extends x2base {
 		if(!Yii::app()->user->checkAccess('CredentialsDelete',array('model'=>$cred)))
 			$this->denied();
 		$cred->delete();
-		$this->redirect(array('profile/manageCredentials'));
+		$this->redirect(array('/profile/manageCredentials'));
 	}
 
     /**
@@ -478,7 +493,7 @@ class ProfileController extends x2base {
                         $user->password = md5($newPass);
                         $user->save();
 
-                        $this->redirect($this->createUrl('profile/view',array('id'=>$id)));
+                        $this->redirect($this->createUrl('/profile/view',array('id'=>$id)));
                     }
                 }else{
                     Yii::app()->clientScript->registerScript('alertPassWrong', "alert('Old password is incorrect.');");
@@ -625,7 +640,7 @@ class ProfileController extends x2base {
         if($redirect == "view")
             $this->redirect(array('view', 'id' => $id));
         else
-            $this->redirect(array('site/whatsNew'));
+            $this->redirect(array('/site/whatsNew'));
     }
 
     /**

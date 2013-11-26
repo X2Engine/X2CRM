@@ -75,24 +75,24 @@ $order = preg_replace('/\.desc$/', ' DESC', $order);
 if(is_numeric($listId)) {
 	$list = X2Model::model('X2List')->findByPk($listId);
     if(isset($list)){
-        $listLink = CHtml::link($list->name,array('/contacts/list','id'=>$listId));
+        $listLink = CHtml::link($list->name,array('/contacts/contacts/list','id'=>$listId));
         $vcrDataProvider = $searchModel->searchList($listId);
     }else{
-        $listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/'.$path));	// default to All Contacts
+        $listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contact/contacts/index'));	// default to All Contacts
         $vcrDataProvider = $searchModel->searchAll();
     }
 } elseif($listId=='myContacts') {
-	$listLink = CHtml::link(Yii::t('contacts','My Contacts'),array('/contacts/'.$path));
+	$listLink = CHtml::link(Yii::t('contacts','My Contacts'),array('/contacts/contacts/myContacts'));
 	$vcrDataProvider = $searchModel->searchMyContacts();
 } elseif($listId=='newContacts') {
-	$listLink = CHtml::link(Yii::t('contacts','New Contacts'),array('/contacts/'.$path));
+	$listLink = CHtml::link(Yii::t('contacts','New Contacts'),array('/contacts/contacts/newContacts'));
 	$vcrDataProvider = $searchModel->searchNewContacts();
 } elseif($tagFlag){
-    $listLink = CHtml::link(Yii::t('contacts','Tag Search'),array('/search/search?term='.$listId));
+    $listLink = CHtml::link(Yii::t('contacts','Tag Search'),array('/search/search','term'=>$listId));
     $_GET['tagField']=$listId;
     $vcrDataProvider = $searchModel->searchAll();
 } else {
-	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/'.$path));	// default to All Contacts
+	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/contacts/index'));	// default to All Contacts
 	$vcrDataProvider = $searchModel->searchAll();
 }
 if(empty($order) && !$tagFlag)

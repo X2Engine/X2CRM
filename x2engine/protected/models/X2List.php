@@ -61,8 +61,8 @@ class X2List extends CActiveRecord {
 		return array(
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
-				'baseRoute'=>'/contacts/list',
-				'autoCompleteSource'=>'/contacts/getLists',
+				'baseRoute'=>'/contacts/contacts/list',
+				'autoCompleteSource'=>'/contacts/contacts/getLists',
 			)
 		);
 	}
@@ -108,7 +108,7 @@ class X2List extends CActiveRecord {
 	}
 
 	public function getDefaultRoute() {
-		return '/contacts/list';
+		return '/contacts/contacts/list';
 	}
 
 	public function createLink() {
@@ -634,7 +634,7 @@ class X2List extends CActiveRecord {
 			return false;
 
 		$criteria = new CDbCriteria();
-		$criteria->compare('listId',$list->id);
+		$criteria->compare('listId',$this->id);
 		$criteria->addInCondition('contactId',(array)$ids);
 
 		// delete all the things!
@@ -658,20 +658,20 @@ class X2List extends CActiveRecord {
 
 	public static function getRoute($id) {
 		if($id=='all')
-			return array('/contacts/index');
+			return array('/contacts/contacts/index');
 		else if ($id=='new')
-			return array('/contacts/newContacts');
+			return array('/contacts/contacts/newContacts');
 		else if (empty($id) || $id=='my')
-			return array('/contacts/myContacts');
+			return array('/contacts/contacts/myContacts');
 		else
-			return array('/contacts/list','id'=>$id);
+			return array('/contacts/contacts/list','id'=>$id);
 	}
 
     public static function getAllStaticListNames ($controller) {
         $listNames = array();
 
         // get all static lists
-        foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {	
+        foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {
             if($controller->checkPermissions($list,'edit'))	// check permissions
                 $listNames[$list->id] = $list->name;
         }

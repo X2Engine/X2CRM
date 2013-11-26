@@ -38,7 +38,7 @@
 <script type="text/javascript">
 $('#aboutPage').live('pagecreate',function(event){
     alert("FISH");
-  $.mobile.changePage("<?php echo $this->createUrl('site/login/'); ?>");
+  $.mobile.changePage("<?php echo $this->createUrl('/mobile/site/login'); ?>");
 });</script>
 <div id="aboutPage" data-role="page"><h1>Welcome to <i><?php echo CHtml::encode(Yii::app()->name); ?></i></h1></div>
 

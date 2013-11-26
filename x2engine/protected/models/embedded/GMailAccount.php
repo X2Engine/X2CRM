@@ -46,54 +46,54 @@ Yii::import('application.models.embedded.*');
  */
 class GMailAccount extends EmailAccount {
 
-	public $senderName = '';
-	public $email = '';
-	public $password = '';
-	public $port = 587;
-	public $security = 'tls';
-	public $server = 'smtp.gmail.com';
-	public $user = '';
+    public $senderName = '';
+    public $email = '';
+    public $password = '';
+    public $port = 587;
+    public $security = 'tls';
+    public $server = 'smtp.gmail.com';
+    public $user = '';
 
-	public function attributeLabels(){
-		return array(
-			'senderName' => Yii::t('app','Sender Name'),
-			'email' => Yii::t('app','Google ID'),
-			'password' => Yii::t('app','Password'),
-		);
-	}
+    public function attributeLabels(){
+        return array(
+            'senderName' => Yii::t('app','Sender Name'),
+            'email' => Yii::t('app','Google ID'),
+            'password' => Yii::t('app','Password'),
+        );
+    }
 
-	public function modelLabel() {
-		return Yii::t('app','Google Email Account');
-	}
+    public function modelLabel() {
+        return Yii::t('app','Google Email Account');
+    }
 
-	public function renderInputs(){
-		foreach($this->attributeNames() as $attr){
-			echo CHtml::activeLabel($this, $attr);
-			switch($attr){
-				case 'senderName':
-					echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
-					break;
-				case 'email':
-					echo '<p class="fieldhelp-thin-small">'.Yii::t('app', '(example@gmail.com)').
+    public function renderInputs(){
+        foreach($this->attributeNames() as $attr){
+            echo CHtml::activeLabel($this, $attr);
+            switch($attr){
+                case 'senderName':
+                    echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
+                    break;
+                case 'email':
+                    echo '<p class="fieldhelp-thin-small">'.Yii::t('app', '(example@gmail.com)').
                         '</p>';
-					echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
-					break;
-				case 'password':
-					echo CHtml::activePasswordField($this, $attr, $this->htmlOptions($attr));
-					break;
-			}
-		}
-		echo CHtml::errorSummary($this);
+                    echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
+                    break;
+                case 'password':
+                    echo CHtml::activePasswordField($this, $attr, $this->htmlOptions($attr));
+                    break;
+            }
+        }
+        echo CHtml::errorSummary($this);
 
-	}
+    }
 
-	public function rules(){
-		return array(
-			array('email','email'),
-			array('senderName,email,password', 'required'),
-			array('senderName,email,password', 'safe'),
-		);
-	}
+    public function rules(){
+        return array(
+            array('email','email'),
+            array('senderName,email,password', 'required'),
+            array('senderName,email,password', 'safe'),
+        );
+    }
 
 }
 

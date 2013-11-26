@@ -333,9 +333,9 @@ class SortableWidgets extends CJuiWidget {
                 yii.profile['activityFeedOrder']=1;
                 $(this).addClass('selected');
                 $(this).removeClass('hover');
-                var chatbox = $('#chat-box');
-                chatbox.children().each(function(i,child){chatbox.prepend(child)});
-                chatbox.prop('scrollTop',0);
+                var feedbox = $('#feed-box');
+                feedbox.children().each(function(i,child){feedbox.prepend(child)});
+                feedbox.prop('scrollTop',0);
                 $("#bottomUp").removeClass('selected');
             }
         });
@@ -346,10 +346,10 @@ class SortableWidgets extends CJuiWidget {
                 yii.profile['activityFeedOrder']=0;
                 $(this).addClass('selected');
                 $(this).removeClass('hover');
-                var chatbox = $('#chat-box');
-                var scroll=chatbox.prop('scrollHeight');
-                chatbox.children().each(function(i,child){chatbox.prepend(child)});
-                chatbox.prop('scrollTop',scroll);
+                var feedbox = $('#feed-box');
+                var scroll=feedbox.prop('scrollHeight');
+                feedbox.children().each(function(i,child){feedbox.prepend(child)});
+                feedbox.prop('scrollTop',scroll);
                 $("#topDown").removeClass('selected');
             }
         });
@@ -382,7 +382,7 @@ class SortableWidgets extends CJuiWidget {
         $("#drive-refresh").click(function(e){
             e.preventDefault();
             $.ajax({
-                'url':'<?php echo Yii::app()->controller->createUrl('/media/refreshDriveCache') ?>',
+                'url':'<?php echo Yii::app()->controller->createUrl('/media/media/refreshDriveCache') ?>',
                 'success':function(data){
                     $('#drive-table').html(data);
                 }
@@ -400,26 +400,26 @@ class SortableWidgets extends CJuiWidget {
                 data: 'color='+ color,
                 success:function(){
                     if(color == '') {
-                        $('#chat-box').css('background-color', '#fff');
+                        $('#feed-box').css('background-color', '#fff');
                     } else {
-                        $('#chat-box').css('background-color', '#' + color);
+                        $('#feed-box').css('background-color', '#' + color);
                     }
-                    //$('#chat-box').css("color", convertTextColor(color, 'standardText'));
+                    //$('#feed-box').css("color", convertTextColor(color, 'standardText'));
                     // Check for a dark color
                     /*if(convertTextColor(color, 'linkText') == '#fff000'){
-                    $('#chat-box a').removeClass();
-                    $('#chat-box a').addClass('dark_background');
+                    $('#feed-box a').removeClass();
+                    $('#feed-box a').addClass('dark_background');
                 }
                 // Light color
                 else {
-                    $('#chat-box a').removeClass();
-                    $('#chat-box a').addClass("light_background");
+                    $('#feed-box a').removeClass();
+                    $('#feed-box a').addClass("light_background");
                 }
                 // Set color correctly if transparent is selected
                 if(color == ""){
-                    $('#chat-box').css("color", "rgb(51, 51, 51)");
-                    $('#chat-box a').removeClass();
-                    $('#chat-box a').addClass("light_background");
+                    $('#feed-box').css("color", "rgb(51, 51, 51)");
+                    $('#feed-box a').removeClass();
+                    $('#feed-box a').addClass("light_background");
                 }*/
                 }
             });

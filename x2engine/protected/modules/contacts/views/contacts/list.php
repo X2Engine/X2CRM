@@ -78,7 +78,7 @@ $('#createList').unbind('click').click(function() {
 
         if(listName != '' && listName != null) {
             $.ajax({
-                url:'".$this->createUrl('/contacts/createListFromSelection')."',
+                url:'".$this->createUrl('/contacts/contacts/createListFromSelection')."',
                 type:'post',
                 data:{listName:listName,modelName:'Contacts',gvSelection:selectedItems},
                 success:function(response) { if(response != '') window.location.href=response; }
@@ -94,7 +94,7 @@ $('#addToList').unbind('click').click(function() {
 
     if(selectedItems.length > 0) {
         $.ajax({
-            url:'".$this->createUrl('/contacts/addToList')."',
+            url:'".$this->createUrl('/contacts/contacts/addToList')."',
             type:'post',
             data:{listId:targetList,gvSelection:selectedItems},
             success:function(response) { if(response=='success') alert('".addslashes(Yii::t('app','Added items to list.'))."'); else alert(response); }
@@ -109,7 +109,7 @@ $('#removeFromList').unbind('click').click(function() {
 
         if(confirmRemove) {
             $.ajax({
-                url:'".$this->createUrl('/contacts/removeFromList')."',
+                url:'".$this->createUrl('/contacts/contacts/removeFromList')."',
                 type:'post',
                 data:{listId:".$listModel->id.",gvSelection:selectedItems},
                 success:function(response) { if(response=='success') $.fn.yiiGridView.update('contacts-grid'); else alert(response); }
@@ -169,12 +169,12 @@ $this->widget('application.components.X2GridView', array(
             .(Yii::app()->user->checkAccess('ContactsExportContacts') ? 
                 CHtml::link(
                     Yii::t('app','Export'),
-                    array('/contacts/exportContacts?listId='.$listModel->id),
+                    array('/contacts/contacts/exportContacts','listId'=>$listModel->id),
                     array('class'=>'x2-button')
                 ) : null)
             .CHtml::link(
                 Yii::t('marketing','Email List'), 
-                Yii::app()->createUrl('/marketing/create?Campaign[listId]='.$listModel->id),
+                Yii::app()->createUrl('/marketing/marketing/create',array('Campaign[listId]'=>$listModel->id)),
                 array('class'=>'x2-button')
             )
         .'{filterHint}{summary}{items}{pager}',
@@ -208,7 +208,8 @@ $this->widget('application.components.X2GridView', array(
         ),
     ),
     'massActions'=>array(
-        'addToList', 'newList'
+        'addToList', 'newList',
+        'removeFromList'
     ),
     'enableControls'=>true,
     'enableTags'=>true,

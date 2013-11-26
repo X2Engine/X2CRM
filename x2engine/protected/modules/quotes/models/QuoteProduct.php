@@ -58,7 +58,8 @@ class QuoteProduct extends CActiveRecord {
 // NOTE: you should only define rules for those attributes that
 // will receive user inputs.
 		return array(
-			array('quantity,lineNumber,productId', 'numerical', 'integerOnly' => true),
+			array('lineNumber,productId', 'numerical', 'integerOnly' => true),
+			array('quantity','numerical'),
 			array('price,adjustment,total','numerical','allowEmpty'=>true),
 			array('name','required'),
 			array('name,type,currency', 'length', 'max' => 100),

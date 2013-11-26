@@ -123,7 +123,7 @@ class Opportunity extends X2Model {
 
 		$links = array();
 		foreach($allOpportunities as $model) {
-			$links[] = CHtml::link($model->name,array('/opportunities/view','id'=>$model->id));
+			$links[] = CHtml::link($model->name,array('/opportunities/opportunities/view','id'=>$model->id));
 		}
 		return implode(', ',$links);
 	}

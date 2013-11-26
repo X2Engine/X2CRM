@@ -379,7 +379,7 @@ function removeLine(object) {
 <!-- Main window - view, edit and translations -->
 <div class="content-container">
 <div class="content">
-<form method="POST" action="<?php echo Yii::app()->request->scriptUrl.'/admin/translationManager?file='.$targetFile; ?>" id="translationForm">
+<form method="POST" action="<?php echo Yii::app()->controller->createAbsoluteUrl('/admin/translationManager',array('file'=>$targetFile)); ?>" id="translationForm">
 <input type="hidden" name="file" value="<?php echo $_GET['file']; ?>">
 <table class="rounded" style="table-layout:fixed;">
 	<tr>
@@ -462,7 +462,7 @@ function removeLine(object) {
 	<div id="footer-logos">
 		<?php
 		$imghtml = CHtml::image(Yii::app()->theme->baseUrl.'/images/x2footer.png','');
-		echo CHtml::link($imghtml,array('site/page','view'=>'about')); // Yii::app()->request->baseURL.'/index.php');
+		echo CHtml::link($imghtml,array('/site/page','view'=>'about')); // Yii::app()->request->baseURL.'/index.php');
 		?>
 	</div>
 	Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>

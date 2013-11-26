@@ -70,7 +70,6 @@ class X2GridViewMassActionAction extends CAction {
                 ' deleted', array ('{updatedRecordsNum}' => $updatedRecordsNum)
         );
 
-        self::echoFlashes ();
     }
 
     /**
@@ -122,7 +121,6 @@ class X2GridViewMassActionAction extends CAction {
             );
         }
 
-        self::echoFlashes ();
     }
 
     /**
@@ -163,7 +161,35 @@ class X2GridViewMassActionAction extends CAction {
             );
         }
 
-        self::echoFlashes ();
+    }
+
+    /**
+     * Add selected records to list with given id 
+     */
+    public function removeFromList($gvSelection, $listId){
+        foreach($gvSelection as $contactId) {
+            if(!ctype_digit((string) $contactId)) {
+                AuxLib::printTestError ('Invalid selection');
+            }
+        }
+
+        $list = CActiveRecord::model('X2List')->findByPk($listId);
+        $updatedRecordsNum = sizeof ($gvSelection);
+
+        // check permissions
+        if($list !== null && $this->controller->checkPermissions($list, 'edit')) {
+            $list->removeIds($_POST['gvSelection']);
+            self::$successFlashes[] = Yii::t(
+                'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
+                    ' removed from list "{list}"', array (
+                        '{updatedRecordsNum}' => $updatedRecordsNum,
+                        '{list}' => $list->name,
+                    )
+            );
+        } else {
+            self::$errorFlashes[] = Yii::t(
+                'app', 'You do not have permission to modify this list');
+        }
     }
 
     /**
@@ -177,7 +203,7 @@ class X2GridViewMassActionAction extends CAction {
             }
         }
 
-        $list = CActiveRecord::model('X2List')->findByPk($_POST['listId']);
+        $list = CActiveRecord::model('X2List')->findByPk($listId);
         $updatedRecordsNum = sizeof ($gvSelection);
 
         // check permissions
@@ -194,7 +220,6 @@ class X2GridViewMassActionAction extends CAction {
             self::$errorFlashes[] = Yii::t(
                 'app', 'You do not have permission to modify this list');
         }
-        self::echoFlashes ();
     }
 
     /**
@@ -247,7 +272,6 @@ class X2GridViewMassActionAction extends CAction {
             self::$errorFlashes[] = Yii::t(
                 'app', 'List could not be created');
         }
-        self::echoFlashes ();
     }
 
     /**
@@ -285,6 +309,13 @@ class X2GridViewMassActionAction extends CAction {
                 }
                 $this->addToList ($gvSelection, $_POST['listId']);
                 break;
+            case 'removeFromList':
+                if ($this->controller->modelClass !== 'Contacts' || !isset ($_POST['listId'])) {
+                    AuxLib::printTestError ('Invalid request');
+                    return;
+                }
+                $this->removeFromList ($gvSelection, $_POST['listId']);
+                break;
             case 'createList':
                 if ($this->controller->modelClass !== 'Contacts' || 
                     !isset ($_POST['listName']) || $_POST['listName'] === '') {
@@ -295,9 +326,10 @@ class X2GridViewMassActionAction extends CAction {
                 $this->createList ($gvSelection, $_POST['listName']);
                 break;
             default:
-            AuxLib::printTestError ('Mass action not available');
+                AuxLib::printTestError ('Mass action not available');
                 return;
         }
+        self::echoFlashes ();
     }
 
 }

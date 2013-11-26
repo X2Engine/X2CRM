@@ -78,3 +78,22 @@ div.err-msg-placeholder {
 }
 
 
+/*
+activity
+*/
+
+#feed-box div.message {
+
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+}
+#feed-box a { /* links disabled until mobile versions of linked pages are added */
+    color: rgb(75,75,75);
+    text-decoration: none;
+}
+#feed-box span.my-username {
+    color: #999;
+}
+#feed-post-publisher {
+    margin-bottom: 10px;
+}

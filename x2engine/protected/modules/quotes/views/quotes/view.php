@@ -62,7 +62,7 @@ var confirmBox = $('<div></div>')
     	resizable: false,
     	buttons: {
     		'Yes': function() {
-    			window.location = '". Yii::app()->createUrl('quotes/quotes/update/', array('id'=>$model->id)) ."';
+    			window.location = '". Yii::app()->createUrl('/quotes/quotes/update', array('id'=>$model->id)) ."';
     			$(this).dialog('close');
     		},
     		'No': function() {
@@ -98,7 +98,7 @@ $this->actionMenu = $this->formatMenu(array(
 
 $strict = Yii::app()->params['admin']['quoteStrictLock'];
 if($model->locked)
-	if($strict && Yii::app()->user->name != 'admin')
+	if($strict && !Yii::app()->user->checkAccess('QuotesAdminAccess'))
 		$this->actionMenu[] = array('label'=>Yii::t('quotes','Update'), 'url'=>'#', 'linkOptions'=>array('onClick'=>'dialogStrictLock();'));
 	else
 		$this->actionMenu[] = array('label'=>Yii::t('quotes','Update'), 'url'=>'#', 'linkOptions'=>array('onClick'=>'dialogLock();'));
@@ -110,7 +110,7 @@ $this->actionMenu[] = array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>
 $this->actionMenu[] = array(
 	'label'=>($model->type == 'invoice'? Yii::t('quotes', 'Print Invoice') : Yii::t('quotes','Print Quote')), 
 	'url'=>'#', 'linkOptions'=>array(
-		'onClick'=>"window.open('". Yii::app()->createUrl('quotes/quotes/print', 
+		'onClick'=>"window.open('". Yii::app()->createUrl('/quotes/quotes/print', 
 		array('id'=>$model->id)) ."')")
 );
 $themeUrl = Yii::app()->theme->getBaseUrl();
@@ -122,7 +122,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	<h2><span class="no-bold"><?php echo ($model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?></span> <?php echo $model->name==''?'#'.$model->id:$model->name; ?></h2>
 
 <?php if($model->locked) { ?>
-	<?php if($strict && Yii::app()->user->name != 'admin') { ?>
+	<?php if($strict && !Yii::app()->user->checkAccess('QuotesAdminAccess')) { ?>
 		<a class="x2-button icon edit right" href="#" onClick="dialogStrictLock();"><span></span></a>
 	<?php } else { ?>
 		<a class="x2-button icon edit right" href="#" onClick="dialogLock();"><span></span></a>

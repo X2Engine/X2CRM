@@ -56,6 +56,17 @@ class Admin extends CActiveRecord {
         return 'x2_admin';
     }
 
+    public function behaviors() {
+        return array(
+            'JSONEmbeddedModelFieldsBehavior' => array(
+                'class' => 'application.components.JSONEmbeddedModelFieldsBehavior',
+                'fixedModelFields' => array('emailDropbox' => 'EmailDropboxSettings'),
+                'transformAttributes' => array('emailDropbox'),
+                
+            )
+        );
+    }
+
     /**
      * @return array validation rules for model attributes.
      */
@@ -75,12 +86,14 @@ class Admin extends CActiveRecord {
             array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
             array('batchTimeout','numerical','integerOnly' => true),
-            array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
+            array('emailBulkAccount,serviceCaseEmailAccount,emailDropbox', 'safe'),
             array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail'),
             array('serviceCaseEmailAccount', 'setDefaultEmailAccount', 'alias' => 'serviceCaseEmail'),
 	    array('webLeadEmailAccount','setDefaultEmailAccount','alias' => 'systemResponseEmail'),
 	    array('emailNotificationAccount','setDefaultEmailAccount','alias'=>'systemNotificationEmail'),
             array('emailSignature', 'length', 'max' => 4096),
+            array('externalBaseUrl','url','allowEmpty'=>true),
+            array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
             array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment,emailDropbox_createContact,emailDropbox_zapLineBreaks,emailDropbox_emptyContact,emailDropbox_logging', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array('emailDropbox_alias', 'length', 'max' => 50),
@@ -124,7 +137,7 @@ class Admin extends CActiveRecord {
             'emailSecurity' => Yii::t('admin', 'Security'),
             'installDate' => Yii::t('admin', 'Installed'),
             'updateDate' => Yii::t('admin', 'Last Update'),
-            'updateInterval' => Yii::t('admin', 'Update Interval'),
+            'updateInterval' => Yii::t('admin', 'Version Check Interval'),
             'googleClientId' => Yii::t('admin', 'Google Client ID'),
             'googleClientSecret' => Yii::t('admin', 'Google Client Secret'),
             'googleAPIKey' => Yii::t('admin', 'Google API Key'),
@@ -140,11 +153,6 @@ class Admin extends CActiveRecord {
             'serviceCaseEmailMessage' => Yii::t('admin', 'Email Message'),
             'gaTracking_public' => Yii::t('admin', 'Google Analytics Property ID (public)'),
             'gaTracking_internal' => Yii::t('admin', 'Google Analytics Property ID (internal)'),
-            'emailDropbox_alias' => Yii::t('admin', 'Email capture address'),
-            'emailDropbox_createContact' => Yii::t('admin', "Create contacts from emails"),
-            'emailDropbox_zapLineBreaks' => Yii::t('admin', 'Zap line breaks'),
-            'emailDropbox_emptyContact' => Yii::t('admin', 'Create contacts when first and last name are missing'),
-            'emailDropbox_logging' => Yii::t('admin', 'Enable logging'),
             'serviceDistribution' => Yii::t('admin', 'Service Distribution'),
             'serviceOnlineOnly' => Yii::t('admin', 'Service Online Only'),
             'eventDeletionTime' => Yii::t('admin', 'Event Deletion Time'),
@@ -155,6 +163,7 @@ class Admin extends CActiveRecord {
             'webLeadEmailAccount' => Yii::t('admin','Send As (to web leads)'),
             'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
             'batchTimeout' => Yii::t('app','Time limit on batch actions'),
+            'externalBaseUrl' => Yii::t('app','External / Public Base URL')
         );
     }
 

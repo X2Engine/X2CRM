@@ -76,7 +76,7 @@
         echo $form->dropDownList($model, 'type', Fields::getFieldTypes('title'), array(
             'ajax' => array(
                 'type' => 'POST', //request type
-                'url' => CController::createUrl('admin/getFieldType'), //url to call.
+                'url' => CController::createUrl('/admin/getFieldType'), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update' => '#dropdown', //selector to update
             //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'

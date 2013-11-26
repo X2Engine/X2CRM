@@ -305,7 +305,7 @@ $(function() {
 							$.post('<?php echo $urls['saveGoogleEvent']; ?>?calendarId=' + event.source.calendarId, $(viewAction).find('form').serializeArray(),
 								function() {$('#calendar').fullCalendar('refetchEvents');}); // delete event from database
 							$(this).dialog('close');
-						},
+						}
 					});
 					boxButtons.unshift({
 						text: '<?php echo Yii::t('app', 'Delete'); ?>', // delete event
@@ -315,7 +315,7 @@ $(function() {
 								$('#calendar').fullCalendar('removeEvents', event.id);
 								$(this).dialog('close');
 							}
-						},
+						}
 					});
 				} else {
 					$.post('<?php echo $urls['viewGoogleEvent']; ?>', {EventId: event.id, CalendarId: event.source.calendarId}, function(data) {
@@ -342,7 +342,7 @@ $(function() {
 	//						event.description = description;
 	//						$('#calendar').fullCalendar('updateEvent', event);
 							$(this).dialog('close');
-						},
+						}
 					});
 					boxButtons.unshift({
 						text: '<?php echo Yii::t('app', 'Delete'); ?>', // delete event
@@ -352,7 +352,7 @@ $(function() {
 								$('#calendar').fullCalendar('removeEvents', event.id);
 								$(this).dialog('close');
 							}
-						},
+						}
 					});
 				} else { // non-editable event/action
 					$.post('<?php echo $urls['viewAction']; ?>', {'ActionId': event.id, 'IsEvent': event.type=='event'}, function(data) {
@@ -407,7 +407,7 @@ $(function() {
 						text: '<?php echo Yii::t('contacts', 'View Contact'); ?>',
 						click: function() {
 							window.location = event.associationUrl;
-						},
+						}
 					});
 					if(event.source.editable && event.type != 'event') {
 						if(event.complete == 'Yes') {
@@ -417,7 +417,7 @@ $(function() {
 									$.post('<?php echo $urls['uncompleteAction']; ?>', {id: event.id});
 									event.complete = 'No';
 									$(this).dialog('close');
-								},
+								}
 							});
 						} else {
 							boxButtons.unshift({  // prepend button
@@ -426,14 +426,14 @@ $(function() {
 									$.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
 									event.complete = 'Yes';
 									$(this).dialog('close');
-								},
+								}
 							});
 							boxButtons.unshift({  // prepend button
 								text: '<?php echo Yii::t('actions', 'Complete and View Contact'); ?>',
 								click: function() {
 									$.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
 									window.location = event.associationUrl;
-								},
+								}
 							});
 						}
 					}
@@ -447,7 +447,7 @@ $(function() {
 									$.post('<?php echo $urls['uncompleteAction']; ?>', {id: event.id});
 									event.complete = 'No';
 									$(this).dialog('close');
-								},
+								}
 							});
 						} else {
 							boxButtons.unshift({  // prepend button
@@ -456,7 +456,7 @@ $(function() {
 									$.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
 									event.complete = 'Yes';
 									$(this).dialog('close');
-								},
+								}
 							});
 						}
 					}
@@ -660,6 +660,7 @@ $this->widget('Publisher', array(
     'showLogACall' => false,
     'showNewComment' => false,
     'showNewAction' => false,
+    'showLogTimeSpent' => false
         )
 );
 ?>

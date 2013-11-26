@@ -38,7 +38,7 @@ $this->pageTitle = Yii::t('marketing','Create Campaign');
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','All Campaigns'), 'url'=>array('index')),
 	array('label'=>Yii::t('marketing','Create Campaign')),
-	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/lists')),
+	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/contacts/lists')),
 	array(
         'label'=>Yii::t('marketing','Newsletters'), 
         'url'=>array('/marketing/weblist/index'),
