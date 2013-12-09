@@ -787,7 +787,7 @@ class Profile extends CActiveRecord {
       Private helper function to update users layout elements to match the set of layout
       elements specified in initLayout ().
      */
-    private function addRemoveLayoutElements($position, $layout, $initLayout){
+    private function addRemoveLayoutElements($position, &$layout, $initLayout){
 
         $changed = false;
 
@@ -841,8 +841,8 @@ class Profile extends CActiveRecord {
         }
 
         if($changed){
-            Yii::app()->params->profile->layout = json_encode($layout);
-            Yii::app()->params->profile->update(array('layout'));
+            $this->layout = json_encode($layout);
+            $this->update(array('layout'));
         }
     }
 
@@ -852,18 +852,19 @@ class Profile extends CActiveRecord {
      * @return array
      */
     public function getLayout(){
-        $layout = Yii::app()->params->profile->layout;
+        $layout = $this->getAttribute('layout');
 
         $initLayout = $this->initLayout();
 
         if(!$layout){ // layout hasn't been initialized?
             $layout = $initLayout;
-            Yii::app()->params->profile->layout = json_encode($layout);
-            Yii::app()->params->profile->update(array('layout'));
+            $this->layout = json_encode($layout);
+            $this->update(array('layout'));
         }else{
             $layout = json_decode($layout, true); // json to associative array
             $this->addRemoveLayoutElements('center', $layout, $initLayout);
             $this->addRemoveLayoutElements('left', $layout, $initLayout);
+            $this->addRemoveLayoutElements('right', $layout, $initLayout);
         }
 
         return $layout;

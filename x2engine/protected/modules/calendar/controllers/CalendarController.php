@@ -37,9 +37,12 @@
 /**
  *  Calendar lets you create calendar events, view actions from other modules, and sync to google calendar.
  *
+ * @property User $currentUser The currently logged-in user who is accessing the calendar
  * @package X2CRM.modules.calendar.controllers
  */
 class CalendarController extends x2base {
+
+    private $_currentUser;
 
     public $modelClass = 'X2Calendar';
     public $calendarUsers = null; // list of users for choosing whose calendar to view
@@ -386,8 +389,7 @@ class CalendarController extends x2base {
       Returns:
       A string containing a SQL boolean expression
      */
-
-    private function constructFilterClause($filter){
+    private function constructFilterClause(array $filter){
         $clause = "";
         $clause .= "((complete != \"Yes\") "; // add completed actions
         if(in_array('contacts', $filter))
@@ -419,7 +421,7 @@ class CalendarController extends x2base {
      * return a json string of actions associated with the specified user
      */
     public function actionJsonFeed($user, $start, $end){
-        $loggedInUser = User::model()->findByPk(Yii::app()->user->id); // get logged in user profile
+        $loggedInUser = $this->currentUser; // User::model()->findByPk(Yii::app()->user->id); // get logged in user profile
         $filter = explode(',', $loggedInUser->calendarFilter); // action types user doesn't want filtered
         $possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered
         $actions = $this->calendarActions($user,$start,$end);
@@ -429,6 +431,8 @@ class CalendarController extends x2base {
             if($action->visibility >= 1 || // don't show private actions,
                     $action->assignedTo == Yii::app()->user->name || // unless they belong to current user
                     Yii::app()->params->isAdmin){ // admin sees all
+                $linked = !empty($action->associationType) && strtolower($action->associationType) != 'none' && class_exists(X2Model::getModelName($action->associationType));
+                $associationUrl = $linked ? $this->createUrl(str_repeat('/'.$action->associationType,2).'/view',array('id'=>$action->associationId)) : '';
                 $description = $action->actionDescription;
                 if(in_array($action->type, array('email', 'emailFrom', 'email_quote', 'email_invoice', 'emailOpened', 'emailOpened_quote', 'emailOpened_invoice'))){
                     $actionHeaderPattern = InlineEmail::insertedPattern('ah', '(.*)', 1, 'mis');
@@ -464,11 +468,11 @@ class CalendarController extends x2base {
                         $events[$last]['allDay'] = $action->allDay;
                     if($action->color)
                         $events[$last]['color'] = $action->color;
-                    if(!empty($action->associationType) && class_exists(X2Model::getModelName($action->associationType))){
-                        $events[$last]['associationUrl'] = $this->createUrl('/'.$action->associationType.'/view/id/'.$action->associationId);
+                    if($linked){
+                        $events[$last]['associationUrl'] = $associationUrl;
                         $events[$last]['associationName'] = $action->associationName;
                     }
-                }else if(!empty($action->associationType) && class_exists(X2Model::getModelName($action->associationType))){
+                }else if($linked){
                     $events[] = array(
                         'title' => $title,
                         'description' => $description,
@@ -476,9 +480,9 @@ class CalendarController extends x2base {
                         'id' => $action->id,
                         'complete' => $action->complete,
                         'associationType' => $action->associationType,
-                        'associationUrl' => $this->createUrl('/'.$action->associationType.'/view/id/'.$action->associationId),
+                        'associationUrl' => $associationUrl,
                         'associationName' => $action->associationName,
-                        'allDay' => false,
+                        'allDay' => false
                     );
                     end($events);
                     $last = key($events);
@@ -502,6 +506,7 @@ class CalendarController extends x2base {
                     if($action->color)
                         $events[$last]['color'] = $action->color;
                 }
+                $events[$last]['linked'] = $linked;
             }
         }
         echo CJSON::encode($events);
@@ -510,14 +515,6 @@ class CalendarController extends x2base {
     public function actionJsonFeedGroup($groupId, $start, $end){
         // SQL where clause
         $actions = $this->calendarActions($groupId,$start,$end);
-
-        // get actions assigned to user
-        $actions = Yii::app()->db->createCommand()
-                ->select('a.id, a.visibility, a.assignedTo, a.complete, a.type, a.dueDate, a.completeDate, a.associationType, a.associationName, a.associationId, a.allDay, a.color,t.text')
-                ->from('x2_actions AS a')
-                ->join('x2_action_text AS t', 't.actionId=a.id')
-                ->where($where)
-                ->queryAll();
 
         $events = array();
         foreach($actions as $action){
@@ -1287,8 +1284,7 @@ class CalendarController extends x2base {
      * @return array An array of action records
      */
     public function calendarActions($calendarUser,$start,$end) {
-        $user = User::model()->findByPk(Yii::app()->user->id);
-        $filter = explode(',', $user->calendarFilter); // action types user doesn't want filtered
+        $filter = explode(',',$this->currentUser->calendarFilter); // action types user doesn't want filtered
         $action = new Actions;
         $criteria = $action->getAccessCriteria();
         $criteria->compare('assignedTo',$calendarUser);
@@ -1299,4 +1295,15 @@ class CalendarController extends x2base {
         return Actions::model()->with('actionText')->findAll($criteria);
     }
 
+
+    /**
+     * Getter function for {@link $currentUser}
+     * @return type
+     */
+    public function getCurrentUser() {
+        if(!isset($this->_currentUser)) {
+            $this->_currentUser = User::model()->findByPk(Yii::app()->user->id);
+        }
+        return $this->_currentUser;
+    }
 }

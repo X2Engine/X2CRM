@@ -69,6 +69,17 @@ class UpdaterBehaviorTest extends FileOperTestCase {
      */
     public $testTables;
 
+
+    public static function setUpBeforeClass(){
+        X2DbTestCase::setUpAppEnvironment();
+        return parent::setUpBeforeClass();
+    }
+
+    public static function tearDownAfterClass(){
+        X2DbTestCase::tearDownAppEnvironment();
+        return parent::tearDownAfterClass();
+    }
+
     //////////////////////
     // NON-TEST METHODS //
     //////////////////////
@@ -1014,7 +1025,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                         'mb_regex_encoding' => true,
                         'getcwd' => true,
                         'chmod' => true,
-                        'proc_open' => true,
+                        'proc_open' => true
                     ),
                     'classes' =>
                     array(
@@ -1049,6 +1060,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                         'updates_connection' => 0,
                         'outbound_connection' => 0,
                         'shell' => true,
+                        'fsockopen' => true
                     ),
                 ),
                 'reqMessages' =>

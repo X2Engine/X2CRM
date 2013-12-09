@@ -59,7 +59,31 @@ class MediaTest extends X2DbTestCase {
 		$this->assertNotEquals(null,$image->path,'Failed asserting valid path for media item "bg"');
 		$this->assertFileExists($image->path);
 	}
+        
+        public function testGetPath() {
+            $source = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'tests', 'data', 'media', 'testfile.txt'));
+            $dest = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'uploads', 'media', 'admin', 'testfile.txt'));
+            FileUtil::ccopy($source, $dest);
+            $dest = realpath($dest);
+            $testfile = $this->media("testfile");
+
+            $this->assertEquals($dest, $testfile->getPath());
+            
+            unlink($dest);
+        }
 	
+        public function testDeleteUpload() {
+            $source = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'tests', 'data', 'media', 'testfile.txt'));
+            $dest = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'uploads', 'media', 'admin', 'testfile.txt'));
+            FileUtil::ccopy($source, $dest);
+            $dest = realpath($dest);
+            $testfile = $this->media("testfile");
+            
+            $this->assertFileExists($dest);
+            $testfile->delete();
+            $this->assertFileNotExists($dest);
+        }
+        
 	public function testResolveMimetype() {
 		$image = $this->media('bg');
 		$mt = $image->resolveType();

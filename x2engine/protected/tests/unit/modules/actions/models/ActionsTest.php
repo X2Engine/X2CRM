@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -34,61 +35,37 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::app()->clientScript->registerScript('contact-qtip', '
-function refreshQtip() {
-	$(".contact-name").each(function (i) {
-		var contactId = $(this).attr("href").match(/\\d+$/);
+Yii::import('application.modules.actions.models.*');
 
-		if(contactId !== null && contactId.length) {
-			$(this).qtip({
-				content: {
-					text: "'.addslashes(Yii::t('app','loading...')).'",
-					ajax: {
-						url: yii.baseUrl+"/index.php/contacts/qtip",
-						data: { id: contactId[0] },
-						method: "get"
-					}
-				},
-				style: {
-				}
-			});
-		}
-	});
+/**
+ * Test for the Actions class
+ * @package X2CRM.tests.unit.modules.actions.models
+ * @author Demitri Morgan <demitri@x2engine.com>
+ */
+class ActionsTest extends X2DbTestCase {
+
+    public static function referenceFixtures() {
+        return array('actions'=>'Actions');
+    }
+
+    /**
+     * Test special validation that avoids empty association when the type is
+     * something meant to be associated, i.e. a logged call, note, etc.
+     */
+    public function testValidate() {
+        $action = new Actions();
+        $action->type = 'call';
+        $action->actionDescription = 'Contacted. Will call back later';
+        $this->assertFalse($action->validate());
+        $this->assertTrue($action->hasErrors('associationId'));
+        $this->assertTrue($action->hasErrors('associationType'));
+        $action = new Actions();
+        // Do the same thing but with "None" association type.
+        $action->associationType = 'None';
+        $this->assertFalse($action->validate());
+        $this->assertTrue($action->hasErrors('associationId'));
+        $this->assertTrue($action->hasErrors('associationType'));
+    }
 }
 
-$(function() {
-	refreshQtip();
-});
-');
 ?>
-<div class='flush-grid-view'>
-<?php $this->widget('zii.widgets.grid.CGridView', array(
-	'dataProvider' => $dataProvider,
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=>'<div class="page-title"><h2>'.Yii::t('app','Search Results').'</h2><div class="title-bar">{summary}</div></div>{items}{pager}',
-	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
-	'columns' => array(
-		array(
-			'name' => Yii::t('app','Name'),
-			'type' => 'raw',
-			'value' => '$data["#recordLink"]',
-		),
-		array(
-			'name' => Yii::t('app','Type'),
-			'type' => 'raw',
-			'value' => '$data["type"]', 
-		),
-		array(
-			'name' => Yii::t('app','Description'), 
-			'type' => 'raw',
-			'value' => 'Formatter::truncateText(CHtml::encode($data["description"]),140)'
-		),
-        array(
-			'name' => Yii::t('app','Assigned To'),
-			'type' => 'raw',
-			'value' => 'isset($data["assignedTo"])?$data["assignedTo"]:""', 
-		),
-	),
-));
-?>
-</div>

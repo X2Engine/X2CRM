@@ -286,7 +286,7 @@ class WorkflowController extends x2base {
 			$action->setScenario('workflow');
 
 			$action->createDate = Formatter::parseDate($_POST['Actions']['createDate']);
-			$action->completeDate = Formatter::parseDate($_POST['Actions']['completeDate']);
+            $action->completeDate = Formatter::parseDate($_POST['Actions']['completeDate']);
 			$action->actionDescription = $_POST['Actions']['actionDescription'];
 
 			if(isset($_POST['Actions']['completedBy']) && (Yii::app()->params->isAdmin || Yii::app()->params->admin->workflowBackdateReassignment))
@@ -304,7 +304,8 @@ class WorkflowController extends x2base {
 				
 				if($previouslyComplete)	// we're uncompleteing this thing
 					$this->updateWorkflowChangelog($action,'revert',$model);
-				
+                
+                unset ($action->completeDate); // remove invalid value
 			} else {
 				if($action->completeDate < $action->createDate)
 					$action->completeDate = $action->createDate;	// we can't have the completeDate before the createDate now can we
@@ -384,7 +385,7 @@ class WorkflowController extends x2base {
 				if(empty($workflowStatus['stages'][ -1*$workflowStatus['stages'][$stageNumber]['requirePrevious'] ]['complete']))
 					$previousCheck = false;
 			}
-			// is this stage is OK to complete? if a comment is required, then is $comment empty?
+			// is this stage OK to complete? if a comment is required, then is $comment empty?
 			if($previousCheck && (!$stage['requireComment'] || ($stage['requireComment'] && !empty($comment)))) {
 			
 			
@@ -406,9 +407,8 @@ class WorkflowController extends x2base {
 				$actionModels[0]->complete = 'Yes';
 				$actionModels[0]->completedBy = Yii::app()->user->getName();
 				// $actionModels[0]->actionDescription = $workflowId.':'.$stageNumber.$comment;
-				if($actionModels[0]->save()){
-                    $actionModels[0]->actionDescription = $comment;
-                }
+                $actionModels[0]->actionDescription = $comment;
+				$actionModels[0]->save();
 				
 				$model->updateLastActivity();
 				

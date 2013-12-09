@@ -247,9 +247,19 @@ class Fields extends CActiveRecord {
     }
 
     /**
+     * Function to return data about the field types used by X2.
      *
-     * @param type $scenario
-     * @return array
+     * This function should be called whenever information about an x2_field type
+     * is needed, as it can store all of that information in one consolidated
+     * location and has a variety of uses. If no scenario is provided, it will turn
+     * the array exactly as defined in $fieldTypes at the top of the function.
+     * If a scenario is provided, it will attempt to fill only the information
+     * for that scenario. So calling the function with "validator" will just return
+     * an array of "type" => "validator" while calling it with an array of scenarios
+     * (e.g. $scenario = array("title","validator")) will return an array containing
+     * just that data, like: "type" => array("title", "validator").
+     * @param mixed $scenario A string or array of the data scenario required
+     * @return array An array of information about the field types.
      */
     public static function getFieldTypes($scenario = null){
         $fieldTypes = array(
@@ -329,19 +339,22 @@ class Fields extends CActiveRecord {
                 'columnDefinition'=>'INT',
             ),
         );
+        // No scenario, return all data
         if(empty($scenario)){
             return $fieldTypes;
         }else{
+            // Scenario is a string, need to convert to array
             if(!is_array($scenario)){
                 $scenario = array($scenario);
             }
             $ret = array();
+            // Add the validator information to our return data
             if(in_array('validator', $scenario)){
-                if(count($scenario) == 1){
+                if(count($scenario) == 1){ // Only one scenario, can return a purely associative array
                     foreach($fieldTypes as $fieldType => $data){
                         $ret[$fieldType] = $data['validator'];
                     }
-                }else{
+                }else{ // More than one scenario, need to return each field type as an array
                     foreach($fieldTypes as $fieldType => $data){
                         $ret[$fieldType]['validator']=$data['validator'];
                     }
@@ -373,8 +386,11 @@ class Fields extends CActiveRecord {
         }
     }
 
-     /**
-     * Implodes an array of assignees
+    /**
+     * Implodes an array of usernames for multiple assignment fields. This method,
+     * if still used anyhwere, could be refactored to use JSON
+     * @param mixed $arr Array or string of usernames
+     * @return string A properly formatted assignment string
      */
     public static function parseUsers($arr){
 		$str="";
@@ -385,6 +401,13 @@ class Fields extends CActiveRecord {
 		return $str;
 	}
 
+    /**
+     * Similar to {@link Fields::parseUsers} but is used in the case where it's an associative
+     * array of username => full name and the array keys need to be used to generate
+     * our assignment string
+     * @param array $arr An array of format username => full name
+     * @return string A properly formatted assignment string
+     */
 	public static function parseUsersTwo($arr){
 		$str="";
 		if(is_array($arr)){

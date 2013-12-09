@@ -41,10 +41,6 @@
  */
 abstract class X2FlowTrigger extends X2FlowItem {
 
-    /**
-     * "Cache" of instantiated triggers, for reference purposes
-     */
-    protected static $_instances;
 	/**
 	 * $var string the type of notification to create
 	 */
@@ -720,10 +716,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @return string the empty string or the title of the trigger with the given class name
 	 */
 	public static function getTriggerTitle ($triggerType) {
-        if (isset (self::$_instances) && in_array ($triggerType, array_keys (self::$_instances))) {
-            $class = self::$_instances[$triggerType]; 
-            return Yii::t('studio', $class->title);
-        }
 		foreach(self::getTriggerInstances() as $class) {
             if (get_class ($class) === $triggerType) {
                 return Yii::t('studio', $class->title);
@@ -733,24 +725,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	}
 
     public static function getTriggerInstances(){
-        if(!isset(self::$_instances)) {
-            self::$_instances = array();
-            foreach(scandir(
-                Yii::getPathOfAlias('application.components.x2flow.triggers')) as $file) {
-
-                if(!preg_match ('/\.php$/', $file) || $file === '.' || $file === '..' || 
-                   $file === 'X2FlowTrigger.php' || $file === 'X2FlowSwitch.php' || 
-                   $file === 'BaseTagTrigger.php') {
-		    		continue;
-                }
-
-                // remove file extension and create instance
-			    $class = self::create(array('type'=>substr($file,0,-4)));	
-                if($class !== null) {
-                    self::$_instances[$class->title] = $class;
-                }
-            }
-        }
-        return self::$_instances;
+        return self::getInstances('triggers',array(__CLASS__,'X2FlowSwitch','BaseTagTrigger'));
     }
 }

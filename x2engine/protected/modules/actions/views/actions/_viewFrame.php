@@ -65,6 +65,19 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
         <script type="text/javascript" src="<?php echo Yii::app()->clientScript->coreScriptUrl.'/jui/js/jquery-ui-i18n.min.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/jquery-ui-timepicker-addon.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/qtip/jquery.qtip.min.js'; ?>"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("a").click(function(event){
+                    event.preventDefault();
+                    var thiswindow = window, i = 0;
+                    while(thiswindow != top && i < 10) {
+                        thiswindow = thiswindow.parent;
+                        i++;
+                    }
+                    thiswindow.location = this.getAttribute("href");
+                });
+            });
+        </script>
         <style>
             .control-button{
                 display:inline-block;

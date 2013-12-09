@@ -36,6 +36,18 @@ return array(
 		'private' => '0',
 		'description' => NULL,
 		'mimetype' => NULL,
+	),
+        'testfile' => array(
+		'id' => '25',
+		'associationType' => 'none',
+		'associationId' => NULL,
+		'uploadedBy' => 'admin',
+		'fileName' => 'testfile.txt',
+		'createDate' => '1360739993',
+		'lastUpdated' => '1360739993',
+		'private' => '0',
+		'description' => NULL,
+		'mimetype' => NULL,
 	)
 );
 ?>

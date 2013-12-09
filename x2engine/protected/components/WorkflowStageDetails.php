@@ -60,6 +60,10 @@ class WorkflowStageDetails extends X2Widget {
 			$("#workflowStageDetails").dialog({
 				autoOpen:false,
 				closeOnEscape:true,
+                resizable: false,
+                modal: false,
+                show: "fade",
+                hide: "fade",
 				width:400,
 				buttons:{
 					"'.addslashes(Yii::t('app','Save')).'": function() { saveWorkflowStageDetails(); },
@@ -78,6 +82,29 @@ class WorkflowStageDetails extends X2Widget {
 					"'.addslashes(Yii::t('app','Close')).'": function() { $(this).dialog("close"); }
 					
 					
+				}
+			});
+			$("#workflowCommentDialog").dialog({
+				autoOpen:false,
+                resizable: false,
+                modal: true,
+                show: "fade",
+                hide: "fade",
+				width:400,
+				buttons:{
+					submit: {
+                        click: function() {
+                            completeWorkflowStageComment(); return false;
+					    },
+                        text: "'.addslashes(Yii::t('app','Submit')).'",
+                        "class": "highlight"
+                    },
+					cancel: {
+                        text: "'.addslashes(Yii::t('app','Cancel')).'",
+                        click: function() {
+                            $(this).dialog("close");
+					    }
+                    }
 				}
 			});
 		});

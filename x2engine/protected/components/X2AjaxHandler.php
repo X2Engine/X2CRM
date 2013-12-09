@@ -45,7 +45,7 @@ class X2AjaxHandler extends CFilter {
         if (Yii::app()->request->getIsAjaxRequest() && isset($_GET["ajax"])) {
             if($_GET['ajax']=='history'){
                 if(isset($_GET['id'])){
-                    $type = strtolower($filterChain->controller->id);
+                    $type = $filterChain->controller->id;
                     $filterChain->controller->widget('History', array('associationType' => $type, 'associationId' => $_GET['id']));
                     Yii::app()->end();
                 }

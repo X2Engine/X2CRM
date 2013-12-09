@@ -376,7 +376,10 @@ $(function() {
                     }else{
                         var associationType=event.associationType;
                     }
-                    viewAction.prepend('<b><a href="' + event.associationUrl + '">' + event.associationName + '</a></b><br />');
+                    if(event.linked) {
+                        viewAction.prepend('<b><a href="' + event.associationUrl + '">' + event.associationName + '</a></b><br />');
+                    }
+
                     boxButtons.unshift({  //prepend button
                         text: '<?php echo Yii::t('calendar', 'View'); ?> '+associationType,
                         click: function() {
@@ -409,7 +412,9 @@ $(function() {
 						boxTitle = 'Contact Event';
 					else
 						boxTitle = 'Contact Action';
-					viewAction.prepend('<b><a href="' + event.associationUrl + '">' + event.associationName + '</a></b><br />');
+                    if(viewAction.linked) {
+                        viewAction.prepend('<b><a href="' + event.associationUrl + '">' + event.associationName + '</a></b><br />');
+                    }
 					boxButtons.unshift({  //prepend button
 						text: '<?php echo Yii::t('contacts', 'View Contact'); ?>',
 						click: function() {
@@ -490,7 +495,7 @@ $(function() {
 					$('.ui-dialog-titlebar').css('padding', '0.2em 0.4em');
 					$('.ui-dialog-titlebar-close').css({
 						'height': '18px',
-						'widht': '18px'
+						'width': '18px'
 						});
 					$(viewAction).css('font-size', '0.75em');
 				},

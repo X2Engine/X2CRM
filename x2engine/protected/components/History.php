@@ -50,10 +50,11 @@ class History extends X2Widget {
     public $relationships = 0; // don't show actions on related records by default
 
     /**
-     *
+     * This renders the list view of the action history for a record.
      */
     public function run(){
         if($this->filters){
+            // Filter tabs allowed
             $historyTabs = array(
                 'all' => Yii::t('app', 'All'),
                 'actions' => Yii::t('app', 'Actions'),
@@ -88,6 +89,7 @@ class History extends X2Widget {
         }else{
             $historyTabs = array();
         }
+        // Register JS to make the history tabs update the history when selected.
         Yii::app()->clientScript->registerScript('history-tabs', "
             var relationshipFlag={$this->relationships};
             var currentHistory='".$this->historyType."';
@@ -134,11 +136,12 @@ class History extends X2Widget {
     }
 
     /**
-     *
+     * Function to actually generate the condition and data provider for the
+     * History CListView.
      * @return \CActiveDataProvider
      */
     public function getHistory(){
-
+        // Based on our filter, we need a particular additional criteria
         $historyCriteria = array(
             'all' => '',
             'actions' => ' AND type IS NULL',
@@ -150,12 +153,14 @@ class History extends X2Widget {
             'webactivity' => 'AND type IN ("weblead","webactivity")'
         );
         if($this->relationships){
+            // Add association conditions for our relationships
             $type = $this->associationType;
             $model = X2Model::model($type)->findByPk($this->associationId);
             if(count($model->relatedX2Models) > 0){
                 $associationCondition =
 					"((associationId={$this->associationId} AND ".
 					"associationType='{$this->associationType}')";
+                // Loop through related models and add an association type OR for each
                 foreach($model->relatedX2Models as $relatedModel){
                     if($relatedModel instanceof X2Model){
                         $associationCondition .=
@@ -174,11 +179,13 @@ class History extends X2Widget {
 				'associationId='.$this->associationId.' AND '.
 				'associationType="'.$this->associationType.'"';
         }
+        // Fudge replacing Opportunity and Quote because they're stored as plural in the actions table
         $associationCondition =
 			str_replace('Opportunity', 'opportunities', $associationCondition);
         $associationCondition = str_replace('Quote', 'quotes', $associationCondition);
         $visibilityCondition = '';
         $module = isset(Yii::app()->controller->module) ? Yii::app()->controller->module->getId() : Yii::app()->controller->getId();
+        // Apply history privacy settings so that only allowed actions are viewable.
         if(!Yii::app()->user->checkAccess($module.'Admin')){
             if(Yii::app()->params->admin->historyPrivacy == 'user'){
                 $visibilityCondition = ' AND (assignedTo="'.Yii::app()->user->getName().'")';

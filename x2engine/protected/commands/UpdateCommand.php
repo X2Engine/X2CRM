@@ -213,10 +213,10 @@ class UpdateCommand extends CConsoleCommand {
         $status = 0;
         $latestUpdaterVersion = $this->getLatestUpdaterVersion();
         if($latestUpdaterVersion){
-            if(version_compare($updaterVersion,$latestUpdaterVersion) < 0 && $autoRefresh){
+            if(version_compare($updaterVersion,$latestUpdaterVersion) < 0){
                 $classes = $this->updateUpdater($latestUpdaterVersion);
                 if(empty($classes)){
-                    $this->output(Yii::t('admin', 'The updater is now up-to-date and compliant with the updates server.'));
+                    $this->output(Yii::t('admin', 'The updater is now up-to-date and compliant with the updates server. Re-run the command to proceed.'));
                 } else {
                     $this->output(Yii::t('admin', 'One or more dependencies of AdminController are missing and could not be automatically retrieved. They are {classes}', array('{classes}' => implode(', ', $classes))),1,1);
                 }
@@ -230,7 +230,7 @@ class UpdateCommand extends CConsoleCommand {
                 $this->output(Yii::t('admin','Could not connect to the updates server, or an error occurred on the updates server.').' '.(
                         $this->requirements['extensions']['curl'] || $this->requirements['environment']['allow_url_fopen']
                         ? ''
-                        : Yii::t('admin','Note, this system does not permit outbound HTTP requests via PHP.')
+                        : Yii::t('admin','Note, outbound HTTP requests are not permitted in this PHP runtime environment, because all methods of doing so have been disabled.')
                         ),1,1);
             }
         }

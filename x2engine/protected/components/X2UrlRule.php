@@ -36,6 +36,9 @@
 /**
  * Custom URL parsing class
  *
+ * The only change which has been made is the modification of a regex flag in URL
+ * parsing. Ctrl + F for "X2CHANGE" to see the location of this change.
+ *
  * @package X2CRM.components
  */
 class X2UrlRule extends CUrlRule
@@ -171,6 +174,15 @@ class X2UrlRule extends CUrlRule
 		else
 			$this->pattern.='$/u';
 
+        // X2CHANGE
+        /*
+         * Because of the way our URLs work that we want to hide module/controller
+         * names from our path so that we see "contacts/index" instead of
+         * "contacts/contacts/index" we need to allow for multiple named subpatterns
+         * in a regex with the same name. The only way to do this is to add the
+         * "?J" modifier to the start of the pattern, which has been added in the
+         * routePattern property below.
+         */
 		if($this->references!==array())
 			$this->routePattern='/^(?J)'.strtr($this->route,$tr2).'$/u';
 

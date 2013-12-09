@@ -98,7 +98,7 @@ function setUpTextEditor (suppressInsertableAttrs) {
 		if(template != "0") {
 			
 			$.ajax({
-				url:yii.baseUrl+"/index.php/docs/fullView/"+template+"?json=1",
+				url:yii.baseUrl+"/index.php/docs/fullView/"+template+"?json=1&replace=1",
 				type:"GET",
 				dataType:"json"
 			}).done(function(data) {

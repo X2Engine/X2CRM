@@ -54,6 +54,10 @@ class X2CRMUpdateAction extends WebUpdaterAction {
      *  nothing unless the scenario is "delete".
 	 */
 	public function run($scenario = 'update',$redirect=0){
+        // Get configuration variables:
+        $configVars = $this->configVars;
+        extract($configVars);
+
         if(!in_array($scenario,array('update','upgrade','delete')))
             throw new CHttpException(400);
         if($scenario == 'delete'){
@@ -65,9 +69,7 @@ class X2CRMUpdateAction extends WebUpdaterAction {
                 self::respond('');
             }
         }
-        // Get configuration variables:
-        $configVars = $this->configVars;
-        extract($configVars);
+
         $unique_id = $this->uniqueId;
         $edition = $this->edition;
         $this->scenario = $scenario;
@@ -110,14 +112,7 @@ class X2CRMUpdateAction extends WebUpdaterAction {
         if(version_compare($version, $latestVersion) < 0){ // If the effective version is not the most recent version
             if($scenario == 'update'){
                 // Update.
-                //
-                // It's okay that the app isn't at the latest version. But if
-                // $redirect=1, the user is using the download link.
-                if($redirect){
-                    // Redirect to the download link
-                    $this->controller->redirect($this->updateServer.'/'.$this->getUpdateDataRoute($version, $unique_id, $edition));
-                } else
-                    $this->controller->render('updater',$viewParams);
+                $this->controller->render('updater',$viewParams);
             }else{ 
                 // Upgrade.
                 //
@@ -139,7 +134,8 @@ class X2CRMUpdateAction extends WebUpdaterAction {
                 $this->controller->render('updater', array(
                     'scenario' => 'message',
                     'version' => $version,
-                    'message' => Yii::t('admin', 'X2CRM is at the latest version!')
+                    'message' => Yii::t('admin', 'X2CRM is at the latest version!'),
+                    'longMessage' => $redirect ? Yii::t('admin','Download cancelled (no update package necessary)') : ''
                 ));
             }else{
                 // Upgrade.

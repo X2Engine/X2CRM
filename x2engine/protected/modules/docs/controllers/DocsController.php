@@ -122,11 +122,21 @@ class DocsController extends x2base {
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
-	public function actionFullView($id,$json=0) {
-
+	public function actionFullView($id,$json=0,$replace=0) {
 		$model = $this->loadModel($id);
-
-		echo $json ? CJSON::encode(array('body'=>$model->text,'subject'=>$model->subject)) : $model->text;
+        $response = array(
+            'body' => $model->text,
+            'subject' => $model->subject
+        );
+        if($replace)
+            foreach(array_keys($response) as $key)
+                $response[$key] = str_replace('{signature}', Yii::app()->params->profile->signature, $response[$key]);
+        if($json){
+            header('Content-type: application/json');
+            echo json_encode($response);
+        }else{
+            echo $response['body'];
+        }
 	}
 
 	/**

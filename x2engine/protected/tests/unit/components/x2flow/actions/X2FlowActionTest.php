@@ -34,61 +34,18 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::app()->clientScript->registerScript('contact-qtip', '
-function refreshQtip() {
-	$(".contact-name").each(function (i) {
-		var contactId = $(this).attr("href").match(/\\d+$/);
+Yii::import('application.tests.unit.components.x2flow.X2FlowItemTest');
 
-		if(contactId !== null && contactId.length) {
-			$(this).qtip({
-				content: {
-					text: "'.addslashes(Yii::t('app','loading...')).'",
-					ajax: {
-						url: yii.baseUrl+"/index.php/contacts/qtip",
-						data: { id: contactId[0] },
-						method: "get"
-					}
-				},
-				style: {
-				}
-			});
-		}
-	});
+/**
+ * 
+ * @package X2CRM.tests.unit.components.x2flow.actions
+ * @author Demitri Morgan <demitri@x2engine.com>
+ */
+class X2FlowActionTest extends X2FlowItemTest {
+
+    public function testGetActionInstances() {
+        $this->assertGetInstances('Action',array('X2FlowAction'));
+    }
 }
 
-$(function() {
-	refreshQtip();
-});
-');
 ?>
-<div class='flush-grid-view'>
-<?php $this->widget('zii.widgets.grid.CGridView', array(
-	'dataProvider' => $dataProvider,
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=>'<div class="page-title"><h2>'.Yii::t('app','Search Results').'</h2><div class="title-bar">{summary}</div></div>{items}{pager}',
-	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
-	'columns' => array(
-		array(
-			'name' => Yii::t('app','Name'),
-			'type' => 'raw',
-			'value' => '$data["#recordLink"]',
-		),
-		array(
-			'name' => Yii::t('app','Type'),
-			'type' => 'raw',
-			'value' => '$data["type"]', 
-		),
-		array(
-			'name' => Yii::t('app','Description'), 
-			'type' => 'raw',
-			'value' => 'Formatter::truncateText(CHtml::encode($data["description"]),140)'
-		),
-        array(
-			'name' => Yii::t('app','Assigned To'),
-			'type' => 'raw',
-			'value' => 'isset($data["assignedTo"])?$data["assignedTo"]:""', 
-		),
-	),
-));
-?>
-</div>

@@ -107,7 +107,7 @@ class Actions extends X2Model {
             return parent::getAttributeLabel($attribute);
         }
     }
-
+    
     /**
      * Fixes up record association, parses dates (since this doesn't use {@link X2Model::setX2Fields()})
      * @return boolean whether or not to save
@@ -148,6 +148,19 @@ class Actions extends X2Model {
             }
         }
         return parent::afterSave();
+    }
+
+    public function validate($attributes = null, $clearErrors = true){
+        if(!parent::validate($attributes, $clearErrors)){
+            return false;
+        }
+        if(!empty($this->type) && $this->type != 'event'){
+            foreach(array('associationType', 'associationId') as $attr){
+                if(empty($this->$attr) || $this->$attr == 'None')
+                    $this->addError($attr, Yii::t('actions', 'Association is required for actions of this type.'));
+            }
+        }
+        return !$this->hasErrors();
     }
 
     public function afterFind(){

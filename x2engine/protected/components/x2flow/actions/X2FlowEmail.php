@@ -74,10 +74,8 @@ class X2FlowEmail extends X2FlowAction {
 	public function execute(&$params) {
 		// die(var_dump(array_keys($params)));
 		$eml = new InlineEmail;
-        $historyFlag = false;
 		$options = &$this->config['options'];
         if(isset($params['model'])){
-            $historyFlag = true;
             $eml->targetModel=$params['model'];
         }
 		if(isset($options['cc']['value']))
@@ -102,7 +100,7 @@ class X2FlowEmail extends X2FlowAction {
 			$eml->template = $this->parseOption('template',$params);
 			$eml->prepareBody();
 		}
-		$result = $eml->send($historyFlag);
+		$result = $eml->send(false);
 		if (isset($result['code']) && $result['code'] == 200) {
             return array (true, "");
         } else {

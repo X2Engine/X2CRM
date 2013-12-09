@@ -66,6 +66,13 @@ class Media extends X2Model {
         return 'x2_media';
     }
 
+    public function afterDelete() {
+        parent::afterDelete();
+        
+        if (file_exists($this->getPath()))
+            unlink($this->getPath());
+    }
+    
     public function behaviors(){
         $behaviors = array_merge(parent::behaviors(), array(
             'X2LinkableBehavior' => array(
@@ -165,12 +172,13 @@ class Media extends X2Model {
      * Magic path getter
      *
      * Obtains the full, absolute path to a file.
+     * @return String|NULL Returns a path to the file or NULL if the file does not exist.
      */
     public function getPath(){
         if(!isset($this->_path)){
             $pathFmt = array(
-                '{bp}/uploads/media/{uploadedBy}/{fileName}',
-                '{bp}/uploads/{fileName}'
+                implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', 'media', '{uploadedBy}', '{fileName}')),
+                implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', '{fileName}'))
             );
             $basePath = realpath(Yii::app()->basePath.DIRECTORY_SEPARATOR.'..');
             $params = array(
@@ -184,6 +192,7 @@ class Media extends X2Model {
                     $this->_path = $path;
                     break;
                 }else{
+                    // The file does not exist.
                     $this->_path = null;
                 }
             }

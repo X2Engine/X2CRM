@@ -43,11 +43,21 @@
  */
 class Publisher extends X2Widget {
 
+    protected $allTabs = array(
+        'log-a-call',
+        'log-time-spent',
+        'new-action',
+        'new-comment'
+    );
+    private $_hiddenTabs;
+
     public $associationType;        // type of record to associate actions with
     public $associationId = '';        // record to associate actions with
     public $assignedTo = null;    // user actions will be assigned to by default
+    public $selectedTab = 'log-a-call';
 
     public $calendar = false;
+    public $hideTabs = array();
     public $model;
 
     public $viewParams = array(
@@ -55,8 +65,20 @@ class Publisher extends X2Widget {
         'associationId',
         'associationType',
         'calendar',
-        'associationType'
+        'associationType',
+        'hiddenTabs'
     );
+
+    public function getHiddenTabs() {
+        if(!isset($this->_hiddenTabs)) {
+            $this->_hiddenTabs = array();
+            $hiddenTabs = array_flip($this->hideTabs);
+            foreach($this->allTabs as $tab) {
+                $this->_hiddenTabs[$tab] = isset($hiddenTabs[$tab]);
+            }
+        }
+        return $this->_hiddenTabs;
+    }
 
 
     public function run() {
@@ -222,8 +244,9 @@ class Publisher extends X2Widget {
     });
     // "Quick note" menu event handler:
     $(document).on("change","#quickNote2",function(){
-        $("#Actions_actionDescription").val($(this).val());
+        $("#action-description").val($(this).val());
     });
+    x2.publisher.switchToTab("'.$this->selectedTab.'");
     ').'
     if($("#publisher .ui-state-active").length !== 0) { // if publisher is present (prevents a javascript error if publisher is not present)
         var selected = $("#publisher .ui-state-active").attr("aria-controls");
@@ -271,4 +294,16 @@ class Publisher extends X2Widget {
         $this->model = $model;
         $this->render('publisher',array_combine($this->viewParams,array_map(function($p)use($that){return $that->$p;},$this->viewParams)));
     }
+
+    //////////////////////////////////////////////////////////////
+    // BACKWARDS COMPATIBILITY FUNCTIONS FOR OLD CUSTOM MODULES //
+    //////////////////////////////////////////////////////////////
+
+    /**
+     * Old Publisher had "halfWidth" property
+     */
+    public function setHalfWidth($value) {
+        $this->calendar = !$value;
+    }
+
 }

@@ -64,10 +64,10 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
         // record types) will be displayed.
         ?>
         <ul>
-            <li><a href="#log-a-call"><?php echo Yii::t('actions', 'Log A Call'); ?></a></li>
-            <li><a href="#log-time-spent"><?php echo Yii::t('actions', 'Log Time'); ?></a></li>
-            <li><a href="#new-action"><b>+</b><?php echo Yii::t('actions', 'Action'); ?></a></li>
-            <li style='margin-right: 0'><a href="#new-comment"><b>+</b><?php echo Yii::t('actions', 'Comment'); ?></a></li>
+            <?php if(!$hiddenTabs['log-a-call']) { ?><li><a href="#log-a-call"><?php echo Yii::t('actions', 'Log A Call'); ?></a></li><?php } ?>
+            <?php if(!$hiddenTabs['log-time-spent']) { ?><li><a href="#log-time-spent"><?php echo Yii::t('actions', 'Log Time'); ?></a></li><?php } ?>
+            <?php if(!$hiddenTabs['new-action']) { ?><li><a href="#new-action"><b>+</b><?php echo Yii::t('actions', 'Action'); ?></a></li><?php } ?>
+            <?php if(!$hiddenTabs['new-comment']) { ?><li style='margin-right: 0'><a href="#new-comment"><b>+</b><?php echo Yii::t('actions', 'Comment'); ?></a></li><?php } ?>
         </ul>
     <?php } ?>
     <div class="form">
@@ -80,6 +80,7 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
         // inputs when not in calendar mode, specific to each tab, should go in.
         ?>
         <div class="row">
+            <?php if(!$hiddenTabs['log-a-call']) { ?>
             <div id="log-a-call">
             <?php echo CHtml::label(Yii::t('app','Quick Note'), 'quickNote', array('style' => 'display:inline-block;')); ?>
             <?php
@@ -94,10 +95,11 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
             ));
             ?>
             <?php echo CHtml::dropDownList('quickNote2', '', array('' => '-')); ?>
-            </div>
-            <div id="new-action"></div>
-            <div id="new-comment"></div>
-        </div>
+            </div><?php } ?>
+            <?php foreach(array('log-time-spent','new-action','new-comment') as $tab) { ?>
+            <?php if(!$hiddenTabs[$tab]) { ?><div id="<?php echo $tab; ?>"></div><?php } ?>
+            <?php } ?>
+         </div>
     <?php } else { ?>
         <span class="publisher-widget-title"><?php echo Yii::t('actions','New Event') ?></span>
     <?php } ?>

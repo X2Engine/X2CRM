@@ -645,16 +645,13 @@ abstract class X2Model extends CActiveRecord {
      * @param boolean $textOnly whether to generate HTML or plain text
      * @return string the HTML or text for the formatted attribute
      */
-    public function renderAttribute($fieldName, $makeLinks = true, $textOnly = true){
+    public function renderAttribute($fieldName, $makeLinks = true, $textOnly = true,$encode=true){
+        $render = function($x)use($encode){return $encode?CHtml::encode($x):$x;};
 
         $field = $this->getField($fieldName);
         if(!isset($field))
             return null;
 
-        /**
-         * Skip variable replacement in cases that a full session and request
-         * aren't available:
-         */
         if(Yii::app()->params->noSession){
             $webRequestAttributes = array(
                 'rating', // Uses a Yii widget, which requires access to the controller
@@ -664,7 +661,7 @@ abstract class X2Model extends CActiveRecord {
                 'text', // Uses convertUrls, which is in x2base
             );
             if(in_array($field->type, $webRequestAttributes))
-                return $this->$fieldName;
+                return $render($this->$fieldName);
         }
 
         switch($field->type){
@@ -674,18 +671,18 @@ abstract class X2Model extends CActiveRecord {
                 elseif(is_numeric($this->$fieldName))
                     return Formatter::formatLongDate($this->$fieldName);
                 else
-                    return $this->$fieldName;
+                    return $render($this->$fieldName);
             case 'dateTime':
                 if(empty($this->$fieldName))
                     return ' ';
                 elseif(is_numeric($this->$fieldName))
                     return Formatter::formatCompleteDate($this->$fieldName);
                 else
-                    return $this->$fieldName;
+                    return $render($this->$fieldName);
 
             case 'rating':
                 if($textOnly){
-                    return $this->$fieldName;
+                    return $render($this->$fieldName);
                 }else{
                     return Yii::app()->controller->widget('CStarRating', array(
                                 'model' => $this,
@@ -728,7 +725,7 @@ abstract class X2Model extends CActiveRecord {
                     return '';
                 }else{
                     $mailtoLabel = (isset($this->name) && !is_numeric($this->name)) ? '"'.$this->name.'" <'.$this->$fieldName.'>' : $this->$fieldName;
-                    return $makeLinks ? CHtml::mailto($this->$fieldName, $mailtoLabel) : $this->$fieldName;
+                    return $makeLinks ? CHtml::mailto($this->$fieldName, $mailtoLabel) : $render($this->$fieldName);
                 }
 
             case 'phone':
@@ -744,7 +741,7 @@ abstract class X2Model extends CActiveRecord {
                             return '<a href="tel:+1'.$phoneCheck->number.'">'.$this->$fieldName.'</a>';
                         }
                     }
-                    return $this->$fieldName;
+                    return $render($this->$fieldName);
                 }
 
             case 'url':
@@ -755,14 +752,15 @@ abstract class X2Model extends CActiveRecord {
                     $text = '';
                 }elseif(!empty($field->linkType)){
                     switch($field->linkType){
+                        
                         case 'skype':
-                            $text = '<a href="callto:'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
+                            $text = '<a href="callto:'.$render($this->$fieldName).'">'.$render($this->$fieldName).'</a>';
                             break;
                         case 'googleplus':
-                            $text = '<a href="http://plus.google.com/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
+                            $text = '<a href="http://plus.google.com/'.$render($this->$fieldName).'">'.$render($this->$fieldName).'</a>';
                             break;
                         case 'twitter':
-                            $text = '<a href="http://www.twitter.com/#!/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
+                            $text = '<a href="http://www.twitter.com/#!/'.$render($this->$fieldName).'">'.$render($this->$fieldName).'</a>';
                             break;
                         case 'linkedin':
                             $text = '<a href="http://www.linkedin.com/in/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
@@ -815,11 +813,11 @@ abstract class X2Model extends CActiveRecord {
             case 'link':
                 $linkedModel = $this->getLinkedModel($fieldName);
                 if($linkedModel === null)
-                    return $this->$fieldName;
+                    return $render($this->$fieldName);
                 else
                     return $makeLinks ? $linkedModel->getLink() : $linkedModel->name;
             case 'boolean':
-                return $textOnly ? $this->$fieldName : CHtml::checkbox('', $this->$fieldName, array('onclick' => 'return false;', 'onkeydown' => 'return false;'));
+                return $textOnly ? $render($this->$fieldName) : CHtml::checkbox('', $this->$fieldName, array('onclick' => 'return false;', 'onkeydown' => 'return false;'));
 
             case 'currency':
                 if($this instanceof Product) // products have their own currency
@@ -828,13 +826,13 @@ abstract class X2Model extends CActiveRecord {
                     return empty($this->$fieldName) ? "&nbsp;" : Yii::app()->locale->numberFormatter->formatCurrency($this->$fieldName, Yii::app()->params['currency']);
 
             case 'percentage':
-                return $this->$fieldName !== null && $this->$fieldName !== '' ? (string) ($this->$fieldName)."%" : null;
+                return $this->$fieldName !== null && $this->$fieldName !== '' ? (string) ($render($this->$fieldName))."%" : null;
 
             case 'dropdown':
-                return X2Model::model('Dropdowns')->getDropdownValue($field->linkType, $this->$fieldName);
+                return $render(X2Model::model('Dropdowns')->getDropdownValue($field->linkType, $this->$fieldName));
 
             case 'parentCase':
-                return Yii::t(strtolower(Yii::app()->controller->id), $this->$fieldName);
+                return $render(Yii::t(strtolower(Yii::app()->controller->id), $this->$fieldName));
 
             case 'text':
                 return Yii::app()->controller->convertUrls($this->$fieldName);
@@ -846,13 +844,13 @@ abstract class X2Model extends CActiveRecord {
                 }else{
                     $creds = Credentials::model()->findByPk($this->$fieldName);
                     if(!empty($creds))
-                        return CHtml::encode($creds->name);
+                        return $render($creds->name);
                     else
                         return $sysleg;
                 }
 
             default:
-                return $this->$fieldName;
+                return $render($this->$fieldName);
         }
     }
 

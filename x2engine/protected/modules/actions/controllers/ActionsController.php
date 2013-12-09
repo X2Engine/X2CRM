@@ -538,7 +538,7 @@ class ActionsController extends x2base {
                         if($notification->user == $model->assignedTo && ($_POST['notificationUsers'] == 'assigned' || $_POST['notificationUsers'] == 'both')){
                             $notification->delete();
                         }elseif($notification->user == Yii::app()->user->getName() && ($_POST['notificationUsers'] == 'me' || $_POST['notificationUsers'] == 'both')){
-                            $noticiation->delete();
+                            $notification->delete();
                         }
                     }
                 }elseif(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){

@@ -1,3 +1,20 @@
+# 3.6.3 #
+12/9/2013
+* Fixed Bugs:  
+  * [286](http://x2software.com/index.php/bugReports/286): Clicking action frame links opens in iframe  
+  * [373](http://x2software.com/index.php/bugReports/373): Undefined index: RecordViewChart  
+  * [376](http://x2software.com/index.php/bugReports/376): preg_match() [<a href='function.preg-match'>function.preg-match</a>]: Unknown modifier '7'  
+  * [463](http://x2software.com/index.php/bugReports/463): Undefined variable: noticiation  
+  * [513](http://x2software.com/index.php/bugReports/513): strpos() expects parameter 1 to be string, array given  
+  * [541](http://x2software.com/index.php/bugReports/541): Invalid argument supplied for foreach()  
+  * [601](http://x2software.com/index.php/bugReports/601): Unable to resolve the request "Array/Array/index".  
+  * [602](http://x2software.com/index.php/bugReports/602): Unable to resolve the request "undefined/undefined/index".  
+  * [603](http://x2software.com/index.php/bugReports/603): asort() expects parameter 1 to be array, boolean given  
+  * [608](http://x2software.com/index.php/bugReports/608): strpos() expects parameter 1 to be string, array given  
+  * [635](http://x2software.com/index.php/bugReports/635): Class:  not found.  
+  * [652](http://x2software.com/index.php/bugReports/652): Property "Publisher.halfWidth" is not defined.  
+  * [658](http://x2software.com/index.php/bugReports/658): Download redirect link broken
+
 # 3.6.2 #
 11/26/2013
 * Changes to the web tracker allow broader browser support; see [release notes](RELEASE-NOTES.md) for details.

@@ -150,14 +150,14 @@ class Events extends CActiveRecord {
                                                 '{authorText}' => $authorText,
                                                 '{duration}' => empty($action->dueDate) || empty($action->completeDate) ? Yii::t('app', 'duration unknown') : Formatter::formatTimeInterval($action->dueDate, $action->completeDate, '{hoursMinutes}'),
                                                 '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl),
-                                                '{logAbbrev}' => Formatter::truncateText($action->actionDescription,60)
+                                                '{logAbbrev}' => $action->actionDescription
                                             ));
                                     break;
                                 case 'note':
                                     $text = Yii::t('app', '{authorText} posted a comment on {modelLink}: "{noteAbbrev}"', array(
                                                 '{authorText}' => $authorText,
                                                 '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl),
-                                                '{noteAbbrev}' => Formatter::truncateText($action->actionDescription,60)
+                                                '{noteAbbrev}' => $action->actionDescription
                                             ));
                                     break;
                                 case 'time':
@@ -165,7 +165,7 @@ class Events extends CActiveRecord {
                                                 '{authorText}' => $authorText,
                                                 '{time}' => Formatter::formatTimeInterval($action->dueDate, $action->completeDate, '{hoursMinutes}'),
                                                 '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType)),
-                                                '{noteAbbrev}' => Formatter::truncateText($action->actionDescription,60)
+                                                '{noteAbbrev}' => $action->actionDescription
                                             ));
                                     break;
                                 default:

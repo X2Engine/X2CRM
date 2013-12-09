@@ -283,7 +283,7 @@ class SearchController extends x2base {
             $records = array();
             $userRecords = array();
 
-            $regEx = "/$term/i";
+            $regEx = "/".preg_quote($term, '/')."/i";
 
             foreach($other as $key => $recordType){
                 $fieldList = $comparisons[$key];
@@ -362,7 +362,13 @@ class SearchController extends x2base {
 
             $records = Record::convert($records, false);
             if(count($records) == 1){
-                $this->redirect($this->createUrl($records[0]['link']));
+                // Only one match, so go straight to it.
+                // 
+                // The record's corresponding model class must have
+                // X2LinkableBehavior for this to be possible.
+                if(!empty($records[0]['#recordUrl'])) {
+                    $this->redirect($records[0]['#recordUrl']);
+                }
             }
             $dataProvider = new CArrayDataProvider($records, array(
                         'id' => 'id',

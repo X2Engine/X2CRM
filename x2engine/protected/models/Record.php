@@ -65,6 +65,19 @@ class Record {
             }else{
                 $temp['assignedTo']='';
             }
+            $linkObject = $record->asa("X2LinkableBehavior");
+            if ($linkObject instanceof CBehavior) {
+                $temp['#recordLink'] = $linkObject->link;
+                $temp['#recordUrl'] = $linkObject->url;
+            }
+            else {
+                if ($record->hasAttribute('name'))
+                    $temp['#recordLink'] = $record->name;
+                elseif($record->hasAttribute('id'))
+                    $temp['#recordLink'] = '#'.$record->id;
+                else
+                    $temp['#recordLink'] = '';
+            }
             if($record instanceof Contacts) {
 				$temp['id']=$record->id;
 				$temp['name']=$record->firstName.' '.$record->lastName;

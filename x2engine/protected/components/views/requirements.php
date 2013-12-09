@@ -226,6 +226,10 @@ $reqMessages = array_fill_keys(array(1, 2, 3), array()); // Severity levels
 $requirements = array_fill_keys(array('functions','classes','extensions','environment'),array());
 $rbm = installer_t("required but missing");
 
+// Sanity check:
+if(!(@function_exists('function_exists') && @function_exists('extension_loaded')))
+    throw new Exception(installer_t('The functions function_exist and/or extension_loaded are unavailable!'));
+
 //////////////////////////////////////////////
 // TOP PRIORITY: BIG IMPORTANT REQUIREMENTS //
 //////////////////////////////////////////////
@@ -349,7 +353,7 @@ if(!($requirements['extensions']['hash']=extension_loaded('hash'))){
 $requiredFunctions = array(
 	'mb_regex_encoding',
 	'getcwd',
-	'chmod',
+	'chmod'
 );
 $missingFunctions = array();
 foreach($requiredFunctions as $function)
@@ -421,8 +425,15 @@ if($tryAccess){
 	}
 }
 
+// The ability to create network sockets, essential for SMTP-based email delivery:
+if(!(bool) ($requirements['environment']['fsockopen'] = function_exists('fsockopen'))) {
+    $reqMessages[2][] = installer_t('The function fsockopen is unavailable or has been disabled on this server. X2CRM will not be able to send email via SMTP.');
+}
+
 // Check the ability to make database backups during updates:
-$canBackup = $requirements['functions']['proc_open'] = function_exists('proc_open');
+if(!(bool) ($canBackup = $requirements['functions']['proc_open'] = function_exists('proc_open'))) {
+    $reqMessages[2][] = installer_t('The function proc_open is unavailable on this system. X2CRM will not be able to control the local cron table, or perform database backups, or automatically restore a database to its backup in the event of a failed update.');
+}
 $requirements['environment']['shell'] = $canBackup;
 if($canBackup){
 	try{
@@ -451,9 +462,9 @@ if($canBackup){
 	}
     $canBackup = isset($prog);
 }
-if(!$canBackup){
+if(!$canBackup && $requirements['functions']['proc_open']){
     $requirements['environment']['shell'] = 0;
-	$reqMessages[2][] = installer_t('The function proc_open and/or the "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.');
+	$reqMessages[2][] = installer_t('The "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.');
 }
 // Check the session save path:
 $ssp = ini_get('session.save_path');

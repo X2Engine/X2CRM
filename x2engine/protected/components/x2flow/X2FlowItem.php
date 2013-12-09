@@ -38,7 +38,13 @@
  * @package X2CRM.components.x2flow
  */
 abstract class X2FlowItem extends CComponent {
-	/**
+
+    /**
+     * "Cache" of instantiated triggers, for reference purposes
+     */
+    protected static $_instances;
+
+    /**
 	 * $var string the text label for this action
 	 */
 	public $label = '';
@@ -206,6 +212,40 @@ abstract class X2FlowItem extends CComponent {
         
 		return X2Flow::parseValue($options[$name]['value'],$type,$params);
 	}
+
+    /**
+     * Generalized mass-instantiation method.
+     *
+     * Loads and instantiates all X2Flow items of a given type (i.e. actions,
+     * triggers).
+     * 
+     * @param type $type
+     * @param type $excludeClasses
+     * @return type
+     */
+    public static function getInstances($type,$excludeClasses=array()) {
+        if(!isset(self::$_instances))
+            self::$_instances = array();
+        if(!isset(self::$_instances[$type])) {
+            $excludeFiles = array();
+            foreach($excludeClasses as $class) {
+                $excludedFiles[] = "$class.php";
+            }
+            $excludedFiles[] = '.';
+            $excludedFiles[] = '..';
+
+            self::$_instances[$type] = array();
+            foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.'.$type)) as $file) {
+                if(!preg_match ('/\.php$/', $file) || in_array($file,$excludedFiles)) {
+                    continue;
+                }
+                $class = self::create(array('type'=>substr($file,0,-4)));
+                if($class !== null)
+                    self::$_instances[$type][] = $class;
+            }
+        }
+        return self::$_instances[$type];
+    }
 
 
 }
