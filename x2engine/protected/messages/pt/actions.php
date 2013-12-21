@@ -143,4 +143,7 @@ return array (
 '{user} completed an action: {action}'=>'{user} completou uma ação: {action}',
 'Stage {n}: {stage} was completed for {record}'=>'Stage {n} : {stage} foi concluída para {record}',
 '{user} completed stage {n}: {stage} was completed for {record}'=>'{user} concluído a fase {n} : {stage} foi concluída para {record}',
+'Log Time'=>'Log Tempo',
+'Time started'=>'Tempo começou',
+'Time ended'=>'Tempo terminou',
 );

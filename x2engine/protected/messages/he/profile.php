@@ -77,4 +77,7 @@ return array (
 'Theme name already exists or is invalid.'=>'שם ערכת נושא כבר קיים או אינה חוקית.',
 'Theme created successfully.'=>'נושא נוצר בהצלחה.',
 'Page Header Color'=>'צבע כותרת דף',
+'Edit Profile'=>'עריכת פרופיל',
+'Disable phone field links?'=>'לא לבצע קישורי תחום טלפון?',
+'Disable notifications pop-up?'=>'שבת התראות מוקפצת?',
 );

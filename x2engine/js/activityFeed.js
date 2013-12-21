@@ -35,9 +35,9 @@
 
 
 // Globals
-x2.whatsNew.timeout = null; // used to clear timeout when editor resize animation is called
-x2.whatsNew.editorManualResize = false; // used to prevent editor resize animation on manual resize
-x2.whatsNew.editorIsExpanded = false; // used to prevent text field expansion if already expanded
+x2.activityFeed.timeout = null; // used to clear timeout when editor resize animation is called
+x2.activityFeed.editorManualResize = false; // used to prevent editor resize animation on manual resize
+x2.activityFeed.editorIsExpanded = false; // used to prevent text field expansion if already expanded
 
 /*
 Removes an error div created by createErrorBox ().  
@@ -155,7 +155,7 @@ Animate resize of the new post ckeditor window.
 */
 function animateEditorVerticalResize (initialHeight, newHeight,
                                       animationTime /* in milliseconds */) {
-    if (x2.whatsNew.editorManualResize) { // user is currently resizing text field manually
+    if (x2.activityFeed.editorManualResize) { // user is currently resizing text field manually
         return;
     }
 
@@ -177,10 +177,10 @@ function animateEditorVerticalResize (initialHeight, newHeight,
     if (!increaseHeight) delta *= -1;
     var currentHeight = initialHeight;
 
-    if (x2.whatsNew.timeout !== null) {
-        window.clearTimeout (x2.whatsNew.timeout); // clear an existing animation timeout
+    if (x2.activityFeed.timeout !== null) {
+        window.clearTimeout (x2.activityFeed.timeout); // clear an existing animation timeout
     }
-    x2.whatsNew.timeout = window.setTimeout (function resizeTimeout () {
+    x2.activityFeed.timeout = window.setTimeout (function resizeTimeout () {
         if (--steps === 0) {
             delta = lastStepSize;
             if (!increaseHeight) delta *= -1;
@@ -188,9 +188,9 @@ function animateEditorVerticalResize (initialHeight, newHeight,
         window.newPostEditor.resize ("100%", currentHeight + delta, true);
         currentHeight += delta;
         if (increaseHeight && currentHeight < newHeight) {
-            x2.whatsNew.timeout = setTimeout (resizeTimeout, delay);
+            x2.activityFeed.timeout = setTimeout (resizeTimeout, delay);
         } else if (!increaseHeight && currentHeight > newHeight) {
-            x2.whatsNew.timeout = setTimeout (resizeTimeout, delay);
+            x2.activityFeed.timeout = setTimeout (resizeTimeout, delay);
         }
     }, delay);
 }
@@ -227,7 +227,7 @@ function finishMinimizeEditor () {
     }
     $("#save-button").removeClass("highlight");
     $("#post-buttons").slideUp (400);
-    x2.whatsNew.editorIsExpanded = false;
+    x2.activityFeed.editorIsExpanded = false;
 
     // focus on dummy input field to negate forced toolbar collapse refocusing on editor
     removeCursorFromEditor ();
@@ -296,7 +296,7 @@ function minimizePosts(){
     });
 }
 
-//var minimize = x2.whatsNew.minimizeFeed;
+//var minimize = x2.activityFeed.minimizeFeed;
 function restorePosts(){
     $('.items').find ('.event-text').each (function (index, element) {
         var text = element;
@@ -325,13 +325,13 @@ function setupEditorBehavior () {
     }
 
     window.newPostEditor = createCKEditor (
-        "Events_text", { height:70, toolbarStartupExpanded: false, placeholder: x2.whatsNew.translations['Enter text here...']}, editorCallback);
+        "Events_text", { height:70, toolbarStartupExpanded: false, placeholder: x2.activityFeed.translations['Enter text here...']}, editorCallback);
 
     function editorCallback () {
 
         // expand post buttons if user manually resizes
         CKEDITOR.instances.Events_text.on ("resize", function () {
-            if (x2.whatsNew.editorManualResize && !x2.whatsNew.editorIsExpanded) {
+            if (x2.activityFeed.editorManualResize && !x2.activityFeed.editorIsExpanded) {
                 CKEDITOR.instances.Events_text.focus ();
             }
         });
@@ -339,17 +339,17 @@ function setupEditorBehavior () {
         // prevent editor resize animation when user is manually resizing
         $(".cke_resizer_ltr").mousedown (function () {
             $(document).one ("mouseup", function () {
-                x2.whatsNew.editorManualResize = false;
+                x2.activityFeed.editorManualResize = false;
             });
-            x2.whatsNew.editorManualResize = true;
+            x2.activityFeed.editorManualResize = true;
         });
 
     }
 
     // custom event triggered by ckeditor confighelper plugin
     $(document).on ("myFocus", function () {
-        if (!x2.whatsNew.editorIsExpanded) {
-            x2.whatsNew.editorIsExpanded = true;
+        if (!x2.activityFeed.editorIsExpanded) {
+            x2.activityFeed.editorIsExpanded = true;
             $("#save-button").addClass ("highlight");
             var editorMinHeight = window.newPostEditor.config.height;
             var newHeight = 140;
@@ -362,7 +362,7 @@ function setupEditorBehavior () {
     $("html").click (function () {
         var editorText = window.newPostEditor.getData();
 
-        if (x2.whatsNew.editorIsExpanded && editorText === "" &&
+        if (x2.activityFeed.editorIsExpanded && editorText === "" &&
             $('#upload').val () === "") {
 
             initMinimizeEditor ();
@@ -382,12 +382,15 @@ function setupEditorBehavior () {
 
 
 function setupActivityFeed () {
-    x2.whatsNew.DEBUG && console.log ('setupActivityFeed');
+    x2.activityFeed.DEBUG && console.log ('setupActivityFeed');
 
     function updateComments(id){
         $.ajax({
             url:"loadComments",
-            data:{id:id},
+            data:{
+                id:id,
+                profileId: x2.activityFeed.profileId 
+            },
             success:function(data){
                 $("#"+id+"-comments").html(data);
             }
@@ -421,10 +424,10 @@ function setupActivityFeed () {
         e.preventDefault();
         checkedFlag =! checkedFlag;
         if(checkedFlag){
-            $(this).html(x2.whatsNew.translations['Uncheck Filters']);
+            $(this).html(x2.activityFeed.translations['Uncheck Filters']);
             $(".filter-checkbox").attr("checked","checked");
         }else{
-            $(this).html(x2.whatsNew.translations['Check Filters']);
+            $(this).html(x2.activityFeed.translations['Check Filters']);
             $(".filter-checkbox").attr("checked",null);
         }
     });
@@ -432,7 +435,7 @@ function setupActivityFeed () {
     $(document).on("click","#min-posts",function(e){
         e.preventDefault();
         minimizePosts();
-        x2.whatsNew.minimizeFeed = true;
+        x2.activityFeed.minimizeFeed = true;
         $(this).toggle();
         $(this).prev().show();
     });
@@ -440,7 +443,7 @@ function setupActivityFeed () {
     $(document).on("click","#restore-posts",function(e){
         e.preventDefault();
         restorePosts();
-        x2.whatsNew.minimizeFeed = false;
+        x2.activityFeed.minimizeFeed = false;
         $(this).toggle();
         $(this).next().show();
     });
@@ -454,7 +457,7 @@ function setupActivityFeed () {
         window.location = pieces2[0]+"?filters=true&visibility=&users=&types=&subtypes=&default=false";
     });
 
-    if(x2.whatsNew.minimizeFeed === true){
+    if(x2.activityFeed.minimizeFeed === true){
         $("#min-posts").click();
     }
     $(".date-break.first").after("<div class='list-view'><div id='new-events' class='items' style='display:none;border-bottom:solid #BABABA;'></div></div>");
@@ -482,14 +485,14 @@ function setupActivityFeed () {
         pieces = str.split("?");
         var str2 = pieces[0];
         pieces2 = str2.split("#");
-        window.location = pieces2[0] + "?filters=true&visibility=&users=" + x2.whatsNew.usersGroups + 
+        window.location = pieces2[0] + "?filters=true&visibility=&users=" + x2.activityFeed.usersGroups + 
             "&types=&subtypes=&default=false";
     });
 
     $(document).on("click","#toggle-all-comments",function(e){
         e.preventDefault();
-        x2.whatsNew.commentFlag = !x2.whatsNew.commentFlag;
-        if(x2.whatsNew.commentFlag){
+        x2.activityFeed.commentFlag = !x2.activityFeed.commentFlag;
+        if(x2.activityFeed.commentFlag){
             $(".comment-link").click();
         }else{
             $(".comment-hide-link").click();
@@ -528,14 +531,14 @@ function setupActivityFeed () {
 
 function makePostExpandable (element) {
     if ($(element).hasClass ('is-expandable')) return;
-    x2.whatsNew.DEBUG && console.log ('makePostExpandable');
+    x2.activityFeed.DEBUG && console.log ('makePostExpandable');
     $(element).addClass ('is-expandable');
-    x2.whatsNew.DEBUG && console.log (element);
+    x2.activityFeed.DEBUG && console.log (element);
     $(element).expander ({
         slicePoint: 80,
         expandPrefix: '',
-        expandText: ' [' + x2.whatsNew.translations['Read more'] + ']',
-        userCollapseText: '[' + x2.whatsNew.translations['Read less'] + ']',
+        expandText: ' [' + x2.activityFeed.translations['Read more'] + ']',
+        userCollapseText: '[' + x2.activityFeed.translations['Read less'] + ']',
         expandEffect: 'show',
         collapseEffect: 'slideUp',
         summaryClass: 'jquery-expandable-summary',
@@ -551,8 +554,8 @@ function makePostExpandable (element) {
                 removeClass ('expandable-details-override');
         }
     });
-    if (x2.whatsNew.minimizeFeed === false) {
-        x2.whatsNew.DEBUG && console.log ('clicking read more');
+    if (x2.activityFeed.minimizeFeed === false) {
+        x2.activityFeed.DEBUG && console.log ('clicking read more');
         $(element).find ('.read-more').find ('a').click ();
     }
 }
@@ -578,12 +581,12 @@ function setupBroadcastDialog () {
         var userIdList = $('#broadcast-dialog-user-select').val ();
         var errorMsgs = [];
         if (userIdList === null) {
-            x2.whatsNew.DEBUG && console.log ('clickBroadcastButton if');
-            errorMsgs.push (x2.whatsNew.translations['broadcast error message 1']);
+            x2.activityFeed.DEBUG && console.log ('clickBroadcastButton if');
+            errorMsgs.push (x2.activityFeed.translations['broadcast error message 1']);
         }
         if ($('#email-users').attr ('checked') === undefined &&
             $('#notify-users').attr ('checked') === undefined) {
-            errorMsgs.push (x2.whatsNew.translations['broadcast error message 2']);
+            errorMsgs.push (x2.activityFeed.translations['broadcast error message 2']);
         }
         if (errorMsgs.length !== 0) {
             var errorBox = createErrorBox (
@@ -615,7 +618,7 @@ function setupBroadcastDialog () {
         pieces = $(this).attr("id").split("-");
         id = pieces[0];
         $("#broadcast-dialog").dialog({
-            title: x2.whatsNew.translations['Broadcast Event'],
+            title: x2.activityFeed.translations['Broadcast Event'],
             autoOpen: true,
             height: "auto",
             width: 850,
@@ -624,11 +627,11 @@ function setupBroadcastDialog () {
             hide: 'fade',
             buttons: [
                 { 
-                    text: x2.whatsNew.translations['Broadcast'],
+                    text: x2.activityFeed.translations['Broadcast'],
                     click: clickBroadcastButton
                 },
                 { 
-                    text: x2.whatsNew.translations['Nevermind'],
+                    text: x2.activityFeed.translations['Nevermind'],
                     click: function () {
                         $('#broadcast-dialog').dialog("close");
                         destroyErrorBox ($('#broadcast-dialog'));
@@ -691,8 +694,8 @@ function setupMakeImportantDialog () {
         pieces = $(this).attr("id").split("-");
         id = pieces[0];
         $("#make-important-dialog").dialog({
-            //title: x2.whatsNew.translations['MakeImportant Event'],
-            title: x2.whatsNew.translations['Make Important'],
+            //title: x2.activityFeed.translations['MakeImportant Event'],
+            title: x2.activityFeed.translations['Make Important'],
             autoOpen: true,
             height: "auto",
             width: 850,
@@ -701,12 +704,12 @@ function setupMakeImportantDialog () {
             hide: 'fade',
             buttons: [
                 { 
-                    //text: x2.whatsNew.translations['MakeImportant'],
-                    text: x2.whatsNew.translations['Okay'],
+                    //text: x2.activityFeed.translations['MakeImportant'],
+                    text: x2.activityFeed.translations['Okay'],
                     click: clickMakeImportantButton
                 },
                 { 
-                    text: x2.whatsNew.translations['Nevermind'],
+                    text: x2.activityFeed.translations['Nevermind'],
                     click: function () {
                         $('#make-important-dialog').dialog("close");
                     }
@@ -729,7 +732,10 @@ function updateEventList () {
         var id = pieces[0];
         $.ajax({
             url:"loadComments",
-            data:{id:id},
+            data:{
+                id:id,
+                profileId: x2.activityFeed.profileId 
+            },
             success:function(data){
                 $("#"+id+"-comments").html(data);
                 //$(".empty").parent().hide();
@@ -1141,14 +1147,18 @@ function updateEventList () {
         });
     });
 
-    var lastEventId=x2.whatsNew.lastEventId;
-    var lastTimestamp=x2.whatsNew.lastTimestamp;
+    var lastEventId=x2.activityFeed.lastEventId;
+    var lastTimestamp=x2.activityFeed.lastTimestamp;
     function updateFeed(){
         $.ajax({
             url:"getEvents",
             type:"GET",
             dataType: "json",
-            data:{'lastEventId':lastEventId, 'lastTimestamp':lastTimestamp},
+            data:{
+                'lastEventId':lastEventId, 
+                'lastTimestamp':lastTimestamp,
+                'profileId':x2.activityFeed.profileId
+            },
             success:function(data){
                 lastEventId=data[0];
                 if(data[1]){
@@ -1166,7 +1176,7 @@ function updateEventList () {
                            "undefined")
                             $(this).yiiListView();
                         });
-                    x2.whatsNew.DEBUG && console.log ('hiding ' + text);
+                    x2.activityFeed.DEBUG && console.log ('hiding ' + text);
                     $newElem = $(text).hide().prependTo("#new-events");
                     makePostExpandable ($newElem.find ('.event-text-box').children ('.event-text'));
                     $newElem.fadeIn(1000);
@@ -1192,7 +1202,8 @@ function updateEventList () {
         pieces = $(link).attr("id").split("-");
         id = pieces[0];
         if(confirm("Are you sure you want to delete this post?")){
-            window.location=x2.whatsNew.deletePostUrl + '?id=' + id;
+            window.location=x2.activityFeed.deletePostUrl + '?id=' + id + '&profileId=' +
+            x2.activityFeed.profileId;
         }else{
             e.preventDefault();
         }
@@ -1200,7 +1211,7 @@ function updateEventList () {
 
     $(document).on("submit","#attachment-form-form",function(){
         if(window.newPostEditor.getData()!="" && 
-           window.newPostEditor.getData()!=x2.whatsNew.translations['Enter text here...']){
+           window.newPostEditor.getData()!=x2.activityFeed.translations['Enter text here...']){
 
             $("#attachmentText").val(window.newPostEditor.getData ());
         }
@@ -1221,6 +1232,7 @@ function setupFeedColorPickers () {
 }
 
 function setUpChartHideShowBehavior () {
+    return;
 
     /*
     Show the chart when the show chart button is clicked
@@ -1321,7 +1333,7 @@ function setUpChartHideShowBehavior () {
 
 }
 
-$(document).on ('ready', function whatsNewMain () {
+$(document).on ('ready', function profileMain () {
     setupEditorBehavior ();
     setupActivityFeed ();
     setupMakeImportantDialog ();
@@ -1331,6 +1343,3 @@ $(document).on ('ready', function whatsNewMain () {
     attachmentMenuBehavior ();
     setUpChartHideShowBehavior ();
 });
-
-
-

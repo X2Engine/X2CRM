@@ -1,5 +1,5 @@
 /*!
- * Expander - v1.4.5 - 2013-03-24
+ * Expander - v1.4.7 - 2013-08-30
  * http://plugins.learningjquery.com/expander/
  * Copyright (c) 2013 Karl Swedberg
  * Licensed MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -7,7 +7,7 @@
 
 (function($) {
   $.expander = {
-    version: '1.4.5',
+    version: '1.4.7',
     defaults: {
       // the number of characters at which the contents will be sliced into two parts.
       slicePoint: 100,
@@ -302,7 +302,7 @@
             return;
           }
 
-          o = $.extend({}, $this.data('expander') || {}, opts),
+          o = $.extend({}, $this.data('expander') || {}, opts);
           details = $this.find('.' + o.detailClass).contents();
 
           $this.removeData('expanderInit');
@@ -345,7 +345,7 @@
 
       return [
         summary,
-        '<',
+        ' <',
           el + ' class="' + o.detailClass + '"',
         '>',
           o.details,

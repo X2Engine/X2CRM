@@ -55,4 +55,5 @@ return array (
 'Web Form Case entered by {name}'=>'وب سایت مورد فرم وارد {name}',
 'Hello'=>'سلام',
 'Web Form Case'=>'فرم مورد وب سایت',
+'Thank you for contacting our Technical Support '=>'تشکر از شما برای تماس با پشتیبانی فنی ما',
 );

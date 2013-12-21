@@ -35,15 +35,39 @@
  *****************************************************************************************/
 
 /**
- * ApplicationConfigBehavior is a behavior for the application.
- * It loads additional config paramenters that cannot be statically
- * written in config/main
+ * ApplicationConfigBehavior is a behavior for the application. It loads
+ * additional config paramenters that cannot be statically written in config/main
+ * and is also used for features in common with the console application.
  *
- * @property integer $suID (read-only) substitute user ID in the case that no user session is available.
- * @property User $suModel Substitute web user model in the case that no user session is available.
+ * @property string $absoluteBaseUrl (read-only) the base URL of the web
+ *  application, independent of whether there is a web request.
+ * @property string $externalAbsoluteBaseUrl (read-only) the absolute base url
+ *  of the application to use when creating URLs to be viewed publicly
+ * @property string $externalWebRoot (read-only) The absolute base webroot URL
+ *  of the application to use when creating URLs to be viewed publicly, from
+ *  the internet (i.e. the web lead capture form, email tracking links, etc.)
+ * @property integer|bool $locked Integer (timestamp) if the application is
+ *  locked; false otherwise.
+ * @property string $lockFile Path to the lock file
+ * @property integer $suID (read-only) substitute user ID in the case that no
+ *  user session is available.
+ * @property User $suModel Substitute web user model in the case that no user
+ *  session is available.
  * @package X2CRM.components
  */
 class ApplicationConfigBehavior extends CBehavior {
+
+    
+    private $_absoluteBaseUrl;
+    private $_externalAbsoluteBaseUrl;
+    private $_externalWebRoot;
+    
+    /**
+     * If the application is locked, this will be an integer corresponding to
+     * the date that the application was locked. Otherwise, it will be false.
+     * @var mixed
+     */
+    private $_locked;
 
 
     /**
@@ -77,6 +101,47 @@ class ApplicationConfigBehavior extends CBehavior {
         return array_merge(parent::events(), array(
                     'onBeginRequest' => 'beginRequest',
                 ));
+    }
+
+    /**
+     * Returns a JS string which declares two global JS dictionaries if they haven't already been 
+     * declared. Additional properties of the yii global are declared if the user has a profile.
+     * The globals would already have been decalared in the case that this is an AJAX request in 
+     * which registered scripts are being sent back in response to the client.
+     *
+     * @param object if set, additional profile specific properties are declared
+     * @returns string A JS string
+     */
+    public function getJSGlobalsSetupScript ($profile=null) {
+        if ($profile) {
+            $where = 'fileName = "'.$profile->notificationSound.'"';
+            $uploadedBy = $this->owner->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
+            if(!empty($uploadedBy['uploadedBy'])){
+                $notificationSound = $this->owner->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
+            }else{
+                $notificationSound = $this->owner->baseUrl.'/uploads/'.$profile->notificationSound;
+            }
+        }
+        return '
+            if (typeof yii === "undefined") {
+                var	yii = {
+                    baseUrl: "'.$this->owner->baseUrl.'",
+                    scriptUrl: "'.$this->owner->request->scriptUrl.'",
+                    themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
+                    language: "'.($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
+                    datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
+                    timePickerFormat: "'.Formatter::formatTimePicker().'"
+                    '.($profile ? '
+                        , profile: '.CJSON::encode($profile->getAttributes()).',
+                          notificationSoundPath: "'.$notificationSound.'"' : '').
+               '};
+            }
+            if (typeof x2 === "undefined") {
+                x2 = {};
+            }
+            x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
+            x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
+        ';
     }
 
     /**
@@ -135,16 +200,7 @@ class ApplicationConfigBehavior extends CBehavior {
             date_default_timezone_set(Profile::model()->tableSchema->getColumn('timeZone')->defaultValue);
         }
 
-        // Import directories
-        Yii::import('application.models.*');
-        Yii::import('application.controllers.X2Controller');
-        Yii::import('application.controllers.x2base');
-        Yii::import('application.components.*');
-        Yii::import('application.components.util.*');
-        Yii::import('application.components.permissions.*');
-        Yii::import('application.modules.media.models.Media');
-        Yii::import('application.modules.groups.models.Groups');
-        Yii::import('application.extensions.gallerymanager.models.*');
+        $this->importDirectories();
         
         $this->cryptInit();
         
@@ -273,60 +329,12 @@ class ApplicationConfigBehavior extends CBehavior {
             if($notGuest){
                 $profile = $this->owner->params->profile;
                 if(isset($profile)){
-                    $where = 'fileName = "'.$profile->notificationSound.'"';
-                    $uploadedBy = $this->owner->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
-                    if(!empty($uploadedBy['uploadedBy'])){
-                        $notificationSound = $this->owner->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
-                    }else{
-                        $notificationSound = $this->owner->baseUrl.'/uploads/'.$profile->notificationSound;
-                    }
-                    $yiiString = '
-                    var	yii = {
-                        baseUrl: "'.$this->owner->baseUrl.'",
-                        scriptUrl: "'.$this->owner->request->scriptUrl.'",
-                        themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
-                        language: "'.($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
-                        datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
-                        timePickerFormat: "'.Formatter::formatTimePicker().'",
-                        profile: '.CJSON::encode($this->owner->params->profile->getAttributes()).',
-                        notificationSoundPath: "'.$notificationSound.'"
-                    };
-                    if(typeof x2 == "undefined")
-                        x2 = {};
-					x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
-                    x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
-                    ';
+                    $yiiString = $this->getJSGlobalsSetupScript ($profile);
                 }else{
-                    $yiiString = '
-                var	yii = {
-                    baseUrl: "'.$this->owner->baseUrl.'",
-                    scriptUrl: "'.$this->owner->request->scriptUrl.'",
-                    themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
-                    language: "'.($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
-                    datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
-                    timePickerFormat: "'.Formatter::formatTimePicker().'"
-                };
-                if(typeof x2 == "undefined")
-                    x2 = {};
-				x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
-                x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
-                ';
+                    $yiiString = $this->getJSGlobalsSetupScript ();
                 }
             }else{
-                $yiiString = '
-			var	yii = {
-				baseUrl: "'.$this->owner->baseUrl.'",
-				scriptUrl: "'.$this->owner->request->scriptUrl.'",
-				themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
-				language: "'.($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
-				datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
-				timePickerFormat: "'.Formatter::formatTimePicker().'"
-			};
-            if(typeof x2 == "undefined")
-                x2 = {};
-			x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
-			x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
-			';
+                $yiiString = $this->getJSGlobalsSetupScript ();
             }
 
             $userAgentStr = strtolower($this->owner->request->userAgent);
@@ -393,6 +401,93 @@ class ApplicationConfigBehavior extends CBehavior {
         }
     }
 
+    /**
+     * Creates an URL that is safe to use for public-facing assets.
+     *
+     * In the case that there is no web request, but the "external" web root is
+     * defined, the $_SERVER superglobal doesn't have necessary indexes like
+     * "SERVER_PROTOCOL" to construct valid URLs. However, using the user-defined
+     * external web root, it will explicitly use the route to generate the URL
+     * (and assume the "path" format is always used for URLs).
+     *
+     * The solution ("Offline URL generation" should really be replaced with
+     * something more elegant in the future. It is a crude attempt to replicate
+     * URL creation for offline-generated URLs, i.e. for a console command that
+     * sends emails. It was deemed, at the time of this special case's writing,
+     * impractical to override CUrlManager.createUrl due to the complexity and
+     * number of places where the $_SERVER superglobal (which any solution would
+     * need to eliminate dependency thereupon) is referenced / depended upon.
+     *
+     * Provided the convention of always using absolute (and never relative)
+     * routes is always adhered to, and the URL style remains "path", this
+     * kludge should always work.
+     *
+     * @param string $route The module/controller/action route
+     * @param array $params Query parameters
+     */
+    public function createExternalUrl($route, $params = array()){
+        if($this->owner->controller instanceof CController){ // Standard in-web-request URL generation
+            return $this->externalWebRoot.$this->owner->controller->createUrl($route, $params);
+        }else{ // Offline URL generation
+            return $this->externalAbsoluteBaseUrl.'/index.php/'.trim($route, '/').'?'.http_build_query($params, '', '&');
+        }
+    }
+
+    /**
+     * Magic getter for {@link absoluteBaseUrl}; in the case that web request data
+     * isn't available, it uses a config file.
+     *
+     * @return type
+     */
+    public function getAbsoluteBaseUrl(){
+        if(!isset($this->_absoluteBaseUrl)){
+            if($this->owner->params->noSession){
+                $this->_absoluteBaseUrl = '';
+                // Use the web API config file to construct the URL
+                $file = realpath($this->owner->basePath.'/../webLeadConfig.php');
+                if($file){
+                    include($file);
+                    if(isset($url))
+                        $this->_absoluteBaseUrl = $url;
+                }
+                if(!isset($this->_absoluteBaseUrl)){
+                    $this->_absoluteBaseUrl = ''; // Default
+                    if($this->hasProperty('request')){
+                        // If this is an API request, there is still hope yet to resolve it
+                        try{
+                            $this->_absoluteBaseUrl = $this->owner->request->getBaseUrl(1);
+                        }catch(Exception $e){
+
+                        }
+                    }
+                }
+            }else{
+                $this->_absoluteBaseUrl = $this->owner->baseUrl;
+            }
+        }
+        return $this->_absoluteBaseUrl;
+    }
+
+    public function getExternalAbsoluteBaseUrl(){
+        if(!isset($this->_externalAbsoluteBaseUrl)){
+            $eabu = $this->owner->params->admin->externalBaseUri;
+            $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.(empty($eabu) ? $this->owner->baseUrl : $eabu);
+        }
+        return $this->_externalAbsoluteBaseUrl;
+    }
+
+    /**
+     * Resolves the public-facing absolute base url.
+     *
+     * @return type
+     */
+    public function getExternalWebRoot(){
+        if(!isset($this->_externalWebRoot)){
+            $eabu = $this->owner->params->admin->externalBaseUrl;
+            $this->_externalWebRoot = $eabu ? $eabu : $this->owner->request->getHostInfo();
+        }
+        return $this->_externalWebRoot;
+    }
 
 	/**
 	 * Substitute user ID magic getter.
@@ -434,6 +529,46 @@ class ApplicationConfigBehavior extends CBehavior {
     }
 
     /**
+     * Returns the lock status of the application.
+     * @return boolean
+     */
+    public function getLocked() {
+        if(!isset($this->_locked)){
+            $file = $this->lockFile;
+            if(!file_exists($file))
+                return false;
+            $this->_locked = (int) trim(file_get_contents($file));
+        }
+        return $this->_locked;
+    }
+
+    /**
+     * Returns the path to the application lock file
+     * @return type
+     */
+    public function getLockFile() {
+        return implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'runtime','x2crm.lock'));
+    }
+
+    /**
+     * Lock the application (non-administrative users cannot use it).
+     *
+     * If the value evaluates to false, the application will be unlocked.
+     *
+     * @param type $value
+     */
+    public function setLocked($value) {
+        $this->_locked = $value;
+        $file = $this->lockFile;
+        if($value == false && file_exists($file)) {
+            unlink($file);
+        } elseif($value !== false) {
+            file_put_contents($this->lockFile,$value);
+        }
+
+    }
+
+    /**
      * Substitute user model magic getter.
      *
      * @return User
@@ -453,6 +588,22 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     public function setSuModel(User $user){
         $this->_suModel = $user;
+    }
+
+    /**
+     * Import all directories that are used system-wide.
+     */
+    public function importDirectories() {
+        Yii::import('application.models.*');
+        Yii::import('application.controllers.X2Controller');
+        Yii::import('application.controllers.x2base');
+        Yii::import('application.components.*');
+        Yii::import('application.components.util.*');
+        Yii::import('application.components.permissions.*');
+        Yii::import('application.modules.media.models.Media');
+        Yii::import('application.modules.groups.models.Groups');
+        Yii::import('application.extensions.gallerymanager.models.*');
+
     }
 
 }

@@ -146,4 +146,7 @@ return array (
 'The base directory configuration directive is set, and it is not the current working directory.'=>'기본 디렉토리 구성 지시문을 설정하고 그것을 현재 작업 디렉토리되지 않습니다.',
 'The base directory configuration directive is set, and it does not include the current working directory.'=>'기본 디렉토리 구성 지시문을 설정하고 그것을 현재 작업 디렉토리를 포함하지 않습니다.',
 'Some hashing algorithms required for software updates are missing on this server:'=>'소프트웨어 업데이트에 필요한 몇 가지 해시 알고리즘은이 서버에서 누락되었습니다 :',
+'The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will have to be performed manually.'=>'&quot;allow_url_fopen을&quot;PHP 설정 옵션이없는 CURL 확장에 추가하여 사용할 수 없습니다. 이는 거기에 HTTP 요청을 수행하는 가능한 방법이 없으며, 따라서 소프트웨어 업데이트는 수동으로 수행되어야 할 것이라는 점을 의미.',
+'This web server is effectively cut off from the internet; (1) no outbound network route exists, or (2) local DNS resolution is failing, or (3) this server is behind a firewall that is preventing outbound requests. Software updates will have to be performed manually, and Google integration will not work.'=>'(1) 아웃 바운드 네트워크 경로가 존재하지 않는, 또는 (2) 로컬 DNS 확인이 실패하거나, (3)이 서버가 아웃 바운드 요청을 방지하는 방화벽 뒤에,이 웹 서버를 효율적으로 인터넷에서 차단된다. 소프트웨어 업데이트는 수동으로 수행해야합니다, 구글의 통합이 작동하지 않습니다.',
+'Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will have to be performed manaully.'=>'이 웹 서버에서 업데이트 서버에 연결할 수 없습니다. 이는 일시적인 문제 일 수 있습니다. 이 지속되면 소프트웨어 업데이트 manaully 수행해야합니다.',
 );

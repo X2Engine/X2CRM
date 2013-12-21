@@ -210,11 +210,13 @@ class Fields extends CActiveRecord {
         $posNeg = strpos($value, '-');
         if($posNeg === 0 || $posNeg === strlen($value) - 1) // Minus sign notation
             $sign = -1;
+
         // Strip out currency/percent symbols and digit group separators, but exclude null currency symbols:
         if(!function_exists('stripSymbols')){
             function stripSymbols($s){ return !empty($s); }
         }
         $stripSymbols = array_filter(array_values(Yii::app()->params->supportedCurrencySymbols), 'stripSymbols');
+
         // Just in case "Other" currency used: include that currency's symbol
         $defaultSym = Yii::app()->getLocale()->getCurrencySymbol(Yii::app()->params->admin->currency);
         if($defaultSym)
@@ -225,10 +227,12 @@ class Fields extends CActiveRecord {
         if(!empty($grpSym) && $type != 'percentage')
             $stripSymbols[] = $grpSym;
         $value = strtr($value, array_fill_keys($stripSymbols, ''));
+
         // Trim away negative symbols and any remaining whitespace:
         $value = trim($value, "-() ");
         $converted = strtr($value, array_flip(get_html_translation_table(HTML_ENTITIES, ENT_QUOTES)));
         $value = trim($converted, chr(0xC2).chr(0xA0));
+
         // Turn null string into zero:
         if($value === null || $value === '')
             return ($type != 'int') ? 0.0 : 0;

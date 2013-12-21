@@ -142,4 +142,7 @@ return array (
 '{user} completed an action: {action}'=>'',
 'Stage {n}: {stage} was completed for {record}'=>'',
 '{user} completed stage {n}: {stage} was completed for {record}'=>'',
+'Log Time'=>'',
+'Time started'=>'',
+'Time ended'=>'',
 );

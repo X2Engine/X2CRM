@@ -38,31 +38,11 @@
  * X2WebApplication class file.
  * 
  * X2WebApplication extends CWebApplication to provide additional functionality.
- * @property string $absoluteBaseUrl (read-only) the base URL of the web
- *  application, independent of whether there is a web request.
- * @property string $externalAbsoluteBaseUrl (read-only) The absolute base URL
- *  of the application to use when creating URLs to be viewed publicly, from
- *  the internet (i.e. the web lead capture form, email tracking links, etc.)
- * @property string $externalWebRoot (read-only) The web root of public-facing
- *  URLs.
- * @property integer|bool $locked Integer (timestamp) if the application is
- *  locked; false otherwise.
- * @property string $lockFile Path to the lock file
+ * 
  * @package X2CRM.modules.contacts
  *
  */
 class X2WebApplication extends CWebApplication {
-
-
-    private $_externalAbsoluteBaseUrl;
-    private $_absoluteBaseUrl;
-    
-    /**
-     * If the application is locked, this will be an integer corresponding to
-     * the date that the application was locked. Otherwise, it will be false.
-     * @var mixed
-     */
-    private $_locked;
 
 	/**
 	 * Creates a controller instance based on a route.
@@ -148,103 +128,4 @@ class X2WebApplication extends CWebApplication {
 		}
 	}
 
-    /**
-     * Creates an URL specific to 
-     * @param type $url
-     */
-    public function createExternalUrl($route,$params=array()) {
-        return $this->externalWebRoot.$this->controller->createUrl($route,$params);
-    }
-
-    /**
-     * Magic getter for {@link absoluteBaseUrl}; in the case that web request data
-     * isn't available, it uses a config file.
-     *
-     * @return type
-     */
-    public function getAbsoluteBaseUrl(){
-        if(!isset($this->_absoluteBaseUrl)){
-            if($this->params->noSession){
-                $this->_absoluteBaseUrl = '';
-                // Use the web API config file to construct the URL
-                $file = realpath($this->basePath.'/../webLeadConfig.php');
-                if($file){
-                    include($file);
-                    if(isset($url))
-                        $this->_absoluteBaseUrl = $url;
-                }
-                if(!isset($this->_absoluteBaseUrl)){
-                    $this->_absoluteBaseUrl = ''; // Default
-                    if($this->hasProperty('request')){
-                        // If this is an API request, there is still hope yet to resolve it
-                        try{
-                            $this->_absoluteBaseUrl = $this->request->getBaseUrl(1);
-                        }catch(Exception $e){
-
-                        }
-                    }
-                }
-            }else{
-                $this->_absoluteBaseUrl = $this->baseUrl;
-            }
-        }
-        return $this->_absoluteBaseUrl;
-    }
-
-    /**
-     * Resolves the public-facing absolute base url.
-     * 
-     * @return type
-     */
-    public function getExternalWebRoot() {
-        if(!isset($this->_externalAbsoluteBaseUrl)) {
-            $eabu = $this->params->admin->externalBaseUrl;
-            $this->_externalAbsoluteBaseUrl = $eabu ? $eabu : $this->request->getHostInfo();
-        }
-        return $this->_externalAbsoluteBaseUrl;
-    }
-
-    public function getExternalAbsoluteBaseUrl() {
-        return $this->externalWebRoot.$this->baseUrl;
-    }
-
-    /**
-     * Returns the lock status of the application.
-     * @return boolean
-     */
-    public function getLocked() {
-        if(!isset($this->_locked)){
-            $file = $this->lockFile;
-            if(!file_exists($file))
-                return false;
-            $this->_locked = (int) trim(file_get_contents($file));
-        }
-        return $this->_locked;
-    }
-
-    /**
-     * Returns the path to the application lock file
-     * @return type
-     */
-    public function getLockFile() {
-        return implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'runtime','x2crm.lock'));
-    }
-
-    /**
-     * Lock the application (non-administrative users cannot use it).
-     *
-     * If the value evaluates to false, the application will be unlocked.
-     * 
-     * @param type $value
-     */
-    public function setLocked($value) {
-        $this->_locked = $value;
-        $file = $this->lockFile;
-        if($value == false && file_exists($file)) {
-            unlink($file);
-        } elseif($value !== false) {
-            file_put_contents($this->lockFile,$value);
-        }
-
-    }
 }

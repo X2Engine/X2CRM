@@ -221,13 +221,7 @@ $this->renderPartial('_detailView',
 );
 */
 $this->endWidget();
-?>
 
-<?php $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'Quote')); ?>
-
-<?php $this->widget('Attachments',array('associationType'=>'quotes','associationId'=>$model->id,'startHidden'=>true)); ?>
-
-<?php
 if($contact){ // if associated contact exists, setup inline email form
 	$this->widget('InlineEmailForm', array(
 		'attributes' => array(
@@ -244,8 +238,10 @@ if($contact){ // if associated contact exists, setup inline email form
 	)
 	);
 }
-
 ?>
+<?php $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'Quote')); ?>
+
+<?php $this->widget('Attachments',array('associationType'=>'quotes','associationId'=>$model->id,'startHidden'=>true)); ?>
 
 </div>
 <div class="history half-width">

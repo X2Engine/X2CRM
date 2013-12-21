@@ -42,8 +42,8 @@ Yii::import('application.models.X2Model');
  */
 class Actions extends X2Model {
 
-    public $verifyCode;
-    public $actionDescriptionTemp = "";
+    public $verifyCode; // CAPTCHA for guests using the publisher
+    public $actionDescriptionTemp = ""; // Easy way to get around action text records
 
     /**
      * Returns the static model of the specified AR class.
@@ -83,6 +83,7 @@ class Actions extends X2Model {
     public function rules(){
         return array(
             array('allDay', 'boolean'),
+            array('associationId,associationType','requiredAssoc'),
             array('createDate, completeDate, lastUpdated', 'numerical', 'integerOnly' => true),
             array('id,assignedTo,actionDescription,visibility,associationId,associationType,associationName,dueDate,
 				priority,type,createDate,complete,reminder,completedBy,completeDate,lastUpdated,updatedBy,color', 'safe'),
@@ -107,7 +108,7 @@ class Actions extends X2Model {
             return parent::getAttributeLabel($attribute);
         }
     }
-    
+
     /**
      * Fixes up record association, parses dates (since this doesn't use {@link X2Model::setX2Fields()})
      * @return boolean whether or not to save
@@ -132,17 +133,26 @@ class Actions extends X2Model {
             $this->dueDate = Formatter::parseDateTime($this->dueDate);
             $this->completeDate = Formatter::parseDateTime($this->completeDate);
         }
+        if(empty($this->timeSpent) && !empty($this->completeDate) && !empty($this->dueDate) && in_array($this->type ,array('time','call'))) {
+            $this->timeSpent = $this->completeDate - $this->dueDate;
+        }
         return parent::beforeSave();
     }
 
+    public function beforeDelete() {
+        
+        return parent::beforeDelete();
+    }
+
     public function afterSave(){
+        // No action text exists for this yet
         if(!($this->actionText instanceof ActionText)){
-            $actionText = new ActionText;
+            $actionText = new ActionText; // Create new oen
             $actionText->actionId = $this->id;
-            $actionText->text = $this->actionDescriptionTemp;
+            $actionText->text = $this->actionDescriptionTemp; // A magic setter sets actionDescriptionTemp value
             $actionText->save();
-        }else{
-            if($this->actionText->text != $this->actionDescriptionTemp){
+        }else{ // We have an action text
+            if($this->actionText->text != $this->actionDescriptionTemp){ // Only update if different
                 $this->actionText->text = $this->actionDescriptionTemp;
                 $this->actionText->save();
             }
@@ -150,15 +160,10 @@ class Actions extends X2Model {
         return parent::afterSave();
     }
 
-    public function validate($attributes = null, $clearErrors = true){
-        if(!parent::validate($attributes, $clearErrors)){
-            return false;
-        }
+    public function requiredAssoc($attribute, $params = array()){
         if(!empty($this->type) && $this->type != 'event'){
-            foreach(array('associationType', 'associationId') as $attr){
-                if(empty($this->$attr) || $this->$attr == 'None')
-                    $this->addError($attr, Yii::t('actions', 'Association is required for actions of this type.'));
-            }
+            if(empty($this->$attribute) || strtolower($this->$attribute) == 'none')
+                $this->addError($attribute, Yii::t('actions', 'Association is required for actions of this type.'));
         }
         return !$this->hasErrors();
     }
@@ -221,14 +226,13 @@ class Actions extends X2Model {
     }
 
     public function setActionDescription($value){
+        // Magic setter stores value in actionDescriptionTemp until saved
         $this->actionDescriptionTemp = $value;
     }
 
     public function getActionDescription(){
-        if($this->actionText instanceof ActionText)
-            return $this->actionText->text;
-        else
-            return $this->actionDescriptionTemp;
+        // Magic getter only ever refers to actionDescriptionTemp
+        return $this->actionDescriptionTemp;
     }
 
     /**
@@ -565,7 +569,7 @@ class Actions extends X2Model {
         return $this->searchBase($criteria);
     }
 
-    public function searchBase($criteria){
+    public function searchBase($criteria, $pageSize=null, $uniqueId=null){
 
         $this->compareAttributes($criteria);
         $criteria->with = 'actionText';
@@ -586,6 +590,33 @@ class Actions extends X2Model {
                 ));
         //printR($criteria,true);
         return $dataProvider;
+    }
+
+    public function compareAttributes(&$criteria){
+        foreach(self::$_fields[$this->tableName()] as &$field){
+            if($field->fieldName != 'actionDescription'){
+                $fieldName = $field->fieldName;
+                switch($field->type){
+                    case 'boolean':
+                        $criteria->compare('t.'.$fieldName, $this->compareBoolean($this->$fieldName), true);
+                        break;
+                    case 'link':
+                        $criteria->compare('t.'.$fieldName, $this->compareLookup($field->linkType, $this->$fieldName), true);
+                        $criteria->compare('t.'.$fieldName, $this->$fieldName, true, 'OR');
+                        break;
+                    case 'assignment':
+                        $criteria->compare('t.'.$fieldName, $this->compareAssignment($this->$fieldName), true);
+                        break;
+                    case 'dropdown':
+                        $criteria->compare('t.'.$fieldName, $this->compareDropdown($field->linkType, $this->$fieldName), true);
+                        break;
+                    case 'phone':
+                    // $criteria->join .= ' RIGHT JOIN x2_phone_numbers ON (x2_phone_numbers.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
+                    default:
+                        $criteria->compare('t.'.$fieldName, $this->$fieldName, true);
+                }
+            }
+        }
     }
 
     public function syncGoogleCalendar($operation){

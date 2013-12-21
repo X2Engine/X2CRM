@@ -59,8 +59,9 @@ class ActionsTest extends X2DbTestCase {
         $this->assertFalse($action->validate());
         $this->assertTrue($action->hasErrors('associationId'));
         $this->assertTrue($action->hasErrors('associationType'));
+        // Do the same thing but with "None" association type. Validation should fail.
         $action = new Actions();
-        // Do the same thing but with "None" association type.
+        $action->type = 'call';
         $action->associationType = 'None';
         $this->assertFalse($action->validate());
         $this->assertTrue($action->hasErrors('associationId'));

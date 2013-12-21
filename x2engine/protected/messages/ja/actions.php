@@ -143,4 +143,7 @@ return array (
 '{user} completed an action: {action}'=>'{user}アクションを完了： {action}',
 'Stage {n}: {stage} was completed for {record}'=>'ステージ{n} ： {stage}のために完成しました{record}',
 '{user} completed stage {n}: {stage} was completed for {record}'=>'{user}完了段階{n} {stage}のために完成しました{record}',
+'Log Time'=>'ログ時刻',
+'Time started'=>'タイム開始',
+'Time ended'=>'終了時間',
 );

@@ -102,8 +102,8 @@ class Workflow extends CActiveRecord {
 	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
-			'name' => Yii::t('workflow','Workflow Name'),
-			'isDefault' => Yii::t('workflow','Default Workflow'),
+			'name' => Yii::t('workflow','Process Name'),
+			'isDefault' => Yii::t('workflow','Default Process'),
 			'lastUpdated' => Yii::t('workflow','Last Updated'),
 		);
 	}

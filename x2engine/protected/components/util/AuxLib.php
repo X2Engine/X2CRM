@@ -65,17 +65,32 @@ class AuxLib {
     }
 
     /**
-     * @param array $messages An associateive array (<var name> => <var value>)
      * @param string $namespace The name of the JS object which will contain the translations 
-     *  dictionary 
+     *  dictionary. For nested namespaces, each namespace should be separated by a '.' character.
+     * @param array $vars An associative array (<var name> => <var value>)
      * @param string $scriptName The name of the script which will be registered
      *   and which will be a property of the global JS object x2.
      */
     public static function registerPassVarsToClientScriptScript (
         $namespace, $vars, $scriptName='passVarsToClientScript') {
 
+        $namespaces = explode ('.', $namespace);
+        $rootNamespace = array_shift ($namespaces);
+
+        // declare nested namespaces one at a time if they don't already exist, starting at the root
         $passVarsToClientScript = "
-            if (!".$namespace.") ".$namespace." = {};
+            (function () {
+                if (typeof ".$rootNamespace." === 'undefined') ".$rootNamespace." = {};
+                var namespaces = ".CJSON::encode ($namespaces).";
+                var prevNameSpace = ".$rootNamespace.";
+
+                for (var i in namespaces) {
+                    if (typeof prevNameSpace[namespaces[i]] === 'undefined') {
+                        prevNameSpace[namespaces[i]] = {};
+                    }
+                    prevNameSpace = prevNameSpace[namespaces[i]];
+                }
+            }) ();
         ";
         foreach ($vars as $key=>$val) {
             $passVarsToClientScript .= $namespace.".".$key." = ".$val.";";
@@ -124,5 +139,16 @@ class AuxLib {
         $userAgentStr = strtolower(Yii::app()->request->userAgent);
         return preg_match('/msie 8/', $userAgentStr);
     }
+
+    public static function setCookie ($key, $val, $time) {
+        if (YII_DEBUG) { // workaround which allows chrome to set cookies for localhost
+            $serverName = Yii::app()->request->getServerName() === 'localhost' ? '' : 
+                Yii::app()->request->getServerName();
+        } else {
+            $serverName = Yii::app()->request->getServerName();
+        }
+        setcookie($key,$val,time()+$time,dirname(Yii::app()->request->getScriptUrl()), $serverName);
+    }
+
 
 }

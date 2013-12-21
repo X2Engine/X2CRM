@@ -143,4 +143,7 @@ return array (
 '{user} completed an action: {action}'=>'{user} השלים פעולה: {action}',
 'Stage {n}: {stage} was completed for {record}'=>'שלב {n} {stage} הושלם עבור {record}',
 '{user} completed stage {n}: {stage} was completed for {record}'=>'{user} שלב הושלם {n} {stage} הושלם עבור {record}',
+'Log Time'=>'יומן זמן',
+'Time started'=>'הזמן התחיל',
+'Time ended'=>'זמן הסתיים',
 );

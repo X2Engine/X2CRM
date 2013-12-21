@@ -2333,30 +2333,37 @@ class AdminController extends Controller {
 
             $moduleName = trim($_POST['moduleName']);
 
-            if(preg_match('/\W/', $moduleName) || preg_match('/^[^a-zA-Z]+/', $moduleName))   // are there any non-alphanumeric or _ chars?
-                $errors[] = Yii::t('module', 'Invalid table name'); //$this->redirect('createModule');									// or non-alpha characters at the beginning?
+            // are there any non-alphanumeric or _ chars? or non-alpha characters at the beginning?
+            if(preg_match('/\W/', $moduleName) || preg_match('/^[^a-zA-Z]+/', $moduleName)) {
+                $errors[] = Yii::t('module', 'Invalid table name'); //$this->redirect('createModule');
+            }
 
-            if($moduleName == '')  // we will attempt to use the title
-                $moduleName = $title; // as the backend name, if possible
+            if($moduleName == '') // we will attempt to use the title as the backend name, if possible
+                $moduleName = $title; 
 
-            if($recordName == '')  // use title for record name
-                $recordName = $title; // if none is provided
+            if($recordName == '') // use title for record name if none is provided
+                $recordName = $title; 
 
             $trans = include('protected/data/transliteration.php');
 
-            $moduleName = strtolower(strtr($moduleName, $trans));  // replace characters with their A-Z equivalent, if possible
+            // replace characters with their A-Z equivalent, if possible
+            $moduleName = strtolower(strtr($moduleName, $trans));  
+            
+            // now remove all remaining non-alphanumeric or _ chars
+            $moduleName = preg_replace('/\W/', '', $moduleName); 
+            
+            // remove any numbers or _ from the beginning
+            $moduleName = preg_replace('/^[0-9_]+/', '', $moduleName); 
 
-            $moduleName = preg_replace('/\W/', '', $moduleName); // now remove all remaining non-alphanumeric or _ chars
 
-            $moduleName = preg_replace('/^[0-9_]+/', '', $moduleName); // remove any numbers or _ from the beginning
-
-
-            if($moduleName == '')        // if there is nothing left of moduleName at this point,
+            if($moduleName == '') { // if there is nothing left of moduleName at this point,
                 $moduleName = 'module'.substr(time(), 5);  // just generate a random one
+            }
 
-
-            if(!is_null(Modules::model()->findByAttributes(array('title' => $title))) || !is_null(Modules::model()->findByAttributes(array('name' => $moduleName))))
+            if(!is_null(Modules::model()->findByAttributes(array('title' => $title))) || 
+               !is_null(Modules::model()->findByAttributes(array('name' => $moduleName)))) {
                 $errors[] = Yii::t('module', 'A module with that name already exists');
+            }
             if(empty($errors)){
                 $dirFlag = false;
                 $configFlag = false;
@@ -3191,16 +3198,18 @@ class AdminController extends Controller {
             $model = Dropdowns::model()->findByAttributes(array('name' => $_POST['Dropdowns']['name']));
             $model->attributes = $_POST['Dropdowns'];
             $temp = array();
-            foreach($model->options as $option){
-                if($option != "")
-                    $temp[$option] = $option;
-            }
-            $model->options = json_encode($temp);
-            if($model->save()){
-                $this->redirect('manageDropDowns');
+            if(is_array($model->options) && count($model->options) > 0) {
+                foreach($model->options as $option){
+                    if($option != "")
+                        $temp[$option] = $option;
+                }
+                $model->options = json_encode($temp);
+                if($model->save()){
+                    $this->redirect('manageDropDowns');
+                }
             }
         }
-        $this->render('editDropdowns');
+        $this->redirect('manageDropDowns');
     }
 
     /**
@@ -3575,6 +3584,8 @@ class AdminController extends Controller {
         }
         if($admin->externalBaseUrl == '' && !$admin->hasErrors('externalBaseUrl'))
             $admin->externalBaseUrl = Yii::app()->request->getHostInfo();
+        if($admin->externalBaseUri == '' && !$admin->hasErrors('externalBaseUri'))
+            $admin->externalBaseUri = Yii::app()->baseUrl;
         $this->render('publicInfo', array(
             'model' => $admin,
         ));

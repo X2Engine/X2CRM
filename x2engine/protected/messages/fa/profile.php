@@ -77,4 +77,7 @@ return array (
 'Theme name already exists or is invalid.'=>'نام تم در حال حاضر وجود دارد یا نامعتبر است.',
 'Theme created successfully.'=>'تم با موفقیت ایجاد شده است.',
 'Page Header Color'=>'صفحات رنگ سربرگ',
+'Edit Profile'=>'ویرایش پروفایل',
+'Disable phone field links?'=>'غیر فعال کردن لینک درست تلفن؟',
+'Disable notifications pop-up?'=>'غیر فعال کردن اعلان پاپ آپ؟',
 );

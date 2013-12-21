@@ -178,4 +178,6 @@ return array (
 'Website: '=>'وب سایت:',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'اخطار: بارگذاری بیش از حد بسیاری از پرونده در این صفحه ممکن است مقید کردن سرور به طور قابل توجهی. آیا شما مطمئن هستید که می خواهید ادامه دهید؟',
 'Saved Searches'=>'جستجوهای ذخیره شده',
+'Clicking this button will pull any relevant '=>'با کلیک کردن این دکمه هر گونه مربوطه را بکشد',
+'Drag tags here from the tag cloud widget or click to '=>'کشیدن در اینجا برچسب ها از ویجت ابر برچسب کلیک کنید و یا به',
 );

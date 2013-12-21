@@ -53,6 +53,8 @@ CREATE TABLE x2_admin(
 	emailFromAddr			VARCHAR(255)	NOT NULL DEFAULT '',
 	emailBatchSize			INT				NOT NULL DEFAULT 200,
 	emailInterval			INT				NOT NULL DEFAULT 60,
+    emailCount              INT             NOT NULL DEFAULT 0,
+    emailStartTime          BIGINT          DEFAULT NULL,
 	emailUseSignature		VARCHAR(5)		DEFAULT "user",
 	emailSignature			TEXT,
 	emailType				VARCHAR(20)		DEFAULT "mail",
@@ -97,7 +99,8 @@ CREATE TABLE x2_admin(
     emailDropbox                TEXT,
     historyPrivacy              VARCHAR(20) DEFAULT "default",
     batchTimeout                INT DEFAULT 300,
-    externalBaseUrl             VARCHAR(255) DEFAULT NULL
+    externalBaseUrl             VARCHAR(255) DEFAULT NULL,
+    externalBaseUri             VARCHAR(255) DEFAULT NULL
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
@@ -252,6 +255,7 @@ CREATE TABLE x2_list_items (
 	opened					INT				UNSIGNED NOT NULL DEFAULT 0,
 	clicked					INT				UNSIGNED NOT NULL DEFAULT 0,
 	unsubscribed			INT				UNSIGNED NOT NULL DEFAULT 0,
+    sending                 TINYINT         NOT NULL DEFAULT 0,
 	INDEX (listId),
 	INDEX (uniqueId),
 	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
@@ -349,6 +353,7 @@ CREATE TABLE x2_profile(
 	allowPost				TINYINT			DEFAULT 1,
 	disablePhoneLinks       TINYINT			DEFAULT 0,
 	disableNotifPopup		TINYINT			DEFAULT 0,
+	disableAutomaticRecordTagging		TINYINT			DEFAULT 0,
 	language				VARCHAR(40)		DEFAULT "",
 	timeZone				VARCHAR(100)	DEFAULT "",
 	resultsPerPage			INT DEFAULT		20,
@@ -367,6 +372,7 @@ CREATE TABLE x2_profile(
 	backgroundTiling		VARCHAR(10)		NULL DEFAULT "",
 	pageOpacity				INT				NULL,*/
     theme                   TEXT,
+    profileWidgetLayout     TEXT,
     miscLayoutSettings      TEXT,
     notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",
     loginSound              VARCHAR(100)    NULL DEFAULT "",

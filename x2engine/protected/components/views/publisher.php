@@ -90,7 +90,7 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
                     'url' => Yii::app()->controller->createUrl('/site/dynamicDropdown'),
                     'data' => 'js:{"val":$(this).val(),"dropdownId":"117"}',
                     'update' => '#quickNote2',
-                    'complete' => 'function() { $("#Actions_actionDescription").val(""); } '
+                    'complete' => 'function() { x2.publisher.getElement("#action-description").val(""); } '
                 )
             ));
             ?>
@@ -134,12 +134,12 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
         
         <div class="cell" id="action-duration" style="display:none;">
             <div class="action-duration-input">
-                <label for="timetrack-hours"><?php echo Yii::t('actions','hours'); ?></label>
+                <label for="timetrack-hours"><?php echo Yii::t('actions','Hours'); ?></label>
                 <input class="action-duration-display" type="number" min="0" max="99" name="timetrack-hours" />
             </div>
             <span class="action-duration-display">:</span>
             <div class="action-duration-input">
-                <label for="timetrack-minutes"><?php echo Yii::t('actions','minutes'); ?></label>
+                <label for="timetrack-minutes"><?php echo Yii::t('actions','Minutes'); ?></label>
                 <input class="action-duration-display" type="number" min="0" max="59" name="timetrack-minutes" />
             </div>
         </div><!-- #action-duration .cell -->

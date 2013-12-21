@@ -89,6 +89,7 @@ $this->widget('application.components.X2GridView', array(
 		'expectedCloseDate' => 117,
 		'assignedTo' => 120,
 		'lastActivity' => 90,
+        'gvControls' => 72,
 	),
 	'specialColumns'=>array(
 		'name'=>array(

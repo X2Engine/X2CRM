@@ -318,7 +318,7 @@ $this->beginWidget('zii.widgets.CPortlet',
 echo CHtml::link(
     Yii::t('app','All'),'#',
     array(
-        'class'=>'x2-button filter-control-button',
+        'class'=>'x2-minimal-button filter-control-button',
         'id'=>'all-button',
         'style'=>'width:107px;'
     )
@@ -327,7 +327,7 @@ foreach($eventTypes as $type=>$name) {
     echo CHtml::link(
         $name,'#',
         array(
-            'class'=>'x2-button filter-control-button',
+            'class'=>'x2-minimal-button filter-control-button',
             'id'=>$type.'-button','style'=>'width:107px;'
         )
     )."<br>";

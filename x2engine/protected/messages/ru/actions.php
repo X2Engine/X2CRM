@@ -231,4 +231,7 @@ return array (
 '{user} completed an action: {action}'=>'{user} завершено действие: {action}',
 'Stage {n}: {stage} was completed for {record}'=>'Стадия {n} : {stage} была завершена {record}',
 '{user} completed stage {n}: {stage} was completed for {record}'=>'{user} завершен этап {n} : {stage} была завершена {record}',
+'Log Time'=>'Вход Время',
+'Time started'=>'Время начала',
+'Time ended'=>'Время закончилась',
 );

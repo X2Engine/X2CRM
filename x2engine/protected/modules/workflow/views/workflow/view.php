@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+$this->setPageTitle(Yii::t('workflow', 'View Process'));
+
 $user=isset($_GET['users'])?$_GET['users']:''; 
 Yii::app()->clientScript->registerScript('getWorkflowStage',"
 
@@ -57,15 +60,15 @@ function getStageMembers(stage) {
 ",CClientScript::POS_HEAD);
 $isAdmin = (Yii::app()->params->isAdmin);
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('workflow','All Workflows'), 'url'=>array('index')),
+	array('label'=>Yii::t('workflow','All Processes'), 'url'=>array('index')),
 	array('label'=>Yii::t('app','Create'), 'url'=>array('create'), 'visible'=>$isAdmin),
 	array('label'=>Yii::t('app','View')),
-	array('label'=>Yii::t('workflow','Edit Workflow'), 'url'=>array('update', 'id'=>$model->id), 'visible'=>$isAdmin),
-	array('label'=>Yii::t('workflow','Delete Workflow'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 'visible'=>$isAdmin),
+	array('label'=>Yii::t('workflow','Edit Process'), 'url'=>array('update', 'id'=>$model->id), 'visible'=>$isAdmin),
+	array('label'=>Yii::t('workflow','Delete Process'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 'visible'=>$isAdmin),
 ));
 
 ?>
-<div class="page-title icon workflow"><h2><span class="no-bold"><?php echo Yii::t('workflow','Workflow:'); ?></span> <?php echo $model->name; ?></h2></div>
+<div class="page-title icon workflow"><h2><span class="no-bold"><?php echo Yii::t('workflow','Process:'); ?></span> <?php echo $model->name; ?></h2></div>
 <div style="width:300px;float:left;padding:10px;">
 <?php
 
@@ -75,7 +78,7 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 </div>
 
 <div class="form" style="clear:none;">
-	<h2><?php echo Yii::t('workflow', 'Workflow Status'); ?></h2>
+	<h2><?php echo Yii::t('workflow', 'Process Status'); ?></h2>
 	<?php $form = $this->beginWidget('CActiveForm', array(
 		'action'=>'view',
 		'id'=>'dateRangeForm',

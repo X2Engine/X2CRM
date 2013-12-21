@@ -94,11 +94,6 @@ class ActionsController extends x2base {
         $users = User::getNames();
         $association = $this->getAssociation($action->associationType, $action->associationId);
 
-        // if($association != null)
-        // $associationName = $association->name;
-        //else
-        //$associationName = Yii::t('app','None');
-
         if($this->checkPermissions($action, 'view')){
 
             X2Flow::trigger('RecordViewTrigger', array('model' => $action));
@@ -437,6 +432,16 @@ class ActionsController extends x2base {
                 $model->disableBehavior('changelog');
 
             if($model->save()){ // action saved to database *
+                if(!empty($_POST['timers'])) {
+                    $timerIds = explode(',',$_POST['timers']);
+                    $params = array();
+                    foreach($timerIds as $id) {
+                        $params[":timer$id"] = $id;
+                    }
+                    $wherein = '('.implode(',',array_keys($params)) .')';
+                    Yii::app()->db->createCommand()
+                            ->update(CaseTimer::model()->tableName(),array('actionId'=>$model->id),"`id` IN ".$wherein, $params);
+                }
                 if(isset($event)){
                     $event->associationId = $model->id;
                     $event->save();
@@ -948,7 +953,10 @@ class ActionsController extends x2base {
             if($modelName = X2Model::getModelName($type)){
                 $linkModel = $modelName;
                 if(class_exists($linkModel)){
-                    $linkSource = $this->createUrl(X2Model::model($linkModel)->autoCompleteSource);
+                    if($linkModel == "X2Calendar")
+                        $linkSource = ''; // Return no data to disable autocomplete on actions/update
+                    else
+                        $linkSource = $this->createUrl(X2Model::model($linkModel)->autoCompleteSource);
                 }else{
                     $linkSource = "";
                 }

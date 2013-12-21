@@ -573,42 +573,14 @@ class InlineEmail extends CFormModel {
      * @param array $params
      */
     public function parseMailingList($attribute, $params = array()){
-        if(!is_array($this->$attribute)){
-            $splitString = explode(',', $this->$attribute);
-        }else{
-            $splitString = $this->$attribute;
-        }
-        $invalid = false;
-
-        foreach($splitString as &$token){
-
-            $token = trim($token);
-            if(empty($token))
-                continue;
-
-            $matches = array();
-
-            $emailValidator = new CEmailValidator;
-
-            if($emailValidator->validateValue($token)) // if it's just a simple email, we're done!
-                $this->mailingList[$attribute][] = array('', $token);
-            elseif(strlen($token) < 255 && preg_match('/^"?([^"]*)"?\s*<(.+)>$/i', $token, $matches)){ // otherwise, it must be of the variety <email@example.com> "Bob Slydel"
-                if(count($matches) == 3 && $emailValidator->validateValue($matches[2])){  // (with or without quotes)
-                    $this->mailingList[$attribute][] = array($matches[1], $matches[2]);
-                }else{
-                    $invalid = true;
-                    break;
-                }
-            }else{
-                $invalid = true;
-                break;
-            }
-        }
-        if($attribute=='bcc'){
-            //printR($this->mailingList,true);
-        }
-        if($invalid)
-            $this->addError($attribute, Yii::t('app', 'Invalid email address list.'));
+        // First, convert the mailing list into an array of addresses.
+        // Use EmailDeliveryBehavior's recipient header parsing method,
+        // addressHeaderToArray, to do the heavy lifting.
+        try {
+            $this->mailingList[$attribute] = self::addressHeaderToArray($this->$attribute);
+        } catch (CException $e) {
+            $this->addError($attribute, $e->getMessage());
+        }   
     }
 
     /**
@@ -654,7 +626,13 @@ class InlineEmail extends CFormModel {
      */
     public function insertTrackingImage($replace = false){
         $recipientContacts = $this->recipientContacts;
-        if(count($recipientContacts) == 1){ // There was only one addressee
+        if(count($recipientContacts) == 1){ 
+            // Note, if there is more than one contact in the recipient list, it is
+            // impossible to distinguish who opened the email, because both will be
+            // sent the same email. Thus it will be disabled for this use case until
+            // we have time to re-write this class a bit so that it supports sending
+            // distinct email bodies for each different recipient (so that each can
+            // have its own different tracking image)
             $theContact = reset($recipientContacts);
             if(!empty($theContact)){ // The one person who was sent an email is an existing contact
                 $insertNew = true;

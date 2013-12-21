@@ -77,4 +77,7 @@ return array (
 'Theme name already exists or is invalid.'=>'Nome do tema já existe ou é inválido.',
 'Theme created successfully.'=>'Tema criado com sucesso.',
 'Page Header Color'=>'Página Cor Header',
+'Edit Profile'=>'Editar Perfil',
+'Disable phone field links?'=>'Desative as ligações telefônicas de campo?',
+'Disable notifications pop-up?'=>'Desabilite as notificações pop-up?',
 );

@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/site/whatsNew')),
+	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/profile/index')),
     array('label' => Yii::t('users', 'Manage Users')),
     array('label' => Yii::t('users', 'Create User'), 'url' => array('create')),
     array('label' => Yii::t('users', 'Invite Users'), 'url' => array('inviteUsers')),
@@ -108,11 +108,11 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'value' => '$data->login?date("Y-m-d",$data->login):"n/a"',
             'type' => 'raw',
         ),
-        array(
-            'header' => '<b>'.Yii::t('users', 'Records Updated').'</b>',
-            'value' => '(Changelog::model()->countByAttributes(array(),"changedBy=\"$data->username\" AND timestamp > '.strtotime("$offset").'"))',
-            'type' => 'raw',
-        ),
+//        array(
+//            'header' => '<b>'.Yii::t('users', 'Records Updated').'</b>',
+//            'value' => '(Changelog::model()->countByAttributes(array(),"changedBy=\"$data->username\" AND timestamp > '.strtotime("$offset").'"))',
+//            'type' => 'raw',
+//        ),
         array(
             'header' => Yii::t('app', 'Active'),
             'value' => '$data->status? Yii::t("app","Yes") : Yii::t("app","No")',

@@ -400,7 +400,6 @@ class ContactsController extends x2base {
                 if(!is_array($value)){
                     $value = explode(",", $value);
                 }
-                $tags = $value;
                 $tagCount = count($value);
                 $tagStr = "(";
                 for($i = 0; $i < count($value); $i++){
@@ -488,7 +487,7 @@ class ContactsController extends x2base {
             'contactId' => isset($contactId) ? $contactId : 0,
             'assignment' => isset($_POST['params']['assignedTo']) || isset($params['assignedTo']) ? (isset($_POST['params']['assignedTo']) ? $_POST['params']['assignedTo'] : $params['assignedTo']) : '',
             'leadSource' => isset($_POST['params']['leadSource']) ? $_POST['params']['leadSource'] : '',
-            'tags' => (isset($_POST['params']['tags']) && isset($tags) || isset($params['tags'])) ? isset($tags) ? $tags : $params['tags'] : array(),
+            'tags' => ((isset($_POST['params']['tags']) && !empty($_POST['params']['tags'])) ? $_POST['params']['tags'] : array()),
             'zoom' => isset($zoom) ? $zoom : null,
             'mapFlag' => isset($map) ? 'true' : 'false',
             'noHeatMap' => isset($_GET['noHeatMap']) && $_GET['noHeatMap'] ? true : false,
@@ -792,7 +791,7 @@ class ContactsController extends x2base {
                 $newRecord->disableBehavior('X2TimestampBehavior');
                 $newRecord->dupeCheck = 1;
                 $newRecord->save();
-                if(is_null($action)){
+                if($action === ''){
                     $newRecord->delete();
                     echo $oldId;
                     return;
@@ -1200,16 +1199,11 @@ class ContactsController extends x2base {
 
         $perPage = ProfileChild::getResultsPerPage();
 
-        $criteria->offset = isset($_GET['page']) ? $_GET['page'] * $perPage - 3 : -3;
-        $criteria->limit = $perPage;
+        //$criteria->offset = isset($_GET['page']) ? $_GET['page'] * $perPage - 3 : -3;
+        //$criteria->limit = $perPage;
         $criteria->order = 'createDate DESC';
 
-        $contactLists = new CActiveDataProvider('X2List', array(
-                    'criteria' => $criteria,
-                    'pagination' => array(
-                        'pageSize' => !Yii::app()->user->isGuest ? ProfileChild::getResultsPerPage() : 20,
-                    ),
-                ));
+        $contactLists = X2Model::model('X2List')->findAll($criteria);
 
         $totalContacts = X2Model::model('Contacts')->count();
         $totalMyContacts = X2Model::model('Contacts')->count('assignedTo="'.Yii::app()->user->getName().'"');
@@ -1256,9 +1250,9 @@ class ContactsController extends x2base {
             $newContacts,
         );
 
-        $dataProvider = new CArrayDataProvider(array_merge($contactListData, $contactLists->getData()), array(
+        $dataProvider = new CArrayDataProvider(array_merge($contactListData, $contactLists), array(
                     'pagination' => array('pageSize' => $perPage),
-                    'totalItemCount' => $contactLists->getTotalItemCount() + 3,
+                    'totalItemCount' => count($contactLists) + 3,
                 ));
 
         $this->render('listIndex', array(

@@ -55,4 +55,5 @@ return array (
 'Web Form Case entered by {name}'=>'웹 폼 케이스가 입력 {name}',
 'Hello'=>'안녕하세요',
 'Web Form Case'=>'웹 폼 케이스',
+'Thank you for contacting our Technical Support '=>'우리의 기술 지원에 문의 해 주셔서 감사합니다',
 );

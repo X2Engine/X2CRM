@@ -277,7 +277,7 @@ class Contacts extends X2Model {
         return $mailingList;
     }
 
-	public function searchAll() {
+	public function searchAll($pageSize=null, $uniqueId=null) {
 		$criteria = new CDbCriteria;
 		if(isset($_GET['tagField']) && !empty($_GET['tagField'])) {	// process the tags filter
             
@@ -310,7 +310,7 @@ class Contacts extends X2Model {
             $criteria->order='b.timestamp DESC';
             $criteria->params = $params;
         }
-        return $this->searchBase($criteria);
+        return $this->searchBase($criteria, $pageSize, $uniqueId);
     }
 
     public function searchMyContacts() {

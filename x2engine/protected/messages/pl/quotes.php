@@ -61,4 +61,7 @@ return array (
 'Could not save quote due to line item errors:'=>'Nie można zapisać ofertę ze względu na błędy pozycji wierszy:',
 'Update Quote:'=>'Aktualizacja Cytat:',
 'Update Invoice:'=>'Aktualizacja faktury:',
+'Are you sure you want to delete this quote?'=>'Czy na pewno chcesz usunąć ten cytat?',
+'This quote is locked. Are you sure you want to update this quote?'=>'Ten cytat jest zablokowana. Czy na pewno chcesz zaktualizować ten cytat?',
+'This quote is locked.'=>'Ten cytat jest zablokowana.',
 );

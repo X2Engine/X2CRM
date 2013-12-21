@@ -49,9 +49,33 @@ $urlTitleHeight = $sitesSettings->urltitleHeight;
 $topsitesContainerHeight = $topsitesHeight + 2;
 $urlTitleContainerHeight = $urlTitleHeight + 30;
 $siteContainerHeight = $topsitesHeight + $urlTitleHeight + 45;
-$siteContainerFixHeight = 337;
+$siteContainerFixHeight = 317;
 
 Yii::app()->clientScript->registerCss ('topSitesCss', "
+#sites-box{
+    height: 200px;
+    width: auto;
+    margin: 5px;
+    padding: 0 4px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    line-height: 1.1em;
+    font-size: 9pt;
+    color: #555;
+    background: #fcfcfc;
+    border: 1px solid #ddd;
+}
+#site-url-container{
+    height: 100px;
+}
+#widget_TopSites .portlet-content{
+    padding: 0;
+}
+#site-url-container input {
+    width: 120px;
+    padding: 5px;
+    margin-top: 10px;
+}
 #top-sites-form {
     padding: 2px;
 }

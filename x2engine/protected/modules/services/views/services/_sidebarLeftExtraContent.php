@@ -38,6 +38,7 @@
 // This is a list of service case statuses. When the User checks one of the corresponding 
 // checkboxes
 // the status will be hidden in the gridview in services/index
+// This is currently displayed only in index.
 if(isset($this->serviceCaseStatuses) && $this->serviceCaseStatuses != null) {
 
     Yii::app()->clientScript->registerCSS ("servicesFiltersStyle", "
@@ -138,4 +139,7 @@ if(isset($this->serviceCaseStatuses) && $this->serviceCaseStatuses != null) {
 
 
     $this->endWidget();
+}
+elseif($this->action->id != 'create') {
+    
 }

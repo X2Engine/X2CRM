@@ -65,4 +65,7 @@ return array (
 'Could not save quote due to line item errors:'=>'Impossible d&#39;enregistrer citation en raison d&#39;erreurs d&#39;élément de ligne:',
 'Update Quote:'=>'Mise à jour Citation:',
 'Update Invoice:'=>'Mettre à jour la facture:',
+'Are you sure you want to delete this quote?'=>'Etes-vous sûr de vouloir supprimer cette citation?',
+'This quote is locked. Are you sure you want to update this quote?'=>'Cette citation est verrouillé. Etes-vous sûr que vous voulez mettre à jour cette citation?',
+'This quote is locked.'=>'Cette citation est verrouillé.',
 );

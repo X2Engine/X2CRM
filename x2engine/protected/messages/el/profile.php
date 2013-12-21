@@ -77,4 +77,7 @@ return array (
 'Theme name already exists or is invalid.'=>'Θέμα όνομα υπάρχει ήδη ή είναι άκυρη.',
 'Theme created successfully.'=>'Θέμα δημιουργήθηκε με επιτυχία.',
 'Page Header Color'=>'Σελίδα Color Header',
+'Edit Profile'=>'Επεξεργασία προφίλ',
+'Disable phone field links?'=>'Απενεργοποίηση συνδέσεις πεδίο τηλέφωνο;',
+'Disable notifications pop-up?'=>'Απενεργοποιήσετε τις ειδοποιήσεις pop-up;',
 );

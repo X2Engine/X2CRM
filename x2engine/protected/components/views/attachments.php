@@ -47,7 +47,7 @@ function checkName(el, sbm) {
 
 	// check the file extension
 	var re = 1;
-	for(i in illegal_ext) {
+	for(var i in illegal_ext) {
 		if(illegal_ext[i] == ar_ext) {
 			re = 0;
 			break;

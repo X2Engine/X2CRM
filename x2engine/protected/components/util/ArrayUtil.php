@@ -39,7 +39,7 @@
  * Standalone class with miscellaneous array functions
  * 
  * @package
- * @author Demitri Morgan <demitri@x2engine.com>
+ * @author Demitri Morgan <demitri@x2engine.com>, Derek Mueller <derek@x2engine.com>
  */
 class ArrayUtil {
 
@@ -73,6 +73,56 @@ class ArrayUtil {
 
 		return $fields;
 	}
+
+    /**
+     * A recursive version of normalizeToArray (). 
+     *
+	 * @param array $expectedFields The array with key => default value pairs
+	 * @param array $currentFields The array to copy values from
+	 * @return array
+     */
+	public static function normalizeToArrayR ($expectedFields, $currentFields) {
+        $fields = array ();
+
+        /* 
+        Use values in current fields if they are present, otherwise use default values in
+        expected fields. If the default value is an array, Apply array normalization 
+        recursively.
+        */
+        foreach ($expectedFields as $key => $val) {
+            if (is_array ($val) && isset ($currentFields[$key]) && 
+                is_array ($currentFields[$key])) {
+
+                $fields[$key] = self::normalizeToArrayR (
+                    $expectedFields[$key], $currentFields[$key]);
+            } else if (isset ($currentFields[$key])) {
+                $fields[$key] = $currentFields[$key];
+            } else {
+                $fields[$key] = $expectedFields[$key];
+            }
+        }
+
+        /*
+        Maintain array ordering of current fields
+        */
+        $orderedFields = array ();
+        foreach ($currentFields as $key => $val) {
+            if (in_array ($key, array_keys ($fields))) {
+                $orderedFields[$key] = $fields[$key];
+                unset ($fields[$key]);
+            }
+        }
+
+        /* 
+        Add fields not specified in currentFields. These fields can't be sorted so they are 
+        simply appended.
+        */
+        foreach ($fields as $key => $val) {
+            $orderedFields[$key] = $fields[$key];
+        }
+
+        return $orderedFields;
+    }
 
     /**
      * Determines whether a given array is associative

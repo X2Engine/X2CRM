@@ -548,7 +548,7 @@ function loadFormJson(formJson) {
 	var form = $.parseJSON(formJson);
 	// console.log(form);
 
-	for(i=0; i<form.sections.length; i++) {
+	for(var i=0; i<form.sections.length; i++) {
 
 		var formSection = form.sections[i];
 

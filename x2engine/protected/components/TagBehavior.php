@@ -106,7 +106,9 @@ class TagBehavior extends CActiveRecordBehavior {
 	public function scanForTags() {
 		$tags = array();
 		foreach($this->getOwner()->getFields(true) as $fieldName => $field) {
-			if($field->type === 'varchar' || $field->type === 'text') {
+            $profile = Yii::app()->params->profile;
+			if(!(isset ($profile) && $profile->disableAutomaticRecordTagging) &&
+               ($field->type === 'varchar' || $field->type === 'text')) {
 				$matches = array();
 				if(preg_match_all('/(?:^|\s|\.)(#\w+[-\w]+\w+|#\w+)(?:$|[^\'"])/u',$this->getOwner()->$fieldName,$matches)) {		// extract the tags
 					foreach($matches[1] as $match) {

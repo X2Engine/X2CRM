@@ -241,7 +241,7 @@ refreshQtip();
 Yii::app()->clientScript->registerScript('map-controls',"
 $('#mapControlForm').submit(function(){
     var tags=new Array();
-    $.each($('#x2-tag-list a'),function(){
+    $.each($(this).find ('.x2-tag-list a'),function(){
         tags.push($(this).text());
     });
     $('#params_tags').val(tags);
@@ -255,7 +255,7 @@ $('#save-button').click(function(e){
     if(mapName){
         var center=map.getCenter();
         var tags=new Array();
-        $.each($('#x2-tag-list a'),function(){
+        $.each($('#mapControlForm').find ('.x2-tag-list a'),function(){
             tags.push($(this).text());
         })
         var parameters={'assignedTo':'".(empty($assignment)?"":$assignment)."','tags':tags};

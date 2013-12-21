@@ -75,6 +75,9 @@ class X2TranslationBehavior extends CBehavior {
         'languageStats' => array(
         // Stats about translations for individual languages are stored here.
         ),
+        'errors'=>array(
+
+        ),
     );
 
     /**
@@ -153,11 +156,11 @@ class X2TranslationBehavior extends CBehavior {
             foreach($langData as $fileName => $file){
                 foreach($file as $index){
                     if($limit > 0){ // Haven't hit 1000 messages yet.
+                        $limit--;
                         $index = str_replace("'", "\\'", $index); // Make message safe for insertion
                         $message = $this->translateMessage($index, $lang); // Translate message for the specified language
                         $translations[$index] = $message; // Store the translation (and original message) to be written to the file later.
                         $this->statistics['languageStats'][$lang]++;
-                        $limit--;
                     }else{ // We hit our limit of 1000 messages.
                         $this->replaceTranslations($lang, $fileName, $translations); // Replace translations for what we have now, we'll manually refresh to get more.
                         break 3; // Break out of all the loops to save time
@@ -251,20 +254,26 @@ class X2TranslationBehavior extends CBehavior {
         $languages = scandir('protected/messages/');
         foreach($languages as $lang){
             if($lang != '.' && $lang != '..'){ // Don't include the current or parent directory.
-                $messages = array_merge(array_keys(require "protected/messages/$lang/$file.php"), array_keys(require "protected/messages/$lang/common.php")); // Get all of the messages already in the appropriate language as well as common.php
-                $messages = array_map(function($data){
-                            return str_replace("'", "\\'", $data); // Make all strings safe for insertion--more importantly to match the provided message list to check for equivalency.
-                        }, $messages);
-                $diff = array_diff($messageList, $messages); // Create a diff array of messages not already in the provided language file or common.php
-                if(!empty($diff)){
-                    $contents = file_get_contents("protected/messages/$lang/$file.php"); // Grab the array of messages from the translation file.
-                    foreach($diff as $message){
-                        if($lang == 'template'){
-                            $this->statistics['newMessages']++; // Only count statistics once, even if adding to every file.
+                if(file_exists("protected/messages/$lang/$file.php")){
+                    $messages = array_merge(array_keys(require "protected/messages/$lang/$file.php"), array_keys(require "protected/messages/$lang/common.php")); // Get all of the messages already in the appropriate language as well as common.php
+                    $messages = array_map(function($data){
+                                return str_replace("'", "\\'", $data); // Make all strings safe for insertion--more importantly to match the provided message list to check for equivalency.
+                            }, $messages);
+                    $diff = array_diff($messageList, $messages); // Create a diff array of messages not already in the provided language file or common.php
+                    if(!empty($diff)){
+                        $contents = file_get_contents("protected/messages/$lang/$file.php"); // Grab the array of messages from the translation file.
+                        foreach($diff as $message){
+                            if($lang == 'template'){
+                                $this->statistics['newMessages']++; // Only count statistics once, even if adding to every file.
+                            }
+                            $contents = preg_replace('/^\);/m', "'$message'=>'',\n);", $contents); // Replace the ending of the array in the file with one of the diff messages.
                         }
-                        $contents = preg_replace('/^\);/m', "'$message'=>'',\n);", $contents); // Replace the ending of the array in the file with one of the diff messages.
+                        file_put_contents("protected/messages/$lang/$file.php", $contents); // Put the array back in the translation file.
                     }
-                    file_put_contents("protected/messages/$lang/$file.php", $contents); // Put the array back in the translation file.
+                }else{
+                    if(!isset($this->statistics['errors']['missingFiles']))
+                        $this->statistics['errors']['missingFiles']=array();
+                    $this->statistics['errors']['missingFiles'][$file]=$file;
                 }
             }
         }
@@ -320,6 +329,7 @@ class X2TranslationBehavior extends CBehavior {
             'protected/messages', // These are the translation files...
             'protected/extensions', // Extensions are rarely translated and generally don't display text.
             'protected/tests', // Unit tests have no translation calls
+            'backup', // Backup of older files that may no longer be relevant
         );
         foreach($paths as $path)
             if(strpos($relPath, $path) === 0) // We found the excluded directory in the relative path.
@@ -496,18 +506,21 @@ return array(
         if(strpos($message, ' ') !== false){
             $message = urlencode($message); // URL encode the message so we can make a GET request.
         }
-
-        $data = file_get_contents("https://www.googleapis.com/language/translate/v2?key=$key&source=en&target=$lang&q=$message"); // Grab the response from Google Translate API.
-        $data = json_decode($data, true); // Response is JSON, need to decode it to an array.
-        if(isset($data['data'], $data['data']['translations'], $data['data']['translations'][0], $data['data']['translations'][0]['translatedText'])){
-            $message = $data['data']['translations'][0]['translatedText']; // Make sure the data structure returned is correct, then store the message as the translated version.
-        }else{
-            $message = ''; // Otherwise, leave the message blank.
+        try{ // Occasionally we get a timeout that causes an exception
+            $data = file_get_contents("https://www.googleapis.com/language/translate/v2?key=$key&source=en&target=$lang&q=$message"); // Grab the response from Google Translate API.
+            $data = json_decode($data, true); // Response is JSON, need to decode it to an array.
+            if(isset($data['data'], $data['data']['translations'], $data['data']['translations'][0], $data['data']['translations'][0]['translatedText'])){
+                $message = $data['data']['translations'][0]['translatedText']; // Make sure the data structure returned is correct, then store the message as the translated version.
+            }else{
+                $message = ''; // Otherwise, leave the message blank.
+            }
+            $message = preg_replace_callback('/'.preg_quote('<span class="notranslate">', '/').'(.*?)'.preg_quote('</span>', '/').'/', function($matches){
+                        return $matches[1]; // Strip out the <span></span> tags
+                    }, $message);
+            $message = trim($message, '\\/'); // Trim any harmful characters Google Translate may have moved around, like leaving a "\" at the end of the string...
+        }catch(CException $e){
+            $message = '';
         }
-        $message = preg_replace_callback('/'.preg_quote('<span class="notranslate">', '/').'(.*?)'.preg_quote('</span>', '/').'/', function($matches){
-                    return $matches[1]; // Strip out the <span></span> tags
-                }, $message);
-        $message = trim($message, '\\/'); // Trim any harmful characters Google Translate may have moved around, like leaving a "\" at the end of the string...
         return $message;
     }
 

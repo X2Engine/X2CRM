@@ -35,6 +35,15 @@
  *****************************************************************************************/
 $this->setPageTitle($model->name);
 $themeUrl = Yii::app()->theme->getBaseUrl();
+
+$this->actionMenu = $this->formatMenu(array(
+	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
+	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
+	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
+	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
+));
+
+
 Yii::app()->getClientScript()->registerScript('docIframeAutoExpand','
 $("#docIframe").load(function() {
 	$(this).height($(this).contents().height());
@@ -47,10 +56,9 @@ $(window).resize(function() {
 <div class="page-title icon docs"><h2><span class="no-bold"><?php echo Yii::t('docs','Document:'); ?></span> <?php echo $model->name; ?></h2>
 
 <?php
-$perm=$model->editPermissions;
-$pieces=explode(", ",$perm);
-if(Yii::app()->user->checkAccess('DocsUpdate') && (Yii::app()->user->checkAccess('DocsAdmin') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm))
+if ($model->checkEditPermission ()) {
 	echo CHtml::link('<span></span>',array('/docs/docs/update','id'=>$model->id),array('class'=>'x2-button x2-hint icon edit right','title'=>Yii::t('docs','Edit')));
+}
     echo CHtml::link('<span></span>',array('/docs/docs/create','duplicate'=>$model->id),array('class'=>'x2-button icon copy right x2-hint','title'=>Yii::t('docs','Make a copy')));
 echo "<br>\n";
 ?>

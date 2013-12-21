@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$this->setPageTitle(Yii::t('workflow', 'Process Settings'));
+
 Yii::app()->clientScript->registerScript('updateChatPollSlider',"
 
 $('#settings-form input, #settings-form select, #settings-form textarea').change(function() {
@@ -108,7 +110,7 @@ else
 
 ?>
 <div class="span-16">
-<div class="page-title"><h2><?php echo Yii::t('admin','Workflow Settings'); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin','Process Settings'); ?></h2></div>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'settings-form',
@@ -135,7 +137,7 @@ $form = $this->beginWidget('CActiveForm', array(
 		));
 		?>
 		<?php echo $form->dropDownList($model,'workflowBackdateWindow',$timeLengths,array('id'=>'backdateWindow')); ?><br>
-		<?php echo Yii::t('admin','How long users have to backdate a workflow date.'); ?>
+		<?php echo Yii::t('admin','How long users have to backdate a process date.'); ?>
 		<p>
 		<hr>
 		<?php echo $form->labelEx($model,'workflowBackdateRange'); ?>
@@ -157,12 +159,12 @@ $form = $this->beginWidget('CActiveForm', array(
 		));
 		?>
 		<?php echo $form->dropDownList($model,'workflowBackdateRange',$dateLengths,array('id'=>'backdateRange')); ?><br>
-		<?php echo Yii::t('admin','How far back users can backdate a workflow stage.'); ?>
+		<?php echo Yii::t('admin','How far back users can backdate a process stage.'); ?>
 		<p>
 		<hr>
 		<?php echo $form->checkBox($model, 'workflowBackdateReassignment',array('id'=>'backdateReassignment')); ?>
 		<label for="backdateReassignment" style="display:inline"><?php echo Yii::t('admin', 'Backdate reassignment'); ?></label><br>
-		<?php echo Yii::t('admin','Users can change who a workflow stage was completed by.'); ?>
+		<?php echo Yii::t('admin','Users can change who a process stage was completed by.'); ?>
 		</p>
 	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','style'=>'margin-left:0;'))."\n";?>
 	</div>

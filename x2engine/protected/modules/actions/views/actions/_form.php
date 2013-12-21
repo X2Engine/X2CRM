@@ -84,7 +84,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->par
                 <div class="cell">
                     <?php echo $form->label($actionModel, 'associationType'); ?>
                     <?php
-                    echo $form->dropDownList($actionModel, 'associationType', array_merge(array('none' => Yii::t('app','None')), $modelList), array(
+                    echo $form->dropDownList($actionModel, 'associationType', array_merge(array('none' => Yii::t('app','None'), 'calendar' => Yii::t('calendar', 'Calendar')), $modelList), array(
                         'ajax' => array(
                             'type' => 'POST', //request type
                             'url' => CController::createUrl('/actions/actions/parseType'), //url to call.
@@ -108,8 +108,11 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->par
                     }else{
                         $linkModel = null;
                     }
-                    if(class_exists($linkModel)){
-                        $linkSource = $this->createUrl(X2Model::model($linkModel)->autoCompleteSource);
+                    if(!empty($linkModel) && class_exists($linkModel)){
+                        if($linkModel == 'X2Calendar')
+                            $linkSource = '';
+                        else
+                            $linkSource = $this->createUrl(X2Model::model($linkModel)->autoCompleteSource);
                     }else{
                         $linkSource = "";
                     }

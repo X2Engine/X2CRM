@@ -47,7 +47,6 @@ return array (
 'Could not connect to the updates server at this time.'=>'',
 'You can continue installing the application without enabling updates and try again later by going into "General Settings" under the section "App Settings" in the Admin console.'=>'',
 'Product Key'=>'',
-'Registration'=>'',
 'Software registration succeeded.'=>'',
 'To receive software updates from X2Engine, please register your copy of X2EngineCRM:'=>'',
 'For support or sales inquiries, please contact us'=>'',
@@ -147,4 +146,7 @@ return array (
 'The base directory configuration directive is set, and it is not the current working directory.'=>'',
 'The base directory configuration directive is set, and it does not include the current working directory.'=>'',
 'Some hashing algorithms required for software updates are missing on this server:'=>'',
+'The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will have to be performed manually.'=>'',
+'This web server is effectively cut off from the internet; (1) no outbound network route exists, or (2) local DNS resolution is failing, or (3) this server is behind a firewall that is preventing outbound requests. Software updates will have to be performed manually, and Google integration will not work.'=>'',
+'Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will have to be performed manaully.'=>'',
 );

@@ -65,7 +65,7 @@ function checkPictureExt(el, sbm) {
 	// alert(ar_ext);
 	// check the file extension
 	var re = 0;
-	for(i in legal_extensions) {
+	for(var i in legal_extensions) {
 		if(legal_extensions[i] == ar_ext) {
 			re = 1;
 			break;

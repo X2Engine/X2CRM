@@ -103,4 +103,5 @@ return array (
 'Web Form Case entered by {name}'=>'Дело веб-формы введенный {name}',
 'Hello'=>'Привет',
 'Web Form Case'=>'Дело веб-формы',
+'Thank you for contacting our Technical Support '=>'Спасибо за обращение в нашу службу технической поддержки',
 );

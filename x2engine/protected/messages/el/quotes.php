@@ -65,4 +65,7 @@ return array (
 'Could not save quote due to line item errors:'=>'Δεν ήταν δυνατή η αποθήκευση απόσπασμα οφείλεται σε σφάλματα στοιχείο γραμμής:',
 'Update Quote:'=>'Ενημέρωση Απόσπασμα:',
 'Update Invoice:'=>'Ενημέρωση Τιμολόγιο:',
+'Are you sure you want to delete this quote?'=>'Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το απόσπασμα;',
+'This quote is locked. Are you sure you want to update this quote?'=>'Αυτό το απόσπασμα είναι κλειδωμένο. Είστε σίγουροι ότι θέλετε να ενημερώσετε αυτό το απόσπασμα;',
+'This quote is locked.'=>'Αυτό το απόσπασμα είναι κλειδωμένο.',
 );

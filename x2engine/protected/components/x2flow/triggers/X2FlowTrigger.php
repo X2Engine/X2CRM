@@ -58,6 +58,8 @@ abstract class X2FlowTrigger extends X2FlowItem {
 			'=' => Yii::t('studio','equals'),
 			'>' => Yii::t('studio','greater than'),
 			'<' => Yii::t('studio','less than'),
+			'>=' => Yii::t('studio','greater than or equal to'),
+			'<=' => Yii::t('studio','less than or equal to'),
 			'<>' => Yii::t('studio','not equal to'),
 			'list' => Yii::t('studio','in list'),
 			'notList' => Yii::t('studio','not in list'),
@@ -432,9 +434,15 @@ abstract class X2FlowTrigger extends X2FlowItem {
 				return $subject == $value;
 
 			case '>':
-				return $subject >= $value;
+				return $subject > $value;
 
 			case '<':
+				return $subject < $value;
+
+			case '>=':
+				return $subject >= $value;
+
+			case '<=':
 				return $subject <= $value;
 
 			case 'between':

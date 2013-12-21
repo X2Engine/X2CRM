@@ -143,4 +143,7 @@ return array (
 '{user} completed an action: {action}'=>'{user}完成了一个动作： {action}',
 'Stage {n}: {stage} was completed for {record}'=>'完成阶段{n} {stage} {record}',
 '{user} completed stage {n}: {stage} was completed for {record}'=>'{user}完成完成阶段{n} {stage} {record}',
+'Log Time'=>'登录时间',
+'Time started'=>'开始时间',
+'Time ended'=>'结束时间',
 );

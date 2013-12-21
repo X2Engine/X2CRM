@@ -55,6 +55,12 @@ class EmailDeliveryBehavior extends CBehavior {
     private $_credentials;
 
     /**
+     * ID of the credentials record to use for SMTP authentication
+     * @var integer
+     */
+    private $_credId = null;
+
+    /**
      * @var array Sender address
      */
     private $_from;
@@ -70,17 +76,66 @@ class EmailDeliveryBehavior extends CBehavior {
      * @var Profile
      */
     private $_userProfile;
-    
-    /**
-     * ID of the credentials record to use for SMTP authentication
-     * @var integer
-     */
-    public $credId = null;
-    
+        
     /**
      * @var array Status codes
      */
     public $status = array();
+
+
+    /**
+     * Parses a To, CC, or BCC header into an array compatible with PHPMailer.
+     * 
+     * Each element of the array corresponds to an email addressee; the first
+     * element is the name, the second, the value.
+     *
+     * The special case of "LastName, FirstName" is covered (splitting on commas
+     * will break in this case) is covered by using a bit of RegExp from an idea
+     * shared here:
+     * 
+     * http://stackoverflow.com/a/2202489/1325798
+     * 
+     * @param type $header
+     */
+    public static function addressHeaderToArray($header) {
+        // First, tokenize all pieces of the header to avoid splitting inside of
+        // recipient names:
+        preg_match_all('/"(?:\\\\.|[^\\\\"])*"|\S+/', $header, $matches);
+        $tokenCount = 0;
+        $values = array();
+        foreach($matches[0] as $matchedPiece) {
+            $piece = trim($matchedPiece,',');
+            $token = "\{token_$tokenCount\}";
+            $values[$token] = $piece;
+            $tokenCount++;
+        }
+        $tokens = array_flip($values);
+        $delimiter = '-&@&-'; // Something highly unlikely to ever appear in an email header
+        $tokenizedHeader = str_replace(',',$delimiter,strtr($header,$tokens));
+        $headerPieces = explode($delimiter,strtr($tokenizedHeader,$values));
+        $headerArray = array();
+        foreach($headerPieces as $recipient){
+            $recipient = trim($recipient);
+            if(empty($recipient))
+                continue;
+            $matches = array();
+            $emailValidator = new CEmailValidator;
+
+            if($emailValidator->validateValue($recipient)) // if it's just a simple email, we're done!
+                $headerArray[] = array('', $recipient);
+            elseif(strlen($recipient) < 255 && preg_match('/^"?([^"]*)"?\s*<(.+)>$/i', $recipient, $matches)){ // otherwise, it must be of the variety <email@example.com> "Bob Slydel"
+                if(count($matches) == 3 && $emailValidator->validateValue($matches[2])){  // (with or without quotes)
+                    $headerArray[] = array($matches[1], $matches[2]);
+                }else{
+                    throw new CException(Yii::t('app', 'Invalid email address list.'));
+                }
+            }else{
+                throw new CException(Yii::t('app', 'Invalid email address list.'));
+            }
+        }
+        return $headerArray;            
+    }
+
     /**
      * Adds email addresses to a PHPMail object
      * @param type $phpMail
@@ -122,6 +177,8 @@ class EmailDeliveryBehavior extends CBehavior {
      *
      * Any special authentication and security should take place in here.
      *
+     * @param array $addresses This array must contain "to", "cc" and/or "bcc"
+     *  keys, and the values for each of these should be 
      * @throws Exception
      * @return array
      */
@@ -175,13 +232,12 @@ class EmailDeliveryBehavior extends CBehavior {
             }
 
             $this->status['code'] = '200';
+            $this->status['exception'] = null;
             $this->status['message'] = Yii::t('app', 'Email Sent!');
-        }catch(phpmailerException $e){
-            $this->status['code'] = '500';
-            $this->status['message'] = $e->getMessage()." ".$e->getFile()." L".$e->getLine(); //Pretty error messages from PHPMailer
         }catch(Exception $e){
             $this->status['code'] = '500';
-            $this->status['message'] = $e->getMessage()." ".$e->getFile()." L".$e->getLine(); //Boring error messages from anything else!
+            $this->status['exception'] = $e;
+            $this->status['message'] = $e->getMessage()." ".$e->getFile()." L".$e->getLine();
         }
         return $this->status;
     }
@@ -200,6 +256,10 @@ class EmailDeliveryBehavior extends CBehavior {
             }
         }
         return $this->_credentials;
+    }
+
+    public function getCredId() {
+        return $this->_credId;
     }
 
     public function getFrom(){
@@ -308,6 +368,10 @@ class EmailDeliveryBehavior extends CBehavior {
             }
         }
         return $this->_userProfile;
+    }
+
+    public function setCredId($value) {
+        $this->_credId = $value;
     }
 
     public function setFrom($from){

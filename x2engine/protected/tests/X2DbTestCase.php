@@ -57,7 +57,9 @@ abstract class X2DbTestCase extends CDbTestCase {
      * the class.
      * @var array
      */
-    public static abstract function referenceFixtures();
+    public static function referenceFixtures() {
+        return array();
+    }
 
     private static $_referenceFixtureRecords = array();
 

@@ -83,7 +83,7 @@ class Admin extends CActiveRecord {
             array('currency', 'length', 'max' => 3),
             array('emailUseAuth, emailUseSignature', 'length', 'max' => 10),
             array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max' => 20),
-            array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass', 'length', 'max' => 255),
+            array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
             array('batchTimeout','numerical','integerOnly' => true),
             array('emailBulkAccount,serviceCaseEmailAccount,emailDropbox', 'safe'),
@@ -142,9 +142,9 @@ class Admin extends CActiveRecord {
             'googleAPIKey' => Yii::t('admin', 'Google API Key'),
             'googleIntegration' => Yii::t('admin', 'Activate Google Integration'),
             'inviteKey' => Yii::t('admin', 'Invite Key'),
-            'workflowBackdateWindow' => Yii::t('admin', 'Workflow Backdate Window'),
-            'workflowBackdateRange' => Yii::t('admin', 'Workflow Backdate Range'),
-            'workflowBackdateReassignment' => Yii::t('admin', 'Workflow Backdate Reassignment'),
+            'workflowBackdateWindow' => Yii::t('admin', 'Process Backdate Window'),
+            'workflowBackdateRange' => Yii::t('admin', 'Process Backdate Range'),
+            'workflowBackdateReassignment' => Yii::t('admin', 'Process Backdate Reassignment'),
             'serviceCaseEmailAccount' => Yii::t('admin', 'Send As (to service requesters)'),
             'serviceCaseFromEmailName' => Yii::t('admin', 'Sender Name'),
             'serviceCaseFromEmailAddress' => Yii::t('admin', 'Sender Email Address'),
@@ -162,7 +162,8 @@ class Admin extends CActiveRecord {
             'webLeadEmailAccount' => Yii::t('admin','Send As (to web leads)'),
             'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
             'batchTimeout' => Yii::t('app','Time limit on batch actions'),
-            'externalBaseUrl' => Yii::t('app','External / Public Base URL')
+            'externalBaseUrl' => Yii::t('app','External / Public Base URL'),
+            'externalBaseUri' => Yii::t('app','External / Public Base URI')
         );
     }
 
@@ -196,6 +197,41 @@ class Admin extends CActiveRecord {
         } else{
             Yii::app()->db->createCommand()->delete('x2_credentials_default', 'userId=:uid AND serviceType=:st', array(':uid' => Credentials::$sysUseId[$params['alias']], ':st' => 'email'));
         }
+    }
+
+    /**
+     * Record that a number of emails have been sent, to avoid going over the
+     * bulk email batch size per interval.
+     * 
+     * @param integer $nEmail Number of emails that will have been sent
+     */
+    public function countEmail($nEmail = 1) {
+        $now = time();
+        if(empty($this->emailStartTime))
+            $this->emailStartTime = $now;
+        if($now-$this->emailStartTime > $this->emailInterval) {
+            // Reset
+            $this->emailStartTime = $now;
+            $this->emailCount = 0;
+        }
+        $this->emailCount += $nEmail;
+        $this->update(array('emailCount','emailStartTime'));
+        return $this->emailCount;
+    }
+
+    /**
+     * Returns true or false based on whether a number of emails to be sent will
+     * exceed the batch maximum.
+     *
+     * @param integer $nEmail Number of emails to be sent
+     */
+    public function emailCountWillExceedLimit($nEmail=1) {
+        $now = time();
+        if($now-$this->emailStartTime > $this->emailInterval) {
+            $this->emailStartTime = $now;
+            $this->emailCount = 0;
+        }
+        return $this->emailCount + $nEmail > $this->emailBatchSize;
     }
 
 }

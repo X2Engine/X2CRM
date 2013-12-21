@@ -29,6 +29,7 @@ CREATE TABLE x2_actions	(
 	syncGoogleCalendarEventId TEXT,
     sticky                  TINYINT         DEFAULT 0,
     flowTriggered           TINYINT         DEFAULT 0,
+    timeSpent               INT             DEFAULT 0,
 	INDEX (assignedTo),
 	INDEX (type),
 	INDEX (associationType,associationId)
@@ -44,7 +45,7 @@ CREATE TABLE x2_action_text	(
 /*&*/
 INSERT INTO `x2_modules`
 			(name,				title,				visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("actions",			"Actions",			1,			0,				1,			0,			0,			0,		0);
+	VALUES	("actions",			"Actions",			1,			5,				1,			0,			0,			0,		0);
 /*&*/
 INSERT INTO `x2_fields`
 (modelName,	fieldName,				attributeLabel,		modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance, uniqueConstraint, safe)
@@ -68,4 +69,5 @@ VALUES
 ("Actions",	"lastUpdated",			"Last Updated",			0,		0,		"dateTime",		0,			0,		NULL,			0,		0,			"",         0,                  1),
 ("Actions",	"updatedBy",			"Updated By",			0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),
 ("Actions",	"allDay",				"All Day",				0,		0,		"boolean",		0,			0,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"color",				"Color",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1);
+("Actions",	"color",				"Color",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),
+("Actions", "timeSpent",            "Time Spent",           0,      0,      "int",          0,          0,      NULL,           0,      0,          "",         0,                  1);

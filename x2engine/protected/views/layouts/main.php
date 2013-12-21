@@ -113,7 +113,7 @@ AuxLib::registerPassVarsToClientScriptScript ('auxlib',
 $cs ->registerScriptFile($baseUrl.'/js/json2.js')
     ->registerScriptFile($baseUrl.'/js/main.js'.$jsVersion, CCLientScript::POS_HEAD)
 	->registerScriptFile($baseUrl.'/js/auxlib.js', CClientScript::POS_HEAD)
-	->registerScriptFile($baseUrl.'/js/layout.js')
+	->registerScriptFile($baseUrl.'/js/LayoutManager.js')
 	->registerScriptFile($baseUrl.'/js/publisher.js')
 	->registerScriptFile($baseUrl.'/js/media.js')
 	->registerScriptFile($baseUrl.'/js/x2forms.js')
@@ -124,7 +124,8 @@ $cs ->registerScriptFile($baseUrl.'/js/json2.js')
 	->registerScriptFile($baseUrl.'/js/widgets.js')
 	->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion)
     ->registerScriptFile($baseUrl.'/js/actionFrames.js'.$jsVersion)
-	->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js');
+	->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js')
+	->registerScriptFile($baseUrl.'/js/checklistDropdown/jquery.multiselect.js');
 
 if (IS_IPAD) {
     $cs->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
@@ -143,7 +144,7 @@ $cs->registerScript('datepickerLanguage', "
 $mmPath = Yii::getPathOfAlias('application.extensions.moneymask.assets');
 $aMmPath = Yii::app()->getAssetManager()->publish($mmPath);
 $cs->registerScriptFile("$aMmPath/jquery.maskMoney.js");
-$cs->registerCoreScript('jquery');
+//$cs->registerCoreScript('jquery');
 
 // blueprint CSS framework
 $cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
@@ -160,11 +161,11 @@ $cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
 	->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection')*/
 	->registerCssFile($themeUrl.'/css/combined.css'.$jsVersion,'screen, projection')
-	->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection')
+	//->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection')
     ->registerCoreScript('cookie');
 // $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion);
 
-$cs->registerCssFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.css');
+//$cs->registerCssFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.css');
 
 if (IS_ANDROID)
 	$cs->registerCssFile($themeUrl.'/css/androidLayout.css'.$jsVersion,'screen, projection');
@@ -260,7 +261,7 @@ if ($preferences != null && $preferences['pageHeaderBgColor']) {
 
 
 if ($preferences != null && $preferences['activityFeedWidgetBgColor']){
-	$themeCss .= '#chat-box {
+	$themeCss .= '#feed-box {
 		background-color: #'.$preferences['activityFeedWidgetBgColor'].';
 	 }';
 }
@@ -447,7 +448,7 @@ if(is_file(Yii::app()->params->logo)){
 }
 array_unshift($menuItems, array(
     'label' => CHtml::image(Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo, Yii::app()->name, $logoOptions),
-    'url' => array('/site/whatsNew'),
+    'url' => array('/profile', 'id' => Yii::app()->user->id),
     'active' => false,
     'itemOptions' => array('id' => 'search-bar-title', 'class' => 'special','title'=>Yii::t('app','Go to Activity Feed'))
 ));
@@ -478,7 +479,7 @@ if(!Yii::app()->user->isGuest){
 }
 $userMenu = array(
     array('label' => Yii::t('app', 'Admin'), 'url' => array('/admin/index'), 'active' => ($module == 'admin') ? true : null, 'visible' => $isAdmin),
-    array('label' => Yii::t('app', 'Activity'), 'url' => array('/site/whatsNew')),
+    array('label' => Yii::t('app', 'Profile'), 'url' => array('/profile/view', 'id' => Yii::app()->user->getId())),
     array('label' => Yii::t('app', 'Users'), 'url' => array('/users/users/admin'), 'visible' => $isAdmin),
     array('label' => Yii::t('app', 'Users'), 'url' => array('/profile/profiles'), 'visible' => !$isAdmin),
     array('label' => $searchbarHtml, 'itemOptions' => array('id' => 'search-bar', 'class' => 'special')),

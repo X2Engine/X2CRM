@@ -3,7 +3,7 @@
 return array(
 	'name' => "Accounts",
 	'install' => array(
-		dirname(__FILE__) . '/data/install.sql',
+		implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','install.sql')),
 		array(
 			'INSERT INTO x2_form_layouts
 						(id,model,version,layout,defaultView,defaultForm,createDate,lastUpdated)
@@ -12,7 +12,7 @@ return array(
 			),
 	),
 	'uninstall' => array(
-		dirname(__FILE__) . '/data/uninstall.sql'
+		implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','uninstall.sql'))
 	),
 	'editable' => true,
 	'searchable' => true,

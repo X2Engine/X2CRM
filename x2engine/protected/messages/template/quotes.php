@@ -61,4 +61,7 @@ return array (
 'Could not save quote due to line item errors:'=>'',
 'Update Quote:'=>'',
 'Update Invoice:'=>'',
+'Are you sure you want to delete this quote?'=>'',
+'This quote is locked. Are you sure you want to update this quote?'=>'',
+'This quote is locked.'=>'',
 );

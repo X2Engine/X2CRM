@@ -86,6 +86,9 @@ class ServicesController extends x2base {
             'exportServiceReport' => array(
                 'class' => 'ExportServiceReportAction',
             ),
+            'timerControl' => array(
+                'class' => 'TimerControlAction',
+            ),
         ));
     }
 

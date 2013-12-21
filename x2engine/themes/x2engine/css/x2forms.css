@@ -315,7 +315,9 @@ div.x2-layout .formItem .placeholder {color:#aaa;}
 
 div.x2-layout .formInputBox input {margin:0;padding:2px;}
 div.x2-layout .formInputBox input[type="text"] {width:100%;}
-div.x2-layout .formInputBox textarea {height:100%;resize:none;padding:2px;}
+div.x2-layout .formInputBox textarea {
+    padding:2px;
+}
 div.x2-layout .formInputBox select {width:100%;}
 div.x2-layout .formInputBox input.input-percentage { background: #FFFFFF url(../images/formEditor/percentage.gif) no-repeat 95%;}
 

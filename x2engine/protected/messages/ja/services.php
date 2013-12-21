@@ -55,4 +55,5 @@ return array (
 'Web Form Case entered by {name}'=>'によって入力されたWebフォームケース{name}',
 'Hello'=>'こんにちは',
 'Web Form Case'=>'Webフォームケース',
+'Thank you for contacting our Technical Support '=>'当社の技術サポートにお問い合わせいただきありがとうございます',
 );

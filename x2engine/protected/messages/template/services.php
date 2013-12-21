@@ -51,4 +51,5 @@ return array (
 'Web Form Case entered by {name}'=>'',
 'Hello'=>'',
 'Web Form Case'=>'',
+'Thank you for contacting our Technical Support '=>'',
 );

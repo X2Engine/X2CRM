@@ -61,7 +61,7 @@ class DocsController extends x2base {
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','create','createEmail','update','exportToHtml','changePermissions', 'delete', 'getItems', 'getItem'),
+				'actions'=>array('index','view','create','createEmail','update','exportToHtml','changePermissions', 'delete', 'getItems', 'getItem', 'ajaxCheckEditPermission'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -434,5 +434,24 @@ class DocsController extends x2base {
                echo Yii::t('docs', 'Saved at') . ' ' . Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('medium'), time());
 			};
 		}
+    }
+
+    /**
+     * Echoes 'true' if User has permission, 'false' otherwise
+     * @param int id id of doc model  
+     */
+    public function actionAjaxCheckEditPermission ($id) {
+        if (!isset ($id)) {
+            echo 'failure';
+            return;
+        }
+        $doc = Docs::model ()->findByPk ($id);
+        if (isset ($doc)) {
+            $canEdit = $doc->checkEditPermission () ? 'true' : 'false';
+        } else {
+            $canEdit = 'false';
+        }
+        echo $canEdit;
+        return;
     }
 }

@@ -39,6 +39,8 @@ Child prototype of X2Chart
 
 
 function X2UsersChart (argsDict) {
+    argsDict = $.extend (true, {prototype: X2UsersChart.prototype}, argsDict);
+
 	X2Chart.call (this, argsDict);	
 
 	var thisX2Chart = this;
@@ -202,7 +204,8 @@ X2UsersChart.prototype.setDefaultSettings = function () {
 
 		// default start date 
 		$('#' + thisX2Chart.chartType + '-chart-datepicker-from').
-			datepicker('setDate', '-7d'); 
+			datepicker('setDate', new Date (new Date () - X2Chart.MSPERWEEK)); 
+
 		$.cookie (
 			thisX2Chart.cookiePrefix + 'startDate', 
 			$('#' + thisX2Chart.chartType + '-chart-datepicker-from').
@@ -223,6 +226,12 @@ X2UsersChart.prototype.setDefaultSettings = function () {
 			$('#' + thisX2Chart.chartType + '-chart-datepicker-to').
 			datepicker ('getDate').valueOf ());
 	}
+
+	// metric default, select all
+	$('#' + thisX2Chart.chartType + '-first-metric').children ().each (function () {
+        $(this).attr ('selected', 'selected')
+    });
+	$('#' + thisX2Chart.chartType + '-first-metric').multiselect2 ('refresh');
 
 };
 
@@ -305,6 +314,7 @@ X2UsersChart.prototype.postMetricSelectionSetup = function () {
 
 	$('#' + thisX2Chart.chartType + '-first-metric').bind ("multiselect2beforeclose", 
 		function (evt, ui) {
+
 			var firstMetricVal = $(this).val ();
 			var maxSelected = 21;
 			if (firstMetricVal !== null) {

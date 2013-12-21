@@ -55,4 +55,5 @@ return array (
 'Web Form Case entered by {name}'=>'输入Web窗体案例{name}',
 'Hello'=>'你好',
 'Web Form Case'=>'Web窗体案例',
+'Thank you for contacting our Technical Support '=>'感谢您联系我们的技术支持',
 );

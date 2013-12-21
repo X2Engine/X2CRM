@@ -3,7 +3,8 @@
 $this->widget('InlineQuotes',
 	array(
 		'startHidden'=>false,
-		'contactId'=>$model->id,
+		'recordId'=>$modelId,
+		'modelName'=>$modelName,
 	)
 );
 ?>

@@ -143,4 +143,7 @@ return array (
 '{user} completed an action: {action}'=>'{user} a réalisé une action: {action}',
 'Stage {n}: {stage} was completed for {record}'=>'Etape {n} : {stage} a été achevé pour {record}',
 '{user} completed stage {n}: {stage} was completed for {record}'=>'{user} étape franchie {n} : {stage} a été achevé pour {record}',
+'Log Time'=>'Durée Connexion',
+'Time started'=>'Heure de début',
+'Time ended'=>'Durée terminé',
 );

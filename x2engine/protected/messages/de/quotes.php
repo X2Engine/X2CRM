@@ -65,4 +65,7 @@ return array (
 'Could not save quote due to line item errors:'=>'Konnte nicht gespeichert werden Zitat aufgrund Posten Fehler:',
 'Update Quote:'=>'Aktualisieren Zitat:',
 'Update Invoice:'=>'Aktualisieren Rechnung:',
+'Are you sure you want to delete this quote?'=>'Sind Sie sicher, dass Sie dieses Zitat löschen?',
+'This quote is locked. Are you sure you want to update this quote?'=>'Dieses Angebot ist gesperrt. Sind Sie sicher, dass Sie dieses Zitat aktualisieren?',
+'This quote is locked.'=>'Dieses Angebot ist gesperrt.',
 );

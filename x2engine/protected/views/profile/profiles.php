@@ -47,6 +47,12 @@ $('.search-form form').submit(function(){
 });
 ");
 
+Yii::app()->clientScript->registerCss ('profilesStyle', "
+    #profiles-grid .summary {
+        margin-left: 5px;
+    }
+");
+
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('index')),
 	array('label'=>Yii::t('profile','People')),
@@ -57,8 +63,9 @@ $this->actionMenu = $this->formatMenu(array(
 	'model'=>$model, 
 )); ?>
 </div>
+<div class='flush-grid-view'>
 <?php
-	$this->widget('zii.widgets.grid.CGridView', array(
+/*$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'profiles-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=> '<div class="page-title"><h2>'.Yii::t('profile','People').'</h2><div class="title-bar">'
@@ -76,5 +83,52 @@ $this->actionMenu = $this->formatMenu(array(
 			),
 		'tagLine',
 	),
+));*/
+
+$this->widget('application.components.X2GridViewLess', array(
+	'id'=>'profiles-grid',
+	'title'=>Yii::t('profile', 'People'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
+	'template'=> 
+        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
+        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
+        '<div id="x2-gridview-page-title" '.
+         'class="page-title icon contacts x2-gridview-fixed-title">'.
+        '{title}{buttons}{filterHint}{summary}{topPager}{items}{pager}',
+    'fixedHeader'=>true,
+	'dataProvider'=>$model->search (),
+	'filter'=>$model,
+	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
+	'modelName'=>'Profile',
+	'viewName'=>'profiles',
+	'defaultGvSettings'=>array(
+		'fullName' => 125,
+		'tagLine' => 165,
+		'isActive' => 80,
+	),
+    'modelAttrColumnNames'=>array (
+        'tagLine', 'username', 'officePhone', 'cellPhone', 'emailAddress', 'googleId'
+    ),
+	'specialColumns'=>array(
+		'fullName'=>array(
+			'name'=>'fullName',
+			'header'=>Yii::t('profile', 'Full Name'),
+			'value'=>'CHtml::link($data->fullName,array("view","id"=>$data->id))',
+			'type'=>'raw',
+		),
+		'isActive'=>array(
+			'name'=>'isActive',
+			'header'=>Yii::t('profile', 'Active'),
+			'value'=>'"<span title=\''.
+                '".(Session::isOnline ($data->username) ? '.
+                 '"'.Yii::t('profile', 'Active User').'" : "'.Yii::t('profile', 'Inactive User').'")."\''.
+                ' class=\'".(Session::isOnline ($data->username) ? '.
+                '"active-indicator" : "inactive-indicator")."\'></span>"',
+			'type'=>'raw',
+		),
+	),
+	'enableControls'=>false,
+	'fullscreen'=>true,
 ));
 ?>
+</div>

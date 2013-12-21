@@ -46,7 +46,7 @@ if($filter) {
 <b><?php echo Yii::t('app', 'Tags'); ?></b>
 <div id="x2-tags-container" class="form">
     <?php
-		echo '<div id="x2-tag-list" style="min-height:15px;">';
+		echo '<div class="x2-tag-list" style="min-height:15px;">';
 		foreach($tags as $tag) {
 			echo '<span class="tag link-disable"><span class="delete-tag filter">[x]</span>'.
                     CHtml::link(CHtml::encode ($tag),'#').
@@ -65,14 +65,14 @@ if($filter) {
 	Yii::app()->clientScript->registerScript('tags-list','
 	$(document).on ("ready", function () {
         new MapTagsContainer ({
-            containerSelector: "#x2-tag-list"
+            containerSelector: "#x2-tags-container .x2-tag-list"
         }); 
 	});',CClientScript::POS_HEAD);
 } else {
 
 ?>
 <div id="x2-tags-container">
-	<div id="x2-tag-list">
+	<div class="x2-tag-list">
 		<?php 
         foreach($tags as $tag) {
             echo '<span class="tag"><span class="delete-tag">[x]</span> '.
@@ -109,7 +109,7 @@ if($filter) {
             searchUrl: "'.$searchUrl.'",
             modelType: "'.get_class ($model).'",
             modelId: '.$model->id.',
-            containerSelector: "#x2-tag-list",
+            containerSelector: "#x2-tags-container .x2-tag-list",
         });
 	});',CClientScript::POS_HEAD);
 }

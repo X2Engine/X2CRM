@@ -143,4 +143,7 @@ return array (
 '{user} completed an action: {action}'=>'{user} ολοκληρώσει μια ενέργεια: {action}',
 'Stage {n}: {stage} was completed for {record}'=>'Στάδιο {n} : {stage} ολοκληρώθηκε για {record}',
 '{user} completed stage {n}: {stage} was completed for {record}'=>'{user} ολοκληρώσει το στάδιο {n} : {stage} ολοκληρώθηκε για {record}',
+'Log Time'=>'Σύνδεση Ώρα',
+'Time started'=>'Ώρα ξεκίνησε',
+'Time ended'=>'Χρόνος που έληξε',
 );

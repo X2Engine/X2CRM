@@ -55,4 +55,5 @@ return array (
 'Web Form Case entered by {name}'=>'Web μορφή περίπτωση που έχουν εισαχθεί από {name}',
 'Hello'=>'Γεια σας',
 'Web Form Case'=>'Υπόθεση Web Form',
+'Thank you for contacting our Technical Support '=>'Σας ευχαριστούμε για την επικοινωνία με την Τεχνική Υποστήριξη μας',
 );

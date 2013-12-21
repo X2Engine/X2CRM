@@ -77,4 +77,7 @@ return array (
 'Theme name already exists or is invalid.'=>'主题名称已经存在，或者是无效的。',
 'Theme created successfully.'=>'主题创建成功。',
 'Page Header Color'=>'页面标题颜色',
+'Edit Profile'=>'编辑个人资料',
+'Disable phone field links?'=>'禁用手机领域的联系？',
+'Disable notifications pop-up?'=>'禁用通知弹出？',
 );

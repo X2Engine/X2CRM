@@ -58,13 +58,13 @@ abstract class X2FlowAction extends X2FlowItem {
     public function validate(&$params=array(), $flowId) {
         $paramRules = $this->paramRules();
         if(!isset($paramRules['options'],$this->config['options']))
-            return array (false, Yii::t('model', "Flow item validation error"));
+            return array (false, Yii::t('admin', "Flow item validation error"));
 
         if(isset($paramRules['modelRequired'])) {
             if(!isset($params['model']))    // model not provided when required
-                return array (false, Yii::t('model', "Flow item validation error"));
+                return array (false, Yii::t('admin', "Flow item validation error"));
             if($paramRules['modelRequired'] != 1 && $paramRules['modelRequired'] !== get_class($params['model']))    // model is not the correct type
-                return array (false, Yii::t('model', "Flow item validation error"));
+                return array (false, Yii::t('admin', "Flow item validation error"));
         }
         return $this->validateOptions($paramRules);
     }
@@ -107,8 +107,8 @@ abstract class X2FlowAction extends X2FlowItem {
     }
 
     /**
-     * Gets all action types. 
-     * 
+     * Gets all action types.
+     *
      * Optionally limits actions to a list with a property matching a value.
      * @param string $queryProperty The property of each action to test
      * @param mixed $queryValue The value to match actions against

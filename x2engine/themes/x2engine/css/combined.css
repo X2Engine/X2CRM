@@ -47,4 +47,7 @@ file used to fix IE8 max 31 css file references issue
 @import url("details.css");
 @import url("x2forms.css");
 @import url("form.css");
+@import url("../../../js/bgrins-spectrum-2c2010c/spectrum.css");
+@import url("../../../js/qtip/jquery.qtip.min.css");
+
 

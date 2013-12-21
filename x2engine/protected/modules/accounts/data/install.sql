@@ -28,7 +28,7 @@ CREATE TABLE `x2_accounts` (
 /*&*/
 INSERT INTO `x2_modules`
 			(name,				title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("accounts",		"Accounts",		1,			2,				1,			1,			0,			0,		0);
+	VALUES	("accounts",		"Accounts",		1,			1,				1,			1,			0,			0,		0);
 /*&*/
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance, uniqueConstraint, safe)

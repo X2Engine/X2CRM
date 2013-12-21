@@ -19,7 +19,7 @@ CREATE TABLE x2_media(
 /*&*/
 INSERT INTO `x2_modules`
 			(`name`,	title,	visible,	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("media",	"Media",1,			11,				0,			0,			0,			0,		0);
+	VALUES	("media",	"Media",1,			13,				0,			0,			0,			0,		0);
 /*&*/
 INSERT INTO x2_fields
 (modelName,	fieldName,			attributeLabel,			modified,	custom,		type,			required,	readOnly,	linkType,		searchable,	isVirtual,	relevance)

@@ -178,4 +178,6 @@ return array (
 'Website: '=>'אתר אינטרנט:',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'אזהרה: טעינת רישומים רבים מדי בדף זה עשויה לקשור את השרת באופן משמעותי. האם אתה בטוח שברצונך להמשיך?',
 'Saved Searches'=>'חיפושים שמורים',
+'Clicking this button will pull any relevant '=>'לחיצה על כפתור זה יהיה למשוך את כל רלוונטי',
+'Drag tags here from the tag cloud widget or click to '=>'גרור תגים לכאן מיישומון תג הענן או לחץ כדי',
 );

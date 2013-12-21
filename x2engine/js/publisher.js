@@ -48,6 +48,17 @@ x2.publisher.elements = {};
 x2.publisher.isCalendar = false;
 
 /**
+ * Selector for all fields which need to be reset after the publisher is
+ * submitted, and whose initial default vaules must be recorded upon page load
+ */
+x2.publisher.resetFieldsSelector = '#publisher-form select, '
+    + '#publisher-form input#timetrack-timespent, '
+    + '#publisher-form input#timetrack-timers, '
+    + '#publisher-form input[type=text], '
+    + '#publisher-form input[type=number], '
+    + '#publisher-form textarea';
+
+/**
  * "Magic getter" method which caches jQuery objects so they don't have to be
  * looked up a second time from the DOM
  */
@@ -67,10 +78,12 @@ x2.publisher.reset = function () {
         x2.publisher.getElement('#groupCheckbox').click(); // unchecks group checkbox, and calls ajax function to restor Assigned To to list of users
     }
 
-    // reset textarea and dropdowns
-    $('#publisher-form select, #publisher-form input[type=text], #publisher-form input[type=number], #publisher-form textarea').each(function(i) {
+    // reset textarea, dropdowns, and time track control fields
+    $(x2.publisher.resetFieldsSelector).each(function(i) {
         $(this).val($(this).data('defaultValue'));
     });
+    x2.publisher.getElement('#timetrack-minutes').prop('disabled',false);
+    x2.publisher.getElement('#timetrack-hours').prop('disabled',false);
 
     // reset checkboxes
     x2.publisher.getElement('#publisher-form input[type=checkbox]').each(function(i) {

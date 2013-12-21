@@ -120,7 +120,7 @@ if(empty($data->type) || $data->type == 'weblead'){
     //echo Actions::parseStatus($data->dueDate);
 } elseif($data->type == 'workflow'){
     // $actionData = explode(':',$data->actionDescription);
-    echo Yii::t('workflow', 'Workflow:').'<b> '.$workflowRecord->name.'/'.$stageRecords[$data->stageNumber - 1]->name.'</b> ';
+    echo Yii::t('workflow', 'Process:').'<b> '.$workflowRecord->name.'/'.$stageRecords[$data->stageNumber - 1]->name.'</b> ';
 }elseif(in_array($data->type, array('email', 'emailFrom', 'email_quote', 'email_invoice'))){
     echo Yii::t('actions', 'Email Message:').' '.Formatter::formatCompleteDate($data->completeDate);
 }elseif($data->type == 'quotes'){
@@ -148,7 +148,7 @@ if(empty($data->type) || $data->type == 'weblead'){
     }
     echo '</b>';
 }elseif($data->type == 'time'){
-    echo Formatter::formatTimeInterval($data->dueDate,$data->completeDate);
+    echo Formatter::formatTimeInterval($data->dueDate,$data->dueDate+$data->timeSpent);
 }
 ?>
         <div class="buttons">

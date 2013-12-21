@@ -123,7 +123,7 @@ class Publisher extends X2Widget {
                 x2.actionFrames.viewEmailDialog = $('<div></div>', {id: 'x2-view-email-dialog'});
 
                 x2.actionFrames.viewEmailDialog.dialog({
-                    title: '".Yii::t('app', 'View history item') /* Changed to generic title from "View" +type because there's no practical way to translate javascript variables */."',
+                    title: '".Yii::t('app', 'View History Item')."',
                     autoOpen: false,
                     resizable: true,
                     width: '650px',
@@ -147,7 +147,7 @@ class Publisher extends X2Widget {
                 } else {
                     x2.actionFrames.viewEmailDialog.dialog('open');
                 }
-            }
+            };
             
             $(document).on('ready',function(){
                 var t;
@@ -164,12 +164,13 @@ class Publisher extends X2Widget {
                 }).mouseleave(function(){
                     clearTimeout(t);
                 }); // Legacy quote pop-out view
-        $('.quote-print-frame').mouseenter(function(){
-            var id=$(this).attr('id');
-            t=setTimeout(function(){x2.publisher.loadFrame(id,'QuotePrint')},500);
-        }).mouseleave(function(){
-            clearTimeout(t);
-        }); // New quote pop-out view
+
+                $('.quote-print-frame').mouseenter(function(){
+                    var id=$(this).attr('id');
+                    t=setTimeout(function(){x2.publisher.loadFrame(id,'QuotePrint')},500);
+                }).mouseleave(function(){
+                    clearTimeout(t);
+                }); // New quote pop-out view
             });
         ", CClientScript::POS_HEAD);
         Yii::app()->clientScript->registerCss('recordViewPublisherCss', '
@@ -253,7 +254,7 @@ class Publisher extends X2Widget {
         x2.publisher.switchToTab(selected);
     }
 
-    $("#publisher-form select, #publisher-form input[type=text], #publisher-form input[type=number], #publisher-form textarea").each(function(i) {
+    $(x2.publisher.resetFieldsSelector).each(function(i) {
         $(this).data("defaultValue", $(this).val());
     });
 
@@ -262,7 +263,7 @@ class Publisher extends X2Widget {
     });
 
     // Highlight save button when something is edited in the publisher
-    $("#publisher-form input, #publisher-form select, #publisher-form textarea, #publisher").focus(function(){
+    $("#publisher-form input, #publisher-form select, #publisher-form textarea, #publisher").bind("focus.compose",function(){
         $("#save-publisher").addClass("highlight");
         if(this.nodeName == "TEXTAREA" || this.nodeName == "DIV") // Expand text area; expecting user input.
             $("#publisher-form textarea").height(80);

@@ -94,7 +94,7 @@ TagCreationContainer.prototype._createNewTagHandler = function (event) {
             'value': '#'
         });
     
-        $('#x2-tag-list').append(span);
+        $(that.containerSelector).append(span);
         span.hide();
         that._appendTagInput (that._appendRemove($(span), true)).fadeIn('slow');
         span.children('input').focus();

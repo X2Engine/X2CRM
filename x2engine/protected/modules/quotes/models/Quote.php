@@ -607,13 +607,14 @@ class Quote extends X2Model {
 		return $temp;
 	}
 
-	public function search() {
+	public function search($pageSize=null, $uniqueId=null) {
+	    $pageSize = $pageSize === null ? ProfileChild::getResultsPerPage() : $pageSize;
 		$criteria = new CDbCriteria;
-		$parameters = array('limit' => ceil(ProfileChild::getResultsPerPage()));
+		$parameters = array('limit' => ceil($pageSize));
 		$criteria->scopes = array('findAll' => array($parameters));
 		$criteria->addCondition("t.type!='invoice' OR t.type IS NULL");
 
-		return $this->searchBase($criteria);
+		return $this->searchBase($criteria, $pageSize, $uniqueId);
 	}
 
 	public function searchInvoice() {
@@ -631,7 +632,7 @@ class Quote extends X2Model {
 		return $this->searchBase($criteria);
 	}
 
-	public function searchBase($criteria) {
+	public function searchBase($criteria, $pageSize=null, $uniqueId=null) {
 
 		$dateRange = Yii::app()->controller->partialDateRange($this->expectedCloseDate);
 		if ($dateRange !== false)
@@ -645,7 +646,7 @@ class Quote extends X2Model {
 		if ($dateRange !== false)
 			$criteria->addCondition('lastUpdated BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
 
-		return parent::searchBase($criteria);
+		return parent::searchBase($criteria, $pageSize, $uniqueId);
 	}
 
 	/**

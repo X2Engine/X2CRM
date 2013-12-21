@@ -1,3 +1,18 @@
+# 3.7 #
+12/23/2013
+* In previous versions, the "greater than" and "less than" comparison operators 
+  in X2Flow incorrectly resulted in the comparisons "greater than or equal to" 
+  and "less than or equal to", respectively. In this version, that behavior is
+  corrected, and "greater than" and "less than" strictly mean greater than and
+  less than. This will change all existing flows that use these operators in
+  value comparisons; the comparisons will not hold true if values being compared
+  are equal.
+* To accomodate flows that depend on "less than or equal to" and "greater than 
+  or equal to" comparisons, new operators for these comparisons are available 
+  to building X2Flow criteria. All existing flows depending on the erroneous
+  behavior of "less than" and "greater than" (which held true even if the values
+  being compared were equal) should be modified to use these new operators.
+
 # 3.6.2 #
 11/26/2013
 * Hosting one's CRM on a different domain name than one's website will increase 

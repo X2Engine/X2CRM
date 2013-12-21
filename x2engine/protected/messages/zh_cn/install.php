@@ -147,4 +147,7 @@ return array (
 'The base directory configuration directive is set, and it is not the current working directory.'=>'基本目录的配置指令集，它是不是当前工作目录。',
 'The base directory configuration directive is set, and it does not include the current working directory.'=>'基本目录的配置指令，它不包括当前的工作目录。',
 'Some hashing algorithms required for software updates are missing on this server:'=>'在此服务器上缺少一些软件更新所需的哈希算法：',
+'The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will have to be performed manually.'=>'PHP的配置选项“allow_url_fopen选项”，除了CURL扩展失踪被禁用。这意味着不存在可能的方式来发出HTTP请求，从而软件更新将必须手动进行。',
+'This web server is effectively cut off from the internet; (1) no outbound network route exists, or (2) local DNS resolution is failing, or (3) this server is behind a firewall that is preventing outbound requests. Software updates will have to be performed manually, and Google integration will not work.'=>'该Web服务器是有效地从互联网中剪除，（1）没有出站网络路由存在，或（2）本地DNS解析出现故障，或（3）该服务器位于防火墙是防止出站请求后面。软件更新将需要手动执行，而谷歌的整合将无法正常工作。',
+'Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will have to be performed manaully.'=>'无法从该Web服务器到达的更新服务器。这可能是暂时性的问题。如果仍然存在，软件更新将不得不manaully执行。',
 );

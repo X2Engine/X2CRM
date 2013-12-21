@@ -53,7 +53,8 @@ $this->widget('X2Chart', array (
 		'note'=>Yii::t('app', 'Notes'),
 		'quotes'=>Yii::t('app', 'Quotes'),
 		'webactivity'=>Yii::t('app', 'Web Activity'),
-		'workflow'=>Yii::t('app', 'Workflow Actions')
+		'workflow'=>Yii::t('app', 'Process Actions'),
+		'time'=>Yii::t('app', 'Time Actions')
 	),
 	'chartType' => 'actionHistoryChart',
 	'getDataOnPageLoad' => true,

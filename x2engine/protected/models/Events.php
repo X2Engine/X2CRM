@@ -163,16 +163,46 @@ class Events extends CActiveRecord {
                                 case 'time':
                                     $text = Yii::t('app', '{authorText} logged {time} on {modelLink}: "{noteAbbrev}"', array(
                                                 '{authorText}' => $authorText,
-                                                '{time}' => Formatter::formatTimeInterval($action->dueDate, $action->completeDate, '{hoursMinutes}'),
+                                                '{time}' => Formatter::formatTimeInterval($action->dueDate, $action->dueDate+$action->timeSpent, '{hoursMinutes}'),
                                                 '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType)),
                                                 '{noteAbbrev}' => $action->actionDescription
                                             ));
                                     break;
                                 default:
                                     if(!empty($authorText)){
-                                        $text = $authorText.Yii::t('app', "created a new {actionLink} associated with the contact {contactLink}", array('{actionLink}' => CHtml::link(Events::parseModelName($this->associationType), '#', array('class' => 'action-frame-link', 'data-action-id' => $this->associationId)), '{contactLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl)));
+                                        $text = $authorText.Yii::t('app', 
+                                            "created a new {actionLink} associated with the contact {contactLink}", 
+                                            array(
+                                                '{actionLink}' => CHtml::link(
+                                                    Events::parseModelName($this->associationType),
+                                                    '#', 
+                                                    array(
+                                                        'class' => 'action-frame-link',
+                                                        'data-action-id' => $this->associationId
+                                                    )
+                                                ), 
+                                                '{contactLink}' => X2Model::getModelLink(
+                                                    $action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl
+                                                )
+                                            )
+                                        );
                                     }else{
-                                        $text = Yii::t('app', "A new {actionLink} associated with the contact {contactLink} has been created.", array('{actionLink}' => CHtml::link(Events::parseModelName($this->associationType), '#', array('class' => 'action-frame-link', 'data-action-id' => $this->associationId)), '{contactLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl)));
+                                        $text = Yii::t('app',
+                                            "A new {actionLink} associated with the contact {contactLink} has been created.", 
+                                            array(
+                                                '{actionLink}' => CHtml::link(Events::parseModelName($this->associationType), 
+                                                    '#', 
+                                                    array(
+                                                        'class' => 'action-frame-link',
+                                                        'data-action-id' => $this->associationId
+                                                    )
+                                                ), 
+                                                '{contactLink}' => X2Model::getModelLink(
+                                                    $action->associationId, ucfirst($action->associationType), 
+                                                    $requireAbsoluteUrl
+                                                )
+                                            )
+                                        );
                                     }
                             }
                         }else{
@@ -267,24 +297,24 @@ class Events extends CActiveRecord {
                     if(isset($record)){
                         $stages = Workflow::getStages($action->workflowId);
                         if(isset($stages[$action->stageNumber - 1])){
-                            $text = $authorText.Yii::t('app', 'started the workflow stage "{stage}" for the {modelName} {modelLink}', array(
+                            $text = $authorText.Yii::t('app', 'started the process stage "{stage}" for the {modelName} {modelLink}', array(
                                         '{stage}' => $stages[$action->stageNumber - 1],
                                         '{modelName}' => Events::parseModelName($action->associationType),
                                         '{modelLink}' => X2Model::getModelLink($action->associationId, $action->associationType)
                                     ));
                         }else{
-                            $text = $authorText.Yii::t('app', "started a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.", array(
+                            $text = $authorText.Yii::t('app', "started a process stage for the {modelName} {modelLink}, but the process stage could not be found.", array(
                                         '{modelName}' => Events::parseModelName($action->associationType),
                                         '{modelLink}' => X2Model::getModelLink($action->associationId, $action->associationType)
                                     ));
                         }
                     }else{
-                        $text = $authorText.Yii::t('app', "started a workflow stage, but the associated {modelName} was not found.", array(
+                        $text = $authorText.Yii::t('app', "started a process stage, but the associated {modelName} was not found.", array(
                                     '{modelName}' => Events::parseModelName($action->associationType)
                                 ));
                     }
                 }else{
-                    $text = $authorText.Yii::t('app', "started a workflow stage, but the workflow record could not be found.");
+                    $text = $authorText.Yii::t('app', "started a process stage, but the process record could not be found.");
                 }
                 break;
             case 'workflow_complete':
@@ -294,24 +324,24 @@ class Events extends CActiveRecord {
                     if(isset($record)){
                         $stages = Workflow::getStages($action->workflowId);
                         if(isset($stages[$action->stageNumber - 1])){
-                            $text = $authorText.Yii::t('app', 'completed the workflow stage "{stageName}" for the {modelName} {modelLink}', array(
+                            $text = $authorText.Yii::t('app', 'completed the process stage "{stageName}" for the {modelName} {modelLink}', array(
                                         '{stageName}' => $stages[$action->stageNumber - 1],
                                         '{modelName}' => Events::parseModelName($action->associationType),
                                         '{modelLink}' => X2Model::getModelLink($action->associationId, $action->associationType)
                                     ));
                         }else{
-                            $text = $authorText.Yii::t('app', "completed a workflow stage for the {modelName} {modelLink}, but the workflow stage could not be found.", array(
+                            $text = $authorText.Yii::t('app', "completed a process stage for the {modelName} {modelLink}, but the process stage could not be found.", array(
                                         '{modelName}' => Events::parseModelName($action->associationType),
                                         '{modelLink}' => X2Model::getModelLink($action->associationId, $action->associationType)
                                     ));
                         }
                     }else{
-                        $text = $authorText.Yii::t('app', "completed a workflow stage, but the associated {modelName} was not found.", array(
+                        $text = $authorText.Yii::t('app', "completed a process stage, but the associated {modelName} was not found.", array(
                                     '{modelName}' => Events::parseModelName($action->associationType)
                                 ));
                     }
                 }else{
-                    $text = $authorText.Yii::t('app', "completed a workflow stage, but the workflow record could not be found.");
+                    $text = $authorText.Yii::t('app', "completed a process stage, but the process record could not be found.");
                 }
                 break;
             case 'workflow_revert':
@@ -320,18 +350,18 @@ class Events extends CActiveRecord {
                     $record = X2Model::model(ucfirst($action->associationType))->findByPk($action->associationId);
                     if(isset($record)){
                         $stages = Workflow::getStages($action->workflowId);
-                        $text = $authorText.Yii::t('app', 'reverted the workflow stage "{stageName}" for the {modelName} {modelLink}', array(
+                        $text = $authorText.Yii::t('app', 'reverted the process stage "{stageName}" for the {modelName} {modelLink}', array(
                                     '{stageName}' => $stages[$action->stageNumber - 1],
                                     '{modelName}' => Events::parseModelName($action->associationType),
                                     '{modelLink}' => X2Model::getModelLink($action->associationId, $action->associationType)
                                 ));
                     }else{
-                        $text = $authorText.Yii::t('app', "reverted a workflow stage, but the associated {modelName} was not found.", array(
+                        $text = $authorText.Yii::t('app', "reverted a process stage, but the associated {modelName} was not found.", array(
                                     '{modelName}' => Events::parseModelName($action->associationType)
                                 ));
                     }
                 }else{
-                    $text = $authorText.Yii::t('app', "reverted a workflow stage, but the workflow record could not be found.");
+                    $text = $authorText.Yii::t('app', "reverted a process stage, but the process record could not be found.");
                 }
                 break;
             case 'feed':
@@ -489,9 +519,13 @@ class Events extends CActiveRecord {
             case 'action_complete':
                 $action = X2Model::model('Actions')->findByPk($this->associationId);
                 if(isset($action)){
-                    $text = $authorText.Yii::t('app', "completed the following action: {actionDescription}", array(
-                                '{actionDescription}' => X2Model::getModelLink($this->associationId, $this->associationType, $requireAbsoluteUrl)
-                            ));
+                    $text = $authorText.Yii::t('app', 
+                        "completed the following action: {actionDescription}",
+                        array(
+                            '{actionDescription}' => X2Model::getModelLink(
+                                $this->associationId, $this->associationType, $requireAbsoluteUrl)
+                        )
+                    );
                 }else{
                     $text = $authorText.Yii::t('app', "completed an action, but the record could not be found.");
                 }
@@ -575,9 +609,9 @@ class Events extends CActiveRecord {
         'notif' => 'Notifications',
         'weblead_create' => 'Webleads Created',
         'web_activity' => 'Web Activity',
-        'workflow_complete' => 'Workflow Complete',
-        'workflow_revert' => 'Workflow Reverted',
-        'workflow_start' => 'Workflow Started',
+        'workflow_complete' => 'Process Complete',
+        'workflow_revert' => 'Process Reverted',
+        'workflow_start' => 'Process Started',
         'doc_update' => 'Doc Updates',
         'email_from' => 'Email Received',
         'media' => 'Media',

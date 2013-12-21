@@ -569,7 +569,7 @@ class CrontabUtil {
                 <?php $ns(); ?>.enableField = function(form, name, enable) {
                     var elts = form.elements[name];
                     elts.disabled = !enable;
-                    for(i=0; i<elts.length; i++) {
+                    for(var i=0; i<elts.length; i++) {
                         elts[i].disabled = !enable;
                     }
                 }
@@ -589,7 +589,7 @@ class CrontabUtil {
                  */
                 <?php $ns(); ?>.scheduleMode = function(form,mode) {
                     var allElt,i;
-                    for(i=0;i<<?php $ns(); ?>.schedParts.length;i++) {
+                    for(var i=0;i<<?php $ns(); ?>.schedParts.length;i++) {
                         allElt = <?php $ns(); ?>.schedAllNames[<?php $ns(); ?>.schedAllParts[i]];
                         <?php $ns(); ?>.enableField(form,allElt,!mode);
                         <?php $ns(); ?>.enableField(form,<?php $ns(); ?>.schedNames[<?php $ns(); ?>.schedParts[i]]+'[]',(<?php $ns(); ?>.radioButtonValue(form,allElt) == '0' && !mode));

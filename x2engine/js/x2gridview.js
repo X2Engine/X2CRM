@@ -41,39 +41,42 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 		minColWidth:30,
 		onResize:$.noop,
 		onDrag:$.noop,
-		ignoreLastCol:false
-	},
-	originalElement:null,
-	tables:$(),
-	t1:{
-		table:$(),
-		firstRow:$(),
-		masterCells:$(),
-		grips:$(),
-		gripContainer:$(),
-	},
-	t2:{
-		table:$(),
-		firstRow:$(),
-		masterCells:$(),
-		grips:$(),
-		gripContainer:$(),
+		ignoreLastCol:false,
+        DEBUG: x2.DEBUG && false
 	},
 
-	colWidths:[],
-
-	mouseStartX:0,
-	currentGrip:0,
-	colStartW:0,
-
-	// hoverCell:$(),
-	// hoverTimeout:null,
+    t1T2Offset: 10,
 
 	/**
 	 * Sets up table resizing
 	 */
 	_create:function() {
 		var self = this;
+
+        this.originalElement=null;
+        this.tables=$();
+        this.t1={
+            table:$(),
+            firstRow:$(),
+            masterCells:$(),
+            grips:$(),
+            gripContainer:$()
+        };
+        this.t2={
+            table:$(),
+            firstRow:$(),
+            masterCells:$(),
+            grips:$(),
+            gripContainer:$()
+        };
+
+        this.colWidths=[];
+
+        this.mouseStartX=0;
+        this.currentGrip=0;
+        this.colStartW=0;
+
+
 		if(this.element.is('table'))
 			this.tables = $(this.element);
 		else
@@ -158,7 +161,8 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 	updateColWidth:function(index) {
 		this.t1.masterCells.get(index).style.width = this.colWidths[index]+"px";
 		if(index < this.t2.masterCells.length)
-			this.t2.masterCells.get(index).style.width = (this.colWidths[index]-9)+"px";
+			this.t2.masterCells.get(index).style.width = 
+                (this.colWidths[index]-this.t1T2Offset + (index === 0 ? 1 : 0))+"px";
 	},
 	resetColWidths:function(row) {
 		var parent = this.t1.firstRow.parent();
@@ -174,7 +178,8 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 			this.t2.firstRow.detach();
 			for(var i=0;i<this.t2.masterCells.length;i++) {
 				if(this.colWidths[i] !== undefined)
-					this.t2.masterCells.get(i).style.width = (this.colWidths[i]-9)+"px";
+					this.t2.masterCells.get(i).style.width = 
+                        (this.colWidths[i]-this.t1T2Offset + (i === 0 ? 1 : 0))+"px";
 			}
 			this.t2.firstRow.prependTo(parent);
 		}
@@ -196,6 +201,7 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 		this.updateGrips();
 	},
 	updateGrips:function() {
+
 		var self = this;
 		var x = -1;
 		for(var i=0;i<this.currentGrip;i++)
@@ -216,38 +222,44 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 $.widget("x2.colDragging", /* $.ui.mouse, */ {
 	options:{
 		start:$.noop,
-		complete:$.noop
+		complete:$.noop,
+        namespacePrefix: '',
+        DEBUG: x2.DEBUG && false
 	},
-
-	startMouseX:0,
-
-	tables:$(),
-
-	t1:{},
-	t2:{},
-	colgroup:$(),
-	colWidths:[],
-	spacers:[],		// an array of either undefined or {elem:[spacer cell],width:[spacer width]}
-	timeout:null,
-	dragged:{
-		col:$(),
-		cell1:$(),
-		// cell2:$(),
-		width:0,
-		index:0
-	},
-
-	helperTemplate:null,
-	helper:$(),
-	helperStartPos:{},
-
-	hoverIndex:-1,
-	tableOffsetX:0,
-
-	dragging:false,
 
 	_create:function() {
 		var self = this;
+
+        this.startMouseX=0;
+
+        this.tables=$();
+
+        this.t1={};
+        this.t2={};
+        this.colgroup=$();
+        this.colWidths=[];
+
+        // an array of either undefined or {elem:[spacer cell],width:[spacer width]}
+        this.spacers=[];		
+        this.timeout=null;
+        this.dragged={
+            col:$(),
+            cell1:$(),
+            // cell2:$(),
+            width:0,
+            index:0
+        };
+
+        this.helperTemplate=null;
+        this.helper=$();
+        this.helperStartPos={};
+
+        this.hoverIndex=-1;
+        this.tableOffsetX=0;
+
+        this.dragging=false;
+
+
 		this.tableOffsetX = $(this.element).offset().left;
 		var tables = this.element.find("table.items");
 
@@ -262,26 +274,39 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 		this.helperTemplate = $('<div class="grid-view"><table class="x2grid-helper x2grid-resizable items"><thead><tr></tr></thead></table></div>');
 
 		this.t1.masterCells.each(function(i,elem) {
-			$(elem).disableSelection().bind('selectstart',function(e){e.preventDefault();return false;});
+			$(elem).disableSelection().unbind('selectstart');
+            $(elem).disableSelection().bind('selectstart', 
+                function(e){e.preventDefault();return false;});
 		});
 
-		this.t1.firstRow.bind('mousedown.colDragging',function(startEvent) {
+		this.t1.firstRow.unbind ('mousedown.colDragging');
+		this.t1.firstRow.bind('mousedown.colDragging',
+            function(startEvent) {
+
+            self.options.DEBUG && console.log ('mousedown event: namespacePrefix = ' + self.options.namespacePrefix);
+
 			startEvent.preventDefault();
 
 			if($(startEvent.target).closest('th').is(':last-child'))
 				return false;
 			self.startMouseX = startEvent.pageX;
-			$(document).bind('mousemove.colDragging',function(dragEvent) {	// listen for mousemove anywhere in the window
+			$(document).unbind('mousemove.' + self.options.namespacePrefix + 'colDragging');
+			$(document).unbind('mouseup.'+self.options.namespacePrefix+'colDragging');
+			$(document).bind('mousemove.' + self.options.namespacePrefix + 'colDragging',
+                function(dragEvent) {	// listen for mousemove anywhere in the window
+
 				dragEvent.preventDefault();
-				if(!self.dragging && Math.abs(dragEvent.pageX - self.startMouseX) > 10) {	// start actually dragging if they move the mouse at least 10px
+                // start actually dragging if they move the mouse at least 10px
+				if(!self.dragging && Math.abs(dragEvent.pageX - self.startMouseX) > 10) {	
 					self.dragging = true;
 					self._mouseStart(startEvent);	// fire _mouseStart() only once
 					self._mouseDrag(dragEvent);
 				} else if(self.dragging) {
 					self._mouseDrag(dragEvent);		// fire _mouseDrag() a bunch
 				}
-			}).bind('mouseup.colDragging',function(stopEvent) {
-				$(this).unbind('mousemove.colDragging');	// stop dragging on mouseup anywhere
+			}).bind('mouseup.'+self.options.namespacePrefix+'colDragging',function(stopEvent) {
+                // stop dragging on mouseup anywhere
+				$(this).unbind('mousemove.' + self.options.namespacePrefix + 'colDragging');	
 				if(self.dragging) {
 					self.dragging = false;
 					self._mouseStop(stopEvent);
@@ -290,8 +315,10 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 		});
 	},
 	_destroy:function() {
-		this.t1.firstRow.unbind('mousedown.colDragging');
-		$(document).unbind('mousemove.colDragging mouseup.colDragging');
+		this.t1.firstRow.unbind('mousedown.' + self.options.namespacePrefix + 'colDragging');
+		$(document).unbind(
+            'mousemove.' + self.options.namespacePrefix + 'colDragging ' + 
+            'mouseup.' + self.options.namespacePrefix + 'colDragging');
 	},
 	/**
 	 * Start dragging.
@@ -343,6 +370,10 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 
 		if(this.timeout === null)
 			this.timeout = setInterval(function(){ self._animate(); },20);
+
+        // account for misalignment issue
+        if (this.dragged.index > 0)
+            $(this.t1.masterCells).first ().width ($(this.t1.masterCells).first ().width () + 1)
 	},
 	/**
 	 * Called on mousemove event.
@@ -358,7 +389,11 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 		// }
 	},
 	_mouseStop:function(e) {
-		// return;
+
+        // account for misalignment issue
+        if (this.dragged.index > 0)
+            $(this.t1.masterCells).first ().width ($(this.t1.masterCells).first ().width () - 1)
+
 		this.dragging = false;
 		clearInterval(this.timeout);
 		this.timeout = null;
@@ -407,7 +442,7 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 	_getTargetIndex:function(x) {
 		var offset = this.tableOffsetX;
 		var i;
-		for(i=0;i<this.colWidths.length;i++) {
+		for(var i=0;i<this.colWidths.length;i++) {
 			offset += this.colWidths[i];	// add one for the border
 			if(x < offset)
 				return i;
@@ -484,20 +519,17 @@ $.widget("x2.colDragging", /* $.ui.mouse, */ {
 
 $.widget("x2.gvSettings", {
 
-	prevGvSettings: '',
-	saveGridviewSettingsTimeout: null,
-	tables:$(),
-    _lastCheckedCheckboxId: undefined, // used for multiselect
-    _shiftPressed: false, // used for multiselect
-    _SHIFTWHICH: 16, // used for multiselect
-
 	options: {
 		viewName:'gridView',
+        namespacePrefix: '',
+        fixedHeader: false,
 		columnSelectorId:'column-selector',
 		columnSelectorHtml:'',
 		ajaxUpdate:false,
 		saveSettings:true,
-		saveTimeout:1000
+		saveTimeout:1000,
+        enableScrollOnPageChange: true,
+        DEBUG: x2.DEBUG && true
 	},
 
 	// setGridviewModel:function(model) {
@@ -505,9 +537,21 @@ $.widget("x2.gvSettings", {
 	// }
 
 	_create: function() {
-
 		var self = this;
+
+        self.prevGvSettings = '';
+        self.saveGridviewSettingsTimeout = null;
+        self.tables = $();
+        self._lastCheckedCheckboxId = undefined; // used for multiselect
+        self._shiftPressed = false; // used for multiselect
+        self._SHIFTWHICH = 16; // used for multiselect
+
 		var o = self.options;
+
+        self.options.DEBUG && console.log ('this.options = ');
+        self.options.DEBUG && console.log (this.options);
+        self.options.DEBUG && console.log ('this.namespacePrefix = ');
+        self.options.DEBUG && console.log (this.options.namespacePrefix);
 
 		if(o.ajaxUpdate) {
 			this.element.find('.search-button').click(function() {
@@ -515,8 +559,14 @@ $.widget("x2.gvSettings", {
 				return false;
 			});
 		} else {
-			this.element.after(o.columnSelectorHtml);
+			if (!$('#'+o.columnSelectorId).length) {
+			    this.element.after(o.columnSelectorHtml);
+            }
+			$('#'+o.columnSelectorId).find('input').unbind('change');
 			$('#'+o.columnSelectorId).find('input').bind('change',function() { 
+                self.options.DEBUG && console.log ('self = ');
+                self.options.DEBUG && console.log (self);
+
                 self._saveColumnSelection(this,self); 
             });
 			/* this.element.closest('div.grid-view').find('.column-selector-link').bind(
@@ -524,6 +574,7 @@ $.widget("x2.gvSettings", {
 		}
 			/* $('#'+o.columnSelectorId).find('input').bind(
                    'change',function() { self._saveColumnSelection(this); }); */
+			this.element.find('.column-selector-link').unbind('mousedown');
 			this.element.find('.column-selector-link').bind('mousedown',function() { 
                 self._toggleColumnSelector(this,self); 
             });
@@ -536,19 +587,25 @@ $.widget("x2.gvSettings", {
 		this._setupGridviewChecking(self);
 		this._compareGridviewSettings(self);
 
-		this.element.find('.yiiPager').on('click','a',function() {
-			$('html,body').animate({scrollTop:0},500,'swing');
-		});
+        if (this.enableScrollOnPageChange) {
+            this.element.find('.yiiPager').unbind ('click');
+            this.element.find('.yiiPager').on('click','a',function() {
+                $('html,body').animate({scrollTop:0},500,'swing');
+            });
+        }
 
+        this.element.find('.auto-resize-button').unbind ('click');
         this.element.find('.auto-resize-button').on('click',function() {
 			self._autoSizeColumns(self);
 		});
 
+        this.element.find ('.filter-button').unbind ('click');
         this.element.find ('.filter-button').on ('click', function (evt) {
             evt.preventDefault ();
             return self._clearFilters (self);
         });
 
+        this.element.find ('.search-button').unbind ('click');
         this.element.find ('.search-button').on ('click', function () {
             x2.DEBUG && console.log ('search-button');
         });
@@ -607,6 +664,7 @@ $.widget("x2.gvSettings", {
         }
 
         // checkbox behavior
+        this.element.find ('[type="checkbox"]').unbind ('change');
         this.element.find ('[type="checkbox"]').on ('change', function () {
             var checkboxId = parseInt ($(this).attr ('id').match (/[0-9]+$/));
             if (checkboxId === null) return; // invalid checkbox
@@ -648,11 +706,13 @@ $.widget("x2.gvSettings", {
         //x2.DEBUG && console.log (this.element);
 
         // set and unset shift property
-        $(document).on ('keydown', function (evt) {
+        $(document).unbind ('keydown.x2gridviewshift' + self.options.namespacePrefix);
+        $(document).on ('keydown.x2gridviewshift' + self.options.namespacePrefix, function (evt) {
             if (evt.which === self._SHIFTWHICH) self._shiftPressed = true;
             //x2.DEBUG && console.log ('shift up ' + evt.which);
         });
-        $(document).on ('keyup', function (evt) {
+        $(document).unbind ('keyup.x2gridviewshift' + self.options.namespacePrefix);
+        $(document).on ('keyup.x2gridviewshift' + self.options.namespacePrefix, function (evt) {
             if (evt.which === self._SHIFTWHICH) self._shiftPressed = false;
             //x2.DEBUG && console.log ('shift up ' + evt.which);
         });
@@ -671,6 +731,7 @@ $.widget("x2.gvSettings", {
 
 	_setupGridviewDragging:function(self) {
 		this.element.colDragging({
+            namespacePrefix: self.options.namespacePrefix,
 			start:function(){
 				clearTimeout(self.saveGridviewSettingsTimeout);
 			},
@@ -682,6 +743,10 @@ $.widget("x2.gvSettings", {
 	},
 
 	_compareGridviewSettings:function(self) {
+        self.DEBUG && console.log ('_compareGridviewSettings');
+        self.DEBUG && console.log ('this = ');
+        self.DEBUG && console.log (this);
+
 		var o = self.options;
 		var headerCells = this.tables.eq(0).find('tr:first th');
 
@@ -691,12 +756,14 @@ $.widget("x2.gvSettings", {
 		for(var i=0;i<headerCells.length-1;i++) {
 			var width = cols.eq(i).width();
 			if(width != 0)
-				tableData.push('\"'+headerCells.eq(i).attr('id').substr(2)+'\":'+width);
+				tableData.push('\"'+headerCells.eq(i).attr('id').
+                    replace (/^.*?C_/, '')+'\":'+width);
+				//tableData.push('\"'+headerCells.eq(i).attr('id').substr(2)+'\":'+width);
 		}
 		gvSettings += tableData.join(',') + '}';
 		if(this.prevGvSettings != '' && this.prevGvSettings != gvSettings) {
 			var encodedGvSettings = encodeURI(gvSettings);
-			var links = $('div.grid-view table th a, div.grid-view div.pager a');
+			var links = self.element.find ('div.grid-view table th a, div.grid-view div.pager a');
 
 			links.each(function(i,elem) {
 				var link = $(elem);
@@ -705,7 +772,8 @@ $.widget("x2.gvSettings", {
 				if(startPos > -1)
 					url = url.substr(0,startPos);
 
-				link.attr('href',url+'&viewName='+o.viewName+'&gvSettings='+encodedGvSettings);
+				link.attr('href',url+'&viewName='+o.viewName+'&'+
+                    self.options.namespacePrefix + 'gvSettings='+encodedGvSettings);
 			});
 
 			clearTimeout(this.saveGridviewSettingsTimeout);
@@ -714,7 +782,8 @@ $.widget("x2.gvSettings", {
 					$.ajax({
 						url: yii.scriptUrl+'/site/saveGridviewSettings',
 						type: 'GET',
-						data: 'viewName='+o.viewName+'&gvSettings='+encodedGvSettings
+						data: 'viewName='+o.viewName+'&'+
+                            self.options.namespacePrefix + 'gvSettings='+encodedGvSettings
 					});
 				}
 			},o.saveTimeout);
@@ -729,7 +798,7 @@ $.widget("x2.gvSettings", {
 		var options = self.options;
 
         // check if fixed header is hidden
-        if ($('#x2-gridview-top-bar-outer').length && 
+        if (self.fixedHeader && $('#x2-gridview-top-bar-outer').length && 
             !$('#x2-gridview-top-bar-outer').is (':visible')) return;
 
         var fadeOut;
@@ -739,32 +808,38 @@ $.widget("x2.gvSettings", {
             fadeOut = false;
         }
 
+        var columnSelectorLink = self.element.find ('.column-selector-link');
+
         if (fadeOut) {
-            $('.column-selector-link').removeClass ('clicked');
+            $(columnSelectorLink).removeClass ('clicked');
 		    $('#'+options.columnSelectorId).fadeOut(300,'swing',afterFadeOut);
 
         } else {
             // get the position of the link
-            var xPos = $('.column-selector-link').position().left;
+            var xPos = $(columnSelectorLink).position().left;
             var yPos = self.tables.eq(0).parent().position().top;
 
             //show the menu directly over the placeholder
-            //$('#'+o.columnSelectorId).css( { 'left': xPos + 'px', 'top':yPos + 'px' } );
-            $('#'+options.columnSelectorId).attr ('style', 'left: ' + xPos + 'px;');
-			$(".column-selector-link").addClass('clicked');
+            if (self.options.fixedHeader) {
+                $('#'+options.columnSelectorId).attr ('style', 'left: ' + xPos + 'px;');
+            } else {
+                $('#'+options.columnSelectorId).css ({ 'left': xPos + 'px', 'top':yPos + 'px' });
+            }
+			$(columnSelectorLink).addClass('clicked');
 		    $('#'+options.columnSelectorId).fadeIn(300,'swing',afterFadeIn);
         }
 
 
         function afterFadeOut () {
             x2.DEBUG && console.log ('_toggleColumnSelector: fade toggle');
-            $(document).unbind('click.columnSelector');
+            $(document).unbind('click.' + self.options.namespacePrefix + 'columnSelector');
         }
 
         function afterFadeIn () {
 
             // enable close on click outside
-            $(document).bind('click.columnSelector',function(e) {
+            $(document).unbind('click.' + self.options.namespacePrefix + 'columnSelector');
+            $(document).bind('click.' + self.options.namespacePrefix + 'columnSelector',function(e) {
                 // e.stopPropagation();
                 // console.debug($(e.target).parent().parent());
                 var clicked = $(e.target).add($(e.target).parents());
@@ -778,8 +853,12 @@ $.widget("x2.gvSettings", {
 	},
 
 	_saveColumnSelection: function(object,self) {
-		// $(document).unbind('click.columnSelector');
+        self.options.DEBUG && console.log ('_saveColumnSelection');
+       self.options.DEBUG && console.log ('self.options.viewName = ');
+        self.options.DEBUG && console.log (self.options.viewName);
+
 		var data = $(object).closest('form').serialize()+'&viewName='+self.options.viewName;
+
 		if(data !== null && data != '') {
 			$.fn.yiiGridView.update(this.element.attr('id'), {
 				data: data
@@ -803,8 +882,10 @@ $.widget("x2.gvSettings", {
 	},
 
     _autoSizeColumns:function(self){
-        $('.grid-view td').css('width',(100/($('.grid-view th').length)+"%"));
-        $('.grid-view th').css('width',(100/($('.grid-view th').length)+"%"));
+        this.element.find ('td').css(
+            'width', (100 / (this.element.find ('th').length)+"%"));
+        this.element.find ('th').css(
+            'width',(100/(this.element.find ('th').length)+"%"));
 		this._compareGridviewSettings(self);
         this._setupGridviewResizing(self);
 		this._setupGridviewDragging(self);

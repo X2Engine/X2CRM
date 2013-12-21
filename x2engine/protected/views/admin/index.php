@@ -86,15 +86,15 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 </div>
 <div class="form">
     <div class="row">
-        <h2 id="admin-workflow"><?php echo Yii::t('admin','Web Lead Capture and Opportunity Workflows'); ?></h2>
+        <h2 id="admin-workflow"><?php echo Yii::t('admin','Web Lead Capture and Opportunity Processes'); ?></h2>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('marketing','Web Lead Form'),array('/marketing/marketing/webleadForm')); ?><br><?php echo Yii::t('admin','Create a public form to receive new contacts');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Set Lead Distribution'),array('/admin/setLeadRouting')); ?><br><?php echo Yii::t('admin','Change how new web leads are distributed.');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Add Custom Lead Rules'),array('/admin/roundRobinRules')); ?><br><?php echo Yii::t('admin','Manage rules for the "Custom Round Robin" lead distribution setting.');?></div>
     </div><br>
     <div class="row">
         <?php if(Yii::app()->params->edition==='pro'){ ?><div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Web Tracker Setup'),array('/marketing/marketing/webTracker')); ?><br><?php echo Yii::t('admin','Configure and embed visitor tracking on your website');?></div><?php } ?>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Workflows'),array('/workflow/workflow/index')); ?><br><?php echo Yii::t('admin','Create and manage workflows');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Workflow Settings'),array('/admin/workflowSettings')); ?><br><?php echo Yii::t('admin','Change advanced workflow settings');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Processes'),array('/workflow/workflow/index')); ?><br><?php echo Yii::t('admin','Create and manage processes');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Process Settings'),array('/admin/workflowSettings')); ?><br><?php echo Yii::t('admin','Change advanced process settings');?></div>
     </div><br>
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Notification Criteria'),array('/admin/addCriteria')); ?><br><?php echo Yii::t('admin','Manage what events will trigger user notifications.');?></div>

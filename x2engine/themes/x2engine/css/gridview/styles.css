@@ -44,12 +44,12 @@ ul.column-selector.stuck {
 }
 ul.column-selector {
 	display:none;
-	position:fixed;
+	position:absolute;
     top: 68px;
 	z-index:850;
 	background:#fff;
 	padding:0;
-	border:1px solid #999;
+	border:1px solid #b3b3b3;
 	border-top:none;
 	max-height:300px;
 	overflow-y:scroll;
@@ -58,6 +58,9 @@ ul.column-selector {
 	-moz-box-shadow:		0 0 15px 0 rgba(0,0,0,0.5);
 	-webkit-box-shadow:		0 0 15px 0 rgba(0,0,0,0.5);
 	box-shadow:				0 0 15px 0 rgba(0,0,0,0.5);
+}
+ul.column-selector.fixed-header {
+    position: fixed;
 }
 ul.column-selector li {padding:2px 5px;}
 ul.column-selector li:last-child {padding-bottom:5px;}
@@ -101,24 +104,21 @@ ul.column-selector li:hover {background:#eee;}
 .grid-view table.items thead th {
 	line-height:25px;
 	padding:0;
-	border-left:1px solid #e6e6e6;
-	border-right-color:#999;
-	border-bottom:1px solid #777;
+	/*border-left:1px solid #e6e6e6;*/
+	border-right-color:#b3b3b3;
+	border-bottom:1px solid #b3b3b3;
 	color:#333;
 	text-align:center;
 	font-size:11px;
 	font-weight:bold;
 	-webkit-appearance:none;
 	cursor:default;
-	-moz-box-shadow:		inset 0 1px 0 #fff;
-	-webkit-box-shadow:		inset 0 1px 0 #fff;
-	box-shadow:				inset 0 1px 0 #fff;
 	background:#ddd;
-	background:-moz-linear-gradient(top,	#e0e0e0 0%, #ccc 100%);
+	/*background:-moz-linear-gradient(top,	#e0e0e0 0%, #ccc 100%);
 	background:-webkit-linear-gradient(top,	#e0e0e0 0%, #ccc 100%);
 	background:-o-linear-gradient(top,		#e0e0e0 0%, #ccc 100%);
 	background:-ms-linear-gradient(top,		#e0e0e0 0%, #ccc 100%);
-	background:linear-gradient(to bottom,	#e0e0e0 0%, #ccc 100%);
+	background:linear-gradient(to bottom,	#e0e0e0 0%, #ccc 100%);*/
 	
 }
 /* .grid-view table.items thead tr:hover {
@@ -194,11 +194,11 @@ ul.column-selector li:hover {background:#eee;}
 .grid-view table.items tr.filters {background:#fff;}
 .grid-view table.items tr.filters td {
 	padding:0;
-	border:solid #777;
+	border:solid #b3b3b3;
 	border-width:0 1px 1px 0;
-	border-bottom-color:#666;
-	border-right-color:#999;
-	background:#ccc;
+	border-bottom-color:#b3b3b3;
+	border-right-color:#b3b3b3;
+	background:#d8d8d8;
 }
 .grid-view table.items tr.filters input, .grid-view table.items tr.filters select {
 	width:100%;
@@ -216,20 +216,11 @@ ul.column-selector li:hover {background:#eee;}
  * -------------------- Column Sorting --------------------
  */
 .grid-view table.items th.asc, .grid-view table.items th.desc {
-	/* background:url(sort_bg.gif) top left repeat-x; */
 	border-color:#3577d1;
-	-moz-box-shadow:		inset 0 1px 0 #94c3ff;
-	-webkit-box-shadow:		inset 0 1px 0 #94c3ff;
-	box-shadow:				inset 0 1px 0 #94c3ff;
 	border-left-color:#79b4ff;
 	background:#629ceb;
-	background:-moz-linear-gradient(top,	#629ceb 0%, #5594e9 100%);
-	background:-webkit-linear-gradient(top,	#629ceb 0%, #5594e9 100%);
-	background:-o-linear-gradient(top,		#629ceb 0%, #5594e9 100%);
-	background:-ms-linear-gradient(top,		#629ceb 0%, #5594e9 100%);
-	background:linear-gradient(to bottom,	#629ceb 0%, #5594e9 100%);
-	/* border-width:0 1px; */
-} /* rgb(105, 147, 204)*/
+}
+
 .grid-view table.items th.asc a, .grid-view table.items th.desc a {
 	color:#fff;
 	text-shadow:0 0 2px rgba(0,0,0,0.25);
@@ -261,6 +252,7 @@ ul.column-selector li:hover {background:#eee;}
 	border-collapse:separate;
 	margin-top:0;
     border: none;
+    margin-bottom: 0;
 }
 
 .grid-view .x2grid-body-container table.items.x2grid-resizable {
@@ -371,7 +363,7 @@ fixed header
 
 .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-top-bar-inner {
     width: 100%;
-    padding-right: 22% !important;
+    padding-right: 22%;
     padding-left: 11px;
     height: 0;
     -webkit-box-sizing: border-box;
@@ -380,13 +372,14 @@ fixed header
 }
 
 .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title {
+    margin: 0 6px 0 5px;
     width: auto;
     -moz-border-radius: 0;
     -o-border-radius: 0;
     -webkit-border-radius: 0;
     border-radius: 0;
-    border-left: 1px solid #999;
-    border-right: 1px solid #999;
+    border-left: 1px solid #b3b3b3;
+    border-right: 1px solid #b3b3b3;
 }
 
 .x2-gridview-body-with-fixed-header {
@@ -394,8 +387,9 @@ fixed header
 }
 
 .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
-    border-left: 1px solid #999;
-    border-right: 1px solid #999;
+    margin: 0 6px 0 5px;
+    border-left: 1px solid #b3b3b3;
+    border-right: 1px solid #b3b3b3;
 }
 
 
@@ -403,7 +397,7 @@ fixed header
 loading anim
 */
 
-#x2-gridview-updating-anim {
+.x2-gridview-updating-anim {
     margin: auto;
     top: 0;
     left: 0;
@@ -412,3 +406,37 @@ loading anim
     position: fixed;
     z-index: 1000;
 }
+
+/*
+activity indicator
+*/
+
+.grid-view .active-indicator,
+.grid-view .inactive-indicator {
+    height: 12px;
+    display: block;
+    width: 12px;
+    text-align: center;
+    margin: auto;
+    border-radius: 9px;
+}
+
+.grid-view .active-indicator {
+    background: rgb(11, 199, 11);
+    border: 1px solid rgb(162, 162, 162);
+}
+
+.grid-view .inactive-indicator {
+    border: 1px solid rgb(219, 219, 219);
+    background: rgb(230, 230, 230);
+}
+
+
+/*
+Remove extra border when pager isn't shown
+*/
+.grid-view .x2grid-body-container.x2grid-no-pager .x2grid-resizable {
+    border-bottom: none !important;
+    border-radius: 0 0 3px 3px !important;
+}
+

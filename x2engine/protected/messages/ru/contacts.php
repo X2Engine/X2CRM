@@ -307,4 +307,6 @@ return array (
 'Latitutde'=>'Latitutde',
 'Longitude'=>'Долгота',
 'Saved Searches'=>'Сохраненные поиски',
+'Clicking this button will pull any relevant '=>'Нажимая эту кнопку потянет любую соответствующую',
+'Drag tags here from the tag cloud widget or click to '=>'Перетащите теги сюда из облако тегов виджета или нажмите чтобы',
 );

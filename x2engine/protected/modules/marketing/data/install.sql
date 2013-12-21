@@ -58,7 +58,7 @@ CREATE TABLE x2_web_forms(
 /*&*/
 INSERT INTO `x2_modules`
 			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("marketing",		"Marketing",		1,			3,				0,			1,			0,			0,		0);
+	VALUES	("marketing",		"Marketing",		1,			2,				0,			1,			0,			0,		0);
 /*&*/
 INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance, uniqueConstraint, safe)

@@ -55,4 +55,5 @@ return array (
 'Web Form Case entered by {name}'=>'Caso formulario Web introducidos por {name}',
 'Hello'=>'¡Hola',
 'Web Form Case'=>'Caso de formularios Web',
+'Thank you for contacting our Technical Support '=>'Gracias por ponerse en contacto con nuestro Soporte Técnico',
 );

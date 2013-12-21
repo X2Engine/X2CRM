@@ -39,6 +39,7 @@ Child prototype of X2Chart
 
 
 function X2EventsChart (argsDict) {
+    argsDict = $.extend (true, {prototype: X2EventsChart.prototype}, argsDict);
 	X2Chart.call (this, argsDict);	
 
 	var thisX2Chart = this;
@@ -90,6 +91,8 @@ function X2EventsChart (argsDict) {
 
 	thisX2Chart.setUpFilters ();
 
+    thisX2Chart.DEBUG && console.log ('X2EventsChart: end constructor');
+
 	thisX2Chart.start ();
 }
 
@@ -105,9 +108,12 @@ X2EventsChart.prototype.setDefaultSettings = function () {
 	if (($.cookie (thisX2Chart.cookiePrefix + 'dateRange') === null || 
 	     $.cookie (thisX2Chart.cookiePrefix + 'dateRange') !== 'Custom') &&
 	    $.cookie (thisX2Chart.cookiePrefix + 'startDate') === null) {
+
+        thisX2Chart.DEBUG && console.log ('setting default');
 		// default start date 
 		$('#' + thisX2Chart.chartType + '-chart-datepicker-from').
-			datepicker('setDate', '-7d'); 
+			datepicker('setDate', new Date (new Date () - X2Chart.MSPERWEEK)); 
+
 		$.cookie (
 			thisX2Chart.cookiePrefix + 'startDate', 
 			$('#' + thisX2Chart.chartType + '-chart-datepicker-from').
@@ -132,8 +138,6 @@ X2EventsChart.prototype.setDefaultSettings = function () {
 	$('#' + thisX2Chart.chartType + '-first-metric').children ().first ().attr (
 		'selected', 'selected');
 	$('#' + thisX2Chart.chartType + '-first-metric').multiselect2 ('refresh');
-
-
 
 };
 

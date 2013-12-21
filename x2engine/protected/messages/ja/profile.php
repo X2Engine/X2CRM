@@ -77,4 +77,7 @@ return array (
 'Theme name already exists or is invalid.'=>'テーマ名はすでに存在していますか、無効です。',
 'Theme created successfully.'=>'テーマは正常に作成。',
 'Page Header Color'=>'ページヘッダーの色',
+'Edit Profile'=>'プロファイル編集',
+'Disable phone field links?'=>'電話機フィールドのリンクを無効にする？',
+'Disable notifications pop-up?'=>'通知のポップアップを無効にする？',
 );

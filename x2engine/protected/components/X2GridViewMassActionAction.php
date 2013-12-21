@@ -76,12 +76,13 @@ class X2GridViewMassActionAction extends CAction {
         }
         $updatedRecordsNum = $updatedRecordsNum - $unauthorized;
         self::$successFlashes[] = Yii::t(
-                        'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
-                        ' deleted', array('{updatedRecordsNum}' => $updatedRecordsNum)
+            'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
+            ' deleted', array('{updatedRecordsNum}' => $updatedRecordsNum)
         );
         if($unauthorized > 0){
             self::$errorFlashes[] = Yii::t(
-                            'app', 'You were not authorized to delete {unauthorized} record'.($unauthorized === 1 ? '' : 's'), array('{unauthorized}' => $unauthorized)
+                'app', 'You were not authorized to delete {unauthorized} record'.
+                ($unauthorized === 1 ? '' : 's'), array('{unauthorized}' => $unauthorized)
             );
         }
 
@@ -194,14 +195,19 @@ class X2GridViewMassActionAction extends CAction {
 
         // check permissions
         if($list !== null && $this->controller->checkPermissions($list, 'edit')) {
-            $list->removeIds($_POST['gvSelection']);
-            self::$successFlashes[] = Yii::t(
-                'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
-                    ' removed from list "{list}"', array (
-                        '{updatedRecordsNum}' => $updatedRecordsNum,
-                        '{list}' => $list->name,
-                    )
-            );
+            if ($list->removeIds($_POST['gvSelection'])) {
+                self::$successFlashes[] = Yii::t(
+                    'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
+                        ' removed from list "{list}"', array (
+                            '{updatedRecordsNum}' => $updatedRecordsNum,
+                            '{list}' => $list->name,
+                        )
+                );
+            } else {
+                self::$errorFlashes[] = Yii::t(
+                    'app', 'The selected record'.($updatedRecordsNum === 1 ? '' : 's').
+                        ' could not be removed from this list');
+            }
         } else {
             self::$errorFlashes[] = Yii::t(
                 'app', 'You do not have permission to modify this list');
@@ -224,14 +230,19 @@ class X2GridViewMassActionAction extends CAction {
 
         // check permissions
         if ($list !== null && $this->controller->checkPermissions ($list, 'edit')) {
-            $list->addIds($gvSelection);
-            self::$successFlashes[] = Yii::t(
-                'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
-                    ' added to list "{list}"', array (
-                        '{updatedRecordsNum}' => $updatedRecordsNum,
-                        '{list}' => $list->name,
-                    )
-            );
+            if ($list->addIds($gvSelection)) {
+                self::$successFlashes[] = Yii::t(
+                    'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
+                        ' added to list "{list}"', array (
+                            '{updatedRecordsNum}' => $updatedRecordsNum,
+                            '{list}' => $list->name,
+                        )
+                );
+            } else {
+                self::$errorFlashes[] = Yii::t(
+                    'app', 'The selected record'.($updatedRecordsNum === 1 ? '' : 's').
+                        ' could not be added to this list');
+            }
         } else {
             self::$errorFlashes[] = Yii::t(
                 'app', 'You do not have permission to modify this list');

@@ -38,5 +38,18 @@ return array(
 		'createDate' => '1371871507',
 		'lastUpdated' => '1372728516',
 	),
+    'launchedEmailCampaign' => array(
+        'id' => '16',
+        'assignedTo' => 'admin',
+        'name' => 'Campaign Testing',
+        'description' => NULL,
+        'type' => 'campaign',
+        'logicType' => 'AND',
+        'modelName' => 'Contacts',
+        'visibility' => '1',
+        'count' => '4',
+        'createDate' => '1387560057',
+        'lastUpdated' => '1387560057',
+    ),
 );
 ?>

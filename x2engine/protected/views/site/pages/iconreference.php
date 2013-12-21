@@ -126,7 +126,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
                 <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/feed.png' . "'/>"; ?>
             </div>
             <div class="icon-description">
-                <p> <?php echo CHtml::link (Yii::t('app', 'Activity Feed'), array ('/site/whatsNew')); ?> </p>
+                <p> <?php echo CHtml::link (Yii::t('app', 'Activity Feed'), array ('/profile/profile')); ?> </p>
             </div>
         </div>
         <div class="row">
@@ -232,7 +232,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
                 <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/workflow.png' . "'/>"; ?>
             </div>
             <div class="icon-description">
-                <p> <?php echo CHtml::link (Yii::t('workflow', 'Workflow'), array ('/workflow/workflow/index')); ?> </p>
+                <p> <?php echo CHtml::link (Yii::t('workflow', 'Process'), array ('/workflow/workflow/index')); ?> </p>
             </div>
         </div>
     </div>

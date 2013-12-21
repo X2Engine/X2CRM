@@ -111,18 +111,16 @@ if ($name === 'RecordViewChart') {
 
 
 
-if ($name === 'RecordViewChart') {
-}
-
-
-
 $themeUrl = Yii::app()->theme->getBaseUrl();
-$relationshipCount = ""; // only used in InlineRelationships title; shows the number of relationships
+
+// only used in InlineRelationships title; shows the number of relationships
+$relationshipCount = ""; 
 if($name == "InlineRelationships"){
     $modelName = ucwords($modelType);
     $relationshipsDataProvider = new CArrayDataProvider($model->relatedX2Models, array(
                 'id' => 'relationships-gridview',
-                'sort' => array('attributes' => array('name', 'myModelName', 'createDate', 'assignedTo')),
+                'sort' => array(
+                    'attributes' => array('name', 'myModelName', 'createDate', 'assignedTo')),
                 'pagination' => array('pageSize' => 10)
             ));
     $relationshipCount = " (".$relationshipsDataProvider->totalItemCount.")";
@@ -161,13 +159,18 @@ if($name == "InlineRelationships"){
 
         <?php if(!Yii::app()->user->isGuest){ ?>
             <div class="portlet-minimize">
-                <a onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false" href="#" class="x2widget-minimize">
+                <a onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false" 
+                 href="#" class="x2widget-minimize">
 					<?php
 					if ($widget['minimize']) {
-						echo CHtml::image($themeUrl.'/images/icons/Expand_Widget.png', Yii::t('app', 'Maximize Widget'),
+						echo CHtml::image(
+                            $themeUrl.'/images/icons/Expand_Widget.png', 
+                            Yii::t('app', 'Maximize Widget'),
 							array ('title' => Yii::t('app', 'Maximize Widget')));
 					} else {
-						echo CHtml::image($themeUrl.'/images/icons/Collapse_Widget.png', Yii::t('app', 'Minimize Widget'),
+						echo CHtml::image(
+                            $themeUrl.'/images/icons/Collapse_Widget.png', 
+                            Yii::t('app', 'Minimize Widget'),
 							array ('title' => Yii::t('app', 'Minimize Widget')));
 					}
 					?>
@@ -182,14 +185,19 @@ if($name == "InlineRelationships"){
 						)
 					);
 				?>
-                <a onclick="$('#x2widget_<?php echo $name; ?>').hideWidget(); return false" href="#">
-					<?php echo CHtml::image($themeUrl.'/images/icons/Close_Widget.png', Yii::t('app', 'Close Widget'),
-						array ('title' => Yii::t('app', 'Close Widget'))); ?>
+                <a onclick="$('#x2widget_<?php echo $name; ?>').hideWidget(); return false" 
+                 href="#">
+					<?php 
+                    echo CHtml::image(
+                        $themeUrl.'/images/icons/Close_Widget.png', Yii::t('app', 'Close Widget'),
+						array ('title' => Yii::t('app', 'Close Widget'))); 
+                    ?>
 				</a>
             </div>
         <?php } ?>
     </div>
-    <div class="x2widget-container" style="<?php echo $widget['minimize'] ? 'display: none;' : ''; ?>">
+    <div class="x2widget-container" 
+     style="<?php echo $widget['minimize'] ? 'display: none;' : ''; ?>">
         <?php 
         $widgetParams = array (
             'widget' => $widget,
@@ -202,7 +210,7 @@ if($name == "InlineRelationships"){
         }
         if(isset($this->controller)){ // not ajax  
             $this->render('x2widget', $widgetParams);
-        } else{ // we are in an ajax call 
+        } else { // we are in an ajax call 
             $this->renderPartial('application.components.views.x2widget', $widgetParams);
         } 
         ?>

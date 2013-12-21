@@ -178,4 +178,6 @@ return array (
 'Website: '=>'Website:',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'AVISO: carregar muitos registros nesta página podem amarrar o servidor de forma significativa. Tem certeza de que deseja continuar?',
 'Saved Searches'=>'Buscas Salvas',
+'Clicking this button will pull any relevant '=>'Ao clicar neste botão vai puxar qualquer relevante',
+'Drag tags here from the tag cloud widget or click to '=>'Arraste Tag aqui do widget tag cloud ou clique para',
 );

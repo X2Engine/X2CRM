@@ -42,5 +42,4 @@ $('body').bind('ajaxSuccess', function(event, request, settings) {
     if (request.getResponseHeader('REQUIRES_AUTH') == '1') {
         window.location = window.location;
     }
-    ;
 });

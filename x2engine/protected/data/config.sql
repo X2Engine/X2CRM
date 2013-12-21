@@ -50,7 +50,8 @@ INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
 (114,	'Invoice Status',	'{"Pending":"Pending","Issued":"Issued","Paid":"Paid","Open":"Open","Canceled":"Canceled","Other":"Other"}'),
 (115,	'Bug Status',       '{"Unconfirmed":"Unconfirmed","Confirmed":"Confirmed","In Progress":"In Progress","Closed (Resolved Internally)":"Closed (Resolved Internally)","Closed (Unable to Reproduce)":"Closed (Unable to Reproduce)","Closed (Duplicate)":"Closed (Duplicate)","Merged Into Base Code":"Merged Into Base Code"}'),
 (116,	'Bug Severity',     '{"5":"Blocker","4":"Critical","3":"Major","2":"Normal","1":"Minor","0":"Feature Request"}'),
-(117,	'Quick Note',       '{"Contacted":"Contacted","Not Contacted":"Not Contacted"}');
+(117,	'Quick Note',       '{"Contacted":"Contacted","Not Contacted":"Not Contacted"}'),
+(120,   'Case Timers',      '{\"Case Research\":\"Case Research\",\"Meeting on Case\":\"Meeting on Case\",\"Email Sent\":\"Email Sent\"}');
 /*&*/
 INSERT INTO x2_dropdowns (`id`, `name`, `options`, `parent`, `parentVal`) VALUES
 (118,	'Contacted Quick Note','{"Not interested.":"Not interested.","Requested follow up call.":"Requested follow up call.","Contact made.":"Contact made."}', 117, 'Contacted'),

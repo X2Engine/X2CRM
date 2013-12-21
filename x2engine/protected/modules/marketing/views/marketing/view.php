@@ -58,27 +58,14 @@ if($model->launchDate){
 	");
 }
 
-Yii::app()->clientScript->registerScript('mailer-status-update', '
-$("#docIframe").parent().resizable({
-	minHeight:100,
-	handles:"s,se",
-	resize: function(event, ui) {
-		$(this).css("width","");
-
-		$(\'<div class="ui-resizable-iframeFix" style="background: #fff;"></div>\')
-			.css({
-				width: this.offsetWidth+"px", height: this.offsetHeight+"px",
-				position: "absolute", opacity: "0.001", zIndex: 1000
-			})
-			.css($(this).offset())
-			.appendTo("body");
-	},
-	stop: function(event, ui) {
-		$(this).css("width","");
-		$("div.ui-resizable-iframeFix").each(function() { this.parentNode.removeChild(this); }); //Remove frame helpers
-	}
-});
-', CClientScript::POS_READY);
+if($model->active) // Periodically refresh the campaign chart and grid view
+    Yii::app()->clientScript->registerScript('mailer-status-update', '
+        setInterval(function() {
+            if(typeof x2.campaignChart != "undefined")
+                x2.campaignChart.chart.getEventsBetweenDates();
+            $.fn.yiiGridView.update("campaign-grid", {data: {"id_page": 1}})
+        },5000);
+    ', CClientScript::POS_READY);
 
 $this->pageTitle = $model->name;
 $themeUrl = Yii::app()->theme->getBaseUrl();
@@ -150,11 +137,11 @@ $this->actionMenu = $this->formatMenu(array(
             } elseif($model->active){
                 echo CHtml::beginForm(array('toggle', 'id' => $model->id));
                 echo CHtml::submitButton(
-                        Yii::t('app', 'Stop'), array('class' => 'x2-button left urgent', 'style' => 'margin-left:0;'));
+                        Yii::t('app', 'Stop'), array('id'=>'campaign-toggle-button','class' => 'x2-button left urgent', 'style' => 'margin-left:0;'));
                 echo CHtml::endForm();
                 echo CHtml::beginForm(array('complete', 'id' => $model->id));
                 echo CHtml::submitButton(
-                        Yii::t('marketing', 'Complete'), array('class' => 'x2-button highlight left', 'style' => 'margin-left:0;'));
+                        Yii::t('marketing', 'Complete'), array('id'=>'campaign-complete-button','class' => 'x2-button highlight left', 'style' => 'margin-left:0;'));
                 echo CHtml::endForm();
             }else{ //active == 0
                 echo CHtml::beginForm(array('toggle', 'id' => $model->id));
@@ -219,7 +206,13 @@ $this->actionMenu = $this->formatMenu(array(
 
     if($model->type === 'Email'){
         ?>
-        <h2 id='attachments-title'><?php echo Yii::t('app', 'Attachments'); ?></h2>
+        <?php
+        if($model->launchDate && $model->active && !$model->complete){
+            $this->widget('EmailProgressControl',array(
+                'campaign' => $model,
+            ));
+        }
+        ?>
         <?php
         // find out if attachments are minimized
         $showAttachments = true;
@@ -233,6 +226,7 @@ $this->actionMenu = $this->formatMenu(array(
             }
         }
         ?>
+
         <div id="campaign-attachments-wrapper" class="x2-layout form-view">
             <div class="formSection collapsible <?php echo $showAttachments ? 'showSection' : ''; ?>">
                 <div class="formSectionHeader">
@@ -265,34 +259,7 @@ $this->widget('X2WidgetList', array(
     'model' => $model,
     'modelType' => 'Marketing'
 ));
-?>
-    <?php if($model->launchDate && $model->active && !$model->complete && $model->type == 'Email'){ ?>
-        <div id="mailer-status" class="wide form" style="max-height: 150px; margin-top:13px;">
-        </div>
-    <?php
-    Yii::app()->clientScript->registerScript('mailer-status-update', '
-		function tryMail() {
-			newEl = $("<div id=\"mailer-status-active\">'.Yii::t('marketing', 'Attempting to send email').'...</div>");
-			newEl.prependTo($("#mailer-status")).slideDown(232);
-			$.ajax({
-                url:'.CJSON::encode($this->createUrl('mail', array('id' => $model->id))).',
-                dataTye:"json"
-            }).done(function(data) {
-				var htmlStr = "";
-				for (var i=0; i < data.messages.length; i++) {
-                    if(data.messages[i]!="")
-    					htmlStr += data.messages[i] + "<br/>";
-				}
-				newEl.html(htmlStr);
-				$("#mailer-status-active").removeAttr("id");
-				$.fn.yiiGridView.update("contacts-grid");
-                //console.log ("hello, wait = " + data.wait);
-				window.setTimeout(tryMail, data.wait * 1000);
-			});
-		}
-		tryMail();
-		');
-}
+
 ?>
 
     <div style="margin-top: 23px;">
@@ -382,7 +349,7 @@ if(isset($contactList) && $model->launchDate){
                 ));
     }
     $this->widget('zii.widgets.grid.CGridView', array(
-        'id' => 'contacts-grid',
+        'id' => 'campaign-grid',
         'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
         'template' => '{summary}{items}{pager}',
         'summaryText' => Yii::t('app', 'Displaying {start}-{end} result(s).')
@@ -391,7 +358,7 @@ if(isset($contactList) && $model->launchDate){
         .CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
             'ajax' => array(
                 'url' => $this->createUrl('/profile/setResultsPerPage'),
-                'complete' => "function(response) { $.fn.yiiGridView.update('contacts-grid', {data: {'id_page': 1}}) }",
+                'complete' => "function(response) { $.fn.yiiGridView.update('campaign-grid', {data: {'id_page': 1}}) }",
                 'data' => "js: {results: $(this).val()}",
             ),
             'style' => 'margin: 0;',

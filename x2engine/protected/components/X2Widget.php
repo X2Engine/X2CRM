@@ -48,7 +48,8 @@ abstract class X2Widget extends CWidget {
 	 *
 	 * @param string $viewFile view file path
 	 * @param array $data data to be extracted and made available to the view
-	 * @param boolean $return whether the rendering result should be returned instead of being echoed
+	 * @param boolean $return whether the rendering result should be returned instead of being 
+     *  echoed
 	 * @return string the rendering result. Null if the rendering result is not required.
 	 * @throws CException if the view file does not exist
 	 */
@@ -56,5 +57,6 @@ abstract class X2Widget extends CWidget {
 		$viewFile = Yii::getCustomPath($viewFile);
 		return parent::renderFile($viewFile,$data,$return);
 	}
+
 }
 ?>

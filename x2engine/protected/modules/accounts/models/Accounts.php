@@ -232,9 +232,9 @@ class Accounts extends X2Model {
 		return true;
 	}
 
-	public function search() {
+	public function search($pageSize=null, $uniqueId=null) {
 		$criteria = new CDbCriteria;
-		return $this->searchBase($criteria);
+		return $this->searchBase($criteria, $pageSize, $uniqueId);
 	}
 
     public function searchList($id, $pageSize=null) {
@@ -242,7 +242,6 @@ class Accounts extends X2Model {
 
 		if(isset($list)) {
 			$search = $list->queryCriteria();
-
 
 			$this->compareAttributes($search);
 

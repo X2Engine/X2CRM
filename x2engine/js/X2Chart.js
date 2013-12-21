@@ -50,7 +50,8 @@ function X2Chart (argsDict) {
 		suppressDateRangeSelector: false, // suppresses ui feature
 		translations: null, // used for various chart text
 		chartSubtype: 'line', // (e.g. line, pie)
-		chartSettings: null // predefined chart settings
+		chartSettings: null, // predefined chart settings
+        prototype: X2Chart.prototype // used to convert between pie and line chart
 	};
 
 	auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -75,12 +76,12 @@ function X2Chart (argsDict) {
     if (Modernizr.canvas) {
 	    x2[thisX2Chart.chartType].windowResizeFunction = X2Chart.x2ChartResize (thisX2Chart);
     } else {
-	    x2[thisX2Chart.chartType].windowResizeFunction = 
-            X2Chart.x2ChartNoCanvasResize (thisX2Chart);
+	    x2[thisX2Chart.chartType].windowResizeFunction = X2Chart.x2ChartNoCanvasResize (thisX2Chart);
     }
 
 	// redraw graph on window resize
-	$(window).on ('resize', x2[thisX2Chart.chartType].windowResizeFunction);
+	$(window).unbind ('resize.' + this.chartType);
+	$(window).bind ('resize.' + this.chartType, x2[thisX2Chart.chartType].windowResizeFunction);
 }
 
 /************************************************************************************
@@ -1180,6 +1181,7 @@ X2Chart.groupLineChartData = function (
 					date = new Date (timestamp);
 					day = date.getDay ();
 					timestamp -= day * X2Chart.MSPERDAY;
+					timestamp = thisX2Chart.roundForDaylightSavings (timestamp);
 
 					chartData.push ([timestamp, count]);
 				}
@@ -1223,7 +1225,7 @@ X2Chart.prototype.setDefaultSettings = function () {}; // override in child prot
 
 X2Chart.prototype.tearDown = function () { 
 	var thisX2Chart = this;
-    $(window).unbind ('resize', x2[thisX2Chart.chartType].windowResizeFunction);
+    $(window).unbind ('resize.' + this.chartType, x2[thisX2Chart.chartType].windowResizeFunction);
 }
 
 X2Chart.prototype.updatePieChartEventCount = function (eventCount) { 
@@ -1269,17 +1271,17 @@ X2Chart.prototype.setChartSubtype = function (chartSubtype, plot, uiSetUp, force
 	
 	if (chartSubtype === 'line') {
 		if (diffChartSubtype) thisX2Chart.pieChartTearDown (uiSetUp);
-		X2Chart.prototype.plotData = X2Chart.plotLineData;
-		X2Chart.prototype.getJqplotConfig = X2Chart.getJqplotLineConfig;
-		X2Chart.prototype.groupChartData = X2Chart.groupLineChartData;
-		X2Chart.prototype.setupTooltipBehavior = X2Chart.setupLineTooltipBehavior;
+		this.prototype.plotData = X2Chart.plotLineData;
+		this.prototype.getJqplotConfig = X2Chart.getJqplotLineConfig;
+		this.prototype.groupChartData = X2Chart.groupLineChartData;
+		this.prototype.setupTooltipBehavior = X2Chart.setupLineTooltipBehavior;
 		thisX2Chart.postLineChartSetUp ();
 	} else if (chartSubtype === 'pie') {
 		if (diffChartSubtype) thisX2Chart.lineChartTearDown ();
-		X2Chart.prototype.plotData = X2Chart.plotPieData;
-		X2Chart.prototype.getJqplotConfig = X2Chart.getJqplotPieConfig;
-		X2Chart.prototype.groupChartData = X2Chart.groupPieChartData;
-		X2Chart.prototype.setupTooltipBehavior = X2Chart.setupPieTooltipBehavior;
+		this.prototype.plotData = X2Chart.plotPieData;
+		this.prototype.getJqplotConfig = X2Chart.getJqplotPieConfig;
+		this.prototype.groupChartData = X2Chart.groupPieChartData;
+		this.prototype.setupTooltipBehavior = X2Chart.setupPieTooltipBehavior;
 		thisX2Chart.postPieChartSetUp (uiSetUp);
 	}
 
@@ -1759,9 +1761,10 @@ X2Chart.prototype.getZeroEntriesBetween = function (
 				while (true) {
 					if (!rounded) {
 						intermediateTimestamp += X2Chart.MSPERWEEK;
-						intermediateTimestamp = thisX2Chart.roundForDaylightSavings (intermediateTimestamp);
+                        intermediateTimestamp = thisX2Chart.roundForDaylightSavings (
+                            intermediateTimestamp);
 					}
-					rounded = false;
+                    rounded = false;
 
 					if ((intermediateTimestamp < timestamp2 && !inclusiveEnd) ||
 						(intermediateTimestamp <= timestamp2 && inclusiveEnd)) {
@@ -2974,6 +2977,39 @@ X2Chart.prototype.applyDateRange = function (dateRange) {
 			$(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
 			$(toDatepicker).datepicker ('setDate', new Date (endTimestamp));
 			break;
+		case 'Last Three Months':
+			var date = new Date ();
+            var M = date.getMonth () - 3;
+            var Y = date.getFullYear ();
+            M = M < 0 ? 12 + M : M;
+			var startDate = (new Date (Y, M, 1, 0, 0, 0, 0));
+			$(fromDatepicker).datepicker ('setDate', startDate);
+			$(toDatepicker).datepicker ('setDate', date);
+			break;
+		case 'Last Six Months':
+			var date = new Date ();
+            var M = date.getMonth () - 6;
+            var Y = date.getFullYear ();
+            M = M < 0 ? 12 + M : M;
+			var startDate = (new Date (Y, M, 1, 0, 0, 0, 0));
+			$(fromDatepicker).datepicker ('setDate', startDate);
+			$(toDatepicker).datepicker ('setDate', date);
+			break;
+		case 'This Year':
+			var date = new Date ();
+            var Y = date.getFullYear ();
+			var startDate = (new Date (Y, 0, 1, 0, 0, 0, 0));
+			$(fromDatepicker).datepicker ('setDate', startDate);
+			$(toDatepicker).datepicker ('setDate', date);
+			break;
+		case 'Last Year':
+			var date = new Date ();
+            var Y = date.getFullYear ();
+			var startDate = (new Date (Y - 2, 0, 1, 0, 0, 0, 0));
+			var endDate = (new Date (Y - 2, 11, 31, 0, 0, 0, 0));
+			$(fromDatepicker).datepicker ('setDate', startDate);
+			$(toDatepicker).datepicker ('setDate', endDate);
+			break;
 		/*case 'Data Domain':
 			var date = new Date ();
 			//$(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
@@ -3091,12 +3127,15 @@ X2Chart.prototype.setUpMetricSelection = function () {
 		'uncheckAllText': thisX2Chart.translations['Uncheck all'],
 		'selectedText': '# ' + thisX2Chart.translations['metric1Label']
 	});
+
+
 	// setup metric selector behavior
-	$('#' + thisX2Chart.chartType + '-first-metric').bind ("multiselect2close", function (evt, ui) {
+	$('#' + thisX2Chart.chartType + '-first-metric').bind (
+        "multiselect2close", function (evt, ui) {
+
 		var firstMetricVal = $(this).val ();
 		firstMetricVal = firstMetricVal === null ? 'none' : firstMetricVal;
 		$.cookie (thisX2Chart.cookiePrefix + 'firstMetric', firstMetricVal);
-		thisX2Chart.DEBUG && console.log ('close multiselect');
 		thisX2Chart.plotData ({redraw: true});
 		if (!thisX2Chart.suppressChartSettings) {
 			thisX2Chart.setChartSettingName ('');  
@@ -3548,7 +3587,7 @@ X2Chart.prototype.show = function () {
 /*
 Used to stretch chart width to size of container when canvas is not supported by browser
 */
-X2Chart.prototype.resizeChartNoCanvas = function (thisX2Chart) {
+X2Chart.prototype.resizeChartNoCanvas = function () {
     var thisX2Chart = this;
     var chartTarget = 
         $('#' + thisX2Chart.chartType + '-chart-container').find ('.chart.jqplot-target');
@@ -3593,13 +3632,3 @@ X2Chart.prototype.setUpBinSizeSelection = function () {
 		}
 	});
 };
-
-
-
-
-
-
-
-
-
-

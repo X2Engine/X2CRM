@@ -123,6 +123,17 @@ class User extends CActiveRecord {
         }
     }
 
+    public static function getUsersDataProvider () {
+        $usersDataProvider = new CActiveDataProvider('User', array(
+                    'criteria' => array(
+                        'condition' => 'status=1',
+                        'order' => 'lastName ASC'
+                    )
+                ));
+        return $usersDataProvider;
+    }
+
+
     public static function getNames(){
 
         $userNames = array();
@@ -418,6 +429,9 @@ class User extends CActiveRecord {
 
         return new SmartDataProvider(get_class($this), array(
                     'criteria' => $criteria,
+                    'pagination'=>array(
+                        'pageSize'=>ProfileChild::getResultsPerPage(),
+                    ),
                 ));
     }
 

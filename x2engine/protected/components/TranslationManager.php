@@ -278,7 +278,7 @@ function addLine(object) {
 		</td>\
 		<td>';
 
-	for(i=0; i<langPacks.length; i++) {
+	for(var i=0; i<langPacks.length; i++) {
 		newEntry += '\
 			<div class="language '+langPacks[i]+'">'+langPacks[i]+'</div>\
 			<div class="translation '+langPacks[i]+'">\

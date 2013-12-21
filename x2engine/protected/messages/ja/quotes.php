@@ -65,4 +65,7 @@ return array (
 'Could not save quote due to line item errors:'=>'行項目エラーによる見積もりを保存できませんでした：',
 'Update Quote:'=>'見積りを更新します。',
 'Update Invoice:'=>'請求書を更新します。',
+'Are you sure you want to delete this quote?'=>'あなたは、この引用符を削除してもよろしいですか？',
+'This quote is locked. Are you sure you want to update this quote?'=>'この引用は、ロックされています。あなたは、この見積もりを更新してもよろしいですか？',
+'This quote is locked.'=>'この引用は、ロックされています。',
 );

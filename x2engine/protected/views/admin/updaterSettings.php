@@ -101,9 +101,9 @@
         <span class="mock-x2-form-label"><?php echo Yii::t('admin','Manual / Offline Update'); ?></span><br />
                 <?php
                 echo CHtml::tag('p',array(),Yii::t('admin','To update manually, if using X2CRM offline or if something goes wrong, see the instructions given in {wikilink}.',array(
-                    '{wikilink}' => CHtml::link(Yii::t('admin','The X2CRM Update Guide'),'http://wiki.x2engine.com')
+                    '{wikilink}' => CHtml::link(Yii::t('admin','The X2CRM Update Guide'),'http://wiki.x2engine.com/wiki/Software_Updates_and_Upgrades#Performing_.22Offline.22_Updates')
                 )));
-                echo CHtml::tag('p',array(),Yii::t('admin','Download links you will need:'));
+                echo CHtml::tag('p',array(),Yii::t('admin','Links you will need:'));
                 $edition = Yii::app()->params->admin->edition;
                 $uniqueId = Yii::app()->params->admin->unique_id;
                 $this->scenario = 'update';
@@ -112,6 +112,7 @@
                     <li><?php echo CHtml::link(Yii::t('admin','Latest Update Package for Version {version}',array('{version}'=>Yii::app()->params->version)),$this->updateServer.'/'.$this->getUpdateDataRoute()); ?></li>
                     <li><?php echo CHtml::link(Yii::t('admin','Latest Updater Utility Patch'),$edition=='opensource' ? "https://x2planet.com/installs/updater.zip" : "https://x2planet.com/installs/{$uniqueId}/updater-{$edition}.zip");?></li>
                     <li><?php echo CHtml::link(Yii::t('admin','File Set Refresh Package'),$edition=='opensource'?"https://x2planet.com/installs/refresh.zip":"https://x2planet.com/installs/{$uniqueId}/refresh-{$edition}.zip");?></li>
+                    <li><?php echo CHtml::link(Yii::t('admin','Latest updater utility version number'),$this->updateServer.'/installs/updates/updateCheck'); ?></li>
                 </ul>
         <hr />
         <?php echo CHtml::submitButton(Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button')) . "\n"; ?>

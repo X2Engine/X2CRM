@@ -65,4 +65,7 @@ return array (
 'Could not save quote due to line item errors:'=>'اعلان را نجات دهد نه با توجه به خطاهای قلم دوم از اقلام خط:',
 'Update Quote:'=>'بروز نقل قول:',
 'Update Invoice:'=>'بروز فاکتور:',
+'Are you sure you want to delete this quote?'=>'آیا مطمئن هستید که می خواهید این نقل قول را حذف کنید؟',
+'This quote is locked. Are you sure you want to update this quote?'=>'این نقل قول قفل شده است. آیا مطمئن هستید که می خواهید برای به روز رسانی این نقل قول؟',
+'This quote is locked.'=>'این نقل قول قفل شده است.',
 );

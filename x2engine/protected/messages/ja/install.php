@@ -146,4 +146,7 @@ return array (
 'The base directory configuration directive is set, and it is not the current working directory.'=>'ベースディレクトリの設定ディレクティブが設定され、それが現在の作業ディレクトリではありません。',
 'The base directory configuration directive is set, and it does not include the current working directory.'=>'ベースディレクトリの設定ディレクティブが設定され、それが現在の作業ディレクトリが含まれていない。',
 'Some hashing algorithms required for software updates are missing on this server:'=>'ソフトウェア更新に必要ないくつかのハッシュアルゴリズムは、このサーバー上で不足しているされています：',
+'The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will have to be performed manually.'=>'&quot;allow_url_fopenを&quot; PHP設定オプションが欠落しているCURL拡張に加えて、無効になっています。これは、HTTP要求を行うませ可能な方法がないことを意味し、従って、ソフトウェアの更新を手動で実行する必要があります。',
+'This web server is effectively cut off from the internet; (1) no outbound network route exists, or (2) local DNS resolution is failing, or (3) this server is behind a firewall that is preventing outbound requests. Software updates will have to be performed manually, and Google integration will not work.'=>'（1）は、アウトバウンドのネットワークルートが存在しない、または、（2）ローカルDNS解決が失敗している、または（3）このサーバが送信要求を妨げているファイアウォールの背後にある、このWebサーバーを効果的にインターネットから遮断される。ソフトウェアの更新は手動で実行する必要があります、とGoogleとの統合は機能しません。',
+'Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will have to be performed manaully.'=>'このWebサーバからアップデートサーバに達することができなかった。これは一時的な問題かもしれません。それが解決しない場合は、ソフトウェアの更新がmanaully実行する必要があります。',
 );

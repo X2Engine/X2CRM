@@ -1,0 +1,128 @@
+/*****************************************************************************************
+ * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+
+#profile-info-container {
+    border: 1px solid #c5c5c5;
+    border-radius: 4px 4px 4px 4px;
+    -moz-border-radius: 4px 4px 4px 4px;
+    -webkit-border-radius: 4px 4px 4px 4px;
+    -o-border-radius: 4px 4px 4px 4px;
+}
+
+#profile-info {
+    border: none !important;
+}
+
+#content {
+    background: none !important;
+    border: none !important;
+}
+
+#content.wide-profile-widget-layout #profile-info-container-outer {
+    float: left;
+    width: 52%;
+}
+
+#activity-feed-container-outer {
+    margin-top: 10px;
+}
+
+#content .page-title {
+    -moz-border-radius: 3px 3px 0px 0px;
+    -o-border-radius: 3px 3px 0px 0px;
+    -webkit-border-radius: 3px 3px 0px 0px;
+    border-radius: 3px 3px 0px 0px;
+}
+
+/*  
+Allows jQuery UI sortable to drop droppables into this container even if it's empty
+*/
+#content.wide-profile-widget-layout #profile-widgets-container-2 {
+    padding-bottom:20px;
+    margin-bottom: -20px; /* prevent padding from taking up space in layout  */
+}
+
+#content.wide-profile-widget-layout #profile-widgets-container-2.empty-widget-container {
+    padding-bottom:30px;
+}
+
+/*  
+Allows jQuery UI sortable to drop droppables into this container even if it's empty
+*/
+#content.wide-profile-widget-layout #profile-widgets-container-inner {
+    padding-bottom:200px;
+    margin-bottom: -200px; /* prevent padding from taking up space in layout  */
+}
+
+#content.wide-profile-widget-layout #profile-widgets-container-inner.empty-widget-container {
+    height: 100%;
+    position: fixed;
+    width: 33%;
+}
+
+#content.wide-profile-widget-layout #profile-widgets-container-2 {
+    width: 52%;
+    clear: left;
+    float: left;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#content.wide-profile-widget-layout #activity-feed-container-outer {
+    width: 52%;
+    clear: left;
+    float: left;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 10px;
+}
+#content.wide-profile-widget-layout #activity-feed-container {
+    margin-right: 0;
+}
+
+#content.wide-profile-widget-layout #profile-widgets-container {
+    float: right;
+    width: 48%;
+    margin-top: -10px;
+}
+
+#content.wide-profile-widget-layout #profile-widgets-container-inner {
+    margin-left: 9px;
+}
+
+.profile-sort-placeholder {
+    height:200px;
+}
+

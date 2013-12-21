@@ -84,9 +84,8 @@ class X2FlowRecordReassign extends X2FlowAction {
             return array(false, Yii::t('studio', 'User '.$user.' does not exist'));
         }
 
-        if($model->updateByPk(
-                        $model->id, array('assignedTo' => $assignedTo))){
-
+        if($model->updateByPk($model->id, array('assignedTo' => $assignedTo))){
+            $model->assignedTo = $assignedTo;
             if(is_subclass_of($model, 'X2Model')){
                 return array(
                     true,

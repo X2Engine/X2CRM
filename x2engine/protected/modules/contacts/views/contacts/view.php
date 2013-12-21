@@ -183,6 +183,24 @@ if(!IS_ANDROID && !IS_IPAD){
     <?php $this->renderPartial('application.components.views._detailView', array('model' => $model, 'modelName' => 'contacts')); ?>
 
     <?php
+// echo CJSON::encode($insertableAttributes);
+// var_dump($insertableAttributes);
+
+    $this->widget('InlineEmailForm', array(
+        'attributes' => array(
+            'to' => '"'.$model->name.'" <'.$model->email.'>, ',
+            // 'subject'=>'hi',
+            // 'redirect'=>'contacts/'.$model->id,
+            'modelName' => 'Contacts',
+            'modelId' => $model->id,
+            'targetModel' => $model,
+        ),
+        'startHidden' => true,
+            )
+    );
+    ?>
+
+    <?php
     $this->widget('X2WidgetList', array(
         'block' => 'center',
         'model' => $model,
@@ -244,30 +262,14 @@ if(!IS_ANDROID && !IS_IPAD){
 
 
     <?php $this->widget('Attachments', array('associationType' => 'contacts', 'associationId' => $model->id, 'startHidden' => true)); ?>
-
-    <?php
-// echo CJSON::encode($insertableAttributes);
-// var_dump($insertableAttributes);
-
-    $this->widget('InlineEmailForm', array(
-        'attributes' => array(
-            'to' => '"'.$model->name.'" <'.$model->email.'>, ',
-            // 'subject'=>'hi',
-            // 'redirect'=>'contacts/'.$model->id,
-            'modelName' => 'Contacts',
-            'modelId' => $model->id,
-            'targetModel' => $model,
-        ),
-        'startHidden' => true,
-            )
-    );
-    ?>
     <div id="quote-form-wrapper">
         <?php
         $this->widget('InlineQuotes', array(
             'startHidden' => true,
+            'recordId' => $model->id,
             'contactId' => $model->id,
             'account' => $model->getLinkedAttribute('company', 'name'),
+            'modelName' => X2Model::getModuleModelName ()
                 )
         );
         ?>

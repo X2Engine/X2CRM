@@ -637,11 +637,15 @@ class X2List extends CActiveRecord {
 		$criteria->compare('listId',$this->id);
 		$criteria->addInCondition('contactId',(array)$ids);
 
+        $model = CActiveRecord::model('X2ListItem');
+
 		// delete all the things!
 		if(CActiveRecord::model('X2ListItem')->deleteAll($criteria)) {
 			$this->count = CActiveRecord::model('X2ListItem')->countByAttributes(array('listId'=>$this->id));
-			return $this->update(array('count'));
-		}
+			$this->update(array('count'));
+            return true;
+		} 
+        return false;
 	}
 
 	/**

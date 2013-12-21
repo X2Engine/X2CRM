@@ -117,7 +117,12 @@ if ($model->associationType!="none") {
 			<?php echo $model->getAttributeLabel('associationName'); ?>
 		</td>
 		<td colspan="3">
-			<?php echo CHtml::link($model->associationName,array('/'.$model->associationType.'/'.$model->associationId)); ?>
+			<?php
+                            if ($model->associationType=="calendar")
+                                echo CHtml::link(Yii::t('calendar', "Calendar"), array('/'.$model->associationType.'/'));
+                            else
+                                echo CHtml::link($model->associationName,array('/'.$model->associationType.'/'.$model->associationId));
+                        ?>
 		</td>
 	</tr>
 

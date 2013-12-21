@@ -208,15 +208,14 @@ if(isset($layout)) {
 											if(empty($model->$fieldName) && $labelType == 'inline')
 												$model->$fieldName = $field->attributeLabel;
 		
-											if($field->type!='text')
-												$item['height'] = 'auto';
-											else
-												$item['height'] .= 'px';
+											if($field->type === 'text')
+												$textFieldHeight = $item['height'] . 'px';
+                                            $item['height'] = 'auto';
 		
 											$htmlString .= '<div class="formItem '.$labelClass.'">';
 											$htmlString .= $form->labelEx($model,$field->fieldName);
-											$htmlString .= '<div class="formInputBox" style="width:'.$item['width'].
-												'px;height:'.$item['height'].';">';
+											$htmlString .= '<div class="formInputBox" style="width:'.$item['width'].'px;height:'.$item['height'].';">';
+											//$htmlString .= '<div class="formInputBox" style="width:'.$item['width'].'px">';
 											$default=$model->$fieldName==$field->attributeLabel;
 		
 											if(isset($specialFields[$fieldName])) {
@@ -225,6 +224,7 @@ if(isset($layout)) {
 												$htmlString .= $model->renderInput($fieldName,array(
 													'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
 													'disabled'=>$item['readOnly']? 'disabled' : null,
+                                                    'style' => $field->type === 'text' ? 'height: '.$textFieldHeight: ''
 												));
 											}
 		                                    $htmlString .= "</div>";

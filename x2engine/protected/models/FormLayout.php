@@ -36,7 +36,7 @@
 
 /**
  * This is the model class for table "x2_form_versions".
- * 
+ *
  * @package X2CRM.models
  * @property integer $id
  * @property string $model
@@ -140,7 +140,7 @@ class FormLayout extends CActiveRecord {
         $attributes = array('model'=>ucfirst($modelName),'defaultForm'=>1);
 
         $layout = self::model()->findByAttributes($attributes);
-        if (!isset ($layout)) return false;
+        if (!isset ($layout)) return array();
 
 	    $layoutData = json_decode($layout->layout,true);
 
@@ -155,13 +155,13 @@ class FormLayout extends CActiveRecord {
 
                                     if(isset($item['name'],$item['labelType'],$item['readOnly'],
                                         $item['height'],$item['width'])) {
-        
+
                                         $fieldName = preg_replace('/^formItem_/u','',$item['name']);
-        
+
                                         if(in_array (
                                             $fieldName, array_keys ($editableFieldsFieldInfo))) {
 
-                                            $editableFieldsInLayout[$fieldName] = 
+                                            $editableFieldsInLayout[$fieldName] =
                                                 $editableFieldsFieldInfo[$fieldName];
                                         }
                                     }

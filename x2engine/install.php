@@ -516,9 +516,19 @@ $timezones = array(
                         $disabledByDefault = array('products', 'quotes', 'bugReports');
                         foreach($modules as $moduleName):
                             $item = "menu_$moduleName";
+                            if (function_exists('ucfirst')) { 
+                                $moduleLabel = ucfirst($moduleName);
+                            } else {
+                                $moduleLabel = $moduleName;
+                            }
+                            if ($moduleLabel === 'Workflow') {
+                                $moduleLabel = 'Process';
+                            }
                             ?>
                             <div class="checkbox-grid-cell">
-                                <label for="<?php echo $item ?>"><?php echo function_exists('ucfirst') ? ucfirst($moduleName) : $moduleName; ?></label><input type="checkbox" name="<?php echo $item ?>" id="<?php echo $item; ?>" value="1"<?php echo getField($item, 1, !in_array($moduleName, $disabledByDefault)) ? ' checked=1' : ''; ?> />
+                                <label for="<?php echo $item ?>"><?php echo $moduleLabel; ?></label>
+                                <input type="checkbox" name="<?php echo $item ?>" id="<?php echo $item; ?>" value="1"<?php 
+                                 echo getField($item, 1, !in_array($moduleName, $disabledByDefault)) ? ' checked=1' : ''; ?> />
                             </div>
 <?php endforeach; ?>
                     </div>

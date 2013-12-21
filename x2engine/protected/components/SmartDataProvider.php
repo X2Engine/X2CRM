@@ -43,14 +43,23 @@
  * @package X2CRM.components
  */
 class SmartDataProvider extends CActiveDataProvider {
-	public function __construct($modelClass,$config=array()) {
+	public function __construct($modelClass,$config=array(), $uniqueId=null) {
 		parent::__construct($modelClass, $config);
+
+        //AuxLib::debugLogR ($_GET);
 
 		//Sort and page saving code modified from:
 		//http://www.stupidannoyingproblems.com/2012/04/yii-grid-view-remembering-filters-pagination-and-sort-settings/
 
-		//a string unique to each controller/action (and optionally id) combination
-		$statePrefix = Yii::app()->controller->uniqueid .'/'. Yii::app()->controller->action->id . (isset($_GET['id']) ? '/'.$_GET['id'] : '');
+        if (isset ($uniqueId)) {
+            $statePrefix = $uniqueId . (isset ($_GET['id']) ? '/'.$_GET['id'] : '');
+        } else {
+		    //a string unique to each controller/action (and optionally id) combination
+		    $statePrefix = Yii::app()->controller->uniqueid .'/'. Yii::app()->controller->action->id . (isset($_GET['id']) ? '/'.$_GET['id'] : '');
+        }
+
+        //AuxLib::debugLog ($this->getId());
+        //AuxLib::debugLog ($statePrefix);
 
 		// store also sorting order
 		$key = $this->getId()!='' ? $this->getId().'_sort' : 'sort';

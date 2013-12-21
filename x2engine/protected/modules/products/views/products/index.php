@@ -66,57 +66,43 @@ function trimText($text) {
 </div><!-- search-form -->
 <div class='flush-grid-view'>
 <?php
-	$canDelete = Yii::app()->params->isAdmin;
-	$this->widget('zii.widgets.grid.CGridView', array(
+$this->widget('application.components.X2GridView', array(
 	'id'=>'product-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title icon products"><h2>'.Yii::t('products','Products').
-        '</h2><div class="x2-button-group">'
-		.CHtml::link(
-            '<span></span>','#',array('title'=>Yii::t('app','Advanced Search'),
-            'class'=>'x2-button search-button'))
-		.CHtml::link(
-            '<span></span>',array(Yii::app()->controller->action->id,'clearFilters'=>1),
-            array('title'=>Yii::t('app','Clear Filters'),'class'=>'x2-button filter-button')).'</div> '
-		.X2GridView::getFilterHint()
-		.'{summary}</div>{items}{pager}',
-	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
+	'title'=>Yii::t('products','Products'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
+	'template'=> 
+        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
+        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
+        '<div id="x2-gridview-page-title" '.
+         'class="page-title icon quotes x2-gridview-fixed-title">'.
+        '{title}{buttons}{filterHint}'.
+        
+        '{summary}{topPager}{items}{pager}',
+    'fixedHeader'=>true,
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
-	'columns'=>array(
-		array(
+	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
+	'modelName'=>'Product',
+	'viewName'=>'products',
+	// 'columnSelectorId'=>'contacts-column-selector',
+	'defaultGvSettings'=>array(
+        'gvCheckbox' => 30,
+		'name' => 244,
+		'type' => 67,
+		'description' => 117,
+		'createDate' => 120,
+		'gvControls' => 73,
+	),
+	'specialColumns'=>array(
+		'name'=>array(
 			'name'=>'name',
-			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
+			'header'=>Yii::t('products','Name'),
+			'value'=>'$data->link',
 			'type'=>'raw',
-		),
-		array(
-			'name'=>'type',
-			'header'=>Yii::t('products', 'Type'),
-			'value'=>'trimText($data->type)',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'description',
-			'header'=>Yii::t('products','Description'),
-			'value'=>'trimText($data->description)',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'40%'),
-		),
-		array(
-			'name'=>'createDate',
-			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), '.
-                '$data->createDate)',
-			'type'=>'raw',
-		),
-		array(
-			'header'=>Yii::t('products', 'Tools'),
-			'class'=>'CButtonColumn',
-			'buttons' => array(
-				'delete' => array(
-					'visible' => ($canDelete?'true':'false'),
-				),
-			),
 		),
 	),
-)); ?>
+	'enableControls'=>true,
+	'fullscreen'=>true,
+));
+?>
 </div>

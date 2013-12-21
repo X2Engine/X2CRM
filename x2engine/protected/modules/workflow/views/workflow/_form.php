@@ -91,7 +91,7 @@ function addStage() {
 	</li>');
 	stageCount++;
 
-	for(i=1;i<stageCount;i++)
+	for(var i=1;i<stageCount;i++)
 		$('#workflow-stages li:last-child select.workflow_requirePrevious').append('<option value=\"-'+i+'\">".addslashes(Yii::t('workflow','Stage'))." '+i+'</option>');
 	$('#workflow-stages li select.workflow_requirePrevious').append('<option value=\"'+stageCount+'\">".addslashes(Yii::t('workflow','Stage'))." '+stageCount+'</option>');
 	$('#workflow-stages li:last-child').slideDown(300);

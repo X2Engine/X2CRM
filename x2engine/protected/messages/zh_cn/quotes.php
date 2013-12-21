@@ -65,4 +65,7 @@ return array (
 'Could not save quote due to line item errors:'=>'无法保存项目错误报价：',
 'Update Quote:'=>'更新报价：',
 'Update Invoice:'=>'更新发票：',
+'Are you sure you want to delete this quote?'=>'您确定要删除这句话？',
+'This quote is locked. Are you sure you want to update this quote?'=>'本帖被锁定。您确定要更新这句话？',
+'This quote is locked.'=>'本帖被锁定。',
 );

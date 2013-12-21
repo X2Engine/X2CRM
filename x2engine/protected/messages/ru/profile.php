@@ -136,4 +136,7 @@ return array (
 'Please fix the following errors:'=>'Необходимо исправить следующие ошибки:',
 'Theme name already exists or is invalid.'=>'Название темы уже существует или является недействительным.',
 'Theme created successfully.'=>'Тема создана успешно.',
+'Edit Profile'=>'Изменить профиль',
+'Disable phone field links?'=>'Отключение таких ссылок телефон?',
+'Disable notifications pop-up?'=>'Отключить уведомления всплывающие?',
 );

@@ -97,6 +97,13 @@ class X2TranslationAction extends CAction {
             echo "<li>".$count." messages were translated for the language: ".$language."</li>";
         }
         echo "</ul>";
+        if(isset($this->statistics['errors']['missingFiles'])){
+            echo "Unable to find the following requested translation files:<br><ul>";
+            foreach($this->statistics['errors']['missingFiles'] as $file){
+                echo "<li>".$file."</li>";
+            }
+            echo "</ul>";
+        }
         echo "Translation complete.";
     }
 

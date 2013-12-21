@@ -97,7 +97,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 
 		$model = $this->getOwner();
 
-		$api = 0;	// FIX THIS
+		//$api = 0;	// FIX THIS
 
 		X2Flow::trigger('RecordCreateTrigger',array('model'=>$model));
 
@@ -116,7 +116,8 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 			if(!empty($model->assignedTo) && $model->assignedTo != $this->editingUsername && $model->assignedTo != 'Anyone') {
 				$notif = new Notification;
 				$notif->user = $model->assignedTo;
-				$notif->createdBy = ($api == 1) ? 'API' : $this->editingUsername;
+				//$notif->createdBy = ($api == 1) ? 'API' : $this->editingUsername;
+                $notif->createdBy = $this->editingUsername;
 				$notif->createDate = time();
 				$notif->type = 'create';
 				$notif->modelType = get_class($model);

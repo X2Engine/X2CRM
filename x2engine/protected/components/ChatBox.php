@@ -47,7 +47,10 @@ class ChatBox extends X2Widget {
 	}
 
 	public function run() {
-        if(Yii::app()->controller->action->getId()!='whatsNew'){
+
+        // don't display in profile view
+        if(Yii::app()->controller->modelClass !== 'Profile' ||
+           Yii::app()->controller->action->getId () !== 'view'){
             $this->render('chatBox',array());
         }
 	}

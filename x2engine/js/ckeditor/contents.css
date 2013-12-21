@@ -97,3 +97,35 @@ pre
 	white-space: pre-wrap; /* CSS 2.1 */
 	word-wrap: break-word; /* IE7 */
 }
+
+
+/* x2modstart */
+/*
+drop down menus
+*/
+
+.cke_panel_list {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.cke_panel_grouptitle {
+    display: none !important;
+}
+
+.cke_panel_listItem {
+    padding: 0 !important;
+}
+.cke_panel_listItem a {
+    border: none!important;
+}
+
+.cke_panel_listItem a:hover {
+    border: none!important;
+    border-radius: 0 !important;
+    background: rgb(214,214,214) !important;
+    -moz-box-shadow: none !important; 
+    -webkit-box-shadow:none !important;
+    box-shadow:none !important;
+}
+/* x2modend */

@@ -57,10 +57,6 @@ class JSONFieldsDefaultValuesBehavior extends JSONFieldsBehavior {
 		if(!isset($this->_fields)) {
 			$this->_fields = array();
 			foreach($this->transformAttributes as $attr => $fields) {
-                $fieldArr = array ();
-                foreach ($fields as $JSONAttrName => $defaultVal) {
-                    $fields[$JSONAttrName] = $defaultVal;
-                }
                 $this->_fields[$attr] = $fields;
             }
 		}

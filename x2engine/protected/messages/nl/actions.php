@@ -143,4 +143,7 @@ return array (
 '{user} completed an action: {action}'=>'{user} voltooide een actie: {action}',
 'Stage {n}: {stage} was completed for {record}'=>'Stage {n} : {stage} werd voltooid voor {record}',
 '{user} completed stage {n}: {stage} was completed for {record}'=>'{user} afgerond stadium {n} : {stage} werd voltooid voor {record}',
+'Log Time'=>'Inloggen Time',
+'Time started'=>'Tijd begonnen',
+'Time ended'=>'Tijd eindigde',
 );

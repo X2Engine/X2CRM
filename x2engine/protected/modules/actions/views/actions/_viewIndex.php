@@ -127,7 +127,7 @@ if($type == 'workflow') {
 				//echo Actions::parseStatus($data->dueDate);
 		} elseif ($data->type == 'workflow') {
 			// $actionData = explode(':',$data->actionDescription);
-			echo Yii::t('workflow','Workflow:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$data->stageNumber-1]->name.'</b> ';
+			echo Yii::t('workflow','Process:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$data->stageNumber-1]->name.'</b> ';
 		} elseif(in_array($data->type,array('email','emailFrom'))) {
 			echo Yii::t('actions','Email Message:').' '.Formatter::formatCompleteDate($data->completeDate);
 		} elseif($data->type == 'quotes') {

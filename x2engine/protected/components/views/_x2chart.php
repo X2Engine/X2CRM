@@ -34,17 +34,20 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
 if ($chartType === 'usersChart' || $chartType === 'eventsChart') {
-    Yii::app()->clientScript->registerScriptFile(
+    /*Yii::app()->clientScript->registerScriptFile(
         Yii::app()->getBaseUrl().'/js/X2Chart.js', CClientScript::POS_END);
     Yii::app()->clientScript->registerScriptFile(
         Yii::app()->getBaseUrl().'/js/X2EventsChart.js', CClientScript::POS_END);
     Yii::app()->clientScript->registerScriptFile(
-        Yii::app()->getBaseUrl().'/js/X2UsersChart.js', CClientScript::POS_END);
-
-    Yii::app()->clientScript->registerCoreScript('jquery.ui');
+        Yii::app()->getBaseUrl().'/js/X2UsersChart.js', CClientScript::POS_END);*/
+    if (!$isAjaxRequest) {
+        Yii::app()->clientScript->registerCoreScript('jquery');
+        Yii::app()->clientScript->registerCoreScript('jquery.ui');
+        Yii::app()->clientScript->registerCoreScript('cookie');
+    }
     Yii::app()->clientScript->packages = X2WidgetList::packages ();
+    Yii::app()->clientScript->registerPackage('ProfileChartWidgetJS');
     Yii::app()->clientScript->registerPackage('ChartWidgetExtJS');
     Yii::app()->clientScript->registerPackage('ChartWidgetExtCss');
     Yii::app()->clientScript->registerPackage('ChartWidgetCss');
@@ -326,7 +329,7 @@ Yii::app()->clientScript->registerScript(
             if (!$suppressDateRangeSelector) {
             ?>
             <select id="<?php echo $chartType; ?>-date-range-selector"
-             class="date-range-selector">
+             class="date-range-selector x2-minimal-select">
                  <option value="Custom"><?php echo Yii::t('app', 'Custom'); ?></option>
                  <option value="Today"><?php echo Yii::t('app', 'Today'); ?></option>
                  <option value="Yesterday"><?php echo Yii::t('app', 'Yesterday'); ?></option>
@@ -334,6 +337,12 @@ Yii::app()->clientScript->registerScript(
                  <option value="Last Week"><?php echo Yii::t('app', 'Last Week'); ?></option>
                  <option value="This Month"><?php echo Yii::t('app', 'This Month'); ?></option>
                  <option value="Last Month"><?php echo Yii::t('app', 'Last Month'); ?></option>
+                 <option value="Last Three Months"><?php 
+                    echo Yii::t('app', 'Last Three Months'); ?></option>
+                 <option value="Last Six Months"><?php 
+                    echo Yii::t('app', 'Last Six Months'); ?></option>
+                 <option value="This Year"><?php echo Yii::t('app', 'This Year'); ?></option>
+                 <option value="Last Year"><?php echo Yii::t('app', 'Last Year'); ?></option>
                  <!--<option value="Data Domain"><?php //echo Yii::t('app', 'Data Domain'); ?></option>-->
             </select>
             <?php
@@ -354,7 +363,7 @@ Yii::app()->clientScript->registerScript(
          title='<?php echo Yii::t('app', 'Delete predefined chart setting'); ?>'>
             [x]
         </a>
-        <select id="<?php echo $chartType; ?>-predefined-settings" class="predefined-settings right">
+        <select id="<?php echo $chartType; ?>-predefined-settings" class="x2-minimal-select predefined-settings right">
             <option value="" id="<?php echo $chartType; ?>-custom-settings-option" 
              class="custom-settings-option">
                 <?php echo Yii::t('app', 'Custom'); ?>
@@ -385,7 +394,6 @@ Yii::app()->clientScript->registerScript(
         }
         ?>
     </div>
-
 
     <div id="<?php echo $chartType; ?>-chart" class="chart jqplot-target">
     </div>

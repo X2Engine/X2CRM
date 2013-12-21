@@ -42,6 +42,8 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName']))),
 	array('label'=>Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('module','Delete {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
+    array('label' => Yii::t('app', 'Attach A File/Photo'), 'url' => '#', 'linkOptions' => array('onclick' => 'toggleAttachmentForm(); return false;')),
+    array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
 ));
 $modelType = json_encode("Templates");
 $modelId = json_encode($model->id);
@@ -57,8 +59,17 @@ $(function() {
 
 <?php
 $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'Templates'));
-
+$this->widget('Attachments', array('associationType' => 'templates', 'associationId' => $model->id, 'startHidden' => true)); 
 ?>
+<div id="quote-form-wrapper">
+    <?php
+    $this->widget('InlineQuotes', array(
+        'startHidden' => true,
+        'contactId' => $model->id,
+        'modelName' => X2Model::getModuleModelName ()
+    ));
+    ?>
+</div>
 </div>
 <div class="history half-width">
 <?php

@@ -71,6 +71,7 @@ if($opportunityModule->visible && $accountModule->visible)
 
 $this->actionMenu = $this->formatMenu($menuItems);
 
+
 Yii::app()->clientScript->registerScript('search', "
 /*$('.search-button').unbind('click').click(function(){
 	$('.search-form').toggle();
@@ -88,33 +89,20 @@ $('#content').on('mouseup','#contacts-grid a',function(e) {
 });
 ",CClientScript::POS_READY);
 
+/*Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2QTipManager.js',
+    CClientScript::POS_HEAD);*/
+
+
+
 // init qtip for contact names
-Yii::app()->clientScript->registerScript('contact-qtip', '
-function refreshQtip() {
-	$(".contact-name").each(function (i) {
-		var contactId = $(this).attr("href").match(/\\d+$/);
-
-		if(contactId !== null && contactId.length) {
-			$(this).qtip({
-				content: {
-					text: "'.addslashes(Yii::t('app','loading...')).'",
-					ajax: {
-						url: yii.scriptUrl+"/contacts/qtip",
-						data: { id: contactId[0] },
-						method: "get"
-					}
-				},
-				style: {
-				}
-			});
-		}
-	});
-}
-
-$(function() {
-	refreshQtip();
+/*Yii::app()->clientScript->registerScript('contact-qtip', '
+x2.qtipManager = new X2QtipManager ({
+    loadingText: "'.addslashes(Yii::t('app','loading...')).'",
+    qTipSelector: ".contact-name"
 });
-');
+
+x2.qtipManager.refresh ();
+',CClientScript::POS_READY);*/
 ?>
 
 
@@ -129,6 +117,12 @@ $(function() {
 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
+    'enableQtips' => true,
+    'qtipManager' => array (
+        'X2QtipManager',
+        'loadingText'=> addslashes(Yii::t('app','loading...')),
+        'qtipSelector' => ".contact-name"
+    ),
 	'title'=>$heading,
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> 

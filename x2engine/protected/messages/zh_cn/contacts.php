@@ -178,4 +178,6 @@ return array (
 'Website: '=>'网址：',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'警告：此页面上加载了太多的记录可能会占用服务器显著。您确定要继续吗？',
 'Saved Searches'=>'保存的搜索',
+'Clicking this button will pull any relevant '=>'单击此按钮将拉动相关的任何',
+'Drag tags here from the tag cloud widget or click to '=>'拖放标签从这里标签云小工具或点击',
 );

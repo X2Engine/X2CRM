@@ -55,7 +55,7 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
         $visible ? '[&ndash;]' : '[+]', $toggleUserCalendarsVisibleUrl, 
         array(
             'success'=>'function(response) {
-                togglePortletVisible($("#user-calendars"), response); 
+                x2.LayoutManager.togglePortletVisible($("#user-calendars"), response); 
             }'
         )
     );
@@ -165,7 +165,7 @@ if(isset($this->groupCalendars) && $this->groupCalendars !== null) {
         // javascript function togglePortletVisible defined in js/layout.js
         array(
             'success'=>'function(response) { 
-                togglePortletVisible($("#group-calendar"), response); 
+                x2.LayoutManager.togglePortletVisible($("#group-calendar"), response); 
             }'
         )
     ); 

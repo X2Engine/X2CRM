@@ -155,7 +155,7 @@ if($data->important && isset($data->fontColor)){
         <div class="deleteButton">
             <?php
             if(($data->type == 'feed') && ($data->user == Yii::app()->user->getName() || Yii::app()->params->isAdmin)){
-                echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'), array('/profile/updatePost', 'id' => $data->id))." ";
+                echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'), array('/profile/updatePost', 'id' => $data->id, 'profileId' => $profileId))." ";
             }
             if((($data->user == Yii::app()->user->getName() || $data->associationId == Yii::app()->user->getId()) && ($data->type == 'feed')) || Yii::app()->params->isAdmin)
                 echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'), '#', array('class' => 'delete-link', 'id' => $data->id.'-delete'));

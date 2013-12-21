@@ -77,4 +77,7 @@ return array (
 'Theme name already exists or is invalid.'=>'Naam van het thema al bestaat of ongeldig is.',
 'Theme created successfully.'=>'Thema gemaakt met succes.',
 'Page Header Color'=>'Koptekst Kleur',
+'Edit Profile'=>'Profiel Bewerken',
+'Disable phone field links?'=>'Uitschakelen telefoon veld koppelingen?',
+'Disable notifications pop-up?'=>'Meldingen uitschakelen pop-up?',
 );

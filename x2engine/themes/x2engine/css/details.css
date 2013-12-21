@@ -117,7 +117,6 @@ table.details input, table.details textarea {
 	font-family:Arial, Helvetica, sans-serif;
 }
 table.details {
-	margin:5px 0;
 	clear:both;
 	border:1px solid #aaa;
 	width:100%;
@@ -170,16 +169,19 @@ table.details tr:last-child td:only-child {
 
 table.details th, table.details td {
 	padding:5px;
-	background:#f8f8f8;
-	border-top:1px solid #d0d0d0;
-	border-left:1px solid #d0d0d0;
+	background:#fff;
+	border-top:1px solid #dfdfdf;
+	border-left:1px solid #dfdfdf;
 	vertical-align:top;
 	font-family:sans-serif;
 	font-size:12px;
 	font-style:normal;
 	font-weight:normal;
 }
-table.details td.label {background:#eee;text-align:right;}
+table.details td.label {
+    background:white;
+    text-align:right;
+}
 table.details a {text-decoration:none;}
 
 /* rounded corners on description cell */

@@ -34,9 +34,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-?>
-
-<?php echo CHtml::button(
+echo CHtml::button(
 	Yii::t('quotes', 'New Quote'), 
 	array('id'=>'show-new-quote-button', 'onclick'=>'x2.inlineQuotes.openForm();', 'class'=>'x2-button')
-); ?>
+); 
+
+?>

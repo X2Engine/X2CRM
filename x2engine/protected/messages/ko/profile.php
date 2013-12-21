@@ -74,4 +74,7 @@ return array (
 'Theme name already exists or is invalid.'=>'테마 이름이 이미 존재하거나 잘못되었습니다.',
 'Theme created successfully.'=>'테마가 성공적으로 만들었습니다.',
 'Page Header Color'=>'페이지 머리글 색상',
+'Edit Profile'=>'프로필 수정',
+'Disable phone field links?'=>'전화 필드의 링크를 사용하지 않도록 설정?',
+'Disable notifications pop-up?'=>'알림에게 팝업을 비활성화?',
 );

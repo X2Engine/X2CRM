@@ -178,4 +178,6 @@ return array (
 'Website: '=>'Website:',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'ΠΡΟΣΟΧΗ: φόρτωση πάρα πολλά αρχεία σε αυτή τη σελίδα μπορούν να δένουν το διακομιστή σημαντικά. Είστε βέβαιοι ότι θέλετε να συνεχίσετε;',
 'Saved Searches'=>'Αποθηκευμένες αναζητήσεις',
+'Clicking this button will pull any relevant '=>'Κάνοντας κλικ σε αυτό το κουμπί, θα τραβήξει κάθε σχετική',
+'Drag tags here from the tag cloud widget or click to '=>'Σύρετε ετικέτες εδώ από το widget σύννεφο tag ή κάντε κλικ στο',
 );

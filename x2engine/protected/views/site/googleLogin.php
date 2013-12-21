@@ -36,10 +36,15 @@
 
 $this->pageTitle = Yii::app()->name.' - Login';
 $admin = Admin::model()->findByPk(1);
-Yii::app()->clientScript->registerCss('fixMenuShadow', "
+Yii::app()->clientScript->registerCss('googleLogin', "
+// fix menu shadow
 #page .container {
 	position:relative;
 	z-index:2;
+}
+
+#google-login-logo {
+    margin: 8px 10px 0 -5px;
 }
 ", 'screen', CClientScript::POS_HEAD);
 ?>
@@ -57,11 +62,10 @@ Yii::app()->clientScript->registerCss('fixMenuShadow', "
 </script>
 <div class="form" id="login-form">
     <div class="cell">
-        <?php echo CHtml::image(Yii::app()->baseUrl.'/images/x2engine_crm_login.png', 'X2Engine', array('id' => 'login-logo', 'width' => 74, 'height' => 84)); ?>
+        <?php echo CHtml::image(Yii::app()->baseUrl.'/images/x2engine_crm_login.png', 'X2Engine', array('id' => 'google-login-logo', 'width' => 80, 'height' => 71)); ?>
     </div>
     <?php if(isset($admin->googleIntegration) && $admin->googleIntegration == '1'){ ?>
         <div id="login-box">
-
             <div id="error-message">
                 <?php
                 if(isset($failure) && $failure == 'email'){

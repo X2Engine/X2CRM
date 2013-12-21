@@ -279,4 +279,22 @@ class Docs extends X2Model {
 		return $templateLinks;
 	}
 
+    /**
+     * @return bool true if user has edit permissions, false otherwise 
+     */
+    public function checkEditPermission () {
+        $perm = $this->editPermissions;
+        $pieces = explode(", ",$perm);
+        if (Yii::app()->user->checkAccess('DocsUpdate') && 
+            (Yii::app()->user->checkAccess('DocsAdmin') || 
+             Yii::app()->user->getName()==$this->createdBy || 
+             array_search(Yii::app()->user->getName(),$pieces)!==false || 
+             Yii::app()->user->getName()==$perm)) {
+
+             return true;
+        } else {
+            return false;
+        }
+    }
+
 }

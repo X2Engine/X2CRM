@@ -35,8 +35,8 @@
  *****************************************************************************************/
 
 Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->getBaseUrl().'/js/whatsNew.js', CClientScript::POS_END);
-Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/whatsNew.css');
+	Yii::app()->getBaseUrl().'/js/profile.js', CClientScript::POS_END);
+Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/profile.css');
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(
@@ -70,15 +70,15 @@ $usersGroups = implode(",",$tempUserList);
 
 
 $passVarsToClientScript = "
-	x2.whatsNew = {};
-	x2.whatsNew.DEBUG = false;//".(YII_DEBUG ? 'true' : 'false').";
-	x2.whatsNew.usersGroups = '".$usersGroups."';
-	x2.whatsNew.minimizeFeed = ".(Yii::app()->params->profile->minimizeFeed==1?'true':'false').";
-	x2.whatsNew.commentFlag = false;
-	x2.whatsNew.lastEventId = ".(!empty($lastEventId)?$lastEventId:0).";
-	x2.whatsNew.lastTimestamp = ".(!empty($lastTimestamp)?$lastTimestamp:0).";
-	x2.whatsNew.deletePostUrl = '".$this->createUrl('/profile/deletePost')."';
-	x2.whatsNew.translations = {};
+	x2.profile = {};
+	x2.profile.DEBUG = false;//".(YII_DEBUG ? 'true' : 'false').";
+	x2.profile.usersGroups = '".$usersGroups."';
+	x2.profile.minimizeFeed = ".(Yii::app()->params->profile->minimizeFeed==1?'true':'false').";
+	x2.profile.commentFlag = false;
+	x2.profile.lastEventId = ".(!empty($lastEventId)?$lastEventId:0).";
+	x2.profile.lastTimestamp = ".(!empty($lastTimestamp)?$lastTimestamp:0).";
+	x2.profile.deletePostUrl = '".$this->createUrl('/profile/deletePost')."';
+	x2.profile.translations = {};
 ";
 
 $translations = array (
@@ -100,7 +100,7 @@ $translations = array (
 
 // pass array of predefined theme uploadedBy attributes to client
 foreach ($translations as $key=>$val) {
-	$passVarsToClientScript .= "x2.whatsNew.translations['".
+	$passVarsToClientScript .= "x2.profile.translations['".
 		$key. "'] = '" . addslashes ($val) . "';\n";
 }
 
@@ -258,10 +258,10 @@ $this->widget('zii.widgets.CListView', array(
 					'options'=>array(
 						'onRenderComplete'=>'js:function(){
 							makePostsExpandable ();
-							if(x2.whatsNew.minimizeFeed){
+							if(x2.profile.minimizeFeed){
 								minimizePosts();
 							}
-							if(x2.whatsNew.commentFlag){
+							if(x2.profile.commentFlag){
 								$(".comment-link").click();
 							}
 						}'
@@ -283,10 +283,10 @@ $this->widget('zii.widgets.CListView', array(
 					'options'=>array(
 						'onRenderComplete'=>'js:function(){
 							makePostsExpandable ();
-							if(x2.whatsNew.minimizeFeed){
+							if(x2.profile.minimizeFeed){
 								minimizePosts();
 							}
-							if(x2.whatsNew.commentFlag){
+							if(x2.profile.commentFlag){
 								$(".comment-link").click();
 							}
 							$.each($(".comment-count"),function(){

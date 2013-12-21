@@ -41,10 +41,14 @@
  */
 class X2Info extends CComponent {
 
-	public static function hint($text,$superScript = true) {
-		return CHtml::tag($superScript?'sup':'span',array(
+	public static function hint($text,$superScript = true,$id=null) {
+        $htmlOptions = array (
 			'class'=>'x2-hint',
 			'title'=>$text
-		),'?');
+        );
+        if ($id !== null) {
+            $htmlOptions['id'] = $id;
+        }
+		return CHtml::tag($superScript?'sup':'span',$htmlOptions,'?');
 	}
 }

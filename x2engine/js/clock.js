@@ -68,7 +68,7 @@ $(function() {
 			
 			var browsers = ["-moz-transform","-webkit-transform","-o-transform","-ms-transform"];
 			
-			for(i in browsers) {
+			for(var i in browsers) {
 				$("#tzClock .sec").css(browsers[i],sCssAngle);
 				$("#tzClock .min").css(browsers[i],mCssAngle);
 				$("#tzClock .hour").css(browsers[i],hCssAngle);

@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
@@ -56,17 +55,12 @@ class X2WidgetList extends X2Widget {
                 'baseUrl' => Yii::app()->request->baseUrl,
                 'css' => array (
                     'js/widgetListCombined.css'
-                    /*'js/gallerymanager/bootstrap/css/bootstrap.css',
-                    'js/jqplot/jquery.jqplot.css',
-                    'js/checklistDropdown/jquery.multiselect.css'*/
                 )
             ),
             'widgetListCombinedCss2' => array(
                 'baseUrl' => Yii::app()->getTheme ()->getBaseUrl (),
                 'css' => array (
                     'css/widgetListCombined.css'
-                    /*'css/galleryWidgetCssOverrides.css',
-                    'css/x2chart.css'*/
                 )
             ),
             'GalleryWidgetJS' => array(
@@ -75,16 +69,7 @@ class X2WidgetList extends X2Widget {
                     'js/galleryManagerDialogSetup.js',
                     'js/gallerymanager/bootstrap/js/bootstrap.js',
                 ),
-                /*'css' => array (
-                    'js/gallerymanager/bootstrap/css/bootstrap.css',
-                )*/
             ),
-            /*'GalleryWidgetCss' => array(
-                'baseUrl' => Yii::app()->getTheme ()->getBaseUrl (),
-                'css' => array(
-                    'css/galleryWidgetCssOverrides.css',
-                )
-            ),*/
             'ChartWidgetExtJS' => array(
                 'baseUrl' => Yii::app()->request->baseUrl,
                 'js' => array(
@@ -95,12 +80,7 @@ class X2WidgetList extends X2Widget {
                     'js/jqplot/plugins/jqplot.dateAxisRenderer.js',
                     'js/jqplot/plugins/jqplot.highlighter.js',
                     'js/jqplot/plugins/jqplot.enhancedLegendRenderer.js',
-                    'js/checklistDropdown/jquery.multiselect.js',
                 ),
-                /*'css' => array(
-                    'js/jqplot/jquery.jqplot.css',
-                    'js/checklistDropdown/jquery.multiselect.css'
-                ),*/
             ),
             'ChartWidgetExtCss' => array(
                 'baseUrl' => Yii::app()->request->baseUrl,
@@ -115,6 +95,15 @@ class X2WidgetList extends X2Widget {
                     'js/auxlib.js',
                     'js/X2Chart.js',
                     'js/X2ActionHistoryChart.js',
+                ),
+            ),
+            'ProfileChartWidgetJS' => array(
+                'baseUrl' => Yii::app()->request->baseUrl,
+                'js' => array(
+                    'js/auxlib.js',
+                    'js/X2Chart.js',
+                    'js/X2UsersChart.js',
+                    'js/X2EventsChart.js',
                 ),
             ),
             'ChartWidgetCss' => array(
@@ -199,13 +188,15 @@ class X2WidgetList extends X2Widget {
     }
 
     private function isExcluded ($name) {
-        if ($this->modelType == 'BugReports' && ($name != 'InlineRelationships' && $name!='WorkflowStageDetails') ||
+        if ($this->modelType == 'BugReports' && 
+            ($name != 'InlineRelationships' && $name!='WorkflowStageDetails') ||
             $this->modelType == 'Quote' && $name == 'WorkflowStageDetails' ||
             $this->modelType == 'Marketing' &&
             ($name == 'WorkflowStageDetails' || $name === 'InlineRelationships') ||
             $this->modelType == 'services' && $name == 'InlineRelationships' ||
             $this->modelType === 'products' &&
             ($name === 'InlineRelationships' || $name === 'WorkflowStageDetails')) {
+
             return true;
         } else {
             return false;
@@ -213,4 +204,3 @@ class X2WidgetList extends X2Widget {
     }
 
 }
-

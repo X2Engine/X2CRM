@@ -175,4 +175,6 @@ return array (
 'Website: '=>'',
 'WARNING: loading too many records on this page may tie up the server significantly. Are you sure you want to continue?'=>'',
 'Saved Searches'=>'',
+'Clicking this button will pull any relevant '=>'',
+'Drag tags here from the tag cloud widget or click to '=>'',
 );

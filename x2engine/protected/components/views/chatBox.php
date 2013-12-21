@@ -193,7 +193,7 @@ $(function() {
 
         $('#feed-post-button').on ('click', function () {
             $.ajax({
-                url:'".Yii::app()->request->getScriptUrl () . '/site/publishPost'."',
+                url:'".Yii::app()->request->getScriptUrl () . '/profile/publishPost'."',
                 type:'POST',
                 data:{
                     text:$('#feed-post-editor').val(),

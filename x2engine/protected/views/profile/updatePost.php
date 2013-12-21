@@ -75,6 +75,11 @@ window.newPostEditor = createCKEditor (
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'event-update-form',
 	'enableAjaxValidation'=>false,
+    'action'=>array (
+        '/profile/updatePost',
+        'id' => $id,
+        'profileId' => $profileId
+    )
 )); ?>
 
 	<div class="top row">

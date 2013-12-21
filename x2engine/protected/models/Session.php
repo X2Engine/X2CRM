@@ -132,4 +132,19 @@ class Session extends CActiveRecord {
 
 		return $query->queryColumn();
 	}
+
+    /**
+     * @param string $username
+     * @return bool true if user has a recently updated session record, false otherwise
+     */
+	public static function isOnline ($username) {
+		$record = Yii::app()->db->createCommand()
+            ->select('*')
+            ->from('x2_sessions')
+            ->where('user=:username and lastUpdated > "'.(time () - 900).
+                '"', array ('username' => $username))
+            ->queryAll ();
+
+		return (!empty ($record));
+    }
 }

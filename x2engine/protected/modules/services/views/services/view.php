@@ -49,6 +49,7 @@ $menuItems = array(
 	array('label'=>Yii::t('services','Delete Case'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Send Email'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;')),
 	array('label'=>Yii::t('app','Attach a File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
+    array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
 	array('label'=>Yii::t('services','Create Web Form'), 'url'=>array('createWebForm')),
 );
 $menuItems[] = array(
@@ -143,23 +144,11 @@ if($model->contactId) { // every service case should have a contact associated w
 		<?php
 	}
 }
-?>
-
-<?php 
-	$this->widget('X2WidgetList', array(
-		'block'=>'center', 
-		'model'=>$model, 
-		'modelType'=>'services'
-	)); 
-?>
-
-
-<?php $this->widget('Attachments',array('associationType'=>'services','associationId'=>$model->id,'startHidden'=>true)); ?>
-
-<?php
 $to = null;
-if(isset($contact))
+if(isset($contact)) {
 	$to = '"'.$contact->name.'" <'.$contact->email.'>, ';
+}
+
 $this->widget('InlineEmailForm', array(
 	'attributes' => array(
 		'to' => $to,
@@ -169,7 +158,28 @@ $this->widget('InlineEmailForm', array(
 	'startHidden' => true,
 		)
 );
+
+$this->widget('X2WidgetList', array(
+    'block'=>'center', 
+    'model'=>$model, 
+    'modelType'=>'services'
+)); 
 ?>
+
+<?php $this->widget('Attachments',array('associationType'=>'services','associationId'=>$model->id,'startHidden'=>true)); ?>
+
+<?php
+?>
+<div id="quote-form-wrapper">
+    <?php
+    $this->widget('InlineQuotes', array(
+        'startHidden' => true,
+        'recordId' => $model->id,
+        'contactId' => $model->getLinkedAttribute('contactId', 'id'),
+        'modelName' => X2Model::getModuleModelName ()
+    ));
+    ?>
+</div>
 
 </div>
 <div class="history half-width">

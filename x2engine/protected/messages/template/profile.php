@@ -74,4 +74,7 @@ return array (
 'Theme name already exists or is invalid.'=>'',
 'Theme created successfully.'=>'',
 'Page Header Color'=>'',
+'Edit Profile'=>'',
+'Disable phone field links?'=>'',
+'Disable notifications pop-up?'=>'',
 );

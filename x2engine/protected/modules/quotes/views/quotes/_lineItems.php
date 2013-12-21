@@ -735,7 +735,7 @@ if (YII_DEBUG && $debug) {
         $('#line-items').on (
             'click', '.product-select-button', function (event) {
 
-            x2.quotes.clickedLineItem = $(this).prev ().prev ();
+            x2.quotes.clickedLineItem = $(this).siblings ('.line-item-field');
             $('#product-menu').show ().position ({
                 my: "left top",
                 at: "left bottom",

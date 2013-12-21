@@ -42,6 +42,7 @@ $menuItems = array(
 	array('label'=>Yii::t('accounts','Share Account'),'url'=>array('shareAccount','id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
+    array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
 //	array('label'=>Yii::t('quotes','Quotes/Invoices'),'url'=>'javascript:void(0)','linkOptions'=>array('onclick'=>'x2.inlineQuotes.toggle(); return false;')),
 );
 $modelType = json_encode("Accounts");
@@ -104,10 +105,6 @@ $this->renderPartial('application.components.views._detailView',array('model'=>$
 
 $this->endWidget();
 
-
-$this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'accounts'));
-
-?><?php
 $accountContactsArray = array();
 foreach($model->relatedX2Models as $relatedModel)
 	if($relatedModel instanceof Contacts)
@@ -134,17 +131,19 @@ $this->widget('InlineEmailForm',
 	)
 );
 
+$this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'accounts'));
 
-/* <div id="quote-form-wrapper"><?php
-$this->widget('InlineQuotes',
-	 array(
-		 'startHidden'=>true,
-		 'account'=>$model->name,
-	 )
- );
-?></div> */
 ?>
-
+    <div id="quote-form-wrapper">
+        <?php
+        $this->widget('InlineQuotes', array(
+            'startHidden' => true,
+            'recordId' => $model->id,
+            'account' => $model->name,
+            'modelName' => X2Model::getModuleModelName ()
+        ));
+        ?>
+    </div>
 <?php $this->widget('Attachments',array('associationType'=>'accounts','associationId'=>$model->id,'startHidden'=>true)); ?>
 <?php
 //$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'Accounts'));

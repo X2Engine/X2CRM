@@ -34,12 +34,14 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$this->setPageTitle(Yii::t('workflow', 'Update Process'));
+
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('workflow','All Workflows'), 'url'=>array('index')),
+	array('label'=>Yii::t('workflow','All Processes'), 'url'=>array('index')),
 	array('label'=>Yii::t('app','Create'), 'url'=>array('create')),
 	array('label'=>Yii::t('app','View'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('workflow','Edit Workflow')),
-	array('label'=>Yii::t('workflow','Delete Workflow'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
+	array('label'=>Yii::t('workflow','Edit Process')),
+	array('label'=>Yii::t('workflow','Delete Process'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 ));
 ?>
 <div class="page-title icon workflow">

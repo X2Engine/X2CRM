@@ -1,3 +1,22 @@
+# 3.7 #
+12/20/2013
+* Powerful new all-in-one user home page, featuring:
+  * Re-positionable sections
+  * Accounts, contacts and opportunities grid views
+  * User and event charts
+  * Doc viewer
+  * Users grid displaying active users
+  * Activity feed
+* Inline quotes widget now available in Services, Accounts, Opportunities and custom modules
+* New lighter, cleaner look and feel
+* Case timer: track time spent on service cases and easily publish 
+* New campaign batch emailing method that displays real-time progress
+* "Workflow" module renamed to "Process"
+* Fixed Bugs:  
+  * [541](http://x2software.com/index.php/bugReports/541): Invalid argument supplied for foreach()  
+  * [550](http://x2software.com/index.php/bugReports/550): Invalid argument supplied for foreach()  
+  * [711](http://x2software.com/index.php/bugReports/711): Property "X2Calendar.autoCompleteSource" is not defined. 
+
 # 3.6.3 #
 12/9/2013
 * Fixed Bugs:  

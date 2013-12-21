@@ -68,11 +68,13 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
         <script type="text/javascript">
             $(document).ready(function() {
                 $("a").click(function(event){
-                    event.preventDefault();
-                    var thiswindow = window, i = 0;
-                    while(thiswindow != top && i < 10) {
-                        thiswindow = thiswindow.parent;
-                        i++;
+                    if(!$(this).hasClass('vcr-button')) {
+                        event.preventDefault();
+                        var thiswindow = window, i = 0;
+                        while(thiswindow != top && i < 10) {
+                            thiswindow = thiswindow.parent;
+                            i++;
+                        }
                     }
                     thiswindow.location = this.getAttribute("href");
                 });

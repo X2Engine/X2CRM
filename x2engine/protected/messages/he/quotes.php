@@ -65,4 +65,7 @@ return array (
 'Could not save quote due to line item errors:'=>'לא יכל להציל את הציטוט בשל טעויות פריטי שורה:',
 'Update Quote:'=>'עדכן את ציטוט:',
 'Update Invoice:'=>'עדכן את החשבונית:',
+'Are you sure you want to delete this quote?'=>'האם אתה בטוח שברצונך למחוק את הציטוט הזה?',
+'This quote is locked. Are you sure you want to update this quote?'=>'ציטוט זה נעול. האם אתה בטוח שאתה רוצה לעדכן את הציטוט הזה?',
+'This quote is locked.'=>'ציטוט זה נעול.',
 );

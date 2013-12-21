@@ -65,4 +65,7 @@ return array (
 'Could not save quote due to line item errors:'=>'Impossibile salvare il preventivo a causa di errori di elemento per linea:',
 'Update Quote:'=>'Aggiornare Citazione:',
 'Update Invoice:'=>'Aggiornare fattura:',
+'Are you sure you want to delete this quote?'=>'Sei sicuro di voler cancellare questa citazione?',
+'This quote is locked. Are you sure you want to update this quote?'=>'Questa citazione è bloccato. Sei sicuro che si desidera aggiornare questa citazione?',
+'This quote is locked.'=>'Questa citazione è bloccato.',
 );

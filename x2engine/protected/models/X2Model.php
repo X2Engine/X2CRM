@@ -110,6 +110,24 @@ abstract class X2Model extends CActiveRecord {
     }
 
     /**
+     * Returns model name of module associated with current controller
+     * Precondition: model is an instance of X2Model
+     * @return string model name
+     */
+    public static function getModuleModelName () {
+        return X2Model::getModelName (Yii::app()->controller->module->name);
+    }
+
+    /**
+     * Returns model of module associated with current controller
+     * Precondition: model is an instance of X2Model
+     * @return object model
+     */
+    public static function getModuleModel () {
+        return X2Model::model (X2Model::getModuleModelName ());
+    }
+
+    /**
      * Magic getter for {@link myModelName}
      * @return string
      */
@@ -729,20 +747,8 @@ abstract class X2Model extends CActiveRecord {
                 }
 
             case 'phone':
-                if(empty($this->$fieldName)){
-                    return '';
-                }else{
-                    $phoneCheck = PhoneNumber::model()->findByAttributes(array('modelId' => $this->id, 'modelType' => get_class($this), 'fieldName' => $fieldName));
-                    if(isset($phoneCheck) && strlen($phoneCheck->number) == 10){
-                        $temp = $phoneCheck->number;
-                        $this->$fieldName = "(".substr($temp, 0, 3).") ".substr($temp, 3, 3)."-".substr($temp, 6, 4);
-                        $profile = Yii::app()->params->profile;
-                        if ($makeLinks && !$profile->disablePhoneLinks) {
-                            return '<a href="tel:+1'.$phoneCheck->number.'">'.$this->$fieldName.'</a>';
-                        }
-                    }
-                    return $render($this->$fieldName);
-                }
+                $value = X2Model::getPhoneNumber($fieldName,get_class($this),$this->id);
+                return $render($value);
 
             case 'url':
                 if(!$makeLinks)
@@ -752,7 +758,7 @@ abstract class X2Model extends CActiveRecord {
                     $text = '';
                 }elseif(!empty($field->linkType)){
                     switch($field->linkType){
-                        
+
                         case 'skype':
                             $text = '<a href="callto:'.$render($this->$fieldName).'">'.$render($this->$fieldName).'</a>';
                             break;
@@ -856,14 +862,15 @@ abstract class X2Model extends CActiveRecord {
 
     public static function getPhoneNumber($field, $class, $id){
         $phoneCheck = CActiveRecord::model('PhoneNumber')->findByAttributes(array('modelId' => $id, 'modelType' => $class, 'fieldName' => $field));
-        if(isset($phoneCheck) && strlen($phoneCheck->number) == 10){
+        if(isset($phoneCheck) && strlen($phoneCheck->number) == 10 && strpos($phoneCheck->number, '0') === false && strpos($phoneCheck->number, '1') === false){
             $temp = $phoneCheck->number;
             return "(".substr($temp, 0, 3).") ".substr($temp, 3, 3)."-".substr($temp, 6, 4);
         }else{
             $record = X2Model::model($class)->findByPk($id);
-            if(isset($record))
+            if(isset($record) && $record->hasAttribute($field))
                 return $record->$field;
         }
+        return '';
     }
 
     /**
@@ -1278,9 +1285,11 @@ abstract class X2Model extends CActiveRecord {
     /**
      * Base search function, includes Retrieves a list of models based on the current search/filter conditions.
      * @param CDbCriteria $criteria the attribute name
+     * @param integer $pageSize If set, will override property of profile model
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
-    public function searchBase($criteria){
+    public function searchBase($criteria, $pageSize=null, $uniqueId=null){
+        //AuxLib::debugLogR ($criteria);
         if($criteria === null)
             $criteria = $this->getAccessCriteria();
         else
@@ -1293,18 +1302,27 @@ abstract class X2Model extends CActiveRecord {
             }
         }
         $criteria->with = $with;
-        $sort = new CSort(get_class($this));
+        $sort = new SmartSort (get_class($this));
         $sort->multiSort = false;
         $sort->attributes = $this->getSort();
         $sort->defaultOrder = 't.lastUpdated DESC, t.id DESC';
         $sort->sortVar = get_class($this)."_sort";
+
+        if (!$pageSize) {
+            if (!Yii::app()->user->isGuest) {
+                $pageSize = ProfileChild::getResultsPerPage();
+            } else {
+                $pageSize = 20;
+            }
+        }
+
         $dataProvider = new SmartDataProvider(get_class($this), array(
                     'sort' => $sort,
                     'pagination' => array(
-                        'pageSize' => !Yii::app()->user->isGuest ? ProfileChild::getResultsPerPage() : 20,
+                        'pageSize' => $pageSize,
                     ),
                     'criteria' => $criteria,
-                ));
+                ), $uniqueId);
         $sort->applyOrder($criteria);
         return $dataProvider;
     }

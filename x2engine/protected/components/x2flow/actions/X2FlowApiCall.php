@@ -42,7 +42,7 @@
 class X2FlowApiCall extends X2FlowAction {
 
     public $title = 'Remote API Call';
-    public $info = 'Call a remote API by requesting the specified URL. You can specify the request type and any variables to be passed with the request. To improve performance, he request will be put into a job queue unless you need it to execute immediately.';
+    public $info = 'Call a remote API by requesting the specified URL. You can specify the request type and any variables to be passed with the request. To improve performance, the request will be put into a job queue unless you need it to execute immediately.';
 
     public function paramRules(){
         $httpVerbs = array(

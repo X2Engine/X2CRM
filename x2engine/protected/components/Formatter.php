@@ -121,7 +121,7 @@ class Formatter {
 
     /**
      * Formats a time interval.
-     * 
+     *
      * @param integer $start Beginning of the interval
      * @param integer $duration Length of the interval
      */
@@ -404,19 +404,20 @@ class Formatter {
         }
         // Pattern will match {attr}, {attr1.attr2}, {attr1.attr2.attr3}, etc.
         preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
-        if(isset($matches[0])){
+        if(!empty($matches[0])){
             foreach($matches[0] as $match){
                 $match = substr($match, 1, -1); // Remove the "{" and "}" characters
                 $attr = $match;
                 if(strpos($match, '.') !== false){ // We found a link attribute (i.e. {company.name})
+                    $newModel = $model;
                     $pieces = explode('.',$match);
                     $first = array_shift($pieces);
-                    $tmpModel = Formatter::parseShortCode($first, $model); // First check if the first piece is part of a short code, like "user"
+                    $tmpModel = Formatter::parseShortCode($first, $newModel); // First check if the first piece is part of a short code, like "user"
                     if(isset($tmpModel) && $tmpModel instanceof CActiveRecord){
-                        $model = $tmpModel; // If we got a model from our short code, use that
+                        $newModel = $tmpModel; // If we got a model from our short code, use that
                         $attr = implode('.',$pieces); // Also, set the attribute to have the first item removed.
                     }
-                    $value = preg_replace('/{'.$match.'}/i', $model->getAttribute($attr, $renderFlag), $value); // Replaced the matched value with the attribute
+                    $value = preg_replace('/{'.$match.'}/i', $newModel->getAttribute($attr, $renderFlag), $value); // Replaced the matched value with the attribute
                 }else{ // Standard attribute
                     if(isset($params[$match])){ // First check if we provided a value for this attribute
                         $value = $params[$match];
@@ -430,8 +431,8 @@ class Formatter {
                     }
                 }
             }
-            return $value;
         }
+        return $value;
     }
 
     /**

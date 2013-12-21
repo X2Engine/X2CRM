@@ -34,13 +34,13 @@
  *****************************************************************************************/
 
 #widget_MediaBox .media-item a, 
-#x2-tag-list .tag a {
+.x2-tag-list .tag a {
 	text-decoration: none;
 	color: black;
 }
 
 #widget_MediaBox .media-item, 
-#x2-tag-list .tag {
+.x2-tag-list .tag {
 	-moz-border-radius: 		4px;
 	-o-border-radius: 		4px;
 	-webkit-border-radius: 	4px;
@@ -60,7 +60,7 @@
 }
 
 /* placeholder text */
-#x2-tag-list .tag-container-placeholder {
+.x2-tag-list .tag-container-placeholder {
     color: rgb(117,117,117);
 }
 

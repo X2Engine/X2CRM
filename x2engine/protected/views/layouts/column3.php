@@ -47,6 +47,7 @@ Yii::app()->clientScript->registerScript('logos',base64_decode(
 
 <!--<div id="sidebar-left">-->
     <!-- sidebar -->
+    <div id='sidebar-left-widget-box'>
     <?php
 
         $echoedFirstSideBarLeft = false;
@@ -82,7 +83,10 @@ Yii::app()->clientScript->registerScript('logos',base64_decode(
         if(isset($this->modelClass) &&
            ($this->modelClass == 'Services' || $this->modelClass == 'Actions' ||
             $this->modelClass == 'BugReports' || $this->modelClass == 'X2Calendar' ||
-            ($this->id=='site' && $this->action->id=='whatsNew'))) {
+            ($this->id=='profile' && $this->action->id=='view' && 
+             (!(isset ($_GET['publicProfile']) && $_GET['publicProfile']) && 
+              $_GET['id'] == Yii::app()->params->profile->id)))) {
+
             echoFirstSideBarLeft ($echoedFirstSideBarLeft);
             $this->renderPartial ('_sidebarLeftExtraContent');
         }
@@ -133,6 +137,7 @@ Yii::app()->clientScript->registerScript('logos',base64_decode(
         ');
         ?>
         </div>
+    </div>
 <!--</div>-->
 <!--</div>-->
 <div id="flexible-content">

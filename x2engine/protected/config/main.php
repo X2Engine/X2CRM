@@ -270,6 +270,11 @@ $config = array(
         // 'clientScript'=>array(
         // 'class' => 'X2ClientScript',
         // ),
+        'clientScript'=>array(
+            'class' => 'application.extensions.NLSClientScript',
+            'mergeJs' => false,
+            'mergeCss' => false,
+        ),
         'errorHandler' => array(
             // use 'site/error' action to display errors
             'errorAction' => '/site/error',
