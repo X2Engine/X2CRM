@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,31 +34,15 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$menuItems = array(
-	array('label'=>Yii::t('docs','List Docs'),'url'=>array('index')),
-	array('label'=>Yii::t('docs','Create Doc'),'url'=>array('create')),
-	array('label'=>Yii::t('docs','Create Email'),'url'=>array('createEmail')),
-	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
-);
+if($this->action->id == 'createEmail'){
+    $title = Yii::t('docs', 'Create Email Template');
+}else if($this->action->id == 'createQuote'){
+    $title = Yii::t('docs', 'Create Quote Template');
+}else{
+    $title = Yii::t('docs', 'Create Document');
+}
 
-?>
-<div class="page-title icon docs"><h2><?php
-	if($this->action->id=='createEmail') {
-		unset($menuItems[2]['url']);
-		echo Yii::t('docs','Create Email Template');
-	} else if($this->action->id == 'createQuote') {
-		unset($menuItems[3]['url']);
-		echo Yii::t('docs','Create Quote');
-	} else {
-		unset($menuItems[1]['url']);
-		echo Yii::t('docs','Create Document');
-	}
-
-	?></h2>
-</div>
-
-<?php
-$this->actionMenu = $this->formatMenu($menuItems);
+$this->renderPartial('_docPageHeader',compact('title','model'));
 
 echo $this->renderPartial('_form', array('model'=>$model,'users'=>$users));
 

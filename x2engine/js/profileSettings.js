@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -103,13 +103,13 @@ function deleteSound(sound, id){
 change the background image
 */
 function setBackground(filename) {
-		if(filename=='') {
-				$('body').css('background-image','none').removeClass("no-borders");
-		} else {
-			$('body').css('background-image','url('+yii.baseUrl+'/uploads/'+filename+')').
-                toggleClass("no-borders",($('#backgroundTiling').val() === 'stretch'));
-			$(window).trigger('resize');
-		}
+    if(filename=='') {
+            $('body').css('background-image','none').removeClass("no-borders");
+    } else {
+        $('body').css('background-image','url("'+yii.baseUrl+'/uploads/'+filename+'")').
+            toggleClass("no-borders",($('#backgroundTiling').val() === 'stretch'));
+        $(window).trigger('resize');
+    }
 }
 
 function deleteBackground(id,filename) {

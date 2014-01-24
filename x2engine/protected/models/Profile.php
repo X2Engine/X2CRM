@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -153,7 +153,7 @@ class Profile extends CActiveRecord {
             array('googleId', 'unique'),
             array('fullName', 'length', 'max' => 60),
             array('username, updatedBy', 'length', 'max' => 20),
-            array('officePhone, cellPhone, language', 'length', 'max' => 40),
+            array('officePhone, extension, cellPhone, language', 'length', 'max' => 40),
             array('timeZone', 'length', 'max' => 100),
             array('widgets, tagLine, emailAddress', 'length', 'max' => 255),
             array('widgetOrder', 'length', 'max' => 512),
@@ -161,7 +161,7 @@ class Profile extends CActiveRecord {
             array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, fullName, username, officePhone, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on' => 'search')
+            array('id, fullName, username, officePhone, extension, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on' => 'search')
         );
     }
 
@@ -183,6 +183,7 @@ class Profile extends CActiveRecord {
             'fullName' => Yii::t('profile', 'Full Name'),
             'username' => Yii::t('profile', 'Username'),
             'officePhone' => Yii::t('profile', 'Office Phone'),
+            'extension' => Yii::t('profile','Extension'),
             'cellPhone' => Yii::t('profile', 'Cell Phone'),
             'emailAddress' => Yii::t('profile', 'Email Address'),
             'notes' => Yii::t('profile', 'Notes'),
@@ -227,10 +228,44 @@ class Profile extends CActiveRecord {
     }
 
     /**
+     * Masks method in X2SmartSearchModelBehavior. Enables sorting by lastLogin and isActive.
+     */
+    public function getSort () {
+        $attributes = array();
+        foreach($this->owner->attributes as $name => $val) {
+            $attributes[$name] = array(
+                'asc' => 't.'.$name.' ASC',
+                'desc' => 't.'.$name.' DESC',
+            );
+        }
+        $attributes['lastLogin'] = array (
+            'asc' => '(SELECT lastLogin from x2_users '.
+                'WHERE x2_users.username=t.username) ASC',
+            'desc' => '(SELECT lastLogin from x2_users '.
+                'WHERE x2_users.username=t.username) DESC',
+        );
+        $attributes['isActive'] = array (
+            'asc' => 
+                '(SELECT DISTINCT user '.
+                    'FROM x2_sessions '.
+                    'WHERE t.username=x2_sessions.user AND '.
+                        'x2_sessions.lastUpdated > '.(time () - 900).
+                ') DESC ',
+            'desc' => 
+                '(SELECT DISTINCT user '.
+                    'FROM x2_sessions '.
+                    'WHERE t.username=x2_sessions.user AND '.
+                        'x2_sessions.lastUpdated > '.(time () - 900).
+                ') ASC',
+        );
+        return $attributes;
+    }
+
+    /**
      * Retrieves a list of models based on the current search/filter conditions.
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
-    public function search($resultsPerPage=null, $uniqueId=null){
+    public function search($resultsPerPage=null, $uniqueId=null, $excludeAPI=false){
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
 
@@ -266,6 +301,14 @@ class Profile extends CActiveRecord {
                     'username not in (select x2_sessions.user from x2_sessions as x2_sessions)';
             }
         } 
+
+        if ($excludeAPI) {
+            if ($criteria->condition !== '') {
+                $criteria->condition .= ' AND username!=\'API\'';
+            } else { 
+                $criteria->condition = 'username!=\'API\'';
+            }
+        }
 
         return $this->smartSearch ($criteria, $resultsPerPage, $uniqueId);
     }
@@ -1048,4 +1091,7 @@ class Profile extends CActiveRecord {
         }
     }
 
+    public function getLastLogin () {
+        return $this->user['lastLogin'];
+    }
 }

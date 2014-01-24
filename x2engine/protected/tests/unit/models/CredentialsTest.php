@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -74,8 +74,8 @@ class CredentialsTest extends X2DbTestCase {
         $this->assertEquals('smtp.rep.com',$cred->auth->server, "server not preserved");
         $this->assertEquals('12345luggage',$cred->auth->password, "password not preserved");
         $default = Credentials::model()->findDefault($this->users('testUser')->id,'email');
-        $this->assertEquals(2,$default->id);
-        $this->assertEquals('Sales Rep\'s 1st GMail Account',$default->name);
+        $this->assertEquals(4,$default->id);
+        $this->assertEquals('Sales Rep\'s Backup Email Account',$default->name);
         // As a bonus: test the magic getters. No assertions really necessary or
         // practical to have here because we'd have to declare things in two
         // separate places. We just call to see if an exception is thrown.

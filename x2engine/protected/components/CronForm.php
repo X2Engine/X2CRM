@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,10 +39,17 @@
  * Widget-ized wrapper methods for rendering cron forms and processing input.
  *
  * @property array $jobTags Array of cron line tags for which to generate the form.
+ * @property array $displayCmds Array of commands for display purposes only.
  * @package X2CRM.components
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class CronForm extends X2Widget {
+
+    /**
+     * Array of commands for display purposes only
+     * @var array
+     */
+    private $_displayCmds;
 
     /**
      * Stores the value of {@link jobTags}
@@ -149,6 +156,16 @@ class CronForm extends X2Widget {
         }catch(Exception $e){
             $this->execute = false;
         }
+    }
+
+    public function getDisplayCmds() {
+        if(!isset($this->_displayCmds)) {
+            $this->_displayCmds = array();
+            foreach($this->jobs as $tag => $attributes) {
+                $this->_displayCmds[$tag] = isset($attributes['cmd']) ? $attributes['cmd'] : '';
+            }
+        }
+        return $this->_displayCmds;
     }
 
     /**
@@ -275,6 +292,7 @@ $(".cron-enabled").each(function() {
             $jobSections[] = $this->render('application.components.views.cronJobForm', array_merge($viewData, array(
                         'userCmd' => $this->allowUserCmdInput,
                         'cmd' => $this->formData[$tag]['cmd'],
+                        'displayCmd' => isset($this->displayCmds[$tag])?$this->displayCmds[$tag]:'',
                         'enabled' => $enabled,
                         'labelClass' => $this->labelCssClass,
                         'name' => $this->name,
@@ -283,6 +301,10 @@ $(".cron-enabled").each(function() {
                     )),true);
         }
         echo implode($this->jobSeparator,$jobSections);
+    }
+
+    public function setDisplayCmds(array $value) {
+        $this->_displayCmds = $value;
     }
 
     /**

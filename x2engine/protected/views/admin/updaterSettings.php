@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -85,8 +85,15 @@
         //////////////////////////////////////////////////
         // Auto-updater cron job schedule form elements //
         //////////////////////////////////////////////////
+        ?>
+                    <h3><?php echo Yii::t('admin','Disclaimer'); ?></h3>
+        <p><?php echo Yii::t('admin','Using this form may interfere with third-party cron table managers.')
+                .'&nbsp;'.Yii::t('admin','If you are not using X2CRM Cloud / On Demand, and your hosting service provides a scheduled tasks manager, it is recommended that you use that instead, with the commands as listed here.'); ?></p>
+
+            <?php
         $this->widget('CronForm',array(
             'formData' => $_POST,
+            'displayCmds' => $displayCmds,
             'jobs' => array(
                 'app_update' => array(
                     'title' => Yii::t('admin', 'Update Automatically'),

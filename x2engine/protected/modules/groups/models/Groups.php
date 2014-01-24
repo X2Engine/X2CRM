@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -98,9 +98,10 @@ class Groups extends X2Model {
 	 * @return array relational rules.
 	 */
 	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
+            'users' => array (
+                self::MANY_MANY, 'User', 'x2_group_to_user(groupId, userId)'
+            ),
 		);
 	}
 
@@ -141,15 +142,34 @@ class Groups extends X2Model {
 		));
 	}
 
-	/* inGroup
-	 *
+    /**
+     * @return bool True if group has online users, false otherwise 
+     */
+    public function hasOnlineUsers () {
+        return count ($this->getOnlineUsers ()) > 0;
+    }
+
+    /**
+     * @return <array of objects> An array of user models where each user has an active session
+     */
+    public function getOnlineUsers () {
+        $users = $this->users;
+		$onlineUserUsernames = Session::getOnlineUsers();
+        $onlineUsers = array_filter ($users, function ($a) use ($onlineUserUsernames) {
+            return in_array ($a['username'], $onlineUserUsernames);
+        });
+        return $onlineUsers;
+    }
+
+	/**
 	 * Find out if a user belongs to a group
 	 */
 	public static function inGroup($userId, $groupId) {
 		return GroupToUser::model()->exists("userId=$userId AND groupId=$groupId");
 	}
 
-	/* Looks up groups to which the specified user belongs.
+	/** 
+     * Looks up groups to which the specified user belongs.
 	 * Uses cache to lookup/store groups.
 	 *
 	 * @param Integer $userId user to look up groups for

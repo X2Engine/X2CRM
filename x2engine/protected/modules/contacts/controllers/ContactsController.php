@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -168,22 +168,39 @@ class ContactsController extends x2base {
              */
             if($contact->dupeCheck != '1' && !empty($contact->firstName) && !empty($contact->lastName)){
                 $criteria = new CDbCriteria();
-                $criteria->compare('CONCAT(firstName," ",lastName)', $contact->firstName." ".$contact->lastName, false, "OR");
+                $criteria->compare(
+                    'CONCAT(firstName," ",lastName)', $contact->firstName." ".$contact->lastName, false, "OR");
+
                 if(!empty($contact->email))
                     $criteria->compare('email', $contact->email, false, "OR");
+
                 $criteria->compare('id', "<>".$contact->id, false, "AND");
+
                 if(!Yii::app()->user->checkAccess('ContactsAdminAccess')){
-                    $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+                    $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0") '.
+                        'OR assignedTo="'.Yii::app()->user->getName().'"';
                     /* x2temp */
-                    $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+                    $groupLinks = Yii::app()->db->createCommand()
+                        ->select('groupId')
+                        ->from('x2_group_to_user')
+                        ->where('userId='.Yii::app()->user->getId())
+                        ->queryColumn();
+
                     if(!empty($groupLinks))
                         $condition .= ' OR assignedTo IN ('.implode(',', $groupLinks).')';
 
-                    $condition .= 'OR (visibility=2 AND assignedTo IN
-                        (SELECT username FROM x2_group_to_user WHERE groupId IN
-                            (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                    $condition .= 'OR ('.
+                        'visibility=2 AND assignedTo IN ('.
+                            'SELECT username '.
+                            'FROM x2_group_to_user '.
+                            'WHERE groupId IN ('.
+                                'SELECT groupId '.
+                                'FROM x2_group_to_user '.
+                                'WHERE userId='.Yii::app()->user->getId().')))';
+
                     $criteria->addCondition($condition);
                 }
+
                 $count = X2Model::model('Contacts')->count($criteria);
                 if(!isset($_GET['showAll']) || $_GET['showAll'] != 'true')
                     $criteria->limit = 5;
@@ -836,7 +853,6 @@ class ContactsController extends x2base {
         $name = 'Contacts';
         $renderFlag = true;
         $users = User::getNames();
-        $accounts = Accounts::getNames();
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
@@ -947,8 +963,6 @@ class ContactsController extends x2base {
         if($renderFlag){
 
             if(isset($_POST['x2ajax'])){
-                Yii::app()->clientScript->scriptMap['*.js'] = false;
-                Yii::app()->clientScript->scriptMap['*.css'] = false;
                 if(isset($x2ajaxCreateError) && $x2ajaxCreateError == true){
                     $page = $this->renderPartial('application.components.views._form', array('model' => $model, 'users' => $users, 'modelName' => 'contacts'), true, true);
                     echo json_encode(
@@ -964,7 +978,6 @@ class ContactsController extends x2base {
                 $this->render('create', array(
                     'model' => $model,
                     'users' => $users,
-                    'accounts' => $accounts,
                 ));
             }
         }
@@ -1096,7 +1109,6 @@ class ContactsController extends x2base {
         $model = $this->loadModel($id);
         $users = User::getNames();
         $renderFlag = true;
-        $accounts = Accounts::getNames();
 
         if(isset($_POST['Contacts'])){
             $oldAttributes = $model->attributes;
@@ -1174,7 +1186,6 @@ class ContactsController extends x2base {
                 $this->render('update', array(
                     'model' => $model,
                     'users' => $users,
-                    'accounts' => $accounts,
                 ));
             }
         }
@@ -1825,14 +1836,21 @@ class ContactsController extends x2base {
             $temp = CUploadedFile::getInstanceByName('contacts');
             $temp->saveAs('contacts.csv');
             ini_set('auto_detect_line_endings', 1); // Account for Mac based CSVs if possible
-            $fp = fopen('contacts.csv', 'r+');
+            if(file_exists('contacts.csv'))
+                $fp = fopen('contacts.csv', 'r+');
+            else
+                throw new Exception('There was an error saving the contacts file.');
             $meta = fgetcsv($fp);
+            if($meta === false)
+                throw new Exception('There was an error parsing the contents of the CSV.');
             while("" === end($meta)){
                 array_pop($meta); // Remove empty data from the end of the metadata
             }
             if(count($meta) == 1){ // This was from a global export CSV, the first row is the version
                 $version = $meta[0]; // Remove it and repeat the above process
                 $meta = fgetcsv($fp);
+                if($meta === false)
+                    throw new Exception('There was an error parsing the contents of the CSV.');
                 while("" === end($meta)){
                     array_pop($meta);
                 }

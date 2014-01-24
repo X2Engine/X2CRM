@@ -5,7 +5,7 @@ return array_merge($customCreds,array(
 	'testUser' => array(
 		'id' => '1',
 		'name' => 'Sales Rep\'s Email Account',
-		'userId' => '12345',
+		'userId' => '2',
 		'private' => '1',
 		'isEncrypted' => 1,
 		'modelClass' => 'EmailAccount',
@@ -16,7 +16,7 @@ return array_merge($customCreds,array(
 	'gmail1' => array(
 		'id' => '2',
 		'name' => 'Sales Rep\'s 1st GMail Account',
-		'userId' => '12345',
+		'userId' => '2',
 		'private' => '1',
 		'isEncrypted' => 1,
 		'modelClass' => 'GMailAccount',
@@ -27,7 +27,18 @@ return array_merge($customCreds,array(
 	'gmail2' => array(
 		'id' => '3',
 		'name' => 'Sales Rep\'s 2nd GMail Account',
-		'userId' => '12345',
+		'userId' => '2',
+		'private' => '1',
+		'isEncrypted' => 1,
+		'modelClass' => 'GMailAccount',
+		'createDate' => NULL,
+		'lastUpdated' => NULL,
+		'auth' => 'DjFnHn8VbWx0qEWmDeEfV4zECPDOEZA27vMtNKxgw/gPDU43IhOgEPVozjUZXw1qNWZsxw3+0dV5wGkyRsXnVbqh7ik7/D0J0sNJCyHmB/Gnrna4IRiLnpbEqGChcbw2',
+	),
+	'backupUser' => array(
+		'id' => '4',
+		'name' => 'Sales Rep\'s Backup Email Account',
+		'userId' => '2',
 		'private' => '1',
 		'isEncrypted' => 1,
 		'modelClass' => 'GMailAccount',

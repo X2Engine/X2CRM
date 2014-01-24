@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,55 +34,142 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::app()->clientScript->registerScript('uploadExtensionCheck', "
-var illegal_ext = ['exe','bat','dmg','js','jar','swf','php','pl','cgi','htaccess','py'];	// array with disallowed extensions
+$script = "
+x2.attachments = (function () {
 
-function checkName(el, sbm) {
+function X2Attachments (argsDict) {
+    argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+
+    // array with disallowed extensions
+    this._illegal_ext = ['exe','bat','dmg','js','jar','swf','php','pl','cgi','htaccess','py'];	
+    this._fileIsUploaded = false;
+    this._submitButtonSelector = '#submitAttach';
+}
+
+/**
+ * @return bool True if a file with a valid extension has been uploaded, false otherwise
+ */
+X2Attachments.prototype.fileIsUploaded = function () {
+    return this._fileIsUploaded;
+};
+
+X2Attachments.prototype.checkName = function (evt) {
+    var elem = evt.target;
+
+    var re = this.checkFileName (evt);
+
+	// if re is 1, the extension isn't illegal
+	if (re) {
+		// enable submit
+        this._fileIsUploaded = true;
+		$(this._submitButtonSelector).removeAttr('disabled');
+	} else {
+        this._fileIsUploaded = false;
+		// delete the file name, disable Submit, Alert message
+		elem.value = '';
+		$(this._submitButtonSelector).attr('disabled','disabled');
+
+		var filenameError = ".json_encode(Yii::t('app', '"{X}" is not an allowed filetype.')).";
+		alert(filenameError.replace('{X}',ar_ext));
+	}
+};
+
+X2Attachments.prototype.checkFileName = function (evt) {
+    var elem = evt.target;
+
 	// - www.coursesweb.net
 	// get the file name and split it to separe the extension
-	var name = el.value;
+	var name = elem.value;
 	var ar_name = name.split('.');
 
-	ar_ext = ar_name[ar_name.length - 1].toLowerCase();
+	var ar_ext = ar_name[ar_name.length - 1].toLowerCase();
 
 	// check the file extension
 	var re = 1;
-	for(var i in illegal_ext) {
-		if(illegal_ext[i] == ar_ext) {
+	for(var i in this._illegal_ext) {
+		if(this._illegal_ext[i] == ar_ext) {
 			re = 0;
 			break;
 		}
 	}
 
-	// if re is 1, the extension isn't illegal
-	if(re==1) {
-		// enable submit
-		$(sbm).removeAttr('disabled');
-	}
-	else {
-		// delete the file name, disable Submit, Alert message
-		el.value = '';
-		$(sbm).attr('disabled','disabled');
+    return re === 1;
+};
 
-		var filenameError = ".json_encode(Yii::t('app', '"{X}" is not an allowed filetype.')).";
-		alert(filenameError.replace('{X}',ar_ext));
-	}
+return new X2Attachments ();
+
+}) (); ";
+
+if (!$mobile) {
+    Yii::app()->clientScript->registerScript(
+        'uploadExtensionCheck', $script, CClientScript::POS_HEAD);
+} else {
+?>
+<script>
+<?php
+echo $script;
+?>
+</script>
+<?php
 }
-", CClientScript::POS_HEAD);
 ?>
 <div id="attachment-form-top"></div>
 <div id="attachment-form"<?php if($startHidden) echo ' style="display:none;"'; ?>>
     <div class="form">
+        <?php
+        if (!$mobile) {
+        ?>
         <b><?php echo Yii::t('app', 'Attach a File'); ?></b><br />
         <?php
-        echo CHtml::form(array('/site/upload'), 'post', array('enctype' => 'multipart/form-data', 'id' => 'attachment-form-form'));
+        }
+        echo CHtml::form(
+            array('/site/upload'), 'post', 
+            array(
+                'enctype' => 'multipart/form-data', 'id' => 'attachment-form-form'
+            )
+        );
         echo "<div class='row'>";
         echo CHtml::hiddenField('associationType', $this->associationType);
         echo CHtml::hiddenField('associationId', $this->associationId);
         echo CHtml::hiddenField('attachmentText', '');
-        echo CHtml::dropDownList('private', 'public', array('0' => Yii::t('actions', 'Public'), '1' => Yii::t('actions', 'Private')));
-        echo CHtml::fileField('upload', '', array('id' => 'upload', 'onchange' => "checkName(this, '#submitAttach')"));
-        echo CHtml::submitButton(Yii::t('app','Submit'), array('id' => 'submitAttach', 'disabled' => 'disabled', 'class' => 'x2-button', 'style' => 'display:inline'));
+        if (isset ($profileId))
+            echo CHtml::hiddenField('profileId', $profileId);
+        $visibilityHtmlAttrs = array ();
+        if ($mobile)
+            $visibilityHtmlAttrs['data-mini'] = 'true';
+        echo CHtml::dropDownList(
+            'private', 'public', 
+            array(
+                '0' => Yii::t('actions', 'Public'), 
+                '1' => Yii::t('actions', 'Private')
+            ),
+            $visibilityHtmlAttrs
+        );
+        $fileFieldHtmlAttrs = array (
+            'id' => 'upload', 
+            'onchange' => "x2.attachments.checkName(event)"
+        );
+        if ($mobile) {
+            $fileFieldHtmlAttrs['data-inline'] = 'true';
+            $fileFieldHtmlAttrs['data-mini'] = 'true';
+        }
+        echo CHtml::fileField(
+            'upload', '', $fileFieldHtmlAttrs
+        );
+        if ($mobile) 
+            echo '<div style="display:none;">';
+        echo CHtml::submitButton(
+            Yii::t('app','Submit'), 
+            array(
+                'id' => 'submitAttach', 'disabled' => 'disabled', 'class' => 'x2-button',
+                'style' => 'display:inline'
+            )
+        );
+        if ($mobile) 
+            echo "</div>";
         echo "</div>";
         if(Yii::app()->params->admin->googleIntegration){
             $auth = new GoogleAuthenticator();

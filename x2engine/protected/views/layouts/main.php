@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -62,145 +62,14 @@ if(is_int(Yii::app()->locked)) {
 }
 
 
-$baseUrl = Yii::app()->getBaseUrl();
-$scriptUrl = Yii::app()->request->scriptUrl;
-$themeUrl = Yii::app()->theme->getBaseUrl();
-$admin = Yii::app()->params->admin;
-$profile = Yii::app()->params->profile;
-
 $cs = Yii::app()->clientScript;
-$jsVersion = '?'.Yii::app()->params->buildDate;
-
-// jQuery and jQuery UI libraries
-$cs ->registerCoreScript('jquery')
-	->registerCoreScript('jquery.ui');
-
-// Declare currency format(s) from Yii for the formatCurrency plugin
-$locale = Yii::app()->locale;
-$cldFormat = array();
-foreach(explode(';',$locale->getCurrencyFormat()) as $format) {
-	$newFormat = preg_replace('/¤/','%s',$format);
-	$newFormat = preg_replace('/[#,\.0]+/','%n',$newFormat); // The number, in positive/negative
-	$cldFormat[] = $newFormat;
-}
-if(count($cldFormat) == 1) { // Default convention if no negative format is defined
-	$cldFormat[] = $locale->getNumberSymbol('minusSign').$cldFormat[0];
-}
-$decSym = $locale->getNumberSymbol('decimal');
-$grpSym = $locale->getNumberSymbol('group');
-// Declare:
-$cldScript = '(function($) {'."\n";
-foreach(Yii::app()->params->supportedCurrencySymbols as $curCode=>$curSym) {
-	$cldScript .= '$.formatCurrency.regions["'.$curCode.'"] = '.CJSON::encode(array(
-		'symbol' => $curSym,
-		'positiveFormat' => $cldFormat[0],
-		'negativeFormat' => $cldFormat[1],
-		'decimalSymbol' => $decSym,
-		'digitGroupSymbol' => $grpSym,
-		'groupDigits' => true
-	)).";\n";
-}
-$cldScript .= "\n})(jQuery);";
-
-AuxLib::registerPassVarsToClientScriptScript ('auxlib',
-    array (
-        'saveMiscLayoutSettingUrl' => 
-            "'".addslashes (Yii::app()->createUrl ('/profile/saveMiscLayoutSetting'))."'" 
-    ), 'passAuxLibVars'
-);
-
-// custom scripts
-$cs ->registerScriptFile($baseUrl.'/js/json2.js')
-    ->registerScriptFile($baseUrl.'/js/main.js'.$jsVersion, CCLientScript::POS_HEAD)
-	->registerScriptFile($baseUrl.'/js/auxlib.js', CClientScript::POS_HEAD)
-	->registerScriptFile($baseUrl.'/js/LayoutManager.js')
-	->registerScriptFile($baseUrl.'/js/publisher.js')
-	->registerScriptFile($baseUrl.'/js/media.js')
-	->registerScriptFile($baseUrl.'/js/x2forms.js')
-	->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js'.$jsVersion)
-	->registerScript('formatCurrency-locales',$cldScript,CCLientScript::POS_HEAD)
-	->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js')
-	->registerScriptFile($baseUrl.'/js/relationships.js')
-	->registerScriptFile($baseUrl.'/js/widgets.js')
-	->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion)
-    ->registerScriptFile($baseUrl.'/js/actionFrames.js'.$jsVersion)
-	->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js')
-	->registerScriptFile($baseUrl.'/js/checklistDropdown/jquery.multiselect.js');
-
-if (IS_IPAD) {
-    $cs->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
-}
-    //$cs->registerScriptFile($baseUrl.'/js/jquery.mobile-1.3.2.js');
-
-if(Yii::app()->session['translate'])
-    $cs->registerScriptFile($baseUrl.'/js/translator.js');
-
-$cs->registerScriptFile($baseUrl.'/js/backgroundFade.js');
-$cs->registerScript('datepickerLanguage', "
-    $.datepicker.setDefaults( $.datepicker.regional[ '' ] );
-");
-// $cs ->registerScriptFile($baseUrl.'/js/backgroundImage.js');
-// MoneyMask extension:
-$mmPath = Yii::getPathOfAlias('application.extensions.moneymask.assets');
-$aMmPath = Yii::app()->getAssetManager()->publish($mmPath);
-$cs->registerScriptFile("$aMmPath/jquery.maskMoney.js");
-//$cs->registerCoreScript('jquery');
-
-// blueprint CSS framework
-$cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
-	->registerCssFile($themeUrl.'/css/print.css'.$jsVersion,'print')
-	/*->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/auxlib.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/jquery-ui.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/dragtable.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/main.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/combined.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/ui-elements.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/layout.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/details.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection')
-	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection')*/
-	->registerCssFile($themeUrl.'/css/combined.css'.$jsVersion,'screen, projection')
-	//->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection')
-    ->registerCoreScript('cookie');
-// $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion);
-
-//$cs->registerCssFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.css');
-
-if (IS_ANDROID)
-	$cs->registerCssFile($themeUrl.'/css/androidLayout.css'.$jsVersion,'screen, projection');
-else if (IS_IPAD)
-	$cs->registerCssFile($themeUrl.'/css/ipadLayout.css'.$jsVersion,'screen, projection');
-
-$fullscreen = Yii::app()->user->isGuest || $profile->fullscreen;
-
-$cs->registerScript('fullscreenToggle', '
-window.enableFullWidth = '.(!Yii::app()->user->isGuest ? ($profile->enableFullWidth ? 'true' : 'false') : 'true').';
-window.fullscreen = '.($fullscreen ? 'true' : 'false').';
-', CClientScript::POS_HEAD);
-
-if (is_object (Yii::app()->controller->module)) {
-    $cs->registerScript ('saveCurrModule', "
-        x2.currModule = '".Yii::app()->controller->module->name."';
-    ", CClientScript::POS_HEAD);
-}
-
-if(!$isGuest){
-    $cs->registerScript ('notificationsParams', "
-        x2.notifications = new x2.Notifs ({ 
-            disablePopup: ".($profile->disableNotifPopup ? 'true' : 'false').",
-            translations: {
-                clearAll: 
-                    '".addslashes (Yii::t('app', 'Permanently delete all notifications?'))."'
-            }
-        });
-    ", CClientScript::POS_READY);
-    $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
-       ->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion, CClientScript::POS_BEGIN);
-}
-
-if(!$isGuest && ($profile->language == 'he' || $profile->language == 'fa'))
-    $cs->registerCss('rtl-language', 'body{text-align:right;}');
+$baseUrl = $cs->baseUrl;
+$scriptUrl = $cs->scriptUrl;
+$themeUrl = $cs->themeUrl;
+$admin = $cs->admin;
+$profile = $cs->profile;
+$fullscreen = $cs->fullscreen;
+$cs->registerMain();
 
 $backgroundImg = '';
 $defaultOpacity = 1;

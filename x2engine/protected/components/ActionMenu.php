@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -56,7 +56,7 @@ class ActionMenu extends X2Widget {
 
 		$unfinished = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No'),'type="" OR type IS NULL');
 
-		$overdue = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No'),'dueDate < '.time().' AND type="" OR type IS NULL');
+		$overdue = Actions::model()->countByAttributes(array('assignedTo' => Yii::app()->user->getName(), 'complete' => 'No'),'dueDate < '.time().' AND (type="" OR type IS NULL)');
 
 		$complete = Actions::model()->countByAttributes(array('completedBy' => Yii::app()->user->getName(), 'complete' => 'Yes'),'type="" OR type IS NULL');
 

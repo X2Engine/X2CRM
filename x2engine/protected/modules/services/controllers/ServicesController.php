@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -94,10 +94,10 @@ class ServicesController extends x2base {
 
     public function behaviors(){
         return array_merge(parent::behaviors(), array(
-                    'ServiceRoutingBehavior' => array(
-                        'class' => 'ServiceRoutingBehavior'
-                    )
-                ));
+            'ServiceRoutingBehavior' => array(
+                'class' => 'ServiceRoutingBehavior'
+            )
+        ));
     }
 
     /**
@@ -352,7 +352,8 @@ class ServicesController extends x2base {
     }
 
     public function actionGetItems(){
-        $sql = 'SELECT id as value FROM x2_services WHERE id LIKE :qterm ORDER BY id ASC';
+        // We need to select the id both as 'id' and 'value' in order to correctly populate the association form.
+        $sql = 'SELECT id, id as value FROM x2_services WHERE id LIKE :qterm ORDER BY id ASC';
         $command = Yii::app()->db->createCommand($sql);
         $qterm = $_GET['term'].'%';
         $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
@@ -410,77 +411,4 @@ class ServicesController extends x2base {
             Yii::app()->params->profile->update(array('hideCasesWithStatus'));
         }
     }
-
-    public function getDateRange(){
-
-        $dateRange = array();
-        $dateRange['strict'] = false;
-        if(isset($_GET['strict']) && $_GET['strict'])
-            $dateRange['strict'] = true;
-
-        $dateRange['range'] = 'custom';
-        if(isset($_GET['range']))
-            $dateRange['range'] = $_GET['range'];
-
-        switch($dateRange['range']){
-
-            case 'thisWeek':
-                $dateRange['start'] = strtotime('mon this week'); // first of this month
-                $dateRange['end'] = time(); // now
-                break;
-            case 'thisMonth':
-                $dateRange['start'] = mktime(0, 0, 0, date('n'), 1); // first of this month
-                $dateRange['end'] = time(); // now
-                break;
-            case 'lastWeek':
-                $dateRange['start'] = strtotime('mon last week'); // first of last month
-                $dateRange['end'] = strtotime('mon this week') - 1;  // first of this month
-                break;
-            case 'lastMonth':
-                $dateRange['start'] = mktime(0, 0, 0, date('n') - 1, 1); // first of last month
-                $dateRange['end'] = mktime(0, 0, 0, date('n'), 1) - 1;  // first of this month
-                break;
-            case 'thisYear':
-                $dateRange['start'] = mktime(0, 0, 0, 1, 1);  // first of the year
-                $dateRange['end'] = time(); // now
-                break;
-            case 'lastYear':
-                $dateRange['start'] = mktime(0, 0, 0, 1, 1, date('Y') - 1);  // first of last year
-                $dateRange['end'] = mktime(0, 0, 0, 1, 1, date('Y')) - 1;   // first of this year
-                break;
-            case 'all':
-                $dateRange['start'] = 0;        // every record
-                $dateRange['end'] = time();
-                if(isset($_GET['end'])){
-                    $dateRange['end'] = Formatter::parseDate($_GET['end']);
-                    if($dateRange['end'] == false)
-                        $dateRange['end'] = time();
-                    else
-                        $dateRange['end'] = strtotime('23:59:59', $dateRange['end']);
-                }
-                break;
-
-            case 'custom':
-            default:
-                $dateRange['end'] = time();
-                if(isset($_GET['end'])){
-                    $dateRange['end'] = Formatter::parseDate($_GET['end']);
-                    if($dateRange['end'] == false)
-                        $dateRange['end'] = time();
-                    else
-                        $dateRange['end'] = strtotime('23:59:59', $dateRange['end']);
-                }
-
-                $dateRange['start'] = strtotime('1 month ago', $dateRange['end']);
-                if(isset($_GET['start'])){
-                    $dateRange['start'] = Formatter::parseDate($_GET['start']);
-                    if($dateRange['start'] == false)
-                        $dateRange['start'] = strtotime('-30 days 0:00', $dateRange['end']);
-                    else
-                        $dateRange['start'] = strtotime('0:00', $dateRange['start']);
-                }
-        }
-        return $dateRange;
-    }
-
 }

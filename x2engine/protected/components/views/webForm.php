@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -123,7 +123,8 @@ $useDefaults = false;
     $useDefaults = true;
 
 
-$fieldTypes = array_map (function ($elem) { if ($elem['required']) return $elem['fieldName']; }, $fieldList);
+$fieldTypes = array_map (function ($elem) { 
+    if ($elem['required']) return $elem['fieldName']; }, $fieldList);
 
 if ($type === 'service') {
     $contactFields = array('firstName', 'lastName', 'email', 'phone');
@@ -235,7 +236,6 @@ input[type="text"] {
 ?>
 </style>
 
-
 <?php
 
 ?>
@@ -257,7 +257,7 @@ $form = $this->beginWidget('CActiveForm', array(
 
 function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
     foreach($fieldList as $field) {
-        if(!isset($field['type']) || $field['type']!='hidden'){
+        if(!isset($field['type']) || $field['type']==='normal'){
             if(isset($field['label']) && $field['label'] != '') {
                 $label = '<label>' . $field['label'] . '</label>';
             } else {
@@ -275,7 +275,8 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
                 <b>
                     <?php
                     echo $label;
-                    echo ($field['required'] && !$starred ? '*' : '');
+                    echo ($field['required'] && !$starred ? 
+                        '<span class="asterisk"> *</span>' : '');
                     ?>
                 </b>
                 <?php
@@ -297,7 +298,11 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
             } ?>
             </div>
 <?php
-        }else{
+        }elseif ($field['type'] === 'tags') {
+            ?>
+            <input type="hidden" name="tags" value="<?php echo $field['label']?>" />
+            <?php
+        }elseif ($field['type'] === 'hidden') {
             $model->{$field['fieldName']}=$field['label'];
             echo $form->hiddenField($model, $field['fieldName']);
         }
@@ -305,12 +310,6 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
 }
 
 renderFields ($fieldList, $type, $form, $model, $contactFields);
-
-// renders hidden tracking key field
-foreach ($_GET as $key=>$value) { ?>
-    <input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>" />
-    <?php
-}
 
 ?>
 <div class="submit-button-row row">

@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -65,20 +65,34 @@ CKEDITOR.plugins.add('insertattributes',{
 			
 				var attributes = editor.config.insertableAttributes;
 			
-				for(var model in attributes) {
+				for(var model in attributes) { // Each model type gets its own section
 					if(attributes.hasOwnProperty(model)) {
-						this.startGroup(model);
+						this.startGroup(model); 
 						
 						var attributeLabels = [];
+                        var attributeTokens = [];
 						for(var key in attributes[model]) {
-							if(attributes[model].hasOwnProperty(key))
+							if(attributes[model].hasOwnProperty(key)) {
 								attributeLabels.push(key);
+                            }
 						}
 						attributeLabels.sort();
 
 						for(var i in attributeLabels) {
-							this.add(attributes[model][attributeLabels[i]],attributeLabels[i],attributes[model][attributeLabels[i]]);
-							// this.add('value', 'drop_text', 'drop_label');
+                            // Internal convention for referencing properties of
+                            // editor.config.insertableAttributes:
+                            // {property of insertableAttributes}-@-{attribute label}
+                            //
+                            // It is done this way to avoid storing the values
+                            // inside attributes of HTML elements...which can
+                            // break stuff (since the value can potentially
+                            // include invalid characters like carriage returns.
+                            // JSON encoding is not used because that too can
+                            // cause problems.
+                            //
+                            // The following method call ("add") has arguments in the order:
+                            // value, dropdown text, dropdown label
+							this.add(model +'-@-'+attributeLabels[i],attributeLabels[i],attributeLabels[i]);
 						}
 					}
 				}
@@ -87,9 +101,9 @@ CKEDITOR.plugins.add('insertattributes',{
 			onClick:function(value) {
 				editor.focus();
 				editor.fire("saveSnapshot");
-				editor.insertHtml(value);
+                var modelAttribute = value.split('-@-');
+				editor.insertHtml(editor.config.insertableAttributes[modelAttribute[0]][modelAttribute[1]]);
 				editor.fire("saveSnapshot");
-				// console.debug(this);
 			}
 		});
 	}

@@ -30,9 +30,15 @@ class Yii extends YiiBase {
 	protected static $rootPath;
 
 	public static function getRootPath() {
-		if(!isset(self::$rootPath)) {
+        if (YII_DEBUG && YII_UNIT_TESTING) { 
+            // resets root path to the webroot so that custom files can be detected
+            $path = array ();
+            exec ('pwd', $path);
+            self::$rootPath = dirname (preg_replace ('/\/tests/', '', $path[0]));
+        } elseif (!isset(self::$rootPath)) {
 			self::$rootPath = dirname(self::app()->request->scriptFile);
 		}
+
 		return self::$rootPath;
 	}
 
@@ -55,6 +61,7 @@ class Yii extends YiiBase {
 	public static function getCustomPath($path) {
 		//calculate equivalent path in /custom, ie. from [root]/[path] to [root]/custom/[path]
 		$customPath = str_replace(self::getRootPath(),self::getRootPath().DIRECTORY_SEPARATOR.'custom',$path);
+
 		if(file_exists($customPath))
 			$path = $customPath;
 		return $path;

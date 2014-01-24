@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -251,10 +251,7 @@ $feedcontainerFixHeight = $feedcontainerHeight + 10;
         $firstUser = $userIds[0];
         echo CHtml::dropDownList(
             'subtype',1,
-            array_map(
-                function ($item) { return Yii::t('app', $item); },
-                json_decode(Dropdowns::model()->findByPk(113)->options,true)
-            ),
+            Dropdowns::getItems(113),
             array ('id'=>'feed-post-subtype')
         );
         echo CHtml::dropDownList('associationId',$firstUser,$users, 

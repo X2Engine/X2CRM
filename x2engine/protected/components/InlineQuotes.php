@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -46,7 +46,7 @@
 class InlineQuotes extends X2Widget {
 
 	public $recordId; // quotes displayed here are related to this record
-    public $contactId; // id of associated contact (optional)
+    private $_contactId; // id of associated contact (optional)
 	public $contact;
 	public $account = null; // name of associated account (optional)
     public $modelName;
@@ -190,6 +190,18 @@ class InlineQuotes extends X2Widget {
         parent::init();
 	}
 
+        /**
+         * Getter and setter for contactId will also update recordId
+         * in order to remain backwards compatible.
+         */
+        public function getContactId() {
+          return $this->_contactId;  
+        }
+
+        public function setContactId($value) {
+            $this->_contactId = $value;
+            $this->recordId = $value;
+        }
 
     /**
      * Returns all related invoices or quotes 

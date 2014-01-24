@@ -1,7 +1,6 @@
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -53,6 +52,7 @@ function WebFormDesigner (argsDict) {
 		savedForms: {}, // used to cache previously viewed forms
         fields: [],
         colorfields: [],
+        deleteFormUrl: '',
         listId: null
 	};
 
@@ -158,6 +158,7 @@ WebFormDesigner.prototype._init = function () {
     // set up saved form selection behavior
     $('#saved-forms').on('change', function() {
         var id = $(this).val();
+        that._showHideDeleteButton ();
 
         // clear old form, populate form with saved input
         that._clearFields();
@@ -212,6 +213,51 @@ WebFormDesigner.prototype._init = function () {
     that._afterInit ();
 
     that.updateParams();
+
+    that._setUpFormDeletion ();
+};
+
+WebFormDesigner.prototype._showHideDeleteButton = function () {
+    if ($('#saved-forms').find (':selected').val () === '0') {
+        $('#delete-form').hide ();
+    } else {
+        $('#delete-form').show ();
+    }
+};
+
+/**
+ * Sets up behavior of 'Delete Form' button
+ */
+WebFormDesigner.prototype._setUpFormDeletion = function () {
+    var that = this; 
+    $('#delete-form').on ('click', function (evt) {
+        var formId = $('#saved-forms').val ();
+        auxlib.destroyErrorFeedbackBox ($('#saved-forms'));
+        $.ajax ({
+            url: that.deleteFormUrl,
+            type: 'GET',
+            data: {
+                id: formId, 
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data[0]) {
+                    $('#saved-forms').find ('[value="' + formId + '"]').remove ();
+                    auxlib.createReqFeedbackBox ({
+                        prevElem: $('#delete-form'),
+                        message: data[1],
+                        disableButton: $('#delete-form')
+                    });
+                    that._showHideDeleteButton ();
+                } else {
+                    auxlib.createErrorFeedbackBox ({
+                        prevElem: $('#delete-form'),
+                        message: data[1],
+                    });
+                }
+            }
+        });
+    });
 };
 
 // override in child prototype
@@ -361,6 +407,7 @@ WebFormDesigner.prototype.saved = function (data, status, xhr) {
     that.updateParams();
     $('#web-form-save-button').removeClass ('highlight');
     alert(that.translations.formSavedMsg);
+    that._showHideDeleteButton ();
 }
 
 /*

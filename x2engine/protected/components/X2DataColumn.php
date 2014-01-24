@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,7 +41,15 @@ Yii::import('zii.widgets.grid.CDataColumn');
  */
 class X2DataColumn extends CDataColumn {
 
+    private $_fieldType;
+
     protected $_data;
+
+    public $fieldModel;
+
+    public function getFieldType() {
+        return isset($this->fieldModel['type']) ? $this->fieldModel['type'] : null;
+    }
 
     /**
      * Renders the data cell content.
@@ -55,6 +63,8 @@ class X2DataColumn extends CDataColumn {
             $value = $this->evaluateExpression($this->value, array('data' => $this->data, 'row' => $row));
         elseif($this->name !== null){
             $value = $this->data->renderAttribute($this->name, false, true); // CHtml::value($data,$this->name);
+            if($this->data->getField($this->name)->type == 'text')
+                $value = Formatter::truncateText(preg_replace("/\<br ?\/?\>/"," ",$value),100);
         }
         echo $value === null ? $this->grid->nullDisplay : $value; //  $this->grid->getFormatter()->format($value,$this->type);
     }
@@ -76,6 +86,48 @@ class X2DataColumn extends CDataColumn {
             }
         }else{
             $this->_data = $data;
+        }
+    }
+
+    public function renderFilterCellContent() {
+        switch($this->fieldType){
+            case 'boolean':
+                echo CHtml::activeDropdownList($this->grid->filter, $this->name, array('' => '- '.Yii::t('app', 'Select').' -', '1' => Yii::t('app', 'Yes'), 'false' => Yii::t('app', "No")), array('class' => 'x2-minimal-select-filtercol'));
+                break;
+            case 'dropdown':
+                $dropdown = Dropdowns::model()->findByPk($this->fieldModel['linkType']);
+                if(!$dropdown->multi) {
+                    $options = json_decode($dropdown->options,1);
+                    $defaultOption = array('' => '- '.Yii::t('app', 'Select').' -');
+                    $options = is_array($options) ? array_merge($defaultOption,$options) : $defaultOption;
+                    $selected = isset($options[$this->grid->filter->{$this->name}]) ? $this->grid->filter->{$this->name} : '';
+                    echo CHtml::activeDropdownList($this->grid->filter, $this->name, $options, array('class' => 'x2-minimal-select-filtercol'));
+                } else {
+                    parent::renderFilterCellContent();
+                }
+                break;
+            case 'dateTime':
+            case 'date':
+                Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+                echo Yii::app()->controller->widget('CJuiDateTimePicker', array(
+                    'model' => $this->grid->filter, //Model object
+                    'attribute' => $this->name, //attribute name
+                    'mode' => 'date', //use "time","date" or "datetime" (default)
+                    'options' => array(// jquery options
+                        // We want to eventually use Formatter::formatDatePicker() once the compare criteria can support it
+                        'dateFormat' => 'm/d/yy',
+                        'changeMonth' => true,
+                        'changeYear' => true,
+                    ),
+                    'htmlOptions' => array(
+                        'id' => 'datePicker'.$this->name,
+                        'class' => 'datePicker'
+                    ),
+                    'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
+                        ), true);
+                break;
+            default:
+                parent::renderFilterCellContent();
         }
     }
 

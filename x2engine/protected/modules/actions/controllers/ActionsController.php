@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -70,15 +70,12 @@ class ActionsController extends x2base {
     }
 
     public function actions(){
-        return array(
-            'inlineEmail' => array(
-                'class' => 'InlineEmailAction',
-            ),
+        return array_merge(parent::actions(), array(
             'captcha' => array(
                 'class' => 'CCaptchaAction',
                 'backColor' => 0xeeeeee,
             ),
-        );
+        ));
     }
 
     /**
@@ -342,7 +339,7 @@ class ActionsController extends x2base {
         $this->render('create', array(
             'model' => $model,
             'users' => $users,
-            'modelList' => Admin::getModelList(),
+            'modelList' => Fields::getDisplayedModelNamesList(),
         ));
     }
 
@@ -570,6 +567,16 @@ class ActionsController extends x2base {
                         $notif2->save();
                     }
                 }
+                if(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->params->admin->userActionBackdating){
+                    $events = X2Model::model('Events')->findAllByAttributes(array(
+                        'associationType' => 'Actions',
+                        'associationId' => $model->id,
+                    ));
+                    foreach($events as $event) {
+                        $event->timestamp = $model->getRelevantTimestamp();
+                        $event->update(array('timestamp'));
+                    }
+                }
                 $model->syncGoogleCalendar('update');
                 if(isset($_GET['redirect']) && $model->associationType != 'none'){ // if the action has an association
                     if($model->associationType == 'product' || $model->associationType == 'products')
@@ -601,7 +608,7 @@ class ActionsController extends x2base {
         $this->render('update', array(
             'model' => $model,
             'users' => $users,
-            'modelList' => Admin::getModelList(),
+            'modelList' => Fields::getDisplayedModelNamesList(),
             'notifType' => $notifType,
             'notifTime' => $notifTime,
         ));
@@ -716,9 +723,7 @@ class ActionsController extends x2base {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         }
-        if(isset($_GET['ajax']) || Yii::app()->request->isAjaxRequest)
-            echo 'Success';
-        else
+        if(!isset($_GET['ajax']) && !Yii::app()->request->isAjaxRequest)
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
     }
 

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -352,6 +352,44 @@ class Actions extends X2Model {
         if($model !== null)
             return $model->getLink();
         return false;
+    }
+
+    public function getRelevantTimestamp() {
+        switch($this->type) {
+            case 'attachment':
+                $timestamp = $this->completeDate;
+                break;
+            case 'email': 
+            case 'emailFrom': 
+            case 'email_quote': 
+            case 'email_invoice': 
+                $timestamp = $this->completeDate; 
+                break;
+            case 'emailOpened': 
+            case 'emailOpened_quote': 
+            case 'email_opened_invoice': 
+                $timestamp = $this->completeDate; 
+                break;
+            case 'event': 
+                $timestamp = $this->completeDate; 
+                break;
+            case 'note': 
+                $timestamp = $this->completeDate; 
+                break;
+            case 'quotes': 
+                $timestamp = $this->createDate; 
+                break;
+            case 'time': 
+                $timestamp = $this->createDate; 
+                break;
+            case 'webactivity': 
+                $timestamp = $this->completeDate; 
+                break;
+            case 'workflow': 
+                $timestamp = $this->completeDate; 
+                break;
+        }
+        return $timestamp;
     }
 
     public static function parseStatus($dueDate){

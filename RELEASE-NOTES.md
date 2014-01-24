@@ -1,3 +1,9 @@
+# 3.7.1 #
+12/23/2013
+* For security purposes, the web lead form no longer permits setting options via
+  query parameters, with the exception of CSS (i.e. color); rather, all options
+  are now stored server-side. Existing web lead forms will thus need to be updated.
+
 # 3.7 #
 12/23/2013
 * In previous versions, the "greater than" and "less than" comparison operators 

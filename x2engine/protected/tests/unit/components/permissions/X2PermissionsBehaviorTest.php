@@ -14,7 +14,7 @@ Yii::import("application.components.permissions.*");
  * @author raymond
  */
 
-class X2PermissionsBehaviorTest extends CTestCase {
+class X2PermissionsBehaviorTest extends X2TestCase {
     
     public function testGetAccessConditions() {
         $behavior = new X2PermissionsBehavior;

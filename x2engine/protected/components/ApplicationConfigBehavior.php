@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -230,7 +230,9 @@ class ApplicationConfigBehavior extends CBehavior {
             if($notGuest && !($this->owner->request->getPathInfo() == 'site/getEvents')){
                 $this->owner->user->setReturnUrl($this->owner->request->requestUri);
                 if($session !== null){
-                    if($session->lastUpdated + $this->owner->params->admin->timeout < time()){
+                    $roleTimeout = Roles::getUserTimeout($this->owner->user->getId());
+                    $timeout = ($roleTimeout != null)? $roleTimeout : $this->owner->params->admin->timeout;
+                    if($session->lastUpdated + $timeout < time()){
                         SessionLog::logSession($this->owner->user->getName(), $sessionId, 'activeTimeout');
                         $session->delete();
                         $this->owner->user->logout(false);
@@ -284,8 +286,6 @@ class ApplicationConfigBehavior extends CBehavior {
             $this->owner->language = $this->owner->params->profile->language;
         else if(isset($adminProf))
             $this->owner->language = $adminProf->language;
-        else
-            $this->owner->language = '';
 
         $locale = $this->owner->locale;
         $curSyms = array();

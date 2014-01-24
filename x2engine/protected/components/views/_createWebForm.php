@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -132,7 +132,9 @@ Yii::app()->clientScript->registerScript('webleadForm','
         externalAbsoluteBaseUrl: "'.addslashes($externalAbsoluteBaseUrl).'",
         saveUrl: "'.addslashes ($saveUrl).'",
         savedForms: '.CJSON::encode($formAttrs).',
-        fields: ["fg","bgc","font","bs","bc","tags"],
+        deleteFormUrl: "'.Yii::app()->createAbsoluteUrl (
+            '/marketing/marketing/ajaxDeleteWebForm').'",
+        fields: ["fg","bgc","font","bs","bc"],
         colorfields: ["fg","bgc","bc"],
         listId: '.(!empty($id) ? $id : 'null').'
     });
@@ -178,7 +180,15 @@ Yii::app()->clientScript->registerScript('webleadForm','
                     array(
                         'id' => 'reset-form',
                         'class'=>'x2-button x2-small-button'
-                    )); ?>
+                    )); 
+        		echo CHtml::button (
+                    Yii::t('marketing','Delete Form'),
+                    array(
+                        'id' => 'delete-form',
+                        'class'=>'x2-button x2-small-button',
+                        'style' => 'display: none;' 
+                    )); 
+                ?>
             </div>
         </div>
     </div>
@@ -260,18 +270,6 @@ Yii::app()->clientScript->registerScript('webleadForm','
             <?php echo CHtml::textField('bc', '#f0f0f0', array('class'=>'half')); ?>
             <p class="fieldhelp">
                 <?php echo Yii::t('marketing','Default') .': '. Yii::t('marketing','none'); ?>
-            </p>
-        </div>
-        <div class="cell" <?php if ($webFormType !== 'weblead') echo 'style="display: none;"'; ?>>
-            <?php echo CHtml::label(Yii::t('marketing','Tags'), 'tags'); ?>
-            <?php echo CHtml::textField('tags'); ?>
-            <p class="fieldhelp">
-                <em><?php echo Yii::t('marketing','Example') .': web,newlead,urgent'; ?></em>
-                <br/>
-                <?php
-                echo Yii::t(
-                    'marketing','These tags will be applied to any contact created by the form.');
-                ?>
             </p>
         </div>
         <div style="display: none;">

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -67,10 +67,19 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
             $model=X2Model::model($this->owner->modelClass);
         }
 		if(isset($_GET['id']) && !in_array($actionId,$exceptions) && !Yii::app()->user->isGuest && isset($model)) {
-			if ($model->hasAttribute('assignedTo')) { // If we have an assignment field, we may have an exception in the permissions
-				$model=X2Model::model($this->owner->modelClass)->findByPk($_GET['id']);
-                if($model!==null){ // Pass the assigned to into the params array to be used for biz rules.
+            $retrieved = false;
+ 			if ($model->hasAttribute('assignedTo')) { // If we have an assignment field, we may have an exception in the permissions
+               $model=X2Model::model($this->owner->modelClass)->findByPk($_GET['id']);
+               $retrieved = true;
+               if($model!==null){ // Pass the assigned to into the params array to be used for biz rules.
                     $params['assignedTo']=$model->assignedTo;
+                }
+            }
+            if($model->hasAttribute('createdBy')){ // If we have a created by field, we may have an exception in the permissions
+                if(!$retrieved) // Skip fetching if it's here already
+                    $model = X2Model::model($this->owner->modelClass)->findByPk($_GET['id']);
+                if($model !== null){ // Pass the assigned to into the params array to be used for biz rules.
+                    $params['createdBy'] = $model->createdBy;
                 }
             }
 		}

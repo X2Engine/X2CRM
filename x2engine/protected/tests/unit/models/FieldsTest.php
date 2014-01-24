@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,15 +34,52 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.modules.bugReports.models.*');
+
 /**
  * Test case for the {@link Fields} model class.
+ * 
  * @package X2CRM.tests.unit.models
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class FieldsTest extends CTestCase {
-	
-	public function testStrToNumeric() {
+class FieldsTest extends X2TestCase {
 
+    private $_testColumnName;
+    private $_testTableName;
+
+    /**
+     * This defines the model to which columns will be added.
+     * @return string 
+     */
+    public function getTestModelName() {
+        Yii::import('application.modules.contacts.models.*');
+        return 'Contacts';
+    }
+
+    public function getTestColumnName() {
+        if(!isset($this->_testColumnName)) {
+            $this->_testColumnName = 'testColumn_'.time();
+        }
+        return $this->_testColumnName;
+    }
+
+    public function getTestTableName() {
+        if(!isset($this->_testTableName)) {
+            $this->_testTableName = X2Model::model($this->getTestModelName())->tableName();
+        }
+        return $this->_testTableName;
+    }
+
+    public function tearDownTestColumn() {
+        $sql = 'ALTER TABLE `'.$this->getTestTableName().'` DROP COLUMN `'.$this->getTestColumnName().'`';
+        try {
+            Yii::app()->db->createCommand($sql)->execute();
+        } catch(CDbException $e) {
+            // Do nothing; column doesn't exist, so there's nothing left to do
+        }
+    }
+
+	public function testStrToNumeric() {
 		$cur =  Yii::app()->locale->getCurrencySymbol(Yii::app()->params->admin->currency);
 		$input = " $cur 123.45 % ";
 		$this->assertEquals(123.45,Fields::strToNumeric($input,'currency'));
@@ -97,6 +134,78 @@ class FieldsTest extends CTestCase {
 		$value = Fields::strToNumeric("($curSym"."9,888.77)",'currency',$curSym);
 		$this->assertEquals(-9888.77,$value,'Failed asserting proper conversion of multibyte strings to numbers.');
 	}
+
+    public function testCreateAndDropColumn() {
+        $field = new Fields('test');
+        $field->modelName = $this->getTestModelName();
+        $field->fieldName = $this->getTestColumnName();
+        $field->type = 'varchar';
+        $field->custom = 0;
+        $tableName = X2Model::model($field->modelName)->tableName();
+        try {
+            $field->createColumn();
+        } catch(Exception $e) {
+            $this->tearDownTestColumn();
+            throw $e;
+        }
+        Yii::app()->db->schema->refresh();
+        $columnsAfterAdd = Yii::app()->db->schema->tables[$tableName]->columnNames;
+        try {
+            $field->dropColumn();
+        } catch(Exception $e) {
+            $this->tearDownTestColumn();
+            throw $e;
+        }
+        Yii::app()->db->schema->refresh();
+        $columnsAfterDrop = Yii::app()->db->schema->tables[$tableName]->columnNames;
+        $this->tearDownTestColumn();
+        $this->assertTrue(in_array($field->fieldName,$columnsAfterAdd),"Column {$field->fieldName} was not created.");
+        $this->assertTrue(!in_array($field->fieldName,$columnsAfterDrop),"Column {$field->fieldName} was not dropped.");
+    }
+
+    public function testDropColumn() {
+        $field = new Fields;
+        $field = new Fields('test');
+        $field->modelName = $this->getTestModelName();
+        $field->fieldName = $this->getTestColumnName();
+        $field->type = 'varchar';
+        $field->custom = 0;
+        $field->createColumn();
+    }
+
+    public function testNonReserved() {
+        $field = new Fields('test');
+        $field->fieldName = 'SCHEMA';
+        $field->validate(array('fieldName'));
+        $this->assertTrue($field->hasErrors('fieldName'));
+    }
+
+    public function testUniqueFieldName() {
+        $field = new Fields('test');
+        // These two fields should always exist:
+        $field->custom = 0;
+        $field->modelName = $this->getTestModelName();
+        $field->fieldName = 'firstName';
+        $field->validate(array('fieldName'));
+        $this->assertTrue($field->hasErrors('fieldName'),'No validation error for a field with a duplicate name: '.$field->fieldName);
+    }
+
+    public function testValidDefault() {
+        $field = new Fields;
+        $field->fieldName = 'testName';
+        $field->type = 'email';
+        $field->defaultValue = 'not an email address';
+        $field->validate(array('defaultValue'));
+        $this->assertTrue($field->hasErrors('defaultValue'));
+        // Now test (this is more a feature of AmorphousModel than of Fields)
+        // that the "required" validator is disabled
+        $field->clearErrors();
+        $field->defaultValue = '';
+        $field->required = 1;
+        $field->validate(array('defaultValue'));
+        $this->assertFalse($field->hasErrors('defaultValue'));
+    }
+
 }
 
 ?>

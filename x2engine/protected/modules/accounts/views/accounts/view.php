@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -105,28 +105,16 @@ $this->renderPartial('application.components.views._detailView',array('model'=>$
 
 $this->endWidget();
 
-$accountContactsArray = array();
-foreach($model->relatedX2Models as $relatedModel)
-	if($relatedModel instanceof Contacts)
-		if($relatedModel->email != '')
-			$accountContactsArray[] = '"'.$relatedModel->name.'" <'.$relatedModel->email.'>';
-$accountContacts = implode(', ',$accountContactsArray);
-// Limit insertable attributes
-$insertableAttributes = array();
-foreach($model->attributeLabels() as $fieldName => $label) {
-	$attr = trim($model->renderAttribute($fieldName,false));
-	if($attr !== '')
-		$insertableAttributes[$label] = $attr;
-}
 $this->widget('InlineEmailForm',
 	array(
 		'attributes'=>array(
-			'to'=>$accountContacts,
+			'to'=>implode (', ', $model->getRelatedContactsEmails ()),
 			'modelName'=>'Accounts',
 			'modelId'=>$model->id,
 		),
 		'templateType' => 'accountEmail',
-		'insertableAttributes' => array(Yii::t('accounts','Account Attributes')=>$insertableAttributes),
+		'insertableAttributes' => 
+            array(Yii::t('accounts','Account Attributes')=>$model->getEmailInsertableAttrs ()),
 		'startHidden'=>true,
 	)
 );

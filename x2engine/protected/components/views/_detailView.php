@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,9 +41,7 @@ $attributeLabels = $model->attributeLabels();
 // $showWorkflow = Yii::app()->params->profile->showWorkflow;
 
 $cs = Yii::app()->getClientScript();
-$cs->registerCoreScript('rating');
-//$cs->registerCssFile($cs->getCoreScriptUrl().'/rating/jquery.rating.css');
-$cs->registerCssFile (Yii::app()->getTheme()->getBaseUrl().'/css/rating/jquery.rating.css');
+
 
 if($modelName=='contacts' || $modelName=='opportunities'){
     $cs->registerScript('toggleWorkflow', "
@@ -215,14 +213,17 @@ if($layoutData !== false && isset($layoutData['sections']) && count($layoutData[
                                             // $style .= 'min-height:'.$item['height'].'px;';
                                         $htmlString .= '<div class="'.$class.'" style="'.$style.'">';
     
-                                        if(isset($specialFields[$fieldName]))
+                                        if(isset($specialFields[$fieldName])) {
                                             $fieldHtml = $specialFields[$fieldName];
-                                        else
-                                            $fieldHtml = $model->renderAttribute($field->fieldName,true,false);
-                                        if(empty($fieldHtml))
+                                        } else {
+                                            $fieldHtml = $model->renderAttribute(
+                                                $field->fieldName,true,false);
+                                        }
+                                        if(empty($fieldHtml)) {
                                             $htmlString .= '&nbsp;';
-                                        else
+                                        } else {
                                             $htmlString .= $fieldHtml;
+                                        }
                                     }
                                 }
                                 unset($item);

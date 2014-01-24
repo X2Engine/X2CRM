@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -90,12 +90,12 @@ if($type == 'workflow') {
     <?php
     if($data->complete!='Yes'){
 		if(empty($data->dueDate)){
-			echo X2Date::actionDate($data->createDate,$data->priority);
+			echo X2DateUtil::actionDate($data->createDate,$data->priority);
         }else{
-			echo X2Date::actionDate($data->dueDate,$data->priority);
+			echo X2DateUtil::actionDate($data->dueDate,$data->priority);
         }
     }else{
-		echo X2Date::actionDate($data->completeDate,$data->priority,'Yes');
+		echo X2DateUtil::actionDate($data->completeDate,$data->priority,'Yes');
     }
 ?>
 	<div class="header">

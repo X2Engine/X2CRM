@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -46,8 +46,38 @@ class EventsTest extends X2DbTestCase {
         'event'=>'Events',
     );
 
-    public static function referenceFixtures() {
-        return array();
+    public static function referenceFixtures(){
+        return array(
+            'profile' => 'Profile',
+        );
+    }
+
+    public function testGetFilteredEventsDataProvider () {
+        return;
+        /*$isMyProfile = false;
+        $profile = Profile::model()->findByAttributes(array('username' => 'testuser'));
+        extract (Events::getFilteredEventsDataProvider (
+            $profile, $isMyProfile, null, false));
+        $data = $dataProvider->getData ();
+        print (count ($data));*/
+    }
+
+    /**
+     * @todo Refactor Events::getEventsProfile so it uses the substitute user
+     *  instead of the web user, and find a way to not have to uncomment the
+     *  lines in the fixture file to get the necessary data
+     */
+    public function testGetEventsProfile(){
+        $this->markTestIncomplete();
+        //return; // comment this and uncomment records in events fixture to test
+        $lastEventId=0;
+        $lastTimestamp=0;
+        $profile = Profile::model()->findByAttributes(array('username' => 'testuser'));
+        $myProfile = Profile::model()->findByAttributes(array('username' => 'admin'));
+
+        $events=Events::getEvents(
+            $lastEventId,$lastTimestamp,'admin',null,null,$myProfile,$profile);
+        $this->assertCount(3, $events['events']);
     }
     
     public function testGetEvents(){

@@ -1,8 +1,7 @@
 <?php
-
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,14 +34,64 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-/**
- * Model for processing cron form input and updating the user cron table
- *
- * @package X2CRM.component
- * @author Demitri Morgan <demitri@x2engine.com>
- */
-class CronJobs extends CComponent {
 
+Yii::import('application.models.*');
+Yii::import('application.modules.groups.models.*');
+Yii::import('application.modules.users.models.*');
+Yii::import('application.components.*');
+Yii::import('application.components.permissions.*');
+Yii::import('application.components.util.*');
+
+/**
+ *
+ * @package X2CRM.tests.unit.components
+ */
+class GroupTest extends CDbTestCase {
+
+    const VERBOSE = 0;
+
+    public $fixtures = array (
+        'users' => array ('User', '_1'),
+        'groups' => array ('Groups', '_1'),
+        'groupToUser' => array ('GroupToUser', '_2'),
+    );
+
+    /**
+     * Ensures that all users accessed via the users relation belong to the group 
+     */
+    public function testUsersRelation () {
+        foreach ($this->groups as $key => $val) {
+            $groupModel = Groups::model ()->findByAttributes ($val);
+            $userIds = array_map (function ($a) { return $a['id']; }, $groupModel->users);
+
+            if(self::VERBOSE) {
+                print ($groupModel->id."\n");
+                print_r ($userIds);
+            }
+            
+            /*
+            For each user, ensure that there is a corresponding groupToUser entry
+            */
+            foreach ($userIds as $uid) {
+                $found = false;
+                foreach ($this->groupToUser as $key => $val) {
+                     if ($val['groupId'] == $groupModel->id && $val['userId'] == $uid) {
+                        $found = true;
+                     }
+                }
+                $this->assertTrue ($found);
+            }
+        }
+    }
+
+    public function testHasOnlineUsers () {
+        $group4 = Groups::model ()->findByAttributes ($this->groups['group3']);
+        $this->assertFalse ($group4->hasOnlineUsers ());
+
+        $group1 = Groups::model ()->findByAttributes ($this->groups['group1']);
+        $this->assertTrue ($group1->hasOnlineUsers ());
+
+    }
 
 }
 

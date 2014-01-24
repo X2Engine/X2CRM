@@ -1,7 +1,8 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,45 +36,18 @@
  *****************************************************************************************/
 
 /**
- * Date formatting utilities (unused)
  * 
- * @package X2CRM.components 
+ * @package 
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
-class X2Date {
-	public static function dateBox($date) {
-		$str = '<div class="date-box" title="';
-		$str .= date('Y-m-d H:i',$date);
-		
-		$str .= '"><span class="month">';
-		$str .= date('M',$date);
-		$str .= '</span><span class="day">';
-		$str .= date('d',$date);
-		$str .= '</span></div>';
-		return $str;
-	}
-	
-	public static function actionDate($date,$priority,$complete='No') {
-        if($complete=="No"){
-            if($priority == '3')
-                $priority = ' p-3';
-            elseif($priority == '2')
-                $priority = ' p-2';
-            else
-                $priority = ' p-1';
-        }else{
-            $priority='';
+class ValidLinkValidator extends CValidator {
+
+    public function validateAttribute($model,$attribute,$params = array()) {
+        if(!is_numeric($model->$attribute)){
+            $model->addError($attribute, Yii::t('app', '{attr} does not refer to any existing record', array('{attr}' => $model->getAttributeLabel($attribute))));
         }
-		
-		$str = '<div class="date-box'.$priority.'" title="';
-		$str .= date('Y-m-d H:i',$date);
-		
-		$str .= '"><span class="month">';
-		$str .= Yii::app()->getLocale()->getMonthName(date('n',$date),'abbreviated');
-		// $str .= date('M',$date);
-		$str .= '</span><span class="day">';
-		$str .= date('d',$date);
-		$str .= '</span></div>';
-		return $str;
-	}
+    }
+
 }
+
 ?>

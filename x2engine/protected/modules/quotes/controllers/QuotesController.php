@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -58,17 +58,12 @@ class QuotesController extends x2base {
 	public function actionView($id){
 		$type = 'quotes';
 		$model = $this->getModel($id);
-		// The following line is for compatibility with associatedContacts in
-		// the legacy format.
-		$model->contact;
-		// Now it's safe to turn it into links (the way it has always been done)
-		$contactId = $model->associatedContacts;
-		$model->associatedContacts = Contacts::getContactLinks($model->associatedContacts);
 		$quoteProducts = $model->lineItems;
 
         // add quote to user's recent item list
         User::addRecentItem('q', $id, Yii::app()->user->getId()); 
 
+        $contactId = $model->associatedContacts;
 		parent::view($model, $type, array('orders' => $quoteProducts,
 			'contactId' => $contactId
 		));

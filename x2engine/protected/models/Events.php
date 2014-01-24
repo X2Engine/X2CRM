@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -170,17 +170,17 @@ class Events extends CActiveRecord {
                                     break;
                                 default:
                                     if(!empty($authorText)){
-                                        $text = $authorText.Yii::t('app', 
-                                            "created a new {actionLink} associated with the contact {contactLink}", 
+                                        $text = $authorText.Yii::t('app',
+                                            "created a new {actionLink} associated with the contact {contactLink}",
                                             array(
                                                 '{actionLink}' => CHtml::link(
                                                     Events::parseModelName($this->associationType),
-                                                    '#', 
+                                                    '#',
                                                     array(
                                                         'class' => 'action-frame-link',
                                                         'data-action-id' => $this->associationId
                                                     )
-                                                ), 
+                                                ),
                                                 '{contactLink}' => X2Model::getModelLink(
                                                     $action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl
                                                 )
@@ -188,17 +188,17 @@ class Events extends CActiveRecord {
                                         );
                                     }else{
                                         $text = Yii::t('app',
-                                            "A new {actionLink} associated with the contact {contactLink} has been created.", 
+                                            "A new {actionLink} associated with the contact {contactLink} has been created.",
                                             array(
-                                                '{actionLink}' => CHtml::link(Events::parseModelName($this->associationType), 
-                                                    '#', 
+                                                '{actionLink}' => CHtml::link(Events::parseModelName($this->associationType),
+                                                    '#',
                                                     array(
                                                         'class' => 'action-frame-link',
                                                         'data-action-id' => $this->associationId
                                                     )
-                                                ), 
+                                                ),
                                                 '{contactLink}' => X2Model::getModelLink(
-                                                    $action->associationId, ucfirst($action->associationType), 
+                                                    $action->associationId, ucfirst($action->associationType),
                                                     $requireAbsoluteUrl
                                                 )
                                             )
@@ -519,7 +519,7 @@ class Events extends CActiveRecord {
             case 'action_complete':
                 $action = X2Model::model('Actions')->findByPk($this->associationId);
                 if(isset($action)){
-                    $text = $authorText.Yii::t('app', 
+                    $text = $authorText.Yii::t('app',
                         "completed the following action: {actionDescription}",
                         array(
                             '{actionDescription}' => X2Model::getModelLink(
@@ -625,7 +625,213 @@ class Events extends CActiveRecord {
         return Yii::t('app', $type);
     }
 
-    public static function getEvents($id, $timestamp, $user = null, $maxTimestamp = null, $limit = null){
+    /**
+     * Delete expired events (expiration defined by "Event Deletion Time" admin setting
+     */
+    public static function deleteOldEvents () {
+        $dateRange = Yii::app()->params->admin->eventDeletionTime;
+        if(!empty($dateRange)){
+            $dateRange = $dateRange * 24 * 60 * 60;
+            $deletionTypes = json_decode(Yii::app()->params->admin->eventDeletionTypes, true);
+            if(!empty($deletionTypes)){
+                $deletionTypes = "('".implode("','", $deletionTypes)."')";
+                $time = time() - $dateRange;
+                X2Model::model('Events')->deleteAll(
+                    'lastUpdated < '.$time.' AND type IN '.$deletionTypes);
+            }
+        }
+    }
+
+    /**
+     * Returns events filtered with feed filters. Saves filters in session.
+     * @return array
+     *  'dataProvider' => <object>
+     *  'lastUpdated' => <integer>
+     *  'lastId' => <integer>
+     */
+    public static function getFilteredEventsDataProvider (
+        $profile, $isMyProfile, $filters, $filtersOn) {
+
+        if (!$isMyProfile) {
+            /* only show events associated with current profile which current user has
+               permission to see */
+            $visibilityCondition = "AND ((associationId=$profile->id AND (visibility=1 OR ".
+                "user='".Yii::app()->user->getName ()."')) OR ".
+                "(visibility=1 AND user='".$profile->username."'))";
+        } else if (!Yii::app()->params->isAdmin){
+            if(Yii::app()->params->admin->historyPrivacy == 'user'){
+                $visibilityCondition = ' AND (associationId='.Yii::app()->user->getId().
+                    ' OR user="'.Yii::app()->user->getName().'")';
+            }elseif(Yii::app()->params->admin->historyPrivacy == 'group'){
+                $visibilityCondition =
+                    ' AND user IN ('.
+                            'SELECT DISTINCT b.username '.
+                            'FROM x2_group_to_user a INNER JOIN x2_group_to_user b '.
+                            'ON a.groupId=b.groupId '.
+                            'WHERE a.username="'.Yii::app()->user->getName().'"'.
+                        ')';
+            }else{
+                $visibilityCondition = " AND (associationId=".Yii::app()->user->getId().
+                    " OR user='".Yii::app()->user->getName()."' OR visibility=1)";
+            }
+        }else{
+            $visibilityCondition = "";
+        }
+
+        if($filtersOn || isset($_SESSION['filters'])){
+            if($filters){
+                unset($_SESSION['filters']);
+            }else{
+                $filters = $_SESSION['filters'];
+
+                function implodeFilters($n){
+                    return implode(",", $n);
+                }
+
+                $func = "implodeFilters";
+                $filters = array_map($func, $filters);
+                $filters['default'] = false;
+            }
+            unset($filters['filters']);
+            $visibility = $filters['visibility'];
+            $visibility = str_replace('Public', '1', $visibility);
+            $visibility = str_replace('Private', '0', $visibility);
+            $visibilityFilter = explode(",", $visibility);
+            if($visibility != ""){
+                $visibilityCondition = " AND visibility NOT IN (".$visibility.")";
+            }else{
+                $visibilityFilter = array();
+            }
+
+            $users = $filters['users'];
+            if($users != ""){
+                $users = explode(",", $users);
+                $users[]='';
+                $users[]='api';
+                $userFilter = $users;
+                $users = '"'.implode('","', $users).'"';
+                if($users != ""){
+                    $userCondition = " AND (user NOT IN (".$users.")";
+                }else{
+                    $userCondition = "(";
+                }
+                if(strpos($users, 'Anyone') === false){
+                    $userCondition.=" OR user IS NULL)";
+                }else{
+                    $userCondition.=")";
+                }
+            }else{
+                $userCondition = "";
+                $userFilter = array();
+            }
+            
+            $types = $filters['types'];
+            if($types != ""){
+                $types = explode(",", $types);
+                $typeFilter = $types;
+                $types = '"'.implode('","', $types).'"';
+                $typeCondition = " AND (type NOT IN (".$types.") OR important=1)";
+            }else{
+                $typeCondition = "";
+                $typeFilter = array();
+            }
+            $subtypes = $filters['subtypes'];
+            if(strpos($types, "feed") === false && $subtypes != ""){
+                $subtypes = explode(",", $subtypes);
+                $subtypeFilter = $subtypes;
+                $subtypes = '"'.implode('","', $subtypes).'"';
+                if($subtypes != "") {
+                    $subtypeCondition =
+                        " AND (type!='feed' OR subtype NOT IN (".$subtypes.") OR important=1)";
+                } else {
+                    $subtypeCondition = "";
+                }
+            }else{
+                $subtypeCondition = "";
+                $subtypeFilter = array();
+            }
+            $default = $filters['default'];
+            $_SESSION['filters'] = array(
+                'visibility' => $visibilityFilter,
+                'users' => $userFilter,
+                'types' => $typeFilter,
+                'subtypes' => $subtypeFilter
+            );
+            if($default == 'true'){
+                Yii::app()->params->profile->defaultFeedFilters =
+                    json_encode($_SESSION['filters']);
+                Yii::app()->params->profile->save();
+            }
+            $condition = "type!='comment' AND (type!='action_reminder' ".
+                "OR user='".Yii::app()->user->getName()."') AND ".
+                "(type!='notif' OR user='".Yii::app()->user->getName()."')".
+                $visibilityCondition.$userCondition.$typeCondition.$subtypeCondition;
+            $_SESSION['feed-condition'] = $condition;
+        }else{
+            $condition =
+                "type!='comment' AND ".
+                "(type!='action_reminder' OR user='".Yii::app()->user->getName()."') ".
+                "AND (type!='notif' OR user='".Yii::app()->user->getName()."')".
+                $visibilityCondition;
+        }
+
+        $condition.= " AND timestamp <= ".time();
+        if(!isset($_SESSION['lastEventId'])){
+            $lastId = Yii::app()->db->createCommand()
+                    ->select('MAX(id)')
+                    ->from('x2_events')
+                    ->where($condition)
+                    ->order('timestamp DESC, id DESC')
+                    ->limit(1)
+                    ->queryScalar();
+            $_SESSION['lastEventId'] = $lastId;
+        }else{
+            $lastId = $_SESSION['lastEventId'];
+        }
+        $lastTimestamp = Yii::app()->db->createCommand()
+                ->select('MAX(timestamp)')
+                ->from('x2_events')
+                ->where($condition)
+                ->order('timestamp DESC, id DESC')
+                ->limit(1)
+                ->queryScalar();
+        if(empty($lastTimestamp)){
+            $lastTimestamp = 0;
+        }
+        if(isset($_SESSION['lastEventId'])){
+            $condition.=" AND id <= ".$_SESSION['lastEventId']." AND sticky = 0";
+        }
+        $dataProvider = new CActiveDataProvider('Events', array(
+                    'criteria' => array(
+                        'condition' => $condition,
+                        'order' => 'timestamp DESC, id DESC',
+                    ),
+                    'pagination' => array(
+                        'pageSize' => 20
+                    ),
+                ));
+
+        return array (
+            'dataProvider' => $dataProvider,
+            'lastTimestamp' => $lastTimestamp,
+            'lastId' => $lastId
+        );
+    }
+
+    /**
+     * @param object $profile The current user's profile model
+     * @param object $profileId The profile model for which events are being requested.
+     */
+    public static function getEvents(
+        $id, $timestamp, $user = null, $maxTimestamp = null, $limit = null, $myProfile=null,
+        $profile=null){
+
+        if (isset ($myProfile)) {
+            $isMyProfile = $myProfile->id === $profile->id;
+        } else {
+            $isMyProfile = false;
+        }
+
         if(is_null($maxTimestamp)){
             $maxTimestamp = time();
         }
@@ -639,16 +845,41 @@ class Events extends CActiveRecord {
         }
         if(!Yii::app()->params->isAdmin && !Yii::app()->user->isGuest){
             if(Yii::app()->params->admin->historyPrivacy == 'user'){
-                $visibilityCondition = ' AND (associationId='.Yii::app()->user->getId().' OR `user`="'.Yii::app()->user->getName().'")';
+                $visibilityCondition = ' AND (associationId='.Yii::app()->user->getId().
+                    ' OR `user`="'.Yii::app()->user->getName().'")';
             }elseif(Yii::app()->params->admin->historyPrivacy == 'group'){
-                $visibilityCondition = ' AND (`user` IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.Yii::app()->user->getName().'") OR (associationId='.Yii::app()->user->getId().' OR `user`="'.Yii::app()->user->getName().'"))';
+                $visibilityCondition =
+                    ' AND (`user` IN ('.
+                        'SELECT DISTINCT b.username '.
+                        'FROM x2_group_to_user a '.
+                        'INNER JOIN x2_group_to_user b ON a.groupId=b.groupId '.
+                        'WHERE a.username="'.Yii::app()->user->getName().'") OR '.
+                            '(associationId='.Yii::app()->user->getId().' OR '.
+                             '`user`="'.Yii::app()->user->getName().'"))';
             }else{
-                $visibilityCondition = " AND (associationId=".Yii::app()->user->getId()." OR `user`='".Yii::app()->user->getName()."' OR visibility=1)";
+                $visibilityCondition =
+                    " AND (associationId=".Yii::app()->user->getId()." OR ".
+                          "`user`='".Yii::app()->user->getName()."' OR visibility=1)";
             }
-        }else{
+        } else {
             $visibilityCondition = "";
         }
-        $condition = isset($_SESSION['feed-condition']) ? $_SESSION['feed-condition']." AND timestamp < $maxTimestamp AND (`type`!='action_reminder' OR `user`='$user')  AND (`type`!='notif' OR `user`='$user') AND (id > $id OR timestamp > $timestamp)" : '(id > '.$id.' OR timestamp > '.$timestamp.') AND timestamp <= '.$maxTimestamp.'  AND `type`!="comment"'." AND (`type`!='action_reminder' OR `user`='$user') AND (`type`!='notif' OR `user`='".Yii::app()->user->getName()."')".$visibilityCondition;
+        $condition = isset($_SESSION['feed-condition']) ?
+            $_SESSION['feed-condition']." AND ".
+            "timestamp < $maxTimestamp AND (`type`!='action_reminder' OR `user`='$user')  ".
+            "AND (`type`!='notif' OR `user`='$user') AND (id > $id OR timestamp > $timestamp)" :
+            '(id > '.$id.' OR timestamp > '.$timestamp.') AND timestamp <= '.$maxTimestamp.'  AND '.
+            '`type`!="comment"'." AND (`type`!='action_reminder' OR `user`='$user') AND ".
+            "(`type`!='notif' OR `user`='".Yii::app()->user->getName()."')".$visibilityCondition;
+
+        if (isset ($myProfile) && !$isMyProfile) {
+            // only show events associated with current profile which current user has
+            // permission to see
+            $condition .= " AND ((associationId=".$profile->id." AND (visibility=1 OR ".
+                "user='".$myProfile->username."')) OR (visibility=1 AND user='".
+                $profile->username."'))";
+        }
+
         $parameters['condition'] = $condition;
         $criteria->scopes = array('findAll' => array($parameters));
         return array(

@@ -47,5 +47,5 @@ VALUES
 ("Services",		"subIssue",				"Sub Issue",			0,			0, 		"dropdown",				0, 			0, 			'111', 			0,			0,			"",			0,                  1),
 ("Services",		"origin",				"Case Origin",			0,			0, 		"dropdown",				0, 			0, 			'112', 			0,			0,			"",			0,                  1),
 ("Services",		"escalatedTo",			"Escalated To",			0,			0, 		"optionalAssignment",	0, 			0, 			NULL, 			0,			0,			"",			0,                  1),
-("Services",		"lastActivity",			"Last Activity",		0,			0, 		"dateTime",				0, 			0, 			NULL, 			0,			0,			"",			0,                  1),
+("Services",		"lastActivity",			"Last Activity",		0,			0, 		"dateTime",				0, 			1, 			NULL, 			0,			0,			"",			0,                  1),
 ("Services",		"parentCase",			"Parent Case",			0,			0, 		"link",					0, 			0, 			'Services', 	1,			0,			"",			0,                  1);

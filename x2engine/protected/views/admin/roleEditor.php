@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -88,6 +88,31 @@ foreach($groups as $group){
         <?php echo $form->labelEx($model,'name'); ?>
         <?php echo $form->textField($model,'name'); ?>
         <?php echo $form->error($model,'name'); ?>
+
+        <?php echo $form->labelEx($model,'timeout'); ?>
+        <?php echo Yii::t('admin', 'Set role session expiration time (in minutes).'); ?>
+        <?php $this->widget('zii.widgets.jui.CJuiSlider', array(
+            'value' => $model->timeout,
+            // additional javascript options for the slider plugin
+            'options' => array(
+                'min' => 5,
+                'max' => 1440,
+                'step' => 5,
+                'change' => "js:function(event,ui) {
+                                $('#createTimeout').val(ui.value);
+                                $('#save-button').addClass('highlight');
+                            }",
+                'slide' => "js:function(event,ui) {
+                                $('#createTimeout').val(ui.value);
+                            }",
+            ),
+            'htmlOptions' => array(
+                'style' => 'width:340px;margin:10px 0;',
+                'id' => 'createRoleTimeout'
+            ),
+        )); ?>
+        <?php echo $form->textField($model,'timeout', array('id'=>'createTimeout')); ?>
+        <?php echo $form->error($model, 'timeout'); ?>
 </div>
 <div id="addRole">
         <?php echo $form->labelEx($model,'users'); ?>

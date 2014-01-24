@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -262,7 +262,7 @@ class X2GridView extends CGridView {
 
         Yii::app ()->clientScript->registerScript ('x2GridViewStickyHeader', "
             x2.gridviewStickyHeader = {};
-            x2.gridviewStickyHeader.DEBUG = true;
+            x2.gridviewStickyHeader.DEBUG = false && x2.DEBUG;
             x2.gridviewStickyHeader.isStuck;
 
             x2.gridviewStickyHeader.makeSticky = function () {
@@ -607,6 +607,9 @@ class X2GridView extends CGridView {
 
         $datePickerJs = '';
 
+        $staticModel = X2Model::model($this->modelName);
+        $fieldModels = $staticModel instanceof X2Model ? $staticModel->getFields(true) : array();
+
         foreach($this->gvSettings as $columnName => $width) {
             if($columnName=='gvControls' && !$this->enableControls){
                 continue;
@@ -639,8 +642,8 @@ class X2GridView extends CGridView {
 
                 $newColumn['name'] = $columnName;
                 $newColumn['id'] = $this->namespacePrefix.'C_'.$columnName;
-                $newColumn['header'] =
-                    X2Model::model($this->modelName)->getAttributeLabel($columnName);
+                $newColumn['header'] = X2Model::model($this->modelName)->getAttributeLabel($columnName);
+                $newColumn['fieldModel'] = isset($fieldModels[$columnName]) ? $fieldModels[$columnName]->attributes : array();
                 $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
 
                 if($isCurrency) {
@@ -802,6 +805,11 @@ class X2GridView extends CGridView {
         if ($this->enableQtips) $this->setUpQtipManager ();
         if ($this->fixedHeader) $this->setUpStickyHeader ();
 
+        // Re-enable a datepicker widget in the data columns
+        $this->addToAfterAjaxUpdate ("
+                $('.datePicker').datepicker();
+        ");
+
         parent::init();
     }
 
@@ -812,35 +820,35 @@ class X2GridView extends CGridView {
             return;
         }
 
-        // add a dropdown to the summary text that let's user set how many rows to show on each page
-        $this->summaryText = Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
-
-            // . '<div class="form no-border" style="display: block;padding-top: 5px;margin: 0 0 0 5px;float: right;">
-                // <a class="x2-button" style="padding:0 15px;">&lt;</a>
-                // <a class="x2-button" style="padding:0 15px;">&gt;</a>
-            // </div>'
-
-            . '<div class="form no-border" style="display:inline;"> '
-            . CHtml::dropDownList(
-                'resultsPerPage', Profile::getResultsPerPage(),
-                Profile::getPossibleResultsPerPage(), array(
+        /* add a dropdown to the summary text that let's user set how many rows to show on each 
+           page */
+        $this->summaryText = Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>').
+            '<div class="form no-border" style="display:inline;"> '.
+            CHtml::dropDownList(
+                'resultsPerPage', 
+                Profile::getResultsPerPage(),
+                Profile::getPossibleResultsPerPage(), 
+                array(
                     'class' => 'x2-minimal-select',
-                    'ajax' => array(
-                        'url' => $this->controller->createUrl('/profile/setResultsPerPage'),
-                        'complete' => "function(response) {
-                            ".$this->beforeGridViewUpdateJSString."
-                            \$.fn.yiiGridView.update('{$this->id}', {" .
+                    'onchange' => '$.ajax ({'.
+                        'data: {'.
+                            'results: $(this).val ()'.
+                        '},'.
+                        'url: "'.$this->controller->createUrl('/profile/setResultsPerPage').'",'.
+                        'complete: function (response) {'.
+                            'console.log ("setResultsPerPage after ajax");'.
+                            //$this->beforeGridViewUpdateJSString.
+                            '$.fn.yiiGridView.update("'.$this->id.'", {'.
                                 (isset($this->modelName) ?
-                                    "data: {'{$this->modelName}_page': 1}," : "") .
-                                    "complete: function () {".$this->afterGridViewUpdateJSString .
-                                    "}
-                            });
-                        }",
-                        'data' => 'js: {results: $(this).val()}',
-                    )
-                ))
-            . ' </div>';
-            // . Yii::t('app', ' results per page');
+                                    'data: {'.$this->modelName.'_page: 1},' : '') .
+                                    'complete: function () {'.
+                                        //$this->afterGridViewUpdateJSString .
+                                    '}'.
+                            '});'.
+                        '}'.
+                    '});'
+                )). 
+            '</div>';
     }
 
     public function getAfterAjaxUpdateStr () {
@@ -897,9 +905,9 @@ class X2GridView extends CGridView {
             //Yii::app()->clientScript->registerScript('CButtonColumn#C_gvControls',null);
             //Yii::app()->clientScript->registerScript('CCheckBoxColumn#C_gvCheckbox',null);
 
-            $output = '';
+            /*$output = '';
             Yii::app()->getClientScript()->renderBodyEnd($output);
-            echo $output;
+            echo $output;*/
 
             echo CHtml::closeTag($this->tagName);
             ob_flush();

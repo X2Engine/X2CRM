@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -250,8 +250,19 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
                 '/\{_unsub\}/', '<a href="'.Yii::app()->createExternalUrl('/marketing/marketing/click', array('uid' => $uniqueId, 'type' => 'unsub', 'email' => $email)).'">'.Yii::t('marketing', 'unsubscribe').'</a>', $emailBody);
 
         // Replace attribute variables:
-        $emailBody = Docs::replaceVariables($emailBody, $contact, array('{trackingKey}' => $uniqueId)); // use the campaign key, not the general key
-        //
+        $replacementParams = array(
+            '{trackingKey}' => $uniqueId, // Use the campaign key, not the general contact key
+        );
+        // Get the assignee of the campaign, for signature replacement.
+        $user = User::model()->findByAttributes(array('username' => $campaign->assignedTo));
+        if($user instanceof User) {
+            $replacementParams['{signature}'] = $user->profile->signature;
+        } else {
+            $replacementParams['{signature}'] = '';
+        }
+        // Replacement in body
+        $emailBody = Docs::replaceVariables($emailBody, $contact, $replacementParams);
+        // Replacement in subject
         $subject = Docs::replaceVariables($campaign->subject, $contact);
 
         // Add the transparent tracking image:

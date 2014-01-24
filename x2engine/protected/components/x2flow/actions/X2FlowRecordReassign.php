@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -78,14 +78,17 @@ class X2FlowRecordReassign extends X2FlowAction {
         $user = $this->parseOption('user', $params);
         if($user === 'auto'){
             $assignedTo = $this->getNextAssignee();
-        }elseif(CActiveRecord::model('User')->exists('username=?', array($user)) || CActiveRecord::model('Groups')->exists('id=?', array($user))){ // make sure the user exists
+        }elseif(CActiveRecord::model('User')->exists('username=?', array($user)) || 
+                CActiveRecord::model('Groups')->exists('id=?', array($user))){ 
+            // make sure the user exists
+
             $assignedTo = $user;
         }else{
             return array(false, Yii::t('studio', 'User '.$user.' does not exist'));
         }
 
-        if($model->updateByPk($model->id, array('assignedTo' => $assignedTo))){
-            $model->assignedTo = $assignedTo;
+        $model->assignedTo = $assignedTo;
+        if($model->save ()){
             if(is_subclass_of($model, 'X2Model')){
                 return array(
                     true,
@@ -95,7 +98,7 @@ class X2FlowRecordReassign extends X2FlowAction {
                 return array(true, "");
             }
         }else{
-            return array(false, "");
+            return array(false, "Failed to reassign the record");
         }
     }
 

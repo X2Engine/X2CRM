@@ -1,7 +1,7 @@
 <?php
 return array(
 	'testProfile' => array(
-		'id' => 12345,
+		'id' => 2,
         'allowPost' => '1',
         'language' => 'en',
         'timeZone' => 'US/Pacific',
@@ -52,6 +52,6 @@ return array(
         'feedFilters' => null, 
         'hideBugsWithStatus' => null, 
         'actionFilters' => null 
-    )
+    ),
 );
 ?>

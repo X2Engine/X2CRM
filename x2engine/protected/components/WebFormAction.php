@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -40,7 +40,7 @@ class WebFormAction extends CAction {
     public static function sanitizeGetParams () {
         //sanitize get params
         $whitelist = array(
-            'fg', 'bgc', 'font', 'bs', 'bc', 'tags', 'iframeHeight'
+            'fg', 'bgc', 'font', 'bs', 'bc', 'iframeHeight'
         );
         $_GET = array_intersect_key($_GET, array_flip($whitelist));
         //restrict param values, alphanumeric, # for color vals, comma for tag list, . for decimals
@@ -68,7 +68,7 @@ class WebFormAction extends CAction {
 
                     X2Flow::trigger('RecordTagAddTrigger', array(
                         'model' => $model,
-                        'tag' => $tag,
+                        'tags' => $tag,
                     ));
                 }
             }
@@ -464,10 +464,14 @@ class WebFormAction extends CAction {
     /**
      * Create a web lead form with a custom style
      *
-     * Currently web forms have all options passed as GET parameters. Saved web forms
-     * are saved to the table x2_web_forms. Saving, retrieving, and updating a web form
-     * all happens in this function. Someday this should be updated to be it's own module.
-     *
+     * There are currently two methods of specifying web form options. 
+     *  Method 1 (legacy):
+     *      Web form options are sent in the GET parameters (limited options: css, web form
+     *      id for retrieving custom header)
+     *  Method 2 (new):
+     *      CSS options are passed in the GET parameters and all other options (custom fields, 
+     *      custom html, and email templates) are stored in the database and accessed via a
+     *      web form id sent in the GET parameters.
      *
      * This get request is for weblead/service type only, marketing/weblist/view supplies
      * the form that posts for weblist type

@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -204,10 +204,10 @@ class Credentials extends CActiveRecord {
 			}
 		}
 		// Fallback: return the first model found associated with user ID that meets the criteria for use ($serviceType)
-		$criteria = new CDbCriteria(array('condition' => 'WHERE `userId`=:uid', 'params' => array(':uid' => $userId)));
+		$criteria = new CDbCriteria(array('condition' => '`userId`=:uid', 'params' => array(':uid' => $userId)));
 		if(array_key_exists($serviceType, $this->defaultSubstitutes)){
 			if(count($this->defaultSubstitutes[$serviceType])){
-				$criteria->addInCondition('model', $this->defaultSubstitutes[$serviceType]);
+				$criteria->addInCondition('modelClass', $this->defaultSubstitutes[$serviceType]);
 			}
 		}
 		return self::model()->find($criteria);

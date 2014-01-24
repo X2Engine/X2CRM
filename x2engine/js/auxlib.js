@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -192,6 +192,21 @@ auxlib.applyArgs = function (obj, defaultArgs, args) {
 	}
 }
 
+/**
+ * Calls callback when user clicks outside of elem
+ * Only works for elements with no children, can only be used on one element at a time
+ * @param object elem jQuery element
+ * @param function callback 
+ */
+auxlib.onClickOutside = function (elem, callback) {
+    $("body").unbind ('click.onClickOutside');
+    $("body").bind ('click.onClickOutside', function (evt) {
+        if ($(evt.target)[0] !== $(elem)[0]) {
+            callback ();
+        }
+    });
+};
+
 auxlib.makeDialogClosableWithOutsideClick = function (dialogElem) {
     $("body").on ('click', function (evt) {
         if ($(dialogElem).closest (".ui-dialog").length &&
@@ -199,6 +214,7 @@ auxlib.makeDialogClosableWithOutsideClick = function (dialogElem) {
             $(dialogElem).dialog ("isOpen") &&
             !$(evt.target).is ("a") &&
             !$(evt.target).closest ('.ui-dialog').length) {
+
             $(dialogElem).dialog ("close");
         }
     });
@@ -290,4 +306,19 @@ auxlib.saveMiscLayoutSetting = function (settingName, settingVal) {
         success: function () {
         }
     });
+};
+
+auxlib.validatePhotoFileExt = function (name) {
+    var isLegalExtension = false;
+
+    // name is valid
+    if (name.match (/.+\..+/)) {
+        var extension = name.split('.').pop ().toLowerCase ();
+
+        var legalExtensions = ['png','gif','jpg','jpe','jpeg'];        
+        if ($.inArray (extension, legalExtensions) !== -1)
+            isLegalExtension = true;
+    } 
+
+    return isLegalExtension;
 };

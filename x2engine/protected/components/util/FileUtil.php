@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -69,6 +69,7 @@ class FileUtil {
      */
     public static function ccopy($source, $target, $relTarget = false, $contents = true){
         $ds = DIRECTORY_SEPARATOR;
+        $remote = (bool) preg_match('%^https?://%', $source);
         // Normalize target to the form where if it's a directory it doesn't have
         // a trailing slash, and is platform-agnostic:
         $target = rtrim(self::rpath($target), $ds);
@@ -76,7 +77,7 @@ class FileUtil {
         if($relTarget)
             $target = self::relpath($target);
         // Safeguard against overwriting files:
-        if(is_dir($source) && !is_dir($target) && is_file($target))
+        if(!$remote && is_dir($source) && !is_dir($target) && is_file($target))
             throw new Exception("Cannot copy a directory ($source) into a file ($target).");
 
         // Create parent directories if they don't exist already.
@@ -88,7 +89,7 @@ class FileUtil {
         //  directory will be created anyway if necessary
         // If a directory is being copied and $contents is false: it's assumed
         //  that the target is a destination directory and not part of the tree
-        //  to be copied. Thus, 
+        //  to be copied.
         $pathNodes = explode($ds, $target);
         if($contents)
             array_pop($pathNodes);
@@ -100,7 +101,7 @@ class FileUtil {
             }
         }
 
-        if(preg_match('%^https?://%', $source)){
+        if($remote){
             if(self::tryCurl($source)){
                 // Fall back on the getContents method, which will try using CURL
                 $ch = self::curlInit($source);

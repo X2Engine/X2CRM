@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,31 +37,29 @@
 Yii::import('application.components.x2flow.*');
 Yii::import('application.components.x2flow.actions.*');
 Yii::import('application.components.x2flow.triggers.*');
+Yii::import('application.tests.X2TestCase');
 
 /**
  * @package X2CRM.tests.unit.components.x2flow
- * @author Demitri Morgan <demitri@x2engine.com>
+ * @author Demitri Morgan <demitri@x2engine.com>, Derek Mueller <derek@x2engine.com>
  */
-abstract class X2FlowItemTest extends CTestCase {
+class X2FlowItemTest extends X2DbTestCase {
 
-    public function assertGetInstances ($subClass,$ignoreClassFiles) {
-        $items = call_user_func("X2Flow{$subClass}::get{$subClass}Instances");
-        $allFiles = scandir($actionsPath = Yii::getPathOfAlias('application.components.x2flow.'.strtolower($subClass).'s'));
-        $classFiles = array();
-        foreach($allFiles as $file) {
-            $classPath = $actionsPath.DIRECTORY_SEPARATOR.$file;
-            if(is_file($classPath) && !is_dir($classPath)) {
-                $classFiles[] = substr($file,0,-4);
-            }
+    const VERBOSE = 0;
+
+    public $fixtures = array (
+        'x2flow' => array ('X2Flow', '_1')
+    );
+
+    public function testCreate () {
+        if(get_class($this) == 'X2FlowItemTest'){
+            $flow = X2FlowTestingAuxLib::getFlow($this, 'flow1');
+            $item = X2FlowItem::create($flow['trigger']);
+            if(self::VERBOSE) print ('testCreate: '.get_class($item));
+            $this->assertTrue(get_class($item) === $flow['trigger']['type']);
         }
-        $classesLoaded = array();
-        foreach($items as $itemObject) {
-            $classesLoaded[] = get_class($itemObject);
-        }
-        $classesNotLoaded = array_diff($classFiles,$classesLoaded);
-        $classesShouldBeLoaded = array_diff($classesNotLoaded,$ignoreClassFiles);
-        $this->assertEquals(array(),$classesShouldBeLoaded,'Some classes were not instantiated.');
     }
+
 
 }
 

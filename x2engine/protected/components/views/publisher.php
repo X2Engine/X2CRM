@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -90,7 +90,9 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
                     'url' => Yii::app()->controller->createUrl('/site/dynamicDropdown'),
                     'data' => 'js:{"val":$(this).val(),"dropdownId":"117"}',
                     'update' => '#quickNote2',
-                    'complete' => 'function() { x2.publisher.getElement("#action-description").val(""); } '
+                    'complete' => 'function() {'.
+                        'x2.publisher.getElement("#action-description").val(""); '.
+                    '}'
                 )
             ));
             ?>
@@ -108,7 +110,9 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
         <?php if(!$calendar) echo $saveButton; ?>
         <div class="text-area-wrapper">
             <?php 
-            echo $form->textArea($model, 'actionDescription', array('rows' => 3, 'cols' => 40,'id'=>'action-description'));
+            echo $form->textArea(
+                $model, 'actionDescription', 
+                array('rows' => 3, 'cols' => 40,'id'=>'action-description'));
             ?>
         </div>
     </div><!-- .row -->

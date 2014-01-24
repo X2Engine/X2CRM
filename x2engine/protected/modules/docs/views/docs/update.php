@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,28 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$title = ($model->type=='email')? Yii::t('docs','Edit Template:') : Yii::t('docs','Edit Document:');
- 
-$pieces = explode(", ",$model->editPermissions);
-$user = Yii::app()->user->getName();
-
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
-	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
-	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
-	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
-	array('label'=>Yii::t('docs','View'), 'url'=>array('view','id'=>$model->id)),
-));
-
-if(array_search($user,$pieces)!==false || $user==$model->editPermissions || $user=='admin' || $user==$model->createdBy)
-	$this->actionMenu[] = array('label'=>Yii::t('docs','Edit Doc'));
-if(Yii::app()->params->isAdmin || $user==$model->createdBy)
-	$this->actionMenu[] = array('label'=>Yii::t('docs','Delete Doc'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('docs','Are you sure you want to delete this item?')));
-if(Yii::app()->params->isAdmin || $user==$model->createdBy)
-	$this->actionMenu[]=array('label'=>Yii::t('docs','Edit Doc Permissions'), 'url'=>array('changePermissions', 'id'=>$model->id));
-	
-$this->actionMenu[] = array('label'=>Yii::t('docs','Export Doc'),'url'=>array('exportToHtml','id'=>$model->id));
+$title = (in_array($model->type,array('email'))) ? Yii::t('docs','Edit Template:') : Yii::t('docs','Edit Document:');
 ?>
-<div class="page-title icon docs"><h2><span class="no-bold"><?php echo $title; ?></span> <?php echo CHtml::encode($model->name); ?></h2></div>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model)); ?>
+<?php $this->renderPartial('_docPageHeader',compact('title','model')); ?>
+
+
+<?php $this->renderPartial('_form', array('model'=>$model)); ?>

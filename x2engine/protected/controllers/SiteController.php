@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -55,9 +55,11 @@ class SiteController extends x2base {
     }
 
     protected function beforeAction($action = null){
-        if(is_int(Yii::app()->locked)
-                && !Yii::app()->user->checkAccess('GeneralAdminSettingsTask')
-                && !(in_array($this->action->id,array('login','logout')) || Yii::app()->user->isGuest)) {
+        if(is_int(Yii::app()->locked) && 
+           !Yii::app()->user->checkAccess('GeneralAdminSettingsTask') && 
+           !(in_array($this->action->id,array('login','logout')) || 
+             Yii::app()->user->isGuest)) {
+
             $this->appLockout();
         }
         return true;
@@ -75,16 +77,16 @@ class SiteController extends x2base {
     public function accessRules(){
         return array(
             array('allow',
-                'actions' => array('login', 'index', 'logout', 'warning', 'captcha', 'googleLogin', 'error', 'storeToken', 'sendErrorReport'),
+                'actions' => array('login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin', 'error', 'storeToken', 'sendErrorReport'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array('groupChat', 'newMessage', 'getMessages', 'checkNotifications', 'updateNotes', 'addPersonalNote',
-                    'getNotes', 'getURLs', 'addSite', 'deleteMessage', 'fullscreen', 'pageOpacity', 'widgetState', 'widgetOrder', 'saveGridviewSettings', 'saveFormSettings',
+                    'getNotes', 'getURLs', 'addSite', 'deleteMessage', 'fullscreen', 'widgetState', 'widgetOrder', 'saveGridviewSettings', 'saveFormSettings',
                     'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload', 'uploadProfilePicture', 'index', 'contact',
                     'viewNotifications', 'inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'printRecord', 'createRecords',
                     'toggleVisibility', 'page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
-                    'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'minimizePosts', 
+                    'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'minimizePosts',
                     'bugReport', 'deleteRelationship', 'minMaxLeftWidget', 'toggleFeedControls', 'toggleFeedFilters',
                     'getTip', 'share', 'activityFeedOrder', 'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory',
                     'dynamicDropdown', 'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
@@ -417,7 +419,7 @@ class SiteController extends x2base {
                     CHtml::link(
                         Yii::t('app', $site->title), $site->url, array('target'=>'_blank')),
                     CHtml::link(
-                        '[x]', 
+                        '[x]',
                         array('/site/DeleteURL', 'id' => $site->id),
                         array (
                             'title' => Yii::t('app', 'Delete Link'),
@@ -483,8 +485,8 @@ class SiteController extends x2base {
                         "</td>".
                         "<td>" .
                             CHtml::link(
-                                'Delete', 
-                                array('/site/DeleteURL', 'id' => $entry->id, 'url' => $url)). 
+                                'Delete',
+                                array('/site/DeleteURL', 'id' => $entry->id, 'url' => $url)).
                         "</td>".
                     "</tr>";
             }
@@ -537,29 +539,6 @@ class SiteController extends x2base {
         }
         if(isset($_GET['redirect'])){
             $this->redirect($this->createUrl($_GET['redirect']));
-        }
-    }
-
-    /**
-     * Sets the page opacity for the current web user.
-     */
-    public function actionPageOpacity(){
-        if(isset($_GET['opacity']) && is_numeric($_GET['opacity'])){
-
-            $opacity = $_GET['opacity'];
-            if($opacity > 1)
-                $opacity = 1;
-            if($opacity < 0.1)
-                $opacity = 0.1;
-
-            $opacity = round(100 * $opacity);
-
-            // $profile = X2Model::model('ProfileChild')->findByPk(Yii::app()->user->getId());
-
-            Yii::app()->params->profile->pageOpacity = $opacity;
-            if(Yii::app()->params->profile->save()){
-                echo "success";
-            }
         }
     }
 
@@ -729,6 +708,75 @@ class SiteController extends x2base {
         }
     }
 
+    private function handleDefaultUpload ($model, $name) {
+        $note = new Actions;
+        $note->createDate = time();
+        $note->dueDate = time();
+        $note->completeDate = time();
+        $note->complete = 'Yes';
+        $note->visibility = '1';
+        $note->completedBy = Yii::app()->user->getName();
+        if($model->private){
+            $note->assignedTo = Yii::app()->user->getName();
+            $note->visibility = '0';
+        }else{
+            $note->assignedTo = 'Anyone';
+        }
+        $note->type = 'attachment';
+        $note->associationId = $_POST['associationId'];
+        $note->associationType = $_POST['associationType'];
+
+        $association = $this->getAssociation($note->associationType, $note->associationId);
+        if($association != null)
+            $note->associationName = $association->name;
+
+        $note->actionDescription = $model->fileName.':'.$model->id;
+        if($note->save()){
+
+        }else{
+            unlink('uploads/'.$name);
+        }
+        if($model->associationType == 'product')
+            $this->redirect(array('/products/products/view','id'=>$model->associationId));
+        $this->redirect(array($model->associationType.'/'.$model->associationType.'/view','id'=>$model->associationId));
+
+    }
+ 
+    /**
+     * @param object $model
+     * @param string $name
+     */
+    private function handleFeedTypeUpload ($model, $name) {
+        $event = new Events;
+        $event->user = Yii::app()->user->getName();
+        if(isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])){
+            $event->text = $_POST['attachmentText'];
+        }else{
+            $event->text = Yii::t('app', 'Attached file: ');
+        }
+        $event->type = 'media';
+        $event->timestamp = time();
+        $event->lastUpdated = time();
+        $event->associationId = $model->id;
+        $event->associationType = 'Media';
+        if($event->save()){
+            //$this->redirect('profile');
+        }else{
+            unlink('uploads/'.$name);
+        }
+
+        if (AuxLib::isMobile ()) {
+
+            $this->redirect (array('/mobile/site/activity'));
+        } else {
+            if (isset ($_POST['profileId'])) {
+                $this->redirect (array('/profile/view', 'id' => $_POST['profileId']));
+            } else {
+                $this->redirect (array('/profile/view', 'id' => Yii::app()->user->getId()));
+            }
+        }
+    }
+
     /**
      * Remove a temp file and the temp folder that is in.
      */
@@ -753,7 +801,7 @@ class SiteController extends x2base {
      */
     public function actionUpload(){
         if(isset($_FILES['upload'])){
-            if(isset($_POST['drive']) && $_POST['drive']){
+            if(isset($_POST['drive']) && $_POST['drive']){ // google drive
                 $auth = new GoogleAuthenticator();
                 if($auth->getAccessToken()){
                     $service = $auth->getDriveService();
@@ -848,13 +896,15 @@ class SiteController extends x2base {
                         throw new CHttpException('400', 'Invalid request');
                     }
                 }
-            }else{
+            }else{ // non-google drive upload
                 $model = new Media;
-                $temp = CUploadedFile::getInstanceByName('upload');
+                $temp = CUploadedFile::getInstanceByName('upload'); // file uploaded through form
                 if(isset($temp)){
                     $name = $temp->getName();
                     $name = str_replace(' ', '_', $name);
                     $check = Media::model()->findAllByAttributes(array('fileName' => $name));
+
+                    // rename file if there name conflicts by suffixing "(n)"
                     if(count($check) != 0){
                         $count = 1;
                         $newName = $name;
@@ -867,10 +917,10 @@ class SiteController extends x2base {
                         }
                         $name = $newName;
                     }
+
                     $username = Yii::app()->user->name;
-                    //echo ($username);
-                    //echo ($name);
-                    //Yii::app ()->end ();
+
+                    // copy file to user's media uploads directory
                     if(FileUtil::ccopy($temp->getTempName(), "uploads/media/$username/$name")){
                         if(isset($_POST['associationId']))
                             $model->associationId = $_POST['associationId'];
@@ -883,74 +933,29 @@ class SiteController extends x2base {
                         $model->lastUpdated = time();
                         $model->fileName = $name;
                         if($model->save()){
-
                         }
-                        if($model->associationType == 'feed'){
-                            $event = new Events;
-                            $event->user = Yii::app()->user->getName();
-                            if(isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])){
-                                $event->text = $_POST['attachmentText'];
-                            }else{
-                                $event->text = Yii::t('app', 'Attached file: ');
-                            }
-                            $event->type = 'media';
-                            $event->timestamp = time();
-                            $event->lastUpdated = time();
-                            $event->associationId = $model->id;
-                            $event->associationType = 'Media';
-                            if($event->save()){
-                                $this->redirect('profile');
-                            }else{
-                                unlink('uploads/'.$name);
-                            }
-                            $this->redirect (array('/profile/view', 'id' => Yii::app()->user->getId()));
-                        }else if($model->associationType == 'docs'){
-                            $this->redirect(array('/docs/docs/index'));
-                        }else if($model->associationType == 'loginSound' || $model->associationType == 'notificationSound'){
-                            /* $profile = Yii::app()->params->profile;
-                              if($model->associationType == 'loginSound'){
-                              $profile->loginSound = $name;
-                              }else{
-                              $profile->notificationSound = $name;
-                              }
-                              $profile->update(array($model->associationType)); */
-                            $this->redirect(array('/profile/settings', 'id' => Yii::app()->user->getId()));
-                        }elseif($model->associationType == 'bg' || $model->associationType == 'bg-private'){
-                            /* $profile = Yii::app()->params->profile;
-                              $profile->backgroundImg = $name;
-                              $profile->update(array('backgroundImg')); */
-                            $this->redirect(array('/profile/settings', 'id' => Yii::app()->user->getId()));
-                        }else{
-                            $note = new Actions;
-                            $note->createDate = time();
-                            $note->dueDate = time();
-                            $note->completeDate = time();
-                            $note->complete = 'Yes';
-                            $note->visibility = '1';
-                            $note->completedBy = Yii::app()->user->getName();
-                            if($model->private){
-                                $note->assignedTo = Yii::app()->user->getName();
-                                $note->visibility = '0';
-                            }else{
-                                $note->assignedTo = 'Anyone';
-                            }
-                            $note->type = 'attachment';
-                            $note->associationId = $_POST['associationId'];
-                            $note->associationType = $_POST['associationType'];
 
-                            $association = $this->getAssociation($note->associationType, $note->associationId);
-                            if($association != null)
-                                $note->associationName = $association->name;
-
-                            $note->actionDescription = $model->fileName.':'.$model->id;
-                            if($note->save()){
-
-                            }else{
-                                unlink('uploads/'.$name);
-                            }
-                            if($model->associationType == 'product')
-                                $this->redirect(array('/products/products/view','id'=>$model->associationId));
-                            $this->redirect(array($model->associationType.'/'.$model->associationType.'/view','id'=>$model->associationId));
+                        // handle different upload types
+                        switch ($model->associationType) {
+                            case 'feed':
+                                $this->handleFeedTypeUpload ($model, $name);
+                                break;
+                            case 'docs':
+                                $this->redirect(array('/docs/docs/index'));
+                                break;
+                            case 'loginSound':
+                            case 'notificationSound':
+                                $this->redirect(
+                                    array('/profile/settings', 'id' => Yii::app()->user->getId()));
+                                break;
+                            case 'bg':
+                            case 'bg-private':
+                                $this->redirect(
+                                    array('/profile/settings', 'id' => Yii::app()->user->getId()));
+                                break;
+                            default:
+                                $this->handleDefaultUpload ($model, $name);
+                                break;
                         }
                     }
                 }else{
@@ -1341,6 +1346,19 @@ class SiteController extends x2base {
     }
 
     /**
+     * Clears remember me cookies and redirects to login page. 
+     */
+    public function actionForgetMe () {
+        $loginForm = new LoginForm;
+        foreach(array('username','rememberMe') as $attr) {
+            // Remove the cookie if they unchecked the box
+
+            AuxLib::clearCookie(CHtml::resolveName($loginForm, $attr));
+        }
+        $this->redirect (array ('login'));
+    }
+
+    /**
      * Displays the login page
      */
     public function actionLogin(){
@@ -1361,9 +1379,14 @@ class SiteController extends x2base {
                     AuxLib::setCookie (CHtml::resolveName ($model, $attr), $model->$attr,
                         2592000);
                 }
+            }else{
+                foreach(array('username','rememberMe') as $attr) {
+                    // Remove the cookie if they unchecked the box
+                    AuxLib::clearCookie(CHtml::resolveName($model, $attr));
+                }
             }
 
-            x2base::cleanUpSessions();
+            Session::cleanUpSessions();
 
             $ip = $this->getRealIp();
 
@@ -1482,7 +1505,7 @@ class SiteController extends x2base {
                     if($model->login(true)){
                         $ip = $this->getRealIp();
 
-                        x2base::cleanUpSessions();
+                        Session::cleanUpSessions();
                         if(isset($_SESSION['sessionId']))
                             $sessionId = $_SESSION['sessionId'];
                         else
@@ -1874,6 +1897,12 @@ class SiteController extends x2base {
         }
         if(isset($_SESSION['access_token']))
             unset($_SESSION['access_token']);
+
+        /*$login = new LoginForm;
+        foreach(array('username', 'rememberMe') as $attr){
+            // Remove the cookie if they unchecked the box
+            AuxLib::clearCookie(CHtml::resolveName($login, $attr));
+        }*/
 
         Yii::app()->user->logout();
 

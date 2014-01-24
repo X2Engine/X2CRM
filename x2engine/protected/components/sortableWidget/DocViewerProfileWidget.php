@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -196,6 +196,27 @@ class DocViewerProfileWidget extends SortableWidget {
                         .widget-edit-button {
                             margin-right: 10px;
                             margin-top: 3px;
+                        }
+
+                        .default-text-container {
+                            text-align: center;
+                            position: absolute;
+                            top: 0;
+                            bottom: 0;
+                            left: 0;
+                            right: 0;
+                        }
+
+                        .default-text-container a {
+                            height: 17%;
+                            text-decoration: none;
+                            font-size: 16px;
+                            margin: auto;
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                            right: 0;
+                            bottom: 0;
                         }
                     "
                 )

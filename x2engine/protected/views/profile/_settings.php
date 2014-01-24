@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -448,18 +448,16 @@ $form = $this->beginWidget('CActiveForm', array(
             <select id="backgroundImg" name="preferences[backgroundImg]"
                     class='theme-attr left'>
                 <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
-                <?php foreach($myBackgrounds->data as $background){ ?>
+                <?php foreach ($myBackgrounds->data as $background) { ?>
                     <option value="<?php
-                echo $background->uploadedBy == null ?
-                        $background->fileName :
-                        ('media/'.$background->uploadedBy.'/'.$background->fileName);
-                    ?>"
-                            <?php
-                            if($background->fileName == $preferences['backgroundImg']){
-                                echo "selected='selected'";
-                            }
-                            ?>>
-                                <?php echo $background->fileName; ?>
+                        echo $background->uploadedBy == null ?
+                            $background->fileName :
+                            ('media/'.$background->uploadedBy.'/'.$background->fileName); ?>"
+                        <?php
+                        if($background->fileName == $preferences['backgroundImg']){
+                            echo "selected='selected'";
+                        } ?>>
+                        <?php echo $background->fileName; ?>
                     </option>
                 <?php } ?>
             </select>

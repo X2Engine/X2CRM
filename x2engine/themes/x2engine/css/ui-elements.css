@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -59,6 +59,14 @@ Select element which doesn't show border or background color difference until ho
     -webkit-border-radius:     3px !important;
     -o-border-radius:         3px !important;
     border: 1px solid white !important;
+}
+.x2-minimal-select-filtercol {
+    border-width: 0;
+    -moz-border-radius:         0 !important;
+    -webkit-border-radius:     0 !important;
+    -o-border-radius:         0 !important;
+    background: none;
+    max-height: 16px;
 }
 
 .submenu-title-bar .x2-minimal-select {
@@ -409,6 +417,16 @@ small x2-button
 /**
  * ------------------ X2Link Drag-n-Drop ------------------
  */
+
+.x2-minimal-link {
+    text-decoration: none;
+    color: #3776CA;
+}
+
+.x2-minimal-link:hover {
+    text-decoration: underline;
+}
+
 .x2-link {
     display: inline-block;
     font-weight: normal;
@@ -781,11 +799,6 @@ div.x2-sortlist a.del {
     cursor: pointer;
     background: url(../images/list_delete.png) top left no-repeat;
 }
-
-
-
-.rating-cancel {    display: none !important;
-}    /* get rid of horrid "cancel rating" on star ratings widget */
 
 .list-view h2, .list-view h3, .list-view h4 {
     display: inline;
@@ -1271,9 +1284,6 @@ Ckeditor
 
 
 
-
-
-
 .x2-icon-button {
     opacity:0.7;
 }
@@ -1283,3 +1293,61 @@ Ckeditor
 }
 
 
+
+/***********************************************************************
+* Enlargeable Image Modal 
+***********************************************************************/
+
+/*
+original image
+*/
+.x2-enlargeable-image {
+    cursor: pointer;
+}
+
+.x2-enlargeable-image-modal {
+    background-color: rgba(0, 0, 0, 0.66);
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10000;
+}
+
+.x2-enlargeable-image-modal img {
+    border: 19px solid black;
+    border-bottom: 25px solid black;
+    border-top: 15px solid black;
+    vertical-align: middle;
+    margin: auto;
+    left: 0;
+    top: -40px;
+    right: 0;
+    bottom: 0;
+    position: fixed;
+}
+
+/*
+close button
+*/
+.x2-enlargeable-image-modal input {
+    position: fixed;
+    margin: auto;
+    right: 0;
+    left: 0;
+    bottom: 4%;
+    background-color: rgb(37, 37, 37);
+    border-radius: 32px;
+    height: 28px;
+    padding: 5px 2px;
+    opacity: 0.5;
+}
+
+.x2-enlargeable-image-modal input:hover {
+    background-color: rgb(44, 44, 44);
+}

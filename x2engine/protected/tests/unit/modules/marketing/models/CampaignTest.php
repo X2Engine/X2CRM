@@ -14,7 +14,7 @@ Yii::import("application.components.permissions.*");
  *
  * @author raymond
  */
-class CampaignTest extends CTestCase {
+class CampaignTest extends X2TestCase {
     public function testGetAccessCriteria() {
         $campaign = new Campaign;
         $criteria = $campaign->getAccessCriteria();

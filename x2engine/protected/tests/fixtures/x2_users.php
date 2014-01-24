@@ -14,11 +14,47 @@ return array(
 		'status' => 1
 	),
 	'testUser' => array(
-		'id' => 12345,
+		'id' => 2,
 		'username' => 'testuser',
 		'firstName' => 'Sales',
 		'lastName' => 'Rep',
 		'emailAddress' => 'sales@rep.com',
+		'password' => '5f4dcc3b5aa765d61d8327deb882cf99', // "password"
+		'userKey' => '5f4dcc3b5aa765d61d8327deb882cf99',
+		'lastUpdated' => time(),
+		'lastLogin' => time(),
+		'status' => 1
+	),
+	'testUser2' => array(
+		'id' => 3,
+		'username' => 'testuser2',
+		'firstName' => 'Sales2',
+		'lastName' => 'Rep2',
+		'emailAddress' => 'sales2@rep.com',
+		'password' => '5f4dcc3b5aa765d61d8327deb882cf99', // "password"
+		'userKey' => '5f4dcc3b5aa765d61d8327deb882cf99',
+		'lastUpdated' => time(),
+		'lastLogin' => time(),
+		'status' => 1
+	),
+	'testUser3' => array(
+		'id' => 4,
+		'username' => 'testuser4',
+		'firstName' => 'Sales4',
+		'lastName' => 'Rep4',
+		'emailAddress' => 'sales4@rep.com',
+		'password' => '5f4dcc3b5aa765d61d8327deb882cf99', // "password"
+		'userKey' => '5f4dcc3b5aa765d61d8327deb882cf99',
+		'lastUpdated' => time(),
+		'lastLogin' => time(),
+		'status' => 1
+	),
+	'testUser4' => array(
+		'id' => 5,
+		'username' => 'testuser5',
+		'firstName' => 'Sales5',
+		'lastName' => 'Rep5',
+		'emailAddress' => 'sales5@rep.com',
 		'password' => '5f4dcc3b5aa765d61d8327deb882cf99', // "password"
 		'userKey' => '5f4dcc3b5aa765d61d8327deb882cf99',
 		'lastUpdated' => time(),

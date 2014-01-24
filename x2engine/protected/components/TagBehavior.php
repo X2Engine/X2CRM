@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -48,15 +48,17 @@ class TagBehavior extends CActiveRecordBehavior {
 
 	/**
 	 * Responds to {@link CModel::onAfterSave} event.
-
+     *
 	 * Matches tags provided they:
 	 *    - start with a #
-	 *    - consist of these characters: UTF-8 letters, numbers, _ and - (but only in the middle of the tag)
+	 *    - consist of these characters: UTF-8 letters, numbers, _ and - (but only in the middle 
+     *        of the tag)
 	 *    - come after a space or . or are at the beginning
 	 *    - are not in quotes
 	 *
 	 * Looks up any current tag records, and saves a tag record for each new tag.
-	 * Note: does not delete tags when they are removed from text fields (this would screw with manual tagging)
+	 * Note: does not delete tags when they are removed from text fields (this would screw with 
+     *  manual tagging)
 	 *
 	 * @param CModelEvent $event event parameter
 	 */

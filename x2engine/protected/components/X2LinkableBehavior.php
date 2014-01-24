@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -109,15 +109,15 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 	 * @return string a link to the model
 	 */
 	public function getUrlLink() {
-		$name = ($this->owner->hasAttribute('name') || method_exists ($this->owner, 'getName')) ? $this->owner->name : '';
+		$name = ($this->owner->hasAttribute('name') || $this->owner->canGetProperty('name') || property_exists($this->owner, 'name')) ? $this->owner->name : '';
 		if($name == '')
-			$name = $this->owner->hasAttribute('id') ? '&#35;'.$this->owner->id : '';
+			$name = $this->owner->hasAttribute('id') ? '#'.$this->owner->id : '';
 
 		$url = $this->url;
 	        if($this->owner instanceof Contacts){
-        	    return CHtml::link('<span>'.$name.'</span>',$url,array('class'=>'contact-name'));
+        	    return CHtml::link('<span>'.CHtml::encode($name).'</span>',$url,array('class'=>'contact-name'));
 	        }else{
-        	    return CHtml::link('<span>'.$name.'</span>',$url);
+        	    return CHtml::link('<span>'.CHtml::encode($name).'</span>',$url);
 	        }
 	}
 

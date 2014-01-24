@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -73,7 +73,8 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
         if (!isset ($this->_dataProvider)) {
             $resultsPerPage = self::getJSONProperty (
                 $this->profile, 'resultsPerPage', $this->widgetType);
-            $this->_dataProvider = $this->model->search ($resultsPerPage, get_called_class ());
+            $this->_dataProvider = $this->model->search (
+                $resultsPerPage, get_called_class (), true);
         }
         return $this->_dataProvider;
     }
@@ -87,24 +88,33 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
                 parent::getGridViewConfig (),
                 array (
                     'defaultGvSettings'=>array(
+                        'isActive' => 65,
                         'fullName' => 125,
-                        'tagLine' => 165,
+                        'tagLine' => 100,
                         'emailAddress' => 100,
                         'cellPhone' => 100,
-                        'isActive' => 80,
+                        'lastLogin' => 80,
                     ),
                     'template'=>
                         '<div class="page-title">{buttons}{filterHint}'.
                         '{summary}{topPager}</div>{items}{pager}',
                     'modelAttrColumnNames'=>array (
                         'tagLine', 'username', 'officePhone', 'cellPhone', 'emailAddress', 
-                        'googleId'
+                        'googleId', 'isActive'
                     ),
                     'specialColumns'=>array(
                         'fullName'=>array(
                             'name'=>'fullName',
                             'header'=>Yii::t('profile', 'Full Name'),
                             'value'=>'CHtml::link($data->fullName,array("view","id"=>$data->id))',
+                            'type'=>'raw',
+                        ),
+                        'lastLogin'=>array(
+                            'name'=>'lastLogin',
+                            'header'=>Yii::t('profile', 'Last Login'),
+                            'value'=>'($data->user->lastLogin == 0 ? "" : '.
+                                'Yii::app()->dateFormatter->formatDateTime ('.
+                                    '$data->user->lastLogin, "medium"))',
                             'type'=>'raw',
                         ),
                         'isActive'=>array(

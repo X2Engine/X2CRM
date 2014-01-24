@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,10 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+Yii::app()->clientScript->registerMain();
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/fieldEditor.js', CClientScript::POS_HEAD);
+$loadUrl = Yii::app()->createUrl('/admin/createUpdateField');
+Yii::app()->clientScript->registerScript('fieldEditor-config', 'x2.fieldEditor.loadUrl = '.json_encode($loadUrl).';', CClientScript::POS_READY);
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Modified Fields'); ?></h2></div>
 <div class="form">
@@ -40,6 +44,7 @@
 </div>
 <div class="form">
     <?php
+
     $this->widget('zii.widgets.grid.CGridView', array(
         'id' => 'fields-grid',
         'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -69,33 +74,21 @@
          */
         ),
     ));
+
     ?>
     <br>
-    <a href="#" onclick="$('#addField').toggle();$('#removeField').hide();$('#customizeField').hide();" class="x2-button"><?php echo Yii::t('admin','Add Field');?></a>
-    <a href="#" onclick="$('#removeField').toggle();$('#addField').hide();$('#customizeField').hide();" class="x2-button"><?php echo Yii::t('admin','Remove Field');?></a>
-    <a href="#" onclick="$('#customizeField').toggle();$('#addField').hide();$('#removeField').hide();" class="x2-button"><?php echo Yii::t('admin','Customize Field');?></a>
+    <a href="javascript:void(0);" onclick="$('#createUpdateField').show();$('#removeField').hide();x2.fieldEditor.load('create')" class="x2-button"><?php echo Yii::t('admin','Add Field');?></a>
+    <a href="javascript:void(0);" onclick="$('#removeField').show();$('#createUpdateField').hide();" class="x2-button"><?php echo Yii::t('admin','Remove Field');?></a>
+    <a href="javascript:void(0);" onclick="$('#createUpdateField').show();$('#removeField').hide();x2.fieldEditor.load('update')" class="x2-button"><?php echo Yii::t('admin','Customize Field');?></a>
     <br>
     <br>
-    <div id="addField" style="display:none;">
-        <?php
-        $this->renderPartial('addField', array(
-            'model' => $model,
-        ));
-        ?>
+    <div id="createUpdateField" style="display:none">
     </div>
 
     <div id="removeField" style="display:none;">
         <?php
         $this->renderPartial('removeFields', array(
             'fields' => $fields,
-        ));
-        ?>
-    </div>
-
-    <div id="customizeField" style="display:none;">
-        <?php
-        $this->renderPartial('customizeFields', array(
-            'model' => $model,
         ));
         ?>
     </div>

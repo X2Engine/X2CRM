@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -140,9 +140,8 @@ class FormLayout extends CActiveRecord {
         $attributes = array('model'=>ucfirst($modelName),'defaultForm'=>1);
 
         $layout = self::model()->findByAttributes($attributes);
-        if (!isset ($layout)) return array();
 
-	    $layoutData = json_decode($layout->layout,true);
+        $layoutData = json_decode((isset($layout)? $layout->layout : X2Model::getDefaultFormLayout($modelName)),true);
 
         $editableFieldsInLayout = array ();
 	    if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {

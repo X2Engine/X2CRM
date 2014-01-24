@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -40,6 +40,7 @@ $enableName = $name.'['.$tag.'][enabled]';
     <input value="1" <?php echo $enabled ? 'checked="checked"' : ''; ?> type="checkbox" name="<?php echo $enableName ?>" class="cron-enabled" id="cron-job-<?php echo $tag; ?>" />&nbsp;
     <label for="<?php echo $enableName; ?>" class="<?php echo $labelClass; ?>"><?php echo $title; ?></label>
     <p><?php echo $longdesc; ?></p>
+    <p><?php echo Yii::t('admin','Command:').'&nbsp;<span style="font-family: monospace;font-weight:bold;">'.CHtml::encode($displayCmd).'</span>'; ?></p>
     <div id="cron-job-<?php echo $tag; ?>-form" class="cron-job-form">
         <p><?php echo $instructions; ?></p>
         <?php echo CrontabUtil::schedForm($initialCron, $name, $userCmd ? $cmd : "echo>/dev/null ", $tag, $initialCron['desc']); ?>

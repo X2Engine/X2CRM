@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -110,23 +110,35 @@ $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelTy
         ));
         ?>
     </div>
-<?php $this->widget('Attachments',array('associationType'=>'opportunities','associationId'=>$model->id,'startHidden'=>true)); ?>
 
-<?php
+<?php 
+$this->widget(
+    'Attachments',
+    array(
+        'associationType'=>'opportunities','associationId'=>$model->id,
+        'startHidden'=>true
+    )
+); 
+
 //$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'Opportunity'));
 
 $linkModel = X2Model::model('Accounts')->findByPk($model->accountName);
+
 if (isset($linkModel))
 	$accountName = json_encode($linkModel->name);
 else
 	$accountName = json_encode('');
+
 $createContactUrl = $this->createUrl('/contacts/contacts/create');
 $createAccountUrl = $this->createUrl('/accounts/accounts/create');
 $createOpportunityUrl=$this->createUrl('/opportunities/opportunities/create');
 $assignedTo = json_encode($model->assignedTo);
-$tooltip = json_encode(Yii::t('opportunities', 'Create a new Opportunity associated with this Opportunity.'));
-$contactTooltip = json_encode(Yii::t('opportunities', 'Create a new Contact associated with this Opportunity.'));
-$accountsTooltip = json_encode(Yii::t('opportunities', 'Create a new Account associated with this Opportunity.'));
+$tooltip = json_encode(
+    Yii::t('opportunities', 'Create a new Opportunity associated with this Opportunity.'));
+$contactTooltip = json_encode(
+    Yii::t('opportunities', 'Create a new Contact associated with this Opportunity.'));
+$accountsTooltip = json_encode(
+    Yii::t('opportunities', 'Create a new Account associated with this Opportunity.'));
 
 Yii::app()->clientScript->registerScript('create-model', "
 	$(function() {

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -722,7 +722,8 @@ class AdminController extends Controller {
             $values = $_POST['Values'];
             $criteria = array();
             for($i = 0; $i < count($values['field']); $i++){
-                $tempArr = array($values['field'][$i], $values['comparison'][$i], $values['value'][$i]);
+                $tempArr = array(
+                    $values['field'][$i], $values['comparison'][$i], $values['value'][$i]);
                 $criteria[] = implode(',', $tempArr);
             }
             $model->criteria = json_encode($criteria);
@@ -738,7 +739,10 @@ class AdminController extends Controller {
             $model->users = Fields::parseUsers($model->users);
             $check = LeadRouting::model()->findByAttributes(array('priority' => $model->priority));
             if(isset($check)){
-                $query = "UPDATE x2_lead_routing SET priority=priority+1 WHERE priority>='$model->priority'";
+                $query = 
+                    "UPDATE x2_lead_routing ".
+                    "SET priority=priority+1 ".
+                    "WHERE priority>='$model->priority'";
                 $command = Yii::app()->db->createCommand($query);
                 $command->execute();
             }
@@ -872,6 +876,7 @@ class AdminController extends Controller {
 
         if(isset($_POST['Roles'])){
             $id = $_POST['Roles']['name'];
+            $timeout = $_POST['Roles']['timeout'];
             $model = Roles::model()->findByAttributes(array('name' => $id));
             $id = $model->id;
             if(!isset($_POST['viewPermissions']))
@@ -887,6 +892,7 @@ class AdminController extends Controller {
             else
                 $users = array();
             $model->users = "";
+            $model->timeout = $timeout * 60; // Timeout is specified in minutes
             if($model->save()){
 
                 $userRoles = RoleToUser::model()->findAllByAttributes(array('roleId' => $model->id));
@@ -1115,6 +1121,39 @@ class AdminController extends Controller {
             }
             /* end x2temp */
             unset($unselected['admin']);
+
+            echo "<div class='row'><label>Timeout</label>";
+            echo Yii::t('admin', 'Set role session expiration time (in minutes).');
+            echo "<br />";
+            $this->widget('zii.widgets.jui.CJuiSlider', array(
+                'value' => $role->timeout / 60,
+                // additional javascript options for the slider plugin
+                'options' => array(
+                    'min' => 5,
+                    'max' => 1440,
+                    'step' => 5,
+                    'change' => "js:function(event,ui) {
+                                            $('#editTimeout').val(ui.value);
+                                            $('#save-button').addClass('highlight');
+                                    }",
+                    'slide' => "js:function(event,ui) {
+                                            $('#editTimeout').val(ui.value);
+                                    }",
+                ),
+                'htmlOptions' => array(
+                    'style' => 'width:340px;margin:10px 0;',
+                    'id' => 'editTimeoutSlider'
+                ),
+            ));
+            echo CHtml::activeTextField($role, 'timeout', array('id'=>'editTimeout'));
+            echo "</div>";
+            Yii::app()->clientScript->registerScript('timeoutInMinutes', "
+                $('#editTimeout').val( $('#editTimeout').val() / 60 );
+            ", CClientScript::POS_READY);
+            echo "<script>";
+            Yii::app()->clientScript->echoScripts();
+            echo "</script>";
+
             echo "<div id='users'><label>Users</label>";
             echo CHtml::dropDownList('users[]', $selected, $unselected, array('class' => 'multiselect', 'multiple' => 'multiple', 'size' => 8));
             echo "</div>";
@@ -1364,43 +1403,6 @@ class AdminController extends Controller {
     }
 
     /**
-     * Echo a list of model attributes as a dropdown.
-     *
-     * This method is called via AJAX as a part of creating notification criteria.
-     * It takes the model or module name as POST data and returns a list of dropdown
-     * options consisting of the fields available to that model.
-     */
-    public function actionGetAttributes(){
-        $data = array();
-        $type = null;
-
-        if(isset($_POST['Criteria']['modelType']))
-            $type = ucfirst($_POST['Criteria']['modelType']);
-        if(isset($_POST['Fields']['modelName']))
-            $type = $_POST['Fields']['modelName'];
-
-           if(isset($type)){
-            if($type == 'Marketing') $type = 'Campaign';
-            elseif ($type == 'Quotes') $type = 'Quote';
-            elseif ($type == 'Products') $type = 'Product';
-            elseif ($type == 'Opportunities') $type = 'Opportunity';
-
-            foreach(X2Model::model('Fields')->findAllByAttributes(array('modelName' => $type)) as $field){
-                if($field->fieldName != 'id'){
-                    if(isset($_POST['Criteria']))
-                        $data[$field->fieldName] = $field->attributeLabel;
-                    else
-                        $data[$field->id] = $field->attributeLabel;
-                }
-            }
-        }
-        asort($data);
-        $data = array('' => '-') + $data;
-        $htmlOptions = array();
-        echo CHtml::listOptions('', $data, $htmlOptions);
-    }
-
-    /**
      * @deprecated
      * Deprecated function to set user timeout.
      *
@@ -1639,97 +1641,73 @@ class AdminController extends Controller {
     }
 
     /**
-     * Add a custom field.
+     * Form/submit action for adding or customizing a field.
      *
      * This method allows for the creation of custom fields linked to any customizable
-     * module in X2CRM.  This is used by "Manage Fields."
+     * module in X2CRM.  This is used by "Manage Fields." It is used to reload the
+     * form via AJAX.
+     * 
+     * @param bool $search If set to 1/true, perform a lookup for an existing field
+     * @param bool $save If set to 1/true, attempt to save the model; otherwise just echo the form.
      */
-    public function actionAddField(){
-        $model = new Fields;
-        if(isset($_POST['Fields'])){
+    public function actionCreateUpdateField($search=0,$save=0,$override=0){
+        if($search) {
+            // A field is being looked up, to populate form fields for customizing
+            // an existing field
+            $new = false;
+            if(isset($_POST['Fields'])) {
+                $model = Fields::model()->findByAttributes(array_intersect_key($_POST['Fields'],array_fill_keys(array('modelName','fieldName'),null)));
+            }
+        } else {
+            // Requesting the form
+            $new = true;
+        }
+        if(!isset($model) || !(bool) $model){
+            // If the field model wasn't found, create the object
+            $model = new Fields;
+        }
+        
+        if(isset($_POST['Fields']) && ($model->isNewRecord || $override)){
             $model->attributes = $_POST['Fields'];
-            (isset($_POST['Fields']['required']) && $_POST['Fields']['required'] == 1) ? $model->required = 1 : $model->required = 0;
-            (isset($_POST['Fields']['searchable']) && $_POST['Fields']['searchable'] == 1) ? $model->searchable = 1 : $model->searchable = 0;
-            (isset($_POST['Fields']['uniqueConstraint']) && $_POST['Fields']['uniqueConstraint'] == 1) ? $model->uniqueConstraint = 1 : $model->uniqueConstraint = 0;
-            $model->type = $_POST['Fields']['type'];
-            // $model->visible=1;
-            $model->custom = 1;
-            $model->modified = 1;
-            $model->modelName = X2Model::getModelName($model->modelName);
-            if(strpos('c_', $model->fieldName) !== 0)
-            // This is a safeguard against fields that end up having
-            // identical names to fields added later in updates.
-                $model->fieldName = "c_{$model->fieldName}";
-
-            $fieldType = $model->type;
-            $columnDefinitions = Fields::getFieldTypes('columnDefinition');
-            if(isset($columnDefinitions[$fieldType])){
-                $fieldType = $columnDefinitions[$fieldType];
-            }else{
-                $fieldType = 'VARCHAR(250)';
-            }
-
-            if($model->type == 'dropdown'){
-                if(isset($_POST['dropdown'])){
-                    $id = $_POST['dropdown'];
-                    $model->linkType = $id;
-                }
-            }
-            if($model->type == "link"){
-                if(isset($_POST['dropdown'])){
-                    $linkType = $_POST['dropdown'];
-                    $model->linkType = ucfirst($linkType);
-                }
-            }
-            $tableName = X2Model::model($model->modelName)->tableName();
-            $field = $model->fieldName;
-            if(preg_match("/\s/", $field)){
-
-            }else{
-                if($model->save()){
-                    $sql = "ALTER TABLE $tableName ADD COLUMN `$field` $fieldType";
-                    $command = Yii::app()->db->createCommand($sql);
-                    try{
-                        $result = $command->query();
-                    }catch(CDbException $e){
-                        $model->delete(); // If the SQL failed, remove the x2_fields record of it to prevent issues.
-                    }
-                }
-            }
-            $this->redirect('manageFields');
-        }
-    }
-
-    /**
-     * Validate a field before allowing it to be added to a model as a custom field.
-     *
-     * This function will check a field name against a list of disallowed fields
-     * within the software. This includes model / field combinations already in
-     * existence (e.g. Contacts & "First Name"), MySQL reserved words, and X2
-     * reserved words.
-     * @param string $fieldName The name of the field being added
-     * @param string $modelName The name of the model the field is being added to
-     */
-    public function actionValidateField($fieldName, $modelName){
-
-        function in_arrayi($needle, $haystack){
-            return in_array(strtolower($needle), array_map('strtolower', $haystack));
         }
 
-        $reservedWords = array_merge(require('protected/data/mysqlReservedWords.php'), require('protected/data/modelReservedWords.php'));
+        $message = '';
+        $error = false;
 
-        if(in_arrayi($fieldName, $reservedWords)){
-            echo Yii::t('admin', 'This field is a MySQL or X2CRM reserved word.  Choose a different field name.');
-        }elseif(preg_match('/\W/', $fieldName) || preg_match('/^[^a-zA-Z]+/', $fieldName)){
-            echo Yii::t('admin', 'Field names can only contain alphanumeric characters.');
-        }else{
-            $field = X2Model::model('Fields')->findByAttributes(array('modelName' => $modelName, 'fieldName' => 'c_'.$fieldName));
-            if(isset($field)){
-                echo Yii::t('admin', "That model & field name combination is already in use.");
-            }else{
-                echo "0";
+        if(isset($_POST['Fields']) && $save) {
+            $model->attributes = $_POST['Fields'];
+            // Set the default value
+            if(isset($_POST['AmorphousModel'])) {
+                $aModel = $_POST['AmorphousModel'];
+                $model->defaultValue = $model->parseValue($aModel['customized_field']);
+            }
+
+            $new = $model->isNewRecord;
+            $model->modified = 1; // The field has been modified
+            if($new) // The field should be marked as custom since the user is adding it
+                $model->custom = 1;
+
+            if($model->save()) {
+                $message = $new ? Yii::t('admin','Field added.') : Yii::t('admin','Field modified successfully.');
+                if($new) {
+                    $model = new Fields;
+                }
+            } else {
+                $error = true;
+                $message = Yii::t('admin','Please correct the following errors.');
             }
         }
+        $dummyModel = new AmorphousModel;
+        $dummyModel->addField($model,'customized_field');
+        $dummyModel->setAttribute('customized_field',$model->defaultValue);
+
+        $this->renderPartial('createUpdateField',array(
+            'model' => $model,
+            'new' => $new,
+            'dummyModel' => $dummyModel,
+            'message' => $message,
+            'error' => $error
+        ));
     }
 
     /**
@@ -1739,113 +1717,12 @@ class AdminController extends Controller {
      * be deleted in this way.
      */
     public function actionRemoveField(){
-
         if(isset($_POST['field']) && $_POST['field'] != ""){
             $id = $_POST['field'];
             $field = Fields::model()->findByPk($id);
-            $fieldName = strtolower($field->fieldName);
-            $tableName = X2Model::model($field->modelName)->tableName();
-            if($field->delete()){
-                $sql = "ALTER TABLE `$tableName` DROP COLUMN `$fieldName`";
-                $command = Yii::app()->db->createCommand($sql);
-                $result = $command->query();
-            }
+            $field->delete();
         }
         $this->redirect('manageFields');
-    }
-
-    /**
-     * Edit a pre-existing field.
-     *
-     * This method allows for the editing of both user created and default fields.
-     * This also changes the database schema to fit the field type and as such must
-     * be used very carefully.
-     */
-    public function actionCustomizeFields(){
-
-        if(isset($_POST['Fields'], $_POST['Fields']['id']) && !empty($_POST['Fields']['id'])){
-            $fieldModel = X2Model::model('Fields')->findByPk($_POST['Fields']['id']);
-            $oldType = $fieldModel->type;
-            $fieldModel->attributes = $_POST['Fields'];
-            $fieldModel->type = $_POST['Fields']['type'];
-            if($fieldModel->type == 'dropdown'){
-                if(isset($_POST['dropdown'])){
-                    $id = $_POST['dropdown'];
-                    $fieldModel->linkType = $id;
-                }
-            }
-            if($fieldModel->type == "link"){
-                if(isset($_POST['dropdown'])){
-                    $linkType = $_POST['dropdown'];
-                    $fieldModel->linkType = ucfirst($linkType);
-                }
-            }
-            $fieldType = $fieldModel->type;
-            $columnDefinitions = Fields::getFieldTypes('columnDefinition');
-            if(isset($columnDefinitions[$fieldType])){
-                $fieldType = $columnDefinitions[$fieldType];
-            }else{
-                $fieldType = 'VARCHAR(250)';
-            }
-
-            $tableName = X2Model::model($fieldModel->modelName)->tableName();
-            $fieldModel->modified = 1;
-            $fieldName = $fieldModel->fieldName;
-            (isset($_POST['Fields']['required']) && $_POST['Fields']['required'] == 1) ? $fieldModel->required = 1 : $fieldModel->required = 0;
-            (isset($_POST['Fields']['uniqueConstraint']) && $_POST['Fields']['uniqueConstraint'] == 1) ? $fieldModel->uniqueConstraint = 1 : $fieldModel->uniqueConstraint = 0;
-            (isset($_POST['Fields']['searchable']) && $_POST['Fields']['searchable'] == 1) ? $fieldModel->searchable = 1 : $fieldModel->searchable = 0;
-            if($fieldModel->save()){
-                if($fieldType != $oldType){
-                    $sql = "ALTER TABLE `$tableName` MODIFY COLUMN `$fieldName` $fieldType";
-                    $command = Yii::app()->db->createCommand($sql);
-                    $result = $command->query();
-                }
-                $this->redirect('manageFields');
-            }
-        }
-        $this->redirect('manageFields');
-    }
-
-    /**
-     * Echo a dropdown of field data.
-     *
-     * This method is called via AJAX as part of editing fields.  It echoes back
-     * a list of all the relevant attributes for a field when a dropdown option
-     * is selected.
-     */
-    public function actionGetFieldData(){
-
-        if(isset($_POST['Fields']['id'])){
-            $fieldModel = X2Model::model('Fields')->findByPk($_POST['Fields']['id']);
-            $temparr = $fieldModel->attributes;
-            if(!empty($fieldModel->linkType)){
-                $type = $fieldModel->type;
-                if($type == 'link'){
-                    $query = Yii::app()->db->createCommand()
-                            ->select('modelName')
-                            ->from('x2_fields')
-                            ->group('modelName')
-                            ->queryAll();
-                    $arr = array();
-                    foreach($query as $array){
-                        if($array['modelName'] != 'Calendar')
-                            $arr[$array['modelName']] = $array['modelName'];
-                    }
-                    $temparr['dropdown'] = CHtml::dropDownList('dropdown', $fieldModel->linkType, $arr);
-                } elseif($type == 'dropdown'){
-                    $dropdowns = Dropdowns::model()->findAll();
-                    $arr = array();
-                    foreach($dropdowns as $dropdown){
-                        $arr[$dropdown->id] = $dropdown->name;
-                    }
-
-                    $temparr['dropdown'] = CHtml::dropDownList('link_dropdown', '', $arr);
-                }
-            }else{
-                $temparr['dropdown'] = "";
-            }
-            echo CJSON::encode($temparr);
-        }
     }
 
     /**
@@ -2198,14 +2075,19 @@ class AdminController extends Controller {
                         }
                     }
                     if(is_dir('protected/modules/'.$moduleName.'/views/default')){ // The view files need to be updated to the new format
-                        if(rename('protected/modules/'.$moduleName.'/views/default', 'protected/modules/'.$moduleName.'/views/'.$moduleName)){
-                            $status[$moduleName]['messages'][]=Yii::t('admin','Module view folder successfully renamed.');
-                        }else{
-                            $status[$moduleName]['error']=Yii::t('admin','Fatal error - Unable to rename module view folder. Aborting module conversion.');
-                            if($backupFlag){
-                                FileUtil::rrmdir('protected/modules/'.$moduleName);
-                                if(FileUtil::ccopy('backup/modules/'.$moduleName, 'protected/modules/'.$moduleName)){
-                                    $status[$moduleName]['error'].=" ".Yii::t('admin','Module backup was successfully restored.');
+                        if (is_dir('protected/modules/'.$moduleName.'/views/'.$moduleName)) {
+                            FileUtil::ccopy('protected/modules/'.$moduleName.'/views/default/', 'protected/modules/'.$moduleName.'/views/'.$moduleName);
+                            $status[$moduleName]['messages'][]=Yii::t('admin', 'Module view folder already exists. View files successfully copied.');
+                        }else {
+                            if(rename('protected/modules/'.$moduleName.'/views/default', 'protected/modules/'.$moduleName.'/views/'.$moduleName)){
+                                $status[$moduleName]['messages'][]=Yii::t('admin','Module view folder successfully renamed.');
+                            }else{
+                               $status[$moduleName]['error']=Yii::t('admin','Fatal error - Unable to rename module view folder. Aborting module conversion.');
+                                if($backupFlag){
+                                    FileUtil::rrmdir('protected/modules/'.$moduleName);
+                                    if(FileUtil::ccopy('backup/modules/'.$moduleName, 'protected/modules/'.$moduleName)){
+                                        $status[$moduleName]['error'].=" ".Yii::t('admin','Module backup was successfully restored.');
+                                    }
                                 }
                             }
                         }
@@ -2410,6 +2292,16 @@ class AdminController extends Controller {
                     $moduleRecord->toggleable = 1;
                     $moduleRecord->menuPosition = Modules::model()->count();
                     $moduleRecord->save();
+
+                    Yii::import('application.modules.'.$moduleName.'.models.*');
+                    $layoutModel = new FormLayout;
+                    $layoutModel->model = ucfirst($moduleName);
+                    $layoutModel->version = "Default";
+                    $layoutModel->layout = X2Model::getDefaultFormLayout($moduleName);
+                    $layoutModel->defaultView = true;
+                    $layoutModel->defaultForm = true;
+                    $layoutModel->save();
+
                     $this->redirect(array('/'.$moduleName.'/index'));
                 }
             }
@@ -2438,13 +2330,13 @@ class AdminController extends Controller {
 			lastUpdated INT,
 			updatedBy VARCHAR(250)
 			) COLLATE = utf8_general_ci",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom) VALUES ('$moduleTitle', 'id', 'ID', '0')",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'name', 'Name', '0', 'varchar')",
+            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, readOnly) VALUES ('$moduleTitle', 'id', 'ID', '0', '1')",
+            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type, required) VALUES ('$moduleTitle', 'name', 'Name', '0', 'varchar', '1')",
             "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'assignedTo', 'Assigned To', '0', 'assignment')",
             "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'description', 'Description', '0', 'text')",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'createDate', 'Create Date', '0', 'date')",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'lastUpdated', 'Last Updated', '0', 'date')",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'updatedBy', 'Updated By', '0', 'assignment')");
+            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type, readOnly) VALUES ('$moduleTitle', 'createDate', 'Create Date', '0', 'date', '1')",
+            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type, readOnly) VALUES ('$moduleTitle', 'lastUpdated', 'Last Updated', '0', 'date', '1')",
+            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type, readOnly) VALUES ('$moduleTitle', 'updatedBy', 'Updated By', '0', 'assignment', '1')");
         foreach($sqlList as $sql){
             $command = Yii::app()->db->createCommand($sql);
             $command->execute();
@@ -3224,19 +3116,21 @@ class AdminController extends Controller {
             $model = Dropdowns::model()->findByAttributes(array('name' => $name));
             $str = "";
 
-            $options = json_decode($model->options);
-            foreach($options as $option){
-                $str.="<li>
-						<input type=\"text\" size=\"30\"  name=\"Dropdowns[options][]\" value='$option' />
-						<div class=\"\">
-							<a href=\"javascript:void(0)\" onclick=\"moveStageUp(this);\">[".Yii::t('workflow', 'Up')."]</a>
-							<a href=\"javascript:void(0)\" onclick=\"moveStageDown(this);\">[".Yii::t('workflow', 'Down')."]</a>
-							<a href=\"javascript:void(0)\" onclick=\"deleteStage(this);\">[".Yii::t('workflow', 'Del')."]</a>
-						</div>
-						<br />
-					</li>";
+            if ($model != null) {
+                $options = json_decode($model->options);
+                foreach($options as $option){
+                    $str.="<li>
+                                                    <input type=\"text\" size=\"30\"  name=\"Dropdowns[options][]\" value='$option' />
+                                                    <div class=\"\">
+                                                            <a href=\"javascript:void(0)\" onclick=\"moveStageUp(this);\">[".Yii::t('workflow', 'Up')."]</a>
+                                                            <a href=\"javascript:void(0)\" onclick=\"moveStageDown(this);\">[".Yii::t('workflow', 'Down')."]</a>
+                                                            <a href=\"javascript:void(0)\" onclick=\"deleteStage(this);\">[".Yii::t('workflow', 'Del')."]</a>
+                                                    </div>
+                                                    <br />
+                                            </li>";
+                }
+                echo $str.CHtml::activeLabel($model, 'multi').'&nbsp;'.CHtml::activeCheckBox($model, 'multi');
             }
-            echo $str.CHtml::activeLabel($model, 'multi').'&nbsp;'.CHtml::activeCheckBox($model, 'multi');
         }
     }
 
@@ -3248,28 +3142,18 @@ class AdminController extends Controller {
      */
     public function actionGetFieldType(){
         if(isset($_POST['Fields']['type'])){
+            $field = new Fields;
+            $field->attributes = $_POST['Fields'];
             $type = $_POST['Fields']['type'];
-            if($type == "dropdown"){
-                $dropdowns = Dropdowns::model()->findAll();
-                $arr = array();
-                foreach($dropdowns as $dropdown){
-                    $arr[$dropdown->id] = $dropdown->name;
-                }
+            $model = new AmorphousModel();
+            $model->addField($field,'customized_field');
 
-                echo CHtml::dropDownList('dropdown', '', $arr);
-            }elseif($type == 'link'){
-                $query = Yii::app()->db->createCommand()
-                        ->select('modelName')
-                        ->from('x2_fields')
-                        ->group('modelName')
-                        ->queryAll();
-                $arr = array();
-                foreach($query as $array){
-                    if($array['modelName'] != 'Calendar')
-                        $arr[$array['modelName']] = $array['modelName'];
-                }
-                echo CHtml::dropDownList('dropdown', '', $arr);
-            }
+            $this->renderPartial('fieldDefault',array(
+                'field' => $field,
+                'dummyModel' => $model,
+                'type' => $type,
+                'echoScripts' => true
+            ));
         }
     }
 
@@ -3801,26 +3685,37 @@ class AdminController extends Controller {
      */
     public function actionUpdaterSettings(){
         $admin = &Yii::app()->params->admin;
+        // Save new updater cron settings in crontab
+        $cf = new CronForm;
+        $cf->jobs = array(
+            'app_update' => array(
+                'cmd' => Yii::app()->basePath.DIRECTORY_SEPARATOR.'yiic update app --lock=1',
+                'desc' => Yii::t('admin', 'Automatic software updates cron job'),
+            ),
+        );
         if(isset($_POST['Admin'])){
             $admin->setAttributes($_POST['Admin']);
             foreach(array('unique_id', 'edition') as $var)
                 if(isset($_POST['unique_id']))
                     $admin->$var = $_POST[$var];
             if($admin->save()){
-                // Save new updater cron settings in crontab
-                $cf = new CronForm;
-                $cf->jobs = array(
-                    'app_update' => array(
-                        'cmd' => Yii::app()->basePath.DIRECTORY_SEPARATOR.'yiic update app --lock=1',
-                        'desc' => Yii::t('admin', 'Automatic software updates cron job'),
-                    ),
-                );
-                $cf->save($_POST);
+                if(isset($_POST['crontab_submit'])){
+                    // Save new updater cron settings in crontab
+                    $cf->save($_POST);
+                }
                 $this->redirect('updaterSettings');
             }
         }
+        foreach($cf->jobs as $tag => $attributes){
+            $commands[$tag] = $attributes['cmd'];
+        }
+        if(isset($_POST['crontab_submit'])){
+            // Save new updater cron settings in crontab
+            $cf->save($_POST);
+        }
         $this->render('updaterSettings', array(
             'model' => $admin,
+            'displayCmds' => $commands
         ));
     }
 
@@ -3922,29 +3817,6 @@ class AdminController extends Controller {
       public function actionViewLogs() {
       $this->render('viewLogs');
       } */
-
-    /**
-     * Improved version of array_search that allows for regex searching
-     *
-     * @param string $find Regex to search on
-     * @param array $in_array An array to search in
-     * @param array $keys_found An array of keys which meet the regex
-     * @return type Returns the an array of keys if $in_array is valid, or false if not.
-     */
-    function Array_Search_Preg($find, $in_array, $keys_found = Array()){
-        if(is_array($in_array)){
-            foreach($in_array as $key => $val){
-                if(is_array($val))
-                    $this->Array_Search_Preg($find, $val, $keys_found);
-                else{
-                    if(preg_match('/'.$find.'/', $val))
-                        $keys_found[] = $key;
-                }
-            }
-            return $keys_found;
-        }
-        return false;
-    }
 
     /**
      * Prints an error message explaing what has gone wrong when the classes are missing.

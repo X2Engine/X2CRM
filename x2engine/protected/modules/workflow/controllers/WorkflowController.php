@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -88,7 +88,7 @@ class WorkflowController extends x2base {
 	
 	// Displays workflow table/funnel diagram
 	public function actionView($id) {
-        $dateRange=$this->getDateRange();
+        $dateRange=X2DateUtil::getDateRange();
 		if(isset($_GET['stage']) && is_numeric($_GET['stage']))
 			$viewStage = $_GET['stage'];
 		else
@@ -525,7 +525,7 @@ class WorkflowController extends x2base {
 	public function actionGetStageMembers($workflowId,$stage,$start,$end,$range,$user) {
             
         
-        $dateRange=$this->getDateRange();
+        $dateRange=X2DateUtil::getDateRange();
         if(!empty($user)){
             $userString=" AND x2_actions.assignedTo='$user' ";
         }else{
@@ -704,7 +704,7 @@ class WorkflowController extends x2base {
 		$currentAmount=0;
 		$count=0;
 		foreach($models as $model){
-			$dateRange=$this->getDateRange();
+			$dateRange=X2DateUtil::getDateRange();
 			if(!empty($user)){
 				$userString=" AND x2_actions.assignedTo='$user' ";
 			}else{

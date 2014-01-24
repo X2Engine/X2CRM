@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -58,34 +58,36 @@ class X2GridViewSortableWidgetsBehavior extends CBehavior {
             $this->owner->sortableWidget->widgetType);
 
         // add a dropdown to the summary text that let's user set how many rows to show on each page
-        $this->owner->summaryText = Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
-            . '<div class="form no-border" style="display:inline;"> '
-            . CHtml::dropDownList(
-                $widgetClass.'resultsPerPage', $resultsPerPage,
-                Profile::getPossibleResultsPerPage(), array(
+        $this->owner->summaryText = Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>').
+            '<div class="form no-border" style="display:inline;">'.
+            CHtml::dropDownList(
+                $widgetClass.'resultsPerPage', 
+                $resultsPerPage,
+                Profile::getPossibleResultsPerPage(), 
+                array(
                     'class' => 'x2-minimal-select',
-                    'ajax' => array(
-                        'url' => Yii::app()->controller->createUrl ('/profile/setWidgetSetting'),
-                        'type' => 'POST',
-                        'data' => array (
-                            'key' => "resultsPerPage",
-                            'value' => "js: $(this).val()",
-                            'widgetClass' => get_class ($this->owner->sortableWidget),
-                            'widgetType' => $this->owner->sortableWidget->widgetType
-                        ),
-                        'complete' => "function(response) {
-                            ".$this->owner->beforeGridViewUpdateJSString."
-                            \$.fn.yiiGridView.update('{$this->owner->id}', {" .
+                    'onchange' => '$.ajax ({'.
+                        'data: {'.
+                            'key: "resultsPerPage",'.
+                            'value: $(this).val(),'.
+                            'widgetClass: "'.get_class ($this->owner->sortableWidget).'",'.
+                            'widgetType: "'.$this->owner->sortableWidget->widgetType.'"'.
+                        '},'.
+                        'type: "POST",'.
+                        'url: "'.Yii::app()->controller
+                            ->createUrl('/profile/setWidgetSetting').'",'.
+                        'complete: function (response) {'.
+                            'x2.DEBUG && console.log ("setResultsPerPage after ajax");'.
+                            '$.fn.yiiGridView.update("'.$this->owner->id.'", {'.
                                 (isset($this->owner->modelName) ?
-                                    "data: {'{$this->owner->modelName}_page': 1}," : "") .
-                                    "complete: function () {".
-                                        $this->owner->afterGridViewUpdateJSString .
-                                    "}
-                            });
-                        }",
-                    )
-                ))
-            . ' </div>';
+                                    'data: {'.$this->owner->modelName.'_page: 1},' : '') .
+                                    'complete: function () {'.
+                                    '}'.
+                            '});'.
+                        '}'.
+                    '});'
+                )). 
+            '</div>';
     }
 
 }

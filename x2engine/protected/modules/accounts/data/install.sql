@@ -34,7 +34,7 @@ INSERT INTO x2_fields
 (modelName,			fieldName,				attributeLabel,	 modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance, uniqueConstraint, safe)
 VALUES
 ("Accounts",		"name",					"Name",					0,		0,	"varchar",		1,			0,		NULL,			1,		0,			"High",     0,                  1),
-("Accounts",		"id",					"ID",					0,		0,	"varchar",		0,			0,		NULL,			0,		0,			"",         1,                  1),
+("Accounts",		"id",					"ID",					0,		0,	"varchar",		0,			1,		NULL,			0,		0,			"",         1,                  1),
 ("Accounts",		"website",				"Website",				0,		0,	"url",			0,			0,		NULL,			0,		0,			"",         0,                  1),
 ("Accounts",		"type",					"Type",					0,		0,	"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),
 ("Accounts",		"visibility",			"Visibility",			0,		0,	"visibility",	0,			0,		NULL,			0,		0,			"",         0,                  1),

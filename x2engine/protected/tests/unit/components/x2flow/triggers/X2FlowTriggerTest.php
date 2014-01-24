@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,18 +35,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.tests.unit.components.x2flow.X2FlowItemTest');
-
 /**
  * 
  * @package X2CRM.tests.unit.components.x2flow.triggers
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class X2FlowTriggerTest extends X2FlowItemTest {
+class X2FlowTriggerTest extends X2TestCase {
 
     public function testGetTriggerInstances() {
-        $this->assertGetInstances('Trigger',array('X2FlowTrigger','X2FlowSwitch','BaseTagTrigger'));
-        
+        X2FlowTestingAuxLib::assertGetInstances(
+            $this, 'Trigger',array('X2FlowTrigger','X2FlowSwitch','BaseTagTrigger'));
     }
     
 }

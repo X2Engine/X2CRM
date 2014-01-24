@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -79,7 +79,8 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 	<h2><?php echo Yii::t('services','Case {n}',array('{n}'=>$model->id)); ?></h2>
 	<?php //if(Yii::app()->user->checkAccess('ServicesUpdate',$authParams)){ ?>
-	<a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><span></span></a>
+	<a class="x2-button icon edit right" href="<?php 
+        echo $this->createUrl('update',array('id'=>$model->id));?>"><span></span></a>
     <?php
     echo CHtml::link(
         '<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/icons/email_button.png'.
@@ -100,7 +101,9 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	'enableAjaxValidation'=>false,
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
-$this->renderPartial('application.components.views._detailView',array('model'=>$model,'form'=>$form,'modelName'=>'services'));
+$this->renderPartial(
+    'application.components.views._detailView',
+    array('model'=>$model,'form'=>$form,'modelName'=>'services'));
 
 ?>
 
@@ -138,12 +141,15 @@ if($model->contactId) { // every service case should have a contact associated w
 		<div id='contact-info-container'>
 		<h2> <?php echo Yii::t('actions','Contact Info'); ?> </h2>
 		<?php
-		$this->renderPartial('application.modules.contacts.views.contacts._detailViewMini',array('model'=>$contact, 'serviceModel'=>$model));
+		$this->renderPartial(
+            'application.modules.contacts.views.contacts._detailViewMini',
+            array('model'=>$contact, 'serviceModel'=>$model));
 		?>
 		</div>
 		<?php
 	}
 }
+
 $to = null;
 if(isset($contact)) {
 	$to = '"'.$contact->name.'" <'.$contact->email.'>, ';
@@ -156,8 +162,7 @@ $this->widget('InlineEmailForm', array(
 		'modelId' => $model->id,
 	),
 	'startHidden' => true,
-		)
-);
+));
 
 $this->widget('X2WidgetList', array(
     'block'=>'center', 
@@ -197,5 +202,7 @@ $this->widget('History',array('associationType'=>'services','associationId'=>$mo
 ?>
 </div>
 
-<?php $this->widget('CStarRating',array('name'=>'rating-js-fix', 'htmlOptions'=>array('style'=>'display:none;'))); ?>
-
+<?php 
+$this->widget(
+    'CStarRating',array('name'=>'rating-js-fix', 'htmlOptions'=>array('style'=>'display:none;'))); 
+?>

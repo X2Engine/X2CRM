@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -74,15 +74,16 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		<h4><?php echo Yii::t('app','Core Team');?></h4>
 		<ul>
 			<li>John Roberts</li>
-			<li>Jake Houser</li>
 			<li>Demitri Morgan</li>
 			<li>Derek Mueller</li>
 			<li>Sandra Tam</li>
 			<li>Tony Zavala</li>
+			<li>Raymond Colebaugh</li>
 		</ul>
 		</div><br>
 		<h4 class="clear"><?php echo Yii::t('app','Special Thanks');?></h4>
 		<ul class="inline">
+			<li>Jake Houser</li>
             <li>Matthew Pearson</li>
 			<li>James Thomas</li>
 			<li>Andrew Hoffman</li>
@@ -133,7 +134,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>
 			<li>formatCurrency: <a href="http://code.google.com/p/jquery-formatcurrency/" target="_blank"><?php echo Yii::t('app','Developer'); ?></a>
 				<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a></li>
-			<li>phpMailer: <a href="http://quocity.com/colresizable/" target="_blank"><?php echo Yii::t('app','Developer'); ?></a>
+			<li>phpMailer: <a href="http://phpmailer.worxware.com/" target="_blank"><?php echo Yii::t('app','Developer'); ?></a>
 				<a href="http://www.gnu.org/copyleft/lesser.html" target="_blank" class="no-underline" title="Lesser GPL License">[LGPL]</a></li>
 			<li>FullCalendar: <a href="http://arshaw.com/fullcalendar/" target="_blank"><?php echo Yii::t('app','Developer'); ?></a>
 				<a href="http://www.opensource.org/licenses/mit-license.php" target="_blank" class="no-underline" title="MIT License">[MIT]</a></li>

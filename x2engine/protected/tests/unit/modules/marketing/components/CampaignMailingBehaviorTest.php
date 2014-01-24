@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -53,6 +53,8 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
             'campaign' => 'Campaign',
             'lists' => 'X2List',
             'credentials' => 'Credentials',
+            'users' => 'User',
+            'profile' => array('Profile','.marketing')
         );
     }
 
@@ -114,7 +116,8 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         $this->assertEquals($recipientAddress,$email);
         $this->assertEquals(str_replace('{firstName}',$contact->firstName,$this->campaign('testUser')->subject),$subject);
         // Find the contact's name:
-        $this->assertRegExp('/'.preg_quote(str_replace('{firstName}',$contact->firstName,$this->campaign('testUser')->content),'/').'/',$message,'Variable replacement didn\'t take place');
+        $replaceVars = array('{firstName}'=> $contact->firstName, '{signature}' => $this->users('testUser')->profile->signature);
+        $this->assertRegExp('/'.preg_quote(strtr($this->campaign('testUser')->content,$replaceVars),'/').'/',$message,'Variable replacement didn\'t take place');
         // Find the tracking image:
         $this->assertRegExp('/'.preg_quote('<img src="'.$admin->externalBaseUrl.$admin->externalBaseUri.'/index.php/marketing/marketing/click?uid='.$uniqueId,'/').'/',$message,'Tracking image not inserted');
         // Find the unsubscribe link:

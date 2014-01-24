@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -147,7 +147,12 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 $ret[] = array('condition'=>'t.visibility=1', 'operator'=>'OR');
                 $ret[] = array('condition'=>'t.assignedTo="'.$user.'"', 'operator'=>'OR');
                 $ret[] = array('condition'=>'t.assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")', 'operator'=>'OR');
-                $ret[] = array('condition'=>'(t.visibility=2 AND t.assignedTo IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.$user.'"))', 'operator'=>'OR');
+                $ret[] = array(
+                    'condition'=>'(t.visibility=2 AND t.assignedTo IN ('.
+                        'SELECT DISTINCT b.username '.
+                        'FROM x2_group_to_user a INNER JOIN x2_group_to_user b '.
+                        'ON a.groupId=b.groupId '.
+                        'WHERE a.username="'.$user.'"))', 'operator'=>'OR');
                 break;
             default:
             case 0:  // can't view anything

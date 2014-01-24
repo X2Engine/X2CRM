@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -263,17 +263,25 @@ class Publisher extends X2Widget {
     });
 
     // Highlight save button when something is edited in the publisher
-    $("#publisher-form input, #publisher-form select, #publisher-form textarea, #publisher").bind("focus.compose",function(){
+    $("#publisher-form input, #publisher-form select, #publisher-form textarea, #publisher").
+        bind("focus.compose", function(){
+
         $("#save-publisher").addClass("highlight");
-        if(this.nodeName == "TEXTAREA" || this.nodeName == "DIV") // Expand text area; expecting user input.
+
+        // Expand text area; expecting user input.
+        if(this.nodeName == "TEXTAREA" || this.nodeName == "DIV") 
             $("#publisher-form textarea").height(80);
+
         $(document).unbind("click.publisher").bind("click.publisher",function(e) {
-            if(!$(e.target).parents().is("#publisher-form, .ui-datepicker")
-                && $("#publisher-form textarea").val()=="") {
+            if(!$(e.target).closest ("#publisher-form, .ui-datepicker, .fc-day").length && 
+               $("#publisher-form textarea").val() === "") {
+
                 $("#save-publisher").removeClass("highlight");
                 $("#publisher-form textarea").animate({"height":22},300);
             }
         });
+
+        return false;
     });
 
     '.($this->calendar?"

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -93,48 +93,23 @@ if($type == 'workflow'){
     <div class="icon <?php echo $type; ?>"></div>
     <div class="header">
 <?php
+
 if(empty($data->type) || $data->type == 'weblead'){
+    echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>";
     if($data->complete == 'Yes'){
-        echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Completed:')." </span>".Formatter::formatCompleteDate($data->completeDate);
+        echo Yii::t('actions', 'Completed:')." </span>".Formatter::formatCompleteDate($data->completeDate);
     }else{
         if(!empty($data->dueDate)){
-            echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Due:')." </span>".Actions::parseStatus($data->dueDate).'</b>';
+            echo Yii::t('actions', 'Due:')." </span>".Actions::parseStatus($data->dueDate).'</b>';
         }elseif(!empty($data->createDate)){
-            echo "<span style='color:grey;cursor:pointer' class='action-frame-link' data-action-id='{$data->id}'>".Yii::t('actions', 'Created:')." </span>".Formatter::formatLongDateTime($data->createDate).'</b>';
+            echo Yii::t('actions', 'Created:')." </span>".Formatter::formatLongDateTime($data->createDate).'</b>';
         }else{
             echo "&nbsp;";
         }
     }
-}elseif($data->type == 'attachment'){
-    if($data->completedBy == 'Email')
-        echo Yii::t('actions', 'Email Message:').' '.Formatter::formatCompleteDate($data->completeDate);
-    else
-        echo Yii::t('actions', 'Attachment:').' '.Formatter::formatCompleteDate($data->completeDate);
-    //User::getUserLinks($data->completedBy);
-
-    echo ' ';
-
-    //if ($data->complete=='Yes')
-    //echo Formatter::formatDate($data->completeDate);
-    //else
-    //echo Actions::parseStatus($data->dueDate);
 } elseif($data->type == 'workflow'){
     // $actionData = explode(':',$data->actionDescription);
     echo Yii::t('workflow', 'Process:').'<b> '.$workflowRecord->name.'/'.$stageRecords[$data->stageNumber - 1]->name.'</b> ';
-}elseif(in_array($data->type, array('email', 'emailFrom', 'email_quote', 'email_invoice'))){
-    echo Yii::t('actions', 'Email Message:').' '.Formatter::formatCompleteDate($data->completeDate);
-}elseif($data->type == 'quotes'){
-    echo Yii::t('actions', 'Quote:').' '.Formatter::formatCompleteDate($data->createDate);
-}elseif(in_array($data->type, array('emailOpened', 'emailOpened_quote', 'email_opened_invoice'))){
-    echo Yii::t('actions', 'Email Opened:').' '.Formatter::formatCompleteDate($data->completeDate);
-}elseif($data->type == 'webactivity'){
-    echo Yii::t('actions', 'This contact visited your website');
-}elseif($data->type == 'note'){
-    echo Formatter::formatCompleteDate($data->completeDate);
-}elseif($data->type == 'call'){
-    echo Yii::t('actions', 'Call:').' '.($data->completeDate == $data->dueDate
-            ? Formatter::formatCompleteDate($data->completeDate)
-            : Formatter::formatTimeInterval($data->dueDate,$data->completeDate,'{start}; {decHours} '.Yii::t('app','hours')));
 }elseif($data->type == 'event'){
     echo '<b>'.CHtml::link(Yii::t('calendar', 'Event').': ', '#', array('class' => 'action-frame-link', 'data-action-id' => $data->id));
     if($data->allDay){
@@ -147,8 +122,33 @@ if(empty($data->type) || $data->type == 'weblead'){
             echo ' - '.Formatter::formatLongDateTime($data->completeDate);
     }
     echo '</b>';
+}elseif($data->type == 'call'){
+    echo Yii::t('actions', 'Call:').' '.($data->completeDate == $data->dueDate
+            ? Formatter::formatCompleteDate($data->completeDate)
+            : Formatter::formatTimeInterval(
+                $data->dueDate,$data->completeDate,'{start}; {decHours} '.Yii::t('app','hours')));
+}elseif($data->type == 'webactivity'){
+    echo Yii::t('actions', 'This contact visited your website');
 }elseif($data->type == 'time'){
     echo Formatter::formatTimeInterval($data->dueDate,$data->dueDate+$data->timeSpent);
+} else{
+    $timeFormat = Formatter::formatCompleteDate($data->getRelevantTimestamp());
+    if($data->type == 'attachment') {
+        if ($data->completedBy === 'Email') {
+            $label = 'Email Message:';
+        } else {
+            $label = 'Attachment:';
+        }
+    } elseif($data->type == 'quotes') {
+        $label = 'Quote:';
+    } elseif(in_array($data->type, array('email', 'emailFrom', 'email_quote', 'email_invoice'))) {
+        $label = 'Email Message:';
+    } elseif(in_array($data->type, array('emailOpened', 'emailOpened_quote', 'email_opened_invoice'))) {
+        $label = 'Email Opened:';
+    }
+
+    if(isset($label)) echo Yii::t('actions', $label).' ';
+    echo $timeFormat;
 }
 ?>
         <div class="buttons">

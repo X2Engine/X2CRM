@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -59,7 +59,7 @@ class MarketingController extends x2base {
             array('allow', // allow authenticated user to perform the following actions
                 'actions' => array(
 					'index', 'view', 'create', 'createFromTag', 'update', 'search', 'delete', 'launch', 
-					'toggle', 'complete', 'getItems', 'inlineEmail', 'mail', 
+					'toggle', 'complete', 'getItems', 'inlineEmail', 'mail', 'deleteWebForm',
 					'webleadForm'),
                 'users' => array('@'),
             ),
@@ -82,6 +82,23 @@ class MarketingController extends x2base {
                 'class' => 'InlineEmailAction',
             ),
         ));
+    }
+
+    /**
+     * Deletes a web form record with the specified id 
+     * @param int $id
+     */
+    public function actionAjaxDeleteWebForm ($id) {
+        $model = WebForm::model ()->findByPk ($id); 
+        $success = false;
+        if ($model) {
+            $success = $model->delete ();
+        }
+        AuxLib::ajaxReturn (
+            $success,  
+            Yii::t('app', 'Success'),
+            Yii::t('app', 'Unable to delete web form')
+        );
     }
 
     /**
@@ -108,7 +125,8 @@ class MarketingController extends x2base {
         $model = $this->loadModel($id);
 
         if(!isset($model)){
-            Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
+            Yii::app()->user->setFlash(
+                'error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('index'));
         }
 
@@ -475,14 +493,6 @@ class MarketingController extends x2base {
         } else {
             self::respond(Yii::t('marketing','Specified campaign does not exist.'),1);
         }
-    }
-
-    /**
-     * Wrapper for {@link sendMail()}
-     */
-    public function actionMail($id = null) {
-        header('Content-type: application/json');
-        echo CJSON::encode(self::sendMail($id));
     }
 
     /**

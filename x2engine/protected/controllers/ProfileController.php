@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -443,7 +443,6 @@ class ProfileController extends x2base {
         if($id == Yii::app()->user->getId() || Yii::app()->params->isAdmin){
             $model = $this->loadModel($id);
             $users = User::getNames();
-            $accounts = Accounts::getNames();
 
             if(isset($_POST['Profile'])){
 
@@ -461,7 +460,6 @@ class ProfileController extends x2base {
             $this->render('update', array(
                 'model' => $model,
                 'users' => $users,
-                'accounts' => $accounts,
             ));
         }else{
             $this->redirect(array('/profile/view','id'=>$id));
@@ -945,6 +943,7 @@ class ProfileController extends x2base {
         }
 
         if(!Yii::app()->user->isGuest){
+            Events::deleteOldEvents ();
             
             $isMyProfile = !$publicProfile && $id === Yii::app()->params->profile->id;
             $profile = $this->loadModel ($id);
@@ -954,158 +953,26 @@ class ProfileController extends x2base {
                 unset($_SESSION['lastEventId']);
             }
 
-            $dateRange = Yii::app()->params->admin->eventDeletionTime;
-            if(!empty($dateRange)){
-                $dateRange = $dateRange * 24 * 60 * 60;
-                $deletionTypes = json_decode(Yii::app()->params->admin->eventDeletionTypes, true);
-                if(!empty($deletionTypes)){
-                    $deletionTypes = "('".implode("','", $deletionTypes)."')";
-                    $time = time() - $dateRange;
-                    X2Model::model('Events')->deleteAll('lastUpdated < '.$time.' AND type IN '.$deletionTypes);
-                }
-            }
             unset($_SESSION['feed-condition']);
             if(!isset($_GET['filters'])){
                 unset($_SESSION['filters']);
             }
             if(isset(Yii::app()->params->profile->defaultFeedFilters)){
-                $_SESSION['filters'] = json_decode(Yii::app()->params->profile->defaultFeedFilters, true);
+                $_SESSION['filters'] = 
+                    json_decode(Yii::app()->params->profile->defaultFeedFilters, true);
             }
 
-            if (!$isMyProfile) {
-                $visibilityCondition = "AND associationId=$id";
-            } else if (!Yii::app()->params->isAdmin){
-                if(Yii::app()->params->admin->historyPrivacy == 'user'){
-                    $visibilityCondition = ' AND (associationId='.Yii::app()->user->getId().' OR user="'.Yii::app()->user->getName().'")';
-                }elseif(Yii::app()->params->admin->historyPrivacy == 'group'){
-                    $visibilityCondition = ' AND user IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.Yii::app()->user->getName().'")';
-                }else{
-                    $visibilityCondition = " AND (associationId=".Yii::app()->user->getId()." OR user='".Yii::app()->user->getName()."' OR visibility=1)";
-                }
-            }else{
-                $visibilityCondition = "";
+            $filters = null;
+            $filtersOn = false;
+            if (isset($_GET['filters'])) {
+                $filters = $_GET;
+                if ($_GET['filters'])
+                    $filtersOn = true;
             }
 
-            if((isset($_GET['filters']) && $_GET['filters']) || isset($_SESSION['filters'])){
-                if(isset($_GET['filters'])){
-                    unset($_SESSION['filters']);
-                    $filters = $_GET;
-                }else{
-                    $filters = $_SESSION['filters'];
+            extract (Events::getFilteredEventsDataProvider (
+                $profile, $isMyProfile, $filters, $filtersOn));
 
-                    function implodeFilters($n){
-                        return implode(",", $n);
-                    }
-
-                    $func = "implodeFilters";
-                    $filters = array_map($func, $filters);
-                    $filters['default'] = false;
-                }
-                unset($filters['filters']);
-                $visibility = $filters['visibility'];
-                $visibility = str_replace('Public', '1', $visibility);
-                $visibility = str_replace('Private', '0', $visibility);
-                $visibilityFilter = explode(",", $visibility);
-                if($visibility != ""){
-                    $visibilityCondition = " AND visibility NOT IN (".$visibility.")";
-                }else{
-                    $visibilityFilter = array();
-                }
-
-                $users = $filters['users'];
-                if($users != ""){
-                    $users = explode(",", $users);
-                    $userFilter = $users;
-                    $users = '"'.implode('","', $users).'"';
-                    if($users != ""){
-                        $userCondition = " AND (user NOT IN (".$users.")";
-                    }else{
-                        $userCondition = "(";
-                    }
-                    if(strpos($users, 'Anyone') === false){
-                        $userCondition.=" OR user IS NULL)";
-                    }else{
-                        $userCondition.=")";
-                    }
-                }else{
-                    $userCondition = "";
-                    $userFilter = array();
-                }
-
-                $types = $filters['types'];
-                if($types != ""){
-                    $types = explode(",", $types);
-                    $typeFilter = $types;
-                    $types = '"'.implode('","', $types).'"';
-                    $typeCondition = " AND (type NOT IN (".$types.") OR important=1)";
-                }else{
-                    $typeCondition = "";
-                    $typeFilter = array();
-                }
-                $subtypes = $filters['subtypes'];
-                if(strpos($types, "feed") === false && $subtypes != ""){
-                    $subtypes = explode(",", $subtypes);
-                    $subtypeFilter = $subtypes;
-                    $subtypes = '"'.implode('","', $subtypes).'"';
-                    if($subtypes != "")
-                        $subtypeCondition = " AND (type!='feed' OR subtype NOT IN (".$subtypes.") OR important=1)";
-                    else
-                        $subtypeCondition = "";
-                }else{
-                    $subtypeCondition = "";
-                    $subtypeFilter = array();
-                }
-                $default = $filters['default'];
-                $_SESSION['filters'] = array(
-                    'visibility' => $visibilityFilter,
-                    'users' => $userFilter,
-                    'types' => $typeFilter,
-                    'subtypes' => $subtypeFilter
-                );
-                if($default == 'true'){
-                    Yii::app()->params->profile->defaultFeedFilters = json_encode($_SESSION['filters']);
-                    Yii::app()->params->profile->save();
-                }
-                $condition = "type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."') AND (type!='notif' OR user='".Yii::app()->user->getName()."')".$visibilityCondition.$userCondition.$typeCondition.$subtypeCondition;
-                $_SESSION['feed-condition'] = $condition;
-            }else{
-                $condition = "type!='comment' AND (type!='action_reminder' OR user='".Yii::app()->user->getName()."') AND (type!='notif' OR user='".Yii::app()->user->getName()."')".$visibilityCondition;
-            }
-            $condition.= " AND timestamp <= ".time();
-            if(!isset($_SESSION['lastEventId'])){
-                $lastId = Yii::app()->db->createCommand()
-                        ->select('MAX(id)')
-                        ->from('x2_events')
-                        ->where($condition)
-                        ->order('timestamp DESC, id DESC')
-                        ->limit(1)
-                        ->queryScalar();
-                $_SESSION['lastEventId'] = $lastId;
-            }else{
-                $lastId = $_SESSION['lastEventId'];
-            }
-            $lastTimestamp = Yii::app()->db->createCommand()
-                    ->select('MAX(timestamp)')
-                    ->from('x2_events')
-                    ->where($condition)
-                    ->order('timestamp DESC, id DESC')
-                    ->limit(1)
-                    ->queryScalar();
-            if(empty($lastTimestamp)){
-                $lastTimestamp = 0;
-            }
-            if(isset($_SESSION['lastEventId'])){
-                $condition.=" AND id <= ".$_SESSION['lastEventId']." AND sticky = 0";
-            }
-            $dataProvider = new CActiveDataProvider('Events', array(
-                        'criteria' => array(
-                            'condition' => $condition,
-                            'order' => 'timestamp DESC, id DESC',
-                        ),
-                        'pagination' => array(
-                            'pageSize' => 20
-                        ),
-                    ));
             $data = $dataProvider->getData();
             if(isset($data[count($data) - 1]))
                 $firstId = $data[count($data) - 1]->id;
@@ -1148,9 +1015,17 @@ class ProfileController extends x2base {
         }
     }
 
-    public function actionGetEvents($lastEventId, $lastTimestamp, $profileId){
+    public function actionGetEvents($lastEventId, $lastTimestamp, $myProfileId, $profileId){
 
-        $result = Events::getEvents($lastEventId, $lastTimestamp);
+        $myProfile = Profile::model ()->findByPk ($myProfileId);
+        $profile = Profile::model ()->findByPk ($profileId);
+        if (!isset ($myProfile) || !isset ($profile)) 
+            return false;
+
+
+        $result = Events::getEvents($lastEventId, $lastTimestamp, null, 
+            null, null, $myProfile, $profile);
+
         $events = $result['events'];
         $eventData = "";
         $newLastEventId = $lastEventId;

@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -140,6 +140,31 @@ class ArrayUtil {
         }
         return false;
     }
+
+
+    /**
+     * Improved version of array_search that allows for regex searching
+     *
+     * @param string $find Regex to search on
+     * @param array $in_array An array to search in
+     * @param array $keys_found An array of keys which meet the regex
+     * @return type Returns the an array of keys if $in_array is valid, or false if not.
+     */
+    public static function arraySearchPreg($find, $in_array, $keys_found = Array()) {
+        if (is_array($in_array)) {
+            foreach ($in_array as $key => $val) {
+                if (is_array($val))
+                    self::arraySearchPreg($find, $val, $keys_found);
+                else {
+                    if (preg_match('/' . $find . '/', $val))
+                        $keys_found[] = $key;
+                }
+            }
+            return $keys_found;
+        }
+        return false;
+    }
+
 }
 
 ?>

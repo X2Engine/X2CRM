@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -50,25 +50,34 @@ class WebleadTrigger extends BaseTagTrigger {
             'info' => Yii::t('studio', $this->info),
             'modelClass' => 'Contacts',
             'options' => array(
-                array('name' => 'tags', 'label' => Yii::t('studio', 'Tags (optional)'), 'operators' => array('=', 'list', 'notList'), 'optional' => 1),
-                ));
+                array(
+                    'name' => 'tags', 'label' => Yii::t('studio', 'Tags (optional)'), 
+                    'operators' => array('=', 'list', 'notList'), 'optional' => 1
+                ),
+            )
+        );
     }
 
     public function check(&$params){
         $tagOptions = $this->config['options']['tags'];
         $tags = $tagOptions['value'];
         $tags = is_array($tags) ? $tags : Tags::parseTags($tags);
-        if(!empty($tags) && isset($params['tags'])){
+        if(!empty($tags) && isset($params['tags'])){ 
             if(!is_array($params['tags'])){
                 $params['tags']=explode(',',$params['tags']);
             }
             //$params['tags']=array_map(function($item){ return str_replace('#','',$item); },$params['tags']);
             // must have at least 1 tag in the list:
-            return array (
-                count(array_intersect($params['tags'], $tags)) > 0 ? 
-                    $this->checkConditions($params) : false, '');
-        }else{
-            return array (true, '');
+            if (count(array_intersect($params['tags'], $tags)) > 0) {
+                return $this->checkConditions($params);
+            } else {
+                return array (false, '');
+            }
+        } elseif (!empty ($tags) && !isset ($params['tags'])) { 
+            // trigger requires tags but record has none
+            return array (false, '');
+        }else{ // trigger has no tag conditions
+            return $this->checkConditions($params);
         }
     }
 

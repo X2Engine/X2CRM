@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -62,6 +62,9 @@ class BugReports extends X2Model {
 				'class'=>'application.components.ERememberFiltersBehavior',
 				'defaults'=>array(),
 				'defaultStickOnClear'=>false
+			),
+			'InlineEmailModelBehavior' => array(
+				'class'=>'application.components.InlineEmailModelBehavior',
 			)
 		));
 	}
@@ -69,7 +72,8 @@ class BugReports extends X2Model {
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 * @return CActiveDataProvider the data provider that can return the models based on the 
+     *  search/filter conditions.
 	 */
 	public function search() {
 		$criteria=new CDbCriteria;
@@ -85,8 +89,7 @@ class BugReports extends X2Model {
     }
 
     /**
-	 *  Like search but filters by status based on the user's profile
-	 *
+	 * Like search but filters by status based on the user's profile
 	 */
 	public function searchWithStatusFilter() {
 		// Warning: Please modify the following code to remove attributes that

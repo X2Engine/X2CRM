@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -47,7 +47,7 @@ function DocViewerProfileWidget (argsDict) {
         translations: [],
         getItemsUrl: '', // used to populate autocomplete
         getDocUrl: '', // url to request a doc
-        docId: null, // the id of the doc currently being viewed
+        docId: '', // the id of the doc currently being viewed
         editDocUrl: '', // url to edit a doc
         canEdit: false, // has permission to edit current doc
         checkEditPermissionUrl: ''
@@ -88,6 +88,15 @@ DocViewerProfileWidget.prototype.onDragStop = function () {
 /*
 Private instance methods
 */
+
+DocViewerProfileWidget.prototype._setUpDefaultTextBehavior = function () {
+    var that = this;
+    this.element.find ('.default-text-container a').click (function (evt) {
+        evt.preventDefault ();
+        that._selectADocButton.click ();
+        return false;
+    });
+};
 
 /**
  * Show dialog with doc selection form when settings menu item is clicked 
@@ -131,6 +140,7 @@ DocViewerProfileWidget.prototype._setUpSelectADocBehavior = function () {
                             that.setProperty ('docId', selectedDocId);
                             that.docId = selectedDocId;
                             that.changeLabel (selectedDocLabel);
+                            that.element.find ('.default-text-container').remove ();
                             that._checkEditPermission ();
                         } else {
                             auxlib.createErrorFeedbackBox ({
@@ -311,5 +321,9 @@ DocViewerProfileWidget.prototype._init = function () {
     this._iframeElem = this.contentContainer.find ('iframe');
     this._iframeSrc = '';
     this._setUpSelectADocBehavior ();
+
+    if (this.docId === '') {
+        this._setUpDefaultTextBehavior ();
+    }
 };
 

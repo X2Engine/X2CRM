@@ -8,5 +8,8 @@ defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
 // Enable all logging or bare minimum logging:
 defined('YII_LOGGING') or define('YII_LOGGING',true);
 
+// Indicates that the application is being run as part of a unit test. 
+defined('YII_UNIT_TESTING') or define('YII_UNIT_TESTING',false);
+
 
 ?>

@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -184,6 +184,7 @@ CREATE TABLE x2_fields (
 	searchable				TINYINT			DEFAULT 0,
 	relevance				VARCHAR(250),
 	isVirtual				TINYINT			DEFAULT 0,
+    defaultValue            TEXT,
 	INDEX (modelName),
 	UNIQUE (modelName, fieldName)
 ) COLLATE = utf8_general_ci;
@@ -342,6 +343,7 @@ CREATE TABLE x2_profile(
 	fullName				VARCHAR(255)	NOT NULL,
 	username				VARCHAR(50)		NOT NULL,
 	officePhone				VARCHAR(40),
+    extension               VARCHAR(40),
 	cellPhone				VARCHAR(40),
 	emailAddress			VARCHAR(255)	NOT NULL,
 	notes					TEXT,
@@ -430,7 +432,8 @@ DROP TABLE IF EXISTS x2_roles;
 CREATE TABLE x2_roles (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(250),
-	users					TEXT
+	users					TEXT,
+        timeout                                 INT
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_role_exceptions;

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,14 +39,41 @@
  */
 class AuxLib {
 
+
+    /**
+     * @param int $errCode php file upload error code 
+     */
+    public static function getFileUploadErrorMessage ($errCode) {
+        $errMsg = 'Failed to upload file.';
+        switch ($errCode) {
+            case UPLOAD_ERR_OK:
+                break;
+            case UPLOAD_ERR_FORM_SIZE:
+            case UPLOAD_ERR_INI_SIZE:
+                $errMsg = Yii::t('app', 'File exceeds the maximum upload size.');
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+                break;
+            case UPLOAD_ERR_CANT_WRITE:
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                break;
+        }
+        return $errMsg;
+    }
+
     /**
      * Registers a script which instantiates a dictionary of translations.
      * @param string $scriptName The name of the script which will be registered
      *   and which will be a property of the global JS object x2.
      * @param array $messages An associateive array (<message label> => <untranslated message>)
      * @param string $translationFile The first parameter to Yii::t
-     * @param string $namespace The name of the JS object which will contain the translations 
-     *  dictiory 
+     * @param string $namespace The name of the JS object which will contain the translations
+     *  dictiory
      */
     public static function registerTranslationsScript (
         $namespace, $messages, $translationFile='app', $scriptName='passMsgsToClientScript') {
@@ -65,7 +92,7 @@ class AuxLib {
     }
 
     /**
-     * @param string $namespace The name of the JS object which will contain the translations 
+     * @param string $namespace The name of the JS object which will contain the translations
      *  dictionary. For nested namespaces, each namespace should be separated by a '.' character.
      * @param array $vars An associative array (<var name> => <var value>)
      * @param string $scriptName The name of the script which will be registered
@@ -112,21 +139,38 @@ class AuxLib {
      * Used by actions to return JSON encoded array containing error status and error message.
      */
     public static function printError ($message) {
-        echo CJSON::encode (array ('failure', Yii::t('app', $message)));
+        echo CJSON::encode (array (false, $message));
     }
 
     /**
      * Used by actions to return JSON encoded array containing success status and success message.
      */
     public static function printSuccess ($message) {
-        echo CJSON::encode (array ('success', Yii::t('app', $message)));
+        echo CJSON::encode (array (true, $message));
+    }
+
+    /**
+     * Calls printError or printSuccess depending on the value of $success.
+     *
+     * @param bool $success 
+     * @param string $successMessage
+     * @param string $errorMessage
+     * @return array (<bool>, <string>)
+     */
+    public static function ajaxReturn ($success, $successMessage, $errorMessage) {
+        if ($success) {
+            self::printSuccess ($successMessage);
+        } else { // !$success
+            self::printError ($errorMessage);
+        }
     }
 
     /**
      * Used to log debug messages
      */
     public static function debugLog ($message) {
-        if (YII_DEBUG) Yii::log ($message, '', 'application.debug');
+        if (!YII_DEBUG) return;
+        Yii::log ($message, '', 'application.debug');
     }
 
     public static function debugLogR ($arr) {
@@ -134,20 +178,40 @@ class AuxLib {
         $logMessage = print_r ($arr, true);
         Yii::log ($logMessage, '', 'application.debug');
     }
-    
+
     public static function isIE8 () {
         $userAgentStr = strtolower(Yii::app()->request->userAgent);
         return preg_match('/msie 8/', $userAgentStr);
     }
 
+    /**
+     * @return bool returns true if user is using mobile app, false otherwise 
+     */
+    public static function isMobile () {
+        return (Yii::app()->request->cookies->contains('x2mobilebrowser') && 
+                Yii::app()->request->cookies['x2mobilebrowser']->value);
+    }
+
     public static function setCookie ($key, $val, $time) {
         if (YII_DEBUG) { // workaround which allows chrome to set cookies for localhost
-            $serverName = Yii::app()->request->getServerName() === 'localhost' ? '' : 
+            $serverName = Yii::app()->request->getServerName() === 'localhost' ? '' :
                 Yii::app()->request->getServerName();
         } else {
             $serverName = Yii::app()->request->getServerName();
         }
         setcookie($key,$val,time()+$time,dirname(Yii::app()->request->getScriptUrl()), $serverName);
+    }
+
+    public static function clearCookie ($key){
+        if(YII_DEBUG){ // workaround which allows chrome to set cookies for localhost
+            $serverName = Yii::app()->request->getServerName() === 'localhost' ? '' :
+                    Yii::app()->request->getServerName();
+        }else{
+            $serverName = Yii::app()->request->getServerName();
+        }
+        unset($_COOKIE[$key]);
+        setcookie(
+            $key, '', time() - 3600, dirname(Yii::app()->request->getScriptUrl()), $serverName);
     }
 
 

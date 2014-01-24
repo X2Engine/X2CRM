@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -140,7 +140,7 @@ if($data->important && isset($data->fontColor)){
             }
         }
         if($data->type == 'calendar_event'){
-            echo X2Date::actionDate($data->timestamp, 1);
+            echo X2DateUtil::actionDate($data->timestamp, 1);
         }
         ?>
         <?php //  echo ($data->type!='feed')?CHtml::image($imgUrl,'',array('title'=>$data->parseType($data->type))):""; ?>

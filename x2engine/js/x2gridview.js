@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -529,7 +529,7 @@ $.widget("x2.gvSettings", {
 		saveSettings:true,
 		saveTimeout:1000,
         enableScrollOnPageChange: true,
-        DEBUG: x2.DEBUG && true
+        DEBUG: x2.DEBUG && false
 	},
 
 	// setGridviewModel:function(model) {
@@ -607,7 +607,7 @@ $.widget("x2.gvSettings", {
 
         this.element.find ('.search-button').unbind ('click');
         this.element.find ('.search-button').on ('click', function () {
-            x2.DEBUG && console.log ('search-button');
+            self.options.DEBUG && console.log ('search-button');
         });
 
 		// var headerHeight = this.tables.eq(0).height();
@@ -630,14 +630,14 @@ $.widget("x2.gvSettings", {
             url: url,
             type: 'GET',
             success: function () {
-                x2.DEBUG && console.log ('filters cleared');
-                x2.DEBUG && console.log (self.element.attr('id'));
-                self.element.find ('.x2grid-resizable').find ('.filters').find ('input').
+                self.options.DEBUG && console.log ('filters cleared');
+                self.options.DEBUG && console.log (self.element.attr('id'));
+                self.element.find ('.x2grid-resizable').find ('.filters').find ('input,select').
                     each (function () { $(this).val (''); });
-                self.element.find ('.x2grid-resizable').find ('.filters').find ('input').
+                self.element.find ('.x2grid-resizable').find ('.filters').find ('input,select').
                     first ().change (); // force update of gridview
                 $('#x2-gridview-updating-anim').hide ();
-            },
+            }
         });
         return false;
     },
@@ -648,7 +648,7 @@ $.widget("x2.gvSettings", {
 
         // check/uncheck all boxes between first and last
         function checkUncheckAllBetween (check, firstCheckboxId, lastCheckboxId) {
-            x2.DEBUG && console.log ('checkUncheckAllBetween: ' + check + ',' + firstCheckboxId + 
+            self.options.DEBUG && console.log ('checkUncheckAllBetween: ' + check + ',' + firstCheckboxId + 
                 ',' + lastCheckboxId);
 
             self.element.find ('[type="checkbox"]').each (function () {
@@ -671,7 +671,7 @@ $.widget("x2.gvSettings", {
             //x2.DEBUG && console.log ('_setupGridviewChecking: checkboxId = ' + checkboxId);
             var checked = $(this).is (':checked');
             //x2.DEBUG && console.log ('_setupGridviewChecking: checked = ' + checked);
-            x2.DEBUG && console.log ('_setupGridviewChecking: checkbox changed: _shiftPressed = ' +
+            self.options.DEBUG && console.log ('_setupGridviewChecking: checkbox changed: _shiftPressed = ' +
                 self._shiftPressed);
             if (self._shiftPressed && 
                 ((checked && checkboxId !== self._lastCheckedCheckboxId) || 
@@ -743,9 +743,9 @@ $.widget("x2.gvSettings", {
 	},
 
 	_compareGridviewSettings:function(self) {
-        self.DEBUG && console.log ('_compareGridviewSettings');
-        self.DEBUG && console.log ('this = ');
-        self.DEBUG && console.log (this);
+        self.options.DEBUG && console.log ('_compareGridviewSettings');
+        self.options.DEBUG && console.log ('this = ');
+        self.options.DEBUG && console.log (this);
 
 		var o = self.options;
 		var headerCells = this.tables.eq(0).find('tr:first th');
@@ -831,7 +831,7 @@ $.widget("x2.gvSettings", {
 
 
         function afterFadeOut () {
-            x2.DEBUG && console.log ('_toggleColumnSelector: fade toggle');
+            self.options.DEBUG && console.log ('_toggleColumnSelector: fade toggle');
             $(document).unbind('click.' + self.options.namespacePrefix + 'columnSelector');
         }
 

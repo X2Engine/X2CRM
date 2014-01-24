@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -296,7 +296,8 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		// $type = isset($condition['type'])? $condition['type'] : null;
 		$value = isset($condition['value'])? $condition['value'] : null;
 
-		if(isset($condition['name']) && $condition['type'] === '') {	// default to a doing basic value comparison
+        // default to a doing basic value comparison
+		if(isset($condition['name']) && $condition['type'] === '') {	
 			if(!isset($params[$condition['name']]))
 				return false;
 
@@ -318,10 +319,14 @@ abstract class X2FlowTrigger extends X2FlowItem {
                          $model->getAttribute($attr) != $oldAttributes[$attr]);
 				}
 
-				return self::evalComparison($model->getAttribute($attr),$operator,X2Flow::parseValue($value,$field->type,$params));
+				return self::evalComparison(
+                    $model->getAttribute($attr),$operator,
+                        X2Flow::parseValue($value,$field->type,$params));
 
 			case 'current_user':
-				return self::evalComparison(Yii::app()->user->getName(),$operator,X2Flow::parseValue($value,'assignment',$params));
+				return self::evalComparison(
+                    Yii::app()->user->getName(),$operator,
+                    X2Flow::parseValue($value,'assignment',$params));
 
 			case 'month':
 				return self::evalComparison((int)date('n'),$operator,$value);	// jan = 1, dec = 12
@@ -420,13 +425,16 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	 */
 	public static function evalComparison($subject,$operator,$value=null) {
 
-		if(in_array($operator,array('list','notList','between'),true) && !is_array($value)) {	// $value needs to be a comma separated list
+        // $value needs to be a comma separated list
+		if(in_array($operator,array('list','notList','between'),true) && !is_array($value)) {	
 			$value = explode(',',$value);
 
 			$len = count($value);
-			for($i=0;$i<$len; $i++)
-				if(($value[$i] = trim($value[$i])) === '')		// loop through the values, trim and remove empty strings
+			for($i=0;$i<$len; $i++) {
+                // loop through the values, trim and remove empty strings
+				if(($value[$i] = trim($value[$i])) === '')		
 					unset($value[$i]);
+            }
 		}
 
 		switch($operator) {

@@ -63,7 +63,7 @@ class QuoteProduct extends CActiveRecord {
 			array('price,adjustment,total','numerical','allowEmpty'=>true),
 			array('name','required'),
 			array('name,type,currency', 'length', 'max' => 100),
-			array('description','length','max'=>140),
+			array('description', 'safe', 'safe' => true),
 			array('adjustmentType', 'in', 'range' => array('percent', 'linear', 'totalPercent', 'totalLinear')),
 		);
 	}

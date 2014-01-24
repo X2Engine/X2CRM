@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -228,7 +228,7 @@ $rbm = installer_t("required but missing");
 
 // Sanity check:
 if(!(@function_exists('function_exists') && @function_exists('extension_loaded')))
-    throw new Exception(installer_t('The functions function_exist and/or extension_loaded are unavailable!'));
+    throw new Exception(installer_t('The functions function_exist and/or extension_loaded are unavailable!').' '.installer_t('The requirements check script itself cannot run.'));
 
 //////////////////////////////////////////////
 // TOP PRIORITY: BIG IMPORTANT REQUIREMENTS //
@@ -239,12 +239,14 @@ if(!(@function_exists('function_exists') && @function_exists('extension_loaded')
 $requirements['environment']['filesystem_ownership'] = 1;
 $uid = array_fill_keys(array('{id_own}', '{id_run}'), null);
 $uid['{id_own}'] = fileowner(realpath(dirname(__FILE__)));
-if(function_exists('posix_geteuid')){
+if($requirements['extensions']['posix'] = function_exists('posix_geteuid')){
 	$uid['{id_run}'] = posix_geteuid();
 	if($uid['{id_own}'] !== $uid['{id_run}']){
 		$reqMessages[3][] = strtr(installer_t("PHP is running with user ID={id_run}, but this directory is owned by the system user with ID={id_own}."), $uid);
         $requirements['environment']['filesystem_ownership'] = 0;
 	}
+} else {
+    $reqMessages[1][] = installer_t('The requirements check script could not determine if local files have correct ownership because the "posix" extension is not available.');
 }
 
 $requirements['environment']['filesystem_permissions'] = 1;

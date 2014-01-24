@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -42,7 +42,7 @@ Yii::import('application.components.util.*');
  * @package X2CRM.tests.unit.components.util
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class ArrayUtilTest extends CTestCase {
+class ArrayUtilTest extends X2TestCase {
 
 	public $arrayTemplate = array(
 		'this' => null,

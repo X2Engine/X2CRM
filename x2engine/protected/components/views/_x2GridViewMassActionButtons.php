@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -207,22 +207,20 @@ general mass actions styling
 ");
 
 $beforeUpdateJSString = "
+    x2.DEBUG && console.log ('beforeUpdateJSString');
     
     
     $('.mass-action-dialog').each (function () {
-        x2.massActions.DEBUG && console.log ('destroying dialog loop');
+        //x2.massActions.DEBUG && console.log ('destroying dialog loop');
         if ($(this).closest ('.ui-dialog').length) {
-            x2.massActions.DEBUG && console.log ('destroying dialog');
+            //x2.massActions.DEBUG && console.log ('destroying dialog');
             $(this).dialog ('destroy');
             $(this).hide ();
         }
     });
 
-    var selectedRecords = typeof selectedRecords === 'undefined' ? 
-        $.fn.yiiGridView.getChecked('".$gridId."', 'C_gvCheckbox') : selectedRecords;
-    
     // save to preserve checks
-    x2.".$namespacePrefix."MassActionsManager.previouslySelectedRecords = selectedRecords; 
+    x2.".$namespacePrefix."MassActionsManager.saveSelectedRecords ();
 
     $('#".$gridId." .x2-gridview-updating-anim').show ();
     $('#".$gridId."-mass-action-buttons').find ('.mass-action-button').unbind ('click');
@@ -231,6 +229,7 @@ $beforeUpdateJSString = "
 $gridObj->addToBeforeAjaxUpdate ($beforeUpdateJSString);
 
 $afterUpdateJSSTring = "
+    x2.DEBUG && console.log ('afterUpdateJSSTring');
     if (typeof x2.".$namespacePrefix."MassActionsManager !== 'undefined') 
         x2.".$namespacePrefix."MassActionsManager.reinit (); 
     $('#".$gridId." .x2-gridview-updating-anim').hide ();
@@ -239,33 +238,34 @@ $afterUpdateJSSTring = "
 $gridObj->addToAfterAjaxUpdate ($afterUpdateJSSTring);
 
 Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript',"
-    x2.".$namespacePrefix."MassActionsManager = new X2GridViewMassActionsManager ({
-        massActions: ".CJSON::encode ($massActions).",
-        gridId: '".$gridId."',
-        namespacePrefix: '".$namespacePrefix."',
-        gridSelector: '#".$gridId."',
-        fixedHeader: ".($fixedHeader ? 'true' : 'false').",
-        executeUrls: {
+    if (typeof x2.".$namespacePrefix."MassActionsManager === 'undefined') {
+        x2.DEBUG && console.log ('new X2GridViewMassActionsManager');
+        x2.".$namespacePrefix."MassActionsManager = new X2GridViewMassActionsManager ({
+            massActions: ".CJSON::encode ($massActions).",
+            gridId: '".$gridId."',
+            namespacePrefix: '".$namespacePrefix."',
+            gridSelector: '#".$gridId."',
+            fixedHeader: ".($fixedHeader ? 'true' : 'false').",
+            executeUrls: {
+                 
+                removeFromList: '".Yii::app()->request->getScriptUrl () . 
+                    '/' . lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
+                addToList: '".Yii::app()->request->getScriptUrl () . '/' . 
+                    lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
+                createNewList: '".Yii::app()->request->getScriptUrl () . '/' . 
+                    lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
+            },
              
-            removeFromList: '".Yii::app()->request->getScriptUrl () . 
-                '/' . lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
-            addToList: '".Yii::app()->request->getScriptUrl () . '/' . 
-                lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
-            createNewList: '".Yii::app()->request->getScriptUrl () . '/' . 
-                lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
-        },
-         
-        modelName: '".$modelName."',
-        translations: x2.massActions.translations,
-        beforeAjaxUpdate: function () {".$beforeUpdateJSString."},
-        afterAjaxUpdate: function () {".$afterUpdateJSSTring."},
-        expandWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
-            '/images/icons/Expand_Widget.png'."',
-        collapseWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
-            '/images/icons/Collapse_Widget.png'."',
-        closeWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
-            '/images/icons/Close_Widget.png'."'
-    });
+            modelName: '".$modelName."',
+            translations: x2.massActions.translations,
+            expandWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
+                '/images/icons/Expand_Widget.png'."',
+            collapseWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
+                '/images/icons/Collapse_Widget.png'."',
+            closeWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
+                '/images/icons/Close_Widget.png'."'
+        });
+    }
 ", CClientScript::POS_READY);
 
 ?>

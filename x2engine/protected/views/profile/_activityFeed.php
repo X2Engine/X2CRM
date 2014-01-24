@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,8 @@ Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/activityFeed.js', CClientScript::POS_END);
 /*Yii::app()->clientScript->registerCssFile(
     Yii::app()->getTheme()->getBaseUrl().'/css/activityFeed.css');*/
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->getBaseUrl().'/js/EnlargeableImage.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(
@@ -79,6 +81,7 @@ $passVarsToClientScript = "
     x2.activityFeed.lastEventId = ".(!empty($lastEventId)?$lastEventId:0).";
     x2.activityFeed.lastTimestamp = ".(!empty($lastTimestamp)?$lastTimestamp:0).";
     x2.activityFeed.profileId = ".$profileId.";
+    x2.activityFeed.myProfileId = ".Yii::app()->params->profile->id.";
     x2.activityFeed.deletePostUrl = '".$this->createUrl('/profile/deletePost')."';
     x2.activityFeed.translations = {};
 ";
@@ -241,18 +244,31 @@ Yii::app()->clientScript->registerScript(
                 'translateOptions',json_decode(Dropdowns::model()->findByPk(113)->options,true)),
             array ('class' => 'x2-select'));
         echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
-        echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"$('#attachments').slideToggle();", 'id'=>"toggle-attachment-menu-button"));
+        if ($isMyProfile) 
+            echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"$('#attachments').slideToggle();", 'id'=>"toggle-attachment-menu-button"));
+
         echo "</div>";
         ?>
     </div>
     <?php $this->endWidget(); ?>
 </div>
-
-<div id="attachments" style="display:none;">
-<?php $this->widget('Attachments',array('associationType'=>'feed','associationId'=>Yii::app()->user->getId())); ?>
-</div>
-
 <?php
+if ($isMyProfile) {
+?>
+<div id="attachments" style="display:none;">
+<?php 
+$this->widget(
+    'Attachments',
+    array(
+        'associationType'=>'feed',
+        'associationId'=>Yii::app()->user->getId(),
+        'profileId'=>$profileId,
+    )
+); 
+?>
+</div>
+<?php
+}
 $this->widget('zii.widgets.CListView', array(
     'dataProvider'=>$stickyDataProvider,
     'itemView'=>'_viewEvent',

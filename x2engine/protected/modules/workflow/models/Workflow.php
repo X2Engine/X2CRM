@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -297,7 +297,7 @@ class Workflow extends CActiveRecord {
 				
 				if($workflowStatus['stages'][$stage]['complete']) {
 					$statusStr .= Yii::t('workflow','Completed').' '.date("Y-m-d",$workflowStatus['stages'][$stage]['completeDate']);
-					// X2Date::dateBox($workflowStatus['stages'][$stage]['completeDate']);
+					// X2DateUtil::dateBox($workflowStatus['stages'][$stage]['completeDate']);
 
 					// can only undo if there is no restriction on backdating, or we're still within the edit time window
 					$allowUndo = Yii::app()->params->admin->workflowBackdateWindow < 0 || (time() - $workflowStatus['stages'][$stage]['completeDate']) < Yii::app()->params->admin->workflowBackdateWindow;
@@ -342,7 +342,7 @@ class Workflow extends CActiveRecord {
 	}
 	
 	public static function renderWorkflowStats(&$workflowStatus) {
-		$dateRange=Yii::app()->controller->getDateRange();
+		$dateRange=X2DateUtil::getDateRange();
 		$user=isset($_GET['users'])?$_GET['users']:''; 
 		if(!empty($user)){
 			$userString=" AND assignedTo='$user' ";

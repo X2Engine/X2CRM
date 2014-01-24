@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -73,8 +73,20 @@ $this->widget('MenuList', array(
     <button type='submit' class='x2-button' id='feed-post-button' 
      data-inline='true'><?php echo Yii::t('app', 'Submit Post'); ?></button>
 </form>
+<div id="attachments" style='display: none;'>
+<?php
+$this->widget (
+    'Attachments',
+    array(
+        'associationType'=>'feed',
+        'associationId'=>Yii::app()->user->getId(),
+        'mobile' => true,
+    )
+);
+?>
+</div>
 <div id="feed-box"></div>
-<script>
+<script type='text/javascript'>
 
     /*
     Initializes notifications or, if it has already been initialized, retrieves previously received
@@ -105,8 +117,15 @@ $this->widget('MenuList', array(
         // post text to activity feed
         $('#feed-post-button').on ('click', function () {
 
+            // if a photo is uploaded, submit it (requires page refresh)
+            if (x2.attachments.fileIsUploaded ()) {
+                $.mobile['ajaxEnabled'] = false; 
+                $('#submitAttach').click ();            
+                return false;
+            }
+
             $.ajax({
-                url:"<?php echo Yii::app()->request->getScriptUrl () . '/site/publishPost'; ?>",
+                url:"<?php echo Yii::app()->request->getScriptUrl () . '/profile/publishPost'; ?>",
                 type:"POST",
                 data:{
                     "text":$("#feed-post-editor").val(),

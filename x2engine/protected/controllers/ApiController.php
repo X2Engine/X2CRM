@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -167,6 +167,10 @@ class ApiController extends x2base {
 		// Get an instance of the respective model
 		$model = $this->getModel(true);
 		$model->setX2Fields($_POST);
+
+        if ($this->modelClass === 'Contacts' && isset ($_POST['x2_key'])) {
+            $model->trackingKey = $_POST['x2_key']; // key is read-only, won't be set by setX2Fields
+        }
 
 		$setUserFields = false;
 		// $scenario = 'Changelog behavior in effect.';
@@ -959,4 +963,5 @@ class ApiController extends x2base {
 			$this->_sendResponse(400, sprintf("No parameters matching primary key column(s) <b>%s</b> for model <b>%s</b>.",implode('-',$pkc),$this->modelClass));
 		}
 	}
+
 }

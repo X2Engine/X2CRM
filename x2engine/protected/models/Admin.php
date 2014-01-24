@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -165,23 +165,6 @@ class Admin extends CActiveRecord {
             'externalBaseUrl' => Yii::t('app','External / Public Base URL'),
             'externalBaseUri' => Yii::t('app','External / Public Base URI')
         );
-    }
-
-    public static function getModelList(){
-        $modelList = array();
-        foreach(X2Model::model('Modules')->findAllByAttributes(array('editable' => true, 'visible' => 1)) as $module){
-            if(X2Model::getModelName($module->name)){
-                $modelName = $module->name;
-            }else{
-                $modelName = ucfirst($module->name);
-            }
-            if(Yii::app()->user->checkAccess(ucfirst($module->name).'Index', array())){
-                $modelList[$modelName] = $module->title;
-            }
-        }
-        return array_map(function($term){
-                            return Yii::t('app', $term);
-                        }, $modelList);
     }
 
     public function requiredIfSysDefault($attribute, $params){

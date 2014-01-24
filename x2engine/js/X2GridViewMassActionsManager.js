@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -50,14 +50,12 @@ function X2GridViewMassActionsManager (argsDict) {
          
         modelName: '', // name of model associated with grid
         translations: [], 
-        beforeAjaxUpdate: function () {}, // function to call before an ajax gridview update
-        afterAjaxUpdate: function () {},  // function to call after an ajax gridview update
         expandWidgetSrc: '', // image src
         collapseWidgetSrc: '', // image src
         closeWidgetSrc: '', // image src
     };
 
-    this.previouslySelectedRecords = null; // records selected before grid update
+    this._previouslySelectedRecords = null; // records selected before grid update
     this._topPagerNamespace = this.namespacePrefix + 'TopPagerManager'; 
     this._stickyHeaderNamespace = this.namespacePrefix + 'stickyHeader';
     this.tagContainer = null;
@@ -79,6 +77,10 @@ Private static methods
 /*
 Public instance methods
 */
+
+X2GridViewMassActionsManager.prototype.saveSelectedRecords = function () {
+    this._previouslySelectedRecords = this._getSelectedRecords ();
+};
 
 /**
  * Public function for condensing interface
@@ -392,7 +394,7 @@ X2GridViewMassActionsManager.prototype._executeRemoveFromList = function (dialog
             $(dialog).dialog ('close');
             that._displayFlashes (response);
             if (response['success']) {
-                that._updateGrid (selectedRecords);
+                that._updateGrid ();
             }
         }
     });
@@ -569,7 +571,7 @@ X2GridViewMassActionsManager.prototype._executeMassAction = function (massAction
  */
 X2GridViewMassActionsManager.prototype._checkX2GridViewRows = function () {
     var that = this; 
-    var idsOfchecked = that.previouslySelectedRecords;
+    var idsOfchecked = that._previouslySelectedRecords;
 
     // create a dictionary for O(1) access
     var dictOfIdsOfChecked = {};
@@ -583,7 +585,7 @@ X2GridViewMassActionsManager.prototype._checkX2GridViewRows = function () {
         }
     });
 
-    that.previouslySelectedRecords = undefined;
+    that._previouslySelectedRecords = undefined;
 };
 
 /**
@@ -715,15 +717,12 @@ X2GridViewMassActionsManager.prototype._getSelectedRecords = function () {
 
 /**
  * Removes objects which will get reconstructed after the grid updates and then updates the grid
- * @param array selectedRecords currently check records
  */
-X2GridViewMassActionsManager.prototype._updateGrid = function (selectedRecords) {
+X2GridViewMassActionsManager.prototype._updateGrid = function () {
     var that = this; 
-    that.beforeAjaxUpdate ();
     $('#' + that.gridId).yiiGridView ('update', {
         complete: function () {
             that.DEBUG && console.log ('x2.massActions._updateGrid complete');
-            that.afterAjaxUpdate ();
         }
     });
 };
@@ -735,7 +734,7 @@ X2GridViewMassActionsManager.prototype._init = function () {
     var that = this; 
     that.DEBUG && console.log ('main');
 
-    if (that.previouslySelectedRecords) that._checkX2GridViewRows ();
+    if (that._previouslySelectedRecords) that._checkX2GridViewRows ();
 
     that._checkUIShow (false);
     that._setUpMoreButtonBehavior ();

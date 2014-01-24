@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -43,6 +43,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/email
 $insertableAttributes = array();
 foreach(X2Model::model('Contacts')->attributeLabels() as $fieldName => $label)
 	$insertableAttributes[$label] = '{'.$fieldName.'}';
+$insertableAttributes[Yii::t('profile','Signature')] = '{signature}';
 
 Yii::app()->clientScript->registerScript('editorSetup','
 
@@ -69,7 +70,7 @@ function setUpTextEditor (suppressInsertableAttrs) {
 	} else {
 		window.emailEditor = createCKEditor("Campaign_content",{
 			tabIndex:5,
-			insertableAttributes:x2.insertableAttributes,
+			insertableAttributes:'.CJSON::encode(array(Yii::t('contacts','Contact Attributes')=>$insertableAttributes)).',
 			fullPage:true
 		},function(){
 			window.emailEditor.document.on("keyup",function(){ 
@@ -89,7 +90,6 @@ function setUpTextEditor (suppressInsertableAttrs) {
 		.css("clear","both")
 		.find("label").remove();
 
-	x2.insertableAttributes = '.CJSON::encode(array(Yii::t('contacts','Contact Attributes')=>$insertableAttributes)).';
 
 	setupEmailAttachments("campaign-attachments");
 

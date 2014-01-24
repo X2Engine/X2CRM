@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,15 @@
 
 
 // Globals
-x2.activityFeed.timeout = null; // used to clear timeout when editor resize animation is called
-x2.activityFeed.editorManualResize = false; // used to prevent editor resize animation on manual resize
-x2.activityFeed.editorIsExpanded = false; // used to prevent text field expansion if already expanded
+
+// used to clear timeout when editor resize animation is called
+x2.activityFeed.timeout = null; 
+
+// used to prevent editor resize animation on manual resize
+x2.activityFeed.editorManualResize = false; 
+
+// used to prevent text field expansion if already expanded
+x2.activityFeed.editorIsExpanded = false; 
 
 /*
 Removes an error div created by createErrorBox ().  
@@ -105,6 +111,10 @@ function publishPostAndroid () {
 Send post text to server via Ajax and minimize editor.
 */
 function publishPost () {
+    if (typeof x2.attachments !== 'undefined' && x2.attachments.fileIsUploaded ()) { 
+        // publisher text gets submitted with file, don't submit it twice
+        return;
+    }
 
     var editorText = window.newPostEditor.getData();
 
@@ -252,8 +262,11 @@ function attachmentMenuBehavior () {
 
     $("#submitAttach").hide ();
 
-    function submitAttachment () {
-        $("#submitAttach").click ();
+    function submitAttachment (evt) {
+        evt.preventDefault ();
+        if (x2.attachments.fileIsUploaded ()) {
+            $("#submitAttach").click ();
+        }
         return false;
     }
 
@@ -910,7 +923,9 @@ function updateEventList () {
 
         // place the stickied post into the sticky feed in the correct location
         var hasInserted = false;
-        $("#sticky-feed > .items > div.view.top-level.activity-feed").each (function (index, element) {
+        $("#sticky-feed > .items > div.view.top-level.activity-feed").each (
+            function (index, element) {
+
             var id = $(element).children ().find (".comment-age").attr ("id").split ("-");
             var eventId = id[0];
             var eventTimeStamp = id[1];
@@ -1157,7 +1172,8 @@ function updateEventList () {
             data:{
                 'lastEventId':lastEventId, 
                 'lastTimestamp':lastTimestamp,
-                'profileId':x2.activityFeed.profileId
+                'profileId':x2.activityFeed.profileId,
+                'myProfileId':x2.activityFeed.myProfileId
             },
             success:function(data){
                 lastEventId=data[0];
@@ -1231,107 +1247,17 @@ function setupFeedColorPickers () {
 
 }
 
-function setUpChartHideShowBehavior () {
-    return;
-
-    /*
-    Show the chart when the show chart button is clicked
-    */
-    $('#show-chart').click (function (evt) {
-        evt.preventDefault();
-        $(this).hide ();
-        $('#hide-chart').show ();
-
-        var currChart = $('#chart-type-selector').val ();
-        x2[currChart].chart.show ();
-        $('#activity-feed-chart-container').slideDown (450);
-        x2[currChart].chart.replot ();
-        $('#page-title-container').addClass ('page-title-container-chart-shown');
+/*
+Make all attached images enlargeable
+*/
+function setUpImageAttachmentBehavior () {
+    $('.attachment-img').each (function () {
+        new x2.EnlargeableImage ({
+            elem: $(this)
+        });                                       
     });
-
-    /*
-    Hide the chart when the hide chart button is clicked
-    */
-    $('#hide-chart').click (function (evt) {
-        evt.preventDefault();
-        $(this).hide ();
-        $('#show-chart').show ();
-        $('#activity-feed-chart-container').slideUp ({
-            duration: 450,
-            complete: function () {
-                x2['eventsChart'].chart.hide ();
-                x2['usersChart'].chart.hide ();
-                $('#page-title-container').removeClass ('page-title-container-chart-shown');
-            }
-        });    
-    });
-
-    $('#chart-type-selector').on ('change', function () {
-        var selectedChart = $(this).val ();
-        if (selectedChart === 'eventsChart') {
-            x2['usersChart'].chart.hide ();
-            x2['eventsChart'].chart.show ();
-            x2['eventsChart'].chart.replot ();
-        } else if (selectedChart === 'usersChart') {
-            x2['eventsChart'].chart.hide ();
-            x2['usersChart'].chart.show ();
-            x2['usersChart'].chart.replot ();
-        }
-        $.cookie ('feedSelectedChart', selectedChart);
-    });
-
-    var chartsReady = 0;
-    // event triggered by _x2chart.js
-    $(document).on ('usersChartReady eventsChartReady', function () { 
-        if (++chartsReady === 2)
-            checkChartShow ();
-    });
-
-    function checkChartShow () {
-        if ($.cookie (x2['eventsChart'].chart.cookiePrefix + 'chartIsShown') === 'true' ||
-            $.cookie (x2['usersChart'].chart.cookiePrefix + 'chartIsShown') === 'true') {
-
-            $('#show-chart').click ();
-        }
-    }
-
-    // set chart type using cookie
-    $('#chart-type-selector').find ('option').each (function () {
-        $(this).removeAttr ('selected');
-    });
-    if ($.cookie ('feedSelectedChart')) {
-        $('#chart-type-selector').children ().each (function () {
-            if ($(this).val () === $.cookie ('feedSelectedChart'))
-                $(this).attr ('selected', 'selected');
-        });
-    } else {
-        $('#chart-type-selector').children ().first ().attr ('selected', 'selected');
-    }
-
-
-    $('#chart-subtype-selector').on ('change', function (evt) {
-        var selectedSubType = $(this).val ();
-        selectedChart = $('#chart-type-selector').val ();
-        x2['eventsChart'].chart.setChartSubtype (
-            selectedSubType, true, false, true);    
-        x2['usersChart'].chart.setChartSubtype (
-            selectedSubType, true, false, true);    
-        $.cookie ('feedChartSelectedSubtype', selectedSubType);
-    });
-
-    if ($.cookie ('feedChartSelectedSubtype')) {
-        // set chart type using cookie
-        $('#chart-subtype-selector').find ('option').each (function () {
-            $(this).removeAttr ('selected');
-        });
-        $('#chart-subtype-selector').children ().each (function () {
-            if ($(this).val () === $.cookie ('feedChartSelectedSubtype'))
-                $(this).attr ('selected', 'selected');
-        });
-    } 
-
-
 }
+
 
 $(document).on ('ready', function profileMain () {
     setupEditorBehavior ();
@@ -1341,5 +1267,5 @@ $(document).on ('ready', function profileMain () {
     updateEventList ();
     setupFeedColorPickers ();
     attachmentMenuBehavior ();
-    setUpChartHideShowBehavior ();
+    setUpImageAttachmentBehavior ();
 });

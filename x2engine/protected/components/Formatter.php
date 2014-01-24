@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -312,7 +312,7 @@ class Formatter {
      * Obtain a Unix-style integer timestamp for a date format.
      *
      * @param string $date
-     * @return integer
+     * @return mixed integer or false if parsing fails
      */
     public static function parseDate($date){
         if(Yii::app()->locale->getId() == 'en')
@@ -491,12 +491,14 @@ class Formatter {
      * existed for the index $key, otherwise null
      */
     public static function parseShortCode($key, $model){
-        $shortCodes = include('protected/components/x2flow/shortcodes.php');
-        if(isset($shortCodes[$key])){
-            return eval($shortCodes[$key]);
-        }else{
-            return null;
+        $path = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','x2flow','shortcodes.php'));
+        if(file_exists($path)){
+            $shortCodes = include($path);
+            if(isset($shortCodes[$key])){
+                return eval($shortCodes[$key]);
+            }
         }
+        return null;
     }
 
     /**
