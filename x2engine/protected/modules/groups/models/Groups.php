@@ -153,10 +153,10 @@ class Groups extends X2Model {
      * @return <array of objects> An array of user models where each user has an active session
      */
     public function getOnlineUsers () {
-        $users = $this->users;
 		$onlineUserUsernames = Session::getOnlineUsers();
-        $onlineUsers = array_filter ($users, function ($a) use ($onlineUserUsernames) {
-            return in_array ($a['username'], $onlineUserUsernames);
+
+        $onlineUsers = array_filter($this->users,function ($a) use ($onlineUserUsernames) {
+            return in_array($a->username, $onlineUserUsernames);
         });
         return $onlineUsers;
     }

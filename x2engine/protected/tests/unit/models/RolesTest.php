@@ -34,66 +34,42 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
-Yii::import('application.models.*');
-Yii::import('application.modules.groups.models.*');
-Yii::import('application.modules.users.models.*');
-Yii::import('application.components.*');
-Yii::import('application.components.permissions.*');
-Yii::import('application.components.util.*');
-
 /**
- *
- * @package X2CRM.tests.unit.components
+ * 
+ * @package X2CRM.tests.unit.models
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
-class GroupTest extends CDbTestCase {
+class RolesTest extends X2DbTestCase {
 
-    const VERBOSE = 0;
-
-    public $fixtures = array (
-        'users' => 'User',
-        'groups' => array ('Groups', '_1'),
-        'groupToUser' => array ('GroupToUser', '_2'),
-        'session' => array('Session','_2'),
-    );
+    public static function referenceFixtures() {
+        return array(
+            'user' => 'User',
+            'role' => 'Roles',
+            'roleToUser' => 'RoleToUser'
+        );
+    }
 
     /**
-     * Ensures that all users accessed via the users relation belong to the group 
+     *
      */
-    public function testUsersRelation () {
-        foreach ($this->groups as $key => $val) {
-            $groupModel = Groups::model ()->findByAttributes ($val);
-            $userIds = array_map (function ($a) { return $a['id']; }, $groupModel->users);
-
-            if(self::VERBOSE) {
-                print ($groupModel->id."\n");
-                print_r ($userIds);
-            }
-            
-            /*
-            For each user, ensure that there is a corresponding groupToUser entry
-            */
-            foreach ($userIds as $uid) {
-                $found = false;
-                foreach ($this->groupToUser as $key => $val) {
-                     if ($val['groupId'] == $groupModel->id && $val['userId'] == $uid) {
-                        $found = true;
-                     }
-                }
-                $this->assertTrue ($found);
-            }
-        }
+    public function testGetUserTimeout() {
+        Yii::app()->cache->flush();
+        $defaultTimeout = 60;
+        Yii::app()->params->admin->timeout = $defaultTimeout;
+        // admin's timeout should be the big one based on role
+        $this->assertEquals($this->role('longTimeout')->timeout, Roles::getUserTimeout($this->user('admin')->id));
+        // testuser's timeout should also be the big one, and not the "Peon"
+        // role's timeout length
+        $this->assertEquals($this->role('longTimeout')->timeout, Roles::getUserTimeout($this->user('testUser')->id));
+        // testuser2's timeout should be the "Peon" role's timeout length
+        // because that user has that role, and that role has a timeout longer
+        // than the default timeout
+        $this->assertEquals($this->role('shortTimeout')->timeout, Roles::getUserTimeout($this->user('testUser2')->id));
+        // testuser3 should have no role. Here, let's ensure that in case the
+        // fixtures have been modified otherwise
+        RoleToUser::model()->deleteAllByAttributes(array('userId'=>$this->user('testUser3')->id));
+        $this->assertEquals($defaultTimeout,Roles::getUserTimeout($this->user('testUser3')->id));
     }
-
-    public function testHasOnlineUsers () {
-        // Group 3 should have no online users.
-        $this->assertFalse($this->groups('group3')->hasOnlineUsers ());
-
-        // Group 1 should have online users.
-        $this->assertTrue ($this->groups('group1')->hasOnlineUsers ());
-
-    }
-
 }
 
 ?>

@@ -160,14 +160,14 @@ class Roles extends CActiveRecord {
 		$userRoles = Yii::app()->db->createCommand() // lookup the user's roles
 			->select('roleId')
 			->from('x2_role_to_user')
-			->where('type="user" AND userId='.$userId)
-			->queryColumn();
+			->where('type="user" AND userId=:userId')
+			->queryColumn(array(':userId'=>$userId));
 
 		$groupRoles = Yii::app()->db->createCommand()	// lookup roles of all the user's groups
 			->select('x2_role_to_user.roleId')
 			->from('x2_group_to_user')
-			->join('x2_role_to_user','x2_role_to_user.userId=x2_group_to_user.groupId AND x2_group_to_user.userId='.$userId.' AND type="group"')
-			->queryColumn();
+			->join('x2_role_to_user','x2_role_to_user.userId=x2_group_to_user.groupId AND x2_group_to_user.userId=:userId AND type="group"')
+			->queryColumn(array(':userId' => $userId));
 
 		$userRoles[$userId] = array_unique($userRoles + $groupRoles);  // combine all the roles, remove duplicates
 
@@ -177,34 +177,37 @@ class Roles extends CActiveRecord {
 		return $userRoles[$userId];
 	}
 
-        /**
-         * Returns the maximum timeout of the current users roles
-         * @return Integer Maximum timeout value
-         */
-        public static function getUserTimeout($userId, $cache = true) {
-            $cacheVar = 'user_roles_timeout'.$userId;
-            if ($cache === true && ($timeout = Yii::app()->cache->get($cacheVar)) !== false)
-                return $timeout;
+    /**
+     * Returns the timeout of the current user.
+     *
+     * Selects and returns the maximum timeout between the timeouts of the
+     * current user's roles and the default timeout.
+     * @return Integer Maximum timeout value
+     */
+    public static function getUserTimeout($userId, $cache = true){
+        $cacheVar = 'user_roles_timeout'.$userId;
+        if($cache === true && ($timeout = Yii::app()->cache->get($cacheVar)) !== false)
+            return $timeout;
 
-            if (isset($userId) && $userId != null) {
-                $userRoles = Roles::getUserRoles($userId);
-                $availableTimeouts = array();
-                foreach($userRoles as $role) {
-                     $timeout = Yii::app()->db->createCommand()
-                            ->select('timeout')
-                            ->from('x2_roles')
-                            ->where('id='.$role)
-                            ->queryScalar();
-                     if (isset($timeout)) $availableTimeouts[] = $timeout;
-                     unset($timeout);
-                }
-                if (count($availableTimeouts) > 0) {
-                    $timeout = max($availableTimeouts);
-                    if($cache === true)
-                        Yii::app()->cache->set($cacheVar,$timeout,259200);
-                    return $timeout;
-                }
-            }
-            return null;
+        $userRoles = Roles::getUserRoles($userId);
+        $availableTimeouts = array();
+        foreach($userRoles as $role){
+            $timeout = Yii::app()->db->createCommand()
+                    ->select('timeout')
+                    ->from('x2_roles')
+                    ->where('id='.$role)
+                    ->queryScalar();
+            if(isset($timeout))
+                $availableTimeouts[] = $timeout;
+            unset($timeout);
         }
+        $availableTimeouts[] = Yii::app()->params->admin->timeout;
+        if(count($availableTimeouts) > 0){
+            $timeout = max($availableTimeouts);
+            if($cache === true)
+                Yii::app()->cache->set($cacheVar, $timeout, 259200);
+            return $timeout;
+        }
+    }
+
 }

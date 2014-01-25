@@ -1,39 +1,12 @@
 # X2CRM 3.7 #
-Point release 3.7.1 1/23/2014
+Point release 3.7.2 1/24/2014 (follow-up to 3.7.1, 1/23/2014)
 
-New in this release (see [CHANGELOG](CHANGELOG.md) for full history)
-* Improvements to the fields manager
-  * Better input validation, stability and security
-  * New option to set default values for fields in new records
-* Administrators can set distinct session timeouts for different user roles
-* Mass update buttons added to the Actions grid view
-* Default form/view will be generated automatically for new custom modules that don't yet have them
-* Inline email widget included in custom module generation
-* Improvements to column filters
-  * Dropdown menu and boolean type fields appear as dropdowns
-  * Date type fields provide the convenient datepicker widget so you don't have to type in dates manually
-* Re-instated the missing "cancel" button in the star rating input widget to clear a rating field's value
-* Signature replacement in campaigns; new "{signature}" placeholder will be replaced with the email signature of the assignee
-* Fixed Bugs:  
-  * [124](http://x2software.com/index.php/bugReports/124): Gridview filters: True/False vs. Yes/No  
-  * [441](http://x2software.com/index.php/bugReports/441): Property "Profile.pageOpacity" is not defined.  
-  * [719](http://x2software.com/index.php/bugReports/719): rename(protected/modules/ob\_b/views/default,protected/modules/ob\_b/views/ob\_b) [<a href='function.rename'>function.rename</a>]: Directory not empty  
-  * [757](http://x2software.com/index.php/bugReports/757): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND (type I
-  * [764](http://x2software.com/index.php/bugReports/764): primary contact field in quote detail view comes out html-encoded  
-  * [766](http://x2software.com/index.php/bugReports/766): Backdating actions does not affect activity feed dates  
-  * [770](http://x2software.com/index.php/bugReports/770): Number of overdue actions incorrectly displayed in "My Actions" widget  
-  * [833](http://x2software.com/index.php/bugReports/833): User Report
-  * In Professional Edition:
-    * Tag-based trigger / action now works
-    * Security vulnerability in web lead form patched; see [release notes](RELEASE-NOTES.md) for full details.
-    * Fixed idiosyncratic permissions behavior in the docs module; the "private delete access" permission now grants users the ability to delete their own documents
-  * "Sign in as another user" option fixes the previous issue of being unable to switch users after enabling "Remember Me"
-  * X2Touch restored
-  * In the API, an exception is made so that the "userKey" field of Contacts is not read-only, allowing use of the API for creating properly web-tracked leads
-  * Removed deprecated functions that were causing memory exhaustion errors on systems with over 10,000 account records
-  * Posts marked as private are properly hidden
-  * Numerous other unlisted, long-standing bugs (not recorded in the public bug tracker)
-
+New in 3.7.2 (see [CHANGELOG](CHANGELOG.md) for full history)
+* Improved user session timeout method to fix compatibility issue with some servers
+* Fixed bug in Actions.getRelevantTimestamp 
+* Fixed star rating cancel button in Firefox
+* Fixed bug in web lead form designer preventing tags from being saved properly
+* Fixed bug in campaign mailer component that prevents user from seeing when mail is undeliverable (gives a server error instead)
 
 # Introduction #
 Welcome to  X2CRM!

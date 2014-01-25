@@ -155,15 +155,23 @@ class Session extends CActiveRecord {
      * Clear session records which have timed out. Log the timeout.
      */
     public static function cleanUpSessions () {
-        $roleTimeout = Roles::getUserTimeout(Yii::app()->user->id);
-        $timeout = ($roleTimeout != null)? $roleTimeout : Yii::app()->params->admin->timeout;
-        $sessions = X2Model::model('Session')
-            ->findAllByAttributes(
-                array(),'lastUpdated < :cutoff', 
-                array(':cutoff' => time() - $timeout));
-        foreach($sessions as $session){
-            SessionLog::logSession($session->user,$session->id,'passiveTimeout');
-            $session->delete();
+        // Only select users with active sessions to clear out, in case there are
+        // dozens of inactive users, to make things more efficient:
+        $users = Yii::app()->db->createCommand()
+                ->select('x2_users.id,x2_users.username')
+                ->from('x2_users')
+                ->rightJoin('x2_sessions', 'x2_sessions.user = x2_users.username')
+                ->where('x2_users.username IS NOT NULL AND x2_users.username != ""')
+                ->queryAll();
+        foreach($users as $user){
+            $timeout = Roles::getUserTimeout($user['id']);
+            $sessions = X2Model::model('Session')
+                    ->findAllByAttributes(
+                    array('user' => $user['username']), 'lastUpdated < :cutoff', array(':cutoff' => time() - $timeout));
+            foreach($sessions as $session){
+                SessionLog::logSession($session->user, $session->id, 'passiveTimeout');
+                $session->delete();
+            }
         }
     }
 }

@@ -1,3 +1,11 @@
+# 3.7.2 #
+1/24/2012
+* Improved user session timeout method to fix compatibility issue with some servers
+* Fixed bug in Actions.getRelevantTimestamp 
+* Fixed star rating cancel button in Firefox
+* Fixed bug in web lead form designer preventing tags from being saved properly
+* Fixed bug in campaign mailer component that prevents user from seeing when mail is undeliverable (gives a server error instead)
+
 # 3.7.1 #
 1/23/2014
 * Improvements to the fields manager

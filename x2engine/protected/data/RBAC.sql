@@ -398,7 +398,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('MarketingAdminAccess',1,'',NULL,'N;'),
 ('MarketingBasicAccess',1,'',NULL,'N;'),
 ('MarketingBasicPrivate',1,'Control their own records','return Yii::app()->user->getName()==$params[\'assignedTo\'];','N;'),
-('MarketingAjaxDeleteWebForm',0,'',NULL,'N;'),
+/*('MarketingAjaxDeleteWebForm',0,'',NULL,'N;'),*/
 ('MarketingClick',0,'',NULL,'N;'),
 ('MarketingComplete',0,'',NULL,'N;'),
 ('MarketingCreate',0,'',NULL,'N;'),
@@ -1080,7 +1080,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('MarketingPrivateReadOnlyAccess','MarketingViewPrivate'),
 ('LeadRoutingTask','MarketingWebLeadForm'),
 ('MarketingAdminAccess','MarketingWebleadForm'),
-('MarketingAdminAccess','MarketingAjaxDeleteWebForm'),
+/*('MarketingAdminAccess','MarketingAjaxDeleteWebForm'),*/
 ('MediaAdminAccess','MediaAdmin'),
 ('administrator','MediaAdminAccess'),
 ('MediaUpdateAccess','MediaBasicAccess'),

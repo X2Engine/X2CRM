@@ -90,8 +90,9 @@ Set up form submission behavior.
 */
 WebFormDesigner.prototype._setUpFormSubmission = function () {
     var that = this;
-    $('#web-form-save-button').on('click', function(evt) {
+    $('#web-form-submit-button').on('click', function(evt) {
         evt.preventDefault ();
+        that._refreshForm ();
         var formJSON = auxlib.formToJSON ($('#web-form-designer-form'));
         $.ajax({
             url: that.saveUrl,
@@ -153,7 +154,7 @@ WebFormDesigner.prototype._init = function () {
         }
     });
 
-    //that._setUpFormSubmission ();
+    that._setUpFormSubmission ();
 
     // set up saved form selection behavior
     $('#saved-forms').on('change', function() {
@@ -214,7 +215,7 @@ WebFormDesigner.prototype._init = function () {
 
     that.updateParams();
 
-    that._setUpFormDeletion ();
+    //that._setUpFormDeletion ();
 };
 
 WebFormDesigner.prototype._showHideDeleteButton = function () {
@@ -340,6 +341,11 @@ WebFormDesigner.prototype._generateQuery = function (params) {
 
     return query;
 };
+
+/**
+ * Use to refresh form data before submission
+ */
+WebFormDesigner.prototype._refreshForm = function () {};
 
 // override in child prototype
 WebFormDesigner.prototype._appendToQuery = function (query) {

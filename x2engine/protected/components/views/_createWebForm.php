@@ -181,13 +181,13 @@ Yii::app()->clientScript->registerScript('webleadForm','
                         'id' => 'reset-form',
                         'class'=>'x2-button x2-small-button'
                     )); 
-        		echo CHtml::button (
+        		/*echo CHtml::button (
                     Yii::t('marketing','Delete Form'),
                     array(
                         'id' => 'delete-form',
                         'class'=>'x2-button x2-small-button',
                         'style' => 'display: none;' 
-                    )); 
+                    )); */
                 ?>
             </div>
         </div>
@@ -207,15 +207,15 @@ Yii::app()->clientScript->registerScript('webleadForm','
                 "id" => 'web-form-name',
                 "class"=>"left")
             );
-            /*echo CHtml::submitButton(
+            echo CHtml::button (
                 Yii::t('marketing','Save'), 
     	    	array(
                     'name'=>'save',
                     'id'=>'web-form-submit-button',
                     'class'=>'x2-button x2-small-button'
                 )
-            );*/
-            echo CHtml::ajaxSubmitButton(
+            );
+            /*echo CHtml::ajaxSubmitButton(
                 Yii::t('marketing','Save'), $saveUrl,
                 array(
                     'success'=>'function(data, status, xhr) {
@@ -227,7 +227,7 @@ Yii::app()->clientScript->registerScript('webleadForm','
                     'name'=>'save',
                     'class'=>'x2-button x2-small-button'
                 )
-            );
+            );*/
 
             ?>
         </div>

@@ -103,5 +103,5 @@
 # 2.1.1 #
 10/15/2012
 * Note: Any existing changelog data will be preserved, but not visible in the
-changelog table. In the next update we will include code to convert this data
-to the new format.
+  changelog table. In the next update we will include code to convert this data
+  to the new format.

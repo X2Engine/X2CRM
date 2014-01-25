@@ -535,7 +535,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             $this->status['message'] = Yii::t('marketing','Email sent successfully to {address}.',array('{address}' => $this->recipient->email));
         } else if ($this->status['exception'] instanceof phpmailerException && $this->status['exception']->getCode() != PHPMailer::STOP_CRITICAL) {
             // Undeliverable mail. Mark as sent but without unique ID, designating it as a bad address
-            $this->status['message'] = Yii::t('marketing','Email could not be sent to {address}; bad response from server or otherwise undeliverable.',array('{address}'=>$email));
+            $this->status['message'] = Yii::t('marketing','Email could not be sent to {address}; bad response from server or otherwise undeliverable.',array('{address}'=>$this->recipient->email));
             $this->undeliverable = true;
             $this->markEmailSent(null);
         } else {

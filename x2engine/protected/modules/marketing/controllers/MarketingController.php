@@ -88,7 +88,7 @@ class MarketingController extends x2base {
      * Deletes a web form record with the specified id 
      * @param int $id
      */
-    public function actionAjaxDeleteWebForm ($id) {
+    /*public function actionAjaxDeleteWebForm ($id) {
         $model = WebForm::model ()->findByPk ($id); 
         $success = false;
         if ($model) {
@@ -99,7 +99,7 @@ class MarketingController extends x2base {
             Yii::t('app', 'Success'),
             Yii::t('app', 'Unable to delete web form')
         );
-    }
+    }*/
 
     /**
      * Returns a JSON array of the names of all campaigns filtered by a search term.

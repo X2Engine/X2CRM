@@ -388,6 +388,8 @@ class Actions extends X2Model {
             case 'workflow': 
                 $timestamp = $this->completeDate; 
                 break;
+            default:
+                $timestamp = $this->createDate;
         }
         return $timestamp;
     }

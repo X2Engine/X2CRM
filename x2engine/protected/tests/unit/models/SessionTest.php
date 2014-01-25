@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -34,66 +35,49 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
-Yii::import('application.models.*');
-Yii::import('application.modules.groups.models.*');
 Yii::import('application.modules.users.models.*');
-Yii::import('application.components.*');
-Yii::import('application.components.permissions.*');
-Yii::import('application.components.util.*');
 
 /**
- *
- * @package X2CRM.tests.unit.components
+ * 
+ * @package X2CRM.tests.unit.models
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
-class GroupTest extends CDbTestCase {
+class SessionTest extends X2DbTestCase {
 
-    const VERBOSE = 0;
-
-    public $fixtures = array (
-        'users' => 'User',
-        'groups' => array ('Groups', '_1'),
-        'groupToUser' => array ('GroupToUser', '_2'),
-        'session' => array('Session','_2'),
+    public $fixtures = array(
+        'session' => array('Session','_1'),
     );
 
-    /**
-     * Ensures that all users accessed via the users relation belong to the group 
-     */
-    public function testUsersRelation () {
-        foreach ($this->groups as $key => $val) {
-            $groupModel = Groups::model ()->findByAttributes ($val);
-            $userIds = array_map (function ($a) { return $a['id']; }, $groupModel->users);
+    public static function referenceFixtures() {
+        return array(
+            'user' => 'User',
+            'role' => 'Roles',
+            'roleToUser' => 'RoleToUser'
+        );
+    }
 
-            if(self::VERBOSE) {
-                print ($groupModel->id."\n");
-                print_r ($userIds);
-            }
-            
-            /*
-            For each user, ensure that there is a corresponding groupToUser entry
-            */
-            foreach ($userIds as $uid) {
-                $found = false;
-                foreach ($this->groupToUser as $key => $val) {
-                     if ($val['groupId'] == $groupModel->id && $val['userId'] == $uid) {
-                        $found = true;
-                     }
-                }
-                $this->assertTrue ($found);
-            }
+    public function testCleanUpSessions() {
+        Yii::app()->cache->flush();
+        // Prepare expected data:
+        $sessionCounts = array(
+            'session1' => 1,
+            'session2' => 1,
+            'session3' => 0,
+        );
+        foreach(array_keys($sessionCounts) as $alias) {
+            $sessionIds[$alias] = $this->session($alias)->id;
+        }
+        
+        $defaultTimeout = 60;
+        Yii::app()->params->admin->timeout = $defaultTimeout;
+        
+        Session::cleanUpSessions();
+        // Session 1 shoud still be there
+        // Sessions 2 and 3 should be gone
+        foreach($sessionCounts as $alias => $count){
+            $this->assertEquals((integer)$count, Session::model()->countByAttributes(array('id'=>$sessionIds[$alias])),"$alias did not get deleted");
         }
     }
-
-    public function testHasOnlineUsers () {
-        // Group 3 should have no online users.
-        $this->assertFalse($this->groups('group3')->hasOnlineUsers ());
-
-        // Group 1 should have online users.
-        $this->assertTrue ($this->groups('group1')->hasOnlineUsers ());
-
-    }
-
 }
 
 ?>

@@ -230,8 +230,7 @@ class ApplicationConfigBehavior extends CBehavior {
             if($notGuest && !($this->owner->request->getPathInfo() == 'site/getEvents')){
                 $this->owner->user->setReturnUrl($this->owner->request->requestUri);
                 if($session !== null){
-                    $roleTimeout = Roles::getUserTimeout($this->owner->user->getId());
-                    $timeout = ($roleTimeout != null)? $roleTimeout : $this->owner->params->admin->timeout;
+                    $timeout = Roles::getUserTimeout($this->owner->user->getId());
                     if($session->lastUpdated + $timeout < time()){
                         SessionLog::logSession($this->owner->user->getName(), $sessionId, 'activeTimeout');
                         $session->delete();
