@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package X2CRM.modules.calendar 
+ * @package application.modules.calendar 
  */
 class CalendarModule extends CWebModule {
 	public function init() {

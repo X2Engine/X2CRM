@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@
 /**
  * Description of X2ControllerPermissionsBehavior
  *
- * @package X2CRM.components.permissions
+ * @package application.components.permissions
  */
 class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
@@ -71,11 +71,13 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
  			if ($model->hasAttribute('assignedTo')) { // If we have an assignment field, we may have an exception in the permissions
                $model=X2Model::model($this->owner->modelClass)->findByPk($_GET['id']);
                $retrieved = true;
-               if($model!==null){ // Pass the assigned to into the params array to be used for biz rules.
+               if($model !== null){ // Pass the assigned to into the params array to be used for biz rules.
                     $params['assignedTo']=$model->assignedTo;
-                }
+               }
             }
-            if($model->hasAttribute('createdBy')){ // If we have a created by field, we may have an exception in the permissions
+
+            // If we have a created by field, we may have an exception in the permissions
+            if(isset ($model) && $model->hasAttribute('createdBy')){ 
                 if(!$retrieved) // Skip fetching if it's here already
                     $model = X2Model::model($this->owner->modelClass)->findByPk($_GET['id']);
                 if($model !== null){ // Pass the assigned to into the params array to be used for biz rules.

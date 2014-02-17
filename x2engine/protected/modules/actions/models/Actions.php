@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,7 +38,7 @@ Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_actions".
- * @package X2CRM.modules.actions.models
+ * @package application.modules.actions.models
  */
 class Actions extends X2Model {
 
@@ -85,8 +85,9 @@ class Actions extends X2Model {
             array('allDay', 'boolean'),
             array('associationId,associationType','requiredAssoc'),
             array('createDate, completeDate, lastUpdated', 'numerical', 'integerOnly' => true),
-            array('id,assignedTo,actionDescription,visibility,associationId,associationType,associationName,dueDate,
-				priority,type,createDate,complete,reminder,completedBy,completeDate,lastUpdated,updatedBy,color', 'safe'),
+            array('id,assignedTo,actionDescription,visibility,associationId,associationType,'.
+                'associationName,dueDate,priority,type,createDate,complete,reminder,completedBy,'.
+                'completeDate,lastUpdated,updatedBy,color', 'safe'),
             array('verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(), 'on' => 'guestCreate'),
         );
     }
@@ -98,6 +99,8 @@ class Actions extends X2Model {
         return array_merge(parent::relations(), array(
                     'workflow' => array(self::BELONGS_TO, 'Workflow', 'workflowId'),
                     'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
+                    'timers' => array(self::HAS_MANY,'ActionTimer','actionId'),
+                    'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
                 ));
     }
 
@@ -133,9 +136,13 @@ class Actions extends X2Model {
             $this->dueDate = Formatter::parseDateTime($this->dueDate);
             $this->completeDate = Formatter::parseDateTime($this->completeDate);
         }
-        if(empty($this->timeSpent) && !empty($this->completeDate) && !empty($this->dueDate) && in_array($this->type ,array('time','call'))) {
+        // Whether this is a "timed" action record:
+        $timed = $this->isTimedType;
+        
+        if(empty($timeSpent) && !empty($this->completeDate) && !empty($this->dueDate) && $timed) {
             $this->timeSpent = $this->completeDate - $this->dueDate;
         }
+        
         return parent::beforeSave();
     }
 
@@ -547,15 +554,29 @@ class Actions extends X2Model {
     public function search($criteria = null){
         if(!$criteria instanceof CDbCriteria){
             $criteria = $this->getAccessCriteria();
-            $criteria->addCondition('(type != "workflow" AND type!="email" AND type!="event" AND type!="emailFrom") OR type IS NULL');
-            $criteria->addCondition("assignedTo='".Yii::app()->user->getName()."' AND complete!='Yes' AND IFNULL(dueDate, createDate) <= '".strtotime('today 11:59 PM')."'");
+            $criteria->addCondition(
+                '(type != "workflow" AND type!="email" AND type!="event" '.
+                'AND type!="emailFrom") OR type IS NULL');
+            $criteria->addCondition(
+                "assignedTo='".Yii::app()->user->getName()."' AND complete!='Yes' AND ".
+                "IFNULL(dueDate, createDate) <= '".strtotime('today 11:59 PM')."'");
         }
         return $this->searchBase($criteria);
     }
 
     public function searchIndex(){
         $criteria = new CDbCriteria;
-        $parameters = array('condition' => "(assignedTo='Anyone' OR assignedTo='".Yii::app()->user->getName()."' OR assignedTo='' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."')) AND dueDate <= '".mktime(23, 59, 59)."' AND ((type != \"workflow\" AND type!=\"email\" AND type!=\"event\" AND type!=\"emailFrom\") OR type IS NULL)", 'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
+        $parameters = array(
+            'condition' => 
+                "(assignedTo='Anyone' OR assignedTo='".Yii::app()->user->getName().
+                "' OR assignedTo='' OR assignedTo IN (
+                    SELECT groupId 
+                    FROM x2_group_to_user 
+                    WHERE userId='".Yii::app()->user->getId()."')
+                ) AND dueDate <= '".mktime(23, 59, 59)."' AND 
+                    ((type != \"workflow\" AND type!=\"email\" AND type!=\"event\" AND 
+                    type!=\"emailFrom\") OR type IS NULL)", 
+                'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
         $criteria->scopes = array('findAll' => array($parameters));
         return $this->searchBase($criteria);
     }
@@ -563,7 +584,10 @@ class Actions extends X2Model {
     public function searchComplete(){
         $criteria = new CDbCriteria;
         if(!Yii::app()->user->checkAccess('ActionsAdmin')){
-            $parameters = array("condition" => "completedBy='".Yii::app()->user->getName()."' AND complete='Yes'", "limit" => ceil(ProfileChild::getResultsPerPage() / 2));
+            $parameters = array(
+                "condition" => 
+                    "completedBy='".Yii::app()->user->getName()."' AND complete='Yes'", 
+                "limit" => ceil(ProfileChild::getResultsPerPage() / 2));
             $criteria->scopes = array('findAll' => array($parameters));
         }
         return $this->searchBase($criteria);
@@ -571,7 +595,13 @@ class Actions extends X2Model {
 
     public function searchAll(){
         $criteria = new CDbCriteria;
-        $parameters = array("condition" => "(assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."'))", 'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
+        $parameters = array(
+            "condition" => 
+                "(assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (
+                    SELECT groupId 
+                    FROM x2_group_to_user 
+                    WHERE userId='".Yii::app()->user->getId()."'))", 
+            'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
         $criteria->scopes = array('findAll' => array($parameters));
         return $this->searchBase($criteria);
     }
@@ -579,7 +609,14 @@ class Actions extends X2Model {
     public function searchGroup(){
         $criteria = new CDbCriteria;
         if(!Yii::app()->user->checkAccess('ActionsAdmin')){
-            $parameters = array("condition" => "(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."')) AND complete!='Yes'", 'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
+            $parameters = array(
+                "condition" => 
+                    "(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR 
+                    assignedTo IN (
+                        SELECT groupId 
+                        FROM x2_group_to_user 
+                        WHERE userId='".Yii::app()->user->getId()."')) AND complete!='Yes'", 
+                'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
             $criteria->scopes = array('findAll' => array($parameters));
         }
         return $this->searchBase($criteria);
@@ -588,7 +625,14 @@ class Actions extends X2Model {
     public function searchAllGroup(){
         $criteria = new CDbCriteria;
         if(!Yii::app()->user->checkAccess('ActionsAdmin')){
-            $parameters = array("condition" => "(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."'))", 'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
+            $parameters = array(
+                "condition" => 
+                    "(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR 
+                      assignedTo IN (
+                        SELECT groupId 
+                        FROM x2_group_to_user 
+                        WHERE userId='".Yii::app()->user->getId()."'))", 
+                'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
             $criteria->scopes = array('findAll' => array($parameters));
         }
         return $this->searchBase($criteria);
@@ -597,7 +641,14 @@ class Actions extends X2Model {
     public function searchAllComplete(){
         $criteria = new CDbCriteria;
         if(!Yii::app()->user->checkAccess('ActionsAdmin')){
-            $parameters = array("condition" => "(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE userId='".Yii::app()->user->getId()."')) AND complete='Yes'", 'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
+            $parameters = array(
+                "condition" => 
+                    "(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR 
+                      assignedTo IN (
+                        SELECT groupId 
+                        FROM x2_group_to_user 
+                        WHERE userId='".Yii::app()->user->getId()."')) AND complete='Yes'", 
+                'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
             $criteria->scopes = array('findAll' => array($parameters));
         }
         return $this->searchBase($criteria);
@@ -617,44 +668,31 @@ class Actions extends X2Model {
         if(!empty($criteria->order)){
             $criteria->order = $order = "sticky DESC, ".$criteria->order;
         }else{
-            $order = 'sticky DESC, IF(complete="No", IFNULL(dueDate, IFNULL(createDate,0)), GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC';
+            $order = 
+                'sticky DESC, IF(
+                    complete="No", IFNULL(dueDate, IFNULL(createDate,0)), 
+                    GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC';
         }
-        $dataProvider = new CActiveDataProvider('Actions', array(
-                    'sort' => array(
-                        'defaultOrder' => $order,
-                    ),
-                    'pagination' => array(
-                        'pageSize' => ProfileChild::getResultsPerPage()
-                    ),
-                    'criteria' => $criteria,
-                ));
-        //printR($criteria,true);
+        $dataProvider = new SmartDataProvider('Actions', 
+            array(
+                'sort' => array(
+                    'defaultOrder' => $order,
+                ),
+                'pagination' => array(
+                    'pageSize' => ProfileChild::getResultsPerPage()
+                ),
+                'criteria' => $criteria,
+            ), $uniqueId);
         return $dataProvider;
     }
 
+    /**
+     * Override parent method to exclude actionDescription
+     */
     public function compareAttributes(&$criteria){
         foreach(self::$_fields[$this->tableName()] as &$field){
             if($field->fieldName != 'actionDescription'){
-                $fieldName = $field->fieldName;
-                switch($field->type){
-                    case 'boolean':
-                        $criteria->compare('t.'.$fieldName, $this->compareBoolean($this->$fieldName), true);
-                        break;
-                    case 'link':
-                        $criteria->compare('t.'.$fieldName, $this->compareLookup($field->linkType, $this->$fieldName), true);
-                        $criteria->compare('t.'.$fieldName, $this->$fieldName, true, 'OR');
-                        break;
-                    case 'assignment':
-                        $criteria->compare('t.'.$fieldName, $this->compareAssignment($this->$fieldName), true);
-                        break;
-                    case 'dropdown':
-                        $criteria->compare('t.'.$fieldName, $this->compareDropdown($field->linkType, $this->$fieldName), true);
-                        break;
-                    case 'phone':
-                    // $criteria->join .= ' RIGHT JOIN x2_phone_numbers ON (x2_phone_numbers.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
-                    default:
-                        $criteria->compare('t.'.$fieldName, $this->$fieldName, true);
-                }
+                $this->compareAttribute ($criteria, $field);
             }
         }
     }
@@ -684,6 +722,60 @@ class Actions extends X2Model {
                     $profile->deleteGoogleCalendarEvent($this); // delete action in Google Calendar
             }
         }
+    }
+
+    /**
+     * Returns a link which opens an action view dialog. Event bound in actionFrames.js. 
+     * @param string $linkText The text to display in the <a> tag.
+     */
+    public function getActionLink ($linkText) {
+        return CHtml::link(
+            $linkText,
+            '#',
+            array(
+                'class' => 'action-frame-link',
+                'data-action-id' => $this->id
+            )
+        );
+    }
+     
+    /**
+     * Completes/uncompletes set of actions 
+     * @param string $operation <'complete' | 'uncomplete'>
+     * @param array $ids
+     * @return int $updated number of actions updated successfully
+     */
+    public static function changeCompleteState ($operation, $ids) {
+        $updated = 0;
+        foreach(self::model()->findAllByPk ($ids) as $action){
+            if($action === null)
+                continue;
+
+            $inGroup = false;
+
+            // we have an action assigned to a group? Then check if we are in the group
+            if(ctype_digit((string) $action->assignedTo)) 
+                $inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
+
+            if(Yii::app()->user->getName() == $action->assignedTo || 
+               $action->assignedTo == 'Anyone' || $action->assignedTo == '' || $inGroup || 
+               Yii::app()->params->isAdmin){ // make sure current user can edit this action
+
+                if($operation === 'complete') {
+                    if ($action->complete()) $updated++;
+                } elseif($operation === 'uncomplete') {
+                    if ($action->uncomplete()) $updated++;
+                }
+            }
+        }
+        return $updated;
+    }
+
+    /**
+     * Returns whether this is the type of action that can be time-tracked
+     */
+    public function getIsTimedType() {
+        return $this->type == 'time' || $this->type == 'call';
     }
 
 }

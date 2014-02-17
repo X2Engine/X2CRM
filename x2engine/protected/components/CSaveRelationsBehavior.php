@@ -53,7 +53,7 @@
  * @author Alban Jubert <alban.jubert@trinidev.fr>
  * @link http://www.trinidev.fr/
  * @license CSaveRelationsBehavior
- * @package X2CRM.components 
+ * @package application.components 
  * @version 1.0.3
  */
 

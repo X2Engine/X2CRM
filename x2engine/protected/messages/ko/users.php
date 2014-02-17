@@ -19,7 +19,7 @@ return array (
 // Users Titles
 'User: {name}'=>'사용자 : {name}',
 'Update User: {name}'=>'사용자를 업데이트 : {name}',
-'Invite Users to X2CRM'=>'사용자가 X2CRM을 초대합니다',
+'Invite Users to X2Engine'=>'사용자가 X2Engine을 초대합니다',
 'Instructions'=>'명령',
 'Delete Unregistered'=>'미등록 삭제',
 'Invited Users'=>'초대 된 사용자',

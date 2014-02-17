@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.modules.docs.controllers
+ * @package application.modules.docs.controllers
  */
 class DocsController extends x2base {
 
@@ -290,7 +290,7 @@ class DocsController extends x2base {
 
 	public function actionExportToHtml($id){
 		$model = $this->loadModel($id);
-		$file = 'doc.html';
+		$file = $this->safePath(($uid = uniqid()).'-doc.html');
 		$fp = fopen($file,'w+');
 		$data="<style>
 				#wrap{
@@ -306,12 +306,25 @@ class DocsController extends x2base {
 			".$model->text."</div>";
 		fwrite($fp, $data);
 		fclose($fp);
-		$link = CHtml::link(Yii::t('app','Download').'!',Yii::app()->request->baseUrl."/doc.html");
+		$link = CHtml::link(Yii::t('app','Download').'!',array('downloadExport','uid'=>$uid,'id'=>$id));
 		$this->render('export',array(
 			'model'=>$model,
 			'link'=>$link,
 		));
 	}
+
+    /**
+     * Download an exported doc file.
+     * @param type $uid Unique ID associated with the file
+     * @param type $id ID of the doc exported
+     */
+    public function actionDownloadExport($uid,$id) {
+        if(file_exists($this->safePath($filename = $uid.'-doc.html'))) {
+            $this->sendFile($filename,false);
+        } else {
+            $this->redirect(array('exportToHtml','id'=>$id));
+        }
+    }
 
     public function titleUpdate($old_title, $new_title) {
         if ((sizeof(Modules::model()->findAllByAttributes(array('name' => $new_title))) == 0) && ($old_title != $new_title)) {
@@ -453,5 +466,11 @@ class DocsController extends x2base {
         }
         echo $canEdit;
         return;
+    }
+
+    public function behaviors() {
+        return array_merge(parent::behaviors(),array(
+            'ImportExportBehavior' => array('class' => 'ImportExportBehavior'),
+        ));
     }
 }

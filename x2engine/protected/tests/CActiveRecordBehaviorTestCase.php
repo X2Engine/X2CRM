@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -36,7 +36,7 @@
 
 /**
  * Class intended for auto-import of {@link CActiveMock}
- * @package X2CRM.tests
+ * @package application.tests
  */
 class CActiveRecordBehaviorTestCase extends X2TestCase {
 
@@ -54,7 +54,7 @@ class CActiveRecordBehaviorTestCase extends X2TestCase {
 
 /**
  * Child class of CActiveRecord for doing mocks in tests of CActiveRecordBehavior
- * @package X2CRM.tests
+ * @package application.tests
  */
 class CActiveMock extends CActiveRecord {
 

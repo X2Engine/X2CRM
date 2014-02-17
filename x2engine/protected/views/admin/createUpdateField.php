@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -153,16 +153,18 @@
                             $arr[$array['modelName']] = $array['modelName'];
                     }
                     echo CHtml::activeDropDownList($model, 'linkType', $arr);
-                }
+                } 
 
-                $dummyFieldName = 'customized_field';
-                foreach($model->getErrors('defaultValue') as $index => $message){
-                    $dummyModel->addError('customized_field', $message);
+                if($model->type != 'timerSum') {
+                    $dummyFieldName = 'customized_field';
+                    foreach($model->getErrors('defaultValue') as $index => $message){
+                        $dummyModel->addError('customized_field', $message);
+                    }
+                    echo CHtml::label($model->getAttributeLabel('defaultValue'), CHtml::resolveName($dummyModel, $dummyFieldName));
+                    $model->fieldName = 'customized_field';
+                    echo X2Model::renderModelInput($dummyModel, $model,array('id'=>'defaultValue-input-'.$model->type));
+                    echo CHtml::error($dummyModel, 'customized_field');
                 }
-                echo CHtml::label($model->getAttributeLabel('defaultValue'), CHtml::resolveName($dummyModel, $dummyFieldName));
-                $model->fieldName = 'customized_field';
-                echo X2Model::renderModelInput($dummyModel, $model,array('id'=>'defaultValue-input-'.$model->type));
-                echo CHtml::error($dummyModel, 'customized_field');
                 echo "<script id=\"input-clientscript-".time()."\">\n";
                 Yii::app()->clientScript->echoScripts();
                 echo "\n</script>";
@@ -170,29 +172,45 @@
             </div>
         <br>
 
+        <?php if($model->type != 'timerSum') { ?>
+            <div class="row">
+                <?php echo $form->checkBox($model, 'required', array('id' => 'required')); ?>
+                <?php echo $form->labelEx($model, 'required', array('style' => 'display:inline;')); ?>
+                <?php echo $form->error($model, 'required'); ?>
+            </div>
+    
+            <div class="row">
+                <?php echo $form->checkBox($model, 'uniqueConstraint', array('id' => 'uniqueConstraint')); ?>
+                <?php echo $form->labelEx($model, 'uniqueConstraint', array('style' => 'display:inline;')); ?>
+                <?php echo $form->error($model, 'uniqueConstraint'); ?>
+            </div>
+    
+            <div class="row">
+                <?php echo $form->checkBox($model, 'searchable', array('id' => 'searchable-custom', 'onclick' => '$("#relevance_box_custom").toggle();')); ?>
+                <?php echo $form->labelEx($model, 'searchable', array('style' => 'display:inline;')); ?>
+                <?php echo $form->error($model, 'searchable'); ?>
+            </div>
+    
+            <div class="row" id ="relevance_box_custom" style="display:none">
+                <?php echo $form->labelEx($model, 'relevance'); ?>
+                <?php echo $form->dropDownList($model, 'relevance', Fields::searchRelevance(), array("id" => "relevance-custom")); ?>
+                <?php echo $form->error($model, 'relevance'); ?>
+            </div>
+        <?php } ?>
 
+        <br>
         <div class="row">
-            <?php echo $form->checkBox($model, 'required', array('id' => 'required')); ?>
-            <?php echo $form->labelEx($model, 'required', array('style' => 'display:inline;')); ?>
-            <?php echo $form->error($model, 'required'); ?>
-        </div>
+            <?php echo $form->labelEx($model,'keyType');
+            echo Yii::t('admin', 'This adds an index to the field, which can improve sorting performance. Please note, however, that you cannot add a unique index to a field in a model that has duplicate entries.');
+            ?>
+            <br />
+            <?php if($model->keyType == 'PRI' || $model->keyType =='FIX') {?>
+                <br /><span class="error"><?php echo Yii::t('admin','The index on this field cannot be modified.'); ?></span>
+            <?php } else {
+            echo $form->dropDownList($model,'keyType', array('MUL'=>Yii::t('admin','Index'),'UNI'=>Yii::t('admin','Unique')),array('empty'=>Yii::t('admin','None')));
+            echo $form->error($model, 'keyType');
 
-        <div class="row">
-            <?php echo $form->checkBox($model, 'uniqueConstraint', array('id' => 'uniqueConstraint')); ?>
-            <?php echo $form->labelEx($model, 'uniqueConstraint', array('style' => 'display:inline;')); ?>
-            <?php echo $form->error($model, 'uniqueConstraint'); ?>
-        </div>
-
-        <div class="row">
-            <?php echo $form->checkBox($model, 'searchable', array('id' => 'searchable-custom', 'onclick' => '$("#relevance_box_custom").toggle();')); ?>
-            <?php echo $form->labelEx($model, 'searchable', array('style' => 'display:inline;')); ?>
-            <?php echo $form->error($model, 'searchable'); ?>
-        </div>
-
-        <div class="row" id ="relevance_box_custom" style="display:none">
-            <?php echo $form->labelEx($model, 'relevance'); ?>
-            <?php echo $form->dropDownList($model, 'relevance', Fields::searchRelevance(), array("id" => "relevance-custom", 'options' => array('Medium' => array('selected' => true)))); ?>
-            <?php echo $form->error($model, 'relevance'); ?>
+            } ?>
         </div>
         <br />
 

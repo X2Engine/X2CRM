@@ -55,8 +55,8 @@ return array (
 'Triggers when a record of specified type is deleted.'=>'כאשר מפעיל תיעוד של סוג שצוין נמחקת.',
 'Triggered by adding one of these tags to a record.'=>'מופעל על ידי הוספה אחד מהתגים אלה לשיא.',
 'Triggered when some updates a record of the the specified type.'=>'מופעל כאשר כמה עדכוני שיא של הסוג שצוין.',
-'Triggered when a user signs in to X2CRM.'=>'מופעל כאשר משתמש נכנס לX2CRM.',
-'Triggered when a user signs out of X2CRM.'=>'מופעל כאשר משתמש חותם מתוך X2CRM.',
+'Triggered when a user signs in to X2Engine.'=>'מופעל כאשר משתמש נכנס לX2Engine.',
+'Triggered when a user signs out of X2Engine.'=>'מופעל כאשר משתמש חותם מתוך X2Engine.',
 'Triggered when a contact visits a webpage'=>'מופעל כאשר קשר מבקר בדף אינטרנט',
 'Triggers when a new contact fills out your web lead capture form.'=>'כאשר מפעיל את קשר חדש ממלא את הטופס להוביל ללכידת האינטרנט שלך.',
 

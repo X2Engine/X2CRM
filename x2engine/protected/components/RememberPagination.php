@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@
 /**
  * Pagination class extended from {@link Yii::CPagination}
  * 
- * @package X2CRM.components 
+ * @package application.components 
  */
 class RememberPagination extends CPagination{
 	public function createPageUrl($controller,$page)

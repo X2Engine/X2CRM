@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -39,7 +39,7 @@ Yii::import('application.models.X2Model');
 /**
  * This is the model class for table "x2_contacts".
  *
- * @package X2CRM.modules.contacts.models
+ * @package application.modules.contacts.models
  */
 class Contacts extends X2Model {
 
@@ -149,9 +149,9 @@ class Contacts extends X2Model {
 
             $datetime = Formatter::formatLongDateTime(time());
             $modelLink = CHtml::link($this->name, Yii::app()->controller->createAbsoluteUrl('/contacts/' . $this->id));
-            $subject = 'X2CRM: ' . $this->name . ' updated';
+            $subject = 'X2Engine: ' . $this->name . ' updated';
             $message = "Hello,<br>\n<br>\n";
-            $message .= 'You are receiving this email because you are subscribed to changes made to the contact ' . $modelLink . ' in X2CRM. ';
+            $message .= 'You are receiving this email because you are subscribed to changes made to the contact ' . $modelLink . ' in X2Engine. ';
             $message .= 'The following changes were made on ' . $datetime . ":<br>\n<br>\n";
 
             foreach ($this->getChanges() as $attribute => $change) {
@@ -352,26 +352,6 @@ class Contacts extends X2Model {
 
     public function search() {
         $criteria = new CDbCriteria;
-        // $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
-        // $parameters = array('limit'=>ceil(ProfileChild::getResultsPerPage()));
-        /* x2temp */
-
-        // if(Yii::app()->params->isAdmin)
-            // $accessLevel = 3;
-        // elseif(Yii::app()->user->checkAccess('ContactsView'))
-            // $accessLevel = 2;
-        // elseif(Yii::app()->user->checkAccess('ContactsViewPrivate'))
-            // $accessLevel = 1;
-
-        // $condition = Yii::app()->user->searchAccessConditions($accessLevel);
-
-        // $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-        // if(!empty($groupLinks))
-            // $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
-        /* end x2temp */
-        // $parameters['condition'] = $condition;
-        // $criteria->scopes=array('findAll'=>array($parameters));
-
         return $this->searchBase($criteria);
     }
 

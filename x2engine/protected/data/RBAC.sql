@@ -1,5 +1,5 @@
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -129,6 +129,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('ActionsSearch',0,'',NULL,'N;'),
 ('ActionsSendReminder',0,'',NULL,'N;'),
 ('ActionsShareAction',0,'',NULL,'N;'),
+('ActionsTimerControl',0,'',NULL,'N;'),
 ('ActionsTomorrow',0,'',NULL,'N;'),
 ('ActionsUncomplete',0,'',NULL,'N;'),
 ('ActionsUncompleteSelected',0,'',NULL,'N;'),
@@ -353,6 +354,7 @@ INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
 ('DocsDelete',0,'',NULL,'N;'),
 ('DocsDeleteNote',0,'',NULL,'N;'),
 ('DocsDeletePrivate',1,'Users can delete their own docs','return Yii::app()->user->getName()==$params[\'createdBy\'];','N;'),
+('DocsDownloadExport',0,'',NULL,'N;'),
 ('DocsExportToHtml',0,'',NULL,'N;'),
 ('DocsFullAccess',1,'',NULL,'N;'),
 ('DocsGetItem',0,'',NULL,'N;'),
@@ -782,6 +784,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('ActionsViewPrivate','ActionsSendReminder'),
 ('ActionsReadOnlyAccess','ActionsShareAction'),
 ('ActionsViewPrivate','ActionsShareAction'),
+('ActionsUpdateAccess','ActionsTimerControl'),
 ('ActionsReadOnlyAccess','ActionsTomorrow'),
 ('ActionsViewPrivate','ActionsTomorrow'),
 ('ActionsReadOnlyAccess','ActionsUncomplete'),
@@ -991,6 +994,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('DocsPrivateFullAccess','DocsDeletePrivate'),
 ('DocsReadOnlyAccess','DocsExportToHtml'),
 ('DocsViewPrivate','DocsExportToHtml'),
+('DocsExportToHtml','DocsDownloadExport'),
 ('DocsAdminAccess','DocsFullAccess'),
 ('DocsMinimumRequirements','DocsGetItem'),
 ('DocsMinimumRequirements','DocsGetItems'),

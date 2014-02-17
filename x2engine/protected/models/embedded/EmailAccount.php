@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -41,7 +41,7 @@ Yii::import('application.models.embedded.JSONEmbeddedModel');
  * Authentication data and tools for interfacing with a SMTP server, i.e. to
  * send email.
  * 
- * @package X2CRM.models.embedded
+ * @package application.models.embedded
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class EmailAccount extends JSONEmbeddedModel {

@@ -73,7 +73,7 @@ Yii::import('zii.widgets.grid.CButtonColumn');
  * @link http://www.yiiframework.com/
  * @license http://opensource.org/licenses/bsd-license.php
  * @version 1.0
- * @package X2CRM.components
+ * @package application.components
  */
 class EButtonColumnWithClearFilters extends CButtonColumn {
 

@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -54,7 +54,7 @@ Yii::import('application.components.util.*');
  * @property string $dbBackupPath (read-only) Full path to the database backup file.
  * @property string $dbCommand (read-only) command to be used for running SQL from files
  * @property array $dbParams (read-only) Database information retrieved from {@link CDbConnection}
- * @property string $edition (read-only) The edition of the installation of X2CRM.
+ * @property string $edition (read-only) The edition of the installation of X2Engine.
  * @property array $files (read-only) A list of files and their statuses (present, missing or corrupt).
  * @property array $filesByStatus (read-only) An array of files in each status category
  * @property array $filesStatus (read-only) A summary (showing counts) of all files' statuses.
@@ -72,10 +72,10 @@ Yii::import('application.components.util.*');
  * @property string $updateDataRoute (read-only) Relative URL (to the base URL of the update server) from which to get update manifests.
  * @property string $updateDir (read-only) the directory of updates.
  * @property string $updatePackage (read-only) destination path for the update package.
- * @property string $version Version of X2CRM
+ * @property string $version Version of X2Engine
  * @property string $webRoot (read-only) Absolute path to the web root, even if not in a web request
  * @property array $webUpdaterActions (read-only) array of actions in the web-based updater utility.
- * @package X2CRM.components
+ * @package application.components
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class UpdaterBehavior extends ResponseBehavior {
@@ -93,7 +93,7 @@ class UpdaterBehavior extends ResponseBehavior {
      * Defines a file that (for extra security) prevents race conditions in the unlikely event that 
      * multiple requests to the web updater to enact file/database changes are made.
      */
-    const LOCKFILE = 'x2crm_update.lock';
+    const LOCKFILE = 'app_update.lock';
 
     const PKGFILE = 'update.zip';
 
@@ -103,8 +103,8 @@ class UpdaterBehavior extends ResponseBehavior {
 
     const LOGFILE = 'update_db_restore.log';
 
-    // Whatever you do, do not change this to a blank string. It WILL result in
-    // all files in X2CRM getting deleted!
+    // Whatever you do, DO NOT change this to a blank string. It WILL result in
+    // the obliteration of all files in the app!
     const UPDATE_DIR = 'update';
 
     const SECURITY_IMG = 'cG93ZXJlZF9ieV94MmVuZ2luZS5wbmc=';
@@ -327,7 +327,7 @@ class UpdaterBehavior extends ResponseBehavior {
     private $_uniqueId;
 
     /**
-     * Version of X2CRM.
+     * Version of X2Engine.
      */
     private $_version;
 
@@ -396,7 +396,7 @@ class UpdaterBehavior extends ResponseBehavior {
         if($success)
             $this->cleanUp();
         else{
-            $message = Yii::t('admin', 'Failed to copy one or more files from {dir} into X2CRM. You may need to copy them manually.', array('{dir}' => $dir));
+            $message = Yii::t('admin', 'Failed to copy one or more files from {dir} into X2Engine. You may need to copy them manually.', array('{dir}' => $dir));
             if(!empty($copiedFiles)){
                 $message .= ' '.Yii::t('admin', 'Check that they exist: {fileList}', array('{fileList}' => implode(', ', $copiedFiles)));
             }
@@ -567,7 +567,7 @@ class UpdaterBehavior extends ResponseBehavior {
         // Wrong initial app version
         if($this->manifest['fromVersion'] != $this->version) {
             if($throw)
-                throw new CException(Yii::t('admin','The package to be applied does not correspond to this version of X2CRM; it was meant for version {fv} and this installation is at version {av}.',array(
+                throw new CException(Yii::t('admin','The package to be applied does not correspond to this version of X2Engine; it was meant for version {fv} and this installation is at version {av}.',array(
                     '{fv}'=>$this->manifest['fromVersion'],
                     '{av}'=>$this->version
                 )),self::ERR_NOTAPPLY);
@@ -577,7 +577,7 @@ class UpdaterBehavior extends ResponseBehavior {
         // Wrong initial app edition
         if($this->manifest['fromEdition'] != $this->edition) {
             if($throw)
-                throw new CException(Yii::t('admin','The package to be applied does not correspond to this edition of X2CRM; it was meant for edition "{fe}" and this installation is edition "{ae}".',array(
+                throw new CException(Yii::t('admin','The package to be applied does not correspond to this edition of X2Engine; it was meant for edition "{fe}" and this installation is edition "{ae}".',array(
                     '{fe}' => $this->manifest['fromEdition'],
                     '{ae}' => $this->edition,
                 )),self::ERR_NOTAPPLY);
@@ -725,8 +725,8 @@ class UpdaterBehavior extends ResponseBehavior {
      * directory, "tmp", in the web root. To copy it into the live install, use
      * restoreBackup on target "tmp".
      *
-     * @param string $route Route relative to the web root of the web root path in the X2CRM source code
-     * @param string $file Path relative to the X2CRM web root of the file to be downloaded
+     * @param string $route Route relative to the web root of the web root path in the X2Engine source code
+     * @param string $file Path relative to the X2Engine web root of the file to be downloaded
      * @param integer $maxAttempts Maximum times to attempt to download the file before giving up and throwing an exception.
      * @return boolean
      * @throws Exception
@@ -822,7 +822,7 @@ class UpdaterBehavior extends ResponseBehavior {
             if(time()-$lockTime > 3600) // No operation should take longer than an hour
                 unlink($lockFile);
             else
-                throw new CException(Yii::t('admin', 'An operation that began {t} is in progress (to apply database and file changes to X2CRM). If you are seeing this message, and the stated time is less than a minute ago, this is most likely because your web browser made a duplicate request to the server. Please stand by while the operation completes. Otherwise, you may delete the lock file {file} and try again.',array('{t}'=>strftime('%h %e, %r',$lockTime),'{file}'=>$this->lockFile)),self::ERR_ISLOCKED);
+                throw new CException(Yii::t('admin', 'An operation that began {t} is in progress (to apply database and file changes to X2Engine). If you are seeing this message, and the stated time is less than a minute ago, this is most likely because your web browser made a duplicate request to the server. Please stand by while the operation completes. Otherwise, you may delete the lock file {file} and try again.',array('{t}'=>strftime('%h %e, %r',$lockTime),'{file}'=>$this->lockFile)),self::ERR_ISLOCKED);
         }
 
         // One last check: that the package exists and is applicable:
@@ -1014,7 +1014,7 @@ class UpdaterBehavior extends ResponseBehavior {
     }
 
     /**
-     * Checks the current X2CRM installation for compatibility issues with the
+     * Checks the current X2Engine installation for compatibility issues with the
      * current package as defined in the manifest and requirements check script.
      *
      * @return array
@@ -1467,7 +1467,7 @@ class UpdaterBehavior extends ResponseBehavior {
      * retrieving the full package.
      * 
      * @param string $version Version updating/upgrading from
-     * @param string $uniqueId The identifier/product key for this installation of X2CRM
+     * @param string $uniqueId The identifier/product key for this installation of X2Engine
      * @param string $edition The edition updating/upgrading from
      * @return array
      */
@@ -1553,7 +1553,7 @@ class UpdaterBehavior extends ResponseBehavior {
             $this->_webUpdaterActions = array(
                 'backup' => array('class' => 'application.components.webupdater.DatabaseBackupAction'),
                 'updateStage' => array('class' => 'application.components.webupdater.UpdateStageAction'),
-                'updater' => array('class' => 'application.components.webupdater.X2CRMUpdateAction'),
+                'updater' => array('class' => 'application.components.webupdater.UpdaterAction'),
             );
             $allClasses = array_merge($this->_webUpdaterActions, array('base' => array('class' => 'application.components.webupdater.WebUpdaterAction')));
             if($getter){
@@ -1626,7 +1626,7 @@ class UpdaterBehavior extends ResponseBehavior {
             if(!empty(Yii::app()->name))
                 $appName = Yii::app()->name;
             else
-                $appName = "X2EngineCRM";
+                $appName = "X2Engine";
         }
         if(!isset($email)){
             if(!empty(Yii::app()->params->admin->emailFromAddr))
@@ -1736,7 +1736,7 @@ class UpdaterBehavior extends ResponseBehavior {
                 }
             }
             if(!empty($definitions)) {
-                $header = Yii::t('admin','Some requirements for running X2CRM at the latest version are not met on this server:');
+                $header = Yii::t('admin','Some requirements for running X2Engine at the latest version are not met on this server:');
                 $messages .= $web ? CHtml::tag($h,$htmlOptions,$header) : "$header";
                 $messages .= $this->formatDefinitionList($definitions,$web);
             }
@@ -1863,7 +1863,9 @@ class UpdaterBehavior extends ResponseBehavior {
                     $that->sqlError(Yii::t('admin', 'migration script {file}', array('{file}' => $script)), $ran, $e->getMessage());
                 };
         $scriptErr = function($errno, $errstr, $errfile, $errline, $errcontext) use(&$ran, &$script, $that){
-                    $that->sqlError(Yii::t('admin', 'migration script {file}', array('{file}' => $script)), $ran, "$errstr [$errno] : $errfile L$errline; $errcontext");
+                    if($errno == E_ERROR) {
+                        $that->sqlError(Yii::t('admin', 'migration script {file}', array('{file}' => $script)), $ran, "$errstr [$errno] : $errfile L$errline; $errcontext");
+                    }
                 };
         set_error_handler($scriptErr);
         set_exception_handler($scriptExc);

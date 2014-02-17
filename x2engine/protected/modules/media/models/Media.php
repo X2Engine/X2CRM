@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,7 +38,7 @@
 /**
  * This is the model class for table "x2_media".
  *
- * @package X2CRM.modules.media.models
+ * @package application.modules.media.models
  * @property integer $id
  * @property string $associationType
  * @property integer $associationId
@@ -68,9 +68,11 @@ class Media extends X2Model {
 
     public function afterDelete() {
         parent::afterDelete();
-        
-        if (file_exists($this->getPath()))
+        // Reset path if name was changed:
+        $this->_path = null; 
+        if (file_exists($this->getPath())) {
             unlink($this->getPath());
+        }
     }
     
     public function behaviors(){
@@ -343,7 +345,7 @@ class Media extends X2Model {
     // return a link to the Media Module view for this file
     public function getMediaLink(){
         if($this->drive){
-            return CHtml::link($this->title, "https://drive.google.com/file/d/".$this->fileName, array('target' => '_blank'));
+            return CHtml::link($this->name, "https://drive.google.com/file/d/".$this->fileName, array('target' => '_blank'));
         }else{
             return CHtml::link($this->fileName, Yii::app()->controller->createUrl('/media/', array('view' => $this->id)));
         }

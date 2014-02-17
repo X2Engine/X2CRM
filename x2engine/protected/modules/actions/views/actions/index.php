@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -45,10 +45,14 @@ $this->actionMenu = $this->formatMenu($menuItems);
     <h2><?php echo Yii::t('actions','Actions');?></h2>
 
     <div class="title-bar" style="padding-left:0px;">
-        <?php echo CHtml::link(Yii::t('actions','Back to Top'),'#',array('class'=>'x2-button right','id'=>'scroll-top-button')); ?>
-        <?php echo CHtml::link(Yii::t('actions','Filters'),'#',array('class'=>'controls-button x2-button right','id'=>'advanced-controls-toggle')); ?>
-        <?php echo CHtml::link(Yii::t('actions','New Action'),array('/actions/actions/create'),array('class'=>'controls-button x2-button right','id'=>'create-button')); ?>
-        <?php echo CHtml::link(Yii::t('actions','Switch to Grid'),array('index','toggleView'=>1),array('class'=>'x2-button right')); ?>
+        <?php 
+        /*
+        disabled until fixed header is added
+        echo CHtml::link(Yii::t('actions','Back to Top'),'#',array('class'=>'x2-button right','id'=>'scroll-top-button')); */
+        echo CHtml::link(Yii::t('actions','Filters'),'#',array('class'=>'controls-button x2-button right','id'=>'advanced-controls-toggle')); 
+        echo CHtml::link(Yii::t('actions','New Action'),array('/actions/actions/create'),array('class'=>'controls-button x2-button right','id'=>'create-button')); 
+        echo CHtml::link(Yii::t('actions','Switch to Grid'),array('index','toggleView'=>1),array('class'=>'x2-button right')); 
+        ?>
     </div>
 </div>
 <?php echo $this->renderPartial('_advancedControls',$params,true); ?>
@@ -82,12 +86,14 @@ $this->widget('zii.widgets.CListView', array(
 ?>
 
 <script>
+    x2.actionFrames.deleteActionUrl = '<?php echo $this->createUrl ('/actions/actions/delete'); ?>';
     var clickedFlag=false;
     var lastClass="";
+    /* disabled until fixed header is added
     $(document).on('click','#scroll-top-button',function(e){
         e.preventDefault();
         $(".items").animate({ scrollTop: 0 }, "slow");
-    });
+    });*/
     $(document).on('click','#advanced-controls-toggle',function(e){
         e.preventDefault();
         if($('#advanced-controls').is(':hidden')){
@@ -127,9 +133,10 @@ $this->widget('zii.widgets.CListView', array(
                     $('#action-view-pane').removeClass(lastClass);
                     $('#action-view-pane').addClass($(this).attr('id'));
                     lastClass=$(this).attr('id');
+                    x2.actionFrames.setLastClass (lastClass);
                     var pieces=lastClass.split('-');
                     var id=pieces[1];
-                   	$('#action-view-pane').html('<iframe id="action-frame" src="<?php echo Yii::app()->controller->createAbsoluteUrl('/actions/actions/viewAction'); ?>?id='+id+'" onload="createControls('+id+', false);"></iframe>');
+                   	$('#action-view-pane').html('<iframe id="action-frame" src="<?php echo Yii::app()->controller->createAbsoluteUrl('/actions/actions/viewAction'); ?>?id='+id+'" onload="x2.actionFrames.createControls('+id+', false);"></iframe>');
                 }
             }else{
                 $(this).addClass('important');
@@ -140,11 +147,12 @@ $this->widget('zii.widgets.CListView', array(
                 $('#action-view-pane').addClass($(this).attr('id'));
                 lastClass=$(this).attr('id');
                 var pieces=lastClass.split('-');
+                x2.actionFrames.setLastClass (lastClass);
                 var id=pieces[1];
                 $('#action-view-pane').show();
                 $('#action-view-pane').animate({width: '59%'});;
                 clickedFlag=!clickedFlag;
-                 $('#action-view-pane').html('<iframe id="action-frame" src="<?php echo Yii::app()->controller->createAbsoluteUrl('/actions/actions/viewAction'); ?>?id='+id+'" onload="createControls('+id+', false);"></iframe>');
+                 $('#action-view-pane').html('<iframe id="action-frame" src="<?php echo Yii::app()->controller->createAbsoluteUrl('/actions/actions/viewAction'); ?>?id='+id+'" onload="x2.actionFrames.createControls('+id+', false);"></iframe>');
             }
         }
     });

@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -36,8 +36,6 @@
 
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/activityFeed.js', CClientScript::POS_END);
-/*Yii::app()->clientScript->registerCssFile(
-    Yii::app()->getTheme()->getBaseUrl().'/css/activityFeed.css');*/
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/EnlargeableImage.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(
@@ -52,7 +50,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js
 
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
-/*Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');*/
 
 
 $groups = Groups::getUserGroups(Yii::app()->user->getId());

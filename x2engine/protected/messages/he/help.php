@@ -2,7 +2,7 @@
 return array (
 
 'Icon Reference'=>'סמל עיון',
-'X2CRM Modules'=>'מודולים X2CRM',
+'X2Engine Modules'=>'מודולים X2Engine',
 'Events'=>'אירועים',
 'Action Reminder'=>'תזכורת פעולה',
 'Calendar Event'=>'לוח אירועים פורום',

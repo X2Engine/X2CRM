@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -36,7 +36,7 @@
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Export All Data'); ?></h2></div>
 <div class="form">
-    <?php echo Yii::t('admin', 'This page will export all data from all modules into a CSV file. This CSV can be re-imported to another X2CRM installation as is without any formatting changes.') ?>
+    <?php echo Yii::t('admin', 'This page will export all data from all modules into a CSV file. This CSV can be re-imported to another X2Engine installation as is without any formatting changes.') ?>
     <br><br>
     <?php
     echo Yii::t('admin', 'Which modules would you like to export data from?');

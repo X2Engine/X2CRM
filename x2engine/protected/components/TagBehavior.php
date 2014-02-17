@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@
 /**
  * TagBehavior class file.
  *
- * @package X2CRM.components
+ * @package application.components
  * TagBehavior adds and removes tags from x2_tags when a record is created, updated or deleted
  */
 class TagBehavior extends CActiveRecordBehavior {

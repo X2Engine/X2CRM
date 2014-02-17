@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package X2CRM.modules.contacts 
+ * @package application.modules.contacts 
  */
 class ContactsModule extends CWebModule {
     public $defaultController = 'Contacts';

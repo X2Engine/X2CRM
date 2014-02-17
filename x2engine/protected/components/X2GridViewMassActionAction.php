@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -54,6 +54,26 @@ class X2GridViewMassActionAction extends CAction {
         ));
     }
 
+    private function completeSelected ($gvSelection) {
+        $updatedRecordsNum = Actions::changeCompleteState ('complete', $gvSelection);
+        if ($updatedRecordsNum > 0) {
+            self::$successFlashes[] = Yii::t(
+                'app', '{updatedRecordsNum} action'.($updatedRecordsNum === 1 ? '' : 's').
+                    ' completed', array ('{updatedRecordsNum}' => $updatedRecordsNum)
+            );
+        }
+    }
+
+    private function uncompleteSelected ($gvSelection) {
+        $updatedRecordsNum = Actions::changeCompleteState ('uncomplete', $gvSelection);
+        if ($updatedRecordsNum > 0) {
+            self::$successFlashes[] = Yii::t(
+                'app', '{updatedRecordsNum} action'.($updatedRecordsNum === 1 ? '' : 's').
+                    ' uncompleted', array ('{updatedRecordsNum}' => $updatedRecordsNum)
+            );
+        }
+    }
+
     /**
      * Delete selected records
      */
@@ -96,12 +116,12 @@ class X2GridViewMassActionAction extends CAction {
         if (!isset ($_POST['tags']) || !is_array ($_POST['tags']) ||
             !isset ($_POST['modelType'])) {
 
-//            AuxLib::printTestError ('Invalid request');
+            throw new CHttpException (400, Yii::t('app', 'Bad request.'));
             return;
         }
         $modelType = X2Model::model ($_POST['modelType']);
         if ($modelType === null) {
-//            AuxLib::printTestError ('Invalid model type');
+            throw new CHttpException (400, Yii::t('app', 'Invalid model type.'));
             return;
         }
 
@@ -153,14 +173,19 @@ class X2GridViewMassActionAction extends CAction {
                     'app', 'Record {recordId} could not be updated.', array (
                         '{recordId}' => $recordId
                     )
-                ).($model === null ? Yii::t('app','The record could not be found.') : Yii::t('app','You do not have sufficient permissions.'));
+                ).($model === null ? 
+                    Yii::t('app','The record could not be found.') : 
+                    Yii::t('app','You do not have sufficient permissions.'));
                 continue;
             }
 
-            if (isset($fields['associationType']) && isset($fields['associationName']) && $fields['associationType'] != 'none') {
+            if (isset($fields['associationType']) && isset($fields['associationName']) && 
+                $fields['associationType'] !== 'none') {
+
                 // If we are setting an association, lookup the association id
                 $attributes = array('name' => $fields['associationName']);
-                $associatedModel = X2Model::Model($fields['associationType'])->findByAttributes($attributes);
+                $associatedModel = X2Model::Model($fields['associationType'])
+                    ->findByAttributes($attributes);
                 $fields['associationId'] = $associatedModel->id;
             }
 
@@ -192,7 +217,7 @@ class X2GridViewMassActionAction extends CAction {
     public function removeFromList($gvSelection, $listId){
         foreach($gvSelection as $contactId) {
             if(!ctype_digit((string) $contactId)) {
-//                AuxLib::printTestError ('Invalid selection');
+                throw new CHttpException (400, Yii::t('app', 'Bad Request'));
             }
         }
 
@@ -226,8 +251,7 @@ class X2GridViewMassActionAction extends CAction {
     public function addToList($gvSelection, $listId){
         foreach($gvSelection as &$contactId) {
             if(!ctype_digit((string) $contactId)) {
-//                AuxLib::printTestError ('Invalid selection');
-                return;
+                throw new CHttpException (400, Yii::t('app', 'Bad Request'));
             }
         }
 
@@ -296,12 +320,10 @@ class X2GridViewMassActionAction extends CAction {
                         )
                 );
             } else {
-//                AuxLib::printTestError ($list->getError ());
                 self::$errorFlashes[] = Yii::t(
                     'app', 'List could not be created');
             }
         } else {
-//            AuxLib::printTestError ($list->getError ());
             self::$errorFlashes[] = Yii::t(
                 'app', 'List could not be created');
         }
@@ -314,13 +336,18 @@ class X2GridViewMassActionAction extends CAction {
         if (!isset ($_POST['massAction']) || !isset ($_POST['gvSelection']) ||
             !is_array ($_POST['gvSelection'])) {
 
-//            AuxLib::printTestError ('Invalid request');
-            return;
+            throw new CHttpException (400, Yii::t('app', 'Bad Request'));
         }
 
         $massAction = $_POST['massAction'];
         $gvSelection = $_POST['gvSelection'];
         switch ($massAction) {
+            case 'completeAction':
+                $this->completeSelected ($gvSelection);
+                break;
+            case 'uncompleteAction':
+                $this->uncompleteSelected ($gvSelection);
+                break;
             case 'delete':
                 $this->deleteSelected ($gvSelection);
                 break;
@@ -329,37 +356,33 @@ class X2GridViewMassActionAction extends CAction {
                 break;
             case 'updateFields':
                 if (!isset ($_POST['fields'])) {
-//                    AuxLib::printTestError ('Invalid request');
-                    return;
+                    throw new CHttpException (400, Yii::t('app', 'Bad Request'));
                 }
                 $this->updateFieldsOfSelected (
                     $gvSelection, $_POST['fields']);
                 break;
             case 'addToList':
                 if ($this->controller->modelClass !== 'Contacts' || !isset ($_POST['listId'])) {
-//                    AuxLib::printTestError ('Invalid request');
-                    return;
+                    throw new CHttpException (400, Yii::t('app', 'Bad Request'));
                 }
                 $this->addToList ($gvSelection, $_POST['listId']);
                 break;
             case 'removeFromList':
                 if ($this->controller->modelClass !== 'Contacts' || !isset ($_POST['listId'])) {
-//                    AuxLib::printTestError ('Invalid request');
-                    return;
+                    throw new CHttpException (400, Yii::t('app', 'Bad Request'));
                 }
                 $this->removeFromList ($gvSelection, $_POST['listId']);
                 break;
             case 'createList':
                 if ($this->controller->modelClass !== 'Contacts' ||
                     !isset ($_POST['listName']) || $_POST['listName'] === '') {
-
-//                    AuxLib::printTestError ('Invalid request');
-                    return;
+                    
+                    throw new CHttpException (400, Yii::t('app', 'Bad Request'));
                 }
                 $this->createList ($gvSelection, $_POST['listName']);
                 break;
             default:
-//                AuxLib::printTestError ('Mass action not available');
+                throw new CHttpException (400, Yii::t('app', 'Bad Request'));
                 return;
         }
         self::echoFlashes ();

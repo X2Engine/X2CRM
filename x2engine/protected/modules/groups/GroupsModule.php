@@ -1,7 +1,7 @@
 <?php
  
 /**
- * @package X2CRM.modules.groups
+ * @package application.modules.groups
  */
 class GroupsModule extends CWebModule {
 	public function init() {

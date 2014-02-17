@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -78,15 +78,34 @@ Yii::app()->clientScript->registerScript('logos',base64_decode(
             $this->endWidget();
         }
 
-        if(isset($this->modelClass) &&
-           ($this->modelClass == 'Services' || $this->modelClass == 'Actions' ||
-            $this->modelClass == 'BugReports' || $this->modelClass == 'X2Calendar' ||
-            ($this->id=='profile' && $this->action->id=='view' && 
-             (!(isset ($_GET['publicProfile']) && $_GET['publicProfile']) && 
-              $_GET['id'] == Yii::app()->params->profile->id)))) {
-
-            echoFirstSideBarLeft ($echoedFirstSideBarLeft);
-            $this->renderPartial ('_sidebarLeftExtraContent');
+        if(isset($this->modelClass)){
+            $module = ($this->module instanceof CModule) ? $this->module->id : $this->id;
+            $controller = $this->id;
+            // Determine if there's left sidebar content to render:
+            $modulePath = implode(DIRECTORY_SEPARATOR,array(
+                Yii::app()->basePath,
+                'modules',
+                $module,
+                'views',
+                $controller,
+                '_sidebarLeftExtraContent.php'
+            ));
+            $controllerPath = implode(DIRECTORY_SEPARATOR,array(
+                Yii::app()->basePath,
+                'views',
+                $controller,
+                '_sidebarLeftExtraContent.php'
+            ));
+            $profile = $this->id == 'profile'
+                    && $this->action->id == 'view'
+                    && (!(isset($_GET['publicProfile']) && $_GET['publicProfile'])
+                        && $_GET['id'] == Yii::app()->params->profile->id);
+            if($profile 
+                    || ((file_exists($controllerPath)|| file_exists($modulePath))
+                            && $controller != 'profile')){
+                echoFirstSideBarLeft($echoedFirstSideBarLeft);
+                $this->renderPartial('_sidebarLeftExtraContent');
+            }
         }
 
         if ($echoedFirstSideBarLeft) echo "</div>";

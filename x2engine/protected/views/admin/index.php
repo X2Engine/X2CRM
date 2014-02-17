@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -39,7 +39,7 @@ $admin = &Yii::app()->params->admin;
 <div class="span-20 admin-screen">
 <div class="page-title">
     <h2 style="padding-left:0"><?php echo Yii::t('app','Administration Tools'); ?></h2>
-    <?php echo CHtml::link(Yii::t('admin','About X2EngineCRM'),array('/site/page','view'=>'about'),array('class'=>'x2-button right')); ?>
+    <?php echo CHtml::link(Yii::t('admin','About X2Engine'),array('/site/page','view'=>'about'),array('class'=>'x2-button right')); ?>
 </div>
 
 <?php //echo Yii::t('app','Welcome to the administration tool set.'); ?>
@@ -62,7 +62,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Community'),'http://www.x2community.com'); ?><br><?php echo Yii::t('admin','X2Engine Support Forums');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Yii Framework'),'http://www.yiiframework.com/'); ?><br><?php echo Yii::t('admin','Yii Open Source web framework');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','System Diagram'),array('/site/page','view'=>'systemdiagram')); ?><br><?php echo Yii::t('admin','X2CRM 3.0 system diagram');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','System Diagram'),array('/site/page','view'=>'systemdiagram')); ?><br><?php echo Yii::t('admin','X2Engine 3.0 system diagram');?></div>
     </div>
 </div>
 <div class="form">
@@ -103,7 +103,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
     </div><br>
     <?php if(Yii::app()->params->edition!=='opensource'): ?>
     <div class="row">
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Flow'),array('/studio/flowIndex')); ?><br><?php echo Yii::t('admin','Program X2CRM with custom automation directives using a visual design interface.');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Flow'),array('/studio/flowIndex')); ?><br><?php echo Yii::t('admin','Program X2Engine with custom automation directives using a visual design interface.');?></div>
     </div>
     <?php endif; ?>
 </div>
@@ -117,11 +117,11 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create static page'),array('/admin/createPage')); ?><br><?php echo Yii::t('admin','Add a static page to the top bar');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Google Integration'),array('/admin/googleIntegration')); ?><br><?php echo Yii::t('admin','Enter your google app settings for Calendar/Google login');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Toggle default logo'),array('/admin/toggleDefaultLogo')); ?><br><?php echo Yii::t('admin','Change logo back to X2Contacts');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Restore default logo'),array('/admin/toggleDefaultLogo')); ?><br><?php echo Yii::t('admin','Change logo back to the X2Engine default logo');?></div>
     </div><br>
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upload your logo'),array('/admin/uploadLogo')); ?><br><?php echo Yii::t('admin','Upload your own logo. 30px height image.');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Update X2CRM'),array('/admin/updater')); ?><br><?php echo Yii::t('admin','The X2CRM remote update utility.');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Update X2Engine'),array('/admin/updater')); ?><br><?php echo Yii::t('admin','The X2Engine remote update utility.');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Activity Feed Settings'),array('/admin/activitySettings')); ?><br><?php echo Yii::t('admin','Configure global settings for the activity feed.');?></div>
     </div><!-- .row --><br />
     <div class="row">
@@ -130,17 +130,17 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         </div>
         <?php if(Yii::app()->params->edition!=='opensource'): ?>
             <div class="cell span-6">
-                <?php echo CHtml::link(Yii::t('admin','Lock or Unlock X2CRM'),array('/admin/lockApp')); ?><br><?php echo Yii::t('admin','Set X2CRM into maintenance mode, where only administrators can access it.');?>
+                <?php echo CHtml::link(Yii::t('admin','Lock or Unlock X2Engine'),array('/admin/lockApp')); ?><br><?php echo Yii::t('admin','Set X2Engine into maintenance mode, where only administrators can access it.');?>
             </div><!-- .cell.span-6 -->
         <?php endif; ?>
           <?php if (isset(Yii::app()->params->admin->edition)): ?>
         <?php if(in_array(Yii::app()->params->admin->edition,array('opensource',Null))): ?>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upgrade X2CRM'),array('/admin/updater','scenario'=>'upgrade')); ?><br><?php echo Yii::t('admin','Upgrade X2CRM to Professional Edition; license key required.');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upgrade X2Engine'),array('/admin/updater','scenario'=>'upgrade')); ?><br><?php echo Yii::t('admin','Upgrade X2Engine to Professional Edition; license key required.');?></div>
         <?php endif;
         endif; ?>
         <?php if(Yii::app()->params->edition!=='opensource'): ?>
         <div class="cell span-6">
-            <?php echo CHtml::link(Yii::t('admin','Cron Table'),array('/admin/x2CronSettings')); ?><br><?php echo Yii::t('admin','Control the interval at which X2CRM will check for and run scheuled tasks.'); ?>
+            <?php echo CHtml::link(Yii::t('admin','Cron Table'),array('/admin/x2CronSettings')); ?><br><?php echo Yii::t('admin','Control the interval at which X2Engine will check for and run scheuled tasks.'); ?>
         </div><!-- .cell.span-6 -->
         <?php endif; ?>
     </div><!-- .row -->
@@ -148,14 +148,14 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 <div class="form">
     <div class="row">
         <h2 id="admin-email"><?php echo Yii::t('admin','Email Configuration'); ?></h2>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Email Settings'),array('/admin/emailSetup')); ?><br><?php echo Yii::t('admin','Configure X2CRM\'s email settings');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Email Settings'),array('/admin/emailSetup')); ?><br><?php echo Yii::t('admin','Configure X2Engine\'s email settings');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create Email Campaign'),array('/marketing/marketing/create')); ?><br><?php echo Yii::t('admin','Create an email marketing campaign');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Campaigns'),array('/marketing/marketing/index')); ?><br><?php echo Yii::t('admin','Manage your marketing campaigns');?></div>
     </div>
     <?php if(Yii::app()->params->admin->edition != 'opensource'): ?>
     <br />
     <div class="row">
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Email Capture'),array('/admin/emailDropboxSettings')); ?><br><?php echo Yii::t('admin','Settings for the "email dropbox", which allows X2CRM to receive and record email.');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Email Capture'),array('/admin/emailDropboxSettings')); ?><br><?php echo Yii::t('admin','Settings for the "email dropbox", which allows X2Engine to receive and record email.');?></div>
     </div>
     <?php endif; ?>
 </div>
@@ -174,7 +174,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <!--<div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Translate Mode'),array('/admin/index','translateMode'=>Yii::app()->session['translate']?0:1),array('class'=>Yii::app()->session['translate']?'x2-button clicked':'x2-button')); ?><br><?php echo Yii::t('admin','Enable translation tool on all pages.');?></div>-->
     </div><br>
     <div class="row">
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Translations'),array('/admin/translationManager')); ?><br><?php echo Yii::t('admin','Add, remove and update message translations in the X2Contacts language packs.');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Translations'),array('/admin/translationManager')); ?><br><?php echo Yii::t('admin','Add, remove and update message translations in the X2Engine language packs.');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Tag Manager'),array('/admin/manageTags')); ?><br><?php echo Yii::t('admin','View a list of all used tags with options for deletion.');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','User View History'),array('/admin/userViewLog')); ?><br><?php echo Yii::t('admin','See a history of what records users have viewed.');?></div>
     </div>

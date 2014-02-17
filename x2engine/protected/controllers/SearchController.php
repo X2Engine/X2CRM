@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,7 +38,7 @@
 /**
  * Global internal searching through records.
  *
- * @package X2CRM.controllers
+ * @package application.controllers
  */
 class SearchController extends x2base {
 
@@ -214,7 +214,7 @@ class SearchController extends x2base {
     }
 
     /**
-     * Search X2EngineCRM for a record.
+     * Search X2Engine for a record.
      *
      * This is the action called by the search bar in the main menu.
      */

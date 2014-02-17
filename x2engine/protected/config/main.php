@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -85,12 +85,8 @@ $config = array(
             'showScriptName' => !isset($_SERVER['HTTP_MOD_REWRITE']),
             //'caseSensitive'=>false,
             'rules' => array(
-                // REST-ful API URLs (IN PROGRESS)
                 'api/tags/<model:[A-Z]\w+>/<id:\d+>/<tag:\w+>' => 'api/tags/model/<model>/id/<id>/tag/<tag>',
                 'api/tags/<model:[A-Z]\w+>/<id:\d+>' => 'api/tags/model/<model>/id/<id>',
-                // Generic restful action; capitalized first letter should always indicate model name
-                // 'api/<model:[A-Z]\w+>/<id:\d+>' => 'api/restful/model/<model>/id/<id>',
-                // 'api/<model:[A-Z]\w+>' => 'api/restful/model/<model>',
                 'x2touch' => 'mobile/site/home',
                 '<module:(mobile)>/<controller:\w+>/<id:\d+>' => '<module>/<controller>/view',
                 '<module:(mobile)>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
@@ -104,140 +100,12 @@ $config = array(
                 'weblist/<action:\w+>' => 'marketing/weblist/<action>',
                 '<module:\w+>' => '<module>/<module>/index',
                 '<module:\w+>/<id:\d+>' => '<module>/<module>/view',
+                '<module:\w+>/id/<id:\d+>' => '<module>/<module>/view',
                 '<module:\w+>/<action:\w+>' => '<module>/<module>/<action>',
                 '<module:\w+>/<action:\w+>/<id:\d+>' => '<module>/<module>/<action>',
                 '<module:\w+>/<controller:\w+>/<id:\d+>' => '<module>/<controller>/view',
                 '<module:\w+>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
                 '<module:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>' => '<module>/<controller>/<action>',
-            /*
-              // special HTTP methods for API
-              array('api/view', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'GET'),
-              array('api/update', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'POST'),
-              array('api/delete', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'DELETE'),
-              array('api/create', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
-              array('api/voip', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
-
-              // 'gii/<controller>'=>'gii/<controller>',
-
-              'contacts/<id:\d+>'							=>	'contacts/contacts/view',
-              'contacts/<action:\w+>'						=>	'contacts/contacts/<action>',
-              'contacts/<action:\w+>/<id:\d+>'			=>	'contacts/contacts/<action>',
-              'contacts/contacts/<id:\d+>'				=>	'contacts/contacts/view',
-              'contacts/contacts/<action:\w+>'			=>	'contacts/contacts/<action>',
-              'contacts/contacts/<action:\w+>/<id:\d+>'	=>	'contacts/contacts/<action>',
-
-              'actions/<id:\d+>'							=>	'actions/actions/view',
-              'actions/<action:\w+>'						=>	'actions/actions/<action>',
-              'actions/<action:\w+>/<id:\d+>'				=>	'actions/actions/<action>',
-              'actions/actions/<id:\d+>'					=>	'actions/actions/view',
-              'actions/actions/<action:\w+>'				=>	'actions/actions/<action>',
-              'actions/actions/<action:\w+>/<id:\d+>'		=>	'actions/actions/<action>',
-
-              'accounts/<id:\d+>'							=>	'accounts/accounts/view',
-              'accounts/<action:\w+>'						=>	'accounts/accounts/<action>',
-              'accounts/<action:\w+>/<id:\d+>'			=>	'accounts/accounts/<action>',
-              'accounts/accounts/<id:\d+>'				=>	'accounts/accounts/view',
-              'accounts/accounts/<action:\w+>'			=>	'accounts/accounts/<action>',
-              'accounts/accounts/<action:\w+>/<id:\d+>'	=>	'accounts/accounts/<action>',
-
-              'calendar/<id:\d+>'							=>	'calendar/calendar/view',
-              'calendar/<action:\w+>'						=>	'calendar/calendar/<action>',
-              'calendar/<action:\w+>/<id:\d+>'			=>	'calendar/calendar/<action>',
-              'calendar/calendar/<id:\d+>'				=>	'calendar/calendar/view',
-              'calendar/calendar/<action:\w+>'			=>	'calendar/calendar/<action>',
-              'calendar/calendar/<action:\w+>/<id:\d+>'	=>	'calendar/calendar/<action>',
-
-              'charts/<id:\d+>'							=>	'charts/charts/view',
-              'charts/<action:\w+>'						=>	'charts/charts/<action>',
-              'charts/<action:\w+>/<id:\d+>'				=>	'charts/charts/<action>',
-              'charts/charts/<id:\d+>'					=>	'charts/charts/view',
-              'charts/charts/<action:\w+>'				=>	'charts/charts/<action>',
-              'charts/charts/<action:\w+>/<id:\d+>'		=>	'charts/charts/<action>',
-
-              'docs/<id:\d+>'								=>	'docs/docs/view',
-              'docs/<action:\w+>'							=>	'docs/docs/<action>',
-              'docs/<action:\w+>/<id:\d+>'				=>	'docs/docs/<action>',
-              'docs/docs/<id:\d+>'						=>	'docs/docs/view',
-              'docs/docs/<action:\w+>'					=>	'docs/docs/<action>',
-              'docs/docs/<action:\w+>/<id:\d+>'			=>	'docs/docs/<action>',
-
-              'groups/<id:\d+>'							=>	'groups/groups/view',
-              'groups/<action:\w+>'						=>	'groups/groups/<action>',
-              'groups/<action:\w+>/<id:\d+>'				=>	'groups/groups/<action>',
-              'groups/groups/<id:\d+>'					=>	'groups/groups/view',
-              'groups/groups/<action:\w+>'				=>	'groups/groups/<action>',
-              'groups/groups/<action:\w+>/<id:\d+>'		=>	'groups/groups/<action>',
-
-              'marketing/<id:\d+>'						=>	'marketing/marketing/view',
-              'marketing/<action:\w+>'					=>	'marketing/marketing/<action>',
-              'marketing/<action:\w+>/<id:\d+>'			=>	'marketing/marketing/<action>',
-              'marketing/marketing/<id:\d+>'				=>	'marketing/marketing/view',
-              'marketing/marketing/<action:\w+>'			=>	'marketing/marketing/<action>',
-              'marketing/marketing/<action:\w+>/<id:\d+>'	=>	'marketing/marketing/<action>',
-
-              'media/<id:\d+>'							=>	'media/media/view',
-              'media/<action:\w+>'						=>	'media/media/<action>',
-              'media/<action:\w+>/<id:\d+>'				=>	'media/media/<action>',
-              'media/media/<id:\d+>'						=>	'media/media/view',
-              'media/media/<action:\w+>'					=>	'media/media/<action>',
-              'media/media/<action:\w+>/<id:\d+>'			=>	'media/media/<action>',
-
-              'opportunities/<id:\d+>'							=>	'opportunities/opportunities/view',
-              'opportunities/<action:\w+>'						=>	'opportunities/opportunities/<action>',
-              'opportunities/<action:\w+>/<id:\d+>'				=>	'opportunities/opportunities/<action>',
-              'opportunities/opportunities/<id:\d+>'				=>	'opportunities/opportunities/view',
-              'opportunities/opportunities/<action:\w+>'			=>	'opportunities/opportunities/<action>',
-              'opportunities/opportunities/<action:\w+>/<id:\d+>'	=>	'opportunities/opportunities/<action>',
-
-              'products/<id:\d+>'							=>	'products/products/view',
-              'products/<action:\w+>'						=>	'products/products/<action>',
-              'products/<action:\w+>/<id:\d+>'			=>	'products/products/<action>',
-              'products/products/<id:\d+>'				=>	'products/products/view',
-              'products/products/<action:\w+>'			=>	'products/products/<action>',
-              'products/products/<action:\w+>/<id:\d+>'	=>	'products/products/<action>',
-
-              'quotes/<id:\d+>'							=>	'quotes/quotes/view',
-              'quotes/<action:\w+>'						=>	'quotes/quotes/<action>',
-              'quotes/<action:\w+>/<id:\d+>'				=>	'quotes/quotes/<action>',
-              'quotes/quotes/<id:\d+>'					=>	'quotes/quotes/view',
-              'quotes/quotes/<action:\w+>'				=>	'quotes/quotes/<action>',
-              'quotes/quotes/<action:\w+>/<id:\d+>'		=>	'quotes/quotes/<action>',
-
-              'users/<id:\d+>'							=>	'users/users/view',
-              'users/<action:\w+>'						=>	'users/users/<action>',
-              'users/<action:\w+>/<id:\d+>'				=>	'users/users/<action>',
-              'users/users/<id:\d+>'						=>	'users/users/view',
-              'users/users/<action:\w+>'					=>	'users/users/<action>',
-              'users/users/<action:\w+>/<id:\d+>'			=>	'users/users/<action>',
-
-              'workflow/<id:\d+>'							=>	'workflow/workflow/view',
-              'workflow/<action:\w+>'						=>	'workflow/workflow/<action>',
-              'workflow/<action:\w+>/<id:\d+>'			=>	'workflow/workflow/<action>',
-              'workflow/workflow/<id:\d+>'				=>	'workflow/workflow/view',
-              'workflow/workflow/<action:\w+>'			=>	'workflow/workflow/<action>',
-              'workflow/workflow/<action:\w+>/<id:\d+>'	=>	'workflow/workflow/<action>',
-
-              'reports/<id:\d+>'							=>	'reports/reports/view',
-              'reports/<action:\w+>'						=>	'reports/reports/<action>',
-              'reports/<action:\w+>/<id:\d+>'             =>	'reports/reports/<action>',
-              'reports/reports/<id:\d+>'                  =>	'reports/reports/view',
-              'reports/reports/<action:\w+>'              =>	'reports/reports/<action>',
-              'reports/reports/<action:\w+>/<id:\d+>'     =>	'reports/reports/<action>',
-
-              // 'mobile/<id:\d+>'							=>	'mobile/workflow/view',
-              // 'mobile/<action:\w+>'						=>	'mobile/workflow/<action>',
-              // 'mobile/<action:\w+>/<id:\d+>'			=>	'mobile/workflow/<action>',
-              // 'mobile/workflow/<id:\d+>'				=>	'mobile/workflow/view',
-              // 'mobile/workflow/<action:\w+>'			=>	'mobile/workflow/<action>',
-              // 'mobile/workflow/<action:\w+>/<id:\d+>'	=>	'mobile/workflow/<action>',
-
-              // module/action -> assume DefaultController (module/default/action) unless there are 3 tokens (module/controller/action)
-
-              // old type
-              // '<controller:\w+>/<id:\d+>'=>'<controller>/view',
-              // '<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-              // '<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
-             */
             ),
         ),
         'zip' => array(

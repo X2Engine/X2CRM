@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -235,14 +235,28 @@ $form = $this->beginWidget('CActiveForm', array(
             echo $form->checkBox(
                     $model, 'disableAutomaticRecordTagging', 
                     array('onchange' => 'js:highlightSave();'));
-            echo $form->labelEx(
+            echo '&nbsp;'.$form->labelEx(
                     $model, 'disableAutomaticRecordTagging', array('style' => 'display:inline;'));
             ?>
             <span class='x2-hint' title='<?php 
              echo Yii::t('app', 'Prevent tags from being automatically generated when hashtags are detected in record fields.'); ?>'>[?]</span>
         </div>
     </div>
-    <div class="row" style="margin-bottom:10px;"> 
+    <?php if(PRO_VERSION) { ?>
+    <div class="row"> 
+        <div class="cell">
+            <?php
+            echo $form->checkBox(
+                    $model, 'disableTimeInTitle', array('onchange' => 'js:highlightSave();'));
+            ?>
+            <?php
+            echo $form->labelEx(
+                    $model, 'disableTimeInTitle', array('style' => 'display:inline;'));
+            ?>
+        </div>
+    </div>
+    <?php } ?>
+     <div class="row" style="margin-bottom:10px;">
         <div class="cell">
             <?php
             echo $form->checkBox(

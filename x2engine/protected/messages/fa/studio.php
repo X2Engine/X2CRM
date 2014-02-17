@@ -55,8 +55,8 @@ return array (
 'Triggers when a record of specified type is deleted.'=>'باعث زمانی که یک رکورد از نوع مشخص شده حذف شده است.',
 'Triggered by adding one of these tags to a record.'=>'موجب شده توسط اضافه کردن یکی از این برچسب ها به رکورد.',
 'Triggered when some updates a record of the the specified type.'=>'باعث زمانی که برخی از به روز رسانی یک رکورد از نوع مشخص شده است.',
-'Triggered when a user signs in to X2CRM.'=>'باعث زمانی که نشانه های کاربر در X2CRM.',
-'Triggered when a user signs out of X2CRM.'=>'باعث هنگامی که یک کاربر از X2CRM امضا.',
+'Triggered when a user signs in to X2Engine.'=>'باعث زمانی که نشانه های کاربر در X2Engine.',
+'Triggered when a user signs out of X2Engine.'=>'باعث هنگامی که یک کاربر از X2Engine امضا.',
 'Triggered when a contact visits a webpage'=>'باعث هنگامی که یک تماس بازدیدکننده داشته است یک صفحه وب',
 'Triggers when a new contact fills out your web lead capture form.'=>'باعث هنگامی که یک تماس جدید پر کردن فرم وب خود را جذب سرب.',
 

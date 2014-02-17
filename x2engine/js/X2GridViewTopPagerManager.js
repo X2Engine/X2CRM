@@ -1,5 +1,5 @@
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -43,7 +43,6 @@ function X2GridViewTopPagerManager (argsDict) {
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
-    this._massActionsNamespace = this.namespacePrefix + 'MassActionsManager'; 
     this._init ();
 }
 
@@ -60,94 +59,6 @@ Public instance methods
 */
 
 X2GridViewTopPagerManager.prototype.reinit = function () { this._init (); };
-
-/**
- * The public method. Holds the result of _condenseExpandTitleBar.
- */
-X2GridViewTopPagerManager.prototype.condenseExpandTitleBar = function () {}; 
-
-/*
-Private instance methods
-*/
-
-/**
- * The private method
- * Creates a closure to keep track of state information about the title bar.
- */
-X2GridViewTopPagerManager.prototype._condenseExpandTitleBar = function () {
-    var that = this;
-    var hiddenButtons = 0;
-    var rightmostPosRightElems;
-    var leftMostTopPosLeftElems = $('#' + that.gridId + '-top-pager').position ().top;
-    var moveMoreButtonMenuItemIntoButtons;
-
-    /*
-    Checks whether the top bar UI should be expanded or condensed and performs the appropriate
-    action.
-    Parameters:
-        newLeftMostTopPosLeftElems - if set, the top offset of the top bar pagination buttons will 
-            be checked. This check has the function of determining whether the pagination buttons
-            have been moved down due to a lack of space. Having the optional variable eliminates
-            the need for calling position ().top every execution (a costly operation).
-    */
-    return function (newLeftMostTopPosLeftElems) {
-        if (!that._massActionsEnabled) return;
-
-        var newLeftMostTopPosLeftElems = 
-            typeof newLeftMostTopPosLeftElems === 'undefined' ? undefined : 
-                newLeftMostTopPosLeftElems; 
-        var moreButton = $('#' + that.gridId + ' .mass-action-more-button');
-    
-        if (typeof rightmostPosRightElems === 'undefined') { // calculate once and cache
-            var rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
-        }
-        var leftMostPosLeftElems = $('#' + that.gridId + '-top-pager').position ().left;
-        var titleBarEmptySpace = leftMostPosLeftElems - rightmostPosRightElems;
-
-        /*that.DEBUG && console.log (titleBarEmptySpace);
-        that.DEBUG && console.log ('hiddenButtons = ');
-        that.DEBUG && console.log (hiddenButtons);*/
-    
-        if (newLeftMostTopPosLeftElems && hiddenButtons == 0 &&
-            newLeftMostTopPosLeftElems > leftMostTopPosLeftElems) {
-
-            if (x2[that._massActionsNamespace].moveButtonIntoMoreMenu ()) hiddenButtons++;
-            rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
-        } else if (titleBarEmptySpace < 80 && hiddenButtons === 0) {
-            if (x2[that._massActionsNamespace].moveButtonIntoMoreMenu ()) hiddenButtons++;
-            rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
-        } else if (titleBarEmptySpace < 70 && hiddenButtons === 1) {
-            if (x2[that._massActionsNamespace].moveButtonIntoMoreMenu ()) hiddenButtons++;
-            rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
-        } else if (titleBarEmptySpace >= 80 && hiddenButtons == 2) {
-            if (x2[that._massActionsNamespace].moveMoreButtonMenuItemIntoButtons ()) hiddenButtons--;
-            rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
-        } else if (titleBarEmptySpace >= 90 && hiddenButtons > 0) {
-            if (x2[that._massActionsNamespace].moveMoreButtonMenuItemIntoButtons ()) hiddenButtons--;
-            rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
-        } 
-    }
-}
-
-/**
- * Sets up behavior which will hide/show mass action buttons when there isn't space for them
- */
-X2GridViewTopPagerManager.prototype._setUpTitleBarResponsiveness = function () {
-    var that = this;
-    if (typeof x2[that._massActionsNamespace] === 'undefined') return; 
-
-    that.condenseExpandTitleBar = that._condenseExpandTitleBar ();
-
-    $(window).unbind ('resize.topPager').bind (
-        'resize.topPager', that.condenseExpandTitleBar);
-
-    $(document).on ('showWidgets', function () {
-        if ($('body').hasClass ('no-widgets')) return;
-        that.DEBUG && console.log ('showWidgets');
-        var posTop = $('#' + that.gridId + '-top-pager').position ().top;
-        that.condenseExpandTitleBar (posTop);
-    });
-};
 
 /**
  * Check if grid view is on the first page 
@@ -207,10 +118,5 @@ X2GridViewTopPagerManager.prototype._init = function () {
         $('#' + that.gridId + '-top-pager').hide ()
         return;
     }
-    if (typeof x2[that._massActionsNamespace] !== 'undefined')
-        that._massActionsEnabled = true;
-    else 
-        that._massActionsEnabled = false;
-    that._setUpTitleBarResponsiveness ();
     that._setUpButtonBehavior ();
 };

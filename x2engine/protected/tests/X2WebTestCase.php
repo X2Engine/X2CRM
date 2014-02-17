@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -42,14 +42,14 @@
  *
  * Change the following URL based on your server configuration
  * Make sure the URL ends with a slash so that we can use relative URLs in test cases
- * @package X2CRM.tests
+ * @package application.tests
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 include('WebTestConfig.php');
 Yii::import ('application.components.permissions.*');
 
 /**
- * @package X2CRM.tests
+ * @package application.tests
  */
 abstract class X2WebTestCase extends CWebTestCase {
 

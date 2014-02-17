@@ -4,6 +4,7 @@ return array(
 	'testQuote' => array(
 		'id' => 1,
 		'name' => 'Black Mesa',
+        'nameId' => 'Black Mesa_1',
 		'website' => 'www.blackmesa.com',
 		'type' => 'Manufacturing',
 		'annualRevenue' => '0',

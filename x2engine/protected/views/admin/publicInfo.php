@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -59,7 +59,7 @@
         <p><?php 
         echo Yii::t('admin', 'You ');
          
-        echo Yii::t('admin', 'should use this if the CRM is behind a firewall and you access X2CRM using a different URL than one would use to access it from the internet (i.e. a host name / IP address on a private subnet or VPN).'); 
+        echo Yii::t('admin', 'should use this if the CRM is behind a firewall and you access X2Engine using a different URL than one would use to access it from the internet (i.e. a host name / IP address on a private subnet or VPN).'); 
         ?></p>
         <?php echo $form->textField($model, 'externalBaseUrl',array('style' => 'width: 90%')); ?>
         <?php echo CHtml::error($model, 'externalBaseUrl');?>

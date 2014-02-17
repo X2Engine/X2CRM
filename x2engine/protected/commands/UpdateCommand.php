@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,9 +38,9 @@
 Yii::import('application.components.util.*');
 
 /**
- * X2CRM command line updater.
+ * X2Engine command line updater.
  * 
- * @package X2CRM.commands
+ * @package application.commands
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class UpdateCommand extends CConsoleCommand {
@@ -138,7 +138,7 @@ class UpdateCommand extends CConsoleCommand {
             $latestVersion = $this->checkUpdates(true);
             if(version_compare($this->configVars['version'], $latestVersion) >= 0) {
                 if($scenario != 'upgrade') {
-                    $this->output(Yii::t('admin', 'X2CRM is at the latest version!'));
+                    $this->output(Yii::t('admin', 'X2Engine is at the latest version!'));
                     Yii::app()->end();
                 }
             } else if($scenario == 'upgrade') {
@@ -189,14 +189,14 @@ class UpdateCommand extends CConsoleCommand {
 
             if($lock){
                 $this->output(Yii::t('admin', 'Unlocking the app.'));
-                Yii::app()->locked = time();
+                Yii::app()->setLocked(false);
             }
             throw $e;
         }
 
         if($lock) {
             $this->output(Yii::t('admin','Unlocking the app.'));
-            Yii::app()->locked = time();
+            Yii::app()->setLocked(false);
         }
         $this->output(Yii::t('admin','All done.'));
     }

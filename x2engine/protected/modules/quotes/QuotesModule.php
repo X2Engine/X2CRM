@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package X2CRM.modules.quotes
+ * @package application.modules.quotes
  * @author David Visbal
  */
 class QuotesModule extends CWebModule {

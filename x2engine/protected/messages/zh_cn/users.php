@@ -19,7 +19,7 @@ return array (
 // Users Titles
 'User: {name}'=>'用户名：{name}',
 'Update User: {name}'=>'更新用户：{name}',
-'Invite Users to X2CRM'=>'邀请用户到X2CRM的',
+'Invite Users to X2Engine'=>'邀请用户到X2Engine的',
 'Instructions'=>'说明',
 'Delete Unregistered'=>'删除未注册',
 'Invited Users'=>'邀请用户',

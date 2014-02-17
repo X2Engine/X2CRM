@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -33,8 +33,10 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
-Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
+Yii::app()->clientScript->registerCssFile(
+    Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
 Yii::app()->clientScript->registerCss('multiselectCss',"
 .multiselect {
 	width: 460px;
@@ -46,18 +48,20 @@ Yii::app()->clientScript->registerCss('multiselectCss',"
 ",'screen, projection');
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'roles-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'.Yii::t('admin','Role List').'</h2><div class="title-bar">'
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.
+        '/css/gridview',
+	'template'=> '<div class="page-title"><h2>'.
+        Yii::t('admin','Role List').'</h2><div class="title-bar">'
 		.'{summary}</div></div>{items}{pager}',
 		'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
 	'dataProvider'=>$dataProvider,
 	'columns'=>array(
 		'name',
-                array(
-                    'name'=>'timeout',
-                    'value'=>'isset($data->timeout)? $data->timeout / 60 : null',
-                    'header'=>Yii::t('admin', 'Session Timeout')
-                ),
+        array(
+            'name'=>'timeout',
+            'value'=>'isset($data->timeout)? $data->timeout / 60 : null',
+            'header'=>Yii::t('admin', 'Session Timeout')
+        ),
 	),
 )); ?>
 <br>

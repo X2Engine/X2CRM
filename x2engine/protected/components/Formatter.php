@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@
 /**
  * Consolidated class for common string formatting and parsing functions.
  *
- * @package X2CRM.components
+ * @package application.components
  */
 class Formatter {
 
@@ -55,13 +55,17 @@ class Formatter {
 
         $text = mb_ereg_replace("\r\n", "\n", $text);  //convert microsoft's stupid CRLF to just LF
 
-        if(!$allowUnlimited)
-            $text = mb_ereg_replace("[\r\n]{3,}", "\n\n", $text); // replaces 2 or more CR/LF chars with just 2
+        if(!$allowUnlimited) {
+            // replaces 2 or more CR/LF chars with just 2
+            $text = mb_ereg_replace("[\r\n]{3,}", "\n\n", $text); 
+        }
 
-        if($allowDouble)
-            $text = mb_ereg_replace("[\r\n]", '<br />', $text); // replaces all remaining CR/LF chars with <br />
-        else
+        if($allowDouble) {
+            // replaces all remaining CR/LF chars with <br />
+            $text = mb_ereg_replace("[\r\n]", '<br />', $text); 
+        } else {
             $text = mb_ereg_replace("[\r\n]+", '<br />', $text);
+        }
 
         return $text;
     }
@@ -78,14 +82,21 @@ class Formatter {
     public static function timestampAge($timestamp){
         $age = time() - strtotime($timestamp);
         //return $age;
-        if($age < 60)
-            return Yii::t('app', 'Just now'); // less than 1 min ago
-        if($age < 3600)
-            return Yii::t('app', '{n} minutes ago', array('{n}' => floor($age / 60))); // minutes (less than an hour ago)
-        if($age < 86400)
-            return Yii::t('app', '{n} hours ago', array('{n}' => floor($age / 3600))); // hours (less than a day ago)
-
-        return Yii::t('app', '{n} days ago', array('{n}' => floor($age / 86400))); // days (more than a day ago)
+        if($age < 60) {
+            // less than 1 min ago
+            return Yii::t('app', 'Just now'); 
+        }
+        if($age < 3600) {
+            // minutes (less than an hour ago)
+            return Yii::t('app', '{n} minutes ago', array('{n}' => floor($age / 60))); 
+        }
+        if($age < 86400) {
+            // hours (less than a day ago)
+            return Yii::t('app', '{n} hours ago', array('{n}' => floor($age / 3600))); 
+        }
+        
+        // days (more than a day ago)
+        return Yii::t('app', '{n} days ago', array('{n}' => floor($age / 86400))); 
     }
 
     /**
@@ -93,10 +104,12 @@ class Formatter {
      * @param integer $timestamp Unix time stamp
      */
     public static function formatLongDate($timestamp){
-        if(empty($timestamp))
+        if(empty($timestamp)) {
             return '';
-        else
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('long'), $timestamp);
+        } else {
+            return Yii::app()->dateFormatter->format(
+                Yii::app()->locale->getDateFormat('long'), $timestamp);
+        }
     }
 
     /**
@@ -111,7 +124,8 @@ class Formatter {
             else
                 return "MM d, yy";
         } else{
-            $format = Yii::app()->locale->getDateFormat('short'); // translate Yii date format to jquery
+            // translate Yii date format to jquery
+            $format = Yii::app()->locale->getDateFormat('short'); 
             $format = str_replace('yy', 'y', $format);
             $format = str_replace('MM', 'mm', $format);
             $format = str_replace('M', 'm', $format);
@@ -140,8 +154,13 @@ class Formatter {
                     '{hoursColMinutes}' => sprintf('%d:%d',$intHours,$intMinutes),
                     '{hours}' => $intHours,
                     '{minutes}' => $intMinutes,
-                    '{hoursMinutes}' => $intHours ? sprintf('%d %s %d %s', $intHours, Yii::t('app', 'hours'), $intMinutes, Yii::t('app', 'minutes')) : sprintf('%d %s', $intMinutes, Yii::t('app', 'minutes')),
-                    '{quarterDecHours}' => sprintf('%0.2f '.Yii::t('app', 'hours'), round($duration / 900.0) * 0.25),
+                    '{hoursMinutes}' => $intHours ? 
+                        sprintf('%d %s %d %s', $intHours, Yii::t('app', 'hours'), 
+                            $intMinutes, Yii::t('app', 'minutes')) : 
+                        sprintf('%d %s', $intMinutes, Yii::t('app', 'minutes')),
+                    '{quarterDecHours}' => sprintf(
+                        '%0.2f '.Yii::t('app', 'hours'), 
+                        round($duration / 900.0) * 0.25),
                     '{start}' => self::formatCompleteDate($start),
                     '{end}' => self::formatCompleteDate($end)
                 ));
@@ -153,13 +172,17 @@ class Formatter {
      * @param string $width
      * @return string
      */
-    public static function formatTimePicker($width = ''){
+    public static function formatTimePicker($width = '',$seconds = false){
         if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh'){
-            return "HH:mm";
+            return "HH:mm".($seconds?':ss':'');
         }
-        $format = Yii::app()->locale->getTimeFormat('short');
-        //$format = strtolower($format); // jquery specifies hours/minutes as hh/mm instead of HH//MM
-        $format = str_replace('a', 'TT', $format); // yii and jquery have different format to specify am/pm
+        $format = Yii::app()->locale->getTimeFormat($seconds?'medium':'short');
+
+        // jquery specifies hours/minutes as hh/mm instead of HH//MM
+        //$format = strtolower($format); 
+
+        // yii and jquery have different format to specify am/pm
+        $format = str_replace('a', 'TT', $format); 
         return $format;
     }
 
@@ -167,21 +190,34 @@ class Formatter {
      * Check if am/pm is being used in this locale.
      */
     public static function formatAMPM(){
-        if(strstr(Yii::app()->locale->getTimeFormat(), "a") === false)
+        if(strstr(Yii::app()->locale->getTimeFormat(), "a") === false) {
             return false;
-        else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') // 24 hour format for china
+        } else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
+            // 24 hour format for china
             return false;
-        else
+        } else {
             return true;
+        }
     }
 
     /*     * * Date Time Format Functions ** */
 
     public static function formatFeedTimestamp($timestamp){
-        if(Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'), $timestamp) == Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'), time())){
-            $str = Yii::t('app', 'Today').' '.Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('short'), $timestamp);
+        if (Yii::app()->dateFormatter->format(
+                Yii::app()->locale->getDateFormat('medium'), $timestamp) == 
+            Yii::app()->dateFormatter->format(
+                Yii::app()->locale->getDateFormat('medium'), time())){
+
+            $str = Yii::t('app', 'Today').' '.
+                Yii::app()->dateFormatter->format(
+                    Yii::app()->locale->getTimeFormat('short'), $timestamp);
         }else{
-            $str = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium'), $timestamp)." ".Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('short'), $timestamp);
+            $str = 
+                Yii::app()->dateFormatter->format(
+                    Yii::app()->locale->getDateFormat('medium'), $timestamp).
+                " ".
+                Yii::app()->dateFormatter->format(
+                    Yii::app()->locale->getTimeFormat('short'), $timestamp);
         }
         return $str;
     }
@@ -192,15 +228,22 @@ class Formatter {
      * @return string
      */
     public static function formatDateEndOfDay($timestamp){
-        if(empty($timestamp))
+        if(empty($timestamp)) {
             return '';
-        else
-        if(Yii::app()->locale->getId() == 'en')
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium').' '.Yii::app()->locale->getTimeFormat('short'), strtotime("tomorrow", $timestamp) - 60);
-        else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh')
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short').' '.'HH:mm', strtotime("tomorrow", $timestamp) - 60);
-        else
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short').' '.Yii::app()->locale->getTimeFormat('short'), strtotime("tomorrow", $timestamp) - 60);
+        } else if(Yii::app()->locale->getId() == 'en') {
+            return Yii::app()->dateFormatter->format(
+                Yii::app()->locale->getDateFormat('medium').' '.
+                    Yii::app()->locale->getTimeFormat('short'), 
+                strtotime("tomorrow", $timestamp) - 60);
+        } else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
+            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short').
+                ' '.'HH:mm', strtotime("tomorrow", $timestamp) - 60);
+        } else {
+            return Yii::app()->dateFormatter->format(
+                Yii::app()->locale->getDateFormat('short').' '.
+                    Yii::app()->locale->getTimeFormat('short'), 
+                strtotime("tomorrow", $timestamp) - 60);
+        }
     }
 
     /**
@@ -257,9 +300,11 @@ class Formatter {
             else if($due['yday'] == $now['yday'] + 1 && $width == 'long') // is it tomorrow?
                 $ret = Yii::t('app', 'Tomorrow');
             else
-                $ret = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat($width), $date); // any other day this year
+                $ret = Yii::app()->dateFormatter->format(
+                    Yii::app()->locale->getDateFormat($width), $date); // any other day this year
         } else{
-            $ret = Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat($width), $date); // due date is after this year
+            $ret = Yii::app()->dateFormatter->format(
+                Yii::app()->locale->getDateFormat($width), $date); // due date is after this year
         }
         return $ret;
     }
@@ -271,7 +316,8 @@ class Formatter {
     public static function formatDueDate($date){
         if(!is_numeric($date))
             $date = strtotime($date); // make sure $date is a proper timestamp
-        return date('l', $date)." ".Yii::app()->dateFormatter->formatDateTime($date, 'long', null)." - ".Yii::app()->dateFormatter->formatDateTime($date, null, 'short');
+        return date('l', $date)." ".Yii::app()->dateFormatter->formatDateTime($date, 'long', null).
+            " - ".Yii::app()->dateFormatter->formatDateTime($date, null, 'short');
     }
 
     public static function formatCompleteDate($date){
@@ -297,15 +343,23 @@ class Formatter {
      * @return string
      */
     public static function formatDateTime($timestamp){
-        if(empty($timestamp))
+        if(empty($timestamp)){
             return '';
-        else
-        if(Yii::app()->locale->getId() == 'en')
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('medium').' '.Yii::app()->locale->getTimeFormat('short'), $timestamp);
-        else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh')
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short').' '.'HH:mm', $timestamp);
-        else
-            return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short').' '.Yii::app()->locale->getTimeFormat('short'), $timestamp);
+        }else if(Yii::app()->locale->getId() == 'en'){
+
+            return Yii::app()->dateFormatter->format(
+                Yii::app()->locale->getDateFormat('medium').' '.
+                    Yii::app()->locale->getTimeFormat('short'), 
+                $timestamp);
+        }else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
+            return Yii::app()->dateFormatter->format(
+                Yii::app()->locale->getDateFormat('short').' '.'HH:mm', $timestamp);
+        } else {
+            return Yii::app()->dateFormatter->format(
+                Yii::app()->locale->getDateFormat('short').' '.
+                    Yii::app()->locale->getTimeFormat('short'), 
+                $timestamp);
+        }
     }
 
     /**
@@ -326,15 +380,19 @@ class Formatter {
      * @param string $date
      * @return integer
      */
-    public static function parseDateTime($date){
-        if($date === null)
+    public static function parseDateTime($date,$length = 'short'){
+        if($date === null){
             return null;
-        elseif(is_numeric($date))
+        }elseif(is_numeric($date)){
             return $date;
-        elseif(Yii::app()->locale->getId() == 'en')
+        }elseif(Yii::app()->locale->getId() == 'en'){
             return strtotime($date);
-        else
-            return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short').' hh:mm');
+        } else {
+            return CDateTimeParser::parse(
+                $date, 
+                Yii::app()->locale->getDateFormat($length).' '.
+                Yii::app()->locale->getTimeFormat($length));
+        }
     }
 
     /**
@@ -491,7 +549,8 @@ class Formatter {
      * existed for the index $key, otherwise null
      */
     public static function parseShortCode($key, $model){
-        $path = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','x2flow','shortcodes.php'));
+        $path = implode(DIRECTORY_SEPARATOR,
+            array(Yii::app()->basePath,'components','x2flow','shortcodes.php'));
         if(file_exists($path)){
             $shortCodes = include($path);
             if(isset($shortCodes[$key])){
@@ -521,6 +580,20 @@ class Formatter {
         );
         $safeWords = array_map('encapsulateWords',$safeWords);
         return implode('|',$safeWords);
+    }
+
+    /**
+     * If text is greater than limit, it gets truncated and suffixed with an ellipsis  
+     * @param string $text
+     * @param int $limit
+     * @return string 
+     */
+    public static function trimText ($text, $limit = 150) {
+        if(mb_strlen($text,'UTF-8') > $limit) {
+            return mb_substr($text, 0,$limit - 3, 'UTF-8').'...';
+        } else {
+            return $text;
+        }
     }
 
 }

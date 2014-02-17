@@ -38,7 +38,6 @@ return array(
         'gridviewSettings' => null, 
         'formSettings' => null, 
         'emailSignature' => null, 
-        'showActions' => null, 
         'syncGoogleCalendarId' => null, 
         'syncGoogleCalendarAccessToken' => null, 
         'syncGoogleCalendarRefreshToken' => null, 

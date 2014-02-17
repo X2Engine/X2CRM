@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -43,7 +43,7 @@
  * A campaign is 'active' after it has been launched and ready to send mail. A campaign is 'complete'
  * when all applicable email has been sent. This is the model class for table "x2_campaigns".
  *
- * @package X2CRM.modules.marketing.models
+ * @package application.modules.marketing.models
  */
 class CampaignAttachment extends CActiveRecord {
 	public static function model($className=__CLASS__) {

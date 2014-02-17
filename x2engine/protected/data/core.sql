@@ -1,5 +1,5 @@
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -49,7 +49,7 @@ CREATE TABLE x2_admin(
 	onlineOnly				TINYINT,
 	emailBulkAccount		INT	NOT NULL DEFAULT -1,
 	emailNotificationAccount	INT NOT NULL DEFAULT -1,
-	emailFromName			VARCHAR(255)	NOT NULL DEFAULT "X2CRM",
+	emailFromName			VARCHAR(255)	NOT NULL DEFAULT "X2Engine",
 	emailFromAddr			VARCHAR(255)	NOT NULL DEFAULT '',
 	emailBatchSize			INT				NOT NULL DEFAULT 200,
 	emailInterval			INT				NOT NULL DEFAULT 60,
@@ -185,6 +185,7 @@ CREATE TABLE x2_fields (
 	relevance				VARCHAR(250),
 	isVirtual				TINYINT			DEFAULT 0,
     defaultValue            TEXT,
+    keyType                 CHAR(3) DEFAULT NULL,
 	INDEX (modelName),
 	UNIQUE (modelName, fieldName)
 ) COLLATE = utf8_general_ci;
@@ -213,54 +214,6 @@ CREATE TABLE x2_lead_routing(
 	rrId					INT				DEFAULT 0,
 	groupType				INT
 ) COLLATE = utf8_general_ci;
-/*&*/
-/* These have foreign key constraints in them and should thus be dropped first: */
-DROP TABLE IF EXISTS x2_list_criteria,x2_list_items;
-/*&*/
-DROP TABLE IF EXISTS x2_lists;
-/*&*/
-CREATE TABLE x2_lists (
-	id						INT UNSIGNED	NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	assignedTo				VARCHAR(255),
-	name					VARCHAR(100)	NOT NULL,
-	description				VARCHAR(250)	NULL,
-	type					VARCHAR(20)		NULL,
-	logicType				VARCHAR(20)		DEFAULT "AND",
-	modelName				VARCHAR(100)	NOT NULL,
-	visibility				INT NOT NULL	DEFAULT 1,
-	count					INT UNSIGNED	NOT NULL DEFAULT 0,
-	createDate				BIGINT			NOT NULL,
-	lastUpdated				BIGINT			NOT NULL,
-	INDEX(assignedTo),
-	INDEX(type)
-) ENGINE InnoDB COLLATE utf8_general_ci;
-/*&*/
-CREATE TABLE x2_list_criteria (
-	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	listId					INT				UNSIGNED NOT NULL,
-	type					VARCHAR(20)		NULL,
-	attribute				VARCHAR(40)		NULL,
-	comparison				VARCHAR(10)		NULL,
-	value					VARCHAR(100)	NOT NULL,
-	INDEX (listId),
-	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE InnoDB COLLATE utf8_general_ci;
-/*&*/
-CREATE TABLE x2_list_items (
-	id						INT UNSIGNED	NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	emailAddress			VARCHAR(255)	NULL,
-	contactId				INT				UNSIGNED,
-	listId					INT				UNSIGNED NOT NULL,
-	uniqueId				VARCHAR(32)		NULL,
-	sent					INT				NOT NULL DEFAULT 0,
-	opened					INT				UNSIGNED NOT NULL DEFAULT 0,
-	clicked					INT				UNSIGNED NOT NULL DEFAULT 0,
-	unsubscribed			INT				UNSIGNED NOT NULL DEFAULT 0,
-    sending                 TINYINT         NOT NULL DEFAULT 0,
-	INDEX (listId),
-	INDEX (uniqueId),
-	FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE InnoDB COLLATE utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_modules;
 /*&*/
@@ -356,6 +309,7 @@ CREATE TABLE x2_profile(
 	disablePhoneLinks       TINYINT			DEFAULT 0,
 	disableNotifPopup		TINYINT			DEFAULT 0,
 	disableAutomaticRecordTagging		TINYINT			DEFAULT 0,
+    disableTimeInTitle      TINYINT DEFAULT 0,
 	language				VARCHAR(40)		DEFAULT "",
 	timeZone				VARCHAR(100)	DEFAULT "",
 	resultsPerPage			INT DEFAULT		20,
@@ -386,7 +340,6 @@ CREATE TABLE x2_profile(
 	emailUseSignature		VARCHAR(5)		DEFAULT "user",
 	emailSignature			LONGTEXT,
 	enableFullWidth			TINYINT			DEFAULT 1,
-	showActions				VARCHAR(20),
 	syncGoogleCalendarId	TEXT,
 	syncGoogleCalendarAccessToken TEXT,
 	syncGoogleCalendarRefreshToken TEXT,
@@ -469,7 +422,7 @@ CREATE TABLE x2_role_to_user (
 DROP TABLE IF EXISTS x2_sessions;
 /*&*/
 CREATE TABLE x2_sessions(
-	id						CHAR(40)		PRIMARY KEY,
+	id						CHAR(128)		PRIMARY KEY,
 	user					VARCHAR(255),
 	lastUpdated				BIGINT,
 	IP						VARCHAR(40)		NOT NULL,

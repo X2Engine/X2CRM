@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -65,7 +65,7 @@ return array (
 // Users Titles
 'User: {name}'=>'Пользователь: {name}',
 'Update User: {name}'=>'Обновление пользователя: {name}',
-'Invite Users to X2CRM'=>'Приглашать пользователей X2CRM',
+'Invite Users to X2Engine'=>'Приглашать пользователей X2Engine',
 'Instructions'=>'Инструкции',
 'Please enter a list of e-mails separated by commas.'=>'Пожалуйста, введите список адресов электронной почты, разделенных запятыми.',
 'Delete User'=>'Удалить пользователя',

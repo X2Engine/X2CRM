@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -41,7 +41,7 @@ Yii::import('application.components.util.*');
 /**
  * Test for JSONFieldsBehavior.
  *
- * @package X2CRM.tests.unit.components
+ * @package application.tests.unit.components
  * @author Demitri Morgan <demitri@x2engine.com>, Derek Mueller <derek@x2engine.com>
  */
 class JSONFieldsBehaviorTest extends CActiveRecordBehaviorTestCase {

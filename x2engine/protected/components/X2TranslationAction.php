@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -36,10 +36,10 @@
 
 /**
  * Action to be included in AdminController to allow for the automated updates
- * of X2CRM's translation files. Running this action will find all instances of
+ * of X2Engine's translation files. Running this action will find all instances of
  * Yii::t calls in the app, add them to our translation files, and translate them.
  * End users should not need to run this action.
- * @package X2CRM.components
+ * @package application.components
  * @author "Jake Houser" <jake@x2engine.com>
  */
 class X2TranslationAction extends CAction {

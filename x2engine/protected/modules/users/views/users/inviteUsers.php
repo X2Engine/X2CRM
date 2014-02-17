@@ -12,7 +12,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('users','Invite Users')),
 ));
 ?>
-<div class="page-title icon users"><h2><?php echo Yii::t('users','Invite Users to X2CRM'); ?></h2></div>
+<div class="page-title icon users"><h2><?php echo Yii::t('users','Invite Users to X2Engine'); ?></h2></div>
 
 <form method="POST">
 <div class="form">

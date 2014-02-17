@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -397,7 +397,15 @@ function outputErrors() {
 				}
 			}
 		}
-	}
+	} else {
+        if(!empty($response['errors'])) {
+            echo installer_t("One or more configuration variables have been invalidly set:")."\n";
+            foreach($response['errors'] as $name => $error) {
+                echo "\t$name:\t$error\n";
+            }
+            die();
+        }
+    }
 }
 
 /**
@@ -501,18 +509,24 @@ function installStage($stage) {
 					addValidationError('adminUsername', 'Admin username cannot contain apostrophes');
 				elseif (preg_match('/^\d+$/', $config['adminUsername']))
 					addValidationError('adminUsername', 'Admin username must contain at least one non-numeric character.');
+				elseif (!preg_match('/^\w+$/', $config['adminUsername']))
+					addValidationError('adminUsername', 'Admin username may contain only alphanumeric characters and underscores.');
 			}
 			if (empty($config['adminEmail']) || !preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i', $config['adminEmail']))
 				addValidationError('adminEmail', 'Please enter a valid email address.');
-			if ($_POST['adminPass'] == '')
+			if ($config['adminPass'] == '')
 				addValidationError('adminPass', 'Admin password cannot be blank.');
-			if (!isset($_POST['adminPass2']))
+			if (!$silent && !isset($_POST['adminPass2']))
 				addValidationError('adminPass2', 'Please confirm the admin password.');
-			else if ($config['adminPass'] != $_POST['adminPass2'])
+			else if (!$silent && $config['adminPass'] != $_POST['adminPass2'])
 				addValidationError('adminPass2', 'Admin passwords did not match.');
 			if (!empty($response['errors'])) {
-				respond(installer_t('Please correct the following errors:'));
-			}
+                if(!$silent) {
+                    respond(installer_t('Please correct the following errors:'));
+                } else {
+                    outputErrors();
+                }
+            }
 			break;
 		case 'module':
 			if (isset($_GET['module'])) {
@@ -679,7 +693,7 @@ function installStage($stage) {
 			}
 			break;
 	}
-	if (in_array($stage, array_keys($stageLabels)) && $stage != 'finalize')
+	if (in_array($stage, array_keys($stageLabels)) && $stage != 'finalize' && !($stage == 'validate' && $silent))
 		respond(installer_tr("Completed: {stage}", array('{stage}' => $stageLabels[$stage])));
 }
 
@@ -849,13 +863,13 @@ try {
 //////////////////////////////
 $complete = isset($_POST['complete']) ? $_POST['complete'] == 1 : False;
 
-if (!$complete)
+if (!$complete && !$silent)
 	outputErrors();
 
 // Install everything all at once:
 if (($silent || !isset($_GET['stage'])) && !$complete) {
 	// Install core schema/data, modules, and configure:
-	foreach (array('core', 'RBAC', 'timezoneData', 'module', 'config', 'dummy_data', 'finalize') as $component)
+	foreach (array('validate','core', 'RBAC', 'timezoneData', 'module', 'config', 'dummy_data', 'finalize') as $component)
 		installStage($component);
 } else if (isset($_GET['stage'])) {
 	installStage($_GET['stage']);

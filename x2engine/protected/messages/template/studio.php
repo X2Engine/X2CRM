@@ -55,8 +55,8 @@ return array (
 'Triggers when a record of specified type is deleted.'=>'',
 'Triggered by adding one of these tags to a record.'=>'',
 'Triggered when some updates a record of the the specified type.'=>'',
-'Triggered when a user signs in to X2CRM.'=>'',
-'Triggered when a user signs out of X2CRM.'=>'',
+'Triggered when a user signs in to X2Engine.'=>'',
+'Triggered when a user signs out of X2Engine.'=>'',
 'Triggered when a contact visits a webpage'=>'',
 'Triggers when a new contact fills out your web lead capture form.'=>'',
 

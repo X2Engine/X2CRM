@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@
 /**
  * Class providing an abstraction layer for cron table editing.
  *
- * Abstracted data comes in the form (for each line of the X2CRM-managed section
+ * Abstracted data comes in the form (for each line of the X2Engine-managed section
  * of the cron table): an array with keys
  *
  * <dl>
@@ -54,8 +54,12 @@
  * For each of the above that are defined as plural, the values could be either
  * an array of possible values or "*" for "all" (see {@link https://en.wikipedia.org/wiki/Cron}
  * for more information on cron table formatting and specification).
+ *
+ * NOTE: the crontab field and manged section delimeters are set the way they are
+ * for backwards compatibility (with old crontabs that use the old markers)
+ * despite the change in product naming (from X2Engine back to X2Engine).
  * 
- * @package X2CRM.components.util
+ * @package application.components.util
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class CrontabUtil {
@@ -86,7 +90,7 @@ class CrontabUtil {
     public static $schedFields = array('min', 'hour', 'dayOfMonth', 'month', 'dayOfWeek');
 
     /**
-     * Adds delimiters for identifying X2CRM-managed cron tasks to the crontab, if they
+     * Adds delimiters for identifying X2Engine-managed cron tasks to the crontab, if they
      * don't already exist.
      *
      * @param string $crontab reference to the current cron table in string form.
@@ -95,7 +99,7 @@ class CrontabUtil {
     public static function addCronMarker(&$crontab, $check = false){
         if(strpos($crontab, self::CRONTAB_MANAGED_BEGIN) === false){
             if($check)
-                throw new Exception('X2CRM management delimiters not found in cron table.');
+                throw new Exception('X2Engine management delimiters not found in cron table.');
             $crontab .= implode("\n", array('', self::CRONTAB_MANAGED_BEGIN, self::CRONTAB_MANAGED_END, ''));
         }
     }

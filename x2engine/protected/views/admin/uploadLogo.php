@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -39,6 +39,11 @@
 <?php echo Yii::t('admin','To upload your logo for display next to the search bar, please  upload the file here using the form below.'); ?>
 <br><br>
 <h3><?php echo Yii::t('contacts','Upload File'); ?></h3>
+<?php if (Yii::app()->user->hasFlash('error')) {
+    echo "<div class='flash-error'>";
+    echo Yii::app()->user->getFlash('error');
+    echo "</div>";
+} ?>
 <?php echo CHtml::form('uploadLogo','post',array('enctype'=>'multipart/form-data')); ?>
 <?php echo CHtml::fileField('logo-upload', ''); ?><br><br>
 <?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?> 

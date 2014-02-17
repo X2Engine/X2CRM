@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,9 +38,9 @@ require_once('WebTestConfig.php');
 
 /**
  * Base class for running quick back & forth web tests with cURL, i.e. for
- * testing X2CRM's remote API.
+ * testing X2Engine's remote API.
  * 
- * @package X2CRM.tests
+ * @package application.tests
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 abstract class CURLTestCase extends X2DbTestCase {

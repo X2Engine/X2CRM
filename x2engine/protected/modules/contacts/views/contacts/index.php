@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -88,21 +88,6 @@ $('#content').on('mouseup','#contacts-grid a',function(e) {
 	document.cookie = 'vcr-list=".$this->getAction()->getId()."; expires=0; path=/';
 });
 ",CClientScript::POS_READY);
-
-/*Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2QTipManager.js',
-    CClientScript::POS_HEAD);*/
-
-
-
-// init qtip for contact names
-/*Yii::app()->clientScript->registerScript('contact-qtip', '
-x2.qtipManager = new X2QtipManager ({
-    loadingText: "'.addslashes(Yii::t('app','loading...')).'",
-    qTipSelector: ".contact-name"
-});
-
-x2.qtipManager.refresh ();
-',CClientScript::POS_READY);*/
 ?>
 
 

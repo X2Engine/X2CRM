@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -36,7 +36,7 @@
 
 /**
  * This is the model class for table "x2_events".
- * @package X2CRM.models
+ * @package application.models
  */
 class Events extends CActiveRecord {
 
@@ -150,14 +150,14 @@ class Events extends CActiveRecord {
                                                 '{authorText}' => $authorText,
                                                 '{duration}' => empty($action->dueDate) || empty($action->completeDate) ? Yii::t('app', 'duration unknown') : Formatter::formatTimeInterval($action->dueDate, $action->completeDate, '{hoursMinutes}'),
                                                 '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl),
-                                                '{logAbbrev}' => $action->actionDescription
+                                                '{logAbbrev}' => CHtml::encode($action->actionDescription)
                                             ));
                                     break;
                                 case 'note':
                                     $text = Yii::t('app', '{authorText} posted a comment on {modelLink}: "{noteAbbrev}"', array(
                                                 '{authorText}' => $authorText,
                                                 '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl),
-                                                '{noteAbbrev}' => $action->actionDescription
+                                                '{noteAbbrev}' => CHtml::encode($action->actionDescription)
                                             ));
                                     break;
                                 case 'time':
@@ -165,7 +165,7 @@ class Events extends CActiveRecord {
                                                 '{authorText}' => $authorText,
                                                 '{time}' => Formatter::formatTimeInterval($action->dueDate, $action->dueDate+$action->timeSpent, '{hoursMinutes}'),
                                                 '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType)),
-                                                '{noteAbbrev}' => $action->actionDescription
+                                                '{noteAbbrev}' => CHtml::encode($action->actionDescription)
                                             ));
                                     break;
                                 default:
@@ -498,7 +498,7 @@ class Events extends CActiveRecord {
                 if(isset($action)){
                     $text = Yii::t('app', "{calendarText} event: {actionDescription}", array(
                                 '{calendarText}' => CHtml::link(Yii::t('calendar', 'Calendar'), Yii::app()->controller->createAbsoluteUrl('/calendar/calendar/index')),
-                                '{actionDescription}' => $action->actionDescription
+                                '{actionDescription}' => CHtml::encode($action->actionDescription)
                             ));
                 }else{
                     $text = Yii::t('app', "{calendarText} event: event not found.", array(

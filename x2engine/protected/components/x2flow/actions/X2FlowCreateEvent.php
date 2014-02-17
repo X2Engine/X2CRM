@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,12 +37,12 @@
 /**
  * X2FlowAction that creates an event
  *
- * @package X2CRM.components.x2flow.actions
+ * @package application.components.x2flow.actions
  */
 class X2FlowCreateEvent extends X2FlowAction {
 
     public $title = 'Post to Activity Feed';
-    public $info = 'Creates an activity feed event.'; // You can write your own message, or X2CRM will automatically choose one based on what triggered this flow.';
+    public $info = 'Creates an activity feed event.'; // You can write your own message, or X2Engine will automatically choose one based on what triggered this flow.';
 
     public function paramRules(){
         // $eventTypes = array('auto'=>Yii::t('app','Auto')) + Dropdowns::getItems(113,'app');

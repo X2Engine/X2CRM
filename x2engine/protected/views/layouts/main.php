@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -47,16 +47,16 @@ if($isAdmin && file_exists($updateManifest = implode(DIRECTORY_SEPARATOR,array(Y
     }
 } else if($isAdmin && Yii::app()->session['alertUpdate']){
     Yii::app()->user->setFlash('admin.update',Yii::t('admin', 'A new version is available.')
-            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Update X2CRM'),array('/admin/updater'))
+            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Update X2Engine'),array('/admin/updater'))
             .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Updater Settings'),array('/admin/updaterSettings')));
     Yii::app()->session['alertUpdate'] = false;
 }
 if(is_int(Yii::app()->locked)) {
     $lockMsg = '<strong>'.Yii::t('admin','The application is currently locked.').'</strong>';
     if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','LockAppAction.php')))) {
-        $lockMsg .= ' '.CHtml::link(Yii::t('admin','Unlock X2CRM'),array('/admin/lockApp','toggle'=>0));
+        $lockMsg .= ' '.CHtml::link(Yii::t('admin','Unlock X2Engine'),array('/admin/lockApp','toggle'=>0));
     } else {
-        $lockMsg .= Yii::t('admin', 'You can manually unlock the application by deleting the file {file}', array('{file}' => '<em>"x2crm.lock"</em> in protected/config'));
+        $lockMsg .= Yii::t('admin', 'You can manually unlock the application by deleting the file {file}', array('{file}' => '<em>"X2Engine.lock"</em> in protected/config'));
     }
     Yii::app()->user->setFlash('admin.isLocked',$lockMsg);
 }
@@ -317,7 +317,7 @@ if(is_file(Yii::app()->params->logo)){
 }
 array_unshift($menuItems, array(
     'label' => CHtml::image(Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo, Yii::app()->name, $logoOptions),
-    'url' => array('/profile', 'id' => Yii::app()->user->id),
+    'url' => array('/profile/view', 'id' => Yii::app()->user->getId()),
     'active' => false,
     'itemOptions' => array('id' => 'search-bar-title', 'class' => 'special','title'=>Yii::t('app','Go to Activity Feed'))
 ));

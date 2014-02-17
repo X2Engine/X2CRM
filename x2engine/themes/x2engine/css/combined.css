@@ -1,5 +1,5 @@
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -49,5 +49,6 @@ file used to fix IE8 max 31 css file references issue
 @import url("form.css");
 @import url("../../../js/bgrins-spectrum-2c2010c/spectrum.css");
 @import url("../../../js/qtip/jquery.qtip.min.css");
+@import url("rating/jquery.rating.css");
 
 

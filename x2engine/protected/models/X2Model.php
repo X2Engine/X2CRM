@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -46,7 +46,7 @@ Yii::import('application.modules.users.models.*');
  *
  * @property string $myModelName (read-only) Model name of the instance.
  * @property array $relatedX2Models (read-only) Models associated via the associations table
- * @package X2CRM.models
+ * @package application.models
  */
 abstract class X2Model extends CActiveRecord {
 
@@ -71,7 +71,28 @@ abstract class X2Model extends CActiveRecord {
         'services' => 'Services',
         '' => ''
     );
-    protected static $_fields;    // one copy of fields for all instances of this model
+    /**
+     * Stores one copy of fields for all instances of this model
+     * @var type
+     */
+    protected static $_fields;
+    
+    /**
+     * Stores possible references to models via lookup fields. The structure of
+     * this array is:
+     *
+     * 1st level (array):
+     * [model class key] => [array value]
+     *
+     * 2nd level (array):
+     * [table name key] => [array value]
+     *
+     * So for each model name, there is an array of corresponding tables (and
+     * for each table, a list of columns) that need to be updated if the nameId
+     * attribute changes.
+     * @var type
+     */
+    protected static $_nameIdRefs; 
     protected static $_linkedModels; // cache for models loaded for link field attributes (used by automation system)
     protected $_runAfterCreate;   // run afterCreate before afterSave, but only for new records
     private $_relatedX2Models;   // Relationship models stored in here
@@ -85,7 +106,7 @@ abstract class X2Model extends CActiveRecord {
     public function __construct($scenario = 'insert'){
         $this->queryFields();
         parent::__construct($scenario);
-        if($this->getIsNewRecord()) {
+        if($this->getIsNewRecord() && $scenario == 'insert') {
             foreach($this->getFields() as $field) {
                 if($field->defaultValue != null && !$field->readOnly) {
                     $this->{$field->fieldName} = $field->defaultValue;
@@ -133,6 +154,72 @@ abstract class X2Model extends CActiveRecord {
      */
     public static function getModuleModel () {
         return X2Model::model (X2Model::getModuleModelName ());
+    }
+
+    /**
+     * Updates action timer sum fields in X2Model.
+     * 
+     * @todo write a proper unit test for this method
+     */
+    public static function updateTimerTotals($modelId,$modelName=null) {
+        Yii::import('application.modules.actions.models.*');
+        $modelName = empty($modelName) ? get_called_class() : $modelName;
+        $model = self::model($modelName)->findByPk($modelId);
+        if(empty($model) || $model->asa('X2LinkableBehavior') == null) return;
+        // All fields of type "timerSum":
+        $fields = array_filter($model->fields,function($f){return $f->type=='timerSum';});
+        foreach($fields as $field) {
+            if($field->linkType == null) {
+                // "all types" specified, so take the shortcut of summing over
+                // timeSpent field of all actions, which already itself 
+                // contain sums over timer records, all of which are also
+                // associated with the current model:
+                $model->{$field->fieldName} = Yii::app()->db->createCommand()
+                    ->select("SUM(timeSpent)")
+                    ->from(Actions::model()->tableName())
+                    ->where("associationId=:id 
+                             AND associationType=:module
+                             AND type IN ('call','time')")
+                    ->queryScalar(array(
+                        ':module' => $model->module,
+                        ':id' => $modelId
+                    ));
+            } else {
+                // Sum over all *published* timer records of the given type:
+                $model->{$field->fieldName} = Yii::app()->db->createCommand()
+                    ->select("SUM(endtime-timestamp)")
+                    ->from(ActionTimer::model()->tableName())
+                    ->where("associationId=:id
+                        AND associationType=:modelName
+                        AND actionId IS NOT NULL
+                        AND type=:type")
+                    ->queryScalar(array(
+                        ':id' => $modelId,
+                        ':modelName' => $modelName,
+                        ':type' => $field->linkType
+                    ));
+            }
+        }
+        if(count($fields) > 0)
+            $model->update(array_map(function($f){return $f->fieldName;},$fields));
+    }
+
+    /**
+     * Use all email addresses of the model for finding a record
+     * @param type $email
+     */
+    public function findByEmail($email) {
+        $criteria = new CDbCriteria;
+        $paramCount = 0;
+        foreach($this->getFields() as $field) {
+            if($field->type == 'email') {
+                $paramCount++;
+                $params[$param = ":email$paramCount"] = $email;
+                $criteria->addCondition("`{$field->fieldName}`=$param", 'OR');
+            }
+        }
+        $criteria->params = $params;
+        return self::model(get_class($this))->find($criteria);
     }
 
     /**
@@ -203,12 +290,21 @@ abstract class X2Model extends CActiveRecord {
 
     public function relations(){
         $relations = array();
+        $myClass = get_class($this);
+
+        // Generate relations from link-type fields.
         foreach(self::$_fields[$this->tableName()] as &$_field){
-            if($_field->type === 'link')
-                $relations[$_field->fieldName.'Model'] = array(self::BELONGS_TO, $_field->linkType, $_field->fieldName);
+            if($_field->type === 'link' && class_exists($_field->linkType)){
+                $relations[$alias = $_field->fieldName.'Model'] =
+                        array(
+                            self::BELONGS_TO,
+                            $_field->linkType,
+                            array($_field->fieldName => 'nameId'),
+                );
+            }
         }
         if(Yii::app()->params->edition == 'pro'){
-            $relations['gallery'] = array(self::HAS_ONE, 'GalleryToModel', 'modelId', 'condition' => 'modelName="'.get_class($this).'"');
+            $relations['gallery'] = array(self::HAS_ONE, 'GalleryToModel', 'modelId', 'condition' => 'modelName="'.$myClass.'"');
         }
         return $relations;
     }
@@ -255,6 +351,18 @@ abstract class X2Model extends CActiveRecord {
      */
     public function beforeSave(){
         $this->_runAfterCreate = $this->getIsNewRecord();
+        if(!$this->_runAfterCreate) {
+            $this->updateNameId();
+        } else {
+            // Safeguard against duplicate entries (violating unique constraint
+            // on the nameId column): set uniqueId before submitting to
+            // some unique value, and let it be updated to a proper uniqueId
+            // value after saving. This is just in case the nameId update after
+            // insertion fails, which is easily corrected.
+            if($this->hasAttribute('nameId')) {
+                $this->nameId = uniqid();
+            }
+        }
         return parent::beforeSave();
     }
 
@@ -264,9 +372,12 @@ abstract class X2Model extends CActiveRecord {
 
     public function afterCreate(){
         $this->_runAfterCreate = false;
-
         if($this->hasEventHandler('onAfterCreate'))
             $this->onAfterCreate(new CEvent($this));
+    }
+
+    public function onAfterInsert($event) {
+        $this->raiseEvent('onAfterInsert',$event);
     }
 
     public function onAfterUpdate($event){
@@ -274,6 +385,12 @@ abstract class X2Model extends CActiveRecord {
     }
 
     public function afterUpdate(){
+        
+        // Update, as necessary, references to this record via the nameId field.
+        /* x2tempstart */
+        $this->updateNameIdRefs();
+        /* x2tempend */
+
         if($this->hasEventHandler('onAfterUpdate'))
             $this->onAfterUpdate(new CEvent($this));
     }
@@ -285,6 +402,14 @@ abstract class X2Model extends CActiveRecord {
      */
     public function afterDelete(){
         X2Model::model('PhoneNumber')->deleteAllByAttributes(array('modelId' => $this->id, 'modelType' => get_class($this))); // clear out old phone numbers
+
+        // Change all references to this record so that they retain the name but
+        // exclude the ID:
+        if($this->hasAttribute('nameId') && $this->hasAttribute('name')){
+            $this->_oldAttributes = $this->getAttributes();
+            $this->nameId = $this->name;
+            $this->updateNameIdRefs();
+        }
 
         if($this->hasEventHandler('onAfterDelete'))
             $this->onAfterDelete(new CEvent($this));
@@ -481,6 +606,8 @@ abstract class X2Model extends CActiveRecord {
         return null;
     }
 
+
+
     /**
      * Looks up a linked attribute by loading the linked model and calling renderAttribute() on it.
      * @param string $linkField the attribute of $this linking to the external model
@@ -498,16 +625,23 @@ abstract class X2Model extends CActiveRecord {
      * Looks up an external model referenced in a link field.
      * Caches loaded models in X2Model::$_linkedModels
      * @param string $linkField the attribute of $this linking to the external model
+     * @param bool $lookup Actually look up the model; otherwise (if false) use
+     *  the name/ID to populate a dummy model that can be used for just
+     *  generating a link.
      * @return mixed the active record. Null if the attribute is not set or does not exist.
      */
-    public function getLinkedModel($linkField){
-        $id = $this->getAttribute($linkField);
-
-        if(ctype_digit((string) $id)){
+    public function getLinkedModel($linkField,$lookup=true){
+        $nameId = $this->getAttribute($linkField);
+        list($name, $id) = Fields::nameAndId($nameId);
+        if(ctype_digit((string) $id)) {
             $field = $this->getField($linkField);
 
             if($field !== null && $field->type === 'link'){
                 $modelClass = $field->linkType;
+
+                if(!$lookup) {
+                    return self::getLinkedModelMock($modelClass,$name,$id);
+                }
 
                 // try to look up the linked model
                 if(!isset(self::$_linkedModels[$modelClass][$id])){
@@ -521,6 +655,32 @@ abstract class X2Model extends CActiveRecord {
             }
         }
         return null;
+    }
+
+    /**
+     * Creates a mock-up of a linked model with the minimum requirements for
+     * generating a link in a view of another model.
+     * 
+     * @param string $modelClass
+     * @param string $name
+     * @param integer $id
+     * @param bool $allowEmpty Return the model even if $name/$id are empty.
+     * @return \modelClass|string
+     */
+    public static function getLinkedModelMock($modelClass, $name, $id, $allowEmpty=false){
+        if($id !== null || $allowEmpty){
+            // Take the shortcut for link generation:
+            $model = new $modelClass;
+            if($model->hasAttribute('id') && $model->hasAttribute('name')){
+                $model->id = $id;
+                $model->name = $name;
+                return $model;
+            }else{
+                return null;
+            }
+        }else{
+            return null;
+        }
     }
 
     /**
@@ -555,6 +715,22 @@ abstract class X2Model extends CActiveRecord {
             return '';
         }else{
             return $id;
+        }
+    }
+
+    /**
+     * Link generation shortcut.
+     * @param type $modelClass
+     * @param type $nameId
+     * @return type
+     */
+    public static function getModelLinkMock($modelClass,$nameId) {
+        list($name,$id) = Fields::nameAndId($nameId);
+        $model = self::getLinkedModelMock($modelClass,$name,$id);
+        if($model instanceof X2Model && !is_null($model->asa('X2LinkableBehavior'))) {
+            return $model->link;
+        } else {
+            return $name;
         }
     }
 
@@ -669,6 +845,14 @@ abstract class X2Model extends CActiveRecord {
                 return $_field;
         }
         return null;
+    }
+
+    public function insert($attributes = null){
+        $succeeded = parent::insert($attributes);
+        // Alter and save the nameId field:
+        $this->updateNameId(true);
+		X2Flow::trigger('RecordCreateTrigger',array('model'=>$this));
+        return $succeeded;
     }
 
     /**
@@ -833,11 +1017,12 @@ abstract class X2Model extends CActiveRecord {
                 return $text;
 
             case 'link':
-                $linkedModel = $this->getLinkedModel($fieldName);
-                if($linkedModel === null)
+                $linkedModel = $this->getLinkedModel($fieldName,false);
+                if($linkedModel === null) {
                     return $render($this->$fieldName);
-                else
+                } else {
                     return $makeLinks ? $linkedModel->getLink() : $linkedModel->name;
+                }
             case 'boolean':
                 return $textOnly ? $render($this->$fieldName) : CHtml::checkbox('', $this->$fieldName, array('onclick' => 'return false;', 'onkeydown' => 'return false;'));
 
@@ -870,7 +1055,13 @@ abstract class X2Model extends CActiveRecord {
                     else
                         return $sysleg;
                 }
-
+            case 'timerSum':
+                $t_seconds = $this->$fieldName;
+                $t[] = floor($t_seconds/3600); // Hours
+                $t[] = floor($t_seconds/60) % 60; // Minutes
+                $t[] = $t_seconds % 60; // Seconds
+                $pad = function($t){return str_pad((string)$t,2,'0',STR_PAD_LEFT);};
+                return implode(':',array_map($pad,$t));
             default:
                 return $render($this->$fieldName);
         }
@@ -1004,36 +1195,21 @@ abstract class X2Model extends CActiveRecord {
             case 'link':
                 $linkSource = null;
                 $linkId = '';
+                $name = '';
 
                 if(class_exists($field->linkType)){
-                    // if the field is an ID, look up the actual name
-                    if(isset($model->$fieldName) && ctype_digit((string) $model->$fieldName)){
-                        $linkModel = X2Model::model($field->linkType)->findByPk($model->$fieldName);
-                        if(isset($linkModel)){
-                            $model->$fieldName = $linkModel->name;
-                            $linkId = $linkModel->id;
-                        }else{
-                            $model->$fieldName = '';
-                        }
+                    // Create a model for autocompletion:
+                    if(!empty($model->$fieldName)){
+                        list($name, $linkId) = Fields::nameAndId($model->$fieldName);
+                        $linkModel = self::getLinkedModelMock($field->linkType, $name, $linkId, true);
+                    }else{
+                        $linkModel = X2Model::model($field->linkType);
                     }
-                    $staticLinkModel = X2Model::model($field->linkType);
-
-                    if(array_key_exists('X2LinkableBehavior', $staticLinkModel->behaviors()))
-                        $linkSource = Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource);
-
-                    /* $count = $staticLinkModel->count();
-                      if($count <= 50) {
-                      $names = array(''=>'');
-                      $data =	Yii::app()->db->createCommand()
-                      ->select('id,name')
-                      ->from($staticLinkModel->tableName())
-                      ->order('name ASC')
-                      ->queryAll();
-
-                      foreach($data as $row)
-                      $names[$row['id']] = $row['name'];
-                      return CHtml::dropDownList($field->modelName.'['.$fieldName.']',$linkId,$names);
-                      } */
+                    if($linkModel instanceof X2Model && $linkModel->asa('X2LinkableBehavior') instanceof X2LinkableBehavior){
+                        $linkSource = Yii::app()->controller->createUrl($linkModel->autoCompleteSource);
+                        $linkId = $linkModel->id;
+                        $model->$fieldName = $name;
+                    }
                 }
 
                 return CHtml::hiddenField($field->modelName.'['.$fieldName.'_id]', $linkId, array('id' => $field->modelName.'_'.$fieldName."_id"))
@@ -1042,7 +1218,7 @@ abstract class X2Model extends CActiveRecord {
                             'attribute' => $fieldName,
                             // 'name'=>'autoselect_'.$fieldName,
                             'source' => $linkSource,
-                            'value' => $model->$fieldName,
+                            'value' => $name,
                             'options' => array(
                                 'minLength' => '1',
                                 'select' => 'js:function( event, ui ) {
@@ -1227,6 +1403,10 @@ abstract class X2Model extends CActiveRecord {
                 }
                 return Credentials::selectorField($model, $field->fieldName, $type, $uid);
 
+            case 'timerSum':
+                // Sorry, no-can-do. This is field derives its value from a sum over timer records.
+                return $model->renderAttribute($field->fieldName);
+
             default:
                 return CHtml::activeTextField($model, $field->fieldName, array_merge(array(
                                     'title' => $field->attributeLabel,
@@ -1281,6 +1461,10 @@ abstract class X2Model extends CActiveRecord {
                 $data[$fieldName] = null;
 
             if($field->type === 'link'){
+                // Do a preliminary lookup for linkId in case there are
+                // duplicates (similar name) and the user selects one of them,
+                // in which case there is an ID from the form that was populated
+                // via the auto-complete input widget:
                 $linkId = null;
                 if(isset($data[$fieldName.'_id'])) {
                     // get the linked model's ID from the hidden autocomplete field
@@ -1288,15 +1472,14 @@ abstract class X2Model extends CActiveRecord {
                 }
 
                 if(ctype_digit((string) $linkId)){
-                    $linkName = Yii::app()->db->createCommand()
-                            ->select('name')
+                    $link = Yii::app()->db->createCommand()
+                            ->select('name,nameId')
                             ->from(X2Model::model($field->linkType)->tableName())
                             ->where('id=?', array($linkId))
-                            ->queryScalar();
-                    // make sure the linked model exists and that the name matches
-                    if($linkName === $data[$fieldName]) {
-                        // (ie, the hidden ID field isn't junk data)
-                        $data[$fieldName] = (int) $linkId;
+                            ->queryRow(true);
+                    // Make sure the linked model exists and that the name matches:
+                    if(isset($link['name']) && $link['name'] === $data[$fieldName]) {
+                        $data[$fieldName] = $link['nameId'];
                     }
                 }
             }
@@ -1331,13 +1514,7 @@ abstract class X2Model extends CActiveRecord {
         else
             $criteria->mergeWith($this->getAccessCriteria());
         $this->compareAttributes($criteria);
-        $with = array();
-        foreach(self::$_fields[$this->tableName()] as &$field){
-            if($field->type == 'link'){
-                $with[] = $field->fieldName.'Model';
-            }
-        }
-        $criteria->with = $with;
+        $criteria->with = array(); // No joins necessary!
         $sort = new SmartSort (get_class($this));
         $sort->multiSort = false;
         $sort->attributes = $this->getSort();
@@ -1368,21 +1545,6 @@ abstract class X2Model extends CActiveRecord {
         foreach(self::$_fields[$this->tableName()] as &$field){
             $fieldName = $field->fieldName;
             switch($field->type){
-                // Temporary until we can find a better way to do this.
-//                case 'link':
-//                    $linkType = $field->linkType;
-//                    if(class_exists(ucfirst($linkType)) && X2Model::model(ucfirst($linkType))->hasAttribute('name')){
-//                        $attributes[$fieldName] = array(
-//                            'asc' => 'IF(t.'.$field->fieldName.' REGEXP "^-?[0-9]+$",'.$field->fieldName.'Model.name, t.'.$fieldName.') ASC',
-//                            'desc' => 'IF(t.'.$field->fieldName.' REGEXP "^-?[0-9]+$",'.$field->fieldName.'Model.name, t.'.$fieldName.') DESC',
-//                        );
-//                    }else{
-//                        $attributes[$fieldName] = array(
-//                            'asc' => 't.'.$fieldName.' ASC',
-//                            'desc' => 't.'.$fieldName.' DESC',
-//                        );
-//                    }
-//                    break;
                 default:
                     $attributes[$fieldName] = array(
                         'asc' => 't.'.$fieldName.' ASC',
@@ -1393,34 +1555,79 @@ abstract class X2Model extends CActiveRecord {
         return $attributes;
     }
 
+    /**
+     * Unshifts valid operators of the front of the string.
+     * @return array (<operator>, <remaining string>)
+     */
+    public function unshiftOperator ($string) {
+        $retArr = array ('', $string);
+        if (strlen ($string) > 1) {
+            if (strlen ($string) > 2 && preg_match ("/^(<>|>=).*/", $string)) {
+                $retArr = array (substr ($string, 0, 2), substr ($string, 2));
+            } else if (preg_match ("/^(<|>|=).*/", $string)) {
+                $retArr = array ($string[0], substr ($string, 1));
+            }
+        }
+        
+        return $retArr;
+    }
+
+    /**
+     * Helper method for compareAttributes 
+     */
+    protected function compareAttribute (&$criteria, $field) {
+        $fieldName = $field->fieldName;
+        switch($field->type){
+            case 'boolean':
+                $criteria->compare(
+                    't.'.$fieldName, $this->compareBoolean($this->$fieldName), true);
+                break;
+            case 'link':
+                $criteria->compare(
+                    't.'.$fieldName, 
+                    $this->compareLookup($field->linkType, $this->$fieldName), 
+                    true);
+                $criteria->compare('t.'.$fieldName, $this->$fieldName, true, 'OR');
+                break;
+            case 'assignment':
+                $criteria->compare(
+                    't.'.$fieldName, $this->compareAssignment($this->$fieldName), true);
+                break;
+            case 'dropdown':
+                $criteria->compare(
+                    't.'.$fieldName, 
+                    $this->compareDropdown($field->linkType, $this->$fieldName), 
+                    true);
+                break;
+            case 'date':
+            case 'dateTime':
+                if (!empty($this->$fieldName)) {
+
+                    // grap operator and convert date string to timestamp
+                    $retArr = $this->unshiftOperator ($this->$fieldName);
+                    $operator = $retArr[0];
+                    $timestamp = strtotime ($retArr[1]);
+
+                    if ($operator === '=' || $operator === '') { 
+                        $criteria->addBetweenCondition(
+                            't.'.$fieldName, $timestamp,
+                            $timestamp + 60 * 60 * 24);
+                    } else {
+                        $value = $operator.$timestamp;
+                        $criteria->compare ('t.'.$fieldName, $value);
+                    }
+                }
+                break;
+            case 'phone':
+            // $criteria->join .= ' RIGHT JOIN x2_phone_numbers ON (x2_phone_numbers.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
+            default:
+                $criteria->compare('t.'.$fieldName, $this->$fieldName, true);
+        }
+    }
+
     public function compareAttributes(&$criteria){
         foreach(self::$_fields[$this->tableName()] as &$field){
-            $fieldName = $field->fieldName;
-            switch($field->type){
-                case 'boolean':
-                    $criteria->compare('t.'.$fieldName, $this->compareBoolean($this->$fieldName), true);
-                    break;
-                case 'link':
-                    $criteria->compare('t.'.$fieldName, $this->compareLookup($field->linkType, $this->$fieldName), true);
-                    $criteria->compare('t.'.$fieldName, $this->$fieldName, true, 'OR');
-                    break;
-                case 'assignment':
-                    $criteria->compare('t.'.$fieldName, $this->compareAssignment($this->$fieldName), true);
-                    break;
-                case 'dropdown':
-                    $criteria->compare('t.'.$fieldName, $this->compareDropdown($field->linkType, $this->$fieldName), true);
-                    break;
-                case 'date':
-                case 'dateTime':
-                    if (!empty($this->$fieldName))
-                        $criteria->addCondition('t.'.$fieldName." BETWEEN UNIX_TIMESTAMP(STR_TO_DATE('".$this->$fieldName."', '%m/%d/%Y'))"
-                                . "AND UNIX_TIMESTAMP(STR_TO_DATE('".$this->$fieldName."', '%m/%d/%Y')) + 60*60*24");
-                    break;
-                case 'phone':
-                // $criteria->join .= ' RIGHT JOIN x2_phone_numbers ON (x2_phone_numbers.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
-                default:
-                    $criteria->compare('t.'.$fieldName, $this->$fieldName, true);
-            }
+            $this->compareAttribute ($criteria, $field);
         }
     }
 
@@ -1435,9 +1642,17 @@ abstract class X2Model extends CActiveRecord {
             $tableName = $class->tableName();
 
             if($linkType == 'Contacts')
-                $linkIds = Yii::app()->db->createCommand()->select('id')->from($tableName)->where(array('like', 'CONCAT(firstName," ",lastName)', "%$value%"))->queryColumn();
+                $linkIds = Yii::app()->db->createCommand()
+                    ->select('id')
+                    ->from($tableName)
+                    ->where(array('like', 'CONCAT(firstName," ",lastName)', "%$value%"))
+                    ->queryColumn();
             else
-                $linkIds = Yii::app()->db->createCommand()->select('id')->from($tableName)->where(array('like', 'name', "%$value%"))->queryColumn();
+                $linkIds = Yii::app()->db->createCommand()
+                    ->select('id')
+                    ->from($tableName)
+                    ->where(array('like', 'name', "%$value%"))
+                    ->queryColumn();
 
             return empty($linkIds) ? -1 : $linkIds;
         }
@@ -1513,7 +1728,7 @@ abstract class X2Model extends CActiveRecord {
         else
             return null;
     }
-
+    
     /**
      * Picks the primary key attribute out of an associative aray and finds the record
      * @param array $params
@@ -1536,6 +1751,90 @@ abstract class X2Model extends CActiveRecord {
             return null;
         }
         return $this->findByPk($pk);
+    }
+
+    /**
+     * Sets the nameId field appropriately.
+     *
+     * The model must be inserted already, so that its primary key can
+     * be used.
+     * @param bool $save If true, update the model when done.
+     */
+    public function updateNameId($save = false){
+        if(!$this->hasAttribute('nameId')) {
+            return;
+        }
+        $this->_oldAttributes['nameId'] = $this->nameId;
+        $this->nameId = Fields::nameId($this->name, $this->id);
+        if($save){
+            $this->update(array('nameId'));
+        }
+    }
+
+    /**
+     * Updates references to this model record in other tables.
+     *
+     * This is a temporary solution to be used until a future version, wherein
+     * all tables have been migrated to InnoDB and foreign key constraints can
+     * be used to maintain referential integrity. However, this function should
+     * still be kept in place for handling the special case of deletion, which
+     * cannot be adequately handled by foreign key constraints.
+     *
+     * It may be a while before we can safely migrate everything to InnoDB,
+     * because one or more of our big-ticket customers have FULLTEXT indexes on
+     * their contacts table to make searching faster, and FULLTEXT indexes are
+     * not supported in InnoDB.
+     *
+     * @todo Also in said future version would be a suite of unit-tested
+     *  methods in Fields (or this model) for creating, deleting and altering
+     *  indexes and foreign key constraints, so that new custom fields can
+     *  be created properly.
+     */
+    public function updateNameIdRefs(){
+        // Update all references to this model via the nameId field.
+        //
+        // The name field and thus nameId field may have changed. Update all
+        // references to it so that searching/sorting works properly.
+        if(!$this->hasAttribute('nameId')) {
+            return;
+        }
+        $nameId = $this->nameId;
+        $oldNameId = isset($this->_oldAttributes['nameId']) ? $this->_oldAttributes['nameId'] : null;
+        if($nameId !== $oldNameId){
+            // First, however, we need to get references:
+            $modelName = get_class($this);
+            if(!isset(self::$_nameIdRefs[$modelName])){
+                // Attempt to get cached values:
+                $cacheIndex = 'nameIdRefs_'.$modelName;
+                self::$_nameIdRefs[$modelName] = Yii::app()->cache->get($cacheIndex);
+                // Generate and store an index of references if not available:
+                if(self::$_nameIdRefs[$modelName] == false){
+                    $fields = Fields::model()->findAllByAttributes(array(
+                        'type' => 'link',
+                        'linkType' => $modelName
+                    ));
+                    self::$_nameIdRefs[$modelName] = array();
+                    foreach($fields as $field){
+                        $table = X2Model::model($field->modelName)->tableName();
+                        self::$_nameIdRefs[$modelName][$table][] = $field->fieldName;
+                    }
+                    Yii::app()->cache->set($cacheIndex, self::$_nameIdRefs[$modelName], 0); // cache the data
+                }
+            }
+
+            // Go through references and run updates:
+            foreach(self::$_nameIdRefs[$modelName] as $table => $columns){
+                foreach($columns as $column){
+                    Yii::app()->db->createCommand()->update(
+                            $table,
+                            array($column => $nameId),
+                            "$column=:nid",
+                            array(':nid' => $oldNameId)
+                    );
+                }
+            }
+        }
+        
     }
 
     public static function getAssignmentOptions($anyone = true, $showGroups = true){

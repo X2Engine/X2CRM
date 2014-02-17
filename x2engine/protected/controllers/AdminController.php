@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -39,8 +39,10 @@ Yii::import('application.components.util.*');
 /**
  * Administrative, app-wide configuration actions.
  *
- * @package X2CRM.controllers
+ * @package application.controllers
  * @property boolean $noRemoteAccess (Read-only) true indicates there's no way to automatically retrieve files.
+ * @property string $exportFile (read-only) path to the data export file
+ * @author Jake Houser <jake@x2engine.com>
  */
 class AdminController extends Controller {
 
@@ -52,7 +54,7 @@ class AdminController extends Controller {
      * Behavior classes used by AdminController
      * @var array
      */
-    public static $behaviorClasses = array('LeadRoutingBehavior', 'UpdaterBehavior', 'CommonControllerBehavior');
+    public static $behaviorClasses = array('LeadRoutingBehavior', 'UpdaterBehavior', 'CommonControllerBehavior','ImportExportBehavior');
 
     /**
      * Extraneous properties for individual behaviors
@@ -73,6 +75,7 @@ class AdminController extends Controller {
      */
     private $_noRemoteAccess;
     private $_behaviors;
+    private $_exportFile;
 
     /**
      * A list of actions to include.
@@ -1133,15 +1136,15 @@ class AdminController extends Controller {
                     'max' => 1440,
                     'step' => 5,
                     'change' => "js:function(event,ui) {
-                                            $('#editTimeout').val(ui.value);
-                                            $('#save-button').addClass('highlight');
-                                    }",
+                                    $('#editTimeout').val(ui.value);
+                                    $('#save-button').addClass('highlight');
+                                }",
                     'slide' => "js:function(event,ui) {
-                                            $('#editTimeout').val(ui.value);
-                                    }",
+                                    $('#editTimeout').val(ui.value);
+                                }",
                 ),
                 'htmlOptions' => array(
-                    'style' => 'width:340px;margin:10px 0;',
+                    'style' => 'width:340px;margin:10px 9px;',
                     'id' => 'editTimeoutSlider'
                 ),
             ));
@@ -1188,8 +1191,6 @@ class AdminController extends Controller {
      * roles are not included and cannot be edited this way).
      */
     public function actionManageRoles(){
-        $model = new Roles;
-
         $dataProvider = new CActiveDataProvider('Roles');
         $roles = $dataProvider->getData();
         $arr = array();
@@ -1203,6 +1204,7 @@ class AdminController extends Controller {
         }
 
         $model = new Roles;
+        $model->timeout = 60;
         if(isset($_POST['Roles'])){
             $model->attributes = $_POST['Roles'];
             if(!isset($_POST['viewPermissions']))
@@ -1218,6 +1220,7 @@ class AdminController extends Controller {
             else
                 $users = array();
             $model->users = "";
+            $model->timeout *= 60;
 
             if($model->save()){
 
@@ -1280,7 +1283,7 @@ class AdminController extends Controller {
      * A deprecated function controlling the updater.
      *
      * This function formerly toggled whether or not to notify the admin of any
-     * new updates to X2CRM.  This has been replaced with an option in the "Updater
+     * new updates to X2Engine.  This has been replaced with an option in the "Updater
      * Settings" page of the Admin tab.
 
       public function actionToggleUpdater() {
@@ -1593,7 +1596,7 @@ class AdminController extends Controller {
      * Configure google integration.
      *
      * This method provides a form for the entry of Google Apps data.  This will
-     * allow for users to log in with their Google account and sync X2CRM's calendars
+     * allow for users to log in with their Google account and sync X2Engine's calendars
      * with their Google Calendar.
      */
     public function actionGoogleIntegration(){
@@ -1618,7 +1621,7 @@ class AdminController extends Controller {
     /**
      * Configure email settings.
      *
-     * This allows for configuration of how emails are handled by X2CRM.  The admin
+     * This allows for configuration of how emails are handled by X2Engine.  The admin
      * can select to use the server that the software is hosted on or a separate mail server.
      */
     public function actionEmailSetup(){
@@ -1644,7 +1647,7 @@ class AdminController extends Controller {
      * Form/submit action for adding or customizing a field.
      *
      * This method allows for the creation of custom fields linked to any customizable
-     * module in X2CRM.  This is used by "Manage Fields." It is used to reload the
+     * module in X2Engine.  This is used by "Manage Fields." It is used to reload the
      * form via AJAX.
      * 
      * @param bool $search If set to 1/true, perform a lookup for an existing field
@@ -1941,12 +1944,21 @@ class AdminController extends Controller {
      * Upload a custom logo
      *
      * This method allows for the admin to upload their own logo to go in place of
-     * the X2CRM logo in the top left corner of the software.
+     * the X2Engine logo in the top left corner of the software.
      */
     public function actionUploadLogo(){
         if(isset($_FILES['logo-upload'])){
             $temp = CUploadedFile::getInstanceByName('logo-upload');
+            if ($temp === null) {
+                Yii::app()->user->setFlash('error', Yii::t('admin', 'There was an error uploading your logo.'));
+                $this->redirect('uploadLogo');
+            }
             $name = $temp->getName();
+            $allowedExtensions = array('gif', 'jpg', 'jpeg', 'tif', 'tiff', 'bmp', 'png');
+            if (!in_array($temp->getExtensionName(), $allowedExtensions)) {
+                Yii::app()->user->setFlash('error', Yii::t('admin', 'Invalid file extension.'));
+                $this->redirect('uploadLogo');
+            }
             $temp->saveAs('uploads/logos/'.$name);
             $admin = ProfileChild::model()->findByPk(1);
             $logo = Media::model()->findByAttributes(array('associationId' => $admin->id, 'associationType' => 'logo'));
@@ -1971,7 +1983,7 @@ class AdminController extends Controller {
     }
 
     /**
-     * Reverts the logo back to X2CRM.
+     * Reverts the logo back to X2Engine.
      */
     public function actionToggleDefaultLogo(){
 
@@ -1997,7 +2009,7 @@ class AdminController extends Controller {
     /**
      * Create or edit translations.
      *
-     * This method allows the admin to access the X2CRM built in translation manager.
+     * This method allows the admin to access the X2Engine built in translation manager.
      * Any translation for any language can be edited and saved from here, and new
      * ones can be added.
      */
@@ -2325,12 +2337,15 @@ class AdminController extends Controller {
 			id INT NOT NULL AUTO_INCREMENT primary key,
 			assignedTo VARCHAR(250),
 			name VARCHAR(250) NOT NULL,
+			nameId VARCHAR(250) DEFAULT NULL,
 			description TEXT,
 			createDate INT,
 			lastUpdated INT,
-			updatedBy VARCHAR(250)
+			updatedBy VARCHAR(250),
+            UNIQUE(nameId)
 			) COLLATE = utf8_general_ci",
-            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, readOnly) VALUES ('$moduleTitle', 'id', 'ID', '0', '1')",
+            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, readOnly, keyType) VALUES ('$moduleTitle', 'id', 'ID', '0', '1','PRI')",
+            "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, readOnly, keyType) VALUES ('$moduleTitle', 'nameId', 'nameId', '0', '1','FIX')",
             "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type, required) VALUES ('$moduleTitle', 'name', 'Name', '0', 'varchar', '1')",
             "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'assignedTo', 'Assigned To', '0', 'assignment')",
             "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type) VALUES ('$moduleTitle', 'description', 'Description', '0', 'text')",
@@ -2610,6 +2625,7 @@ class AdminController extends Controller {
                     X2Model::model('Fields')->deleteAllByAttributes(array('modelName' => $moduleName));
                     X2Model::model('Fields')->updateAll(array('linkType' => null, 'type' => 'varchar'), "linkType='$moduleName'");
                     X2Model::model('FormLayout')->deleteAllByAttributes(array('model' => $moduleName));
+                    X2Model::model('Relationships')->deleteAll('firstType = :model OR secondType = :model', array(':model' => $moduleName));
                     $auth = Yii::app()->authManager;
                     $auth = Yii::app()->authManager;
                     $ucName = ucfirst($moduleName);
@@ -2741,10 +2757,31 @@ class AdminController extends Controller {
         if(isset($_FILES['data'])){
 
             $module = Yii::app()->file->set('data');
+            if (!$module->exists) {
+                Yii::app()->user->setFlash('error', Yii::t('admin', 'There was an error uploading the module.'));
+                $this->redirect('importModule');
+            }
+
             $moduleName = $module->filename;
-            $module->copy($moduleName.".zip");
+            if (X2Model::model('Modules')->findByAttributes(array('name' => $moduleName))) {
+                Yii::app()->user->setFlash('error', Yii::t('admin', 'Unable to upload module. A module with this name already exists.'));
+                $this->redirect('importModule');
+            }
+            if ($module->extension !== 'zip') {
+                Yii::app()->user->setFlash('error', Yii::t('admin', 'There was an error uploading the module. Please select a valid zip archive.'));
+                $this->redirect('importModule');
+            }
+
+            $filename = $this->asa('ImportExportBehavior')->safePath($moduleName.".zip");
+            if ($module->copy($filename) === false || !file_exists($filename)) {
+                Yii::app()->user->setFlash('error', Yii::t('admin', "There was an error saving the module."));
+                $this->redirect('importModule');
+            }
             $zip = Yii::app()->zip;
-            $zip->extractZip("$moduleName.zip", 'protected/modules/');
+            if ($zip->extractZip($filename, 'protected/modules/') === false) {
+                Yii::app()->user->setFlash('error', Yii::t('admin', "There was an error unzipping the module. Please ensure the zip archive is not corrupt."));
+                $this->redirect('importModule');
+            }
 
             $regPath = "protected/modules/$moduleName/register.php";
             $regFile = realpath($regPath);
@@ -2765,7 +2802,7 @@ class AdminController extends Controller {
                     }
                 }
             }
-
+            unlink($filename);
 
             $this->redirect(array($moduleName.'/index'));
         }
@@ -3189,12 +3226,15 @@ class AdminController extends Controller {
         ));
     }
 
+    ///////////////////
+    // GLOBAL EXPORT //
+    ///////////////////
+
     /**
      * Helper function to generate the necessary CSV via ajax and insert version data.
      */
     public function actionPrepareExport(){
-        $file = 'data.csv';
-        $fp = fopen($file, 'w+');
+        $fp = fopen($this->safePath(), 'w+');
         fputcsv($fp, array('v'.Yii::app()->params->version));
         fclose($fp);
     }
@@ -3212,7 +3252,7 @@ class AdminController extends Controller {
     public function actionGlobalExport($model, $page){
         if(class_exists($model)){
             ini_set('memory_limit', -1);
-            $file = 'data.csv';
+            $file = $this->safePath();
             $fp = fopen($file, 'a+');
             $tempModel = X2Model::model($model);
             $meta = array_keys($tempModel->attributes);
@@ -3264,16 +3304,13 @@ class AdminController extends Controller {
             }
         }
     }
-
+//  $file = Yii::app()->file->set($this->safePath($file));
     /**
      * Helper function called in a lot of places to download a file
      * @param string $file Filepath of the requested file
      */
     public function actionDownloadData($file){
-        if(!preg_match('/\.\./', $file)){
-            $file = Yii::app()->file->set($file);
-            $file->send();
-        }
+        $this->sendFile($file);
     }
 
     /**
@@ -3401,7 +3438,7 @@ class AdminController extends Controller {
             $_SESSION['model'] = "";
             $_SESSION['failed'] = 0;
             $temp = CUploadedFile::getInstanceByName('data');
-            $temp->saveAs('data.csv');
+            $temp->saveAs($this->safePath());
             // If we have post data, render the import processing page
             $this->render('processImport', array(
                 'overwrite' => $overwrite,
@@ -3418,7 +3455,7 @@ class AdminController extends Controller {
      * process.
      */
     public function actionPrepareImport(){
-        $fp = fopen('data.csv', 'r+');
+        $fp = fopen($this->safePath(), 'r+');
         $version = fgetcsv($fp); // The first row should be just the version number of the data
         $version = $version[0];
         $tempMeta = fgetcsv($fp);
@@ -3445,7 +3482,7 @@ class AdminController extends Controller {
         }else{
             $_SESSION['importId'] = 1;
         }
-        $failedImport = fopen('failedImport.csv', 'w+'); // Prepare a CSV for any failed records
+        $failedImport = fopen($this->safePath('failedImport.csv'), 'w+'); // Prepare a CSV for any failed records
         fputcsv($failedImport, array(Yii::app()->params->version));
         fclose($failedImport);
         echo json_encode(array($version));
@@ -3487,11 +3524,11 @@ class AdminController extends Controller {
      * @return null A return statement to cease further execution, could probably be cleaned up & removed
      */
     public function actionGlobalImport(){
-        if(isset($_POST['count']) && file_exists('data.csv')){
+        if(isset($_POST['count']) && file_exists($this->safePath())){
             $metaData = $_SESSION['metaData']; // Grab the most recent metadata
             $modelType = $_SESSION['model']; // And model
             $count = $_POST['count'];
-            $fp = fopen('data.csv', 'r+');
+            $fp = fopen($this->safePath(), 'r+');
             /*
              * THIS IS ESSENTIAL. As with the above block noted as essential,
              * this was KEY to figuring out how to do an AJAX based CSV read.
@@ -3581,7 +3618,7 @@ class AdminController extends Controller {
                                 }
                                 if(!$model->validate()){
                                     $saveFlag = false;
-                                    $failedImport = fopen('failedImport.csv', 'a+');
+                                    $failedImport = fopen($this->safePath('failedImport.csv'), 'a+');
                                     $lastFailed = $_SESSION['lastFailed'];
                                     if($lastFailed != $modelType){
                                         $tempMeta = $metaData; // Keep track of the metadata of failed records
@@ -3621,7 +3658,7 @@ class AdminController extends Controller {
                             }
                         }else{
                             // Put the failed lead into the failed import CSV
-                            $failedImport = fopen('failedImport.csv', 'a+');
+                            $failedImport = fopen($this->safePath('failedImport.csv'), 'a+');
                             $lastFailed = $_SESSION['lastFailed'];
                             if($lastFailed != $modelType){
                                 $tempMeta = $metaData;
@@ -3667,7 +3704,7 @@ class AdminController extends Controller {
      * and delete the uploaded data file.
      */
     public function actionCleanUpImport(){
-        unlink('data.csv');
+        unlink($this->safePath());
         unset($_SESSION['counts']);
         unset($_SESSION['overwriten']);
         unset($_SESSION['model']);
@@ -3830,7 +3867,7 @@ class AdminController extends Controller {
         $message .= "\n(1) ".Yii::t('admin', 'PHP processes run by the web server do not have permission to create or modify files');
         $message .= "\n(2) ".Yii::t('admin', 'x2planet.com and raw.github.com are currently unavailable');
         $message .= "\n(3) ".Yii::t('admin', 'This web server has no outbound internet connection. This could be because it is behind a firewall that does not permit outbound connections, operating within a private network with broken domain name resolution, or with no outbound route.');
-        $message .= "\n\n".Yii::t('admin', 'To stop this error from occurring, if the problem persists, restore the file {adminController} to the copy from your version of X2CRM:', array('{adminController}' => 'protected/controllers/AdminController.php'));
+        $message .= "\n\n".Yii::t('admin', 'To stop this error from occurring, if the problem persists, restore the file {adminController} to the copy from your version of X2Engine:', array('{adminController}' => 'protected/controllers/AdminController.php'));
         $message .= "\n"."https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engine/protected/controllers/AdminController.php";
         $this->error500($message);
     }
@@ -3963,14 +4000,14 @@ class AdminController extends Controller {
      */
     public function checkRemoteMethods(){
         if($this->noRemoteAccess)
-            $this->error500(Yii::t('admin', 'X2CRM needs to retrieve one or more remote files, but no remote access methods are available on this web server, because allow_url_fopen is disabled and the CURL extension is missing.'));
+            $this->error500(Yii::t('admin', 'X2Engine needs to retrieve one or more remote files, but no remote access methods are available on this web server, because allow_url_fopen is disabled and the CURL extension is missing.'));
     }
 
     /**
      * Explicit, attention-grabbing error message w/o bug reporter.
      *
      * This is intended for errors that are NOT bugs, but that arise from server
-     * malconfiguration and/or missing requirements for running X2CRM, as a
+     * malconfiguration and/or missing requirements for running X2Engine, as a
      * last-ditch effort to fail gracefully.
      * @param type $message
      */

@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -79,7 +79,7 @@
             '-1' => Yii::t('admin', 'Never'),
         ));
         ?>
-        <p><?php echo Yii::t('admin','As often as specified, X2CRM will check for updates and display a system notification message if a new version is available.'); ?></p>
+        <p><?php echo Yii::t('admin','As often as specified, X2Engine will check for updates and display a system notification message if a new version is available.'); ?></p>
         <hr /><?php
 
         //////////////////////////////////////////////////
@@ -88,7 +88,7 @@
         ?>
                     <h3><?php echo Yii::t('admin','Disclaimer'); ?></h3>
         <p><?php echo Yii::t('admin','Using this form may interfere with third-party cron table managers.')
-                .'&nbsp;'.Yii::t('admin','If you are not using X2CRM Cloud / On Demand, and your hosting service provides a scheduled tasks manager, it is recommended that you use that instead, with the commands as listed here.'); ?></p>
+                .'&nbsp;'.Yii::t('admin','If you are not using X2Engine Cloud / On Demand, and your hosting service provides a scheduled tasks manager, it is recommended that you use that instead, with the commands as listed here.'); ?></p>
 
             <?php
         $this->widget('CronForm',array(
@@ -97,8 +97,8 @@
             'jobs' => array(
                 'app_update' => array(
                     'title' => Yii::t('admin', 'Update Automatically'),
-                    'longdesc' => Yii::t('admin', 'If enabled, X2CRM will periodically check for updates and update automatically if a new version is available.'),
-                    'instructions' => Yii::t('admin', 'Specify an update schedule below. Note, X2CRM will be locked when the update is being applied, and so it is recommended to schedule updates at times when the application will encounter the least use. If any compatibility issues are detected, the update package will not be applied, but will be retrieved and unpacked for manual review and confirmation.'),
+                    'longdesc' => Yii::t('admin', 'If enabled, X2Engine will periodically check for updates and update automatically if a new version is available.'),
+                    'instructions' => Yii::t('admin', 'Specify an update schedule below. Note, X2Engine will be locked when the update is being applied, and so it is recommended to schedule updates at times when the application will encounter the least use. If any compatibility issues are detected, the update package will not be applied, but will be retrieved and unpacked for manual review and confirmation.'),
                 )
             ),
         ));
@@ -107,8 +107,8 @@
         <hr />
         <span class="mock-x2-form-label"><?php echo Yii::t('admin','Manual / Offline Update'); ?></span><br />
                 <?php
-                echo CHtml::tag('p',array(),Yii::t('admin','To update manually, if using X2CRM offline or if something goes wrong, see the instructions given in {wikilink}.',array(
-                    '{wikilink}' => CHtml::link(Yii::t('admin','The X2CRM Update Guide'),'http://wiki.x2engine.com/wiki/Software_Updates_and_Upgrades#Performing_.22Offline.22_Updates')
+                echo CHtml::tag('p',array(),Yii::t('admin','To update manually, if using X2Engine offline or if something goes wrong, see the instructions given in {wikilink}.',array(
+                    '{wikilink}' => CHtml::link(Yii::t('admin','The X2Engine Update Guide'),'http://wiki.x2engine.com/wiki/Software_Updates_and_Upgrades#Performing_.22Offline.22_Updates')
                 )));
                 echo CHtml::tag('p',array(),Yii::t('admin','Links you will need:'));
                 $edition = Yii::app()->params->admin->edition;

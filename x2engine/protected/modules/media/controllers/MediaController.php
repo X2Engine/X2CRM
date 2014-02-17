@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -36,7 +36,7 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.modules.media.controllers
+ * @package application.modules.media.controllers
  */
 class MediaController extends x2base {
 
@@ -296,7 +296,7 @@ class MediaController extends x2base {
 //        if(isset($service, $_SESSION['access_token'], $_FILES['upload'])){
 //            $file = new Google_DriveFile();
 //            $file->setTitle($_FILES['upload']['name']);
-//            $file->setDescription('Uploaded by X2CRM');
+//            $file->setDescription('Uploaded by X2Engine');
 //            $file->setMimeType($_FILES['upload']['type']);
 //
 //            $data = file_get_contents($_FILES['upload']['tmp_name']);
@@ -308,7 +308,7 @@ class MediaController extends x2base {
 //                if(is_array($createdFile)){
 //                    $media = new Media;
 //                    $media->fileName = $createdFile['id'];
-//                    $media->title = $createdFile['title'];
+//                    $media->name = $createdFile['title'];
 //                    $media->associationType = 'Contacts';
 //                    $media->associationId = 955;
 //                    $media->uploadedBy = Yii::app()->user->getName();

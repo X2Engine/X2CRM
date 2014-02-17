@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -58,8 +58,8 @@ Yii::import('application.components.util.*');
  * Note also that any files in the uploads folder will also need to be backed up,
  * if the data is to be re-used elsewhere; references to files on the server 
  * will otherwise point to nonexistent files.
- * @package X2CRM.commands
- * @author Demitri Morgan <demitri@x2crm.com>
+ * @package application.commands
+ * @author Demitri Morgan <demitri@X2Engine.com>
  */
 class SampleDataCommand extends CConsoleCommand {
 

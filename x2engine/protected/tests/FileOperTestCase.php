@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -45,7 +45,7 @@ Yii::import('application.components.util.*');
  * @property string $relBaseDir (read-only) relative path to web root of the testing files area
  * @property array $relFileList (read-only) List of testing files relative to the base of the testing directory
  * @property string $testTime (read-only) Timestamp of the test currently being run (used to construct test paths)
- * @package X2CRM.tests
+ * @package application.tests
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 abstract class FileOperTestCase extends X2TestCase {

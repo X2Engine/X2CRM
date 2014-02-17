@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -43,7 +43,7 @@
  * The methods for form inputs and rendering detail should be included in the
  * models themselves, to keep each model self-contained.
  * 
- * @package X2CRM.models.embedded
+ * @package application.models.embedded
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 abstract class JSONEmbeddedModel extends CModel {

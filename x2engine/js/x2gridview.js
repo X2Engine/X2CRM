@@ -1,5 +1,5 @@
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -532,6 +532,7 @@ $.widget("x2.gvSettings", {
         DEBUG: x2.DEBUG && false
 	},
 
+
 	// setGridviewModel:function(model) {
 		// viewName = model;
 	// }
@@ -866,6 +867,21 @@ $.widget("x2.gvSettings", {
 		}
 	},
 
+
+    _autoSizeColumns:function(self){
+        this.element.find ('td').css(
+            'width', (100 / (this.element.find ('th').length)+"%"));
+        this.element.find ('th').css(
+            'width',(100/(this.element.find ('th').length)+"%"));
+		this._compareGridviewSettings(self);
+        this._setupGridviewResizing(self);
+		this._setupGridviewDragging(self);
+    },
+
+    /***********************************************************************
+    * public methods
+    ***********************************************************************/
+
 	getScrollbarWidth:function() {
 		var outer = $(document.createElement('div')).addClass('scrollbar-width-test');
 		var inner = $(document.createElement('div')).appendTo(outer);
@@ -881,14 +897,12 @@ $.widget("x2.gvSettings", {
 		return w2 - w1;
 	},
 
-    _autoSizeColumns:function(self){
-        this.element.find ('td').css(
-            'width', (100 / (this.element.find ('th').length)+"%"));
-        this.element.find ('th').css(
-            'width',(100/(this.element.find ('th').length)+"%"));
-		this._compareGridviewSettings(self);
-        this._setupGridviewResizing(self);
-		this._setupGridviewDragging(self);
+    /**
+     * @return <array of strings> Ids of checked records
+     */
+    getChecked: function () {
+        return $.fn.yiiGridView.getChecked(
+            this.element.attr ('id'), this.options.namespacePrefix + 'C_gvCheckbox');
     }
 });
 })(jQuery);

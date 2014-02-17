@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -43,7 +43,7 @@ Yii::import('application.modules.marketing.components.*');
 
 /**
  * 
- * @package X2CRM.tests.unit.modules.marketing.components
+ * @package application.tests.unit.modules.marketing.components
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class CampaignMailingBehaviorTest extends X2DbTestCase {
@@ -109,7 +109,7 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         $admin = Yii::app()->params->admin;
         // Set URL/URI to verify proper link generation:
         $admin->externalBaseUrl = 'http://examplecrm.com';
-        $admin->externalBaseUri = '/x2crm';
+        $admin->externalBaseUri = '/X2Engine';
         list($subject,$message,$uniqueId) = $cmb->prepareEmail($this->campaign('testUser'),$contact,$this->listItem('testUser_unsent')->emailAddress);
         $email = $cmb->recipient->email;
         
@@ -121,7 +121,7 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         // Find the tracking image:
         $this->assertRegExp('/'.preg_quote('<img src="'.$admin->externalBaseUrl.$admin->externalBaseUri.'/index.php/marketing/marketing/click?uid='.$uniqueId,'/').'/',$message,'Tracking image not inserted');
         // Find the unsubscribe link:
-        $this->assertRegExp('/'.preg_quote('To stop receiving these messages, click here: <a href="http://examplecrm.com/x2crm/index.php/marketing/marketing/click?uid='.$uniqueId.'&type=unsub&email='.rawurlencode($recipientAddress).'">unsubscribe</a>','/').'/',$message,'Unsubscribe link not inserted');
+        $this->assertRegExp('/'.preg_quote('To stop receiving these messages, click here: <a href="http://examplecrm.com/X2Engine/index.php/marketing/marketing/click?uid='.$uniqueId.'&type=unsub&email='.rawurlencode($recipientAddress).'">unsubscribe</a>','/').'/',$message,'Unsubscribe link not inserted');
     }
 
 

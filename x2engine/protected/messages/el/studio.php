@@ -55,8 +55,8 @@ return array (
 'Triggers when a record of specified type is deleted.'=>'Πυροδοτεί όταν ένα ρεκόρ συγκεκριμένος τύπος διαγράφεται.',
 'Triggered by adding one of these tags to a record.'=>'Που προκλήθηκε από την προσθήκη μιας από αυτές τις ετικέτες σε ένα αρχείο.',
 'Triggered when some updates a record of the the specified type.'=>'Ενεργοποιείται όταν κάποιες ενημερώσεις ρεκόρ του καθορισμένου τύπου.',
-'Triggered when a user signs in to X2CRM.'=>'Ενεργοποιείται όταν ένας χρήστης για να X2CRM.',
-'Triggered when a user signs out of X2CRM.'=>'Ενεργοποιείται όταν ένας χρήστης υπογράφει από X2CRM.',
+'Triggered when a user signs in to X2Engine.'=>'Ενεργοποιείται όταν ένας χρήστης για να X2Engine.',
+'Triggered when a user signs out of X2Engine.'=>'Ενεργοποιείται όταν ένας χρήστης υπογράφει από X2Engine.',
 'Triggered when a contact visits a webpage'=>'Ενεργοποιείται όταν μια επαφή επισκέπτεται μια ιστοσελίδα',
 'Triggers when a new contact fills out your web lead capture form.'=>'Πυροδοτεί όταν μια νέα επαφή συμπληρώνει web φόρμα σας οδηγήσει σύλληψη.',
 

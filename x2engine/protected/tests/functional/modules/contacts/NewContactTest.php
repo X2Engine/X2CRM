@@ -5,7 +5,7 @@ Yii::import('application.modules.actions.models.Actions');
 
 /**
  * 
- * @package X2CRM.tests.functional.modules.contacts
+ * @package application.tests.functional.modules.contacts
  */
 class NewContactTest extends X2WebTestCase {
 

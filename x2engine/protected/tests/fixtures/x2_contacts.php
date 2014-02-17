@@ -6,6 +6,8 @@ return array(
 	'testAnyone' => array(
 		'id' => 12345,
 		'name' => 'Testfirstname Testlastname',
+        'nameId' => 'Testfirstname Testlastname_12345',
+        'company' => 'Black Mesa_1',
 		'firstName' => 'Testfirstname',
 		'lastName' => 'Testlastname',
 		'email' => 'contact@test.com',
@@ -19,6 +21,7 @@ return array(
 	'testUser' => array(
 		'id' => 67890,
 		'name' => 'Testfirstnametwo Testlastnametwo',
+		'nameId' => 'Testfirstnametwo Testlastnametwo_67890',
 		'firstName' => 'Testfirstnametwo',
 		'lastName' => 'Testlastnametwo',
 		'email' => 'contact2@test.com',
@@ -32,6 +35,7 @@ return array(
 	'testUser_unsent' => array(
 		'id' => 67891,
 		'name' => 'Testfirstnamethree Testlastnamethree',
+		'nameId' => 'Testfirstnamethree Testlastnamethree_67891',
 		'firstName' => 'Testfirstnamethree',
 		'lastName' => 'Testlastnamethree',
 		'email' => 'contact3@test.com',
@@ -44,6 +48,7 @@ return array(
     'launchedEmailCampaign1' => array(
         'id' => '1191',
         'name' => 'Test1 Contact1',
+        'nameId' => 'Test1 Contact1_1191',
         'firstName' => 'Test1',
         'lastName' => 'Contact1',
         'title' => '',
@@ -91,6 +96,7 @@ return array(
     'launchedEmailCampaign2' => array(
         'id' => '1192',
         'name' => 'Test2 Contact2',
+        'nameId' => 'Test2 Contact2_1192',
         'firstName' => 'Test2',
         'lastName' => 'Contact2',
         'title' => '',
@@ -138,6 +144,7 @@ return array(
     'launchedEmailCampaign3' => array(
         'id' => '1193',
         'name' => 'Testduplicate Emailcontact',
+        'nameId' => 'Testduplicate Emailcontact_1193',
         'firstName' => 'TestDuplicate',
         'lastName' => 'EmailContact',
         'title' => '',
@@ -185,6 +192,7 @@ return array(
     'launchedEmailCampaign4' => array(
         'id' => '1194',
         'name' => 'Testcontact Unsubscribed',
+        'nameId' => 'Testcontact Unsubscribed_1194',
         'firstName' => 'TestContact',
         'lastName' => 'Unsubscribed',
         'title' => '',
@@ -232,6 +240,7 @@ return array(
     'launchedEmailCampaign5' => array(
         'id' => '1195',
         'name' => 'Testcontact Blankemail',
+        'nameId' => 'Testcontact Blankemail_1195',
         'firstName' => 'TestContact',
         'lastName' => 'BlankEmail',
         'title' => '',

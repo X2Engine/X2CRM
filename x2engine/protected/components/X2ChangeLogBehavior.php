@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -42,7 +42,7 @@
  * and takes the appropriate action (create a notification, create a new action,
  * reassign the record, etc.)
  *
- * @package X2CRM.components
+ * @package application.components
  * @property string $autoCompleteSource The action to user for autocomplete data
  * @property string $baseRoute The default module/controller this model "belongs" to
  * @property string $editingUsername Username of the user who is performing the save operation.
@@ -99,8 +99,6 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 
 		//$api = 0;	// FIX THIS
 
-		X2Flow::trigger('RecordCreateTrigger',array('model'=>$model));
-
 		if($this->createEvent){
             $event = new Events;
             $event->visibility = $model->hasAttribute('visibility')? $model->visibility : 1;
@@ -108,12 +106,17 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
             $event->associationId = $model->id;
             $event->user = $this->editingUsername;
             $event->type = 'record_create';
-            // if(!$model instanceof Contacts || $api==0) // Event creation already handled by web lead.
+            
+            // Event creation already handled by web lead.
+            // if(!$model instanceof Contacts || $api==0) 
+
             $event->save();
         }
 
 		if($model->hasAttribute('assignedTo')) {
-			if(!empty($model->assignedTo) && $model->assignedTo != $this->editingUsername && $model->assignedTo != 'Anyone') {
+			if(!empty($model->assignedTo) && $model->assignedTo != $this->editingUsername && 
+                $model->assignedTo != 'Anyone') {
+
 				$notif = new Notification;
 				$notif->user = $model->assignedTo;
 				//$notif->createdBy = ($api == 1) ? 'API' : $this->editingUsername;

@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,9 +37,9 @@
 /**
  * This is the model class for table "x2_contact_lists".
  *
- * @package X2CRM.models
+ * @package application.models
  */
-class X2List extends CActiveRecord {
+class X2List extends X2Model {
 
 	private $_itemModel = null;
 	private $_itemFields = array();
@@ -185,7 +185,7 @@ class X2List extends CActiveRecord {
 		 } else {
 			 $condition='';
 		 }
-		return self::model()->with('listItems')->findByPk((int)$id,$condition);
+		return self::model()->findByPk((int)$id,$condition);
 	}
 
 	/**

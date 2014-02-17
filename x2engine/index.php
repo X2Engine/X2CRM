@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -36,27 +36,27 @@
 
 // change the following paths if necessary
 $constants = dirname(__FILE__).DIRECTORY_SEPARATOR.'constants.php';
-$yii = implode(DIRECTORY_SEPARATOR,array(dirname(__FILE__),'framework','yii.php'));
+$yii = implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'framework', 'yii.php'));
 require_once($constants);
 require_once($yii);
 Yii::$enableIncludePath = false;
-Yii::registerAutoloader(array('Yii','x2_autoload'));
-if (!empty($_SERVER['REMOTE_ADDR'])) {
-	$matches = array();
-	preg_match('/(.+)index.php/', $_SERVER["REQUEST_URI"], $matches);
+Yii::registerAutoloader(array('Yii', 'x2_autoload'));
+if(!empty($_SERVER['REMOTE_ADDR'])){
+    $matches = array();
+    $indexReq = preg_match('/(.+)index.php/', $_SERVER["REQUEST_URI"], $matches);
 
-	$filename = 'install.php';
+    $filename = 'install.php';
 
-	if (file_exists($filename)) {
-		header('Location: ' . $matches[1] . $filename);
-		exit();
-	}
-	$config=dirname(__FILE__).'/protected/config/web.php';
-	Yii::createWebApplication($config)->run();
+    if(file_exists($filename)){
+        header('Location: '.(!$indexReq ? $SERVER_['REQUEST_URI'] : $matches[1]).$filename);
+        exit();
+    }
+    $config = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected', 'config', 'web.php'));
+    Yii::createWebApplication($config)->run();
 }
 
-function printR($obj, $die=false){
-    echo "<pre>" . print_r($obj, true) . "</pre>";
+function printR($obj, $die = false){
+    echo "<pre>".print_r($obj, true)."</pre>";
     if($die){
         die();
     }

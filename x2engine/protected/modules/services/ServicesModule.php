@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package X2CRM.modules.accounts 
+ * @package application.modules.accounts 
  */
 class ServicesModule extends CWebModule {
 	public function init() {

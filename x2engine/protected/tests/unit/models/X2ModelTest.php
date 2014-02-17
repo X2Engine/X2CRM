@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -35,8 +35,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.modules.accounts.models.*');
 Yii::import('application.modules.actions.models.*');
 Yii::import('application.modules.contacts.models.*');
+Yii::import('application.modules.opportunities.models.*');
+Yii::import('application.modules.quotes.models.*');
 
 /**
  * Test certain features specific to {@link X2Model}.
@@ -45,10 +48,20 @@ Yii::import('application.modules.contacts.models.*');
  * future be replaced with mocks, fake tables and special fixtures in order to
  * generally test {@link X2Model} without relying on ephemeral data.
  *
- * @package X2CRM.tests.unit.models
+ * @package application.tests.unit.models
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class X2ModelTest extends X2TestCase {
+class X2ModelTest extends X2DbTestCase {
+
+    public $fixtures = array(
+        'contact' => 'Contacts',
+    );
+
+    public static function referenceFixtures(){
+        return array(
+            'account' => 'Accounts'
+        );
+    }
 
     private $_nameFields;
 
@@ -110,6 +123,30 @@ class X2ModelTest extends X2TestCase {
         $contact->setX2Fields($input);
         $this->assertEquals('Gustavo', $contact->firstName);
         $this->assertEquals('Fring', $contact->lastName);
+     }
+
+     public function testFindByEmail() {
+         $c = Contacts::model()->findByEmail($this->contact('testAnyone')->email);
+         $this->assertTrue((bool) $c);
+         $this->assertEquals($this->contact('testAnyone')->id,$c->id);
+     }
+
+     /**
+      * A cursory test of the auto-ref update for the link-type fields refactor.
+      */
+     public function testUpdateNameIdRefs() {
+         $account = $this->account('testQuote');
+         $contact = $this->contact('testAnyone');
+         // Test name change:
+         $account->refresh();
+         $account->name = 'A smouldering crater left behind by the G-man';
+         $account->save();
+         $contact->refresh();
+         $this->assertEquals(Fields::nameId($account->name,$account->id),$contact->company);
+         // Test deletion:
+         $account->delete();
+         $contact->refresh();
+         $this->assertEquals($account->name,$contact->company);
      }
 }
 

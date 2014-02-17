@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -39,7 +39,7 @@ Yii::import('application.modules.bugReports.models.*');
 /**
  * Test case for the {@link Fields} model class.
  * 
- * @package X2CRM.tests.unit.models
+ * @package application.tests.unit.models
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class FieldsTest extends X2TestCase {
@@ -171,6 +171,31 @@ class FieldsTest extends X2TestCase {
         $field->type = 'varchar';
         $field->custom = 0;
         $field->createColumn();
+    }
+
+    public function testNameAndId() {
+        $d = Fields::NAMEID_DELIM;
+
+        $nid = array('My Name',12345);
+        $this->assertEquals($nid,Fields::nameAndId(implode($d,$nid)));
+        // This shouldn't affect it...
+        $nid[0] .= $d;
+        $this->assertEquals($nid,Fields::nameAndId(implode($d,$nid)));
+        // Or this...
+        $nid[0] = $d.$nid[0];
+        $this->assertEquals($nid,Fields::nameAndId(implode($d,$nid)));
+        // It should return an array with nameId first and then null for ID:
+        $nid[1] = null;
+        $this->assertEquals($nid,Fields::nameAndId($nid[0]));
+
+        // Empty in = empty out:
+        $nid = array(null,null);
+        $this->assertEquals($nid,Fields::nameAndId(null));
+    }
+
+    public function testNameId() {
+        $d = Fields::NAMEID_DELIM;
+        $this->assertEquals('My Name'.$d.'12345',Fields::nameId('My Name',12345));
     }
 
     public function testNonReserved() {

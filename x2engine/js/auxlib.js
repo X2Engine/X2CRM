@@ -1,5 +1,5 @@
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -252,7 +252,6 @@ auxlib.create = function (prototype) {
     return new dummyFn ();
 };
 
-
 /*
 Remove cursor from input by focusing on a temporary dummy input element.
 */
@@ -321,4 +320,13 @@ auxlib.validatePhotoFileExt = function (name) {
     } 
 
     return isLegalExtension;
+};
+
+auxlib.map = function (callback, array) {
+    var arrLen = array.length;
+    var newArr = [];
+    for (var i = 0; i < arrLen; ++i) {
+        newArr.push (callback (array[i])); 
+    }
+    return newArr;
 };

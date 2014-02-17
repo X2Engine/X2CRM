@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -41,7 +41,7 @@
  *  a quote or invoice from the contact view page. It makes heavy use of
  *  javascript and ajax calls to the QuotesController.
  * 
- * @package X2CRM.components 
+ * @package application.components 
  */
 class InlineQuotes extends X2Widget {
 

@@ -1,5 +1,32 @@
+# 3.7.3b #
+2/14/2014
+* Multiple security vulnerabilities patched in web forms, data import/export, and docs import/export
+* "Lookup" fields performance and functionality restoration overhaul:
+  * Search/sort works without sorting on columns in joined tables
+  * All such fields store all the necessary data to create a link, eliminating joins in grid view queries
+* More robust error handling in the module importer
+* Consistent branding throughout app (see [release notes](RELEASE-NOTES.md) for full details)
+* Date/time picker input widget now available in relevant grid view column filters
+* New "action timer sum" field type computes/displays sums of time spent on a record.
+* Fields editor has the ability to create indexes on fields
+* New in Professional Edition:
+  * "Case Timer" has been generalized to the "action timer" and is available in most modules now
+  * Action timer editing interface available to admins and users with action backdating privileges
+  * Case creation via the email dropbox (experimental)
+* Fixed Bugs:  
+  * [254](http://x2software.com/index.php/bugReports/254): User Report  
+  * [800](http://x2software.com/index.php/bugReports/800): User Report  
+  * [803](http://x2software.com/index.php/bugReports/803): Unable to resolve the request "financiala33/financiala33/index".  
+  * [848](http://x2software.com/index.php/bugReports/848): Undefined variable: timestamp  
+  * [850](http://x2software.com/index.php/bugReports/850): Could not attach files to emails (user report)  
+  * [867](http://x2software.com/index.php/bugReports/867): MyBugReportsController and its behaviors do not have a method or closure named "getDateRange".  
+  * [875](http://x2software.com/index.php/bugReports/875): User Report  
+  * [885](http://x2software.com/index.php/bugReports/885): User Report  
+  * [888](http://x2software.com/index.php/bugReports/888): User Report
+* Numerous additional bugs reported via our forums have been fixed - thanks!
+
 # 3.7.2 #
-1/24/2012
+1/24/2014
 * Improved user session timeout method to fix compatibility issue with some servers
 * Fixed bug in Actions.getRelevantTimestamp 
 * Fixed star rating cancel button in Firefox

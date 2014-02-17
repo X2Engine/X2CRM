@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -48,7 +48,7 @@
  *  for {@link model}. In some cases (i.e. some older custom modules) the class
  *  name will not be specified in the controller, and thus it is useful to guess
  *  its corresponding model's name based on its own name.
- * @package X2CRM.components
+ * @package application.components
  */
 class CommonControllerBehavior extends CBehavior {
 
@@ -86,6 +86,11 @@ class CommonControllerBehavior extends CBehavior {
             if($this->resolvedModelClass == 'Admin' && empty($id))
                 $id = 1;
 
+            // Last-ditch effort:
+            if(isset($_GET['id'])) {
+                $id = $_GET['id'];
+            }
+            
             // ID was never specified, so there's no way to tell which record to
             // load. Thus, redirect to index:
 			if($id === null)

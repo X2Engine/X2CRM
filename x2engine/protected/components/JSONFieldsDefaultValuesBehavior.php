@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -42,7 +42,7 @@
  * default value in the transformAttributes array will result in potentially unexpected behavior
  * (e.g. array ('<JSON field 0>, <JSON field 1> => <JSON field 1 default value>), here 
  * <JSON field 0> would be the default value of a JSON field called '0').
- * @package X2CRM.components
+ * @package application.components
  */
 class JSONFieldsDefaultValuesBehavior extends JSONFieldsBehavior {
 

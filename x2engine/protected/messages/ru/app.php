@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -407,7 +407,7 @@ return array (
 'Report A Bug'=>'Сообщить об ошибке',
 'Email Address'=>'Адрес электронной почты',
 'Bug Description'=>'Описание ошибки',
-'X2CRM Version:'=>'X2CRM версия:',
+'X2Engine Version:'=>'X2Engine версия:',
 'PHP Version:'=>'PHP версия:',
 'Include phpinfo()? (optional, but recommended)'=>'Включите PHPInfo ()? (не обязательно, но рекомендуется)',
 'Detailed server and PHP configuration information that is very helpful for debugging purposes.  However, it can contain sensitive information about your server\'s configuration, and it is not required to be sent with the report.  We do however, highly recommend it.'=>'Подробная сервер и PHP информацию о конфигурации, что очень полезно для отладки. Тем не менее, он может содержать конфиденциальную информацию о конфигурации сервера, и он не обязан быть отправлено с докладом. Мы, тем не менее, очень рекомендую его.',
@@ -602,7 +602,7 @@ return array (
 'Saved'=>'Сохраненные',
 'Phone system reported inbound call from contact.'=>'Телефонная система сообщила входящего вызова от контакта.',
 'You are not authorized to perform this action.'=>'У вас нет прав для выполнения этого действия.',
-'Your X2CRM session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.'=>'Ваша X2CRM сессия истекла. Вы можете выбрать &quot;Отмена&quot;, чтобы игнорировать это сообщение и восстановить сохраненные данные с текущей страницы. В противном случае, Вы будете перенаправлены на страницу входа.',
+'Your X2Engine session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.'=>'Ваша X2Engine сессия истекла. Вы можете выбрать &quot;Отмена&quot;, чтобы игнорировать это сообщение и восстановить сохраненные данные с текущей страницы. В противном случае, Вы будете перенаправлены на страницу входа.',
 'your feed'=>'фид',
 '{name}\'s feed'=>'{name} \ &#39;ы кормов',
 'Google Email Account'=>'Учетная запись электронной почты Google',
@@ -696,7 +696,7 @@ return array (
 'Line Chart'=>'Линейный график',
 'Pie Chart'=>'Круговая диаграмма',
 'Stars'=>'Звезды',
-'The Image Gallery widget currently does not support Internet Explorer. We are looking to resolve this issue for a later release of X2CRM.'=>'Галерея виджетов настоящее время не поддерживает Internet Explorer. Мы ищем для решения этого вопроса на более поздний выпуск X2CRM.',
+'The Image Gallery widget currently does not support Internet Explorer. We are looking to resolve this issue for a later release of X2Engine.'=>'Галерея виджетов настоящее время не поддерживает Internet Explorer. Мы ищем для решения этого вопроса на более поздний выпуск X2Engine.',
 'File'=>'Файл',
 'Yesterday'=>'Вчера',
 'Data Domain'=>'Data Domain',
@@ -770,7 +770,7 @@ return array (
 'No valid Contact found.'=>'Действительная контактная не найдено.',
 'This web content gets displayed if the visitor doesn\'t '=>'Это веб-контент получает отображается, если посетитель Безразлично \ &#39;т',
 'Auto-Resize Columns'=>'Авто-изменить размер колонок',
-'X2CRM is undergoing maintenance; it has been locked by an administrator. Please try again later.'=>'X2CRM проводиться ремонтные работы, она была заблокирована администратором. Пожалуйста, повторите попытку позже.',
+'X2Engine is undergoing maintenance; it has been locked by an administrator. Please try again later.'=>'X2Engine проводиться ремонтные работы, она была заблокирована администратором. Пожалуйста, повторите попытку позже.',
 'External / Public Base URL'=>'Внешний / общественная Базовый URL',
 '{attr} does not refer to any existing record'=>'{attr} не относится к любой существующей записи',
 '{authorText} logged a call ({duration}) with {modelLink}: "{logAbbrev}"'=>'{authorText} вошли на вызов ( {duration} ) с {modelLink} : &quot; {logAbbrev} &quot;',

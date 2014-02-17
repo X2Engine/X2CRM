@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -80,6 +80,7 @@ class WebFormAction extends CAction {
     
 
     private function handleWebleadFormSubmission ($model, $extractedParams) {
+        $newRecord = $model->isNewRecord;
         if(isset($_POST['Contacts'])) {
             $model->createEvent = false;
             $model->setX2Fields($_POST['Contacts'], true);
@@ -136,7 +137,8 @@ class WebFormAction extends CAction {
                 if($success){
                     self::addTags ($model);
                     $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ? array() : explode(',',$_POST['tags']));
-                    X2Flow::trigger('WebleadTrigger', array('model' => $model, 'tags' => $tags));
+                    if($newRecord)
+                        X2Flow::trigger('WebleadTrigger', array('model' => $model, 'tags' => $tags));
 
                     //use the submitted info to create an action
                     $action = new Actions;
@@ -409,7 +411,7 @@ class WebFormAction extends CAction {
                                     );
                                     $emailSubject = 'Service Case Created';
                                     $emailBody = "A new service case, #".$model->id.
-                                        ", has been created in X2CRM. To view the case, click ".
+                                        ", has been created in X2Engine. To view the case, click ".
                                         "this link: ".$model->getLink();
                                     $status = $this->controller->sendUserEmail(
                                         $useremail, $emailSubject, $emailBody, null, $from);

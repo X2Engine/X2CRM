@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,7 +38,7 @@
 /**
  * Email delivery methods.
  *
- * @package X2CRM.components
+ * @package application.components
  * @property Credentials $credentials (read-only) The SMTP account to use for
  *  delivery, if applicable.
  * @property array $from The sender of the email.

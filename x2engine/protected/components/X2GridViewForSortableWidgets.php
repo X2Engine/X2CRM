@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -40,7 +40,7 @@ Yii::import('application.components.X2GridViewSortableWidgetsBehavior');
 /**
  * Used to display gridviews within sortable widgets. This allows sortable widget gridviews to have
  * their own results per page settings.
- * @package X2CRM.components
+ * @package application.components
  */
 class X2GridViewForSortableWidgets extends X2GridView {
 

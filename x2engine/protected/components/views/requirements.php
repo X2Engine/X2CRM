@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -47,9 +47,9 @@
 /////////////////
 // SET GLOBALS //
 /////////////////
-$document = '<html><header><title>X2CRM System Requirements Check</title>{headerContent}</head><body><div style="width: 680px; border:1px solid #DDD; margin: 25px auto 25px auto; padding: 20px;font-family:sans-serif;">{bodyContent}</div></body></html>';
+$document = '<html><header><title>X2Engine System Requirements Check</title>{headerContent}</head><body><div style="width: 680px; border:1px solid #DDD; margin: 25px auto 25px auto; padding: 20px;font-family:sans-serif;">{bodyContent}</div></body></html>';
 $totalFailure = array(
-	"<h1>This server definitely, most certainly cannot run X2CRM.</h1><p>Not even the system requirements checker script itself could run properly on this server. It encountered the following {scenario}:</p>\n<pre style=\"overflow-x:auto;margin:5px;padding:5px;border:1px red dashed;\">\n",
+	"<h1>This server definitely, most certainly cannot run X2Engine.</h1><p>Not even the system requirements checker script itself could run properly on this server. It encountered the following {scenario}:</p>\n<pre style=\"overflow-x:auto;margin:5px;padding:5px;border:1px red dashed;\">\n",
 	"\n</pre>"
 );
 $mode = php_sapi_name() == 'cli' ? 'cli' : 'web';
@@ -147,9 +147,9 @@ if(!$returnArray){
     register_shutdown_function('reqShutdown');
 }
 //////////////////////////////
-// X2CRM Requirements Check //
+// X2Engine Requirements Check //
 //////////////////////////////
-// "Cannot {scenario} X2CRM"
+// "Cannot {scenario} X2Engine"
 if(!isset($scenario))
 	$scenario = 'install';
 
@@ -168,6 +168,10 @@ if(count($phpInfoContent))
 	$phpInfoContent = $phpInfoContent[1];
 else
 	$phpInfoStyle = '';
+
+$phpInfoStyle .= '<style>
+.hidden {display: none;}
+</style>';
 
 // Declare the function since the script is not being used from within the installer
 if(!function_exists('installer_t')){
@@ -397,44 +401,118 @@ if(!$curl){
 if(!(bool) ($requirements['environment']['allow_url_fopen']=@ini_get('allow_url_fopen'))){
 	if(!$curl){
 		$tryAccess = false;
-		$reqMessages[2][] = installer_t('The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will have to be performed manually.');
+		$reqMessages[2][] = installer_t('The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make outbound HTTP/HTTPS requests.')
+            .' '.installer_t('Software updates will have to be performed using the "offline" method, and Google integration will not work.');
 	} else
 		$reqMessages[1][] = installer_t('The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.');
 }
-$requirements['environment']['updates_connection'] = 0;
-$requirements['environment']['outbound_connection'] = 0;
-if($tryAccess){
-	if(!(bool) @file_get_contents('http://google.com')){
 
-		$ch = curl_init('https://www.google.com');
+
+///////////////////////
+// NETWORK DIAGNOSIS //
+///////////////////////
+
+/**
+ * Attempt to access a remote URL
+ *
+ * @global bool $tryCurl
+ * @param string $url
+ * @return bool Whether access succeeded
+ */
+function tryGetRemote($url) {
+    global $tryCurl;
+    if($tryCurl || !(bool) ($response = @file_get_contents($url))){
+        // Function file_get_contents not available, or failed:
+		$ch = @curl_init($url);
+        if(!(bool) $ch)
+            return 0;
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_POST, 0);
-		$response = (bool) @curl_exec($ch);
+		$response = @curl_exec($ch);
 		curl_close($ch);
-		if(!($requirements['environment']['outbound_connection']=(bool)$response)){
-			$reqMessages[2][] = installer_t('This web server is effectively cut off from the internet; (1) no outbound network route exists, or (2) local DNS resolution is failing, or (3) this server is behind a firewall that is preventing outbound requests. Software updates will have to be performed manually, and Google integration will not work.');
-		} else {
-			$ch = curl_init('https://x2planet.com/installs/registry/reqCheck');
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_POST, 0);
-			$response = (bool) @curl_exec($ch);
-			curl_close($ch);
-			if(!($requirements['environment']['updates_connection']=(bool)$response)) {
-				$reqMessages[2][] = installer_t('Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will have to be performed manaully.');
-			}
-		}
-
-	}
+    }
+    return (int) (bool) $response;
 }
+
+/**
+ * Attempt to query a host name's DNS record.
+ * @param type $hostname
+ * @return boolean
+ */
+function checkDNS($hostname) {
+    if(function_exists('dns_check_record')) {
+        return (integer) @dns_check_record($hostname);
+    } else {
+        return 0;
+    }
+}
+
+// Re-usable messages for network diagnosis:
+$updateMethodMsg = installer_t('Software updates will have to be performed using the "offline" method.');
+$googleIntegrationMsg = installer_t('Google integration will not work.');
+$tmpProblemMsg = installer_t('This may be a temporary problem.');
+$cutOffMsg = installer_t('This server is effectively cut off from the internet.');
+$firewallMsg = installer_t('This is likely because the server is behind a firewall that is preventing outbound HTTP/HTTPS requests.');
+
+// Defaults and presets:
+$tryCurl = !$requirements['environment']['allow_url_fopen'];
+$requirements['environment']['updates_connection'] = 0;
+$requirements['environment']['outbound_connection'] = 0;
+
+// Full network diagnosis:
+if($tryAccess){
+    // There exists one remote access method, so it's worth trying. 
+    // 
+    // Check outbound connection:
+    if($requirements['environment']['outbound_connection'] = checkDNS('google.com')){
+        // At least DNS is working, and at least for google.
+        if($requirements['environment']['outbound_connection'] = tryGetRemote('http://www.google.com')){
+            // Can connect to Google OK. Can connect to the updates server?
+            if($requirements['environment']['updates_connection'] = checkDNS('x2planet.com')){
+                if(!($requirements['environment']['updates_connection'] = tryGetRemote('https://x2planet.com/installs/registry/reqCheck'))){
+                    // 
+                    $reqMessages[2][] = installer_t('Could not reach the updates server from this web server.')
+                            .' '.$firewallMsg
+                            .' '.$updateMethodMsg
+                            .' '.$tmpProblemMsg;
+                }
+            }else{
+                // No DNS for update server.
+                $reqMessages[2][] = installer_t('The DNS record associated with the updates server is not available on this web server.')
+                        .' '.$updateMethodMsg
+                        .' '.$tmpProblemMsg;
+            }
+        } else {
+            // Can resolve DNS but can't make web request.
+            $reqMessages[2][] = $cutOffMsg
+                    .' '.$firewallMsg
+                    .' '.installer_t('It is also posible that no outbound network route exists.')
+                    .' '.$updateMethodMsg
+                    .' '.$googleIntegrationMsg;
+        }
+    }else{
+        // DNS failed for Google! There's no outbound connection period
+        $reqMessages[2][] = $cutOffMsg
+        .' '.installer_t('This is due to local DNS resolution failing.')
+            .' '.$updateMethodMsg
+            .' '.$googleIntegrationMsg;
+    }
+}
+
+if(!function_exists('dns_check_record') && !$requirements['environment']['outbound_connection']) {
+    $reqMessages[1][] = installer_t('Note: the function "dns_check_record" is not available on this server, so network diagnostic messages may not be accurate.');
+}
+
+
 
 // The ability to create network sockets, essential for SMTP-based email delivery:
 if(!(bool) ($requirements['environment']['fsockopen'] = function_exists('fsockopen'))) {
-    $reqMessages[2][] = installer_t('The function fsockopen is unavailable or has been disabled on this server. X2CRM will not be able to send email via SMTP.');
+    $reqMessages[2][] = installer_t('The function "fsockopen" is unavailable or has been disabled on this server. X2Engine will not be able to send email via SMTP.');
 }
 
 // Check the ability to make database backups during updates:
 if(!(bool) ($canBackup = $requirements['functions']['proc_open'] = function_exists('proc_open'))) {
-    $reqMessages[2][] = installer_t('The function proc_open is unavailable on this system. X2CRM will not be able to control the local cron table, or perform database backups, or automatically restore a database to its backup in the event of a failed update.');
+    $reqMessages[2][] = installer_t('The function proc_open is unavailable on this system. X2Engine will not be able to control the local cron table, or perform database backups, or automatically restore a database to its backup in the event of a failed update.');
 }
 $requirements['environment']['shell'] = $canBackup;
 if($canBackup){
@@ -466,7 +544,7 @@ if($canBackup){
 }
 if(!$canBackup && $requirements['functions']['proc_open']){
     $requirements['environment']['shell'] = 0;
-	$reqMessages[2][] = installer_t('The "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.');
+	$reqMessages[2][] = installer_t('The "mysqldump" and "mysql" command line utilities are unavailable on this system. X2Engine will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.');
 }
 // Check the session save path:
 $ssp = ini_get('session.save_path');
@@ -479,7 +557,7 @@ if(!is_writable($ssp)){
 ////////////////////////////////////////////////////////////
 // Check encryption methods
 if(!($requirements['extensions']['openssl']=extension_loaded('openssl') && $requirements['extensions']['mcrypt']=extension_loaded('mcrypt'))) {
-	$reqMessages[1][] = installer_t('The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2CRM, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.');
+	$reqMessages[1][] = installer_t('The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2Engine, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.');
 }
 
 // Check for Zip extension
@@ -513,12 +591,12 @@ $canInstall = !(bool) count($reqMessages[3]);
 $output = '';
 
 if(!$canInstall){
-	$output .= '<div style="width: 100%; text-align:center;"><h1>'.installer_t("Cannot $scenario X2CRM")."</h1></div>\n";
+	$output .= '<div style="width: 100%; text-align:center;"><h1>'.installer_t("Cannot $scenario X2Engine")."</h1></div>\n";
 	$output .= "<strong>".installer_t('Unfortunately, your server does not meet the minimum system requirements;')."</strong><br />";
 }else if($hasMessages){
 	$output .= '<div style="width: 100%; text-align:center;"><h1>'.installer_t('Note the following:').'</h1></div>';
 }else if($standalone){
-	$output .= '<div style="width: 100%; text-align:center;"><h1>'.installer_t('This webserver can run X2CRM!').'</h1></div>';
+	$output .= '<div style="width: 100%; text-align:center;"><h1>'.installer_t('This webserver can run X2Engine!').'</h1></div>';
 }
 
 $severityClasses = array(
@@ -585,8 +663,22 @@ if($standalone){
 			'eN7e3qGaR5pbOX5IyACEE2jhHCORso+yXimTL/IlJ1Ml9WMj3R05Oj6cP5apdi0peEBwiIinep1e/uVbA0ZZqjMUJc7AgAAvtNKbUGoY36nOI/0kE9/Ss2Uy6+tqn4gZrP7L1S6y'.
 			'foOjqU8D2Qh62jxXLmro3t6v5Z9BfI9ot3c0sJFeamluXqXX68PDwyMoNhr6tXOfGOh2jQBZz+g8d16j+IxFbOY/wOgn/xJf9HY6nTfZQBaLJUunrPT88f7UfjX5nRr4f1NIL/8R'.
 			'YABtitvxQEn6dgAAAABJRU5ErkJggg==';
-	$output .= '<img style="display:block;margin-left:278px;float:none;" src="data:image/png;base64,'.$imgData.'"><br /><br />';
-    $output .= $phpInfoContent;
+	$output .= '<div style="display:block;float:none;margin-left:275px; width: 150px; display:inline-block"><img style="display:block;float:none;" src="data:image/png;base64,'.$imgData.'"><br />';
+    $output .= '<a style="display:block;float:none; padding:0; color: #6A6AA8;font-family:monospace;font-weight:bold; text-decoration:none;" href="javascript:void(0);" onclick="showHidePhpInfo(this);">[ + phpinfo()]</a></div><br /><br />';
+    $output .= "<div id=\"phpInfoContent\" class=\"hidden\">$phpInfoContent</div>";
+    $output .= '
+<script type="text/javascript">
+function showHidePhpInfo(elt) {
+    var content = document.getElementById("phpInfoContent");
+    if (content.getAttribute("class") == "hidden") {
+        elt.innerHTML = "[ - phpinfo()]";
+        content.setAttribute("class","");
+    } else {
+        elt.innerHTML = "[ + phpinfo()]";
+        content.setAttribute("class","hidden");
+    }
+}
+</script>';
 }
 
 /////////

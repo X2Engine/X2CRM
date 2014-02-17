@@ -1,3 +1,16 @@
+# 3.7.3b #
+* This version, while it is mainly oriented towards fixing bugs, contains some
+  extreme, far-reaching changes (for example, the refactoring of how lookup fields
+  work) that may have introduced bugs that we have not seen/foreseen in our tests.
+  For that reason, this release has been deemed a beta, and a stable follow-up release
+  can be expected later.
+* From this version forward, the name of this software is **X2Engine**. If you see
+  any references to "X2CRM", "X2Contacts" or "X2EngineCRM" in UI messages, please
+  report it as a bug. If you see any such references in the Wiki, or in pinned forum
+  posts, or in the X2Engine User Reference Guide, please post in 
+  [this thread](http://x2community.com/topic/1482-branding-consistency/) or follow
+  the instructions for contacting the X2Engine team.
+
 # 3.7.1 #
 12/23/2013
 * For security purposes, the web lead form no longer permits setting options via
@@ -75,7 +88,7 @@
     for the content to be rendered.
   * In the APIModel class, there should now be a new "modelErrors" property,
     which stores the validation errors for each attribute of the object, returned by
-    (http://www.yiiframework.com/doc/api/1.1/CModel#errors-detail)[CActiveRecord.getErrors()]
+    [CActiveRecord.getErrors()](http://www.yiiframework.com/doc/api/1.1/CModel#errors-detail)
     on the server. The source of this data is the "modelErrors" property of the
     response from the create and update actions.
 

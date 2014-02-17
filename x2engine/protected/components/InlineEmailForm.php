@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -48,7 +48,7 @@
  * @property string $specialFields Extra HTML to render inside the form.
  * @property bool $postReplace If true, variable replacement will be run on non-template user input.
  * @property bool $skipEvent If true, no event record will be created.
- * @package X2CRM.components
+ * @package application.components
  */
 class InlineEmailForm extends X2Widget {
 

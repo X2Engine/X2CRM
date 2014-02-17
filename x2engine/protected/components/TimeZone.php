@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -40,7 +40,7 @@
  * A widget that displays time information (i.e. zone, current time there) 
  * specific to the contact being viewed.
  *  
- * @package X2CRM.components 
+ * @package application.components 
  */
 class TimeZone extends X2Widget {
 
@@ -126,7 +126,8 @@ class TimeZone extends X2Widget {
 		} else
 			echo Yii::t('app','Timezone not available');
 	}
-	/**
+
+    /**
 	 * @param string $address the address to geocode
 	 * @return string either the timezone or a blank string on failure
 	 */

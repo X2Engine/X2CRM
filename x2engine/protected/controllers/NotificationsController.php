@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@
 /**
  * User notifications & social feed controller
  *
- * @package X2CRM.controllers
+ * @package application.controllers
  */
 class NotificationsController extends CController {
 
@@ -61,7 +61,7 @@ class NotificationsController extends CController {
         if(Yii::app()->user->isGuest) {
             header('Content-type: application/json');
             echo CJSON::encode(array(
-                'sessionError'=>Yii::t('app','Your X2CRM session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.')
+                'sessionError'=>Yii::t('app','Your X2Engine session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.')
             ));
             Yii::app()->end();
         }

@@ -55,8 +55,8 @@ return array (
 'Triggers when a record of specified type is deleted.'=>'指定类型的记录被删除时触发。',
 'Triggered by adding one of these tags to a record.'=>'加入这些标签之一，达到创纪录的触发。',
 'Triggered when some updates a record of the the specified type.'=>'一些更新的指定类型的记录时触发。',
-'Triggered when a user signs in to X2CRM.'=>'触发当用户迹象X2CRM。',
-'Triggered when a user signs out of X2CRM.'=>'触发当用户签署X2CRM时。',
+'Triggered when a user signs in to X2Engine.'=>'触发当用户迹象X2Engine。',
+'Triggered when a user signs out of X2Engine.'=>'触发当用户签署X2Engine时。',
 'Triggered when a contact visits a webpage'=>'接触时触发访问网页',
 'Triggers when a new contact fills out your web lead capture form.'=>'触发一个新的联系人时，填写您的网页导致捕获的形式。',
 

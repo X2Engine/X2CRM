@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,12 +37,11 @@
 Yii::import('application.components.webupdater.*');
 
 /**
- * Description of X2CRMUpdateAction
- *
- * @package X2CRM.components.webupdater
+ * Action for the updates/upgrades control page.
+ * @package application.components.webupdater
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class X2CRMUpdateAction extends WebUpdaterAction {
+class UpdaterAction extends WebUpdaterAction {
 
 	/**
 	 * Runs user-interface-related updater actions.
@@ -134,7 +133,7 @@ class X2CRMUpdateAction extends WebUpdaterAction {
                 $this->controller->render('updater', array(
                     'scenario' => 'message',
                     'version' => $version,
-                    'message' => Yii::t('admin', 'X2CRM is at the latest version!'),
+                    'message' => Yii::t('admin', 'X2Engine is at the latest version!'),
                     'longMessage' => $redirect ? Yii::t('admin','Download cancelled (no update package necessary)') : ''
                 ));
             }else{

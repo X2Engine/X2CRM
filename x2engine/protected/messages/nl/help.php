@@ -2,7 +2,7 @@
 return array (
 
 'Icon Reference'=>'Pictogram Reference',
-'X2CRM Modules'=>'X2CRM Modules',
+'X2Engine Modules'=>'X2Engine Modules',
 'Events'=>'Evenementen',
 'Action Reminder'=>'Actie Herinnering',
 'Calendar Event'=>'Agendagebeurtenis',

@@ -2,7 +2,7 @@
 return array (
 
 'Icon Reference'=>'아이콘 참조',
-'X2CRM Modules'=>'X2CRM 모듈',
+'X2Engine Modules'=>'X2Engine 모듈',
 'Events'=>'이벤트',
 'Action Reminder'=>'액션 알림',
 'Calendar Event'=>'캘린더 이벤트',

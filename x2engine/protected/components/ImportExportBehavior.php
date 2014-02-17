@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -34,24 +34,39 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-if ($this->showActions !== null) {
-    $this->beginWidget('zii.widgets.CPortlet', array(
-        'title'=>Yii::t('actions', 'Show Actions'),
-        'id'=>'actions-filter',
-    ));
-    echo '<div class="form no-border" style="text-align:center; height:25px;">';
-    echo CHtml::dropDownList('show-actions', $this->showActions,
-        array(
-            'uncomplete'=>Yii::t('actions', 'Incomplete'),
-            'complete'=>Yii::t('actions', 'Complete'),
-            'all'=>Yii::t('actions', 'All'),
-        ),
-        array(
-            'id'=>'dropdown-show-actions',
-            'onChange'=>'toggleShowActions();',
-        )
-    );
+/**
+ * Behavior for dealing with data files directly on the server while avoiding
+ * directory traversal and publicly visible files.
+ * 
+ * @package application.components
+ * @author Demitri Morgan <demitri@x2engine.com>
+ */
+class ImportExportBehavior extends CBehavior {
 
-    echo '</div>';
-    $this->endWidget();
+    /**
+     * Sends the file to the web client upon request
+     * @param type $file
+     */
+    public function sendFile($file){
+        if(!preg_match('/\.\./', $file)){
+            $file = Yii::app()->file->set($this->safePath($file));
+            $file->send();
+        }
+    }
+
+    /**
+     * Returns a file path that is within the protected folder, to protect data
+     * @param type $filename
+     * @return type
+     */
+    public function safePath($filename = 'data.csv'){
+        return implode(DIRECTORY_SEPARATOR, array(
+                    Yii::app()->basePath,
+                    'data',
+                    $filename
+                ));
+    }
+
 }
+
+?>

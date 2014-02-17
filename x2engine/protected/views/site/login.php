@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -120,6 +120,7 @@ CClientScript::POS_READY);
                 <div class="cell remember-me-cell">
                     <?php 
                     if ($model->rememberMe) {
+                        echo $form->hiddenField($model,'rememberMe',array('value'=>1));
                     ?>
                     <a href='<?php echo Yii::app()->createUrl ('/site/site/forgetMe'); ?>'
                      class='x2-link x2-minimal-link'>

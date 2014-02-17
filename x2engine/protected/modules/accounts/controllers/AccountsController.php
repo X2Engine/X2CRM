@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -36,7 +36,7 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.modules.accounts.controllers
+ * @package application.modules.accounts.controllers
  */
 class AccountsController extends x2base {
 
@@ -49,7 +49,7 @@ class AccountsController extends x2base {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'search', 'addUser', 'addContact', 'removeUser', 'removeContact',
+                'actions' => array('index', 'view', 'create', 'update', 'search', 'addUser', 'removeUser', 
                     'addNote', 'deleteNote', 'saveChanges', 'delete', 'shareAccount', 'inlineEmail'),
                 'users' => array('@'),
             ),

@@ -2,7 +2,7 @@
 return array (
 
 'Icon Reference'=>'Συσχέτηση Εικονιδίου',
-'X2CRM Modules'=>'X2CRM Πρόσθετα',
+'X2Engine Modules'=>'X2Engine Πρόσθετα',
 'Events'=>'Συμβάντα',
 'Action Reminder'=>'Υπενθύμιση Ενέργειας',
 'Calendar Event'=>'Συμβάν Ημερολογίου',

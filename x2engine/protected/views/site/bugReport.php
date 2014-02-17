@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -45,7 +45,7 @@
     <?php echo Yii::t('app',"Here's a quick list of what will be included in the report:");?><br><br>
     <label><?php echo Yii::t('app','Email Address');?></label><?php echo CHtml::textField('email','',array('size'=>40)); ?><br>
     <label><?php echo Yii::t('app','Bug Description');?></label><?php echo CHtml::textArea('bugDescription','',array('style'=>'height:100px;')); ?>
-    <b><?php echo Yii::t('app','X2CRM Version:');?></b> <?php echo $x2version; ?><br>
+    <b><?php echo Yii::t('app','X2Engine Version:');?></b> <?php echo $x2version; ?><br>
     <b><?php echo Yii::t('app','PHP Version:');?></b> <?php echo $phpversion;?><br><br>
     <label><span><?php echo Yii::t('app','Include phpinfo()? (optional, but recommended)');?> <a href="#" style="text-decoration:none;" class="x2-hint" title="<?php echo Yii::t('app','Detailed server and PHP configuration information that is very helpful for debugging purposes.  However, it can contain sensitive information about your server\'s configuration, and it is not required to be sent with the report.  We do however, highly recommend it.');?>">[?]</a></span></label>
     <?php echo CHtml::checkBox('phpinfo',true); ?><br><br>

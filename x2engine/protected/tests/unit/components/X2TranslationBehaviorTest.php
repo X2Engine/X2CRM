@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -40,7 +40,7 @@ Yii::import('application.components.*');
  * Test for translations auto-parse
 
  *
- * @package X2CRM.tests.unit.components
+ * @package application.tests.unit.components
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class X2TranslationBehaviorTest extends X2TestCase {
@@ -91,7 +91,7 @@ class X2TranslationBehaviorTest extends X2TestCase {
 					'This and that \"thing\"' => '',
 					'Define how the system sends email by default.' => '',
 					'Note that this will not supersede other email settings. Usage of these particular settings is a legacy feature. Unless this web server also serves as your company\\\'s primary mail server, it is recommended to instead use "{ma}" to set up email accounts for system usage instead.' => '',
-					'Configure how X2CRM sends email when responding to new service case requests.' => '',
+					'Configure how X2Engine sends email when responding to new service case requests.' => '',
 				),
 			'profile' => array(
 				'Manage Passwords for Third-Party Applications' => '',

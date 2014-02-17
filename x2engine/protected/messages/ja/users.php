@@ -19,7 +19,7 @@ return array (
 // Users Titles
 'User: {name}'=>'ユーザー: {name}',
 'Update User: {name}'=>'ユーザーを更新する: {name}',
-'Invite Users to X2CRM'=>'ユーザーはX2CRMに招待',
+'Invite Users to X2Engine'=>'ユーザーはX2Engineに招待',
 'Instructions'=>'説明書',
 'Delete Unregistered'=>'未登録の削除',
 'Invited Users'=>'招待ユーザー',

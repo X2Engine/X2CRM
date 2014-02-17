@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package X2CRM.modules.template 
+ * @package application.modules.template 
  */
 class TemplatesModule extends CWebModule {
 	public function init() {

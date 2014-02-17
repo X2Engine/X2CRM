@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -75,8 +75,8 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                             thiswindow = thiswindow.parent;
                             i++;
                         }
+                        thiswindow.location = this.getAttribute("href");
                     }
-                    thiswindow.location = this.getAttribute("href");
                 });
             });
         </script>
@@ -224,7 +224,13 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                             'actionModel' => $model,
                         ));
                     }else{
-                        echo ucwords(Events::parseModelName(X2Model::getModelName($model->associationType))).": <span class='model-link'>".X2Model::getModelLink($model->associationId, X2Model::getModelName($model->associationType))."</span>";
+                        echo ucwords(
+                            Events::parseModelName(X2Model::getModelName($model->associationType))).
+                            ": <span class='model-link'>".
+                                X2Model::getModelLink(
+                                    $model->associationId, 
+                                    X2Model::getModelName($model->associationType)).
+                            "</span>";
                     }
                     ?>
                 </div>

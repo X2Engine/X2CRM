@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -43,7 +43,7 @@ Yii::import('application.modules.users.models.User');
  * This is kept separate from ApiControllerTest to make it faster; it doesn't
  * require all the same fixtures.
  *
- * @package X2CRM.tests.api
+ * @package application.tests.api
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class ApiControllerSecurityTest extends CURLTestCase {

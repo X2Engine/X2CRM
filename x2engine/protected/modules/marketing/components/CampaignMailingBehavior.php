@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -52,7 +52,7 @@ Yii::import('application.modules.docs.models.*');
  *  email is being sent to. If it's not a campaign, but a newsletter, this will
  *  be an ad-hoc contact model with its email address set to that of the list
  *  item.
- * @package X2CRM.modules.marketing.components
+ * @package application.modules.marketing.components
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class CampaignMailingBehavior extends EmailDeliveryBehavior {
@@ -508,12 +508,13 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             ':listId' => $this->listItem->listId,
             ':emailAddress' => $this->recipient->email,
             ':email' => $this->recipient->email,
+            ':setEmail' => $this->recipient->email,
             ':id' => $this->itemId,
             ':sent' => time(),
             ':uniqueId' => $uniqueId
         );
         $condition = 'i.id=:id OR (i.listId=:listId AND (i.emailAddress=:emailAddress OR c.email=:email))';
-        $columns = 'i.sent=:sent,i.uniqueId=:uniqueId,sending=0';
+        $columns = 'i.sent=:sent,i.uniqueId=:uniqueId,sending=0,emailAddress=:setEmail';
         Yii::app()->db->createCommand('UPDATE x2_list_items AS i LEFT JOIN x2_contacts AS c ON c.id=i.contactId SET '.$columns.' WHERE '.$condition)->execute($params);
     }
 

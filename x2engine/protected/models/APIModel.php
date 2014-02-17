@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -35,7 +35,7 @@
  *****************************************************************************************/
  
 /**
- * Standalone model class for interaction with X2CRM's API
+ * Standalone model class for interaction with X2Engine's API
  *
  * Remote data insertion & lookup API model. Has multiple magic methods and
  * automatically makes cURL requests to API controller for ease of use. For each
@@ -43,7 +43,7 @@
  * view this reference, look at the URL path for the method. For example 'api/create'
  * corresponds to actionCreate in ApiController.
  *
- * @package X2CRM.models
+ * @package application.models
  * @author Jake Houser <jake@x2engine.com>, Demitri Morgan <demitri@x2engine.com>
  * @property mixed $responseObject Response data from the server
  * @property array $modelErrors Validation errors, if any, from the server.
@@ -293,7 +293,7 @@ class APIModel {
         if ($leadRouting) {
             $attributes['assignedTo'] = $this->_send('admin/getRoutingType', array_merge($attributes,$this->attributes));
         }
-	return $this->modelCreateUpdate('Contacts','create',$attributes);
+	    return $this->modelCreateUpdate('Contacts','create',$attributes);
     }
 
     /**
@@ -383,8 +383,7 @@ class APIModel {
 		// Set custom options next so that they override defaults:
 		curl_setopt_array($ch,$curlOpts);
 		if($post) // Set payload data
-			curl_setopt($ch,CURLOPT_POSTFIELDS,array_merge($postData,$authOpts));
-
+			curl_setopt($ch,CURLOPT_POSTFIELDS,$postData = array_merge($postData,$authOpts));
 		return $ch;
 	}
 

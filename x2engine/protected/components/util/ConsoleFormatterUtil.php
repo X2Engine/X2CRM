@@ -1,6 +1,7 @@
 <?php
+
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -35,17 +36,81 @@
  *****************************************************************************************/
 
 /**
- * Base marketing widget class
- * 
- * @package X2CRM.modules.marketing.components
+ * Class for formatting pretty console messages.
+ *
+ * Formatting methods are intended to be chained, i.e.
+ *
+ * $formatter->bgColor($backgroundColor)->bold()->color($textColor)->format();
+ *
+ * Only "format" returns the message with the escape sequences. Note also,
+ *
  * @author Demitri Morgan <demitri@x2engine.com>
+ * @package application.commands
  */
-class MarketingModuleWidget extends X2Widget {
+class ConsoleFormatterUtil {
 
-    public function getModule() {
-        return Yii::app()->getModule('marketing');
+    public $msg;
+
+    /**
+     * ANSI escape sequence codes
+     * @var type
+     */
+    private $_seq = array(
+        'clr' => '0',
+        'bold' => '1',
+        'black' => '30',
+        'red' => '31',
+        'green' => '32',
+        'yellow' => '33',
+        'blue' => '34',
+        'purple' => '35',
+        'cyan' => '36',
+        'white' => '37',
+        'bg_black' => '40',
+        'bg_red' => '41',
+        'bg_magenta' => '45',
+        'bg_yellow' => '43',
+        'bg_green' => '42',
+        'bg_blue' => '44',
+        'bg_cyan' => '46',
+        'bg_light_gray' => '47',
+    );
+
+    public function __construct($msg){
+        $this->msg = $msg;
     }
 
+    public function bgColor($color) {
+        $color = isset($this->_seq["bg_$color"]) ? $this->_seq["bg_$color"] : $color;
+        $this->msg = "\033[".$color.'m'.$this->msg;
+        return $this;
+    }
+
+    /**
+     * Returns a message in boldface.
+     * @param type $msg
+     */
+    public function bold(){
+        $this->msg = "\033[".$this->_seq['bold'].'m'.$this->msg;
+        return $this;
+    }
+
+    /**
+     * Returns a message with color sequences applied.
+     *
+     * @param type $msg
+     * @param type $color
+     * @return type
+     */
+    public function color($color){
+        $color = isset($this->_seq[$color]) ? $this->_seq[$color] : $color;
+        $this->msg = "\033[".$color.'m'.$this->msg;
+        return $this;
+    }
+
+    public function format(){
+        return $this->msg."\033[".$this->_seq['clr'].'m';
+    }
 }
 
 ?>

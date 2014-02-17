@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -40,7 +40,7 @@
  * the email was sent. This uniqueId is used in /actions/emailOpened($uid)
  * to keep track of which emails have been opened by the Contact. 
  *
- * @package X2CRM.models
+ * @package application.models
  * @property integer $id
  * @property integer $actionId
  * @property string $uniqueId

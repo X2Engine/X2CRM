@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -36,17 +36,20 @@
  *****************************************************************************************/
 
 /**
- * Stand-alone class for running command line programs.
+ * Stand-alone class for running more advanced command line programs.
  *
- * Provides a wrapper/shortcut object for running commands using proc_open, in
- * addition to daisy-chaining programs via piping. An example, on Unix-like
- * systems:
+ * Provides a wrapper/shortcut object for running commands using proc_open.
+ * 
+ * This should ideally permit chaining of programs via pipes. An example, on
+ * Unix-like systems:
  *
  * $cmd->run('ps aux')->pipeTo('awk \'/foo/ {print $2}\'')->pipeTo('kill')->complete();
  *
- * The above would send SIGTERM to all processes matching "foo".
+ * The above would send SIGTERM to all processes matching "foo". However, this
+ * is not yet possible due to a "bug" in PHP:
+ * http://stackoverflow.com/questions/6014761/proper-shell-execution-in-php
  *
- * @package X2CRM.components.util
+ * @package application.components.util
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class CommandUtil {
@@ -106,8 +109,6 @@ class CommandUtil {
 		$this->os = substr(strtoupper(PHP_OS), 0, 3) == 'WIN' ? 'dos' : 'posix';
 	}
 
-
-
 	/**
 	 * Closes a process and throws an exception if it exited with error code.
 	 * @param type $ind
@@ -116,9 +117,11 @@ class CommandUtil {
 	public function close($ind){
 		if(gettype($this->processes[$ind]) != 'resource')
 			return;
+        $this->debug('Closing process at index '.$ind);
 		$err = stream_get_contents($this->pipeline[$ind][2]);
 		if($code = proc_close($this->processes[$ind]) == -1 && self::DEBUG)
 			throw new Exception("Command {$this->cmd[$ind]} exited with error status.".(empty($err) ? '' : " Error output was as follows: \n $err"));
+        $this->debug('Closed process at index '.$ind);
 		return $code;
 	}
 
@@ -152,6 +155,12 @@ class CommandUtil {
 		return $this->lastReturnCode = $code;
 	}
 
+    public function debug($msg,$lvl=1) {
+        if(self::DEBUG >= $lvl) {
+            echo "[debug] $msg\n";
+        }
+    }
+
 	/**
 	 * Returns the current number of subprocesses.
 	 * @return integer
@@ -168,7 +177,7 @@ class CommandUtil {
 		$n_proc = $this->nProc();
 		if($n_proc > 0){
 			$output = stream_get_contents($this->pipeline[$n_proc - 1][1]);
-			$this->complete();
+            $this->complete();
 			return $output;
 		} else
 			return null;
@@ -194,6 +203,7 @@ class CommandUtil {
 	 */
 	public function pipeTo($cmd, $cwd = null, $filter = null){
 		$n_proc = $this->nProc();
+        $this->debug('pipeTo('.$cmd.'): $n_proc = '.$n_proc);
 		if($n_proc == 0)
 			throw new Exception('Cannot pipe to subprocess; no prior processes from which to pipe have been opened.');
 		return $this->run($cmd, $n_proc - 1, $cwd, $filter);
@@ -218,9 +228,11 @@ class CommandUtil {
 			if($inputType == 'resource'){
 				// Interpret as a file descriptor.
 				$inputText = stream_get_contents($input);
+                $this->debug("Interpreted input as a stream resource, and read input:\n$inputText",2);
 			}else if($inputType == 'string'){
 				// Interpret as literal input
 				$inputText = $input;
+                $this->debug("Interpreted input as a string, and it is:\n$inputText",2);
 			}else if($inputType == 'integer'){
 				// Interpret as an index of a process whose output will be used as input
 				$inputText = stream_get_contents($this->pipeline[$input][1]);
@@ -231,15 +243,19 @@ class CommandUtil {
 
 		// Spawn new process
 		$procIndex = $this->nProc();
+        $this->debug("Spawning $cmd and storing process handle at index $procIndex");
 		$this->cmd[$procIndex] = $cmd;
 		$this->processes[$procIndex] = proc_open($cmd, $descriptor, $this->pipeline[$procIndex], $cwd);
-		$filter = empty($filter) ? '/.*/' : $filter;
+        $filter = empty($filter) ? '/.*/' : $filter;
+        
 		// Write input to process
 		if(!empty($inputText)){ // Send input to the program
+            $this->debug("Writing to input of child process $procIndex...");
 			$this->inputs[$procIndex] = $inputText;
 			foreach(explode("\n", $inputText) as $inputLine)
 				if(preg_match($filter, $inputLine))
 					fwrite($this->pipeline[$procIndex][0], $inputLine);
+            $this->debug("...done.");
 		}
 		return $this;
 	}

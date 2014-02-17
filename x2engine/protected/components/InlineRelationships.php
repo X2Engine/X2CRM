@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -41,7 +41,7 @@
  * Relationships lists the relationships a model has with other models,
  * and provides a way to add existing models to the models relationships.
  *
- * @package X2CRM.components 
+ * @package application.components 
  */
 class InlineRelationships extends X2Widget {
 

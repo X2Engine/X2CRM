@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,7 +38,7 @@
  *  Calendar lets you create calendar events, view actions from other modules, and sync to google calendar.
  *
  * @property User $currentUser The currently logged-in user who is accessing the calendar
- * @package X2CRM.modules.calendar.controllers
+ * @package application.modules.calendar.controllers
  */
 class CalendarController extends x2base {
 

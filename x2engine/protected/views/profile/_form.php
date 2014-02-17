@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -95,7 +95,7 @@
 	<div class="row">
 		<div class="cell">
 			<?php echo $form->labelEx($model,'googleId'); ?>
-			<?php echo $form->textField($model,'googleId',array('size'=>40,'maxlength'=>250)).' <span class="x2-hint" title="This field should contain a Google Account (i.e. yourname@gmail.com) which you can use to log in to X2CRM with if Google Integration has been enabled.">[?]</span>'; ?>
+			<?php echo $form->textField($model,'googleId',array('size'=>40,'maxlength'=>250)).' <span class="x2-hint" title="This field should contain a Google Account (i.e. yourname@gmail.com) which you can use to log in to X2Engine with if Google Integration has been enabled.">[?]</span>'; ?>
 			<?php echo $form->error($model,'googleId'); ?>
 		</div>
 	</div>

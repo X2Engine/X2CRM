@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -77,7 +77,7 @@ Yii::import('application.modules.quotes.models.*');
  * 	be placed in the email
  * @property string $uniqueId A unique ID used for the tracking record and
  * 	tracking image URL
- * @package X2CRM.models
+ * @package application.models
  */
 class InlineEmail extends CFormModel {
     // Enclosure comments:
@@ -610,7 +610,7 @@ class InlineEmail extends CFormModel {
      * Parses the tracking image and unique ID out of the body if there are any.
      *
      * The email will be tracked, but only if one and only one of the recipients
-     * corresponds to a contact in X2CRM (remember, the user can switch the
+     * corresponds to a contact in X2Engine (remember, the user can switch the
      * recipient list at the last minute by modifying the "To:" field).
      *
      * Otherwise, there's absolutely no way of telling with any certainty who

@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,11 +38,14 @@
  * Data provider class
  *
  * A child of CActiveDataProvider made for the purposes of getting pagingation to
- * wok properly.
+ * work properly.
  *
- * @package X2CRM.components
+ * @package application.components
  */
 class SmartDataProvider extends CActiveDataProvider {
+    
+    private $_countCriteria;
+
 	public function __construct($modelClass,$config=array(), $uniqueId=null) {
 		parent::__construct($modelClass, $config);
 
@@ -109,6 +112,7 @@ class SmartDataProvider extends CActiveDataProvider {
 	 */
 	protected function fetchData() {
 		$criteria=clone $this->getCriteria();
+        $criteria->with = array();
 
 		if(($pagination=$this->getPagination())!==false) {
 			$pagination->setItemCount($this->getTotalItemCount());
@@ -141,4 +145,20 @@ class SmartDataProvider extends CActiveDataProvider {
 		$this->model->setDbCriteria($baseCriteria);  // restore original criteria
 		return $data;
 	}
+
+    /**
+     * Generates the item count without eager loading, to improve performance.
+     * @return type
+     */
+    public function calculateTotalItemCount(){
+        if($this->model instanceof X2Model) {
+            if(!isset($this->_countCriteria)) {
+                $this->_countCriteria = clone $this->getCriteria();
+                $this->_countCriteria->with = array();
+            }
+            return X2Model::model($this->modelClass)->count($this->_countCriteria);
+        }else{
+            return parent::calculateTotalItemCount();
+        }
+    }
 }

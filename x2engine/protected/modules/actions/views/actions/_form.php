@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -139,13 +139,15 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->par
                 <div class="cell">
                     <?php echo $form->hiddenField($actionModel, 'associationId'); ?>
                     <?php
-                    if($actionModel->type == 'event')
-                        echo $form->label($actionModel, 'startDate');
-                    else
-                        echo $form->label($actionModel, 'dueDate');
+                    Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+                    if(!$actionModel->isTimedType) {
+                        if($actionModel->type == 'event')
+                            echo $form->label($actionModel, 'startDate');
+                        else
+                            echo $form->label($actionModel, 'dueDate');
                     if(is_numeric($actionModel->dueDate))
                         $actionModel->dueDate = Formatter::formatDateTime($actionModel->dueDate); //format date from DATETIME
-                    Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+                    
                     $this->widget('CJuiDateTimePicker', array(
                         'model' => $actionModel, //Model object
                         'attribute' => 'dueDate', //attribute name
@@ -160,8 +162,8 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->par
                         'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
                         'htmlOptions' => array('onClick' => "$('#ui-datepicker-div').css('z-index', '20');"), // fix datepicker so it's always on top
                     ));
+                    echo $form->error($actionModel, 'dueDate'); 
                     ?>
-                    <?php echo $form->error($actionModel, 'dueDate'); ?>
                     <?php
                     if($actionModel->type == 'event'){
                         echo $form->label($actionModel, 'endDate');
@@ -191,6 +193,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->par
                         echo $form->error($actionModel, 'completeDate');
                         echo $form->label($actionModel, 'allDay');
                         echo $form->checkBox($actionModel, 'allDay');
+                    }
                     }
                     ?>
                 </div>
@@ -280,7 +283,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->par
                     ),
                 ));
                 ?>
-            </div>
+            </div><!-- .cell -->
             <div class="cell">
                 <?php echo $form->labelEx($actionModel, 'lastUpdated'); ?>
                 <?php
@@ -302,10 +305,35 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->par
                     ),
                 ));
                 ?>
+            </div><!-- .cell -->
+            <?php if($actionModel->isTimedType) { ?>
+            <div class="cell">
+                <?php echo $form->labelEx($actionModel, 'startDate'); ?>
+                <?php
+                $actionModel->dueDate = Formatter::formatDateTime($actionModel->dueDate);
+                $this->widget('CJuiDateTimePicker', array(
+                    'model' => $actionModel, //Model object
+                    'attribute' => 'dueDate', //attribute name
+                    'mode' => 'datetime', //use "time","date" or "datetime" (default)
+                    'options' => array(
+                        'dateFormat' => ( (isset($this->controller)) ? Formatter::formatDatePicker('medium') : Formatter::formatDatePicker('medium') ),
+                        'timeFormat' => ( (isset($this->controller)) ? Formatter::formatTimePicker() : Formatter::formatTimePicker() ),
+                        'ampm' => ( (isset($this->controller)) ? Formatter::formatAMPM() : Formatter::formatAMPM() ),
+                        'changeMonth' => false,
+                        'changeYear' => true,
+                    ), // jquery plugin options
+                    'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
+                    'htmlOptions' => array(
+                        'disabled' => $backdating,
+                    ),
+                ));
+                ?>
             </div>
-            <?php if($actionModel->complete == 'Yes'){ ?>
+            <?php } ?>
+
+            <?php if($actionModel->complete == 'Yes' || $actionModel->isTimedType){ ?>
                 <div class="cell">
-                    <?php echo $form->labelEx($actionModel, 'completeDate'); ?>
+                    <?php echo $form->labelEx($actionModel, $actionModel->isTimedType ? 'endDate' : 'completeDate'); ?>
                     <?php
                     $actionModel->completeDate = Formatter::formatDateTime($actionModel->completeDate);
                     $this->widget('CJuiDateTimePicker', array(
@@ -326,9 +354,22 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->par
                     ));
                     ?>
                 </div>
-            <?php } ?>
-        </div>
-    </div>
+
+            <?php } 
+            ?>
+            
+        </div><!-- #action-backdating -->
+</div><!-- .form -->
+<?php if(!$backdating 
+         && file_exists(__DIR__.DIRECTORY_SEPARATOR.'_actionTimersForm.php')
+         && $actionModel->complete == 'Yes') { ?>
+    <?php
+    $this->renderPartial('_actionTimersForm',array(
+        'model' => $actionModel,
+        'form' => $form,
+    ));
+    ?>
+<?php } ?>
 </div>
 <?php $this->endWidget(); ?>
 <script>

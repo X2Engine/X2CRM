@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -50,6 +50,8 @@ Yii::app()->clientScript->registerScriptFile (
 
 
 $massActionLabels = array (
+    'completeAction' => Yii::t ('app', 'Complete selected actions'),
+    'uncompleteAction' => Yii::t ('app', 'Uncomplete selected actions'),
     'newList' => Yii::t ('app', 'New list from selection'),
     'addToList' => Yii::t ('app', 'Add selected to list'),
     'removeFromList' => Yii::t ('app', 'Remove selected from list'),
@@ -247,6 +249,10 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
             gridSelector: '#".$gridId."',
             fixedHeader: ".($fixedHeader ? 'true' : 'false').",
             executeUrls: {
+                completeAction: '".Yii::app()->request->getScriptUrl () . '/' . 
+                    lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
+                uncompleteAction: '".Yii::app()->request->getScriptUrl () . '/' . 
+                    lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
                  
                 removeFromList: '".Yii::app()->request->getScriptUrl () . 
                     '/' . lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',

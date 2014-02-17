@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -44,7 +44,7 @@ Yii::import('application.models.X2Model');
  * @property Contacts $contact First contact associated with this quote.
  * @property array $lineItems All line items for the quote.
  * @property array $productLines (read-only) Line items that are products/services.
- * @package X2CRM.modules.quotes.models
+ * @package application.modules.quotes.models
  * @author David Visbal, Demitri Morgan <demitri@x2engine.com>
  */
 class Quote extends X2Model {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package X2CRM.modules.users
+ * @package application.modules.users
  */
 class UsersModule extends CWebModule {
 	public function init() {

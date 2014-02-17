@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -39,7 +39,7 @@
 /**
  * This is the model class for table "x2_users".
  *
- * @package X2CRM.modules.users.models
+ * @package application.modules.users.models
  */
 class User extends CActiveRecord {
 
@@ -91,6 +91,7 @@ class User extends CActiveRecord {
             array('backgroundInfo', 'safe'),
             array('username', 'unique', 'allowEmpty' => false),
             array('username', 'match', 'pattern' => '/^\d+$/', 'not' => true), // No numeric usernames. That will break association with groups.
+            array('username','match','pattern'=>'/^\w+$/'), // Username must be alphanumerics/underscores only
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, firstName, lastName, username, password, title, department, officePhone, cellPhone, homePhone, address, backgroundInfo, emailAddress, status, lastUpdated, updatedBy, recentItems, topContacts, lastLogin, login', 'safe', 'on' => 'search'),
@@ -301,7 +302,7 @@ class User extends CActiveRecord {
     public static function getUserLinks($users, $makeLinks = true, $useFullName = true){
         if(!is_array($users)){
             /* x2temp */
-            if(is_numeric($users)){
+            if(preg_match('/^\d+$/',$users)){
                 $group = Groups::model()->findByPk($users);
                 if(isset($group))
                 //$link = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;

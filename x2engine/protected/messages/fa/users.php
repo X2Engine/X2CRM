@@ -19,7 +19,7 @@ return array (
 // Users Titles
 'User: {name}'=>'{name}: کاربر',
 'Update User: {name}'=>'{name}: بروزرسانی کاربر',
-'Invite Users to X2CRM'=>'دعوت از کاربران برای X2CRM',
+'Invite Users to X2Engine'=>'دعوت از کاربران برای X2Engine',
 'Instructions'=>'دستورالعمل ها',
 'Delete Unregistered'=>'حذف ثبت نام نشده',
 'Invited Users'=>'کاربران دعوت شده',

@@ -1,43 +1,47 @@
 DROP TABLE IF EXISTS x2_media;
 /*&*/
 CREATE TABLE x2_media(
-	id				INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	associationType	VARCHAR(40)		NOT NULL,
-	associationId	INT,
-	uploadedBy		VARCHAR(50),
-	fileName		VARCHAR(100),
-    title           VARCHAR(255),
-	createDate		BIGINT,
-	lastUpdated		BIGINT,
-	private			TINYINT         DEFAULT 0,
-	description		TEXT,
-	mimetype		VARCHAR(250),
-	filesize		INT,
-	dimensions		VARCHAR(40),
-    drive           TINYINT         DEFAULT 0
+    id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    associationType VARCHAR(40) NOT NULL,
+    associationId   INT,
+    uploadedBy      VARCHAR(50),
+    fileName        VARCHAR(100),
+    `name`          VARCHAR(255),
+    nameId          VARCHAR(250) DEFAULT NULL,
+    createDate      BIGINT,
+    lastUpdated     BIGINT,
+    private         TINYINT DEFAULT 0,
+    description     TEXT,
+    mimetype        VARCHAR(250),
+    filesize        INT,
+    dimensions      VARCHAR(40),
+    drive           TINYINT DEFAULT 0,
+    UNIQUE(nameId)
 ) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules`
-			(`name`,	title,	visible,	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("media",	"Media",1,			13,				0,			0,			0,			0,		0);
+(`name`,    title,    visible,    menuPosition,    searchable,    editable,    adminOnly,    custom,    toggleable)
+VALUES
+('media', 'Media', 1, 13, 0, 0, 0, 0, 0);
 /*&*/
 INSERT INTO x2_fields
-(modelName,	fieldName,			attributeLabel,			modified,	custom,		type,			required,	readOnly,	linkType,		searchable,	isVirtual,	relevance)
+(modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, keyType)
 VALUES
-("Media",	"id",				"ID",					0,			0,			"varchar",		0,			1,			NULL,			0,			0,			""),
-("Media",	"associationType",	"Association Type",		0,			0,			"varchar",		1,			1,			NULL,			0,			0,			""),
-("Media",	"associationId",	"Association ID",		0,			0,			"int",			0,			1,			NULL,			0,			0,			""),
-("Media",	"uploadedBy",		"Uploaded By",			0,			0,			"assignment",	0,			1,			NULL,			0,			0,			""),
-("Media",	"fileName",			"File Name",			0,			0,			"varchar",		0,			0,			NULL,			1,			0,			"High"),
-("Media",	"title",			"Title",                0,			0,			"varchar",		0,			0,			NULL,			1,			0,			"High"),
-("Media",	"createDate",		"Create Date",			0,			0,			"dateTime",		0,			1,			NULL,			0,			0,			""),
-("Media",	"lastUpdated",		"Last Updated",			0,			0,			"dateTime",		0,			1,			NULL,			0,			0,			""),
-("Media",	"private",			"Private",				0,			0,			"int",			0,			0,			NULL,			0,			0,			""),
-("Media",	"description",		"Description",			0,			0,			"text",			0,			0,			NULL,			1,			0,			"Medium"),
-("Media",	"mimetype",			"MIME Info",			0,			0,			"varchar",		0,			1,			NULL,			0,			0,			""),
-("Media",	"filesize",			"File Size",			0,			0,			"int",			0,			1,			NULL,			0,			0,			""),
-("Media",	"drive",			"Google Drive",			0,			0,			"int",			0,			0,			NULL,			0,			0,			""),
-("Media",	"dimensions",		"Dimensions",			0,			0,			"varchar",		0,			1,			NULL,			0,			0,			"");
+('Media', 'id',              'ID',               0, 0, 'varchar',    0, 1, NULL, 0, 0, '',       'PRI'),
+('Media', 'associationType', 'Association Type', 0, 0, 'varchar',    1, 1, NULL, 0, 0, '',       NULL),
+('Media', 'associationId',   'Association ID',   0, 0, 'int',        0, 1, NULL, 0, 0, '',       NULL),
+('Media', 'uploadedBy',      'Uploaded By',      0, 0, 'assignment', 0, 1, NULL, 0, 0, '',       NULL),
+('Media', 'fileName',        'File Name',        0, 0, 'varchar',    0, 0, NULL, 1, 0, 'High',   NULL),
+('Media', 'name',            'Title',            0, 0, 'varchar',    0, 0, NULL, 1, 0, 'High',   NULL),
+('Media', 'nameId',          'NameID',           0, 0, 'varchar',    0, 1, NULL, 1, 0, 'High',   'FIX'),
+('Media', 'createDate',      'Create Date',      0, 0, 'dateTime',   0, 1, NULL, 0, 0, '',       NULL),
+('Media', 'lastUpdated',     'Last Updated',     0, 0, 'dateTime',   0, 1, NULL, 0, 0, '',       NULL),
+('Media', 'private',         'Private',          0, 0, 'int',        0, 0, NULL, 0, 0, '',       NULL),
+('Media', 'description',     'Description',      0, 0, 'text',       0, 0, NULL, 1, 0, 'Medium', NULL),
+('Media', 'mimetype',        'MIME Info',        0, 0, 'varchar',    0, 1, NULL, 0, 0, '',       NULL),
+('Media', 'filesize',        'File Size',        0, 0, 'int',        0, 1, NULL, 0, 0, '',       NULL),
+('Media', 'drive',           'Google Drive',     0, 0, 'int',        0, 0, NULL, 0, 0, '',       NULL),
+('Media', 'dimensions',      'Dimensions',       0, 0, 'varchar',    0, 1, NULL, 0, 0, '',       NULL);
 /*&*/
 INSERT INTO x2_media
 (associationType, fileName)

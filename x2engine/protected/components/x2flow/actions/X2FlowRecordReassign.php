@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@
 /**
  * X2FlowAction that reassigns a record
  *
- * @package X2CRM.components.x2flow.actions
+ * @package application.components.x2flow.actions
  */
 class X2FlowRecordReassign extends X2FlowAction {
 
@@ -77,7 +77,13 @@ class X2FlowRecordReassign extends X2FlowAction {
 
         $user = $this->parseOption('user', $params);
         if($user === 'auto'){
-            $assignedTo = $this->getNextAssignee();
+            if (get_class ($model) === 'Contacts') {
+                $assignedTo = $this->getNextAssignee($model);
+            } else {
+                return array(
+                    false, Yii::t('studio', 'Lead routing rules cannot be used with {type} records',
+                        array ('{type}' => get_class ($model))));
+            }
         }elseif(CActiveRecord::model('User')->exists('username=?', array($user)) || 
                 CActiveRecord::model('Groups')->exists('id=?', array($user))){ 
             // make sure the user exists
@@ -88,7 +94,7 @@ class X2FlowRecordReassign extends X2FlowAction {
         }
 
         $model->assignedTo = $assignedTo;
-        if($model->save ()){
+        if($model->update (array ('assignedTo'))){
             if(is_subclass_of($model, 'X2Model')){
                 return array(
                     true,

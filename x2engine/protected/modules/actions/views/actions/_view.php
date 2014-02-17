@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -44,7 +44,9 @@ function deleteAction(actionId) {
 			//data: 'id='+actionId,
 			success: function(response) {
 				if(response=='Success')
-					$('#history-'+actionId).fadeOut(200,function() { $('#history-'+actionId).remove(); });
+					$('#history-'+actionId).fadeOut(200,function() { 
+                        $('#history-'+actionId).remove(); 
+                    });
 
 					// event detected by x2chart.js
 					$(document).trigger ('deletedAction');

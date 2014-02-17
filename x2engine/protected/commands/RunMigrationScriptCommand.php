@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -43,7 +43,7 @@
 class RunMigrationScriptCommand extends CConsoleCommand {
 
     public function run($args) {
-        if(file_exists($script = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'migrations',$args[0])))) {
+        if(file_exists($script = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,$args[0])))) {
             require_once $script;
         } else {
             echo "File not found: $script\n";

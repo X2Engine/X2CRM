@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -35,11 +35,14 @@
  *****************************************************************************************/
 
 /**
- * Base widget class for all of X2EngineCRM's widgets
- * 
- * @package X2CRM.components
+ * Base widget class for all of X2Engine's widgets
+ *
+ * @property X2WebModule $module
+ * @package application.components
  */
 abstract class X2Widget extends CWidget {
+
+    protected $_module;
 
 	/**
 	 * Renders a view file.
@@ -57,6 +60,52 @@ abstract class X2Widget extends CWidget {
 		$viewFile = Yii::getCustomPath($viewFile);
 		return parent::renderFile($viewFile,$data,$return);
 	}
+
+    /**
+     * Runs an arbitrary function inside a partial view. All scripts registered get processed.
+     * Allows scripts associated with a widget to be returned in AJAX response.
+     * 
+     * @param function $function
+     */
+    public static function ajaxRender ($function) {
+        Yii::app()->controller->renderPartial (
+            'application.components.views._ajaxWidgetContents',
+            array (
+                'run' => $function
+            ), false, true);
+    }
+
+    /**
+     * Getter for {@link module}.
+     *
+     * Can automatically recognize when a component is a member of a module's
+     * collection of components.
+     * @return type
+     */
+    public function getModule(){
+        if(!isset($this->_module)){
+            // Ascertain the module to which the widget belongs by virtue of its
+            // location in the file system:
+            $rc = new ReflectionClass(get_class($this));
+            $path = $rc->getFileName();
+            $ds = preg_quote(DIRECTORY_SEPARATOR,'/');
+            $pathPattern = array(
+                'protected',
+                'modules',
+                '(?P<module>[a-z0-9]+)',
+                'components',
+                '\w+\.php'
+            );
+            if(preg_match('/'.implode($ds,$pathPattern).'$/',$path,$match)) {
+                // The widget is part of a module:
+                $this->_module = Yii::app()->getModule($match['module']);
+            } else {
+                // Assume the widget's module is the currently-requested module:
+                $this->_module = Yii::app()->controller->module;
+            }
+        }
+        return $this->_module;
+    }
 
 }
 ?>

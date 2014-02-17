@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,7 +38,7 @@
 /**
  * X2FlowAction that creates a new action
  *
- * @package X2CRM.components.x2flow.actions
+ * @package application.components.x2flow.actions
  */
 class X2FlowRecordCreateAction extends X2FlowAction {
 

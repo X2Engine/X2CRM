@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -39,7 +39,7 @@
  * 
  * Renders the actions widget with action statistics, i.e. how many actions total,
  * how many actions complete, how many incomplete, titled "My Actions"
- * @package X2CRM.components 
+ * @package application.components 
  */
 class HelpfulTips extends X2Widget {
 	public $visibility;

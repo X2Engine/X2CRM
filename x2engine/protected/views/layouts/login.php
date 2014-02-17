@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -111,7 +111,7 @@ Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientS
 <meta name="language" content="<?php echo Yii::app()->language; ?>" />
 
 <meta name="description" content="X2Engine - Open Source Customer Relationship Management (CRM) and Sales Force Application">
-<meta name="keywords" content="open source,CRM,customer relationship management,contact management,sales force,php,x2engine,x2crm">
+<meta name="keywords" content="open source,CRM,customer relationship management,contact management,sales force,php,x2engine,X2Engine">
 
 
 <link rel="icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon0" />

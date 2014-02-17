@@ -48,7 +48,7 @@ class X2MessageSource extends CMessageSource {
     /**
      * @var boolean Whether or not to log a missing translation if the index is found
      * in the messages file, but the translation message is blank. For example,
-     * 'X2CRM'=>'' would trigger an onMissingTranslation event if this parameter
+     * 'X2Engine'=>'' would trigger an onMissingTranslation event if this parameter
      * is set to true, but will not trigger if it is set to false.
      */
     public $logBlankMessages = true;

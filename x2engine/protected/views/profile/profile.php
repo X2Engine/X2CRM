@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -42,7 +42,6 @@ get displayed in addition to the activity feed/profile information sections.
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/profile.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/profileCombined.css');
-//Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/profile.css');
 
 AuxLib::registerPassVarsToClientScriptScript (
     'x2.profile', array ('isMyProfile' => ($isMyProfile ? 'true' : 'false')), 'profileScript');

@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -36,12 +36,12 @@
 
 return array (
 // Install screen
-'Install X2EngineCRM'=>'Установка X2EngineCRM',
-'X2EngineCRM Installation'=>'Установка X2EngineCRM',
+'Install X2Engine'=>'Установка X2Engine',
+'X2Engine Installation'=>'Установка X2Engine',
 'Installation Complete'=>'Установка завершена',
 'This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'=>'Это веб-приложение требует Javascript для правильной работы. Пожалуйста, включите Javascript в Вашем браузере, прежде чем продолжить.',
 // Requirements check
-'Cannot install X2EngineCRM'=>'Не удается установить X2EngineCRM',
+'Cannot install X2Engine'=>'Не удается установить X2Engine',
 'required but missing'=>'требуется, но отсутствует',
 'Your server\'s PHP version'=>'PHP вашего сервера версии',
 'version 5.3 or later is required'=>'версии 5.3 или более поздней версии',
@@ -49,9 +49,9 @@ return array (
 'Otherwise, contact your hosting provider.'=>'В противном случае, обратитесь к вашему хостинг-провайдеру.',
 'If you are a system administrator of this server, refer to'=>'Если вы являетесь системным администратором этого сервера, обратитесь к',
 
-'Welcome to the X2EngineCRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Добро пожаловать в программу установки приложения X2EngineCRM! Пожалуйста, заполните поля, перечисленные ниже.',
+'Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'=>'Добро пожаловать в программу установки приложения X2Engine! Пожалуйста, заполните поля, перечисленные ниже.',
 
-'X2EngineCRM Application Info'=>'Информация о Вашем приложении X2EngineCRM',
+'X2Engine Application Info'=>'Информация о Вашем приложении X2Engine',
 
 'Application Name'=>'Имя приложения',
 'Default Language'=>'Язык по умолчанию',
@@ -77,13 +77,13 @@ return array (
 'Email'=>'E-mail',
 'Company'=>'компания',
 'Position'=>'положение',
-'How you found X2EngineCRM'=>'Как вы нашли X2EngineCRM',
+'How you found X2Engine'=>'Как вы нашли X2Engine',
 'Phone Number'=>'Номер телефона',
 'Subscribe to the newsletter'=>'Подписаться на рассылку',
 'Comments'=>'Комментарии',
 'Request a follow-up contact'=>'Заказать последующих контактов',
 'Software Updates'=>'Обновления программного обеспечения',
-'Please help us improve X2EngineCRM by providing the following information:'=>'Пожалуйста, помогите нам улучшить X2EngineCRM, предоставив следующую информацию:',
+'Please help us improve X2Engine by providing the following information:'=>'Пожалуйста, помогите нам улучшить X2Engine, предоставив следующую информацию:',
 'Software update notifications enabled.'=>'Уведомления обновление программного обеспечения включено.',
 'Optional Information'=>'Дополнительная информация',
 'Could not connect to the updates server at this time.'=>'Не удалось подключиться к серверу обновлений в это время.',
@@ -117,15 +117,15 @@ return array (
 'The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.'=>'Опции конфигурации PHP &quot;allow_url_fopen&quot; отключена. CURL будет использоваться для изготовления всех HTTP запросов при обновлении.',
 'This web server is effectively cut off from the internet; (1) no outbound network route exists, or (2) local DNS resolution is failing, or (3) this server is behind a firewall that is preventing outbound requests. Software updates and Google integration will not work.'=>'Этот веб-сервер фактически отрезаны от интернета: (1) нет исходящих маршрутной сети не существует, или (2) местные DNS разрешение не удается, или (3) этот сервер находится за брандмауэром, которая не позволяет исходящие запросы. Обновления программного обеспечения и интеграции Google не будет работать.',
 'Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will not work.'=>'Не смогли достичь сервер обновлений с этого веб-сервера. Это может быть временная проблема. Если она сохранится, обновления программного обеспечения не будет работать.',
-'The function proc_open and/or the "mysqldump" and "mysql" command line utilities are unavailable on this system. X2CRM will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.'=>'Proc_open функции и / или &quot;туздЫшпр&quot; и &quot;MySQL&quot; утилиты командной строки недоступны на данной системе. X2CRM не сможет автоматически сделать резервную копию своей базы данных в процессе обновления программного обеспечения или автоматически восстановить свою базу данных в случае неудачного обновления.',
+'The function proc_open and/or the "mysqldump" and "mysql" command line utilities are unavailable on this system. X2Engine will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.'=>'Proc_open функции и / или &quot;туздЫшпр&quot; и &quot;MySQL&quot; утилиты командной строки недоступны на данной системе. X2Engine не сможет автоматически сделать резервную копию своей базы данных в процессе обновления программного обеспечения или автоматически восстановить свою базу данных в случае неудачного обновления.',
 'The path defined in session.save_path ({ssp}) is not writable. Uploading files via the media module will not work.'=>'Путь определен в session.save_path ( {ssp} ) не доступен для записи. Загрузка файлов через коммуникационный модуль не будет работать.',
-'The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2CRM, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.'=>'&quot;OpenSSL&quot; и &quot;Mcrypt&quot; библиотеки недоступны. Если какое-либо приложение учетных данных (т.е. пароли учетной записи электронной почты) вводятся в X2CRM, они будут храниться в базе данных в виде текста (без шифрования вообще). Таким образом, если базы данных все под угрозу, эти пароли будут читаться посторонними лицами.',
+'The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2Engine, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.'=>'&quot;OpenSSL&quot; и &quot;Mcrypt&quot; библиотеки недоступны. Если какое-либо приложение учетных данных (т.е. пароли учетной записи электронной почты) вводятся в X2Engine, они будут храниться в базе данных в виде текста (без шифрования вообще). Таким образом, если базы данных все под угрозу, эти пароли будут читаться посторонними лицами.',
 'This will result in the inability to import and export custom modules.'=>'Это приведет к невозможности импортировать и экспортировать пользовательские модули.',
 'Image previews and MIME info for uploaded files in the media module will not be available.'=>'Быстрый просмотр и MIME информацию для закачанных файлов в модуль данных не будут доступны.',
 'Security captchas will not work, and the media module will not be able to detect or display the dimensions of uploaded images.'=>'Безопасность капчи не будет работать, и коммуникационный модуль не сможет обнаружить или показывают размеры загруженных изображений.',
 'Unfortunately, your server does not meet the minimum system requirements;'=>'К сожалению, Ваш сервер не отвечает минимальным системным требованиям;',
 'Note the following:'=>'Обратите внимание на следующее:',
-'This webserver can run X2CRM!'=>'Этот веб-сервер может работать X2CRM!',
+'This webserver can run X2Engine!'=>'Этот веб-сервер может работать X2Engine!',
 'All other essential requirements were met.'=>'Все остальные основные требования были удовлетворены.',
 'Command'=>'Команда',
 'Simple Schedule'=>'Простое расписание',
@@ -163,9 +163,9 @@ return array (
 'Friday'=>'Пятница',
 'Sautrday'=>'Sautrday',
 'Schedule a Cron Task for Automation (optional)'=>'График задач Cron для автоматизации (опционально)',
-'To trigger scheduled or delayed tasks automatically in X2CRM requires adding a task to the local cron table.'=>'Для запуска запланированных или задержки задачи автоматически в X2CRM требует добавлении задачи в локальную таблицу хрон.',
-'Create a cron task for X2CRM'=>'Создание задач Cron для X2CRM',
-'Run delayed or recurring tasks within X2CRM'=>'Выполнить задержкой или повторяющихся задач в рамках X2CRM',
+'To trigger scheduled or delayed tasks automatically in X2Engine requires adding a task to the local cron table.'=>'Для запуска запланированных или задержки задачи автоматически в X2Engine требует добавлении задачи в локальную таблицу хрон.',
+'Create a cron task for X2Engine'=>'Создание задач Cron для X2Engine',
+'Run delayed or recurring tasks within X2Engine'=>'Выполнить задержкой или повторяющихся задач в рамках X2Engine',
 'The base directory configuration directive is set, and it does not include the current working directory.'=>'Базовая конфигурация каталога директива установлена, и она не включает в текущем рабочем каталоге.',
 'Some hashing algorithms required for software updates are missing on this server:'=>'Некоторые алгоритмы хэширования необходимых для обновления программного обеспечения не хватает на этом сервере:',
 'The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will have to be performed manually.'=>'Параметр конфигурации PHP &quot;allow_url_fopen&quot; отключена в дополнение к расширению CURL отсутствует. Это означает, что нет никакой возможности, чтобы сделать HTTP запросов и, таким образом, обновления программного обеспечения должны быть выполнены вручную.',

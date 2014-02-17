@@ -3,7 +3,7 @@
 /**
  * This is the model class for table "x2_modules".
  *
- * @package X2CRM.models
+ * @package application.models
  * @property integer $id
  * @property string $name
  * @property string $title

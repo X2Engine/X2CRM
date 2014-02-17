@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -40,7 +40,7 @@
  * 
  * LeadRouting is a CBehavior that provides logic for simple or complex 
  * distribution of leads to users
- * @package X2CRM.components
+ * @package application.components
  */
 class LeadRoutingBehavior extends CBehavior {
 
@@ -49,7 +49,7 @@ class LeadRoutingBehavior extends CBehavior {
 	 * 
 	 * @return string Username that should be assigned the next lead
 	 */
-	public function getNextAssignee() {
+	public function getNextAssignee($contact=null) {
 		$admin = &Yii::app()->params->admin;
 		$type = $admin->leadDistribution;
 		if ($type == "") {
@@ -59,7 +59,7 @@ class LeadRoutingBehavior extends CBehavior {
 		} elseif ($type == "trueRoundRobin") {
 			return $this->roundRobin();
 		} elseif ($type == "customRoundRobin") {
-            return $this->customRoundRobin ();
+            return $this->customRoundRobin ($contact);
 		} elseif ($type=='singleUser') {
             $user = User::model()->findByPk($admin->rrId);
             if(isset($user)){
@@ -72,15 +72,23 @@ class LeadRoutingBehavior extends CBehavior {
 
 	/**
 	 * Picks the next asignee for custom round robin lead routing rule.
+     * @param mixed $contact null or Contacts model. If this is set, it will be used in place of 
+     *  POST data for the purposes of testing routing rules.
 	 * @return mixed
 	 */
-    public function customRoundRobin () {
-        $arr = $_POST;
-        // for new lead capture form:
-        //     "Contacts" maps to an array of fields, check if this array exists and has fields, 
-        //     if so, set arr
-        if(isset($arr['Contacts']) && is_array($arr['Contacts']) && count($arr['Contacts']) > 0)
-            $arr = $arr['Contacts'];
+    public function customRoundRobin ($contact=null) {
+        if ($contact) {
+            $arr = $contact->getAttributes ();
+        } else {
+            $arr = $_POST;
+            /* for new lead capture form:
+                 "Contacts" maps to an array of fields, check if this array exists and has fields, 
+                 if so, set arr */
+            if(isset($arr['Contacts']) && is_array($arr['Contacts']) && 
+               count($arr['Contacts']) > 0) {
+                $arr = $arr['Contacts'];
+            }
+        }
         $users = $this->getRoutingRules($arr);
         if (!empty($users) && is_array($users) && count($users)>1) {
             $rrId = $users[count($users) - 1];

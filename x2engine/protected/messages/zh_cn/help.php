@@ -2,7 +2,7 @@
 return array (
 
 'Icon Reference'=>'图标参考',
-'X2CRM Modules'=>'X2CRM模块',
+'X2Engine Modules'=>'X2Engine模块',
 'Events'=>'活动',
 'Action Reminder'=>'操作提醒',
 'Calendar Event'=>'日历事件',

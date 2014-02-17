@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -52,12 +52,6 @@ $('.search-form form').submit(function(){
 });
 ");
 
-function trimText($text) {
-	if(mb_strlen($text,'UTF-8')>150)
-		return mb_substr($text,0,147,'UTF-8').'...';
-	else
-		return $text;
-}
 ?>
 <div class="search-form" style="display:none">
 <?php $this->renderPartial('_search',array(

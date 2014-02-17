@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@
 /**
  * Primary/default controller for the web application.
  *
- * @package X2CRM.controllers
+ * @package application.controllers
  */
 class SiteController extends x2base {
 
@@ -90,7 +90,7 @@ class SiteController extends x2base {
                     'bugReport', 'deleteRelationship', 'minMaxLeftWidget', 'toggleFeedControls', 'toggleFeedFilters',
                     'getTip', 'share', 'activityFeedOrder', 'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory',
                     'dynamicDropdown', 'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
-                    'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL'),
+                    'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL', 'removeTmpUpload'),
                 'users' => array('@'),
             ),
             array('allow',
@@ -811,7 +811,7 @@ class SiteController extends x2base {
                     try{
                         $file = new Google_DriveFile();
                         $file->setTitle($_FILES['upload']['name']);
-                        $file->setDescription('Uploaded by X2CRM');
+                        $file->setDescription('Uploaded by X2Engine');
                         $file->setMimeType($_FILES['upload']['type']);
 
                         $data = file_get_contents($_FILES['upload']['tmp_name']);
@@ -1164,10 +1164,6 @@ class SiteController extends x2base {
                     $request = Yii::app()->request->requestUri;
                     if(preg_match('/opportunity/', $request)){
                         $request = preg_replace('/opportunity/', 'opportunities', $request);
-                        $this->redirect($request);
-                    }
-                    if(preg_match('/id/', $request)){
-                        $request = preg_replace('/id\//', '', $request);
                         $this->redirect($request);
                     }
                     if(empty($referer)){

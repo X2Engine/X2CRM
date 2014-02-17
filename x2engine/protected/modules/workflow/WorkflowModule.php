@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package X2CRM.modules.workflow 
+ * @package application.modules.workflow 
  */
 class WorkflowModule extends CWebModule {
 	public function init() {

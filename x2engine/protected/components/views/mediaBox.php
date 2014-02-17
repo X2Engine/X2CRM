@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -62,7 +62,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
 
         <?php
         $myMediaItems = Yii::app()->db->createCommand()
-                ->select('id, uploadedBy, fileName, description, drive, title')
+                ->select('id, uploadedBy, fileName, description, drive, name')
                 ->where('uploadedBy=:username AND drive=:drive AND associationType="none"', array(':username' => $username, ':drive' => $this->drive))
                 ->from('x2_media')
                 ->queryAll();
@@ -79,7 +79,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
 				$desc = CHtml::encode($item['description']);
                 echo '<span class="media-item">';
                 $path = Media::getFilePath($item['uploadedBy'], $item['fileName']);
-                $filename = $item['drive']?$item['title']:$item['fileName'];
+                $filename = $item['drive']?$item['name']:$item['fileName'];
                 if(mb_strlen($filename, 'UTF-8') > 35){
                     $filename = mb_substr($filename, 0, 32, 'UTF-8').'…';
                 }
@@ -125,7 +125,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
             <?php //$userMediaItems = X2Model::model('Media')->findAllByAttributes(array('uploadedBy'=>$user->username)); ?>
             <?php
             $userMediaItems = Yii::app()->db->createCommand()
-                    ->select('id, uploadedBy, fileName, description, private, drive, title')
+                    ->select('id, uploadedBy, fileName, description, private, drive, name')
                     ->where('uploadedBy=:username AND associationType="none"', array(':username' => $user['username']))
                     ->from('x2_media')
                     ->queryAll();
@@ -147,7 +147,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
 							$desc = CHtml::encode($item['description']);
                             echo '<span class="media-item">';
                             $path = Media::getFilePath($item['uploadedBy'], $item['fileName']);
-                            $filename = $item['drive']?$item['title']:$item['fileName'];
+                            $filename = $item['drive']?$item['name']:$item['fileName'];
                             if(mb_strlen($filename, 'UTF-8') > 35){
                                 $filename = mb_substr($filename, 0, 32, 'UTF-8').'…';
                             }

@@ -1,5 +1,5 @@
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -40,7 +40,7 @@
 function X2GridViewMassActionsManager (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
-        DEBUG: x2.DEBUG && false,
+        DEBUG: x2.DEBUG && true,
         massActions: [], // enabled mass actions
         gridId: '', // id of associated grid view
         namespacePrefix: '', // used to access other x2gridview javascript objects
@@ -62,6 +62,7 @@ function X2GridViewMassActionsManager (argsDict) {
     this._successFlashFadeTimeout = null;
 
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    this._elementSelector = '#' + this.gridId + '-mass-action-buttons';
 
     this._init ();
 }
@@ -91,10 +92,10 @@ X2GridViewMassActionsManager.prototype.moveButtonIntoMoreMenu = function () {
     var buttonSet = $('#' + that.gridId + '-mass-action-buttons .mass-action-button-set');
     var buttons = $(buttonSet).children ();
     var visibleCount = 0;
+    var lastButton;
 
     // get last visible button
     $(buttons).each (function () {
-        that.DEBUG && console.log ($(this));
         if ($(this).attr ('style') !== 'display: none;') {
             lastButton = $(this); 
             visibleCount++;
@@ -109,7 +110,7 @@ X2GridViewMassActionsManager.prototype.moveButtonIntoMoreMenu = function () {
     if (visibleCount === 2) $(buttons).first ().addClass ('pseudo-only-child');
 
     // show button in list
-    var lastButtonAction = $(lastButton).attr ('class').match (/[^-]+$/)[0];
+    var lastButtonAction = $(lastButton).attr ('class').match (/mass-action-button-([^ ]+)/)[1];
 
     $('#' + that.gridId + '-mass-action-buttons .mass-action-' + lastButtonAction).show ();
 
@@ -128,6 +129,10 @@ X2GridViewMassActionsManager.prototype.moveMoreButtonMenuItemIntoButtons = funct
     var listItems = $(moreDropDownList).children ();
     var firstItem;
 
+    var buttonActions = auxlib.map (function (a) {
+        return $(a).attr ('class').match (/mass-action-button-([^ ]+)/)[1];
+    }, buttons);
+
     // get first non hidden element in button list 
     $(listItems).each (function () {
         that.DEBUG && console.log ($(this));
@@ -136,15 +141,20 @@ X2GridViewMassActionsManager.prototype.moveMoreButtonMenuItemIntoButtons = funct
             return false;
         }
     });
-    if (typeof firstItem === 'undefined') return false;
+    if (typeof firstItem === 'undefined') {
+         return false;
+    }
+
+    var lastButtonAction = $(firstItem).attr ('class').match (/[^-]+$/)[0];
+
+    if ($.inArray (lastButtonAction, buttonActions) === -1) return false;
 
     // hiden button list item and show button set button
     $(firstItem).hide ();
-    var lastButtonAction = $(firstItem).attr ('class').match (/[^-]+$/)[0];
     $('#' + that.gridId + '-mass-action-buttons .mass-action-button-' + lastButtonAction).show ();
 
     if ($(buttons).length - 
-        $(buttonSet).children ('[style=\"display: none;\"]').length !== 1) {
+        $(buttonSet).children ('[style="display: none;"]').length !== 1) {
 
         $(buttons).first ('.pseudo-only-child').removeClass ('pseudo-only-child');
     } else {
@@ -370,6 +380,50 @@ X2GridViewMassActionsManager.prototype._checkFlashesUnsticky = function () {
 * Execute mass actions functions 
 ***********************************************************************/
 
+X2GridViewMassActionsManager.prototype._executeCompleteSelected = function () {
+    var that = this;
+    var selectedRecords = that._getSelectedRecords () 
+    $.ajax({
+        url: that.executeUrls['completeAction'],
+        type:'post',
+        data:{
+            massAction: 'completeAction',
+            gvSelection: selectedRecords
+        },
+        success: function (data) { 
+            that.DEBUG && console.log ('_executeCompleteSelected: ajax ret: ' + data);
+            var response = JSON.parse (data);
+            var returnStatus = response[0];
+            if (response['success']) {
+                that._updateGrid ();
+            } 
+            that._displayFlashes (response);
+        }
+    });
+};
+
+X2GridViewMassActionsManager.prototype._executeUncompleteSelected = function () {
+    var that = this;
+    var selectedRecords = that._getSelectedRecords () 
+    $.ajax({
+        url: that.executeUrls['uncompleteAction'],
+        type:'post',
+        data:{
+            massAction: 'uncompleteAction',
+            gvSelection: selectedRecords
+        },
+        success: function (data) { 
+            that.DEBUG && console.log ('_executeUncompleteSelected: ajax ret: ' + data);
+            var response = JSON.parse (data);
+            var returnStatus = response[0];
+            if (response['success']) {
+                that._updateGrid ();
+            } 
+            that._displayFlashes (response);
+        }
+    });
+};
+
 
 
 /**
@@ -533,6 +587,12 @@ X2GridViewMassActionsManager.prototype._executeMassAction = function (massAction
     }
 
     switch (massAction) {
+        case 'completeAction':
+            that._executeCompleteSelected ();
+            break;
+        case 'uncompleteAction':
+            that._executeUncompleteSelected ();
+            break;
         case 'newList':
             that._massActionDialog ({
                 dialogElem: $('#' + that.gridId + '-new-list-dialog'),
@@ -617,11 +677,13 @@ X2GridViewMassActionsManager.prototype._setUpMoreButtonBehavior = function () {
                 'style', 'left: ' + $(this).position ().left + 'px;' +
                     'top: ' + yPos + 'px;');
         }
+
         return false;
     }
 
-    $(document).on ('click.' + this.namespacePrefix + 'moreDropDownList', 
-        function () { $(moreDropDownList).hide (); });
+    $(document).on ('click.' + this.namespacePrefix + 'moreDropDownList', function () { 
+        $(moreDropDownList).hide (); 
+    });
 
     $('#' + that.gridId + ' .mass-action-more-button').unbind ('click').
         click (massActionMoreButtonBehavior);
@@ -688,9 +750,8 @@ X2GridViewMassActionsManager.prototype._checkUIShow = function (justChanged, che
 
     if (foundChecked) {
         $(massActionButtons).show ();
-        if (x2[that._topPagerNamespace] && x2[that._topPagerNamespace].condenseExpandTitleBar) {
-            x2[that._topPagerNamespace].
-                condenseExpandTitleBar ($('#x2-gridview-top-pager').position ().top);
+        if (that.condenseExpandTitleBar) {
+            that.condenseExpandTitleBar ($(that._elementSelector).next ().position ().top);
         }
     } else  {
         $(massActionButtons).hide ();
@@ -727,6 +788,94 @@ X2GridViewMassActionsManager.prototype._updateGrid = function () {
     });
 };
 
+
+/**
+ * The public method. Holds the result of _condenseExpandTitleBar.
+ */
+X2GridViewMassActionsManager.prototype.condenseExpandTitleBar = function () {}; 
+
+/*
+Private instance methods
+*/
+
+/**
+ * The private method
+ * Creates a closure to keep track of state information about the title bar.
+ */
+X2GridViewMassActionsManager.prototype._condenseExpandTitleBar = function () {
+    var that = this;
+    var hiddenButtons = 0;
+    var rightmostPosRightElems;
+    var leftMostTopPosLeftElems = $(this._elementSelector).next ().position ().top;
+    var moveMoreButtonMenuItemIntoButtons;
+
+    /*
+    Checks whether the top bar UI should be expanded or condensed and performs the appropriate
+    action.
+    Parameters:
+        newLeftMostTopPosLeftElems - if set, the top offset of the top bar pagination buttons will 
+            be checked. This check has the function of determining whether the pagination buttons
+            have been moved down due to a lack of space. Having the optional variable eliminates
+            the need for calling position ().top every execution (a costly operation).
+    */
+    return function (newLeftMostTopPosLeftElems) {
+        var newLeftMostTopPosLeftElems = 
+            typeof newLeftMostTopPosLeftElems === 'undefined' ? leftMostTopPosLeftElems : 
+                newLeftMostTopPosLeftElems; 
+
+        var moreButton = $('#' + that.gridId + ' .mass-action-more-button');
+    
+        if (typeof rightmostPosRightElems === 'undefined') { // calculate once and cache
+            var rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
+        }
+        var leftMostPosLeftElems = $(that._elementSelector).next ().position ().left;
+        var titleBarEmptySpace = leftMostPosLeftElems - rightmostPosRightElems;
+
+        that.DEBUG && console.log (titleBarEmptySpace);
+    
+        if (newLeftMostTopPosLeftElems && hiddenButtons == 0 &&
+            newLeftMostTopPosLeftElems > leftMostTopPosLeftElems) {
+
+            if (that.moveButtonIntoMoreMenu ()) hiddenButtons++;
+            rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
+        } else if (titleBarEmptySpace < 80 && hiddenButtons === 0) {
+            if (that.moveButtonIntoMoreMenu ()) hiddenButtons++;
+            rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
+        } else if (titleBarEmptySpace < 70 && hiddenButtons === 1) {
+            if (that.moveButtonIntoMoreMenu ()) hiddenButtons++;
+            rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
+        } else if (titleBarEmptySpace >= 80 && hiddenButtons == 2) {
+            if (that.moveMoreButtonMenuItemIntoButtons ()) 
+                hiddenButtons--;
+            rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
+        } else if (titleBarEmptySpace >= 90 && hiddenButtons > 0) {
+            if (that.moveMoreButtonMenuItemIntoButtons ()) 
+                hiddenButtons--;
+            rightmostPosRightElems = $(moreButton).position ().left + $(moreButton).width ();
+        } 
+    }
+}
+
+/**
+ * Sets up behavior which will hide/show mass action buttons when there isn't space for them
+ */
+X2GridViewMassActionsManager.prototype._setUpTitleBarResponsiveness = function () {
+    var that = this;
+
+    that.condenseExpandTitleBar = that._condenseExpandTitleBar ();
+
+    $(window).unbind ('resize.' + this.namespacePrefix  + 'massActions').bind (
+        'resize.' + this.namespacePrefix + 'massActions', that.condenseExpandTitleBar);
+
+    $(document).on ('showWidgets', function () {
+        if ($('body').hasClass ('no-widgets')) return;
+        that.DEBUG && console.log ('showWidgets');
+        var posTop = $(that._elementSelector).next ().position ().top;
+        that.condenseExpandTitleBar (posTop);
+    });
+};
+
+
 /**
  * set up mass action ui behavior, this gets run on every grid update
  */
@@ -740,4 +889,5 @@ X2GridViewMassActionsManager.prototype._init = function () {
     that._setUpMoreButtonBehavior ();
     that._setUpMassActions ();
     that._setUpUIHideShowBehavior ();
+    that._setUpTitleBarResponsiveness ();
 };

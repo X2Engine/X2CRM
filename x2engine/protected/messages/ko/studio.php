@@ -55,8 +55,8 @@ return array (
 'Triggers when a record of specified type is deleted.'=>'지정된 유형의 레코드가 삭제 될 때 트리거합니다.',
 'Triggered by adding one of these tags to a record.'=>'기록에 이러한 태그 중 하나를 추가하여 트리거.',
 'Triggered when some updates a record of the the specified type.'=>'트리거 할 때 일부 업데이트 지정된 유형의 기록.',
-'Triggered when a user signs in to X2CRM.'=>'에서 사용자 징후 X2CRM 할 때 트리거.',
-'Triggered when a user signs out of X2CRM.'=>'사용자가 X2CRM에서 서명 될 때 트리거.',
+'Triggered when a user signs in to X2Engine.'=>'에서 사용자 징후 X2Engine 할 때 트리거.',
+'Triggered when a user signs out of X2Engine.'=>'사용자가 X2Engine에서 서명 될 때 트리거.',
 'Triggered when a contact visits a webpage'=>'연락처 웹 페이지를 방문 할 때 발생',
 'Triggers when a new contact fills out your web lead capture form.'=>'새 연락처가 웹 리드 캡처 양식을 입력 할 때 트리거합니다.',
 

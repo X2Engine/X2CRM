@@ -53,7 +53,12 @@ class CJuiDateTimePicker extends CJuiDatePicker
 		
 		$assets = Yii::app()->getAssetManager()->publish(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets');
 		$cs->registerCssFile($assets.self::ASSETS_NAME.'.css');
-		$cs->registerScriptFile($assets.self::ASSETS_NAME.'.js',CClientScript::POS_END);
+        /* x2modstart */
+        // importing a different version of timepicker
+		//$cs->registerScriptFile($assets.self::ASSETS_NAME.'.js',CClientScript::POS_END);
+        Yii::app()->clientScript->registerScriptFile (
+            Yii::app()->getBaseUrl().'/js/jquery-ui-timepicker-addon.js');
+        /* x2modend */  
 		
 		$cs->registerScript(__CLASS__, 	$this->defaultOptions?'jQuery.{$this->mode}picker.setDefaults('.CJavaScript::encode($this->defaultOptions).');':'');
 		$cs->registerScript(__CLASS__.'#'.$id, $js);

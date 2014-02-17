@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -48,7 +48,7 @@ Yii::import('zii.widgets.grid.CGridView');
  * @property bool $isAdmin If true, the grid view will be generated under the
  *  assumption that the user viewing it has full/administrative access to
  *  whichever module that it is being used in.
- * @package X2CRM.components
+ * @package application.components
  */
 class X2GridView extends CGridView {
     public $selectableRows = 0;
@@ -94,7 +94,7 @@ class X2GridView extends CGridView {
     protected $gvSettings = null;
     protected $columnSelectorId;
     protected $columnSelectorHtml;
-    protected $ajax = false;
+    public $ajax = false;
 
     /**
      * @var string Set to view name if value not passed to constructor. Used to save/access
@@ -476,7 +476,17 @@ class X2GridView extends CGridView {
         $this->pager = array (
             'class' => 'CLinkPager', 
             'header' => '',
-            'htmlOptions' => array ('id' => $this->namespacePrefix . 'Pager'));
+            'htmlOptions' => array (
+                'id' => $this->namespacePrefix . 'Pager'
+            ),
+            'firstPageCssClass' => '',
+            'lastPageCssClass' => '',
+            'prevPageLabel' => '<',
+            'nextPageLabel' => '>',
+            'firstPageLabel' => '<<',
+            'lastPageLabel' => '>>',
+
+        );
 
         $this->baseScriptUrl = Yii::app()->theme->getBaseUrl().'/css/gridview';
 
@@ -665,9 +675,9 @@ class X2GridView extends CGridView {
                         'Yii::app()->dateFormatter->formatDateTime($data["'.
                         $columnName.'"],"medium")';
                 } elseif($this->allFields[$columnName]->type=='link') {
-                    $newColumn['value'] = '!is_numeric($data["'.$columnName.'"])?$data["'.
-                        $columnName.'"]:X2Model::getModelLink($data["'.$columnName.
-                        '"],X2Model::getModelName("'.$this->allFields[$columnName]->linkType.'"))';
+                    $newColumn['value'] = 'X2Model::getModelLinkMock(
+                        "'.$this->allFields[$columnName]->linkType.'",
+                        $data["'.$columnName.'"])';
                     $newColumn['type'] = 'raw';
                 } elseif($this->allFields[$columnName]->type=='boolean') {
                     $newColumn['value']='$data["'.$columnName.'"]==1?Yii::t("actions","Yes"):'.

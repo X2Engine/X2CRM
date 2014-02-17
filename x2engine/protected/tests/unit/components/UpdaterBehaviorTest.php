@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -40,7 +40,7 @@ Yii::import('application.components.util.*');
 /**
  * Test suite for the application updater.
  * 
- * @package X2CRM.tests.unit.components
+ * @package application.tests.unit.components
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class UpdaterBehaviorTest extends FileOperTestCase {
@@ -626,7 +626,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         if($ube->sourceDir != $webRoot.DIRECTORY_SEPARATOR.'update'.DIRECTORY_SEPARATOR.'source')
             die('Unsafe to proceed through tests; property sourceDir of UpdaterBehavior did not return the expected value; it was '.$ube->sourceDir);
         $this->assertEquals($ube->webRoot.DIRECTORY_SEPARATOR.'update.zip',$ube->updatePackage);
-        $this->assertEquals(Yii::app()->basePath.DIRECTORY_SEPARATOR.'runtime'.DIRECTORY_SEPARATOR.'x2crm_update.lock',$ube->lockFile);
+        $this->assertEquals(Yii::app()->basePath.DIRECTORY_SEPARATOR.'runtime'.DIRECTORY_SEPARATOR.UpdaterBehavior::LOCKFILE,$ube->lockFile);
     }
 
     public function testApplyFiles() {
@@ -1058,8 +1058,8 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                         'pcre_version' => true,
                         'chmod' => 1,
                         'allow_url_fopen' => '1',
-                        'updates_connection' => 0,
-                        'outbound_connection' => 0,
+                        'updates_connection' => 1,
+                        'outbound_connection' => 1,
                         'shell' => true,
                         'fsockopen' => true
                     ),
@@ -1096,7 +1096,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                 'Media' =>
                 array(
                     0 => 'drive',
-                    1 => 'title',
                 ),
                 'Opportunity' =>
                 array(

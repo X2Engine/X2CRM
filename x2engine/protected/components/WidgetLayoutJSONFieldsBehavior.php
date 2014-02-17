@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -51,7 +51,7 @@ Yii::import('application.components.sortableWidget.*');
  * The class called <widget class name> must have a static method called 
  * getJSONPropertiesStructure () which returns the structure of the JSON field.
  * 
- * @package X2CRM.components
+ * @package application.components
  */
 class WidgetLayoutJSONFieldsBehavior extends JSONFieldsBehavior {
 

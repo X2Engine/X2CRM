@@ -7,7 +7,7 @@
  * designates it as an adjustment to the subtotal
  * @property bool $isPercentAdjustment Tells whether the adjustment units is
  * a percentage
- * @package X2CRM.modules.quotes.models
+ * @package application.modules.quotes.models
  * @author David Visbal, Demitri Morgan <demitri@x2engine.com>
  */
 class QuoteProduct extends CActiveRecord {

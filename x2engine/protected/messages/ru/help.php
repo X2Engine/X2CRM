@@ -2,7 +2,7 @@
 return array (
 
 'Icon Reference'=>'Иконка Ссылка',
-'X2CRM Modules'=>'Модули X2CRM',
+'X2Engine Modules'=>'Модули X2Engine',
 'Events'=>'События',
 'Action Completed'=>'Действие завершено',
 'Action Reminder'=>'Действие напоминание',

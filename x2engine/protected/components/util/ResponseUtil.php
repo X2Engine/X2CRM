@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -44,8 +44,8 @@
  * wrapper of sorts for this class).
  *
  * The goal of developing this utility class is to consolidate JSON/AJAX response 
- * code in the X2CRM installer, the X2CRM API, a growing number of other places in
- * X2CRM, and the X2CRM update key server (which was the initial inspiration for 
+ * code in the X2Engine installer, the X2Engine API, a growing number of other places in
+ * X2Engine, and the X2Engine update key server (which was the initial inspiration for 
  * developing ResponseBehavior). There was enough functional redundancy in all those
  * places, and so I decided that enough was enough.
  *

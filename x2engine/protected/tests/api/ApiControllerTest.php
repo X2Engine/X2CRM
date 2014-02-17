@@ -12,8 +12,8 @@ Yii::import('application.modules.users.models.*');
 Yii::import('application.models.*');
 
 /**
- * CRUD test for X2CRM's remote API
- * @package X2CRM.tests.api
+ * CRUD test for X2Engine's remote API
+ * @package application.tests.api
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class ApiControllerTest extends CURLTestCase {
@@ -34,8 +34,11 @@ class ApiControllerTest extends CURLTestCase {
 
 	public static function referenceFixtures(){
 		return array(
-			'users'=>'User'
-		);
+			'users'=>'User',
+            'roles'=>array('Roles','.empty'),
+            'roleToUser' =>array('RoleToUser','.empty'),
+            'roleToPermission' => array('RoleToPermission','.empty'),
+        );
 	}
 
 	/**
@@ -204,6 +207,7 @@ class ApiControllerTest extends CURLTestCase {
 
 	public function testCRUD() {
 		if(self::TEST_LEVEL >= 2) {
+            Yii::app()->cache->flush();
 			$this->assertCRUD();
 		} else {
 			$this->markTestSkipped('Skipping test because TEST_LEVEL is not set >= 2');
@@ -284,6 +288,8 @@ class ApiControllerTest extends CURLTestCase {
 					foreach(array('createdBy','updatedBy') as $name)
 						if(X2Model::model($class)->hasAttribute($name))
 							$userAttrs[$name] = $param['user'];
+                    if($class == 'Services') // Test setting a linktype field and having it turn into a nameId reference:
+                        $attrs['contactId'] = Fields::nameId($this->contacts('testUser')->name,$this->contacts('testUser')->id);
 					$models[$class] = X2Model::model($class)->findByAttributes(array_merge($attrs,$userAttrs));
 					$this->assertTrue((bool) $models[$class], "Model of class $class not created properly when user = {$param['user']}. The response was: $cr.");
 					foreach($attrs as $attr => $value)

@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -71,7 +71,7 @@ $form=$this->beginWidget('CActiveForm', array(
 
 		<br><br>
 
-		<?php echo Yii::t('admin','Google integration allows users to link their calendars on x2crm with Google Calendars as well as log in with their Google IDs.'); ?>
+		<?php echo Yii::t('admin','Google integration allows users to link their calendars on X2Engine with Google Calendars as well as log in with their Google IDs.'); ?>
 		<br><br>
 
 		<?php echo Yii::t('admin', 'You will need to create a google app in order to use google integration.'); ?>
@@ -100,7 +100,7 @@ $form=$this->beginWidget('CActiveForm', array(
             echo $form->textField($model, "gaTracking_$type", array('id' => "gaTracking_$type"));
         }
         echo '<br />';
-        echo Yii::t('admin', 'Enter property IDs to enable Google Analytics tracking. The public ID will be used on publicly-accessible web lead and service case forms. The internal one will be used within X2CRM, for tracking the activity of authenticated users.');
+        echo Yii::t('admin', 'Enter property IDs to enable Google Analytics tracking. The public ID will be used on publicly-accessible web lead and service case forms. The internal one will be used within X2Engine, for tracking the activity of authenticated users.');
         ?>
     <br /><br /><hr />
 	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button'))."\n";?>

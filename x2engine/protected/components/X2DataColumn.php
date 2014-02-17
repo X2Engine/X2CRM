@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -92,39 +92,65 @@ class X2DataColumn extends CDataColumn {
     public function renderFilterCellContent() {
         switch($this->fieldType){
             case 'boolean':
-                echo CHtml::activeDropdownList($this->grid->filter, $this->name, array('' => '- '.Yii::t('app', 'Select').' -', '1' => Yii::t('app', 'Yes'), 'false' => Yii::t('app', "No")), array('class' => 'x2-minimal-select-filtercol'));
+                echo CHtml::activeDropdownList(
+                    $this->grid->filter, $this->name, 
+                    array(
+                        '' => '- '.Yii::t('app', 'Select').' -', 
+                        '1' => Yii::t('app', 'Yes'),
+                        'false' => Yii::t('app', "No")
+                    ), 
+                    array(
+                        'class' => 'x2-minimal-select-filtercol'
+                    )
+                );
                 break;
             case 'dropdown':
                 $dropdown = Dropdowns::model()->findByPk($this->fieldModel['linkType']);
                 if(!$dropdown->multi) {
                     $options = json_decode($dropdown->options,1);
                     $defaultOption = array('' => '- '.Yii::t('app', 'Select').' -');
-                    $options = is_array($options) ? array_merge($defaultOption,$options) : $defaultOption;
-                    $selected = isset($options[$this->grid->filter->{$this->name}]) ? $this->grid->filter->{$this->name} : '';
-                    echo CHtml::activeDropdownList($this->grid->filter, $this->name, $options, array('class' => 'x2-minimal-select-filtercol'));
+                    $options = is_array($options) ? 
+                        array_merge($defaultOption,$options) : $defaultOption;
+                    $selected = isset($options[$this->grid->filter->{$this->name}]) ? 
+                        $this->grid->filter->{$this->name} : '';
+                    echo CHtml::activeDropdownList(
+                        $this->grid->filter, $this->name, $options,
+                        array('class' => 'x2-minimal-select-filtercol'));
                 } else {
                     parent::renderFilterCellContent();
                 }
                 break;
+            case 'visibility':
+                echo CHtml::activeDropDownList($this->grid->filter, $this->name,
+                        array('' => '- '.Yii::t('app', 'Select').' -', 1 => Yii::t('app', 'Public'), 0 => Yii::t('app', 'Private'), 2 => Yii::t('app', 'User\'s Groups')),
+                        array('class' => 'x2-minimal-select-filtercol'));
+                break;
             case 'dateTime':
             case 'date':
                 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-                echo Yii::app()->controller->widget('CJuiDateTimePicker', array(
-                    'model' => $this->grid->filter, //Model object
-                    'attribute' => $this->name, //attribute name
-                    'mode' => 'date', //use "time","date" or "datetime" (default)
-                    'options' => array(// jquery options
-                        // We want to eventually use Formatter::formatDatePicker() once the compare criteria can support it
-                        'dateFormat' => 'm/d/yy',
-                        'changeMonth' => true,
-                        'changeYear' => true,
-                    ),
-                    'htmlOptions' => array(
-                        'id' => 'datePicker'.$this->name,
-                        'class' => 'datePicker'
-                    ),
-                    'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
+                $that = $this;
+                $renderWidget = function () use ($that) {
+                    echo Yii::app()->controller->widget('CJuiDateTimePicker', 
+                        array(
+                            'model' => $that->grid->filter, //Model object
+                            'attribute' => $that->name, //attribute name
+                            'mode' => 'date', //use "time","date" or "datetime" (default)
+                            'options' => array(// jquery options
+                                'dateFormat' => Formatter::formatDatePicker ('medium')
+                            ),
+                            'htmlOptions' => array(
+                                'id' => 'datePicker'.$that->name,
+                                'class' => 'datePicker x2-gridview-filter-datepicker'
+                            ),
+                            'language' => (Yii::app()->language == 'en') ? 
+                                '' : Yii::app()->getLanguage(),
                         ), true);
+                };
+                if ($this->grid->ajax) {
+                    X2Widget::ajaxRender ($renderWidget);
+                } else {
+                    $renderWidget ();
+                }
                 break;
             default:
                 parent::renderFilterCellContent();

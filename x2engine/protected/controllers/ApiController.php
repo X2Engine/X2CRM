@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,7 +38,7 @@ Yii::import('application.modules.users.models.*');
 
 /**
  * Remote data insertion & lookup API
- * @package X2CRM.controllers
+ * @package application.controllers
  * @author Jake Houser <jake@x2engine.com>, Demitri Morgan <demitri@x2engine.com>
  */
 class ApiController extends x2base {
@@ -154,137 +154,138 @@ class ApiController extends x2base {
 	}
 
 	/**
-	 * Creates a new record.
-	 *
-	 * This method allows for the creation of new records via API request.
-	 * Requests should be made of the following format:
-	 * www.[server].com/index.php/path/to/x2/index.php/api/create/model/[modelType]
-	 * With the model's attributes as $_POST data.  Furthermore, in the post array
-	 * a valid username and encrypted password must be submitted under the indeces
-	 * 'authUser' and 'authPassword' for the request to be authenticated.
-	 */
-	public function actionCreate() {
-		// Get an instance of the respective model
-		$model = $this->getModel(true);
-		$model->setX2Fields($_POST);
+     * Creates a new record.
+     *
+     * This method allows for the creation of new records via API request.
+     * Requests should be made of the following format:
+     * www.[server].com/index.php/path/to/x2/index.php/api/create/model/[modelType]
+     * With the model's attributes as $_POST data.  Furthermore, in the post array
+     * a valid username and encrypted password must be submitted under the indeces
+     * 'authUser' and 'authPassword' for the request to be authenticated.
+     */
+    public function actionCreate(){
+        // Get an instance of the respective model
+        $model = $this->getModel(true);
+        $model->setX2Fields($_POST);
 
-        if ($this->modelClass === 'Contacts' && isset ($_POST['x2_key'])) {
+        if($this->modelClass === 'Contacts' && isset($_POST['x2_key'])){
             $model->trackingKey = $_POST['x2_key']; // key is read-only, won't be set by setX2Fields
         }
 
-		$setUserFields = false;
-		// $scenario = 'Changelog behavior in effect.';
-		if(!empty($_POST['createDate'])){ // If create date is being manually set, i.e. an import, don't overwrite
-			$model->disableBehavior('changelog');
-			$setUserFields = true;
-			// $scenario = 'Changelog behavior disabled; create date not empty.';
-		}
-		try{
-			$editingUsername = $model->editingUsername;
-			// $scenario .= ' Model or one of its behaviors has a property "editingUsername".';
-		} catch (Exception $e) {
-			$setUserFields = true;
-			// $scenario .= ' Model nor its behaviors have a property "editingUsername".';
-		}
-		// $this->addResponseProperty('scenario',$scenario);
-		if($setUserFields)
-			$this->modelSetUsernameFields($model);
-		// Attempt to save the model, and perform special post-save (or error)
-		// operations based on the model type:
-		$valid = $model->validate();
-		if($valid){
-			// First (a hack) to ensure that empty numeric fields get set
-			// properly to avoid SQL "invalid value" errors in strict mode
-			foreach($model->fields as $fieldModel)
-				if(in_array($fieldModel->type,array('currency','float','int')) && !isset($_POST[$fieldModel->fieldName]))
-					$model->{$fieldModel->fieldName} = $fieldModel->parseValue($model->{$fieldModel->fieldName});
-			$valid = $valid && $model->save();
-		}
-		$this->addResponseProperty('model',$model->attributes);
+        $setUserFields = false;
+        // $scenario = 'Changelog behavior in effect.';
+        if(!empty($_POST['createDate'])){ // If create date is being manually set, i.e. an import, don't overwrite
+            $model->disableBehavior('changelog');
+            $setUserFields = true;
+            // $scenario = 'Changelog behavior disabled; create date not empty.';
+        }
+        try{
+            $editingUsername = $model->editingUsername;
+            // $scenario .= ' Model or one of its behaviors has a property "editingUsername".';
+        }catch(Exception $e){
+            $setUserFields = true;
+            // $scenario .= ' Model nor its behaviors have a property "editingUsername".';
+        }
+        // $this->addResponseProperty('scenario',$scenario);
+        if($setUserFields)
+            $this->modelSetUsernameFields($model);
+        // Attempt to save the model, and perform special post-save (or error)
+        // operations based on the model type:
+        $valid = $model->validate();
+        if($valid){
+            // First (a hack) to ensure that empty numeric fields get set
+            // properly to avoid SQL "invalid value" errors in strict mode
+            foreach($model->fields as $fieldModel)
+                if(in_array($fieldModel->type, array('currency', 'float', 'int')) && !isset($_POST[$fieldModel->fieldName]))
+                    $model->{$fieldModel->fieldName} = $fieldModel->parseValue($model->{$fieldModel->fieldName});
+            $valid = $valid && $model->save();
+        }
+        $this->addResponseProperty('model', $model->attributes);
 
-		if ($valid) { // New record successfully created
-			$message =  "A {$this->modelClass} type record was created"; //sprintf(' <b>%s</b> was created',$this->modelClass);
-			switch ($this->modelClass) {
-				// Special extra actions to take for each model type:
-				case 'Actions':
-					// Set actionDescription manually since it's stored in a different table
-					// which is updated using the magic getter:
-					if(isset($_POST['actionDescription'])){
-        				    $model->actionDescription=$_POST['actionDescription'];
-			        	}
-					$message .= " with description {$model->actionDescription}";
-					$model->syncGoogleCalendar('create');
-					break;
-				case 'Contacts':
-					$message .= " with name {$model->name}";
-					break;
-			}
-			$this->_sendResponse(200,$message);
-		} else { // API model creation failure
-			$this->addResponseProperty('modelErrors',$model->errors);
-			switch ($this->modelClass) {
-				case 'Contacts':
-					$this->log(sprintf('Failed to save record of type %s due to errors: %s', $this->modelClass, CJSON::encode($model->errors)));
-					$msg = $this->validationMsg('create', $model);
-					// Special lead failure notification in the app and through email:
+        if($valid){ // New record successfully created
+            $message = "A {$this->modelClass} type record was created"; //sprintf(' <b>%s</b> was created',$this->modelClass);
+            switch($this->modelClass){
+                // Special extra actions to take for each model type:
+                case 'Actions':
+                    // Set actionDescription manually since it's stored in a different table
+                    // which is updated using the magic getter:
+                    if(isset($_POST['actionDescription'])){
+                        $model->actionDescription = $_POST['actionDescription'];
+                    }
+                    $message .= " with description {$model->actionDescription}";
+                    $model->syncGoogleCalendar('create');
+                    break;
+                case 'Contacts':
+                    $message .= " with name {$model->name}";
+                    break;
+            }
+            $this->_sendResponse(200, $message);
+        }else{ // API model creation failure
+            $this->addResponseProperty('modelErrors', $model->errors);
+            switch($this->modelClass){
+                case 'Contacts':
+                    $this->log(sprintf('Failed to save record of type %s due to errors: %s', $this->modelClass, CJSON::encode($model->errors)));
+                    $msg = $this->validationMsg('create', $model);
+                    // Special lead failure notification in the app and through email:
 
-					$notif = new Notification;
-					$notif->user = 'admin';
-					$notif->type = 'lead_failure';
-					$notif->createdBy = $this->user->username;
-					$notif->createDate = time();
-					$notif->save();
+                    $notif = new Notification;
+                    $notif->user = 'admin';
+                    $notif->type = 'lead_failure';
+                    $notif->createdBy = $this->user->username;
+                    $notif->createDate = time();
+                    $notif->save();
 
-					$to = Yii::app()->params->admin->webLeadEmail;
-					$subject = "Web Lead Failure";
-					if(!Yii::app()->params->automatedTesting){
-						// Send notification of failure
-						$responderId = Credentials::model()->getDefaultUserAccount(Credentials::$sysUseId['systemNotificationEmail'],'email');
-						if($responderId != Credentials::LEGACY_ID) { // Using configured 3rd-party email account
-							$this->sendUserEmail(array('to'=>array(array($to,'X2CRM Administrator'))),$subject,$msg,null,$responderId);
-						}else{ // Using plain old PHP mail
-							$phpMail = $this->getPhpMailer();
-							$fromEmail = Yii::app()->params->admin->emailFromAddr;
-							$fromName = Yii::app()->params->admin->emailFromName;
-							$phpMail->AddReplyTo($fromEmail, $fromName);
-							$phpMail->SetFrom($fromEmail, $fromName);
-							$phpMail->Subject = $subject;
-							$phpMail->AddAddress($to, 'X2CRM Administrator');
-							$phpMail->MsgHTML($msg."<br />JSON Encoded Attributes:<br /><br />".json_encode($model->attributes));
-							$phpMail->Send();
-						}
-					}
+                    $to = Yii::app()->params->admin->webLeadEmail;
+                    $subject = "Web Lead Failure";
+                    if(!Yii::app()->params->automatedTesting){
+                        // Send notification of failure
+                        $responderId = Credentials::model()->getDefaultUserAccount(Credentials::$sysUseId['systemNotificationEmail'], 'email');
+                        if($responderId != Credentials::LEGACY_ID){ // Using configured 3rd-party email account
+                            $this->sendUserEmail(array('to' => array(array($to, 'X2Engine Administrator'))), $subject, $msg, null, $responderId);
+                        }else{ // Using plain old PHP mail
+                            $phpMail = $this->getPhpMailer();
+                            $fromEmail = Yii::app()->params->admin->emailFromAddr;
+                            $fromName = Yii::app()->params->admin->emailFromName;
+                            $phpMail->AddReplyTo($fromEmail, $fromName);
+                            $phpMail->SetFrom($fromEmail, $fromName);
+                            $phpMail->Subject = $subject;
+                            $phpMail->AddAddress($to, 'X2Engine Administrator');
+                            $phpMail->MsgHTML($msg."<br />JSON Encoded Attributes:<br /><br />".json_encode($model->attributes));
+                            $phpMail->Send();
+                        }
+                    }
 
-					$attributes = $model->attributes;
-					ksort($attributes);
-					if (file_exists('failed_leads.csv')) {
-						$fp = fopen('failed_leads.csv', "a+");
-						fputcsv($fp, $attributes);
-					} else {
-						$fp = fopen('failed_leads.csv', "a+");
-						fputcsv($fp, array_keys($attributes));
-						fputcsv($fp, $attributes);
-					}
-					$this->_sendResponse(500, $msg);
-					break;
-				default:
-					$this->log(sprintf('Failed to save record of type %s due to errors: %s', $this->modelClass, CJSON::encode($model->errors)));
-					// Errors occurred
-					$msg = "<h1>Error</h1>";
-					$msg .= sprintf("Couldn't create model <b>%s</b> due to errors:", $this->modelClass);
-					$msg .= "<ul>";
-					foreach ($model->errors as $attribute => $attr_errors) {
-						$msg .= "<li>Attribute: $attribute</li>";
-						$msg .= "<ul>";
-						foreach ($attr_errors as $attr_error)
-							$msg .= "<li>$attr_error</li>";
-						$msg .= "</ul>";
-					}
-					$msg .= "</ul>";
-					$this->_sendResponse(500, $msg);
-			}
-		}
-	}
+                    $attributes = $model->attributes;
+                    ksort($attributes);
+                    
+                    if(file_exists($flCsv = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'data', 'failed_leads.csv')))){
+                        $fp = fopen($flCsv,'a+');
+                        fputcsv($fp, $attributes);
+                    }else{
+                        $fp = fopen($flCsv,'w+');
+                        fputcsv($fp, array_keys($attributes));
+                        fputcsv($fp, $attributes);
+                    }
+                    $this->_sendResponse(500, $msg);
+                    break;
+                default:
+                    $this->log(sprintf('Failed to save record of type %s due to errors: %s', $this->modelClass, CJSON::encode($model->errors)));
+                    // Errors occurred
+                    $msg = "<h1>Error</h1>";
+                    $msg .= sprintf("Couldn't create model <b>%s</b> due to errors:", $this->modelClass);
+                    $msg .= "<ul>";
+                    foreach($model->errors as $attribute => $attr_errors){
+                        $msg .= "<li>Attribute: $attribute</li>";
+                        $msg .= "<ul>";
+                        foreach($attr_errors as $attr_error)
+                            $msg .= "<li>$attr_error</li>";
+                        $msg .= "</ul>";
+                    }
+                    $msg .= "</ul>";
+                    $this->_sendResponse(500, $msg);
+            }
+        }
+    }
 
 	/**
 	 * Delete a model record by primary key value.
@@ -737,13 +738,13 @@ class ApiController extends x2base {
 	}
 
     /**
-     * Sends the appropriate response if X2CRM is locked.
+     * Sends the appropriate response if X2Engine is locked.
      * 
      * @param type $filterChain
      */
     public function filterAvailable($filterChain) {
         if(is_int(Yii::app()->locked)) {
-            $this->_sendResponse(503,"X2CRM is currently undergoing maintenance. Please try again later.");
+            $this->_sendResponse(503,"X2Engine is currently undergoing maintenance. Please try again later.");
         }
         $filterChain->run();
     }
@@ -896,7 +897,7 @@ class ApiController extends x2base {
 					$message = 'The requested method is not implemented.';
 					break;
                 case 503:
-                    $message = "X2CRM is currently unavailable.";
+                    $message = "X2Engine is currently unavailable.";
                     break;
 			}
 

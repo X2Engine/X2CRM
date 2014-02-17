@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -41,7 +41,7 @@
  * X2LinkableBehavior is a CModelBehavior which allows consistent lookup of Yii
  * routes, HTML links and autcomplete sources.
  *
- * @package X2CRM.components
+ * @package application.components
  * @property string $module The module this record "belongs" to
  * @property string $baseRoute The default module/controller path for this record's module
  * @property string $viewRoute The default action to view this record

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package X2CRM.modules.opportunities 
+ * @package application.modules.opportunities 
  */
 class OpportunitiesModule extends CWebModule {
 	public function init() {

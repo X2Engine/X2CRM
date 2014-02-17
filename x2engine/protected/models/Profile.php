@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -42,7 +42,7 @@ Yii::import('application.components.X2SmartSearchModelBehavior');
 
 /**
  * This is the model class for table "x2_profile".
- * @package X2CRM.models
+ * @package application.models
  */
 class Profile extends CActiveRecord {
 
@@ -147,7 +147,7 @@ class Profile extends CActiveRecord {
         return array(
             array('fullName, username, status', 'required'),
             array('status, lastUpdated, disableNotifPopup, allowPost, disableAutomaticRecordTagging, disablePhoneLinks, resultsPerPage', 'numerical', 'integerOnly' => true),
-            array('enableFullWidth,showSocialMedia,showDetailView', 'boolean'), //,showWorkflow
+            array('enableFullWidth,showSocialMedia,showDetailView,disableTimeInTitle', 'boolean'), //,showWorkflow
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
             array('googleId', 'unique'),
@@ -196,6 +196,7 @@ class Profile extends CActiveRecord {
             'disablePhoneLinks' => Yii::t('profile', 'Disable phone field links?'),
             'disableAutomaticRecordTagging' => 
                 Yii::t('profile', 'Disable automatic record tagging?'),
+            'disableTimeInTitle' => Yii::t('profile','Disable timer display in page title?'),
             'disableNotifPopup' => Yii::t('profile', 'Disable notifications pop-up?'),
             'language' => Yii::t('profile', 'Language'),
             'timeZone' => Yii::t('profile', 'Time Zone'),

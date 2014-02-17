@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.modules.opportunities.controllers
+ * @package application.modules.opportunities.controllers
  */
 class OpportunitiesController extends x2base {
 
@@ -48,7 +48,7 @@ class OpportunitiesController extends x2base {
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','create','update','search','addUser','addContact','removeUser','removeContact',
+				'actions'=>array('index','view','create','update','search','addUser','removeUser',
 									'saveChanges','delete','shareOpportunity','inlineEmail'),
 				'users'=>array('@'),
 			),
@@ -381,49 +381,6 @@ class OpportunitiesController extends x2base {
 		));
 	}
 
-	public function actionAddContact($id) {
-		$users=User::getNames();
-		unset($users['admin']);
-		unset($users['']);
-		foreach(Groups::model()->findAll() as $group)
-			$users[$group->id]=$group->name;
-
-		$contacts=Contacts::getAllNames();
-        unset($contacts['0']);
-		$model=$this->loadModel($id);
-
-		$contacts=Opportunity::editContactArray($contacts, $model);
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST['Opportunity'])) {
-			$temp=$model->associatedContacts;
-            $tempArr=$model->attributes;
-			$model->attributes=$_POST['Opportunity'];
-			$arr=$_POST['Opportunity']['associatedContacts'];
-			foreach($arr as $contactId) {
-				$rel=new Relationships;
-				$rel->firstType='Contacts';
-				$rel->firstId=$contactId;
-				$rel->secondType='Opportunity';
-				$rel->secondId=$model->id;
-				$rel->save();
-			}
-            // $changes=$this->calculateChanges($tempArr,$model->attributes, $model);
-            // $model=$this->updateChangelog($model,$changes);
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
-		}
-
-		$this->render('addContact',array(
-			'model'=>$model,
-			'users'=>$users,
-			'contacts'=>$contacts,
-			'action'=>'Add'
-		));
-	}
-
 	public function actionRemoveUser($id) {
 
 		$model=$this->loadModel($id);
@@ -456,45 +413,6 @@ class OpportunitiesController extends x2base {
 		$this->render('addUser',array(
 			'model'=>$model,
 			'users'=>$pieces,
-			'action'=>'Remove'
-		));
-	}
-
-	public function actionRemoveContact($id) {
-
-		$model=$this->loadModel($id);
-		$rels=Relationships::model()->findAllByAttributes(array('firstType'=>'Contacts','secondType'=>'Opportunity','secondId'=>$id));
-        $pieces=array();
-        foreach($rels as $relationship){
-            $contact=X2Model::model('Contacts')->findByPk($relationship->firstId);
-            if(isset($contact)){
-                $pieces[$relationship->firstId]=$contact->name;
-            }
-        }
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST['Opportunity'])) {
-			$temp=$model->attributes;
-			$model->attributes=$_POST['Opportunity'];
-			$arr=$_POST['Opportunity']['associatedContacts'];
-
-
-			foreach($arr as $id=>$contact) {
-				$rel=X2Model::model('Relationships')->findByAttributes(array('firstType'=>'Contacts','firstId'=>$contact,'secondType'=>'Opportunity','secondId'=>$model->id));
-				if(isset($rel))
-					$rel->delete();
-				unset($pieces[$contact]);
-			}
-			// $changes=$this->calculateChanges($temp,$model->attributes);
-			// $model=$this->updateChangelog($model,$changes);
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
-		}
-
-		$this->render('addContact',array(
-			'model'=>$model,
-			'contacts'=>$pieces,
 			'action'=>'Remove'
 		));
 	}

@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -42,7 +42,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('media', 'Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('media','Are you sure you want to delete this item?'))),
 ));
 ?>
-<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','Update File: '); ?></span> <?php echo $model->drive?$model->title:$model->fileName; ?></h2></div>
+<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','Update File: '); ?></span> <?php echo $model->drive?$model->name:$model->fileName; ?></h2></div>
 
 <?php $form=$this->beginWidget('CActiveForm', array(
    'id'=>'media-form',

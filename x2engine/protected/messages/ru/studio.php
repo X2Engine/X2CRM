@@ -55,8 +55,8 @@ return array (
 'Triggers when a record of specified type is deleted.'=>'Триггеры, когда запись указанного типа будет удалена.',
 'Triggered by adding one of these tags to a record.'=>'Срабатывает, добавив одну из этих тегов до рекордной.',
 'Triggered when some updates a record of the the specified type.'=>'Срабатывает, когда некоторые обновления записи указанного типа.',
-'Triggered when a user signs in to X2CRM.'=>'Срабатывает, когда пользователь знаки и X2CRM.',
-'Triggered when a user signs out of X2CRM.'=>'Срабатывает, когда пользователь подписывает из X2CRM.',
+'Triggered when a user signs in to X2Engine.'=>'Срабатывает, когда пользователь знаки и X2Engine.',
+'Triggered when a user signs out of X2Engine.'=>'Срабатывает, когда пользователь подписывает из X2Engine.',
 'Triggered when a contact visits a webpage'=>'Срабатывает при контакте посещает веб-страницу',
 'Triggers when a new contact fills out your web lead capture form.'=>'Срабатывает, когда новый контакт заполняет ваш веб привести захват формы.',
 

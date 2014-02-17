@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,7 +38,7 @@
 /**
  * Base controller for all application controllers with CRUD operations
  *
- * @package X2CRM.controllers
+ * @package application.controllers
  */
 abstract class x2base extends X2Controller {
 	/*
@@ -100,7 +100,7 @@ abstract class x2base extends X2Controller {
      public function appLockout() {
          header("HTTP/1.1 503 Unavailable");
          header("Content-type: text/plain; charset=utf-8");
-         echo Yii::t('app','X2CRM is undergoing maintenance; it has been locked by an administrator. Please try again later.');
+         echo Yii::t('app','X2Engine is undergoing maintenance; it has been locked by an administrator. Please try again later.');
          Yii::app()->end();
      }
 
@@ -515,9 +515,9 @@ abstract class x2base extends X2Controller {
 
 				$datetime = Formatter::formatLongDateTime(time());
 				$modelLink = CHtml::link($model->name, $this->createAbsoluteUrl('/contacts/' . $model->id));
-				$subject = "X2CRM: {$model->name} updated";
+				$subject = "X2Engine: {$model->name} updated";
 				$message = "Hello,<br>\n<br>\n";
-				$message .= "You are receiving this email because you are subscribed to changes made to the contact $modelLink in X2CRM. ";
+				$message .= "You are receiving this email because you are subscribed to changes made to the contact $modelLink in X2Engine. ";
 				$message .= "The following changes were made on $datetime:<br>\n<br>\n";
 
 				foreach($changes as $attribute=>$change) {
@@ -971,7 +971,7 @@ abstract class x2base extends X2Controller {
     }
 
     /**
-	 * Send an email from X2CRM, returns an array with status code/message
+	 * Send an email from X2Engine, returns an array with status code/message
 	 *
 	 * @param array addresses
 	 * @param string $subject the subject for the email

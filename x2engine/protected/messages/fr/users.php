@@ -19,7 +19,7 @@ return array (
 // Users Titles
 'User: {name}'=>'Utilisateur: {name}',
 'Update User: {name}'=>'L\'Atilisateur Mise à Jour: {name}',
-'Invite Users to X2CRM'=>'Invitons les utilisateurs à X2CRM',
+'Invite Users to X2Engine'=>'Invitons les utilisateurs à X2Engine',
 'Instructions'=>'Directives',
 'Delete Unregistered'=>'Supprimer non enregistré',
 'Invited Users'=>'Les utilisateurs invités',

@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@
 /**
  * This is the model class for table "x2_sessions".
  *
- * @package X2CRM.models
+ * @package application.models
  * @property integer $id
  * @property string $user
  * @property integer $lastUpdated
@@ -58,22 +58,6 @@ class Session extends CActiveRecord {
 	 */
 	public function tableName() {
 		return 'x2_sessions';
-	}
-
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('lastUpdated', 'numerical', 'integerOnly'=>true),
-			array('id, IP', 'length', 'max'=>40),
-			array('user', 'length', 'max'=>20),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, user, lastUpdated', 'safe', 'on'=>'search'),
-		);
 	}
 
 	/**

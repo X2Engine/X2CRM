@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -53,7 +53,7 @@
  *  user session is available.
  * @property User $suModel Substitute web user model in the case that no user
  *  session is available.
- * @package X2CRM.components
+ * @package application.components
  */
 class ApplicationConfigBehavior extends CBehavior {
 
@@ -154,7 +154,7 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     public function beginRequest(){
         // $t0 = microtime(true);
-        $noSession = $this->owner->params->noSession;
+        $noSession = $this->owner->params->noSession || strpos($this->owner->request->getPathInfo(),'api')===0;
 
         if(!$noSession){
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
@@ -260,20 +260,6 @@ class ApplicationConfigBehavior extends CBehavior {
             }
         }
 
-        $modules = $this->owner->modules;
-        $arr = array();
-        foreach(scandir($this->owner->basePath.'/../protected/modules') as $module){
-            if(file_exists("protected/modules/$module/register.php")){
-                $arr[$module] = ucfirst($module);
-                Yii::import("application.modules.$module.models.*");
-            }
-        }
-        foreach($arr as $key => $module){
-            $record = Modules::model()->findByAttributes(array('name' => $key));
-            if(isset($record))
-                $modules[] = $key;
-        }
-        $this->owner->setModules($modules);
         $adminProf = X2Model::model('Profile')->findByPk(1);
         $this->owner->params->adminProfile = $adminProf;
 
@@ -515,7 +501,9 @@ class ApplicationConfigBehavior extends CBehavior {
     public function getIsInSession(){
         if(!isset($this->_isInSession)){
             $app = $this->owner;
-            if(!$app->params->hasProperty('noSession')){
+            if($app instanceof CConsoleApplication) {
+                $this->_isInSession = false;
+            } elseif(!$app->params->hasProperty('noSession')){
                 $this->_isInSession = true;
             }else{
                 if(!isset(Yii::app()->user) || Yii::app()->user->isGuest){
@@ -546,7 +534,7 @@ class ApplicationConfigBehavior extends CBehavior {
      * @return type
      */
     public function getLockFile() {
-        return implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'runtime','x2crm.lock'));
+        return implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'runtime','app.lock'));
     }
 
     /**
@@ -592,7 +580,7 @@ class ApplicationConfigBehavior extends CBehavior {
     /**
      * Import all directories that are used system-wide.
      */
-    public function importDirectories() {
+    public function importDirectories(){
         Yii::import('application.models.*');
         Yii::import('application.controllers.X2Controller');
         Yii::import('application.controllers.x2base');
@@ -603,6 +591,29 @@ class ApplicationConfigBehavior extends CBehavior {
         Yii::import('application.modules.groups.models.Groups');
         Yii::import('application.extensions.gallerymanager.models.*');
 
+        $modules = $this->owner->modules;
+        $arr = array();
+        $modulePath = implode(DIRECTORY_SEPARATOR,array(
+            $this->owner->basePath,
+            'modules'
+        ));
+        foreach(scandir($modulePath) as $module){
+            $regScript = implode(DIRECTORY_SEPARATOR,array(
+                $modulePath,
+                $module,
+                'register.php'
+            ));
+            if(file_exists($regScript)){
+                $arr[$module] = ucfirst($module);
+                Yii::import("application.modules.$module.models.*");
+            }
+        }
+        foreach($arr as $key => $module){
+            $record = Modules::model()->findByAttributes(array('name' => $key));
+            if(isset($record))
+                $modules[] = $key;
+        }
+        $this->owner->setModules($modules);
     }
 
 }

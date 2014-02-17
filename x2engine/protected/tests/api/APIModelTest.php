@@ -7,7 +7,7 @@ Yii::import('application.modules.users.models.*');
 /**
  * Test suite for APIModel
  * 
- * @package X2CRM.tests.api
+ * @package application.tests.api
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class APIModelTest extends CURLTestCase {
@@ -21,7 +21,12 @@ class APIModelTest extends CURLTestCase {
 	);
 
 	public static function referenceFixtures() {
-		return array('users'=>'User');
+		return array(
+            'users'=>'User',
+            'roles'=>array('Roles','.empty'),
+            'roleToUser' =>array('RoleToUser','.empty'),
+            'roleToPermission' => array('RoleToPermission','.empty'),
+        );
 	}
 
 	public function newModel() {
@@ -72,9 +77,10 @@ class APIModelTest extends CURLTestCase {
 	}
 
 	public function testContactCRUD() {
+        Yii::app()->cache->flush();
 		$model = $this->newModel();
 		// Trigger a validation error and test that the error feedback works
-		$model->attributes = array('firstName'=> 'John', 'lastName'=>'Doe','email'=>'lfdkjslfdjs');
+		$model->attributes = array('firstName'=> 'John', 'lastName'=>'Doe','email'=>'lfdkjslfdjs','visibility'=>1);
 		$model->contactCreate(false);
 		$this->assertEquals(500,$model->responseCode,'Failed asserting response code was correct for validation errors.');
 		$this->assertEquals(1,$model->responseObject['error'],'Failed asserting that the API reported validation errors.');

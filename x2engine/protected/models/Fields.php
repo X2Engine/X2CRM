@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,7 +38,7 @@
 /**
  * This is the model class for table "x2_fields".
  *
- * @package X2CRM.models
+ * @package application.models
  * @property integer $id
  * @property string $modelName
  * @property string $fieldName
@@ -49,6 +49,12 @@
  * @author Jake Houser <jake@x2engine.com>, Demitri Morgan <demitri@x2engine.com>
  */
 class Fields extends CActiveRecord {
+
+    /**
+     * Defines the separator between name & ID in uniquely identifying "nameId"
+     * fields
+     */
+    const NAMEID_DELIM = '_';
 
     private $_myTableName;
 
@@ -171,6 +177,11 @@ class Fields extends CActiveRecord {
                 'validator'=>'int',
                 'columnDefinition'=>'INT',
             ),
+            'timerSum'=>array(
+                'title'=>Yii::t('admin','Action Timer Sum'),
+                'validator'=>'safe',
+                'columnDefinition'=>'INT'
+            ),
         );
         // No scenario, return all data
         if(empty($scenario)){
@@ -266,6 +277,44 @@ class Fields extends CActiveRecord {
      */
     public static function model($className = __CLASS__){
         return parent::model($className);
+    }
+
+    /**
+     * The inverse operation of {@link nameId()}, this splits a uniquely
+     * -identifying "nameId" field into name and ID.
+     */
+    public static function nameAndId($nameId) {
+        // The last occurrence should be the delimeter
+        $delimPos = strrpos($nameId,Fields::NAMEID_DELIM);
+
+        if($delimPos === false) {
+            // Delimeter not found
+            return array($nameId,null);
+        }
+        
+        if($delimPos >= strlen($nameId)-1) {
+            // Delimeter at the end with nothing else, i.e. a name of a
+            // non-existent model ending with the delimeter
+            return array($nameId,null);
+        }
+
+        $id = substr($nameId,$delimPos+1);
+        $name = substr($nameId,0,$delimPos);
+
+        if(!ctype_digit($id)) {
+            // Name has the delimeter in it, but does not refer to any record.
+            return array($nameId,null);
+        } else {
+            // Name and ID acquired.
+            return array($name,$id);
+        }
+    }
+
+    /**
+     * Generates a combination name and id field to uniquely identify the record.
+     */
+    public static function nameId($name,$id) {
+        return $name.self::NAMEID_DELIM.$id;
     }
 
     /**
@@ -387,6 +436,17 @@ class Fields extends CActiveRecord {
         if(!$existing){ // Going to create the column.
             $this->createColumn();
         }
+        if($this->keyType != 'PRI' && $this->keyType != 'FIX'){
+            // The key for this column is not primary/hard-coded (managed by
+            // X2Engine developers, and cannot be user-modified), so it can
+            // be allowed to change.
+            if($this->keyType != null){
+                $this->dropIndex();
+                $this->createIndex($this->keyType === 'UNI');
+            }else{
+                $this->dropIndex();
+            }
+        }
         return parent::afterSave();
     }
 
@@ -411,7 +471,8 @@ class Fields extends CActiveRecord {
             'searchable' => Yii::t('admin', "Searchable"),
             'relevance' => Yii::t('admin', 'Search Relevance'),
             'uniqueConstraint' => Yii::t('admin', 'Unique'),
-            'defaultValue' => Yii::t('admin', 'Default Value')
+            'defaultValue' => Yii::t('admin', 'Default Value'),
+            'keyType' => Yii::t('admin','Key Type'),
         );
     }
 
@@ -455,14 +516,48 @@ class Fields extends CActiveRecord {
     }
 
     /**
+     * Creates an index on the column associated with the current field record.
+     */
+    public function createIndex($unique = false){
+        $indexType = $unique ? "UNIQUE" : "INDEX";
+        $sql = "ALTER TABLE `{$this->myTableName}` ADD $indexType(`{$this->fieldName}`)";
+        try{
+            Yii::app()->db->createCommand($sql)->execute();
+            return true;
+        }catch(CDbException $e){
+            // Fail quietly until there's a need to take additional action after
+            // this happens
+            return false;
+        }
+    }
+
+    /**
      * Deletes the table column associated with the field record.
      */
-    public function dropColumn() {
+    public function dropColumn(){
         $sql = "ALTER TABLE `{$this->myTableName}` DROP COLUMN `{$this->fieldName}`";
-        try {
+        try{
             Yii::app()->db->createCommand($sql)->execute();
-        } catch (CDbException $e) {
+            return true;
+        }catch(CDbException $e){
+            // Fail quietly until there's a need to take additional action after
+            // this happens
+            return false;
+        }
+    }
 
+    /**
+     * Drops the index on the column associated with the current field record.
+     */
+    public function dropIndex(){
+        $sql = "ALTER TABLE `{$this->myTableName}` DROP INDEX `{$this->fieldName}`";
+        try{
+            Yii::app()->db->createCommand($sql)->execute();
+            return true;
+        }catch(CDbException $e){
+            // Fail quietly until there's a need to take additional action after
+            // this happens
+            return false;
         }
     }
 
@@ -479,7 +574,7 @@ class Fields extends CActiveRecord {
 
     /**
      * Validator for ensuring an identifier does not include MySQL reserved words
-     * or X2CRM reserved words
+     * or X2Engine reserved words
      */
     public function nonReserved($attribute,$params = array()) {
         if($this->isNewRecord){
@@ -493,7 +588,7 @@ class Fields extends CActiveRecord {
                 }
             }
             if(in_array($this->$attribute, $reservedWords)){
-                $this->addError($attribute, Yii::t('admin', 'This field is a MySQL or X2CRM reserved word.  Choose a different field name.'));
+                $this->addError($attribute, Yii::t('admin', 'This field is a MySQL or X2Engine reserved word.  Choose a different field name.'));
             }
         }
     }
@@ -520,14 +615,32 @@ class Fields extends CActiveRecord {
                 return $value === false ? null : $value;
 
             case 'link':
-                if(empty($value) || empty($this->linkType) || is_int($value)) // if it's empty, then whatever; if it's already numeric, assume it's valid
+                if(empty($value) || empty($this->linkType)) {
                     return $value;
-                $linkId = Yii::app()->db->createCommand()
-                        ->select('id')
+                }
+                list($name,$id) = self::nameAndId($value);
+                if(ctype_digit((string) $id)) {
+                    // Already formatted as a proper reference. Check for existence of the record.
+                    $linkedModel = X2Model::model($this->linkType)->findByAttributes(array('nameId'=>$value));
+                    // Return the plain text name if the link is broken; otherwise,
+                    // given how the record exists, return the value.
+                    return empty($linkedModel) ? $name : $value;
+                } else if(ctype_digit($value)) {
+                    // User manually entered the ID, i.e. in an API call
+                    $link = Yii::app()->db->createCommand()
+                        ->select('nameId')
                         ->from(X2Model::model($this->linkType)->tableName())
-                        ->where('name=?', array($value))
+                        ->where('id=?', array($value))
                         ->queryScalar();
-                return $linkId === false ? $value : $linkId;
+                } else {
+                    // Look up model's unique nameId by its name:
+                    $link = Yii::app()->db->createCommand()
+                            ->select('nameId')
+                            ->from(X2Model::model($this->linkType)->tableName())
+                            ->where('name=?', array($name))
+                            ->queryScalar();
+                }
+                return $link === false ? $name : $link;
             case 'boolean':
                 return (bool) $value;
 	    case 'dropdown':
@@ -569,9 +682,11 @@ class Fields extends CActiveRecord {
             array('fieldName','uniqueFieldName'),
             array('linkType','length','max'=>250),
             array('type','length','max'=>20),
+            array('keyType','in','range' => array('MUL','UNI','PRI','FIX'), 'allowEmpty'=>true),
+            array('keyType','requiredUnique'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, modelName, fieldName, attributeLabel, custom, modified, readOnly', 'safe', 'on' => 'search'),
+            array('id, modelName, fieldName, attributeLabel, custom, modified, readOnly, keyType', 'safe', 'on' => 'search'),
         );
     }
     
@@ -604,7 +719,17 @@ class Fields extends CActiveRecord {
     public function tableName(){
         return 'x2_fields';
     }
-    
+
+    /**
+     * Validator that prevents adding a unique constraint to a field without
+     * also making it required.
+     */
+    public function requiredUnique($attribute, $params = array()) {
+        if($this->$attribute == 'UNI' && !$this->uniqueConstraint) {
+            $this->addError($attribute,Yii::t('admin','You cannot add a unique constraint unless you also make the field unique and required.'));
+        }
+    }
+
     /**
      * Check that the combination of model and field name will not conflict
      * with any existing one.

@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@
 <h2><?php echo Yii::t('admin','How to set up a Web Lead form'); ?></h2>
 <p>
 <?php echo CHtml::image(Yii::app()->getBaseUrl().'/images/webLead.gif','',array('style'=>'float:left;margin-right:10px;border:1px solid #ddd;')); ?>
-<?php echo Yii::t('admin','The Web Lead capture form is very useful if you have a public website. Visitors can submit their contact information and questions, and X2Contacts will automatically create contact records for them.'); ?>
+<?php echo Yii::t('admin','The Web Lead capture form is very useful if you have a public website. Visitors can submit their contact information and questions, and X2Engine will automatically create contact records for them.'); ?>
 <br /><br />
 <?php echo Yii::t('admin','To install the web lead form, simply copy the following HTML into your website:'); ?>
 

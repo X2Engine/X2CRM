@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -76,7 +76,7 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
 <div class="span-16">
     <div class="page-title"><h2><?php echo Yii::t('admin', 'Email Server Configuration'); ?></h2></div>
     <div class="form">
-        <p><?php echo Yii::t('admin','For more information, see {config} on the X2CRM wiki.',array('{config}'=>CHtml::link(Yii::t('admin','Email Configuration'),'http://wiki.x2engine.com/wiki/E-Mail_Configuration'))); ?></p>
+        <p><?php echo Yii::t('admin','For more information, see {config} on the X2Engine wiki.',array('{config}'=>CHtml::link(Yii::t('admin','Email Configuration'),'http://wiki.x2engine.com/wiki/E-Mail_Configuration'))); ?></p>
         <hr />
         <?php
         $form = $this->beginWidget('CActiveForm', array(
@@ -163,7 +163,7 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
         </div>
         <br /><hr />
         <h4><?php echo Yii::t('admin', 'Bulk Email Settings'); ?></h4>
-        <p><?php echo Yii::t('admin', 'Configure how X2CRM sends email when mailing en-masse.'); ?></p>
+        <p><?php echo Yii::t('admin', 'Configure how X2Engine sends email when mailing en-masse.'); ?></p>
         <div class="row">
             <div class="cell">
                 <?php echo $form->labelEx($model, 'emailBulkAccount'); ?>
@@ -225,7 +225,7 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
 
         <br /><hr />
         <h4><?php echo Yii::t('admin', 'Service Case Email Settings'); ?></h4>
-        <p><?php echo Yii::t('admin', 'Configure how X2CRM sends email when responding to new service case requests.'); ?></p>
+        <p><?php echo Yii::t('admin', 'Configure how X2Engine sends email when responding to new service case requests.'); ?></p>
         <div class="row">
             <div class="cell">
                 <?php echo $form->labelEx($model, 'serviceCaseEmailAccount'); ?>

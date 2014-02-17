@@ -55,8 +55,8 @@ return array (
 'Triggers when a record of specified type is deleted.'=>'指定されたタイプのレコードが削除されたときにトリガします。',
 'Triggered by adding one of these tags to a record.'=>'レコードにこれらのタグのいずれかを添加することにより誘発した。',
 'Triggered when some updates a record of the the specified type.'=>'トリガされたとき、いくつかのアップデート、指定されたタイプのレコード。',
-'Triggered when a user signs in to X2CRM.'=>'ユーザーがサインインがX2CRMするときにトリガ。',
-'Triggered when a user signs out of X2CRM.'=>'ユーザがX2CRMからサインアウトしたときにトリガ。',
+'Triggered when a user signs in to X2Engine.'=>'ユーザーがサインインがX2Engineするときにトリガ。',
+'Triggered when a user signs out of X2Engine.'=>'ユーザがX2Engineからサインアウトしたときにトリガ。',
 'Triggered when a contact visits a webpage'=>'接触がウェブページを訪問したときにトリガ',
 'Triggers when a new contact fills out your web lead capture form.'=>'新しい連絡先は、Webリードキャプチャフォームに入力したときにトリガします。',
 

@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -42,7 +42,7 @@
  * create a service case from a contacts view via ajax by clicking the
  * "Create Case" button. (the new case is associated with the contact).
  *
- * @package X2CRM.modules.services.controllers
+ * @package application.modules.services.controllers
  */
 class ServicesController extends x2base {
 
@@ -85,9 +85,6 @@ class ServicesController extends x2base {
             ),
             'exportServiceReport' => array(
                 'class' => 'ExportServiceReportAction',
-            ),
-            'timerControl' => array(
-                'class' => 'TimerControlAction',
             ),
         ));
     }

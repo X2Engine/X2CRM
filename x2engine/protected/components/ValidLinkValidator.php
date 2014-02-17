@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -43,7 +43,8 @@
 class ValidLinkValidator extends CValidator {
 
     public function validateAttribute($model,$attribute,$params = array()) {
-        if(!is_numeric($model->$attribute)){
+        list($name,$id) = Fields::nameAndId($model->$attribute);
+        if(!ctype_digit($id)){
             $model->addError($attribute, Yii::t('app', '{attr} does not refer to any existing record', array('{attr}' => $model->getAttributeLabel($attribute))));
         }
     }

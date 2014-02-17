@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.modules.users.controllers
+ * @package application.modules.users.controllers
  */
 class UsersController extends x2base {
 
@@ -329,12 +329,12 @@ class UsersController extends x2base {
 
 			$body="Hello,
 
-You are receiving this email because your X2CRM administrator has invited you to create an account.
-Please click on the link below to create an account at X2CRM!
+You are receiving this email because your X2Engine administrator has invited you to create an account.
+Please click on the link below to create an account at X2Engine!
 
 ";
 
-			$subject="Create Your X2CRM User Account";
+			$subject="Create Your X2Engine User Account";
 			$list=trim($list);
 			$emails=explode(',',$list);
 			foreach($emails as &$email){

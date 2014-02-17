@@ -55,8 +55,8 @@ return array (
 'Triggers when a record of specified type is deleted.'=>'Activeert wanneer een record van een specifiek type wordt verwijderd.',
 'Triggered by adding one of these tags to a record.'=>'Veroorzaakt door het toevoegen van een van deze tags naar een record.',
 'Triggered when some updates a record of the the specified type.'=>'Geactiveerd wanneer sommige updates een verslag van het het opgegeven type.',
-'Triggered when a user signs in to X2CRM.'=>'Geactiveerd wanneer een gebruiker zich aanmeldt bij X2CRM.',
-'Triggered when a user signs out of X2CRM.'=>'Geactiveerd wanneer een gebruiker ondertekent uit X2CRM.',
+'Triggered when a user signs in to X2Engine.'=>'Geactiveerd wanneer een gebruiker zich aanmeldt bij X2Engine.',
+'Triggered when a user signs out of X2Engine.'=>'Geactiveerd wanneer een gebruiker ondertekent uit X2Engine.',
 'Triggered when a contact visits a webpage'=>'Geactiveerd wanneer een contactpersoon bezoekt een webpagina',
 'Triggers when a new contact fills out your web lead capture form.'=>'Schakelaar wanneer u een nieuwe contactpersoon vult uw web leads formulier.',
 

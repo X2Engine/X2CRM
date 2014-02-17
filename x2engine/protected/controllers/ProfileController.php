@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,7 +38,7 @@
 /**
  * User profiles controller
  *
- * @package X2CRM.controllers
+ * @package application.controllers
  */
 class ProfileController extends x2base {
 
@@ -1189,7 +1189,7 @@ class ProfileController extends x2base {
                 // Check if user has set a default account for email delivery
                 $subject = "Event Broadcast";
                 $fromName = Yii::app()->params->profile->fullName;
-                $body = "$fromName has broadcast an event on your X2CRM Activity Feed:<br><br>".
+                $body = "$fromName has broadcast an event on your X2Engine Activity Feed:<br><br>".
                         $event->getText(array('requireAbsoluteUrl' => true));
                 $recipients = array('to' => array());
                 foreach($users as $user)

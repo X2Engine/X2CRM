@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -40,7 +40,7 @@ Yii::import('application.extensions.NLSClientScript');
  * Custom extension of CClientScript used by the app.
  *
  * @property bool $fullscreen Whether to render in full screen mode
- * @package X2CRM.components 
+ * @package application.components 
  */
 class X2ClientScript extends NLSClientScript {
 
@@ -52,25 +52,25 @@ class X2ClientScript extends NLSClientScript {
     private $_scriptUrl;
     private $_themeUrl;
     
-	/**
-	 * Inserts the scripts at the beginning of the body section.
-	 * @param boolean $includeScriptFiles whether to include external files, or just dynamic scripts
-	 * @return string the output to be inserted with scripts.
-	 */
-	public function renderOnRequest($includeScriptFiles = false) {
-		$html='';
-		if($includeScriptFiles) {
-			foreach($this->scriptFiles as $scriptFiles) {
-				foreach($scriptFiles as $scriptFile)
-					$html.=CHtml::scriptFile($scriptFile)."\n";
-			}
-		}
-		foreach($this->scripts as $script)	// the good stuff!
-			$html.=CHtml::script(implode("\n",$script))."\n";
+    /**
+     * Inserts the scripts at the beginning of the body section.
+     * @param boolean $includeScriptFiles whether to include external files, or just dynamic scripts
+     * @return string the output to be inserted with scripts.
+     */
+    public function renderOnRequest($includeScriptFiles = false) {
+        $html='';
+        if($includeScriptFiles) {
+            foreach($this->scriptFiles as $scriptFiles) {
+                foreach($scriptFiles as $scriptFile)
+                    $html.=CHtml::scriptFile($scriptFile)."\n";
+            }
+        }
+        foreach($this->scripts as $script)    // the good stuff!
+            $html.=CHtml::script(implode("\n",$script))."\n";
 
-		if($html!=='')
-			return $html;
-	}
+        if($html!=='')
+            return $html;
+    }
 
     /**
      * Echoes out registered scripts and the necessary JavaScript to load
@@ -84,20 +84,20 @@ class X2ClientScript extends NLSClientScript {
         $endScripts = '';
         foreach($cs->cssFiles as $url => $type){
             $scripts .= '
-if($("head link[href=\''.$url.'\']").length == 0) {
-    $.ajax({type:"GET",url:"'.$url.'"}).done(function(response) {
-        $(\'<link rel="stylesheet" type="text/css" href="'.$url.'">\').appendTo("head");
-    });
-}';
+                if($("head link[href=\''.$url.'\']").length == 0) {
+                    $.ajax({type:"GET",url:"'.$url.'"}).done(function(response) {
+                        $(\'<link rel="stylesheet" type="text/css" href="'.$url.'">\').appendTo("head");
+                    });
+                }';
         }
         foreach($cs->scriptFiles as $position => $scriptFiles){
             foreach($scriptFiles as $key => $url){
                 $scripts .= '
-$.ajax({
-    type:"GET",
-    dataType:"script",
-    url:"'.$url.'"
-}).always(function(){';
+                    $.ajax({
+                        type:"GET",
+                        dataType:"script",
+                        url:"'.$url.'"
+                    }).always(function(){';
                 $endScripts .= '})';
             }
         }
@@ -126,7 +126,7 @@ $.ajax({
         $admin = $this->admin;
         $isGuest = $this->isGuest;
 
-// jQuery and jQuery UI libraries
+        // jQuery and jQuery UI libraries
         $cs->registerCoreScript('jquery')
            ->registerCoreScript('jquery.ui');
 
@@ -143,7 +143,8 @@ $.ajax({
         }
         $decSym = $locale->getNumberSymbol('decimal');
         $grpSym = $locale->getNumberSymbol('group');
-// Declare:
+
+        // Declare:
         $cldScript = '(function($) {'."\n";
         foreach(Yii::app()->params->supportedCurrencySymbols as $curCode => $curSym){
             $cldScript .= '$.formatCurrency.regions["'.$curCode.'"] = '.CJSON::encode(array(
@@ -163,7 +164,7 @@ $.ajax({
                 ), 'passAuxLibVars'
         );
 
-// custom scripts
+        // custom scripts
         $cs->registerScriptFile($baseUrl.'/js/json2.js')
                 ->registerScriptFile($baseUrl.'/js/main.js'.$jsVersion, CCLientScript::POS_HEAD)
                 ->registerScriptFile($baseUrl.'/js/auxlib.js', CClientScript::POS_HEAD)
@@ -177,47 +178,28 @@ $.ajax({
                 ->registerScriptFile($baseUrl.'/js/relationships.js')
                 ->registerScriptFile($baseUrl.'/js/widgets.js')
                 ->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion)
-                ->registerScriptFile($baseUrl.'/js/actionFrames.js'.$jsVersion)
+                ->registerScriptFile($baseUrl.'/js/ActionFrames.js'.$jsVersion)
                 ->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js')
                 ->registerScriptFile($baseUrl.'/js/checklistDropdown/jquery.multiselect.js');
 
         if(IS_IPAD){
             $cs->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
         }
-        //$cs->registerScriptFile($baseUrl.'/js/jquery.mobile-1.3.2.js');
 
         if(Yii::app()->session['translate'])
             $cs->registerScriptFile($baseUrl.'/js/translator.js');
 
         $cs->registerScriptFile($baseUrl.'/js/backgroundFade.js');
         $cs->registerScript('datepickerLanguage', "
-    $.datepicker.setDefaults( $.datepicker.regional[ '' ] );
-");
-// $cs ->registerScriptFile($baseUrl.'/js/backgroundImage.js');
-// MoneyMask extension:
+            $.datepicker.setDefaults( $.datepicker.regional[ '' ] );
+        ");
         $mmPath = Yii::getPathOfAlias('application.extensions.moneymask.assets');
         $aMmPath = Yii::app()->getAssetManager()->publish($mmPath);
         $cs->registerScriptFile("$aMmPath/jquery.maskMoney.js");
-//$cs->registerCoreScript('jquery');
-// blueprint CSS framework
         $cs->registerCssFile($baseUrl.'/css/normalize.css', 'all')
-                ->registerCssFile($themeUrl.'/css/print.css'.$jsVersion, 'print')
-                /* ->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection')
-                  ->registerCssFile($themeUrl.'/css/auxlib.css'.$jsVersion,'screen, projection')
-                  ->registerCssFile($themeUrl.'/css/jquery-ui.css'.$jsVersion,'screen, projection')
-                  ->registerCssFile($themeUrl.'/css/dragtable.css'.$jsVersion,'screen, projection')
-                  ->registerCssFile($themeUrl.'/css/main.css'.$jsVersion,'screen, projection')
-                  ->registerCssFile($themeUrl.'/css/combined.css'.$jsVersion,'screen, projection')
-                  ->registerCssFile($themeUrl.'/css/ui-elements.css'.$jsVersion,'screen, projection')
-                  ->registerCssFile($themeUrl.'/css/layout.css'.$jsVersion,'screen, projection')
-                  ->registerCssFile($themeUrl.'/css/details.css'.$jsVersion,'screen, projection')
-                  ->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection')
-                  ->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection') */
-                ->registerCssFile($themeUrl.'/css/combined.css'.$jsVersion, 'screen, projection')
-                //->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection')
-                ->registerCoreScript('cookie');
-// $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion);
-//$cs->registerCssFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.css');
+            ->registerCssFile($themeUrl.'/css/print.css'.$jsVersion, 'print')
+            ->registerCssFile($themeUrl.'/css/combined.css'.$jsVersion, 'screen, projection')
+            ->registerCoreScript('cookie');
 
         if(IS_ANDROID)
             $cs->registerCssFile($themeUrl.'/css/androidLayout.css'.$jsVersion, 'screen, projection');
@@ -225,26 +207,26 @@ $.ajax({
             $cs->registerCssFile($themeUrl.'/css/ipadLayout.css'.$jsVersion, 'screen, projection');
 
         $cs->registerScript('fullscreenToggle', '
-window.enableFullWidth = '.(!Yii::app()->user->isGuest ? ($profile->enableFullWidth ? 'true' : 'false') : 'true').';
-window.fullscreen = '.($fullscreen ? 'true' : 'false').';
-', CClientScript::POS_HEAD);
+            window.enableFullWidth = '.(!Yii::app()->user->isGuest ? ($profile->enableFullWidth ? 'true' : 'false') : 'true').';
+            window.fullscreen = '.($fullscreen ? 'true' : 'false').';
+        ', CClientScript::POS_HEAD);
 
         if(is_object(Yii::app()->controller->module)){
             $cs->registerScript('saveCurrModule', "
-        x2.currModule = '".Yii::app()->controller->module->name."';
-    ", CClientScript::POS_HEAD);
+                x2.currModule = '".Yii::app()->controller->module->name."';
+            ", CClientScript::POS_HEAD);
         }
 
         if(!$isGuest){
             $cs->registerScript('notificationsParams', "
-        x2.notifications = new x2.Notifs ({
-            disablePopup: ".($profile->disableNotifPopup ? 'true' : 'false').",
-            translations: {
-                clearAll:
-                    '".addslashes(Yii::t('app', 'Permanently delete all notifications?'))."'
-            }
-        });
-    ", CClientScript::POS_READY);
+                x2.notifications = new x2.Notifs ({
+                    disablePopup: ".($profile->disableNotifPopup ? 'true' : 'false').",
+                    translations: {
+                        clearAll:
+                            '".addslashes(Yii::t('app', 'Permanently delete all notifications?'))."'
+                    }
+                });
+            ", CClientScript::POS_READY);
             $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
                     ->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion, CClientScript::POS_BEGIN);
         }
@@ -253,8 +235,6 @@ window.fullscreen = '.($fullscreen ? 'true' : 'false').';
             $cs->registerCss('rtl-language', 'body{text-align:right;}');
 
         $cs->registerCoreScript('rating');
-//$cs->registerCssFile($cs->getCoreScriptUrl().'/rating/jquery.rating.css');
-        $cs->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/rating/jquery.rating.css');
     }
 
     public function getAdmin() {

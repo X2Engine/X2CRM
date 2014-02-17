@@ -1,6 +1,6 @@
 <?php 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -557,7 +557,7 @@ function stageDownload(i) {
 }
 
 /**
- * Enact changes to X2CRM.
+ * Enact changes to X2Engine.
  */
 function stageEnact(i) {
     if(inProgress) { // Duplicate request to server 
@@ -612,7 +612,7 @@ function stageReview(i) {
         $(this).fadeOut(300,function(){
             $('html, body').animate({scrollTop:0});
         });
-        updateHeader.text(<?php echo json_encode($scenario == 'update' ? Yii::t('admin','Updating X2CRM...'):Yii::t('admin','Upgrading X2CRM...')); ?>);
+        updateHeader.text(<?php echo json_encode($scenario == 'update' ? Yii::t('admin','Updating X2Engine...'):Yii::t('admin','Upgrading X2Engine...')); ?>);
         proceedToNextStage(ind);
     });
 }
@@ -775,12 +775,12 @@ $(function() {
  */
 window.onbeforeunload = function(e) {
     if(isActive())
-        return <?php echo json_encode(Yii::t('admin','The updater is currently applying changes to X2CRM. If you interrupt it, you could cause SEVERE damage that may include (but would not be limited to) loss of data.')); ?>;
+        return <?php echo json_encode(Yii::t('admin','The updater is currently applying changes to X2Engine. If you interrupt it, you could cause SEVERE damage that may include (but would not be limited to) loss of data.')); ?>;
 }
 
 </script>
 
-<div class="page-title"><h2><?php echo in_array($scenario,array('message','error')) ? $message : "X2CRM ".ucfirst($scenario); ?></h2></div>
+<div class="page-title"><h2><?php echo in_array($scenario,array('message','error')) ? $message : "X2Engine ".ucfirst($scenario); ?></h2></div>
 <div class="span-24 updater-page">
 
 <div class="form">
@@ -810,16 +810,16 @@ window.onbeforeunload = function(e) {
 <h3><?php echo Yii::t('admin', 'Before Proceeding'); ?></h3>
 <?php echo Yii::t('admin', 'The following precautions are highly recommended:') ?><br />
 <ul style="margin-top:10px;">
-    <li><?php echo Yii::t('admin', "Make a backup copy of X2CRM's database:") ?>
+    <li><?php echo Yii::t('admin', "Make a backup copy of X2Engine's database:") ?>
         <ul>
             <li><?php echo Yii::t('admin', 'using third-party web hosting tools, or:'); ?></li>
             <li><?php echo Yii::t('admin', 'by clicking the button below.'); ?></li>
         </ul>
     </li>
-    <li><?php echo Yii::t('admin', "Make a backup copy of all X2CRM's files in addition to its database, in case you want to revert to the current version."); ?></li>
+    <li><?php echo Yii::t('admin', "Make a backup copy of all X2Engine's files in addition to its database, in case you want to revert to the current version."); ?></li>
     <?php if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','LockAppAction.php')))):
     if(!Yii::app()->locked): ?>
-    <li><?php echo CHtml::link(Yii::t('admin','Lock X2CRM'),array('/admin/lockApp')); ?></li>
+    <li><?php echo CHtml::link(Yii::t('admin','Lock X2Engine'),array('/admin/lockApp')); ?></li>
     <?php
     endif;
     endif; ?>
@@ -881,7 +881,7 @@ try{
 
 <div class="form" id="autorestore-disclaimer">
     <h4 style="margin:0;"><?php echo Yii::t('admin', 'Disclaimer'); ?></h4>
-    <?php echo Yii::t('admin','Restoring a database may take longer than the maximum PHP execution time permitted in some server environments, or even longer than the request timeout value in the configuration of your web browser. This is especially likely to occur if you have a large X2CRM installation with hundreds of thousands of records. If a database restore operation is cut short, the consequences could be severe. Please check your web server configuration and test making a backup of the database first. If database backups do not succeed, consider disabling this option.'); ?>
+    <?php echo Yii::t('admin','Restoring a database may take longer than the maximum PHP execution time permitted in some server environments, or even longer than the request timeout value in the configuration of your web browser. This is especially likely to occur if you have a large X2Engine installation with hundreds of thousands of records. If a database restore operation is cut short, the consequences could be severe. Please check your web server configuration and test making a backup of the database first. If database backups do not succeed, consider disabling this option.'); ?>
 </div>
 </div><!-- #database-backup -->
 <br />

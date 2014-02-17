@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@
 /**
  * X2FlowAction that creates a notification
  *
- * @package X2CRM.components.x2flow.actions
+ * @package application.components.x2flow.actions
  */
 class X2FlowWait extends X2FlowAction {
 	public $title = 'Wait';
@@ -113,7 +113,6 @@ class X2FlowWait extends X2FlowAction {
 
 		$cron->data = CJSON::encode($cronData);
 		// $cron->validate();
-		// die(var_dump($cron->getErrors()));
         if(isset($tmpModel)){
             $params['model']=$tmpModel;
         }
@@ -122,18 +121,5 @@ class X2FlowWait extends X2FlowAction {
         } else {
 			return array (false, "");
         }
-		// $notif->user = $this->parseOption('user',$params);
-
 	}
 }
-
-
-
-
-
-
-
-
-
-
-

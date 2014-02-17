@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -179,7 +179,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 			Appropriate Legal Notices must retain the display of the "Powered by X2Engine"
 			logo. If the display of the logo is not reasonably feasible for technical reasons,
 			the Appropriate Legal Notices must display the words "Powered by X2Engine".
-			X2CRM and X2Engine are trademarks of X2Engine Inc.<br><br>
+			X2Engine and X2Engine are trademarks of X2Engine Inc.<br><br>
 
 		<?php else: ?>
 			<b>X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license

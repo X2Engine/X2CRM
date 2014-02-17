@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -40,7 +40,7 @@ Yii::import('application.components.webupdater.*');
  * Back up the database and existing files to be deleted or replaced in an
  * update or upgrade.
  * 
- * @package X2CRM.components.webupdater
+ * @package application.components.webupdater
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class DatabaseBackupAction extends WebUpdaterAction {

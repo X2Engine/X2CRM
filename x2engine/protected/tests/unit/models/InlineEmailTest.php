@@ -10,7 +10,7 @@ Yii::import('application.components.ResponseBehavior');
 /**
  * Test of the {@link InlineEmail} class.
  *
- * @package X2CRM.tests.unit.models
+ * @package application.tests.unit.models
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class InlineEmailTest extends X2DbTestCase {

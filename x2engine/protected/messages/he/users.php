@@ -19,7 +19,7 @@ return array (
 // Users Titles
 'User: {name}'=>'משתמש: {name}',
 'Update User: {name}'=>'עדכון משתמש: {name}',
-'Invite Users to X2CRM'=>'להזמין משתמשים לX2CRM',
+'Invite Users to X2Engine'=>'להזמין משתמשים לX2Engine',
 'Instructions'=>'הוראות',
 'Delete Unregistered'=>'מחק רשום',
 'Invited Users'=>'משתמשים שהוזמנו',

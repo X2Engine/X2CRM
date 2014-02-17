@@ -55,8 +55,8 @@ return array (
 'Triggers when a record of specified type is deleted.'=>'Wird ausgelöst, wenn ein Datensatz des vorgeschriebenen Typs wird gelöscht.',
 'Triggered by adding one of these tags to a record.'=>'Ausgelöst durch das Hinzufügen einer dieser Variablen auf einen Rekordwert.',
 'Triggered when some updates a record of the the specified type.'=>'Wird ausgelöst, wenn einige Updates eine Aufzeichnung des angegebenen Typs.',
-'Triggered when a user signs in to X2CRM.'=>'Ausgelöst, wenn ein Benutzer sich X2CRM.',
-'Triggered when a user signs out of X2CRM.'=>'Wird ausgelöst, wenn ein Benutzer von X2CRM.',
+'Triggered when a user signs in to X2Engine.'=>'Ausgelöst, wenn ein Benutzer sich X2Engine.',
+'Triggered when a user signs out of X2Engine.'=>'Wird ausgelöst, wenn ein Benutzer von X2Engine.',
 'Triggered when a contact visits a webpage'=>'Ausgelöst, wenn ein Kontakt eine Webseite besucht',
 'Triggers when a new contact fills out your web lead capture form.'=>'Wird ausgelöst, wenn ein neuer Kontakt füllt Ihre Web-Lead-Erfassung Form.',
 

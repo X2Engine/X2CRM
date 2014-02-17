@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -226,6 +226,7 @@ class X2Flow extends CActiveRecord {
         $flowTrace;
         $flowRetVal = null;
         foreach($flows as &$flow) {
+
             // if flow id is specified, only execute flow with specified id
             if (isset ($params['flowId']) && $flow->id !== $params['flowId']) continue;
             $triggerLog = new TriggerLog;
@@ -395,7 +396,8 @@ class X2Flow extends CActiveRecord {
                     if($flowPath[$pathIndex] && isset($item['trueBranch'])){
                         if(isset($flowPath[$pathIndex + 1])) {
                             return $this->traverse(
-                                    $flowPath, $item['trueBranch'], $params, $pathIndex + 1, $triggerLogId);
+                                $flowPath, $item['trueBranch'], $params, $pathIndex + 1,
+                                $triggerLogId);
                         } else {
                             return array(
                                 $item['type'], true,
@@ -419,9 +421,10 @@ class X2Flow extends CActiveRecord {
                 }
             }
             return false;
-        } else{ // we're in the final branch, so just execute it starting at the specified index
+        } else { // we're in the final branch, so just execute it starting at the specified index
             if(isset($flowPath[$pathIndex]))
-                return $this->executeBranch($flowPath, $flowItems, $params, $flowPath[$pathIndex], $triggerLogId);
+                return $this->executeBranch(
+                    $flowPath, $flowItems, $params, $flowPath[$pathIndex], $triggerLogId);
         }
     }
 
@@ -435,7 +438,6 @@ class X2Flow extends CActiveRecord {
      */
     public function executeBranch($flowPath, &$flowItems, &$params, $start = 0, $triggerLogId=null){
         $results = array();
-        //AuxLib::debugLog ('executeBranch');
 
         for($i = $start; $i < count($flowItems); $i++){
             $item = &$flowItems[$i];
@@ -460,14 +462,16 @@ class X2Flow extends CActiveRecord {
                         $flowPath[] = 0; // they're now on
                         $results[] = array(
                             $item['type'], true,
-                            $this->executeBranch($flowPath, $item['trueBranch'], $params, 0, $triggerLogId)
+                            $this->executeBranch(
+                                $flowPath, $item['trueBranch'], $params, 0, $triggerLogId)
                         );
                     }elseif(isset($item['falseBranch'])){
                         $flowPath[] = false;
                         $flowPath[] = 0;
                         $results[] = array(
                             $item['type'], false,
-                            $this->executeBranch($flowPath, $item['falseBranch'], $params, 0, $triggerLogId)
+                            $this->executeBranch(
+                                $flowPath, $item['falseBranch'], $params, 0, $triggerLogId)
                         );
                     }
                 }
@@ -476,13 +480,13 @@ class X2Flow extends CActiveRecord {
                 if($item['type'] === 'X2FlowWait'){
                     $flowAction->flowPath = $flowPath;
                     $flowAction->flowId = $this->id;
-                    $results[] = $this->validateAndExecute ($item, $flowAction, $params, $triggerLogId);
-                    //$results[] = array($item['type'], $flowAction->validate($params) && $flowAction->execute($params));
+                    $results[] = $this->validateAndExecute (
+                        $item, $flowAction, $params, $triggerLogId);
                     break;
                 }else{
                     $flowPath[count($flowPath) - 1]++; // increment the index in the current branch
-                    //$results[] = array($item['type'], $flowAction->validate($params) && $flowAction->execute($params));
-                    $results[] = $this->validateAndExecute ($item, $flowAction, $params, $triggerLogId);
+                    $results[] = $this->validateAndExecute (
+                        $item, $flowAction, $params, $triggerLogId);
                 }
             }
         }
@@ -507,7 +511,6 @@ class X2Flow extends CActiveRecord {
      * @param string $type the X2Fields type for this value
      * @return mixed the parsed value
      */
-
     public static function parseValue($value, $type, &$params = null){
         if(is_string($value)){
             if(strpos($value, '=') === 0){

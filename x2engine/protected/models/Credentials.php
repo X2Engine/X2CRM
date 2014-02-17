@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -56,7 +56,7 @@
  *	keyworkds, i.e. "Email Account" for "email".
  * @property array $sysUseLabels (read-only) An array of labels for system-wide
  *	uses of system-owned credentials.
- * @package X2CRM.models
+ * @package application.models
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class Credentials extends CActiveRecord {

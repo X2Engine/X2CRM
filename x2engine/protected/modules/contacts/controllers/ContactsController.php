@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.modules.contacts.controllers
+ * @package application.modules.contacts.controllers
  */
 class ContactsController extends x2base {
 
@@ -132,6 +132,9 @@ class ContactsController extends x2base {
         return array_merge(parent::behaviors(), array(
                     'LeadRoutingBehavior' => array(
                         'class' => 'LeadRoutingBehavior'
+                    ),
+                    'ImportExportBehavior' => array(
+                        'class' => 'ImportExportBehavior'
                     )
                 ));
     }
@@ -1288,6 +1291,7 @@ class ContactsController extends x2base {
     // Lists all visible contacts
     public function actionIndex(){
         $model = new Contacts('search');
+
         Yii::app()->user->setState('vcr-list', 'index');
         $this->render('index', array('model' => $model));
     }
@@ -1834,10 +1838,10 @@ class ContactsController extends x2base {
 
         if(isset($_FILES['contacts'])){
             $temp = CUploadedFile::getInstanceByName('contacts');
-            $temp->saveAs('contacts.csv');
+            $temp->saveAs($filePath = $this->safePath('contacts.csv'));
             ini_set('auto_detect_line_endings', 1); // Account for Mac based CSVs if possible
-            if(file_exists('contacts.csv'))
-                $fp = fopen('contacts.csv', 'r+');
+            if(file_exists($filePath))
+                $fp = fopen($filePath, 'r+');
             else
                 throw new Exception('There was an error saving the contacts file.');
             $meta = fgetcsv($fp);
@@ -1862,7 +1866,7 @@ class ContactsController extends x2base {
             // Set our file offset for importing Contacts
             $_SESSION['offset'] = ftell($fp);
             $_SESSION['metaData'] = $meta;
-            $failedContacts = fopen('failedContacts.csv', 'w+');
+            $failedContacts = fopen($this->safePath('failedContacts.csv'), 'w+');
             fputcsv($failedContacts, $meta);
             fclose($failedContacts);
             $x2attributes = array_keys(X2Model::model('Contacts')->attributes);
@@ -2039,8 +2043,8 @@ class ContactsController extends x2base {
         unset($_SESSION['metaData']);
         unset($_SESSION['fields']);
         unset($_SESSION['x2attributes']);
-        if(file_exists('contacts.csv')){
-            unlink('contacts.csv');
+        if(file_exists($path = $this->safePath('contacts.csv'))){
+            unlink($path);
         }
     }
 
@@ -2049,11 +2053,11 @@ class ContactsController extends x2base {
      * recursively via AJAX to import sets of records.
      */
     public function actionImportRecords(){
-        if(isset($_POST['count']) && file_exists('contacts.csv')){
+        if(isset($_POST['count']) && file_exists($path = $this->safePath('contacts.csv'))){
             $count = $_POST['count']; // Number of records to import
             $metaData = $_SESSION['metaData'];
             $importMap = $_SESSION['importMap'];
-            $fp = fopen('contacts.csv', 'r+');
+            $fp = fopen($path, 'r+');
             fseek($fp, $_SESSION['offset']); // Seek to the right file offset
             for($i = 0; $i < $count; $i++){
                 $arr = fgetcsv($fp); // Loop through and start importing
@@ -2248,7 +2252,7 @@ class ContactsController extends x2base {
                         }
                     }else{
                         // If the import failed, then put the data into the failedContacts CSV for easy recovery.
-                        $failedContacts = fopen('failedContacts.csv', 'a+');
+                        $failedContacts = fopen($this->safePath('failedContacts.csv'), 'a+');
                         fputcsv($failedContacts, $arr);
                         fclose($failedContacts);
                         $_SESSION['failed']++;
@@ -2328,12 +2332,12 @@ class ContactsController extends x2base {
     public function actionExportContacts($listId = null){
         unset($_SESSION['contactExportFile'], $_SESSION['exportContactCriteria'], $_SESSION['contactExportMeta']);
         if(is_null($listId)){
-            $file = "contact_export.csv";
+            $file = $this->safePath("contact_export.csv");
             $listName = CHtml::link(Yii::t('contacts', 'All Contacts'), array('/contacts/contacts/index'), array('style' => 'text-decoration:none;'));
         }else{
             $list = X2List::load($listId);
             $_SESSION['exportContactCriteria'] = $list->queryCriteria();
-            $file = "list".$listId.".csv";
+            $file = $this->safePath("list".$listId.".csv");
             $listName = CHtml::link(Yii::t('contacts', 'List')." $listId: ".$list->name, array('/contacts/contacts/list','id'=>$listId), array('style' => 'text-decoration:none;'));
         }
         $_SESSION['contactExportFile'] = $file;
@@ -2466,7 +2470,7 @@ class ContactsController extends x2base {
     }
 
     public function actionCleanFailedLeads(){
-        $file = 'failed_leads.csv';
+        $file = $this->safePath('failed_leads.csv');
 
         if(file_exists($file)){
             header('Content-Description: File Transfer');

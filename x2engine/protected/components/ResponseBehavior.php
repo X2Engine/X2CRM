@@ -9,7 +9,7 @@
  * @property string $logCategory Output logging will occur; this specifies the log category.
  * @property boolean $longErrorTrace Whether to print extended error traces with errors, for debugging
  * @property array $response The response, if returning a JSON
- * @package X2CRM.components
+ * @package application.components
  */
 class ResponseBehavior extends CBehavior {
 

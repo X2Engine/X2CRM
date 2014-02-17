@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -33,6 +33,12 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/auxlib.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Tags/TagContainer.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Tags/TagCreationContainer.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Tags/InlineTagsContainer.js');
+
 $authParams['assignedTo']=$model->assignedTo;
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),

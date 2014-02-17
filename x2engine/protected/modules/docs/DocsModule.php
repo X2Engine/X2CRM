@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package X2CRM.modules.docs 
+ * @package application.modules.docs 
  */
 class DocsModule extends CWebModule {
 	public function init() {

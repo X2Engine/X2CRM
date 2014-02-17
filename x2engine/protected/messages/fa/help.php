@@ -2,7 +2,7 @@
 return array (
 
 'Icon Reference'=>'آیکون های مرجع',
-'X2CRM Modules'=>'ماژول های X2CRM',
+'X2Engine Modules'=>'ماژول های X2Engine',
 'Events'=>'رویدادهای',
 'Action Reminder'=>'یادآوری اکشن',
 'Calendar Event'=>'تقویم رویداد',

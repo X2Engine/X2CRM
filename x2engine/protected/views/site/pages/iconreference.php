@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -110,7 +110,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
 
 <div id="icon-reference-section-1" class="icon-reference form p-20">
     <h2 class="section-title"> 
-        <?php echo Yii::t ('help', 'X2CRM Modules'); ?>
+        <?php echo Yii::t ('help', 'X2Engine Modules'); ?>
     </h2>
     <div class="column1 cell">
         <div class="row">

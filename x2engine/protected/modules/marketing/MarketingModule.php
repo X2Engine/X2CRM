@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package X2CRM.modules.marketing 
+ * @package application.modules.marketing 
  */
 class MarketingModule extends X2WebModule {
 

@@ -20,7 +20,7 @@ throw new Exception('Exceptions too');
 Yii::t('profile','Manage Passwords for Third-Party Applications');
 Yii::t('admin','Define how the system sends email by default.');
 Yii::t('admin','Note that this will not supersede other email settings. Usage of these particular settings is a legacy feature. Unless this web server also serves as your company\'s primary mail server, it is recommended to instead use "{ma}" to set up email accounts for system usage instead.',array('{ma}'=>CHtml::link(Yii::t('app','Manage Apps'),array('profile/manageCredentials'))));
-Yii::t('admin','Configure how X2CRM sends email when responding to new service case requests.');
+Yii::t('admin','Configure how X2Engine sends email when responding to new service case requests.');
 
 // Not valid/ignored:
 Yii::t('users',$notastring);

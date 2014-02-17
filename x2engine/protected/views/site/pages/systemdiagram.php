@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************************
- * X2CRM Open Source Edition is a customer relationship management program developed by
+ * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -38,7 +38,7 @@
 <?php
 $this->layout = '//layouts/column3';
 $this->pageTitle=Yii::app()->name . ' - ' . Yii::t('admin','System Diagram');
-echo "<div class='page-title'><h2>".Yii::t('admin','X2CRM 3.0 System Diagram')."</h2></div>";
+echo "<div class='page-title'><h2>".Yii::t('admin','X2Engine 3.0 System Diagram')."</h2></div>";
 echo "<div class='form'>";
 echo CHtml::image(Yii::app()->theme->baseUrl.'/images/map3.png','',array('style'=>'display:block;margin-left:auto;margin-right:auto;'));
 echo "</div>";

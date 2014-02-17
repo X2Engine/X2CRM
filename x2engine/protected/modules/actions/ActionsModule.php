@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @package X2CRM.modules.actions
+ * @package application.modules.actions
  */
-class ActionsModule extends CWebModule {
+class ActionsModule extends X2WebModule {
 	public function init() {
 		// this method is called when the module is being created
 		// you may place code here to customize the module or the application

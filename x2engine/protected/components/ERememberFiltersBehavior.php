@@ -66,7 +66,7 @@
  * @author Marton Kodok http://www.yiiframework.com/forum/index.php?/user/8824-pentium10/
  * @link http://www.yiiframework.com/
  * @version 1.2
- * @package X2CRM.components
+ * @package application.components
  */
 class ERememberFiltersBehavior extends CActiveRecordBehavior {
 
