@@ -48,7 +48,7 @@ if(!empty($_SERVER['REMOTE_ADDR'])){
     $filename = 'install.php';
 
     if(file_exists($filename)){
-        header('Location: '.(!$indexReq ? $SERVER_['REQUEST_URI'] : $matches[1]).$filename);
+        header('Location: '.(!$indexReq ? $_SERVER['REQUEST_URI'] : $matches[1]).$filename);
         exit();
     }
     $config = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected', 'config', 'web.php'));
