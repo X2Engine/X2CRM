@@ -101,6 +101,7 @@ $config = array(
                 '<module:\w+>' => '<module>/<module>/index',
                 '<module:\w+>/<id:\d+>' => '<module>/<module>/view',
                 '<module:\w+>/id/<id:\d+>' => '<module>/<module>/view',
+                '<module:\w+>/<action:\w+>/id/<id:\d+>' => '<module>/<module>/<action>',
                 '<module:\w+>/<action:\w+>' => '<module>/<module>/<action>',
                 '<module:\w+>/<action:\w+>/<id:\d+>' => '<module>/<module>/<action>',
                 '<module:\w+>/<controller:\w+>/<id:\d+>' => '<module>/<controller>/view',

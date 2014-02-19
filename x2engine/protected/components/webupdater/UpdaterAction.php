@@ -88,9 +88,8 @@ class UpdaterAction extends WebUpdaterAction {
         // available by this point in time (since the old safeguard methods
         // in AdminController would take care of that for much older
         // versions) so it's safe to auto-download at this point.
-        $latestVersion = $this->checkUpdates(true);
         $updaterCheck = $this->getLatestUpdaterVersion();
-        if($updaterCheck && $latestVersion){
+        if($updaterCheck){
             if(version_compare($updaterVersion,$updaterCheck) < 0){
                 $this->runUpdateUpdater($updaterCheck, array('updater', 'scenario' => $scenario));
             }
@@ -107,7 +106,8 @@ class UpdaterAction extends WebUpdaterAction {
             ));
         }
 
-
+        $latestVersion = $this->checkUpdates(true);
+        $viewParams['latestVersion'] = $latestVersion;
         if(version_compare($version, $latestVersion) < 0){ // If the effective version is not the most recent version
             if($scenario == 'update'){
                 // Update.
@@ -123,7 +123,7 @@ class UpdaterAction extends WebUpdaterAction {
                 $this->controller->render('updater', array(
                     'scenario' => 'error',
                     'message' => 'Update required',
-                    'longMessage' => Yii::t('admin',"Before upgrading, you must update to the latest version ({latestver}).",array('{latestVer}'=>$latestVersion)).' '.CHtml::link(Yii::t('app', 'Update'), array('/admin/updater','scenario'=>'update'), array('class' => 'x2-button'))
+                    'longMessage' => Yii::t('admin',"Before upgrading, you must update to the latest version ({latestver}).",array('{latestver}'=>$latestVersion)).' '.CHtml::link(Yii::t('app', 'Update'), array('/admin/updater','scenario'=>'update'), array('class' => 'x2-button'))
                 ));
             }
         }else{ // If at latest version already.

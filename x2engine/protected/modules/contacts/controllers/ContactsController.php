@@ -1311,6 +1311,7 @@ class ContactsController extends x2base {
         $list->count = $dataProvider->totalItemCount;
         $list->save();
 
+        X2Flow::trigger('RecordViewTrigger',array('model'=>$list));
         $this->render('list', array(
             'listModel' => $list,
             'dataProvider' => $dataProvider,

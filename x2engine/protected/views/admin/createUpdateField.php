@@ -70,6 +70,7 @@
             <div class="row">
                 <?php echo $form->labelEx($model, 'modelName'); ?>
                 <?php
+                $modelList = array();
                 foreach(X2Model::model('Modules')->findAllByAttributes(array('editable' => true)) as $module){
                     if(!($modelName = X2Model::getModelName($module->name))){
                         $modelName = ucfirst($module->name);

@@ -195,7 +195,9 @@ class ApplicationConfigBehavior extends CBehavior {
                 // }
                 return;
             }
-        } else{
+        }else{
+            Yii::import('application.models.Profile');
+            Yii::import('application.components.TransformedFieldStorageBehavior');
             // Set time zone based on the default value
             date_default_timezone_set(Profile::model()->tableSchema->getColumn('timeZone')->defaultValue);
         }

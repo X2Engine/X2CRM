@@ -1,3 +1,16 @@
+# 3.7.3 #
+2/18/2014
+* Users can add custom percentage type fields via the fields manager
+* Minor/unlisted bugs fixed:
+  * (Professional Edition) "Record viewed" X2Flow trigger wasn't working in Contacts
+  * API failures due to Profile class not being auto-loaded
+  * 404 error on "convert to invoice" button in Quotes
+  * Pro-only link was displayed (incorrectly) in the Marketing module
+  * Backwards compatibility safeguards in link type fields migration script
+* Fixed Bugs:
+  * [935](http://x2software.com/index.php/bugReports/935): Unable to resolve the request "products/id/update".
+  * [939](http://x2software.com/index.php/bugReports/939): No es posible resolver la solicitud "docs/view/id"
+
 # 3.7.3b #
 2/14/2014
 * Multiple security vulnerabilities patched in web forms, data import/export, and docs import/export

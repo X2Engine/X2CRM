@@ -1790,7 +1790,7 @@ class AdminController extends Controller {
             if($module->save()){
 
                 if($model->save()){
-                    $this->redirect('/docs/docs/view',array('id'=>$model->id,'static'=>'true'));
+                    $this->redirect(array('/docs/docs/view','id'=>$model->id,'static'=>'true'));
                 }
             }
         }

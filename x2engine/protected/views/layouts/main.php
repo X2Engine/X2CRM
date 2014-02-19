@@ -46,7 +46,7 @@ if($isAdmin && file_exists($updateManifest = implode(DIRECTORY_SEPARATOR,array(Y
                 .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Cancel'),array("/admin/updater",'scenario'=>'delete','redirect'=>1)));
     }
 } else if($isAdmin && Yii::app()->session['alertUpdate']){
-    Yii::app()->user->setFlash('admin.update',Yii::t('admin', 'A new version is available.')
+    Yii::app()->user->setFlash('admin.update',Yii::t('admin', 'A new version is available: {version}',array('{version}'=>'<strong>'.Yii::app()->session['newVersion'].'</strong>'))
             .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Update X2Engine'),array('/admin/updater'))
             .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Updater Settings'),array('/admin/updaterSettings')));
     Yii::app()->session['alertUpdate'] = false;

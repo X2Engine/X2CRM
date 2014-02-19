@@ -72,6 +72,16 @@ foreach(scandir($modulePath) as $module){
  * for custom modules, however.
  */
 $migrateLinkFields = function(){
+            if(!class_exists('X2Model')) {
+                return 'Your installation of X2Engine is WAY too old to run this '
+                        .'migration script; class X2Model does not even exist yet. '
+                        .'Restore your backup, update manually, and run this script when done.';
+            } elseif(!method_exists('X2Model','getModelName')) {
+                return 'Your installation of X2Engine is WAY too old to run this '
+                        .'migration script; class X2Model does not have required '
+                        .'method "getModelName". '
+                        .'Restore your backup, update manually, and run this script when done.';
+            }
             $debug = 0;
             // Get all fields with the "name" attribute:
             $namedModels = Yii::app()->db->createCommand()
@@ -89,7 +99,10 @@ $migrateLinkFields = function(){
             // All models whose table needs a nameId column:
             $customModels = array_diff($namedModels, $nameIdModels);
             foreach($customModels as $modelName){
-                $model = X2Model::model($modelName);
+                $class = X2Model::getModelName($modelName);
+                if(empty($class) || !class_exists($class))
+                    continue;
+                $model = X2Model::model($class);
                 if($model->asa('X2LinkableBehavior') instanceof X2LinkableBehavior && $model->hasAttribute('name')){
                     $table = $model->tableName();
                     // Create the field; it's a custom module's table that
@@ -113,7 +126,10 @@ $migrateLinkFields = function(){
 
             // Next, populate the nameId fields:
             foreach($namedModels as $modelName){
-                $model = X2Model::model($modelName);
+                $class = X2Model::getModelName($modelName);
+                if(empty($class) || !class_exists($class))
+                    continue;
+                $model = X2Model::model($class);
                 if($model->asa('X2LinkableBehavior') instanceof X2LinkableBehavior && $model->hasAttribute('name')){
                     $table = $model->tableName();
                     // Populate
@@ -128,7 +144,10 @@ $migrateLinkFields = function(){
             // Now that that's done, it is safe to create unique keys for
             // existing custom modules:
             foreach($customModels as $modelName){
-                $model = X2Model::model($modelName);
+                $class = X2Model::getModelName($modelName);
+                if(empty($class) || !class_exists($class))
+                    continue;
+                $model = X2Model::model($class);
                 if($model->asa('X2LinkableBehavior') instanceof X2LinkableBehavior && $model->hasAttribute('name')){
                     $table = $model->tableName();
                     // Create the field; it's a custom module's table that
@@ -149,26 +168,33 @@ $migrateLinkFields = function(){
                     ->where('type="link" AND linkType IS NOT NULL AND linkType != ""')
                     ->queryAll(true);
             foreach($linkFields as $field){
-                if($debug) { echo "updating refs for field {$field['modelName']}.{$field['fieldName']}\n";}
-                if(class_exists($field['linkType'])){
-                    $model = X2Model::model($field['modelName']);
-                    $referencedModel = X2Model::model($field['linkType']);
-                    if($referencedModel->asa('X2LinkableBehavior') instanceof X2LinkableBehavior){
-                        // Referenced model exists and is linkable. Update refs:
-                        $table = $model->tableName();
-                        $referencedTable = $referencedModel->tableName();
-                        $column = $field['fieldName'];
-                        $query = "UPDATE `$table` AS `t1`
+                if($debug){ echo "updating refs for field {$field['modelName']}.{$field['fieldName']}\n"; }
+                $class = X2Model::getModelName($field['modelName']);
+                if(empty($class) || !class_exists($class))
+                    continue;
+                $model = X2Model::model($class);
+                $referencedClass = X2Model::getModelName($field['linkType']);
+                if(empty($referencedClass) || !class_exists($referencedClass))
+                    continue;
+                $referencedModel = X2Model::model($referencedClass);
+                if($referencedModel->asa('X2LinkableBehavior') instanceof X2LinkableBehavior){
+                    // Referenced model exists and is linkable. Update refs:
+                    $table = $model->tableName();
+                    $referencedTable = $referencedModel->tableName();
+                    $column = $field['fieldName'];
+                    $query = "UPDATE `$table` AS `t1`
                                  LEFT JOIN `$referencedTable` AS `t2`
                                  ON CAST(`t1`.`$column` AS CHAR)=`t2`.`id`
                                  SET `t1`.`$column`=CAST(`t2`.`nameId` AS CHAR)
                                  WHERE 1";
-                        if($debug) { echo "Running: $query\n";}
-                        Yii::app()->db->createCommand($query)->execute();
+                    if($debug){
+                        echo "Running: $query\n";
                     }
+                    Yii::app()->db->createCommand($query)->execute();
                 }
             }
+            return false;
         };
 
-$migrateLinkFields();
+$success = !($migrateLinkFields());
 ?>

@@ -142,7 +142,7 @@ class UpdateCommand extends CConsoleCommand {
                     Yii::app()->end();
                 }
             } else if($scenario == 'upgrade') {
-                $this->output(Yii::t('admin',"Before upgrading, you must update to the latest version ({latestver}). ",array('{latestVer}'=>$latestVersion)),1,1);
+                $this->output(Yii::t('admin',"Before upgrading, you must update to the latest version ({latestver}). ",array('{latestver}'=>$latestVersion)),1,1);
             }
             $data = $this->getUpdateData();
             if(array_key_exists('errors', $data)){

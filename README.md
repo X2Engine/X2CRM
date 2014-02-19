@@ -1,7 +1,7 @@
 # X2CRM 3.7 #
-Point release 3.7.3b 2/14/2014
+Release 3.7.3 2/18/2014
 
-New in 3.7.3b (see [CHANGELOG](CHANGELOG.md) for full history):
+New in 3.7.3 (see [CHANGELOG](CHANGELOG.md) for full history):
 
 * Multiple security vulnerabilities patched in web forms, data import/export, and docs import/export
 * "Lookup" fields performance and functionality restoration overhaul:
@@ -12,6 +12,7 @@ New in 3.7.3b (see [CHANGELOG](CHANGELOG.md) for full history):
 * Date/time picker input widget now available in relevant grid view column filters
 * New "action timer sum" field type computes/displays sums of time spent on a record.
 * Fields editor has the ability to create indexes on fields
+* Users can add custom percentage type fields via the fields manager
 * New in Professional Edition:
   * "Case Timer" has been generalized to the "action timer" and is available in most modules now
   * Action timer editing interface available to admins and users with action backdating privileges
@@ -26,6 +27,14 @@ New in 3.7.3b (see [CHANGELOG](CHANGELOG.md) for full history):
   * [875](http://x2software.com/index.php/bugReports/875): User Report  
   * [885](http://x2software.com/index.php/bugReports/885): User Report  
   * [888](http://x2software.com/index.php/bugReports/888): User Report
+  * [935](http://x2software.com/index.php/bugReports/935): Unable to resolve the request "products/id/update".
+  * [939](http://x2software.com/index.php/bugReports/939): No es posible resolver la solicitud "docs/view/id"
+* Minor/unlisted bugs fixed:
+  * (Professional Edition) "Record viewed" X2Flow trigger wasn't working in Contacts
+  * API failures due to Profile class not being auto-loaded
+  * 404 error on "convert to invoice" button in Quotes
+  * Pro-only link was displayed (incorrectly) in the Marketing module
+  * Backwards compatibility safeguards in link type fields migration script
 * Numerous additional bugs reported via our forums have been fixed - thanks!
 
 # Introduction #

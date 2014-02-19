@@ -132,6 +132,11 @@ class Fields extends CActiveRecord {
                 'validator'=> 'int',
                 'columnDefinition'=>'BIGINT',
             ),
+            'percentage'=>array(
+                'title'=>Yii::t('admin','Percentage'),
+                'validator' => 'numerical',
+                'columnDefinition' => 'FLOAT'
+            ),
             'email'=>array(
                 'title'=>Yii::t('admin','Email'),
                 'validator'=>'email',
@@ -175,7 +180,7 @@ class Fields extends CActiveRecord {
             'visibility'=>array(
                 'title'=>Yii::t('admin','Visibility'),
                 'validator'=>'int',
-                'columnDefinition'=>'INT',
+                'columnDefinition'=>'INT NOT NULL DEFAULT 1',
             ),
             'timerSum'=>array(
                 'title'=>Yii::t('admin','Action Timer Sum'),

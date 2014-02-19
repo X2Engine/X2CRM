@@ -780,7 +780,19 @@ window.onbeforeunload = function(e) {
 
 </script>
 
-<div class="page-title"><h2><?php echo in_array($scenario,array('message','error')) ? $message : "X2Engine ".ucfirst($scenario); ?></h2></div>
+<div class="page-title"><h2><?php
+if(in_array($scenario,array('message','error'))) {
+    echo $message;
+} else {
+    if($scenario == 'update'){
+        echo Yii::t('admin', 'Update X2Engine to {latestVer} from {currentVer}', array('{latestVer}' => $latestVersion, '{currentVer}' => $version));
+    }elseif($scenario == 'upgrade'){
+        echo Yii::t('admin', 'Upgrade X2Engine');
+    } else {
+        echo Yii::t('admin','X2Engine Updater');
+    }
+}
+?></h2></div>
 <div class="span-24 updater-page">
 
 <div class="form">

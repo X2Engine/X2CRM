@@ -77,7 +77,11 @@ $this->actionMenu = $this->formatMenu(array(
     array('label' => Yii::t('module', 'Update'), 'url' => array('update', 'id' => $model->id)),
     array('label' => Yii::t('module', 'Delete'), 'url' => '#', 'linkOptions' => array('submit' => array('delete', 'id' => $model->id), 'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'))),
     array('label' => Yii::t('contacts', 'Contact Lists'), 'url' => array('/contacts/contacts/lists')),
-    array('label' => Yii::t('marketing', 'Newsletters'), 'url' => array('/marketing/weblist/index')),
+	array(
+        'label'=>Yii::t('marketing','Newsletters'), 
+        'url'=>array('/marketing/weblist/index'),
+        'visible'=>(Yii::app()->params->edition==='pro')
+    ),
     array('label' => Yii::t('marketing', 'Web Lead Form'), 'url' => array('webleadForm')),
     array('label' => Yii::t('app', 'X2Flow'), 'url' => array('/studio/flowIndex'), 'visible' => (Yii::app()->params->edition === 'pro')),
         ), $authParams);

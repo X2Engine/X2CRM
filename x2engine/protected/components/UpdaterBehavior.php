@@ -1860,11 +1860,11 @@ class UpdaterBehavior extends ResponseBehavior {
         $that = $this;
         $script = '';
         $scriptExc = function($e) use(&$ran, &$script, $that){
-                    $that->sqlError(Yii::t('admin', 'migration script {file}', array('{file}' => $script)), $ran, $e->getMessage());
+                    $that->sqlError(Yii::t('admin', 'migration script {file}', array('{file}' => $script)), $ran, $e->getMessage(),false);
                 };
         $scriptErr = function($errno, $errstr, $errfile, $errline, $errcontext) use(&$ran, &$script, $that){
                     if($errno == E_ERROR) {
-                        $that->sqlError(Yii::t('admin', 'migration script {file}', array('{file}' => $script)), $ran, "$errstr [$errno] : $errfile L$errline; $errcontext");
+                        $that->sqlError(Yii::t('admin', 'migration script {file}', array('{file}' => $script)), $ran, "$errstr [$errno] : $errfile L$errline; $errcontext",false);
                     }
                 };
         set_error_handler($scriptErr);
@@ -1955,7 +1955,7 @@ class UpdaterBehavior extends ResponseBehavior {
      * @param type $sqlRun
      * @param type $errorMessage
      */
-    public function sqlError($sqlFail, $sqlRun = array(), $errorMessage = null){
+    public function sqlError($sqlFail, $sqlRun = array(), $errorMessage = null, $throw = true){
         if(!$this->isConsole)
             $errorMessage = CHtml::encode($errorMessage);
         $message = Yii::t('admin', 'A database change failed to apply: {sql}.', array('{sql}' => $sqlFail)).' ';
@@ -1975,7 +1975,12 @@ class UpdaterBehavior extends ResponseBehavior {
         $message .= "\n\n".Yii::t('admin', "Update failed.");
         if(!$this->isConsole)
             $message = str_replace("\n", "<br />", $message);
-        throw new CException($message,self::ERR_DATABASE);
+        if($throw) {
+            throw new CException($message,self::ERR_DATABASE);
+        } else {
+            self::respond($message,1,1);
+        }
+
     }
 
     public function testDatabasePermissions(){

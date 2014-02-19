@@ -132,7 +132,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 <?php } ?>
 
 <?php if($model->type != 'invoice') { ?>
-	<a class="x2-button right" href="convertToInvoice/<?php echo $model->id;?>"><?php echo Yii::t('quotes', 'Convert To Invoice'); ?></a>
+	<a class="x2-button right" href="<?php echo $this->createUrl('convertToInvoice',array('id'=>$model->id));?>"><?php echo Yii::t('quotes', 'Convert To Invoice'); ?></a>
 <?php } ?>
 </div>
 <div id="main-column" class="half-width">

@@ -389,7 +389,8 @@ Please click on the link below to create an account at X2Engine!
 	}
 
 	public function actionDelete($id) {
-        if($id!=1){
+        $adminUser = User::model()->findByPk(1);
+        if($id!=1 && !empty($adminUser)){
 		$model=$this->loadModel($id);
 		if(Yii::app()->request->isPostRequest) {
 			$dataProvider=new CActiveDataProvider('Actions', array(
@@ -399,9 +400,9 @@ Please click on the link below to create an account at X2Engine!
 			$actions=$dataProvider->getData();
 			foreach($actions as $action){
                                 if($action->updatedBy==$model->username)
-                                    $action->updatedBy='admin';
+                                    $action->updatedBy=$adminUser->username;
                                 if($action->completedBy==$model->username)
-                                    $action->completedBy='admin';
+                                    $action->completedBy=$adminUser->username;
 				$action->assignedTo="Anyone";
                                 $action->save();
 			}
@@ -421,7 +422,7 @@ Please click on the link below to create an account at X2Engine!
 			$contacts=$dataProvider->getData();
                         foreach($contacts as $contact){
                                 if($contact->updatedBy==$model->username)
-                                    $contact->updatedBy='admin';
+                                    $contact->updatedBy=$adminUser->username;
                                 // if($contact->completedBy==$model->username)
                                     // $contact->completedBy='admin';
 				$contact->assignedTo="Anyone";

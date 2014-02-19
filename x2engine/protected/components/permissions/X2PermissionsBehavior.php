@@ -53,12 +53,41 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
 
         $accessLevel = $this->getAccessLevel();
 
+        // Determine visibility attribute:
+        $visAttr = false;
         if($this->owner->hasAttribute('visibility')){
-            $visFlag = true;
-        }else{
-            $visFlag = false;
+            $visAttr = 'visibility';
+        }else if($this->owner instanceof X2Model){
+            // Check for the existence of a visibility-type field
+            $fields = $this->owner->getFields();
+            foreach($fields as $field){
+                // Use the first visibility type field in the model (any
+                // additional fields would be superfluous)
+                if($field->type == 'visibility'){
+                    $visAttr = $field->fieldName;
+                    break;
+                }
+            }
         }
-        $conditions=$this->getAccessConditions($accessLevel, $visFlag);
+
+        // Determine assignment attribute:
+        $assignAttr = false;
+        if($this->owner->hasAttribute('assignedTo')) {
+            $assignAttr = 'assignedTo';
+        } elseif ($this->owner->hasAttribute('createdBy')) {
+            $assignAttr = 'createdBy';
+        } elseif ($this->owner instanceof X2Model) {
+            $fields = $this->owner->getFields();
+            foreach($fields as $field) {
+                // Use the first assignment field available:
+                if($field->type == 'assignment') {
+                    $assignAttr = $field->fieldName;
+                    break;
+                }
+            }
+        }
+
+        $conditions=$this->getAccessConditions($accessLevel, $visAttr,null,$assignAttr);
         foreach($conditions as $arr){
             $criteria->addCondition($arr['condition'],$arr['operator']);
         }
@@ -117,14 +146,23 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
     }
 
     /**
-     * Generates SQL condition to filter out records the user doesn't have permission to see.
+     * Generates SQL condition to filter out records the user doesn't have
+     * permission to see.
+     *
      * This method is used by the 'accessControl' filter.
-     * @param Integer $accessLevel The user's access level. 0=no access, 1=own records, 2=public records, 3=full access
-     * @param Boolean $useVisibility Whether to consider the model's visibility setting
-     * @param String $user The username to use in these checks (defaults to current user)
+     *
+     * @param Integer $accessLevel The user's access level. 0=no access, 1=own
+     *  records, 2=public records, 3=full access
+     * @param boolean|string $visibilityAttr The attribute to use for visibility
+     *  settings. False signifies that visibility should be ignored.
+     * @param String $user The username to use in these checks (defaults to the
+     *  current user)
+     * @param boolean|string $assignmentAttr The attribute to use for assignment
+     *  and ownership. False signifies that it's to be treated as if owned by
+     *  the system/no one in particular.
      * @return String The SQL conditions
      */
-    public function getAccessConditions($accessLevel, $useVisibility = true, $user = null){
+    public function getAccessConditions($accessLevel, $visibilityAttr = 'visibility', $user = null, $assignmentAttr='assignedTo'){
         if($user === null){
             if(Yii::app()->isInSession)
                 $user = Yii::app()->user->getName();
@@ -132,7 +170,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 $user = Yii::app()->getSuModel()->username;
         }
 
-        if($accessLevel === 2 && $useVisibility === false) // level 2 access only works if we consider visibility,
+        if($accessLevel === 2 && $visibilityAttr === false) // level 2 access only works if we consider visibility,
             $accessLevel = 3;  // so upgrade to full access
         $ret=array();
         switch($accessLevel){
@@ -140,19 +178,25 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 $ret[] = array('condition'=>'TRUE', 'operator'=>'AND');
                 break;
             case 1:  // user can view records they (or one of their groups) own
-                $ret[] = array('condition'=>'t.assignedTo="'.$user.'"', 'operator'=>'OR');
-                $ret[] = array('condition'=>'t.assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")', 'operator'=>'OR');
+                if($assignmentAttr != false){
+                    $ret[] = array('condition' => 't.'.$assignmentAttr.'="'.$user.'"', 'operator' => 'OR');
+                    $ret[] = array('condition' => 't.'.$assignmentAttr.' IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")', 'operator' => 'OR');
+                }
                 break;
             case 2:  // user can view any public (shared) record
-                $ret[] = array('condition'=>'t.visibility=1', 'operator'=>'OR');
-                $ret[] = array('condition'=>'t.assignedTo="'.$user.'"', 'operator'=>'OR');
-                $ret[] = array('condition'=>'t.assignedTo IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")', 'operator'=>'OR');
-                $ret[] = array(
-                    'condition'=>'(t.visibility=2 AND t.assignedTo IN ('.
+                if($visibilityAttr != false){
+                    $ret[] = array('condition' => "t.$visibilityAttr=1", 'operator' => 'OR');
+                }
+                if($assignmentAttr != false){
+                    $ret[] = array('condition' => 't.'.$assignmentAttr.'="'.$user.'"', 'operator' => 'OR');
+                    $ret[] = array('condition' => 't.'.$assignmentAttr.' IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")', 'operator' => 'OR');
+                    $ret[] = array(
+                        'condition' => "(t.$visibilityAttr=2 AND t.$assignmentAttr IN (".
                         'SELECT DISTINCT b.username '.
                         'FROM x2_group_to_user a INNER JOIN x2_group_to_user b '.
                         'ON a.groupId=b.groupId '.
-                        'WHERE a.username="'.$user.'"))', 'operator'=>'OR');
+                        'WHERE a.username="'.$user.'"))', 'operator' => 'OR');
+                }
                 break;
             default:
             case 0:  // can't view anything
