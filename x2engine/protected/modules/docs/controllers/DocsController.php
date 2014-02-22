@@ -90,7 +90,8 @@ class DocsController extends x2base {
         }
 	}
 
-    /** Check whether the user has permissions to see the Document.
+    /** 
+     * Check whether the user has permissions to see the Document.
      * @param CActiveRecord $model of the Document to display.
      */
     private function checkViewPermissions($model) {
