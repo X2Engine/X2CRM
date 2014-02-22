@@ -90,6 +90,9 @@ class DocsController extends x2base {
         }
 	}
 
+    /** Check whether the user has permissions to see the Document.
+     * @param CActiveRecord $model of the Document to display.
+     */
     private function checkViewPermissions($model) {
 		if(isset($model)){
 			$permissions=explode(", ",$model->editPermissions);
@@ -98,7 +101,7 @@ class DocsController extends x2base {
 			else
 				$editFlag=false;
 		}
-		//echo $model->visibility;exit;
+
 		if (!isset($model) ||
 			   !(($model->visibility==1 ||
 				($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) ||
