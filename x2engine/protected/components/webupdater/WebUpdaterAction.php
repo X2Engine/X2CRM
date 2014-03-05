@@ -56,6 +56,15 @@ Yii::import('application.components.util.*');
  */
 abstract class WebUpdaterAction extends CAction{
 
+    public function behaviors() {
+        return array(
+			'UpdaterBehavior' => array(
+				'class' => 'application.components.UpdaterBehavior',
+                'isConsole' => false
+			)
+		);
+    }
+
 	/**
 	 * Override of CAction's construct; all child classes need to have the
 	 * behavior {@link UpdaterBehavior} attached and enabled.
@@ -65,12 +74,7 @@ abstract class WebUpdaterAction extends CAction{
 	 */
 	public function __construct($controller, $id){
 		parent::__construct($controller, $id);
-		$this->attachBehaviors(array(
-			'UpdaterBehavior' => array(
-				'class' => 'application.components.UpdaterBehavior',
-				'isConsole' => false,
-			)
-		));
+		$this->attachBehaviors($this->behaviors());
 		// Be certain we can continue safely:
 		$this->requireDependencies();
 	}

@@ -87,7 +87,7 @@ $this->actionMenu = $this->formatMenu(array(
         ), $authParams);
 ?>
 <div class="page-title icon marketing">
-    <h2><?php echo $model->name; ?></h2>
+    <h2><?php echo CHtml::encode($model->name); ?></h2>
     <?php if(Yii::app()->user->checkAccess('MarketingUpdate', $authParams)){ ?>
         <a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id)); ?>"><span></span></a>
     <?php } ?>

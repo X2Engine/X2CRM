@@ -410,8 +410,11 @@ class ContactsController extends x2base {
         $parameters = array();
         $tagCount = 0;
         $tagFlag = false;
+        $contactFields = array_flip (Contacts::model()->attributeNames());
+
         // Loop through params and add conditions to limit the contact data set
         foreach($params as $field => $value){
+            if (!isset ($contactFields[$field])) continue; // prevents SQL injection by verifying field name
             if($field != 'tags' && $value != ''){
                 $conditions.=" AND x2_contacts.$field=:$field";
                 $parameters[":$field"] = $value;
@@ -2125,7 +2128,7 @@ class ContactsController extends x2base {
                                                     }else{
                                                         $_SESSION['created'][$className] = 1;
                                                     }
-                                                    $model->$importMap[$attribute] = $lookup->id;
+                                                    $model->$importMap[$attribute] = $lookup->nameId;
                                                     $relationship = new Relationships;
                                                     $relationship->firstType = 'Contacts';
                                                     $relationship->secondType = $className;
@@ -2333,14 +2336,18 @@ class ContactsController extends x2base {
     public function actionExportContacts($listId = null){
         unset($_SESSION['contactExportFile'], $_SESSION['exportContactCriteria'], $_SESSION['contactExportMeta']);
         if(is_null($listId)){
-            $file = $this->safePath("contact_export.csv");
+            $file = "contact_export.csv";
             $listName = CHtml::link(Yii::t('contacts', 'All Contacts'), array('/contacts/contacts/index'), array('style' => 'text-decoration:none;'));
+            $_SESSION['exportContactCriteria'] = array('with' => array()); // Forcefully disable eager loading so it doesn't go super-slow)
         }else{
             $list = X2List::load($listId);
-            $_SESSION['exportContactCriteria'] = $list->queryCriteria();
-            $file = $this->safePath("list".$listId.".csv");
+            $criteria = $list->queryCriteria();
+            $criteria->with = array();
+            $_SESSION['exportContactCriteria'] = $criteria;
+            $file = "list".$listId.".csv";
             $listName = CHtml::link(Yii::t('contacts', 'List')." $listId: ".$list->name, array('/contacts/contacts/list','id'=>$listId), array('style' => 'text-decoration:none;'));
         }
+        $filePath = $this->safePath($file);
         $_SESSION['contactExportFile'] = $file;
         $attributes = X2Model::model('Contacts')->attributes;
         $meta = array_keys($attributes);
@@ -2354,7 +2361,7 @@ class ContactsController extends x2base {
         }
         // Set up metadata
         $_SESSION['contactExportMeta'] = $meta;
-        $fp = fopen($file, 'w+');
+        $fp = fopen($filePath, 'w+');
         fputcsv($fp, $meta);
         fclose($fp);
         $this->render('exportContacts', array(
@@ -2368,7 +2375,8 @@ class ContactsController extends x2base {
      * @param int $page The page of the data provider to export
      */
     public function actionExportSet($page){
-        $file = $_SESSION['contactExportFile'];
+        Contacts::$autoPopulateFields = false;
+        $file = $this->safePath($_SESSION['contactExportFile']);
         $fields = X2Model::model('Contacts')->getFields();
         $fp = fopen($file, 'a+');
         // Load data provider based on export criteria
@@ -2393,14 +2401,12 @@ class ContactsController extends x2base {
                     if(is_numeric($record->$fieldName))
                         $record->$fieldName = Formatter::formatLongDateTime($record->$fieldName);
                 }elseif($field->type == 'link'){
-                    try{
-                        $linkModel = X2Model::model($field->linkType)->findByPk($record->$fieldName);
-                        if(isset($linkModel) && $linkModel->hasAttribute('name')){
-                            $record->$fieldName = $linkModel->name;
-                        }
-                    }catch(Exception $e){
-
+                    $name = $record->$fieldName;
+                    if(!empty($field->linkType)){
+                        list($name, $id) = Fields::nameAndId($name);
                     }
+                    if(!empty($name))
+                        $record->$fieldName = $name;
                 }elseif($fieldName == 'visibility'){
                     $record->$fieldName = $record->$fieldName == 1 ? 'Public' : 'Private';
                 }

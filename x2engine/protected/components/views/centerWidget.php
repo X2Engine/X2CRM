@@ -128,7 +128,7 @@ if($name == "InlineRelationships"){
 ?>
 
 
-<div class="x2-widget form" id="x2widget_<?php echo $name; ?>">
+<div class="x2-widget form x2-layout-island" id="x2widget_<?php echo $name; ?>">
     <div class="x2widget-header">
 
 		<?php

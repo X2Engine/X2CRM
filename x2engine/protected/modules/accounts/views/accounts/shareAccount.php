@@ -50,7 +50,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/email
 Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
 ?>
 <div class="page-title icon accounts">
-<h2><span class="no-bold"><?php echo Yii::t('app','Share:');?></span> <?php echo $model->name; ?></h2>
+<h2><span class="no-bold"><?php echo Yii::t('app','Share:');?></span> <?php echo CHtml::encode($model->name); ?></h2>
 </div>
 
 <?php
@@ -82,7 +82,7 @@ $form = $this->beginWidget('CActiveForm', array(
 ));
 ?>
 <div class="page-title icon accounts">
-	<h2><span class="no-bold"><?php echo Yii::t('accounts','Account:'); ?></span> <?php echo $model->name; ?></h2>
+	<h2><span class="no-bold"><?php echo Yii::t('accounts','Account:'); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 </div>
 <?php
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'accounts','form'=>$form)); 

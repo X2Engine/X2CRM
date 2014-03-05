@@ -50,7 +50,7 @@ class LeadRoutingBehavior extends CBehavior {
 	 * @return string Username that should be assigned the next lead
 	 */
 	public function getNextAssignee($contact=null) {
-		$admin = &Yii::app()->params->admin;
+		$admin = &Yii::app()->settings;
 		$type = $admin->leadDistribution;
 		if ($type == "") {
 			return "Anyone";
@@ -107,7 +107,7 @@ class LeadRoutingBehavior extends CBehavior {
 	 * @return mixed
 	 */
 	public function evenDistro() {
-		$admin = &Yii::app()->params->admin;
+		$admin = &Yii::app()->settings;
 		$online = $admin->onlineOnly;
 		Session::cleanUpSessions();
 		$usernames = array();
@@ -151,7 +151,7 @@ class LeadRoutingBehavior extends CBehavior {
 	 * @return mixed 
 	 */
 	public function roundRobin() {
-		$admin = &Yii::app()->params->admin;
+		$admin = &Yii::app()->settings;
 		$online = $admin->onlineOnly;
 		Session::cleanUpSessions();
 		$usernames = array();
@@ -185,7 +185,7 @@ class LeadRoutingBehavior extends CBehavior {
 	 * @return integer
 	 */
 	public function getRoundRobin() {
-		$admin = &Yii::app()->params->admin;
+		$admin = &Yii::app()->settings;
 		$rrId = $admin->rrId;
 		return $rrId;
 	}
@@ -194,7 +194,7 @@ class LeadRoutingBehavior extends CBehavior {
 	 * Stores the round-robin state. 
 	 */
 	public function updateRoundRobin() {
-		$admin = &Yii::app()->params->admin;
+		$admin = &Yii::app()->settings;
 		$admin->rrId = $admin->rrId + 1;
 		$admin->save();
 	}
@@ -205,7 +205,7 @@ class LeadRoutingBehavior extends CBehavior {
 	 * @return type 
 	 */
 	public function getRoutingRules($data) {
-		$admin = &Yii::app()->params->admin;
+		$admin = &Yii::app()->settings;
 		$online = $admin->onlineOnly;
 		Session::cleanUpSessions();
 		$sessions = Session::getOnlineUsers();

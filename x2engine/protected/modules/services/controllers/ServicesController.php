@@ -173,9 +173,6 @@ class ServicesController extends x2base {
             }
             $model->setX2Fields($_POST['Services']);
 
-            if($model->contactId != '' && !is_numeric($model->contactId)) // make sure an existing contact is associated with this case, otherwise don't create it
-                $model->addError('contactId', Yii::t('services', 'Contact does not exist'));
-
             if(isset($_POST['x2ajax'])){ // we're creating a case with "Create Case" button in contacts view
                 // if($this->create($model,$temp, '1')) { // success creating case?
                 if($model->save()){ // success creating case?

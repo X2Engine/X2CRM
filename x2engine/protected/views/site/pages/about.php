@@ -79,11 +79,11 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 			<li>Sandra Tam</li>
 			<li>Tony Zavala</li>
 			<li>Raymond Colebaugh</li>
+			<li>Jake Houser</li>
 		</ul>
 		</div><br>
-		<h4 class="clear"><?php echo Yii::t('app','Special Thanks');?></h4>
+		<h4 class="clear"><?php echo Yii::t('app','Past Contributors');?></h4>
 		<ul class="inline">
-			<li>Jake Houser</li>
             <li>Matthew Pearson</li>
 			<li>James Thomas</li>
 			<li>Andrew Hoffman</li>

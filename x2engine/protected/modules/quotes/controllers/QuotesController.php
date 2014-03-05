@@ -63,7 +63,8 @@ class QuotesController extends x2base {
         // add quote to user's recent item list
         User::addRecentItem('q', $id, Yii::app()->user->getId()); 
 
-        $contactId = $model->associatedContacts;
+        $contactNameId = Fields::nameAndId ($model->associatedContacts);
+        $contactId = $contactNameId[1];
 		parent::view($model, $type, array('orders' => $quoteProducts,
 			'contactId' => $contactId
 		));
@@ -218,11 +219,7 @@ class QuotesController extends x2base {
 		$model = $this->getModel($id);
 
 		if(isset($_POST['Quote'])){
-			$model->lastUpdated = time();
-			$model->updatedBy = Yii::app()->user->name;
 			$model->setX2Fields($_POST['Quote']);
-			$model->total = Fields::strToNumeric($_POST['Quote']['total'],'currency');
-			$temp = $model->attributes;
 			if(isset($_POST['lineitem']))
 				$model->lineItems = $_POST['lineitem'];
 			if(!$model->hasLineItemErrors) {
@@ -274,18 +271,18 @@ class QuotesController extends x2base {
 		$model = $this->getModel($id,false);
 		if($model == null)
 			return Yii::t('quotes','Quote {id} does not exist. It may have been deleted.',array('{id}'=>$id));
-		if (empty($model->template)) { // Legacy view (very, very plain!)
+		if (! ($model->templateModel instanceof Docs)) { // Legacy view (very, very plain!)
 			return $this->renderPartial('print', array(
 				'model' => $model,
 				'email' => $email
 			),true);
 		} else { // User-defined template
-			$template = Docs::model()->findByPk($model->template);
-			if(empty($template)) {
+			$template = $model->templateModel;
+			if(!($template instanceof Docs)) {
 				// Template not found (it was probably deleted).
 				// Use the default quotes view.
 				$model->template = null;
-				$model->save();
+				$model->update(array('template'));
 				return $this->getPrintQuote($model->id);
 			}
 			return Docs::replaceVariables($template->text,$model);
@@ -309,7 +306,7 @@ class QuotesController extends x2base {
 	 *  quote.
 	 */
 	public function actionIndexInvoice() {
-		$model=new Quote('searchInvoice');
+		$model=new Quote('search');
 		$this->render('indexInvoice', array('model'=>$model));
 	}
 

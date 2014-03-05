@@ -43,7 +43,7 @@ class ServiceRoutingBehavior extends CBehavior {
 	 * @return string Username that should be assigned the next lead
 	 */
 	public function getNextAssignee() {
-		$admin = &Yii::app()->params->admin;
+		$admin = &Yii::app()->settings;
 		$type = $admin->serviceDistribution;
 		if ($type == "") {
 			return "Anyone";
@@ -75,7 +75,7 @@ class ServiceRoutingBehavior extends CBehavior {
 	 * @return mixed
 	 */
 	public function evenDistro() {
-		$admin = &Yii::app()->params->admin;
+		$admin = &Yii::app()->settings;
 		$online = $admin->serviceOnlineOnly;
 		Session::cleanUpSessions();
 		$usernames = array();
@@ -119,7 +119,7 @@ class ServiceRoutingBehavior extends CBehavior {
 	 * @return mixed 
 	 */
 	public function roundRobin() {
-		$admin = &Yii::app()->params->admin;
+		$admin = &Yii::app()->settings;
 		$online = $admin->serviceOnlineOnly;
 		Session::cleanUpSessions();
 		$usernames = array();
@@ -153,7 +153,7 @@ class ServiceRoutingBehavior extends CBehavior {
 	 * @return integer
 	 */
 	public function getRoundRobin() {
-		$admin = &Yii::app()->params->admin;
+		$admin = &Yii::app()->settings;
 		$srrId = $admin->srrId;
 		return $srrId;
 	}
@@ -162,7 +162,7 @@ class ServiceRoutingBehavior extends CBehavior {
 	 * Stores the round-robin state. 
 	 */
 	public function updateRoundRobin() {
-		$admin = &Yii::app()->params->admin;
+		$admin = &Yii::app()->settings;
 		$admin->srrId = $admin->srrId + 1;
 		$admin->save();
 	}

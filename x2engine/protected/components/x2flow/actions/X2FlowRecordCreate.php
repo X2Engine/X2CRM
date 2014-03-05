@@ -66,7 +66,8 @@ class X2FlowRecordCreate extends X2FlowAction {
                 true,
                 Yii::t('studio', 'View created record: ').$model->getLink ());
         } else {
-            return array(false, array_shift($model->getErrors()));
+            $errors = $model->getErrors ();
+            return array(false, array_shift($errors));
         }
 	}
 }

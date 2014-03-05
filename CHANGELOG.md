@@ -1,3 +1,16 @@
+# 3.7.4 #
+3/4/2014
+* Fixed security holes listed in ["Multiple vulnerabilities in X2Engine"](http://hauntit.blogspot.com/2014/02/en-multiple-vulnerabilities-in-x2engine.html) published on [The HauntIT Blog](http://hauntit.blogspot.com/)
+* Fixed Bugs:  
+  * [773](http://x2software.com/index.php/bugReports/773): If a user lacks edit permission on that field but that field has a default value (like in Service Cases) the default value will not save.  
+  * [947](http://x2software.com/index.php/bugReports/947): Unable to resolve the request "quotes/id/update".  
+  * [948](http://x2software.com/index.php/bugReports/948): nameId field of 'Sample Quote Template' doc is null  
+  * [949](http://x2software.com/index.php/bugReports/949): Template attribute of quotes is not a proper nameId ref 
+  * [977](http://x2software.com/index.php/bugReports/977): CDbCommand failed to execute the SQL statement: SQLSTATE[22007]: Invalid datetime format: 1292 Truncated incorrect DOUBLE value: '162.210.196.131'
+* Fixed unlisted bugs:
+  * Campaigns issues with listId being a malformed reference to list records, and improper validation (i.e. "List cannot be blank")
+  * Broken download links/extreme slowness in contacts export tool
+
 # 3.7.3 #
 2/18/2014
 * Users can add custom percentage type fields via the fields manager

@@ -188,7 +188,7 @@ class Groups extends X2Model {
 		$userGroups[$userId] = Yii::app()->db->createCommand()	// get array of groupIds
 			->select('groupId')
 			->from('x2_group_to_user')
-			->where('userId=' . $userId)->queryColumn();
+			->where('userId=:userId', array (':userId' => $userId))->queryColumn();
 
 		if($cache === true)
 			Yii::app()->cache->set('user_groups',$userGroups,259200); // cache user groups for 3 days

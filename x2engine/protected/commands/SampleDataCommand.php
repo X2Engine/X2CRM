@@ -375,7 +375,11 @@ class SampleDataCommand extends CConsoleCommand {
 
 			$select = array_merge(is_array($pk) ? $pk : array($pk), $pastCols);
 			$where = '`' . implode("`>$time OR `", $pastCols) . "`>$time";
-			$dates = Yii::app()->db->createCommand()->select($select)->from($table)->where($where)->queryAll();
+			$dates = Yii::app()->db->createCommand()
+                ->select($select)
+                ->from($table)
+                ->where($where)
+                ->queryAll();
 			if(!empty($dates))
 				echo implode("\t", $pastCols) . "\t($table)\n";
 			foreach ($dates as $record) {

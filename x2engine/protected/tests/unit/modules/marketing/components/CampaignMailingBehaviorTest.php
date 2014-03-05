@@ -106,7 +106,7 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         $cmb = $this->instantiate();
         $contact = $this->contacts('testUser_unsent');
         $recipientAddress = $contact->email;
-        $admin = Yii::app()->params->admin;
+        $admin = Yii::app()->settings;
         // Set URL/URI to verify proper link generation:
         $admin->externalBaseUrl = 'http://examplecrm.com';
         $admin->externalBaseUri = '/X2Engine';
@@ -168,20 +168,20 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
     public function testMailIsStillDeliverable() {
         $cmb = $this->instantiate();
         // Bulk limit reached:
-        $admAttr = Yii::app()->params->admin->attributes;
-        Yii::app()->params->admin->emailBatchSize = 1;
-        Yii::app()->params->admin->emailCount = 1;
-        Yii::app()->params->admin->emailStartTime = time();
-        Yii::app()->params->admin->emailInterval = 1000;
+        $admAttr = Yii::app()->settings->attributes;
+        Yii::app()->settings->emailBatchSize = 1;
+        Yii::app()->settings->emailCount = 1;
+        Yii::app()->settings->emailStartTime = time();
+        Yii::app()->settings->emailInterval = 1000;
         $can = $cmb->mailIsStillDeliverable();
 //        print_r($cmb->status); // This should be human-readable and make sense (it's the waiting message)
         $this->assertFalse($can);
         $this->assertEquals(CampaignMailingBehavior::STATE_BULKLIMIT,$cmb->stateChangeType);
         $cmb->stateChange = false;
-        Yii::app()->params->admin->attributes = $admAttr;
+        Yii::app()->settings->attributes = $admAttr;
         // Temporary arrangement, in case the app's current settings are
         // actually going to interfere with the test:
-        Yii::app()->params->admin->emailBatchSize = 10000000;
+        Yii::app()->settings->emailBatchSize = 10000000;
 
         // Mail was sent already:
         $cmb->listItem->sent = time();

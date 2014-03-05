@@ -1,5 +1,7 @@
 <?php
 
+Yii::import('application.components.util.ResponseUtil');
+
 /**
  * Behavior class providing utilities for responding in a uniform yet also
  * context-sensitive manner.
@@ -135,7 +137,7 @@ class ResponseBehavior extends CBehavior {
         Yii::log($message,$error ? 'error' : 'trace', self::$_logCategory);
 		if(self::$_isConsole){
 			echo "$message\n";
-			if($error && $fatal && !self::$_noHalt)
+			if($error && $fatal)
 				Yii::app()->end();
 		} else{
 			$response = self::$_response;

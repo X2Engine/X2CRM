@@ -56,6 +56,8 @@ class Fields extends CActiveRecord {
      */
     const NAMEID_DELIM = '_';
 
+    private static $_purifier;
+
     private $_myTableName;
 
         /**
@@ -277,6 +279,40 @@ class Fields extends CActiveRecord {
     }
 
     /**
+     * Constructs (if not constructed already) and returns a CHtmlPurifier instance
+     *
+     * @return CHtmlPurifier
+     */
+    public static function getPurifier(){
+        if(!isset(self::$_purifier)){
+            self::$_purifier = new CHtmlPurifier();
+            // Set secure default options for HTML purification in X2Engine:
+            self::$_purifier->options = array(
+                'HTML.ForbiddenElements' => array(
+                    'script', // Obvious reasons (XSS)
+                    'form', // Hidden CSRF attempts?
+                    'style', // CSS injection tomfoolery
+                    'iframe', // Arbitrary location
+                    'frame', // Same reason as iframe
+                    'link', // Request to arbitrary location w/o user knowledge
+                    'video', // No,
+                    'audio', // No,
+                    'object', // Definitely no.
+                ),
+                'HTML.ForbiddenAttributes' => array(
+                    // Spoofing/mocking internal form elements:
+                    '*@id',
+                    '*@class',
+                    '*@name',
+                    // The event attributes should be removed automatically by HTMLPurifier by default
+                ),
+                
+            );
+        }
+        return self::$_purifier;
+    }
+
+    /**
      * Returns the static model of the specified AR class.
      * @return Fields the static model class
      */
@@ -392,7 +428,7 @@ class Fields extends CActiveRecord {
         $stripSymbols = array_filter(array_values(Yii::app()->params->supportedCurrencySymbols), 'stripSymbols');
 
         // Just in case "Other" currency used: include that currency's symbol
-        $defaultSym = Yii::app()->getLocale()->getCurrencySymbol(Yii::app()->params->admin->currency);
+        $defaultSym = Yii::app()->getLocale()->getCurrencySymbol(Yii::app()->settings->currency);
         if($defaultSym)
             if(!in_array($defaultSym, $stripSymbols))
                 $stripSymbols[] = $defaultSym;
@@ -604,7 +640,7 @@ class Fields extends CActiveRecord {
      * @param bool $filter If true, replace HTML special characters (prevents markup injection)
      * @return mixed the parsed value
      */
-    public function parseValue($value,$filter = false){
+    public function parseValue($value, $filter = false){
         if(in_array($this->type, array('int', 'float', 'currency', 'percentage'))){
             return self::strToNumeric($value, $this->type);
         }
@@ -620,24 +656,24 @@ class Fields extends CActiveRecord {
                 return $value === false ? null : $value;
 
             case 'link':
-                if(empty($value) || empty($this->linkType)) {
+                if(empty($value) || empty($this->linkType)){
                     return $value;
                 }
-                list($name,$id) = self::nameAndId($value);
-                if(ctype_digit((string) $id)) {
+                list($name, $id) = self::nameAndId($value);
+                if(ctype_digit((string) $id)){
                     // Already formatted as a proper reference. Check for existence of the record.
-                    $linkedModel = X2Model::model($this->linkType)->findByAttributes(array('nameId'=>$value));
+                    $linkedModel = X2Model::model($this->linkType)->findByAttributes(array('nameId' => $value));
                     // Return the plain text name if the link is broken; otherwise,
                     // given how the record exists, return the value.
                     return empty($linkedModel) ? $name : $value;
-                } else if(ctype_digit($value)) {
+                }else if(ctype_digit($value)){
                     // User manually entered the ID, i.e. in an API call
                     $link = Yii::app()->db->createCommand()
-                        ->select('nameId')
-                        ->from(X2Model::model($this->linkType)->tableName())
-                        ->where('id=?', array($value))
-                        ->queryScalar();
-                } else {
+                            ->select('nameId')
+                            ->from(X2Model::model($this->linkType)->tableName())
+                            ->where('id=?', array($value))
+                            ->queryScalar();
+                }else{
                     // Look up model's unique nameId by its name:
                     $link = Yii::app()->db->createCommand()
                             ->select('nameId')
@@ -648,9 +684,11 @@ class Fields extends CActiveRecord {
                 return $link === false ? $name : $link;
             case 'boolean':
                 return (bool) $value;
-	    case 'dropdown':
-	       return is_array($value)?CJSON::encode($value):$value;
-        default:
+            case 'text':
+                return self::getPurifier()->purify($value);
+            case 'dropdown':
+                return is_array($value) ? CJSON::encode($value) : $value;
+            default:
                 return $filter ? CHtml::encode($value) : $value;
         }
     }

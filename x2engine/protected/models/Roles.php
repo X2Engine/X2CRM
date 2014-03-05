@@ -195,13 +195,13 @@ class Roles extends CActiveRecord {
             $timeout = Yii::app()->db->createCommand()
                     ->select('timeout')
                     ->from('x2_roles')
-                    ->where('id='.$role)
+                    ->where('id=:role', array(':role' => $role))
                     ->queryScalar();
             if(isset($timeout))
                 $availableTimeouts[] = $timeout;
             unset($timeout);
         }
-        $availableTimeouts[] = Yii::app()->params->admin->timeout;
+        $availableTimeouts[] = Yii::app()->settings->timeout;
         if(count($availableTimeouts) > 0){
             $timeout = max($availableTimeouts);
             if($cache === true)

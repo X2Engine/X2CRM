@@ -54,7 +54,7 @@ $noteContainerFixHeight = $noteContainerHeight + 5;
 <div id="note-box-container" style="height: <?php echo $noteboxHeight; ?>px; margin-bottom: 5px">
 	<div id="note-box" style="height: <?php echo $noteboxHeight; ?>px"><?php if(isset($data) && count($data)>0){
 	foreach($data as $item)
-		echo $item->data.'<br /><br />';
+		echo CHtml::encode($item->data).'<br /><br />';
 	}
 	?></div>
 </div>

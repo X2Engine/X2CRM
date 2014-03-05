@@ -53,6 +53,14 @@ abstract class X2Model extends CActiveRecord {
     protected $_oldAttributes = array();
 
     /**
+     * A flag for disabling the automatic setting of fields in events like find,
+     * update, validate (etc) to reduce overhead during queries.
+     * @var type
+     */
+    public static $autoPopulateFields = true;
+
+
+    /**
      * List of mapping between module names/associationType values and model class names
      */
     public static $associationModels = array(
@@ -701,7 +709,7 @@ abstract class X2Model extends CActiveRecord {
                         return $model->getLink();
                     }
                 }else{
-                    return $model->name;
+                    return $model->renderAttribute('name');
                 }
             }else{
                 if($requireAbsoluteUrl){
@@ -730,7 +738,7 @@ abstract class X2Model extends CActiveRecord {
         if($model instanceof X2Model && !is_null($model->asa('X2LinkableBehavior'))) {
             return $model->link;
         } else {
-            return $name;
+            return CHtml::encode($name);
         }
     }
 
@@ -943,7 +951,7 @@ abstract class X2Model extends CActiveRecord {
                     return '';
                 }else{
                     $mailtoLabel = (isset($this->name) && !is_numeric($this->name)) ? '"'.$this->name.'" <'.$this->$fieldName.'>' : $this->$fieldName;
-                    return $makeLinks ? CHtml::mailto($this->$fieldName, $mailtoLabel) : $render($this->$fieldName);
+                    return $makeLinks ? CHtml::mailto(CHtml::encode($this->$fieldName), $mailtoLabel) : $render($this->$fieldName);
                 }
 
             case 'phone':
@@ -952,7 +960,7 @@ abstract class X2Model extends CActiveRecord {
 
             case 'url':
                 if(!$makeLinks)
-                    return $this->$fieldName;
+                    return CHtml::encode($this->$fieldName);
 
                 if(empty($this->$fieldName)){
                     $text = '';
@@ -969,10 +977,10 @@ abstract class X2Model extends CActiveRecord {
                             $text = '<a href="http://www.twitter.com/#!/'.$render($this->$fieldName).'">'.$render($this->$fieldName).'</a>';
                             break;
                         case 'linkedin':
-                            $text = '<a href="http://www.linkedin.com/in/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
+                            $text = '<a href="http://www.linkedin.com/in/'.$render($this->$fieldName).'">'.$render($this->$fieldName).'</a>';
                             break;
                         default:
-                            $text = '<a href="http://www.'.$field->linkType.'.com/'.$this->$fieldName.'">'.$this->$fieldName.'</a>';
+                            $text = '<a href="http://www.'.$field->linkType.'.com/'.$render($this->$fieldName).'">'.$render($this->$fieldName).'</a>';
                     }
                 }else{
                     $text = trim(preg_replace(
@@ -982,7 +990,7 @@ abstract class X2Model extends CActiveRecord {
                                     ), array(
                                 '<a\\1 target="_blank"',
                                 '<a\\1 target="_blank">',
-                                    ), $this->$fieldName
+                                    ), $render($this->$fieldName)
                             ));
                     $oldText = $text;
                     if(!function_exists('linkReplaceCallback')){
@@ -996,7 +1004,7 @@ abstract class X2Model extends CActiveRecord {
                     $text = trim(preg_replace_callback(
                                     array(
                                 '/(?(?=<a[^>]*>.+<\/a>)(?:<a[^>]*>.+<\/a>)|([^="\']?)((?:https?|ftp|bf2|):\/\/[^<> \n\r]+))/ix',
-                                    ), 'linkReplaceCallback', $this->$fieldName
+                                    ), 'linkReplaceCallback', $render($this->$fieldName)
                             ));
                     if($text == trim($oldText)){
                         if(!function_exists('linkReplaceCallback2')){
@@ -1010,7 +1018,7 @@ abstract class X2Model extends CActiveRecord {
                         $text = trim(preg_replace_callback(
                                         array(
                                     '/(^|\s|>)(www.[^<> \n\r]+)/ix',
-                                        ), 'linkReplaceCallback2', $this->$fieldName
+                                        ), 'linkReplaceCallback2', $render($this->$fieldName)
                                 ));
                     }
                 }
@@ -1042,7 +1050,7 @@ abstract class X2Model extends CActiveRecord {
                 return $render(Yii::t(strtolower(Yii::app()->controller->id), $this->$fieldName));
 
             case 'text':
-                return Yii::app()->controller->convertUrls($this->$fieldName);
+                return Yii::app()->controller->convertUrls($render($this->$fieldName));
 
             case 'credentials':
                 $sysleg = Yii::t('app', 'System default (legacy)');
@@ -1075,7 +1083,7 @@ abstract class X2Model extends CActiveRecord {
         }else{
             $record = X2Model::model($class)->findByPk($id);
             if(isset($record) && $record->hasAttribute($field))
-                return $record->$field;
+                return CHtml::encode($record->$field);
         }
         return '';
     }
@@ -1645,13 +1653,13 @@ abstract class X2Model extends CActiveRecord {
                 $linkIds = Yii::app()->db->createCommand()
                     ->select('id')
                     ->from($tableName)
-                    ->where(array('like', 'CONCAT(firstName," ",lastName)', "%$value%"))
+                    ->where(array('like', 'CONCAT(firstName," ",lastName)', ":value"), array (':value' => '%'.$value.'%'))
                     ->queryColumn();
             else
                 $linkIds = Yii::app()->db->createCommand()
                     ->select('id')
                     ->from($tableName)
-                    ->where(array('like', 'name', "%$value%"))
+                    ->where(array('like', 'name', ":value"), array (':value' => '%'.$value.'%'))
                     ->queryColumn();
 
             return empty($linkIds) ? -1 : $linkIds;
@@ -1669,8 +1677,16 @@ abstract class X2Model extends CActiveRecord {
     protected function compareAssignment($data){
         if(is_null($data) || $data == '')
             return null;
-        $userNames = Yii::app()->db->createCommand()->select('username')->from('x2_users')->where(array('like', 'CONCAT(firstName," ",lastName)', "%$data%"))->queryColumn();
-        $groupIds = Yii::app()->db->createCommand()->select('id')->from('x2_groups')->where(array('like', 'name', "%$data%"))->queryColumn();
+        $userNames = Yii::app()->db->createCommand()
+            ->select('username')
+            ->from('x2_users')
+            ->where(array('like', 'CONCAT(firstName," ",lastName)', "%$data%"))
+            ->queryColumn();
+        $groupIds = Yii::app()->db->createCommand()
+            ->select('id')
+            ->from('x2_groups')
+            ->where(array('like', 'name', "%$data%"))
+            ->queryColumn();
 
         return (count($groupIds) + count($userNames) == 0) ? -1 : $userNames + $groupIds;
     }
@@ -1930,5 +1946,21 @@ abstract class X2Model extends CActiveRecord {
         }
 
         return json_encode($layout);
+    }
+
+    /**
+     * Should be used before inserting user-generated input into SQL string in cases
+     * where parameter binding cannot be used (e.g. for SQL object names). 
+     * @param string $attribute Name of attribute
+     * @throws CException If attribute does not exist
+     */
+    public static function checkThrowAttrError ($attribute) {
+        // prevent SQL injection by validating attribute name
+        if (!self::model(get_called_class ())->hasAttribute ($attribute)) { 
+            throw new CException (
+                Yii::t('app', '{attribute} is not an {modelClass} field.', array (
+                    '{attribute}' => $attribute,
+                    '{modelClass}' => get_called_class ())));
+        }
     }
 }

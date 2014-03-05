@@ -36,7 +36,7 @@
 ?>
 
 <?php
-if(Yii::app()->params->admin->googleIntegration) { // menu if google integration is enables has additional options
+if(Yii::app()->settings->googleIntegration) { // menu if google integration is enables has additional options
 	$menuItems = array(
 		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
 		array('label'=>Yii::t('calendar','My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),

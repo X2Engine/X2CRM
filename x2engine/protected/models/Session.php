@@ -45,6 +45,7 @@
  * @property integer $status
  */
 class Session extends CActiveRecord {
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Session the static model class
@@ -149,9 +150,10 @@ class Session extends CActiveRecord {
                 ->queryAll();
         foreach($users as $user){
             $timeout = Roles::getUserTimeout($user['id']);
-            $sessions = X2Model::model('Session')
-                    ->findAllByAttributes(
-                    array('user' => $user['username']), 'lastUpdated < :cutoff', array(':cutoff' => time() - $timeout));
+            $sessions = X2Model::model('Session')->findAllByAttributes(
+                    array('user' => $user['username']), 
+                    'lastUpdated < :cutoff', 
+                    array(':cutoff' => time() - $timeout));
             foreach($sessions as $session){
                 SessionLog::logSession($session->user, $session->id, 'passiveTimeout');
                 $session->delete();

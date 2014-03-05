@@ -52,7 +52,7 @@ class TopSites extends X2Widget {
         $data = array();
         if(count($content)>0){
             foreach($content as $entry){
-                $dt['title'] = $entry->title;
+                $dt['title'] = CHtml::encode($entry->title);
                 if(strpos($entry->url,'http://') === false){
                     $entry->url="http://".$entry->url;
                 }
@@ -60,10 +60,6 @@ class TopSites extends X2Widget {
                 $dt['id'] = $entry->id;
                 $data[] = $dt;
             }
-        }else{
-            $dt['title'] = Yii::t('app',"Example");
-            $dt['url'] = "http://www.x2engine.com";
-            $data[] = $dt;
         }
 		$this->render('topSites', array(
 			'data'=>$data,

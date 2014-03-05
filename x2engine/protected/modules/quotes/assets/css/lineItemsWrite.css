@@ -176,7 +176,7 @@ set width of input fields in the quotes table
 	font-size: 12px;
 }
 
-.quote-table .product-select-button
+.quote-table tr.line-item td.input-cell button.product-select-button
 {
     height: 20px;
     width: 10%;

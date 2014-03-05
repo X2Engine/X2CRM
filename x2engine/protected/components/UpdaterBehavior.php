@@ -36,12 +36,18 @@
  *****************************************************************************************/
 
 Yii::import('application.components.ResponseBehavior');
+Yii::import('application.models.Admin');
+
 // Extra safeguard, in case automatic creation fails, to maintain that the
-// utilities alias is valid:
-$utilDir = Yii::app()->basePath.'/components/util';
-if(!is_dir($utilDir))
-    mkdir($utilDir);
-Yii::import('application.components.util.*');
+// sub-components-directories aliases are valid:
+foreach(array('util') as $compDir){
+    $compDir = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'components', $compDir));
+    if(!is_dir($compDir))
+        mkdir($compDir);
+    Yii::import("application.components.$compDir.*");
+}
+
+
 
 /**
  * Behavior class with application updater/upgrader utilities.
@@ -178,12 +184,6 @@ class UpdaterBehavior extends ResponseBehavior {
     );
 
     /**
-     * Specifies that the behavior is being applied to a console command
-     * @var bool
-     */
-    public static $_isConsole = true;
-
-    /**
      * Explicit override of default {@link ResponseBehavior::$_logCategory}
      * @var string
      */
@@ -307,6 +307,12 @@ class UpdaterBehavior extends ResponseBehavior {
      * stores {@link scenario}
      */
     private $_scenario;
+
+    /**
+     * Stores the application settings object
+     * @var Admin
+     */
+    private $_settings;
 
     /**
      * Stores {@link sourceDir}
@@ -615,31 +621,35 @@ class UpdaterBehavior extends ResponseBehavior {
     /**
      * Securely obtain the latest version.
      */
-    protected function checkUpdates($returnOnly = false){
-        $i = $this->uniqueId;
+    public function checkUpdates($returnOnly = false){
+        $i = empty($this->uniqueId)?'none':$this->uniqueId;
         $v = $this->version;
         $e = $this->edition;
         $secImage = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'images', base64_decode(self::SECURITY_IMG)));
         $context = stream_context_create(array(
             'http' => array('timeout' => 4)  // set request timeout in seconds
                 ));
-
         $updateCheckUrl = $this->updateServer.'/installs/updates/check?'.http_build_query(compact('i', 'v'), '', '&');
-        $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
-        if($securityKey === false)
+        // Get a "secure" code from the server
+        if(($securityKey = FileUtil::getContents($updateCheckUrl, 0, $context)) === false) {
+            if(!$returnOnly)
+                Yii::app()->session['versionCheck'] = true;
             return Yii::app()->params->version;
+        }
         $h = hash('sha512', base64_encode(file_exists($secImage) ? file_get_contents($secImage) : null).$securityKey);
         $n = null;
         if(!($e == 'opensource' || empty($e)))
             $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
-
         $newVersion = FileUtil::getContents($this->updateServer.'/installs/updates/check?'.http_build_query(compact('i', 'v', 'h', 'n'), '', '&'), 0, $context);
-        if(empty($newVersion))
-            return;
+        if(empty($newVersion)) {
+            if(!$returnOnly)
+                Yii::app()->session['versionCheck'] = true;
+            return $this->version;
+        }
 
         if(!($this->isConsole || $returnOnly)){
             Yii::app()->session['versionCheck'] = true;
-            if(version_compare($newVersion, $v) > 0 && !in_array($i, array('none', Null))){ // if the latest version is newer than our version and updates are enabled
+            if(version_compare($newVersion, $v) > 0 && $i !== 'none'){ // if the latest version is newer than our version and updates are enabled
                 Yii::app()->session['versionCheck'] = false;
                 Yii::app()->session['newVersion'] = $newVersion;
             }
@@ -876,7 +886,7 @@ class UpdaterBehavior extends ResponseBehavior {
                 $this->regenerateConfig($this->manifest['targetVersion'], $this->manifest['updaterVersion'], $this->manifest['buildDate']);
             }else if($this->scenario == 'upgrade'){
                 // Change the edition and product key to reflect the upgrade:
-                $admin = Yii::app()->params->admin = CActiveRecord::model('Admin')->findByPk(1);
+                $admin = CActiveRecord::model('Admin')->findByPk(1);
                 $admin->edition = $this->manifest['targetEdition'];
                 if(!(empty($this->uniqueId)||$this->uniqueId=='none')) // Set new unique id
                     $admin->unique_id = $this->uniqueId;
@@ -1259,21 +1269,29 @@ class UpdaterBehavior extends ResponseBehavior {
     /**
      * Backwards-compatible function for obtaining the edition of the
      * installation. Attempts to not fail and return a valid value even if the
-     * installation does not yet have the database column, and even if the admin
-     * object is not yet stored in the application parameters.
+     * application singleton doesn't store the information.
+     *
+     * It uses try/catch blocks because Yii's way of checking if properties
+     * exist as of 1.1.x does not include properties "inherited" from behaviors.
+     *
      * @return string
      */
     public function getEdition(){
         if(!isset($this->_edition)){
-            if(Yii::app()->params->hasProperty('admin')){
-                $admin = Yii::app()->params->admin;
-                if($admin->hasAttribute('edition')){
-                    $this->_edition = empty($admin->edition) ? 'opensource' : $admin->edition;
-                }else{
-                    $this->_edition = 'opensource';
+            // Safe default for versions too early to have "admin" in the
+            // params, or for the "edition" attribute to exist
+            $this->_edition = 'opensource';
+            try{
+                // Versions 4.0 and later:
+                $this->_edition = Yii::app()->edition;
+            }catch(Exception $e){
+                if(Yii::app()->params->hasProperty('admin')){
+                    // Most versions before 4.0:
+                    $admin = Yii::app()->params->admin;
+                    if($admin->hasAttribute('edition')){
+                        $this->_edition = $admin->edition == null ? 'opensource' : $admin->edition;
+                    }
                 }
-            }else{
-                $this->_edition = 'opensource';
             }
         }
         return $this->_edition;
@@ -1407,6 +1425,23 @@ class UpdaterBehavior extends ResponseBehavior {
     }
 
     /**
+     * Getter for {@link settings}
+     */
+    public function getSettings() {
+        if(!isset($this->_settings)){
+            if(Yii::app()->hasProperty('settings')){
+                $this->_settings = Yii::app()->settings;
+            } else if(Yii::app()->params->hasProperty('admin')) {
+                $this->_settings = Yii::app()->params->admin;
+            } else {
+                $this->_settings = CActiveRecord::model('Admin')->findByPk(1);
+            }
+        }
+        return $this->_settings;
+
+    }
+
+    /**
      * Obtains {@link sourceDir}
      * @return string
      */
@@ -1449,7 +1484,9 @@ class UpdaterBehavior extends ResponseBehavior {
      */
     public function getUniqueId(){
         if(!isset($this->_uniqueId)){
-            if(Yii::app()->params->hasProperty('admin')){
+            try {
+                $this->_uniqueId = Yii::app()->settings->unique_id;
+            } catch(Exception $e) {
                 $admin = Yii::app()->params->admin;
                 if($admin->hasAttribute('unique_id')){
                     $this->_uniqueId = empty($admin->unique_id) ? 'none' : $admin->unique_id;
@@ -1629,8 +1666,8 @@ class UpdaterBehavior extends ResponseBehavior {
                 $appName = "X2Engine";
         }
         if(!isset($email)){
-            if(!empty(Yii::app()->params->admin->emailFromAddr))
-                $email = Yii::app()->params->admin->emailFromAddr;
+            if(!empty($this->settings->emailFromAddr))
+                $email = $this->settings->emailFromAddr;
             else
                 $email = 'contact@'.$_SERVER['SERVER_NAME'];
         }
@@ -1942,7 +1979,7 @@ class UpdaterBehavior extends ResponseBehavior {
      */
     public function setUniqueId($value) {
         $this->_uniqueId = $value;
-        Yii::app()->params->admin->unique_id = $value;
+        $this->settings->unique_id = $value;
     }
 
     public function setVersion($value) {

@@ -34,26 +34,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-//Reset widget settings if implementing TopSites widget
-if(!isset(ProfileChild::getWidgetSettings()->TopSites)){
-    Yii::app()->params->profile->widgetSettings = null;
-}
-//Create variables corresponding to pre-defined heights gained
-//through calling ProfileChild.
-$widgetSettings = ProfileChild::getWidgetSettings();
-$sitesSettings = $widgetSettings->TopSites;
-$topsitesHeight = $sitesSettings->topsitesHeight;
-$urlTitleHeight = $sitesSettings->urltitleHeight;
-
-//Set variables to implement HTML divs
-$topsitesContainerHeight = $topsitesHeight + 2;
-$urlTitleContainerHeight = $urlTitleHeight + 30;
-$siteContainerHeight = $topsitesHeight + $urlTitleHeight + 45;
-$siteContainerFixHeight = 317;
-
 Yii::app()->clientScript->registerCss ('topSitesCss', "
 #sites-box{
-    height: 200px;
+    min-height: 25px;
     width: auto;
     margin: 5px;
     padding: 0 4px;
@@ -65,21 +48,20 @@ Yii::app()->clientScript->registerCss ('topSitesCss', "
     background: #fcfcfc;
     border: 1px solid #ddd;
 }
-#site-url-container{
-    height: 100px;
-}
 #widget_TopSites .portlet-content{
     padding: 0;
 }
 #site-url-container input {
     width: 120px;
     padding: 5px;
-    margin-top: 10px;
+}
+#site-url-container #top-site-submit-button {
+    width: 60px;
 }
 #top-sites-form {
     padding: 2px;
 }
-#site-box {
+#sites-box {
     padding: 5px;
 }
 #sites-box table td:first-child {
@@ -93,6 +75,30 @@ Yii::app()->clientScript->registerCss ('topSitesCss', "
     text-align: center;
 }
 #top-sites-container .site-delete-button-row-header {
+}
+
+.top-sites-input {
+    margin-left: 5px;
+    display:inline-block;
+}
+.top-sites-input label{
+    display:block;
+    font-weight:bold;
+}
+.top-sites-input.submit {
+    vertical-align: top;
+}
+
+#top-sites-table a.delete-top-site-link {
+    display: none;
+    text-decoration: none;
+}
+#top-sites-table tr:hover {
+    background-color: #F5F4DE;
+}
+
+#top-sites-table tr:hover a.delete-top-site-link {
+    display: block;
 }
 ");
 
@@ -148,20 +154,12 @@ x2.topSites.addSite = function (links) {
 ",CClientScript::POS_HEAD);
 
 ?>
-<div id="sites-container-fix" style="height:<?php echo $siteContainerFixHeight; ?>px">
-<div id="sites-container" style="height:<?php echo $siteContainerHeight; ?>px">
-<div id="top-sites-container" style="height:<?php echo $topsitesHeight;?>px; margin-bottom: 20px;">
-<div id="sites-box" style="height:<?php echo $topsitesHeight;?>px">
+<div id="sites-container-fix">
+<div id="sites-container">
+<div id="top-sites-container">
+<div id="sites-box">
 
 <table id='top-sites-table'>
-    <tr>
-        <th>
-            <?php echo Yii::t('app',"Link") ?>
-        </th>
-        <th class='site-delete-button-row-header'>
-            <?php echo Yii::t('app',"Delete"); ?>
-        </th>
-    </tr>
 <?php
 foreach($data as $entry){
 ?>
@@ -176,7 +174,7 @@ foreach($data as $entry){
         <?php
         if(isset($entry['id']))
             echo CHtml::link(
-                '[x]', array ('site/DeleteURL', 'id' => isset($entry['id'])?$entry['id']:'#'),
+                '[x]', array ('site/deleteURL', 'id' => isset($entry['id'])?$entry['id']:'#'),
                 array (
                     'title' => Yii::t('app', 'Delete Link'),
                     'class' => 'delete-top-site-link',
@@ -189,30 +187,39 @@ foreach($data as $entry){
 }
 ?>
 </table>
-</div>
+</div><!-- #sites-box -->
 <form id='top-sites-form'>
-    <div id='site-url-container'
-     style="height: <?php echo $urlTitleContainerHeight;?>px; margin-bottom:35px;">
-        <?php echo Yii::t('app','Title:').
-            CHtml::textField('url-title', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
-        <br/>
-        <?php echo Yii::t('app','Link:').
-            CHtml::textField('url-url', '',array('style'=>"height: ".$urlTitleHeight."px;"));?>
+    <div id='site-url-container'>
+        <div class="top-sites-input">
+        <?php
+            echo CHtml::label(Yii::t('app', 'Title:'), 'url-title');
+            echo CHtml::textField('url-title', '');
+        ?>
+        </div><!-- .top-sites-input -->
+        <div class="top-sites-input">
+        <?php 
+            echo CHtml::label(Yii::t('app','Link:'),'url-url');
+            echo CHtml::textField('url-url', '');
+        ?>
+        </div><!-- .top-sites-input -->
+        <div class="top-sites-input submit">
+        <?php
+        echo CHtml::ajaxSubmitButton(
+            Yii::t('app','Add Site'),
+            array('/site/addSite'),
+            array(
+                'update'=>'sites-box',
+                'success'=>"function(response){
+                    x2.topSites.addSite (JSON.parse (response));
+                    $('#url-title').val('');
+                    $('#url-url').val('');
+                }",
+            ),
+            array('class'=>'x2-button','id'=>'top-site-submit-button')
+        );?>
+        </div><!-- .top-sites-input -->
     </div>
-<?php
-echo CHtml::ajaxSubmitButton(
-    Yii::t('app','Add Site'),
-    array('/site/addSite'),
-    array(
-        'update'=>'site-box',
-        'success'=>"function(response){
-            x2.topSites.addSite (JSON.parse (response));
-            $('#url-title').val('');
-            $('#url-url').val('');
-        }",
-    ),
-    array('class'=>'x2-button','id'=>'top-site-submit-button')
-);?>
+
 </form>
 </div>
 </div>

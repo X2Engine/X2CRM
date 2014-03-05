@@ -52,7 +52,8 @@ class ChartsController extends x2base {
                 ->from('x2_contacts')
                 ->group('assignedTo')
                 ->leftJoin('x2_users','x2_contacts.assignedTo=x2_users.username')
-                ->where('createDate BETWEEN '.$dateRange['start'].' AND '.$dateRange['end'])
+                ->where('createDate BETWEEN :start AND :end', 
+                        array (':start' => $dateRange['start'], ':end' => $dateRange['end']))
                 ->order('id ASC')
                 ->queryAll();
                 

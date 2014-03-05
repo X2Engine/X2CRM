@@ -60,48 +60,48 @@ foreach($recentItems as $item) {
                 array('class'=>'action-frame-link','data-action-id'=>$item['model']->id));
             break;
         case 'c': // contact
-            $link = '<strong>'.$item['model']->name.'</strong><br />'.X2Model::getPhoneNumber('phone', 'Contacts', $item['model']->id);
+            $link = '<strong>'.CHtml::encode($item['model']->name).'</strong><br />'.CHtml::encode(X2Model::getPhoneNumber('phone', 'Contacts', $item['model']->id));
             echo CHtml::link($link,array('/contacts/contacts/view','id'=>$item['model']->id));
             break;
         case 'a': // account
-            $link = '<strong>'.Yii::t('app', 'Account').':<br/>'.$item['model']->name.'</strong><br />'.
-                $item['model']->phone;
+            $link = '<strong>'.Yii::t('app', 'Account').':<br/>'.CHtml::encode($item['model']->name).'</strong><br />'.
+                CHtml::encode($item['model']->phone);
             echo CHtml::link($link,array('/accounts/accounts/view','id'=>$item['model']->id));
             break;
         case 'p': // campaign
-            $link = '<strong>'.Yii::t('app', 'Campaign').':<br/>'.$item['model']->name.'</strong>';
+            $link = '<strong>'.Yii::t('app', 'Campaign').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
             echo CHtml::link($link,array('/marketing/marketing/view','id'=>$item['model']->id));
             break;
         case 'o': // opportunity
-            $link = '<strong>'.Yii::t('app', 'Opportunity').':<br/>'.$item['model']->name.'</strong>';
+            $link = '<strong>'.Yii::t('app', 'Opportunity').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
             echo CHtml::link($link,array('/opportunities/opportunities/view','id'=>$item['model']->id));
             break;
         case 'w': // workflow
-            $link = '<strong>'.Yii::t('app', 'Process').':<br/>'.$item['model']->name.'</strong>';
+            $link = '<strong>'.Yii::t('app', 'Process').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
             echo CHtml::link($link,array('/workflow/workflow/view','id'=>$item['model']->id));
             break;
         case 's': // service
-            $link = '<strong>'.Yii::t('app', 'Service Case').' '.$item['model']->name.'</strong>';
+            $link = '<strong>'.Yii::t('app', 'Service Case').' '.CHtml::encode($item['model']->name).'</strong>';
             echo CHtml::link($link,array('/services/services/view','id'=>$item['model']->id));
             break;
         case 'd': // document
-            $link = '<strong>'.Yii::t('app', 'Doc').':<br/>'.$item['model']->name.'</strong>';
+            $link = '<strong>'.Yii::t('app', 'Doc').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
             echo CHtml::link($link,array('/docs/docs/view','id'=>$item['model']->id));
             break;
         case 'm': // media object
-            $link = '<strong>'.Yii::t('app', 'File').':<br/>'.$item['model']->fileName.'</strong>';
+            $link = '<strong>'.Yii::t('app', 'File').':<br/>'.CHtml::encode($item['model']->fileName).'</strong>';
             echo CHtml::link($link,array('/media/media/view','id'=>$item['model']->id));
             break;
         case 'r': // product
-            $link = '<strong>'.Yii::t('app', 'Product').':<br/>'.$item['model']->name.'</strong>';
+            $link = '<strong>'.Yii::t('app', 'Product').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
             echo CHtml::link($link,array('/products/products/view','id'=>$item['model']->id));
             break;
         case 'q': // product
-            $link = '<strong>'.Yii::t('app', 'Quote').':<br/>'.$item['model']->name.'</strong>';
+            $link = '<strong>'.Yii::t('app', 'Quote').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
             echo CHtml::link($link,array('/quotes/quotes/view','id'=>$item['model']->id));
             break;
         case 'g': // group
-            $link = '<strong>'.Yii::t('app', 'Group').':<br/>'.$item['model']->name.'</strong>';
+            $link = '<strong>'.Yii::t('app', 'Group').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
             echo CHtml::link($link,array('/groups/groups/view','id'=>$item['model']->id));
             break;
         default:

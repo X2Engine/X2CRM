@@ -79,18 +79,16 @@ echo $this->renderPartial('_lineItems', array(
 		)
 );
 
-$templateRec = Yii::app()->db->createCommand()->select('id,name')->from('x2_docs')->where("type='quote'")->queryAll();
+$templateRec = Yii::app()->db->createCommand()->select('nameId,name')->from('x2_docs')->where("type='quote'")->queryAll();
 $templates = array();
 $templates[null] = '(none)';
 foreach($templateRec as $tmplRec){
-	$templates[$tmplRec['id']] = $tmplRec['name'];
+	$templates[$tmplRec['nameId']] = $tmplRec['name'];
 }
-if(!$quick){
-	echo '<div style="display:inline-block">';
-	echo '<strong>'.$form->label($model, 'template').'</strong>&nbsp;';
-	echo $form->dropDownList($model, 'template', $templates).'&nbsp;'.CHtml::tag('span', array('class' => 'x2-hint', 'title' => Yii::t('quotes', 'To create a template for quotes and invoices, go to the Docs module and select "{crQu}".', array('{crQu}' => Yii::t('docs', 'Create Quote')))), '[?]');
-	echo '</div><br />';
-}
+echo '<div style="display:inline-block">';
+echo '<strong>'.$form->label($model, 'template').'</strong>&nbsp;';
+echo $form->dropDownList($model, 'template', $templates).'&nbsp;'.CHtml::tag('span', array('class' => 'x2-hint', 'title' => Yii::t('quotes', 'To create a template for quotes and invoices, go to the Docs module and select "{crQu}".', array('{crQu}' => Yii::t('docs', 'Create Quote')))), '[?]');
+echo '</div><br />';
 echo '	<div class="row buttons" style="padding-left:0">'."\n";
 echo CHtml::submitButton(Yii::t('app', 'Create'), array('class' => 'x2-button'.($quick?' highlight':''), 'id' => 'quote-save-button', 'tabindex' => 25))."\n";
 echo $quick?CHtml::button(Yii::t('app','Cancel'),array('class'=>'x2-button right','id'=>'quote-cancel-button','tabindex'=>24))."\n":'';

@@ -277,7 +277,7 @@ class CalendarController extends x2base {
             $this->redirect(array('index'));
         }
 
-        $admin = Yii::app()->params->admin;
+        $admin = Yii::app()->settings;
         $googleIntegration = $admin->googleIntegration;
 
         // if google integration is activated let user choose if they want to link this calendar to a google calendar
@@ -364,7 +364,7 @@ class CalendarController extends x2base {
             $this->redirect(array('view', 'id' => $model->id));
         }
 
-        $admin = Yii::app()->params->admin;
+        $admin = Yii::app()->settings;
         $googleIntegration = $admin->googleIntegration;
 
         $this->render('update', array('model' => $model, 'googleIntegration' => $googleIntegration));
@@ -1149,7 +1149,7 @@ class CalendarController extends x2base {
             unset($_SESSION['calendarForceRefresh']);
             Yii::app()->user->setFlash('error', 'Your Refresh Token was invalid and needed to be refreshed. The last action you attempted to Sync with Google did not successfully synchronize.');
         }
-        $admin = Yii::app()->params->admin;
+        $admin = Yii::app()->settings;
         $googleIntegration = $admin->googleIntegration;
 
         // if google integration is activated let user choose if they want to link this calendar to a google calendar

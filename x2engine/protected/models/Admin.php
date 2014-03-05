@@ -35,6 +35,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.JSONEmbeddedModelFieldsBehavior');
+
 /**
  * This is the model class for table "x2_admin".
  * @package application.models

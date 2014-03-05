@@ -319,11 +319,13 @@ class ProfileController extends x2base {
         $hiddenTags = json_decode(Yii::app()->params->profile->hiddenTags, true);
         if(empty($hiddenTags))
             $hiddenTags = array();
+
+        $tagParams = AuxLib::bindArray ($hiddenTags);
         $allTags = Yii::app()->db->createCommand()
                 ->select('COUNT(*) AS count, tag')
                 ->from('x2_tags')
                 ->group('tag')
-                ->where('tag IS NOT NULL AND tag IN (\''.implode("','", $hiddenTags).'\')')
+                ->where('tag IS NOT NULL AND tag IN ('.implode (',', array_keys ($tagParams)).')', $tagParams)
                 ->order('tag ASC')
                 ->limit(20)
                 ->queryAll();
@@ -954,6 +956,7 @@ class ProfileController extends x2base {
             }
 
             unset($_SESSION['feed-condition']);
+            unset($_SESSION['feed-condition-params']);
             if(!isset($_GET['filters'])){
                 unset($_SESSION['filters']);
             }
@@ -966,8 +969,9 @@ class ProfileController extends x2base {
             $filtersOn = false;
             if (isset($_GET['filters'])) {
                 $filters = $_GET;
-                if ($_GET['filters'])
+                if ($_GET['filters']) {
                     $filtersOn = true;
+                }
             }
 
             extract (Events::getFilteredEventsDataProvider (
@@ -1049,9 +1053,13 @@ class ProfileController extends x2base {
             }
         }
         $commentCriteria = new CDbCriteria();
-        $condition = "type='comment' AND timestamp <=".time()." AND id > ".$lastEventId;
+        $sqlParams = array (
+            ':lastEventId' => $lastEventId
+        );
+        $condition = "type='comment' AND timestamp <=".time()." AND id > :lastEventId";
         $parameters = array('order' => 'id ASC');
         $parameters['condition'] = $condition;
+        $parameters['params'] = $sqlParams;
         $commentCriteria->scopes = array('findAll' => array($parameters));
         $comments = X2Model::model('Events')->findAll($commentCriteria);
         $commentCounts = array();

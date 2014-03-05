@@ -55,7 +55,7 @@ class RolesTest extends X2DbTestCase {
     public function testGetUserTimeout() {
         Yii::app()->cache->flush();
         $defaultTimeout = 60;
-        Yii::app()->params->admin->timeout = $defaultTimeout;
+        Yii::app()->settings->timeout = $defaultTimeout;
         // admin's timeout should be the big one based on role
         $this->assertEquals($this->role('longTimeout')->timeout, Roles::getUserTimeout($this->user('admin')->id));
         // testuser's timeout should also be the big one, and not the "Peon"

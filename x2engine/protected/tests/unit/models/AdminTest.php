@@ -43,7 +43,7 @@ class AdminTest extends X2DbTestCase {
 
 
     public function testCountEmail() {
-        $admin = Yii::app()->params->admin;
+        $admin = Yii::app()->settings;
         $admin->emailCount = 0;
         $admin->emailInterval = 2;
         $admin->update(array('emailCount','emailInterval'));
@@ -64,7 +64,7 @@ class AdminTest extends X2DbTestCase {
     }
 
     public function testEmailCountWillExceedLimit() {
-        $admin = Yii::app()->params->admin;
+        $admin = Yii::app()->settings;
         $admin->emailCount = 0;
         $admin->emailInterval = 1;
         $admin->emailBatchSize = 5;

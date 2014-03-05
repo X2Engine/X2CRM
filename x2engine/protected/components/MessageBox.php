@@ -51,7 +51,7 @@ class MessageBox extends X2Widget {
 	public function run() {
 		$content=Social::model()->findByAttributes(array('type'=>'motd'));
 		if(isset($content))
-			$content=$content->data;
+			$content=CHtml::encode($content->data);
 		else
 			$content=Yii::t('app','Please enter a message of the day!');
 		$this->render('messageBox', array(

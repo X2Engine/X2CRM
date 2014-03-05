@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$admin = &Yii::app()->params->admin;
+$admin = &Yii::app()->settings;
 ?>
 <div class="span-20 admin-screen">
 <div class="page-title">
@@ -79,7 +79,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
     </div><br>
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Sessions'),array('/admin/manageSessions')); ?><br><?php echo Yii::t('admin','Manage user sessions.');?></div>
-        <?php if(Yii::app()->params->admin->sessionLog){ ?>
+        <?php if(Yii::app()->settings->sessionLog){ ?>
             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','View Session Log'),array('/admin/viewSessionLog')); ?><br><?php echo Yii::t('admin','View a log of user sessions with timestamps and statuses.');?></div>
         <?php } ?>
     </div>
@@ -133,8 +133,8 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
                 <?php echo CHtml::link(Yii::t('admin','Lock or Unlock X2Engine'),array('/admin/lockApp')); ?><br><?php echo Yii::t('admin','Set X2Engine into maintenance mode, where only administrators can access it.');?>
             </div><!-- .cell.span-6 -->
         <?php endif; ?>
-          <?php if (isset(Yii::app()->params->admin->edition)): ?>
-        <?php if(in_array(Yii::app()->params->admin->edition,array('opensource',Null))): ?>
+          <?php if (isset(Yii::app()->settings->edition)): ?>
+        <?php if(in_array(Yii::app()->settings->edition,array('opensource',Null))): ?>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upgrade X2Engine'),array('/admin/updater','scenario'=>'upgrade')); ?><br><?php echo Yii::t('admin','Upgrade X2Engine to Professional Edition; license key required.');?></div>
         <?php endif;
         endif; ?>
@@ -152,7 +152,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create Email Campaign'),array('/marketing/marketing/create')); ?><br><?php echo Yii::t('admin','Create an email marketing campaign');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Campaigns'),array('/marketing/marketing/index')); ?><br><?php echo Yii::t('admin','Manage your marketing campaigns');?></div>
     </div>
-    <?php if(Yii::app()->params->admin->edition != 'opensource'): ?>
+    <?php if(Yii::app()->settings->edition != 'opensource'): ?>
     <br />
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Email Capture'),array('/admin/emailDropboxSettings')); ?><br><?php echo Yii::t('admin','Settings for the "email dropbox", which allows X2Engine to receive and record email.');?></div>

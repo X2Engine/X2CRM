@@ -57,7 +57,7 @@ $this->actionMenu = $this->formatMenu(array(
 	if($model->associationName=='none')
 		echo Yii::t('actions','Action');
 	else
-		echo '<span class="no-bold">',Yii::t('actions','Action'),':</span> '.$model->associationName; ?>
+		echo '<span class="no-bold">',Yii::t('actions','Action'),':</span> '.CHtml::encode($model->associationName); ?>
 	</h2>
 </div>
 <?php

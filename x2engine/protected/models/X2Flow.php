@@ -61,7 +61,7 @@ class X2Flow extends CActiveRecord {
     /**
      * @var the current depth of nested trigger calls
      */
-    protected static $_triggerDepth = 0;
+    private static $_triggerDepth = 0;
 
     /**
      * Returns the static model of the specified AR class.

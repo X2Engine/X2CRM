@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-if(Yii::app()->params->admin->googleIntegration) { // menu if google integration is enables has additional options
+if(Yii::app()->settings->googleIntegration) { // menu if google integration is enables has additional options
 	if(Yii::app()->params->isAdmin) {
 		$menuItems = array(
 			array('label'=>Yii::t('calendar', 'Calendar'), 'url'=>array('index')),

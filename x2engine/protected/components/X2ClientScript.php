@@ -239,7 +239,7 @@ class X2ClientScript extends NLSClientScript {
 
     public function getAdmin() {
         if(!isset($this->_admin)) {
-            $this->_admin = Yii::app()->params->admin;
+            $this->_admin = Yii::app()->settings;
         }
         return $this->_admin;
     }

@@ -547,33 +547,37 @@ if(method_exists($this,'renderGaCode'))
 	-->
 </div>
 </div>
-		<?php
-		$this->renderPartial('//layouts/footer');
-		if(Yii::app()->session['translate'])
-			echo '<div class="yiiTranslationList"><b>Other translated messages</b><br></div>';
+    <?php
+    $this->renderPartial('//layouts/footer');
+    if(Yii::app()->session['translate'])
+        echo '<div class="yiiTranslationList"><b>Other translated messages</b><br></div>';
 
-		if($preferences != null &&
-           ($preferences['loginSound'] || $preferences['notificationSound']) &&
-           isset($_SESSION['playLoginSound']) && $_SESSION['playLoginSound']){
+    if($preferences != null &&
+       ($preferences['loginSound'] || $preferences['notificationSound']) &&
+       isset($_SESSION['playLoginSound']) && $_SESSION['playLoginSound']){
 
-			$_SESSION['playLoginSound'] = false;
-			$where = 'fileName = "'.$preferences['loginSound'].'"';
-			$uploadedBy = Yii::app()->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
-			if(!empty($uploadedBy['uploadedBy'])){
-				$loginSound = Yii::app()->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$preferences['loginSound'];
-			}else{
-				$loginSound = Yii::app()->baseUrl.'/uploads/'.$preferences['loginSound'];
-			}
-			echo "";
-			Yii::app()->clientScript->registerScript('playLoginSound', '
-		$("#loginSound").attr("src","'.$loginSound.'");
+        $_SESSION['playLoginSound'] = false;
+        $where = 'fileName=:loginSound';
+        $uploadedBy = Yii::app()->db->createCommand()
+            ->select('uploadedBy')
+            ->from('x2_media')
+            ->where($where, array (':loginSound'=> $preferences['loginSound']))
+            ->queryRow();
+        if(!empty($uploadedBy['uploadedBy'])){
+            $loginSound = Yii::app()->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.
+                $preferences['loginSound'];
+        }else{
+            $loginSound = Yii::app()->baseUrl.'/uploads/'.$preferences['loginSound'];
+        }
+        echo "";
+        Yii::app()->clientScript->registerScript('playLoginSound', '
+            $("#loginSound").attr("src","'.$loginSound.'");
 
-        var sound = $("#loginSound")[0];
-        if (Modernizr.audio) sound.play();
-
-');
-		}
-		?>
+            var sound = $("#loginSound")[0];
+            if (Modernizr.audio) sound.play();
+        ');
+    }
+    ?>
 <a id="page-fader" class="x2-button"><span></span></a>
 <div id="dialog" title="Completion Notes? (Optional)" style="display:none;" class="text-area-wrapper">
 	<textarea id="completion-notes" style="height:110px;"></textarea>

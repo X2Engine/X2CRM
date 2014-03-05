@@ -370,7 +370,7 @@ Yii::app()->clientScript->registerScript(
             </option>
             <?php foreach ($chartSettingsDataProvider->data as $chartSetting) { ?>
             <option value="<?php echo $chartSetting->name; ?>">
-                <?php echo CHTML::encode ($chartSetting->name); ?>
+                <?php echo CHtml::encode ($chartSetting->name); ?>
             </option>
             <?php } ?>
         </select>

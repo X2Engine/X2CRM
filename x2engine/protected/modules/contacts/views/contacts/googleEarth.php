@@ -203,7 +203,7 @@ function refreshQtip() {
 }
 function getDirections(type){
     var latLng = new google.maps.LatLng(center['lat'],center['lng']);
-    var corporateAddress=\"".CJavaScript::encode(Yii::app()->params->admin->corporateAddress)."\";
+    var corporateAddress=\"".CJavaScript::encode(Yii::app()->settings->corporateAddress)."\";
     var personalAddress=\"".CJavaScript::encode(Yii::app()->params->profile->address)."\";
     if(type=='corporate' && corporateAddress!=''){
         var request = {

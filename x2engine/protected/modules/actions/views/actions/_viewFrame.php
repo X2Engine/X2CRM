@@ -207,7 +207,7 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                 echo $form->textArea($model, 'actionDescription', array('rows' => (6), 'cols' => 40));
                 echo "</span>";
                 echo "<span class='field-value'>";
-                echo Formatter::convertLineBreaks($model->actionDescription);
+                echo Formatter::convertLineBreaks(CHtml::encode($model->actionDescription));
                 echo "</span>";
                 ?>
             <?php echo CHtml::ajaxSubmitButton(Yii::t('app', 'Submit'), 'update?id='.$model->id, array(), array('style' => 'display:none;float:left;', 'class' => 'hidden-frame-form x2-button highlight')); ?>

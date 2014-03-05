@@ -96,7 +96,11 @@ class WorkflowStage extends CActiveRecord {
 
 	public function getRoles() {
 		if(empty($this->_roles) && !empty($this->id))
-			$this->_roles = Yii::app()->db->createCommand()->select('roleId')->from('x2_role_to_workflow')->where('stageId='.$this->id)->queryColumn();
+			$this->_roles = Yii::app()->db->createCommand()
+                ->select('roleId')
+                ->from('x2_role_to_workflow')
+                ->where('stageId='.$this->id)
+                ->queryColumn();
 		return $this->_roles;
 	}
 	

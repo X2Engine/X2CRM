@@ -64,7 +64,8 @@ class X2FlowRecordUpdate extends X2FlowAction {
         $model = $params['model'];
 
         $this->setModelAttributes($model, $this->config['attributes'], $params);
-        if ($model->updateByPk($model->id, $model->attributes)) {
+        if ($model->save ()) {
+        //if ($model->updateByPk($model->id, $model->attributes)) {
 		    if(is_subclass_of($model,'X2Model')) {
                 return array (
                     true,

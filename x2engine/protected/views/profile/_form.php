@@ -77,9 +77,9 @@
 		</div>
 		<div class="cell">
 			<?php
-			$userChoice = (Yii::app()->params->admin->emailUseSignature == 'user'); 
+			$userChoice = (Yii::app()->settings->emailUseSignature == 'user'); 
 			if(!$userChoice)
-				$model->emailUseSignature = Yii::app()->params->admin->emailUseSignature;
+				$model->emailUseSignature = Yii::app()->settings->emailUseSignature;
 			?>
 			<?php echo $form->labelEx($model,'emailUseSignature'); ?>
 			<?php echo $form->dropDownList($model,'emailUseSignature',array(

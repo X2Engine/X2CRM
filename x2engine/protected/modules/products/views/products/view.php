@@ -75,7 +75,7 @@ $(function() {
 <div class="page-title icon products">
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-	<h2><span class="no-bold"><?php echo Yii::t('products','Product:'); ?></span> <?php echo $model->name; ?></h2>
+	<h2><span class="no-bold"><?php echo Yii::t('products','Product:'); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 	<a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><span></span></a>
 </div>
 <div id="main-column" class="half-width">

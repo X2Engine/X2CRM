@@ -67,7 +67,7 @@ echo CHtml::image($imageUrl, $model->description, array('style' => $imgStyle));
 	<strong><?php echo Yii::t('media','Dimensions:');?></strong> <?php echo $model->fmtDimensions; ?><br />
 <?php endif; ?>
 <?php if(!empty($model->mimetype)): ?>
-	<strong><?php echo Yii::t('media','MIME Info:');?></strong> <?php echo $model->mimetype; ?><br>
+	<strong><?php echo Yii::t('media','MIME Info:');?></strong> <?php echo $model->renderAttribute('mimetype'); ?><br>
 <?php endif; ?>
 <?php if($model->drive): ?>
 	<?php echo Yii::t('media','File is hosted on Google Drive');?>

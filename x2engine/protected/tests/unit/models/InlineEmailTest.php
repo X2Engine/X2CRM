@@ -192,7 +192,7 @@ class InlineEmailTest extends X2DbTestCase {
 
     public function testDeliver(){
         if(self::TESTDELIVERY){
-            Yii::app()->params->admin->emailType = $this->method;
+            Yii::app()->settings->emailType = $this->method;
             $this->eml = new InlineEmail();
             try{
                 $this->eml->credId = $this->credentials('liveDeliveryTest')->id;

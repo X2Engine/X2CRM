@@ -183,7 +183,7 @@ if (YII_DEBUG && $debug) {
     if (!$readOnly && isset ($products)) {
         echo "<ul id='product-menu'>";
         foreach ($products as $prod) {
-            echo "<li><a href='#'>" . $prod->name . "</a></li>";
+            echo "<li><a href='#'>" . CHtml::encode($prod->name) . "</a></li>";
         }
         echo "</ul>";
     }

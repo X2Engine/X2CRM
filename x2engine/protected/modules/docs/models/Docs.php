@@ -136,7 +136,11 @@ class Docs extends X2Model {
 		if (!Yii::app()->params->isAdmin) {
 			$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="' . Yii::app()->user->getName() . '" OR editPermissions LIKE "%' . Yii::app()->user->getName() . '%"';
 			/* x2temp */
-			$groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId=' . Yii::app()->user->getId())->queryColumn();
+			$groupLinks = Yii::app()->db->createCommand()
+                ->select('groupId')
+                ->from('x2_group_to_user')
+                ->where('userId=' . Yii::app()->user->getId())
+                ->queryColumn();
 			if (!empty($groupLinks))
 				$condition .= ' OR createdBy IN (' . implode(',', $groupLinks) . ')';
 
@@ -245,8 +249,10 @@ class Docs extends X2Model {
 		if(in_array($type, array('email', 'quote'))){
 			// $criteria = new CDbCriteria(array('order'=>'lastUpdated DESC'));
 			$condition = 'TRUE';
+            $params = array ();
 			if(!Yii::app()->params->isAdmin){
-				$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="'.Yii::app()->user->getName().'"';
+                $params[':username'] = Yii::app()->user->getName();
+				$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy=:username';
 				/* x2temp */
 				$uid = Yii::app()->getSuID();
 				if(empty($uid)){
@@ -265,11 +271,12 @@ class Docs extends X2Model {
 				// $criteria->addCondition($condition);
 			}
 			// $templates = X2Model::model('Docs')->findAllByAttributes(array('type'=>'email'),$criteria);
+            $params[':type'] = $type;
 
 			$templateData = Yii::app()->db->createCommand()
 					->select('id,name')
 					->from('x2_docs')
-					->where('type="'.$type.'" AND ('.$condition.')')
+					->where('type=:type AND ('.$condition.')', $params)
 					->order('name ASC')
 					// ->andWhere($condition)
 					->queryAll(false);

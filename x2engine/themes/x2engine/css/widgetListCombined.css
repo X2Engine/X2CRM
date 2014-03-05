@@ -40,4 +40,8 @@ file used to fix IE8 max 31 css file references issue
 @import url("galleryWidgetCssOverrides.css");
 @import url("x2chart.css");
 @import url("x2tags.css");
+@import url("../../../js/gallerymanager/bootstrap/css/bootstrap.css");
+@import url("../../../js/jqplot/jquery.jqplot.css");
+@import url("../../../js/checklistDropdown/jquery.multiselect.css");
+
 

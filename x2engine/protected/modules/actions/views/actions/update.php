@@ -49,12 +49,12 @@ $this->actionMenu = $this->formatMenu(array(
 		if($model->associationType=='none')
 			echo Yii::t('actions','Update Event');
 		else
-			echo '<span class="no-bold">',Yii::t('actions','Update Event:'),'</span> ',$model->associationName;
+			echo '<span class="no-bold">',Yii::t('actions','Update Event:'),'</span> ',CHtml::encode($model->associationName);
 	} else {
 		if($model->associationType=='none')
 			echo Yii::t('actions','Update Action');
 		else
-			echo '<span class="no-bold">',Yii::t('actions','Update Action:'),'</span> ',$model->associationName;
+			echo '<span class="no-bold">',Yii::t('actions','Update Action:'),'</span> ',CHtml::encode($model->associationName);
 	}
 ?></h2>
 </div>

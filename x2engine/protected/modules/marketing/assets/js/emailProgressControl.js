@@ -149,7 +149,7 @@ x2.emailProgressControl.send = function () {
         that.currentlySending = false;
         // Update text status
         that.textStatus.text(response.message);
-        if(!response.error) {
+        if(!(response.error && response.fullStop)) {
             // Update progress bar:
             that.sentCount++;
             that.bar.progressbar({'value':that.sentCount});
@@ -158,6 +158,8 @@ x2.emailProgressControl.send = function () {
             }
             if(!that.paused) { // Send the next one!
                 that.send();
+            } else {
+                that.hideThrobber();
             }
         } else { // full stop
             that.pause();
@@ -170,7 +172,6 @@ x2.emailProgressControl.send = function () {
         that.listItems.push(listItem); // Add the item back in at the end
         that.errorMessage('<span class="emailFail">'+that.text['Could not send email due to an error in the request to the server.']+' ('+textStatus+' '+jqXHR.errorCode+' '+message+')</span>');
     }).always(function() {
-        that.hideThrobber();
         that.afterSend();
     });
 }

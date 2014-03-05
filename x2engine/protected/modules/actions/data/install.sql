@@ -66,7 +66,7 @@ VALUES
 ("Actions", "complete",          "Complete",         0, 0, "varchar",    0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "reminder",          "Reminder",         0, 0, "varchar",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "completedBy",       "Completed By",     0, 0, "assignedTo", 0, 1, NULL, 0, 0, "",     0, 1, NULL),
-("Actions", "completeDate",      "Date Completed",   0, 0, "dateTime",   0, 1, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "completeDate",      "Date Completed",   0, 0, "dateTime",   0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "lastUpdated",       "Last Updated",     0, 0, "dateTime",   0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "updatedBy",         "Updated By",       0, 0, "varchar",    0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "allDay",            "All Day",          0, 0, "boolean",    0, 0, NULL, 0, 0, "",     0, 1, NULL),

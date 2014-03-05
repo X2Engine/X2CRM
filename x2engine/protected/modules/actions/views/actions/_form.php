@@ -60,7 +60,7 @@ $(function(){
 }
 );");
 $themeUrl = Yii::app()->theme->getBaseUrl();
-$backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->params->admin->userActionBackdating);
+$backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->settings->userActionBackdating);
 ?>
 <div class="form" id="action-form">
     <?php

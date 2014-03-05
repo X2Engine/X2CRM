@@ -96,6 +96,7 @@ $config = array(
                 'gii/<controller:\w+>/<action:\w+>' => 'gii/<controller>/<action>',
                 '<controller:(site|admin|profile|api|search|notifications|studio|gallery)>/<id:\d+>' => '<controller>/view',
                 '<controller:(site|admin|profile|api|search|notifications|studio|gallery)>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+                '<controller:(site|admin|profile|api|search|notifications|studio|gallery)>/<action:\w+>/id/<id:\d+>' => '<controller>/<action>',
                 '<controller:(site|admin|profile|api|search|notifications|studio|gallery)>/<action:\w+>' => '<controller>/<action>',
                 'weblist/<action:\w+>' => 'marketing/weblist/<action>',
                 '<module:\w+>' => '<module>/<module>/index',

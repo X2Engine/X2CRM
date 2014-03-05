@@ -164,7 +164,7 @@ CClientScript::POS_READY);
 <br>
 <span id="login-x2engine">
     <a href="http://www.x2engine.com">X2Engine, Inc.</a><?php 
-    if(Yii::app()->params->admin->edition == 'opensource'){
+    if(Yii::app()->settings->edition == 'opensource'){
         echo '&nbsp;&bull;&nbsp;'.CHtml::link("LICENSE",Yii::app()->baseUrl.'/LICENSE.txt');
     } ?></span>
 </div>

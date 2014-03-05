@@ -183,6 +183,12 @@ class EmailDeliveryBehavior extends CBehavior {
      * @return array
      */
     public function deliverEmail($addresses, $subject, $message, $attachments = array()){
+        if(YII_DEBUG) {
+            // Fake a successful send
+            AuxLib::debugLog('Faking an email delivery to address(es): '.var_export($addresses,1));
+            return $this->status = $this->getDebugStatus();
+        }
+
         $phpMail = $this->mailer;
 
         try{
@@ -262,6 +268,19 @@ class EmailDeliveryBehavior extends CBehavior {
         return $this->_credId;
     }
 
+    /**
+     * Gets the status used when "faking" an email send.
+     */
+    public function getDebugStatus() {
+        return require(implode(DIRECTORY_SEPARATOR,array(
+            Yii::app()->basePath,
+            'tests',
+            'data',
+            'marketing',
+            'debugStatus.php'
+        )));
+    }
+
     public function getFrom(){
         if(!isset($this->_from)) {
 			if($this->credentials)
@@ -306,7 +325,7 @@ class EmailDeliveryBehavior extends CBehavior {
                 $phpMail->SetFrom($cred->auth->email, $cred->auth->senderName);
                 $this->from = array('address' => $cred->auth->email, 'name' => $cred->auth->senderName);
             }else{ // Use the system default (legacy method)
-                switch(Yii::app()->params->admin->emailType){
+                switch(Yii::app()->settings->emailType){
                     case 'sendmail':
                         $phpMail->IsSendmail();
                         break;
@@ -316,13 +335,13 @@ class EmailDeliveryBehavior extends CBehavior {
                     case 'smtp':
                         $phpMail->IsSMTP();
 
-                        $phpMail->Host = Yii::app()->params->admin->emailHost;
-                        $phpMail->Port = Yii::app()->params->admin->emailPort;
-                        $phpMail->SMTPSecure = Yii::app()->params->admin->emailSecurity;
-                        if(Yii::app()->params->admin->emailUseAuth == 'admin'){
+                        $phpMail->Host = Yii::app()->settings->emailHost;
+                        $phpMail->Port = Yii::app()->settings->emailPort;
+                        $phpMail->SMTPSecure = Yii::app()->settings->emailSecurity;
+                        if(Yii::app()->settings->emailUseAuth == 'admin'){
                             $phpMail->SMTPAuth = true;
-                            $phpMail->Username = Yii::app()->params->admin->emailUser;
-                            $phpMail->Password = Yii::app()->params->admin->emailPass;
+                            $phpMail->Username = Yii::app()->settings->emailUser;
+                            $phpMail->Password = Yii::app()->settings->emailPass;
                         }
 
 

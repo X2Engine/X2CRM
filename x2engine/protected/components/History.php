@@ -187,9 +187,9 @@ class History extends X2Widget {
         $module = isset(Yii::app()->controller->module) ? Yii::app()->controller->module->getId() : Yii::app()->controller->getId();
         // Apply history privacy settings so that only allowed actions are viewable.
         if(!Yii::app()->user->checkAccess($module.'Admin')){
-            if(Yii::app()->params->admin->historyPrivacy == 'user'){
+            if(Yii::app()->settings->historyPrivacy == 'user'){
                 $visibilityCondition = ' AND (assignedTo="'.Yii::app()->user->getName().'")';
-            }elseif(Yii::app()->params->admin->historyPrivacy == 'group'){
+            }elseif(Yii::app()->settings->historyPrivacy == 'group'){
                 $visibilityCondition = ' AND (t.assignedTo IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.Yii::app()->user->getName().'") OR (t.assignedTo="'.Yii::app()->user->getName().'"))';
             }else{
                 $visibilityCondition = ' AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")';

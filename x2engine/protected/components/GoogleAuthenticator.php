@@ -101,16 +101,16 @@ class GoogleAuthenticator {
      * @param string $redirectUri Define a redirect if the user needs to authenticate again. Defaults to the URL of the current request.
      */
     public function __construct($clientId = null, $clientSecret = null, $redirectUri = null){
-        $this->_enabled = Yii::app()->params->admin->googleIntegration; // Check if integration is enabled in the first place
+        $this->_enabled = Yii::app()->settings->googleIntegration; // Check if integration is enabled in the first place
         if($this->_enabled){
             $this->clientId = $clientId; // Set properties to the provided data/
             $this->clientSecret = $clientSecret;
             $this->redirectUri = $redirectUri;
             if(empty($this->clientId)){ // If the data provided was empty, set it to what's configured in the admin settings.
-                $this->clientId = Yii::app()->params->admin->googleClientId;
+                $this->clientId = Yii::app()->settings->googleClientId;
             }
             if(empty($this->clientSecret)){
-                $this->clientSecret = Yii::app()->params->admin->googleClientSecret;
+                $this->clientSecret = Yii::app()->settings->googleClientSecret;
             }
             if(empty($this->redirectUri)){
                 $this->redirectUri = (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].Yii::app()->controller->createUrl('');

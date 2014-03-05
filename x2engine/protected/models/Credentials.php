@@ -185,8 +185,8 @@ class Credentials extends CActiveRecord {
 				// model for consistency with legacy configuration page in admin
 				if(array_key_exists($userId,self::$sysUseAlias)){
 					$adminAttr = $adminAliasMap[self::$sysUseAlias[$userId]];
-					Yii::app()->params->admin->{$adminAttr} = $this->id;
-					Yii::app()->params->admin->update(array($adminAttr));
+					Yii::app()->settings->{$adminAttr} = $this->id;
+					Yii::app()->settings->update(array($adminAttr));
 				}
 				break;
 		}

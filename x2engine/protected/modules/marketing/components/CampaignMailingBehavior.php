@@ -425,7 +425,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      */
     public function mailIsStillDeliverable() {
         // Check if the batch limit has been reached:
-        $admin = Yii::app()->params->admin;
+        $admin = Yii::app()->settings;
         if($admin->emailCountWillExceedLimit() && !empty($admin->emailStartTime)) {
             $this->status['code'] = 0;
             $t_now = time();
@@ -501,17 +501,18 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * null unique ID, to designate it as a bad email address.
      * 
      * @param type $uniqueId
-     * @param type $success
+     * @param bool $unsent If false, perform the opposite operation (mark as not
+     *  currently sending).
      */
-    public function markEmailSent($uniqueId) {
+    public function markEmailSent($uniqueId,$sent = true) {
         $params = array(
             ':listId' => $this->listItem->listId,
             ':emailAddress' => $this->recipient->email,
             ':email' => $this->recipient->email,
             ':setEmail' => $this->recipient->email,
             ':id' => $this->itemId,
-            ':sent' => time(),
-            ':uniqueId' => $uniqueId
+            ':sent' => $sent?time():0,
+            ':uniqueId' => $sent?$uniqueId:null,
         );
         $condition = 'i.id=:id OR (i.listId=:listId AND (i.emailAddress=:emailAddress OR c.email=:email))';
         $columns = 'i.sent=:sent,i.uniqueId=:uniqueId,sending=0,emailAddress=:setEmail';
@@ -534,11 +535,20 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             if(!$this->isNewsletter) // Create action history records; sent to contact list
                 self::recordEmailSent($this->campaign,$this->recipient);
             $this->status['message'] = Yii::t('marketing','Email sent successfully to {address}.',array('{address}' => $this->recipient->email));
-        } else if ($this->status['exception'] instanceof phpmailerException && $this->status['exception']->getCode() != PHPMailer::STOP_CRITICAL) {
+        } else if ($this->status['exception'] instanceof phpmailerException) {
             // Undeliverable mail. Mark as sent but without unique ID, designating it as a bad address
-            $this->status['message'] = Yii::t('marketing','Email could not be sent to {address}; bad response from server or otherwise undeliverable.',array('{address}'=>$this->recipient->email));
-            $this->undeliverable = true;
-            $this->markEmailSent(null);
+            $this->status['message'] = Yii::t('marketing','Email could not be sent to {address}. The message given was: {message}',array(
+                '{address}'=>$this->recipient->email,
+                '{message}'=>$this->status['exception']->getMessage()
+            ));
+            if($this->status['exception']->getCode() != PHPMailer::STOP_CRITICAL){
+                $this->undeliverable = true;
+                $this->markEmailSent(null);
+            }else{
+                $this->fullStop = true;
+                $this->markEmailSent(null,false);
+            }
+        } else if($this->status['exception'] instanceof phpmailerException && $this->status['exception']->getCode() == PHPMailer::STOP_CRITICAL) {
         } else {
             // Mark as "not currently working on sending"...One way or another, it's done.
             $this->listItem->sending = 0;
@@ -546,12 +556,12 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         }
 
         // Keep track of this email as part of bulk emailing
-        Yii::app()->params->admin->countEmail();
+        Yii::app()->settings->countEmail();
 
         // Update the last activity on the campaign
         $this->campaign->lastActivity = time();
         // Finally, if the campaign is totally done, mark as complete.
-        if(count(self::deliverableItems($this->campaign->listId, true)) == 0) {
+        if(count(self::deliverableItems($this->campaign->list->id, true)) == 0) {
             $this->status['message'] = Yii::t('marketing','All emails sent.');
             $this->campaign->active = 0;
             $this->campaign->complete = 1;
@@ -580,7 +590,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
     */
     public static function sendMail($id = null, $t0 = null){
         self::$batchTime = $t0 === null ? time() : $t0;
-        $admin = Yii::app()->params->admin;
+        $admin = Yii::app()->settings;
         $messages = array();
         $totalSent = 0;
         try{
@@ -599,7 +609,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
                 }
                 $messages = array_merge($messages, $errors);
                 $totalSent += $sent;
-                if(time() - self::$batchTime > Yii::app()->params->admin->batchTimeout)
+                if(time() - self::$batchTime > Yii::app()->settings->batchTimeout)
                     break;
 
             }
@@ -627,7 +637,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         $class = __CLASS__;
         $totalSent = 0;
         $errors = array();
-        $items = self::deliverableItems($campaign->listId,true);
+        $items = self::deliverableItems($campaign->list->id,true);
         foreach($items as $item) {
             $mailer = new $class;
             $mailer->campaign = $campaign;
@@ -641,7 +651,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             } else {
                 $totalSent++;
             }
-            if(time() - self::$batchTime > Yii::app()->params->admin->batchTimeout) {
+            if(time() - self::$batchTime > Yii::app()->settings->batchTimeout) {
                 $errors[] = Yii::t('marketing','Batch timeout limit reached.');
                 break;
             }

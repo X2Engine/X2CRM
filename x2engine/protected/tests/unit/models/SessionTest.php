@@ -69,7 +69,7 @@ class SessionTest extends X2DbTestCase {
         }
         
         $defaultTimeout = 60;
-        Yii::app()->params->admin->timeout = $defaultTimeout;
+        Yii::app()->settings->timeout = $defaultTimeout;
         
         Session::cleanUpSessions();
         // Session 1 shoud still be there

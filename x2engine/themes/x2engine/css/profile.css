@@ -33,6 +33,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+#content .x2-layout-island {
+    border: none;
+}
+
+#profile-info-container,
+#activity-feed-container,
+.sortable-widget-container {
+    border: 1px solid #c5c5c5 !important;
+}
+
 #profile-info-container {
     border: 1px solid #c5c5c5;
     border-radius: 4px 4px 4px 4px;

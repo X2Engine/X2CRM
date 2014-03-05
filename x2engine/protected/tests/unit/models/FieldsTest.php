@@ -80,7 +80,7 @@ class FieldsTest extends X2TestCase {
     }
 
 	public function testStrToNumeric() {
-		$cur =  Yii::app()->locale->getCurrencySymbol(Yii::app()->params->admin->currency);
+		$cur =  Yii::app()->locale->getCurrencySymbol(Yii::app()->settings->currency);
 		$input = " $cur 123.45 % ";
 		$this->assertEquals(123.45,Fields::strToNumeric($input,'currency'));
 		$this->assertEquals(123,Fields::strToNumeric($input,'int'));

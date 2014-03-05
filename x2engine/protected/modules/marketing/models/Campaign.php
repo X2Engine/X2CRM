@@ -68,7 +68,7 @@ class Campaign extends X2Model {
 
 	public function relations() {
 		return array_merge(parent::relations(),array(
-			'list'=>array(self::BELONGS_TO, 'X2List', 'listId'),
+			'list'=>array(self::BELONGS_TO, 'X2List', array('listId'=>'nameId')),
 			'attachments'=>array(self::HAS_MANY, 'CampaignAttachment', 'campaign'),
 		));
 	}

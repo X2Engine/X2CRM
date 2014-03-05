@@ -59,7 +59,7 @@ $strict = Yii::app()->params['admin']['quoteStrictLock'];
 $updateButton = $canDo['QuickUpdate'] ? ' '. CHtml::link(
 	'['. Yii::t('products', 'Update') .']',
 	'javascript:void(0);',
-	array('title'=>'Update Quote', 'onclick'=>"x2.inlineQuotes.toggleUpdateQuote({$quote->id}, {$quote->locked}, $strict);")
+	array('title'=>'Update Quote', 'onclick'=>"x2.inlineQuotes.toggleUpdateQuote({$quote->id}, {$quote->locked}, ".($strict ? 'true' : 'false') .");")
 ):'';
 $deleteButton = $canDo['QuickDelete'] ? ' '. CHtml::ajaxLink(
 	'['. Yii::t('quotes', 'Delete') .']', 
@@ -70,7 +70,7 @@ $deleteButton = $canDo['QuickDelete'] ? ' '. CHtml::ajaxLink(
 	),
 	array('id'=> "delete-quote-{$quote->id}", 'title'=>Yii::t('quotes', "Delete Quote"), 'live'=>false)
 ):'';
-$emailButton = CHtml::link('['. Yii::t('products','Email') .']', 'javascript:void(0)', array('id'=>"email-quote-{$quote->id}", 'onClick'=>"x2.inlineQuotes.sendEmail({$quote->id},".json_encode($quote->template).")"));
+$emailButton = CHtml::link('['. Yii::t('products','Email') .']', 'javascript:void(0)', array('id'=>"email-quote-{$quote->id}", 'onClick'=>"x2.inlineQuotes.sendEmail({$quote->id},".json_encode($quote->templateModel?$quote->templateModel->id:0).")"));
 $printButton = CHtml::link('['. Yii::t('quotes','Print') .']', 'javascript:void(0)', array('id'=>"print-quote-{$quote->id}", 'onClick'=>"window.open('".Yii::app()->controller->createUrl('/quotes/quotes/print', array('id'=>$quote->id))."')"));
 $duplicateButton = CHtml::link('['.Yii::t('quotes','Duplicate').']','javascript:void(0)',array('id'=>"duplicate-quote-{$quote->id}",'onClick'=>"x2.inlineQuotes.openForm(0,{$quote->id})"));
 $convertToInvoiceButton = '';

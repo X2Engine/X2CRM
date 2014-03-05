@@ -70,7 +70,7 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
             <?php if(!$hiddenTabs['new-comment']) { ?><li style='margin-right: 0'><a href="#new-comment"><b>+</b><?php echo Yii::t('actions', 'Comment'); ?></a></li><?php } ?>
         </ul>
     <?php } ?>
-    <div class="form">
+    <div class="form x2-layout-island">
     <?php if(!$calendar) {
         ///////////////////////////
         // Publisher tab content //

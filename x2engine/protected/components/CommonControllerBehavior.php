@@ -174,7 +174,7 @@ class CommonControllerBehavior extends CBehavior {
 	 * @param type $location Named location in the app
 	 */
 	public function renderGaCode($location) {
-		$propertyId = Yii::app()->params->admin->{"gaTracking_" . $location};
+		$propertyId = Yii::app()->settings->{"gaTracking_" . $location};
 		if (!empty($propertyId))
 			$this->owner->renderPartial('application.components.views.gaTrackingScript', array('propertyId' => $propertyId));
 	}

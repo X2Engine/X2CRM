@@ -60,7 +60,7 @@ Yii::app()->clientScript->registerCss ('calendarCss', "
 //Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl() .'/protected/extensions/CJuiDateTimePicker/assets/jquery-ui-timepicker-addon.css');
 //Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/protected/extensions/CJuiDateTimePicker/assets/jquery-ui-timepicker-addon.js');
 
-if(Yii::app()->params->admin->googleIntegration) { // menu if google integration is enables has additional options
+if(Yii::app()->settings->googleIntegration) { // menu if google integration is enables has additional options
     if(Yii::app()->params->isAdmin) {
         $menuItems = array(
             array('label'=>Yii::t('calendar', 'Calendar')),

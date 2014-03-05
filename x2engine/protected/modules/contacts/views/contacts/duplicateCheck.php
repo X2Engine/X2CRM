@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->pageTitle = $newRecord->name;
+$this->pageTitle = $newRecord->renderAttribute('name');
 $authParams['assignedTo'] = $newRecord->assignedTo;
 $this->actionMenu = $this->formatMenu(array(
     array('label' => Yii::t('contacts', 'All Contacts'), 'url' => array('index')),
@@ -44,7 +44,7 @@ $this->actionMenu = $this->formatMenu(array(
         ));
 ?>
 <h1><span style="color:#f00;font-weight:bold;margin-left: 5px;"><?php echo Yii::t('app', 'This record may be a duplicate!'); ?></span></h1>
-<div class="page-title rounded-top"><h2><span class="no-bold"><?php echo Yii::t('app', 'You Entered:'); ?></span> <?php echo $newRecord->name; ?></h2>
+<div class="page-title rounded-top"><h2><span class="no-bold"><?php echo Yii::t('app', 'You Entered:'); ?></span> <?php echo $newRecord->renderAttribute('name'); ?></h2>
     <?php
     if(Yii::app()->user->checkAccess('ContactsUpdate', $authParams) && $ref != 'create')
         echo CHtml::link(Yii::t('app', 'Edit'), $this->createUrl('update', array('id' => $newRecord->id)), array('class' => 'x2-button'));

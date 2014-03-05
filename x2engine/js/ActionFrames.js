@@ -334,6 +334,30 @@ ActionFrames.prototype._init = function () {
             return false;
         });
     });
+
+    // events not related to action frames, these should be moved into a a different prototype
+    $(document).on('click', '.complete-button', function(e){
+        e.preventDefault();
+        var publisher=($('#publisher-form').html()!=null);
+        that._completeAction($(this).attr('data-action-id'), publisher);
+    });
+    $(document).on('click', '.uncomplete-button', function(e){
+        e.preventDefault();
+        var publisher=($('#publisher-form').html()!=null);
+        that._uncompleteAction($(this).attr('data-action-id'), publisher);
+    });
+    $(document).on('click', '.complete-box', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var publisher=($('#publisher-form').html()!=null);
+        that._completeAction($(this).attr('data-action-id'), publisher);
+    });
+    $(document).on('click', '.uncomplete-box', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var publisher=($('#publisher-form').html()!=null);
+        that._uncompleteAction($(this).attr('data-action-id'), publisher);
+    });
 };
 
 var actionFrames = new ActionFrames ({ instanceName: 'actionFrames' });

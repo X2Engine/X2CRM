@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-$this->setPageTitle($model->name);
+$this->setPageTitle(CHtml::encode($model->name));
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 

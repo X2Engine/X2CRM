@@ -275,7 +275,7 @@ class Quote extends X2Model {
 		// - Use the quote's currency if it isn't empty.
 		// - Use the app's currency otherwise.
 		$defaultCurrency = empty($this->currency)?
-            Yii::app()->params->admin->currency:$this->currency;
+            Yii::app()->settings->currency:$this->currency;
 
 		$curSym = Yii::app()->locale->getCurrencySymbol($defaultCurrency);
 		foreach($this->_lineItems as $lineItem) {

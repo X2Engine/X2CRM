@@ -1,41 +1,18 @@
 # X2CRM 3.7 #
-Release 3.7.3 2/18/2014
+Release 3.7.4 3/4/2014
 
-New in 3.7.3 (see [CHANGELOG](CHANGELOG.md) for full history):
+New in 3.7.4 (see [CHANGELOG](CHANGELOG.md) for full history):
 
-* Multiple security vulnerabilities patched in web forms, data import/export, and docs import/export
-* "Lookup" fields performance and functionality restoration overhaul:
-  * Search/sort works without sorting on columns in joined tables
-  * All such fields store all the necessary data to create a link, eliminating joins in grid view queries
-* More robust error handling in the module importer
-* Consistent branding throughout app (see [release notes](RELEASE-NOTES.md) for full details)
-* Date/time picker input widget now available in relevant grid view column filters
-* New "action timer sum" field type computes/displays sums of time spent on a record.
-* Fields editor has the ability to create indexes on fields
-* Users can add custom percentage type fields via the fields manager
-* New in Professional Edition:
-  * "Case Timer" has been generalized to the "action timer" and is available in most modules now
-  * Action timer editing interface available to admins and users with action backdating privileges
-  * Case creation via the email dropbox (experimental)
+* Fixed security holes listed in ["Multiple vulnerabilities in X2Engine"](http://hauntit.blogspot.com/2014/02/en-multiple-vulnerabilities-in-x2engine.html) published on [The HauntIT Blog](http://hauntit.blogspot.com/)
 * Fixed Bugs:  
-  * [254](http://x2software.com/index.php/bugReports/254): User Report  
-  * [800](http://x2software.com/index.php/bugReports/800): User Report  
-  * [803](http://x2software.com/index.php/bugReports/803): Unable to resolve the request "financiala33/financiala33/index".  
-  * [848](http://x2software.com/index.php/bugReports/848): Undefined variable: timestamp  
-  * [850](http://x2software.com/index.php/bugReports/850): Could not attach files to emails (user report)  
-  * [867](http://x2software.com/index.php/bugReports/867): MyBugReportsController and its behaviors do not have a method or closure named "getDateRange".  
-  * [875](http://x2software.com/index.php/bugReports/875): User Report  
-  * [885](http://x2software.com/index.php/bugReports/885): User Report  
-  * [888](http://x2software.com/index.php/bugReports/888): User Report
-  * [935](http://x2software.com/index.php/bugReports/935): Unable to resolve the request "products/id/update".
-  * [939](http://x2software.com/index.php/bugReports/939): No es posible resolver la solicitud "docs/view/id"
-* Minor/unlisted bugs fixed:
-  * (Professional Edition) "Record viewed" X2Flow trigger wasn't working in Contacts
-  * API failures due to Profile class not being auto-loaded
-  * 404 error on "convert to invoice" button in Quotes
-  * Pro-only link was displayed (incorrectly) in the Marketing module
-  * Backwards compatibility safeguards in link type fields migration script
-* Numerous additional bugs reported via our forums have been fixed - thanks!
+  * [773](http://x2software.com/index.php/bugReports/773): If a user lacks edit permission on that field but that field has a default value (like in Service Cases) the default value will not save.  
+  * [947](http://x2software.com/index.php/bugReports/947): Unable to resolve the request "quotes/id/update".  
+  * [948](http://x2software.com/index.php/bugReports/948): nameId field of 'Sample Quote Template' doc is null  
+  * [949](http://x2software.com/index.php/bugReports/949): Template attribute of quotes is not a proper nameId ref 
+  * [977](http://x2software.com/index.php/bugReports/977): CDbCommand failed to execute the SQL statement: SQLSTATE[22007]: Invalid datetime format: 1292 Truncated incorrect DOUBLE value: '162.210.196.131'
+* Fixed unlisted bugs:
+  * Campaigns issues with listId being a malformed reference to list records, and improper validation (i.e. "List cannot be blank")
+  * Broken download links/extreme slowness in contacts export tool
 
 # Introduction #
 Welcome to  X2CRM!

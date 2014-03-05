@@ -7,7 +7,7 @@ Yii::import('application.commands.*');
  * @package application.commands
  */
 class DummyCommand extends CConsoleCommand {
-	public function run() {
+	public function run($args) {
         // Put code in here
     }
 }

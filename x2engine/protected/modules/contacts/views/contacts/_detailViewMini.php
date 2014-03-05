@@ -61,7 +61,7 @@ else
 		<td>
 			<?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : User::getUserLinks($model->assignedTo); ?>
 		</td>
-		<td class="label"><?php echo $model->getAttributeLabel('phone'); ?></td>
+		<td class="label"><?php echo CHtml::encode ($model->getAttributeLabel('phone')); ?></td>
 		<td>
 			<?php
 				$phone = $model->phone;
@@ -72,7 +72,7 @@ else
 				    $phone = "(" . substr($temp, 0, 3) . ") " . substr($temp, 3, 3) . "-" . substr($temp, 6, 4);
 				}
 			?>
-			<b><?php echo $phone; ?></b>
+			<b><?php echo CHtml::encode ($phone); ?></b>
 		</td>
 	</tr>
 	<tr>
@@ -82,14 +82,14 @@ else
 		</td>
 		<td class="label"><?php echo $model->getAttributeLabel('address'); ?></td>
 		<td>
-			<?php echo $model->address; ?>
+			<?php echo CHtml::encode ($model->address); ?>
 		</td>
 	</tr>
 
 	<tr>
 		<td class="label"><?php echo $model->getAttributeLabel('backgroundInfo'); ?></td>
 		<td colspan="3" class="text-field"><div class="spacer"></div>
-			<?php echo $this->convertUrls($model->backgroundInfo); ?>
+			<?php echo $this->convertUrls(CHtml::encode ($model->backgroundInfo)); ?>
 		</td>
 	</tr>
 </table>

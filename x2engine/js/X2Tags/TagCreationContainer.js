@@ -149,7 +149,7 @@ TagCreationContainer.prototype._tagInputEnd = function (event, span, textfield) 
     } else { // create new tag
         var value = textfield.val();
         value = value.replace(/#/g, ''); // strip illegal chars
-        value = '#' + value; // format into a tag
+        value = '#' + encodeURIComponent(value); // format into a tag
 
         that._afterCreateNewTag (textfield, value, span);
 
@@ -204,7 +204,7 @@ TagCreationContainer.prototype._resizeTag = function(textfield) {
 
     x2.DEBUG && console.log ('_resizeTag');
     $(textfield).each(function() {
-        that.textsize.html($(this).val());
+        that.textsize.html(encodeURIComponent($(this).val()));
         x2.DEBUG && console.log ('that.textsize.width = ' + that.textsize.width ());
         $(this).css('width', (that.textsize.width() + 10) + 'px');
     });

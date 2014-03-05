@@ -54,7 +54,7 @@ if($model->type=='note' || $model->type=='attachment') {
 		</td>
 		<td colspan="3" class="text-field">
 			<?php
-			echo $model->subject;
+			echo CHtml::encode($model->subject);
 			?>
 		</td>
 	</tr>
@@ -89,7 +89,7 @@ if($model->type=='note' || $model->type=='attachment') {
 		</td>
 		<td colspan="3" class="text-field">
 			<?php
-			echo $model->subject;
+			echo CHtml::encode($model->subject);
 			?>
 		</td>
 	</tr>
@@ -121,7 +121,7 @@ if ($model->associationType!="none") {
                             if ($model->associationType=="calendar")
                                 echo CHtml::link(Yii::t('calendar', "Calendar"), array('/'.$model->associationType.'/'));
                             else
-                                echo CHtml::link($model->associationName,array('/'.$model->associationType.'/'.$model->associationId));
+                                echo CHtml::link(CHtml::encode($model->associationName),array('/'.$model->associationType.'/'.$model->associationId));
                         ?>
 		</td>
 	</tr>

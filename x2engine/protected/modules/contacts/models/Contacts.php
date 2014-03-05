@@ -83,8 +83,8 @@ class Contacts extends X2Model {
     public function afterFind() {
         parent::afterFind();
 
-        if(isset(Yii::app()->params->admin)) {
-            $admin=Yii::app()->params->admin;
+        if(isset(Yii::app()->settings)) {
+            $admin=Yii::app()->settings;
             if(!empty($admin->contactNameFormat)) {
                 $str = $admin->contactNameFormat;
                 $str = str_replace('firstName',$this->firstName,$str);
@@ -97,7 +97,7 @@ class Contacts extends X2Model {
 
             $this->name = $str;
         }
-        if($this->trackingKey === null) {
+        if($this->trackingKey === null && self::$autoPopulateFields) {
             $this->trackingKey = self::getNewTrackingKey();
             $this->update(array('trackingKey'));
         }
@@ -108,8 +108,8 @@ class Contacts extends X2Model {
      * @return boolean whether or not to save
      */
     public function beforeSave() {
-        if(isset(Yii::app()->params->admin)) {
-            $admin = Yii::app()->params->admin;
+        if(isset(Yii::app()->settings)) {
+            $admin = Yii::app()->settings;
             if(!empty($admin->contactNameFormat)) {
                 $str = $admin->contactNameFormat;
                 $str = str_replace('firstName',$this->firstName,$str);
@@ -165,7 +165,7 @@ class Contacts extends X2Model {
 
             $message .="<br>\nYou can unsubscribe to these messages by going to $modelLink and clicking Unsubscribe.<br>\n<br>\n";
 
-            $adminProfile = Yii::app()->params->adminProfile;;
+            $adminProfile = Yii::app()->params->adminProfile;
             foreach ($result as $subscription) {
                 $subscription=array();
                 if(isset($subscription['user_id'])){

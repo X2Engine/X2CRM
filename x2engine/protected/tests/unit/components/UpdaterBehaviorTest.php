@@ -933,7 +933,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 
     public function testCheckUpdates() {
         $ube = $this->instantiateUBe();
-        Yii::app()->params->admin = $this->getAdmin();
         $version = $ube->checkUpdates(true);
         $this->assertTrue(version_compare(Yii::app()->params->version,$version)>=0);
     }

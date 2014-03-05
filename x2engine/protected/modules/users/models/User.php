@@ -109,6 +109,17 @@ class User extends CActiveRecord {
         );
     }
 
+    /**
+     * Delete associated group to user records 
+     */
+    public function afterDelete () {
+        GroupToUser::model ()->deleteAll (array (
+            'condition' => 'userId='.$this->id
+        ));
+        parent::afterDelete ();
+    }
+
+
     public static function hasRole($user, $role){
         if(is_numeric($role)){
             $lookup = RoleToUser::model()->findByAttributes(array('userId' => $user, 'roleId' => $role));

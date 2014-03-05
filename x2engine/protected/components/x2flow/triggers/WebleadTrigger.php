@@ -61,21 +61,24 @@ class WebleadTrigger extends BaseTagTrigger {
     public function check(&$params){
         $tagOptions = $this->config['options']['tags'];
         $tags = $tagOptions['value'];
-        $tags = is_array($tags) ? $tags : Tags::parseTags($tags);
+        $tags = is_array($tags) ? $tags : Tags::parseTags($tags, true);
         if(!empty($tags) && isset($params['tags'])){ 
             if(!is_array($params['tags'])){
                 $params['tags']=explode(',',$params['tags']);
             }
-            //$params['tags']=array_map(function($item){ return str_replace('#','',$item); },$params['tags']);
+            $params['tags'] = array_map(function($item){ 
+                return preg_replace('/^#/','', $item); 
+            }, $params['tags']);
+
             // must have at least 1 tag in the list:
             if (count(array_intersect($params['tags'], $tags)) > 0) {
                 return $this->checkConditions($params);
             } else {
-                return array (false, '');
+                return array (false, 'Web lead tag condition was not met');
             }
         } elseif (!empty ($tags) && !isset ($params['tags'])) { 
             // trigger requires tags but record has none
-            return array (false, '');
+            return array (false, 'Web lead tag condition was not met');
         }else{ // trigger has no tag conditions
             return $this->checkConditions($params);
         }

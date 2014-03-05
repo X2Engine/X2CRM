@@ -60,7 +60,7 @@ class LeadRoutingBehaviorTest extends CDbTestCase {
 
     public static function setUpBeforeClass () {
         X2DbTestCase::setUpAppEnvironment ();
-        Yii::app()->params->admin->leadDistribution = 'customRoundRobin';
+        Yii::app()->settings->leadDistribution = 'customRoundRobin';
         Yii::app()->db->createCommand ()
             ->delete ('x2_users', 'true');
         parent::setUpBeforeClass ();
@@ -71,12 +71,12 @@ class LeadRoutingBehaviorTest extends CDbTestCase {
     }
 
     protected function setUp () {
-        Yii::app()->params->admin->onlineOnly = false;
+        Yii::app()->settings->onlineOnly = false;
         parent::setUp ();
     }
 
 	public function testCustomRoundRobinOnlineOnly () {
-        Yii::app()->params->admin->onlineOnly = true;
+        Yii::app()->settings->onlineOnly = true;
         TestingAuxLib::setUpSessions($this->sessions);
         $_POST['Contacts'] = array (
             'firstName' => 'contact1',
@@ -87,7 +87,7 @@ class LeadRoutingBehaviorTest extends CDbTestCase {
         if(self::VERBOSE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'Anyone');
 
-        Yii::app()->params->admin->onlineOnly = false;
+        Yii::app()->settings->onlineOnly = false;
         $_POST['Contacts'] = array (
             'firstName' => 'contact1',
             'lastName' => 'contact1'

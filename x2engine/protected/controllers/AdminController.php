@@ -1040,7 +1040,7 @@ class AdminController extends Controller {
      * workflow action once it is marked as complete.
      */
     public function actionWorkflowSettings(){
-        $admin = &Yii::app()->params->admin;
+        $admin = &Yii::app()->settings;
         if(isset($_POST['Admin'])){
 
             $admin->attributes = $_POST['Admin'];
@@ -1414,7 +1414,7 @@ class AdminController extends Controller {
 
       public function actionSetTimeout() {
 
-      $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
+      $admin = &Yii::app()->settings; //Admin::model()->findByPk(1);
       if (isset($_POST['Admin'])) {
       $timeout = $_POST['Admin']['timeout'];
 
@@ -1438,7 +1438,7 @@ class AdminController extends Controller {
 
       public function actionSetChatPoll() {
 
-      $admin = &Yii::app()->params->admin; //X2Model::model('Admin')->findByPk(1);
+      $admin = &Yii::app()->settings; //X2Model::model('Admin')->findByPk(1);
       if (isset($_POST['Admin'])) {
       $timeout = $_POST['Admin']['chatPollTime'];
 
@@ -1464,7 +1464,7 @@ class AdminController extends Controller {
      */
     public function actionAppSettings(){
 
-        $admin = &Yii::app()->params->admin;
+        $admin = &Yii::app()->settings;
         if(isset($_POST['Admin'])){
 
             // if(!isset($_POST['Admin']['ignoreUpdates']))
@@ -1514,7 +1514,7 @@ class AdminController extends Controller {
      */
     public function actionActivitySettings(){
 
-        $admin = &Yii::app()->params->admin;
+        $admin = &Yii::app()->settings;
         $admin->eventDeletionTypes = json_decode($admin->eventDeletionTypes, true);
         if(isset($_POST['Admin'])){
 
@@ -1537,7 +1537,7 @@ class AdminController extends Controller {
      */
     public function actionSetLeadRouting(){
 
-        $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
+        $admin = &Yii::app()->settings; //Admin::model()->findByPk(1);
         if(isset($_POST['Admin'])){
             $routing = $_POST['Admin']['leadDistribution'];
             $online = $_POST['Admin']['onlineOnly'];
@@ -1567,7 +1567,7 @@ class AdminController extends Controller {
      */
     public function actionSetServiceRouting(){
 
-        $admin = &Yii::app()->params->admin; //Admin::model()->findByPk(1);
+        $admin = &Yii::app()->settings; //Admin::model()->findByPk(1);
         if(isset($_POST['Admin'])){
             $routing = $_POST['Admin']['serviceDistribution'];
             $online = $_POST['Admin']['serviceOnlineOnly'];
@@ -1601,7 +1601,7 @@ class AdminController extends Controller {
      */
     public function actionGoogleIntegration(){
 
-        $admin = &Yii::app()->params->admin;
+        $admin = &Yii::app()->settings;
         if(isset($_POST['Admin'])){
             foreach($admin->attributes as $fieldName => $field){
                 if(isset($_POST['Admin'][$fieldName])){
@@ -1626,7 +1626,7 @@ class AdminController extends Controller {
      */
     public function actionEmailSetup(){
 
-        $admin = &Yii::app()->params->admin; //X2Model::model('Admin')->findByPk(1);
+        $admin = &Yii::app()->settings; //X2Model::model('Admin')->findByPk(1);
         Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/manageCredentials.js');
         if(isset($_POST['Admin'])){
             $admin->attributes = $_POST['Admin'];
@@ -1987,7 +1987,7 @@ class AdminController extends Controller {
      */
     public function actionToggleDefaultLogo(){
 
-        $adminProf = Yii::app()->params->adminProfile;
+        $adminProf = Yii::app()->settingsProfile;
         $logo = Media::model()->findByAttributes(array('associationId' => $adminProf->id, 'associationType' => 'logo'));
         if(!isset($logo)){
 
@@ -2690,6 +2690,7 @@ class AdminController extends Controller {
                 "id",
                 "assignedTo",
                 "name",
+                "nameId",
                 "description",
                 "createDate",
                 "lastUpdated",
@@ -3496,7 +3497,7 @@ class AdminController extends Controller {
      * not to make code modifications.
      */
     public function actionPublicInfo(){
-        $admin = &Yii::app()->params->admin;
+        $admin = &Yii::app()->settings;
         if(isset($_POST['Admin'])){
             $admin->attributes = $_POST['Admin'];
             if($admin->save()){
@@ -3721,7 +3722,7 @@ class AdminController extends Controller {
      * This method controls the update interval setting for the application.
      */
     public function actionUpdaterSettings(){
-        $admin = &Yii::app()->params->admin;
+        $admin = &Yii::app()->settings;
         // Save new updater cron settings in crontab
         $cf = new CronForm;
         $cf->jobs = array(
@@ -3874,6 +3875,10 @@ class AdminController extends Controller {
 
     /**
      * Function written by Matthew to display a tree-like hierarchy of the roles
+     * Legend:
+     *  blue: roles (type 0)
+     *  white: tasks (type 1)
+     *  red: actions (type 2)
      */
     public function actionAuthGraph(){
 
@@ -4018,6 +4023,10 @@ class AdminController extends Controller {
         if($app->params->hasProperty('admin')){
             if($app->params->admin->hasProperty('emailFromAddr'))
                 $email = $app->params->admin->emailFromAddr;
+        } else if($app->hasProperty('settings')) {
+            if($app->settings->hasProperty('emailFromAddr')){
+                $email = $app->settings->emailFromAddr;
+            }
         }
         $inAction = @is_subclass_of($this->action, 'CAction');
         if($inAction){

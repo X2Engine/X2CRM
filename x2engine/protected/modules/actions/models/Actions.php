@@ -112,6 +112,20 @@ class Actions extends X2Model {
         }
     }
 
+    public function getAttribute($name, $renderFlag = false){
+        if ($name === 'actionDescription') {
+            $model = ActionText::model ()->findByAttributes (
+                array (
+                    'actionId' => $this->id
+                ));
+            if ($model) return $model->text;
+        } else {
+            return parent::getAttribute ($name, $renderFlag);
+        }
+        return null;
+    }
+
+
     /**
      * Fixes up record association, parses dates (since this doesn't use {@link X2Model::setX2Fields()})
      * @return boolean whether or not to save

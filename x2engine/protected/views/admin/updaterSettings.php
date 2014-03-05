@@ -111,8 +111,8 @@
                     '{wikilink}' => CHtml::link(Yii::t('admin','The X2Engine Update Guide'),'http://wiki.x2engine.com/wiki/Software_Updates_and_Upgrades#Performing_.22Offline.22_Updates')
                 )));
                 echo CHtml::tag('p',array(),Yii::t('admin','Links you will need:'));
-                $edition = Yii::app()->params->admin->edition;
-                $uniqueId = Yii::app()->params->admin->unique_id;
+                $edition = Yii::app()->settings->edition;
+                $uniqueId = Yii::app()->settings->unique_id;
                 $this->scenario = 'update';
                 ?>
                 <ul>

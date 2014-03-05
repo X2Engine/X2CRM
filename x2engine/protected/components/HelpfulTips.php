@@ -51,7 +51,7 @@ class HelpfulTips extends X2Widget {
 	 */
 	public function run() {
             //opensource or pro
-            $edition = yii::app()->params->admin->edition;
+            $edition = yii::app()->settings->edition;
             //True or False
             $admin = Yii::app()->params->isAdmin;
             //Check user type and editon to deliever an appropriate tip

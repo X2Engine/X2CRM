@@ -26,7 +26,7 @@ CREATE TABLE x2_quotes(
     invoiceCreateDate  BIGINT,
     invoiceIssuedDate  BIGINT,
     invoicePayedDate   BIGINT,
-    template           INT DEFAULT NULL,
+    template           VARCHAR(250) DEFAULT NULL,
     total              DECIMAL(18,2) DEFAULT 0.0,
     subtotal           DECIMAL(18,2) DEFAULT 0.0,
     UNIQUE(nameId),

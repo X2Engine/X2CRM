@@ -129,7 +129,11 @@ class ExportFixtureCommand extends CConsoleCommand {
 			$aliasPrompt = $this->confirm('Prompt for row aliases?');
 		}
 
-		$records = Yii::app()->db->createCommand()->select($columns)->from($tableName)->where($range)->queryAll();
+		$records = Yii::app()->db->createCommand()
+            ->select($columns)
+            ->from($tableName)
+            ->where($range)
+            ->queryAll();
 		$fileCont = "<?php\nreturn array(\n";
 		$aliases = array();
 		foreach ($records as $index => $record) {

@@ -137,8 +137,8 @@ class InlineQuotes extends X2Widget {
 		$region = Yii::app()->getLocale()->getId();
 
         // Set up the new create form:
-        Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/inlineQuotes.js', CClientScript::POS_HEAD);
-        $quotesAssetsUrl = Yii::app()->assetManager->publish(Yii::getPathOfAlias('application.modules.quotes.assets'), false, -1, true);
+        $quotesAssetsUrl = $this->module->assetsUrl;
+        Yii::app()->clientScript->registerScriptFile($quotesAssetsUrl.'/js/inlineQuotes.js', CClientScript::POS_HEAD);
         Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsMain.css');
         Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsWrite.css');
         Yii::app()->clientScript->registerCoreScript('jquery.ui');
@@ -147,7 +147,7 @@ class InlineQuotes extends X2Widget {
 
         //$this->contact = Contacts::model()->findByPk($this->contactId);
         $iqConfig = array(
-                'contact' => ($this->contact instanceof Contacts) ? $this->contact->name : '',
+                'contact' => ($this->contact instanceof Contacts) ? CHtml::encode($this->contact->name) : '',
                 'account' => $this->account,
                 'sendingQuote' => false,
                 'lockedMessage' => Yii::t('quotes','This quote is locked. Are you sure you want to update this quote?'),
@@ -158,7 +158,7 @@ class InlineQuotes extends X2Widget {
                     array(
                         '/quotes/quotes/viewInline',
                         'recordId' => $this->recordId,
-                        'recordType' => $this->modelName,
+                        'recordType' => CHtml::encode($this->modelName),
                     )
                 ),
                 'createAction' => CHtml::normalizeUrl(
@@ -209,11 +209,6 @@ class InlineQuotes extends X2Widget {
      * @return array array of related quotes models
      */
     public function getRelatedQuotes ($invoices=false) {
-        if ($this->contact instanceof Contacts) {
-            $associatedContactCondition = "quotes.associatedContacts=".$this->recordId." AND ";
-        } else {
-            $associatedContactCondition = "";
-        }
 
         if ($invoices) {
             $invoiceCondition = "type='invoice'";
@@ -227,7 +222,7 @@ class InlineQuotes extends X2Widget {
         $quotes = Yii::app()->db->createCommand ()
             ->select ('quotes.id')
             ->from ('x2_quotes as quotes, x2_relationships as relationships')
-            ->where ($associatedContactCondition."(".$invoiceCondition.") AND ".
+            ->where ("(".$invoiceCondition.") AND ".
                 "((relationships.firstType='Quote' AND ".
                   "relationships.secondType=:recordType AND relationships.secondId=:recordId) OR ".
                 "(relationships.secondType='Quote' AND ".
@@ -276,32 +271,6 @@ class InlineQuotes extends X2Widget {
 
 		// get a list of products for adding to quotes
 		$products = Product::model()->findAll(array('select'=>'id, name'));
-		// $productNames = array(0 => '');
-		// foreach($products as $product) {
-			// $productNames[$product->id] = $product->name;
-		// }	
-		
-		//$quotes = Quote::model()->findAll("associatedContacts=:associatedContacts AND (type IS NULL OR type!='invoice')", array(':associatedContacts'=>$this->contactId));
-		/*$quotes = Quote::model()->findAll(
-            "associatedContacts=:associatedContacts AND (type IS NULL OR type!='invoice')", array(':associatedContacts'=>$this->contactId));*/
-
-        /*if ($this->contact instanceof Contacts) {
-            $associatedContactCondition = "x2_quotes.associatedContacts=".$this->contactId." AND ";
-        } else {
-            $associatedContactCondition = "";
-        }
-
-        $quotes = Yii::app()->db->createCommand ()
-            ->select ('*')
-            ->from ('x2_quotes')
-            ->join (
-                'x2_quotes.id=x2_relationships.firstId AND x2_relationships.firstType=qutoes OR '.
-                'x2_quotes.id=x2_relationships.secondId AND x2_relationships.secondType=qutoes')
-            ->where ($associatedContactCondition."(type IS NULL OR type!='invoice') AND ".
-                "((x2_relationships.firstType=quotes AND x2_relationships.secondId=:recordId) OR ".
-                 "(x2_relationships.secondType=quotes AND x2_relationships.firstId=:recordId))",
-                 array (':recordId' => $this->contactId))
-            ->queryAll ();*/
 
         $quotes = $this->getRelatedQuotes ();
         
@@ -360,7 +329,6 @@ class InlineQuotes extends X2Widget {
 		echo '<span style="font-weight:bold; font-size: 1.5em;">'. Yii::t('quotes','Invoices') .'</span>';
 		echo '<br /><br />';
 		
-		/*$quotes = Quote::model()->findAll("associatedContacts=:associatedContacts AND type='invoice'", array(':associatedContacts'=>$this->contactId));*/
         $quotes = $this->getRelatedQuotes (true);
 		
 		foreach($quotes as $quote) {
@@ -406,7 +374,6 @@ class InlineQuotes extends X2Widget {
 				'modelName'=>$this->modelName,
 				'dataProvider'=>$dataProvider,
 				'products'=>$products,
-				// 'productNames'=>$productNames,
 				'orders'=>$quoteProducts,
 				'total'=>$total,
                 'canDo' => $canDo,

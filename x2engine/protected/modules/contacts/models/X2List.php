@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * This is the model class for table "x2_contact_lists".
+ * This is the model class for table "x2_lists".
  *
  * @package application.models
  */
@@ -543,8 +543,9 @@ class X2List extends X2Model {
 		}
 
 		$lstTbl = X2ListItem::model()->tableName();
-		$count = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '. $lstTbl .' WHERE listId = :listid AND '. $type .' > 0')
-				->queryScalar(array('listid'=>$this->id));
+		$count = Yii::app()->db->createCommand(
+            'SELECT COUNT(*) FROM '. $lstTbl .' WHERE listId = :listid AND '.$type.' > 0')
+            ->queryScalar(array('listid'=>$this->id));
 		return $count;
 	}
 
@@ -563,6 +564,7 @@ class X2List extends X2Model {
 
 		$count=0;
 		$values = '';
+        $params = array ();
 		if ($this->type == 'dynamic') {
 			//get all contact ids, generate sql to create list items from them
 			$itemIds = $this->queryCommand()->select('id')->queryColumn();
@@ -575,17 +577,23 @@ class X2List extends X2Model {
 			//generate sql to replicate list items
 			foreach($this->listItems as $listItem) {
 				if ($count !== 0) $values .= ',';
-				$values .= '('. (empty($listItem->emailAddress) ? 'NULL' : "'".$listItem->emailAddress."'") .','
-					. (empty($listItem->contactId) ? 'NULL' : $listItem->contactId) .','. $dup->id .','. $listItem->unsubscribed .')';
+                if (!empty($listItem->emailAddress)) {
+                    $params = array_merge ($params, array (':email' => $listItem->emailAddress));
+                }
+				$values .= '('. (empty($listItem->emailAddress) ? 
+                    'NULL' : 
+                    ":email") .','.(empty($listItem->contactId) ? 
+                        'NULL' : 
+                        $listItem->contactId) .','. $dup->id .','. $listItem->unsubscribed .')';
 				$count++;
 			}
 		}
-		$sql = 'INSERT into x2_list_items (emailAddress, contactId, listId, unsubscribed) VALUES ' . $values . ';';
+		$sql = 'INSERT into x2_list_items (emailAddress, contactId, listId, unsubscribed) VALUES '.$values.';';
 		$dup->count = $count;
 
 		$transaction = Yii::app()->db->beginTransaction();
 		try {
-			Yii::app()->db->createCommand($sql)->execute();
+			Yii::app()->db->createCommand($sql)->execute($params);
 			if (!$dup->save()) throw new Exception(array_shift(array_shift($dup->getErrors())));
 			$transaction->commit();
 		} catch (Exception $e) {
@@ -606,10 +614,12 @@ class X2List extends X2Model {
 
 		$ids = (array)$ids;
 
+        $parameters = AuxLib::bindArray ($ids, 'addIds');
 		$existingIds = Yii::app()->db->createCommand()
 			->select('contactId')
 			->from('x2_list_items')
-			->where('listId='.$this->id.' AND contactId IN('.implode(',',$ids).')')		// intersection of $ids and the IDs already in this list
+			->where('listId='.$this->id.' AND contactId IN('.implode (',',array_keys ($parameters)).')',
+                $parameters) // intersection of $ids and the IDs already in this list
 			->queryColumn();
 
 		foreach($ids as $id) {

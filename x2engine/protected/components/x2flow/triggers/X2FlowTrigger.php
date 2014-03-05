@@ -418,9 +418,10 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	}
 
 	/**
-	 * @param mixed $subject the value being analyzed
+	 * @param mixed $subject the value being analyzed (specified in config menu)
 	 * @param string $operator the type of comparison to be used
-	 * @param mixed $value the value to compare $subject with (if applicable)
+	 * @param mixed $value if applicable, the value to compare $subject with (value of model 
+     *  attribute)
 	 * @return boolean
 	 */
 	public static function evalComparison($subject,$operator,$value=null) {

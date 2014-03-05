@@ -4,7 +4,7 @@
  * @package application.modules.quotes
  * @author David Visbal
  */
-class QuotesModule extends CWebModule {
+class QuotesModule extends X2WebModule {
 
   private $_assetsUrl = null;
 

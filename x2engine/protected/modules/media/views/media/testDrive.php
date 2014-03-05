@@ -1,5 +1,5 @@
 <?php
-$admin = Yii::app()->params->admin;
+$admin = Yii::app()->settings;
 require_once 'protected/extensions/google-api-php-client/src/Google_Client.php';
 require_once 'protected/extensions/google-api-php-client/src/contrib/Google_DriveService.php';
 ;

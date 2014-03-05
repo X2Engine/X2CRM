@@ -2981,6 +2981,7 @@ X2Chart.prototype.applyDateRange = function (dateRange) {
 			var date = new Date ();
             var M = date.getMonth () - 3;
             var Y = date.getFullYear ();
+            Y = M < 0 ? Y - 1 : Y;
             M = M < 0 ? 12 + M : M;
 			var startDate = (new Date (Y, M, 1, 0, 0, 0, 0));
 			$(fromDatepicker).datepicker ('setDate', startDate);
@@ -2990,6 +2991,7 @@ X2Chart.prototype.applyDateRange = function (dateRange) {
 			var date = new Date ();
             var M = date.getMonth () - 6;
             var Y = date.getFullYear ();
+            Y = M < 0 ? Y - 1 : Y;
             M = M < 0 ? 12 + M : M;
 			var startDate = (new Date (Y, M, 1, 0, 0, 0, 0));
 			$(fromDatepicker).datepicker ('setDate', startDate);

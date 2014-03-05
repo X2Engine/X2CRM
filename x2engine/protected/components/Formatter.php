@@ -570,15 +570,12 @@ class Formatter {
      * a regular expression.
      */
     private static function getSafeWords(){
-        function encapsulateWords($word){
-            return "\s".$word;
-        }
         $safeWords = array(
             'echo',
             'time',
             'return',
         );
-        $safeWords = array_map('encapsulateWords',$safeWords);
+        $safeWords = array_map (function ($word) { return '\s'.$word; }, $safeWords);
         return implode('|',$safeWords);
     }
 

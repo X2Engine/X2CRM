@@ -119,7 +119,11 @@ class X2Calendar extends CActiveRecord
 		if(Yii::app()->params->isAdmin) { // admin sees all
 			$groups = Yii::app()->db->createCommand()->select()->from('x2_groups')->queryAll();			
 		} else {
-			$groups = Yii::app()->db->createCommand()->select('x2_groups.id, x2_groups.name')->from('x2_group_to_user')->join('x2_groups', 'groupId = x2_groups.id')->where('userId='.Yii::app()->user->id)->queryAll();
+			$groups = Yii::app()->db->createCommand()
+                ->select('x2_groups.id, x2_groups.name')
+                ->from('x2_group_to_user')
+                ->join('x2_groups', 'groupId = x2_groups.id')
+                ->where('userId='.Yii::app()->user->id)->queryAll();
 		}
 		
 		foreach($groups as $group) {
@@ -158,7 +162,7 @@ class X2Calendar extends CActiveRecord
 		require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
 		date_default_timezone_set($timezone);
 
-		$admin = Yii::app()->params->admin;
+		$admin = Yii::app()->settings;
 		if($admin->googleIntegration) {
 			$client = new Google_Client();
 			$client->setClientId($admin->googleClientId);

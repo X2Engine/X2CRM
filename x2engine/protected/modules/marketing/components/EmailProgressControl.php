@@ -56,7 +56,7 @@ class EmailProgressControl extends X2Widget {
 
     public function getListItems() {
         if(!isset($this->_listItems,$this->_sentCount)) {
-            $allListItems = CampaignMailingBehavior::deliverableItems($this->campaign->listId);
+            $allListItems = CampaignMailingBehavior::deliverableItems($this->campaign->list->id);
             $this->_listItems = array();
             $this->_sentCount = 0;
             foreach($allListItems as $listItem) {
@@ -78,7 +78,7 @@ class EmailProgressControl extends X2Widget {
 
     public function init() {
         parent::init();
-        $admin = Yii::app()->params->admin;
+        $admin = Yii::app()->settings;
         $totalEmails = count($this->listItems) + $this->sentCount;
 
         Yii::app()->clientScript->registerCssFile($this->module->assetsUrl.'/css/emailProgressControl.css');

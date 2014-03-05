@@ -48,7 +48,7 @@ class ImportExportBehavior extends CBehavior {
      * @param type $file
      */
     public function sendFile($file){
-        if(!preg_match('/\.\./', $file)){
+        if(!preg_match('/(\.\.|\/)/', $file)){
             $file = Yii::app()->file->set($this->safePath($file));
             $file->send();
         }

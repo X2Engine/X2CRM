@@ -52,7 +52,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/email
 
 Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
 ?>
-<div class="page-title icon contacts"><h2><span class="no-bold"><?php echo Yii::t('contacts','Share Contact');?>:</span> <?php echo $model->firstName." ".$model->lastName;?></h2></div>
+<div class="page-title icon contacts"><h2><span class="no-bold"><?php echo Yii::t('contacts','Share Contact');?>:</span> <?php echo CHtml::encode($model->firstName." ".$model->lastName);?></h2></div>
 <?php
 if(!empty($status)) {
 	$index = array_search('200',$status);
@@ -81,7 +81,7 @@ $form = $this->beginWidget('CActiveForm', array(
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
 ?>
-<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo $model->firstName.' '.$model->lastName; ?></b></h2>
+<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo CHtml::encode($model->firstName.' '.$model->lastName); ?></b></h2>
 <?php
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts'));
 $this->endWidget(); ?>

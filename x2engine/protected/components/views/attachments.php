@@ -171,7 +171,7 @@ echo $script;
         if ($mobile) 
             echo "</div>";
         echo "</div>";
-        if(Yii::app()->params->admin->googleIntegration){
+        if(Yii::app()->settings->googleIntegration){
             $auth = new GoogleAuthenticator();
             if($auth->getAccessToken()){
                 echo "<div class='row'>";

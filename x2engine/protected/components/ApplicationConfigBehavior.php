@@ -34,6 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+// Imports that are required by properties/methods of this behavior:
+Yii::import('application.models.Admin');
+Yii::import('application.components.util.FileUtil');
+
 /**
  * ApplicationConfigBehavior is a behavior for the application. It loads
  * additional config paramenters that cannot be statically written in config/main
@@ -41,6 +45,7 @@
  *
  * @property string $absoluteBaseUrl (read-only) the base URL of the web
  *  application, independent of whether there is a web request.
+ * @property string $edition The "edition" of the software.
  * @property string $externalAbsoluteBaseUrl (read-only) the absolute base url
  *  of the application to use when creating URLs to be viewed publicly
  * @property string $externalWebRoot (read-only) The absolute base webroot URL
@@ -49,6 +54,7 @@
  * @property integer|bool $locked Integer (timestamp) if the application is
  *  locked; false otherwise.
  * @property string $lockFile Path to the lock file
+ * @property Admin $settings The admin model containing settings for the app.
  * @property integer $suID (read-only) substitute user ID in the case that no
  *  user session is available.
  * @property User $suModel Substitute web user model in the case that no user
@@ -57,10 +63,22 @@
  */
 class ApplicationConfigBehavior extends CBehavior {
 
-    
+    private static $_editions = array(
+        'opensource' => array('pro'=>0,'pla'=>0),
+        'pro' => array('pro'=>'pro','pla'=>0),
+        'pla' => array('pro'=>'pro','pla'=>'pla'),
+    );
+
     private $_absoluteBaseUrl;
+    private $_edition;
     private $_externalAbsoluteBaseUrl;
     private $_externalWebRoot;
+    /**
+     * Signifies whether the CryptUtil method has been initialized already
+     * @var bool
+     */
+    private $_cryptInit = false;
+    private $_settings;
     
     /**
      * If the application is locked, this will be an integer corresponding to
@@ -114,8 +132,10 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     public function getJSGlobalsSetupScript ($profile=null) {
         if ($profile) {
-            $where = 'fileName = "'.$profile->notificationSound.'"';
-            $uploadedBy = $this->owner->db->createCommand()->select('uploadedBy')->from('x2_media')->where($where)->queryRow();
+            $where = 'fileName = :notifSound';
+            $params = array (':notifSound' => $profile->notificationSound);
+            $uploadedBy = $this->owner->db->createCommand()
+                ->select('uploadedBy')->from('x2_media')->where($where, $params)->queryRow();
             if(!empty($uploadedBy['uploadedBy'])){
                 $notificationSound = $this->owner->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
             }else{
@@ -140,7 +160,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 x2 = {};
             }
             x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
-            x2.notifUpdateInterval = '.$this->owner->params->admin->chatPollTime.';
+            x2.notifUpdateInterval = '.$this->settings->chatPollTime.';
         ';
     }
 
@@ -163,9 +183,13 @@ class ApplicationConfigBehavior extends CBehavior {
                 Yii::import('application.components.Formatter');
                 Yii::import('application.components.JSONEmbeddedModelFieldsBehavior');
                 Yii::import('application.components.TransformedFieldStorageBehavior');
+                Yii::import('application.components.EncryptedFieldsBehavior');
                 Yii::import('application.components.permissions.*');
                 if(!$this->owner->user->getIsGuest())
-                    $profData = $this->owner->db->createCommand()->select('timeZone, language')->from('x2_profile')->where('id='.$this->owner->user->getId())->queryRow(); // set the timezone to the admin's
+                    $profData = $this->owner->db->createCommand()
+                        ->select('timeZone, language')
+                        ->from('x2_profile')
+                        ->where('id='.$this->owner->user->getId())->queryRow(); // set the timezone to the admin's
                 if(isset($profData)){
                     if(isset($profData['timeZone'])){
                         $timezone = $profData['timeZone'];
@@ -187,7 +211,6 @@ class ApplicationConfigBehavior extends CBehavior {
                 Yii::import('application.models.Admin');
                 $this->cryptInit();
                 
-                $this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
                 // Yii::import('application.models.*');
                 // foreach(scandir('protected/modules') as $module){
                 // if(file_exists('protected/modules/'.$module.'/register.php'))
@@ -210,7 +233,6 @@ class ApplicationConfigBehavior extends CBehavior {
         // Yii::import('application.components.EButtonColumnWithClearFilters');
         // $this->owner->messages->forceTranslation = true;
         $this->owner->messages->onMissingTranslation = array(new TranslationLogger, 'log');
-        $this->owner->params->admin = CActiveRecord::model('Admin')->findByPk(1);
         $notGuest = True;
         $uname = 'admin'; // Will always be admin in a console command
         if(!$noSession){
@@ -266,7 +288,7 @@ class ApplicationConfigBehavior extends CBehavior {
         $this->owner->params->adminProfile = $adminProf;
 
         // set currency
-        $this->owner->params->currency = $this->owner->params->admin->currency;
+        $this->owner->params->currency = $this->settings->currency;
 
         // set language
         if(!empty($this->owner->params->profile->language))
@@ -300,7 +322,7 @@ class ApplicationConfigBehavior extends CBehavior {
             else
                 $this->owner->params->edition = 'opensource';
         } else{
-            $this->owner->params->edition = $this->owner->params->admin->edition;
+            $this->owner->params->edition = $this->settings->edition;
         }
 
         if($this->owner->params->edition === 'pro'){
@@ -377,14 +399,15 @@ class ApplicationConfigBehavior extends CBehavior {
      * on {@link EncryptedFieldsBehavior} can also be instantiated.
      */
     public function cryptInit(){
-        Yii::import('application.components.EncryptedFieldsBehavior');
-        $key = $this->owner->basePath.'/config/encryption.key';
-        $iv = $this->owner->basePath.'/config/encryption.iv';
-        if(extension_loaded('openssl') && extension_loaded('mcrypt') && file_exists($key) && file_exists($iv)){
-            EncryptedFieldsBehavior::setup($key, $iv);
-        }else{
-            // Use unsafe method with encryption
-            EncryptedFieldsBehavior::setupUnsafe();
+        if(!$this->_cryptInit){
+            $key = $this->owner->basePath.'/config/encryption.key';
+            $iv = $this->owner->basePath.'/config/encryption.iv';
+            if(extension_loaded('openssl') && extension_loaded('mcrypt') && file_exists($key) && file_exists($iv)){
+                EncryptedFieldsBehavior::setup($key, $iv);
+            }else{
+                // Use unsafe method with encryption
+                EncryptedFieldsBehavior::setupUnsafe();
+            }
         }
     }
 
@@ -455,9 +478,45 @@ class ApplicationConfigBehavior extends CBehavior {
         return $this->_absoluteBaseUrl;
     }
 
+    /**
+     * Getter for {@link admin}
+     */
+    public function getSettings() {
+        if(!isset($this->_settings)) {
+            $this->cryptInit();
+            $this->_settings = CActiveRecord::model('Admin')->findByPk(1);
+        }
+        return $this->_settings;
+    }
+
+    /**
+     * Getter for {@link edition}
+     *
+     * @return string
+     */
+    public function getEdition() {
+        if(!isset($this->_edition)){
+            if(YII_DEBUG){
+                switch(PRO_VERSION) {
+                    case 1:
+                        $this->_edition = 'pro';
+                        break;
+                    case 2:
+                        $this->_edition = 'pla';
+                        break;
+                    default:
+                        $this->_edition = 'opensource';
+                }
+            } else {
+                $this->_edition = $this->settings->edition;
+            }
+        }
+        return $this->_edition;
+    }
+
     public function getExternalAbsoluteBaseUrl(){
         if(!isset($this->_externalAbsoluteBaseUrl)){
-            $eabu = $this->owner->params->admin->externalBaseUri;
+            $eabu = $this->settings->externalBaseUri;
             $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.(empty($eabu) ? $this->owner->baseUrl : $eabu);
         }
         return $this->_externalAbsoluteBaseUrl;
@@ -470,7 +529,7 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     public function getExternalWebRoot(){
         if(!isset($this->_externalWebRoot)){
-            $eabu = $this->owner->params->admin->externalBaseUrl;
+            $eabu = $this->settings->externalBaseUrl;
             $this->_externalWebRoot = $eabu ? $eabu : $this->owner->request->getHostInfo();
         }
         return $this->_externalWebRoot;
@@ -509,7 +568,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 $this->_isInSession = true;
             }else{
                 if(!isset(Yii::app()->user) || Yii::app()->user->isGuest){
-                    $app->params->noSession=true;
+                    $app->params->noSession = true;
                 }
                 $this->_isInSession = !$app->params->noSession;
             }
@@ -587,6 +646,7 @@ class ApplicationConfigBehavior extends CBehavior {
         Yii::import('application.controllers.X2Controller');
         Yii::import('application.controllers.x2base');
         Yii::import('application.components.*');
+        Yii::import('application.components.filters.*');
         Yii::import('application.components.util.*');
         Yii::import('application.components.permissions.*');
         Yii::import('application.modules.media.models.Media');
@@ -607,7 +667,11 @@ class ApplicationConfigBehavior extends CBehavior {
             ));
             if(file_exists($regScript)){
                 $arr[$module] = ucfirst($module);
-                Yii::import("application.modules.$module.models.*");
+                $thisModulePath = "application.modules.$module";
+                Yii::import("$thisModulePath.models.*");
+                if(is_dir(Yii::getPathOfAlias($thisModulePath).DIRECTORY_SEPARATOR.'components')) {
+                    Yii::import("$thisModulePath.components.*");
+                }
             }
         }
         foreach($arr as $key => $module){

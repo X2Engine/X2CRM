@@ -109,7 +109,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 														if(!empty($model->associationId) && is_numeric($model->associationId) && $modelName=X2Model::getModelName($model->associationType)) {
 															$linkModel = X2Model::model($modelName)->findByPk($model->associationId);
 															if(isset($linkModel)){
-                                                                echo CHtml::link($linkModel->name, array('/'.$model->associationType.'/'.$model->associationId));
+                                                                echo CHtml::link(CHtml::encode($linkModel->name), array('/'.$model->associationType.'/'.$model->associationId));
                                                             }else
 																echo '';
 														} else {
@@ -176,7 +176,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 										<div class="formItem leftLabel">
                                             <label><?php echo Yii::t('media', 'Description'); ?></label>
 											<div class="formInputBox" style="height: auto;">
-												<?php echo $model->description; ?>
+												<?php echo CHtml::encode($model->description); ?>
 											</div>
 										</div>
 

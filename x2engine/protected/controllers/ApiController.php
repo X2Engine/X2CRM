@@ -160,8 +160,8 @@ class ApiController extends x2base {
      * Requests should be made of the following format:
      * www.[server].com/index.php/path/to/x2/index.php/api/create/model/[modelType]
      * With the model's attributes as $_POST data.  Furthermore, in the post array
-     * a valid username and encrypted password must be submitted under the indeces
-     * 'authUser' and 'authPassword' for the request to be authenticated.
+     * a valid username and API key must be submitted under the indices
+     * 'user' and 'userKey' for the request to be authenticated.
      */
     public function actionCreate(){
         // Get an instance of the respective model
@@ -235,7 +235,7 @@ class ApiController extends x2base {
                     $notif->createDate = time();
                     $notif->save();
 
-                    $to = Yii::app()->params->admin->webLeadEmail;
+                    $to = Yii::app()->settings->webLeadEmail;
                     $subject = "Web Lead Failure";
                     if(!Yii::app()->params->automatedTesting){
                         // Send notification of failure
@@ -244,8 +244,8 @@ class ApiController extends x2base {
                             $this->sendUserEmail(array('to' => array(array($to, 'X2Engine Administrator'))), $subject, $msg, null, $responderId);
                         }else{ // Using plain old PHP mail
                             $phpMail = $this->getPhpMailer();
-                            $fromEmail = Yii::app()->params->admin->emailFromAddr;
-                            $fromName = Yii::app()->params->admin->emailFromName;
+                            $fromEmail = Yii::app()->settings->emailFromAddr;
+                            $fromName = Yii::app()->settings->emailFromName;
                             $phpMail->AddReplyTo($fromEmail, $fromName);
                             $phpMail->SetFrom($fromEmail, $fromName);
                             $phpMail->Subject = $subject;
@@ -306,7 +306,6 @@ class ApiController extends x2base {
 	 * Gets a list of contacts.
 	 */
 	public function actionList() {
-		$accessLevel = $this->getAccessLevel('Contacts', $user);
 		$listId = $_POST['id'];
 		$list = X2List::model()->findByPk($listId);
 		if (isset($list)) {
@@ -359,7 +358,7 @@ class ApiController extends x2base {
 	 * URLs to use this function:
 	 * index.php/api/lookup/[model name]/[attribute]/[value]/...
 	 *
-	 * 'authUser' and 'authPassword' are required.
+	 * 'user' and 'userKey' are required.
 	 */
 	public function actionLookup() {
 		$attrs = $_POST;
@@ -485,7 +484,7 @@ class ApiController extends x2base {
 	 * index.php/api/update/model/[model name]/id/[record id]
 	 *
 	 * The attributes of the model should be submitted in the $_POST array along
-	 * with 'authUser' and 'authPassword' just as in create.
+	 * with 'user' and 'userKey' just as in create.
 	 */
 	public function actionUpdate() {
 		$model = $this->model;
@@ -520,7 +519,7 @@ class ApiController extends x2base {
 	 * URLs to use this function:
 	 * index.php/view/id/[record id]
 	 *
-	 * Include 'authUser' and 'authPassword' just like in create and update.
+	 * Include 'user' and 'userKey' just like in create and update.
 	 */
 	public function actionView() {
 		$this->_sendResponse(200,$this->model->attributes,true);

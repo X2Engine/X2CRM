@@ -431,7 +431,10 @@ Please click on the link below to create an account at X2Engine!
 
             $prof=ProfileChild::model()->findByAttributes(array('username'=>$model->username));
             $prof->delete();
-            Yii::app()->db->createCommand("DELETE FROM x2_events where user='".$model->username."' OR (type='feed' AND associationId=".$model->id.")")->execute();
+            Yii::app()->db->createCommand()
+                ->delete ('x2_events', 
+                    "user=:username OR (type='feed' AND associationId=".$model->id.")", 
+                    array (':username' => $model->username));
 			$model->delete();
 
 		} else

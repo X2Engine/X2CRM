@@ -65,15 +65,6 @@ class SiteController extends x2base {
         return true;
     }
 
-    public function behaviors(){
-        return array_merge(parent::behaviors(), array(
-                    'Updater' => array(
-                        'class' => 'application.components.UpdaterBehavior',
-                        'isConsole' => false,
-                    ),
-                ));
-    }
-
     public function accessRules(){
         return array(
             array('allow',
@@ -240,7 +231,7 @@ class SiteController extends x2base {
 
     public function actionGetTip(){
         //opensource or pro
-        $edition = yii::app()->params->admin->edition;
+        $edition = Yii::app()->settings->edition;
         //True or False
         $admin = Yii::app()->params->isAdmin;
         //Check user type and editon to deliever an appropriate tip
@@ -442,7 +433,7 @@ class SiteController extends x2base {
                 ));
         $res = "";
         foreach($content as $item){
-            $res .= $this->convertUrls($item->data)." ".CHtml::link('[x]', array('/site/deleteMessage', 'id' => $item->id, 'url' => $url)).'<br /><br />';
+            $res .= $this->convertUrls(CHtml::encode($item->data))." ".CHtml::link('[x]', array('/site/deleteMessage', 'id' => $item->id, 'url' => $url)).'<br /><br />';
         }
         if($res == ""){
             $res = Yii::t('app', "Feel free to enter some notes!");
@@ -1054,7 +1045,7 @@ class SiteController extends x2base {
         } else {
             $profile = Yii::app()->params->profile;
             if(Yii::app()->params->isAdmin){
-                $admin = &Yii::app()->params->admin;
+                $admin = &Yii::app()->settings;
                 if(Yii::app()->session['versionCheck'] == false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time()))
                     Yii::app()->session['alertUpdate'] = true;
                 else
@@ -1181,8 +1172,8 @@ class SiteController extends x2base {
                 }else{
                     $info = '';
                 }
-                if(!empty(Yii::app()->params->admin->emailFromAddr))
-                    $email = Yii::app()->params->admin->emailFromAddr;
+                if(!empty(Yii::app()->settings->emailFromAddr))
+                    $email = Yii::app()->settings->emailFromAddr;
                 else
                     $email = "";
                 $get = var_dump_to_string($_GET);
@@ -1236,8 +1227,8 @@ class SiteController extends x2base {
     public function actionBugReport(){
 
         $info = $this->phpinfo_array(true);
-        if(!empty(Yii::app()->params->admin->emailFromAddr))
-            $email = Yii::app()->params->admin->emailFromAddr;
+        if(!empty(Yii::app()->settings->emailFromAddr))
+            $email = Yii::app()->settings->emailFromAddr;
         else
             $email = "";
         $phpversion = phpversion();
@@ -1387,7 +1378,7 @@ class SiteController extends x2base {
             $ip = $this->getRealIp();
 
             // increment count on every session with this user/IP, to prevent brute force attacks using session_id spoofing or whatever
-            Yii::app()->db->createCommand('UPDATE x2_sessions SET status=status-1, lastUpdated=:time WHERE user=:name AND IP=:ip AND status BETWEEN -2 AND 0')
+            Yii::app()->db->createCommand('UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
                     ->bindValues(array(':time' => time(), ':name' => $model->username, ':ip' => $ip))
                     ->execute();
 
@@ -1430,10 +1421,16 @@ class SiteController extends x2base {
                 }
 
                 if($model->validate() && $model->login()){  // user successfully logged in
-                    $adminUser = X2Model::model('User')->findByPk(1);
-                    if(isset($adminUser) && $adminUser->username == Yii::app()->user->getName())
+                    // We're not using the isAdmin parameter of the application
+                    // here because isAdmin in this context hasn't been set yet.
+                    $isAdmin = Yii::app()->user->checkAccess('AdminIndex');
+                    if($isAdmin) {
+                        $this->attachBehavior('updaterBehavior', array(
+                            'class' => 'application.components.UpdaterBehavior',
+                            'isConsole' => false
+                        ));
                         $this->checkUpdates();   // check for updates if admin
-                    else
+                    } else
                         Yii::app()->session['versionCheck'] = true; // ...or don't
 
                     $session->status = 1;
@@ -1475,7 +1472,7 @@ class SiteController extends x2base {
         }
         require_once 'protected/components/GoogleAuthenticator.php';
         $auth = new GoogleAuthenticator();
-        if(Yii::app()->params->admin->googleIntegration && $token = $auth->getAccessToken()){
+        if(Yii::app()->settings->googleIntegration && $token = $auth->getAccessToken()){
             try{
                 $user = $auth->getUserInfo($token);
                 $email = filter_var($user->email, FILTER_SANITIZE_EMAIL);
@@ -1575,8 +1572,8 @@ class SiteController extends x2base {
         $code = file_get_contents('php://input');
         require_once 'protected/extensions/google-api-php-client/src/Google_Client.php';
         $client = new Google_Client();
-        $client->setClientId(Yii::app()->params->admin->googleClientId);
-        $client->setClientSecret(Yii::app()->params->admin->googleClientSecret);
+        $client->setClientId(Yii::app()->settings->googleClientId);
+        $client->setClientSecret(Yii::app()->settings->googleClientSecret);
         $client->setRedirectUri('postmessage');
         $client->setAccessType('offline');
         $client->authenticate($code);
@@ -1593,7 +1590,7 @@ class SiteController extends x2base {
             return new Response($tokenInfo->error, 500);
         }
         // Make sure the token we got is for our app.
-        if($tokenInfo->audience != Yii::app()->params->admin->googleClientId){
+        if($tokenInfo->audience != Yii::app()->settings->googleClientId){
             return new Response(
                             "Token's client ID does not match app's.", 401);
         }
@@ -2059,9 +2056,9 @@ class SiteController extends x2base {
       protected function checkUpdates(){
       if(!file_exists($secImage = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','images',base64_decode(Yii::app()->params->updaterSecurityImage)))))
       return;
-      $i = Yii::app()->params->admin->unique_id;
+      $i = Yii::app()->settings->unique_id;
       $v = Yii::app()->params->version;
-      $e = Yii::app()->params->admin->edition;
+      $e = Yii::app()->settings->edition;
       $context = stream_context_create(array(
       'http' => array('timeout' => 4)  // set request timeout in seconds
       ));

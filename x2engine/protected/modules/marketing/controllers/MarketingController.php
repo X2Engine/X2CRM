@@ -263,7 +263,7 @@ class MarketingController extends x2base {
         try{
             if(!$list->save())
                 throw new Exception(array_shift(array_shift($list->getErrors())));
-            $campaign->listId = $list->id;
+            $campaign->listId = $list->nameId;
             if(!$campaign->save())
                 throw new Exception(array_shift(array_shift($campaign->getErrors())));
 
@@ -382,6 +382,7 @@ class MarketingController extends x2base {
      * @param integer $id ID of the campaign to launch
      */
     public function actionLaunch($id){
+        AuxLib::debugLogR ('launch');
         $campaign = $this->loadModel($id);
 
         if(!isset($campaign)){
@@ -421,7 +422,7 @@ class MarketingController extends x2base {
             $newList->type = 'campaign';
             $newList->save();
             $campaign->list = $newList;
-            $campaign->listId = $newList->id;
+            $campaign->listId = $newList->nameId;
         }
 
         $campaign->launchDate = time();
@@ -686,7 +687,7 @@ class MarketingController extends x2base {
      * Get the web tracker code to insert into your website
      */
     public function actionWebTracker(){
-        $admin = Yii::app()->params->admin;
+        $admin = Yii::app()->settings;
         if(isset($_POST['Admin']['enableWebTracker'], $_POST['Admin']['webTrackerCooldown'])){
             $admin->enableWebTracker = $_POST['Admin']['enableWebTracker'];
             $admin->webTrackerCooldown = $_POST['Admin']['webTrackerCooldown'];

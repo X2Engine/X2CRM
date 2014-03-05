@@ -355,18 +355,18 @@ class Profile extends CActiveRecord {
 
     public function getSignature($html = false){
 
-        $adminRule = Yii::app()->params->admin->emailUseSignature;
+        $adminRule = Yii::app()->settings->emailUseSignature;
         $userRule = $this->emailUseSignature;
         $signature = '';
 
         switch($adminRule){
-            case 'admin': $signature = Yii::app()->params->admin->emailSignature;
+            case 'admin': $signature = Yii::app()->settings->emailSignature;
                 break;
             case 'user':
                 switch($userRule){
                     case 'user': $signature = $signature = $this->emailSignature;
                         break;
-                    case 'admin': Yii::app()->params->admin->emailSignature;
+                    case 'admin': Yii::app()->settings->emailSignature;
                         break;
                     case 'group': $signature == '';
                         break;
@@ -592,7 +592,7 @@ class Profile extends CActiveRecord {
 
     public function syncActionToGoogleCalendar($action){
         try{ // catch google exceptions so the whole app doesn't crash if google has a problem syncing
-            $admin = Yii::app()->params->admin;
+            $admin = Yii::app()->settings;
             if($admin->googleIntegration){
                 if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId){
 //                    // Google Calendar Libraries
@@ -678,7 +678,7 @@ class Profile extends CActiveRecord {
 
     public function updateGoogleCalendarEvent($action){
         try{ // catch google exceptions so the whole app doesn't crash if google has a problem syncing
-            $admin = Yii::app()->params->admin;
+            $admin = Yii::app()->settings;
             if($admin->googleIntegration){
                 if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId){
 //                    // Google Calendar Libraries
@@ -762,7 +762,7 @@ class Profile extends CActiveRecord {
 
     public function deleteGoogleCalendarEvent($action){
         try{ // catch google exceptions so the whole app doesn't crash if google has a problem syncing
-            $admin = Yii::app()->params->admin;
+            $admin = Yii::app()->settings;
             if($admin->googleIntegration){
                 if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId){
                     // Google Calendar Libraries

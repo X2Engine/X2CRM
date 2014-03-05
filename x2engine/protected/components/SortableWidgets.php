@@ -225,7 +225,7 @@ class SortableWidgets extends CJuiWidget {
                                         $activityFeedWidgetBgColor).
                                 '</colorPicker>
                             </ul>';
-                    }elseif($class == "MediaBox" && Yii::app()->params->admin->googleIntegration){
+                    }elseif($class == "MediaBox" && Yii::app()->settings->googleIntegration){
                         $auth = new GoogleAuthenticator();
                         if($auth->getAccessToken()){
                             $header = 

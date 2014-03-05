@@ -72,7 +72,7 @@ foreach(array_keys($actionMenu) as $ind) {
 $this->actionMenu = $this->formatMenu($actionMenu);
 
 ?>
-<div class="page-title icon docs"><h2><span class="no-bold"><?php echo $title; ?></span> <?php echo CHtml::encode($model->name); ?></h2>
+<div class="page-title icon docs"><h2><span class="no-bold"><?php CHtml::encode($title); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 <?php
 if(!$model->isNewRecord){
     if($model->checkEditPermission() && $action != 'update'){

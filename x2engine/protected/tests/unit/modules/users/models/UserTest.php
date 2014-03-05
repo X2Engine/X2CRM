@@ -34,24 +34,43 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-/**
- * Handles list/grid view rendering.
- *
- * @package application.components
- */
-class X2AjaxHandler extends CFilter {
 
-    protected function preFilter($filterChain){
-        if (Yii::app()->request->getIsAjaxRequest() && isset($_GET["ajax"])) {
-            if($_GET['ajax']=='history'){
-                if(isset($_GET['id'])){
-                    $type = $filterChain->controller->id;
-                    $filterChain->controller->widget('History', array('associationType' => $type, 'associationId' => $_GET['id']));
-                    Yii::app()->end();
-                }
-            }
-        }
-        return true;
+Yii::import('application.models.*');
+Yii::import('application.modules.groups.models.*');
+Yii::import('application.modules.users.models.*');
+Yii::import('application.components.*');
+Yii::import('application.components.permissions.*');
+Yii::import('application.components.util.*');
+
+/**
+ *
+ * @package application.tests.unit.components
+ */
+class UserTest extends CDbTestCase {
+
+    public $fixtures = array (
+        'users' => 'User',
+        'groups' => array ('Groups', '_1'),
+        'groupToUser' => array ('GroupToUser', '_2'),
+    );
+
+    public function testAfterDelete () {
+        $user = User::model ()->findByPk ('2');
+        print ('id of user to delete: ');
+        print ($user->id);
+        
+        // assert that group to user records exist for this user
+        $this->assertTrue (
+            sizeof (GroupToUser::model ()->findByAttributes (array ('userId' => $user->id))) > 0);
+        $user->delete ();
+
+        // assert that group to user records were deleted
+        $this->assertTrue (
+            sizeof (
+                GroupToUser::model ()->findByAttributes (array ('userId' => $user->id))) === 0);
+
     }
+
 }
+
 ?>

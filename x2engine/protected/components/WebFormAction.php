@@ -79,11 +79,18 @@ class WebFormAction extends CAction {
 
     
 
-    private function handleWebleadFormSubmission ($model, $extractedParams) {
+    private function handleWebleadFormSubmission (X2Model $model, $extractedParams) {
         $newRecord = $model->isNewRecord;
         if(isset($_POST['Contacts'])) {
             $model->createEvent = false;
             $model->setX2Fields($_POST['Contacts'], true);
+            // Extra sanitizing
+            $p = Fields::getPurifier();
+            foreach($model->attributes as $name=>$value) {
+                if($name != $model->primaryKey() && !empty($value)) {
+                    $model->$name = $p->purify($value);
+                }
+            }
             $now = time();
 
             //require email field, check format
@@ -269,6 +276,14 @@ class WebFormAction extends CAction {
 
             
 
+            // Extra sanitizing
+            $p = Fields::getPurifier();
+            foreach($model->attributes as $name=>$value) {
+                if($name != $model->primaryKey() && !empty($value)) {
+                    $model->$name = $p->purify($value);
+                }
+            }
+
             $contact = Contacts::model()->findByAttributes(array('email' => $email));
 
             if(isset($email) && $email) {
@@ -352,7 +367,7 @@ class WebFormAction extends CAction {
                             '{casenumber}. One of our Technical Analysts will contact you shortly.',
                             array('{casenumber}' => $model->id));
 
-                        $emailBody = Yii::app()->params->admin->serviceCaseEmailMessage;
+                        $emailBody = Yii::app()->settings->serviceCaseEmailMessage;
                         if(isset($firstName))
                             $emailBody = preg_replace('/{first}/u', $firstName, $emailBody);
                         if(isset($lastName))
@@ -370,7 +385,7 @@ class WebFormAction extends CAction {
                         $emailBody .= '<img src="'.$this->controller->createAbsoluteUrl(
                             '/actions/actions/emailOpened', array('uid' => $uniqueId, 'type' => 'open')).'"/>';
 
-                        $emailSubject = Yii::app()->params->admin->serviceCaseEmailSubject;
+                        $emailSubject = Yii::app()->settings->serviceCaseEmailSubject;
                         if(isset($firstName))
                             $emailSubject = preg_replace('/{first}/u', $firstName, $emailSubject);
                         if(isset($lastName))
@@ -383,13 +398,13 @@ class WebFormAction extends CAction {
                             $emailSubject = preg_replace('/{description}/u', $description,
                                 $emailSubject);
                         $emailSubject = preg_replace('/{case}/u', $model->id, $emailSubject);
-                        if(Yii::app()->params->admin->serviceCaseEmailAccount != 
+                        if(Yii::app()->settings->serviceCaseEmailAccount != 
                            Credentials::LEGACY_ID) {
-                            $from = (int) Yii::app()->params->admin->serviceCaseEmailAccount;
+                            $from = (int) Yii::app()->settings->serviceCaseEmailAccount;
                         } else {
                             $from = array(
-                                'name' => Yii::app()->params->admin->serviceCaseFromEmailName,
-                                'address' => Yii::app()->params->admin->serviceCaseFromEmailAddress
+                                'name' => Yii::app()->settings->serviceCaseFromEmailName,
+                                'address' => Yii::app()->settings->serviceCaseFromEmailAddress
                             );
                         }
                         $useremail = array('to' => array(array(isset($fullName) ?

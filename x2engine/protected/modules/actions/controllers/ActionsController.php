@@ -55,7 +55,7 @@ class ActionsController extends x2base {
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array('index', 'view', 'create', 'createSplash', 'createInline', 'viewGroup', 'complete', //quickCreate
-                    'completeRedirect', 'update', 'quickUpdate', 'saveShowActions', 'viewAll', 'search', 'completeNew', 'parseType', 'getTerms', 'uncomplete', 'uncompleteRedirect', 'delete', 'shareAction', 'inlineEmail', 'publisherCreate'),
+                    'completeRedirect', 'update', 'quickUpdate', 'saveShowActions', 'viewAll', 'search', 'completeNew', 'parseType', 'uncomplete', 'uncompleteRedirect', 'delete', 'shareAction', 'inlineEmail', 'publisherCreate'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -360,7 +360,9 @@ class ActionsController extends x2base {
             $model->setX2Fields($_POST['Actions']);
 
             // format dates
-            $model->dueDate = Formatter::parseDateTime($_POST[get_class($model)]['dueDate']);
+            if (isset ($_POST['Actions']['dueDate']))
+                $model->dueDate = Formatter::parseDateTime($_POST['Actions']['dueDate']);
+
 
             if($_POST['SelectedTab'] == 'new-event'){
                 $model->disableBehavior('changelog');
@@ -441,9 +443,6 @@ class ActionsController extends x2base {
                 if(isset($event)){
                     $event->associationId = $model->id;
                     $event->save();
-                }
-                if(!(bool)$model->asa('changelog')){
-                    X2Flow::trigger('RecordCreateTrigger',array('model'=>$model));
                 }
                 $model->syncGoogleCalendar('create');
             }else{
@@ -568,7 +567,7 @@ class ActionsController extends x2base {
                         $notif2->save();
                     }
                 }
-                if(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->params->admin->userActionBackdating){
+                if(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->settings->userActionBackdating){
                     $events = X2Model::model('Events')->findAllByAttributes(array(
                         'associationType' => 'Actions',
                         'associationId' => $model->id,
@@ -964,21 +963,6 @@ class ActionsController extends x2base {
             }
         }else{
             echo '';
-        }
-    }
-
-    public function actionGetTerms(){
-        $type = $_GET['type'];
-        if($type != 'none' && ctype_alpha($type)){
-            $sql = 'SELECT id, name as value FROM x2_'.$type.' WHERE name LIKE :qterm ORDER BY name ASC';
-            $command = Yii::app()->db->createCommand($sql);
-            $qterm = $_GET['term'].'%';
-            $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
-            $result = $command->queryAll();
-            echo CJSON::encode($result);
-            exit;
-        }else{
-            echo array('0' => 'None');
         }
     }
 

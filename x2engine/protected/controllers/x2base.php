@@ -36,6 +36,7 @@
  *****************************************************************************************/
 
 /**
+ *
  * Base controller for all application controllers with CRUD operations
  *
  * @package application.controllers
@@ -78,11 +79,13 @@ abstract class x2base extends X2Controller {
 	 */
 	public function filters() {
 		return array(
-			//'accessControl', // perform access control for CRUD operations
-			'setPortlets', // performs widget ordering and show/hide on each page
             array(
-                'application.components.X2AjaxHandler',
+                'application.components.filters.X2AjaxHandlerFilter',
             ),
+            array(
+                'application.components.filters.FileUploadsFilter'
+            ),
+			'setPortlets', // performs widget ordering and show/hide on each page
 		);
 	}
 
@@ -1168,7 +1171,15 @@ abstract class x2base extends X2Controller {
             return;
         }
         if ($inputName == 'associationName') {
-            echo CHtml::activeDropDownList($model, 'associationType', array_merge(array('none' => Yii::t('app', 'None'), 'calendar' => Yii::t('calendar', 'Calendar')), Admin::getModelList()), array(
+            echo CHtml::activeDropDownList(
+                $model, 'associationType', 
+                array_merge(
+                    array(
+                        'none' => Yii::t('app', 'None'), 
+                        'calendar' => Yii::t('calendar', 'Calendar')), 
+                    Fields::getDisplayedModelNamesList()
+                ), 
+                array(
                 'ajax' => array(
                     'type' => 'POST', //request type
                     'url' => CController::createUrl('/actions/actions/parseType'), //url to call.

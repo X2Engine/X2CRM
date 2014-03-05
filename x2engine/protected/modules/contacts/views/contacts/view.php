@@ -43,7 +43,8 @@ Yii::app()->clientScript->registerScript('hints', '
 $result = Yii::app()->db->createCommand()
         ->select()
         ->from('x2_subscribe_contacts')
-        ->where(array('and', 'contact_id=:contact_id', 'user_id=:user_id'), array(':contact_id' => $model->id, 'user_id' => Yii::app()->user->id))
+        ->where(array('and', 'contact_id=:contact_id', 'user_id=:user_id'), 
+            array(':contact_id' => $model->id, 'user_id' => Yii::app()->user->id))
         ->queryAll();
 $subscribed = !empty($result); // if we got any results then user is subscribed
 
@@ -53,14 +54,33 @@ $menuItems = array(
     array('label' => Yii::t('contacts', 'Lists'), 'url' => array('lists')),
     array('label' => Yii::t('contacts', 'Create Contact'), 'url' => array('create')),
     array('label' => Yii::t('contacts', 'View')),
-    array('label' => Yii::t('contacts', 'Edit Contact'), 'url' => array('update', 'id' => $model->id)),
-    array('label' => Yii::t('contacts', 'Share Contact'), 'url' => array('shareContact', 'id' => $model->id)),
-//	array('label'=>Yii::t('contacts','View Relationships'),'url'=>'#', 'linkOptions'=>array('onclick'=>'toggleRelationshipsForm(); return false;')),
-    array('label' => Yii::t('contacts', 'Delete Contact'), 'url' => '#', 'linkOptions' => array('submit' => array('delete', 'id' => $model->id), 'confirm' => 'Are you sure you want to delete this item?')),
-    array('label' => Yii::t('app', 'Send Email'), 'url' => '#', 'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
-    array('label' => Yii::t('app', 'Attach A File/Photo'), 'url' => '#', 'linkOptions' => array('onclick' => 'toggleAttachmentForm(); return false;')),
-    array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
-    array('label' => Yii::t('quotes', ($subscribed ? 'Unsubscribe' : 'Subscribe')), 'url' => '#', 'linkOptions' => array('class' => 'x2-subscribe-button', 'onclick' => 'return subscribe($(this));', 'title' => Yii::t('contacts', 'Receive email updates every time information for {name} changes', array('{name}' => $model->firstName.' '.$model->lastName)))),
+    array(
+        'label' => Yii::t('contacts', 'Edit Contact'), 
+        'url' => array('update', 'id' => $model->id)),
+    array(
+        'label' => Yii::t('contacts', 'Share Contact'), 
+        'url' => array('shareContact', 'id' => $model->id)),
+//    array('label'=>Yii::t('contacts','View Relationships'),'url'=>'#', 'linkOptions'=>array('onclick'=>'toggleRelationshipsForm(); return false;')),
+    array(
+        'label' => Yii::t('contacts', 'Delete Contact'), 
+        'url' => '#', 'linkOptions' => array('submit' => array('delete', 'id' => $model->id),
+        'confirm' => 'Are you sure you want to delete this item?')),
+    array(
+        'label' => Yii::t('app', 'Send Email'), 'url' => '#',
+        'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
+    array(
+        'label' => Yii::t('app', 'Attach A File/Photo'), 'url' => '#',
+        'linkOptions' => array('onclick' => 'toggleAttachmentForm(); return false;')),
+    array(
+        'label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)',
+        'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
+    array(
+        'label' => Yii::t('quotes', ($subscribed ? 'Unsubscribe' : 'Subscribe')), 'url' => '#',
+        'linkOptions' => array(
+            'class' => 'x2-subscribe-button', 'onclick' => 'return subscribe($(this));',
+            'title' => Yii::t('contacts', 'Receive email updates every time information for {name} changes',
+                    array('{name}' => CHtml::encode($model->firstName.' '.$model->lastName)))
+        )),
 );
 $opportunityModule = Modules::model()->findByAttributes(array('name' => 'opportunities'));
 $accountModule = Modules::model()->findByAttributes(array('name' => 'accounts'));
@@ -130,7 +150,7 @@ if(!IS_ANDROID && !IS_IPAD){
 }
 ?>
 <div class="page-title icon contacts">
-    <h2><?php echo $model->name; ?></h2>
+    <h2><?php echo CHtml::encode($model->name); ?></h2>
     <?php $this->renderPartial('_vcrControls', array('model' => $model)); ?>
     <?php
     if(Yii::app()->user->checkAccess('ContactsUpdate', $authParams)){

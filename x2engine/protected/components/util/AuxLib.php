@@ -214,5 +214,20 @@ class AuxLib {
             $key, '', time() - 3600, dirname(Yii::app()->request->getScriptUrl()), $serverName);
     }
 
+    /**
+     * Generates parameter binding placeholders for each element in array
+     * @param array $arr parameter values to be bound in a SQL query
+     * @param string $prefix prefix to use for paramater names
+     * @return array parameter values indexed by parameter name
+     */
+    public static function bindArray ($arr, $prefix='X2') {
+        $placeholders = array ();
+        $arrLen = sizeof ($arr);
+        for ($i = 0; $i < $arrLen; ++$i) {
+            $placeholders[] = ':' . $prefix . $i;
+        }
+        return array_combine ($placeholders, $arr);
+    }
+
 
 }

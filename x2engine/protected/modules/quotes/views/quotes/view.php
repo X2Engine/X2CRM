@@ -119,7 +119,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 <div class="page-title icon quotes">
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-	<h2><span class="no-bold"><?php echo ($model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?></span> <?php echo $model->name==''?'#'.$model->id:$model->name; ?></h2>
+	<h2><span class="no-bold"><?php echo ($model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?></span> <?php echo $model->name==''?'#'.$model->id:CHtml::encode($model->name); ?></h2>
 
 <?php if($model->locked) { ?>
 	<?php if($strict && !Yii::app()->user->checkAccess('QuotesAdminAccess')) { ?>
@@ -128,7 +128,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 		<a class="x2-button icon edit right" href="#" onClick="dialogLock();"><span></span></a>
 	<?php } ?>
 <?php } else { ?>
-	<a class="x2-button icon edit right" href="update/<?php echo $model->id;?>"><span></span></a>
+	<?php echo CHtml::link('<span></span>', array('update', 'id'=>$model->id), array('class'=>'x2-button icon edit right')); ?>
 <?php } ?>
 
 <?php if($model->type != 'invoice') { ?>

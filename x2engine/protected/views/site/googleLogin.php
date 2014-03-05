@@ -89,7 +89,7 @@ Yii::app()->clientScript->registerCss('googleLogin', "
                       https://www.googleapis.com/auth/userinfo.profile
                       https://www.googleapis.com/auth/calendar
                       https://www.googleapis.com/auth/calendar.readonly"
-                      data-clientid="<?php echo trim(Yii::app()->params->admin->googleClientId) ?>"
+                      data-clientid="<?php echo trim(Yii::app()->settings->googleClientId) ?>"
                       data-redirecturi="postmessage"
                       data-accesstype="offline"
                       data-cookiepolicy="single_host_origin"

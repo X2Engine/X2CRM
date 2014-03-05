@@ -629,10 +629,10 @@ class Events extends CActiveRecord {
      * Delete expired events (expiration defined by "Event Deletion Time" admin setting
      */
     public static function deleteOldEvents () {
-        $dateRange = Yii::app()->params->admin->eventDeletionTime;
+        $dateRange = Yii::app()->settings->eventDeletionTime;
         if(!empty($dateRange)){
             $dateRange = $dateRange * 24 * 60 * 60;
-            $deletionTypes = json_decode(Yii::app()->params->admin->eventDeletionTypes, true);
+            $deletionTypes = json_decode(Yii::app()->settings->eventDeletionTypes, true);
             if(!empty($deletionTypes)){
                 $deletionTypes = "('".implode("','", $deletionTypes)."')";
                 $time = time() - $dateRange;
@@ -652,27 +652,31 @@ class Events extends CActiveRecord {
     public static function getFilteredEventsDataProvider (
         $profile, $isMyProfile, $filters, $filtersOn) {
 
+        $params = array ();
+        $params[':username'] = Yii::app()->user->getName ();
+
         if (!$isMyProfile) {
+            $params[':profileUsername'] = $profile->username;
             /* only show events associated with current profile which current user has
                permission to see */
             $visibilityCondition = "AND ((associationId=$profile->id AND (visibility=1 OR ".
-                "user='".Yii::app()->user->getName ()."')) OR ".
-                "(visibility=1 AND user='".$profile->username."'))";
+                "user=:username)) OR ".
+                "(visibility=1 AND user=:profileUsername))";
         } else if (!Yii::app()->params->isAdmin){
-            if(Yii::app()->params->admin->historyPrivacy == 'user'){
+            if(Yii::app()->settings->historyPrivacy == 'user'){
                 $visibilityCondition = ' AND (associationId='.Yii::app()->user->getId().
-                    ' OR user="'.Yii::app()->user->getName().'")';
-            }elseif(Yii::app()->params->admin->historyPrivacy == 'group'){
+                    ' OR user=:username)';
+            }elseif(Yii::app()->settings->historyPrivacy == 'group'){
                 $visibilityCondition =
                     ' AND user IN ('.
                             'SELECT DISTINCT b.username '.
                             'FROM x2_group_to_user a INNER JOIN x2_group_to_user b '.
                             'ON a.groupId=b.groupId '.
-                            'WHERE a.username="'.Yii::app()->user->getName().'"'.
+                            'WHERE a.username=:username'.
                         ')';
             }else{
                 $visibilityCondition = " AND (associationId=".Yii::app()->user->getId().
-                    " OR user='".Yii::app()->user->getName()."' OR visibility=1)";
+                    " OR user=:username OR visibility=1)";
             }
         }else{
             $visibilityCondition = "";
@@ -683,13 +687,7 @@ class Events extends CActiveRecord {
                 unset($_SESSION['filters']);
             }else{
                 $filters = $_SESSION['filters'];
-
-                function implodeFilters($n){
-                    return implode(",", $n);
-                }
-
-                $func = "implodeFilters";
-                $filters = array_map($func, $filters);
+                $filters = array_map(function ($n) { return implode (',', $n); }, $filters);
                 $filters['default'] = false;
             }
             unset($filters['filters']);
@@ -698,7 +696,9 @@ class Events extends CActiveRecord {
             $visibility = str_replace('Private', '0', $visibility);
             $visibilityFilter = explode(",", $visibility);
             if($visibility != ""){
-                $visibilityCondition = " AND visibility NOT IN (".$visibility.")";
+                $visibilityParams = AuxLib::bindArray ($visibilityFilter, 'visibility');
+                $params = array_merge ($params, $visibilityParams);
+                $visibilityCondition = " AND visibility NOT IN (".implode (',',array_keys ($visibilityParams)).")";
             }else{
                 $visibilityFilter = array();
             }
@@ -709,13 +709,14 @@ class Events extends CActiveRecord {
                 $users[]='';
                 $users[]='api';
                 $userFilter = $users;
-                $users = '"'.implode('","', $users).'"';
-                if($users != ""){
-                    $userCondition = " AND (user NOT IN (".$users.")";
+                if(sizeof ($users)){
+                    $usersParams = AuxLib::bindArray ($users, 'users');
+                    $params = array_merge ($params, $usersParams);
+                    $userCondition = " AND (user NOT IN (".implode (',', array_keys ($usersParams)).")";
                 }else{
                     $userCondition = "(";
                 }
-                if(strpos($users, 'Anyone') === false){
+                if(!in_array ('Anyone', $users)){
                     $userCondition.=" OR user IS NULL)";
                 }else{
                     $userCondition.=")";
@@ -729,20 +730,22 @@ class Events extends CActiveRecord {
             if($types != ""){
                 $types = explode(",", $types);
                 $typeFilter = $types;
-                $types = '"'.implode('","', $types).'"';
-                $typeCondition = " AND (type NOT IN (".$types.") OR important=1)";
+                $typesParams = AuxLib::bindArray ($types, 'types');
+                $params = array_merge ($params, $typesParams);
+                $typeCondition = " AND (type NOT IN (".implode (',', array_keys ($typesParams)).") OR important=1)";
             }else{
                 $typeCondition = "";
                 $typeFilter = array();
             }
             $subtypes = $filters['subtypes'];
-            if(strpos($types, "feed") === false && $subtypes != ""){
+            if(is_array ($types) && !in_array ('feed', $types) && $subtypes != ""){
                 $subtypes = explode(",", $subtypes);
                 $subtypeFilter = $subtypes;
-                $subtypes = '"'.implode('","', $subtypes).'"';
-                if($subtypes != "") {
+                if(sizeof ($subtypes)) {
+                    $subtypeParams = AuxLib::bindArray ($subtypes, 'subtypes');
+                    $params = array_merge ($params, $subtypeParams);
                     $subtypeCondition =
-                        " AND (type!='feed' OR subtype NOT IN (".$subtypes.") OR important=1)";
+                        " AND (type!='feed' OR subtype NOT IN (".implode (',', array_keys ($subtypeParams)).") OR important=1)";
                 } else {
                     $subtypeCondition = "";
                 }
@@ -762,16 +765,18 @@ class Events extends CActiveRecord {
                     json_encode($_SESSION['filters']);
                 Yii::app()->params->profile->save();
             }
+
             $condition = "type!='comment' AND (type!='action_reminder' ".
-                "OR user='".Yii::app()->user->getName()."') AND ".
-                "(type!='notif' OR user='".Yii::app()->user->getName()."')".
+                "OR user=:username) AND ".
+                "(type!='notif' OR user=:username)".
                 $visibilityCondition.$userCondition.$typeCondition.$subtypeCondition;
             $_SESSION['feed-condition'] = $condition;
+            $_SESSION['feed-condition-params'] = $params;
         }else{
             $condition =
                 "type!='comment' AND ".
-                "(type!='action_reminder' OR user='".Yii::app()->user->getName()."') ".
-                "AND (type!='notif' OR user='".Yii::app()->user->getName()."')".
+                "(type!='action_reminder' OR user=:username) ".
+                "AND (type!='notif' OR user=:username)".
                 $visibilityCondition;
         }
 
@@ -780,7 +785,7 @@ class Events extends CActiveRecord {
             $lastId = Yii::app()->db->createCommand()
                     ->select('MAX(id)')
                     ->from('x2_events')
-                    ->where($condition)
+                    ->where($condition, $params)
                     ->order('timestamp DESC, id DESC')
                     ->limit(1)
                     ->queryScalar();
@@ -791,7 +796,7 @@ class Events extends CActiveRecord {
         $lastTimestamp = Yii::app()->db->createCommand()
                 ->select('MAX(timestamp)')
                 ->from('x2_events')
-                ->where($condition)
+                ->where($condition, $params)
                 ->order('timestamp DESC, id DESC')
                 ->limit(1)
                 ->queryScalar();
@@ -799,12 +804,14 @@ class Events extends CActiveRecord {
             $lastTimestamp = 0;
         }
         if(isset($_SESSION['lastEventId'])){
-            $condition.=" AND id <= ".$_SESSION['lastEventId']." AND sticky = 0";
+            $condition.=" AND id <= :lastEventId AND sticky = 0";
+            $params[':lastEventId'] = $_SESSION['lastEventId'];
         }
         $dataProvider = new CActiveDataProvider('Events', array(
                     'criteria' => array(
                         'condition' => $condition,
                         'order' => 'timestamp DESC, id DESC',
+                        'params' => $params
                     ),
                     'pagination' => array(
                         'pageSize' => 20
@@ -839,48 +846,65 @@ class Events extends CActiveRecord {
             $user = Yii::app()->user->getName();
         }
         $criteria = new CDbCriteria();
+        $prefix = ':getEvents'; // to prevent name collisions with feed-condition-params
+        $sqlParams = array (
+            $prefix.'currUsername' => Yii::app()->user->getName (),
+            $prefix.'username' => $user
+        );
         $parameters = array('order' => 'timestamp DESC, id DESC');
         if(!is_null($limit) && is_numeric($limit)){
             $parameters['limit'] = $limit;
         }
         if(!Yii::app()->params->isAdmin && !Yii::app()->user->isGuest){
-            if(Yii::app()->params->admin->historyPrivacy == 'user'){
+            if(Yii::app()->settings->historyPrivacy == 'user'){
                 $visibilityCondition = ' AND (associationId='.Yii::app()->user->getId().
-                    ' OR `user`="'.Yii::app()->user->getName().'")';
-            }elseif(Yii::app()->params->admin->historyPrivacy == 'group'){
+                    ' OR `user`='.$prefix.'currUsername)';
+            }elseif(Yii::app()->settings->historyPrivacy == 'group'){
                 $visibilityCondition =
                     ' AND (`user` IN ('.
                         'SELECT DISTINCT b.username '.
                         'FROM x2_group_to_user a '.
                         'INNER JOIN x2_group_to_user b ON a.groupId=b.groupId '.
-                        'WHERE a.username="'.Yii::app()->user->getName().'") OR '.
+                        'WHERE a.username='.$prefix.'currUsername) OR '.
                             '(associationId='.Yii::app()->user->getId().' OR '.
-                             '`user`="'.Yii::app()->user->getName().'"))';
+                             '`user`='.$prefix.'currUsername))';
             }else{
                 $visibilityCondition =
                     " AND (associationId=".Yii::app()->user->getId()." OR ".
-                          "`user`='".Yii::app()->user->getName()."' OR visibility=1)";
+                          "`user`=".$prefix."currUsername OR visibility=1)";
             }
         } else {
             $visibilityCondition = "";
         }
-        $condition = isset($_SESSION['feed-condition']) ?
-            $_SESSION['feed-condition']." AND ".
-            "timestamp < $maxTimestamp AND (`type`!='action_reminder' OR `user`='$user')  ".
-            "AND (`type`!='notif' OR `user`='$user') AND (id > $id OR timestamp > $timestamp)" :
-            '(id > '.$id.' OR timestamp > '.$timestamp.') AND timestamp <= '.$maxTimestamp.'  AND '.
-            '`type`!="comment"'." AND (`type`!='action_reminder' OR `user`='$user') AND ".
-            "(`type`!='notif' OR `user`='".Yii::app()->user->getName()."')".$visibilityCondition;
+        $sqlParams[$prefix.'id'] = $id;
+        $sqlParams[$prefix.'timestamp'] = $timestamp;
+        $sqlParams[$prefix.'maxTimestamp'] = $maxTimestamp;
+        if (isset ($_SESSION['feed-condition']) && isset ($_SESSION['feed-condition-params'])) {
+            $sqlParams = array_merge ($sqlParams, $_SESSION['feed-condition-params']);
+            $condition = 
+                $_SESSION['feed-condition']." AND ".
+                "timestamp < ".$prefix."maxTimestamp AND (`type`!='action_reminder' OR `user`=".$prefix."username)  ".
+                "AND (`type`!='notif' OR `user`=".$prefix."username) AND (id > ".$prefix."id OR 
+                 timestamp > ".$prefix."timestamp)";
+        } else {
+            $condition =
+                '(id > '.$prefix.'id OR timestamp > '.$prefix.'timestamp) AND 
+                 timestamp <= '.$prefix.'maxTimestamp AND '.
+                '`type`!="comment"'." AND (`type`!='action_reminder' OR `user`=".$prefix."username) AND ".
+                "(`type`!='notif' OR `user`=".$prefix."currUsername)".$visibilityCondition;
+        }
 
         if (isset ($myProfile) && !$isMyProfile) {
             // only show events associated with current profile which current user has
             // permission to see
+            $sqlParams[$prefix.'myProfileUsername'] = $myProfile->username;
+            $sqlParams[$prefix.'profileUsername'] = $profile->username;
             $condition .= " AND ((associationId=".$profile->id." AND (visibility=1 OR ".
-                "user='".$myProfile->username."')) OR (visibility=1 AND user='".
-                $profile->username."'))";
+                "user=".$prefix."myProfileUsername)) OR (visibility=1 AND user=".$prefix."profileUsername))";
         }
 
         $parameters['condition'] = $condition;
+        $parameters['params'] = $sqlParams;
         $criteria->scopes = array('findAll' => array($parameters));
         return array(
             'events' => X2Model::model('Events')->findAll($criteria),

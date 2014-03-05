@@ -59,10 +59,13 @@ class X2DataColumn extends CDataColumn {
      */
     protected function renderDataCellContent($row, $data){
         $this->data = $data;
-        if($this->value !== null)
-            $value = $this->evaluateExpression($this->value, array('data' => $this->data, 'row' => $row));
-        elseif($this->name !== null){
-            $value = $this->data->renderAttribute($this->name, false, true); // CHtml::value($data,$this->name);
+        $value = null;
+        if($this->value !== null) {
+            $value = $this->evaluateExpression(
+                $this->value, array('data' => $this->data, 'row' => $row));
+        } elseif($this->name !== null){
+            $value = $this->data->renderAttribute(
+                $this->name, false, true); 
             if($this->data->getField($this->name)->type == 'text')
                 $value = Formatter::truncateText(preg_replace("/\<br ?\/?\>/"," ",$value),100);
         }

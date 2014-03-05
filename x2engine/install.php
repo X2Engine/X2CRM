@@ -286,7 +286,7 @@ $timezones = array(
     <head>
 	<meta charset="UTF-8" />
 	<meta name="language" content="en" />
-	<title><?php echo installer_t('X2CRM Installation'); ?></title>
+	<title><?php echo installer_t('X2Engine Installation'); ?></title>
 	<link rel="icon" href="images/favicon.ico" type="image/x-icon">
 	<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/screen.css" media="screen, projection" />
@@ -355,7 +355,7 @@ $timezones = array(
 				if(percentDone.length == 0) {
 					progressList.remove(); // Get rid of any error messages
 					box.append($('<img src="<?php echo $themeURL; ?>/images/loading.gif">').css({'display':'block','margin-left':'auto','margin-right':'auto'}));
-					messageHeader.text("<?php echo installer_t("Installing X2CRM"); ?>");
+					messageHeader.text("<?php echo installer_t("Installing X2Engine"); ?>");
 					percentDone = $('<span id="percentDone">');
 					messageHeader.append(percentDone);
 					progressList = $('<ul>');
@@ -448,7 +448,7 @@ $timezones = array(
 
 
 
-<?php echo installer_t('Welcome to the X2CRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'); ?>
+<?php echo installer_t('Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'); ?>
 
 
             <div class="wide form" id="install-form">
@@ -461,8 +461,8 @@ $timezones = array(
                     echo "<span class=\"error\">Note: cannot find requirements check script.</span>";
                 ?>
                 <form name="install" id="install" action="initialize.php" method="POST" onSubmit="return validate(this);">
-                    <h2><?php echo installer_t('X2CRM Application Info'); ?></h2><hr>
-                    <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2CRM'); ?>" style="width:190px" /></div>
+                    <h2><?php echo installer_t('X2Engine Application Info'); ?></h2><hr>
+                    <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2Engine'); ?>" style="width:190px" /></div>
                     <div class="row"><label for="language"><?php echo installer_t('Default Language'); ?></label>
                         <select name="language" id="language" onChange="changeLang(this.options[this.selectedIndex].value);" style="width:200px"><option value="">English</option>
                             <?php

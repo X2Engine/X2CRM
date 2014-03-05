@@ -48,17 +48,16 @@ class X2WidgetList extends X2Widget {
     public $associationType;
     public $associationId;
 
+    /**
+     * @var array (<widget name> => <array of parameters to pass to widget) 
+     */
+    public $widgetParamsByWidgetName = array ();
+
     // widget specific javascript packages
     public static function packages () {
         $packages = array (
             'widgetListCombinedCss' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'css' => array (
-                    'js/widgetListCombined.css'
-                )
-            ),
-            'widgetListCombinedCss2' => array(
-                'baseUrl' => Yii::app()->getTheme ()->getBaseUrl (),
+                'baseUrl' => Yii::app()->theme->getBaseUrl (),
                 'css' => array (
                     'css/widgetListCombined.css'
                 )
@@ -147,45 +146,46 @@ class X2WidgetList extends X2Widget {
         parent::init();
     }
 
+    /**
+     * Renders widgets in layout 
+     * @param string $layoutPos <'center' | 'hidden'>
+     */
+    private function renderWidget ($layoutPos) {
+        $layout = $this->layout[$layoutPos];
+        foreach($layout as $name => $widget){ // list of widgets
+            $widgetParams = array ();
+            if (isset ($this->widgetParamsByWidgetName[$name])) 
+                $widgetParams = $this->widgetParamsByWidgetName[$name];
+
+            $viewParams = array(
+                'widget' => $widget,
+                'name' => $name,
+                'model' => $this->model,
+                'modelType' => $this->modelType,
+                'packagesOnly' => $layoutPos === 'hidden',
+                'widgetParams' => $widgetParams
+            );
+
+
+            if(!$this->isExcluded ($name)){
+                $this->render(
+                    'centerWidget',
+                    $viewParams
+                );
+            }
+        }
+    }
+
     public function run(){
 
         if($this->block == 'center'){
             echo '<div id="content-widgets">';
-            foreach($this->layout['center'] as $name => $widget){ // list of widgets
-                $viewParams = array(
-                    'widget' => $widget,
-                    'name' => $name,
-                    'model' => $this->model,
-                    'modelType' => $this->modelType,
-                    'packagesOnly' => false
-                );
-
-                if(!$this->isExcluded ($name)){
-                    $this->render(
-                        'centerWidget',
-                        $viewParams
-                    );
-                }
-            }
-            foreach($this->layout['hidden'] as $name => $widget){ // list of widgets
-                $viewParams = array(
-                    'widget' => $widget,
-                    'name' => $name,
-                    'model' => $this->model,
-                    'modelType' => $this->modelType,
-                    'packagesOnly' => true
-                );
-                if(!$this->isExcluded ($name)){
-                    $this->render(
-                        'centerWidget',
-                        $viewParams
-                    );
-                }
-            }
-
+            $this->renderWidget ('center');
+            $this->renderWidget ('hidden');
             echo '</div>';
         }
     }
+
 
     private function isExcluded ($name) {
         if ($this->modelType == 'BugReports' && 

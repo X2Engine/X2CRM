@@ -300,7 +300,7 @@ class Workflow extends CActiveRecord {
 					// X2DateUtil::dateBox($workflowStatus['stages'][$stage]['completeDate']);
 
 					// can only undo if there is no restriction on backdating, or we're still within the edit time window
-					$allowUndo = Yii::app()->params->admin->workflowBackdateWindow < 0 || (time() - $workflowStatus['stages'][$stage]['completeDate']) < Yii::app()->params->admin->workflowBackdateWindow;
+					$allowUndo = Yii::app()->settings->workflowBackdateWindow < 0 || (time() - $workflowStatus['stages'][$stage]['completeDate']) < Yii::app()->settings->workflowBackdateWindow;
 					
 					if($editPermission && ($allowUndo || Yii::app()->params->isAdmin))
 						$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';

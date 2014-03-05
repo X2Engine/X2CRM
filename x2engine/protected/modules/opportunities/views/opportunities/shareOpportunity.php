@@ -51,7 +51,7 @@ Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");
 
 ?>
 <div class="page-title icon opportunities">
-	<h2><span class="no-bold"><?php echo Yii::t('module','Share');?>:</span> <?php echo $model->name;?></h2>
+	<h2><span class="no-bold"><?php echo Yii::t('module','Share');?>:</span> <?php echo CHtml::encode($model->name);?></h2>
 </div>
 <?php
 if(!empty($status)) {
@@ -82,7 +82,7 @@ $form = $this->beginWidget('CActiveForm', array(
 ));
 ?>
 <div class="page-title rounded-top">
-	<h2><span class="no-bold"><?php echo Yii::t('opportunities','Opportunity:'); ?></span> <?php echo $model->name; ?></h2>
+	<h2><span class="no-bold"><?php echo Yii::t('opportunities','Opportunity:'); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 </div>
 <?php
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'opportunity','form'=>$form,'currentWorkflow'=>$currentWorkflow));

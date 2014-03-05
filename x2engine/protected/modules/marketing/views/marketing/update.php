@@ -74,7 +74,7 @@ $form = $this->beginWidget('CActiveForm', array(
 ));
 ?>
 <div class="page-title icon marketing">
-	<h2><?php echo $model->name; ?></h2>
+	<h2><?php echo CHtml::encode($model->name); ?></h2>
 	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button highlight right')); ?>
 </div>
 <?php

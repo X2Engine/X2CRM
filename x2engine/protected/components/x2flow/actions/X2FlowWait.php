@@ -47,6 +47,23 @@ class X2FlowWait extends X2FlowAction {
 	public $flowId = null;
 	public $flowPath = null;
 
+    public function getFormattedUnit ($unit) {
+        switch ($unit) {
+            case 'mins':
+                return Yii::t('studio', 'minute');
+            case 'hours':
+                return Yii::t('studio', 'hour');
+            case 'days':
+                return Yii::t('studio', 'day');
+            case 'months':
+                return Yii::t('studio', 'month');
+            case 'secs':
+                return Yii::t('studio', 'second');
+            default:
+                return '';
+        }
+    }
+
 	public function paramRules() {
 
 		$units = array(
@@ -81,7 +98,7 @@ class X2FlowWait extends X2FlowAction {
 		if($time === false) {
 			return array (false, "");
         }
-		$time += time();
+        $timeOffset = $time + time ();
 
         // add 1 to the branch position in the flow path, to skip this action
 		$this->flowPath[count($this->flowPath)-1]++;	
@@ -94,7 +111,7 @@ class X2FlowWait extends X2FlowAction {
 			'flowPath'=>$this->flowPath,
             'triggerLogId'=>$triggerLogId
 		);
-		$cron->time = $time;
+		$cron->time = $timeOffset;
 
 		if(isset($params['model'])) {
 			$cronData['modelId'] = $params['model']->id;
@@ -117,7 +134,9 @@ class X2FlowWait extends X2FlowAction {
             $params['model']=$tmpModel;
         }
 		if ($cron->save()) {
-			return array (true, "");
+			return array (
+                true, "Waiting for " . $options['delay']['value'] . ' ' . 
+                $this->getFormattedUnit ($options['unit']['value']) . '(s)');
         } else {
 			return array (false, "");
         }

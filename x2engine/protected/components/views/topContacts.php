@@ -74,7 +74,7 @@ $contactIdList = array();
 foreach($topContacts as $contact) {
 	$contactIdList[] = $contact->id;
 	echo '<li id="contact' . $contact->id . '">';
-	$link = '<strong>'.$contact->firstName.' '.$contact->lastName.'</strong><br />'.$contact->phone;
+	$link = '<strong>'.CHtml::encode($contact->firstName).' '.CHtml::encode($contact->lastName).'</strong><br />'.CHtml::encode($contact->phone);
 	echo CHtml::link($link,array('/contacts/contacts/view','id'=>$contact->id));
 	
 	echo CHtml::link('[x]','#',array(
@@ -93,7 +93,7 @@ if((Yii::app()->controller->id=='contacts' || (!is_null(Yii::app()->controller->
 
 	echo '<li>';
 	echo CHtml::link(
-		Yii::t('app','Add {name}',array('{name}'=>$currentRecord->firstName.' '.$currentRecord->lastName)),
+		Yii::t('app','Add {name}',array('{name}'=>CHtml::encode($currentRecord->firstName).' '.CHtml::encode($currentRecord->lastName))),
 		'#',
 		array('onclick'=>"addTopContact('".$viewId."'); return false;") //"','".$viewId."'); return false;")
 	);
