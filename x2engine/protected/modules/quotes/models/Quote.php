@@ -129,10 +129,10 @@ class Quote extends X2Model {
 	public function getContact(){
 		if(!isset($this->_contact)){
 			$this->_contact = null;
-			$contactIds = explode(' ', $this->associatedContacts);
-			$contact = null;
-			if(!empty($contactIds[0]))
-				$this->_contact = Contacts::model()->findByPk($contactIds[0]);
+            $contactNameId = Fields::nameAndId ($this->associatedContacts);
+            $contactId = $contactNameId[1];
+			if(!empty($contactId))
+				$this->_contact = Contacts::model()->findByPk($contactId);
 		}
 		return $this->_contact;
 	}

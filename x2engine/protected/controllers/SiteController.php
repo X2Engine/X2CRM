@@ -408,7 +408,7 @@ class SiteController extends x2base {
             if($site->save()){
                 echo CJSON::encode (array (
                     CHtml::link(
-                        Yii::t('app', $site->title), $site->url, array('target'=>'_blank')),
+                        $site->title, URL::prependProto($site->url), array('target'=>'_blank')),
                     CHtml::link(
                         '[x]',
                         array('/site/DeleteURL', 'id' => $site->id),
@@ -805,6 +805,27 @@ class SiteController extends x2base {
                         $file->setDescription('Uploaded by X2Engine');
                         $file->setMimeType($_FILES['upload']['type']);
 
+                        if(empty($_FILES['upload']['tmp_name'])) {
+                            $err = false;
+                            switch( $_FILES['newfile']['error'] ) {
+                                 case UPLOAD_ERR_INI_SIZE:
+                                 case UPLOAD_ERR_FORM_SIZE:
+                                     $err .= 'File size exceeds limit of '.get_max_upload().' bytes.';
+                                     break;
+                                 case UPLOAD_ERR_PARTIAL:
+                                     $err .= 'File upload was not completed.';
+                                     break;
+                                 case UPLOAD_ERR_NO_FILE:
+                                     $err .= 'Zero-length file uploaded.';
+                                     break;
+                                 default:
+                                     $err .= 'Internal error '.$_FILES['newfile']['error'];
+                                     break;
+                            }
+                            if((bool) $message) {
+                                throw new CException($message);
+                            }
+                        }
                         $data = file_get_contents($_FILES['upload']['tmp_name']);
                         $createdFile = $service->files->insert($file, array(
                             'data' => $data,
@@ -813,7 +834,7 @@ class SiteController extends x2base {
                         if(is_array($createdFile)){
                             $model = new Media;
                             $model->fileName = $createdFile['id'];
-                            $model->title = $createdFile['title'];
+                            $model->name = $createdFile['title'];
                             if(isset($_POST['associationId']))
                                 $model->associationId = $_POST['associationId'];
                             if(isset($_POST['associationType']))
@@ -1399,13 +1420,12 @@ class SiteController extends x2base {
                 if(isset($_SESSION['sessionId']))
                     $sessionId = $_SESSION['sessionId'];
                 else
-                    $sessionId = null;
+                    $sessionId = $_SESSION['sessionId'] = session_id();
 
                 $session = X2Model::model('Session')->findByPk($sessionId);
 
                 // if this client has already tried to log in, increment their attempt count
                 if($session === null){
-                    $sessionId = $_SESSION['sessionId'] = session_id();
                     $session = new Session;
                     $session->id = $sessionId;
                     $session->user = $model->username;

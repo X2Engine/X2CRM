@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+if(empty($tags))
+    $tags = array();
 
 if($filter) { 
     Yii::app()->clientScript->registerScriptFile (

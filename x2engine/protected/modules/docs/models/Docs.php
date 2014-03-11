@@ -195,8 +195,6 @@ class Docs extends X2Model {
 				// There may still be some stray quotes with 2+ contacts on it, so
 				// explode and pick the first to be on the safe side. The most
 				// common use case by far is to have only one contact on the quote.
-				$contactIds = explode(' ', $model->associatedContacts);
-				$contactId = $contactIds[0];
 				$accountId = $model->accountName;
 				$staticModels = array('Contact' => Contacts::model(), 'Account' => Accounts::model(), 'Quote' => Quote::model());
 				$models = array(
@@ -252,7 +250,7 @@ class Docs extends X2Model {
             $params = array ();
 			if(!Yii::app()->params->isAdmin){
                 $params[':username'] = Yii::app()->user->getName();
-				$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy=:username';
+				$condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy=:username ';
 				/* x2temp */
 				$uid = Yii::app()->getSuID();
 				if(empty($uid)){

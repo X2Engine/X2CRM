@@ -226,6 +226,9 @@ class AuxLib {
         for ($i = 0; $i < $arrLen; ++$i) {
             $placeholders[] = ':' . $prefix . $i;
         }
+        if ($arrLen === 0) {
+            return array ();
+        } 
         return array_combine ($placeholders, $arr);
     }
 

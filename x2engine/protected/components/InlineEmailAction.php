@@ -123,6 +123,7 @@ class InlineEmailAction extends CAction {
 							self::respond(Yii::t('app','Did not send email because you do not have permission to use the specified credentials.'),1);
 					$sendStatus = $model->send($makeEvent);
 					// $sendStatus = array('code'=>'200','message'=>'sent (testing)');
+
 					$failed = $sendStatus['code'] != '200';
 					$message = $sendStatus['message'];
 				} else if($model->modelName == 'Quote' && empty($model->template)) {

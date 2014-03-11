@@ -1,18 +1,18 @@
 # X2CRM 3.7 #
-Release 3.7.4 3/4/2014
+Release 3.7.5 (fixes to 3.7.4) 3/4/2014
 
-New in 3.7.4 (see [CHANGELOG](CHANGELOG.md) for full history):
+New in 3.7.5 (see [CHANGELOG](CHANGELOG.md) for full history):
 
-* Fixed security holes listed in ["Multiple vulnerabilities in X2Engine"](http://hauntit.blogspot.com/2014/02/en-multiple-vulnerabilities-in-x2engine.html) published on [The HauntIT Blog](http://hauntit.blogspot.com/)
 * Fixed Bugs:  
-  * [773](http://x2software.com/index.php/bugReports/773): If a user lacks edit permission on that field but that field has a default value (like in Service Cases) the default value will not save.  
-  * [947](http://x2software.com/index.php/bugReports/947): Unable to resolve the request "quotes/id/update".  
-  * [948](http://x2software.com/index.php/bugReports/948): nameId field of 'Sample Quote Template' doc is null  
-  * [949](http://x2software.com/index.php/bugReports/949): Template attribute of quotes is not a proper nameId ref 
-  * [977](http://x2software.com/index.php/bugReports/977): CDbCommand failed to execute the SQL statement: SQLSTATE[22007]: Invalid datetime format: 1292 Truncated incorrect DOUBLE value: '162.210.196.131'
-* Fixed unlisted bugs:
-  * Campaigns issues with listId being a malformed reference to list records, and improper validation (i.e. "List cannot be blank")
-  * Broken download links/extreme slowness in contacts export tool
+  * [995](http://x2software.com/index.php/bugReports/995): array_combine() [<a href='function.array-combine'>function.array-combine</a>]: Both parameters should have at least 1 element  
+  * [996](http://x2software.com/index.php/bugReports/996): file_get_contents(): Filename cannot be empty  
+  * [997](http://x2software.com/index.php/bugReports/997): Property "Media.title" is not defined.  
+  * [998](http://x2software.com/index.php/bugReports/998): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: parameter was not defined  
+  * [999](http://x2software.com/index.php/bugReports/999): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')GROUP BY   
+  * [1009](http://x2software.com/index.php/bugReports/1009): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '94f072b73cf2bdfdcffa32f488c4077b' for key 'PRIMARY'  
+  * [1016](http://x2software.com/index.php/bugReports/1016): Invalid argument supplied for foreach()  
+  * [1017](http://x2software.com/index.php/bugReports/1017): Property "X2WebApplication.settingsProfile" is not defined.  
+  * [1038](http://x2software.com/index.php/bugReports/1038): Unable to resolve the request "contacts/id/https//www.lplconnect.com".
 
 # Introduction #
 Welcome to  X2CRM!

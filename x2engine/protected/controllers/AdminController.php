@@ -1987,7 +1987,7 @@ class AdminController extends Controller {
      */
     public function actionToggleDefaultLogo(){
 
-        $adminProf = Yii::app()->settingsProfile;
+        $adminProf = Yii::app()->params->adminProfile;
         $logo = Media::model()->findByAttributes(array('associationId' => $adminProf->id, 'associationType' => 'logo'));
         if(!isset($logo)){
 

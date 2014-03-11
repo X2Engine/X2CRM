@@ -320,15 +320,20 @@ class ProfileController extends x2base {
         if(empty($hiddenTags))
             $hiddenTags = array();
 
-        $tagParams = AuxLib::bindArray ($hiddenTags);
-        $allTags = Yii::app()->db->createCommand()
-                ->select('COUNT(*) AS count, tag')
-                ->from('x2_tags')
-                ->group('tag')
-                ->where('tag IS NOT NULL AND tag IN ('.implode (',', array_keys ($tagParams)).')', $tagParams)
-                ->order('tag ASC')
-                ->limit(20)
-                ->queryAll();
+        if (sizeof ($hiddenTags)) {
+            $tagParams = AuxLib::bindArray ($hiddenTags);
+            $allTags = Yii::app()->db->createCommand()
+                    ->select('COUNT(*) AS count, tag')
+                    ->from('x2_tags')
+                    ->group('tag')
+                    ->where('tag IS NOT NULL AND tag IN ('.
+                        implode (',', array_keys ($tagParams)).')', $tagParams)
+                    ->order('tag ASC')
+                    ->limit(20)
+                    ->queryAll();
+        } else {
+            $allTags = array ();
+        }
 
         $this->render('settings', array(
             'model' => $model,

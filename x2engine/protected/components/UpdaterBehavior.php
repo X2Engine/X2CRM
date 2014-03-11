@@ -2141,7 +2141,7 @@ class UpdaterBehavior extends ResponseBehavior {
         }
 
         // Copy the files into the live install
-        if(!(bool) count($failed2Retrieve)) {
+        if(!(bool) count($failed2Retrieve) && (bool) count($updaterFiles)) {
             $this->applyFiles(self::TMP_DIR);
             // Remove the temporary directory:
             FileUtil::rrmdir($this->webRoot.DIRECTORY_SEPARATOR.self::TMP_DIR);

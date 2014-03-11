@@ -167,7 +167,7 @@ foreach($data as $entry){
         <td>
         <?php
             echo CHtml::link(
-                Yii::t('app', $entry['title']), $entry['url'], array('target'=>'_blank'));
+               $entry['title'], URL::prependProto($entry['url']), array('target'=>'_blank'));
         ?>
         </td>
         <td class='delete-top-site-link-container'>

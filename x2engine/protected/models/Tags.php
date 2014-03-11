@@ -47,6 +47,9 @@
  * @property string $itemName
  */
 class Tags extends CActiveRecord {
+
+    const DELIM = ',';
+
     /**
      * Returns the static model of the specified AR class.
      * @return Tags the static model class
@@ -92,6 +95,16 @@ class Tags extends CActiveRecord {
             'timestamp' => 'Timestamp',
             'itemName' => 'Item Name',
         );
+    }
+
+    /**
+     * Strip out all instances of the delimeter in the tag
+     */
+    public function beforeSave() {
+        if(strpos($this->tag,self::DELIM) !== false) {
+            $this->tag = strtr($this->tag,array(self::DELIM => ''));
+        }
+        return true;
     }
     
     /*
@@ -167,7 +180,7 @@ class Tags extends CActiveRecord {
     public static function parseTags($str, $suppressHash=false) {
         $tags = array();
         
-        foreach(explode(',',$str) as $tag) {    // split the string
+        foreach(explode(self::DELIM,$str) as $tag) {    // split the string
             $tag = trim($tag);                        // eliminate whitespace
             if(strlen($tag) > 0) {                    // eliminate empty tags
                 if(substr($tag,0,1) !== '#' && !$suppressHash) // make sure they have the hash

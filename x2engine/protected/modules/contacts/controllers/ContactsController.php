@@ -414,7 +414,7 @@ class ContactsController extends x2base {
 
         // Loop through params and add conditions to limit the contact data set
         foreach($params as $field => $value){
-            if (!isset ($contactFields[$field])) continue; // prevents SQL injection by verifying field name
+            if ($field != 'tags' && !isset ($contactFields[$field])) continue; // prevents SQL injection by verifying field name
             if($field != 'tags' && $value != ''){
                 $conditions.=" AND x2_contacts.$field=:$field";
                 $parameters[":$field"] = $value;
@@ -510,7 +510,7 @@ class ContactsController extends x2base {
             'contactId' => isset($contactId) ? $contactId : 0,
             'assignment' => isset($_POST['params']['assignedTo']) || isset($params['assignedTo']) ? (isset($_POST['params']['assignedTo']) ? $_POST['params']['assignedTo'] : $params['assignedTo']) : '',
             'leadSource' => isset($_POST['params']['leadSource']) ? $_POST['params']['leadSource'] : '',
-            'tags' => ((isset($_POST['params']['tags']) && !empty($_POST['params']['tags'])) ? $_POST['params']['tags'] : array()),
+            'tags' => ((isset($_POST['params']['tags']) && !empty($_POST['params']['tags'])) ? Tags::parseTags($_POST['params']['tags']) : array()),
             'zoom' => isset($zoom) ? $zoom : null,
             'mapFlag' => isset($map) ? 'true' : 'false',
             'noHeatMap' => isset($_GET['noHeatMap']) && $_GET['noHeatMap'] ? true : false,

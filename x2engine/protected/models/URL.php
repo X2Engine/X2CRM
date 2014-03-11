@@ -45,6 +45,9 @@
  * @property integer timestamp
  */
 class URL extends CActiveRecord{
+
+    const DEFAULT_PROTO = 'http';
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Roles the static model class
@@ -54,7 +57,17 @@ class URL extends CActiveRecord{
 		return parent::model($className);
 	}
 
-	/**
+    /**
+     * Prepends the default protocol to a URL that is just a bare domain, i.e.
+     * "google.com"
+     * 
+     * @param type $url
+     */
+    public static function prependProto($url){
+        return !preg_match('%^https?://%', $url) ? self::DEFAULT_PROTO.'://'.$url : $url;
+    }
+
+    /**
 	 * @return string the associated database table name
 	 */
 	public function tableName()

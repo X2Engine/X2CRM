@@ -1,3 +1,16 @@
+# 3.7.5 #
+3/10/2014
+* Fixed Bugs:  
+  * [995](http://x2software.com/index.php/bugReports/995): array_combine() [<a href='function.array-combine'>function.array-combine</a>]: Both parameters should have at least 1 element  
+  * [996](http://x2software.com/index.php/bugReports/996): file_get_contents(): Filename cannot be empty  
+  * [997](http://x2software.com/index.php/bugReports/997): Property "Media.title" is not defined.  
+  * [998](http://x2software.com/index.php/bugReports/998): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: parameter was not defined  
+  * [999](http://x2software.com/index.php/bugReports/999): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')GROUP BY   
+  * [1009](http://x2software.com/index.php/bugReports/1009): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '94f072b73cf2bdfdcffa32f488c4077b' for key 'PRIMARY'  
+  * [1016](http://x2software.com/index.php/bugReports/1016): Invalid argument supplied for foreach()  
+  * [1017](http://x2software.com/index.php/bugReports/1017): Property "X2WebApplication.settingsProfile" is not defined.  
+  * [1038](http://x2software.com/index.php/bugReports/1038): Unable to resolve the request "contacts/id/https//www.lplconnect.com".
+
 # 3.7.4 #
 3/4/2014
 * Fixed security holes listed in ["Multiple vulnerabilities in X2Engine"](http://hauntit.blogspot.com/2014/02/en-multiple-vulnerabilities-in-x2engine.html) published on [The HauntIT Blog](http://hauntit.blogspot.com/)
