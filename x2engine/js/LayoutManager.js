@@ -60,13 +60,42 @@ x2.LayoutManager = function (argsDict) {
 	this.pageMode = -1;		// 0 compact (no widgets)
 	this.newPageMode = 0;	// 1 fixed width (960px)
 							// 2 fill screen (5% margins)
+    this._historyMode = -1;		
 
     // values cached on window resize
     this.windowWidth; 
     this.contentWidth;
 
+    this._halfWidthSelector = '#main-column, .history'; 
+    this._hideSideBarLeftThreshold = 657;
+    this._hideWidgetsThreshold = 1040;
+    this._fullSearchBarThreshold = 915;
+    this._publisherHalfWidthThreshold = 940;
+    this._titleBarThresholds;
+    this._logoWidth = 30; // default logo width
+    this._mobileLayout; // true if mobile layout is active
+
+    // modal search bar is disabled for wide custom logos
+    this._disableSearchBarModes = $('#your-logo').hasClass ('custom-logo');
+    if (this._disableSearchBarModes) {
+        $('body').removeClass ('enable-search-bar-modes');
+    } 
+
     this._init ();
 }
+
+/*
+Public static properties
+*/
+
+/**
+ * Used to determine which mode search bar is in  
+ */
+x2.LayoutManager.searchBarModes = {
+    MOBILE: 0,
+    COMPACT: 1,
+    FULL: 2
+};
 
 /*
 Public static methods
@@ -91,6 +120,15 @@ Private static methods
 Public instance methods
 */
 
+x2.LayoutManager.prototype.setHalfWidthSelector = function (halfWidthSelector) {
+    this._halfWidthSelector = halfWidthSelector;
+    this._historyMode = -1;
+};
+
+x2.LayoutManager.prototype.setHalfWidthThreshold = function (halfWidthThreshold) {
+    this._publisherHalfWidthThreshold = halfWidthThreshold;
+};
+
 /**
  * Functions added via this method will get called during the window resize event. 
  * @var function a function which optionally accepts the parameters (windowWidth, contentWidth)
@@ -99,75 +137,133 @@ x2.LayoutManager.prototype.addFnToResizeQueue = function (fn) {
     this._resizeFnQueue.push (fn);
 };
 
+x2.LayoutManager.prototype.isMobileLayout = function () {
+    return this._mobileLayout;
+};
+
 /*
 Private instance methods
 */
+
+x2.LayoutManager.prototype._calculateTitleBarThresholds = function () {
+    var that = this;
+    var thresholds = [];
+    that.DEBUG && console.log ('_calculateTitleBarThresholds');
+
+    $('#main-menu > .top-bar-module-link').show ();
+    var $menuItems = $('#main-menu > .top-bar-module-link');
+    that.DEBUG && console.log ('$menuItems = ');
+    that.DEBUG && console.log ($menuItems);
+
+    for(var i = 0; i < $menuItems.length; i++) {
+		if(i == 0) {
+			thresholds[i] = 
+                $($menuItems[i]).outerWidth() + 
+                $('#user-menu').outerWidth() + 
+                that._logoWidth + 
+                $('#more-menu').outerWidth() + 370;
+		} else {
+			thresholds[i] = $($menuItems[i]).outerWidth() + thresholds[i-1];
+        }
+    }
+    $('#main-menu .top-bar-module-link').hide ();
+    $('#more-menu .top-bar-module-link').show ();
+
+    this._titleBarThresholds = thresholds;
+};
+
+/**
+ * Helper method for _setUpMenuResponsiveness. Used to determine how the search bar is being 
+ * displayed. The search bar switches between three modes (mobile, compact, full) and with each
+ * mode it takes up a different amount of space. As a result, each time there is a mode change,
+ * the title bar thresholds must be recalculated.
+ */
+x2.LayoutManager.prototype._getSearchbarMode = function (windowWidth) {
+    var that = this;
+    if (windowWidth < that._hideSideBarLeftThreshold) {
+        return x2.LayoutManager.searchBarModes['MOBILE'];
+    } else if (windowWidth > that._hideSideBarLeftThreshold && 
+        windowWidth < that._fullSearchBarThreshold) {
+
+        return x2.LayoutManager.searchBarModes['COMPACT'];
+    } else {
+        return x2.LayoutManager.searchBarModes['FULL'];
+    }
+};
 
 /**
  * Sets up reponsive behavior of top bar menu items 
  */
 x2.LayoutManager.prototype._setUpMenuResponsiveness = function () {
+    //if (x2.isAndroid && $('body').hasClass ('disable-mobile-layout')) return;
+
     var that = this; 
-	var $moreMenu = $('#main-menu ul');
-	var $moreMenuLi = $('#main-menu ul').parent();
-
-	// move all moreMenu items into the main menu so we can get the correct display widths
-	$moreMenu.children().insertBefore($moreMenuLi);
-
-	var $header = $('#main-menu-bar');
-	var $menuItems = $('#main-menu > li').not('#more-menu');
-	var menuItemCutoffs = new Array($menuItems.length);
-	var currentVisibleItems = $menuItems.length;
-
-
-	for(var i = 0; i < menuItemCutoffs.length; i++) {
-		if(i == 0) {
-			menuItemCutoffs[i] = $($menuItems[i]).outerWidth() + $('#user-menu').outerWidth() + 
-                $('#more-menu').outerWidth()+40;
-		} else {
-			menuItemCutoffs[i] = $($menuItems[i]).outerWidth() + menuItemCutoffs[i-1];
-        }
-	}
+	var $moreMenu = $('#more-menu ul');
+	var $moreMenuLi = $('#more-menu');
+    var $mainMenu = $('#main-menu');
+    var currentVisibleItems;
+    var menuItemCount = $('#main-menu > .top-bar-module-link').length;
+    var searchBarMode = this._getSearchbarMode ($(window).width ());
 
     this.addFnToResizeQueue (function (windowWidth, contentWidth) {
+        if ($('body').hasClass ('x2-mobile-layout')) return;
+
+        that.DEBUG && console.log ('searchBarMode = ');
+        that.DEBUG && console.log (searchBarMode);
+        var newSearchBarMode = that._getSearchbarMode (windowWidth);
+        that.DEBUG && console.log ('newSearchBarMode = ');
+        that.DEBUG && console.log (newSearchBarMode);
+
+        if (newSearchBarMode !== searchBarMode || 
+            typeof that._titleBarThresholds === 'undefined') {
+
+            that._calculateTitleBarThresholds ();
+            currentVisibleItems = 0;
+        }
+        searchBarMode = newSearchBarMode;
         that.DEBUG && console.log ('_setUpMenuResponsiveness resize fn');
 
 		// calculate number of elements to show in the main menu
 		var visibleItems = 0;
-		for(var i = 0; i < menuItemCutoffs.length; i++) {
-			if(menuItemCutoffs[i] + 70 < $header.outerWidth())
+		for(var i = 0; i < that._titleBarThresholds.length; i++) {
+			if(that._titleBarThresholds[i] + 70 < windowWidth)
 				visibleItems = i + 1;
 			else
 				break;
 		}
+        that.DEBUG && console.log ('visibleItems = ');
+        that.DEBUG && console.log (visibleItems);
+        that.DEBUG && console.log ('currentVisibleItems = ');
+        that.DEBUG && console.log (currentVisibleItems);
 
-		if(visibleItems < 1)
-			visibleItems = 1;
+		if(visibleItems < 0)
+			visibleItems = 0;
 
 		// there is room for more items, bring some out of the moreMenu
 		if(visibleItems > currentVisibleItems) {
-			for(var i=0; i<visibleItems - currentVisibleItems; i++) {
-				$moreMenu.children().first().insertBefore($moreMenuLi);
+			for(var i = 0; i < visibleItems - currentVisibleItems; ++i) {
+                $mainMenu.children (':hidden').not ('#more-menu').first ().show ();
+                $moreMenu.children (':visible').first ().hide ();
 			}
-			currentVisibleItems = $('#main-menu > li').not('#more-menu').length;
+			currentVisibleItems = $('#main-menu > .top-bar-module-link:visible').length;
 			
 		// the number of items is too high. move some into the moreMenu
 		} else if(visibleItems < currentVisibleItems) {
-			for(var i=$menuItems.length-1; i>=visibleItems; i--) {
-			
-				$($menuItems[i]).prependTo('#main-menu ul');
+			for(var i = currentVisibleItems; i > visibleItems; --i) {
+                $mainMenu.children (':visible').not ('#more-menu').last ().hide ();
+                $moreMenu.children (':hidden').last ().show ();
 			}
-			currentVisibleItems = $('#main-menu > li').not('#more-menu').length;
+			currentVisibleItems = $('#main-menu > .top-bar-module-link:visible').length;
 		}
 		// show More dropdown only if it's needed
-		if($moreMenu.children().length == 0) {
+		if($moreMenu.children(':visible').length == 0) {
 			$moreMenuLi.hide();
 		} else {
 			$moreMenuLi.show();
         }
     });
-
 };
+
 
 /**
  *  Initializes behavior of miscellaneous layout UI elements
@@ -243,7 +339,9 @@ x2.LayoutManager.prototype._setUpX2UIElements = function () {
 			$(document).trigger ('showWidgets');
 		}
 
-		$(window).resize();
+        var windowWidth = $(window).width ();
+        if (windowWidth > that._hideSideBarLeftThreshold)
+		    $(window).resize();
 	});
 
 
@@ -259,6 +357,45 @@ x2.LayoutManager.prototype._setUpX2UIElements = function () {
 };
 
 /**
+ * Called when layout transitions from mobile to desktop. Loops through all children of x2 global
+ * and calls mobileRefreshBehavior on all objects which support it.
+ */
+x2.LayoutManager.prototype._mobileRefreshX2Objects = function () {
+    for (var i in x2) {
+        if (typeof x2[i] === 'object' && x2[i] && 'mobileRefreshBehavior' in x2[i]) {
+            x2[i].mobileRefreshBehavior ();
+        }
+    }
+}
+
+x2.LayoutManager.prototype._setUpMobileLayout = function () {
+    var that = this;
+
+    if (!Modernizr.mq ('only all')) { // check for media query support
+        $('body').addClass ('disable-mobile-layout');
+        return;
+    }
+
+    this.addFnToResizeQueue (function (windowWidth) {
+        if ((typeof that._mobileLayout === 'undefined' || !that._mobileLayout) && 
+            windowWidth <= that._hideSideBarLeftThreshold) {
+
+            $('body').addClass ('x2-mobile-layout'); 
+            that._mobileRefreshX2Objects ();
+            that._mobileLayout = true;
+            //if (x2.gridViewStickyHeader) x2.gridViewStickyHeader.makeStickyForMobile ();
+        } else if ((typeof that._mobileLayout === 'undefined' || that._mobileLayout) &&
+            windowWidth > that._hideSideBarLeftThreshold) {
+
+            $('body').removeClass ('x2-mobile-layout'); 
+            that._mobileLayout = false;
+            that._mobileRefreshX2Objects ();
+            //if (x2.gridViewStickyHeader) x2.gridViewStickyHeader.makeUnstickyForMobile ();
+        }
+    });
+};
+
+/**
  * Binds window event function and adds a couple functions to the resize function queue
  */
 x2.LayoutManager.prototype._setUpWindowResizeEvent = function () {
@@ -269,10 +406,10 @@ x2.LayoutManager.prototype._setUpWindowResizeEvent = function () {
     this.addFnToResizeQueue (function (windowWidth, contentWidth) {
 
 		// figure out what layout mode to use
-		if(!x2.isAndroid && !x2.isIPad && windowWidth <= 1040) {
+		if(/*!x2.isAndroid &&*/ !x2.isIPad && windowWidth <= that._hideWidgetsThreshold) {
 			that.newPageMode = 0;
 		} else {
-			if(windowWidth >= 1040 && window.enableFullWidth) {
+			if(windowWidth >= that._hideWidgetsThreshold && window.enableFullWidth) {
 				that.newPageMode = 2;
 			} else {
 				that.newPageMode = 1;
@@ -297,19 +434,18 @@ x2.LayoutManager.prototype._setUpWindowResizeEvent = function () {
 
     // action history responsiveness setup
     this.addFnToResizeQueue ((function () {
-        var historyMode = -1;		
         return function (windowWidth, contentWidth) {
-            if(contentWidth < 940)
+            if(contentWidth < that._publisherHalfWidthThreshold)
                 var newHistoryMode = 0; // underneath record
             else
                 var newHistoryMode = 1 // side of record
                 
-            if(historyMode != newHistoryMode) {
-                historyMode = newHistoryMode;
-                if(historyMode == 1) {
-                    $('#main-column, .history').addClass('half-width');
+            if(that._historyMode !== newHistoryMode) {
+                that._historyMode = newHistoryMode;
+                if(that._historyMode === 1) {
+                    $(that._halfWidthSelector).addClass('half-width');
                 } else {
-                    $('#main-column, .history').removeClass('half-width');
+                    $(that._halfWidthSelector).removeClass('half-width');
                 }
             }
         };
@@ -317,7 +453,7 @@ x2.LayoutManager.prototype._setUpWindowResizeEvent = function () {
 
 	// the screen just got resized - decide what to do about it
 	$(window).resize(function() {
-		that.windowWidth = $(window).width();
+		that.windowWidth = window.innerWidth || $(window).width ();
 		that.contentWidth = $contentDiv.width();
 
         for (var i in that._resizeFnQueue) {
@@ -326,13 +462,257 @@ x2.LayoutManager.prototype._setUpWindowResizeEvent = function () {
 	});
 };
 
+/**
+ * Sets up behavior of left menu (the mobile version of the title bar)
+ */
+x2.LayoutManager.prototype._setUpLeftMenuResponsiveness = function () {
+    if ($('body').hasClass ('disable-mobile-layout')) return;
+    var that = this;
+
+    // hide/show left menu
+    $('#show-left-menu-button').on ('click', function () {
+        var windowWidth = window.innerWidth;                               
+        if (windowWidth < that._hideSideBarLeftThreshold) {
+            var contentWidth = $('#content-container').width ();
+            if ($('body').hasClass ('show-left-bar')) {
+                that._hideLeftBar ();
+            } else {
+                that._showLeftBar (contentWidth);
+            }
+        }
+        return false;
+    });
+       
+    // disable/enable logo link on window resize
+    (function () {
+        $searchBarTitle = $('#search-bar-title');
+        var logoHref = $searchBarTitle.attr ('href');
+        var disabled = false; // whether or not logo link is disabled
+
+        $(window).on ('resize.leftMenuResponsiveness', function () {
+            if (that.windowWidth < that._hideSideBarLeftThreshold) {
+                if (!disabled) {
+                    $searchBarTitle.attr ('href', '#');
+                    $searchBarTitle.css ({cursor: 'default'});
+                    $searchBarTitle.on ('click.leftMenuResponsiveness', function (e) { 
+                        $('#show-left-menu-button').click ();
+                        e.preventDefault; 
+                        return false;
+                    });
+                    disabled = true;
+                }
+            } else {
+                if (disabled) {
+                    $searchBarTitle.attr ('href', logoHref);
+                    $searchBarTitle.css ({cursor: ''});
+                    $searchBarTitle.unbind ('click.leftMenuResponsiveness');
+                    disabled = false;
+                }
+            }
+        });
+
+        $(window).trigger ('resize.leftMenuResponsiveness');
+    }) ();
+};
+
+/**
+ * Hide/show search bar when search button is clicked. This behavior is only active when 
+ * window width is between width used for full title bar and width used for mobile title bar.
+ */
+x2.LayoutManager.prototype._setUpSearchBarResponsiveness = function () {
+    if ($('body').hasClass ('disable-mobile-layout')) return;
+    var that = this;
+    $searchButton = $('#search-bar .x2-button.black, #search-bar-box');
+    $searchButton.on ('click._setUpSearchBarResponsiveness', function () {
+        if ($(this).next ().is (':hidden')) {
+            $(this).next ().animate ({ width: 'toggle'}, 300);
+            $('#user-menu li').not ('#search-bar').hide ();
+            auxlib.onClickOutside ($searchButton, function () {
+                if ($(this).next ().is (':visible')) {
+                    $(this).next ().hide ();
+                    $('#user-menu li').not ('#search-bar').show ();
+                }
+            }, true);
+            return false;
+        } 
+    });
+};
+
+/**
+ * Show slideout left title bar
+ * @param int contentWidth width of page content
+ */
+x2.LayoutManager.prototype._showLeftBar = function (contentWidth) {
+    var that = this;
+    if ($('body').hasClass ('show-right-bar')) that._hideRightBar ();
+
+    x2.forms.showShortDefaultText ($('#search-bar-box')[0]);
+    $('body').addClass ('show-left-bar');
+    $('#content-container').width (contentWidth);
+    $('#sidebar-left-widget-box').width (contentWidth);
+    $('#footer').width (contentWidth);
+    $('#user-menu-2').css ({
+        right: parseInt (auxlib.rStripPx ($('#user-menu-2').css ('right')), 10) - contentWidth
+    });
+    $('.page-title-fixed-inner .page-title').width (contentWidth);
+
+    // prevent left bar from closing when phone keyboard slides out
+    var searchBarHasFocus = false;
+    $('#search-bar-box').focus (function () {
+        searchBarHasFocus = true;
+    });
+    $('#search-bar-box').blur (function () {
+        searchBarHasFocus = false;
+    });
+
+    $(window).one ('resize', function () { 
+        if (!searchBarHasFocus) that._hideLeftBar (); 
+    });
+
+    auxlib.onClickOutside ($('#top-menus-container'), function () {
+        if ($(this).is (':visible') && $('body').hasClass ('x2-mobile-layout')) {
+            that._hideLeftBar ();
+        }
+    }, true);
+
+};
+
+/**
+ * Hide slideout left title bar
+ */
+x2.LayoutManager.prototype._hideLeftBar = function () {
+    $('body').removeClass ('show-left-bar');
+
+    x2.forms.showLongDefaultText ($('#search-bar-box')[0]);
+    $('#content-container').width ('');
+    $('#footer').width ('');
+    $('#user-menu-2').css ({
+        right: ''
+    });
+    $('#sidebar-left-widget-box').width ('');
+    $('.page-title-fixed-inner .page-title').width ('');
+};
+
+x2.LayoutManager.prototype._minimizeResponsiveTitleBar = function (titleBar) {
+    $(titleBar).removeClass ('responsive-title-bar-shown');
+    $(titleBar).css ({height: ''});
+    $(titleBar).find ('.responsive-menu-items').css ({display: ''});
+};
+
+x2.LayoutManager.prototype._expandResponsiveTitleBar = function (titleBar) {
+    $(titleBar).addClass ('responsive-title-bar-shown');
+    $(titleBar).animate ({ height: ($(titleBar).height () * 2) + 'px' }, 300);
+    $(titleBar).find ('.responsive-menu-items').show ();
+    $(titleBar).find ('.responsive-menu-items').css ({display: 'block'});
+};
+
+/**
+ * Sets up behavior of responsive page titles. Hides/shows page title buttons when grip button
+ * is pressed.
+ */
+x2.LayoutManager.prototype._setUpTitleBarResponsiveness = function () {
+    if ($('body').hasClass ('disable-mobile-layout')) return;
+    var that = this;
+
+    var delay = false;
+    $('.responsive-page-title > .mobile-dropdown-button').bind ('click', function () {
+        if (delay) return;
+        var titleBar = $(this).parents ('.responsive-page-title');
+        if ($(titleBar).hasClass ('responsive-title-bar-shown')) {
+            that._minimizeResponsiveTitleBar (titleBar);
+        } else {
+            auxlib.onClickOutside ($('.responsive-page-title'), function () {
+                that._minimizeResponsiveTitleBar (titleBar);
+            }, true);
+            $(window).one ('resize._setUpTitleBarResponsiveness', function () {
+                if ($(titleBar).children ('.responsive-menu-items').is (':visible')) {
+                    that._minimizeResponsiveTitleBar (titleBar);
+                }
+            }, '_setUpTitleBarResponsiveness');
+            that._expandResponsiveTitleBar (titleBar);
+        }
+        delay = true;
+        setTimeout (function () { delay = false; }, 350); // prevent double click bugs
+    });
+     
+    /*
+    Prevents issue which causes title bar to display incorrectly when switching from mobile to 
+    desktop layout. Issue only arises when h2 has display block on page load. This function 
+    replaces the functionality of a css media query adding/removing display block.  
+    */
+    var pageTitleDisplay;
+    this.addFnToResizeQueue (function (windowWidth, contentWidth) {
+        if ((!pageTitleDisplay || pageTitleDisplay === 'inline-block') &&
+            windowWidth < that._hideSideBarLeftThreshold) {
+
+            $('.responsive-page-title > h2').css ({'display': 'block'});
+            pageTitleDisplay = 'block';
+        } else if ((!pageTitleDisplay || pageTitleDisplay === 'block') &&
+            windowWidth >= that._hideSideBarLeftThreshold) {
+
+            $('.responsive-page-title > h2').css ({'display': ''});
+            pageTitleDisplay = 'inline-block';
+        }
+    });
+};
+
+/**
+ * Prevents wider logos from breaking responsive title bar. For wide custom logos, modal 
+ * search bar is disabled.
+ */
+x2.LayoutManager.prototype._accountForCustomTitleBarLogo = function () {
+    if (!$('#your-logo').hasClass ('custom-logo')) return;
+    var that = this;
+
+    var defaultLogoWidth = 36;
+
+        //console.log ('check loaded'); 
+
+    function afterLoad () {
+        //console.log ('loaded'); 
+        var logoWidth = $('#your-logo').width ();
+        that._logoWidth = logoWidth;
+        if (logoWidth <= defaultLogoWidth + 100) {
+            this._disableSearchBarModes = false;
+            $('body').addClass ('enable-search-bar-modes');
+            $(window).resize();
+            return;
+        }
+
+        /* apply a min-width which will prevent content resizing until the switch to the mobile 
+        layout occurs at _hideSideBarLeftThreshold */
+        $('#page').css ({
+            'min-width': (888 + that._logoWidth) + 'px'
+        });
+        $('#header').css ({
+            'min-width': (888 + that._logoWidth) + 'px'
+        });
+        that._calculateTitleBarThresholds ();
+        $(window).resize();
+
+    }
+
+    if ($('#your-logo').get(0).complete) {
+        afterLoad ();
+    } else {
+        $('#your-logo').load (function () {
+            afterLoad  ();
+        });
+    }
+};
+
 x2.LayoutManager.prototype._init = function () {
     var that = this; 
     that.DEBUG && console.log ('LayoutManager init');
     
+    this._setUpMobileLayout ();
     this._setUpX2UIElements ();
     this._setUpMenuResponsiveness ();
     this._setUpWindowResizeEvent ();
+    this._setUpLeftMenuResponsiveness ();
+    this._setUpSearchBarResponsiveness ();
+    this._setUpTitleBarResponsiveness ();
+    this._accountForCustomTitleBarLogo ();
 
     $(window).resize();
 };

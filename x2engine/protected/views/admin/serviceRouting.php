@@ -35,8 +35,8 @@
  *****************************************************************************************/
 
 ?>
-<div class="span-16">
 <div class="page-title"><h2><?php echo Yii::t('admin','Set Service Routing Options'); ?></h2></div>
+<div class='admin-form-container'>
 <div class="form">
 <?php echo Yii::t('admin','Change how service cases are assigned to users.'); ?>
 <br><br>

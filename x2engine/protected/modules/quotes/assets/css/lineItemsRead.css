@@ -35,12 +35,12 @@
 
 
 
-.quote-table .first-cell
+.line-items-read .quote-table .first-cell
 {
     display: none;
 }
 
-.quote-table input {
+.line-items-read .quote-table input {
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align:middle;
@@ -49,119 +49,119 @@
     color: black;
 }
 
-.quote-table td {
+.line-items-read .quote-table td {
     padding-right: 2px !important;
     padding-left: 2px !important;
 }
 
 /* line item name */
-.quote-table > thead > tr > th.line-item-name, 
-.quote-table > tbody#line-items > tr > td.x2-2nd-child
+.line-items-read .quote-table > thead > tr > th.line-item-name, 
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-2nd-child
 {
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 /* line item name cell */
-.quote-table > tbody#line-items > tr > td.x2-2nd-child {
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-2nd-child {
     width: 20%;
 }
 
 
 /* line item name */
-.quote-table > thead > tr > th.line-item-name, 
-.quote-table > tbody#line-items > tr > td.x2-2nd-child input
+.line-items-read .quote-table > thead > tr > th.line-item-name, 
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-2nd-child input
 {
     width: 95%;
 	font-size: 12px;
 }
 
 /* unit price cell */
-.quote-table > tbody#line-items > tr > td.x2-3rd-child {
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-3rd-child {
     width: 17.5%;
 }
 
 /* unit price */
-.quote-table > tbody#line-items > tr > td.x2-3rd-child input {
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-3rd-child input {
     width: 95%;
 	text-align: right;
 	font-size: 12px;
 }
 
 /* quantity cell */
-.quote-table > tbody#line-items > tr > td.x2-4th-child {
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-4th-child {
     width: 15%;
 }
 
 /* quantity */
-.quote-table > tbody#line-items > tr > td.x2-4th-child input {
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-4th-child input {
     width: 95%;
 	text-align: right;
 	font-size: 12px;
 }
 
 /* adjustment name cell */
-.quote-table > tbody#adjustments> tr > td.x2-4th-child {
+.line-items-read .quote-table > tbody.adjustments> tr > td.x2-4th-child {
     width: 15%;
 }
 
 /* adjustment name */
-.quote-table > tbody#adjustments> tr > td.x2-4th-child input {
+.line-items-read .quote-table > tbody.adjustments> tr > td.x2-4th-child input {
     width: 95%;
 	text-align: left;
 	font-size: 12px;
 }
 
 /* adjustments cell */
-.quote-table > tbody#line-items > tr > td.x2-5th-child,
-.quote-table > tbody#adjustments > tr > td.x2-5th-child {
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-5th-child,
+.line-items-read .quote-table > tbody.adjustments > tr > td.x2-5th-child {
     width: 15%;
 }
 
 /* adjustments */
-.quote-table > tbody#line-items > tr > td.x2-5th-child input,
-.quote-table > tbody#adjustments > tr > td.x2-5th-child input {
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-5th-child input,
+.line-items-read .quote-table > tbody.adjustments > tr > td.x2-5th-child input {
     width: 95%;
 	font-size: 12px;
 	text-align: right;
 }
 
 /* description cell */
-.quote-table > tbody#line-items > tr > td.x2-6th-child,
-.quote-table > tbody#adjustments > tr > td.x2-6th-child {
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-6th-child,
+.line-items-read .quote-table > tbody.adjustments > tr > td.x2-6th-child {
     width: 15%;
 }
 
 /* description */
-.quote-table > tbody#line-items > tr > td.x2-6th-child input,
-.quote-table > tbody#adjustments > tr > td.x2-6th-child input {
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-6th-child input,
+.line-items-read .quote-table > tbody.adjustments > tr > td.x2-6th-child input {
     width: 95%;
 	font-size: 12px;
 }
 
 /* line total cell */
-.quote-table > tbody#line-items > tr > td.x2-7th-child,
-.quote-table > tbody#adjustments > tr > td.x2-7th-child {
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-7th-child,
+.line-items-read .quote-table > tbody.adjustments > tr > td.x2-7th-child {
     width: 20%;
 }
 
 /* line total */
-.quote-table > tbody#line-items > tr > td.x2-7th-child input,
-.quote-table > tbody#adjustments > tr > td.x2-7th-child input {
+.line-items-read .quote-table > tbody.line-items > tr > td.x2-7th-child input,
+.line-items-read .quote-table > tbody.adjustments > tr > td.x2-7th-child input {
 	text-align: left;
     width: 95%;
 	font-size: 12px;
 }
 
 /* subtotal and total cell */
-.quote-table .subtotal-container,
-.quote-table .total-container {
+.line-items-read .quote-table .subtotal-container,
+.line-items-read .quote-table .total-container {
     width: 17.5%;
 }
 
 /* subtotal and total */
-.quote-table input#subtotal,
-.quote-table input#total {
+.line-items-read .quote-table input.subtotal,
+.line-items-read .quote-table input.total {
     width: 95%;
 	text-align: left;
 	font-size: 12px;

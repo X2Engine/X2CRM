@@ -323,6 +323,11 @@ class Fields extends CActiveRecord {
     /**
      * The inverse operation of {@link nameId()}, this splits a uniquely
      * -identifying "nameId" field into name and ID.
+     *
+     * This function should always return an array with two elements, the first
+     * being the name and the second being the ID.
+     *
+     * @param string $nameId The nameId reference.
      */
     public static function nameAndId($nameId) {
         // The last occurrence should be the delimeter
@@ -443,9 +448,12 @@ class Fields extends CActiveRecord {
         $converted = strtr($value, array_flip(get_html_translation_table(HTML_ENTITIES, ENT_QUOTES)));
         $value = trim($converted, chr(0xC2).chr(0xA0));
 
-        // Turn null string into zero:
-        if($value === null || $value === '')
-            return ($type != 'int') ? 0.0 : 0;
+        /* 
+        Setting numeric field to '' fails in MYSQL strict mode and gets coerced to 0 in non-strict 
+        mode. null gets used instead to allow empty number field values.
+        */
+        if($value === null || $value === '') 
+            return null; 
         else if(!in_array($type, array('int', 'currency', 'float', 'percentage')))
             return $value; // Unrecognized type
         else if(!preg_match('/^([\d\.,]+)e?[\+\-]?\d*$/', $value))

@@ -34,6 +34,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss('recordViewCss',"
+
+#content {
+    background: none !important;
+    border: none !important;
+}
+");
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 $menuItems = array(
@@ -72,11 +79,17 @@ $(function() {
 	$('body').data('modelId', $modelId);
 });");
 ?>
+
+<div class="page-title-placeholder"></div>
+<div class="page-title-fixed-outer">
+    <div class="page-title-fixed-inner">
 <div class="page-title icon products">
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 	<h2><span class="no-bold"><?php echo Yii::t('products','Product:'); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 	<a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><span></span></a>
+</div>
+</div>
 </div>
 <div id="main-column" class="half-width">
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Product')); ?>

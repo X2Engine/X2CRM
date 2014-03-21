@@ -101,7 +101,8 @@ class RoleToUser extends CActiveRecord
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 * @return CActiveDataProvider the data provider that can return the models based on the 
+     *  search/filter conditions.
 	 */
 	public function search()
 	{
@@ -118,4 +119,10 @@ class RoleToUser extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+
+    public function afterSave () {
+        // roles have been updated, clear the cached roles for the corresponding user
+        Roles::clearCachedUserRoles ($this->userId);
+        parent::afterSave ();
+    }
 }

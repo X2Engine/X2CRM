@@ -41,13 +41,14 @@
  */
 abstract class ChartWidget extends SortableWidget {
 
-
-    public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{chartSubtypeSelector}{closeButton}{minimizeButton}</div>{widgetContents}';
+    public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{chartSubtypeSelector}{closeButton}{minimizeButton}{settingsMenu}</div>{widgetContents}';
 
     /**
      * @var string the type of chart (e.g. 'eventsChart', 'usersChart')
      */
     public $chartType;
+
+    protected $containerClass = 'sortable-widget-container x2-layout-island sortable-chart-widget';
 
     private static $_JSONPropertiesStructure;
 
@@ -161,7 +162,41 @@ abstract class ChartWidget extends SortableWidget {
                         border-radius: 0px !important;
                     }
 
+                    .sortable-chart-widget .chart-controls-container {
+                        width: 604px;
+                        padding: 3px;
+                    }
 
+                    @media (max-width: 684px) {
+                        .sortable-chart-widget .chart-controls-container {
+                            width: 95%;
+                            padding: 3px;
+                        }
+                        .sortable-chart-widget .popup-dropdown-menu.flipped:before {
+                            right: 52px;
+                        }
+                        .sortable-chart-widget .popup-dropdown-menu {
+                            left: 0 !important;
+                            right: 0!important;
+                            margin: auto;
+                        }
+                    }
+
+                    @media (max-width: 529px) {
+                        .sortable-chart-widget .chart-container .bin-size-button-set {
+                            margin-top: 6px;
+                        }
+                    }
+
+                    /* menu contents */
+                    @media (max-width: 500px) {
+                        .sortable-chart-widget .chart-container .chart-filters-container {
+                            height: auto;
+                        }
+                        .sortable-chart-widget .ui-multiselect {
+                            margin-top: 0 !important;
+                        }
+                    }
                 ")
             );
         }

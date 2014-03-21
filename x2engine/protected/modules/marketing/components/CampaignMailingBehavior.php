@@ -238,7 +238,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         //
         // The rationale for disabling this (magic redirect tracking links) is
         // that it caused email to get caught in spam filters.
-        // 
+        //
         /*
         $url = $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'click'));
         $emailBody = preg_replace(

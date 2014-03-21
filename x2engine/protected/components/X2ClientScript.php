@@ -86,7 +86,8 @@ class X2ClientScript extends NLSClientScript {
             $scripts .= '
                 if($("head link[href=\''.$url.'\']").length == 0) {
                     $.ajax({type:"GET",url:"'.$url.'"}).done(function(response) {
-                        $(\'<link rel="stylesheet" type="text/css" href="'.$url.'">\').appendTo("head");
+                        $(\'<link rel="stylesheet" type="text/css" href="'.$url.'">\').
+                            appendTo("head");
                     });
                 }';
         }
@@ -111,31 +112,45 @@ class X2ClientScript extends NLSClientScript {
         echo $scripts.$endScripts.';';
     }
 
+    public function registerResponsiveCssFile ($url, $media='') {
+        if (RESPONSIVE_LAYOUT) {
+            $this->registerCssFile ($url, $media);
+        }
+    }
+
+    public function registerResponsiveCss ($id, $css, $media='') {
+        if (RESPONSIVE_LAYOUT) {
+            $this->registerCss ($id, $css, $media);
+        }
+    }
+
     /**
-     * Performs all the necessary JavaScript/CSS initializations for most parts of the app.
+     * Registers a set of packages at the specified position
+     * @param Array $packages 
+     * @param Integer $position 
      */
-    public function registerMain(){
-        $cs = $this;
-        $jsVersion = '?'.Yii::app()->params->buildDate;
-        $fullscreen = $this->fullscreen;
-        $profile = $this->profile;
-        
-        $baseUrl = $this->baseUrl;
-        $themeUrl = $this->themeUrl;
-        $scriptUrl = $this->scriptUrl;
-        $admin = $this->admin;
-        $isGuest = $this->isGuest;
+    public function registerPackages ($packages, $position=null) {
+        if ($position === null) {
+            $position = CClientScript::POS_END;
+        }
+        Yii::app()->clientScript->packages = $packages;
+        $oldCoreScriptPosition = Yii::app()->clientScript->coreScriptPosition;
+        Yii::app()->clientScript->coreScriptPosition = $position;
+        foreach (array_keys ($packages) as $packageName) {
+            Yii::app()->clientScript->registerPackage ($packageName);
+        }
+        Yii::app()->clientScript->coreScriptPosition = $oldCoreScriptPosition;
+    }
 
-        // jQuery and jQuery UI libraries
-        $cs->registerCoreScript('jquery')
-           ->registerCoreScript('jquery.ui');
-
+    public function getCurrencyConfigScript () {
         // Declare currency format(s) from Yii for the formatCurrency plugin
         $locale = Yii::app()->locale;
         $cldFormat = array();
         foreach(explode(';', $locale->getCurrencyFormat()) as $format){
             $newFormat = preg_replace('/¤/', '%s', $format);
-            $newFormat = preg_replace('/[#,\.0]+/', '%n', $newFormat); // The number, in positive/negative
+
+            // The number, in positive/negative
+            $newFormat = preg_replace('/[#,\.0]+/', '%n', $newFormat); 
             $cldFormat[] = $newFormat;
         }
         if(count($cldFormat) == 1){ // Default convention if no negative format is defined
@@ -158,6 +173,34 @@ class X2ClientScript extends NLSClientScript {
         }
         $cldScript .= "\n})(jQuery);";
 
+        return $cldScript;
+    }
+
+    /**
+     * Performs all the necessary JavaScript/CSS initializations for most parts of the app.
+     */
+    public function registerMain(){
+        foreach(array('IS_IPAD','RESPONSIVE_LAYOUT') as $layoutConst) {
+            defined($layoutConst) or define($layoutConst,false);
+        }
+
+        $cs = $this;
+        $jsVersion = '?'.Yii::app()->params->buildDate;
+        $fullscreen = $this->fullscreen;
+        $profile = $this->profile;
+        
+        $baseUrl = $this->baseUrl;
+        $themeUrl = $this->themeUrl;
+        $scriptUrl = $this->scriptUrl;
+        $admin = $this->admin;
+        $isGuest = $this->isGuest;
+
+        // jQuery and jQuery UI libraries
+        $cs->registerCoreScript('jquery')
+           ->registerCoreScript('jquery.ui');
+
+        $cldScript = $this->getCurrencyConfigScript ();
+
         AuxLib::registerPassVarsToClientScriptScript('auxlib', array(
             'saveMiscLayoutSettingUrl' =>
             "'".addslashes(Yii::app()->createUrl('/profile/saveMiscLayoutSetting'))."'"
@@ -166,16 +209,17 @@ class X2ClientScript extends NLSClientScript {
 
         // custom scripts
         $cs->registerScriptFile($baseUrl.'/js/json2.js')
+                ->registerScriptFile($baseUrl.'/js/webtoolkit.sha256.js')
                 ->registerScriptFile($baseUrl.'/js/main.js'.$jsVersion, CCLientScript::POS_HEAD)
                 ->registerScriptFile($baseUrl.'/js/auxlib.js', CClientScript::POS_HEAD)
+                ->registerScriptFile($baseUrl.'/js/IframeFixOverlay.js', CClientScript::POS_HEAD)
                 ->registerScriptFile($baseUrl.'/js/LayoutManager.js')
-                ->registerScriptFile($baseUrl.'/js/publisher.js')
+                //->registerScriptFile($baseUrl.'/js/X2Select.js')
                 ->registerScriptFile($baseUrl.'/js/media.js')
-                ->registerScriptFile($baseUrl.'/js/x2forms.js')
+                ->registerScriptFile($baseUrl.'/js/X2Forms.js')
                 ->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js'.$jsVersion)
                 ->registerScript('formatCurrency-locales', $cldScript, CCLientScript::POS_HEAD)
                 ->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js')
-                ->registerScriptFile($baseUrl.'/js/relationships.js')
                 ->registerScriptFile($baseUrl.'/js/widgets.js')
                 ->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion)
                 ->registerScriptFile($baseUrl.'/js/ActionFrames.js'.$jsVersion)
@@ -185,6 +229,7 @@ class X2ClientScript extends NLSClientScript {
         if(IS_IPAD){
             $cs->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
         }
+        $this->registerInitScript ();
 
         if(Yii::app()->session['translate'])
             $cs->registerScriptFile($baseUrl.'/js/translator.js');
@@ -200,14 +245,20 @@ class X2ClientScript extends NLSClientScript {
             ->registerCssFile($themeUrl.'/css/print.css'.$jsVersion, 'print')
             ->registerCssFile($themeUrl.'/css/combined.css'.$jsVersion, 'screen, projection')
             ->registerCoreScript('cookie');
-
-        if(IS_ANDROID)
-            $cs->registerCssFile($themeUrl.'/css/androidLayout.css'.$jsVersion, 'screen, projection');
-        else if(IS_IPAD)
+        if (RESPONSIVE_LAYOUT) {
+            $cs->registerCssFile(
+                $themeUrl.'/css/responsiveCombined.css'.$jsVersion, 'screen, projection');
+        }
+        if(!RESPONSIVE_LAYOUT && IS_ANDROID) {
+            $cs->registerCssFile(
+                $themeUrl.'/css/androidLayout.css'.$jsVersion, 'screen, projection');
+        } elseif (IS_IPAD) {
             $cs->registerCssFile($themeUrl.'/css/ipadLayout.css'.$jsVersion, 'screen, projection');
+        }
 
         $cs->registerScript('fullscreenToggle', '
-            window.enableFullWidth = '.(!Yii::app()->user->isGuest ? ($profile->enableFullWidth ? 'true' : 'false') : 'true').';
+            window.enableFullWidth = '.(!Yii::app()->user->isGuest ? 
+                ($profile->enableFullWidth ? 'true' : 'false') : 'true').';
             window.fullscreen = '.($fullscreen ? 'true' : 'false').';
         ', CClientScript::POS_HEAD);
 
@@ -228,7 +279,8 @@ class X2ClientScript extends NLSClientScript {
                 });
             ", CClientScript::POS_READY);
             $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
-                    ->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion, CClientScript::POS_BEGIN);
+               ->registerScriptFile(
+                $baseUrl.'/js/notifications.js'.$jsVersion, CClientScript::POS_BEGIN);
         }
 
         if(!$isGuest && ($profile->language == 'he' || $profile->language == 'fa'))
@@ -311,6 +363,19 @@ class X2ClientScript extends NLSClientScript {
     }
     public function setThemeUrl($value) {
         $this->_themeUrl = $value;
+    }
+
+    private function registerInitScript () {
+        Yii::app()->clientScript->registerScript ('X2ClientScriptInitScript',"
+            (function () {
+                var actionFramesName = 'actionFrames';
+                x2[actionFramesName] = new x2.ActionFrames ({ 
+                    instanceName: actionFramesName,
+                    deleteActionUrl: '".
+                        Yii::app()->controller->createUrl ('/actions/actions/delete')."'
+                });
+            }) ();
+        ", CClientScript::POS_HEAD);
     }
 
 

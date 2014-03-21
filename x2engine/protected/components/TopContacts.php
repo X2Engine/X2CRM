@@ -42,11 +42,6 @@ Yii::import('application.components.LeftWidget');
  */
 class TopContacts extends LeftWidget {
 
-	public function init() {
-        parent::initTitleBar ();
-		parent::init();
-	}
-
 	protected function renderContent() {
 		$this->render('topContacts',array(
 			'topContacts'=>User::getTopContacts()

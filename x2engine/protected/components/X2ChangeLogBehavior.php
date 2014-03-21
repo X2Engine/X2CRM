@@ -142,10 +142,6 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 	 */
 	public function afterUpdate($event) {
 		if($this->validated) {
-			X2Flow::trigger('RecordUpdateTrigger',array(
-				'model'=>$this->getOwner()
-			));
-
 			$changes = $this->getChanges();
 			$this->updateChangelog($changes);
 		}

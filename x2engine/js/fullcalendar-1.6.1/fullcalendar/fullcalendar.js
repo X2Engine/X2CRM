@@ -708,13 +708,34 @@ function Header(calendar, options) {
 		tm = options.theme ? 'ui' : 'fc';
 		var sections = options.header;
 		if (sections) {
-			element = $("<table class='fc-header' style='width:100%'/>")
+        /* x2modstart */ 
+        if (!$('body').hasClass ('disable-mobile-layout')) {
+        // added responsive menu
+			element = $(
+                "<table class='page-title responsive-page-title fc-header' style='width:100%'/>")
+				.append(
+					$("<tr/>")
+						.append(renderSection('left'))
+						.append(renderSection('center'))
+                        .append (
+                        '<td class="mobile-dropdown-button">'+
+                            '<div class="x2-bar"></div>' +
+                            '<div class="x2-bar"></div>' +
+                            '<div class="x2-bar"></div>' +
+                        '</td>')
+						.append(renderSection('right'))
+				);
+        } else {
+			element = $(
+                "<table class='page-title fc-header' style='width:100%'/>")
 				.append(
 					$("<tr/>")
 						.append(renderSection('left'))
 						.append(renderSection('center'))
 						.append(renderSection('right'))
 				);
+        }
+        /* x2modend */ 
 			return element;
 		}
 	}
@@ -726,7 +747,14 @@ function Header(calendar, options) {
 	
 	
 	function renderSection(position) {
-		var e = $("<td class='fc-header-" + position + "'/>");
+        /* x2modstart */ 
+        // added responsive menu
+        if (position === 'right') {
+		    var e = $("<td class='responsive-menu-items fc-header-" + position + "'/>");
+        } else {
+		    var e = $("<td class='fc-header-" + position + "'/>");
+        }
+        /* x2modend */ 
 		var buttonStr = options.header[position];
 		if (buttonStr) {
 			$.each(buttonStr.split(' '), function(i) {
@@ -755,15 +783,31 @@ function Header(calendar, options) {
 						if (buttonClick) {
 							var icon = options.theme ? smartProperty(options.buttonIcons, buttonName) : null; // why are we using smartProperty here?
 							var text = smartProperty(options.buttonText, buttonName); // why are we using smartProperty here?
+
+                            /* x2modstart */ 
+                            // replaced icons with < and >
+                            var iconTextReplacement;
+                            if (icon) {
+                                if (icon === 'circle-triangle-w') {
+                                    iconTextReplacement = '&lt;';
+                                } else {
+                                    iconTextReplacement = '&gt;';
+                                }
+                            }
+
 							var button = $(
-								"<span class='fc-button fc-button-" + buttonName + " " + tm + "-state-default'>" +
+								"<span class='x2-button fc-button fc-button-" + buttonName + " " 
+                                + tm + "-state-default'>" +
 									(icon ?
-										"<span class='fc-icon-wrap'>" +
-											"<span class='ui-icon ui-icon-" + icon + "'/>" +
+										"<span>" +
+											"<span class='calendar-vcr-button'>" +
+                                                (iconTextReplacement ? iconTextReplacement : '') +
+										    "</span>" +
 										"</span>" :
 										text
 										) +
 								"</span>"
+                            /* x2modend */
 								)
 								.click(function() {
 									if (!button.hasClass(tm + '-state-disabled')) {

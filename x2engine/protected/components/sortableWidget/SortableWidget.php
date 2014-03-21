@@ -85,6 +85,11 @@ abstract class SortableWidget extends X2Widget {
     public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{closeButton}{minimizeButton}</div>{widgetContents}';
 
     /**
+     * @var string CSS class to be added to the container element
+     */
+    protected $containerClass = 'sortable-widget-container x2-layout-island';
+
+    /**
      * Packages which will be registered when the widget content gets rendered.
      */
     protected $_packages;
@@ -303,19 +308,6 @@ abstract class SortableWidget extends X2Widget {
     }
 
     /**
-     * Registers this widgets packages. 
-     */
-    public function registerPackages () {
-        $packages = $this->packages;
-        Yii::app()->clientScript->packages = $packages;
-        Yii::app()->clientScript->coreScriptPosition = CClientScript::POS_END;
-        foreach (array_keys ($packages) as $packageName) {
-            Yii::app()->clientScript->registerPackage ($packageName);
-        }
-        Yii::app()->clientScript->coreScriptPosition = CClientScript::POS_HEAD;
-    }
-
-    /**
      * Add a package to the array of registered packages 
      * @param array $package
      */
@@ -446,7 +438,7 @@ abstract class SortableWidget extends X2Widget {
      * This gets called if {widgetContents} is contained in the template string.
      */
     public function renderWidgetContents () {
-        $this->registerPackages ();
+        Yii::app()->clientScript->registerPackages ($this->packages);
 
         /*
         If it's an ajax request, script must be placed at the end for it to be exectuted upon
@@ -459,7 +451,7 @@ abstract class SortableWidget extends X2Widget {
 
         $minimized = self::getJSONProperty ($this->profile, 'minimized', $this->widgetType);
         echo "<div id='".get_called_class ()."-widget-content-container'".
-            ($minimized ? "style='display: none;'" : '').">";
+            ($minimized ? " style='display: none;'" : '').">";
         $this->render ($this->viewFile, $this->getViewFileParams ());
         echo "</div>";
     }
@@ -586,7 +578,7 @@ abstract class SortableWidget extends X2Widget {
                     }
 
                     .widget-title-bar {
-                        padding:3px;
+                        padding:1px;
                         border-radius:            3px 3px 0px 0px;
                         -moz-border-radius:        3px 3px 0px 0px;
                         -webkit-border-radius:    3px 3px 0px 0px;

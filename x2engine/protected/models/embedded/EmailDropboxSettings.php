@@ -100,7 +100,7 @@ class EmailDropboxSettings extends JSONEmbeddedModel {
         echo CHtml::tag('span', array(
             'class' => 'x2-hint',
             'style'=>$htmlOptions['style'],
-            'title' => Yii::t('admin', 'If disabled, the email dropbox will ignore any emails that are to or from addresses not matching any contacts in X2CRM. If enabled, new contacts will be created automatically using name info contained in the email.')
+            'title' => Yii::t('admin', 'If disabled, the email dropbox will ignore any emails that are to or from addresses not matching any contacts in X2Engine. If enabled, new contacts will be created automatically using name info contained in the email.')
         ), '[?]',$htmlOptions);
         echo '<br />';
         echo '<div style="margin-left:20px;'.((bool) $this->createContact ? '' : 'display:none').'" id="empty-contact">';

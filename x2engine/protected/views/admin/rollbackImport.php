@@ -65,6 +65,12 @@ $this->widget('zii.widgets.grid.CGridView', array(
                 'value' => '$data["importId"]',
                 'type' => 'raw',
             ),
+            'type'=>array(
+                'name' => 'type',
+                'header' => Yii::t('admin', 'Type of Record Imported'),
+                'value' => '$data["type"]',
+                'type' => 'raw',
+            ),
             'records'=>array(
                 'name' => 'records',
                 'header' => Yii::t('admin', "# of Records Imported"),

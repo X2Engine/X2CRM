@@ -37,7 +37,7 @@
 
 <?php
 $this->layout = '//layouts/column1';
-$this->pageTitle=Yii::app()->name . ' - ' . Yii::t('help','Icon Reference');
+$this->pageTitle=Yii::app()->settings->appName . ' - ' . Yii::t('help','Icon Reference');
 
 
 $cssString = "

@@ -74,8 +74,8 @@ x2.Notifs = function (argsDict) {
 Public static properties
 */
 
-//x2.Notifs.fetchNotificationUpdates = !x2.DEBUG;
-x2.Notifs.fetchNotificationUpdates = true;
+x2.Notifs.fetchNotificationUpdates = !x2.DEBUG;
+//x2.Notifs.fetchNotificationUpdates = true;
 
 
 /*
@@ -596,9 +596,9 @@ x2.Notifs.prototype._addNotifications = function (notifData, append, firstCall) 
         newNotifNum++;
         
         if (notifData[i].type == 'voip_call' && 
-            timeNow.getTime() / 1000 - notifData[i].timestamp < 20 && 
+            timeNow.getTime() / 1000 - notifData[i].timestamp < 2*x2.notifUpdateInterval &&
             that._windowId == that._masterId) { 
-            // Screen pop only if less than 20 seconds ago and master window
+            // Screen pop only if less than 2*interval ago and master window
 
             window.open (yii.baseUrl+'/index.php/contacts/'+notifData[i].modelId);
         }

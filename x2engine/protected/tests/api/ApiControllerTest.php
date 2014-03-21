@@ -16,7 +16,7 @@ Yii::import('application.models.*');
  * @package application.tests.api
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class ApiControllerTest extends CURLTestCase {
+class ApiControllerTest extends CURLDbTestCase {
 
 	const TEST_LEVEL = 2;
 

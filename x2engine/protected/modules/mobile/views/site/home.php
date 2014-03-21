@@ -41,7 +41,7 @@ $isAdmin = !$isGuest && $app->params->isAdmin;
 $isUser = !($isGuest || $isAdmin);
 $module = $app->controller->id;
 
-$this->pageTitle = Yii::app()->name . ' - Home';
+$this->pageTitle = Yii::app()->settings->appName . ' - Home';
 ?>
 <div>
     <?php

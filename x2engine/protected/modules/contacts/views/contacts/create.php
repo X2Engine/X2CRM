@@ -52,18 +52,22 @@ $this->actionMenu = $this->formatMenu($menuItems);
 <div class="page-title icon contacts">
 	<h2><?php echo Yii::t('contacts','Create Contact'); ?></h2>
 </div>
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts')); ?>
+<?php 
 
-<?php
-$createAccountUrl = $this->createUrl('/accounts/accounts/create');
-Yii::app()->clientScript->registerScript('create-account', "
-	$(function() {
-		$('.create-account').data('createAccountUrl', '$createAccountUrl');
-		$('.create-account').qtip({content: 'Create a new Account for this Contact.'});
-		// init create action button
-		$('.create-account').initCreateAccountDialog();
-	});
-");
+echo $this->renderPartial(
+    'application.components.views._form', 
+    array(
+        'model'=>$model,
+        'users'=>$users,
+        'modelName'=>'contacts',
+        'defaultsByRelatedModelType' => array (
+            'Accounts' => array (
+                'phone' => 'js: $("div.formInputBox #Contacts_phone").val();',
+                'website' => 'js: $("div.formInputBox #Contacts_website").val();',
+                'assignedTo' => 'js: $("#Contacts_assignedTo_assignedToDropdown").val();'
+            )
+        )
+    )); 
 
 if(isset($_POST['x2ajax'])) {
     echo "<script>\n";

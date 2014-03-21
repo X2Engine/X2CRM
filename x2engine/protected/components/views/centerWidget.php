@@ -39,7 +39,6 @@ if ($this instanceof X2WidgetList) {
     Yii::app()->clientScript->registerCoreScript('jquery.ui');
     Yii::app()->clientScript->packages = X2WidgetList::packages ();
     Yii::app()->clientScript->registerPackage('widgetListCombinedCss');
-    Yii::app()->clientScript->registerPackage('widgetListCombinedCss2');
     if ($name === 'GalleryWidget') {
         Yii::import('application.extensions.gallerymanager.GalleryManager');
         $galleryWidget = new GalleryManager ();
@@ -139,7 +138,7 @@ if($name == "InlineRelationships"){
 				<b><?php echo Yii::t('app', Yii::t('app', 'Action History')); ?></b>
 			</span>
 			<!--  -->
-			<select id='chart-subtype-selector'>
+			<select id='chart-subtype-selector' class='x2-select'>
 				<option value='line'>
 					<?php echo Yii::t('app', 'Line Chart'); ?>
 				</option>
@@ -166,31 +165,40 @@ if($name == "InlineRelationships"){
 						echo CHtml::image(
                             $themeUrl.'/images/icons/Expand_Widget.png', 
                             Yii::t('app', 'Maximize Widget'),
-							array ('title' => Yii::t('app', 'Maximize Widget')));
+							array (
+                                'title' => Yii::t('app', 'Maximize Widget'),
+                                'class' => 'center-widget-maximize-button',
+                            ));
 					} else {
 						echo CHtml::image(
                             $themeUrl.'/images/icons/Collapse_Widget.png', 
                             Yii::t('app', 'Minimize Widget'),
-							array ('title' => Yii::t('app', 'Minimize Widget')));
+							array (
+                                'title' => Yii::t('app', 'Minimize Widget'),
+                                'class' => 'center-widget-minimize-button',
+                            ));
 					}
 					?>
 				</a>
 				<?php
-					echo CHtml::image(
+					/*echo CHtml::image(
 						$themeUrl.'/css/gridview/arrow_both.png',
 						Yii::t('app', 'Sort Widget'),
 						array (
 							'title' => Yii::t('app', 'Sort Widget'),
 							'class' => 'widget-sort-handle'
 						)
-					);
+					);*/
 				?>
                 <a onclick="$('#x2widget_<?php echo $name; ?>').hideWidget(); return false" 
                  href="#">
 					<?php 
                     echo CHtml::image(
                         $themeUrl.'/images/icons/Close_Widget.png', Yii::t('app', 'Close Widget'),
-						array ('title' => Yii::t('app', 'Close Widget'))); 
+						array (
+                            'title' => Yii::t('app', 'Close Widget'),
+                            'class' => 'center-widget-close-button',
+                        )); 
                     ?>
 				</a>
             </div>
@@ -199,19 +207,20 @@ if($name == "InlineRelationships"){
     <div class="x2widget-container" 
      style="<?php echo $widget['minimize'] ? 'display: none;' : ''; ?>">
         <?php 
-        $widgetParams = array (
+        $params = array (
             'widget' => $widget,
             'name' => $name, 
             'model' => $model, 
-            'modelType' => $modelType
+            'modelType' => $modelType,
+            'widgetParams' => (isset ($widgetParams) ? $widgetParams : array ())
         ); 
         if (isset ($moduleName)) {
-            $widgetParams['moduleName'] = $moduleName;
+            $params['moduleName'] = $moduleName;
         }
         if(isset($this->controller)){ // not ajax  
-            $this->render('x2widget', $widgetParams);
+            $this->render('x2widget', $params);
         } else { // we are in an ajax call 
-            $this->renderPartial('application.components.views.x2widget', $widgetParams);
+            $this->renderPartial('application.components.views.x2widget', $params);
         } 
         ?>
     </div>

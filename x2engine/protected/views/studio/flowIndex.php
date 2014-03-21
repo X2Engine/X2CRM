@@ -39,12 +39,14 @@ $this->actionMenu = array(
 	array(
         'label'=>Yii::t('studio','Create Flow'),
         'url'=>array('flowDesigner'),
-        'visible'=>(Yii::app()->params->edition==='pro')),
+        'visible'=>Yii::app()->contEd('pro'),
+    ),
     array (
         'label' => Yii::t('studio', 'All Trigger Logs'),
         'url' => array ('triggerLogs'),
-        'visible' => (Yii::app()->params->edition === 'pro')
-    )
+        'visible' => Yii::app()->contEd('pro')
+    ),
+     
 );
 
 ?>
@@ -110,6 +112,6 @@ $this->widget('zii.widgets.grid.CGridView', array(
 </div>
 <br>
 <?php
-if(Yii::app()->params->edition==='pro')
+if(Yii::app()->contEd('pro'))
 	echo CHtml::link(Yii::t('studio','Create New Flow'),array('/studio/flowDesigner'),array('class'=>'x2-button'));
 ?>

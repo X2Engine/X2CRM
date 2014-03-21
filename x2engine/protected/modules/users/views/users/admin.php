@@ -70,17 +70,12 @@ else
 </div><!-- search-form -->
 <div class='flush-grid-view'>
 <?php
-$this->widget('zii.widgets.grid.CGridView', array(
+$this->widget('X2GridViewGeneric', array(
     'id' => 'users-grid',
+	'buttons'=>array('clearFilters','autoResize'),
     'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview/',
-    'template' => '<div class="page-title icon users"><h2>'.Yii::t('users', 'Manage Users').'</h2><div class="x2-button-group">'
-    .CHtml::link('<span></span>', '#', array('title' => Yii::t('app', 'Advanced Search'), 'class' => 'x2-button search-button'))
-    .CHtml::link('<span></span>', array(Yii::app()->controller->action->id, 'clearFilters' => 1), array('title' => Yii::t('app', 'Clear Filters'), 'class' => 'x2-button filter-button')).'</div>'
-    .CHtml::link(Yii::t('app', 'Today'), array('admin', 'offset' => '0:00'), array('class' => 'x2-button'))
-    .CHtml::link(Yii::t('app', 'This Week'), array('admin', 'offset' => 'first day of this week'), array('class' => 'x2-button'))
-    .CHtml::link(Yii::t('app', 'This Month'), array('admin', 'offset' => 'first day of this month'), array('class' => 'x2-button x2-last-child'))
-    .X2GridView::getFilterHint()
-    .'{summary}</div>{items}{pager}',
+    'template' => '<div class="page-title icon users"><h2>'.Yii::t('users', 'Manage Users').'</h2>'.
+    '{buttons}{filterHint}{summary}</div>{items}{pager}',
     'summaryText' => Yii::t('app', '<b>{start}&ndash;{end}</b> of <b>{count}</b>')
     .'<div class="form no-border" style="display:inline;"> '
     .CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
@@ -92,16 +87,29 @@ $this->widget('zii.widgets.grid.CGridView', array(
         'style' => 'margin: 0;',
     ))
     .' </div>',
+    'gvSettingsName' => 'users-grid',
+    'viewName' => 'admin',
     'dataProvider' => $model->search(),
     'filter' => $model,
+    'defaultGvSettings' => array (
+        'username' => 90,
+        'firstName' => 90,
+        'lastName' => 90,
+        'login' => 90,
+        'emailAddress' => 60
+    ),
     'columns' => array(
         array(
             'name' => 'username',
             'value' => 'CHtml::link($data->username,$data->id)',
             'type' => 'raw',
         ),
-        'firstName',
-        'lastName',
+        array (
+            'name' => 'firstName',
+        ),
+        array (
+            'name' => 'lastName',
+        ),
         array(
             'name' => 'login',
             'header' => Yii::t('users', 'Last Login'),
@@ -119,7 +127,9 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'type' => 'raw',
             'headerHtmlOptions' => array('style' => 'width:60px;')
         ),
-        'emailAddress',
+        array (
+            'name' => 'emailAddress'
+        )
     //'cellPhone',
     //'homePhone',
     //'address',

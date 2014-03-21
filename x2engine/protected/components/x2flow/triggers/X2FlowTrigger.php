@@ -425,7 +425,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	 * @return boolean
 	 */
 	public static function evalComparison($subject,$operator,$value=null) {
-
         // $value needs to be a comma separated list
 		if(in_array($operator,array('list','notList','between'),true) && !is_array($value)) {	
 			$value = explode(',',$value);

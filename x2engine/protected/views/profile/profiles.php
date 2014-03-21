@@ -85,7 +85,7 @@ $this->actionMenu = $this->formatMenu(array(
 	),
 ));*/
 
-$this->widget('application.components.X2GridViewLess', array(
+$this->widget('X2GridViewLess', array(
 	'id'=>'profiles-grid',
 	'title'=>Yii::t('profile', 'People'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),

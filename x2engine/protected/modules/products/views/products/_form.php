@@ -92,8 +92,8 @@ foreach($fields as $field) {
 			        'maxlength'=>40,
 			        'class'=>'resizable',
 			        'style'=>($default?'color:#aaa;':'')."height:".$height.";width:".$width.";",
-			        'onfocus'=>$default? 'toggleText(this);' : null,
-			        'onblur'=>$default? 'toggleText(this);' : null,
+			        'onfocus'=>$default? 'x2.forms.toggleText(this);' : null,
+			        'onblur'=>$default? 'x2.forms.toggleText(this);' : null,
 			        'tabindex'=>$field->tabOrder,
 			        'disabled'=>$disabled,
 			    ));
@@ -108,8 +108,8 @@ foreach($fields as $field) {
 			        'maxlength'=>40,
 			        'class'=>'resizable',
 			        'style'=>($default?'color:#aaa;':'')."height:".$height.";width:".$width.";",
-			        'onfocus'=>$default? 'toggleText(this);' : null,
-			        'onblur'=>$default? 'toggleText(this);' : null,
+			        'onfocus'=>$default? 'x2.forms.toggleText(this);' : null,
+			        'onblur'=>$default? 'x2.forms.toggleText(this);' : null,
 			        'tabindex'=>$field->tabOrder,
 			        'disabled'=>$disabled,
 			    )); 
@@ -150,8 +150,8 @@ foreach($fields as $field) {
 			    	'maxlength'=>40,
 			    	'class'=>'resizable',
 			    	'style'=>"height:".$height.";width:".$width.";",
-			    	'onfocus'=>$default? 'toggleText(this);' : null,
-			    	'onblur'=>$default? 'toggleText(this);' : null,
+			    	'onfocus'=>$default? 'x2.forms.toggleText(this);' : null,
+			    	'onblur'=>$default? 'x2.forms.toggleText(this);' : null,
 			    	'tabindex'=>$field->tabOrder,
 			    	'disabled'=>$disabled,
 			    ));

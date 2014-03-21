@@ -37,6 +37,8 @@
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('products','Product List')),
 	array('label'=>Yii::t('products','Create'), 'url'=>array('create')),
+        array('label'=>Yii::t('products', 'Import Products'), 'url'=>array('admin/importModels', 'model'=>'Product'), 'visible'=>Yii::app()->params->isAdmin),
+        array('label'=>Yii::t('products', 'Export Products'), 'url'=>array('admin/exportModels', 'model'=>'Product'), 'visible'=>Yii::app()->params->isAdmin),
 ));
 
 Yii::app()->clientScript->registerScript('search', "
@@ -60,7 +62,7 @@ $('.search-form form').submit(function(){
 </div><!-- search-form -->
 <div class='flush-grid-view'>
 <?php
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'product-grid',
 	'title'=>Yii::t('products','Products'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),

@@ -34,7 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
 $listId = Yii::app()->user->getState('vcr-list');
 if(empty($listId))
 	$listId = 'index';
@@ -128,6 +127,7 @@ if(is_array($vcrData) && count($vcrData)) {
 		<?php if(isset($listLink)) echo $listLink; ?>
 		<?php echo Yii::t('contacts','<b>{m}</b> of <b>{n}</b>',array('{m}'=>$vcrData['index'],'{n}'=>$vcrData['count'])); ?>
 	</div>
+    <div class='x2-button-group'>
 	<?php
 	//echo CHtml::tag('ul',array('class'=>'vcrPager'),$vcrData['prev']."\n".$vcrData['next']);
 	if(isset($vcrData['prev']))
@@ -135,6 +135,7 @@ if(is_array($vcrData) && count($vcrData)) {
 	if(isset($vcrData['next']))
 		echo $vcrData['next'];
 	?>
+    </div>
 </div>
 <?php
 

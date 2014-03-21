@@ -44,7 +44,7 @@
  */
 function ChartWidget (argsDict) {
     var defaultArgs = {
-        chartType: ''
+        chartType: '',
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
@@ -98,6 +98,29 @@ ChartWidget.prototype._setUpSubtypeSelection = function () {
         x2[that.chartType].chart.setChartSubtype (
             selectedSubType, true, false, true);    
         that.setProperty ('chartSubtype', selectedSubType);
+    });
+};
+
+/**
+ * Instantiates popup dropdown menu. Expects {settingsMenu} to be in the widget template
+ */
+ChartWidget.prototype._setUpSettingsBehavior = function () {
+    var that = this; 
+    this.popupDropdownMenu = new PopupDropdownMenu ({
+        containerElemSelector: this.elementSelector + ' .chart-controls-container',
+        openButtonSelector: this.elementSelector + ' .widget-settings-button',
+        onClickOutsideSelector: 
+            this.elementSelector + ' .widget-settings-button, ' +
+            this.elementSelector + ' .chart-controls-container, ' +
+            '.ui-datepicker-header, .ui-multiselect-header, .ui-multiselect-checkboxes',
+        autoClose: false,
+        onClose: function () {
+            if (!that._cursorInWidget)
+                $(that.element).find ('.submenu-title-bar .x2-icon-button').hide ();
+        },
+        css: {
+            'max-width': '100%'
+        }
     });
 };
 

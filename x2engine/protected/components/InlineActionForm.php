@@ -67,8 +67,6 @@ class InlineActionForm extends X2Widget {
 				"$('#action-form').ready(gotoActionForm);
 				function gotoActionForm() {
 					$('#action-form').show();
-					//toggleForm('#action-form',400);
-					// $('#action-form #Actions_actionDescription').focus();
 				}
 				",CClientScript::POS_HEAD);
 		}

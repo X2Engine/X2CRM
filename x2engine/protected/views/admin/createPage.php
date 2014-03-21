@@ -34,8 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
+<div class='page-title'>
 <h2><?php echo Yii::t('admin','Create Page'); ?></h2>
-<div style="width:600px">
+</div>
+<div class='admin-form-container'>
     <?php echo Yii::t('admin','This form will allow you to create a Document that will be linked on the top menu bar.') ?>
     <br /><br />
 </div>

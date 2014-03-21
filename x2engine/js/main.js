@@ -43,3 +43,7 @@ $('body').bind('ajaxSuccess', function(event, request, settings) {
         window.location = window.location;
     }
 });
+
+jQuery(document).ready(function () {
+    $('.only-in-edition a').removeAttr('href');
+});

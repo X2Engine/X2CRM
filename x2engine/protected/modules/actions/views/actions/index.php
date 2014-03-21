@@ -34,26 +34,49 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerResponsiveCss('responsiveActionsCss',"
+
+@media (max-width: 759px) {
+
+    #action-frame {
+        height: 366px !important;
+    }
+
+    #action-view-pane {
+        width: 100% !important;
+    }
+
+    #action-list > .items {
+        margin-right: 0 !important;
+    }
+
+}
+
+");
+
 $menuItems = array(
 	array('label'=>Yii::t('actions','Action List')),
 	array('label'=>Yii::t('actions','Create'),'url'=>array('create')),
+        array('label'=>Yii::t('actions', 'Import Actions'), 'url'=>array('admin/importModels', 'model'=>'Actions'), 'visible'=>Yii::app()->params->isAdmin),
+        array('label'=>Yii::t('actions', 'Export Actions'), 'url'=>array('admin/exportModels', 'model'=>'Actions'), 'visible'=>Yii::app()->params->isAdmin),
 );
 $this->actionMenu = $this->formatMenu($menuItems);
 
 ?>
-<div class="page-title icon actions" id="page-header">
+<div class="responsive-page-title page-title icon actions" id="page-header">
     <h2><?php echo Yii::t('actions','Actions');?></h2>
-
-    <div class="title-bar" style="padding-left:0px;">
-        <?php 
+    <?php 
+    echo ResponsiveHtml::gripButton ();
+    ?>
+        <div class='responsive-menu-items'>
+        <?php
         /*
         disabled until fixed header is added
         echo CHtml::link(Yii::t('actions','Back to Top'),'#',array('class'=>'x2-button right','id'=>'scroll-top-button')); */
         echo CHtml::link(Yii::t('actions','Filters'),'#',array('class'=>'controls-button x2-button right','id'=>'advanced-controls-toggle')); 
         echo CHtml::link(Yii::t('actions','New Action'),array('/actions/actions/create'),array('class'=>'controls-button x2-button right','id'=>'create-button')); 
-        echo CHtml::link(Yii::t('actions','Switch to Grid'),array('index','toggleView'=>1),array('class'=>'x2-button right')); 
-        ?>
-    </div>
+        echo CHtml::link(Yii::t('actions','Switch to Grid'),array('index','toggleView'=>1),array('class'=>'x2-button right')); ?>
+        </div>
 </div>
 <?php echo $this->renderPartial('_advancedControls',$params,true); ?>
 <?php
@@ -86,7 +109,6 @@ $this->widget('zii.widgets.CListView', array(
 ?>
 
 <script>
-    x2.actionFrames.deleteActionUrl = '<?php echo $this->createUrl ('/actions/actions/delete'); ?>';
     var clickedFlag=false;
     var lastClass="";
     /* disabled until fixed header is added
@@ -112,7 +134,6 @@ $this->widget('zii.widgets.CListView', array(
 		echo "$(document).on('click','.view',function(e){";
 	}
 	?>
-		//alert ('click');
         if(!$(e.target).is('a')){
             e.preventDefault();
             if(clickedFlag){
@@ -135,8 +156,14 @@ $this->widget('zii.widgets.CListView', array(
                     lastClass=$(this).attr('id');
                     x2.actionFrames.setLastClass (lastClass);
                     var pieces=lastClass.split('-');
+                    x2.actionFrames.setLastClass (lastClass);
                     var id=pieces[1];
-                   	$('#action-view-pane').html('<iframe id="action-frame" src="<?php echo Yii::app()->controller->createAbsoluteUrl('/actions/actions/viewAction'); ?>?id='+id+'" onload="x2.actionFrames.createControls('+id+', false);"></iframe>');
+                   	$('#action-view-pane').html(
+                        '<iframe id="action-frame" src="<?php 
+                            echo Yii::app()->controller->createAbsoluteUrl(
+                            '/actions/actions/viewAction'); ?>?id=' + id +
+                            '" onload="x2.actionFrames.createControls(' + id + ', false);">' +
+                        '</iframe>');
                 }
             }else{
                 $(this).addClass('important');
@@ -150,9 +177,14 @@ $this->widget('zii.widgets.CListView', array(
                 x2.actionFrames.setLastClass (lastClass);
                 var id=pieces[1];
                 $('#action-view-pane').show();
-                $('#action-view-pane').animate({width: '59%'});;
-                clickedFlag=!clickedFlag;
-                 $('#action-view-pane').html('<iframe id="action-frame" src="<?php echo Yii::app()->controller->createAbsoluteUrl('/actions/actions/viewAction'); ?>?id='+id+'" onload="x2.actionFrames.createControls('+id+', false);"></iframe>');
+                $('#action-view-pane').animate({width: '59%'});
+                clickedFlag = !clickedFlag;
+                $('#action-view-pane').html(
+                    '<iframe id="action-frame" src="<?php 
+                        echo Yii::app()->controller->createAbsoluteUrl(
+                        '/actions/actions/viewAction'); ?>?id=' + id +
+                        '" onload="x2.actionFrames.createControls(' + id + ', false);">' +
+                    '</iframe>');
             }
         }
     });

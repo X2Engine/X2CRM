@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.X2GridViewSortableWidgetsBehavior');
+Yii::import('X2GridViewSortableWidgetsBehavior');
 
 
 /**

@@ -1,28 +1,43 @@
-# X2CRM 3.7 #
-Release 3.7.5 (fixes to 3.7.4) 3/4/2014
+# X2Engine 4.0 #
+3/20/2014
 
-New in 3.7.5 (see [CHANGELOG](CHANGELOG.md) for full history):
+New in 4.0 (see [CHANGELOG](CHANGELOG.md) for full history):
 
-* Fixed Bugs:  
-  * [995](http://x2software.com/index.php/bugReports/995): array_combine() [<a href='function.array-combine'>function.array-combine</a>]: Both parameters should have at least 1 element  
-  * [996](http://x2software.com/index.php/bugReports/996): file_get_contents(): Filename cannot be empty  
-  * [997](http://x2software.com/index.php/bugReports/997): Property "Media.title" is not defined.  
-  * [998](http://x2software.com/index.php/bugReports/998): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: parameter was not defined  
-  * [999](http://x2software.com/index.php/bugReports/999): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')GROUP BY   
-  * [1009](http://x2software.com/index.php/bugReports/1009): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '94f072b73cf2bdfdcffa32f488c4077b' for key 'PRIMARY'  
-  * [1016](http://x2software.com/index.php/bugReports/1016): Invalid argument supplied for foreach()  
-  * [1017](http://x2software.com/index.php/bugReports/1017): Property "X2WebApplication.settingsProfile" is not defined.  
-  * [1038](http://x2software.com/index.php/bugReports/1038): Unable to resolve the request "contacts/id/https//www.lplconnect.com".
+* New in **Platinum Edition:**
+  * Browser fingerprinting system supplements web activity tracker for when contacts have cookies disabled
+  * Administrators can set default themes for all users
+  * The ability to import/export themes
+  * The ability to import and export flows from X2Flow
+  * Partner branding template (for authorized partners)
+* New in **Professional Edition:**
+  * Improvements to the actions publisher:
+    * New "products" tab, for logging the use of products in a project or with a contact (for example)
+    * New "event" tab through which calendar events associated with the record can be created
+    * Which tabs it displays can be customized
+* Responsive UI replaces X2Touch and makes the application more easy to use on a mobile device
+* Improved Relationships widget with the ability to link to any type of record, including custom modules
+* New Administrative tools:
+  * Can import any data type with the power and flexibility that was previously limited to contact imports
+  * New simpler data export for modules that emulates the exporter previously limited to Contacts
+  * Can customize the application name and description
+* FTP-based file management for compatibility with systems where files and directories are not owned by the web server (documentation coming soon)
+* New look & feel including new icon-based activity feed buttons and login page
+* Bug fixes to the Marketing module, updater, and more:
+  * [1043](http://x2software.com/index.php/bugReports/1043): Property "Media.title" is not defined.  
+  * [1091](http://x2software.com/index.php/bugReports/1091): Array to string conversion 
+  * Further improvements to the security fixes discovered earlier; see ["Multiple Vulnerabilities in X2Engine"](http://x2community.com/topic/1511-multiple-vulnerabilities-in-x2engine/#entry7354) for more information
+
+
 
 # Introduction #
-Welcome to  X2CRM!
-X2CRM is a next-generation,  open source social sales application for small and 
-medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
+Welcome to  X2Engine!
+X2Engine is a next-generation,  open source social sales application for small and 
+medium sized businesses.  X2Engine  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and
 colleague social feeds  and  sales  representatives  become  smarter  and  more
 effective resulting in increased sales and higher customer satisfaction.
 
-X2CRM is  unique  in the  crowded  Customer Relationship Management (CRM) field 
+X2Engine is  unique  in the  crowded  Customer Relationship Management (CRM) field 
 with its compact blog-style user interface. Interactive and collaborative tools 
 which  users are already  familiar  with from  social networking  sites such as  
 tagging,  pictures,  docs,  web pages,  group chat, discussions boards and rich 
@@ -43,17 +58,17 @@ value to their customer interactions resulting in higher close rates.
   which the user of the connection has full permissions rights (i.e. SELECT, 
   DROP, CREATE and UPDATE)
 * PHP 5.3 or later
-* PHP must be run as the same system user that owns the directory where X2CRM 
+* PHP must be run as the same system user that owns the directory where X2Engine 
   will be installed
 * The server must have internet access for automatic updates
 * The server must be publicly accessible for web lead capture, service requests 
   and email tracking to work
 
-X2CRM comes with a requirements check script, 
+X2Engine comes with a requirements check script, 
 [requirements.php](https://x2planet.com/installs/requirements.php) (also can be 
 found in x2engine/protected/components/views), which can be uploaded by itself 
 to your server. Simply visit the script in your browser to see if your server 
-will run X2CRM.
+will run X2Engine.
 
 # Installation #
 1. Upload X2Engine to the web directory of your choice. Be sure to set your FTP 
@@ -82,7 +97,7 @@ We greatly appreciate your input for internationalization!
 
 
 # Tips and Tricks #
-X2CRM  is designed to be intuitive,  but we have included a few tips and tricks 
+X2Engine  is designed to be intuitive,  but we have included a few tips and tricks 
 to get you started!
 * To change the background color,  menu color,  language  or any other setting, 
   click on Profile in the top right and select 'Settings'.

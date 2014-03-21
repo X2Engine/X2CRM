@@ -44,7 +44,6 @@
 }
 
 #profile-info-container {
-    border: 1px solid #c5c5c5;
     border-radius: 4px 4px 4px 4px;
     -moz-border-radius: 4px 4px 4px 4px;
     -webkit-border-radius: 4px 4px 4px 4px;
@@ -134,5 +133,34 @@ Allows jQuery UI sortable to drop droppables into this container even if it's em
 
 .profile-sort-placeholder {
     height:200px;
+}
+
+#profile-info-container .page-title,
+#activity-feed-container .page-title {
+    line-height: 29px;
+    height: 30px;
+}
+
+#profile-info-container .page-title > h2,
+#activity-feed-container .page-title > h2 {
+    font-size: 17px;
+}
+
+#profile-info-container .page-title > h2 {
+    background-position: -1px -8px;
+}
+
+#activity-feed-container .page-title > h2 {
+    background-position: -1px 0px;
+    background-size: 29px;
+    padding-left: 34px;
+}
+
+@media (max-width: 657px){
+    #activity-feed-container .responsive-page-title > .mobile-dropdown-button,
+    #profile-info-container .responsive-page-title > .mobile-dropdown-button {
+        margin-top: -22px;
+        margin-right: 7px;
+    }
 }
 

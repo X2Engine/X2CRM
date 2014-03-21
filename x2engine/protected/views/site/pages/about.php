@@ -34,28 +34,42 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/about-page.css');
+
 $this->layout = '//layouts/column1';
-$this->pageTitle=Yii::app()->name . ' - ' . Yii::t('app','About');
+$this->pageTitle=Yii::app()->settings->appName . ' - ' . Yii::t('app','About');
 ?>
 <?php
 $logo = Yii::app()->baseUrl.'/images/x2engine_crm.png';
-if(Yii::app()->params->edition==='pro')
-	$logo = Yii::app()->baseUrl.'/images/x2engine_crm_pro.png';
-echo CHtml::image($logo,'',array('class'=>'left'));
+if(Yii::app()->edition !== 'opensource') {
+	$logo = Yii::app()->baseUrl.'/images/x2engine_crm_'.Yii::app()->edition.'.png';
+}
+?>
+<div id='icon-container'>
+<?php
+echo CHtml::image($logo,'');
+echo CHtml::image(Yii::app()->theme->baseUrl.'/images/x2EngineSticker.png','', array (
+    'id' => 'x2engine-sticker'
+));
+?>
+</div>
+<?php
 Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion').html($().jquery);",CClientScript::POS_READY);
 ?>
 
-<div class="form left" style="margin-left:10px;width:500px;clear:none;">
+<div class='center-column-container form left' >
 	<b><?php echo Yii::t('app','Version')." ".Yii::app()->params->version;?><br>
-	<?php if(Yii::app()->params->edition==='pro') echo Yii::t('app','Professional Edition'); ?></b><br>
-	<?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'medium',null); ?>.<br><br>
+	<?php echo Yii::app()->getEditionLabel(true); ?></b><br>
+	<?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'long',null); ?>.<br><br>
 	<?php
-	if(Yii::app()->params->edition==='opensource')
+	if(Yii::app()->edition==='opensource')
 		echo Yii::t('app','X2Engine is an open source Customer Relationship Management application <br>designed by John Roberts and licensed under the {link}.',array(
 			'{link}'=>CHtml::link(Yii::t('app','GNU Affero GPL v3'),Yii::app()->getBaseUrl().'/LICENSE.txt',array('title'=>Yii::t('app','GNU Affero General Public License version 3')))
 		));
 	else
-		echo Yii::t('app','X2Engine is a Customer Relationship Management application <br>designed by John Roberts.');
+		//echo Yii::t('app','X2Engine is a Customer Relationship Management application <br>designed by John Roberts.');
+		echo Yii::t('app','X2Engine Inc. is a Santa Cruz California software corporation founded<br>in 2011 by John Roberts.');
 	?>
 	<?php //echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/x2footer.png','',array('style'=>'display:block;margin:5px 0;')); ?><br><br>
 	<div style="clear:both"><?php echo Yii::t('app','For customer and community support:');?> <a href="http://www.x2engine.com/">www.x2engine.com</a></div>
@@ -199,7 +213,8 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 <?php //echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/office.png',''); ?>
 <img src="http://maps.googleapis.com/maps/api/staticmap?sensor=false&size=260x300&markers=|36.975199,-122.032958&hl=en&center=37.4,-122.1&zoom=8">
 </a>
-<?php echo Yii::t('app','X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.');?>
+<?php echo Yii::t('app','X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.');
+?>
 </div>
 
 

@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->pageTitle = Yii::app()->name . ' - Group Chat';
+$this->pageTitle = Yii::app()->settings->appName . ' - Group Chat';
 $menuItems = array(
             array('label' => Yii::t('app', 'Main Menu'), 'url' => array('/mobile/site/home')),
         );

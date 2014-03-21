@@ -97,20 +97,65 @@ class Actions extends X2Model {
      */
     public function relations(){
         return array_merge(parent::relations(), array(
-                    'workflow' => array(self::BELONGS_TO, 'Workflow', 'workflowId'),
-                    'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
-                    'timers' => array(self::HAS_MANY,'ActionTimer','actionId'),
-                    'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
-                ));
+            'workflow' => array(self::BELONGS_TO, 'Workflow', 'workflowId'),
+            'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
+            'timers' => array(self::HAS_MANY,'ActionTimer','actionId'),
+            'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
+        ));
     }
 
-    public function getAttributeLabel($attribute){
-        if($attribute == 'actionDescription'){
-            return Yii::t('actions', 'Action Description');
-        }else{
-            return parent::getAttributeLabel($attribute);
+    /**
+     * Returns action type specific attribute labels
+     * @return String
+     */
+    public function getAttributeLabel ($attribute, $short=false) {
+        $label = '';
+        
+        if ($attribute === 'dueDate') {
+            switch ($this->type) {
+                case 'time':
+                case 'call':
+                    if ($short) 
+                        $label = Yii::t('actions', 'Start');
+                    else
+                        $label = Yii::t('actions', 'Time Started');
+                    break;
+                case 'event':
+                    if ($short) 
+                        $label = Yii::t('actions', 'Start');
+                    else
+                        $label = Yii::t('actions', 'Start Date');
+                    break;
+                default:
+                    $label = parent::getAttributeLabel ($attribute);
+            }
+        } else if ($attribute === 'completeDate') {
+            switch ($this->type) {
+                case 'time':
+                case 'call':
+                    if ($short)
+                        $label = Yii::t('actions', 'End');
+                    else
+                        $label = Yii::t('actions', 'Time Ended');
+                    break;
+                case 'event':
+                    if ($short)
+                        $label = Yii::t('actions', 'End');
+                    else 
+                        $label = Yii::t('actions', 'End Date');
+                    break;
+                default:
+                    $label = parent::getAttributeLabel ($attribute);
+            }
+        } else if ($attribute === 'actionDescription') {
+            $label = Yii::t('actions', 'Action Description');
+        } else {
+            $label = parent::getAttributeLabel ($attribute);
         }
+
+        return $label;
     }
+
 
     public function getAttribute($name, $renderFlag = false){
         if ($name === 'actionDescription') {
@@ -243,6 +288,7 @@ class Actions extends X2Model {
     public function afterDelete(){
         X2Model::model('Events')->deleteAllByAttributes(array('associationType' => 'Actions', 'associationId' => $this->id, 'type' => 'action_reminder'));
         X2Model::model('ActionText')->deleteByPk($this->id);
+         
         parent::afterDelete();
     }
 
@@ -416,18 +462,28 @@ class Actions extends X2Model {
     }
 
     public static function parseStatus($dueDate){
-
         if(empty($dueDate)) // there is no due date
             return false;
         if(!is_numeric($dueDate))
             $dueDate = strtotime($dueDate); // make sure $date is a proper timestamp
 
         $timeLeft = $dueDate - time(); // calculate how long till due date
-        if($timeLeft < 0)
-            return "<span class='overdue'>".Formatter::formatDueDate($dueDate)."</span>"; // overdue by X hours/etc
-
-        else
+        if($timeLeft < 0) {
+            return 
+                "<span class='overdue'>".
+                    Formatter::formatDueDate($dueDate).
+                "</span>"; // overdue by X hours/etc
+        } else {
             return Formatter::formatDueDate($dueDate);
+        }
+    }
+
+    public function formatDueDate () {
+        if (in_array ($this->type, array ('call', 'time', 'event'))) {
+            return Formatter::formatDueDate($this->dueDate);
+        } else {
+            return self::parseStatus ($this->dueDate);
+        }
     }
 
     public static function formatTimeLength($seconds){
@@ -677,8 +733,8 @@ class Actions extends X2Model {
     public function searchBase($criteria, $pageSize=null, $uniqueId=null){
 
         $this->compareAttributes($criteria);
-        $criteria->with = 'actionText';
-        $criteria->compare('actionText.text', $this->actionDescriptionTemp, true);
+        /*$criteria->with = 'actionText';
+        $criteria->compare('actionText.text', $this->actionDescriptionTemp, true);*/
         if(!empty($criteria->order)){
             $criteria->order = $order = "sticky DESC, ".$criteria->order;
         }else{
@@ -790,6 +846,23 @@ class Actions extends X2Model {
      */
     public function getIsTimedType() {
         return $this->type == 'time' || $this->type == 'call';
+    }
+
+      
+
+    /**
+     * Override parent method so that action type can be set from X2Flow create action 
+     */
+    public function getEditableFieldNames ($suppressAttributeLabels=true) {
+        $editableFieldNames = parent::getEditableFieldNames ($suppressAttributeLabels);
+        if ($this->scenario === 'X2FlowCreateAction') {
+            if ($suppressAttributeLabels) {
+                $editableFieldNames[] = 'type';
+            } else {
+                $editableFieldNames['type'] = $this->getAttributeLabel ('type');
+            }
+        }
+        return $editableFieldNames;
     }
 
 }

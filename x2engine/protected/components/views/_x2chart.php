@@ -64,6 +64,11 @@ $passVarsToClientScript = "
         ($suppressDateRangeSelector ? 'true' : 'false').";
     x2.".$chartType.".params.getChartDataActionName = '".$getChartDataActionName."';
     x2.".$chartType.".params.translations = {};
+    x2.".$chartType.".mobileRefreshBehavior = function () {
+        if (typeof x2.".$chartType.".chart !== 'undefined') {
+            x2.".$chartType.".chart.plotData ({redraw: true});
+        }
+    }
     /*x2.".$chartType.".params.DEBUG = ".
         ((YII_DEBUG && $chartType === 'eventsChart') ? 'true' : 'false').";*/
 ";
@@ -176,6 +181,8 @@ Yii::app()->clientScript->registerScript(
 
 <div id="<?php echo $chartType; ?>-chart-container" class="chart-container form" 
  <?php echo ($hideByDefault ? 'style="display: none;"' : ''); ?>>
+
+    <div class='chart-controls-container widget-settings-menu-content'>
 
     <?php
     if ($chartType === 'eventsChart') {
@@ -393,6 +400,8 @@ Yii::app()->clientScript->registerScript(
         <?php
         }
         ?>
+    </div>
+
     </div>
 
     <div id="<?php echo $chartType; ?>-chart" class="chart jqplot-target">

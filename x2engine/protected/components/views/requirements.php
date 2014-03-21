@@ -41,7 +41,7 @@
  *
  * Multi-role requirements-check script. Can be included as part of another page,
  * run as its own standalone script, or used to return requirements check data
- * as an arrya.
+ * as an array.
  */
 
 /////////////////
@@ -469,7 +469,7 @@ if($tryAccess){
         if($requirements['environment']['outbound_connection'] = tryGetRemote('http://www.google.com')){
             // Can connect to Google OK. Can connect to the updates server?
             if($requirements['environment']['updates_connection'] = checkDNS('x2planet.com')){
-                if(!($requirements['environment']['updates_connection'] = tryGetRemote('https://x2planet.com/installs/registry/reqCheck'))){
+                if(!($requirements['environment']['updates_connection'] = tryGetRemote('http://testupdate.x2developer.com/x2planet.com/installs/registry/reqCheck'))){
                     // 
                     $reqMessages[2][] = installer_t('Could not reach the updates server from this web server.')
                             .' '.$firewallMsg

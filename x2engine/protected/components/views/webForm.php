@@ -311,6 +311,8 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
 
 renderFields ($fieldList, $type, $form, $model, $contactFields);
 
+
+
 ?>
 <div class="submit-button-row row">
 <?php

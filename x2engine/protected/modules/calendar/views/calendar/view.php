@@ -75,7 +75,7 @@ $this->renderPartial('application.components.views._detailView',array('model'=>$
 <?php $this->endWidget(); ?>
 
 <?php /*
-<a class="x2-button" href="#" onClick="toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
+<a class="x2-button" href="#" onClick="x2.forms.toggleForm('#attachment-form',200);return false;"><span><?php echo Yii::t('app','Attach A File/Photo'); ?></span></a>
 <br /><br />
 
 <div id="attachment-form" style="display:none;">

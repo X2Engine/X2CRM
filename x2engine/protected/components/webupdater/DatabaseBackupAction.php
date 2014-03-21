@@ -45,12 +45,21 @@ Yii::import('application.components.webupdater.*');
  */
 class DatabaseBackupAction extends WebUpdaterAction {
 
+    public function behaviors() {
+        return array(
+			'UpdaterBehavior' => array(
+				'class' => 'application.components.UpdaterBehavior',
+                'errorCode' => 200, // Simple UI-based error reporting
+                'handleErrors' => true,
+                'handleExceptions' => true
+			)
+		);
+    }
+
     public function run($download = false){
-        set_error_handler('ResponseBehavior::respondWithError');
-        set_exception_handler('ResponseBehavior::respondWithException');
         if(!$download){
             if($this->controller->makeDatabaseBackup())
-                self::respond(Yii::t('admin', 'Backup saved to').' protected/data/'.UpdaterBehavior::BAKFILE);
+                $this->respond(Yii::t('admin', 'Backup saved to').' protected/data/'.UpdaterBehavior::BAKFILE);
         } else {
             $backup = realpath($this->dbBackupPath);
             if((bool) $backup){

@@ -67,6 +67,11 @@ class ApiController extends x2base {
 				'exitNonFatal' => false,
 				'longErrorTrace' => false,
 			),
+            'CommonControllerBehavior' => array(
+                'class' => 'application.components.CommonControllerBehavior',
+                'redirectOnNullModel' => false,
+                'throwOnNullModel' => false
+            ),
 		));
 	}
 
@@ -186,7 +191,7 @@ class ApiController extends x2base {
             $setUserFields = true;
             // $scenario .= ' Model nor its behaviors have a property "editingUsername".';
         }
-        // $this->addResponseProperty('scenario',$scenario);
+        // $this->response['scenario'] = $scenario;
         if($setUserFields)
             $this->modelSetUsernameFields($model);
         // Attempt to save the model, and perform special post-save (or error)
@@ -200,7 +205,7 @@ class ApiController extends x2base {
                     $model->{$fieldModel->fieldName} = $fieldModel->parseValue($model->{$fieldModel->fieldName});
             $valid = $valid && $model->save();
         }
-        $this->addResponseProperty('model', $model->attributes);
+        $this->response['model'] = $model->attributes;
 
         if($valid){ // New record successfully created
             $message = "A {$this->modelClass} type record was created"; //sprintf(' <b>%s</b> was created',$this->modelClass);
@@ -221,7 +226,7 @@ class ApiController extends x2base {
             }
             $this->_sendResponse(200, $message);
         }else{ // API model creation failure
-            $this->addResponseProperty('modelErrors', $model->errors);
+            $this->response['modelErrors'] = $model->errors;
             switch($this->modelClass){
                 case 'Contacts':
                     $this->log(sprintf('Failed to save record of type %s due to errors: %s', $this->modelClass, CJSON::encode($model->errors)));
@@ -405,7 +410,7 @@ class ApiController extends x2base {
 						$this->_sendResponse(500,Yii::t('api','Failed to save relationship record for unknown reason.'));
 					}
 				} else {
-					$this->addResponseProperty('modelErrors',$relationship->errors);
+					$this->response['modelErrors'] = $relationship->errors;
 					$this->_sendResponse(400,$this->validationMsg('create', $relationship));
 				}
 				break;
@@ -500,11 +505,11 @@ class ApiController extends x2base {
 				default:
 					$this->_sendResponse(200, $model->attributes,true);
 			}
-			$this->addResponseProperty('model',$model->attributes);
+			$this->response['model'] = $model->attributes;
 			$this->_sendResponse(200, 'Model created successfully');
 		} else {
 			// Errors occurred
-			$this->addResponseProperty('modelErrors',$model->errors);
+			$this->response['modelErrors'] = $model->errors;
 			$msg = $this->validationMsg('update', $model);
 			$this->_sendResponse(500,$msg);
 		}
@@ -838,7 +843,7 @@ class ApiController extends x2base {
 	 */
 	public function validationMsg($action, $model){
 		$msg = "<h1>".Yii::t('api', 'Error')."</h1>";
-		$msg .= Yii::t("Couldn't perform {a} on model {m}", array('{a}' => $action, '{m}' => "<b>".get_class($model)."</b>"));
+		$msg .= Yii::t('api',"Couldn't perform {a} on model {m}", array('{a}' => $action, '{m}' => "<b>".get_class($model)."</b>"));
 		$msg .= "<ul>";
 		foreach($model->errors as $attribute => $attr_errors){
 			$msg .= "<li>$attribute</li>";
@@ -867,14 +872,15 @@ class ApiController extends x2base {
 	 */
 	protected function _sendResponse($status = 200, $body = '',$direct = false) {
 		// set the status
-		header("HTTP/1.1 $status " . $this->_getStatusCodeMessage($status));
-		if($direct) {
-			header('Content-type: application/json');
-			echo CJSON::encode($body);
-			Yii::app()->end();
-		}
 
-		// we need to create the body if none is passed
+		if($direct) {
+            // Send the body without an envelope, i.e. the "message" or "error"
+            // properties that are standard to ResponseBehavior.
+            $this->response->body = json_encode($body);
+            $this->response->sendHttp($status);
+		}
+        
+		// Create the body if none is passed
 		if ($body == '') {
 			// create some body messages
 			$message = '';
@@ -910,8 +916,7 @@ class ApiController extends x2base {
 		<hr />
 		<address>' . $signature . '</address>';
 		}
-		// data.message is $body, data.error is true if the return status isn't 200 for success
-		self::respond($body, $status != 200);
+		$this->response->sendHttp($status,$body);
 	}
 
 	/**

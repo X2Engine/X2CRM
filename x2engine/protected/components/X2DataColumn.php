@@ -69,7 +69,7 @@ class X2DataColumn extends CDataColumn {
             if($this->data->getField($this->name)->type == 'text')
                 $value = Formatter::truncateText(preg_replace("/\<br ?\/?\>/"," ",$value),100);
         }
-        echo $value === null ? $this->grid->nullDisplay : $value; //  $this->grid->getFormatter()->format($value,$this->type);
+        echo $value === null ? $this->grid->nullDisplay : $value; 
     }
 
     public function getData(){
@@ -125,7 +125,9 @@ class X2DataColumn extends CDataColumn {
                 break;
             case 'visibility':
                 echo CHtml::activeDropDownList($this->grid->filter, $this->name,
-                        array('' => '- '.Yii::t('app', 'Select').' -', 1 => Yii::t('app', 'Public'), 0 => Yii::t('app', 'Private'), 2 => Yii::t('app', 'User\'s Groups')),
+                        array(
+                            '' => '- '.Yii::t('app', 'Select').' -', 1 => Yii::t('app', 'Public'),
+                            0 => Yii::t('app', 'Private'), 2 => Yii::t('app', 'User\'s Groups')),
                         array('class' => 'x2-minimal-select-filtercol'));
                 break;
             case 'dateTime':
@@ -161,4 +163,3 @@ class X2DataColumn extends CDataColumn {
     }
 
 }
-

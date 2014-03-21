@@ -74,6 +74,8 @@ abstract class x2base extends X2Controller {
 	public $modelClass;
 	public $actionMenu = array();
 
+    private $_pageTitle;
+
 	/**
 	 * @return array action filters
 	 */
@@ -91,8 +93,10 @@ abstract class x2base extends X2Controller {
 
 	public function behaviors() {
 		return array(
-			'CommonControllerBehavior' => array('class' => 'application.components.CommonControllerBehavior'),
-            'PermissionsBehavior' => array('class' => 'application.components.permissions.X2ControllerPermissionsBehavior'),
+			'CommonControllerBehavior' => array(
+                'class' => 'application.components.CommonControllerBehavior'),
+            'PermissionsBehavior' => array(
+                'class' => 'application.components.permissions.X2ControllerPermissionsBehavior'),
 		);
 	}
 
@@ -108,7 +112,8 @@ abstract class x2base extends X2Controller {
      }
 
 	public function denied() {
-		throw new CHttpException(403, Yii::t('app','You are not authorized to perform this action.'));
+		throw new CHttpException(
+            403, Yii::t('app','You are not authorized to perform this action.'));
 	}
 
 	public function actions() {
@@ -123,6 +128,19 @@ abstract class x2base extends X2Controller {
 	}
 
     /**
+     * Returns rendered detail view for given model 
+     * @param object $model
+     */
+    public function getDetailView ($model) {
+        if (!is_subclass_of ($model, 'X2Model'))
+            throw new CException (Yii::t ('app', '$model is not a subclass of X2Model'));
+
+        return $this->renderPartial(
+            'application.components.views._detailView', 
+            array('model' => $model, 'modelName' => get_class ($model)), true, true); 
+    }
+
+    /**
      * Renders a view with any attached scripts, WITHOUT the core scripts.
      *
      * This method fixes the problem with {@link renderPartial()} where an AJAX request with
@@ -131,12 +149,15 @@ abstract class x2base extends X2Controller {
      *
      * @param string $view name of the view to be rendered. See {@link getViewFile} for details
      * about how the view script is resolved.
-     * @param array $data data to be extracted into PHP variables and made available to the view script
-     * @param boolean $return whether the rendering result should be returned instead of being displayed to end users
+     * @param array $data data to be extracted into PHP variables and made available to the view 
+     *  script
+     * @param boolean $return whether the rendering result should be returned instead of being 
+     *  displayed to end users
      * @return string the rendering result. Null if the rendering result is not required.
      * @throws CException if the view does not exist
      */
-    public function renderPartialAjax($view, $data = null, $return = false, $includeScriptFiles = false) {
+    public function renderPartialAjax(
+        $view, $data = null, $return = false, $includeScriptFiles = false) {
 
         if (($viewFile = $this->getViewFile($view)) !== false) {
 
@@ -161,7 +182,9 @@ abstract class x2base extends X2Controller {
             else
                 echo $output;
         } else {
-            throw new CException(Yii::t('yii', '{controller} cannot find the requested view "{view}".', array('{controller}' => get_class($this), '{view}' => $view)));
+            throw new CException(
+                Yii::t('yii', '{controller} cannot find the requested view "{view}".', 
+                    array('{controller}' => get_class($this), '{view}' => $view)));
         }
     }
 
@@ -203,7 +226,8 @@ abstract class x2base extends X2Controller {
      */
     public function view(&$model,$type=null,$params=array()) {
 
-		if($type === null)	// && $model->asa('X2LinkableBehavior') !== null)	// should only happen when the model is known to have X2LinkableBehavior
+        // should only happen when the model is known to have X2LinkableBehavior
+		if($type === null)	// && $model->asa('X2LinkableBehavior') !== null)	
 			$type = $model->module;
 
 		if(!isset($_GET['ajax'])){
@@ -674,7 +698,7 @@ abstract class x2base extends X2Controller {
                 'fullscreen'=>true,
             );
         }
-        $this->widget('application.components.X2GridView', $options);
+        $this->widget('X2GridView', $options);
     }
 
     /**
@@ -1079,9 +1103,6 @@ abstract class x2base extends X2Controller {
     public function filterSetPortlets($filterChain) {
 		if (!Yii::app()->user->isGuest) {
 			$themeURL = Yii::app()->theme->getBaseUrl();
-
-			if ($this->action->id != 'webLead' && $this->action->id != 'login' && $this->action->id != 'googleLogin')
-				Yii::app()->clientScript->registerScript('logos', 'var _0xa525=["\x6C\x65\x6E\x67\x74\x68","\x23\x6D\x61\x69\x6E\x2D\x6D\x65\x6E\x75\x2D\x69\x63\x6F\x6E","\x23\x78\x32\x74\x6F\x75\x63\x68\x2D\x6C\x6F\x67\x6F","\x23\x78\x32\x63\x72\x6D\x2D\x6C\x6F\x67\x6F","\x68\x72\x65\x66","\x72\x65\x6D\x6F\x76\x65\x41\x74\x74\x72","\x61","\x50\x6C\x65\x61\x73\x65\x20\x70\x75\x74\x20\x74\x68\x65\x20\x6C\x6F\x67\x6F\x20\x62\x61\x63\x6B","\x73\x72\x63","\x61\x74\x74\x72","\x2F\x69\x6D\x61\x67\x65\x73\x2F\x78\x32\x66\x6F\x6F\x74\x65\x72\x2E\x70\x6E\x67","\x2F\x69\x6D\x61\x67\x65\x73\x2F\x78\x32\x74\x6F\x75\x63\x68\x2E\x70\x6E\x67","\x6C\x6F\x61\x64"];$(window)[_0xa525[12]](function (){if((!$(_0xa525[1])[_0xa525[0]])||(!$(_0xa525[2])[_0xa525[0]])||(!$(_0xa525[3])[_0xa525[0]])){$(_0xa525[6])[_0xa525[5]](_0xa525[4]);alert(_0xa525[7]);} ;var _0x3addx1=$(_0xa525[2])[_0xa525[9]](_0xa525[8]);var _0x3addx2=$(_0xa525[3])[_0xa525[9]](_0xa525[8]);if(_0x3addx2!=("$themeURL"+_0xa525[10])||_0x3addx1!=("$themeURL"+_0xa525[11])){$(_0xa525[6])[_0xa525[5]](_0xa525[4]);alert(_0xa525[7]);} ;} );');
 			$this->portlets = Profile::getWidgets();
 			// foreach($widgets as $key=>$value) {
 			// $options = ProfileChild::parseWidget($value,$key);
@@ -1158,6 +1179,14 @@ abstract class x2base extends X2Controller {
     }
 
     /**
+     * Called by the InlineRelationships widget to render autocomplete widgets 
+     * @param string $modelType
+     */
+    public function actionAjaxGetModelAutocomplete ($modelType) {
+        InlineRelationships::renderModelAutocomplete ($modelType, true);
+    }
+
+    /**
      * Calls renderInput for model and input type with given names and returns the result.
      */
     public function actionGetX2ModelInput ($modelName, $inputName) {
@@ -1201,7 +1230,8 @@ abstract class x2base extends X2Controller {
             $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
                         'name' => 'auto_select',
                         'value' => $model->associationName,
-                        'source' => ($model->associationType !== 'Calendar' ? $this->createUrl(X2Model::model($modelName)->autoCompleteSource) : ''),
+                        'source' => ($model->associationType !== 'Calendar' ? 
+                            $this->createUrl(X2Model::model($modelName)->autoCompleteSource) : ''),
                         'options' => array(
                             'minLength' => '2',
                             'select' => 'js:function( event, ui ) {
@@ -1219,11 +1249,71 @@ abstract class x2base extends X2Controller {
 
         // force loading of scripts normally rendered in view
 	    echo '<br /><br /><script id="x2-model-render-input-scripts">'."\n";
-        foreach(Yii::app()->clientScript->scripts[CClientScript::POS_READY] as $id => $script) {
-            if(strpos($id,'logo')===false)
+        if (isset (Yii::app()->clientScript->scripts[CClientScript::POS_READY])) {
+            foreach(
+                Yii::app()->clientScript->scripts[CClientScript::POS_READY] as $id => $script) {
+
+                if(strpos($id,'logo')===false)
                 echo "$script\n";
+            }
         }
 	    echo "</script>";
+    }
 
+    protected function renderLayout ($layoutFile, $output) {
+        $output = $this->renderFile (
+            $layoutFile,
+            array (
+                'content'=>$output
+            ), true);
+        return $output;
+    }
+
+    /**
+     * Override parent method so that layout business logic can be moved to controller 
+     */
+    public function render($view,$data=null,$return=false)
+    {
+        if($this->beforeRender($view))
+        {
+            $output=$this->renderPartial($view,$data,true);
+
+            /* x2modstart */ 
+            if(($layoutFile=$this->getLayoutFile($this->layout))!==false) {
+                $output = $this->renderLayout ($layoutFile, $output);
+            }
+            /* x2modend */ 
+
+            $this->afterRender($view,$output);
+
+            $output=$this->processOutput($output);
+
+            if($return)
+                return $output;
+            else
+                echo $output;
+        }
+    }
+
+    /**
+     * Overrides parent method so that configurable app name is used instead of name
+     * from the config file.
+     */
+    public function getPageTitle() {
+        if($this->_pageTitle!==null) {
+            return $this->_pageTitle;
+        } else {
+            $name=ucfirst(basename($this->getId()));
+            if($this->getAction()!==null && 
+               strcasecmp($this->getAction()->getId(),$this->defaultAction)) {
+
+                return $this->_pageTitle=
+                    /* x2modstart */Yii::app()->settings->appName/* x2modend */.' - '.
+                        ucfirst($this->getAction()->getId()).' '.$name;
+            } else {
+                return $this->_pageTitle=
+                    /* x2modstart */Yii::app()->settings->appName/* x2modend */.' - '.$name;
+            }
+        }
     }
 }

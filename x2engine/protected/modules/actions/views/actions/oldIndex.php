@@ -39,6 +39,8 @@ $menuItems = array(
 	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
 	array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
 	array('label'=>Yii::t('actions','Create'),'url'=>array('create')),
+        array('label'=>Yii::t('actions', 'Import Actions'), 'url'=>array('admin/importModels', 'model'=>'Actions'), 'visible'=>Yii::app()->params->isAdmin),
+        array('label'=>Yii::t('actions', 'Export Actions'), 'url'=>array('admin/exportModels', 'model'=>'Actions'), 'visible'=>Yii::app()->params->isAdmin),
 );
 
 if($this->route === 'actions/actions/index') {
@@ -67,7 +69,7 @@ x2.actionFrames.afterActionUpdate = (function () {
         $('#actions-grid').yiiGridView ('update');
     };
 }) ();
-",CClientScript::POS_HEAD);
+",CClientScript::POS_END);
 
 ?>
 <div class="search-form" style="display:none">
@@ -76,7 +78,7 @@ x2.actionFrames.afterActionUpdate = (function () {
 )); ?>
 </div><!-- search-form -->
 <?php
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'actions-grid',
     'title'=>$heading,
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.
@@ -88,14 +90,19 @@ $this->widget('application.components.X2GridView', array(
         'qtipSelector' => ".contact-name"
     ),
     'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> '<div class="page-title icon actions">{title}{buttons}'
-		.CHtml::link(
+    'template'=> 
+        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
+        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
+        '<div id="x2-gridview-page-title" '.
+         'class="page-title icon actions x2-gridview-fixed-title">'.
+        '{title}{buttons}'.
+        CHtml::link(
             Yii::t('actions','Switch to List'),
             array('index','toggleView'=>1),
             array('class'=>'x2-button')
-        ).
-        '{filterHint}'. 
-        '{summary}</div>{items}{pager}',
+        ).'{filterHint}'.'{summary}{topPager}'.
+        '{items}{pager}',
+    'fixedHeader' => true,
 	'dataProvider'=>$dataProvider,
     'massActions' => array ('delete', 'tag', 'updateField', 'completeAction', 'uncompleteAction'),
 	// 'enableSorting'=>false,
@@ -126,6 +133,7 @@ $this->widget('application.components.X2GridView', array(
                         CHtml::encode(Formatter::trimText($data->actionDescription)),
                     array("view","id"=>$data->id))',
 			'type'=>'raw',
+            'filter' => false
 		),
 		'associationName'=>array(
 			'name'=>'associationName',

@@ -46,6 +46,13 @@ class JSONFieldsBehavior extends TransformedFieldStorageBehavior {
 
 	protected $hasOptions = true;
 
+    /**
+     * If true, when setting the JSON field, the order of the current field values will be 
+     *  maintained.
+     * @param bool 
+     */
+    public $maintainCurrentFieldsOrder = false; 
+
 	/**
 	 * Returns an array defining the expected structure of the JSON-bearing
 	 * attribute specified by $name.
@@ -76,7 +83,8 @@ class JSONFieldsBehavior extends TransformedFieldStorageBehavior {
 	public function packAttribute($name){
 		$fields = $this->fields($name);
 		$attribute = $this->getOwner()->$name;
-        $attribute = is_array($attribute) ? ArrayUtil::normalizeToArray($fields,$attribute) : $fields;
+        $attribute = is_array($attribute) ? 
+            ArrayUtil::normalizeToArrayR($fields,$attribute,$this->maintainCurrentFieldsOrder) : $fields;
 		return CJSON::encode ($attribute);
 	}
 
@@ -89,7 +97,8 @@ class JSONFieldsBehavior extends TransformedFieldStorageBehavior {
 	public function unpackAttribute($name){
 		$fields = $this->fields($name);
 		$attribute = CJSON::decode ($this->getOwner()->$name);
-		$attribute = is_array($attribute) ? ArrayUtil::normalizeToArray($fields,$attribute) : $fields;
+		$attribute = is_array($attribute) ? 
+            ArrayUtil::normalizeToArrayR($fields,$attribute,$this->maintainCurrentFieldsOrder) : $fields;
 		return $attribute;
 	}
 }

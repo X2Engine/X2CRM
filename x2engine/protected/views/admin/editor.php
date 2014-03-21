@@ -38,7 +38,6 @@
 // ",CClientScript::POS_READY);
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2formEditor.js');
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2gridview.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/colResizable-1.3.min.js');
 
 if(isset($layoutModel) && !empty($layoutModel->layout)){

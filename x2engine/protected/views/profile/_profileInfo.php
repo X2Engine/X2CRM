@@ -265,13 +265,17 @@ if ($isMyProfile) {
 ?>
 <div id='profile-info-container'>
 
-<div class="page-title icon profile">
+<div class="responsive-page-title page-title icon profile">
     <h2>
         <span class="no-bold"><?php echo Yii::t('profile','Profile:'); ?></span>
         <?php echo $model->fullName; ?>
     </h2>
 <?php
     if ($isMyProfile) {
+        echo ResponsiveHtml::gripButton ();
+        ?>
+        <div class='responsive-menu-items'>
+        <?php
         echo CHtml::link(
             Yii::t('profile', 'Minimize'), '#',
             array(
@@ -309,7 +313,6 @@ if ($isMyProfile) {
                 'id' => 'add-profile-widget-button',
             )
         );
-        echo $model->getHiddenProfileWidgetMenu ();
         echo CHtml::link(
             '<span></span>', $this->createUrl('update', array('id' => $model->id)),
             array(
@@ -318,7 +321,9 @@ if ($isMyProfile) {
             )
         );
         ?>
+        </div>
         <?php
+        echo $model->getHiddenProfileWidgetMenu ();
     }
 ?>
 </div>

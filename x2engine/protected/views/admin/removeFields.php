@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin','Remove A Custom Field'); ?></h2></div>
+<div class="page-title rounded-top"><h2><?php echo Yii::t('admin','Remove A Custom Field'); ?></h2></div>
 <div class="form">
 <?php echo Yii::t('admin','This form will allow you to remove any custom fields you have added.'); ?>
 <br>

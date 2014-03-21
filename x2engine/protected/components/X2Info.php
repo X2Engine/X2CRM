@@ -41,14 +41,19 @@
  */
 class X2Info extends CComponent {
 
-	public static function hint($text,$superScript = true,$id=null) {
+	public static function hint($text,$superScript = true, $id=null, $brackets=false, $encode=true) {
         $htmlOptions = array (
-			'class'=>'x2-hint',
-			'title'=>$text
+			'class'=>'x2-hint x2-question-mark',
+			'title' => $encode?htmlentities($text,ENT_QUOTES):$text,
         );
         if ($id !== null) {
             $htmlOptions['id'] = $id;
         }
-		return CHtml::tag($superScript?'sup':'span',$htmlOptions,'?');
+        if ($brackets) {
+            $mark = '[?]';
+        } else {
+            $mark = '?';
+        }
+		return CHtml::tag($superScript?'sup':'span',$htmlOptions,$mark);
 	}
 }

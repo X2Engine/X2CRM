@@ -113,9 +113,12 @@ Yii::app()->clientScript->registerScript(
 
 <div id='activity-feed-container'>
 <div id='page-title-container'>
-    <div class="page-title icon rounded-top activity-feed">
+    <div class="page-title responsive-page-title icon rounded-top activity-feed">
         <h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
-        <div id="menu-links" class="title-bar">
+        <?php 
+        echo ResponsiveHtml::gripButton ();
+        ?>
+        <div id="menu-links" class="title-bar responsive-menu-items">
             <?php
             echo CHtml::link(
                 Yii::t('app','Toggle Comments'),'#',
@@ -240,11 +243,22 @@ Yii::app()->clientScript->registerScript(
             array_map(
                 'translateOptions',json_decode(Dropdowns::model()->findByPk(113)->options,true)),
             array ('class' => 'x2-select'));
-        echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
-        if ($isMyProfile) 
-            echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"$('#attachments').slideToggle();", 'id'=>"toggle-attachment-menu-button"));
-
-        echo "</div>";
+        ?>
+        <div id='second-row-buttons-container'>
+            <?php
+            echo CHtml::submitButton(
+                Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
+            if ($isMyProfile) {
+                echo CHtml::button(
+                    Yii::t('app','Attach A File/Photo'),
+                    array(
+                        'class'=>'x2-button','onclick'=>"$('#attachments').slideToggle();",
+                        'id'=>"toggle-attachment-menu-button"));
+            }
+            ?>
+        </div>
+        </div>
+        <?php
         ?>
     </div>
     <?php $this->endWidget(); ?>

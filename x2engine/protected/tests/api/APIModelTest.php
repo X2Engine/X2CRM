@@ -10,7 +10,7 @@ Yii::import('application.modules.users.models.*');
  * @package application.tests.api
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class APIModelTest extends CURLTestCase {
+class APIModelTest extends CURLDbTestCase {
 
 	public function urlFormat() {
 		return '';

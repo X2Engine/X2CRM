@@ -34,6 +34,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/workflowFunnel.css');
+
 $this->setPageTitle(Yii::t('workflow', 'View Process'));
 
 $user=isset($_GET['users'])?$_GET['users']:''; 
@@ -85,7 +88,7 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 		'enableAjaxValidation'=>false,
 		'method'=>'get',
         'htmlOptions'=>array(
-            'style'=>'width:400px;float:left;'
+            'style'=>'float:left;'
         )
 	)); ?>
 	<div class="row">

@@ -619,7 +619,7 @@ class Quote extends X2Model {
 		$criteria = new CDbCriteria;
 		$parameters = array('limit' => ceil($pageSize));
 		$criteria->scopes = array('findAll' => array($parameters));
-		$criteria->addCondition("t.type!='invoice' OR t.type IS NULL");
+		$criteria->addCondition("(t.type!='invoice' and type!='dummyQuote') OR t.type IS NULL");
 
 		return $this->searchBase($criteria, $pageSize, $uniqueId);
 	}

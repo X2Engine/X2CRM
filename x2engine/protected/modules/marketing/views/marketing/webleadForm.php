@@ -42,13 +42,14 @@ $this->actionMenu = $this->formatMenu(array(
 	array(
         'label'=>Yii::t('marketing','Newsletters'), 
         'url'=>array('/marketing/weblist/index'),
-        'visible'=>(Yii::app()->params->edition==='pro')
+        'visible'=>(Yii::app()->contEd('pro'))
     ),
 	array('label'=>Yii::t('marketing','Web Lead Form')),
-	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker'),'visible'=>(Yii::app()->params->edition==='pro')),
-	array('label'=>Yii::t('app','X2Flow'),'url'=>array('/studio/flowIndex'),'visible'=>(Yii::app()->params->edition==='pro')),
+	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker'),'visible'=>(Yii::app()->contEd('pro'))),
+	array('label'=>Yii::t('app','X2Flow'),'url'=>array('/studio/flowIndex'),'visible'=>(Yii::app()->contEd('pro'))),
 ));
 ?>
+<div id='content-tray'>
 <div class="page-title icon marketing"><h2><?php echo Yii::t('marketing','Web Lead Form'); ?></h2></div>
 <div class="form">
 <?php echo Yii::t('marketing','Create a public form to receive new contacts.'),'<br>',
@@ -66,3 +67,5 @@ $this->renderPartial ('application.components.views._createWebForm',
         'webFormType'=>'weblead'
     )
 );
+?>
+</div>

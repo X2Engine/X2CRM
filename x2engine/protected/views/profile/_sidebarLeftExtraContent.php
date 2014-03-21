@@ -34,6 +34,19 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
+Yii::app()->clientScript->registerCss('filterControlsCss',"
+
+#filter-controls > .portlet-content {
+    padding: 5px 0px !important;
+}
+
+#filter-controls > .portlet-content > .x2-button-group {
+    margin-bottom: 5px;
+}
+
+");
+
 if(isset($_SESSION['filters'])){
     $filters=$_SESSION['filters'];
 }else{
@@ -61,9 +74,10 @@ foreach($eventTypeList as $key=>$value){
         $eventTypes[$value['type']]=Events::parseType($value['type']);
 }
 $profile=Yii::app()->params->profile;
-$this->beginWidget('zii.widgets.CPortlet',
+$this->beginWidget('LeftWidget',
     array(
-        'title'=>Yii::t('app', 'Filter Controls'),
+        'widgetLabel'=>Yii::t('app', 'Filter Controls'),
+        'widgetName' => 'FilterControls',
         'id'=>'filter-controls',
     )
 );
@@ -75,7 +89,6 @@ echo '<a href="#" id="full-filters" class="x2-button x2-last-child'.
     ($profile->fullFeedControls?" disabled-link":"").'" style="width:42px">'.
     Yii::t('app','Full').'</a>';
 echo "</div>\n";
-$this->endWidget();
 $filterList=json_decode($profile->feedFilters,true);
 echo "<div id='full-controls'".($profile->fullFeedControls?"":"style='display:none;'").
     ">";
@@ -309,9 +322,10 @@ echo "</div>";
 echo "<div id='simple-controls'".
     ($profile->fullFeedControls?"style='display:none;'":"").">";
 
-$this->beginWidget('zii.widgets.CPortlet',
+$this->beginWidget('LeftWidget',
     array(
-        'title'=>Yii::t('app', 'Event Types'),
+        'widgetLabel'=>Yii::t('app', 'Event Types'),
+        'widgetName' => 'SimpleFilterControlEventTypes',
         'id'=>'type-filter',
     )
 );
@@ -332,6 +346,7 @@ foreach($eventTypes as $type=>$name) {
         )
     )."<br>";
 }
+$this->endWidget();
 $this->endWidget();
 echo "</div>";
 Yii::app()->clientScript->registerScript('feed-filters','

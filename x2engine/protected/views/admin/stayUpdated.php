@@ -93,7 +93,7 @@
 
 		<div class="row">
 			<label for="info"><?php echo $form->label['info']; ?></label>
-			<textarea style="width:360px;height:100px;" rows="5" height="50" width="100" columns="10" name="info" id="info"></textarea>
+			<textarea class='x2-extra-wide-input' style="height:100px;" rows="5" height="50" width="100" columns="10" name="info" id="info"></textarea>
 		</div><!-- .row -->
 	</div><!-- #receiveUpdates-form -->
 
@@ -238,7 +238,7 @@
                     
                 // Now it is time to connect to the updates server
 				if(!isos || ((postData.unique_id == 'none' || empty(postData.unique_id)) && elts.receiveUpdates.is(":checked"))) {
-                    var submitToUrl = 'http://x2planet.com/installs/registry/<?php echo $form->os ? 'new' : 'register'; ?>';
+                    var submitToUrl = 'http://testupdate.x2developer.com/x2planet.com/installs/registry/<?php echo $form->os ? 'new' : 'register'; ?>';
 					form.find('.error').removeClass('error');
 					status.fadeIn(300).html(loadingImg);
                     if($.browser.msie || typeof window.XDomainRequest != 'undefined') {

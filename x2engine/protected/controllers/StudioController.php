@@ -55,6 +55,16 @@ class StudioController extends x2base {
 		);
 	}
 
+
+    public function behaviors(){
+        return array_merge (parent::behaviors () , 
+            array(
+                'ImportExportBehavior' => array('class' => 'ImportExportBehavior'),
+            )
+        );
+    }
+
+
 	public function actions() {
 		if(file_exists(Yii::app()->getBasePath().'/components/FlowDesignerAction.php')) {
 			return array(
@@ -220,7 +230,7 @@ class StudioController extends x2base {
 		echo CJSON::encode($fields);
 	}
 
-    function actionDeleteAllTriggerLogs ($flowId) {
+    public function actionDeleteAllTriggerLogs ($flowId) {
         if (isset ($flowId)) {
             $triggerLogs = TriggerLog::model()->findAllByAttributes (array (
                 'flowId' => $flowId
@@ -234,7 +244,7 @@ class StudioController extends x2base {
         }
     }
 
-    function actionDeleteAllTriggerLogsForAllFlows () {
+    public function actionDeleteAllTriggerLogsForAllFlows () {
         $triggerLogs = TriggerLog::model()->findAll ();
         foreach ($triggerLogs as $log) {
             $log->delete ();
@@ -242,7 +252,7 @@ class StudioController extends x2base {
         echo "success";
     }
 
-    function actionDeleteTriggerLog ($id) {
+    public function actionDeleteTriggerLog ($id) {
         if (isset ($id)) {
             $triggerLog = TriggerLog::model()->findByAttributes (array (
                 'id' => $id
@@ -255,4 +265,7 @@ class StudioController extends x2base {
         }
         echo "failure";
     }
+
+     
+
 }

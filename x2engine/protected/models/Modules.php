@@ -107,4 +107,50 @@ class Modules extends CActiveRecord {
 	public static function recordLabel($model) {
 		
 	}
+
+        /**
+         * Populate a list of available modules to import/export
+         */
+        public static function getExportableModules() {
+            $modules = Modules::model()->findAll();
+            $moduleList = array();
+            $skipModules = array('Calendar', 'Charts', 'Groups', 'Reports', 'Media', 'Users', 'Workflow');
+            foreach($modules as $module){
+                $name = ucfirst($module->name);
+                if (in_array($name, $skipModules)) {
+                    continue;
+                }
+                if($name != 'Document'){
+                    $controllerName = $name.'Controller';
+                    if(file_exists('protected/modules/'.$module->name.'/controllers/'.$controllerName.'.php')){
+                        Yii::import("application.modules.$module->name.controllers.$controllerName");
+                        $controller = new $controllerName($controllerName);
+                        $model = $controller->modelClass;
+                        if(class_exists($model)){
+                            $moduleList[$model] = Yii::t('app', $module->title);
+                        }
+                    }
+                }
+            }
+            return $moduleList;
+        }
+
+        /**
+         * @return array names of models associated with each module 
+         */
+        public static function getNamesOfModelsOfModules () {
+            $moduleNames = array_map (function ($record) {
+                return $record->name; 
+            }, Modules::model ()->findAll (array ('select' => 'name')));
+
+            $models = array ();
+            foreach ($moduleNames as $name) {
+                $modelName = X2Model::getModelName ($name);
+                if ($modelName && is_subclass_of ($modelName, 'X2Model')) {
+                    $models[] = $modelName;
+                }
+            }
+            return $models;
+        }
 }
+

@@ -46,19 +46,29 @@ $(function() {
     }
 
     /**
-     *    Initializes CKEditor in the email form, and the datetimepicker for the "send later" dropdown.
+     * Initializes CKEditor in the email form, and the datetimepicker for the "send later" dropdown.
      */
     $(document).on('setupInlineEmailEditor',function(){
 
         if(window.inlineEmailEditor)
             window.inlineEmailEditor.destroy(true);
         $('#email-message').val(x2.inlineEmailOriginalBody);
-        window.inlineEmailEditor = createCKEditor('email-message',{fullPage:true,height:'300px',tabIndex:5,insertableAttributes:x2.insertableAttributes}, function() {
-            if(typeof inlineEmailEditorCallback == 'function') {
-                inlineEmailEditorCallback(); // call a callback function after the inline email editor is created (if function exists)
-            }
-            x2.inlineEmailEditor.isSetUp = true;
-        });
+        window.inlineEmailEditor = createCKEditor(
+            'email-message',
+            {
+                toolbarStartupExpanded: !$('body').hasClass ('x2-mobile-layout'),
+                fullPage:true,
+                height:'300px',
+                tabIndex:5,
+                insertableAttributes:x2.insertableAttributes
+            }, function() {
+                if(typeof inlineEmailEditorCallback == 'function') {
+                    /* call a callback function after the inline email editor is created (if 
+                       function exists) */
+                    inlineEmailEditorCallback(); 
+                }
+                x2.inlineEmailEditor.isSetUp = true;
+            });
         
         setupEmailAttachments('email-attachments');
     });
@@ -114,7 +124,7 @@ $(function() {
  * a different model, i.e. a quote.
  */
 function toggleEmailForm(mode) {
-    if (!x2.inlineEmailEditor.isSetUp) return;
+    if (!x2.inlineEmailEditor.isSetUp && !x2.isAndroid) return;
     mode = (typeof mode == 'undefined') ? 'default' : mode;
     if(typeof x2.inlineQuotes != 'undefined') {
         if(typeof x2.inlineQuotes.inlineEmailConfig == 'undefined')
@@ -163,7 +173,7 @@ function setupInlineEmailForm() {
     
     // setupEmailAttachments();
     
-    initX2FileInput();
+    x2.forms.initX2FileInput();
     
     $(document).mouseup(function() {
         $('input.x2-file-input[type=file]').next().removeClass('active');

@@ -37,7 +37,7 @@ if (typeof x2 === 'undefined') x2 = {};
 if (typeof x2.profile === 'undefined') x2.profile = {};
 
 x2.profile._widgetLayoutMode = null; // current layout mode
-x2.profile._widgetLayoutSwitchThreshold = 1250; 
+x2.profile._widgetLayoutSwitchThreshold = 1050; 
 x2.profile._widgetLayoutModes = {'narrow': 0, 'wide': 1}; // types of layout modes
 
 /**

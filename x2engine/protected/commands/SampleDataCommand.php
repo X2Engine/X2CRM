@@ -59,7 +59,7 @@ Yii::import('application.components.util.*');
  * if the data is to be re-used elsewhere; references to files on the server 
  * will otherwise point to nonexistent files.
  * @package application.commands
- * @author Demitri Morgan <demitri@X2Engine.com>
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 class SampleDataCommand extends CConsoleCommand {
 
@@ -95,7 +95,7 @@ class SampleDataCommand extends CConsoleCommand {
             die ("Error: actionExport: failed to copy install_timestamp to dummy_data_date");
         }
 
-// [edition] => [array of table names]
+        // [edition] => [array of table names]
 		$tblEditions = require(realpath(Yii::app()->basePath . '/data/nonFreeTables.php'));
 		$nonFreeEditions = require(realpath(Yii::app()->basePath . '/data/editions.php'));
 		$allEditions = array_keys($tblEditions);
@@ -124,20 +124,12 @@ class SampleDataCommand extends CConsoleCommand {
 		 */
 		$command = "mysqldump -tc -u $user -p$pass $dbname ";
 
-		/* $dummy_data = true; */
-// Ignore pattern for lines in output of mysqldump:
+		// Ignore pattern for lines in output of mysqldump:
 		$lPat = '/^(\/\*|\-\-|\s*$';
-		/* if ($dummy_data) { */
 		// Export current app's data as "dummy" (usage example) data
 		$lPat.='|(?:UN)?LOCK TABLES)/';
 		$out = FileUtil::rpath(Yii::app()->basePath . '/data/dummy_data%s.sql');
-		/* } else {
-		  $lPat .= ')/';
-		  $out = $argv[1];
-		  if (!realpath($outDir = dirname($out)))
-		  die("Error: path " . $outDir . " does not exist.\n");
-		  } */
-
+		
 		/**
 		 * Update the list of tables for each edition with the default tables:
 		 */
@@ -146,10 +138,10 @@ class SampleDataCommand extends CConsoleCommand {
 				}, array());
 		$tblEditions['opensource'] = array_diff($allTbls, $nonFreeTbls);
 
-		/*		 * **************************************** */
-		/* Declare the export specification arrays */
-		/*		 * **************************************** */
-		/* Here it's specified what data will be exported and how.
+		/**
+         * Declare the export specification arrays
+		 *
+		 * Here it's specified what data will be exported and how.
 		 * Each of these arrays follows the basic pattern of $specTemplate:
 		 * [edition] => [array of table names or ([table name] =>[spec])]
 		 */
@@ -158,6 +150,7 @@ class SampleDataCommand extends CConsoleCommand {
 		 * These will be excluded from data export altogether
 		 */
 		$tblsExclude = $specTemplate;
+        // These will be excluded for open source and above:
 		$tblsExclude['opensource'] = array_merge(array(
 			'x2_admin',
 			'x2_auth_assignment',
@@ -169,10 +162,15 @@ class SampleDataCommand extends CConsoleCommand {
 			'x2_timezones',
 			'x2_timezone_points',
 			'x2_tips'
-		),$tblEditions['pro']);
-		$tblsExclude['pro'] = array(
+		),$tblEditions['pro'],$tblEditions['pla']);
+        // These for professional edition:
+		$tblsExclude['pro'] = array_merge(array(
 			'x2_forwarded_email_patterns',
-		);
+		),$tblEditions['pla']);
+        // These for platform/platinum edition:
+        $tblsExclude['pla'] = array(
+            'x2_forwarded_email_patterns'
+        );
 
 		/**
 		 * These will be included, but with specific criteria
@@ -249,15 +247,15 @@ class SampleDataCommand extends CConsoleCommand {
 				$allTbls[$edition][$tbl] = $where;
 		}
 
-// The update statement that will be used for updating records post-insertion:
+        // The update statement that will be used for updating records post-insertion:
 		$updateStatement = "UPDATE `%s` SET %s WHERE %s;";
 
 		foreach ($nonFreeEditions as $edition)
 			$allSql[$edition][] = "/* @edition:$edition */";
 
-		/*		 * ************************** */
-		/* Generate SQL for the data */
-		/*		 * ************************** */
+		/**
+		 * Generate SQL for the data:
+         */
 		foreach ($allTbls as $edition => $tbls) {
 
 			/**
@@ -327,18 +325,9 @@ class SampleDataCommand extends CConsoleCommand {
 			}
 		}
 
-		/* if ($dummy_data) { */
 		// Create dummy data files
 		foreach ($allSql as $edition => $sqls)
 			file_put_contents(sprintf($out, $edition == 'opensource' ? '' : "-$edition"), implode("\n/*&*/\n", $sqls));
-		/* } else {
-		  // Put it all in the same file
-		  $allOut = array();
-		  foreach ($allSql as $edition => $sqls)
-		  foreach ($sqls as $sql)
-		  $allOut[] = $sql;
-		  file_put_contents($out, implode("\n", $allOut));
-		  } */
 	}
 
 	/**

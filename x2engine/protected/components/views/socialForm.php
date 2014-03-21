@@ -45,7 +45,7 @@
 	<div class="float-row">
 		<?php
 		$feed->text = Yii::t('app','Enter text here...');
-		echo $form->textArea($feed,'data',array('onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','style'=>'width:558px;height:50px;color:#aaa;'));
+		echo $form->textArea($feed,'data',array('onfocus'=>'x2.forms.toggleText(this);','onblur'=>'x2.forms.toggleText(this);','style'=>'width:558px;height:50px;color:#aaa;'));
 		echo $form->dropDownList($feed,'associationId',$users);
 		echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button'));
 		?>

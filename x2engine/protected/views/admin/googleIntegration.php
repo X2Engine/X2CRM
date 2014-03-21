@@ -49,8 +49,8 @@ $('#timeout').change(function() {
 ",CClientScript::POS_READY);
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin','Google Integration'); ?></h2></div>
+<div class="admin-form-container">
 <div class="form">
-<div style="width:500px;">
 <?php
 $form=$this->beginWidget('CActiveForm', array(
 		'id'=>'settings-form',
@@ -61,10 +61,10 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo $form->labelEx($model,'googleIntegration',array('style'=>'display:inline;')); ?>
 		<br><br>
 		<?php echo $form->labelEx($model,'googleClientId'); ?>
-		<?php echo $form->textField($model,'googleClientId', array('size'=>75)); ?>
+		<?php echo $form->textField($model,'googleClientId', array('class'=>'x2-xxwide-input')); ?>
 
 		<?php echo $form->labelEx($model,'googleClientSecret'); ?>
-		<?php echo $form->textField($model,'googleClientSecret', array('size'=>75)); ?>
+		<?php echo $form->textField($model,'googleClientSecret', array('class'=>'x2-xxwide-input')); ?>
 
 		<?php // echo $form->labelEx($model,'googleAPIKey'); ?>
 		<?php // echo $form->textField($model,'googleAPIKey', array('size'=>75)); ?>
@@ -79,7 +79,7 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo CHtml::link(Yii::t('admin', 'google console'), 'http://code.google.com/apis/console'); ?>.
 		<?php echo Yii::t('admin', 'Also, the following links need to be added to your app\'s Authorized Redirect URIs:'); ?>
 		<br><br>
-<textarea style="padding:5px; height:60px;line-height:20px;width:600px;" disabled="disabled">
+<textarea class='x2-xxwide-input' style="padding:5px; height:60px;line-height:20px;" disabled="disabled">
 <?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/calendar/calendar/syncActionsToGoogleCalendar'); ?>
 
 <?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/site/googleLogin'); ?>
@@ -88,7 +88,7 @@ $form=$this->beginWidget('CActiveForm', array(
 </textarea>
         <?php echo Yii::t('admin', 'Additionally, the following link needs to be added to your app\'s Authorized Javascript Origins'); ?>
 		<br><br>
-<textarea style="padding:5px; height:20px;line-height:20px;width:600px;" disabled="disabled">
+<textarea class='x2-xxwide-input' style="padding:5px; height:20px;line-height:20px;" disabled="disabled">
 <?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];?>
 </textarea>
 		<br><br>

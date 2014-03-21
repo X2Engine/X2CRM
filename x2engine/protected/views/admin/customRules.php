@@ -33,7 +33,25 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?><div class="page-title"><h2><?php echo Yii::t('admin','Manage Lead Routing'); ?></h2></div>
+
+Yii::app()->clientScript->registerCss('customRulesCss',"
+
+#routing-grid_c0 {
+    width: 58px;
+}
+
+#routing-grid_c2 {
+    width: 30%;
+}
+
+#routing-grid_c3 {
+    width: 20%;
+}
+
+");
+
+?>
+<div class="page-title"><h2><?php echo Yii::t('admin','Manage Lead Routing'); ?></h2></div>
 <div class="form">
 <?php echo Yii::t('admin','Manage routing criteria. This setting is only required if lead distribution is set to "Custom Round Robin"'); ?>
  </div>
@@ -45,12 +63,12 @@ foreach(X2Model::model('Contacts')->attributeLabels() as $field=>$label){
 $str.="</select>";
 Yii::app()->clientScript->registerScript('leadRules', "
 function deleteStage(object) {
-	$(object).closest('li').remove();
+    $(object).closest('li').remove();
 }
 
 function addStage() {
-	$('#criteria ul').append(' \
-	<li>\
+    $('#criteria ul').append(' \
+    <li>\
                 ".Yii::t('admin','AND')." ".$str."\
                 <select name=\"Values[comparison][]\">\
                     <option value=\"<\">".Yii::t('admin','Less Than')."</option>\
@@ -63,54 +81,48 @@ function addStage() {
         <div class=\"cell\">\
             <a href=\"javascript:void(0)\" onclick=\"deleteStage(this);\">[".Yii::t('workflow','Del')."]</a>\
         </div><br />\
-	</li>');
+    </li>');
 }
 
 ",CClientScript::POS_HEAD);
 
 $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'routing-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'dataProvider'=>$dataProvider,
-	'columns'=>array(
-                array(
+    'id'=>'routing-grid',
+    'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.
+        Yii::app()->theme->name.'/css/gridview',
+    'dataProvider'=>$dataProvider,
+    'columns'=>array(
+        array(
+            'name'=>'priority',
+            'header'=>Yii::t('admin','Priority'),
+            'value'=>'$data->priority',
+            'type'=>'raw',
+        ),
+        array(
+            'name'=>'value',
+            'header'=>Yii::t('admin','Criteria'),
+            'value'=>'LeadRouting::humanizeText($data->criteria)',
+            'type'=>'raw',
+            'htmlOptions' => array ('style' => 'text-overflow: ellipsis;'),
+        ),
+        array(
+            'name'=>'users',
+            'header'=>Yii::t('admin','Users'),
+            'value'=>'User::getUserLinks($data->users)',
+            'type'=>'raw',
+        ),
+        array(
+            'name'=>'delete',
+            'header'=>Yii::t('admin','Delete'),
+            'value'=>'CHtml::link(Yii::t("app","Delete"),"deleteRouting/$data->id")',
+            'type'=>'raw',
+        ),
 
-			'name'=>'priority',
-			'header'=>Yii::t('admin','Priority'),
-			'value'=>'$data->priority',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'80%'),
-		),
-		array(
-
-			'name'=>'value',
-			'header'=>Yii::t('admin','Criteria'),
-			'value'=>'LeadRouting::humanizeText($data->criteria)',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'80%'),
-		),
-                array(
-
-			'name'=>'users',
-			'header'=>Yii::t('admin','Users'),
-			'value'=>'User::getUserLinks($data->users)',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'80%'),
-		),
-                array(
-
-			'name'=>'delete',
-			'header'=>Yii::t('admin','Delete'),
-			'value'=>'CHtml::link(Yii::t("app","Delete"),"deleteRouting/$data->id")',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'80%'),
-		),
-
-	),
+    ),
 ));
 ?>
 <br>
-<div class="page-title"><h2><?php echo Yii::t('admin','Add Criteria for Lead Routing'); ?></h2></div>
+<div class="page-title rounded-top"><h2><?php echo Yii::t('admin','Add Criteria for Lead Routing'); ?></h2></div>
 <div class="form">
 <?php echo Yii::t('admin','To add a condition which will affect how leads are distributed, please fill out the form below.'); ?>
 </div>
@@ -118,11 +130,11 @@ $this->widget('zii.widgets.grid.CGridView', array(
 <div class="form">
 
 <?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'routing-form',
-	'enableAjaxValidation'=>false,
+    'id'=>'routing-form',
+    'enableAjaxValidation'=>false,
 )); ?>
 
-	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br>
+    <em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br>
 
         <div id="criteria">
         <label><?php echo Yii::t('admin','Criteria');?></label>
@@ -185,8 +197,8 @@ $this->widget('zii.widgets.grid.CGridView', array(
             <?php echo $form->dropDownList($model,'priority',$priorityArray,array('selected'=>LeadRouting::model()->count()));?>
         </div>
 
-	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
-	</div>
+    <div class="row buttons">
+        <?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
+    </div>
 <?php $this->endWidget(); ?>
 </div>

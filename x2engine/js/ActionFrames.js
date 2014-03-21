@@ -40,7 +40,7 @@ if (typeof x2 === 'undefined')
 actionFrames singleton
 */
 
-x2.actionFrames = (function () {
+x2.ActionFrames = (function () {
 
 /*
 Private properties
@@ -94,7 +94,7 @@ ActionFrames.prototype.createControls = function (id, publisher) {
         }
         $("#action-frame").contents().on('click', '.vcr-button', function(e){
             e.preventDefault();
-            if($(this).attr('id')=='back-button'){
+            if($(this).attr('id') === 'back-button'){
                 $('#'+that._lastClass).prev().click();
                 $('#'+that._lastClass).find('a').focus();
             }else{
@@ -167,7 +167,7 @@ Private instance methods
 /**
  * @param int id
  */
-ActionFrames.prototype._loadActionFrame = function (id){
+ActionFrames.prototype.loadActionFrame = function (id){
     var that = this;
 
     var publisher=($('#publisher-form').html()!=null);
@@ -187,20 +187,42 @@ ActionFrames.prototype._loadActionFrame = function (id){
         id: 'x2-view-email-dialog'
     });
 
+    var isResizing = false;
+    var iframeFix;
     that._frame.dialog({
         title: 'View Action',
         autoOpen: false,
         resizable: true,
         width: '650px',
-        show: 'fade'
+        show: 'fade',
+        resizeStart: function () {
+            isResizing = true;
+            iframeFix = new x2.IframeFixOverlay ({ elementToCover: that._frame });
+            $(document).one ('mouseup', function () {
+                return false;
+            });
+        },
+        resize: function () {
+            iframeFix.resize ();
+        },
+        resizeStop: function () {
+            iframeFix.destroy ();
+        }
     });
+
+    /*
+    // commented out since click outside event gets triggered on dialog resize
+    // can be reintroduced after this gets fixed
     $('body').bind('click', function(e) {
-        if($('#x2-view-email-dialog').dialog('isOpen')
-            && !$(e.target).is('.ui-dialog, a')
-            && !$(e.target).closest('.ui-dialog').length) {
+        if(!isResizing && 
+           $('#x2-view-email-dialog').dialog('isOpen')
+           && !$(e.target).is('.ui-dialog, a')
+           && !$(e.target).closest('.ui-dialog').length) {
+
             $('#x2-view-email-dialog').dialog('close');
         }
     });
+    */
 
     that._frame.data('inactive', true);
     if(that._frame.data('inactive')) {
@@ -272,7 +294,7 @@ ActionFrames.prototype._completeAction = function (id, publisher){
                     data:{
                         'id':id,
                         'notes':$('#completion-notes').val()
-                        },
+                    },
                     success:function(data){
                         if(data && data=='Success'){
                             if(!publisher){
@@ -323,7 +345,7 @@ ActionFrames.prototype._init = function () {
         $(document).on('mouseenter','.action-frame-link',function(){
             var id=$(this).attr('data-action-id');
             timer = setTimeout(function(){
-                that._loadActionFrame (id);
+                that.loadActionFrame (id);
             },500);
         });
         $(document).on('mouseleave','.action-frame-link',function(){
@@ -335,11 +357,15 @@ ActionFrames.prototype._init = function () {
         });
     });
 
-    // events not related to action frames, these should be moved into a a different prototype
+    // action history events, these should be moved into a a different prototype
     $(document).on('click', '.complete-button', function(e){
         e.preventDefault();
         var publisher=($('#publisher-form').html()!=null);
         that._completeAction($(this).attr('data-action-id'), publisher);
+    });
+    $(document).on('click', '.update-button', function(e){
+        e.preventDefault();
+        that.loadActionFrame ($(this).attr('data-action-id'));
     });
     $(document).on('click', '.uncomplete-button', function(e){
         e.preventDefault();
@@ -360,9 +386,7 @@ ActionFrames.prototype._init = function () {
     });
 };
 
-var actionFrames = new ActionFrames ({ instanceName: 'actionFrames' });
-
-return actionFrames;
+return ActionFrames;
 
 }) ();
 

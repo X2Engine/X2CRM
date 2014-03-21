@@ -1,3 +1,3 @@
 <?php
-return array('pro');
+return array('pro','pla');
 ?>

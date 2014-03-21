@@ -34,12 +34,74 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss('adminCss',"
+
+.page-title h2 {
+    line-height: 36px !important;
+}
+
+#content {
+    border: none;
+    background: none;
+}
+
+/*@media (max-width: 950px) {
+    #content {
+        width: auto !important;
+    }
+}
+
+@media (max-width: 790px) {
+    #content > .admin-screen {
+        width: auto !important;
+        margin-right: 0 !important;
+    }
+    .admin-screen .cell {
+        margin-top: 7px !important;
+    }
+    .admin-screen .form h2 {
+        line-height: normal !important;
+        min-height: 48px;
+        padding-top: 13px;
+    }
+    .admin-screen .page-title .x2-button {
+        margin-bottom: 4px !important;
+    }
+}*/
+
+.admin-screen .page-title {
+    margin-bottom: 5px;
+}
+
+");
+
 $admin = &Yii::app()->settings;
+
+$editionStart = function($edition) {
+    ob_start();
+    if(!Yii::app()->contEd($edition)) {
+        echo '<div title="'.Yii::t('admin','This feature is only available in {edition}',array('{edition}'=>'X2Engine '.Yii::app()->editionLabels[$edition])).'" class="only-in-edition edition-'.$edition.'">';
+    }
+};
+
+$editionEnd = function($edition) {
+    if(!Yii::app()->contEd($edition)){
+        echo '</div><!-- .only-in-edition.edition-'.$edition.' -->';
+    }
+    $section = ob_get_contents();
+    ob_end_clean();
+    echo $section;
+};
+
+
 ?>
 <div class="span-20 admin-screen">
-<div class="page-title">
+<div class="page-title x2-layout-island">
     <h2 style="padding-left:0"><?php echo Yii::t('app','Administration Tools'); ?></h2>
-    <?php echo CHtml::link(Yii::t('admin','About X2Engine'),array('/site/page','view'=>'about'),array('class'=>'x2-button right')); ?>
+    <?php
+    
+    echo CHtml::link(Yii::t('admin','About X2Engine'),array('/site/page','view'=>'about'),array('class'=>'x2-button right'));
+    ?>
 </div>
 
 <?php //echo Yii::t('app','Welcome to the administration tool set.'); ?>
@@ -52,7 +114,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
     echo "</span>\n";
 }
 ?>
-<div class="form">
+<div class="form x2-layout-island">
     <h2 id="admin-support"><?php echo Yii::t('admin','Support'); ?></h2>
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Engine'),'http://www.x2engine.com'); ?><br><?php echo Yii::t('admin','Commercial support and hosting');?></div>
@@ -65,12 +127,12 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','System Diagram'),array('/site/page','view'=>'systemdiagram')); ?><br><?php echo Yii::t('admin','X2Engine 3.0 system diagram');?></div>
     </div>
 </div>
-<div class="form">
+<div class="form x2-layout-island">
     <div class="row">
         <h2 id="admin-users"><?php echo Yii::t('admin','User Management'); ?></h2>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('users','Create User'),array('/users/users/create')); ?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('users','Manage Users'),array('/users/users/admin')); ?></div>
-        <?php if(Yii::app()->params->edition==='pro') { ?><div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Edit Access Rules'),array('/admin/editRoleAccess')); ?><br><?php echo Yii::t('admin','Change access rules for roles');?></div><?php } ?>
+        <div class="cell span-6"><?php $editionStart('pro'); ?><?php echo CHtml::link(Yii::t('admin','Edit Access Rules'),array('/admin/editRoleAccess')); ?><br><?php echo Yii::t('admin','Change access rules for roles');?><?php $editionEnd('pro'); ?></div>
     </div><br>
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('users','Invite Users'),array('/users/users/inviteUsers')); ?><br><?php echo Yii::t('admin','Send invitation emails to create X2Engine accounts');?></div>
@@ -84,7 +146,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <?php } ?>
     </div>
 </div>
-<div class="form">
+<div class="form x2-layout-island">
     <div class="row">
         <h2 id="admin-workflow"><?php echo Yii::t('admin','Web Lead Capture and Opportunity Processes'); ?></h2>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('marketing','Web Lead Form'),array('/marketing/marketing/webleadForm')); ?><br><?php echo Yii::t('admin','Create a public form to receive new contacts');?></div>
@@ -92,7 +154,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Add Custom Lead Rules'),array('/admin/roundRobinRules')); ?><br><?php echo Yii::t('admin','Manage rules for the "Custom Round Robin" lead distribution setting.');?></div>
     </div><br>
     <div class="row">
-        <?php if(Yii::app()->params->edition==='pro'){ ?><div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Web Tracker Setup'),array('/marketing/marketing/webTracker')); ?><br><?php echo Yii::t('admin','Configure and embed visitor tracking on your website');?></div><?php } ?>
+        <div class="cell span-6"><?php $editionStart('pro'); ?><?php echo CHtml::link(Yii::t('admin','Web Tracker Setup'),array('/marketing/marketing/webTracker')); ?><br><?php echo Yii::t('admin','Configure and embed visitor tracking on your website');?><?php $editionEnd('pro'); ?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Processes'),array('/workflow/workflow/index')); ?><br><?php echo Yii::t('admin','Create and manage processes');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Process Settings'),array('/admin/workflowSettings')); ?><br><?php echo Yii::t('admin','Change advanced process settings');?></div>
     </div><br>
@@ -101,23 +163,28 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Service Case Web Form'),array('/services/services/createWebForm')); ?><br><?php echo Yii::t('admin','Create a public form to receive new service cases.');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Set Service Case Distribution'),array('/admin/setServiceRouting')); ?><br><?php echo Yii::t('admin','Change how service cases are distributed.');?></div>
     </div><br>
-    <?php if(Yii::app()->params->edition!=='opensource'): ?>
+    
     <div class="row">
+        <?php $editionStart('pro'); ?>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Flow'),array('/studio/flowIndex')); ?><br><?php echo Yii::t('admin','Program X2Engine with custom automation directives using a visual design interface.');?></div>
+        <?php $editionEnd('pro'); ?>
+        <?php $editionStart('pla'); ?>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import Flow'),array('/studio/importFlow')); ?><br><?php echo Yii::t('admin','Import automation flows created using the X2Flow design studio.');?></div>
+        <?php $editionEnd('pla'); ?>
     </div>
-    <?php endif; ?>
+
 </div>
-<div class="form">
+<div class="form x2-layout-island">
     <div class="row">
         <h2 id="admin-settings"><?php echo Yii::t('admin','System Settings'); ?></h2>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','General Settings'),array('/admin/appSettings')); ?><br><?php echo Yii::t('admin','Configure session timeout and chat poll rate.');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Updater Settings'),array('/admin/updaterSettings')); ?><br><?php echo Yii::t('admin','Configure automatic updates and registration.');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage menu items'),array('/admin/manageModules')); ?><br><?php echo Yii::t('admin','Re-order and add or remove top bar tabs');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Menu Items'),array('/admin/manageModules')); ?><br><?php echo Yii::t('admin','Re-order and add or remove top bar tabs');?></div>
     </div><br>
     <div class="row">
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create static page'),array('/admin/createPage')); ?><br><?php echo Yii::t('admin','Add a static page to the top bar');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create Static Page'),array('/admin/createPage')); ?><br><?php echo Yii::t('admin','Add a static page to the top bar');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Google Integration'),array('/admin/googleIntegration')); ?><br><?php echo Yii::t('admin','Enter your google app settings for Calendar/Google login');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Restore default logo'),array('/admin/toggleDefaultLogo')); ?><br><?php echo Yii::t('admin','Change logo back to the X2Engine default logo');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Restore Default Logo'),array('/admin/toggleDefaultLogo')); ?><br><?php echo Yii::t('admin','Change logo back to the X2Engine default logo');?></div>
     </div><br>
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upload your logo'),array('/admin/uploadLogo')); ?><br><?php echo Yii::t('admin','Upload your own logo. 30px height image.');?></div>
@@ -128,42 +195,59 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <div class="cell span-6">
             <?php echo CHtml::link(Yii::t('admin','Public Info Settings'),array('/admin/publicInfo')); ?><br><?php echo Yii::t('admin','Miscellaneous settings that control publicly-visible data.'); ?>
         </div>
-        <?php if(Yii::app()->params->edition!=='opensource'): ?>
-            <div class="cell span-6">
-                <?php echo CHtml::link(Yii::t('admin','Lock or Unlock X2Engine'),array('/admin/lockApp')); ?><br><?php echo Yii::t('admin','Set X2Engine into maintenance mode, where only administrators can access it.');?>
-            </div><!-- .cell.span-6 -->
-        <?php endif; ?>
-          <?php if (isset(Yii::app()->settings->edition)): ?>
-        <?php if(in_array(Yii::app()->settings->edition,array('opensource',Null))): ?>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upgrade X2Engine'),array('/admin/updater','scenario'=>'upgrade')); ?><br><?php echo Yii::t('admin','Upgrade X2Engine to Professional Edition; license key required.');?></div>
-        <?php endif;
-        endif; ?>
-        <?php if(Yii::app()->params->edition!=='opensource'): ?>
         <div class="cell span-6">
-            <?php echo CHtml::link(Yii::t('admin','Cron Table'),array('/admin/x2CronSettings')); ?><br><?php echo Yii::t('admin','Control the interval at which X2Engine will check for and run scheuled tasks.'); ?>
+        <?php $editionStart('pro'); ?>
+            <?php echo CHtml::link(Yii::t('admin','Lock or Unlock X2Engine'),array('/admin/lockApp')); ?><br><?php echo Yii::t('admin','Set X2Engine into maintenance mode, where only administrators can access it.');?>
+        <?php $editionEnd('pro'); ?>
         </div><!-- .cell.span-6 -->
-        <?php endif; ?>
+        <?php $editionStart('pro'); ?>
+        <div class="cell span-6">
+            <?php echo CHtml::link(Yii::t('admin','Manage Action Publisher Tabs'),array('/admin/manageActionPublisherTabs')); ?><br><?php echo Yii::t('admin','Enable or disable tabs in the action publisher.');?>
+        </div><!-- .cell.span-6 -->
+        <?php $editionEnd('pro'); ?>
+    </div><!-- .row -->
+    <div class="row">
+        <?php $editionStart('pro'); ?>
+        <div class="cell span-6">
+            <?php echo CHtml::link(Yii::t('admin', 'Cron Table'), array('/admin/x2CronSettings')); ?><br><?php echo Yii::t('admin', 'Control the interval at which X2Engine will check for and run scheduled tasks.'); ?>
+        </div>
+        <?php $editionEnd('pro'); ?>
+        <?php if (Yii::app()->edition != 'pla') { ?>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upgrade X2Engine'),array('/admin/updater','scenario'=>'upgrade')); ?><br><?php echo Yii::t('admin','Upgrade X2Engine to get exclusive features and service. License key and registration info required.');?></div>
+        <?php } ?>
+        <div class="cell span-6">
+            <?php echo CHtml::link(Yii::t('admin','Change the Application Name'),array('/admin/changeApplicationName')); ?><br><?php echo Yii::t('admin','Change the name of the application as displayed on the sign-in page and on page titles.');?>
+        </div>
+    </div><!-- .row -->
+    <div class="row">
+        <?php $editionStart('pla'); ?>
+        <div class="cell span-6">
+            <?php echo CHtml::link(Yii::t('admin', 'Set a Default Theme'), array('/admin/setDefaultTheme')); ?><br><?php echo Yii::t('admin', 'Set a deafult theme which will automatically be set for all new users.'); ?>
+        </div>
+        <?php $editionEnd('pla'); ?>
     </div><!-- .row -->
 </div>
-<div class="form">
+
+<div class="form x2-layout-island">
     <div class="row">
         <h2 id="admin-email"><?php echo Yii::t('admin','Email Configuration'); ?></h2>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Email Settings'),array('/admin/emailSetup')); ?><br><?php echo Yii::t('admin','Configure X2Engine\'s email settings');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create Email Campaign'),array('/marketing/marketing/create')); ?><br><?php echo Yii::t('admin','Create an email marketing campaign');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Campaigns'),array('/marketing/marketing/index')); ?><br><?php echo Yii::t('admin','Manage your marketing campaigns');?></div>
     </div>
-    <?php if(Yii::app()->settings->edition != 'opensource'): ?>
+    <?php $editionStart('pro'); ?>
     <br />
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Email Capture'),array('/admin/emailDropboxSettings')); ?><br><?php echo Yii::t('admin','Settings for the "email dropbox", which allows X2Engine to receive and record email.');?></div>
     </div>
-    <?php endif; ?>
+    <?php $editionEnd('pro'); ?>
 </div>
-<div class="form">
+
+<div class="form x2-layout-island">
     <div class="row">
         <h2 id="admin-utilities"><?php echo Yii::t('admin','Utilities'); ?></h2>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import Contacts'),array('/contacts/contacts/importExcel')); ?><br><?php echo Yii::t('admin','Import contacts using a CSV template');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Export Contacts'),array('/contacts/contacts/export')); ?><br><?php echo Yii::t('admin','Export contacts to a CSV file');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import Records'),array('/admin/importModels')); ?><br><?php echo Yii::t('admin','Import records using a CSV template');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Export Records'),array('/admin/exportModels')); ?><br><?php echo Yii::t('admin','Export records to a CSV file');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Export All Data'),array('/admin/export')); ?><br><?php echo Yii::t('admin','Export all data (useful for making backups)');?></div>
     </div><br>
     <div class="row">
@@ -179,7 +263,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','User View History'),array('/admin/userViewLog')); ?><br><?php echo Yii::t('admin','See a history of what records users have viewed.');?></div>
     </div>
 </div>
-<div class="form">
+<div class="form x2-layout-island">
     <div class="row">
         <h2 id="admin-studio"><?php echo Yii::t('admin','Χ2Studio'); ?></h2>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create a Module'),array('/admin/createModule')); ?><br><?php echo Yii::t('admin','Create a custom module to add to the top bar');?></div>

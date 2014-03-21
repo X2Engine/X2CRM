@@ -66,13 +66,21 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 
 		if(!isset($this->module)){
 			if(!Yii::app()->params->noSession){
-				if(isset($this->baseRoute))
-					$this->module = preg_replace('/\/.*/', '', preg_replace('/^\//', '', $this->baseRoute)); // try to extract it from $baseRoute (old custom modules)
-				else
-					$this->module = strtolower(get_class($this->owner));  // assume the model name is the same as the controller
+				if(isset($this->baseRoute)) {
+                    // try to extract it from $baseRoute (old custom modules)
+					$this->module = preg_replace(
+                        '/\/.*/', '', preg_replace('/^\//', '', $this->baseRoute)); 
+				} else {
+                    // assume the model name is the same as the controller
+					$this->module = strtolower(get_class($this->owner));  
+                }
 			} else {
 				if(!isset($this->baseRoute,$this->autoCompleteSource))
-					throw new Exception('Class '.get_class($owner).' has not declared properties "baseRoute" or "autoCompleteSource" for using X2LinkableBehavior, yet neither has it declared "module". There is thus no way of resolving links.');
+					throw new Exception(
+                        'Class '.get_class($owner).' has not declared properties '.
+                            '"baseRoute" or "autoCompleteSource" for using X2LinkableBehavior, '.
+                            'yet neither has it declared "module". There is thus no way of '.
+                            'resolving links.');
 			}
 		}
 

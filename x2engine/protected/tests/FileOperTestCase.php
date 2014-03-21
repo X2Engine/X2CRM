@@ -185,6 +185,19 @@ abstract class FileOperTestCase extends X2TestCase {
         $this->removeTestDirs();
     }
 
+    /**
+     * FTP connection wrapper for tests
+     * @param String $test the test method to run
+     */
+    public function useFtp($test){
+        if (X2_FTP_FILEOPER) {
+            // Change to the tests directory so that relative paths work in testing.
+            FileUtil::ftpInit(X2_FTP_HOST, X2_FTP_USER, X2_FTP_PASS, Yii::app()->basePath.DIRECTORY_SEPARATOR.'tests', X2_FTP_CHROOT_DIR);
+            $this->$test();
+            FileUtil::ftpClose();
+        } else
+            $this->markTestSkipped('Skipping: X2_FTP_FILEOPER is disabled.');
+    }
 }
 
 ?>

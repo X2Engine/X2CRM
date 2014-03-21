@@ -50,22 +50,14 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
         $this->createUrl('togglePortletVisible', array('portlet'=>'userCalendars')); 
     $visible = Yii::app()->params->profile->userCalendarsVisible;
 
-    // javascript function togglePortletVisible defined in js/layout.js
-    $minimizeLink = CHtml::ajaxLink(
-        $visible ? '[&ndash;]' : '[+]', $toggleUserCalendarsVisibleUrl, 
+    $this->beginWidget('LeftWidget',
         array(
-            'success'=>'function(response) {
-                x2.LayoutManager.togglePortletVisible($("#user-calendars"), response); 
-            }'
-        )
-    );
-    $this->beginWidget('zii.widgets.CPortlet',
-        array(
-            'title'=>Yii::t('calendar', 'User Calendars') . 
-                '<div class="portlet-minimize">'.$minimizeLink.'</div>',
+            'widgetLabel'=>Yii::t('calendar', 'User Calendars'),
+            'widgetName' => 'UserCalendars',
             'id'=>'user-calendars',
         )
     );
+
     $showUserCalendars = $showCalendars['userCalendars'];
     echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
     foreach($this->calendarUsers as $userName=>$user) {
@@ -103,9 +95,10 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
 
 // Calendar Filters
 if(isset($this->calendarFilter) && $this->calendarFilter !== null) {
-    $this->beginWidget('zii.widgets.CPortlet',
+    $this->beginWidget('LeftWidget',
         array(
-            'title'=>Yii::t('calendar', 'Filter'),
+            'widgetLabel'=>Yii::t('calendar', 'Filter'),
+            'widgetName' => 'CalendarFilter',
             'id'=>'calendar-filter',
         )
     );
@@ -169,10 +162,10 @@ if(isset($this->groupCalendars) && $this->groupCalendars !== null) {
             }'
         )
     ); 
-    $this->beginWidget('zii.widgets.CPortlet',
+    $this->beginWidget('LeftWidget',
             array(
-                'title'=>Yii::t('calendar', 'Group Calendars') . 
-                    '<div class="portlet-minimize">'.$minimizeLink.'</div>',
+                'widgetLabel'=>Yii::t('calendar', 'Group Calendars'),
+                'widgetName' => 'GroupCalendars',
                 'id'=>'group-calendar',
             )
         );

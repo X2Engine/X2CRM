@@ -9,7 +9,7 @@ Yii::import('application.models.*');
  *
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class ApiVoipTest extends CURLTestCase {
+class ApiVoipTest extends CURLDbTestCase {
 
 	public $fixtures = array(
 		'notifications' => 'Notification',

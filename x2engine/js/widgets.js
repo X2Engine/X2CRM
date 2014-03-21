@@ -196,22 +196,26 @@ $.fn.hideWidgetRight = function() {
 
         // slice of the "x2widget_" from the id to get widget name
         var widgetName = $(this).attr('id').slice(7); 
-        $.post(yii.scriptUrl+'/site/hideWidget', {name: widgetName}, function(response) {
-            widget.slideUp(function() {
-                widget.remove();
-                $('#x2-hidden-widgets-menu').replaceWith(response);
-            //    $('.x2-widget-menu-item').draggable({revert: 'invalid', helper:'clone', revertDuration:200, appendTo:'#x2-hidden-widgets-menu',iframeFix:true});
-                $('.x2-hidden-widgets-menu-item.widget-center').click(function() {
-                    return handleWidgetMenuItemClick($(this));
+        $.post(
+            yii.scriptUrl+'/site/hideWidget', 
+            {name: widgetName}, 
+            function(response) {
+
+                widget.slideUp(function() {
+                    widget.remove();
+                    $('#x2-hidden-widgets-menu').replaceWith(response);
+                //    $('.x2-widget-menu-item').draggable({revert: 'invalid', helper:'clone', revertDuration:200, appendTo:'#x2-hidden-widgets-menu',iframeFix:true});
+                    $('.x2-hidden-widgets-menu-item.widget-center').click(function() {
+                        return handleWidgetMenuItemClick($(this));
+                    });
+                    $('.x2-hidden-widgets-menu-item.widget-right').click(function() {
+                        return handleWidgetRightMenuItemClick($(this));
+                    });
+                    if($('#sidebar-right .portlet').length == 0 && window.fullscreen == false) {
+                        $('#fullscreen-button').trigger('click');
+                    }
                 });
-                $('.x2-hidden-widgets-menu-item.widget-right').click(function() {
-                    return handleWidgetRightMenuItemClick($(this));
-                });
-                if($('#sidebar-right .portlet').length == 0 && window.fullscreen == false) {
-                    $('#fullscreen-button').trigger('click');
-                }
             });
-        });
     });
 };
 

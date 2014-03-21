@@ -43,6 +43,7 @@ CREATE TABLE x2_admin(
 	enableWebTracker		TINYINT			DEFAULT 1,
 	currency				VARCHAR(3)		NULL,
 	chatPollTime			INT				DEFAULT 2000,
+    defaultTheme            INT             NULL,
 	ignoreUpdates			TINYINT			DEFAULT 0,
 	rrId					INT				DEFAULT 0,
 	leadDistribution		VARCHAR(255),
@@ -64,6 +65,7 @@ CREATE TABLE x2_admin(
 	emailUser				VARCHAR(255),
 	emailPass				VARCHAR(255),
 	emailSecurity			VARCHAR(10),
+    enforceDefaultTheme     TINYINT         DEFAULT 0,
 	installDate				BIGINT			NOT NULL,
 	updateDate				BIGINT			NOT NULL,
 	updateInterval			INT				NOT NULL DEFAULT 0,
@@ -88,7 +90,7 @@ CREATE TABLE x2_admin(
 	serviceDistribution			varchar(255),
 	serviceOnlineOnly			TINYINT,
     corporateAddress            TEXT,
-    eventDeletionTime           INT,
+    eventDeletionTime           INT, 
     eventDeletionTypes          TEXT,
     properCaseNames             INT             DEFAULT 1,
     contactNameFormat           VARCHAR(255),
@@ -100,7 +102,9 @@ CREATE TABLE x2_admin(
     historyPrivacy              VARCHAR(20) DEFAULT "default",
     batchTimeout                INT DEFAULT 300,
     externalBaseUrl             VARCHAR(255) DEFAULT NULL,
-    externalBaseUri             VARCHAR(255) DEFAULT NULL
+    externalBaseUri             VARCHAR(255) DEFAULT NULL,
+    appName                     VARCHAR(255) DEFAULT NULL,
+    appDescription              VARCHAR(255) DEFAULT NULL
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
@@ -330,6 +334,7 @@ CREATE TABLE x2_profile(
     theme                   TEXT,
     profileWidgetLayout     TEXT,
     miscLayoutSettings      TEXT,
+    actionPublisherTabs      TEXT,
     notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",
     loginSound              VARCHAR(100)    NULL DEFAULT "",
 	startPage				VARCHAR(30)		NULL,

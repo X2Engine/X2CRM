@@ -96,9 +96,11 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
     }
 
     /**
-     * Returns a number from 0 to 3 representing the current user's access level using the Yii auth manager
+     * Returns a number from 0 to 3 representing the current user's access level using the Yii 
+     * auth manager.
      * Assumes authItem naming scheme like "ContactsViewPrivate", etc.
-     * This method probably ought to overridden, as there is no reliable way to determine the module a model "belongs" to.
+     * This method probably ought to overridden, as there is no reliable way to determine the 
+     * module a model "belongs" to.
      * @return integer The access level. 0=no access, 1=own records, 2=public records, 3=full access
      */
     public function getAccessLevel(){
@@ -172,7 +174,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
 
         if($accessLevel === 2 && $visibilityAttr === false) // level 2 access only works if we consider visibility,
             $accessLevel = 3;  // so upgrade to full access
-        $ret=array();
+        $ret = array();
         switch($accessLevel){
             case 3:  // user can view everything
                 $ret[] = array('condition'=>'TRUE', 'operator'=>'AND');

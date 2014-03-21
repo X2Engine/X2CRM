@@ -39,7 +39,30 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckedi
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
 
+Yii::app()->clientScript->registerCss('docFormCss',"
 
+#doc-name,
+#doc-subject {
+    width: 260px;
+}
+
+#create-button-container {
+    width: auto !important;
+    margin-top: 6px;
+}
+
+");
+
+Yii::app()->clientScript->registerResponsiveCss('responsiveDocFormCss',"
+
+@media (max-width: 657px) {
+    #doc-name,
+    #doc-subject {
+        width:160px;
+    }
+}
+
+");
 
 $autosaveUrl = $this->createUrl('autosave').'?id='.$model->id;
 
@@ -119,26 +142,34 @@ $form = $this->beginWidget('CActiveForm', array(
 <div class="form no-border">
 	<div class="row">
 		<div class="cell">
-			<?php echo $form->errorSummary($model); ?>
-			<?php echo $form->label($model,'name'); ?>
-			<?php echo $form->textField($model,'name',array('size'=>60,'maxlength'=>100)); ?>
-			<?php echo $form->error($model,'name'); ?>
+			<?php 
+            echo $form->errorSummary($model); 
+			echo $form->label($model,'name'); 
+			echo $form->textField(
+                $model,'name',
+                array('maxlength'=>100,'id'=>'doc-name')); 
+			echo $form->error($model,'name'); 
+            ?>
 		</div>
 		<div class="cell">
 			<?php echo $form->label($model,'visibility'); ?>
 			<?php echo $form->dropDownList($model,'visibility',array(1=>Yii::t('app','Public'),0=>Yii::t('app','Private'))); ?>
 			<?php echo $form->error($model,'visibility'); ?>
 		</div>
-		<div class="cell right">
+		<div class="cell right" id='create-button-container'>
 			<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float')); ?>
 		</div>
 	</div>
 	<div class="row">
-        <?php if(in_array($model->type,array('email','quote'))){ ?>
-            <?php echo $form->label($model,'subject'); ?>
-            <?php echo $form->textField($model,'subject',array('size'=>60,'maxlength'=>255)); ?>
-            <?php echo $form->error($model,'subject'); ?>
-        <?php } ?>
+        <?php 
+        if(in_array($model->type,array('email','quote'))){ 
+            echo $form->label($model,'subject'); 
+            echo $form->textField(
+                $model,'subject',
+                array('maxlength'=>255,'id'=>'doc-subject')); 
+            echo $form->error($model,'subject'); 
+        } 
+        ?>
 		<span id="savetime">
 			<?php if(isset($_GET['saved'])){
 				$date=date("g:i:s A",$_GET['time']);

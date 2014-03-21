@@ -420,9 +420,12 @@ class MarketingController extends x2base {
                 $this->redirect(array('view', 'id' => $id));
             }
             $newList->type = 'campaign';
-            $newList->save();
-            $campaign->list = $newList;
-            $campaign->listId = $newList->nameId;
+            if($newList->save()) {
+                $campaign->list = $newList;
+                $campaign->listId = $newList->nameId;
+            } else {
+                Yii::app()->user->setFlash('error', Yii::t('marketing', 'Failed to save temporary list.'));
+            }
         }
 
         $campaign->launchDate = time();
@@ -485,14 +488,14 @@ class MarketingController extends x2base {
         $email = $this->recipient->email;
         if($this->campaign instanceof Campaign && $this->listItem instanceof X2ListItem) {
             $this->sendIndividualMail();
-            $this->addResponseProperty('fullStop',$this->fullStop);
+            $this->response['fullStop'] = $this->fullStop;
             $status = $this->status;
             // Actual SMTP (or elsewise) delivery error that should stop the batch:
             $error = ($status['code']!=200 && $this->undeliverable) || $this->fullStop;
-            $this->addResponseProperty('status', $this->status);
-            self::respond($status['message'],$error);
+            $this->response['status'] = $this->status;
+            $this->respond($status['message'],$error);
         } else {
-            self::respond(Yii::t('marketing','Specified campaign does not exist.'),1);
+            $this->respond(Yii::t('marketing','Specified campaign does not exist.'),1);
         }
     }
 
@@ -519,6 +522,9 @@ class MarketingController extends x2base {
         //we can't track anything if the listitem was deleted, but at least prevent breaking links
         if($item === null || $item->list->campaign === null){
             if($type == 'click'){
+                // VERY legacy; corresponds to the old commented-out tracking
+                // links code that was in version 3.6 or so moved into
+                // CampaignMailingBehavior.prepareEmail
                 $this->redirect(urldecode($url));
             }elseif($type == 'open'){
                 //return a one pixel transparent gif
@@ -634,6 +640,7 @@ class MarketingController extends x2base {
             else
                 $action->actionDescription = Yii::t('marketing', 'Campaign').': '.$item->list->campaign->name."\n\n".Yii::t('marketing', 'Contact has opened the email').".";
         } elseif($type == 'click'){
+            // More legacy code corresponding to the disabled tracking links feature:
             $item->markClicked($url);
 
             $action->type = 'email_clicked';
@@ -691,6 +698,7 @@ class MarketingController extends x2base {
         if(isset($_POST['Admin']['enableWebTracker'], $_POST['Admin']['webTrackerCooldown'])){
             $admin->enableWebTracker = $_POST['Admin']['enableWebTracker'];
             $admin->webTrackerCooldown = $_POST['Admin']['webTrackerCooldown'];
+            
             $admin->save();
         }
         $this->render('webTracker', array('admin' => $admin));

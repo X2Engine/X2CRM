@@ -113,15 +113,18 @@ Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientS
 <meta name="description" content="X2Engine - Open Source Customer Relationship Management (CRM) and Sales Force Application">
 <meta name="keywords" content="open source,CRM,customer relationship management,contact management,sales force,php,x2engine,X2Engine">
 
+<link rel="icon" href="<?php echo Yii::app()->getFavIconUrl (); ?>" type="image/x-icon">
+<link rel="shortcut-icon" href="<?php echo Yii::app()->getFavIconUrl (); ?>" type="image/x-icon">
+<link rel="icon" href="<?php echo Yii::app()->getFavIconUrl (); ?>" type="image/x-icon">
+<link rel="shortcut-icon" href="<?php echo Yii::app()->getFavIconUrl (); ?>" type="image/x-icon">
 
-<link rel="icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon0" />
-<link rel="shortcut-icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon" />
 <!--[if lt IE 8]>
 <link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/ie.css" media="screen, projection" />
 <![endif]-->
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
 </head>
 <body id="body-tag"  class="login">
+<meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
 <!--<div class="ie-shadow" style="display:none;"></div>-->
 <?php echo $content; ?>
 </body>

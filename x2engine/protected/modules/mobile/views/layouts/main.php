@@ -42,6 +42,8 @@ $cs->registerCoreScript('jquery');
 $cs->registerPackage('jquerymobile');
 $cs->registerCssFile($this->module->getAssetsUrl() . '/css/jqueryMobileCssOverrides.css');
 $cs->registerCssFile($this->module->getAssetsUrl() . '/css/main.css');
+$cs->registerScriptFile(Yii::app()->baseUrl.'/js/webtoolkit.sha256.js');
+
 $cs->registerScriptFile($baseUrl . '/js/x2mobile.js');
 
 $jsVersion = '?'.Yii::app()->params->buildDate;
@@ -78,6 +80,11 @@ $cs->registerScriptFile(Yii::app()->getBaseUrl ().'/js/jstorage.min.js'.$jsVersi
 				echo Yii::t('app', 'Rights Reserved.'); ?>
 				<?php echo CHtml::link(Yii::t('mobile', 'Go to Full Site'),Yii::app()->getBaseUrl().'/index.php/site/index?mobile=false',array('rel'=>'external', 'onClick'=>'setMobileBrowserFalse()')); ?>
 			</p>
+            <div id='logo-container'>
+            <?php
+            echo CHtml::image(Yii::app()->params->x2Power,'',array('id'=>'powered-by-x2engine')); 
+            ?>
+            </div>
 		</div>
 	</div>
 </div>

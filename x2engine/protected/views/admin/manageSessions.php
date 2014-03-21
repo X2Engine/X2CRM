@@ -34,18 +34,32 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
+<div class='flush-grid-view'>
 <?php
-
-$this->widget('zii.widgets.grid.CGridView', array(
+$this->widget('X2GridViewGeneric', array(
 	'id'=>'sessions-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title"><h2>'.Yii::t('admin','Active Sessions').'</h2><div class="title-bar">'
-		.'{summary}</div></div>{items}{pager}',
+	'buttons'=>array('autoResize'),
+	'baseScriptUrl'=>  
+        Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+	'template'=> '<div class="page-title"><h2>'.Yii::t('admin','Active Sessions').'</h2>'
+		.'{buttons}{summary}</div>{items}{pager}',
 	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
 	'dataProvider'=>$dataProvider,
+    'defaultGvSettings' => array (
+        'user' => 100,
+        'IP' => 100,
+        'lastUpdated' => 100,
+        'status' => 100,
+    ),
+    'gvSettingsName' => 'manage-sessions-grid',
+    'viewName' => 'manageSessions',
 	'columns'=>array(
-		'user',
-        'IP',
+		array (
+            'name' => 'user',
+        ),
+		array (
+            'name' => 'IP',
+        ),
         array(
             'name'=>'lastUpdated',
             'header'=>Yii::t('admin','Last Activity'),
@@ -70,11 +84,14 @@ $this->widget('zii.widgets.grid.CGridView', array(
         ),
 	),
 ));
+?>
+</div>
+<?php
 Yii::app()->clientScript->registerScript('session-controls','
 $(document).on("click",".toggle-session",function(e){
     e.preventDefault();
     var link=this;
-    if(confirm('.Yii::t('admin',"Are you sure you want to toggle this session?").')){
+    if(confirm("'.Yii::t('admin',"Are you sure you want to toggle this session?").'")){
         $.ajax({
             url:"toggleSession?id="+$(this).attr("id"),
             success:function(data){
@@ -91,7 +108,7 @@ $(document).on("click",".toggle-session",function(e){
 $(document).on("click",".end-session",function(e){
     e.preventDefault();
     var link=this;
-    if(confirm('.Yii::t('admin',"Are you sure you want to end this session?").')){
+    if(confirm("'.Yii::t('admin',"Are you sure you want to end this session?").'")){
         $.ajax({
             url:"endSession?id="+$(this).attr("title"),
             success:function(){

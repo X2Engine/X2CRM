@@ -96,13 +96,36 @@ abstract class X2FlowAction extends X2FlowItem {
      *
      */
     public function setModelAttributes(&$model,&$attributeList,&$params) {
+        $data = array ();
         foreach($attributeList as &$attr) {
             if(!isset($attr['name'],$attr['value']))
                 continue;
 
-            if(null !== $field = $model->getField($attr['name']))
-                $model->setAttribute($attr['name'],X2Flow::parseValue($attr['value'],$field->type,$params));    // first do variable/expression evaluation, // then process with X2Fields::parseValue()
+            if(null !== $field = $model->getField($attr['name'])) {
+                // first do variable/expression evaluation, // then process with X2Fields::parseValue()
+                $type = $field->type;
+                $value = $attr['value'];
+                if(is_string($value)){
+                    if(strpos($value, '=') === 0){
+                        $evald = Formatter::parseFormula($value, $params);
+                        if(!$evald[0])
+                            return false;
+                        $value = $evald[1];
+                    } elseif($params !== null){
+
+                        if(is_string($value) && isset($params['model'])){
+                            $value = Formatter::replaceVariables($value, $params['model'], $type, $params);
+                        }
+                    }
+                }
+
+                $data[$attr['name']] = $value;
+            }
         }
+        if (!isset ($model->scenario)) 
+            $model->setScenario ('X2Flow');
+        $model->setX2Fields ($data);
+
         return true;
     }
 

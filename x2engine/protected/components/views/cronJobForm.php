@@ -40,7 +40,7 @@ $enableName = $name.'['.$tag.'][enabled]';
     <input value="1" <?php echo $enabled ? 'checked="checked"' : ''; ?> type="checkbox" name="<?php echo $enableName ?>" class="cron-enabled" id="cron-job-<?php echo $tag; ?>" />&nbsp;
     <label for="<?php echo $enableName; ?>" class="<?php echo $labelClass; ?>"><?php echo $title; ?></label>
     <p><?php echo $longdesc; ?></p>
-    <p><?php echo Yii::t('admin','Command:').'&nbsp;<span style="font-family: monospace;font-weight:bold;">'.CHtml::encode($displayCmd).'</span>'; ?></p>
+    <p><?php echo Yii::t('admin','Command:').'&nbsp;<span style="word-break:break-all; font-family: monospace;font-weight:bold;">'.CHtml::encode($displayCmd).'</span>'; ?></p>
     <div id="cron-job-<?php echo $tag; ?>-form" class="cron-job-form">
         <p><?php echo $instructions; ?></p>
         <?php echo CrontabUtil::schedForm($initialCron, $name, $userCmd ? $cmd : "echo>/dev/null ", $tag, $initialCron['desc']); ?>

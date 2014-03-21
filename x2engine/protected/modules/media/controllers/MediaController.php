@@ -42,6 +42,16 @@ class MediaController extends x2base {
 
     public $modelClass = "Media";
 
+    public function behaviors(){
+        return array_merge(parent::behaviors(), array(
+            /*
+            uncomment when media module supports custom forms
+            'QuickCreateRelationshipBehavior' => array(
+                'class' => 'QuickCreateRelationshipBehavior',
+            ),*/
+        ));
+    }
+
     /**
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
@@ -75,6 +85,45 @@ class MediaController extends x2base {
             $file->send();
         //Yii::app()->getRequest()->sendFile($model->fileName,@file_get_contents($fileName));
         $this->redirect(array('view', 'id' => $id));
+    }
+
+    /**
+     * Alias for actionUpload
+     */
+    public function actionCreate () {
+        $this->actionUpload ();
+    }
+
+    private function createAttachmentAction ($model) {
+        if(!empty($model->associationType) && !empty($model->associationId) && 
+            is_numeric($model->associationId)){
+
+            $note = new Actions;
+            $note->createDate = time();
+            $note->dueDate = time();
+            $note->completeDate = time();
+            $note->complete = 'Yes';
+            $note->visibility = '1';
+            $note->completedBy = Yii::app()->user->getName();
+            if($model->private){
+                $note->assignedTo = Yii::app()->user->getName();
+                $note->visibility = '0';
+            }else{
+                $note->assignedTo = 'Anyone';
+            }
+            $note->type = 'attachment';
+            $note->associationId = $model->associationId;
+            $note->associationType = $model->associationType;
+            if($modelName = X2Model::getModelName($model->associationType)){
+                $association = X2Model::model($modelName)->findByPk($model->associationId);
+                if($association != null){
+                    $note->associationName = $association->name;
+                }
+            }
+            $note->actionDescription = $model->fileName.':'.$model->id;
+            return $note->save();
+        }
+        return false;
     }
 
     /**
@@ -113,40 +162,30 @@ class MediaController extends x2base {
             if($_POST['Media']['description'])
                 $model->description = $_POST['Media']['description'];
 
-            if($model->save()){
-                if(!empty($model->associationType) && !empty($model->associationId) && is_numeric($model->associationId)){
-                    $note = new Actions;
-                    $note->createDate = time();
-                    $note->dueDate = time();
-                    $note->completeDate = time();
-                    $note->complete = 'Yes';
-                    $note->visibility = '1';
-                    $note->completedBy = Yii::app()->user->getName();
-                    if($model->private){
-                        $note->assignedTo = Yii::app()->user->getName();
-                        $note->visibility = '0';
-                    }else{
-                        $note->assignedTo = 'Anyone';
-                    }
-                    $note->type = 'attachment';
-                    $note->associationId = $model->associationId;
-                    $note->associationType = $model->associationType;
-                    if($modelName = X2Model::getModelName($model->associationType)){
-                        $association = X2Model::model($modelName)->findByPk($model->associationId);
-                        if($association != null){
-                            $note->associationName = $association->name;
-                        }
-                    }
-                    $note->actionDescription = $model->fileName.':'.$model->id;
-                    $note->save();
+            /*     
+            uncomment when media module supports custom forms
+            if(isset($_POST['x2ajax'])){
+                $ajaxErrors = $this->quickCreate ($model);
+                if (!$ajaxErrors) {
+                    $this->createAttachmentAction ($model);
                 }
-                $this->redirect(array('view', 'id' => $model->id));
-            }
+            }else{*/
+                if($model->save()){
+                    $this->createAttachmentAction ($model);
+                    $this->redirect(array('view', 'id' => $model->id));
+                }
+            //}
         }
 
-        $this->render('upload', array(
-            'model' => $model,
-        ));
+        /*
+        uncomment when media module supports custom forms
+        if(isset($_POST['x2ajax'])){
+            $this->renderInlineCreateForm ($model, isset ($ajaxErrors) ? $ajaxErrors : false);
+        } else {*/
+            $this->render('upload', array(
+                'model' => $model,
+            ));
+        //}
     }
 
     public function actionQtip($id){

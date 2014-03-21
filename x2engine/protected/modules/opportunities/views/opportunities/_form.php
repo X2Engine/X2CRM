@@ -125,8 +125,8 @@ foreach($fields as $field){ ?>
                             echo $form->textField($model, $fieldName, array(
                                     'class'=>'resizable',
                                     'style'=>($default?'color:#aaa;':'')."height:".$height.";width:".$width.";",
-                                    'onfocus'=>$default? 'toggleText(this);' : null,
-                                    'onblur'=>$default? 'toggleText(this);' : null,
+                                    'onfocus'=>$default? 'x2.forms.toggleText(this);' : null,
+                                    'onblur'=>$default? 'x2.forms.toggleText(this);' : null,
                                     'tabindex'=>$field->tabOrder,
                                     'disabled'=>$disabled,
                             ));
@@ -138,8 +138,8 @@ foreach($fields as $field){ ?>
                             echo $form->textArea($model, $fieldName, array(
                                     'class'=>'resizable',
                                     'style'=>($default?'color:#aaa;':'')."height:".$height.";width:".$width.";",
-                                    'onfocus'=>$default? 'toggleText(this);' : null,
-                                    'onblur'=>$default? 'toggleText(this);' : null,
+                                    'onfocus'=>$default? 'x2.forms.toggleText(this);' : null,
+                                    'onblur'=>$default? 'x2.forms.toggleText(this);' : null,
                                     'tabindex'=>$field->tabOrder,
                                     'disabled'=>$disabled,
                             )); 
@@ -174,8 +174,8 @@ foreach($fields as $field){ ?>
                                 echo $form->dropDownList($model, $fieldName,json_decode($dropdown->options), array(
                                         'class'=>'resizable',
                                         'style'=>"width:".$width.";",
-                                        'onfocus'=>$default? 'toggleText(this);' : null,
-                                        'onblur'=>$default? 'toggleText(this);' : null,
+                                        'onfocus'=>$default? 'x2.forms.toggleText(this);' : null,
+                                        'onblur'=>$default? 'x2.forms.toggleText(this);' : null,
                                         'tabindex'=>$field->tabOrder,
                                         'disabled'=>$disabled,
                                 ));

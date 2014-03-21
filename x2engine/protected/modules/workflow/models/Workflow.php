@@ -246,10 +246,13 @@ class Workflow extends CActiveRecord {
 		// $started = false;
 		for($stage=1; $stage<=$stageCount;$stage++) {
 
-			if(!empty($workflowStatus['stages'][$stage]['roles']))	// if roles are specified, check if user has any of them
-				$editPermission = count(array_intersect(Yii::app()->params->roles,$workflowStatus['stages'][$stage]['roles'])) > 0;
-			else
+			if(!empty($workflowStatus['stages'][$stage]['roles'])){ // if roles are specified, check if user has any of them
+				$editPermission = count(
+                    array_intersect(
+                        Yii::app()->params->roles,$workflowStatus['stages'][$stage]['roles'])) > 0;
+			} else {
 				$editPermission = true;	// default is full permission for everybody
+            }
 				
 			if(Yii::app()->params->isAdmin)	// admin override
 				$editPermission = true;
@@ -295,32 +298,60 @@ class Workflow extends CActiveRecord {
 				$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="workflowStageDetails('.$workflowId.','.$stage.');">['.Yii::t('workflow','Details').']</a> ';
 				
 				
+                $revertText = 
+                    '<img title="'.Yii::t('app', 'Revert Stage').'" src="'.Yii::app()->theme->getBaseUrl (). 
+                        '/images/icons/Uncomplete.png'.'">';
+
 				if($workflowStatus['stages'][$stage]['complete']) {
-					$statusStr .= Yii::t('workflow','Completed').' '.date("Y-m-d",$workflowStatus['stages'][$stage]['completeDate']);
+					$statusStr .= '<span class="workflow-status-string">'.
+                        Yii::t('workflow','Completed').' '.date("Y-m-d",$workflowStatus['stages'][$stage]['completeDate']).
+                        '</span>';
 					// X2DateUtil::dateBox($workflowStatus['stages'][$stage]['completeDate']);
 
 					// can only undo if there is no restriction on backdating, or we're still within the edit time window
 					$allowUndo = Yii::app()->settings->workflowBackdateWindow < 0 || (time() - $workflowStatus['stages'][$stage]['completeDate']) < Yii::app()->settings->workflowBackdateWindow;
 					
 					if($editPermission && ($allowUndo || Yii::app()->params->isAdmin))
-						$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';
+						$statusStr .= 
+                            '<a href="javascript:void(0)" class="right" 
+                               onclick="revertWorkflowStage('.$workflowId.','.$stage.');">
+                               '.$revertText.'
+                            </a>';
 				} else {
 					// $started = true;
-					$statusStr .= '<b>'.Yii::t('workflow','Started').' '.date("Y-m-d",$workflowStatus['stages'][$stage]['createDate']).'</b>';
+					$statusStr .= '<span class="workflow-status-string"><b>'.Yii::t('workflow','Started').' '.date("Y-m-d",$workflowStatus['stages'][$stage]['createDate']).'</b></span>';
 					// if(!$latestStage)
 					
 					if($editPermission){
-						$statusStr .= '<a href="javascript:void(0)" class="right" onclick="revertWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Undo').']</a>';
+						$statusStr .= 
+                            '<a href="javascript:void(0)" class="right" 
+                              onclick="revertWorkflowStage('.$workflowId.','.$stage.');">
+                                '.$revertText.'
+                            </a>';
                     }else{
-                        $statusStr.='<span class="right workflow-hint" style="color:gray;" title="You do not have permission to revert this stage.">['.Yii::t('workflow','Undo').']</span>';
+                        $statusStr.=
+                            '<span class="right workflow-hint" style="color:gray;" 
+                              title="You do not have permission to revert this stage.">
+                                '.$revertText.'
+                            </span>';
                     }
+                    $completeText = 
+                        '<img title="'.Yii::t('app', 'Complete Stage').'" src="'.Yii::app()->theme->getBaseUrl (). 
+                            '/images/icons/Complete.png'.'">';
                     if($previousCheck && $editPermission) {
-						if($workflowStatus['stages'][$stage]['requireComment'])
-							$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="workflowCommentDialog('.$workflowId.','.$stage.');">['.Yii::t('workflow','Complete').']</a> ';
-						else
-							$statusStr .= ' <a href="javascript:void(0)" class="right" onclick="completeWorkflowStage('.$workflowId.','.$stage.');">['.Yii::t('workflow','Complete').']</a> ';
+                        $statusStr .= 
+                            '<a href="javascript:void(0)" class="right" 
+                              onclick="'.(($workflowStatus['stages'][$stage]['requireComment']) ? 
+                                  "workflowCommentDialog('.$workflowId.','.$stage.');" : 
+                                  "completeWorkflowStage('.$workflowId.','.$stage.');").'">
+                                  '.$completeText.'
+                            </a> ';
 					}elseif($previousCheck && !$editPermission){
-                        $statusStr.='<span class="right workflow-hint" style="color:gray;" title="You do not have permission to complete this stage.">['.Yii::t('workflow','Complete').']</span>';
+                        $statusStr.=
+                            '<span class="right workflow-hint" style="color:gray;" 
+                              title="You do not have permission to complete this stage.">
+                              '.$completeText.'
+                            </span>';
                     }
 				}
 				$statusStr .= '</div>';

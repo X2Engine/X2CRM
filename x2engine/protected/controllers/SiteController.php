@@ -54,6 +54,11 @@ class SiteController extends x2base {
         );
     }
 
+	public function behaviors() {
+		return array_merge (parent::behaviors (), array(
+			'CommonSiteControllerBehavior' => array('class' => 'application.components.CommonSiteControllerBehavior')));
+	}
+
     protected function beforeAction($action = null){
         if(is_int(Yii::app()->locked) && 
            !Yii::app()->user->checkAccess('GeneralAdminSettingsTask') && 
@@ -68,20 +73,28 @@ class SiteController extends x2base {
     public function accessRules(){
         return array(
             array('allow',
-                'actions' => array('login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin', 'error', 'storeToken', 'sendErrorReport'),
+                'actions' => array(
+                    'login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin',
+                    'error', 'storeToken', 'sendErrorReport'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('groupChat', 'newMessage', 'getMessages', 'checkNotifications', 'updateNotes', 'addPersonalNote',
-                    'getNotes', 'getURLs', 'addSite', 'deleteMessage', 'fullscreen', 'widgetState', 'widgetOrder', 'saveGridviewSettings', 'saveFormSettings',
-                    'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload', 'uploadProfilePicture', 'index', 'contact',
-                    'viewNotifications', 'inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'printRecord', 'createRecords',
-                    'toggleVisibility', 'page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
+                'actions' => array(
+                    'groupChat', 'newMessage', 'getMessages', 'checkNotifications', 'updateNotes',
+                    'addPersonalNote', 'getNotes', 'getURLs', 'addSite', 'deleteMessage',
+                    'fullscreen', 'widgetState', 'widgetOrder', 'saveGridviewSettings',
+                    'saveFormSettings', 'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload',
+                    'uploadProfilePicture', 'index', 'contact', 'viewNotifications', 'inlineEmail',
+                    'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'printRecord',
+                    'createRecords', 'toggleVisibility', 'page', 'showWidget', 'hideWidget',
+                    'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
                     'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'minimizePosts',
-                    'bugReport', 'deleteRelationship', 'minMaxLeftWidget', 'toggleFeedControls', 'toggleFeedFilters',
-                    'getTip', 'share', 'activityFeedOrder', 'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory',
-                    'dynamicDropdown', 'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
-                    'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL', 'removeTmpUpload'),
+                    'bugReport', 'deleteRelationship', 'minMaxLeftWidget', 'toggleFeedControls',
+                    'toggleFeedFilters', 'getTip', 'share', 'activityFeedOrder',
+                    'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory', 'dynamicDropdown',
+                    'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
+                    'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL',
+                    'removeTmpUpload'),
                 'users' => array('@'),
             ),
             array('allow',
@@ -229,30 +242,13 @@ class SiteController extends x2base {
         }
     }
 
+    /**
+     * Gets a new tip for the "helpful tips" widget
+     */
     public function actionGetTip(){
-        //opensource or pro
-        $edition = Yii::app()->settings->edition;
-        //True or False
-        $admin = Yii::app()->params->isAdmin;
-        //Check user type and editon to deliever an appropriate tip
-        if($edition == 'pro'){
-            if($admin){
-                $where = 'edition = "pro" OR edition = "opensource"';
-            }else{
-                $where = 'admin = 0';
-            }
-        }else if($admin){
-            $where = 'edition = "opensource"';
-        }else{
-            $where = 'admin = 0 AND edition = "opensource"';
-        }
-        $tip = Yii::app()->db->createCommand()
-                ->select('*')
-                ->from('x2_tips')
-                ->where($where)
-                ->order('rand()')
-                ->queryRow();
-        echo json_encode($tip);
+        $tipWidget = new HelpfulTips;
+        header('Content-type: application/json');
+        echo json_encode($tipWidget->getNewTip());
     }
 
     public function actionDynamicDropdown($val, $dropdownId, $field = false, $module = null){
@@ -399,7 +395,9 @@ class SiteController extends x2base {
      * Adds a new URL
      */
     public function actionAddSite(){
-        if((isset($_POST['url-title']) && isset($_POST['url-url'])) && ($_POST['url-title'] != '' && $_POST['url-url'] != '')){
+        if((isset($_POST['url-title']) && isset($_POST['url-url'])) && ($_POST['url-title'] != '' 
+            && $_POST['url-url'] != '')){
+
             $site = new URL;
             $site->title = $_POST['url-title'];
             $site->url = $_POST['url-url'];
@@ -1380,96 +1378,7 @@ class SiteController extends x2base {
         $model->useCaptcha = false;
 
         if(isset($_POST['LoginForm'])){
-            $model->attributes = $_POST['LoginForm']; // get user input data
-            if($model->rememberMe){
-                foreach(array('username','rememberMe') as $attr) {
-                    // Expires in 30 days
-                    AuxLib::setCookie (CHtml::resolveName ($model, $attr), $model->$attr,
-                        2592000);
-                }
-            }else{
-                foreach(array('username','rememberMe') as $attr) {
-                    // Remove the cookie if they unchecked the box
-                    AuxLib::clearCookie(CHtml::resolveName($model, $attr));
-                }
-            }
-
-            Session::cleanUpSessions();
-
-            $ip = $this->getRealIp();
-
-            // increment count on every session with this user/IP, to prevent brute force attacks using session_id spoofing or whatever
-            Yii::app()->db->createCommand('UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
-                    ->bindValues(array(':time' => time(), ':name' => $model->username, ':ip' => $ip))
-                    ->execute();
-
-            $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
-                    ->select('username')
-                    ->from('x2_users')
-                    ->where('username=:name AND status=1', array(':name' => $model->username))
-                    ->limit(1)
-                    ->queryScalar(); // get the correctly capitalized username
-
-            if($activeUser === false){
-                $model->verifyCode = ''; // clear captcha code
-                $model->addError('username', Yii::t('app', 'Incorrect username or password.'));
-                $model->addError('password', Yii::t('app', 'Incorrect username or password.'));
-            }else{
-                $model->username = $activeUser;
-
-                if(isset($_SESSION['sessionId']))
-                    $sessionId = $_SESSION['sessionId'];
-                else
-                    $sessionId = $_SESSION['sessionId'] = session_id();
-
-                $session = X2Model::model('Session')->findByPk($sessionId);
-
-                // if this client has already tried to log in, increment their attempt count
-                if($session === null){
-                    $session = new Session;
-                    $session->id = $sessionId;
-                    $session->user = $model->username;
-                    $session->lastUpdated = time();
-                    $session->status = 0;
-                    $session->IP = $ip;
-                }else{
-                    $session->lastUpdated = time();
-                    if($session->status < -1)
-                        $model->useCaptcha = true;
-                    if($session->status < -2)
-                        $model->setScenario('loginWithCaptcha');
-                }
-
-                if($model->validate() && $model->login()){  // user successfully logged in
-                    // We're not using the isAdmin parameter of the application
-                    // here because isAdmin in this context hasn't been set yet.
-                    $isAdmin = Yii::app()->user->checkAccess('AdminIndex');
-                    if($isAdmin) {
-                        $this->attachBehavior('updaterBehavior', array(
-                            'class' => 'application.components.UpdaterBehavior',
-                            'isConsole' => false
-                        ));
-                        $this->checkUpdates();   // check for updates if admin
-                    } else
-                        Yii::app()->session['versionCheck'] = true; // ...or don't
-
-                    $session->status = 1;
-                    $session->save();
-                    SessionLog::logSession($model->username, $sessionId, 'login');
-                    $_SESSION['playLoginSound'] = true;
-                    if(Yii::app()->user->returnUrl == '/site/index')
-                        $this->redirect(array('/site/index'));
-                    else
-                        $this->redirect(Yii::app()->user->returnUrl); // after login, redirect to wherever
-                } else{ // login failed
-                    $model->verifyCode = ''; // clear captcha code
-                    if($model->hasErrors()){
-                        $model->addError('username', Yii::t('app', 'Incorrect username or password.'));
-                        $model->addError('password', Yii::t('app', 'Incorrect username or password.'));
-                    }
-                    $session->save();
-                }
-            }
+            $this->login ($model);
         }
 
         header('REQUIRES_AUTH: 1'); // tell windows making AJAX requests to redirect
@@ -1686,7 +1595,8 @@ class SiteController extends x2base {
      */
     public function actionAddRelationship(){
         //check if relationship already exits
-        if(isset($_POST['ModelName']) && isset($_POST['ModelId']) && isset($_POST['RelationshipModelName']) && isset($_POST['RelationshipModelId'])){
+        if(isset($_POST['ModelName']) && isset($_POST['ModelId']) && 
+           isset($_POST['RelationshipModelName']) && isset($_POST['RelationshipModelId'])){
 
             $modelName = $_POST['ModelName'];
             $modelId = $_POST['ModelId'];
@@ -1732,6 +1642,8 @@ class SiteController extends x2base {
 //            }
             echo "success";
             Yii::app()->end();
+        } else {
+            throw new CHttpException (400, Yii::t('app', 'Bad Request'));
         }
     }
 
@@ -2083,7 +1995,7 @@ class SiteController extends x2base {
       'http' => array('timeout' => 4)  // set request timeout in seconds
       ));
 
-      $updateCheckUrl = 'https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v'));
+      $updateCheckUrl = 'http://testupdate.x2developer.com/x2planet.com/installs/updates/check?'.http_build_query(compact('i','v'));
       $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
       if($securityKey === false)
       return;
@@ -2092,7 +2004,7 @@ class SiteController extends x2base {
       if(!($e == 'opensource' || empty($e)))
       $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
 
-      $newVersion = FileUtil::getContents('https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v','h','n')),0,$context);
+      $newVersion = FileUtil::getContents('http://testupdate.x2developer.com/x2planet.com/installs/updates/check?'.http_build_query(compact('i','v','h','n')),0,$context);
       if(empty($newVersion))
       return;
 

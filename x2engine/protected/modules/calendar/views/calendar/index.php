@@ -33,9 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?>
 
-<?php
 if(Yii::app()->settings->googleIntegration) { // menu if google integration is enables has additional options
 	$menuItems = array(
 		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
@@ -79,7 +77,7 @@ $('.search-form form').submit(function(){
 */ ?>
 
 <?php 
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'calendar-grid',
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
 	'template'=> '<div class="page-title"><h2>'.Yii::t('quotes','Calendars').'</h2><div class="title-bar">'

@@ -113,7 +113,16 @@ class Profile extends CActiveRecord {
                         'profileInfoIsMinimized'=>false, // profile page profile info section
                         'fullProfileInfo'=>false, // profile page profile info section
                     ),
+                    'actionPublisherTabs' => array(
+                        'PublisherCallTab'=>true,
+                        'PublisherTimeTab'=>true, 
+                        'PublisherActionTab'=>true,
+                        'PublisherCommentTab'=>true,
+                        'PublisherEventTab'=>false,
+                        'PublisherProductsTab'=>false,
+                    ),
                 ),
+                'maintainCurrentFieldsOrder' => true
             ),
             'WidgetLayoutJSONFieldsBehavior' => array(
                 'class' => 'application.components.WidgetLayoutJSONFieldsBehavior',
@@ -312,6 +321,15 @@ class Profile extends CActiveRecord {
         }
 
         return $this->smartSearch ($criteria, $resultsPerPage, $uniqueId);
+    }
+
+    /**
+     * @param array $value This should match the structure of the actionPublisherTabs property
+     *  specified in the JSONFieldsDefaultValuesBehavior configuration
+     */
+    public function setActionPublisherTabs ($value) {
+        $this->actionPublisherTabs = $value;
+        $this->save ();
     }
 
     /**
@@ -815,6 +833,34 @@ class Profile extends CActiveRecord {
                     'title' => 'Recently Viewed',
                     'minimize' => false,
                 ),
+                'ActionMenu' => array(
+                    'title' => 'Actions',
+                    'minimize' => false,
+                ),
+                'ActionTimer' => array(
+                    'title' => 'Action Timer',
+                    'minimize' => false,
+                ),
+                'UserCalendars' => array(
+                    'title' => 'User Calendars',
+                    'minimize' => false,
+                ),
+                'CalendarFilter' => array(
+                    'title' => 'Filter',
+                    'minimize' => false,
+                ),
+                'GroupCalendars' => array(
+                    'title' => 'Group Calendars',
+                    'minimize' => false,
+                ),
+                'FilterControls' => array(
+                    'title' => 'Filter Controls',
+                    'minimize' => false,
+                ),
+                'SimpleFilterControlEventTypes' => array(
+                    'title' => 'Event Types',
+                    'minimize' => false,
+                ),
             ),
             'center' => array(
                 'RecordViewChart' => array(
@@ -891,7 +937,7 @@ class Profile extends CActiveRecord {
             'hidden' => array(),
             'hiddenRight' => array(), // x2temp, should be merged into 'hidden' when widgets can be placed anywhere
         );
-        if(Yii::app()->params->edition == 'pro'){
+        if(Yii::app()->contEd('pro')){
             if(file_exists('protected/config/proWidgets.php')){
                 foreach(include('protected/config/proWidgets.php') as $loc=>$data){
                     $layout[$loc] = array_merge($layout[$loc],$data);
@@ -1094,5 +1140,16 @@ class Profile extends CActiveRecord {
 
     public function getLastLogin () {
         return $this->user['lastLogin'];
+    }
+
+     
+
+    /**
+     * Return theme after checking for an enforced default 
+     */
+    public function getTheme () {
+        $admin = Yii::app()->settings;
+         
+        return $this->theme;
     }
 }

@@ -96,7 +96,7 @@ function publishPostAndroid () {
             $("#save-button").removeClass("highlight");
             $("#Events_text").val("");
             var textarea=document.getElementById("Events_text");
-            toggleText(textarea);
+            x2.forms.toggleText(textarea);
             $(textarea).css("height","25px");
             $(textarea).next().slideUp(400);
             $('#feed-form textarea').blur ();
@@ -368,11 +368,13 @@ function setupEditorBehavior () {
             var newHeight = 140;
             animateEditorVerticalResize (editorMinHeight, newHeight, 300);
             $("#post-buttons").slideDown (400);
+            //x2.Select.reinitWidths ($('#post-buttons'));
         }
     });
 
     // minimize editor on click outside
-    $("html").click (function () {
+    //$("html").click (function () {
+    auxlib.onClickOutside ($('#post-form'), function () {
         var editorText = window.newPostEditor.getData();
 
         if (x2.activityFeed.editorIsExpanded && editorText === "" &&
@@ -384,9 +386,9 @@ function setupEditorBehavior () {
     });
 
     // enables detection of a click outside the publisher div
-    $("#post-form, #attachment-form").click (function (event) {
+    /*$("#post-form, #attachment-form").click (function (event) {
         event.stopPropagation ();
-    });
+    });*/
 
     $('#submit-button').click (publishPost);
     $('#save-button').click (publishPost);
@@ -634,7 +636,7 @@ function setupBroadcastDialog () {
             title: x2.activityFeed.translations['Broadcast Event'],
             autoOpen: true,
             height: "auto",
-            width: 850,
+            width: 657,
             resizable: false,
             show: 'fade',
             hide: 'fade',
@@ -711,7 +713,7 @@ function setupMakeImportantDialog () {
             title: x2.activityFeed.translations['Make Important'],
             autoOpen: true,
             height: "auto",
-            width: 850,
+            width: 657,
             resizable: false,
             show: 'fade',
             hide: 'fade',

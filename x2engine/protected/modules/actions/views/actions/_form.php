@@ -34,6 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
 Yii::app()->clientScript->registerScript('validate', '
 $(document).ready(function(){
 	$("#actions-newCreate-form").submit(function(){
@@ -72,13 +73,16 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
     ?>
     <div class="row">
         <b><?php echo $form->labelEx($actionModel, 'subject'); ?></b>
-        <?php echo $form->textField($actionModel, 'subject', array('size' => 80)); ?>
+        <?php echo $form->textField($actionModel, 'subject', array('class' => 'x2-xxwide-input')); ?>
         <div class="row">
             <b><?php echo $form->labelEx($actionModel, 'actionDescription'); ?></b>
             <?php //echo $form->label($actionModel,'actionDescription'); ?>
-            <div class="text-area-wrapper">
-                <?php echo $form->textArea($actionModel, 'actionDescription', array('rows' => (6), 'cols' => 40)); ?>
-                <?php //echo $form->error($actionModel,'actionDescription'); ?>
+            <div>
+                <?php 
+                echo $form->textArea(
+                    $actionModel, 'actionDescription', array('class' => 'x2-xxwide-input', 'rows' => (6))); 
+                //echo $form->error($actionModel,'actionDescription'); 
+                ?>
             </div>
             <div class="row">
                 <div class="cell">

@@ -34,62 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-// $attributeLabels = $model->getAttributeLabel();
-
-if(isset($actionModel) && $actionModel->associationId!=0)
-	$link = CHtml::link(CHtml::encode($model->name),
-		array('/contacts/contacts/view','id'=>$model->id));
-else if(isset($serviceModel) && $serviceModel->contactId != 0)
-	$link = CHtml::link(CHtml::encode($model->name), array('/contacts/contacts/view','id'=>$model->id));
-else
-	$link = Yii::t('actions','No one');
-?>
-
-<table class="details">
-	<tr>
-		<td class="label" width="20%"><?php echo Yii::t('contacts','Name'); ?></td>
-		<td width="25%">
-			<b><?php echo $link; ?></b>
-		</td>
-		<td class="label" width="15%"><?php echo $model->getAttributeLabel('email'); ?></td>
-		<td>
-			<b><?php echo CHtml::mailto($model->email,$model->email); ?></b>
-		</td>
-	</tr>
-	<tr>
-		<td class="label"><?php echo $model->getAttributeLabel('assignedTo'); ?></td>
-		<td>
-			<?php echo ($model->assignedTo=='Anyone')? $model->assignedTo : User::getUserLinks($model->assignedTo); ?>
-		</td>
-		<td class="label"><?php echo CHtml::encode ($model->getAttributeLabel('phone')); ?></td>
-		<td>
-			<?php
-				$phone = $model->phone;
-				// see if we need/can to format the phone number
-				$phoneCheck = PhoneNumber::model()->findByAttributes(array('modelId' => $model->id, 'modelType' => 'Contacts', 'fieldName' => 'phone'));
-				if(isset($phoneCheck) && strlen($phoneCheck->number) == 10) {
-				    $temp = $phoneCheck->number;
-				    $phone = "(" . substr($temp, 0, 3) . ") " . substr($temp, 3, 3) . "-" . substr($temp, 6, 4);
-				}
-			?>
-			<b><?php echo CHtml::encode ($phone); ?></b>
-		</td>
-	</tr>
-	<tr>
-		<td class="label"><?php echo $model->getAttributeLabel('priority'); ?></td>
-		<td>
-			<b><?php echo Yii::t('contacts',$model->priority); ?></b>
-		</td>
-		<td class="label"><?php echo $model->getAttributeLabel('address'); ?></td>
-		<td>
-			<?php echo CHtml::encode ($model->address); ?>
-		</td>
-	</tr>
-
-	<tr>
-		<td class="label"><?php echo $model->getAttributeLabel('backgroundInfo'); ?></td>
-		<td colspan="3" class="text-field"><div class="spacer"></div>
-			<?php echo $this->convertUrls(CHtml::encode ($model->backgroundInfo)); ?>
-		</td>
-	</tr>
-</table>
+$this->renderPartial(
+    'application.components.views._detailView', 
+    array('model' => $model, 'modelName' => 'contacts', 'scenario'=>'Inline')); 

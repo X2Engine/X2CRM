@@ -460,4 +460,6 @@ class Contacts extends X2Model {
 
         return $return_string;
     }
+    
+    
 }

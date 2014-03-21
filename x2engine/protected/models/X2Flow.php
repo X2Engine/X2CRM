@@ -300,6 +300,31 @@ class X2Flow extends CActiveRecord {
     }
 
     /**
+     * Can be called to resume execution of flow that paused for the wait action. 
+     * @param X2Flow &$flow the object representing the flow to run
+     * @param array &$params an associative array of params, usually including 'model'=>$model,
+     * @param mixed $flowPath an array of directions to a specific point in the flow. Defaults to
+     *  null.
+     */
+    public static function resumeFlowExecution (
+        &$flow, &$params, $flowPath = null, $triggerLogId=null){
+
+        if(self::$_triggerDepth > self::MAX_TRIGGER_DEPTH) // ...have we delved too deep?
+            return;
+
+        if(isset($params['model']) &&
+           (!is_object($params['model']) || !($params['model'] instanceof X2Model))) {
+            // Invalid model provided
+            return false;
+        }
+
+        // increment stack depth before doing anything that might call X2Flow::trigger()
+        self::$_triggerDepth++;
+        self::executeFlow ($flow, $params, $flowPath, $triggerLogId);
+        self::$_triggerDepth--;  // this trigger call is done; decrement the stack depth
+    }
+
+    /**
      * Executes a flow, starting by checking the trigger, passing params to each trigger/action,
      * and calling {@link X2Flow::executeBranch()}
      *
@@ -309,7 +334,7 @@ class X2Flow extends CActiveRecord {
      *  null.
      * Will skip checking the trigger conditions if not null, otherwise runs the entire flow.
      */
-    public static function executeFlow(&$flow, &$params, $flowPath = null, $triggerLogId=null){
+    private static function executeFlow(&$flow, &$params, $flowPath = null, $triggerLogId=null){
         $error = ''; //array($flow->name);
 
         $flowData = CJSON::decode($flow->flow); // parse JSON flow data
@@ -512,13 +537,17 @@ class X2Flow extends CActiveRecord {
      * @return mixed the parsed value
      */
     public static function parseValue($value, $type, &$params = null){
-        if(is_string($value)){
+        if(is_string($value) && isset($params['model'])){
             if(strpos($value, '=') === 0){
-                return Formatter::parseFormula($value, $type, $params);
-            }
-        }
-        if($params !== null){
-            if(is_string($value) && isset($params['model'])){
+                // It's a formula. Evaluate it.
+                $evald = Formatter::parseFormula($value, $params);
+                // Fail silently because there's not yet a good way of reporting
+                // problems that occur in parseFormula --
+                $value = '';
+                if($evald[0])
+                    $value = $evald[1];
+            } else {
+                // Run token replacement:
                 $value = Formatter::replaceVariables($value, $params['model'], $type, $params);
             }
         }

@@ -119,7 +119,8 @@ $dbKeys = array(
 	'bulkEmail',
 	'language',
 	'timezone',
-	'visibleModules'
+	'visibleModules',
+    'app'
 );
 // Values gathered for statistical/anonymous survey purposes:
 $sendArgs = array(
@@ -587,7 +588,7 @@ function installStage($stage) {
 			$dbConfig['{adminPass}'] = md5($config['adminPass']);
 			$dbConfig['{adminUserKey}'] = $config['adminUserKey'];
 			try {
-				foreach (array('', '-pro') as $suffix) {
+				foreach (array('', '-pro', '-pla') as $suffix) {
 					$sqlPath = "protected/data/config$suffix.sql";
 					$sqlFile = realpath($sqlPath);
 					if ($sqlFile) {
@@ -886,7 +887,7 @@ if (!$complete || $silent) {
 		foreach ($sendArgs as $urlKey) {
 			$stats[$urlKey] = $config[$urlKey];
 		}
-		$ch = curl_init('http://x2planet.com/installs/registry/activity?' . http_build_query($stats));
+		$ch = curl_init('http://testupdate.x2developer.com/x2planet.com/installs/registry/activity?' . http_build_query($stats));
 		curl_setopt($ch, CURLOPT_POST, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$gif = curl_exec($ch);
@@ -951,7 +952,7 @@ if (!$silent && $complete):
 					Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
 					<?php echo installer_t('All Rights Reserved.'); ?>
 					<?php if (!$config['test_db']): ?>
-						<img style="height:0;width:0" src="http://x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
+						<img style="height:0;width:0" src="http://testupdate.x2developer.com/x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
 						<?php endif; ?>
 				</div>
 			</div>

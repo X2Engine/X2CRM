@@ -37,88 +37,420 @@
 /**
  * Environmentally-agnostic content/message feedback utility.
  *
- * In the scope of a web request, it will respond via JSON (i.e. for use in an API
- * or AJAX response action). In the scope of a console command, it will echo messages 
- * sequentially. This is very much a work in progress and will eventually take over 
- * most of the roles previously filled by ResponseBehavior (which will become a 
- * wrapper of sorts for this class).
- *
- * The goal of developing this utility class is to consolidate JSON/AJAX response 
- * code in the X2Engine installer, the X2Engine API, a growing number of other places in
- * X2Engine, and the X2Engine update key server (which was the initial inspiration for 
- * developing ResponseBehavior). There was enough functional redundancy in all those
- * places, and so I decided that enough was enough.
+ * In the scope of a web request, it will respond via JSON (i.e. for use in an
+ * API or AJAX response action). In the scope of a console command, it will echo
+ * messages without exiting.
  *
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class ResponseUtil {
+class ResponseUtil implements ArrayAccess {
 
-	// What we need here:
-	// 
-	// Pretty much all the functions and class properties that are particular to handling
-	// requests, especially the error handlers.
+    /**
+     * Exit on non-fatal PHP errors.
+     *
+     * If set to true, the error handler {@link respondWithError} will force a
+     * premature response for any PHP error, even if it's not of type E_ERROR.
+     * 
+     * @var bool 
+     */
+    public static $exitNonFatal = false;
 
-	/**
-	 * Indicates whether a response is already in progress
-	 * @var bool
-	 */
-	private static $_responding = false;
+    /**
+     * The default HTTP status code to use when handling an internal error.
+     *
+     * This can be set to 200 when dealing with client-side code that cannot
+     * retrieve response data if the response code is not 200. This would
+     * thus allow user-friendly error reporting.
+     *
+     * @var integer
+     */
+    public static $errorCode = 500;
 
-	/**
-	 * Shutdown code. 
-	 *
-	 * Can be set to, for instance, "Yii::app()->end();" for a graceful Yii 
-	 * shutdown that saves/rotates logs and performs other useful/appropriate
-	 * operations before terminating the PHP thread.
-	 * @var string
-	 */
-	public static $shutdown = 'die();';
+   /**
+     * Shutdown method.
+     *
+     * Can be set to, for instance, "Yii::app()->end();" for a graceful Yii
+     * shutdown that saves/rotates logs and performs other useful/appropriate
+     * operations before terminating the PHP thread.
+     *
+     * @var string|array|closure
+     */
+    public static $shutdown = 'die();';
 
-	/**
-	 * Runs the shutdown code.
-	 */
-	public static function end() {
-		eval(self::$shutdown);
-	}
+    /**
+     * Produce extended error traces in responses triggered by error handlers.
+     * @var type
+     */
+    public static $longErrorTrace = false;
 
-	/**
-	 * Returns true or false based on whether or not the current thread of PHP
-	 * is being run from the command line.
-	 * @return bool
-	 */
-	public static function isCli(){
-		return php_sapi_name() == 'cli';
-	}
+    /**
+     * Override body.
+     *
+     * If left unset, the content type header will be set to JSON, and the
+     * response body will be {@link _properties}, encoded in JSON. Otherwise,
+     * any content type can be used, andthis property will be returned instead.
+     * @var string
+     */
+    public $body;
 
-	/**
-	 * Universal, web-agnostic response function.
-	 *
-	 * Responds with a JSON and closes the connection if used in a web request; 
-	 * merely echoes the response message (but optionally exits) otherwise.
-	 *
-	 * @param type $message The message to respond with.
-	 * @param bool $error Indicates that an error has occurred
-	 * @param bool $fatal Shut down PHP thread after printing the message
-	 * @param string $shutdown Optional shutdown expression to be evaluated; it must halt the current PHP process.
-	 */
-	public static function respond($message, $error = false, $fatal = false){
-		self::$_responding = true;
-		if(self::isCli()){ // Command line interface message
-			echo $message;
-			if($error && $fatal && !self::$_noHalt)
-				self::end();
-		} else { // One-off JSON response to client
-			if(!extension_loaded('json')){
-				echo '{"error":true,"message":"The JSON PHP extension is required, but this server lacks it."}';
-				self::end();
-			}
-			$response = self::$_response;
-			$response['message'] = $message;
-			$response['error'] = $error;
-			header("Content-type: application/json");
-			echo json_encode($response);
-			self::end();
-		}
-	}
+    /**
+     * HTTP header fields.
+     *
+     * The default of the "Content-type" field is JSON for ease of use, since
+     * it's expected that this class will be used mostly to compose responses
+     * in JSON format.
+     * 
+     * @var array
+     */
+    public $httpHeader = array(
+        'Content-Type' => 'application/json'
+    );
 
+    /**
+     * Specifies, if true, that a response is already in progress.
+     *
+     * This is used to avoid double-responding when using
+     * {@link respondFatalErrorMessage} as a shutdown function for handling
+     * fatal errors.
+     * 
+     * @var bool
+     */
+    private static $_responding = false;
+
+    /**
+     * Response singleton (there can only be one response at a time)
+     * @var ResponseUtil
+     */
+    private static $_response = null;
+
+    private static $_statusMessages = array(
+        200 => 'OK',
+        201 => 'Created',
+        204 => 'No content',
+        304 => 'Not Modified',
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        402 => 'Payment Required',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        410 => 'Gone',
+        415 => 'Unsupported Media Type', // Incorrect content type in request
+        422 => 'Unprocessable Entity', // Validation errors
+        429 => 'Too Many Requests',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        503 => 'Service Unavailable',
+    );
+    
+    /**
+     * Properties of the response.
+     *
+     * In the case of responding to a web request, the response will be this
+     * array encoded in JSON. When setting "indexes" of this class using the
+     * array access method, this is the array where the values are stored.
+     * @var array
+     */
+    private $_properties = array();
+    
+    /**
+     * HTTP status code when applicable.
+     *
+     * The default is 200, meaning no error.
+     *
+     * @var type
+     */
+    private $_status = 200;
+
+    /**
+     * Performs the shutdown code.
+     */
+    public static function end() {
+        switch(gettype(self::$shutdown)) {
+            case 'string':
+                // Interpret as a snippet of PHP code
+                eval(self::$shutdown);
+                break;
+            case 'closure':
+            case 'object':
+                // Interpret as a function
+                $shutdown = self::$shutdown;
+                $shutdown();
+                break;
+            default:
+                die();
+        }
+    }
+
+    /**
+     * Returns the current response singleton object.
+     */
+    public static function getObject() {
+        if(self::$_response instanceof ResponseUtil) {
+            return self::$_response;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns true or false based on whether or not the current thread of PHP
+     * is being run from the command line.
+     * @return bool
+     */
+    public static function isCli(){
+        return (php_sapi_name() == 'cli');
+    }
+    /**
+     * Universal, web-agnostic response function.
+     *
+     * Responds with a JSON and closes the connection if used in a web request;
+     * merely echoes the response message (but optionally exits) otherwise.
+     *
+     * @param type $message The message to respond with.
+     * @param bool $error Indicates that an error has occurred
+     * @param bool $fatal Shut down PHP thread after printing the message
+     * @param string $shutdown Optional shutdown expression to be evaluated; it must halt the current PHP process.
+     */
+    public static function respond($message, $error = false, $fatal = false){
+        if(self::isCli()){ // Command line interface message
+            self::$_responding = true;
+            echo $message;
+            if($error && $fatal)
+                self::end();
+        } else { // One-off JSON response to HTTP client
+            if(!isset(self::$_response)) {
+                self::$_response = new ResponseUtil(array());
+            }
+            // Default error code if there's an error; default/previously-set
+            // response code otherwise.
+            self::$_response->sendHttp($error?self::$errorCode:null,$message,$error);
+        }
+    }
+
+    /**
+     * Error handler method that uses the web-agnostic response method.
+     *
+     * This is disabled by default; fatal errors should ordinarily be caught by
+     * {@link respondFatalErrorMessage()}. This can be enabled for debugging
+     * purposes via setting {@link exitNonFatal} to true.
+     *
+     * @param type $no
+     * @param type $st
+     * @param type $fi
+     * @param type $ln
+     */
+    public static function respondWithError($no, $st, $fi = Null, $ln = Null){
+        if(self::$exitNonFatal){
+            $message = "Error [$no]: $st $fi L$ln";
+            if(self::$longErrorTrace){
+                ob_start();
+                debug_print_backtrace();
+                $message .= "; Trace:\n".ob_get_contents();
+                ob_end_clean();
+            }
+            self::respond($message, true);
+        }
+    }
+
+    /**
+     * Shutdown function for handling fatal errors not caught by
+     * {@link respondWithError()}.
+     */
+    public static function respondFatalErrorMessage(){
+        $error = error_get_last();
+        if($error != null && !self::$_responding){
+            $errno = $error["type"];
+            $errfile = $error["file"];
+            $errline = $error["line"];
+            $errstr = $error["message"];
+            self::respond("PHP ".($errno == E_PARSE ? 'parse' : 'fatal')." error [$errno]: $errstr in $errfile L$errline",true);
+        }
+    }
+
+    /**
+     * @param Exception $e The uncaught exception
+     */
+    public static function respondWithException($e){
+        $message = 'Exception: "'.$e->getMessage().'" in '.$e->getFile().' L'.$e->getLine()."\n";
+        if(self::$longErrorTrace){
+            $message .= "; Trace:\n";
+            foreach($e->getTrace() as $stackLevel){
+                if(!empty($stackLevel['file']) && !empty($stackLevel['line'])){
+                    $message .= $stackLevel['file'].' L'.$stackLevel['line'].' ';
+                }
+                if(!empty($stackLevel['class'])){
+                    $message .= $stackLevel['class'];
+                    $message .= '->';
+                }
+                if(!empty($stackLevel['function'])){
+                    $message .= $stackLevel['function'];
+                    $message .= "();";
+                }
+                $message .= "\n";
+            }
+        }
+        self::respond($message, true);
+    }
+
+    /**
+     * Obtain an appropriate message for a given HTTP status code.
+     *
+     * @param integer $status
+     * @return string
+     */
+    private static function statusMessage($code){
+        $codes = self::$_statusMessages;
+        return isset($codes[$code]) ? $codes[$code] : '';
+    }
+
+    //////////////////////
+    // Instance Methods //
+    //////////////////////
+
+    /**
+     * Constructor.
+     * If one tries to instantiate two {@link ResponseUtil} objects, an
+     * exception will be thrown. The idea is that there should only ever be one
+     * response happening at a time.
+     *
+     * @param array $properties Initial response properties
+     */
+    public function __construct(){
+        if(self::$_response instanceof ResponseUtil){
+            throw new Exception('A response has already been declared.');
+        }
+        self::$_response = $this;
+        if(!self::isCli()){
+            // Collect any extraneous output so that it doesn't get sent before
+            // the intended HTTP header gets sent:
+            ob_start();
+        }
+    }
+
+
+    /////////////////////////////
+    // Array Interface Methods //
+    /////////////////////////////
+
+    /**
+     * Array interface method from {@link ArrayAccess}
+     * @param type $offset
+     * @return type
+     */
+    public function offsetExists($offset){
+        return array_key_exists($offset, $this->_properties);
+    }
+
+    /**
+     * Array interface method from {@link ArrayAccess}
+     * @param type $offset
+     * @return type
+     */
+    public function offsetGet($offset){
+        return $this->_properties[$offset];
+    }
+
+    /**
+     * Array interface method from {@link ArrayAccess}
+     * @param type $offset
+     * @param type $value
+     */
+    public function offsetSet($offset, $value){
+        $this->_properties[$offset] = $value;
+    }
+
+    /**
+     * Array interface method from {@link ArrayAccess}
+     * @param type $offset
+     */
+    public function offsetUnset($offset){
+        unset($this->_properties[$offset]);
+    }
+    
+    /**
+     * Sends a HTTP response back to the client.
+     *
+     * @param integer $status The status code to use
+     * @param type $message
+     * @param type $error
+     * @throws Exception
+     */
+    public function sendHttp($status=null, $message = '', $error = null){
+        self::$_responding = true;
+        // Close the output buffer; it's now safe to do so, since the header
+        // will soon be sent.
+        $output = ob_get_clean();
+        ob_end_clean();
+
+        // Set the response content
+        if($status !== null && !array_key_exists((integer) $status,self::$_statusMessages)){
+            // Invalid call to this method. Fail noisily.
+            $this->_status = self::$errorCode;
+            $body = '{"error":true,"message":"Internal server error: non-numeric HTTP response status code specifed."}';
+        } else if(!extension_loaded('json') || isset($this->body)) {
+            // We might be doing something other than responding in JSON
+            if(!isset($this->body)){
+                if($this->httpHeader['Content-Type'] == 'application/json'){
+                    // JSON-format responding in use but not available
+                    $this->_status = self::$errorCode;
+                    $body = '{"error":true,"message":"The JSON PHP extension is required, but this server lacks it."}';
+                } else {
+                    // Simply echo the message if JSON isn't available.
+                    $body = $output.' '.$message;
+                }
+            } else {
+                // The "body" property is in use, which overrides the standard
+                // way of responding with JSON-encoded properties
+                $body = $output.$this->body;
+            }
+        } else {
+            if($status != null) {
+                // Override status. Loose comparison is in use because zero is
+                // an invalid HTTP response code and expected only of certain
+                // cURL libraries when the connection could not be established.
+                $this->_status = $status;
+            }
+            $response = $this->_properties;
+            
+            // Set universal response properties:
+            if(empty($message) && !empty($response['message']))
+                $message = $response['message'];
+            $response['message'] = $message.(empty($output)
+                    ? ''
+                    : " Note, extraneous output was generated in the scope of this response: $output");
+            $response['error'] = $error === null
+                    ? !in_array($this->_status, array(200, 201, 204, 304))
+                    : (bool) $error;
+            $body = json_encode($response);
+        }
+
+        // Send the response
+        $this->sendHttpHeader();
+        echo $body;
+
+        // Shut down
+        self::$_response = null;
+        self::end();
+    }
+
+    /**
+     * Sends HTTP headers. This method should be called before any content is sent.
+     * 
+     * @param bool $replace The argument sent to header as the replacement flag.
+     */
+    protected function sendHttpHeader($replace = true){
+        header(sprintf("HTTP/1.1 %d %s", $this->_status, self::statusMessage($this->_status)), $replace, $this->_status);
+        foreach($this->httpHeader as $field => $value){
+            header("$field: $value", $replace, $this->_status);
+        }
+    }
+
+    /**
+     * Sets {@link _properties}
+     * @param array $properties
+     */
+    public function setProperties(array $properties) {
+        $this->_properties = $properties;
+    }
 }

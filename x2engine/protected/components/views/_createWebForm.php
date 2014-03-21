@@ -307,7 +307,7 @@ if ($webFormType === 'service') {
         <p class="fieldhelp" style="width: auto;">
             <?php echo Yii::t('marketing', 'Live web form preview.'); ?>
             <?php
-            if (PRO_VERSION && isset($disclaimer)) {
+            if (Yii::app()->contEd('pro') && isset($disclaimer)) {
             ?>
             <span class='x2-hint' title='<?php 
              echo $disclaimer; ?>'>[<span class='x2-hint-asterisk'>*</span>]</span>

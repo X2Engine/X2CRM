@@ -34,12 +34,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 $menuItems = array(
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
-    array('label'=>Yii::t('contacts','Import Contacts'),'url'=>array('importExcel')),
-	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('exportContacts')),
+    array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
+    array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
+    array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
+    array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
+    array('label'=>Yii::t('contacts','Import Contacts'),'url'=>array('/admin/importModels', 'model'=>'Contacts')),
+    array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('/admin/exportModels', 'model'=>'Contacts')),
     array('label'=>Yii::t('contacts','Contact Map')),
     array('label'=>Yii::t('contacts','Saved Maps'),'url'=>array('savedMaps')),
 );

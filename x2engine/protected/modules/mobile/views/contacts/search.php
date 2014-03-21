@@ -60,10 +60,10 @@ $model->lastName = $attributeLabels['lastName'];
 
 <div class="form thin">
 	<div class="row x2-mobile-narrow-input-row">
-		<?php echo $form->textField($model,'firstName',array('maxlength'=>40,'tabindex'=>100,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
+		<?php echo $form->textField($model,'firstName',array('maxlength'=>40,'tabindex'=>100,'onfocus'=>'x2.forms.toggleText(this);','onblur'=>'x2.forms.toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
 		<?php echo $form->error($model,'firstName'); ?>
 
-		<?php echo $form->textField($model,'lastName',array('maxlength'=>40,'tabindex'=>101,'onfocus'=>'toggleText(this);','onblur'=>'toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
+		<?php echo $form->textField($model,'lastName',array('maxlength'=>40,'tabindex'=>101,'onfocus'=>'x2.forms.toggleText(this);','onblur'=>'x2.forms.toggleText(this);','class'=>'x2-mobile-narrow-input')); ?>
 		<?php echo $form->error($model,'lastName'); ?>
 	</div>
 </div>
@@ -82,17 +82,3 @@ echo CHtml::ajaxSubmitButton(
 );
 $this->endWidget();
 ?>
-
-<script>
-
-	function toggleText(field) {
-		if (field.defaultValue==field.value) {
-			field.value = ''
-			field.style.color = 'black'
-		} else if (field.value=='') {
-			field.value = field.defaultValue
-			field.style.color = '#aaa'
-		}
-	}
-	
-</script>

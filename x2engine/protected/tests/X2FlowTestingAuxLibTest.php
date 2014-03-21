@@ -35,15 +35,93 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
-class X2FlowTestingAuxLibTest extends CDbTestCase {
+class X2FlowTestingAuxLibTest extends X2DbTestCase {
 
     public $fixtures = array (
-        'x2flow' => array ('X2Flow', '_1')
+        'x2flow' => array ('X2Flow', '_1'),
+        'accounts' => array ('Accounts', '_1')
     );
 
     public function testGetFlow () {
         $this->assertTrue (is_array (X2FlowTestingAuxLib::getFlow ($this)));
+    }
+
+    public function testExecuteFlow () {
+        $params = array (
+            'model' => Accounts::Model ()->findByAttributes ($this->accounts['account1']),
+            'modelClass' => 'Accounts',
+        );
+        $this->assertTrue (is_array (X2FlowTestingAuxLib::executeFlow (
+            X2Flow::Model ()->findByAttributes ($this->x2flow['flow1']), $params)));
+    }
+
+    public function testCheckTrace () {
+
+        // this trace shows a flow which executed without error
+        $trace =  array (
+            true, 
+            array (
+                array (
+                    "X2FlowCreateNotif", 
+                    array (
+                        true, 
+                        ""
+                    )
+                ), 
+                array (
+                    "X2FlowSwitch", 
+                    true, 
+                    array (
+                        array (
+                            "X2FlowCreateNotif", 
+                            array (
+                                true, 
+                                ""
+                            )
+                        ), 
+                        array (
+                            "X2FlowSwitch", 
+                            true, 
+                            array ()
+                        )
+                    )
+                )
+            )
+        );
+        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($trace));
+
+        // this trace shows a flow which executed with errors
+        $trace =  array (
+            true, 
+            array (
+                array (
+                    "X2FlowCreateNotif", 
+                    array (
+                        true, 
+                        ""
+                    )
+                ), 
+                array (
+                    "X2FlowSwitch", 
+                    true, 
+                    array (
+                        array (
+                            "X2FlowCreateNotif", 
+                            array (
+                                false, 
+                                ""
+                            )
+                        ), 
+                        array (
+                            "X2FlowSwitch", 
+                            true, 
+                            array ()
+                        )
+                    )
+                )
+            )
+        );
+        $this->assertFalse (X2FlowTestingAuxLib::checkTrace ($trace));
     }
 }
 

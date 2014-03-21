@@ -229,7 +229,7 @@ to float around the truncated text. */
 
 
 .event-bottom-buttons {
-    margin-top: 2px;
+    margin-top: -5px;
 }
 
 div#post-form {
@@ -242,9 +242,63 @@ div#post-form {
 }
 
 #activity-feed-container {
-	border: 1px solid #c5c5c5;
 	border-radius:			4px 4px 4px 4px;
 	-moz-border-radius:		4px 4px 4px 4px;
 	-webkit-border-radius:	4px 4px 4px 4px;
 	-o-border-radius:		4px 4px 4px 4px;
 }
+
+.feed-comment-icon,
+.broadcast-icon,
+.like-icon,
+.sticky-icon,
+.unsticky-icon,
+.unlike-icon,
+.feed-make-important-icon,
+.feed-make-unimportant-icon {
+    /*-webkit-filter: grayscale(100%);*/
+    position: relative;
+    top: 7px;
+    height: 20px;
+    opacity: 0.9;
+}
+
+.sticky-icon {
+    opacity: 0.8;
+}
+
+.sticky-icon:hover {
+    opacity: 0.9;
+}
+
+.unsticky-icon:hover,
+.feed-make-important-icon:hover,
+.feed-make-unimportant-icon:hover {
+    opacity: 1; 
+}
+
+.feed-comment-icon {
+    opacity: 0.5;
+}
+
+.broadcast-icon {
+    opacity: 0.6;
+}
+.broadcast-icon:hover {
+    opacity: 0.7;
+}
+
+.like-icon,
+.unlike-icon {
+    opacity: 0.55;
+}
+
+.like-icon:hover,
+.unlike-icon:hover {
+    opacity: 0.65;
+}
+
+.feed-comment-icon:hover {
+    opacity: 0.6;
+}
+

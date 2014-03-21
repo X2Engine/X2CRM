@@ -268,7 +268,8 @@ class QuotesController extends x2base {
 	 * @return type
 	 */
 	public function getPrintQuote($id = null,$email = false) {
-		$model = $this->getModel($id,false);
+        $this->throwOnNullModel = false;
+		$model = $this->getModel($id);
 		if($model == null)
 			return Yii::t('quotes','Quote {id} does not exist. It may have been deleted.',array('{id}'=>$id));
 		if (! ($model->templateModel instanceof Docs)) { // Legacy view (very, very plain!)

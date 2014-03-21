@@ -33,6 +33,25 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+Yii::app()->clientScript->registerCss('manageDropDownsCSS',"
+
+#dropdowns-grid-container {
+    padding-left: 9px;
+    padding-right: 9px;
+}
+
+#dropdowns-grid-page-title {
+    margin-bottom: -5px;
+    border-bottom: none !important;
+    border-radius: 4px 4px 0 0;
+    -moz-border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    -o-border-radius: 4px 4px 0 0;
+}
+
+");
+
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Dropdown List'); ?></h2></div>
 <div class="form">
@@ -40,11 +59,12 @@
         <?php echo Yii::t('admin', 'Manage all dropdowns.  These can be linked to fields via Field Management.  Any default dropdowns can also be edited here to change the available options throughout the application.  Deleting default dropdowns may cause issues with pre-existing forms.') ?>
     </div>
 </div>
+<div id="dropdowns-grid-container">
 <?php
 $this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'fields-grid',
     'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-    'template' => '<h2>'.Yii::t('admin', 'Dropdowns').'</h2><div class="title-bar">'
+    'template' => '<div id="dropdowns-grid-page-title" class="page-title"><h2>'.CHtml::encode (Yii::t('admin', 'Dropdowns')).'</h2>'
     .'{summary}</div>{items}{pager}',
     'dataProvider' => $dataProvider,
     'columns' => array(
@@ -65,6 +85,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 <a href="#" onclick="$('#editDropdown').toggle();$('#createDropdown').hide();$('#deleteDropdown').hide();" class="x2-button"><?php echo Yii::t('admin', 'Edit Dropdown'); ?></a>
 <br>
 <br>
+</div>
 <div id="createDropdown" style="display:none;">
     <?php
     $this->renderPartial('dropDownEditor', array(

@@ -39,7 +39,8 @@
 <?php echo Yii::t('admin','To upload your logo for display next to the search bar, please  upload the file here using the form below.'); ?>
 <br><br>
 <h3><?php echo Yii::t('contacts','Upload File'); ?></h3>
-<?php if (Yii::app()->user->hasFlash('error')) {
+<?php 
+if (Yii::app()->user->hasFlash('error')) {
     echo "<div class='flash-error'>";
     echo Yii::app()->user->getFlash('error');
     echo "</div>";

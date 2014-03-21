@@ -65,7 +65,7 @@ class UpdaterAction extends WebUpdaterAction {
             if($redirect && !empty($_SERVER['HTTP_REFERER'])){
                 $this->controller->redirect($_SERVER['HTTP_REFERER']);
             }else{
-                self::respond('');
+                $this->respond('');
             }
         }
 
@@ -73,13 +73,15 @@ class UpdaterAction extends WebUpdaterAction {
         $edition = $this->edition;
         $this->scenario = $scenario;
         $ready = $this->checkIf('packageExists',false);
-        $viewParams = compact('scenario','unique_id','edition','version','ready');
+        $latestVersion = $version;
+        $viewParams = compact('scenario','unique_id','edition','version','ready','latestVersion');
 
         // Check for an existing package that has been extracted, in which case
         // it isn't necessary to make any requests to the update server, but
         // it is necessary to perform additional checks (which will be done
         // via ajax in the updater view)
         if($ready) {
+            $viewParams['latestVersion'] = $this->manifest['targetVersion'];
             $this->controller->render('updater',$viewParams);
             return;
         }
@@ -90,9 +92,13 @@ class UpdaterAction extends WebUpdaterAction {
         // versions) so it's safe to auto-download at this point.
         $updaterCheck = $this->getLatestUpdaterVersion();
         if($updaterCheck){
-            if(version_compare($updaterVersion,$updaterCheck) < 0){
+            $refreshCriteria = version_compare($updaterVersion,$updaterCheck) < 0
+                    || $this->backCompatHooks($updaterCheck);
+
+            if($refreshCriteria){
                 $this->runUpdateUpdater($updaterCheck, array('updater', 'scenario' => $scenario));
             }
+
             $this->output(Yii::t('admin','The updater is up-to-date and safe to use.'));
         }else{
             // Is it the fault of the webserver?

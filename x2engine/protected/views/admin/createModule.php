@@ -74,7 +74,7 @@ Yii::app()->clientScript->registerCss ('createModule', "
                     <?php echo Yii::t('module', 'Module Title'); ?><span class="required">*</span>
                 </label><?php echo Yii::t('module', 'The name for your new module'); ?>
                 <br>
-                <input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" 
+                <input type="text" size="30" onFocus="x2.forms.toggleText(this);" onBlur="x2.forms.toggleText(this);" 
                  style="color:#aaa;" name="title" id="title" />
             </div>
             <div class="cell">
@@ -83,7 +83,7 @@ Yii::app()->clientScript->registerCss ('createModule', "
                 </label>
                 <?php echo Yii::t('module', '(Optional) What to call individual records, e.g. "Create new X"'); ?>
                 <br>
-                <input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" 
+                <input type="text" size="30" onFocus="x2.forms.toggleText(this);" onBlur="x2.forms.toggleText(this);" 
                  style="color:#aaa;" name="recordName" id="recordName" />
             </div>
         </div>
@@ -96,7 +96,7 @@ Yii::app()->clientScript->registerCss ('createModule', "
                 echo Yii::t('module', 'Optional (alphanumeric only, must start with a letter)'); 
                 ?>
                 <br>
-                <input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" 
+                <input type="text" size="30" onFocus="x2.forms.toggleText(this);" onBlur="x2.forms.toggleText(this);" 
                  style="color:#aaa;" name="moduleName" id="moduleName" />
                 <br>
             </div>

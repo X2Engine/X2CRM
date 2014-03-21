@@ -40,7 +40,7 @@
  * Intended to be rendered partially, via AJAX, in {@link AdminController::actionCreateUpdateField()}
  */
 
-?><div class="page-title"><h2><?php echo $new ? Yii::t('admin', "Add A Custom Field") : Yii::t('admin', 'Customize Fields'); ?></h2></div>
+?><div class="page-title rounded-top"><h2><?php echo $new ? Yii::t('admin', "Add A Custom Field") : Yii::t('admin', 'Customize Fields'); ?></h2></div>
 <?php echo '<h3 id="createUpdateField-message" style="color:'.($error ? 'red' : 'green').'">'.$message.'</h3>'; ?>
 
 <div class="form" id="createUpdateField-container">

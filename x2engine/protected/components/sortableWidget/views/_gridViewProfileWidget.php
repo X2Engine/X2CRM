@@ -34,4 +34,4 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->widget('application.components.X2GridViewForSortableWidgets', $gridViewConfig); 
+$this->widget('X2GridViewForSortableWidgets', $gridViewConfig); 

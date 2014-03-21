@@ -51,8 +51,35 @@ class X2FlowTestingAuxLib {
      * @param string $fixtureName Name of the fixture from which to get data
      * @return array decoded flow JSON string
      */
-    public function getFlow ($context,$rowAlias,$fixtureName = 'x2flow') {
+    public function getFlow ($context,$rowAlias=null,$fixtureName = 'x2flow') {
+        if (!$rowAlias) {
+            $aliases = array_keys ($context->{$fixtureName});
+            $rowAlias = $aliases[0];
+        }
         return CJSON::decode ($context->{$fixtureName}[$rowAlias]['flow']);
+    }
+
+    /**
+     * Checks each entry in triggerLog looking for errors
+     * @param array $trace One of the return value of executeFlow ()
+     * @return bool true if an error was found in the log, false otherwise
+     */
+    public function checkTrace ($trace) {
+        if (!$trace[0]) return false;
+        $trace = $trace[1];
+        while (true) {
+            $complete = true;
+            foreach ($trace as $action) {
+                if ($action[0] === 'X2FlowSwitch') {
+                    $trace = $action[2];
+                    $complete = false;
+                    break;
+                }
+                if (!$action[1][0]) return false;
+            }
+            if ($complete) break;
+        }
+        return true;
     }
 
     /**
@@ -63,6 +90,21 @@ class X2FlowTestingAuxLib {
      */
     public function getFlows ($context,$fixtureName = 'x2flow') {
          return array_map (function ($a) { return CJSON::decode ($a['flow']); }, $context->{$fixtureName});
+    }
+
+    /**
+     * Executes a specified flow, ensuring that flows won't get triggered recursively
+     * @param object $flow An X2Flow model
+     */
+    public function executeFlow ($flow, $params) {
+        $X2Flow = new ReflectionClass ('X2Flow');
+        $_triggerDepth = $X2Flow->getProperty ('_triggerDepth');
+        $_triggerDepth->setAccessible (TRUE);
+        $_triggerDepth->setValue (1);
+        $fn = TestingAuxLib::setPublic ('X2Flow', 'executeFlow');
+        $returnVal = $fn (array (&$flow, &$params));
+        $_triggerDepth->setValue (0);
+        return $returnVal;
     }
 
     public function assertGetInstances ($context, $subClass,$ignoreClassFiles) {

@@ -304,21 +304,17 @@ x2.fieldUtils = {
                     
                     var textValue = '';
                     if(safeAttributes.value !== undefined) {
-                        var index = $.inArray ('::', safeAttributes.value);
-                        if(index > 0)
-                            textValue = safeAttributes.value.substr(index+2);
-                        else
-                            textValue = safeAttributes.value;
+                        textValue = safeAttributes.value.replace (/_[0-9]+$/, '');
                     }
                     
-                    hidden = $('<input type="hidden" />').attr(safeAttributes);
-                    input = $('<input type="text" />').val(textValue).autocomplete({
+                    var hidden = $('<input type="hidden" />').attr(safeAttributes);
+                    var input = $('<input type="text" />').val(textValue).autocomplete({
                         minLength:0,
                         source:attributes.linkSource,
                         select:function(event,ui) {
                             $(this).val(ui.item.value);
                             // console.debug(ui.item);
-                            $(this).next("input").val(ui.item.id+"::"+ui.item.value);
+                            $(this).next("input").val(ui.item.value+'_'+ui.item.id);
                             return false; 
                         }
                     }).keyup(function(){

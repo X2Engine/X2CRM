@@ -33,11 +33,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-#header {
-	position:static !important;
+body.disable-mobile-layout #header {
+	position:static;
 }
 
-#page {
-	margin-top: 0 !important;
+body.disable-mobile-layout #page {
+    margin-top: 0 !important;
 }
+
 

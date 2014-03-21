@@ -59,8 +59,7 @@ abstract class WebUpdaterAction extends CAction{
     public function behaviors() {
         return array(
 			'UpdaterBehavior' => array(
-				'class' => 'application.components.UpdaterBehavior',
-                'isConsole' => false
+				'class' => 'application.components.UpdaterBehavior'
 			)
 		);
     }

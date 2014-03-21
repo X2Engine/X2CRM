@@ -50,7 +50,8 @@ class UpdateCommand extends CConsoleCommand {
             'UpdaterBehavior' => array(
                 'class' => 'application.components.UpdaterBehavior',
                 'isConsole' => true,
-                'scenario' => 'update'
+                'scenario' => 'update',
+                'exitNonFatal' => False
             )
         ));
         $this->requireDependencies();
@@ -213,10 +214,16 @@ class UpdateCommand extends CConsoleCommand {
         $status = 0;
         $latestUpdaterVersion = $this->getLatestUpdaterVersion();
         if($latestUpdaterVersion){
-            if(version_compare($updaterVersion,$latestUpdaterVersion) < 0){
+            $refreshCriteria = version_compare($updaterVersion,$updaterCheck) < 0
+                    || ($backCompat = $this->backCompatHooks($updaterCheck));
+            if($refreshCriteria){
                 $classes = $this->updateUpdater($latestUpdaterVersion);
                 if(empty($classes)){
-                    $this->output(Yii::t('admin', 'The updater is now up-to-date and compliant with the updates server. Re-run the command to proceed.'));
+                    if($backCompat) {
+                        $this->output(Yii::t('admin', 'Re-run the command to proceed.'));
+                    } else {
+                        $this->output(Yii::t('admin', 'The updater is now up-to-date and compliant with the updates server. Re-run the command to proceed.'));
+                    }
                 } else {
                     $this->output(Yii::t('admin', 'One or more dependencies of AdminController are missing and could not be automatically retrieved. They are {classes}', array('{classes}' => implode(', ', $classes))),1,1);
                 }

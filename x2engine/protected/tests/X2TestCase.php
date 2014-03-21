@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
 Yii::import('application.modules.bugReports.models.*');
 
 /**
@@ -47,6 +48,6 @@ class X2TestCase extends CTestCase {
         parent::setUpBeforeClass();
     }
 
-}
+    }
 
 ?>
