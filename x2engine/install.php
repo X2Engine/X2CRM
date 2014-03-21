@@ -443,7 +443,16 @@ $timezones = array(
     <!--<img id="bg" src="uploads/defaultBg.jpg" alt="">-->
         <div id="installer-box">
             <noscript><h3><span id="noscript-error"><?php echo installer_t('This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'); ?></span></h3></noscript>
-            <img src="themes/x2engine/images/x2engine_crm_white.png" alt="X2Engine" id="installer-logo">
+            <?php
+            $edSuf = array('_pla','_pro','');//'images/x2engine_crm_pla.png';
+            foreach($edSuf as $suffix) {
+                $logoFile = "images/x2engine_crm$suffix.png";
+                if(file_exists(__DIR__.DIRECTORY_SEPARATOR.str_replace('/',DIRECTORY_SEPARATOR,$logoFile))) {
+                    echo "<img src=\"$logoFile\" alt=\"X2Engine\" id=\"installer-logo\">";
+                    break;
+                }
+            }
+            ?>
             <h2 id="title"><?php echo installer_t('Installation Page'); ?></h2>
 
 

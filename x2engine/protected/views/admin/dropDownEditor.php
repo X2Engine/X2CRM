@@ -73,7 +73,7 @@ function addStage() {
 
 
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin','Dropdown Editor'); ?></h2></div>
+<div class="page-title rounded-top"><h2><?php echo Yii::t('admin','Dropdown Editor'); ?></h2></div>
 <div class="form">
 
 <?php $form=$this->beginWidget('CActiveForm', array(

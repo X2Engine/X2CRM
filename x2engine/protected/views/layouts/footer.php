@@ -33,28 +33,22 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
-Yii::app()->getClientScript()->registerScript('logos',base64_decode(
-	'JCh3aW5kb3cpLmxvYWQoZnVuY3Rpb24oKXt2YXIgYT0kKCIjcG93ZXJlZC1ieS14MmVuZ2luZSIpO2lmKCFhLmxlb'
-	.'md0aHx8YS5hdHRyKCJzcmMiKSE9eWlpLmJhc2VVcmwrIi9pbWFnZXMvcG93ZXJlZF9ieV94MmVuZ2luZS5wbmciK'
-	.'XskKCJhIikucmVtb3ZlQXR0cigiaHJlZiIpO2FsZXJ0KCJQbGVhc2UgcHV0IHRoZSBsb2dvIGJhY2siKX19KTs='));
-		
-// Yii::app()->params->edition = 'opensource';
 ?>
 <div id="footer">
+
+    <!-- 
+    Powered by X2Engine -->
 	<b>X2Engine <?php echo Yii::app()->params->version; ?>
-	<?php echo Yii::app()->params->edition==='pro'? 'Professional Edition' : 'Open Source Edition'; ?></b> | 
-	<?php echo CHtml::link('X2Touch',array('/x2touch')); ?> | 
+	<?php echo Yii::app()->editionLabel; ?></b> |
 	<?php echo CHtml::link(Yii::t('app','About'),array('/site/page','view'=>'about')); ?> | 
 	
 	<a href="http://www.x2engine.com/">Powered by X2Engine</a>. <br>Copyright &copy; 2011-<?php echo date('Y'); ?> X2Engine Inc.
-	<?php if(Yii::app()->params->edition==='opensource') { ?>
+	<?php if(Yii::app()->edition==='opensource') { ?>
 		Released as free software without warranties under the <a href="<?php echo Yii::app()->getBaseUrl(); ?>/LICENSE.txt" title="GNU Affero General Public License version 3">GNU Affero GPL v3</a>.
-	<?php } /* else { ?>
-		<a href="<?php echo Yii::app()->getBaseUrl(); ?>/LICENSE.txt">License</a>
-	<?php } */ ?>
+	<?php } ?>
 	<br>
-	<?php echo CHtml::link(CHtml::image(Yii::app()->getBaseUrl().'/images/powered_by_x2engine.png','',array('id'=>'powered-by-x2engine')),'http://www.x2engine.com/'); ?>
+	<?php
+    echo CHtml::link(CHtml::image(Yii::app()->params->x2Power,'',array('id'=>'powered-by-x2engine')),'http://www.x2engine.com/'); ?>
 	<div id="response-time">
 	<?php
 	echo round(Yii::getLogger()->getExecutionTime()*1000), 'ms ';

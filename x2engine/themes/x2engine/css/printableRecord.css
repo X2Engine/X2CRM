@@ -34,6 +34,7 @@
  *****************************************************************************************/
 
 .x2-layout {
+    min-width: 598px;
 	border: 1px solid black !important;
 	/*border: none !important;
 	background: #ffffff !important;*/
@@ -230,7 +231,4 @@ input[type="text"].relationships-add-autocomplete {
 	border-radius:			0px 0 0 0 !important;
 	background:#fff !important;
 }
-
-
-
 

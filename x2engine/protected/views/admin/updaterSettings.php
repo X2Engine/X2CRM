@@ -35,7 +35,7 @@
  *****************************************************************************************/
  ?>
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Updater Settings'); ?></h2></div>
-<div class="span-24">
+<div class='span-24'>
     <div class="form">
         <?php
         $form = $this->beginWidget('CActiveForm', array(

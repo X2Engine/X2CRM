@@ -139,6 +139,21 @@ class Roles extends CActiveRecord {
 		));
 	}
 
+    /**
+     * Get roles from cache 
+     */
+    public static function getCachedUserRoles ($userId) {
+		// check the app cache for user's roles
+		return Yii::app()->cache->get(self::getUserCacheVar ($userId));
+    }
+
+    /**
+     * Clear role cache for specified user 
+     */
+    public static function clearCachedUserRoles ($userId) {
+        Yii::app()->cache->delete (self::getUserCacheVar ($userId));
+    }
+
 	/* Looks up roles held by the specified user.
 	 * Uses cache to lookup/store roles.
 	 *
@@ -147,10 +162,8 @@ class Roles extends CActiveRecord {
 	 * @return Array array of roleIds
 	 */
 	public static function getUserRoles($userId,$cache=true) {
-		$cacheVar = 'user_roles_'.$userId;
-
 		// check the app cache for user's roles
-		if($cache === true && ($userRoles = Yii::app()->cache->get($cacheVar)) !== false) {
+		if($cache === true && ($userRoles = self::getCachedUserRoles ($userId)) !== false) {
 			if(isset($userRoles[$userId]))
 				return $userRoles[$userId];
 		} else {
@@ -172,7 +185,7 @@ class Roles extends CActiveRecord {
 		$userRoles[$userId] = array_unique($userRoles + $groupRoles);  // combine all the roles, remove duplicates
 
 		if($cache === true)
-			Yii::app()->cache->set($cacheVar,$userRoles,259200); // cache user groups for 3 days
+			Yii::app()->cache->set(self::getUserCacheVar ($userId),$userRoles,259200); // cache user groups for 3 days
 
 		return $userRoles[$userId];
 	}
@@ -208,6 +221,10 @@ class Roles extends CActiveRecord {
                 Yii::app()->cache->set($cacheVar, $timeout, 259200);
             return $timeout;
         }
+    }
+
+    private static function getUserCacheVar ($userId) {
+		return 'user_roles_'.$userId;
     }
 
 }

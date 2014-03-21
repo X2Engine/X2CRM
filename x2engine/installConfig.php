@@ -23,7 +23,7 @@ $test_url = '';
 $installType = 'Silent';
 // Cron settings. 
 //
-// These settings have no effect except in X2CRM Professional Edition.
+// These settings have no effect except in X2Engine Professional Edition.
 // 
 // Set this to true to add a job to the user's cron table:
 $startCron = false;

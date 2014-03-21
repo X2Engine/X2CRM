@@ -103,7 +103,8 @@ abstract class GridViewWidget extends SortableWidget {
                 'enableScrollOnPageChange' => false,
                 'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
                 'template'=>
-                    '<div class="page-title">{buttons}{filterHint}'.
+                    '<div class="page-title"><h2 class="grid-widget-title-bar-dummy-element">'.
+                    '</h2>{buttons}{filterHint}'.
                     
                     '{summary}{topPager}</div>{items}{pager}',
                 'fixedHeader'=>false,
@@ -160,6 +161,26 @@ abstract class GridViewWidget extends SortableWidget {
                         .sortable-widget-container div.page-title .x2-minimal-select:focus {
                             border: 1px solid #A0A0A0 !important;
                             background: rgb(221, 221, 221)!important;
+                        }
+
+                        .grid-widget-title-bar-dummy-element {
+                            height: 33px;
+                        }
+
+                        @media (max-width: 657px) {
+                            .grid-widget-title-bar-dummy-element {
+                                display: block !important;
+                            }
+                            .sortable-widget-container .x2-gridview-mass-action-buttons {
+                                top: -41px;
+                                right: -20px;
+                            }
+                            .sortable-widget-container .show-top-buttons .x2-gridview-mass-action-buttons {
+                                    right: -24px; 
+                            }
+                            .sortable-widget-container .grid-view .page-title {
+                                height: 34px;
+                            }
                         }
                     "
                 )

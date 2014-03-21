@@ -44,7 +44,7 @@ Preconditions:
 */
 
 Yii::app()->clientScript->registerScriptFile (
-    Yii::app()->getBaseUrl().'/js/X2GridViewTopPagerManager.js', CClientScript::POS_END);
+    Yii::app()->getBaseUrl().'/js/X2GridView/X2GridViewTopPagerManager.js', CClientScript::POS_END);
 
 Yii::app()->clientScript->registerCss ('topPagerCss', "
 .x2-gridview-top-pager {

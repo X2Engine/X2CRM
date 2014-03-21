@@ -156,18 +156,47 @@ if(empty($data->type) || $data->type == 'weblead'){
         <?php
         if(!Yii::app()->user->isGuest){
             if(empty($data->type) || $data->type == 'weblead'){
-                if($data->complete == 'Yes' && Yii::app()->user->checkAccess('ActionsUncomplete',array('assignedTo'=>$data->assignedTo)))
-                    echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Uncomplete.png'), '#', array('class' => 'uncomplete-button', 'title' => $data->id, 'data-action-id' => $data->id));
-                elseif(Yii::app()->user->checkAccess('ActionsComplete',array('assignedTo'=>$data->assignedTo))){
-                    echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Complete.png'), '#', array('class' => 'complete-button', 'title' => $data->id, 'data-action-id' => $data->id));
+                if($data->complete == 'Yes' && 
+                   Yii::app()->user->checkAccess('ActionsUncomplete',
+                    array('assignedTo'=>$data->assignedTo))) {
+
+                    echo CHtml::link(
+                        CHtml::image($themeUrl.'/images/icons/Uncomplete.png'), 
+                        '#', array(   
+                            'class' => 'uncomplete-button',
+                            'title' => Yii::t('app', 'uncomplete'),
+                            'data-action-id' => $data->id));
+                } elseif(Yii::app()->user->checkAccess(
+                    'ActionsComplete',array('assignedTo'=>$data->assignedTo))){
+
+                    echo CHtml::link(
+                        CHtml::image($themeUrl.'/images/icons/Complete.png'), 
+                        '#', array(
+                            'class' => 'complete-button', 
+                            'title' => Yii::t('app', 'complete'),
+                            'data-action-id' => $data->id));
                 }
             }
             if($data->type != 'workflow'){
-                if(Yii::app()->user->checkAccess('ActionsUpdate',array('assignedTo'=>$data->assignedTo))){
-                    echo $data->type != 'attachment' ? ' '.CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'), array('/actions/actions/update', 'id' => $data->id, 'redirect' => 1), array()).' ' : "";
+                if(Yii::app()->user->checkAccess(
+                    'ActionsUpdate',array('assignedTo'=>$data->assignedTo))){
+
+                    echo $data->type != 'attachment' ? 
+                        ' '.CHtml::link(
+                            CHtml::image($themeUrl.'/images/icons/Edit.png'), 
+                            '#', array(
+                                'class' => 'update-button', 'title' => Yii::t('app', 'edit'),
+                                'data-action-id' => $data->id)) : '';
                 }
-                if(Yii::app()->user->checkAccess('ActionsDelete',array('assignedTo'=>$data->assignedTo))){
-                    echo ' '.CHtml::link(CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'), '#', array('onclick' => 'deleteAction('.$data->id.'); return false'));
+                if(Yii::app()->user->checkAccess(
+                    'ActionsDelete',array('assignedTo'=>$data->assignedTo))){
+
+                    echo ' '.CHtml::link(
+                        CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'), 
+                        '#', array(
+                            'onclick' => 'deleteAction('.$data->id.'); return false',
+                            'title' => Yii::t('app', 'delete')
+                        ));
                 }
             }
         }
@@ -176,9 +205,9 @@ if(empty($data->type) || $data->type == 'weblead'){
     </div>
     <div class="description">
 <?php
-if($type == 'attachment' && $data->completedBy != 'Email')
+if($type == 'attachment' && $data->completedBy != 'Email') {
     echo Media::attachmentActionText(Yii::app()->controller->convertUrls($data->actionDescription), true, true);
-else if($type == 'workflow'){
+} else if($type == 'workflow'){
 
     if(!empty($data->stageNumber) && !empty($data->workflowId) && $data->stageNumber <= count($stageRecords)){
         if($data->complete == 'Yes')

@@ -41,8 +41,11 @@ class MMask extends CWidget {
 
      public function run() {
          isset($this->config['symbol']) ? '': $this->config['symbol'] = Yii::app()->getLocale()->getCurrencySymbol($this->currency);
-         Yii::app()->clientScript->registerScript('processPrint', '
+         /* x2modstart */ 
+         // added unique script name so that multiple instances can be created for the same page
+         Yii::app()->clientScript->registerScript('processPrint'.$this->element, '
              $("'.$this->element.'").maskMoney('.json_encode($this->config).')');
+         /* x2modend */     
      }
 }
 

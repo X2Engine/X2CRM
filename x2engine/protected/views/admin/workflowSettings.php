@@ -109,8 +109,8 @@ else
 	$backdateRangeIndex++;
 
 ?>
-<div class="span-16">
 <div class="page-title"><h2><?php echo Yii::t('admin','Process Settings'); ?></h2></div>
+<div>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'settings-form',
@@ -132,7 +132,8 @@ $form = $this->beginWidget('CActiveForm', array(
 			),
 			'htmlOptions'=>array(
 				'id'=>'backdateWindowSlider',
-				'style'=>'width:340px;margin:10px 0;',
+                'class'=>'x2-wide-slider',
+				'style'=>'margin:10px 0;',
 			),
 		));
 		?>
@@ -154,7 +155,8 @@ $form = $this->beginWidget('CActiveForm', array(
 			),
 			'htmlOptions'=>array(
 				'id'=>'backdateRangeSlider',
-				'style'=>'width:340px;margin:10px 0;',
+                'class'=>'x2-wide-slider',
+				'style'=>'margin:10px 0;',
 			),
 		));
 		?>

@@ -62,6 +62,10 @@ class InlineQuotes extends X2Widget {
 		if($this->startHidden) {			
 		// register css
 		Yii::app()->clientScript->registerCss('inline-quotes-style','
+            .product-select-button {
+                padding: 0 0 0 0!important;
+            }
+
             #wide-quote-form {
                 background: #F8F8F8;
             }
@@ -139,6 +143,7 @@ class InlineQuotes extends X2Widget {
         // Set up the new create form:
         $quotesAssetsUrl = $this->module->assetsUrl;
         Yii::app()->clientScript->registerScriptFile($quotesAssetsUrl.'/js/inlineQuotes.js', CClientScript::POS_HEAD);
+        Yii::app()->clientScript->registerScriptFile($quotesAssetsUrl.'/js/LineItems.js', CClientScript::POS_HEAD);
         Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsMain.css');
         Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsWrite.css');
         Yii::app()->clientScript->registerCoreScript('jquery.ui');
@@ -256,7 +261,7 @@ class InlineQuotes extends X2Widget {
 		));*/
 		
 		echo '<div id="quotes-form">';
-		echo '<div id="wide-quote-form" class="wide form" style="overflow: visible;">';
+		echo '<div id="wide-quote-form" class="wide x2-layout-island form" style="overflow: visible;">';
 		echo '<div id="quote-create-form-wrapper" style="display:none"></div>';
 		echo '<span style="font-weight:bold; font-size: 1.5em;">'. Yii::t('quotes','Quotes') .'</span>';
 		echo '<br /><br />';

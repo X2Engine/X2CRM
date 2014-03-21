@@ -138,7 +138,7 @@ if ($listModel->type === 'static') {
     $massActions[] = 'removeFromList';
 }
 
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
     'id'=>'contacts-grid',
     'enableQtips' => true,
     'qtipManager' => array (
@@ -156,7 +156,7 @@ $this->widget('application.components.X2GridView', array(
             .(Yii::app()->user->checkAccess('ContactsExportContacts') ? 
                 CHtml::link(
                     Yii::t('app','Export'),
-                    array('/contacts/contacts/exportContacts','listId'=>$listModel->id),
+                    array('/admin/exportModels','model'=>'Contacts', 'listId'=>$listModel->id),
                     array('class'=>'x2-button')
                 ) : null)
             .CHtml::link(

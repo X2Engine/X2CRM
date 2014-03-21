@@ -23,6 +23,7 @@ CREATE TABLE x2_actions    (
     lastUpdated               BIGINT,
     updatedBy                 VARCHAR(50),
     workflowId                INT UNSIGNED,
+    quoteId                   INT UNSIGNED,
     stageNumber               INT UNSIGNED,
     allDay                    TINYINT,
     color                     VARCHAR(20),

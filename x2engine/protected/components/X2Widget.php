@@ -107,5 +107,9 @@ abstract class X2Widget extends CWidget {
         return $this->_module;
     }
 
+    public function setModule ($moduleName) {
+        $this->_module = Yii::app()->getModule($moduleName);
+    }
+
 }
 ?>

@@ -33,6 +33,17 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+Yii::app()->clientScript->registerCss('recordViewCss',"
+#content {
+    background: none !important;
+    border: none !important;
+}
+");
+
+
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relationships.js');
+
 $authParams['assignedTo']=$model->assignedTo;
 $menuItems = array(
 	array('label'=>Yii::t('accounts','All Accounts'), 'url'=>array('index')),
@@ -74,6 +85,10 @@ $menuItems[] = array(
 $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
+
+<div class="page-title-placeholder"></div>
+<div class="page-title-fixed-outer">
+    <div class="page-title-fixed-inner">
 <div class="page-title icon accounts">
 	<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 	<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
@@ -94,6 +109,8 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
         )
     );
     ?>
+</div>
+</div>
 </div>
 <div id="main-column" class="half-width">
 <?php $form=$this->beginWidget('CActiveForm', array(
@@ -146,19 +163,6 @@ $website = json_encode($model->website);
 $opportunityTooltip = json_encode(Yii::t('accounts', 'Create a new Opportunity associated with this Account.'));
 $contactTooltip = json_encode(Yii::t('accounts', 'Create a new Contact associated with this Account.'));
 $accountsTooltip = json_encode(Yii::t('accounts', 'Create a new Account associated with this Account.'));
-
-Yii::app()->clientScript->registerScript('create-model', "
-	$(function() {
-		// init create opportunity button
-		$('#create-opportunity').initCreateOpportunityDialog('$createOpportunityUrl', 'Accounts', '{$model->id}', $accountName, $assignedTo, $opportunityTooltip);
-
-		// init create contact button
-		$('#create-contact').initCreateContactDialog('$createContactUrl', 'Accounts', '{$model->id}', $accountName, $assignedTo, $phone, $website, $contactTooltip, '', '', '');
-
-        // init create account button
-		$('#create-account').initCreateAccountDialog2('$createAccountUrl', 'Accounts', '{$model->id}', $accountName, $assignedTo, '', '', $accountsTooltip);
-    });
-");
 ?>
 </div>
 <div class="history half-width">

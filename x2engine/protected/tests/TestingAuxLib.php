@@ -41,6 +41,13 @@
  * @package application.tests
  */
 class TestingAuxLib  {
+     
+    /**
+     * Method used by TestingAuxLibTest to test setPublic 
+     */
+    private function privateMethod ($arg1, $arg2) {
+        return array ($arg1, $arg2);
+    }
 
     /**
      * Updates timestamps of session records 
@@ -51,6 +58,35 @@ class TestingAuxLib  {
             $model->lastUpdated = time ();
             $model->save ();
         }
+    }
+
+    /**
+     * Used to invoke methods which are protected or private.
+     * @param string $className 
+     * @param string $methodName 
+     * @return function Takes an array of arguments as a parameter and calls
+     *  the specified method with those arguments.
+     */
+    public static function setPublic ($className, $methodName) {
+        $method = new ReflectionMethod ($className, $methodName);
+        $method->setAccessible (TRUE);
+        return function ($arguments) use ($method, $className) {
+            return $method->invokeArgs (new $className (), $arguments);
+        };
+    }
+
+    /**
+     * Log in with the specified credentials 
+     * @return bool true if login was successful, false otherwise
+     */
+    public static function login ($username, $password) {
+        $identity = new UserIdentity($username, $password);
+        $identity->authenticate ();
+		if($identity->errorCode === UserIdentity::ERROR_NONE) {
+            Yii::app()->user->login ($identity, 2592000);
+            return true;
+        }
+        return false;
     }
 
 }

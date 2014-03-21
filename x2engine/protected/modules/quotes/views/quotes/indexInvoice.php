@@ -60,7 +60,7 @@ $('.search-form form').submit(function(){
 )); ?>
 </div><!-- search-form -->
 <?php
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'invoices-grid',
 	'title'=>Yii::t('quotes','Invoices'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),

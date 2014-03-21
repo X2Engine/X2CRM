@@ -186,7 +186,7 @@ $migrateLinkFields = function(){
                                  LEFT JOIN `$referencedTable` AS `t2`
                                  ON CAST(`t1`.`$column` AS CHAR)=`t2`.`id`
                                  SET `t1`.`$column`=CAST(`t2`.`nameId` AS CHAR)
-                                 WHERE 1";
+                                 WHERE t2.id IS NOT NULL";
                     if($debug){
                         echo "Running: $query\n";
                     }

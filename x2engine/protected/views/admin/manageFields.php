@@ -33,6 +33,33 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+Yii::app()->clientScript->registerCss('manageFieldsCSS',"
+
+#fields-grid-page-title {
+    margin-bottom: -5px;
+    border-bottom: none !important;
+    border-radius: 4px 4px 0 0;
+    -moz-border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    -o-border-radius: 4px 4px 0 0;
+}
+
+#fields-form {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#fields-grid {
+    padding: 0 9px;
+}
+
+#remove-field-button {
+    margin-left: 9px;
+}
+
+");
+
 Yii::app()->clientScript->registerMain();
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/fieldEditor.js', CClientScript::POS_HEAD);
 $loadUrl = Yii::app()->createUrl('/admin/createUpdateField');
@@ -42,14 +69,14 @@ Yii::app()->clientScript->registerScript('fieldEditor-config', 'x2.fieldEditor.l
 <div class="form">
     <?php echo Yii::t('admin', 'This page has a list of all fields that have been modified, and allows you to add or remove your own fields, as well as customizing the pre-set fields.'); ?>
 </div>
-<div class="form">
+<div class="form" id="fields-form">
     <?php
 
     $this->widget('zii.widgets.grid.CGridView', array(
         'id' => 'fields-grid',
         'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-        'template' => '<div class="page-title"><h2>'.Yii::t('admin', 'Fields').'</h2></div><div class="title-bar">'
-        .'{summary}</div>{items}{pager}',
+        'template' => '<div class="page-title" id="fields-grid-page-title"><h2>'.
+            Yii::t('admin', 'Fields').'</h2>{summary}</div>{items}{pager}',
         'dataProvider' => $dataProvider,
         'columns' => array(
             'modelName',
@@ -77,7 +104,7 @@ Yii::app()->clientScript->registerScript('fieldEditor-config', 'x2.fieldEditor.l
 
     ?>
     <br>
-    <a href="javascript:void(0);" onclick="$('#createUpdateField').show();$('#removeField').hide();x2.fieldEditor.load('create')" class="x2-button"><?php echo Yii::t('admin','Add Field');?></a>
+    <a href="javascript:void(0);" onclick="$('#createUpdateField').show();$('#removeField').hide();x2.fieldEditor.load('create')" class="x2-button" id="remove-field-button"><?php echo Yii::t('admin','Add Field');?></a>
     <a href="javascript:void(0);" onclick="$('#removeField').show();$('#createUpdateField').hide();" class="x2-button"><?php echo Yii::t('admin','Remove Field');?></a>
     <a href="javascript:void(0);" onclick="$('#createUpdateField').show();$('#removeField').hide();x2.fieldEditor.load('update')" class="x2-button"><?php echo Yii::t('admin','Customize Field');?></a>
     <br>

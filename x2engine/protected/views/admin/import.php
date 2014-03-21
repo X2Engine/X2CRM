@@ -35,6 +35,7 @@
  *****************************************************************************************/
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin','Import Data from Template'); ?></h2></div>
+<div class='admin-form-container'>
 <div class="form">
 <?php echo Yii::t('admin','To import your data a CSV file, please  upload the file here using the form below.'); ?>
 <br><br>
@@ -51,4 +52,5 @@
 <?php echo CHtml::dropDownList('overwrite', '', array('0'=>Yii::t('app','No'),'1'=>Yii::t('app','Yes')),array('id'=>'overwrite-selector')); ?> <br><br>
 <?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button','id'=>'import-button')); ?>
 <?php echo CHtml::endForm(); ?>
+</div>
 </div>

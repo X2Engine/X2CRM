@@ -345,8 +345,11 @@ class ActionsController extends x2base {
         ));
     }
 
-    public function actionPublisherCreate(){
+    private function createProductAction () {
 
+    }
+
+    public function actionPublisherCreate(){
         if(isset($_POST['SelectedTab'], $_POST['Actions']) && 
            (!Yii::app()->user->isGuest || 
             Yii::app()->user->checkAccess($_POST['Actions']['associationType'].'View'))) {
@@ -360,9 +363,9 @@ class ActionsController extends x2base {
             $model->setX2Fields($_POST['Actions']);
 
             // format dates
-            if (isset ($_POST['Actions']['dueDate']))
-                $model->dueDate = Formatter::parseDateTime($_POST['Actions']['dueDate']);
-
+            if (isset ($_POST[get_class($model)]['dueDate'])) {
+                $model->dueDate = Formatter::parseDateTime($_POST[get_class($model)]['dueDate']);
+            }
 
             if($_POST['SelectedTab'] == 'new-event'){
                 $model->disableBehavior('changelog');
@@ -377,7 +380,7 @@ class ActionsController extends x2base {
                 }else{
                     $model->completeDate = $model->dueDate;
                 }
-            }
+            } 
 
             // format association
             if($model->associationId == '')
@@ -402,8 +405,10 @@ class ActionsController extends x2base {
 
             if(in_array($_POST['SelectedTab'],array('log-a-call','new-comment','log-time-spent'))){
                 // Set the complete date accordingly:
-                if(!empty($_POST[get_class($model)]['completeDate']))
-                    $model->completeDate = Formatter::parseDateTime($_POST[get_class($model)]['completeDate']);
+                if(!empty($_POST[get_class($model)]['completeDate'])) {
+                    $model->completeDate = Formatter::parseDateTime(
+                        $_POST[get_class($model)]['completeDate']);
+                }
                 foreach(array('dueDate','completeDate') as $attr)
                     if(empty($model->$attr))
                         $model->$attr = time();
@@ -416,12 +421,14 @@ class ActionsController extends x2base {
                 $model->visibility = '1';
                 $model->assignedTo = Yii::app()->user->getName();
                 $model->completedBy = Yii::app()->user->getName();
-                if($_POST['SelectedTab'] == 'log-a-call')
+                if($_POST['SelectedTab'] == 'log-a-call') {
                     $model->type = 'call';
-                elseif($_POST['SelectedTab'] == 'log-time-spent')
+                } elseif($_POST['SelectedTab'] == 'log-time-spent') {
                     $model->type = 'time';
-                else
+                 
+                } else {
                     $model->type = 'note';
+                }
             }
             if(in_array($model->type, array('call','time','note'))){
                 $event = new Events;
@@ -439,7 +446,9 @@ class ActionsController extends x2base {
 
             if($model->save()){ // action saved to database *
                 
-                X2Model::updateTimerTotals($model->associationId,X2Model::getModelName($model->associationType));
+                X2Model::updateTimerTotals(
+                    $model->associationId,X2Model::getModelName($model->associationType));
+
                 if(isset($event)){
                     $event->associationId = $model->id;
                     $event->save();

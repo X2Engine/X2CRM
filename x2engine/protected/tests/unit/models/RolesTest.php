@@ -49,9 +49,6 @@ class RolesTest extends X2DbTestCase {
         );
     }
 
-    /**
-     *
-     */
     public function testGetUserTimeout() {
         Yii::app()->cache->flush();
         $defaultTimeout = 60;
@@ -69,6 +66,28 @@ class RolesTest extends X2DbTestCase {
         // fixtures have been modified otherwise
         RoleToUser::model()->deleteAllByAttributes(array('userId'=>$this->user('testUser3')->id));
         $this->assertEquals($defaultTimeout,Roles::getUserTimeout($this->user('testUser3')->id));
+    }
+
+    /**
+     * Ensure that upon deletion of roleToUser records, roles updates immediately (doesn't use an
+     * outdated cache entry)
+     */
+    public function testGetUserRoles () {
+        Yii::app()->cache->flush();
+        $userId = $this->user['testUser']['id'];
+        print_r ($userId);
+        $userRoles = Roles::getUserRoles ($userId);
+
+        // assert that user has roles
+        $this->assertTrue (sizeof ($userRoles) > 0);
+
+        RoleToUser::model ()->deleteAllByAttributes (array (
+            'userId' => $userId
+        ));
+        $userRoles = Roles::getUserRoles ($userId);
+
+        // assert that user has no roles 
+        $this->assertTrue (sizeof ($userRoles) === 0);
     }
 }
 

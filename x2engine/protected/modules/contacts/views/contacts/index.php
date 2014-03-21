@@ -35,13 +35,13 @@
  *****************************************************************************************/
 
 $menuItems = array(
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
-	array('label'=>Yii::t('contacts','View List')),
-    array('label'=>Yii::t('contacts','Import Contacts'),'url'=>array('importExcel')),
-	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('exportContacts')),
+    array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
+    array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
+    array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
+    array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
+    array('label'=>Yii::t('contacts','View List')),
+    array('label'=>Yii::t('contacts','Import Contacts'), 'url'=>array('admin/importModels', 'model'=>'Contacts'), 'visible'=>Yii::app()->params->isAdmin),
+    array('label'=>Yii::t('contacts', 'Export Contacts'),'url'=>array('admin/exportModels', 'model'=>'Contacts'), 'visible'=>Yii::app()->params->isAdmin),
     array('label'=>Yii::t('contacts','Contact Map'),'url'=>array('googleMaps')),
     array('label'=>Yii::t('contacts','Saved Maps'),'url'=>array('savedMaps')),
     //array('label'=>Yii::t('contacts','Saved Searches'),'url'=>array('savedSearches'))
@@ -100,7 +100,7 @@ $('#content').on('mouseup','#contacts-grid a',function(e) {
 <form>
 <?php
 
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'contacts-grid',
     'enableQtips' => true,
     'qtipManager' => array (
@@ -115,7 +115,8 @@ $this->widget('application.components.X2GridView', array(
         '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
         '<div id="x2-gridview-page-title" '.
          'class="page-title icon contacts x2-gridview-fixed-title">'.
-        '{title}{buttons}{filterHint}{massActionButtons}{summary}{topPager}{items}{pager}',
+        '{title}{buttons}{filterHint}{massActionButtons}{summary}{topPager}'.
+            '{items}{pager}',
     'fixedHeader'=>true,
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,

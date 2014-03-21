@@ -34,7 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.X2GridViewSortableWidgetsBehavior');
+Yii::import('X2GridViewSortableWidgetsBehavior');
+Yii::import('X2GridViewLess');
 
 /**
  * Used to display gridviews within sortable widgets. This allows sortable widget gridviews to have

@@ -53,18 +53,18 @@ $this->actionMenu = $this->formatMenu(array(
 	array(
         'label'=>Yii::t('marketing','Newsletters'), 
         'url'=>array('/marketing/weblist/index'),
-        'visible'=>(Yii::app()->params->edition==='pro')
+        'visible'=>(Yii::app()->contEd('pro'))
     ),
 	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
 	array(
         'label'=>Yii::t('marketing','Web Tracker'), 
         'url'=>array('webTracker'),
-        'visible'=>(Yii::app()->params->edition==='pro')
+        'visible'=>(Yii::app()->contEd('pro'))
     ),
 	array(
         'label'=>Yii::t('app','X2Flow'),
         'url'=>array('/studio/flowIndex'),
-        'visible'=>(Yii::app()->params->edition==='pro')
+        'visible'=>(Yii::app()->contEd('pro'))
     ),
 ),$authParams);
 

@@ -134,8 +134,8 @@ function addProduct() {
 	var price = $('<input>', {
 		type: 'text',
 		size: 10,
-		'onFocus': 'toggleText(this);',
-		'onBlur': 'toggleText(this);',
+		'onFocus': 'x2.forms.toggleText(this);',
+		'onBlur': 'x2.forms.toggleText(this);',
 		'style': 'color:#aaa;',
 		name: 'ExistingProducts[price][]',
 		value: 0
@@ -145,8 +145,8 @@ function addProduct() {
 	var quantity = $('<input>', {
 		type: 'text',
 		size: 10,
-		'onFocus': 'toggleText(this);',
-		'onBlur': 'toggleText(this);',
+		'onFocus': 'x2.forms.toggleText(this);',
+		'onBlur': 'x2.forms.toggleText(this);',
 		'style': 'color:#aaa;',
 		name: 'ExistingProducts[quantity][]',
 		value: 0
@@ -157,8 +157,8 @@ function addProduct() {
 		type: 'text',
 		size: 10,
 		title: '-5, -4.50, -25%',
-		'onFocus': 'toggleText(this);',
-		'onBlur': 'toggleText(this);',
+		'onFocus': 'x2.forms.toggleText(this);',
+		'onBlur': 'x2.forms.toggleText(this);',
 		'style': 'color:#aaa;',
 		name: 'ExistingProducts[adjustment][]',
 		value: 0
@@ -218,8 +218,8 @@ function addFilledProduct(fillId, fillPrice, fillQuantity, fillAdjustment) {
 	var price = $('<input>', {
 		type: 'text',
 		size: 10,
-		'onFocus': 'toggleText(this);',
-		'onBlur': 'toggleText(this);',
+		'onFocus': 'x2.forms.toggleText(this);',
+		'onBlur': 'x2.forms.toggleText(this);',
 		name: 'ExistingProducts[price][]',
 		value: 0,
 	});
@@ -232,8 +232,8 @@ function addFilledProduct(fillId, fillPrice, fillQuantity, fillAdjustment) {
 	var quantity = $('<input>', {
 		type: 'text',
 		size: 10,
-		'onFocus': 'toggleText(this);',
-		'onBlur': 'toggleText(this);',
+		'onFocus': 'x2.forms.toggleText(this);',
+		'onBlur': 'x2.forms.toggleText(this);',
 		name: 'ExistingProducts[quantity][]',
 		value: 0,
 	});
@@ -247,8 +247,8 @@ function addFilledProduct(fillId, fillPrice, fillQuantity, fillAdjustment) {
 		type: 'text',
 		size: 10,
 		title: '-5, -4.50, -25%',
-		'onFocus': 'toggleText(this);',
-		'onBlur': 'toggleText(this);',
+		'onFocus': 'x2.forms.toggleText(this);',
+		'onBlur': 'x2.forms.toggleText(this);',
 		name: 'ExistingProducts[adjustment][]',
 		value: 0,
 	});

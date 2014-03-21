@@ -143,8 +143,14 @@ if($layoutData !== false && isset($layoutData['sections']) && count($layoutData[
     
         $htmlString .= '<div class="formSectionHeader">';
         if($section['collapsible']) {
-            $htmlString .= '<a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>';
-            $htmlString .= '<a href="javascript:void(0)" class="formSectionShow">[+]</a>';
+            $htmlString .= 
+                '<a href="javascript:void(0)" class="formSectionHide">
+                    <img src="'.Yii::app()->getBaseUrl().'/themes/x2engine/images/icons/Collapse_Widget.png" alt="-">
+                </a>';
+            $htmlString .= 
+                '<a href="javascript:void(0)" class="formSectionShow">
+                    <img src="'.Yii::app()->getBaseUrl().'/themes/x2engine/images/icons/Expand_Inverted.png" alt="+">
+                </a>';
         }
         if(!empty($section['title'])) {
             $htmlString .= '<span class="sectionTitle" title="'.addslashes($section['title']).'">'.
@@ -219,7 +225,7 @@ if($layoutData !== false && isset($layoutData['sections']) && count($layoutData[
                                             $fieldHtml = $model->renderAttribute(
                                                 $field->fieldName,true,false);
                                         }
-                                        if(empty($fieldHtml)) {
+                                        if($fieldHtml === '') {
                                             $htmlString .= '&nbsp;';
                                         } else {
                                             $htmlString .= $fieldHtml;

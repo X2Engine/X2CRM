@@ -84,8 +84,7 @@ class X2WidgetList extends X2Widget {
             'ChartWidgetExtCss' => array(
                 'baseUrl' => Yii::app()->request->baseUrl,
                 'css' => array(
-                    'js/jqplot/jquery.jqplot.css',
-                    'js/checklistDropdown/jquery.multiselect.css'
+                    'js/jqplot/jquery.jqplot.css'
                 ),
             ),
             'ChartWidgetJS' => array(
@@ -186,16 +185,12 @@ class X2WidgetList extends X2Widget {
         }
     }
 
-
     private function isExcluded ($name) {
-        if ($this->modelType == 'BugReports' && 
-            ($name != 'InlineRelationships' && $name!='WorkflowStageDetails') ||
-            $this->modelType == 'Quote' && $name == 'WorkflowStageDetails' ||
-            $this->modelType == 'Marketing' &&
-            ($name == 'WorkflowStageDetails' || $name === 'InlineRelationships') ||
-            $this->modelType == 'services' && $name == 'InlineRelationships' ||
-            $this->modelType === 'products' &&
-            ($name === 'InlineRelationships' || $name === 'WorkflowStageDetails')) {
+        if (($this->modelType == 'BugReports' && $name!='WorkflowStageDetails') ||
+            ($this->modelType == 'Quote' && $name == 'WorkflowStageDetails') ||
+            ($this->modelType == 'Marketing' &&
+             ($name == 'WorkflowStageDetails' || $name === 'InlineRelationships')) ||
+            ($this->modelType === 'products' && $name === 'WorkflowStageDetails')) {
 
             return true;
         } else {

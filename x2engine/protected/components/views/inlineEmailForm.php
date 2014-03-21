@@ -34,6 +34,24 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
+Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormCss',"
+
+@media (max-width: 840px) {
+    #inline-email-form .email-input-row > input {
+        width: 50% !important;
+    }
+    #InlineEmail_subject {
+        display: block;
+    }
+    #email-template {
+        margin-left: 8px;
+    }
+}
+
+");
+
+
 ?>
 <div class="form email-status" id="inline-email-status" style="display:none"></div>
 <div id="inline-email-top"></div>
@@ -62,7 +80,7 @@ if(!empty($this->model->status)){
 }
 ?>
 
-    <div id="email-mini-module" class="wide form<?php if($emailSent) echo ' hidden'; ?>">
+    <div id="email-mini-module" class="wide x2-layout-island form<?php if($emailSent) echo ' hidden'; ?>">
     <?php
     $form = $this->beginWidget('CActiveForm', array(
         'enableAjaxValidation' => false,
@@ -81,12 +99,20 @@ if(!empty($this->model->status)){
 <?php echo $form->label($this->model, 'credId', array('class' => 'x2-email-label')); ?>
             <?php echo Credentials::selectorField($this->model, 'credId'); ?>
         </div><!-- .row -->
-        <div class="row">
+        <div class="row email-input-row">
 <?php //echo $form->error($this->model,'to');  ?>
             <?php echo $form->label($this->model, 'to', array('class' => 'x2-email-label')); ?>
-            <?php echo $form->textField($this->model, 'to', array('id' => 'email-to', 'style' => 'width:400px;', 'tabindex' => '1')); ?>
-            <a href="javascript:void(0)" id="cc-toggle"<?php if(!empty($this->model->cc)) echo ' style="display:none;"'; ?>>[cc]</a>
-            <a href="javascript:void(0)" id="bcc-toggle"<?php if(!empty($this->model->bcc)) echo ' style="display:none;"'; ?>>[bcc]</a>
+            <?php echo $form->textField(
+                $this->model, 'to', array(
+                    'id' => 'email-to',
+                    'tabindex' => '1')); ?>
+            <a href="javascript:void(0)" 
+             id="cc-toggle"<?php if(!empty($this->model->cc)) echo ' style="display:none;"'; ?>>
+                [cc]
+            </a>
+            <a href="javascript:void(0)" 
+             id="bcc-toggle"<?php if(!empty($this->model->bcc)) echo ' style="display:none;"'; ?>>
+                [bcc]</a>
         </div>
         <div class="row" id="cc-row"<?php if(empty($this->model->cc)) echo ' style="display:none;"'; ?>>
 <?php //echo $form->error($this->model,'to');  ?>
@@ -98,7 +124,7 @@ if(!empty($this->model->status)){
             <?php echo $form->label($this->model, 'bcc', array('class' => 'x2-email-label')); ?>
             <?php echo $form->textField($this->model, 'bcc', array('id' => 'email-bcc', 'tabindex' => '3')); ?>
         </div>
-        <div class="row">
+        <div class="row email-input-row">
 <?php echo $form->label($this->model, 'subject', array('class' => 'x2-email-label')); ?>
             <?php echo $form->textField($this->model, 'subject', array('style' => 'width: 265px;', 'tabindex' => '4')); ?>
             <?php
@@ -130,7 +156,7 @@ if(!empty($this->model->status)){
                 <div class="next-attachment">
                     <span class="upload-wrapper">
                         <span class="x2-file-wrapper">
-                            <input type="file" class="x2-file-input" name="upload" onChange="x2.attachments.checkName(event); if($('#submitAttach').attr('disabled') != 'disabled') {fileUpload(this.form, $(this), '<?php echo Yii::app()->createUrl('/site/tmpUpload'); ?>', '<?php echo Yii::app()->createUrl('/site/removeTmpUpload'); ?>'); }">
+                            <input type="file" class="x2-file-input" name="upload" onChange="x2.attachments.checkName(event); if($('#submitAttach').attr('disabled') != 'disabled') {x2.forms.fileUpload(this.form, $(this), '<?php echo Yii::app()->createUrl('/site/tmpUpload'); ?>', '<?php echo Yii::app()->createUrl('/site/removeTmpUpload'); ?>'); }">
                             <input type="button" class="x2-button" value="Choose File">
 <?php echo CHtml::image(Yii::app()->theme->getBaseUrl().'/images/loading.gif', Yii::t('app', 'Loading'), array('id' => 'choose-file-saving-icon', 'style' => 'position: absolute; width: 14px; height: 14px; filter: alpha(opacity=0); -moz-opacity: 0.00; opacity: 0.00;')); ?>
                         </span>
@@ -157,7 +183,7 @@ echo CHtml::ajaxSubmitButton(
     'class' => 'x2-button highlight',
     // 'style'=>'margin-left:-20px;',
     'name' => 'InlineEmail[submit]',
-    'onclick' => 'window.inlineEmailEditor.updateElement();',
+    'onclick' => 'if (!x2.isAndroid) window.inlineEmailEditor.updateElement();',
         )
 );
 

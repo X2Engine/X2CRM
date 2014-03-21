@@ -41,6 +41,17 @@ Yii::app()->clientScript->registerScriptFile(
 
 Yii::app()->clientScript->registerCss("profileSettings", "
 
+/*
+prevents FF checkbox border cutoff
+*/
+#profile-settings input[type='checkbox'] {
+    margin-left: 2px !important;
+}
+
+.preferences-section {
+    border-bottom: 1px solid #C2C2C2 !important;
+}
+
 .tag{
     -moz-border-radius:4px;
     -o-border-radius:4px;
@@ -61,6 +72,7 @@ Yii::app()->clientScript->registerCss("profileSettings", "
 }
 
 #settings-form .prefs-hint {
+    height: 28px;
     color:#06c;
     float: left;
     margin-right: 4px;
@@ -114,10 +126,9 @@ Yii::app()->clientScript->registerCss("profileSettings", "
     border-bottom: 0;
 }
 
-/* adds borders so that these boxes look like the rest */
+#theme-attributes,
 .upload-box {
-    border-left: 1px solid #aaa !important;
-    border-right: 1px solid #aaa !important;
+    border-top: 1px solid #C2C2C2 !important;
 }
 
 /* sub-menu maximize/minimize arrows */
@@ -162,6 +173,10 @@ select#notificationSounds {
     margin-right: 4px;
 }
 
+#themeName {
+    display: block;
+}
+
 #save-changes {
     margin-bottom: 5px;
 }
@@ -174,6 +189,14 @@ select#notificationSounds {
 #upload-login-sound-button,
 #upload-notification-sound-button {
     margin-top: 2px;
+}
+
+.no-theme-editor {
+    display: none;
+}
+
+.no-theme-editor + #prefs-tags {
+    border-top: 1px solid #C2C2C2;
 }
 
 
@@ -192,12 +215,16 @@ $passVariablesToClientScript = "
         Yii::t('profile', 'Update the settings of the currently selected predefined theme.')."';
     x2.profileSettings.normalizedUnhideTagUrl = '".
         CHtml::normalizeUrl(array("/profile/unhideTag"))."';
+    x2.profileSettings.translations = {
+        themeImportDialogTitle: '".Yii::t('profile', 'Import a Theme')."',
+        close: '".Yii::t('app', 'close')."',
+    };
     x2.profileSettings.uploadedByAttrs = {};";
 
 // pass array of predefined theme uploadedBy attributes to client
 foreach($myThemes->data as $theme){
     $passVariablesToClientScript .= "x2.profileSettings.uploadedByAttrs['".
-            $theme->fileName."'] = '".$theme->uploadedBy."';";
+            $theme->id."'] = '".$theme->uploadedBy."';";
 }
 
 Yii::app()->clientScript->registerScript(
@@ -207,7 +234,7 @@ Yii::app()->clientScript->registerScript(
 ?>
 
 <?php
-$form = $this->beginWidget('CActiveForm', array(
+$form = $this->beginWidget('X2ActiveForm', array(
     'id' => 'settings-form',
     'enableAjaxValidation' => false,
         ));
@@ -215,6 +242,9 @@ $form = $this->beginWidget('CActiveForm', array(
 <?php echo $form->errorSummary($model); ?>
 
 <div id="profile-settings" class="form">
+    <?php
+    echo X2Html::getFlashes ();
+    ?>
     <div class="row">
         <div class="cell">
             <?php
@@ -242,7 +272,7 @@ $form = $this->beginWidget('CActiveForm', array(
              echo Yii::t('app', 'Prevent tags from being automatically generated when hashtags are detected in record fields.'); ?>'>[?]</span>
         </div>
     </div>
-    <?php if(PRO_VERSION) { ?>
+    <?php if(Yii::app()->contEd('pro')) { ?>
     <div class="row"> 
         <div class="cell">
             <?php
@@ -273,8 +303,8 @@ $form = $this->beginWidget('CActiveForm', array(
             <?php echo $form->labelEx($model, 'startPage'); ?>
             <?php
             echo $form->dropDownList(
-                    $model, 'startPage', $menuItems,
-                    array('onchange' => 'js:highlightSave();', 'style' => 'min-width:140px;'));
+                $model, 'startPage', $menuItems,
+                array('onchange' => 'js:highlightSave();', 'style' => 'min-width:140px;'));
             ?>
         </div>
         <div class="cell">
@@ -303,12 +333,17 @@ $form = $this->beginWidget('CActiveForm', array(
             <?php echo $form->labelEx($model, 'timeZone'); ?>
             <?php
             echo $form->dropDownList(
-                $model, 'timeZone', $times, array('onchange' => 'js:highlightSave();'));
+                $model, 'timeZone', $times,
+                array(
+                    'onchange' => 'js:highlightSave();'
+                ));
             ?>
         </div>
     </div>
 </div>
-<div id="theme-attributes" class='form'>
+<div id="theme-attributes" class='form preferences-section<?php 
+    echo ''; 
+    ?>'>
     <div id="theme-attributes-title-bar" class="row prefs-title-bar">
         <h3 class="left"><?php echo Yii::t('app', 'Theme'); ?></h3>
         <div class="right minimize-arrows">
@@ -320,16 +355,16 @@ $form = $this->beginWidget('CActiveForm', array(
     </div>
     <div id="theme-attributes-body" class="row prefs-body" <?php echo
         ($miscLayoutSettings['themeSectionExpanded'] == false ? 'style="display: none;"' : ''); ?>>
-        <div class="row">
+        <div class="row" id='theme-mgmt-buttons'>
             <label for="themeName">
                 <?php echo Yii::t('app', 'Predefined Theme') ?>
             </label>
-            <select id="themeName" class="left theme-attr" name="preferences[themeName]">
+            <select id="themeName" class="theme-attr x2-select" name="preferences[themeName]">
                 <option value="" id="custom-theme-option">
                     <?php echo Yii::t('app', 'Custom'); ?>
                 </option>
                 <?php foreach($myThemes->data as $theme){ ?>
-                    <option value="<?php echo $theme->fileName; ?>"
+                    <option value="<?php echo $theme->id; ?>"
                     <?php
                     if($theme->fileName == $preferences['themeName']){
                         echo "selected='selected'";
@@ -349,6 +384,7 @@ $form = $this->beginWidget('CActiveForm', array(
                         <?php echo Yii::t('profile', 'Save Theme'); ?>
             </button>
             <span id="prefs-save-theme-hint" class='hide prefs-hint'>[?]</span>
+            <!--  -->    
             <!--<div id="create-theme-dialog" title="Create Theme">
                 <span class='left'> <?php //echo Yii::t('app', 'Theme name');    ?>: </span>
                 <input id="new-theme-name"> </input>
@@ -439,7 +475,7 @@ $form = $this->beginWidget('CActiveForm', array(
                 <?php echo Yii::t('app', 'Background Tiling') ?>
             </label>
             <select id="backgroundTiling" name="preferences[backgroundTiling]"
-                    class='theme-attr left'>
+             class='theme-attr left x2-select'>
                         <?php
                         $tilingOptions = array(
                             'stretch', 'center', 'repeat', 'repeat-x', 'repeat-y');
@@ -460,7 +496,7 @@ $form = $this->beginWidget('CActiveForm', array(
                 <?php echo Yii::t('profile', 'Background Image'); ?>
             </label>
             <select id="backgroundImg" name="preferences[backgroundImg]"
-                    class='theme-attr left'>
+                    class='theme-attr left x2-select'>
                 <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
                 <?php foreach ($myBackgrounds->data as $background) { ?>
                     <option value="<?php
@@ -484,7 +520,7 @@ $form = $this->beginWidget('CActiveForm', array(
             <label for="loginSounds">
                 <?php echo Yii::t('profile', 'Login Sound'); ?>
             </label>
-            <select id="loginSounds" name="preferences[loginSound]" class='left'>
+            <select id="loginSounds" name="preferences[loginSound]" class='left x2-select'>
                 <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
                 <?php foreach($myLoginSounds->data as $loginSound){ ?>
                     <option value="<?php
@@ -511,7 +547,7 @@ $form = $this->beginWidget('CActiveForm', array(
                 <?php echo Yii::t('profile', 'Notification Sound'); ?>
             </label>
             <select id="notificationSounds" name="preferences[notificationSound]"
-                    class='left'>
+                    class='left x2-select'>
                 <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
                 <?php foreach($myNotificationSounds->data as $notificationSound){ ?>
                     <option value="<?php
@@ -538,7 +574,7 @@ $form = $this->beginWidget('CActiveForm', array(
       </div> */ ?>
 </div>
 
-<div id="prefs-tags" class="form">
+<div id="prefs-tags" class="form preferences-section">
     <div id="tags-title-bar" class="row prefs-title-bar">
         <h3 class="left"><?php echo Yii::t('profile', 'Unhide Tags'); ?></h3>
         <div class="right minimize-arrows">
@@ -565,7 +601,6 @@ $form = $this->beginWidget('CActiveForm', array(
     </div>
 </div>
 
-
 <div class="form">
     <br/>
     <div class="row buttons">
@@ -580,7 +615,7 @@ $form = $this->beginWidget('CActiveForm', array(
 
 <?php $this->endWidget(); ?>
 
-<div class="form hide upload-box" id="create-theme-box">
+<div class="form hide upload-box preferences-section" id="create-theme-box">
     <div class="row">
         <h3><?php echo Yii::t('profile', 'Create a Theme'); ?></h3>
         <span class='left'>
@@ -594,7 +629,7 @@ $form = $this->beginWidget('CActiveForm', array(
             <span class='left'> <?php echo Yii::t('app', 'Theme name'); ?>: </span>
             <input id="new-theme-name"> </input>
         </div>
-        <select class='prefs-theme-privacy-setting'>
+        <select class='prefs-theme-privacy-setting x2-select'>
             <option value='0' selected='selected'>
                 <?php echo Yii::t('app', 'Public'); ?>
             </option>
@@ -612,7 +647,7 @@ $form = $this->beginWidget('CActiveForm', array(
     </div>
 </div>
 
-<div class="form hide upload-box" id="upload-background-img-box">
+<div class="form hide upload-box preferences-section" id="upload-background-img-box">
     <div class="row">
         <h3><?php echo Yii::t('profile', 'Upload a Background Image'); ?></h3>
         <?php echo CHtml::form(
@@ -697,3 +732,7 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php echo CHtml::endForm(); ?>
     </div>
 </div>
+
+<?php
+
+?>

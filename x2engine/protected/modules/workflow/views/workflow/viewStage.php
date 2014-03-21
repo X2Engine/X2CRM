@@ -66,7 +66,7 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 ?>
 </div>
 <?php
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'contacts-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'title'=>$heading,

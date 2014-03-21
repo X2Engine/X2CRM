@@ -242,6 +242,6 @@ $this->endWidget();
 // place the saving icon over the 'Choose File' button (which starts invisible)
 Yii::app()->clientScript->registerScript('savingIcon',"
 $(function() {	
-	initX2FileInput();
+	x2.forms.initX2FileInput();
 });");
 ?>

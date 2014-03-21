@@ -70,6 +70,49 @@ class Formatter {
         return $text;
     }
 
+    /**
+     * Parses text for short codes and returns an associative array of them.
+     *
+     * @param string $value The value to parse
+     * @param X2Model $model The model on which to operate with attribute replacement
+     * @param bool $renderFlag The render flag to pass to {@link X2Model::getAttribute()}
+     * @param array $params Optional additional replacement codes to use
+     */
+    public static function getReplacementTokens($value,$model,$renderFlag,$params=array()) {
+        $codes = $params;
+        // Pattern will match {attr}, {attr1.attr2}, {attr1.attr2.attr3}, etc.
+        preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
+        if(!empty($matches[0])){
+            foreach($matches[0] as $match){
+                $match = substr($match, 1, -1); // Remove the "{" and "}" characters
+                $attr = $match;
+                if(strpos($match, '.') !== false){ // We found a link attribute (i.e. {company.name})
+                    $newModel = $model;
+                    $pieces = explode('.',$match);
+                    $first = array_shift($pieces);
+                    $tmpModel = Formatter::parseShortCode($first, $newModel); // First check if the first piece is part of a short code, like "user"
+                    if(isset($tmpModel) && $tmpModel instanceof CActiveRecord){
+                        $newModel = $tmpModel; // If we got a model from our short code, use that
+                        $attr = implode('.',$pieces); // Also, set the attribute to have the first item removed.
+                    }
+                    $codes['{'.$match.'}'] = $newModel->getAttribute($attr, $renderFlag);
+                }else{ // Standard attribute
+                    if(isset($params[$match])){ // First check if we provided a value for this attribute
+                        $codes['{'.$match.'}'] = $params[$match];
+                    }elseif($model->hasAttribute($match)){ // Next ensure the attribute exists on the model
+                        $codes['{'.$match.'}'] = $model->getAttribute($match, $renderFlag);
+                    }else{ // Finally, try to parse it as a short code if nothing else worked
+                        $shortCodeValue = Formatter::parseShortCode($match, $model);
+                        if(!is_null($shortCodeValue)){
+                            $codes['{'.$match.'}'] = $shortCodeValue;
+                        }
+                    }
+                }
+            }
+        }
+        return $codes;
+    }
+
     /*     * * Date Format Functions ** */
 
     /**
@@ -125,7 +168,7 @@ class Formatter {
                 return "MM d, yy";
         } else{
             // translate Yii date format to jquery
-            $format = Yii::app()->locale->getDateFormat('short'); 
+            $format = Yii::app()->locale->getDateFormat('medium'); 
             $format = str_replace('yy', 'y', $format);
             $format = str_replace('MM', 'mm', $format);
             $format = str_replace('M', 'm', $format);
@@ -295,13 +338,14 @@ class Formatter {
         $ret = '';
 
         if($informal && $due['year'] == $now['year']){  // is the due date this year?
-            if($due['yday'] == $now['yday'] && $width == 'long')  // is the due date today?
+            if($due['yday'] == $now['yday'] && $width == 'long') { // is the due date today?
                 $ret = Yii::t('app', 'Today');
-            else if($due['yday'] == $now['yday'] + 1 && $width == 'long') // is it tomorrow?
+            } else if($due['yday'] == $now['yday'] + 1 && $width == 'long') { // is it tomorrow? 
                 $ret = Yii::t('app', 'Tomorrow');
-            else
+            } else {
                 $ret = Yii::app()->dateFormatter->format(
                     Yii::app()->locale->getDateFormat($width), $date); // any other day this year
+            }
         } else{
             $ret = Yii::app()->dateFormatter->format(
                 Yii::app()->locale->getDateFormat($width), $date); // due date is after this year
@@ -372,7 +416,7 @@ class Formatter {
         if(Yii::app()->locale->getId() == 'en')
             return strtotime($date);
         else
-            return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short'));
+            return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('medium'));
     }
 
     /**
@@ -460,37 +504,10 @@ class Formatter {
         }else{
             $renderFlag = false;
         }
-        // Pattern will match {attr}, {attr1.attr2}, {attr1.attr2.attr3}, etc.
-        preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
-        if(!empty($matches[0])){
-            foreach($matches[0] as $match){
-                $match = substr($match, 1, -1); // Remove the "{" and "}" characters
-                $attr = $match;
-                if(strpos($match, '.') !== false){ // We found a link attribute (i.e. {company.name})
-                    $newModel = $model;
-                    $pieces = explode('.',$match);
-                    $first = array_shift($pieces);
-                    $tmpModel = Formatter::parseShortCode($first, $newModel); // First check if the first piece is part of a short code, like "user"
-                    if(isset($tmpModel) && $tmpModel instanceof CActiveRecord){
-                        $newModel = $tmpModel; // If we got a model from our short code, use that
-                        $attr = implode('.',$pieces); // Also, set the attribute to have the first item removed.
-                    }
-                    $value = preg_replace('/{'.$match.'}/i', $newModel->getAttribute($attr, $renderFlag), $value); // Replaced the matched value with the attribute
-                }else{ // Standard attribute
-                    if(isset($params[$match])){ // First check if we provided a value for this attribute
-                        $value = $params[$match];
-                    }elseif($model->hasAttribute($match)){ // Next ensure the attribute exists on the model
-                        $value = preg_replace('/{'.$match.'}/i', $model->getAttribute($match, $renderFlag), $value);
-                    }else{ // Finally, try to parse it as a short code if nothing else worked
-                        $shortCodeValue = Formatter::parseShortCode($match, $model);
-                        if(!is_null($shortCodeValue)){
-                            $value = preg_replace('/{'.$match.'}/i', $shortCodeValue, $value);
-                        }
-                    }
-                }
-            }
-        }
-        return $value;
+        
+        $shortCodeValues = self::getReplacementTokens($value,$model,$renderFlag,$params);
+        
+        return strtr($value,$shortCodeValues);
     }
 
     /**
@@ -502,36 +519,77 @@ class Formatter {
      * and strip any which are not allowed. This should generally be used for
      * mathematical operations, like calculating dynamic date offsets.
      *
-     * @param String $formula The code to be executed
-     * @param String $type Deprecated variable which is preserved here for compatibility
-     * @param Array $params Optional extra parameters, notably the Model triggering the flow
-     * @return String The parsed value to be used in flow execution
+     * @param string $input The code to be executed
+     * @param array $params Optional extra parameters, notably the Model triggering the flow
+     * @return array An array with the first element true or false corresponding to
+     *  whether execution succeeded, the second, the value returned by the formula.
      */
-    public static function parseFormula($formula, $type = '', $params = array()){
-        $formula = substr($formula, 1); // Remove the "=" character from in front
-        if(isset($params['model'])){ // If we find a model, relace any variables inside of our formula (i.e. {lastUpdated})
-            $formula = Formatter::replaceVariables($formula, $params['model'], 'formula', $params);
+    public static function parseFormula($input,$params = array()){
+        if(strpos($input,'=') !== 0) {
+            return array(false,Yii::t('admin','Formula does not begin with "="'));
         }
+        
+        $formula = substr($input, 1); // Remove the "=" character from in front
+        
+        // If we find a model, relace any variables inside of our formula (i.e. {lastUpdated})
+        if(isset($params['model'])){ 
+            $replacementTokens = self::getReplacementTokens($formula, $params['model'], false);
+        } else {
+            $replacementTokens = $params;
+        }
+        
+        // Run through all short codes and ensure they're proper PHP expressions
+        // that correspond to their value, i.e. strings will become string
+        // expressions, integers will become integers, etc.
+        //
+        // This step is VITALLY IMPORTANT to the security and stability of
+        // X2Flow's formula parsing.
+        foreach(array_keys($replacementTokens) as $token) {
+            if(!in_array(gettype($replacementTokens[$token]),array("boolean","integer","double","string","NULL"))) {
+                // Safeguard against "array to string conversion" and "warning,
+                // object of class X could not be converted to string" errors.
+                // This case shouldn't happen and is not valid, so nothing
+                // smarter need be done here than to simply set the replacement
+                // value to its corresponding token.
+                $replacementTokens[$token] = $token;
+            }
+            // Escape/convert values into valid PHP expressions
+            $replacementTokens[$token] = var_export($replacementTokens[$token],true);
+        }
+
+        // Prepare formula for eval:
         if(strpos($formula, ';') !== strlen($formula) - 1){
-            $formula.=';'; // Eval required a ";" at the end to execute properly, make sure on exists.
+            // Eval requires a ";" at the end to execute properly
+            $formula.=';';
         }
         if(strpos($formula, 'return ') !== 0){
-            $formula = 'return '.$formula; // Eval requries a "return" at the front.
+            // Eval requries a "return" at the front.
+            $formula = 'return '.$formula;
         }
-        $formula = preg_replace(array(
-            '!/\*.*?\*/!s', // Match comments where malicious code could be injected
-            '/\n\s*\n/', // Match lines with only whitespace
-            '/(\S*)\w(?<!'.self::getSafeWords().')(\s*)\((.*?)\)/' // Remove functions not listed in safe words.
-            ),array(
-                '',
-                "\n",
-                'null'
-            ),$formula);
+
+        // Validity check: ensure the formula only consists of "safe" functions,
+        // the existing variable tokens, spaces, and PHP operators:
+        foreach(array_keys($replacementTokens) as $token) {
+            $shortCodePatterns[] = preg_quote($token,'#');
+        }
+        $phpOper = '[\[\]()<>=!^|?:*+%/\-\.]|and|or|xor|\s'; // PHP operators
+        $singleQuotedString = '\'[\w\s]*?\''; // Only simple strings w/alphanumerics, underscores and spaces currently supported
+        $validPattern = '#^return (?:'
+            .self::getSafeWords()
+            .(empty($shortCodePatterns)?'':('|'.implode('|',$shortCodePatterns)))
+            .'|'.$phpOper
+            .'|'.$singleQuotedString.')*;$#';
+        if(!preg_match($validPattern,$formula)) {
+            return array(false,Yii::t('admin','Input evaluates to an invalid formula: ').strtr($formula,$replacementTokens));
+        }
+
         try{
-            return eval($formula); // Execute our sanitized formula.
+            $retVal = @eval(strtr($formula,$replacementTokens));
         }catch(Exception $e){
-            // Hide errors from badly written user input.
+            return array(false,Yii::t('admin','Evaluated statement encountered an exception: '.$e->getMessage()));
         }
+
+        return array(true,$retVal);
     }
 
     /**
@@ -573,9 +631,7 @@ class Formatter {
         $safeWords = array(
             'echo',
             'time',
-            'return',
         );
-        $safeWords = array_map (function ($word) { return '\s'.$word; }, $safeWords);
         return implode('|',$safeWords);
     }
 

@@ -35,9 +35,11 @@
  *****************************************************************************************/
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('quotes','Quotes List')),
-	array('label'=>Yii::t('quotes','Invoice List'), 'url'=>array('indexInvoice')),
-	array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
+    array('label'=>Yii::t('quotes','Quotes List')),
+    array('label'=>Yii::t('quotes','Invoice List'), 'url'=>array('indexInvoice')),
+    array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
+    array('label'=>Yii::t('quotes', 'Import Quotes'), 'url'=>array('admin/importModels', 'model'=>'Quote'), 'visible'=>Yii::app()->params->isAdmin),
+    array('label'=>Yii::t('quotes', 'Export Quotes'), 'url'=>array('admin/exportModels', 'model'=>'Quote'), 'visible'=>Yii::app()->params->isAdmin),
 ));
 
 Yii::app()->clientScript->registerScript('search', "
@@ -60,7 +62,7 @@ $('.search-form form').submit(function(){
 )); ?>
 </div><!-- search-form -->
 <?php
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'quotes-grid',
 	'title'=>Yii::t('quotes','Quotes'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),

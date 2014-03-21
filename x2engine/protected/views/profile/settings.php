@@ -57,6 +57,7 @@ echo $this->renderPartial('_settings', array(
     'myLoginSounds' => $myLoginSounds,
     'myNotificationSounds' => $myNotificationSounds,
     'menuItems' => $menuItems,
-    'allTags' => $allTags
+    'allTags' => $allTags,
+     
 ));
 ?>

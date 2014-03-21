@@ -33,25 +33,109 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?>
 
-<?php
+$halfWidthThreshold = 1200; // content width past which publisher moves to the right of calendar
+Yii::app()->clientScript->registerCss('calendarResponsiveCss',"
+#calendar,
+#publisher-form {
+    max-width: ".$halfWidthThreshold."px;
+}
+
+.responsive-page-title.fc-header {
+    border-radius: 4px 4px 0 0 ;
+    -moz-border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    -o-border-radius: 4px 4px 0 0;
+}
+
+
+    #calendar.half-width {
+        float: left;
+        width: 70%;
+    }
+
+    #publisher-form.half-width {
+        overflow: hidden;
+        margin-top: -15px;
+    }
+    #publisher-form.half-width > #publisher {
+        padding-left: 8px;
+    }
+");
 
 // register fullcalendar css and js
 Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl() .'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullcalendar-1.6.1/fullcalendar/gcal.js');
+Yii::app()->clientScript->registerScriptFile($this->module->assetsUrl . '/js/calendar.js',
+    CClientScript::POS_END);
 
-Yii::app()->clientScript->registerCss ('calendarCss', "
-    .calendarViewEventDialog .ui-dialog-buttonpane button {
-        padding: 0 2px 0 2px !important;
-        margin: 4px 0 4px 4px !important;
-        font-size: 9pt !important;
-    }
+Yii::app()->clientScript->registerCss('calendarIndexCss',"
 
-    .calendarViewEventDialog .ui-dialog-buttonpane button span {
-        padding: 5px 9px 5px 9px !important;
-    }
+#publisher-tabs-row-1 {
+    border-right: 1px solid rgb(204, 204, 204); 
+}
+
+
+.ui-dialog {
+    height: auto !important;
+}
+
+.ui-dialog .ui-dialog-content {
+    height: auto !important;
+}
+
+.fc-first.fc-last {
+    background: white;
+}
+
+#content {
+    background: none !important;
+    border: none !important;
+}
+#main-column {
+    margin-top: 0 !important;
+}
+
+#publisher .ui-tabs-anchor {
+    font-weight: bold;
+    color: rgb(88, 88, 88);
+}
+
+.calendarViewEventDialog .ui-dialog-buttonpane button {
+    padding: 0 2px 0 2px !important;
+    margin: 4px 0 4px 4px !important;
+    font-size: 9pt !important;
+}
+
+.calendarViewEventDialog .ui-dialog-buttonpane button span {
+    padding: 5px 9px 5px 9px !important;
+}
+
+/* make publisher tab look like ordinary section title */
+
+#publisher.ui-tabs .ui-tabs-nav {
+    background: none;
+    padding: 0px;
+    display: block;
+    margin-right: 1px !important;
+}
+
+#publisher li.ui-tabs-active {
+    width: 100%;
+    margin-right: 6px;
+    display: block;
+    border-bottom: none;
+    margin: auto;
+    margin-bottom: -2px;
+}
+
+#publisher > .form {
+   border-radius: 0px 0px 4px 4px;
+   -moz-border-radius: 0px 0px 4px 4px;
+   -webkit-border-radius: 0px 0px 4px 4px;
+   -o-border-radius: 0px 0px 4px 4px;
+}
 
 ");
 
@@ -205,8 +289,8 @@ $(function() {
         dayClick: function(date, allDay, jsEvent, view) { 
 
             // value of window's scrollbar to make publisher visible
-            var scrollPublisher = x2.publisher.container.offset().top + 
-                x2.publisher.container.height() + 5 - $(window).height(); 
+            var scrollPublisher = x2.publisher.getForm ().offset().top + 
+                x2.publisher.getForm ().height() + 5 - $(window).height(); 
             if($(window).scrollTop() < scrollPublisher) {
                 $('html,body').animate({ scrollTop: scrollPublisher });
             }
@@ -218,23 +302,22 @@ $(function() {
                 end: new Date(date.getTime())
             };
             var oldDate = {
-                begin: x2.publisher.getElement('#action-due-date').datetimepicker('getDate'),
-                end: x2.publisher.getElement('#action-complete-date').datetimepicker('getDate')
+                begin: auxlib.getElement('#event-form-action-due-date').datetimepicker('getDate'),
+                end: auxlib.getElement('#event-form-action-complete-date').datetimepicker('getDate')
             };
             if(view.name == 'month' || view.name == 'basicWeek') {
-                Object.keys(oldDate).forEach(function(key){
-                    if(oldDate[key]) {
-                        newDate[key].setHours(oldDate[key].getHours())
-                        newDate[key].setMinutes(oldDate[key].getMinutes())
+                $(auxlib.keys(oldDate)).each(function(key, val){
+                    if(oldDate[val]) {
+                        newDate[val].setHours(oldDate[val].getHours())
+                        newDate[val].setMinutes(oldDate[val].getMinutes())
                     }
                 });
             }
 
-            
-            var dateformat = x2.publisher.getElement('#publisher-form').data('dateformat');
-            var timeformat = x2.publisher.getElement('#publisher-form').data('timeformat');
-            var ampmformat = x2.publisher.getElement('#publisher-form').data('ampmformat');
-            var region = x2.publisher.form.data('region');
+            var dateformat = auxlib.getElement('#publisher-form').data('dateformat');
+            var timeformat = auxlib.getElement('#publisher-form').data('timeformat');
+            var ampmformat = auxlib.getElement('#publisher-form').data('ampmformat');
+            var region = x2.publisher.getForm ().data('region');
 
             if(typeof(dateformat) == 'undefined') {
                 dateformat = 'M d, yy';
@@ -249,8 +332,9 @@ $(function() {
                 region = '';
             }
 
-            x2.publisher.getElement('#action-due-date').datetimepicker("destroy");
-            x2.publisher.getElement('#action-due-date').datetimepicker(
+
+            auxlib.getElement('#event-form-action-due-date').datetimepicker("destroy");
+            auxlib.getElement('#event-form-action-due-date').datetimepicker(
                 jQuery.extend(
                     {
                         showMonthAfterYear:false
@@ -265,10 +349,10 @@ $(function() {
                     }
                 )
             );
-            x2.publisher.getElement('#action-due-date').datetimepicker('setDate', newDate.begin);
+            auxlib.getElement('#event-form-action-due-date').datetimepicker('setDate', newDate.begin);
 
-            x2.publisher.getElement('#action-complete-date').datetimepicker("destroy");
-            x2.publisher.getElement('#action-complete-date').datetimepicker(
+            auxlib.getElement('#event-form-action-complete-date').datetimepicker("destroy");
+            auxlib.getElement('#event-form-action-complete-date').datetimepicker(
                 jQuery.extend(
                     {
                         showMonthAfterYear:false
@@ -283,9 +367,9 @@ $(function() {
                     }
                 )
             );
-            x2.publisher.getElement('#action-complete-date').datetimepicker('setDate', newDate.end);
+            auxlib.getElement('#event-form-action-complete-date').datetimepicker('setDate', newDate.end);
 
-            x2.publisher.getElement('#action-description').focus();
+            auxlib.getElement('#event-form-action-description').focus();
 
             return false;
         },
@@ -585,6 +669,7 @@ $(function() {
                 dialogClass: 'calendarViewEventDialog',
                 autoOpen: false,
                 resizable: true,
+                height: 'auto',
                 width: dialogWidth,
                 show: 'fade',
                 hide: 'fade',
@@ -608,19 +693,19 @@ $(function() {
                 },
                 resizeStart: function () {
                     // resize buttonpane init
-                      var elem = $(this).parents ('.ui-dialog');
-                    buttonpaneHeight = $(elem).find ('.ui-dialog-buttonpane').height ();
+                      /*var elem = $(this).parents ('.ui-dialog');
+                    buttonpaneHeight = $(elem).find ('.ui-dialog-buttonpane').height ();*/
 
                     // resize textarea init
                     //textareaHeight = $(this).find ('textarea').height ();
                 },
                 resize: function (event, ui) {
                     // resize buttonpane to make room for stacked buttons
-                      var elem = $(this).parents ('.ui-dialog');
+                 /*     var elem = $(this).parents ('.ui-dialog');
                     var newButtonpaneHeight = $(elem).find ('.ui-dialog-buttonpane').height ();
                     if (newButtonpaneHeight !== buttonpaneHeight) {
                          $(elem).height ($(elem).height () + (newButtonpaneHeight - buttonpaneHeight));
-                    }
+                    }*/
 
                     // resize textarea
                     /*if (ui.size !== ui.originalSize) {
@@ -763,6 +848,13 @@ $(function() {
         .focus();
     }
 
+$(function () {
+    x2.layoutManager.setUpCalendarTitleBarResponsiveness ();
+    x2.layoutManager.setHalfWidthSelector ('#calendar, #publisher-form');
+    x2.layoutManager.setHalfWidthThreshold (<?php echo $halfWidthThreshold; ?>);
+    $(window).resize ();
+});
+
 </script>
 
 <div id="calendar">
@@ -774,6 +866,9 @@ $(function() {
 <?php
 $this->widget('Publisher', array(
     'associationType' => 'calendar',
-    'calendar' => true
+    'tabs' => array (
+        new PublisherEventTab ()
+    ),
+    'selectedTab' => 'new-event'
 ));
 ?>

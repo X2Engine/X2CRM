@@ -33,14 +33,17 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+.x2-question-mark {
+    cursor: default;
+}
+
+.x2-hide {
+    display: none;
+}
 
 body {
     font-size: 10pt;
 }
-
-
-
-
 
 /*
 Title bar for sections other than the main section (e.g. widgets)
@@ -89,9 +92,6 @@ Select element which doesn't show border or background color difference until ho
     background-color:white;
 }
 
- 
-
-
 /* 
 CSS "button" links to be used instead of actual buttons 
 */
@@ -121,6 +121,7 @@ CSS "button" links to be used instead of actual buttons
     padding: 0 8px;
     border: 1px solid #BEBDBD;
     background: #e9e9e9;
+    outline: none;
     color: #333;
     text-decoration: none;
     border-radius:             3px;
@@ -176,7 +177,6 @@ input.active, .ui-dialog .ui-dialog-buttonpane button:active {
 
 .x2-select:focus {
     color: black;
-    border-color: #BEBDBD;
 }
 
 .x2-button.clicked:hover,
@@ -271,6 +271,37 @@ a.x2-button span.add-button {
     box-shadow: inset 0 1px 1px 0 #000;
     background: #222222;
     filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#222222', endColorstr='#444444',GradientType=0 );
+}
+
+
+.x2-button.x2-blue {
+	border:1px solid #3173CC;
+	background: #5B97E7; /* Old browsers */
+}
+
+.x2-button.x2-blue:hover {
+	background: #488fe2; /* Old browsers */
+}
+
+.x2-button.x2-blue:active {
+	background: #3d70b4; /* Old browsers */
+}
+
+.x2-button.x2-green {
+    border: 1px solid rgb(69, 177, 59);
+    background:rgb(94, 197, 85);
+}
+
+.x2-button.x2-green:hover {
+    background: rgb(102, 204, 93);
+}
+
+.x2-button.x2-green:active {
+    background: rgb(86, 170, 79);
+}
+
+.x2-button.x2-silver {
+    color: rgb(66,66,66) !important;
 }
 
 
@@ -474,85 +505,6 @@ small x2-button
 }*/
 
 
-/***********************************************************************
-UI Multiselect
-***********************************************************************/
-
-.ui-multiselect-menu div.ui-widget-header.ui-corner-all.ui-multiselect-header.ui-helper-clearfix {
-    background:none; 
-    border:none;
-}
-
-
-.ui-multiselect-menu .ui-state-hover {
-    background: rgb(228,228,228);
-    border: 1px solid white;
-}
-
-
-button.ui-multiselect {
-    border: 1px solid white;
-    background: none;
-}
-
-button.ui-multiselect:focus {
-    border: 1px solid white;
-}
-
-.ui-multiselect {
-    font-size: 1em;
-}
-
-.ui-multiselect.ui-helper-clearfix.ui-widget {
-    padding: 0 0 0 0;
-}
-
-
-.ui-multiselect .ui-widget-header {
-    margin: -3px -3px 0 -3px !important;
-    font-weight: bold !important;
-    background: #444 !important;
-    color: #fff !important;
-    font-family: Arial, Helvetica, sans-serif !important;
-    border: 1px solid rgb(168,168,168);
-    background: #eee !important;
-    /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
-    background: -webkit-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
-    background: -o-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
-    background: -ms-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
-    background: linear-gradient(to bottom,    #f0f0f0 0%, #dddddd 100%) !important;*/
-    color: black !important;
-    border-radius:             4px 4px 0 0;
-    -moz-border-radius:         4px 4px 0 0;
-    -webkit-border-radius:     4px 4px 0 0;
-    -o-border-radius:         4px 4px 0 0;
-    /*text-shadow: 0 1px 0 #fff !important;*/
-    -webkit-appearance: none !important;
-    /*-moz-box-shadow:     inset 0 1px 0 0 #fff !important;
-    -webkit-box-shadow:     inset 0 1px 0 0 #fff !important;
-    box-shadow:             inset 0 1px 0 0 #fff !important;*/
-}
-
-
-.ui-multiselect .ui-element {
-    background: #eee !important;
-    border: none !important;
-    /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
-    background: -webkit-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
-    background: -o-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
-    background: -ms-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
-    background: linear-gradient(to bottom,    #f0f0f0 0%, #dddddd 100%) !important;*/
-}
-
-.ui-multiselect.ui-helper-clearfix.ui-widget {
-    border: 1px solid rgb(168,168,168);
-}
-
-.form .ui-multiselect .ui-helper-clearfix.ui-widget-header {
-    margin-right: -5px !important;
-}
-
-
 
 
 
@@ -574,6 +526,7 @@ button.ui-multiselect:focus {
     font-size: 10pt;
     margin: 0 2px 0 0;
     border: 1px solid #ccc;
+    border-bottom: none;
     font-family: Arial, Helvetica, sans-serif;
     /* font-weight: bold; */
 
@@ -581,13 +534,10 @@ button.ui-multiselect:focus {
     -moz-border-radius:         4px 4px 0 0;
     -webkit-border-radius:     4px 4px 0 0;
     -o-border-radius:         4px 4px 0 0;
-
-    -moz-box-shadow: inset 0 1px 0 0 #fff;
-    -webkit-box-shadow: inset 0 1px 0 0 #fff;
-    box-shadow: inset 0 1px 0 0 #fff;
 }
 
 .history .ui-tabs .ui-tabs-nav li a {
+    outline: 0;
     padding: 4px 7px;
 }
 .history .ui-tabs .ui-tabs-nav li a b {
@@ -603,7 +553,7 @@ button.ui-multiselect:focus {
     margin-left: 6px;
 }
 .ui-tabs .ui-tabs-nav li.ui-state-active {
-    border-color: #999;
+    border-color: #D1D1D1;
     border-bottom-color: #eee;
     background:#eee;
 }
@@ -615,7 +565,7 @@ button.ui-multiselect:focus {
 }
 .ui-tabs .form {
     background: #eee;
-    border-color: #999;
+    border-color: #D1D1D1;
     border-radius:             4px;
     -moz-border-radius:         4px;
     -webkit-border-radius:     4px;
@@ -987,6 +937,7 @@ button.ui-button.ui-dialog-titlebar-close {
 
 .ui-dialog {
     border: 1px solid #9b9b9b !important;
+    z-index: 900000;
 }
 
 .ui-dialog {
@@ -1020,6 +971,10 @@ timepicker
 
 .ui-timepicker-div dl:first-child {
     margin-bottom: 32px !important;
+}
+
+#ui-datepicker-div {
+    z-index: 100;
 }
 
 .ui-datepicker .ui-datepicker-header.ui-widget-header.ui-helper-clearfix.ui-corner-all {
@@ -1355,3 +1310,438 @@ close button
 .x2-enlargeable-image-modal input:hover {
     background-color: rgb(44, 44, 44);
 }
+
+/***********************************************************************
+* custom checkboxes 
+***********************************************************************/
+
+
+/*input[type='checkbox']:checked::after {
+    content: ' ';
+    width: 11px;
+    height: 11px;
+    display: block;
+    background-position-y: 11px;
+    border: 1px solid rgb(196, 196, 196);
+    background-image: url('../images/icons/Complete.png');
+    text-shadow: none;
+    box-shadow: none;
+    background-size: 15px;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 2px;
+}
+input[type='checkbox']::after {
+    content: ' ';
+    width: 11px;
+    height: 11px;
+    display: block;
+    border: 1px solid rgb(196, 196, 196);
+    background: white;
+    text-shadow: none;
+    box-shadow: none;
+    border-radius: 2px;
+}*/
+
+
+
+/***********************************************************************
+* VCR Controls
+***********************************************************************/
+
+div.vcrPager {
+    display: block;
+    float: right;
+    margin-left: 15px;
+    line-height: 1.1em;
+}
+
+div.vcrPager div.summary {
+    display: block;
+    float: left;
+    margin-top: 5px;
+}
+div.vcrPager div.summary a {
+    display: block;
+    font-size: 10px;
+    text-decoration: none;
+    margin-bottom: -3px;
+
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -ms-text-overflow: ellipsis;
+}
+div.vcrPager div.summary a:hover {
+    text-decoration: underline;
+}
+div.page-title div.vcrPager a.x2-button {
+    margin: 5px 0 0 0px;
+    padding: 0 12px;
+}
+
+.vcrPager .hidden a {
+    display: none;
+}
+.vcrPager .x2-button.disabled {
+    color: #bbbbbb;
+}
+.vcrPager .x2-button.disabled:hover {
+    background-color: #eee;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#ddd));
+    background: -moz-linear-gradient(top,  #f0f0f0,  #ddd);
+}
+
+
+
+.mobile-dropdown-button {
+    cursor: pointer;
+}
+
+
+
+
+/***********************************************************************
+UI Multiselect
+***********************************************************************/
+
+.ui-multiselect-menu div.ui-widget-header.ui-corner-all.ui-multiselect-header.ui-helper-clearfix {
+    background:none; 
+    border:none;
+}
+
+.ui-multiselect-menu .ui-state-hover {
+    background: rgb(228,228,228);
+    border: 1px solid white;
+}
+
+
+button.ui-multiselect {
+    border: 1px solid white;
+    background: none;
+}
+
+button.ui-multiselect:focus {
+    border: 1px solid white;
+}
+
+.ui-multiselect {
+    font-size: 1em;
+}
+
+.ui-multiselect.ui-helper-clearfix.ui-widget {
+    padding: 0 0 0 0;
+}
+
+
+.ui-multiselect .ui-widget-header {
+    margin: -3px -3px 0 -3px !important;
+    font-weight: bold !important;
+    background: #444 !important;
+    color: #fff !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    border: 1px solid rgb(168,168,168);
+    background: #eee !important;
+    /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
+    background: -webkit-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
+    background: -o-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
+    background: -ms-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
+    background: linear-gradient(to bottom,    #f0f0f0 0%, #dddddd 100%) !important;*/
+    color: black !important;
+    border-radius:             4px 4px 0 0;
+    -moz-border-radius:         4px 4px 0 0;
+    -webkit-border-radius:     4px 4px 0 0;
+    -o-border-radius:         4px 4px 0 0;
+    /*text-shadow: 0 1px 0 #fff !important;*/
+    -webkit-appearance: none !important;
+    /*-moz-box-shadow:     inset 0 1px 0 0 #fff !important;
+    -webkit-box-shadow:     inset 0 1px 0 0 #fff !important;
+    box-shadow:             inset 0 1px 0 0 #fff !important;*/
+}
+
+
+.ui-multiselect .ui-element {
+    background: #eee !important;
+    border: none !important;
+    /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
+    background: -webkit-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
+    background: -o-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
+    background: -ms-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
+    background: linear-gradient(to bottom,    #f0f0f0 0%, #dddddd 100%) !important;*/
+}
+
+.ui-multiselect.ui-helper-clearfix.ui-widget {
+    border: 1px solid rgb(168,168,168);
+}
+
+.ui-multiselect  .ui-helper-clearfix {
+    margin: 0;
+    border: none !important;
+    border-radius: 0 !important;
+    border-left: 1px solid gray !important;
+}
+
+.ui-multiselect .available.connected-list {
+}
+
+.ui-multiselect {
+    max-width: 555px;
+    width: auto !important;
+    border: none !important;
+}
+
+.ui-multiselect .selected,
+.ui-multiselect .available {
+    /*width: 50%;*/
+}
+
+.ui-multiselect.ui-helper-clearfix {
+    min-width: 352px;
+}
+
+.ui-multiselect div.selected {
+    border-left: 1px solid rgb(218, 218, 218) !important;
+    border-top: 1px solid rgb(218, 218, 218) !important;
+    border-bottom: 1px solid rgb(218, 218, 218) !important;
+    /*border-radius:             4px 0 0 4px;
+    -moz-border-radius:         4px 0 0 4px;
+    -webkit-border-radius:     4px 0 0 4px;
+    -o-border-radius:         4px 0 0 4px;*/
+}
+.ui-multiselect div.available {
+    border: 1px solid rgb(218, 218, 218) !important;
+    /*border-radius:             0px 4px 4px 0;
+    -moz-border-radius:         0px 4px 4px 0;
+    -webkit-border-radius:     0px 4px 4px 0;
+    -o-border-radius:         0px 4px 4px 0;*/
+}
+
+.ui-multiselect .ui-widget-header {
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+}
+
+
+.x2-wide-slider {
+    width: 80%;
+    max-width: 340px;
+}
+
+
+.x2-wide-input,
+textarea.x2-wide-input,
+div.form textarea.x2-wide-input {
+    max-width: 260px;
+    width: 90%
+}
+.x2-extra-wide-input,
+textarea.x2-extra-wide-input,
+div.form textarea.x2-extra-wide-input {
+    max-width: 360px;
+    width: 90%
+}
+
+.x2-xxwide-input,
+textarea.x2-xxwide-input,
+div.form textarea.x2-xxwide-input {
+    max-width: 600px;
+    width: 90%;
+}
+
+/***********************************************************************
+* tags 
+***********************************************************************/
+
+
+/* tags dragged from tag cloud */
+.x2-tag.x2-link.ui-draggable-dragging {
+    z-index: 1500;
+}
+
+/* placeholder text */
+.x2-tag-list .tag-container-placeholder {
+    color: rgb(117,117,117);
+}
+
+
+/***********************************************************************
+* FileUtil 
+***********************************************************************/
+
+.x2-file-error {
+    display: inline-block;
+    color: red;
+    margin-left: 2px;
+}
+
+
+/***********************************************************************
+* X2Select 
+***********************************************************************/
+
+.x2-custom-select-outer {
+}
+
+/*.x2-select {
+    position: absolute;
+    right: 99999999999999999px;
+}*/
+
+.x2-custom-select + select {
+    margin: 3px 4px 5px 0px;
+    padding: 2px 4px;
+}
+
+.x2-custom-select {
+    width: 157px;
+    height: 16px;
+    border-radius: 4px 4px 4px 4px;
+    -moz-border-radius: 4px 4px 4px 4px;
+    -webkit-border-radius: 4px 4px 4px 4px;
+    -o-border-radius: 4px 4px 4px 4px;
+
+    background: rgb(230, 230, 230);
+    border: 1px solid rgb(214, 214, 214);
+    cursor: default;
+    margin: 3px 4px 5px 0px;
+    padding: 2px 15px 2px 4px;
+    display: inline-block;
+}
+
+.x2-custom-select-menu {
+    width: 157px;
+    overflow-y: auto;
+    max-height: 200px;
+    position: absolute;
+    background: white;
+    display: block;
+    z-index: 200;
+    border: 1px solid lightgrey;
+    clear: both;
+    list-style: none;
+    box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.1) ;
+    -moz-box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.1);
+    -o-box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.1);
+    margin-left: 4px;
+    margin-bottom: 0;
+    margin-right: 0;
+}
+
+.x2-custom-select-menu > li {
+    margin-left: -20px;
+    padding: 4px 0 4px 11px;
+    cursor: default;
+}
+
+.x2-custom-select-menu > li:hover {
+    background: rgb(240,240,240);
+}
+
+.x2-custom-select-triangle {
+    position: relative;
+    opacity: 0.7;
+    top: 4px;
+    display: inline-block;
+    background: url(../images/icons/Collapse_Widget.png);
+    margin-left: -18px !important;
+    margin-right: 18px !important;
+    background-size: 10px auto;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 1px solid transparent;
+    margin: 3px 4px 5px 0px;
+    padding: 2px 4px;
+}
+
+.x2-custom-select-empty + .x2-custom-select-triangle {
+    top: -7px;
+}
+
+
+.x2-custom-select:hover + .x2-custom-select-triangle {
+    opacity: 0.9;
+}
+
+
+
+/***********************************************************************
+* center widgets 
+***********************************************************************/
+
+.center-widget-minimize-button,
+.center-widget-maximize-button,
+.center-widget-close-button
+{
+    opacity: 0.7;
+}
+
+.center-widget-minimize-button:hover,
+.center-widget-maximize-button:hover,
+.center-widget-close-button:hover
+{
+    opacity: 0.8;
+}
+
+/***********************************************************************
+* action buttons
+***********************************************************************/
+
+.uncomplete-button,
+.edit-button,
+.delete-button,
+.update-button > img,
+.complete-button > img {
+    opacity: 0.75;
+}
+
+.uncomplete-button:hover,
+.edit-button:hover,
+.delete-button:hover,
+.update-button > img:hover,
+.complete-button > img:hover {
+    opacity: 0.85;
+}
+
+
+/***********************************************************************
+* action timer 
+***********************************************************************/
+#actionTimer {
+    text-align: center;
+}
+#actionTimer a {
+}
+
+#actionTimerControl-summary {
+    display: block;
+    border-top: 1px solid #CCCCCC;
+    margin-top: 5px;
+}
+#actionTimerControl-total {
+    font-family: Consolas, monaco, monospace;
+}
+#actionTimerDisplay {
+    font-size: 15px;
+    font-family: Consolas, monaco, monospace;
+    display:block;
+    margin-bottom: 3px;
+    border-bottom: 1px solid #CCCCCC;
+
+}
+
+#actionTimerLog-form textarea {
+    width: 100%;
+    max-width: 100%;
+    height: 100px;
+}
+
+#actionTimerLog-form input[type="submit"] {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+

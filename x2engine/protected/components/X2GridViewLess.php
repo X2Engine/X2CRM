@@ -34,8 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import ('application.components.X2GridView');
-
+Yii::import ('X2GridView');
 
 /**
  * X2GridView for CActiveRecord models
@@ -86,13 +85,16 @@ class X2GridViewLess extends X2GridView {
     }
 
     protected function addFieldNames () {
+        $this->addSpecialFieldNames ();
         $attrs = $this->modelAttrColumnNames;
         foreach ($attrs as $name) {
             $this->allFieldNames[$name] = $this->model->getAttributeLabel ($name);
         }
     }
 
-    protected function createDefaultStyleColumn ($columnName, $width, $isCurrency) {
+    protected function createDefaultStyleColumn ($columnName, $width) {
+        $isCurrency = in_array($columnName,array('annualRevenue','quoteAmount'));
+    
         $newColumn = array ();
 
         $newColumn['name'] = $columnName;
@@ -128,10 +130,7 @@ class X2GridViewLess extends X2GridView {
         return $newColumn;
     }
 
-    protected function handleFields () { return null; }
-
-
-
+    protected function handleFields () {}
 
 }
 ?>

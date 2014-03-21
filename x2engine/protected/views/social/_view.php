@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+ AuxLib::printStackTrace ();
+
 ?>
 <div class="view top-level">
 	<div class="deleteButton">

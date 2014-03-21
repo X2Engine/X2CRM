@@ -58,11 +58,13 @@ class History extends X2Widget {
             $historyTabs = array(
                 'all' => Yii::t('app', 'All'),
                 'actions' => Yii::t('app', 'Actions'),
-                'comments' => Yii::t('app', 'Comments'),
-                'workflow' => Yii::t('app', 'Workflow'),
                 'attachments' => Yii::t('app', 'Attachments'),
+                'comments' => Yii::t('app', 'Comments'),
+                'event' => Yii::t('app', 'Events'),
                 'marketing' => Yii::t('app', 'Marketing'),
                 'webactivity' => Yii::t('app', 'Web Activity'),
+                'workflow' => Yii::t('app', 'Workflow'),
+                 
             );
             $profile = Yii::app()->params->profile;
             if(isset($profile)){ // Load their saved preferences from the profile
@@ -118,6 +120,27 @@ class History extends X2Widget {
                 $.fn.yiiListView.update('history',{ data:{ relationships: relationshipFlag }});
             });
         "); // Script to make all the buttons on the history widget function via AJAX.
+
+        Yii::app()->clientScript->registerCss('historyWidgetCss',"
+            .action-history-controls {
+                border-radius: 4px 4px 0 0 !important; 
+                -moz-border-radius: 4px 4px 0 0 !important;
+                -webkit-border-radius: 4px 4px 0 0 !important;
+                -o-border-radius: 4px 4px 0 0 !important;
+                margin-bottom: -2px !important;
+                border-bottom: none !important;
+                border: 1px solid #c5c5c5 !important;
+            }
+            .history .pager {
+                border-radius: 0 0 4px 4px !important; 
+                -moz-border-radius: 0 0 4px 4px !important;
+                -webkit-border-radius: 0 0 4px 4px !important;
+                -o-border-radius: 0 0 4px 4px !important;
+                border: 1px solid #c5c5c5 !important;
+                margin-top: -3px !important;
+            }
+        ");
+
         $this->widget('application.components.X2ListView', array(
             'id' => 'history',
             'dataProvider' => $this->getHistory(),
@@ -126,12 +149,43 @@ class History extends X2Widget {
             ),
             'itemView' => 'application.modules.actions.views.actions._view',
             'htmlOptions' => array('class' => 'action list-view'),
-            'template' => '<div class="form">'.CHtml::dropDownList('history-selector', $this->historyType, $historyTabs).
-            '<span style="margin-top:5px;" class="right">'.CHtml::link(Yii::t('app', 'Toggle Text'), '#', array('id' => 'history-collapse', 'class' => 'x2-hint', 'title' => Yii::t('app', 'Click to toggle showing the full text of History items.')))
-            .' | '.CHtml::link(Yii::t('app', 'Show All'), '#', array('id' => 'show-history-link', 'class' => 'x2-hint', 'title' => Yii::t('app', 'Click to increase the number of History items shown.'), 'style' => $this->pageSize > 10 ? 'display:none;' : ''))
-            .CHtml::link(Yii::t('app', 'Show Less'), '#', array('id' => 'hide-history-link', 'class' => 'x2-hint', 'title' => Yii::t('app', 'Click to decrease the number of History items shown.'), 'style' => $this->pageSize > 10 ? '' : 'display:none;'))
-            .((!Yii::app()->user->isGuest) ? ' | '.CHtml::link(Yii::t('app', 'Relationships'), '#', array('id' => 'show-relationships-link', 'class' => 'x2-hint', 'title' => Yii::t('app', 'Click to toggle showing actions associated with related records.'))) : '')
-            .'</span></div> {sorter}{items}{pager}',
+            'template' => 
+                '<div class="form action-history-controls">'.
+                    CHtml::dropDownList('history-selector', $this->historyType, $historyTabs).
+                    '<span style="margin-top:5px;" class="right">'.
+                        CHtml::link(
+                            Yii::t('app', 'Toggle Text'), '#', 
+                            array(
+                                'id' => 'history-collapse', 'class' => 'x2-hint',
+                                'title' => Yii::t('app', 
+                                    'Click to toggle showing the full text of History items.'))).
+                        ' | '.
+                        CHtml::link(
+                            Yii::t('app', 'Show All'), '#', 
+                            array(
+                                'id' => 'show-history-link', 
+                                'class' => 'x2-hint', 
+                                'title' => Yii::t('app', 
+                                    'Click to increase the number of History items shown.'), 
+                                'style' => $this->pageSize > 10 ? 'display:none;' : ''
+                            )).
+                        CHtml::link(
+                            Yii::t('app', 'Show Less'), '#', 
+                            array(
+                                'id' => 'hide-history-link', 
+                                'class' => 'x2-hint',
+                                'title' => Yii::t('app', 
+                                    'Click to decrease the number of History items shown.'), 
+                                'style' => $this->pageSize > 10 ? '' : 'display:none;')).
+                        ((!Yii::app()->user->isGuest) ? 
+                            ' | '.CHtml::link(
+                                Yii::t('app', 'Relationships'), '#', 
+                                array(
+                                    'id' => 'show-relationships-link', 'class' => 'x2-hint',
+                                    'title' => Yii::t('app', 
+                                        'Click to toggle showing actions associated with related '.
+                                        'records.'))) : '')
+                .'</span></div> {sorter}{items}{pager}',
         ));
     }
 
@@ -148,9 +202,12 @@ class History extends X2Widget {
             'workflow' => ' AND type="workflow"',
             'comments' => ' AND type="note"',
             'attachments' => ' AND type="attachment"',
-            'marketing' => ' AND type IN ("email","webactivity","weblead","email_staged",'.
-			                             '"email_opened","email_clicked","email_unsubscribed")',
-            'webactivity' => 'AND type IN ("weblead","webactivity")'
+            'event' => ' AND type="event"',
+            'marketing' => 
+                ' AND type IN ("email","webactivity","weblead","email_staged",'.
+                    '"email_opened","email_clicked","email_unsubscribed","event")',
+            'webactivity' => 'AND type IN ("weblead","webactivity")',
+             
         );
         if($this->relationships){
             // Add association conditions for our relationships

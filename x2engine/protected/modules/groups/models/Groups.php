@@ -115,6 +115,17 @@ class Groups extends X2Model {
 		);
 	}
 
+    /**
+     * Delete associated group to user records 
+     */
+    public function afterDelete () {
+        GroupToUser::model ()->deleteAll (array (
+            'condition' => 'groupId='.$this->id
+        ));
+        parent::afterDelete ();
+    }
+
+
 	// public static function getLink($id) {
 		// $groupName = Yii::app()->db->createCommand()->select('name')->from('x2_groups')->where('id='.$id)->queryScalar();
 

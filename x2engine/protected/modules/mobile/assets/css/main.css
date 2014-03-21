@@ -104,3 +104,6 @@ activity
     border-radius: 8px;
 }
 
+#logo-container {
+    text-align:center;
+}

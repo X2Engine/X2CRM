@@ -33,8 +33,10 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?>
-<?php
+
+Yii::app()->clientScript->registerScriptFile($this->module->getAssetsUrl ().'/js/chartManager.js',
+    CClientScript::POS_BEGIN);
+
 require_once("protected/modules/charts/chartsConfig.php");
 $this->actionMenu = $this->formatMenu(array(
 	array('label' => Yii::t('charts', 'Lead Volume'), 'url' => array('leadVolume')),
@@ -74,19 +76,17 @@ $this->actionMenu = $this->formatMenu(array(
 			<div class="row">
 				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('charts', 'Select leads received in the last').'&nbsp;&nbsp;&nbsp;&nbsp;')); ?>
 				<?php
-				echo $form->radioButtonList($model, 'dateRange', array(
+				echo $form->dropDownList($model, 'dateRange', array(
 					10 => Yii::t('charts', '{n} days',array('{n}'=>'10')),
 					30 => Yii::t('charts', '{n} days',array('{n}'=>'30')),
 					60 => Yii::t('charts', '{n} days',array('{n}'=>'60')),
 					90 => Yii::t('charts', '{n} days',array('{n}'=>'90')),
 					120 => Yii::t('charts', '{n} days',array('{n}'=>'120')),
 					360 => Yii::t('charts', '{n} days',array('{n}'=>'360'))
-						), array(
-					'separator' => '&nbsp;&nbsp;|&nbsp;&nbsp;'
 						)
 				)
 				?>
-				<a onclick="submitForm('chart');" href="#" class="x2-button"><span><?php echo Yii::t('app','Go'); ?></span></a>
+				<a onclick="x2.forms.submitForm('chart');" href="#" class="x2-button"><span><?php echo Yii::t('app','Go'); ?></span></a>
 			</div>
 		</div>
 	</div>
@@ -95,17 +95,15 @@ $this->actionMenu = $this->formatMenu(array(
 			<div class="row">
 				<?php echo $form->label($model, 'dealStatus', array('label' => Yii::t('charts', 'Select deals with status').'&nbsp;&nbsp;&nbsp;&nbsp;')); ?>
 				<?php
-				echo $form->radioButtonList($model, 'dealStatus', array(
+				echo $form->dropDownList($model, 'dealStatus', array(
 					'Pending' => Yii::t('charts', 'Pending'),
 					'Won' => Yii::t('charts', 'Won'),
 					'Lost' => Yii::t('charts', 'Lost'),
 					'0' => Yii::t('charts', 'Any')
-						), array(
-					'separator' => '&nbsp;&nbsp;|&nbsp;&nbsp;'
 						)
 				)
 				?>
-				<a onclick="submitForm('chart');" href="#" class="x2-button"><span><?php echo Yii::t('app','Go'); ?></span></a>
+				<a onclick="x2.forms.submitForm('chart');" href="#" class="x2-button"><span><?php echo Yii::t('app','Go'); ?></span></a>
 			</div>
 		</div>
 	</div>
@@ -116,7 +114,7 @@ $this->actionMenu = $this->formatMenu(array(
 				<?php
 				echo $form->dropDownList($model, 'assignedTo', array_merge(array('0' => 'All'), Groups::getNames(), User::getNames()));
 				?>
-				<a onclick="submitForm('chart');" href="#" class="x2-button"><span><?php echo Yii::t('app','Go'); ?></span></a>
+				<a onclick="x2.forms.submitForm('chart');" href="#" class="x2-button"><span><?php echo Yii::t('app','Go'); ?></span></a>
 			</div>
 		</div>
 	</div>

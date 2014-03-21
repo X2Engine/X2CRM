@@ -42,9 +42,18 @@ function PopupDropdownMenu (argsDict) {
     var defaultArgs = {
         containerElemSelector: '', // the container to be turned into a popup dropdown menu
         openButtonSelector: '',// the button which opens/closes the popup dropdown menu
-        onClose: function () {} // function to be called when menu is closed
+        onClose: function () {}, // function to be called when menu is closed
+        autoClose: true, // if true, menu is closed on click inside
+        closeOnClickOutside: true, // if true, menu is closed on click outside
+
+        // used to determine which elements can be clicked without closing the drop down 
+        onClickOutsideSelector: null, 
+        css: {} // css to be applied to the popup dropdown menu on open
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    if (typeof this.onClickOutsideSelector === 'undefined') {
+        this.onClickOutsideSelector = that.containerElemSelector + ', ' + that.openButtonSelector;
+    }
     this._init ();
 }
 
@@ -82,7 +91,7 @@ PopupDropdownMenu.prototype._positionMenu = function () {
     var that = this; 
 
     // flip menu if it would go past the right edge of the window
-    if (that._openButton.offset ().left + that._containerElem.width () > $(window).width  ()) {
+    if (that._openButton.offset ().left + that._containerElem.width () > $(window).width ()) {
         that._containerElem.position ({
             my: 'right top', 
             at: 'left+22 bottom',
@@ -108,9 +117,16 @@ PopupDropdownMenu.prototype._setUpOpenButtonBehavior = function () {
         if (!that._containerElem.is (':visible')) {
             that._positionMenu ();
             that._containerElem.fadeIn ();
-            $(document).one ('click', function () {
-                that.close ();
-            });
+            if (that.autoClose) {
+                $(document).one ('click', function () {
+                    that.close ();
+                });
+            }
+            if (that.closeOnClickOutside) {
+                auxlib.onClickOutside (
+                    $(that.onClickOutsideSelector), 
+                    function () { that.close (); }, true);
+            }
         } else {
             that.close ();
         }
@@ -123,12 +139,13 @@ PopupDropdownMenu.prototype._init = function () {
     that._openButton = $(this.openButtonSelector);
     that._containerElem = $(this.containerElemSelector);
     that._containerElem.addClass ('popup-dropdown-menu');
+    that._containerElem.css (this.css);
     that._setUpOpenButtonBehavior ();
 
     // hide menu on resize
     $(window).resize (function (e) {
         if (that._containerElem.is (':visible')) {
-            that._containerElem.hide ();
+            that.close ();
         }
     });
 };

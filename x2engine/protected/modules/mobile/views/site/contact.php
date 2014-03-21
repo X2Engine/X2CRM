@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->pageTitle=Yii::app()->name . ' - Contact Us';
+$this->pageTitle=Yii::app()->settings->appName . ' - Contact Us';
 $this->breadcrumbs=array(
 	'Contact',
 );

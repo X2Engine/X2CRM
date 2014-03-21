@@ -34,6 +34,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss('recordViewCss',"
+
+#content {
+    background: none !important;
+    border: none !important;
+}
+");
 Yii::app()->clientScript->registerCss ('servicesView', "
 	#contact-info-container {
 		margin: -6px 5px 5px 5px !important;
@@ -64,7 +71,7 @@ $menuItems[] = array(
 			))."');"
 	)
 );
-$modelType = json_encode("Services");
+$modelType = json_encode("Servces");
 $modelId = json_encode($model->id);
 Yii::app()->clientScript->registerScript('widgetShowData', "
 $(function() {
@@ -74,6 +81,9 @@ $(function() {
 $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
+<div class="page-title-placeholder"></div>
+<div class="page-title-fixed-outer">
+    <div class="page-title-fixed-inner">
 <div class="page-title icon services">
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
@@ -94,6 +104,8 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
     );
     ?>
 	<?php //} ?>
+</div>
+</div>
 </div>
 <div id="main-column" class="half-width">
 <?php $form=$this->beginWidget('CActiveForm', array(

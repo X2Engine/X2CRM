@@ -121,8 +121,8 @@ echo CHtml::ajaxSubmitButton(
                 $(quickContactForm).find ('input[type=\"text\"]').val ('');
 
                 // reset placeholder text
-                $(quickContactForm).find ('input[type=\"text\"]').trigger ('focus');
-                $(quickContactForm).find ('input[type=\"text\"]').trigger ('blur');
+                $(quickContactForm).find ('input[type=\"text\"]').focus ();
+                $(quickContactForm).find ('input[type=\"text\"]').blur ();
 			} else { // failure, display errors
                 var errors = JSON.parse (response);
                 var selector;

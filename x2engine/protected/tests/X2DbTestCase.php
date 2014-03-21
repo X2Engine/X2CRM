@@ -41,7 +41,7 @@ Yii::import('application.components.util.*');
 Yii::import('application.modules.bugReports.models.*');
 
 /**
- * Class for database unit testing that performs additional preparation
+ * Base class for database unit testing that performs additional preparation
  * 
  * @package application.tests
  * @author Demitri Morgan <demitri@x2engine.com>

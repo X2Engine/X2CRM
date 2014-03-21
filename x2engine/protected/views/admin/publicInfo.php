@@ -38,8 +38,8 @@
 
 
 ?>
-<div class="span-16">
-    <div class="page-title"><h2><?php echo Yii::t('admin', 'Public Info Settings'); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'Public Info Settings'); ?></h2></div>
+<div class="admin-form-container">
     <?php
     $form = $this->beginWidget('CActiveForm', array(
         'id' => 'settings-form',

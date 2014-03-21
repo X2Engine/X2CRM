@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->pageTitle = Yii::app()->name . ' - Profile';
+$this->pageTitle = Yii::app()->settings->appName . ' - Profile';
 ?>
 <div>
 

@@ -54,21 +54,29 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
     <!-- <![endif]-->
     <head>
         <meta charset="UTF-8" />
-        <script src='<?php echo $baseUrl; ?>/js/jquery-1.6.2.min.js'></script>
         <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/main.css?<?php echo $jsVersion ?>" media="screen, projection" />
         <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/details.css?<?php echo $jsVersion ?>" media="screen, projection" />
         <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/form.css?<?php echo $jsVersion ?>" media="screen, projection" />
         <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/ui-elements.css?<?php echo $jsVersion ?>" media="screen, projection" />
+        <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/x2forms.css?<?php echo $jsVersion ?>" media="screen, projection" />
+        <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/responsiveCombined.css?<?php echo $jsVersion ?>" media="screen, projection" />
         <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->clientScript->coreScriptUrl.'/jui/css/base/jquery-ui.css'; ?>" />
+        <!-- -->
         <script type="text/javascript" src="<?php echo Yii::app()->clientScript->coreScriptUrl.'/jquery.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->clientScript->coreScriptUrl.'/jui/js/jquery-ui.min.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->clientScript->coreScriptUrl.'/jui/js/jquery-ui-i18n.min.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/jquery-ui-timepicker-addon.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/qtip/jquery.qtip.min.js'; ?>"></script>
+        <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/LGPL/jquery.formatCurrency-1.4.0.js'; ?>"></script>
+        <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/auxlib.js'; ?>"></script>
+        <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/X2Forms.js'; ?>"></script>
+        <!-- -->
         <script type="text/javascript">
             $(document).ready(function() {
+                // links inside iframe to pages in app should redirect parent window 
                 $("a").click(function(event){
-                    if(!$(this).hasClass('vcr-button')) {
+                    // exceptions: vcr buttons, products dropdown items
+                    if(!$(this).hasClass('vcr-button') && !$(this).hasClass ('ui-corner-all')) {
                         event.preventDefault();
                         var thiswindow = window, i = 0;
                         while(thiswindow != top && i < 10) {
@@ -81,6 +89,17 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
             });
         </script>
         <style>
+            #header-content {
+                display: inline-block;
+                margin-left:5px;
+                width: 100%;
+                height: 26px;
+            }
+            #controls {
+                height: 17px;
+                display: inline-block;
+                padding-top: 5px;
+            }
             .control-button{
                 display:inline-block;
                 margin-top:-5px;
@@ -88,26 +107,60 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                 vertical-align:middle;
                 cursor:pointer;
             }
+            .vcrPager {
+                height: 32px;
+                margin: -3px 0px 5px 0px !important;
+            }
             a.vcr-button{
                 padding: 1px 15px;
                 margin-top:-5px;
-            }
-            #actionHeader{
-                background: rgb(252,252,252); /* Old browsers */
-                background: -moz-linear-gradient(top, rgba(252,252,252,1) 0%, rgba(232,232,232,1) 100%); /* FF3.6+ */
-                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(232,232,232,1))); /* Chrome,Safari4+ */
-                background: -webkit-linear-gradient(top, rgba(252,252,252,1) 0%,rgba(232,232,232,1) 100%); /* Chrome10+,Safari5.1+ */
-                background: -o-linear-gradient(top, rgba(252,252,252,1) 0%,rgba(232,232,232,1) 100%); /* Opera 11.10+ */
-                background: -ms-linear-gradient(top, rgba(252,252,252,1) 0%,rgba(232,232,232,1) 100%); /* IE10+ */
-                background: linear-gradient(to bottom, rgba(252,252,252,1) 0%,rgba(232,232,232,1) 100%); /* W3C */
-                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#e8e8e8',GradientType=0 ); /* IE6-9 */
             }
             .model-link a{
                 text-decoration:none;
                 color:#06c;
             }
-            .hidden-frame-form{
-                display:none;
+            [for="Actions_dueDate"],
+            [for="Actions_completeDate"] {
+                display: inline-block !important;
+                margin-right: 2px;
+            }
+            #header-info > span {
+                display: block;
+                margin-top: -2px;
+                float:left;
+            }
+            #header-info > .field-value {
+                float: left;
+                margin-right: 7px;
+                height: 21px;
+            }
+            #header-info .hidden-frame-form input {
+                margin-top: 0 !important;
+            }
+            #actionHeader {
+                padding-bottom: 6px;
+                border-bottom:1px solid #ccc;
+            }
+            .due-date-container {
+                float: left;
+                margin-right: 9px;
+            }
+            .complete-date-container {
+                float: left;
+            }
+            @media (max-width: 536px) {
+                #actionHeader {
+                    margin-top: 10px;
+                }
+                #header-content {
+                    height: 40px;
+                }
+                #header-info {
+                    display: block;
+                    margin-top: -5px;
+                    margin-bottom: 1px;
+                    height: 21px;
+                }
             }
         </style>
         <title><?php Yii::t('actions', 'Action View Frame'); ?></title>
@@ -118,67 +171,116 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
             'id' => 'actions-frameUpdate-form',
             'enableAjaxValidation' => false,
             'action' => 'update?id='.$model->id
-                ));
+        ));
         ?>
-        <div id="actionHeader" style="border-bottom:1px solid #ccc;margin-top:10px;padding-bottom:10px;">
-            <span id="header-content" style="margin-left:5px;">
+        <div class='form'>
+        <div id="actionHeader">
+            <span id="header-content">
                 <span id="header-info" style="font-weight:bold;">
                     <?php
                     if($model->complete != 'Yes'){
                         if(!empty($model->dueDate)){
-                            echo "<span class='hidden-frame-form'>";
+                            echo "<span class='hidden-frame-form' style='display: none;'>";
+                            echo "<div class='due-date-container'>";
                             echo $form->label($model, 'dueDate');
                             if(is_numeric($model->dueDate)){
                                 $model->dueDate = Formatter::formatDateTime($model->dueDate);
                             }
                             echo $form->textField($model, 'dueDate');
+                            echo "</div>";
+                            if (in_array ($model->type, array ('event', 'time', 'call'))) {
+                                echo "<div class='complete-date-container'>";
+                                echo $form->label($model, 'completeDate');
+                                if(is_numeric($model->completeDate)){
+                                    $model->completeDate = Formatter::formatDateTime(
+                                        $model->completeDate);
+                                }
+                                echo $form->textField($model, 'completeDate');
+                                echo "</div>";
+                            }
                             echo "</span>";
-                            echo "<span class='field-value'>";
-                            echo "<span style='color:grey'>".Yii::t('actions', 'Due:')." </span>".Actions::parseStatus($model->dueDate).'</b>';
-                            echo "</span>";
+                            echo "<div class='field-value'>";
+                            echo 
+                                "<span style='color:grey'>".
+                                    $model->getAttributeLabel ('dueDate', true).':'.
+                                " </span>".
+                                '<b>'.$model->formatDueDate ().'</b>';
+                            echo "</div>";
+                            if (in_array ($model->type, array ('event', 'time', 'call'))) {
+                                echo "<div class='field-value'>";
+                                echo "<span style='color:grey'>".
+                                    $model->getAttributeLabel ('completeDate', true).':'.
+                                    " </span>".
+                                    '<b>'.$model->formatDueDate ().'</b>';
+                                echo "</div>";
+                            }
                         }elseif(!empty($model->createDate)){
-                            echo Yii::t('actions', 'Created:')." ".Formatter::formatLongDateTime($model->createDate).'</b>';
+                            echo Yii::t('actions', 'Created:')." ".
+                                Formatter::formatLongDateTime($model->createDate).'</b>';
                         }else{
                             echo "&nbsp;";
                         }
                     }else{
-                        echo Yii::t('actions', 'Completed {date}', array('{date}' => Formatter::formatCompleteDate($model->completeDate)));
+                        echo Yii::t('actions', 'Completed {date}', 
+                            array('{date}' => Formatter::formatCompleteDate($model->completeDate)));
                     }
                     ?>
                 </span>
                 <span>
                     <span id="controls">
-                        <?php if(Yii::app()->user->checkAccess('ActionsComplete', array('assignedTo' => $model->assignedTo))){
-                            if($model->complete != 'Yes'){
+                        <?php 
+                            if(Yii::app()->user->checkAccess(
+                                'ActionsComplete', array('assignedTo' => $model->assignedTo))){
+
+                                if($model->complete != 'Yes'){ ?>
+                                    <div class="control-button icon complete-button"></div>
+                                <?php 
+                                } else { 
                                 ?>
-                                <div class="control-button icon complete-button"></div>
-                            <?php }else{ ?>
-                                <div class="control-button icon uncomplete-button"></div>
-                            <?php }
+                                    <div class="control-button icon uncomplete-button"></div>
+                                <?php 
+                                }
                         }
-                        ?>
-                        <?php if(Yii::app()->user->checkAccess('ActionsUpdate', array('assignedTo' => $model->assignedTo))){ ?>
+                        if(Yii::app()->user->checkAccess(
+                            'ActionsUpdate', array('assignedTo' => $model->assignedTo))){ ?>
                             <div class="control-button icon edit-button"></div>
-                        <?php } ?>
-                        <?php if(Yii::app()->user->checkAccess('ActionsDelete', array('assignedTo' => $model->assignedTo))){ ?>
+                        <?php 
+                        } 
+                        if(Yii::app()->user->checkAccess(
+                            'ActionsDelete', array('assignedTo' => $model->assignedTo))){ ?>
                             <div class="control-button icon delete-button" alt="[x]"></div>
-                        <?php } ?>
-                        <?php if(Yii::app()->user->checkAccess('ActionsToggleSticky', array('assignedTo' => $model->assignedTo))){
-                            if(!$model->sticky){
-                                ?>
-                                <div class="control-button icon sticky-button" title="Click to flag this action as sticky."></div>
+                        <?php 
+                        } 
+                        if(Yii::app()->user->checkAccess(
+                            'ActionsToggleSticky', array('assignedTo' => $model->assignedTo))){
+
+                            if(!$model->sticky){ ?>
+                                <div class="control-button icon sticky-button" 
+                                 title="Click to flag this action as sticky."></div>
                             <?php }else{ ?>
-                                <div class="control-button icon sticky-button unsticky" title="Click to unpin this action."></div>
+                                <div class="control-button icon sticky-button unsticky" 
+                                 title="Click to unpin this action."></div>
                         <?php }
                     }
                     ?>
                     </span>
                     <?php if(!$publisher){ ?>
-                        <div class="vcrPager" style="margin-right:15px;">
-    <?php echo CHtml::link('<', '#', array('class' => 'x2-button vcr-button control-button', 'id' => 'back-button')); ?>
-    <?php echo CHtml::link('>', '#', array('class' => 'x2-button vcr-button control-button', 'id' => 'forward-button')); ?>
+                        <div class="vcrPager">
+                        <div class='x2-button-group'>
+                    <?php 
+                        echo CHtml::link(
+                            '<', '#', 
+                            array(
+                                'class' => 'x2-button vcr-button control-button',
+                                'id' => 'back-button')); 
+                        echo CHtml::link(
+                            '>', '#', 
+                            array(
+                                'class' => 'x2-button vcr-button control-button',
+                                'id' => 'forward-button')); ?>
                         </div>
-<?php } ?>
+                        </div>
+                    <?php } ?>
                 </span>
             </span>
             <br />
@@ -187,11 +289,11 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
         <div id="content" style="margin-left:5px;margin-right:5px;">
             <div id="actionBody" class="form">
                 <?php
-                echo "<span class='hidden-frame-form'><span style='display:inline-block;'>";
+                echo "<span class='hidden-frame-form' style='display: none;'><span style='display:inline-block;'>";
                 echo $form->labelEx($model, 'subject');
-                echo $form->textField($model, 'subject', array('size' => 80));
+                echo $form->textField($model, 'subject', array('class'=>'x2-xxwide-input'));
                 echo "</span></span> ";
-                echo "<span class='hidden-frame-form'><span style='display:inline-block;'>";
+                echo "<span class='hidden-frame-form' style='display: none;'><span style='display:inline-block;'>";
                 echo $form->labelEx($model, 'priority');
                 echo $form->dropDownList($model, 'priority', array(1 => Yii::t('actions', 'Low'), 2 => Yii::t('actions', 'Medium'), 3 => Yii::t('actions', 'High')));
                 echo "</span></span>";
@@ -202,16 +304,32 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                     echo "<b>".ucfirst($model->type)."</b><br><br>";
                 }
                 echo "</span>";
-                echo "<span class='hidden-frame-form'>";
+                echo "<span class='hidden-frame-form' style='display: none;'>";
                 echo $form->labelEx($model, 'actionDescription');
-                echo $form->textArea($model, 'actionDescription', array('rows' => (6), 'cols' => 40));
+                echo $form->textArea(
+                    $model, 'actionDescription', array('class'=>'x2-xxwide-input', 'rows' => (6)));
                 echo "</span>";
                 echo "<span class='field-value'>";
                 echo Formatter::convertLineBreaks(CHtml::encode($model->actionDescription));
                 echo "</span>";
+                 
+                echo '<div>';
+                echo CHtml::ajaxSubmitButton(
+                    Yii::t('app', 'Submit'), 'update?id='.$model->id, array(), 
+                    array(
+                        'id' => 'action-edit-submit-button',
+                        'style' => 'display:none;float:left;',
+                          
+                        'class' => 'hidden-frame-form x2-button highlight')); 
+                echo CHtml::link(
+                    Yii::t('actions', 'View Full Edit Page'), 
+                    array(
+                        'update', 'id' => $model->id), array('style' => 'float:right;display:none;',
+                        'target' => '_parent', 'class' => 'x2-button hidden-frame-form')); 
+                echo '</div>';
+
                 ?>
-            <?php echo CHtml::ajaxSubmitButton(Yii::t('app', 'Submit'), 'update?id='.$model->id, array(), array('style' => 'display:none;float:left;', 'class' => 'hidden-frame-form x2-button highlight')); ?>
-                <?php echo CHtml::link(Yii::t('actions', 'View Full Edit Page'), array('update', 'id' => $model->id), array('style' => 'float:right;display:none;', 'target' => '_parent', 'class' => 'x2-button hidden-frame-form')); ?>
+            </div>
             </div>
                 <?php $this->endWidget(); ?>
                 <?php if(!empty($model->associationType) && is_numeric($model->associationId) && !is_null(X2Model::getAssociationModel($model->associationType, $model->associationId)) && ($publisher == 'false' || !$publisher)){ ?>
@@ -243,7 +361,30 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
 <script>
     $(document).on('ready',function(){
         $.datepicker.setDefaults( $.datepicker.regional[ '<?php echo $language; ?>' ] );
-        $('#Actions_dueDate').datetimepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional['<?php echo $language; ?>'], {'dateFormat':'<?php echo $dateFormat; ?>','timeFormat':'<?php echo $timeFormat; ?>','ampm':<?php echo $amPm; ?>,'changeMonth':true,'changeYear':true}));
+        $('#Actions_dueDate').datetimepicker(
+            jQuery.extend(
+                {showMonthAfterYear:false}, 
+                jQuery.datepicker.regional['<?php echo $language; ?>'], 
+                {
+                    'dateFormat':'<?php echo $dateFormat; ?>',
+                    'timeFormat':'<?php echo $timeFormat; ?>',
+                    'ampm':<?php echo $amPm; ?>,
+                    'changeMonth':true,
+                    'changeYear':true
+                }
+            ));
+        $('#Actions_completeDate').datetimepicker(
+            jQuery.extend(
+                {showMonthAfterYear:false}, 
+                jQuery.datepicker.regional['<?php echo $language; ?>'], 
+                {
+                    'dateFormat':'<?php echo $dateFormat; ?>',
+                    'timeFormat':'<?php echo $timeFormat; ?>',
+                    'ampm':<?php echo $amPm; ?>,
+                    'changeMonth':true,
+                    'changeYear':true
+                }
+            ));
         $('#actions-frameUpdate-form').submit(function(e){
             var data=$(this).serializeArray();
             var id=<?php echo $model->id; ?>;
@@ -253,8 +394,15 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                 type:'POST',
                 data:data,
                 success:function(data){
-                    $('iframe', parent.document).attr('src', $('iframe', parent.document).attr('src'));
-                    window.parent.$('#history-'+id).replaceWith(data);
+                    $('#action-frame', parent.document).attr(
+                        'src', $('#action-frame', parent.document).attr('src'));
+                    <?php
+                    if ($publisher) {
+                        echo "window.parent.x2.actionFrames.afterActionUpdate ();";
+                    } else {
+                        echo "window.parent.$('#history-'+id).replaceWith(data);";
+                    }
+                    ?>
                 }
             });
         });

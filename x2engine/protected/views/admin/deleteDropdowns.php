@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin','Delete A Custom Dropdown'); ?></h2></div>
+<div class="page-title rounded-top"><h2><?php echo Yii::t('admin','Delete A Custom Dropdown'); ?></h2></div>
 <div class="form">
 <br> <span style="color:red;"><b><?php echo Yii::t('admin','WARNING');?>:</b> <?php echo Yii::t('admin','this operation is not reversible, and will create issues with any forms using the deleted dropdown.');?></span>
 <form name="deleteDropdowns" action="deleteDropdown" method="POST">

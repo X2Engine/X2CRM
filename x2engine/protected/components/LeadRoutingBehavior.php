@@ -199,6 +199,9 @@ class LeadRoutingBehavior extends CBehavior {
 		$admin->save();
 	}
 
+    const WITHIN_GROUPS = 0;
+    const BETWEEN_GROUPS = 1;
+
 	/**
 	 * Obtains lead routing rules.
 	 * @param type $data
@@ -254,22 +257,22 @@ class LeadRoutingBehavior extends CBehavior {
 					$groups = explode(", ", $groups);
 					$users = array();
 					foreach ($groups as $group) {
-						if ($rule->groupType == 0) {
+						if ($rule->groupType == self::WITHIN_GROUPS) {
 							$links = GroupToUser::model()->findAllByAttributes(
                                 array('groupId' => $group));
 							foreach ($links as $link) {
 								$usernames[] = User::model()->findByPk($link->userId)->username;
 							}
-						} else {
+						} else { // $rule->groupType == self::BETWEEN_GROUPS
 							$users[] = $group;
 						}
 					}
-					if ($online == 1 && $rule->groupType == 0) {
+					if ($online == 1 && $rule->groupType == self::WITHIN_GROUPS) {
 						foreach ($usernames as $user) {
 							if (in_array($user, $sessions))
 								$users[] = $user;
 						}
-					}elseif($rule->groupType == 0){
+					}elseif($rule->groupType == self::WITHIN_GROUPS){
                         $users=$usernames;
                     }
 				}

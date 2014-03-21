@@ -40,6 +40,8 @@ if(!is_null($model) && property_exists($name,'model')){
     $params=array();
 }
 
+$params = array_merge ($params, $widgetParams);
+
 if ($name === 'InlineRelationships' && isset ($moduleName)) {
     $params['moduleName'] = $moduleName;
 }

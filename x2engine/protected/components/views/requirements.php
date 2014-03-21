@@ -41,7 +41,7 @@
  *
  * Multi-role requirements-check script. Can be included as part of another page,
  * run as its own standalone script, or used to return requirements check data
- * as an arrya.
+ * as an array.
  */
 
 /////////////////

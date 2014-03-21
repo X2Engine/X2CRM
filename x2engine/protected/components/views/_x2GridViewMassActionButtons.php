@@ -45,7 +45,7 @@ Parameters:
 */
 
 Yii::app()->clientScript->registerScriptFile (
-    Yii::app()->getBaseUrl().'/js/X2GridViewMassActionsManager.js', CClientScript::POS_END);
+    Yii::app()->getBaseUrl().'/js/X2GridView/X2GridViewMassActionsManager.js', CClientScript::POS_END);
 
 
 
@@ -85,6 +85,9 @@ AuxLib::registerTranslationsScript ('massActions', array (
 
 Yii::app()->clientScript->registerCss ('massActionsCss', "
 
+.x2-gridview-mass-action-outer {
+    position: relative;
+}
 
 /*
 Flashes container
@@ -177,10 +180,6 @@ more drop down list
     clip: rect(0px,1000px,1000px,-10px);
 }
 
-.x2-gridview-mass-action-buttons .more-drop-down-list.fixed-header {
-    position: fixed;
-}
-
 .x2-gridview-mass-action-buttons .more-drop-down-list li {
     line-height: 17px;
     padding: 0 10px 0 10px;
@@ -208,6 +207,29 @@ general mass actions styling
 }
 ");
 
+Yii::app()->clientScript->registerResponsiveCss ('massActionsCssResponsive', "
+
+@media (max-width: 657px) {
+    .x2-gridview-mass-action-buttons {
+        position: absolute;
+        width: 137px;
+        top: -41px;
+        right: -179px;
+        margin: 0px;
+    }
+    .show-top-buttons .x2-gridview-mass-action-buttons {
+        right: -183px; 
+    }
+}
+
+@media (min-width: 658px) {
+    .x2-gridview-mass-action-buttons .more-drop-down-list.fixed-header {
+        position: fixed;
+    }
+}
+
+");
+
 $beforeUpdateJSString = "
     x2.DEBUG && console.log ('beforeUpdateJSString');
     
@@ -230,14 +252,14 @@ $beforeUpdateJSString = "
 
 $gridObj->addToBeforeAjaxUpdate ($beforeUpdateJSString);
 
-$afterUpdateJSSTring = "
+$afterUpdateJSString = "
     x2.DEBUG && console.log ('afterUpdateJSSTring');
     if (typeof x2.".$namespacePrefix."MassActionsManager !== 'undefined') 
         x2.".$namespacePrefix."MassActionsManager.reinit (); 
     $('#".$gridId." .x2-gridview-updating-anim').hide ();
 ";
 
-$gridObj->addToAfterAjaxUpdate ($afterUpdateJSSTring);
+$gridObj->addToAfterAjaxUpdate ($afterUpdateJSString);
 
 Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript',"
     if (typeof x2.".$namespacePrefix."MassActionsManager === 'undefined') {
@@ -275,6 +297,8 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
 ", CClientScript::POS_READY);
 
 ?>
+
+<span class='x2-gridview-mass-action-outer'>
 
 <div id='<?php echo $gridId; ?>-mass-action-buttons' class='x2-gridview-mass-action-buttons'>
      
@@ -353,3 +377,5 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
     
     ?>
 </div>
+
+</span>

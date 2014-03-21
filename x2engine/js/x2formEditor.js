@@ -98,7 +98,7 @@ $(function() {
 	// form subsection toggle
 	$('div.x2-layout').delegate('.formSectionShow, .formSectionHide','click',function() {
 		toggleFormSection($(this).closest('.formSection'));
-		saveFormSections();
+		x2.forms.saveFormSections();
 	});
 
 	// form section add column
@@ -211,8 +211,8 @@ $(function() {
 	});
 
 	// setup field text toggling for any formItem that might get changed to inlineLabel
-	$('div.x2-layout').delegate('div.x2-layout .inlineLabel input:text, div.x2-layout .inlineLabel textarea','focus',function() { formFieldFocus(this); });
-	$('div.x2-layout').delegate('div.x2-layout .inlineLabel input:text, div.x2-layout .inlineLabel textarea','blur',function() { formFieldBlur(this); });
+	$('div.x2-layout').delegate('div.x2-layout .inlineLabel input:text, div.x2-layout .inlineLabel textarea','focus',function() { x2.forms.formFieldFocus(this); });
+	$('div.x2-layout').delegate('div.x2-layout .inlineLabel input:text, div.x2-layout .inlineLabel textarea','blur',function() { x2.forms.formFieldBlur(this); });
 
 
 });

@@ -173,8 +173,10 @@ Parameters:
 	setting - the value of the option to be selected
 */
 auxlib.selectOptionFromSelector = function (selector, setting) {
+    if (!$(selector).children ('[value="' + setting + '"]').length) return;
 	$(selector).children (':selected').removeAttr ('selected');
 	$(selector).children ('[value="' + setting + '"]').attr ('selected', 'selected');
+    $(selector).val (setting).change ();
 }
 
 
@@ -184,7 +186,7 @@ is not defined.
 */
 auxlib.applyArgs = function (obj, defaultArgs, args) {
 	for (var i in defaultArgs) {
-		if (args[i] === undefined) {
+		if (typeof args[i] === 'undefined') {
 			obj[i] = defaultArgs[i];
 		} else {
 			obj[i] = args[i];
@@ -194,18 +196,41 @@ auxlib.applyArgs = function (obj, defaultArgs, args) {
 
 /**
  * Calls callback when user clicks outside of elem
- * Only works for elements with no children, can only be used on one element at a time
- * @param object elem jQuery element
+ * @param object elem jQuery element(s)
  * @param function callback 
+ * @param boolean one if true, event handler will be bound until user clicks outside element
  */
-auxlib.onClickOutside = function (elem, callback) {
-    $("body").unbind ('click.onClickOutside');
-    $("body").bind ('click.onClickOutside', function (evt) {
-        if ($(evt.target)[0] !== $(elem)[0]) {
-            callback ();
+auxlib.onClickOutside = (function () {
+    var i = 0; // used to give events unique ids                               
+    return function (elem, callback, one, eventNamespace) {
+        var eventNamespace = typeof eventNamespace === 'undefined' ? ++i : eventNamespace; 
+        var one = typeof one === 'undefined' ?  false : one;          
+        var selector = elem.selector;
+
+        var clickCallback = function (evt) {
+            // clicked outside if target or target's parents do not match specified elements
+            if ($.inArray ($(evt.target)[0], $(elem)) === -1 && 
+                $(evt.target).closest (selector).length === 0) {
+
+                callback.call (elem);
+                return true;
+            } 
+            return false;
+        };
+        var evtName = 'click.onClickOutside' + eventNamespace;
+        $("body").unbind (evtName);
+        if (one) {
+            $("body").one (evtName, function (evt) {
+                if (!clickCallback (evt)) { // didn't click outside, rebind
+                    auxlib.onClickOutside (elem, callback, one, eventNamespace);
+                }
+            });
+        } else {
+            $("body").bind ('click.onClickOutside' + eventNamespace, clickCallback);
         }
-    });
-};
+        return evtName; 
+    };
+}) ();
 
 auxlib.makeDialogClosableWithOutsideClick = function (dialogElem) {
     $("body").on ('click', function (evt) {
@@ -330,3 +355,18 @@ auxlib.map = function (callback, array) {
     }
     return newArr;
 };
+
+
+/**
+ * "Magic getter" method which caches jQuery objects so they don't have to be
+ * looked up a second time from the DOM
+ */
+auxlib.getElement = (function () {
+    var elements = {};
+    return function (selector) {
+        if(typeof elements[selector] === 'undefined')
+            elements[selector] = $(selector);
+        return elements[selector];
+    };
+}) ();
+

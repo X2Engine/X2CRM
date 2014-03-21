@@ -91,13 +91,15 @@ class Admin extends CActiveRecord {
             array('emailBulkAccount,serviceCaseEmailAccount,emailDropbox', 'safe'),
             array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail'),
             array('serviceCaseEmailAccount', 'setDefaultEmailAccount', 'alias' => 'serviceCaseEmail'),
-	    array('webLeadEmailAccount','setDefaultEmailAccount','alias' => 'systemResponseEmail'),
-	    array('emailNotificationAccount','setDefaultEmailAccount','alias'=>'systemNotificationEmail'),
+            array('webLeadEmailAccount','setDefaultEmailAccount','alias' => 'systemResponseEmail'),
+            array('emailNotificationAccount','setDefaultEmailAccount','alias'=>'systemNotificationEmail'),
             array('emailSignature', 'length', 'max' => 4096),
             array('externalBaseUrl','url','allowEmpty'=>true),
             array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
             array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
+            array ('appName', 'required'),
+            array ('appDescription', 'length', 'max' => 255)
                 // The following rule is used by search().
                 // Please remove those attributes that should not be searched.
                 // array('id, accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, chatPollTime, menuVisibility, currency', 'safe', 'on'=>'search'),
@@ -165,7 +167,8 @@ class Admin extends CActiveRecord {
             'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
             'batchTimeout' => Yii::t('app','Time limit on batch actions'),
             'externalBaseUrl' => Yii::t('app','External / Public Base URL'),
-            'externalBaseUri' => Yii::t('app','External / Public Base URI')
+            'externalBaseUri' => Yii::t('app','External / Public Base URI'),
+            'appName' => Yii::t('app','Application Name'),
         );
     }
 

@@ -140,6 +140,8 @@ class WebFormAction extends CAction {
                     $success = $model->save();
                     //TODO: upload profile picture url from webleadfb
                 }
+                
+                
 
                 if($success){
                     self::addTags ($model);

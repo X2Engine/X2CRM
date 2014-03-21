@@ -96,7 +96,8 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
                         'lastLogin' => 80,
                     ),
                     'template'=>
-                        '<div class="page-title">{buttons}{filterHint}'.
+                        '<div class="page-title"><h2 class="grid-widget-title-bar-dummy-element">'.
+                        '</h2>{buttons}{filterHint}'.
                         '{summary}{topPager}</div>{items}{pager}',
                     'modelAttrColumnNames'=>array (
                         'tagLine', 'username', 'officePhone', 'cellPhone', 'emailAddress', 

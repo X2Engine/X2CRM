@@ -52,7 +52,8 @@ jQuery(document).ready(function ($) {
 	// Declare all properties required for proper function
 	x2.inlineQuotes.declare = function() {
 
-        // x2.quotes is used by _lineItems.php partial to determine view-dependent behavior of quote table
+        /* x2.quotes is used by _lineItems.php partial to determine view-dependent behavior of 
+           quote table */
         x2.quotes = {};
         x2.quotes.view = "x2.inlineQuotes";
 
@@ -191,7 +192,7 @@ jQuery(document).ready(function ($) {
 			e.preventDefault();
 		}
 
-        if (!validateAllInputs () /* defined in lineItems.php */) {
+        if (!x2.quoteslineItems.validateAllInputs () /* defined in lineItems.js */) {
            return false; 
         }
 

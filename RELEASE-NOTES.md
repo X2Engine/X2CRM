@@ -1,3 +1,16 @@
+# 4.0 #
+* "X2Touch", the mobile layout, is no more. In its place will be a responsive,
+  mobile-friendly layout.   
+* The formula-parsing method used in X2Flow has changed to improve security and 
+  stability. Principally, it no longer filters/sanitizes the input by blacklisting
+  patterns in the input. Furthermore owing to how the input needs to be evaluated
+  as PHP code, all replacement values are escaped using 
+  [var_export](http://php.net/var_export). The previous design was found to be 
+  problematic in numerous ways, most notably how character sequences would remain
+  unquoted in the resulting code (which would cause "undefined constant" errors
+  unless the end user explicitly inserted quotes around it, and somehow enforced
+  the content of the referenced field never containing quotes).
+
 # 3.7.3b #
 * This version, while it is mainly oriented towards fixing bugs, contains some
   extreme, far-reaching changes (for example, the refactoring of how lookup fields

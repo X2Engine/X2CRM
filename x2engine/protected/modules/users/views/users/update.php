@@ -51,4 +51,12 @@ $this->actionMenu = $this->formatMenu(array(
 <div class="page-title icon users"><h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo $model->firstName,' ',$model->lastName; ?></h2></div>
 
 
-<?php echo $this->renderPartial('_form', array('model'=>$model, 'groups'=>$groups, 'roles'=>$roles,'selectedGroups'=>$selectedGroups,'selectedRoles'=>$selectedRoles,)); ?>
+<?php echo $this->renderPartial(
+    '_form', array(
+        'update' => true,
+        'model'=>$model,
+        'groups'=>$groups,
+        'roles'=>$roles,
+        'selectedGroups'=>$selectedGroups,
+        'selectedRoles'=>$selectedRoles,
+    )); ?>

@@ -42,6 +42,8 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
 	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
 	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
+        array('label'=>Yii::t('docs', 'Import Docs'), 'url'=>array('admin/importModels', 'model'=>'Docs'), 'visible'=>Yii::app()->params->isAdmin),
+        array('label'=>Yii::t('docs', 'Export Docs'), 'url'=>array('admin/exportModels', 'model'=>'Docs'), 'visible'=>Yii::app()->params->isAdmin),
 ));
 
 Yii::app()->clientScript->registerCss('docsIndexCss', "
@@ -121,7 +123,7 @@ $('.search-form form').submit(function(){
 
 ",CClientScript::POS_READY);
 
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'docs-grid',
 	'title'=>Yii::t('docs','Docs'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),

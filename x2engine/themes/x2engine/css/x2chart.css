@@ -327,5 +327,31 @@ advanced settings
 
 }
 
+.x2-chart-multiselect {
+    max-width: 225px;
+    width: 30%;
+    min-width: 150px;
+}
 
+@media (max-width: 543px) {
+    .chart-legend {
+        width: 100%;
+    }
+}
 
+@media (max-width: 470px) {
+    #actionHistoryChart-bin-size-button-set {
+        margin: auto;
+        left: 0;
+        right: 0;
+        position: absolute;
+        text-align: center;
+    }
+    body.show-left-bar #actionHistoryChart-bin-size-button-set {
+        left: 161px; 
+        width: 300px;
+    }
+    .x2-chart-multiselect {
+        margin-top: 33px !important;
+    }
+}

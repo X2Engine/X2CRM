@@ -36,7 +36,7 @@
 
 ?>
 <div id='<?php echo $widgetClass; ?>-widget-container' 
- class='sortable-widget-container x2-layout-island'
+ class='<?php echo (isset ($this->containerClass) ? $this->containerClass : ''); ?>' 
  <?php echo ($hidden ? 'style="display: none;"' : ''); ?>> 
     <?php $this->renderWidget (); ?>
 </div>

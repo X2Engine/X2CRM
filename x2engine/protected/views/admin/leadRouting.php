@@ -35,8 +35,8 @@
  *****************************************************************************************/
 
 ?>
-<div class="span-16">
 <div class="page-title"><h2><?php echo Yii::t('admin','Set Lead Routing Options'); ?></h2></div>
+<div style="max-width: 630px;">
 <div class="form">
 <?php echo Yii::t('admin','Change how web leads are assigned to users.'); ?>
 <br><br>

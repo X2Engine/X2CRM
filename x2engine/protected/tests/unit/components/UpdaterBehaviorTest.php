@@ -693,6 +693,10 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         FileUtil::rrmdir($newDirPath);
     }
 
+    public function testApplyFilesFtp() {
+        $this->useFtp("testApplyFiles");
+    }
+
     public function testCheckFiles() {
         $ube = $this->instantiateUBe();
         $this->prereq($ube,'checksums with actual files');
@@ -931,6 +935,19 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 
     }
 
+    public function testCheckPartner() {
+        $ube = $this->instantiateUBe();
+        $dataPath = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'tests','data','partner'));
+        $originalPartnerFiles = Yii::app()->basePath.DIRECTORY_SEPARATOR.'partner';
+        $expected = array(
+            'about' => '75e0d946a15236d655f5911bc965bf88',
+            'footer' => '75c98b390e04c0f48dd7d8b948da2905',
+            'login' => 'c6eb4836590c589ce4c9c323568f9237',
+        );
+        $this->assertEquals($expected,$ube->checkPartner());
+        
+    }
+
     public function testCheckUpdates() {
         $ube = $this->instantiateUBe();
         $version = $ube->checkUpdates(true);
@@ -950,6 +967,10 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $this->assertFileExists($ube->updatePackage);
     }
 
+    public function testDownloadPackageFtp() {
+        $this->useFtp('testDownloadPackage');
+    }
+
     public function testDownloadSourceFile(){
         $ube = $this->instantiateUBe();
         $file = "protected/components/views/requirements.php";
@@ -959,6 +980,10 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $ube->downloadSourceFile($file, $ube->getSourceFileRoute('opensource','none'));
         $this->assertFileExists($tmpdir.DIRECTORY_SEPARATOR.$file);
         FileUtil::rrmdir($tmpdir);
+    }
+
+    public function testDownloadSourceFileFtp() {
+        $this->useFtp('testDownloadSourceFile');
     }
 
     /**
@@ -973,6 +998,10 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             $this->assertEnactChanges();
         else
             $this->markTestSkipped('Skipping; TEST_LEVEL not set to 2 (this is a very slow test).');
+    }
+
+    public function testEnactChangesFtp() {
+        $this->useFtp('testEnactChanges');
     }
 
     // enactDatabaseChanges is protected and called in enactChanges, so it's

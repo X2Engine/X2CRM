@@ -59,7 +59,8 @@ class ProfileController extends x2base {
                     'index', 'view', 'update', 'search', 'addPost', 'deletePost', 'uploadPhoto', 
                     'getEvents', 'getEventsBetween', 'broadcastEvent', 'loadComments', 
                     'loadLikeHistory', 'likePost', 'flagPost', 'stickyPost', 'minimizePosts', 
-                    'publishPost', 'createChartSetting', 'deleteChartSetting', 'addComment', 
+                    'publishPost', 'createChartSetting', 'ajaxExportTheme', 
+                    'deleteChartSetting', 'addComment', 
                     'toggleFeedControls', 'toggleFeedFilters', 'setWidgetSetting', 
                     'showWidgetContents', 'getWidgetContents', 
                     'setWidgetOrder', 'profiles', 'settings', 'deleteSound', 'deleteBackground',
@@ -69,21 +70,25 @@ class ProfileController extends x2base {
                     'setDefaultCredentials'),
                 'users' => array('@'),
             ),
-            array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('admin', 'delete'),
-                'users' => array('admin'),
-            ),
             array('deny', // deny all users
                 'users' => array('*'),
             ),
         );
     }
 
+    public function behaviors(){
+        return array_merge (parent::behaviors () , 
+            array(
+                'ImportExportBehavior' => array('class' => 'ImportExportBehavior'),
+            )
+        );
+    }
+
     public function filters(){
-        return array(
+        return array_merge(parent::filters(),array(
             'accessControl',
             'setPortlets',
-        );
+        ));
     }
 
     public function actionHideTag($tag){
@@ -180,11 +185,11 @@ class ProfileController extends x2base {
 
     /**
      */
-    public function actionLoadTheme ($themeName) {
+    public function actionLoadTheme ($themeId) {
         $theme = Yii::app()->db->createCommand()
             ->select('description')
             ->from('x2_media')
-            ->where('fileName=:fileName and associationType="theme"',array(':fileName'=>$themeName))
+            ->where('id=:id and associationType="theme"',array(':id'=>$themeId))
             ->queryScalar();
         echo $theme;
     }
@@ -218,10 +223,11 @@ class ProfileController extends x2base {
         return CJSON::encode ($errorArr);
     }
 
-    private static function getThemeSuccessMsg () {
-        $successArr = array (
+    private static function getThemeSuccessMsg ($data=array ()) {
+        $successArr = array_merge (array (
             'success' => true,
-            'msg' => Yii::t('profile', 'Theme created successfully.'));
+            'msg' => Yii::t('profile', 'Theme created successfully.')),
+            $data);
         return CJSON::encode ($successArr);
     }
 
@@ -245,15 +251,20 @@ class ProfileController extends x2base {
         if (!$theme->save ()) {
             echo self::getThemeErrorMsg ();
         } else {
-            echo self::getThemeSuccessMsg ();
+            echo self::getThemeSuccessMsg (array ('id' => $theme->id));
         }
     }
+
+     
+
 
     /**
      * Display/set user profile settings.
      */
     public function actionSettings(){
         $model = $this->loadModel(Yii::app()->user->getId());
+
+         
 
         if (isset($_POST['Profile']) || isset($_POST['preferences'])) {
             if (isset($_POST['Profile'])) {
@@ -335,6 +346,8 @@ class ProfileController extends x2base {
             $allTags = array ();
         }
 
+        $admin = Yii::app()->settings;
+
         $this->render('settings', array(
             'model' => $model,
             'languages' => $languages,
@@ -344,7 +357,8 @@ class ProfileController extends x2base {
             'myLoginSounds' => $myLoginSoundProvider,
             'myNotificationSounds' => $myNotificationSoundProvider,
             'menuItems' => $menuItems,
-            'allTags' => $allTags
+            'allTags' => $allTags,
+             
         ));
     }
 
@@ -1428,4 +1442,5 @@ class ProfileController extends x2base {
             $profile->update(array('fullFeedControls'));
         }
     }
+
 }

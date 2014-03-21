@@ -43,85 +43,126 @@
  */
 class Publisher extends X2Widget {
 
-    protected $allTabs = array(
-        'log-a-call',
-        'log-time-spent',
-        'new-action',
-        'new-comment'
-    );
     private $_hiddenTabs;
+    private $_tabs; // available tabs with tab titles
 
-    public $associationType;        // type of record to associate actions with
-    public $associationId = '';        // record to associate actions with
-    public $assignedTo = null;    // user actions will be assigned to by default
-    public $selectedTab = 'log-a-call';
-
-    public $calendar = false;
-    public $hideTabs = array();
     public $model;
+    protected $_packages;
+
+    public $associationType; // type of record to associate actions with
+    public $associationId = ''; // record to associate actions with
+    public $assignedTo = null; // user actions will be assigned to by default
 
     public $viewParams = array(
         'model',
         'associationId',
         'associationType',
-        'calendar',
-        'associationType',
-        'hiddenTabs'
     );
 
-    public function getHiddenTabs() {
-        if(!isset($this->_hiddenTabs)) {
-            $this->_hiddenTabs = array();
-            $hiddenTabs = array_flip($this->hideTabs);
-            foreach($this->allTabs as $tab) {
-                $this->_hiddenTabs[$tab] = isset($hiddenTabs[$tab]);
+    public function getTabs () {
+        if (!isset ($this->_tabs)) {
+            $visibleTabs = array_filter (Yii::app()->params->profile->actionPublisherTabs,
+                function ($shown) {
+                    return $shown; 
+                });
+            $this->_tabs = array ();
+            foreach ($visibleTabs as $tabName => $shown) {
+                $this->_tabs[] = new $tabName ();
             }
         }
-        return $this->_hiddenTabs;
+        return $this->_tabs;
     }
 
+    public function setTabs ($tabs) {
+        $this->_tabs = $tabs;
+    }
+
+    /**
+     * Magic getter. Returns this widget's packages. 
+     */
+    public function getPackages () {
+        if (!isset ($this->_packages)) {
+            $this->_packages = array (
+                'auxlib' => array(
+                    'baseUrl' => Yii::app()->request->baseUrl,
+                    'js' => array(
+                        'js/auxlib.js',
+                    ),
+                ),
+                'PublisherJS' => array(
+                    'baseUrl' => Yii::app()->request->baseUrl,
+                    'js' => array(
+                        'js/publisher/Publisher.js',
+                    ),
+                    'depends' => array ('auxlib')
+                ),
+                'MultiRowTabsJS' => array(
+                    'baseUrl' => Yii::app()->request->baseUrl,
+                    'js' => array(
+                        'js/MultiRowTabs.js',
+                    ),
+                ),
+            );
+        }
+        return $this->_packages;
+    }
 
     public function run() {
         $model = new Actions;
         $model->associationType = $this->associationType;
         $model->associationId = $this->associationId;
-        if($this->assignedTo)
+        if($this->assignedTo) {
             $model->assignedTo = $this->assignedTo;
-        else
+        } else {
             $model->assignedTo = Yii::app()->user->getName();
+        }
+        
+        $this->model = $model;
+        $tabs = $this->tabs;
+        $selectedTab = $this->tabs[0]->tabId;
 
-        Yii::app()->clientScript->registerScript('loadEmails', "
-            /**
-             * Ad-hoc quasi-validation for the publisher
-             */
-            x2.publisher.beforeSubmit = function() {
-                if(x2.publisher.getElement('#action-description').val() == '') {
-                    alert('".addslashes(Yii::t('actions', 'Please enter a description.'))."');
-                    return false;
-                }
-                return true; // form is sane: submit!
-            }
+        Yii::app()->clientScript
+            ->registerCoreScript('jquery')
+            ->registerCoreScript('jquery.ui');
+        Yii::app()->clientScript->registerPackages($this->packages);
 
-            //
+        Yii::app()->clientScript->registerScript('publisherScript',"
+        (function () {
+            // construct publisher object, passing tab objects to it
+            x2.publisher = new x2.Publisher ({
+                translations: {},
+                initTabId: '".$selectedTab."',
+                publisherCreateUrl: '".
+                    Yii::app()->controller->createUrl ('/actions/actions/publisherCreate')."'
+            });
+
             x2.publisher.loadFrame = function (id,type){
                 if(type!='Action' && type!='QuotePrint'){
-                    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/actions/actions/viewEmail'))."?id='+id+'\"></iframe>';
+                    var frame=
+                        '<iframe style=\"width:99%;height:99%\" ' +
+                          'src=\"".(Yii::app()->controller->createUrl('/actions/actions/viewEmail')).
+                            "?id='+id+'\"></iframe>';
                 }else if(type=='Action'){
-                    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/actions/actions/viewAction'))."?id='+id+'&publisher=true\"></iframe>';
+                    var frame=
+                        '<iframe style=\"width:99%;height:99%\" ' +
+                          'src=\"".(Yii::app()->controller->createUrl('/actions/actions/viewAction')).
+                            "?id='+id+'&publisher=true\"></iframe>';
                 } else if(type=='QuotePrint'){
-                    var frame='<iframe style=\"width:99%;height:99%\" src=\"".(Yii::app()->controller->createUrl('/quotes/quotes/print'))."?id='+id+'\"></iframe>';
+                    var frame=
+                        '<iframe style=\"width:99%;height:99%\" ' +
+                          'src=\"".(Yii::app()->controller->createUrl('/quotes/quotes/print')).
+                            "?id='+id+'\"></iframe>';
                 }
                 if(typeof x2.actionFrames.viewEmailDialog != 'undefined') {
                     if($(x2.actionFrames.viewEmailDialog).is(':hidden')){
                         $(x2.actionFrames.viewEmailDialog).remove();
-
                     }else{
                         return;
                     }
                 }
-
+    
                 x2.actionFrames.viewEmailDialog = $('<div></div>', {id: 'x2-view-email-dialog'});
-
+    
                 x2.actionFrames.viewEmailDialog.dialog({
                     title: '".Yii::t('app', 'View History Item')."',
                     autoOpen: false,
@@ -138,7 +179,7 @@ class Publisher extends X2Widget {
                             jQuery('#x2-view-email-dialog').dialog('close');
                         }
                     });
-
+    
                 x2.actionFrames.viewEmailDialog.data('inactive', true);
                 if(x2.actionFrames.viewEmailDialog.data('inactive')) {
                     x2.actionFrames.viewEmailDialog.append(frame);
@@ -148,160 +189,74 @@ class Publisher extends X2Widget {
                     x2.actionFrames.viewEmailDialog.dialog('open');
                 }
             };
-            
-            $(document).on('ready',function(){
-                var t;
-                $(document).on('mouseenter','.email-frame',function(){
-                    var id=$(this).attr('id');
-                    t=setTimeout(function(){x2.publisher.loadFrame(id,'Email')},500);
-                });
-                $(document).on('mouseleave','.email-frame',function(){
-                    clearTimeout(t);
-                });
-                $('.quote-frame').mouseenter(function(){
-                    var id=$(this).attr('id');
-                    t=setTimeout(function(){x2.publisher.loadFrame(id,'Quote')},500);
-                }).mouseleave(function(){
-                    clearTimeout(t);
-                }); // Legacy quote pop-out view
 
-                $('.quote-print-frame').mouseenter(function(){
-                    var id=$(this).attr('id');
-                    t=setTimeout(function(){x2.publisher.loadFrame(id,'QuotePrint')},500);
-                }).mouseleave(function(){
-                    clearTimeout(t);
-                }); // New quote pop-out view
+        }) ();
+        ", CClientScript::POS_BEGIN);
+
+        Yii::app()->clientScript->registerScript('loadEmails', "
+
+        $(document).on('ready',function(){
+            var t;
+            $(document).on('mouseenter','.email-frame',function(){
+                var id=$(this).attr('id');
+                t=setTimeout(function(){x2.publisher.loadFrame(id,'Email')},500);
             });
+            $(document).on('mouseleave','.email-frame',function(){
+                clearTimeout(t);
+            });
+            $('.quote-frame').mouseenter(function(){
+                var id=$(this).attr('id');
+                t=setTimeout(function(){x2.publisher.loadFrame(id,'Quote')},500);
+            }).mouseleave(function(){
+                clearTimeout(t);
+            }); // Legacy quote pop-out view
+
+            $('.quote-print-frame').mouseenter(function(){
+                var id=$(this).attr('id');
+                t=setTimeout(function(){x2.publisher.loadFrame(id,'QuotePrint')},500);
+            }).mouseleave(function(){
+                clearTimeout(t);
+            }); // New quote pop-out view
+        });
         ", CClientScript::POS_HEAD);
         Yii::app()->clientScript->registerCss('recordViewPublisherCss', '
-            #action-event-panel {
+            .action-event-panel {
                 margin-top: 5px;
             }
-            #action-duration {
+            .action-duration {
                 margin-right: 10px;
             }
-            #action-duration .action-duration-display {
+            .action-duration .action-duration-display {
                 font-size: 30px;
                 font-family: Consolas, monaco, monospace;
             }
-            #action-duration input {
+            .action-duration input {
                 width: 50px;
             }
-            #action-duration .action-duration-input {
+            .action-duration .action-duration-input {
                 display:inline-block;
             }
-            #action-duration label {
+            .action-duration label {
                 font-size: 10px;
+            }
+            #publisher .text-area-wrapper {
+                /*margin-right: 75px;*/
             }
         ');
 
-        if($this->calendar){
-            Yii::app()->clientScript->registerCss('calendarSpecificWidgetStyle', "
-        .publisher-widget-title {
-            color: #222;
-            font-weight: bold;
-        }
-        .publisher-first-row {
-            margin-top: 8px;
-        }
-        #publisher-form .form {
-            background: #eee;
-        }
-        #publisher-form textarea {
-            min-width: 100%;
-            max-width: 100%;
-            width: 100%;
-        }
-    ");
-        } else {
-            Yii::app()->clientScript->registerCss('genericPublisherWidgetStyle', "
-        #publisher .text-area-wrapper {
-            margin-right: 75px;
-        }
-    ");
-        }
-
-        if($this->calendar){
-            // set date, time, and region format for when javascript replaces datetimepicker
-            // datetimepicker is replaced in the calendar module when the user clicks on a day
-            $dateformat = Formatter::formatDatePicker('medium');
-            $timeformat = Formatter::formatTimePicker();
-            $ampmformat = Formatter::formatAMPM();
-            $region = Yii::app()->locale->getLanguageId(Yii::app()->locale->getId());
-            if($region == 'en')
-                $region = '';
-        }
-
-        // save default values of fields for when the publisher is submitted and then reset
-        Yii::app()->clientScript->registerScript('defaultValues', '
-    x2.publisher.isCalendar = '.($this->calendar ? 'true' : 'false').';
-    '.($this->calendar ?'
-    // Enable fields for the calendar event publisher:
-    x2.publisher.switchToTab("new-event");
-    ':'
-    // Turn on jquery tabs for the publisher:
-    $("#publisher").tabs({
-        activate: function(event, ui) { x2.publisher.tabSelected(event, ui); },
-    });
-    // "Quick note" menu event handler:
-    $(document).on("change","#quickNote2",function(){
-        $("#action-description").val($(this).val());
-    });
-    x2.publisher.switchToTab("'.$this->selectedTab.'");
-    ').'
-    if($("#publisher .ui-state-active").length !== 0) { // if publisher is present (prevents a javascript error if publisher is not present)
-        var selected = $("#publisher .ui-state-active").attr("aria-controls");
-        x2.publisher.switchToTab(selected);
-    }
-
-    $(x2.publisher.resetFieldsSelector).each(function(i) {
-        $(this).data("defaultValue", $(this).val());
-    });
-
-    $("#publisher-form input[type=checkbox]").each(function(i) {
-        $(this).data("defaultValue", $(this).is(":checked"));
-    });
-
-    // Highlight save button when something is edited in the publisher
-    $("#publisher-form input, #publisher-form select, #publisher-form textarea, #publisher").
-        bind("focus.compose", function(){
-
-        $("#save-publisher").addClass("highlight");
-
-        // Expand text area; expecting user input.
-        if(this.nodeName == "TEXTAREA" || this.nodeName == "DIV") 
-            $("#publisher-form textarea").height(80);
-
-        $(document).unbind("click.publisher").bind("click.publisher",function(e) {
-            if(!$(e.target).closest ("#publisher-form, .ui-datepicker, .fc-day").length && 
-               $("#publisher-form textarea").val() === "") {
-
-                $("#save-publisher").removeClass("highlight");
-                $("#publisher-form textarea").animate({"height":22},300);
-            }
-        });
-
-        return false;
-    });
-
-    '.($this->calendar?"
-    // position the saving icon for the publisher (which starts invisible)
-    var publisherLabelCenter = parseInt($('.publisher-label').css('width'), 10)/2;
-    var halfIconWidth = parseInt($('#publisher-saving-icon').css('width'), 10)/2;
-    var iconLeft = publisherLabelCenter - halfIconWidth;
-    $('#publisher-saving-icon').css('left', iconLeft + 'px');
-
-    // set date and time format for when datetimepicker is recreated
-    $('#publisher-form').data('dateformat', '$dateformat');
-    $('#publisher-form').data('timeformat', '$timeformat');
-    $('#publisher-form').data('ampmformat', '$ampmformat');
-    $('#publisher-form').data('region', '$region');
-    ":"")."
-", CClientScript::POS_READY);
-
         $that = $this;
-        $this->model = $model;
-        $this->render('publisher',array_combine($this->viewParams,array_map(function($p)use($that){return $that->$p;},$this->viewParams)));
+        $this->render(
+            'application.components.views.publisher.publisher',
+            array_merge (
+                array_combine(
+                    $this->viewParams,
+                    array_map(function($p)use($that){return $that->$p;}, $this->viewParams)
+                ),
+                array (
+                    'tabs' => $tabs
+                )
+            )
+        );
     }
 
     //////////////////////////////////////////////////////////////
@@ -314,5 +269,8 @@ class Publisher extends X2Widget {
     public function setHalfWidth($value) {
         $this->calendar = !$value;
     }
+    public $calendar = false; 
+    public $selectedTab = '';
+
 
 }

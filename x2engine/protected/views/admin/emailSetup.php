@@ -73,8 +73,8 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
 
 ", CClientScript::POS_READY);
 ?>
-<div class="span-16">
-    <div class="page-title"><h2><?php echo Yii::t('admin', 'Email Server Configuration'); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'Email Server Configuration'); ?></h2></div>
+<div class="admin-form-container">
     <div class="form">
         <p><?php echo Yii::t('admin','For more information, see {config} on the X2Engine wiki.',array('{config}'=>CHtml::link(Yii::t('admin','Email Configuration'),'http://wiki.x2engine.com/wiki/E-Mail_Configuration'))); ?></p>
         <hr />
@@ -253,7 +253,7 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
         <div class="row">
             <div class="cell">
                 <?php echo $form->labelEx($model, 'serviceCaseEmailMessage'); ?>
-                <?php echo $form->textArea($model, 'serviceCaseEmailMessage', array('style' => 'width:490px;height:80px;')); ?>
+                <?php echo $form->textArea($model, 'serviceCaseEmailMessage', array('class'=>'x2-xxwide-input', 'style' => 'height:80px;')); ?>
                 <br>
                 <?php echo Yii::t('admin', 'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.'); ?>
             </div>

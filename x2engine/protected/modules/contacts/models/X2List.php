@@ -87,7 +87,7 @@ class X2List extends X2Model {
 		// class name for the relations automatically generated below.
 		return array(
 			'listItems'=>array(self::HAS_MANY, 'X2ListItem', 'listId'),
-			'campaign'=>array(self::HAS_ONE, 'Campaign', 'listId'),
+			'campaign'=>array(self::HAS_ONE, 'Campaign', array('listId'=>'nameId')),
 		);
 	}
 
@@ -357,7 +357,6 @@ class X2List extends X2Model {
 	 */
 	public static function getVcrLinks(&$dataProvider,$modelId) {
 
-
 		$criteria = $dataProvider->criteria;
 
 		$tableSchema = X2Model::model($dataProvider->modelClass)->getTableSchema();
@@ -367,8 +366,11 @@ class X2List extends X2Model {
 		// for the first query, find the current ID's row number in the list
 		$criteria->select = 't.id';
 
-		foreach(explode(',',$criteria->order) as $token) {		// we also need any columns that are being used in the sort
-			$token = preg_replace('/\s|asc|desc/i','',$token);	// so loop through $criteria->order and extract them
+        // we also need any columns that are being used in the sort
+		foreach(explode(',',$criteria->order) as $token) {		
+
+            // so loop through $criteria->order and extract them
+			$token = preg_replace('/\s|asc|desc/i','',$token);	
 			if($token !== '' && $token !== 'id' && $token!='t.id'){
                 if(strpos($token,'.')!=1){
                     $criteria->select .= ',t.'.$token;
@@ -386,10 +388,13 @@ class X2List extends X2Model {
 		}
 
 		// get search conditions (WHERE, JOIN, ORDER BY, etc) from the criteria
-		$searchConditions = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema,$criteria)->getText();
+		$searchConditions = Yii::app()->db->getCommandBuilder()
+            ->createFindCommand($tableSchema,$criteria)->getText();
 
 		$rowNumberQuery = Yii::app()->db->createCommand(
-			'SELECT r-1 FROM (SELECT *,@rownum:=@rownum + 1 AS r FROM ('.$searchConditions.') t1, (SELECT @rownum:=0) r) t2 WHERE t2.id='.$modelId
+			'SELECT r-1 FROM (
+                SELECT *,@rownum:=@rownum + 1 AS r 
+                FROM ('.$searchConditions.') t1, (SELECT @rownum:=0) r) t2 WHERE t2.id='.$modelId
 		);
 		// attach params from $criteria to this query
 		$rowNumberQuery->params = $criteria->params;
@@ -411,7 +416,8 @@ class X2List extends X2Model {
 				$vcrIndex = 1;		// index of current record in $vcrModels
 			}
 
-			$vcrModels = Yii::app()->db->getCommandBuilder()->createFindCommand($tableSchema,$criteria)->queryAll();
+			$vcrModels = Yii::app()->db->getCommandBuilder()
+                ->createFindCommand($tableSchema,$criteria)->queryAll();
 			$count = $dataProvider->getTotalItemCount();
 
 			$vcrData = array();
@@ -428,15 +434,23 @@ class X2List extends X2Model {
 			else
 				$vcrData['next'] = '<li class="next">'.CHtml::link('>','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
 			*/
-			if($vcrIndex > 0  && isset($vcrModels[0]))		// there's a record before the current one
-				$vcrData['prev'] = CHtml::link('<',array('view','id'=>$vcrModels[0]['id']),array('title'=>$vcrModels[0]['name'],'class'=>'x2-button'));
-			else
-				$vcrData['prev'] = CHtml::link('<','javascript:void(0);',array('class'=>'x2-button disabled'));
+			if($vcrIndex > 0  && isset($vcrModels[0])) { // there's a record before the current one
+				$vcrData['prev'] = CHtml::link(
+                    '<', array('view','id'=>$vcrModels[0]['id']),
+                    array('title'=>$vcrModels[0]['name'],'class'=>'x2-button'));
+			} else {
+				$vcrData['prev'] = CHtml::link(
+                    '<','javascript:void(0);',array('class'=>'x2-button disabled'));
+            }
 
-			if(count($vcrModels) - 1 > $vcrIndex)	// there's a record after the current one
-				$vcrData['next'] = CHtml::link('>', array('view','id'=>$vcrModels[$vcrIndex+1]['id']), array('title'=>$vcrModels[$vcrIndex+1]['name'],'class'=>'x2-button'));
-			else
-				$vcrData['next'] = CHtml::link('>','javascript:void(0);',array('class'=>'x2-button disabled'));
+			if(count($vcrModels) - 1 > $vcrIndex) { // there's a record after the current one
+				$vcrData['next'] = CHtml::link(
+                    '>', array('view','id'=>$vcrModels[$vcrIndex+1]['id']), 
+                    array('title'=>$vcrModels[$vcrIndex+1]['name'],'class'=>'x2-button'));
+			} else {
+				$vcrData['next'] = CHtml::link(
+                    '>','javascript:void(0);',array('class'=>'x2-button disabled'));
+            }
 
 			return $vcrData;
 		}

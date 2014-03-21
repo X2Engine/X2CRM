@@ -36,9 +36,20 @@
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl().'/css/login.css');
 
-$this->pageTitle = Yii::app()->name.' - Login';
+$this->pageTitle = Yii::app()->settings->appName.' - Login';
 $admin = Admin::model()->findByPk(1);
+
+
+$loginBoxHeight = 230;
+
+
+
 Yii::app()->clientScript->registerCss('googleLogin', "
+
+#login-box-outer {
+    top: ".$loginBoxHeight."px;
+}
+
 // fix menu shadow
 #page .container {
 	position:relative;
@@ -62,12 +73,10 @@ Yii::app()->clientScript->registerCss('googleLogin', "
       s.parentNode.insertBefore(po, s);
     })();
 </script>
+<div id="login-box-outer">
 <div class="container<?php echo (isset ($profileId) ? ' welcome-back-page' : ''); ?>" id="login-page">
 <div id="login-box">
 <div class="form" id="login-form">
-    <div class="cell">
-        <?php echo CHtml::image(Yii::app()->baseUrl.'/images/x2engine_crm_login.png', 'X2Engine', array('id' => 'google-login-logo', 'width' => 80, 'height' => 71)); ?>
-    </div>
     <?php if(isset($admin->googleIntegration) && $admin->googleIntegration == '1'){ ?>
         <div id="login-box">
             <div id="error-message">
@@ -112,14 +121,17 @@ Yii::app()->clientScript->registerCss('googleLogin', "
 
     <div class="row" style="margin-top:10px;text-align:center;">
         <?php
-        echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app', 'Login with Google'), (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').
+        echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app', 'Sign in with Google'), (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').
                 ((substr($_SERVER['HTTP_HOST'], 0, 4) == 'www.') ? substr($_SERVER['HTTP_HOST'], 4) : $_SERVER['HTTP_HOST']).
                 $this->createUrl('/site/googleLogin'), array('class' => 'x2touch-link'));
         ?>
-        <?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/mobile.png" id="mobile-icon" /> X2Touch Mobile', Yii::app()->getBaseUrl().'/index.php/x2touch', array('class' => 'x2touch-link')); ?>
     </div>
 </div>
 </div>
+</div>
+<?php
+$this->renderPartial ('loginCompanyInfo');
+?>
 </div>
 <script type="text/javascript">
 function signInCallback(authResult) {

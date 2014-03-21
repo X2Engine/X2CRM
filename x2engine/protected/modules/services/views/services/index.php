@@ -35,10 +35,12 @@
  *****************************************************************************************/
 
 $menuItems = array(
-	array('label'=>Yii::t('services','All Cases')),
-	array('label'=>Yii::t('services','Create Case'), 'url'=>array('create')),
-	array('label'=>Yii::t('services','Create Web Form'), 'url'=>array('createWebForm')),
+    array('label'=>Yii::t('services','All Cases')),
+    array('label'=>Yii::t('services','Create Case'), 'url'=>array('create')),
+    array('label'=>Yii::t('services','Create Web Form'), 'url'=>array('createWebForm')),
     array('label'=>Yii::t('services','Case Report'), 'url'=>array('servicesReport')),
+    array('label'=>Yii::t('services', 'Import Services'), 'url'=>array('admin/importModels', 'model'=>'Services'), 'visibility'=>Yii::app()->params->isAdmin),
+    array('label'=>Yii::t('services', 'Export Services'), 'url'=>array('admin/exportModels', 'model'=>'Services'), 'visibility'=>Yii::app()->params->isAdmin),
 
 );
 
@@ -75,7 +77,7 @@ if($field) {
 	}
 }
 
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'services-grid',
 	'title'=>Yii::t('services','Service Cases'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),

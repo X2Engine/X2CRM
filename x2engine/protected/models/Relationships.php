@@ -120,11 +120,19 @@ class Relationships extends CActiveRecord
 	 *
 	 */
 	public static function create($firstType, $firstId, $secondType, $secondId) {
-		$relationship = Relationships::model()->findByAttributes(array('firstType'=>$firstType, 'firstId'=>$firstId, 'secondType'=>$secondType, 'secondId'=>$secondId));
+		$relationship = Relationships::model()
+            ->findByAttributes(
+                array('firstType'=>$firstType, 'firstId'=>$firstId, 'secondType'=>$secondType,
+                    'secondId'=>$secondId));
+
 		if($relationship)
 			return false;
 
-		$relationship = Relationships::model()->findByAttributes(array('firstType'=>$secondType, 'firstId'=>$secondId, 'secondType'=>$firstType, 'secondId'=>$firstId));
+		$relationship = Relationships::model()->
+            findByAttributes(
+                array('firstType'=>$secondType, 'firstId'=>$secondId, 'secondType'=>$firstType,
+                    'secondId'=>$firstId));
+
 		if($relationship)
 			return false;
 		

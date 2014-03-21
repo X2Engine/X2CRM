@@ -69,13 +69,24 @@ ul.column-selector li:hover {background:#eee;}
 /**
  * ---------------- X2GridView Widget CSS -----------------
  */
-.grid-view .title-bar {display:block;overflow:hidden;}
+.grid-view .title-bar {
+    display:block;overflow:hidden;
+}
 /* .grid-view h3, .grid-view h2 {float:left;margin:0 20px 0 0;} */
-.grid-view .summary {float:right;color:#555;}
-.grid-view .empty {font-style:italic;}
+.grid-view .summary {
+    display: inline-block;
+    float:right;color:#555;
+}
+.grid-view .empty {
+    font-style:italic;
+}
 
-.grid-view table {border:1px solid #aaa;margin:5px 0;}
-.grid-view.fullscreen table {border:none;margin:0;}
+.grid-view table {
+    border:1px solid #aaa;margin:5px 0;
+}
+.grid-view.fullscreen table {
+    border:none;margin:0;
+}
 /* border-collapse:separate; */
 
 
@@ -259,7 +270,7 @@ ul.column-selector li:hover {background:#eee;}
     border-left: none;
     border-right: none;
     border-top: none;
-    border-bottom: 1px solid #aaa;
+    border-bottom: 1px solid #D5D5D5;
 }
 
 .grid-view table.items.x2grid-resizable tr:first-child td{border-top:none;}
@@ -315,7 +326,7 @@ ul.column-selector li:hover {background:#eee;}
  */
 .grid-view .pager {
     border-top:1px solid #aaa;
-	padding:8px;
+	padding:6px;
 	background:#fff;
     margin-left: 0;
     margin-right: 0;
@@ -340,62 +351,6 @@ div.scrollbar-width-test {height:100px;width:100px;position:absolute;top:-100px;
 .yiiPager li a {
     background:#fff;
 }
-
-
-/*
-fixed header
-*/
-
-.x2-gridview-fixed-top-bar-outer {
-    width: 100%;
-    height: 0px;
-    position: fixed;
-    z-index: 800;
-    min-width: 880px;
-    left: 0;
-    top: 32px;
-    padding-left: 151px;
-    padding-right: 9px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-top-bar-inner {
-    width: 100%;
-    padding-right: 22%;
-    padding-left: 11px;
-    height: 0;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title {
-    margin: 0 6px 0 5px;
-    width: auto;
-    -moz-border-radius: 0;
-    -o-border-radius: 0;
-    -webkit-border-radius: 0;
-    border-radius: 0;
-    border-left: 1px solid #b3b3b3;
-    border-right: 1px solid #b3b3b3;
-}
-
-.x2-gridview-body-with-fixed-header {
-    padding-top: 75px;
-}
-
-.x2-gridview-fixed-top-bar-outer .x2grid-header-container {
-    margin: 0 6px 0 5px;
-    border-left: 1px solid #b3b3b3;
-    border-right: 1px solid #b3b3b3;
-}
-
-.x2-gridview-fixed-top-bar-outer + .x2grid-body-container .x2grid-grips div {
-    top: 75px !important;
-}
-
 
 /*
 loading anim
@@ -444,3 +399,13 @@ Remove extra border when pager isn't shown
     border-radius: 0 0 3px 3px !important;
 }
 
+.grid-view ::-webkit-scrollbar-track:horizontal {
+    border-top: none;
+}
+
+.grid-view .x2-bar {
+    width: 23px;
+    background-color: rgb(233, 233, 233);
+}
+
+/*@import url("responsiveStyles.css");*/

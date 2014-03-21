@@ -117,6 +117,8 @@ class UsersController extends x2base {
 			$profile->emailAddress=$model->emailAddress;
 			$profile->status=$model->status;
 
+             
+
 			if($model->save()){
 								$profile->id=$model->id;
 								$profile->save();

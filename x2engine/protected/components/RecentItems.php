@@ -43,11 +43,6 @@ Yii::import('application.components.LeftWidget');
  */
 class RecentItems extends LeftWidget {
 
-	public function init() {
-        parent::initTitleBar ();
-		parent::init();
-	}
-
 	protected function renderContent() {
 		$recentItems = User::getRecentItems(Yii::app()->user->getId());
 		$this->render('recentItems',array('recentItems'=>$recentItems));

@@ -123,9 +123,9 @@ class X2BubbleChart extends X2ChartWidget {
 		$cs->registerPackage('jqbubbleplot');
 		$jsChartOptions = CJavaScript::encode($this->chartOptions);
 		$jsChartOptions = str_replace("'jquery.jqplot.BubbleRenderer'", "$.jqplot.BubbleRenderer", $jsChartOptions);
-		$cmd = "$.jqplot('$id', $chartVals, $jsChartOptions)";
-                if(count($this->plotData)!=0)
-		$cs->registerScript($id, $cmd, CClientScript::POS_LOAD);
+        $cmd = "x2.chartManager.addChart ($.jqplot('$id', $chartVals, $jsChartOptions));";
+        if(count($this->plotData)!=0)
+            $cs->registerScript($id, $cmd, CClientScript::POS_LOAD);
 	}
 
 }

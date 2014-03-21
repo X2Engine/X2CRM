@@ -40,6 +40,12 @@ class X2WebUser extends CWebUser {
 	// private $_access=array();
 	private $_access = null;
 
+    /**
+     * Roles that the user currently has
+     * @var type
+     */
+    private $_roles;
+
 	public function checkAccess($operation,$params=array(),$allowCaching=true) {
 
 		// return true;
@@ -59,7 +65,7 @@ class X2WebUser extends CWebUser {
 		// $GLOBALS['access'][] = $operation;
 
 		$result = Yii::app()->getAuthManager()->checkAccess($operation,$this->getName(),$params);
-		foreach(Yii::app()->params['roles'] as $roleId) {
+		foreach($this->getRoles() as $roleId) {
 			if($result = ($result || Yii::app()->getAuthManager()->checkAccess($operation,$roleId,$params)))
 				break;
 		}
@@ -105,4 +111,15 @@ class X2WebUser extends CWebUser {
 		));
 		return parent::beforeLogout();
 	}
+
+    /**
+     * Retrieves roles for the user
+     */
+    public function getRoles() {
+        if(!isset($this->_roles)) {
+            $this->_roles = Roles::getUserRoles($this->getId());
+        }
+        return $this->_roles;
+
+    }
 }

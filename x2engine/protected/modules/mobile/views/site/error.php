@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->pageTitle=Yii::app()->name . ' - Error';
+$this->pageTitle=Yii::app()->settings->appName . ' - Error';
 $this->breadcrumbs=array(
 	'Error',
 );

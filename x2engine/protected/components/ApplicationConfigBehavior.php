@@ -46,6 +46,7 @@ Yii::import('application.components.util.FileUtil');
  * @property string $absoluteBaseUrl (read-only) the base URL of the web
  *  application, independent of whether there is a web request.
  * @property string $edition The "edition" of the software.
+ * @property array $editions (read-only) The editions that apply to the app.
  * @property string $externalAbsoluteBaseUrl (read-only) the absolute base url
  *  of the application to use when creating URLs to be viewed publicly
  * @property string $externalWebRoot (read-only) The absolute base webroot URL
@@ -63,10 +64,23 @@ Yii::import('application.components.util.FileUtil');
  */
 class ApplicationConfigBehavior extends CBehavior {
 
+    /**
+     * Stores information about software edition sets (for manually setting
+     * edition, when testing software subsets)
+     * @var type
+     */
     private static $_editions = array(
-        'opensource' => array('pro'=>0,'pla'=>0),
-        'pro' => array('pro'=>'pro','pla'=>0),
-        'pla' => array('pro'=>'pro','pla'=>'pla'),
+        'opensource' => array('opensource'=>'opensource','pro'=>0,'pla'=>0),
+        'pro' => array('opensource'=>'opensource','pro'=>'pro','pla'=>0),
+        'pla' => array('opensource'=>'opensource','pro'=>'pro','pla'=>'pla'),
+    );
+    /**
+     * Software edition detection based on logo presence.
+     * @var type 
+     */
+    private static $_logoHashes = array(
+        'pro'=>'c3409244acae439caedac31c91ad5690',
+        'pla'=>'ca9d776db62cfc80848525ff880ec325'
     );
 
     private $_absoluteBaseUrl;
@@ -137,9 +151,11 @@ class ApplicationConfigBehavior extends CBehavior {
             $uploadedBy = $this->owner->db->createCommand()
                 ->select('uploadedBy')->from('x2_media')->where($where, $params)->queryRow();
             if(!empty($uploadedBy['uploadedBy'])){
-                $notificationSound = $this->owner->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
+                $notificationSound = $this->owner->baseUrl.'/uploads/media/'.
+                    $uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
             }else{
-                $notificationSound = $this->owner->baseUrl.'/uploads/'.$profile->notificationSound;
+                $notificationSound = $this->owner->baseUrl.'/uploads/'.
+                    $profile->notificationSound;
             }
         }
         return '
@@ -148,7 +164,8 @@ class ApplicationConfigBehavior extends CBehavior {
                     baseUrl: "'.$this->owner->baseUrl.'",
                     scriptUrl: "'.$this->owner->request->scriptUrl.'",
                     themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
-                    language: "'.($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
+                    language: "'.
+                        ($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
                     datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
                     timePickerFormat: "'.Formatter::formatTimePicker().'"
                     '.($profile ? '
@@ -161,7 +178,43 @@ class ApplicationConfigBehavior extends CBehavior {
             }
             x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
             x2.notifUpdateInterval = '.$this->settings->chatPollTime.';
+            x2.isAndroid = '.(IS_ANDROID ? 'true' : 'false').';
+            x2.isIPad = '.(IS_IPAD ? 'true' : 'false').';
         ';
+    }
+
+    /**
+     * Checks if user is on mobile device and sets appropriate constants 
+     */
+    private function checkForMobileDevice () {
+        $userAgentStr = strtolower($this->owner->request->userAgent);
+        $isAndroid = preg_match('/android/', $userAgentStr);
+        if($isAndroid){
+            define('IS_ANDROID', true);
+        }else{
+            define('IS_ANDROID', false);
+        }
+        $isIPad = preg_match('/ipad/', $userAgentStr);
+        if($isIPad){
+            //define('IS_IPAD', true);
+            define('IS_IPAD', false);
+        }else{
+            define('IS_IPAD', false);
+        }
+    }
+
+    /**
+     * Checks if responsive layout should be used based on requested action
+     */
+    private function checkResponsiveLayout () {
+        if (AuxLib::isIE8 () || strpos ($this->owner->request->getPathInfo(), 'admin') === 0 ||
+            preg_match ('/flowDesigner(\/\d+)?$/', $this->owner->request->getPathInfo())) {
+
+            define('RESPONSIVE_LAYOUT', false);
+        } else {
+            define('RESPONSIVE_LAYOUT', true);
+            //define('RESPONSIVE_LAYOUT', false);
+        }
     }
 
     /**
@@ -273,7 +326,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 $userId = $this->owner->user->getId();
                 if(!is_null($userId)){
                     $this->owner->params->groups = Groups::getUserGroups($userId);
-                    $this->owner->params->roles = Roles::getUserRoles($userId);
+                    $this->owner->params->roles = $this->owner->user->getRoles();
 
                     $this->owner->params->isAdmin = $this->owner->user->checkAccess('AdminIndex');
                 }
@@ -283,6 +336,12 @@ class ApplicationConfigBehavior extends CBehavior {
                     $this->owner->params->roles = array($guestRole->id);
             }
         }
+
+        if(!($logo = $this->owner->cache['x2Power'])){
+            $logo = 'data:image/png;base64,'.base64_encode(file_get_contents(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'images', 'powered_by_x2engine.png'))));
+            $this->owner->cache['x2Power'] = $logo;
+        }
+        $this->owner->params->x2Power = $logo;
 
         $adminProf = X2Model::model('Profile')->findByPk(1);
         $this->owner->params->adminProfile = $adminProf;
@@ -314,27 +373,12 @@ class ApplicationConfigBehavior extends CBehavior {
         if(isset($logo))
             $this->owner->params->logo = $logo->fileName;
 
-
-        // set edition
-        if(YII_DEBUG){
-            if(PRO_VERSION)
-                $this->owner->params->edition = 'pro';
-            else
-                $this->owner->params->edition = 'opensource';
-        } else{
-            $this->owner->params->edition = $this->settings->edition;
-        }
-
-        if($this->owner->params->edition === 'pro'){
-            $proLogo = 'images/x2engine_crm_pro.png';
-            if(!file_exists($proLogo) || hash_file('md5', $proLogo) !== '31a192054302bc68e1ed5a59c36ce731')
-                $this->owner->params->edition = 'opensource';
-        }
-
         setlocale(LC_ALL, 'en_US.UTF-8');
 
         // set base path and theme path globals for JS
         if(!$noSession){
+            $this->checkForMobileDevice ();
+            $this->checkResponsiveLayout ();
             if($notGuest){
                 $profile = $this->owner->params->profile;
                 if(isset($profile)){
@@ -342,37 +386,14 @@ class ApplicationConfigBehavior extends CBehavior {
                 }else{
                     $yiiString = $this->getJSGlobalsSetupScript ();
                 }
+                if(!$this->owner->request->isAjaxRequest)
+                    Yii::app()->clientScript->registerScript(md5($this->owner->name), 'var _x2p=["\x24\x28\x69\x29\x2E\x68\x28\x6A\x28\x29\x7B\x6B\x20\x62\x3D\x24\x28\x22\x23\x6D\x2D\x6C\x2D\x6E\x22\x29\x3B\x36\x28\x32\x20\x67\x3D\x3D\x22\x33\x22\x7C\x7C\x32\x20\x34\x3D\x3D\x22\x33\x22\x29\x7B\x35\x28\x22\x64\x20\x39\x20\x63\x20\x65\x20\x66\x2E\x22\x29\x7D\x37\x7B\x36\x28\x21\x62\x2E\x38\x7C\x7C\x28\x34\x28\x62\x2E\x77\x28\x22\x6F\x22\x29\x29\x21\x3D\x22\x41\x22\x29\x7C\x7C\x21\x62\x2E\x7A\x28\x22\x3A\x79\x22\x29\x7C\x7C\x62\x2E\x43\x28\x29\x3D\x3D\x30\x7C\x7C\x62\x2E\x44\x3D\x3D\x30\x7C\x7C\x62\x2E\x78\x28\x22\x72\x22\x29\x21\x3D\x22\x31\x22\x29\x7B\x24\x28\x22\x61\x22\x29\x2E\x71\x28\x22\x70\x22\x29\x3B\x35\x28\x22\x73\x20\x74\x20\x76\x20\x75\x20\x42\x2E\x22\x29\x7D\x7D\x7D\x29\x3B","\x7C","\x73\x70\x6C\x69\x74","\x7C\x7C\x74\x79\x70\x65\x6F\x66\x7C\x75\x6E\x64\x65\x66\x69\x6E\x65\x64\x7C\x53\x48\x41\x32\x35\x36\x7C\x61\x6C\x65\x72\x74\x7C\x69\x66\x7C\x65\x6C\x73\x65\x7C\x6C\x65\x6E\x67\x74\x68\x7C\x4A\x61\x76\x61\x53\x63\x72\x69\x70\x74\x7C\x7C\x7C\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x7C\x49\x6D\x70\x6F\x72\x74\x61\x6E\x74\x7C\x61\x72\x65\x7C\x6D\x69\x73\x73\x69\x6E\x67\x7C\x6A\x51\x75\x65\x72\x79\x7C\x6C\x6F\x61\x64\x7C\x77\x69\x6E\x64\x6F\x77\x7C\x66\x75\x6E\x63\x74\x69\x6F\x6E\x7C\x76\x61\x72\x7C\x62\x79\x7C\x70\x6F\x77\x65\x72\x65\x64\x7C\x78\x32\x65\x6E\x67\x69\x6E\x65\x7C\x73\x72\x63\x7C\x68\x72\x65\x66\x7C\x72\x65\x6D\x6F\x76\x65\x41\x74\x74\x72\x7C\x6F\x70\x61\x63\x69\x74\x79\x7C\x50\x6C\x65\x61\x73\x65\x7C\x70\x75\x74\x7C\x6C\x6F\x67\x6F\x7C\x74\x68\x65\x7C\x61\x74\x74\x72\x7C\x63\x73\x73\x7C\x76\x69\x73\x69\x62\x6C\x65\x7C\x69\x73\x7C\x30\x65\x31\x65\x32\x34\x37\x30\x64\x30\x30\x32\x36\x36\x33\x64\x30\x38\x30\x64\x34\x35\x62\x39\x63\x37\x34\x65\x32\x63\x61\x36\x30\x62\x62\x61\x31\x64\x38\x64\x64\x33\x65\x66\x35\x61\x31\x32\x33\x33\x64\x61\x61\x33\x62\x64\x61\x36\x36\x64\x32\x63\x61\x65\x7C\x62\x61\x63\x6B\x7C\x68\x65\x69\x67\x68\x74\x7C\x77\x69\x64\x74\x68","","\x66\x72\x6F\x6D\x43\x68\x61\x72\x43\x6F\x64\x65","\x72\x65\x70\x6C\x61\x63\x65","\x5C\x77\x2B","\x5C\x62","\x67"];eval(function (_0xfeccx1,_0xfeccx2,_0xfeccx3,_0xfeccx4,_0xfeccx5,_0xfeccx6){_0xfeccx5=function (_0xfeccx3){return (_0xfeccx3<_0xfeccx2?_x2p[4]:_0xfeccx5(parseInt(_0xfeccx3/_0xfeccx2)))+((_0xfeccx3=_0xfeccx3%_0xfeccx2)>35?String[_x2p[5]](_0xfeccx3+29):_0xfeccx3.toString(36));} ;if(!_x2p[4][_x2p[6]](/^/,String)){while(_0xfeccx3--){_0xfeccx6[_0xfeccx5(_0xfeccx3)]=_0xfeccx4[_0xfeccx3]||_0xfeccx5(_0xfeccx3);} ;_0xfeccx4=[function (_0xfeccx5){return _0xfeccx6[_0xfeccx5];} ];_0xfeccx5=function (){return _x2p[7];} ;_0xfeccx3=1;} ;while(_0xfeccx3--){if(_0xfeccx4[_0xfeccx3]){_0xfeccx1=_0xfeccx1[_x2p[6]]( new RegExp(_x2p[8]+_0xfeccx5(_0xfeccx3)+_x2p[8],_x2p[9]),_0xfeccx4[_0xfeccx3]);} ;} ;return _0xfeccx1;} (_x2p[0],40,40,_x2p[3][_x2p[2]](_x2p[1]),0,{}));');
             }else{
                 $yiiString = $this->getJSGlobalsSetupScript ();
             }
 
-            $userAgentStr = strtolower($this->owner->request->userAgent);
-            $isAndroid = preg_match('/android/', $userAgentStr);
-            if($isAndroid){
-                define('IS_ANDROID', true);
-                $yiiString .= '
-					x2.isAndroid = true;
-				';
-            }else{
-                define('IS_ANDROID', false);
-                $yiiString .= '
-					x2.isAndroid = false;
-				';
-            }
-            $isIPad = preg_match('/ipad/', $userAgentStr);
-            if($isIPad){
-                define('IS_IPAD', true);
-                $yiiString .= '
-					x2.isIPad = true;
-				';
-            }else{
-                define('IS_IPAD', false);
-                $yiiString .= '
-					x2.isIPad = false;
-				';
-            }
-
-            $this->owner->clientScript->registerScript('setParams', $yiiString, CClientScript::POS_HEAD);
+            $this->owner->clientScript->registerScript(
+                'setParams', $yiiString, CClientScript::POS_HEAD);
             $cs = $this->owner->clientScript;
             $baseUrl = $this->owner->request->baseUrl;
             $jsVersion = '?'.$this->owner->params->buildDate;
@@ -385,13 +406,25 @@ class ApplicationConfigBehavior extends CBehavior {
               'media.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'modernizr.custom.66175.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'publisher.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'relationships.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              //'relationships.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'tags.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'translator.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'widgets.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'x2forms.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               ); */
         }
+    }
+
+    /**
+     * Returns true or false for whether or not the application's current edition
+     * contains a given edition.
+     * 
+     * @param string $edition The edition. With "opensource", this function will
+     *  always evaluate to true.
+     * @return boolean
+     */
+    public function contEd($edition) {
+        return (bool) self::$_editions[$this->getEdition()][$edition];
     }
 
     /**
@@ -507,11 +540,97 @@ class ApplicationConfigBehavior extends CBehavior {
                     default:
                         $this->_edition = 'opensource';
                 }
-            } else {
-                $this->_edition = $this->settings->edition;
+            }else{
+                $this->_edition = 'opensource';
+                foreach(array('pla', 'pro') as $ed){
+                    $logo = "images/x2engine_crm_$ed.png";
+                    $logoPath = implode(DIRECTORY_SEPARATOR, array(
+                        $this->owner->basePath,
+                        '..',
+                        FileUtil::rpath($logo)
+                    ));
+                    if(file_exists($logoPath)){
+                        if(md5_file($logoPath) == self::$_logoHashes[$ed]){
+                            $this->_edition = $ed;
+                            break;
+                        }
+                    }
+                }
             }
         }
         return $this->_edition;
+    }
+
+    /**
+     * Returns editions "contained" by the app's current edition
+     */
+    public function getEditions() {
+        return array_filter(self::$_editions[$this->getEdition()]);
+    }
+
+    /**
+     * Returns the name of the software edition.
+     */
+    public function getEditionLabel($addPrefix = false) {
+        $labels = $this->getEditionLabels($addPrefix);
+        return $labels[$this->getEdition()];
+    }
+
+    public function getEditionLabels($addPrefix = false) {
+        $prefix = $addPrefix?'X2Engine ':'';
+        return array(
+            'opensource' => $prefix.'Open Source Edition',
+            'pro' => $prefix.'Professional Edition',
+            'pla' => $prefix.'Platinum Edition'
+        );
+    }
+
+    /**
+     * @return string url of favicon image file for the current version
+     */
+    public function getFavIconUrl () {
+        $baseUrl = Yii::app()->clientScript->baseUrl;
+        $faviconUrl;
+        switch (Yii::app()->edition) {
+            case 'opensource':
+                $faviconUrl = $baseUrl.'/images/faviconOpensource.ico';
+                break;
+            case 'pro':
+                $faviconUrl = $baseUrl.'/images/faviconPro.ico';
+                break;
+            case 'pla':
+                $faviconUrl = $baseUrl.'/images/faviconPla.ico';
+                break;
+            default:
+                if (YII_DEBUG) {
+                    throw new CException (Yii::t('Error: getFavIconLink: default on switch'));
+                }
+        }
+        return $faviconUrl;
+    }
+
+    /**
+     * @return string url of login logo image file for the current version
+     */
+    public function getLoginLogoUrl () {
+        $baseUrl = Yii::app()->clientScript->baseUrl;
+        $loginLogoUrl;
+        switch (Yii::app()->edition) {
+            case 'opensource':
+                $loginLogoUrl = $baseUrl.'/images/x2engineLoginLogoOpensource.png';
+                break;
+            case 'pro':
+                $loginLogoUrl = $baseUrl.'/images/x2engineLoginLogoPro.png';
+                break;
+            case 'pla':
+                $loginLogoUrl = $baseUrl.'/images/x2engineLoginLogoPla.png';
+                break;
+            default:
+                if (YII_DEBUG) {
+                    throw new CException (Yii::t('Error: getFavIconLink: default on switch'));
+                }
+        }
+        return $loginLogoUrl;
     }
 
     public function getExternalAbsoluteBaseUrl(){
@@ -651,7 +770,6 @@ class ApplicationConfigBehavior extends CBehavior {
         Yii::import('application.components.permissions.*');
         Yii::import('application.modules.media.models.Media');
         Yii::import('application.modules.groups.models.Groups');
-        Yii::import('application.extensions.gallerymanager.models.*');
 
         $modules = $this->owner->modules;
         $arr = array();

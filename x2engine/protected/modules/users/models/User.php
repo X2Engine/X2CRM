@@ -135,6 +135,29 @@ class User extends CActiveRecord {
         }
     }
 
+    /**
+     * Return ids of groups to which this user belongs 
+     * @return array
+     */
+    public function getGroupIds () {
+        $results = Yii::app()->db->createCommand ()
+            ->select ('groupId')
+            ->from ('x2_group_to_user')
+            ->where ('userId=:id', array (':id' => $this->id))
+            ->queryAll ();
+        return array_map (function ($a) {
+            return $a['groupId'];
+        }, $results);
+    }
+
+    /**
+     * Return model for current user 
+     * @return object
+     */
+    public static function getMe () {
+        return User::model()->findByPk (Yii::app()->user->getId ()); 
+    }
+
     public static function getUsersDataProvider () {
         $usersDataProvider = new CActiveDataProvider('User', array(
                     'criteria' => array(

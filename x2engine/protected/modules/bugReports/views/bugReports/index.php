@@ -36,8 +36,12 @@
 include("protected/modules/bugReports/bugReportsConfig.php");
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName']))),
-	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
+    array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName']))),
+    array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
+    array('label'=>Yii::t('module','Import {X}', array('{X}'=>$moduleConfig['recordName'])),
+        'url'=>array('admin/importModels', 'model'=>ucfirst($moduleConfig['moduleName'])), 'visibility'=>Yii::app()->params->isAdmin),
+    array('label'=>Yii::t('module','Export {X}', array('{X}'=>$moduleConfig['recordName'])),
+        'url'=>array('admin/exportModels', 'model'=>ucfirst($moduleConfig['moduleName'])), 'visibility'=>Yii::app()->params->isAdmin),
 ));
 
 Yii::app()->clientScript->registerScript('search', "
@@ -61,7 +65,7 @@ $('.search-form form').submit(function(){
 </div><!-- search-form -->
 <?php
 
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'bugReports-grid',
 	'title'=>$moduleConfig['title'],
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),

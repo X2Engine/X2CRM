@@ -42,4 +42,13 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 ?>
 <div class="page-title icon users"><h2><?php echo Yii::t('users','Create User'); ?></h2></div>
-<?php echo $this->renderPartial('_form', array('model'=>$model, 'roles'=>$roles, 'groups'=>$groups,'selectedGroups'=>$selectedGroups,'selectedRoles'=>$selectedRoles,)); ?>
+<?php 
+echo $this->renderPartial(
+    '_form', array(
+        'update' => false,
+        'model'=>$model,
+        'roles'=>$roles,
+        'groups'=>$groups,
+        'selectedGroups'=>$selectedGroups,
+        'selectedRoles'=>$selectedRoles,
+    )); ?>

@@ -58,8 +58,8 @@ $('#currency').change(function() {
 });
 ", CClientScript::POS_READY);
 ?>
-<div class="span-16">
-    <div class="page-title"><h2><?php echo Yii::t('admin', 'General Settings'); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'General Settings'); ?></h2></div>
+<div class="admin-form-container">
     <?php
     $form = $this->beginWidget('CActiveForm', array(
         'id' => 'settings-form',
@@ -86,8 +86,9 @@ $('#currency').change(function() {
 				}",
             ),
             'htmlOptions' => array(
-                'style' => 'width:340px;margin:10px 0;',
-                'id' => 'chatPollSlider'
+                'id' => 'chatPollSlider',
+                'style' => 'margin:10px 0;',
+                'class'=>'x2-wide-slider'
             ),
         ));
 
@@ -116,7 +117,8 @@ $('#currency').change(function() {
 				}",
             ),
             'htmlOptions' => array(
-                'style' => 'width:340px;margin:10px 0;',
+                'style' => 'margin:10px 0;',
+                'class'=>'x2-wide-slider',
                 'id' => 'timeoutSlider'
             ),
         ));
@@ -148,8 +150,10 @@ $('#currency').change(function() {
 				}",
             ),
             'htmlOptions' => array(
-                'style' => 'width:340px;margin:10px 0;',
-                'id' => 'batchTimeoutSlider'
+                'style' => 'margin:10px 0;',
+                'id' => 'batchTimeoutSlider',
+                'style' => 'margin:10px 0;',
+                'class'=>'x2-wide-slider',
             ),
         ));
         echo $form->textField($model,'batchTimeout',array('style'=>'width:50px;','id'=>'batchTimeout'));
@@ -177,8 +181,10 @@ $('#currency').change(function() {
     </div>
     <div class="form">
         <?php echo $form->labelEx($model, 'corporateAddress'); ?>
+        <div> 
         <?php echo Yii::t('admin', 'Enter your corporate address to enable directions on the Google Maps widget.') ?>
-<?php echo $form->textArea($model, 'corporateAddress', array('id' => 'corporateAddress', 'style' => 'height:100px;')); ?>
+        </div>
+<?php echo $form->textArea($model, 'corporateAddress', array('id' => 'corporateAddress', 'style' => 'height:100px;', 'class'=>'x2-extra-wide-input')); ?>
     </div>
     <div class="form">
         <?php echo $form->labelEx($model, 'properCaseNames'); ?>
