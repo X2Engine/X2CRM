@@ -51,6 +51,31 @@ class X2ClientScript extends NLSClientScript {
     private $_profile;
     private $_scriptUrl;
     private $_themeUrl;
+    private $_cacheBuster;
+
+    /**
+     * @param string returns cache buster value. Append this value to names of files upon 
+     *  registration to avoid retrieving the cached file.
+     */
+    private function getCacheBuster() {
+        if (!isset ($this->_cacheBuster)) {
+            if (YII_DEBUG) {
+                /*
+                Cache is refreshed once per session for debugging. It shouldn't be refreshed 
+                every page load or it will cause issues with NLSClientScript.
+                */
+                if (!isset ($_SESSION['cacheBuster'])) {
+                    $_SESSION['cacheBuster'] = ((string) time ());
+                }
+                // always bust caches in debug mode
+                $this->_cacheBuster = $_SESSION['cacheBuster'];
+            } else {
+                // bust cache on update/upgrade
+                $this->_cacheBuster = Yii::app()->params->buildDate;
+            }
+        }
+        return $this->_cacheBuster;
+    }
     
     /**
      * Inserts the scripts at the beginning of the body section.
@@ -112,18 +137,6 @@ class X2ClientScript extends NLSClientScript {
         echo $scripts.$endScripts.';';
     }
 
-    public function registerResponsiveCssFile ($url, $media='') {
-        if (RESPONSIVE_LAYOUT) {
-            $this->registerCssFile ($url, $media);
-        }
-    }
-
-    public function registerResponsiveCss ($id, $css, $media='') {
-        if (RESPONSIVE_LAYOUT) {
-            $this->registerCss ($id, $css, $media);
-        }
-    }
-
     /**
      * Registers a set of packages at the specified position
      * @param Array $packages 
@@ -177,6 +190,229 @@ class X2ClientScript extends NLSClientScript {
     }
 
     /**
+     * Returns a cache busting url suffix to be appended to JS/CSS files before registration
+     * Checks for presence of query string to determine the appropriate separator between the 
+     * url and the cache buster string.
+     * @return string suffix
+     */
+    public function getCacheBusterSuffix ($url=null) {
+        $cacheBuster = $this->getCacheBuster ();
+        if ($url === null) {
+            return '?'.$cacheBuster;
+        } else if (preg_match ("/\?/", $url)) {
+            return '&'.$cacheBuster;
+        } else {
+            return '?'.$cacheBuster;
+        }
+    }
+
+    /**
+     * Allows css containing media queries to be added conditionally 
+     */
+    public function registerResponsiveCssFile ($url, $media='') {
+        if (RESPONSIVE_LAYOUT) {
+            $this->registerCssFile (
+                $url.$this->getCacheBusterSuffix ($url), $media);
+        }
+    }
+
+    /**
+     * Allows css containing media queries to be added conditionally 
+     */
+    public function registerResponsiveCss ($id, $css, $media='') {
+        if (RESPONSIVE_LAYOUT) {
+            $this->registerCss ($id, $css, $media);
+        }
+    }
+
+    /**
+     * Overrides parent method to add cache buster parameter 
+     */
+    public function registerScriptFile ($url, $position=null, array $htmlOptions=array()) {
+        return parent::registerScriptFile (
+            $url.$this->getCacheBusterSuffix ($url), $position,
+            $htmlOptions);
+    }
+
+	/**
+	 * Overrides parent method to add cache busting suffix to package files
+	 */
+	public function renderCoreScripts()
+	{
+		if($this->coreScripts===null)
+			return;
+		$cssFiles=array();
+		$jsFiles=array();
+		foreach($this->coreScripts as $name=>$package)
+		{
+			$baseUrl=$this->getPackageBaseUrl($name);
+			if(!empty($package['js']))
+			{
+                /* x2modstart */ 
+				foreach($package['js'] as $js)
+					$jsFiles[$baseUrl.'/'.$js.$this->getCacheBusterSuffix ($js)]=$baseUrl.'/'.$js;
+                /* x2modend */ 
+			}
+			if(!empty($package['css']))
+			{
+                /* x2modstart */ 
+				foreach($package['css'] as $css)
+					$cssFiles[$baseUrl.'/'.$css.$this->getCacheBusterSuffix ($css)]='';
+                /* x2modend */ 
+			}
+		}
+		// merge in place
+		if($cssFiles!==array())
+		{
+			foreach($this->cssFiles as $cssFile=>$media)
+				$cssFiles[$cssFile]=$media;
+			$this->cssFiles=$cssFiles;
+		}
+		if($jsFiles!==array())
+		{
+			if(isset($this->scriptFiles[$this->coreScriptPosition]))
+			{
+				foreach($this->scriptFiles[$this->coreScriptPosition] as $url => $value)
+					$jsFiles[$url]=$value;
+			}
+			$this->scriptFiles[$this->coreScriptPosition]=$jsFiles;
+		}
+	}
+
+    /**
+     * Overrides parent method to add cache buster parameter 
+     */
+    public function registerCssFile ($url, $media='') {
+        return parent::registerCssFile (
+            $url.$this->getCacheBusterSuffix ($url), $media);
+    }
+
+    /**
+     * Registers a set of css files using cache busting.
+     * For ie < 10, files are imported using css import statements within style tags. This is done
+     * to get around the 31 stylesheet limit in ie 6-9.
+     * @param string id CSS script unique id
+     * @param array $filenames array of filename strings
+     * @param bool if true, theme url + '/css/' will be prepended to each filename
+     */
+    public function registerCssFiles ($id, array $filenames, $prependThemeUrl=true, $media='') {
+        $cssUrl = '';
+        if ($prependThemeUrl) {
+            $cssUrl = $this->getThemeUrl ().'/css/';
+        }
+        $ieVer = Auxlib::getIEVer ();
+        if ($ieVer < 10) {
+            $cacheBuster = $this->getCacheBuster ();
+            $cssStr = '';
+            foreach ($filenames as $file) {
+                $cssStr .= '@import url("'.$cssUrl.$file.'?'.$cacheBuster.'");'."\n";
+            }
+            $this->registerCss ($id, $cssStr, $media);
+        } else {
+            foreach ($filenames as $file) {
+                $this->registerCssFile ($cssUrl.$file, $media);
+            }
+        }
+    }
+
+    /**
+     * Registers css for responsive title bar. Since title bar logo width can change, the
+     * media query that determines the appearance of the title bar must be set in accordance
+     * with the width of the currently uploaded logo.
+     */
+    private function registerResponsiveTitleBarCss () {
+        $logo = Media::model()
+            ->findByAttributes(array('associationId' => 1, 'associationType' => 'logo'));
+
+        if (isset ($logo)) {
+            $dimensions = CJSON::decode ($logo->resolveDimensions ());
+            if (is_array ($dimensions)) {
+                $imgWidth = floor ($dimensions['width'] * (30 / $dimensions['height']));
+                Yii::app()->clientScript->registerScript('logoWidthScript',"
+                if (typeof x2 === 'undefined') x2 = {};
+                x2.logoWidth = ".$imgWidth.";
+                ", CClientScript::POS_HEAD);
+            }
+        }
+
+        if (isset ($imgWidth)) {
+            $threshold = 915 + $imgWidth;
+        } else {
+            $threshold = 915;
+        }
+
+        Yii::app()->clientScript->registerResponsiveCss('responsiveTitleBar',"
+        /*
+        Step between full title bar and mobile title bar. Search bar minimizes and expands to make
+        room for user menu links
+        */
+        @media (max-width: ".$threshold."px) {
+            #search-bar-box {
+                display: none;
+                width: 180px;
+            }
+            #search-bar button.x2-button {
+                border-radius: 3px 3px 3px 3px;
+                -moz-border-radius: 3px 3px 3px 3px;
+                -webkit-border-radius: 3px 3px 3px 3px;
+                -o-border-radius: 3px 3px 3px 3px;
+            }
+        }
+
+        @media (min-width: ".$threshold."px) {
+            #user-menu > li {
+                display: block !important;
+            }
+            #search-bar-box {
+                display: block !important;
+            }
+        }
+        ");
+
+    }
+
+    /**
+     * Registers a set of css files which are used for all pages with the main layout. 
+     */
+    private function registerCombinedCss () {
+        $ieVer = Auxlib::getIEVer ();
+        $cssUrl = $this->getThemeUrl ().'/css';
+
+        $cssFiles = array (
+            'screen.css',
+            'auxlib.css',
+            'jquery-ui.css',
+            'dragtable.css',
+            'main.css',
+            'ui-elements.css',
+            'layout.css',
+            'details.css',
+            'x2forms.css',
+            'form.css',
+            'publisher.css',
+            '../../../js/bgrins-spectrum-2c2010c/spectrum.css',
+            '../../../js/qtip/jquery.qtip.min.css',
+            '../../../js/checklistDropdown/jquery.multiselect.css',
+            'rating/jquery.rating.css',
+        );
+
+        $responsiveCssFiles = array (
+            'responsiveLayout.css',
+            'responsiveUIElements.css',
+            'responsiveX2Forms.css',
+        );
+
+        $this->registerResponsiveTitleBarCss ();
+
+        $this->registerCssFiles ('combinedCss', $cssFiles, 'screen, projection');
+
+        if (RESPONSIVE_LAYOUT) {
+            $this->registerCssFiles ('responsiveCombinedCss', 
+                $responsiveCssFiles, 'screen, projection');
+        }
+    }
+
+    /**
      * Performs all the necessary JavaScript/CSS initializations for most parts of the app.
      */
     public function registerMain(){
@@ -185,7 +421,6 @@ class X2ClientScript extends NLSClientScript {
         }
 
         $cs = $this;
-        $jsVersion = '?'.Yii::app()->params->buildDate;
         $fullscreen = $this->fullscreen;
         $profile = $this->profile;
         
@@ -210,19 +445,19 @@ class X2ClientScript extends NLSClientScript {
         // custom scripts
         $cs->registerScriptFile($baseUrl.'/js/json2.js')
                 ->registerScriptFile($baseUrl.'/js/webtoolkit.sha256.js')
-                ->registerScriptFile($baseUrl.'/js/main.js'.$jsVersion, CCLientScript::POS_HEAD)
+                ->registerScriptFile($baseUrl.'/js/main.js', CCLientScript::POS_HEAD)
                 ->registerScriptFile($baseUrl.'/js/auxlib.js', CClientScript::POS_HEAD)
                 ->registerScriptFile($baseUrl.'/js/IframeFixOverlay.js', CClientScript::POS_HEAD)
                 ->registerScriptFile($baseUrl.'/js/LayoutManager.js')
                 //->registerScriptFile($baseUrl.'/js/X2Select.js')
                 ->registerScriptFile($baseUrl.'/js/media.js')
                 ->registerScriptFile($baseUrl.'/js/X2Forms.js')
-                ->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js'.$jsVersion)
+                ->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js')
                 ->registerScript('formatCurrency-locales', $cldScript, CCLientScript::POS_HEAD)
                 ->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js')
                 ->registerScriptFile($baseUrl.'/js/widgets.js')
-                ->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion)
-                ->registerScriptFile($baseUrl.'/js/ActionFrames.js'.$jsVersion)
+                ->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js')
+                ->registerScriptFile($baseUrl.'/js/ActionFrames.js')
                 ->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js')
                 ->registerScriptFile($baseUrl.'/js/checklistDropdown/jquery.multiselect.js');
 
@@ -242,18 +477,14 @@ class X2ClientScript extends NLSClientScript {
         $aMmPath = Yii::app()->getAssetManager()->publish($mmPath);
         $cs->registerScriptFile("$aMmPath/jquery.maskMoney.js");
         $cs->registerCssFile($baseUrl.'/css/normalize.css', 'all')
-            ->registerCssFile($themeUrl.'/css/print.css'.$jsVersion, 'print')
-            ->registerCssFile($themeUrl.'/css/combined.css'.$jsVersion, 'screen, projection')
+            ->registerCssFile($themeUrl.'/css/print.css', 'print')
             ->registerCoreScript('cookie');
-        if (RESPONSIVE_LAYOUT) {
-            $cs->registerCssFile(
-                $themeUrl.'/css/responsiveCombined.css'.$jsVersion, 'screen, projection');
-        }
+        $this->registerCombinedCss ();
         if(!RESPONSIVE_LAYOUT && IS_ANDROID) {
             $cs->registerCssFile(
-                $themeUrl.'/css/androidLayout.css'.$jsVersion, 'screen, projection');
+                $themeUrl.'/css/androidLayout.css', 'screen, projection');
         } elseif (IS_IPAD) {
-            $cs->registerCssFile($themeUrl.'/css/ipadLayout.css'.$jsVersion, 'screen, projection');
+            $cs->registerCssFile($themeUrl.'/css/ipadLayout.css', 'screen, projection');
         }
 
         $cs->registerScript('fullscreenToggle', '
@@ -278,9 +509,9 @@ class X2ClientScript extends NLSClientScript {
                     }
                 });
             ", CClientScript::POS_READY);
-            $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
+            $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js')
                ->registerScriptFile(
-                $baseUrl.'/js/notifications.js'.$jsVersion, CClientScript::POS_BEGIN);
+                $baseUrl.'/js/notifications.js', CClientScript::POS_BEGIN);
         }
 
         if(!$isGuest && ($profile->language == 'he' || $profile->language == 'fa'))

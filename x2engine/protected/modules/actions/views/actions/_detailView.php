@@ -136,7 +136,7 @@ if ($model->associationType!="none") {
 	<tr>
 		<td class="label"><?php echo $model->getAttributeLabel('priority'); ?></td>
 		<td><b><?php
-        echo Yii::t('actions',($model->priority==1?'Low':($model->priority==2?'Medium':'High'))); ?></b></td>
+        echo $model->getPriorityLabel(); ?></b></td>
 		<td class="label"><?php echo $attributeLabels['createDate']; ?></td>
 		<td><b><?php echo Formatter::formatLongDateTime($model->createDate); ?></b></td>
 	</tr>

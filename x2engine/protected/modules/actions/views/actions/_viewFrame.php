@@ -59,7 +59,9 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
         <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/form.css?<?php echo $jsVersion ?>" media="screen, projection" />
         <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/ui-elements.css?<?php echo $jsVersion ?>" media="screen, projection" />
         <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/x2forms.css?<?php echo $jsVersion ?>" media="screen, projection" />
-        <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/responsiveCombined.css?<?php echo $jsVersion ?>" media="screen, projection" />
+        <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/responsiveLayout.css?<?php echo $jsVersion ?>" media="screen, projection" />
+        <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/responsiveUIElements.css?<?php echo $jsVersion ?>" media="screen, projection" />
+        <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/responsiveX2Forms.css?<?php echo $jsVersion ?>" media="screen, projection" />
         <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->clientScript->coreScriptUrl.'/jui/css/base/jquery-ui.css'; ?>" />
         <!-- -->
         <script type="text/javascript" src="<?php echo Yii::app()->clientScript->coreScriptUrl.'/jquery.js'; ?>"></script>
@@ -211,7 +213,7 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                                 echo "<span style='color:grey'>".
                                     $model->getAttributeLabel ('completeDate', true).':'.
                                     " </span>".
-                                    '<b>'.$model->formatDueDate ().'</b>';
+                                    '<b>'.Formatter::formatDateTime ($model->completeDate).'</b>';
                                 echo "</div>";
                             }
                         }elseif(!empty($model->createDate)){
@@ -295,7 +297,7 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                 echo "</span></span> ";
                 echo "<span class='hidden-frame-form' style='display: none;'><span style='display:inline-block;'>";
                 echo $form->labelEx($model, 'priority');
-                echo $form->dropDownList($model, 'priority', array(1 => Yii::t('actions', 'Low'), 2 => Yii::t('actions', 'Medium'), 3 => Yii::t('actions', 'High')));
+                echo $form->dropDownList($model, 'priority',$model->priorityLabels);
                 echo "</span></span>";
                 echo "<span class='field-value'>";
                 if(!empty($model->subject)){
@@ -310,7 +312,7 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                     $model, 'actionDescription', array('class'=>'x2-xxwide-input', 'rows' => (6)));
                 echo "</span>";
                 echo "<span class='field-value'>";
-                echo Formatter::convertLineBreaks(CHtml::encode($model->actionDescription));
+                echo Formatter::convertLineBreaks($model->actionDescription);
                 echo "</span>";
                  
                 echo '<div>';

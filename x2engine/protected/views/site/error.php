@@ -38,7 +38,7 @@ $errorTitle = Yii::t('app','Error {code}',array('{code}'=>$code));
 $this->pageTitle=Yii::app()->settings->appName . ' - ' . $errorTitle;
 ?>
 <h1 style="font-weight:bold;color:#f00;"><?php echo Yii::t('app','Oops!'); ?></h1>
-<div class="form" style="width:600px;">
+<div id='x2-php-error' class="form" style="width:600px;">
     <?php echo Yii::t('app','It looks like the application ran into an unexpected error.');?>
     <br><br>
     <?php echo Yii::t('app','We apologize for the inconvenience and would like to do our best to fix this issue.  If you would like to make a post on our forums we can actively interact with you in getting this resolved.  If not, simply sending the error report helps us immensely and will only improve the quality of the software. Thanks!');?>
@@ -48,7 +48,7 @@ $this->pageTitle=Yii::app()->settings->appName . ' - ' . $errorTitle;
     <?php echo Yii::t('app',"Here's a quick list of what will be included in the report:");?><br><br>
     <b><?php echo Yii::t('app','Error Code:');?></b> <?php echo $code; ?><br>
     <b><?php echo Yii::t('app','Error Message:');?></b> <?php echo CHtml::encode($message);?><br>
-    <b><?php echo Yii::t('app','Stack Trace:');?> </b> <a href="#" id="toggle-trace" style="text-decoration:none;">[<?php echo Yii::t('app','click to toggle display');?>]</a><br><div id="stack-trace" style="display:none;"><?php echo $trace;?></div>
+    <b><?php echo Yii::t('app','Stack Trace:');?> </b> <a href="#" id="toggle-trace" style="text-decoration:none;">[<?php echo Yii::t('app','click to toggle display');?>]</a><br><div id="stack-trace" style="display:none;"><?php echo nl2br($trace);?></div>
     <b><?php echo Yii::t('app','X2Engine Version:');?> </b> <?php echo $x2version; ?><br>
     <b><?php echo Yii::t('app','PHP Version:');?> </b> <?php echo $phpversion;?><br><br>
     <label><?php echo Yii::t('app','Email Address (optional)');?></label><?php echo CHtml::textField('email','',array('size'=>40)); ?><br><br>

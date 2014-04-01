@@ -169,4 +169,15 @@ class Campaign extends X2Model {
 
 		return $criteria;
 	}
+
+    /**
+     * Override of {@link X2Model::setX2Fields}
+     *
+     * Skips HTML purification for the content so that tracking links will work.
+     */
+    public function setX2Fields(&$data, $filter = false){
+        $originalContent = isset($data['content'])?$data['content']:null;
+        parent::setX2Fields($data, $filter);
+        $this->content = $originalContent;
+    }
 }

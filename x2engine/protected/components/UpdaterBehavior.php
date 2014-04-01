@@ -59,6 +59,11 @@ defined('X2_FTP_CHROOT_DIR') or define('X2_FTP_CHROOT_DIR', false);
 /**
  * Behavior class with application updater/upgrader utilities.
  *
+ * Note to all future developers: it is important to bear in mind that if you
+ * need to make changes to the updates system or the updater in general, they
+ * must be backwards-compatible with all earlier versions of the software (or as
+ * far back as possible).
+ *
  * @property string $backCompatFile Path to the backwards compatibility flag file.
  * @property array $checksums When running an update, this is a list of all MD5 hashes of files to be applied, with filenames their keys and checksums their values.
  * @property string $checksumsContent The contents of the package contents digest file.
@@ -372,7 +377,7 @@ class UpdaterBehavior extends ResponseBehavior {
     /**
      * Base URL of the web server from which to fetch data and files
      */
-    public $updateServer = 'http://testupdate.x2developer.com/x2planet.com';
+    public $updateServer = 'https://x2planet.com';
 
     /**
      * Converts an array formatted like a behavior or controller actions array
@@ -686,31 +691,7 @@ class UpdaterBehavior extends ResponseBehavior {
         return true;
     }
 
-    /**
-     * Branding validity check.
-     */
-    public function checkPartner($content=false) {
-        $partnerFiles = array(
-            'about' => array('about'),
-            'footer' => array('footer'),
-            'login' => array('login'),
-        );
-        $fileStatus = array_fill_keys(array_keys($partnerFiles),false);
-        foreach($partnerFiles as $name=>$sections) {
-            $path = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'partner',''));
-            if(!file_exists($file = $path."$name.php"))
-                $file = $path.$name.'_example.php';
-            if(!file_exists($file))
-                continue;
-            $delimPatterns = array();
-            foreach($sections as $secName) {
-                $delimPatterns[] = sprintf('/\* @start:%s \*/.*?/\* @end:%s \*/',$secName,$secName);
-            }
-            $defaultContent = trim(preg_replace('%(?:'.implode('|',$delimPatterns).')%ms','',file_get_contents($file)));
-            $fileStatus[$name] = $content ? $defaultContent : md5($defaultContent);
-        }
-        return $fileStatus;
-    }
+    
 
 
     /**
@@ -962,6 +943,8 @@ class UpdaterBehavior extends ResponseBehavior {
             throw $e;
         }
 
+        $lastException = null;
+
         try{
             // The hardest part of the update (database changes) is now done. If any
             // errors occurred in the database changes, they should have thrown
@@ -972,8 +955,6 @@ class UpdaterBehavior extends ResponseBehavior {
             $this->applyFiles();
             // Delete old files:
             $this->removeFiles($this->manifest['deletionList']);
-            $lastException = null;
-
             $this->output(Yii::t('admin','Cleaning up...'));
             if($this->scenario == 'update'){
                 $this->resetAssets();
@@ -1009,10 +990,10 @@ class UpdaterBehavior extends ResponseBehavior {
         }
 
         // Done.
-        if(empty($lastException)) {
-            return false;
+        if($lastException instanceof Exception) {
+            throw new CException(Yii::t('admin','Encountered an issue after applying database changes. The error message given was {msg}.',array('{msg}'=>$lastException->getMessage())));
         }else{
-            throw new CException($message);
+            return false;
         }
     }
     

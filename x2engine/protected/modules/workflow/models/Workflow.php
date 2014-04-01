@@ -342,8 +342,8 @@ class Workflow extends CActiveRecord {
                         $statusStr .= 
                             '<a href="javascript:void(0)" class="right" 
                               onclick="'.(($workflowStatus['stages'][$stage]['requireComment']) ? 
-                                  "workflowCommentDialog('.$workflowId.','.$stage.');" : 
-                                  "completeWorkflowStage('.$workflowId.','.$stage.');").'">
+                                  "workflowCommentDialog($workflowId,$stage);" : 
+                                  "completeWorkflowStage($workflowId,$stage);").'">
                                   '.$completeText.'
                             </a> ';
 					}elseif($previousCheck && !$editPermission){

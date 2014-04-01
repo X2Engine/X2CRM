@@ -103,7 +103,7 @@ abstract class CURLTestCase extends CTestCase {
             $this->assertRegExp(
                     sprintf('/^%s: %s\s*$/m', preg_quote($field,'/'), preg_quote($value,'/')),
                     $header,
-                    "Header $field not found in response, or was not equal to \"$value\"");
+                    "Header $field not found in response, or was not equal to \"$value\". Response body = $response");
         }
     }
 

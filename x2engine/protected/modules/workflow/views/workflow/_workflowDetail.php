@@ -34,7 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 
 $users = User::getNames();

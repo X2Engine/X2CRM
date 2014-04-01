@@ -108,7 +108,8 @@ class ActionsController extends x2base {
     }
 
     public function actionViewEmail($id){
-        $action = X2Model::model('Actions')->findByPk($id);
+        $this->redirectOnNullModel = false;
+        $action = $this->loadModel($id);
         if(!Yii::app()->user->isGuest || Yii::app()->user->checkAccess(ucfirst($action->associationType).'View')){
             if(!Yii::app()->user->isGuest){
                 echo preg_replace('/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail--!>/s', '', $action->actionDescription);
@@ -125,11 +126,17 @@ class ActionsController extends x2base {
     }
 
     public function actionViewAction($id, $publisher = false){
-        $action = X2Model::model('Actions')->findByPk($id);
-        if(isset($action)){
-            X2Flow::trigger('RecordViewTrigger', array('model' => $action));
+        $this->redirectOnNullModel = false;
+        $this->throwOnNullModel = false;
+        $model = $this->loadModel($id);
+        if(isset($model)){
+            if(in_array($model->type, Actions::$emailTypes)){
+                $this->actionViewEmail($id);
+                return;
+            }
+            X2Flow::trigger('RecordViewTrigger', array('model' => $model));
             $this->renderPartial('_viewFrame', array(
-                'model' => $action,
+                'model' => $model,
                 'publisher' => $publisher,
             ));
         }else{
@@ -712,7 +719,8 @@ class ActionsController extends x2base {
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if(!isset($_GET['ajax']) && !Yii::app()->request->isAjaxRequest)
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
-        else
+        // Only report the success of a deleted record if this request wasn't made via mass actions
+        else if (!isset($_POST['gvSelection']))
             echo 'success';
     }
 
@@ -775,10 +783,10 @@ class ActionsController extends x2base {
     public function actionUncomplete($id){
         $model = $this->loadModel($id);
         switch($model->priority){
-            case "High":
+            case 3:
                 $box = "Red";
                 break;
-            case "Medium":
+            case 2:
                 $box = "Orange";
                 break;
             default:
@@ -997,6 +1005,24 @@ class ActionsController extends x2base {
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;
     }
+
+
+    public function actionGetItems(){
+        $model = X2Model::model ($this->modelClass);
+        if (isset ($model)) {
+            $tableName = $model->tableName ();
+            $sql = 
+                'SELECT id, subject as value
+                 FROM '.$tableName.' WHERE subject LIKE :qterm ORDER BY subject ASC';
+            $command = Yii::app()->db->createCommand($sql);
+            $qterm = $_GET['term'].'%';
+            $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
+            $result = $command->queryAll();
+            echo CJSON::encode($result);
+        }
+        Yii::app()->end();
+    }
+
 
 
     /***********************************************************************

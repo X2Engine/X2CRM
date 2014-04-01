@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import ('application.components.JSONFieldsBehavior');
+
 /**
  * Enables transparent serialization and storage of array objects in database
  * fields as JSON strings. In contrast to JSONFieldsBehavior where JSON properties default to null,

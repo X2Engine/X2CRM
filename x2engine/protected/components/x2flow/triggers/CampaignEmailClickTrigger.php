@@ -49,10 +49,21 @@ class CampaignEmailClickTrigger extends X2FlowTrigger {
 			'info' => Yii::t('studio',$this->info),
 			'modelClass' => 'Contacts',
 			'options' => array(
-				array('name'=>'campaign','label'=>Yii::t('studio','Campaign'),'type'=>'link','linkType'=>'Campaign','optional'=>1,'linkSource'=>Yii::app()->controller->createUrl(
-					CActiveRecord::model('Campaign')->autoCompleteSource
+				array(
+                    'name'=>'campaign',
+                    'label'=>Yii::t('studio', 'Campaign'),
+                    'type'=>'link',
+                    'linkType'=>'Campaign',
+                    'optional'=>1,
+                    'linkSource'=>Yii::app()->createUrl(
+					    CActiveRecord::model('Campaign')->autoCompleteSource
 				)),
-				array('name'=>'url','label'=>Yii::t('studio','URL'),'operators'=>array('=','<>','list','notList','contains','noContains'),'optional'=>1),
+				array(
+                    'name'=>'url',
+                    'label'=>Yii::t('studio', 'URL'),
+                    'operators'=>array('=', '<>', 'list','notList','contains','noContains'), 
+                    'optional'=>1
+                ),
 			));
 	}
 }

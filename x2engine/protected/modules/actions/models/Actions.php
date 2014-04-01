@@ -42,8 +42,16 @@ Yii::import('application.models.X2Model');
  */
 class Actions extends X2Model {
 
+    /**
+     * Types of actions that should be treated as emails
+     * @var type
+     */
+    public static $emailTypes = array('email', 'emailFrom','emailOpened','email_invoice', 'email_quote');
+
     public $verifyCode; // CAPTCHA for guests using the publisher
     public $actionDescriptionTemp = ""; // Easy way to get around action text records
+
+    private static $_priorityLabels;
 
     /**
      * Returns the static model of the specified AR class.
@@ -185,8 +193,13 @@ class Actions extends X2Model {
             }else{
                 if($association->hasAttribute('name'))
                     $this->associationName = $association->name;
-                if($association->asa('X2TimestampBehavior') !== null)
+                if($association->asa('X2TimestampBehavior') !== null) {
+                    if($association->asa('changelog') !== null
+                            && Yii::app()->getSuName() == 'Guest')
+                        $association->disableBehavior('changelog');
                     $association->updateLastActivity();
+                    $association->enableBehavior('changelog');
+                }
             }
 
             if($this->associationName == 'None' && $this->associationType != 'none')
@@ -625,8 +638,7 @@ class Actions extends X2Model {
         if(!$criteria instanceof CDbCriteria){
             $criteria = $this->getAccessCriteria();
             $criteria->addCondition(
-                '(type != "workflow" AND type!="email" AND type!="event" '.
-                'AND type!="emailFrom") OR type IS NULL');
+                '(type = "" OR type IS NULL)');
             $criteria->addCondition(
                 "assignedTo='".Yii::app()->user->getName()."' AND complete!='Yes' AND ".
                 "IFNULL(dueDate, createDate) <= '".strtotime('today 11:59 PM')."'");
@@ -644,8 +656,7 @@ class Actions extends X2Model {
                     FROM x2_group_to_user 
                     WHERE userId='".Yii::app()->user->getId()."')
                 ) AND dueDate <= '".mktime(23, 59, 59)."' AND 
-                    ((type != \"workflow\" AND type!=\"email\" AND type!=\"event\" AND 
-                    type!=\"emailFrom\") OR type IS NULL)", 
+                    (type=\"\" OR type IS NULL)", 
                 'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
         $criteria->scopes = array('findAll' => array($parameters));
         return $this->searchBase($criteria);
@@ -863,6 +874,51 @@ class Actions extends X2Model {
             }
         }
         return $editableFieldNames;
+    }
+
+    public static function getPriorityLabels(){
+        if(!isset(self::$_priorityLabels)){
+            self::$_priorityLabels = array(
+                1 => Yii::t('actions', 'Low'),
+                2 => Yii::t('actions', 'Medium'),
+                3 => Yii::t('actions', 'High')
+            );
+        }
+        return self::$_priorityLabels;
+    }
+
+    public function getPriorityLabel() {
+        $priorityLabels = self::getPriorityLabels();
+        return empty($this->priority) ? $priorityLabels[1] : $priorityLabels[$this->priority];
+    }
+
+    /**
+     * Special override that prints priority accordingly
+     * @param type $fieldName
+     * @param type $makeLinks
+     * @param type $textOnly
+     * @param type $encode
+     * @return type
+     */
+    public function renderAttribute($fieldName, $makeLinks = true, $textOnly = true, $encode = true){
+        if($fieldName == 'priority'){
+            return $encode?CHtml::encode($this->getPriorityLabel()):$this->getPriorityLabel();
+        }else{
+            return parent::renderAttribute($fieldName, $makeLinks, $textOnly, $encode);
+        }
+    }
+
+    /**
+     * Special override for priority
+     * 
+     * @param type $fieldName
+     * @param type $htmlOptions
+     */
+    public function renderInput($fieldName, $htmlOptions = array()){
+        if($fieldName == 'priority') {
+            return CHtml::activeDropdownList($this,'priority',self::getPriorityLabels());
+        } else
+            return parent::renderInput($fieldName, $htmlOptions);
     }
 
 }

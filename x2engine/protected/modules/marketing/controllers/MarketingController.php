@@ -597,7 +597,7 @@ class MarketingController extends x2base {
             foreach($weblists as $weblist){
                 $weblistAction = new Actions();
                 $weblistAction->disableBehavior('changelog');
-                $weblistAction->id = 0;
+                //$weblistAction->id = 0; // this causes primary key contraint violation errors
                 $weblistAction->isNewRecord = true;
                 $weblistAction->type = 'email_unsubscribed';
                 $weblistAction->associationType = 'X2List';

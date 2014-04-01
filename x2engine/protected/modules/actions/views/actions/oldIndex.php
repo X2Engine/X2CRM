@@ -133,7 +133,7 @@ $this->widget('X2GridView', array(
                         CHtml::encode(Formatter::trimText($data->actionDescription)),
                     array("view","id"=>$data->id))',
 			'type'=>'raw',
-            'filter' => false
+            'filter' => false,
 		),
 		'associationName'=>array(
 			'name'=>'associationName',

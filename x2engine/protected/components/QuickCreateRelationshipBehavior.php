@@ -64,25 +64,11 @@ class QuickCreateRelationshipBehavior extends CBehavior {
     public static function getModelsWhichSupportQuickCreate () {
         if (isset (self::$_modelsWhichSupportQuickCreate)) {
             return self::$_modelsWhichSupportQuickCreate;
-        }  
-        $moduleNames = array_map (function ($record) {
-            return $record->name; 
-        }, Modules::model ()->findAll (array ('select' => 'name')));
-
-        $models = array ();
-        foreach ($moduleNames as $name) {
-            $modelName = X2Model::getModelName ($name);
-            if ($modelName && is_subclass_of ($modelName, 'X2Model')) {
-                $models[] = $modelName;
-            }
         }
-
-        $models = array_diff ($models, array ('Docs', 'Groups', 'Campaign', 'Media',
-            'Quote', 'BugReports', 'Actions'));
-
-        self::$_modelsWhichSupportQuickCreate = $models;
-
-        return $models;
+        self::$_modelsWhichSupportQuickCreate = array_diff (Fields::getModelNames(), 
+                array ('Docs', 'Groups', 'Campaign', 'Media', 'Quote',
+                    'BugReports', 'Actions'));
+        return self::$_modelsWhichSupportQuickCreate;
     }
 
     /**

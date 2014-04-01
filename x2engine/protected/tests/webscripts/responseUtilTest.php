@@ -131,7 +131,7 @@ switch ($case) {
                 $r->sendHttp(666);
                 break;
             case 'extraHeader':
-                $r->httpHeader['Content-MD5'] = base64_encode(md5( json_encode((array) $r)));
+                $r->httpHeader['Content-MD5'] = base64_encode(md5('not the content'));
                 $r->sendHttp();
                 break;
             case 'raw':

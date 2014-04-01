@@ -849,7 +849,7 @@ class InlineEmail extends CFormModel {
                 }else if($this->modelName == 'Quote'){
                     // An event has already been made for issuing the quote and
                     // so another event would be redundant.
-                    $skipEvent = $this->targetModel->contact->id == $contact->id;
+                    $skipEvent = $this->targetModel->associatedContacts == $contact->nameId;
                 }
                 if($skip)
                 // Only save the action history item/event if this hasn't

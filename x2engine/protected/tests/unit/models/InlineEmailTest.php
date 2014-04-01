@@ -90,10 +90,11 @@ class InlineEmailTest extends X2DbTestCase {
 
     public function assertBodyHasTrackingImage($message = null){
         $tt = InlineEmail::TRACKTAG;
-        include(realpath(Yii::app()->basePath.'/../webLeadConfig.php'));
+        include(realpath(Yii::app()->basePath.'/../webConfig.php'));
+        $url = Yii::app()->getAbsoluteBaseUrl();
         $image = "<img src=\"$url/index.php/actions/emailOpened?uid={$this->eml->uniqueId}&type=open\"/>";
         $fullImage = InlineEmail::insertedPattern('track', $image);
-        $this->assertEquals($this->eml->trackingImage, $image, 'Failed asserting that the tracking image is as expected. '.$message);
+        $this->assertEquals($image, $this->eml->trackingImage, 'Failed asserting that the tracking image is as expected. '.$message);
         $this->assertTrue(strpos($this->eml->message, $fullImage) !== false, 'Failed asserting that the body contains the tracking image; body ='.$this->eml->message.$message);
         $this->assertRegExp(InlineEmail::UIDREGEX, $this->eml->trackingImage, 'Failed asserting that the tracking image has a unique id.'.$message);
         preg_match(InlineEmail::UIDREGEX, $this->eml->trackingImage, $matchId);

@@ -182,13 +182,13 @@ class AuxLib {
      */
     public static function debugLog ($message) {
         if (!YII_DEBUG) return;
-        Yii::log ($message, '', 'application.debug');
+        Yii::log ($message, 'error', 'application.debug');
     }
 
     public static function debugLogR ($arr) {
         if (!YII_DEBUG) return;
         $logMessage = print_r ($arr, true);
-        Yii::log ($logMessage, '', 'application.debug');
+        Yii::log ($logMessage, 'error', 'application.debug');
     }
 
     public static function isIE8 () {
@@ -201,13 +201,16 @@ class AuxLib {
         return preg_match('/msie/i', $userAgentStr);
     }
 
+    /**
+     * @return mixed The IE version if available, otherwise infinity 
+     */
     public static function getIEVer () {
         $userAgentStr = strtolower(Yii::app()->request->userAgent);
         preg_match('/msie ([0-9]+)/', $userAgentStr, $matches);
         if (sizeof ($matches) === 2) {
-            $ver = $matches[1];
+            $ver = (int) $matches[1];
         } else {
-            $ver = false;
+            $ver = INF;
         }
         return $ver;
     }

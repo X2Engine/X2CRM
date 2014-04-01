@@ -813,4 +813,8 @@ class QuotesController extends x2base {
 		echo CJSON::encode($result); exit;
 	}
 
+    public function actionGetItems ($term) {
+        X2LinkableBehavior::getItems ($term);
+    }
+
 }

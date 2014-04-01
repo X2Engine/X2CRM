@@ -48,6 +48,8 @@ Yii::import('application.components.util.*');
  */
 class UserTest extends CDbTestCase {
 
+    const VERBOSE = 0;
+
     public $fixtures = array (
         'users' => 'User',
         'groups' => array ('Groups', '_1'),
@@ -56,8 +58,10 @@ class UserTest extends CDbTestCase {
 
     public function testAfterDelete () {
         $user = User::model ()->findByPk ('2');
-        print ('id of user to delete: ');
-        print ($user->id);
+        if(self::VERBOSE){
+            print ('id of user to delete: ');
+            print ($user->id);
+        }
         
         // assert that group to user records exist for this user
         $this->assertTrue (

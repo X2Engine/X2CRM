@@ -35,11 +35,15 @@
  *****************************************************************************************/
 
 /**
- * Environmentally-agnostic content/message feedback utility.
+ * Standalone environmentally-agnostic content/message feedback utility.
  *
  * In the scope of a web request, it will respond via JSON (i.e. for use in an
- * API or AJAX response action). In the scope of a console command, it will echo
- * messages without exiting.
+ * API or AJAX response action). When run in a command line interface, it will
+ * echo messages without exiting.
+ *
+ * Setting elements of an object of this class (using the {@link ArrayAccess}
+ * implementation) will control the properties of the JSON that is returned when
+ * using it in a web request.
  *
  * @author Demitri Morgan <demitri@x2engine.com>
  */
@@ -215,7 +219,7 @@ class ResponseUtil implements ArrayAccess {
     public static function respond($message, $error = false, $fatal = false){
         if(self::isCli()){ // Command line interface message
             self::$_responding = true;
-            echo $message;
+            echo trim($message)."\n";
             if($error && $fatal)
                 self::end();
         } else { // One-off JSON response to HTTP client

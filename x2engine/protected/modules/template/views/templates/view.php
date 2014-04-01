@@ -34,6 +34,15 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss('contactRecordViewCss',"
+
+#content {
+    background: none !important;
+    border: none !important;
+}
+");
+
+
 include("protected/modules/templates/templatesConfig.php");
 
 $this->actionMenu = $this->formatMenu(array(
@@ -53,6 +62,9 @@ $(function() {
 	$('body').data('modelId', $modelId);
 });");
 ?>
+<div class="page-title-placeholder"></div>
+<div class="page-title-fixed-outer">
+    <div class="page-title-fixed-inner">
 <div class="page-title">
     <h2>
         <?php 
@@ -71,6 +83,8 @@ $(function() {
         )
     );
     ?>
+</div>
+</div>
 </div>
 <div id="main-column" class="half-width">
 <?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'templates')); ?>

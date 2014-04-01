@@ -73,6 +73,13 @@ class Media extends X2Model {
         if (file_exists($this->getPath())) {
             unlink($this->getPath());
         }
+
+        // if theme is deleted which is default, unset default theme setting
+        if ($this->id === Yii::app()->settings->defaultTheme) {
+            Yii::app()->settings->defaultTheme = null;
+            Yii::app()->settings->enforceDefaultTheme = false;
+            Yii::app()->settings->save ();
+        }
     }
     
     public function behaviors(){
@@ -183,24 +190,28 @@ class Media extends X2Model {
      */
     public function getPath(){
         if(!isset($this->_path)){
-            $pathFmt = array(
-                implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', 'media', '{uploadedBy}', '{fileName}')),
-                implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', '{fileName}'))
-            );
-            $basePath = realpath(Yii::app()->basePath.DIRECTORY_SEPARATOR.'..');
-            $params = array(
-                '{bp}' => $basePath,
-                '{uploadedBy}' => $this->uploadedBy,
-                '{fileName}' => $this->fileName
-            );
-            foreach($pathFmt as $pfmt){
-                $path = realpath(strtr($pfmt, $params));
-                if((bool) $path){
-                    $this->_path = $path;
-                    break;
-                }else{
-                    // The file does not exist.
-                    $this->_path = null;
+            if ($this->associationType === 'logo') { // an exception for logos, fileName equals path name
+                $this->_path = $this->fileName;    
+            } else {
+                $pathFmt = array(
+                    implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', 'media', '{uploadedBy}', '{fileName}')),
+                    implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', '{fileName}')),
+                );
+                $basePath = realpath(Yii::app()->basePath.DIRECTORY_SEPARATOR.'..');
+                $params = array(
+                    '{bp}' => $basePath,
+                    '{uploadedBy}' => $this->uploadedBy,
+                    '{fileName}' => $this->fileName
+                );
+                foreach($pathFmt as $pfmt){
+                    $path = realpath(strtr($pfmt, $params));
+                    if((bool) $path){
+                        $this->_path = $path;
+                        break;
+                    }else{
+                        // The file does not exist.
+                        $this->_path = null;
+                    }
                 }
             }
         }

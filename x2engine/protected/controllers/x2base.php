@@ -1316,4 +1316,5 @@ abstract class x2base extends X2Controller {
             }
         }
     }
+
 }

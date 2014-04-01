@@ -34,7 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<head>
     <style>
         tip-title {
             text-align: center;
@@ -47,9 +46,7 @@
             margin-right:22px;
         }
     </style>
-</head>
 
-<body>
     <span class="tip-refresh" title="Refresh Tip"></span>
     <div id="tip-content">
         <tip-title>
@@ -82,4 +79,3 @@
             });
         });
     </script>
-</body>

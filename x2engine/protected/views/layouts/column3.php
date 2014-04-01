@@ -65,7 +65,7 @@ $this->beginContent('//layouts/main');
             ));
 
             $this->widget(
-                'zii.widgets.CMenu',array('items'=>$this->actionMenu,'encodeLabel'=>false));
+                'zii.widgets.CMenu',array('items'=>$this->actionMenu,'encodeLabel'=>true));
             $this->endWidget();
         }
 

@@ -156,4 +156,24 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 	public function getAutoCompleteSource() {
 		return $this->autoCompleteSource;
 	}
+
+    /**
+     * Get autocomplete options 
+     * @param string $term
+     */
+    public static function getItems ($term) {
+        $model = X2Model::model (Yii::app()->controller->modelClass);
+        if (isset ($model)) {
+            $tableName = $model->tableName ();
+            $sql = 
+                'SELECT id, name as value 
+                 FROM '.$tableName.' WHERE name LIKE :qterm ORDER BY name ASC';
+            $command = Yii::app()->db->createCommand($sql);
+            $qterm = $term.'%';
+            $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
+            $result = $command->queryAll();
+            echo CJSON::encode($result);
+        }
+        Yii::app()->end();
+    }
 }

@@ -369,7 +369,8 @@ $(function() {
             );
             auxlib.getElement('#event-form-action-complete-date').datetimepicker('setDate', newDate.end);
 
-            auxlib.getElement('#event-form-action-description').focus();
+            auxlib.getElement('#event-action-description').click ();
+            auxlib.getElement('#event-action-description').select();
 
             return false;
         },
@@ -422,18 +423,18 @@ $(function() {
             var focusButton = 'Close';
             var dialogWidth = 390;
             var associations = {
-                'contacts':'<?php echo Yii::t('calendar','Contact'); ?>',
-                'accounts':'<?php echo Yii::t('calendar','Account'); ?>',
-                'opportunities':'<?php echo Yii::t('calendar','Opportunity'); ?>',
-                'campaigns':'<?php echo Yii::t('calendar','Campaign'); ?>',
-                'services':'<?php echo Yii::t('calendar','Case'); ?>',
-                'quotes':'<?php echo Yii::t('calendar','Quote'); ?>',
-                'products':'<?php echo Yii::t('calendar','Product'); ?>'
+                'contacts':'<?php echo CHtml::encode (Yii::t('calendar','Contact')); ?>',
+                'accounts':'<?php echo CHtml::encode (Yii::t('calendar','Account')); ?>',
+                'opportunities':'<?php echo CHtml::encode (Yii::t('calendar','Opportunity')); ?>',
+                'campaigns':'<?php echo CHtml::encode (Yii::t('calendar','Campaign')); ?>',
+                'services':'<?php echo CHtml::encode (Yii::t('calendar','Case')); ?>',
+                'quotes':'<?php echo CHtml::encode (Yii::t('calendar','Quote')); ?>',
+                'products':'<?php echo CHtml::encode (Yii::t('calendar','Product')); ?>'
             };
 
             var boxButtons =  [ // buttons on bottom of dialog
                 {
-                    text: '<?php echo Yii::t('app', 'Close'); ?>',
+                    text: '<?php echo CHtml::encode (Yii::t('app', 'Close')); ?>',
                     click: function() {
                         $(this).dialog('close');
                     }
@@ -441,7 +442,7 @@ $(function() {
             ];
 
             if(event.source.source == 'google') {
-                var boxTitle = '<?php echo Yii::t('calendar', 'Google Event'); ?>';
+                var boxTitle = '<?php echo CHtml::encode (Yii::t('calendar', 'Google Event')); ?>';
                 if(event.source.editable) {
                     dialogWidth = 600;
                     $.post(
@@ -454,7 +455,7 @@ $(function() {
                         }
                     );
                     boxButtons.unshift({
-                        text: '<?php echo Yii::t('app', 'Save'); ?>', // update event
+                        text: '<?php echo CHtml::encode (Yii::t('app', 'Save')); ?>', // update event
                         click: function() {
                             // delete event from database
                             $.post(
@@ -469,7 +470,7 @@ $(function() {
                         }
                     });
                     boxButtons.unshift({
-                        text: '<?php echo Yii::t('app', 'Delete'); ?>', // delete event
+                        text: '<?php echo CHtml::encode (Yii::t('app', 'Delete')); ?>', // delete event
                         click: function() {
                             if(confirm('Are you sure you want to delete this action?')) {
                                 // delete event from Google Calendar
@@ -503,7 +504,7 @@ $(function() {
                         }
                     );
                     boxButtons.unshift({
-                        text: '<?php echo Yii::t('app', 'Save'); ?>', // delete event
+                        text: '<?php echo CHtml::encode (Yii::t('app', 'Save')); ?>', // delete event
                         click: function() {
     //                        var description = $(eventDescription).val();
                             // delete event from database
@@ -521,7 +522,7 @@ $(function() {
                         }
                     });
                     boxButtons.unshift({
-                        text: '<?php echo Yii::t('app', 'Delete'); ?>', // delete event
+                        text: '<?php echo CHtml::encode (Yii::t('app', 'Delete')); ?>', // delete event
                         click: function() {
                             if(confirm('Are you sure you want to delete this action?')) {
                                 // delete event from database
@@ -562,7 +563,7 @@ $(function() {
                     }
 
                     boxButtons.unshift({  //prepend button
-                        text: '<?php echo Yii::t('calendar', 'View'); ?> '+associationType,
+                        text: '<?php echo CHtml::encode (Yii::t('calendar', 'View')); ?> '+associationType,
                         click: function() {
                             window.location = event.associationUrl;
                         }
@@ -571,7 +572,7 @@ $(function() {
                     if(event.source.editable && event.type != 'event') {
                         if(event.complete == 'Yes') {
                             boxButtons.unshift({  // prepend button
-                                text: '<?php echo Yii::t('actions', 'Uncomplete'); ?>',
+                                text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
                                 click: function() {
                                     $.post('<?php echo $urls['uncompleteAction']; ?>', {id: event.id});
                                     event.complete = 'No';
@@ -580,7 +581,7 @@ $(function() {
                             });
                         } else {
                             boxButtons.unshift({  // prepend button
-                                text: '<?php echo Yii::t('actions', 'Complete'); ?>',
+                                text: '<?php echo CHtml::encode (Yii::t('actions', 'Complete')); ?>',
                                 click: function() {
                                     $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
                                     event.complete = 'Yes';
@@ -602,7 +603,7 @@ $(function() {
                             '</a></b><br />');
                     }
                     boxButtons.unshift({  //prepend button
-                        text: '<?php echo Yii::t('contacts', 'View Contact'); ?>',
+                        text: '<?php echo CHtml::encode (Yii::t('contacts', 'View Contact')); ?>',
                         click: function() {
                             window.location = event.associationUrl;
                         }
@@ -610,7 +611,7 @@ $(function() {
                     if(event.source.editable && event.type != 'event') {
                         if(event.complete == 'Yes') {
                             boxButtons.unshift({  // prepend button
-                                text: '<?php echo Yii::t('actions', 'Uncomplete'); ?>',
+                                text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
                                 click: function() {
                                     $.post('<?php echo $urls['uncompleteAction']; ?>', {
                                         id: event.id});
@@ -620,7 +621,7 @@ $(function() {
                             });
                         } else {
                             boxButtons.unshift({  // prepend button
-                                text: '<?php echo Yii::t('actions', 'Complete'); ?>',
+                                text: '<?php echo CHtml::encode (Yii::t('actions', 'Complete')); ?>',
                                 click: function() {
                                     $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
                                     event.complete = 'Yes';
@@ -628,7 +629,7 @@ $(function() {
                                 }
                             });
                             boxButtons.unshift({  // prepend button
-                                text: '<?php echo Yii::t('actions', 'Complete and View Contact'); ?>',
+                                text: '<?php echo CHtml::encode (Yii::t('actions', 'Complete and View Contact')); ?>',
                                 click: function() {
                                     $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
                                     window.location = event.associationUrl;
@@ -641,7 +642,7 @@ $(function() {
                     if(event.source.editable) {
                         if(event.complete == 'Yes') {
                             boxButtons.unshift({  // prepend button
-                                text: '<?php echo Yii::t('actions', 'Uncomplete'); ?>',
+                                text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
                                 click: function() {
                                     $.post('<?php echo $urls['uncompleteAction']; ?>', {id: event.id});
                                     event.complete = 'No';
@@ -650,7 +651,7 @@ $(function() {
                             });
                         } else {
                             boxButtons.unshift({  // prepend button
-                                text: '<?php echo Yii::t('actions', 'Complete'); ?>',
+                                text: '<?php echo CHtml::encode (Yii::t('actions', 'Complete')); ?>',
                                 click: function() {
                                     $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
                                     event.complete = 'Yes';

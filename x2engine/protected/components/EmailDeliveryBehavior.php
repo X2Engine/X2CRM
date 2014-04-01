@@ -48,6 +48,8 @@
  */
 class EmailDeliveryBehavior extends CBehavior {
 
+    const DEBUG_EMAIL = 0;
+
     /**
      * Stores the email credentials, if an account has been defined and is used.
      * @var mixed
@@ -183,7 +185,7 @@ class EmailDeliveryBehavior extends CBehavior {
      * @return array
      */
     public function deliverEmail($addresses, $subject, $message, $attachments = array()){
-        if(YII_DEBUG) {
+        if(YII_DEBUG && self::DEBUG_EMAIL) {
             // Fake a successful send
             AuxLib::debugLog('Faking an email delivery to address(es): '.var_export($addresses,1));
             return $this->status = $this->getDebugStatus();

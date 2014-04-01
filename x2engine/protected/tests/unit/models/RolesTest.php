@@ -75,15 +75,17 @@ class RolesTest extends X2DbTestCase {
     public function testGetUserRoles () {
         Yii::app()->cache->flush();
         $userId = $this->user['testUser']['id'];
-        print_r ($userId);
+        // print_r ($userId);
         $userRoles = Roles::getUserRoles ($userId);
 
         // assert that user has roles
         $this->assertTrue (sizeof ($userRoles) > 0);
 
-        RoleToUser::model ()->deleteAllByAttributes (array (
-            'userId' => $userId
-        ));
+        // Iterate over and remove records explicitly to raise the afterDelete event
+        $records = RoleToUser::model()->findAllByAttributes(array('userId'=>$userId));
+        foreach ($records as $record) {
+            $record->delete();
+        }
         $userRoles = Roles::getUserRoles ($userId);
 
         // assert that user has no roles 

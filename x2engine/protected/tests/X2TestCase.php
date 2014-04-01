@@ -34,6 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.modules.users.models.*');
 Yii::import('application.modules.bugReports.models.*');
 
 /**
@@ -45,9 +46,10 @@ class X2TestCase extends CTestCase {
 
     public static function setUpBeforeClass(){
         Yii::app()->beginRequest();
+        Yii::app()->suModel = User::model()->findByPk(1);
         parent::setUpBeforeClass();
     }
 
-    }
+}
 
 ?>

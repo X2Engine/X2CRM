@@ -71,13 +71,13 @@ $this->actionMenu = $this->formatMenu(array(
 ?>
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts')); ?>
 <?php
-$createAccountUrl = $this->createUrl('/accounts/accounts/create');
-Yii::app()->clientScript->registerScript('create-account', "
+//$createAccountUrl = $this->createUrl('/accounts/accounts/create');
+/*Yii::app()->clientScript->registerScript('create-account', "
 	$(function() {
 		$('.create-account').data('createAccountUrl', '$createAccountUrl');
 		$('.create-account').qtip({content: 'Create a new Account for this Contact.'});
 		// init create action button
 		$('.create-account').initCreateAccountDialog();
 	});
-");
+");*/
 ?>

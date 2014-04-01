@@ -72,7 +72,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 	 */
 	public function getEditingUsername() {
 		if (!isset($this->_editingUsername))
-			$this->_editingUsername = Yii::app()->suModel->username;
+			$this->_editingUsername = Yii::app()->getSuName();
 		return $this->_editingUsername;
 	}
 

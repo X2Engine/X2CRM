@@ -43,12 +43,7 @@
  */
 class Publisher extends X2Widget {
 
-    private $_hiddenTabs;
-    private $_tabs; // available tabs with tab titles
-
     public $model;
-    protected $_packages;
-
     public $associationType; // type of record to associate actions with
     public $associationId = ''; // record to associate actions with
     public $assignedTo = null; // user actions will be assigned to by default
@@ -59,9 +54,13 @@ class Publisher extends X2Widget {
         'associationType',
     );
 
+    protected $_packages;
+    private $_tabs; // available tabs with tab titles
+    private $_hiddenTabs;
+
     public function getTabs () {
         if (!isset ($this->_tabs)) {
-            $visibleTabs = array_filter (Yii::app()->params->profile->actionPublisherTabs,
+            $visibleTabs = array_filter (Yii::app()->settings->actionPublisherTabs,
                 function ($shown) {
                     return $shown; 
                 });
@@ -135,6 +134,7 @@ class Publisher extends X2Widget {
                 publisherCreateUrl: '".
                     Yii::app()->controller->createUrl ('/actions/actions/publisherCreate')."'
             });
+            x2.publisher.isCalendar = ".json_encode($this->calendar).";
 
             x2.publisher.loadFrame = function (id,type){
                 if(type!='Action' && type!='QuotePrint'){
@@ -270,6 +270,7 @@ class Publisher extends X2Widget {
         $this->calendar = !$value;
     }
     public $calendar = false; 
+    public $hideTabs = array ();
     public $selectedTab = '';
 
 

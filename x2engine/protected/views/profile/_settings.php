@@ -230,6 +230,18 @@ foreach($myThemes->data as $theme){
 Yii::app()->clientScript->registerScript(
         'passVariablesToClientScript', $passVariablesToClientScript, CClientScript::POS_BEGIN);
 
+// If the user was redirected from /site/upload and the "useId" parameter is 
+// available, set the background to that so they get instant feedback
+if(isset($_GET['bgId'])) {
+    $media = Media::model()->findByPk($_GET['bgId']);
+    if($media instanceof Media) {
+        Yii::app()->clientScript->registerScript(
+                'setBackgroundToUploaded',
+                '$("select#backgroundImg").val('
+                    .json_encode('media/'.Yii::app()->user->name.'/'.$media->fileName).').trigger("change");'
+                ,CClientScript::POS_READY);
+    }
+}
 
 ?>
 
@@ -249,7 +261,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
         <div class="cell">
             <?php
             echo $form->checkBox(
-                    $model, 'disablePhoneLinks', array('onchange' => 'js:highlightSave();'));
+                    $model, 'disablePhoneLinks', array('onchange' => 'js:x2.profileSettings.highlightSave();'));
             ?>
             <?php
             echo $form->labelEx(
@@ -264,7 +276,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
             <?php
             echo $form->checkBox(
                     $model, 'disableAutomaticRecordTagging', 
-                    array('onchange' => 'js:highlightSave();'));
+                    array('onchange' => 'js:x2.profileSettings.highlightSave();'));
             echo '&nbsp;'.$form->labelEx(
                     $model, 'disableAutomaticRecordTagging', array('style' => 'display:inline;'));
             ?>
@@ -277,7 +289,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
         <div class="cell">
             <?php
             echo $form->checkBox(
-                    $model, 'disableTimeInTitle', array('onchange' => 'js:highlightSave();'));
+                    $model, 'disableTimeInTitle', array('onchange' => 'js:x2.profileSettings.highlightSave();'));
             ?>
             <?php
             echo $form->labelEx(
@@ -290,7 +302,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
         <div class="cell">
             <?php
             echo $form->checkBox(
-                    $model, 'disableNotifPopup', array('onchange' => 'js:highlightSave();'));
+                    $model, 'disableNotifPopup', array('onchange' => 'js:x2.profileSettings.highlightSave();'));
             ?>
             <?php
             echo $form->labelEx(
@@ -304,7 +316,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
             <?php
             echo $form->dropDownList(
                 $model, 'startPage', $menuItems,
-                array('onchange' => 'js:highlightSave();', 'style' => 'min-width:140px;'));
+                array('onchange' => 'js:x2.profileSettings.highlightSave();', 'style' => 'min-width:140px;'));
             ?>
         </div>
         <div class="cell">
@@ -312,7 +324,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
             <?php
             echo $form->dropDownList(
                     $model, 'resultsPerPage', Profile::getPossibleResultsPerPage(),
-                    array('onchange' => 'js:highlightSave();', 'style' => 'width:100px'));
+                    array('onchange' => 'js:x2.profileSettings.highlightSave();', 'style' => 'width:100px'));
             ?>
         </div>
 
@@ -322,7 +334,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
             <?php echo $form->labelEx($model, 'language'); ?>
             <?php
             echo $form->dropDownList(
-                    $model, 'language', $languages, array('onchange' => 'js:highlightSave();'));
+                    $model, 'language', $languages, array('onchange' => 'js:x2.profileSettings.highlightSave();'));
             ?>
         </div>
         <div class="cell">
@@ -335,7 +347,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
             echo $form->dropDownList(
                 $model, 'timeZone', $times,
                 array(
-                    'onchange' => 'js:highlightSave();'
+                    'onchange' => 'js:x2.profileSettings.highlightSave();'
                 ));
             ?>
         </div>

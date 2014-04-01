@@ -8,6 +8,10 @@ $config=require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__,'..','config','te
 // Some last-minute modifications (for unit testing only)
 $config['params']['noSession'] = true;
 require_once($yiit);
+// Automatically write logs immediately so that framework assertion errors don't
+// cause important debugging messages to be lost
+Yii::getLogger()->autoFlush = 1;
+Yii::getLogger()->autoDump = true;
 Yii::createWebApplication($config);
 
 ?>

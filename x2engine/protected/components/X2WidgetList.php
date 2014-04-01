@@ -56,12 +56,6 @@ class X2WidgetList extends X2Widget {
     // widget specific javascript packages
     public static function packages () {
         $packages = array (
-            'widgetListCombinedCss' => array(
-                'baseUrl' => Yii::app()->theme->getBaseUrl (),
-                'css' => array (
-                    'css/widgetListCombined.css'
-                )
-            ),
             'GalleryWidgetJS' => array(
                 'baseUrl' => Yii::app()->request->baseUrl,
                 'js' => array(
@@ -84,7 +78,7 @@ class X2WidgetList extends X2Widget {
             'ChartWidgetExtCss' => array(
                 'baseUrl' => Yii::app()->request->baseUrl,
                 'css' => array(
-                    'js/jqplot/jquery.jqplot.css'
+                    'js/jqplot/jquery.jqplot.css',
                 ),
             ),
             'ChartWidgetJS' => array(

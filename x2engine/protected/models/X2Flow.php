@@ -354,6 +354,7 @@ class X2Flow extends CActiveRecord {
                 $validateRetArr = $trigger->validate($params, $flow->id);
                 if (!$validateRetArr[0]) {
                     $error = $validateRetArr;
+                    return array ('trace' => $error);
                 } else if (sizeof ($validateRetArr) === 3) { // trigger has return value
                     return array (
                         'trace' => $validateRetArr,
@@ -568,9 +569,9 @@ class X2Flow extends CActiveRecord {
                     $value = strtotime($value);
                 return $value === false ? null : $value;
             case 'link':
-                $pieces = explode('::', $value);
+                $pieces = explode('_', $value);
                 if(count($pieces) > 1)
-                    return (int) $pieces[0];
+                    return $pieces[0];
                 return $value;
             default:
                 return $value;

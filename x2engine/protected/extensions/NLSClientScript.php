@@ -562,15 +562,15 @@ curl_info:' . print_r(curl_getinfo($this->ch), true) . '
 		$this->mergeIfXhr = ($this->mergeIfXhr ? 1 : 0);
 		
 		//Minified code
-		$this->registerScript('fixDuplicateResources',
+/*		$this->registerScript('fixDuplicateResources',
 
 '(function(a){var e=a.browser.msie&&7>=parseInt(a.browser.version)?document.createElement("div"):null,f=' . $this->excludePattern . ',g=' . $this->includePattern . ',j=' . $this->mergeIfXhr . ',k=' . $this->resMap2Request . ';a.nlsc||(a.nlsc={resMap:{}});a.nlsc.normUrl=function(c){if(!c)return null;e&&(e.innerHTML=\'<a href="\'+c+\'"></a>\',c=e.firstChild.href);return f&&c.match(f)||g&&!c.match(g)?null:c.replace(/\?*(_=\d+)?$/g,"")};a.nlsc.h=function(c){var b=0,a;for(a=0;a<c.length;a++)b=(b<<5)-b+c.charCodeAt(a)&1073741823;return""+b};a.nlsc.fetchMap= function(){for(var c,b=0,d=a(document).find("script[src]");b<d.length;b++)if(c=this.normUrl(d[b].src?d[b].src:d[b].href))this.resMap[c]=a.nlsc.h(c)};a.nlsc.smap=function(){var a="[",b;for(b in this.resMap)a+=\'"\'+this.resMap[b]+\'",\';return a.replace(/,$/,"")+"]"};var h={global:!0,beforeSend:function(c,b){if("script"!=b.dataType)return j&&(b.url=k(b.url)),!0;a.nlsc.fetched||(a.nlsc.fetched=1,a.nlsc.fetchMap());var d=a.nlsc.normUrl(b.url);if(!d)return!0;if(a.nlsc.resMap[d])return!1;a.nlsc.resMap[d]= a.nlsc.h(d);return!0}};a.browser.msie&&(h.dataFilter=function(a,b){return b&&"html"!=b&&"text"!=b?a:a.replace(/(<script[^>]+)defer(=[^\s>]*)?/ig,"$1")});a.ajaxSetup(h)})(jQuery);'
 
-, CClientScript::POS_HEAD);
+, CClientScript::POS_HEAD);*/
 
 
 //Uncompressed code:
-/*
+
 $this->registerScript('fixDuplicateResources', '
 
 ;(function($){
@@ -597,19 +597,29 @@ $.nlsc.normUrl=function(url) {
 		return null;
 	if (includePattern && !url.match(includePattern))
 		return null;
-	return url.replace(/\?*(_=\d+)?$/g,"");
+    /* x2modstart */     
+    /*
+    After X2 cache busting was introduced, this line broke. It attempts to strip out the jQuery 
+    "_" cache busting query parameter from the script url. But it made the assumption that the
+    url didn\'t already have get parameters before the jQuery cache busting parameter was added.
+    */
+	//return url.replace(/\?*(_=\d+)?$/g,"");
+	return url.replace(/(\&|\?)?(_=\d+)?$/g,"");
+    /* x2modend */ 
 }
 $.nlsc.h=function(s) {
 	var h = 0, i;
 	for (i = 0; i < s.length; i++) {
 		h = (((h<<5)-h) + s.charCodeAt(i)) & 1073741823;
 	}
+
 	return ""+h;
 }
 $.nlsc.fetchMap=function() {
 	//fetching scripts from the DOM
 	for(var url,i=0,res=$(document).find("script[src]"); i<res.length; i++) {
 		if (!(url = this.normUrl(res[i].src ? res[i].src : res[i].href))) continue;
+
 		this.resMap[url] = $.nlsc.h(url);
 	}//i
 }
@@ -636,6 +646,7 @@ var c = {
 		}//if
 		
 		var url = $.nlsc.normUrl(opt.url);
+
 		if (!url) return true;
 		if ($.nlsc.resMap[url]) return false;
 		$.nlsc.resMap[url] = $.nlsc.h(url);
@@ -656,6 +667,5 @@ $.ajaxSetup(c);
 })(jQuery);
 
 ',	CClientScript::POS_HEAD);
-*/
 	}
 }

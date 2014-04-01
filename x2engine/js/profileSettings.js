@@ -35,9 +35,9 @@
 
 (function () {
 
-x2.profileSettings.debug = true;
+x2.profileSettings.debug = false && x2.DEBUG;
 
-function highlightSave() {
+x2.profileSettings.highlightSave = function () {
 	$('#save-changes').addClass('highlight'); 
 }
         
@@ -239,7 +239,7 @@ function setupPrefsEventListeners () {
 		} else {
 			$('#header').removeClass('defaultBg').css('background','#' + text);
 		}
-		highlightSave();
+		x2.profileSettings.highlightSave();
 	});
 
     function selectPreferredColor (CSSProperty, CSSdefault, colorInputElem, targetElem) {
@@ -253,7 +253,7 @@ function setupPrefsEventListeners () {
 		} else {
 			$(targetElem).css(CSSProperty, '#' + text);
 		}
-		highlightSave();
+		x2.profileSettings.highlightSave();
     }
 
 	$('#backgroundColor').change(function() {
@@ -332,7 +332,7 @@ function setupPrefsEventListeners () {
 		}
 		$("body").toggleClass("no-borders",noBorders);
 
-		highlightSave();
+		x2.profileSettings.highlightSave();
 	}).change();
 
     /*

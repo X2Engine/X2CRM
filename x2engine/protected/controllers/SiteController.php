@@ -48,10 +48,10 @@ class SiteController extends x2base {
     public $portlets = array();
 
     public function filters(){
-        return array(
+        return array_merge(parent::filters(),array(
             'setPortlets',
             'accessControl',
-        );
+        ));
     }
 
 	public function behaviors() {
@@ -152,16 +152,15 @@ class SiteController extends x2base {
     public function actionSendErrorReport(){
         if(isset($_POST['report'])){
             $errorReport = $_POST['report'];
+            $errorReportArr = unserialize(base64_decode($errorReport));
             if(isset($_POST['email'])){
-                $errorReport = unserialize(base64_decode($errorReport));
                 $errorReport['email'] = $_POST['email'];
-                $errorReport = base64_encode(serialize($errorReport));
             }
             if(isset($_POST['bugDescription'])){
-                $errorReport = unserialize(base64_decode($errorReport));
                 $errorReport['bugDescription'] = $_POST['bugDescription'];
-                $errorReport = base64_encode(serialize($errorReport));
             }
+            $errorReport['edition'] = Yii::app()->edition;
+            $errorReport = base64_encode(serialize($errorReport));
             $ccUrl = "http://www.x2software.com/receiveErrorReport.php";
             $ccSession = curl_init($ccUrl);
             curl_setopt($ccSession, CURLOPT_POST, 1);
@@ -961,7 +960,12 @@ class SiteController extends x2base {
                             case 'bg':
                             case 'bg-private':
                                 $this->redirect(
-                                    array('/profile/settings', 'id' => Yii::app()->user->getId()));
+                                    array(
+                                        '/profile/settings',
+                                        'id' => Yii::app()->user->getId(),
+                                        'bgId' => $model->id
+                                    )
+                                );
                                 break;
                             default:
                                 $this->handleDefaultUpload ($model, $name);
@@ -1995,7 +1999,7 @@ class SiteController extends x2base {
       'http' => array('timeout' => 4)  // set request timeout in seconds
       ));
 
-      $updateCheckUrl = 'http://testupdate.x2developer.com/x2planet.com/installs/updates/check?'.http_build_query(compact('i','v'));
+      $updateCheckUrl = 'https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v'));
       $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
       if($securityKey === false)
       return;
@@ -2004,7 +2008,7 @@ class SiteController extends x2base {
       if(!($e == 'opensource' || empty($e)))
       $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
 
-      $newVersion = FileUtil::getContents('http://testupdate.x2developer.com/x2planet.com/installs/updates/check?'.http_build_query(compact('i','v','h','n')),0,$context);
+      $newVersion = FileUtil::getContents('https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v','h','n')),0,$context);
       if(empty($newVersion))
       return;
 
