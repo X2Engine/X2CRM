@@ -145,7 +145,7 @@ VALUES
 ('ActionsViewAll',0,'',NULL,'N;'),
 ('ActionsViewGroup',0,'',NULL,'N;'),
 ('ActionsViewPrivate',1,'View assigned records','return Yii::app()->suName==$params[\'assignedTo\'];','N;'),
-('admin',2,'Default admin user','return Yii::app()->suName === \'admin\';','N;'),
+('admin',2,'Default admin user','return Yii::app()->getSuId() === 1;','N;'),
 ('administrator',2,'Admin user','','N;'),
 ('AdminSetDefaultTheme',0,'',NULL,'N;'),
 ('AdminManageActionPublisherTabs',0,'',NULL,'N;'),

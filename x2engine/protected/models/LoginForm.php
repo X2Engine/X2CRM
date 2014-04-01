@@ -110,6 +110,7 @@ class LoginForm extends CFormModel {
 
 			// update lastLogin time
 			$user = User::model()->findByPk(Yii::app()->user->getId());
+            Yii::app()->setSuModel($user);
 			$user->lastLogin = $user->login;
 			$user->login = time();
 			$user->update(array('lastLogin','login'));

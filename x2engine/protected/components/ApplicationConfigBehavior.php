@@ -305,13 +305,16 @@ class ApplicationConfigBehavior extends CBehavior {
         // Set profile
         //
         // Get the Administrator's and the current user's profile.
-        $adminProf = X2Model::model('Profile')->findByPk(1);
+        $adminProf = Profile::model()->findByPk(1);
         $this->owner->params->adminProfile = $adminProf;
         if(!$noSession){ // Typical web session:
             $notGuest = !$this->owner->user->getIsGuest();
-            $this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array(
-                'username' => $this->owner->user->getName()
-                    ));
+            if($notGuest) {
+                $this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array(
+                    'username' => $this->owner->user->getName()
+                        ));
+                $this->setSuModel($this->owner->params->profile->user);
+            }
         } else {
             // Use the admin profile as the user profile.
             //
@@ -326,9 +329,10 @@ class ApplicationConfigBehavior extends CBehavior {
             // session and cookie-based authentication.
             $notGuest = false;
             $this->owner->params->profile = $adminProf;
+            $this->setSuModel($this->owner->params->profile->user);
         }
         
-
+        
         // Set session variables
         if(!$noSession){
             $sessionId = isset($_SESSION['sessionId']) ? $_SESSION['sessionId'] : session_id();
@@ -718,15 +722,15 @@ class ApplicationConfigBehavior extends CBehavior {
 	public function getSuID(){
         if(!isset($this->_suID)){
             if($this->isInSession){
-                $this->_suID = $this->owner->user->getId();
+                $this->_suID = (integer) $this->owner->user->getId();
             }elseif(isset($this->_suModel)){
-                $this->_suID = $this->_suModel->id;
+                $this->_suID = (integer) $this->_suModel->id;
             }elseif(php_sapi_name() == 'cli'){
                 // Assume admin
                 $this->_suID = 1;
             }else{
-                // Assume nothing
-                $this->_suID = 0;
+                // Assume nothing/treat as guest
+                $this->_suID = null;
             }
         }
         return $this->_suID;
@@ -801,7 +805,7 @@ class ApplicationConfigBehavior extends CBehavior {
     public function getSuModel(){
         if(!isset($this->_suModel)){
             if($this->isInSession)
-                $this->_suID == $this->owner->user->getId();
+                $this->_suID == $this->getOwner()->getUser()->getId();
             $this->_suModel = User::model()->findByPk($this->getSuID());
         }
         return $this->_suModel;

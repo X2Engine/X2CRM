@@ -1474,8 +1474,6 @@ class SiteController extends x2base {
                             $this->redirect(array('/site/index'));
                         else
                             $this->redirect(Yii::app()->user->returnUrl);
-                    } else{
-                        print_r($model->getErrors());
                     }
                 }else{
                     $this->render('googleLogin', array(
