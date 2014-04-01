@@ -125,11 +125,7 @@ $form = $this->beginWidget('CActiveForm', array(
     <div class="cell dialog-cell">
         <?php echo $form->label($model, 'priority', array('class' => 'dialog-label')); ?>
         <?php
-        echo $form->dropDownList($model, 'priority', array(
-            '1' => Yii::t('actions', 'Low'),
-            '2' => Yii::t('actions', 'Medium'),
-            '3' => Yii::t('actions', 'High')
-                ), array('onChange' => 'giveSaveButtonFocus();'));
+        echo $form->dropDownList($model, 'priority', Actions::getPriorityLabels(), array('onChange' => 'giveSaveButtonFocus();'));
         ?>
         <?php echo $form->label($model, 'color', array('class' => 'dialog-label')); ?>
         <?php echo $form->dropDownList($model, 'color', Actions::getColors(), array('onChange' => 'giveSaveButtonFocus();')); ?>

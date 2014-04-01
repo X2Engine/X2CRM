@@ -1234,7 +1234,7 @@ class ContactsController extends x2base {
                                 if(isset($fieldRef) && $fieldRef->type == 'link'){
                                     $lookup = X2Model::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name' => $values[$i]));
                                     if(isset($lookup))
-                                        $values[$i] = $lookup->id;
+                                        $values[$i] = $lookup->nameId;
                                 }
                                 $criterion = new X2ListCriterion;
                                 $criterion->listId = $list->id;
@@ -1322,7 +1322,7 @@ class ContactsController extends x2base {
                                 if(isset($fieldRef) && $fieldRef->type == 'link'){
                                     $lookup = X2Model::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name' => $values[$i]));
                                     if(isset($lookup))
-                                        $values[$i] = $lookup->id;
+                                        $values[$i] = $lookup->nameId;
                                 }
                                 $criterion = new X2ListCriterion;
                                 $criterion->listId = $list->id;

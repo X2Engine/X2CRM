@@ -242,7 +242,7 @@ $config = array(
         'version' => $version,
         'edition' => '',
         'buildDate' => $buildDate,
-        'noSession' => false,
+        'noSession' => php_sapi_name()=='cli',
         'automatedTesting' => false,
         'supportedCurrencies' => array('USD', 'EUR', 'GBP', 'CAD', 'JPY', 'CNY', 'CHF', 'INR', 'BRL', 'VND'),
         'supportedCurrencySymbols' => array(),

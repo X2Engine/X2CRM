@@ -108,6 +108,7 @@ class WebFormAction extends CAction {
 
             
 
+            $model->validate ();
             if(!$model->hasErrors()){
 
                 $duplicates = array ();
@@ -127,6 +128,8 @@ class WebFormAction extends CAction {
 
                     
 
+                    
+
                     $success = $model->save();
                 }else{ //create new record
                     $model->assignedTo = $this->controller->getNextAssignee();
@@ -137,12 +140,12 @@ class WebFormAction extends CAction {
 
                     
 
+                    
+
                     $success = $model->save();
                     //TODO: upload profile picture url from webleadfb
                 }
                 
-                
-
                 if($success){
                     self::addTags ($model);
                     $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ? array() : explode(',',$_POST['tags']));

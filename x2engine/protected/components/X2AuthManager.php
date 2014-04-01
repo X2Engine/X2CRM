@@ -312,12 +312,18 @@ class X2AuthManager extends CDbAuthManager {
 	 */
 	public function getAuthAssignments($userId)
 	{
-		$rows=$this->db->createCommand()
-			->select()
-			->from($this->assignmentTable)
-			->where('userid=:userid', array(':userid'=>$userId))
-			->queryAll();
-		$assignments=array();
+        $rows = array();
+        $roleIds = Roles::getUserRoles($userId);
+        if(is_array($roleIds)){
+            foreach($roleIds as $roleId){
+                $rows = array_merge($rows, $this->db->createCommand()
+                                ->select()
+                                ->from($this->assignmentTable)
+                                ->where('userid=:userid', array(':userid' => $userId))
+                                ->queryAll());
+            }
+        }
+        $assignments=array();
 		foreach($rows as $row)
 		{
 			if(($data=@unserialize($row['data']))===false)

@@ -64,8 +64,21 @@ class Admin extends CActiveRecord {
                 'class' => 'application.components.JSONEmbeddedModelFieldsBehavior',
                 'fixedModelFields' => array('emailDropbox' => 'EmailDropboxSettings'),
                 'transformAttributes' => array('emailDropbox'),
-                
-            )
+            ),
+            'JSONFieldsDefaultValuesBehavior' => array(
+                'class' => 'application.components.JSONFieldsDefaultValuesBehavior',
+                'transformAttributes' => array(
+                    'actionPublisherTabs' => array(
+                        'PublisherCallTab'=>true,
+                        'PublisherTimeTab'=>true, 
+                        'PublisherActionTab'=>true,
+                        'PublisherCommentTab'=>true,
+                        'PublisherEventTab'=>false,
+                        'PublisherProductsTab'=>false,
+                    ),
+                ),
+                'maintainCurrentFieldsOrder' => true
+            ),
         );
     }
 
@@ -98,8 +111,8 @@ class Admin extends CActiveRecord {
             array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
             array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
-            array ('appName', 'required'),
-            array ('appDescription', 'length', 'max' => 255)
+            array ('appDescription', 'length', 'max' => 255),
+            array ('appName', 'safe')
                 // The following rule is used by search().
                 // Please remove those attributes that should not be searched.
                 // array('id, accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, chatPollTime, menuVisibility, currency', 'safe', 'on'=>'search'),
@@ -220,6 +233,15 @@ class Admin extends CActiveRecord {
             $this->emailCount = 0;
         }
         return $this->emailCount + $nEmail > $this->emailBatchSize;
+    }
+
+    /**
+     * @param array $value This should match the structure of the actionPublisherTabs property
+     *  specified in the JSONFieldsDefaultValuesBehavior configuration
+     */
+    public function setActionPublisherTabs ($value) {
+        $this->actionPublisherTabs = $value;
+        $this->save ();
     }
 
 }

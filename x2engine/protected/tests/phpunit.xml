@@ -6,7 +6,8 @@
 		stopOnFailure="false">
 
 	<selenium>
-		<browser name="Firefox" browser="*firefox" host="127.0.0.1" port="4444" timeout="30000" />
+		<!--<browser name="Firefox" browser="*firefox" host="127.0.0.1" port="4444" timeout="30000" />-->
+		<browser name="Chrome" browser="*googlechrome" host="127.0.0.1" port="4444" timeout="30000" />
 	</selenium>
 
 </phpunit>

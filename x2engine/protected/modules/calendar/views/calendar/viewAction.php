@@ -85,21 +85,8 @@ $form=$this->beginWidget('CActiveForm', array(
 	<div class="cell dialog-cell">
 		<?php echo $form->label($model,'priority', array('class'=>'dialog-label')); ?>
 		<?php
-		$priorityArray = array(
-				'1'=>Yii::t('actions','Low'),
-				'2'=>Yii::t('actions','Medium'),
-				'3'=>Yii::t('actions','High')
-			);
+		$priorityArray = Actions::getPriorityLabels();
 		echo isset($priorityArray[$model->priority])?$priorityArray[$model->priority]:""; ?>
-		<?php /*
-		<?php echo $form->dropDownList($model,'priority',
-			array(
-				'Low'=>Yii::t('actions','Low'),
-				'Medium'=>Yii::t('actions','Medium'),
-				'High'=>Yii::t('actions','High')
-			),
-			array('onChange'=>'giveSaveButtonFocus();')); */
-		?>
 	</div>
 	<div class="cell dialog-cell">
 		<?php

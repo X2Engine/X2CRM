@@ -118,26 +118,6 @@ class Quote extends X2Model {
 	}
 
 	/**
-	 * Magic getter for {@link contact}
-	 *
-	 * In earlier versions, there was a function that enabled associating more than
-	 * one contact with a quote (that didn't work) by storing contact IDs in a
-	 * space delineated list, {@link associatedContacts}. In case there are any
-	 * records that reflect this, this method fetches the first; the way it
-	 * retrieves the contact is meant to be backwards-compatible.
-	 */
-	public function getContact(){
-		if(!isset($this->_contact)){
-			$this->_contact = null;
-            $contactNameId = Fields::nameAndId ($this->associatedContacts);
-            $contactId = $contactNameId[1];
-			if(!empty($contactId))
-				$this->_contact = Contacts::model()->findByPk($contactId);
-		}
-		return $this->_contact;
-	}
-
-	/**
 	 * Magic getter for {@link productLines}
 	 */
 	public function getProductLines(){
@@ -155,15 +135,16 @@ class Quote extends X2Model {
 	}
 
 	/**
-	 * @return array relational rules.
-	 */
-	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array_merge(parent::relations(), array(
-					'products' => array(self::HAS_MANY, 'QuoteProduct', 'quoteId', 'order' => 'lineNumber ASC'),
-				));
-	}
+     * @return array relational rules.
+     */
+    public function relations(){
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array_merge(parent::relations(), array(
+                    'products' => array(self::HAS_MANY, 'QuoteProduct', 'quoteId', 'order' => 'lineNumber ASC'),
+                    'contact' => array(self::BELONGS_TO, 'Contacts', array('associatedContacts' => 'nameId'))
+                ));
+    }
 
 	/**
 	 * @return string the associated database table name

@@ -69,17 +69,11 @@ x2.LayoutManager = function (argsDict) {
     this._halfWidthSelector = '#main-column, .history'; 
     this._hideSideBarLeftThreshold = 657;
     this._hideWidgetsThreshold = 1040;
-    this._fullSearchBarThreshold = 915;
+    this._fullSearchBarThreshold = x2.logoWidth ? x2.logoWidth + 915 : 915;
     this._publisherHalfWidthThreshold = 940;
     this._titleBarThresholds;
-    this._logoWidth = 30; // default logo width
+    this._logoWidth = x2.logoWidth ? x2.logoWidth : 30; // default logo width
     this._mobileLayout; // true if mobile layout is active
-
-    // modal search bar is disabled for wide custom logos
-    this._disableSearchBarModes = $('#your-logo').hasClass ('custom-logo');
-    if (this._disableSearchBarModes) {
-        $('body').removeClass ('enable-search-bar-modes');
-    } 
 
     this._init ();
 }
@@ -160,10 +154,11 @@ x2.LayoutManager.prototype._calculateTitleBarThresholds = function () {
 			thresholds[i] = 
                 $($menuItems[i]).outerWidth() + 
                 $('#user-menu').outerWidth() + 
+                $('#user-menu-2').outerWidth() + 
                 that._logoWidth + 
-                $('#more-menu').outerWidth() + 370;
+                $('#more-menu').outerWidth();
 		} else {
-			thresholds[i] = $($menuItems[i]).outerWidth() + thresholds[i-1];
+			thresholds[i] = $($menuItems[i]).outerWidth() + thresholds[i-1] + 10;
         }
     }
     $('#main-menu .top-bar-module-link').hide ();
@@ -180,10 +175,10 @@ x2.LayoutManager.prototype._calculateTitleBarThresholds = function () {
  */
 x2.LayoutManager.prototype._getSearchbarMode = function (windowWidth) {
     var that = this;
-    if (windowWidth < that._hideSideBarLeftThreshold) {
+    if (Modernizr.mq ('(max-width: ' + that._hideSideBarLeftThreshold + 'px)')) {
         return x2.LayoutManager.searchBarModes['MOBILE'];
-    } else if (windowWidth > that._hideSideBarLeftThreshold && 
-        windowWidth < that._fullSearchBarThreshold) {
+    } else if (Modernizr.mq ('(min-width: ' + that._hideSideBarLeftThreshold + 'px) and ' +
+        '(max-width: ' + that._fullSearchBarThreshold + 'px)')) {
 
         return x2.LayoutManager.searchBarModes['COMPACT'];
     } else {
@@ -201,9 +196,9 @@ x2.LayoutManager.prototype._setUpMenuResponsiveness = function () {
 	var $moreMenu = $('#more-menu ul');
 	var $moreMenuLi = $('#more-menu');
     var $mainMenu = $('#main-menu');
-    var currentVisibleItems;
     var menuItemCount = $('#main-menu > .top-bar-module-link').length;
     var searchBarMode = this._getSearchbarMode ($(window).width ());
+    var currentVisibleItems;
 
     this.addFnToResizeQueue (function (windowWidth, contentWidth) {
         if ($('body').hasClass ('x2-mobile-layout')) return;
@@ -249,12 +244,14 @@ x2.LayoutManager.prototype._setUpMenuResponsiveness = function () {
 			
 		// the number of items is too high. move some into the moreMenu
 		} else if(visibleItems < currentVisibleItems) {
+			$moreMenuLi.show();
 			for(var i = currentVisibleItems; i > visibleItems; --i) {
                 $mainMenu.children (':visible').not ('#more-menu').last ().hide ();
                 $moreMenu.children (':hidden').last ().show ();
 			}
 			currentVisibleItems = $('#main-menu > .top-bar-module-link:visible').length;
 		}
+
 		// show More dropdown only if it's needed
 		if($moreMenu.children(':visible').length == 0) {
 			$moreMenuLi.hide();
@@ -657,48 +654,27 @@ x2.LayoutManager.prototype._setUpTitleBarResponsiveness = function () {
 };
 
 /**
- * Prevents wider logos from breaking responsive title bar. For wide custom logos, modal 
- * search bar is disabled.
+ * Prevents wider logos from breaking responsive title bar. For wide custom logos, a minimum width
+ * must be applied to the layout to prevent the layout from being to wide to display the mobile
+ * version of it and too narrow to accomodate all of title bar elements.
  */
 x2.LayoutManager.prototype._accountForCustomTitleBarLogo = function () {
-    if (!$('#your-logo').hasClass ('custom-logo')) return;
-    var that = this;
+    if (!x2.logoWidth) return; // no custom logo
 
-    var defaultLogoWidth = 36;
-
-        //console.log ('check loaded'); 
-
-    function afterLoad () {
-        //console.log ('loaded'); 
-        var logoWidth = $('#your-logo').width ();
-        that._logoWidth = logoWidth;
-        if (logoWidth <= defaultLogoWidth + 100) {
-            this._disableSearchBarModes = false;
-            $('body').addClass ('enable-search-bar-modes');
-            $(window).resize();
-            return;
-        }
-
-        /* apply a min-width which will prevent content resizing until the switch to the mobile 
-        layout occurs at _hideSideBarLeftThreshold */
-        $('#page').css ({
-            'min-width': (888 + that._logoWidth) + 'px'
-        });
-        $('#header').css ({
-            'min-width': (888 + that._logoWidth) + 'px'
-        });
-        that._calculateTitleBarThresholds ();
-        $(window).resize();
-
-    }
-
-    if ($('#your-logo').get(0).complete) {
-        afterLoad ();
+    if ($('body').hasClass ('disable-mobile-layout')) {
+        var baseWidth = 888; // responsive layout not available
     } else {
-        $('#your-logo').load (function () {
-            afterLoad  ();
-        });
+        var baseWidth = 548; // base width can be narrower because search bar resizes
     }
+
+    /* apply a min-width which will prevent content resizing until the switch to the mobile 
+    layout occurs at _hideSideBarLeftThreshold */
+    $('#page').css ({
+        'min-width': (baseWidth + this._logoWidth) + 'px'
+    });
+    $('#header').css ({
+        'min-width': (baseWidth + this._logoWidth) + 'px'
+    });
 };
 
 x2.LayoutManager.prototype._init = function () {

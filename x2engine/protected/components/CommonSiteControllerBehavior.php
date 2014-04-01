@@ -144,6 +144,9 @@ class CommonSiteControllerBehavior extends CBehavior {
                 SessionLog::logSession($model->username, $sessionId, 'login');
                 $_SESSION['playLoginSound'] = true;
 
+                if(YII_DEBUG && EmailDeliveryBehavior::DEBUG_EMAIL)
+                    Yii::app()->session['debugEmailWarning'] = 1;
+
                 if ($isMobile) {
                     $cookie = new CHttpCookie('x2mobilebrowser', 'true'); // create cookie
                     $cookie->expire = time() + 31104000; // expires in 1 year

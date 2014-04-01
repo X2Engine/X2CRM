@@ -38,7 +38,13 @@ if ($this instanceof X2WidgetList) {
     Yii::app()->clientScript->registerCoreScript('jquery');
     Yii::app()->clientScript->registerCoreScript('jquery.ui');
     Yii::app()->clientScript->packages = X2WidgetList::packages ();
-    Yii::app()->clientScript->registerPackage('widgetListCombinedCss');
+    Yii::app()->clientScript->registerCssFiles ('widgetCombinedCss', array (
+        "galleryWidgetCssOverrides.css",
+        "../../../js/gallerymanager/bootstrap/css/bootstrap.css",
+        "../../../js/jqplot/jquery.jqplot.css",
+        "x2chart.css",
+        "workflowFunnel.css",
+    ));
     if ($name === 'GalleryWidget') {
         Yii::import('application.extensions.gallerymanager.GalleryManager');
         $galleryWidget = new GalleryManager ();

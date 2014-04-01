@@ -277,7 +277,10 @@ class APIModel {
                 unset($this->attributes[$key]);
             }
         }
-		$this->responseObject = $this->_send("api/lookup/model/$modelName",$this->attributes);
+        $action = empty($this->attributes['id']) && count($this->attributes) > 1
+            ? "api/lookup/model/$modelName"
+            : "api/view/model/$modelName";
+		$this->responseObject = $this->_send($action,$this->attributes);
 		return $this->processResponse(true);
 	}
 

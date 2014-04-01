@@ -64,10 +64,13 @@ $cs->registerScript('setFormName',"
 window.formName = '$modelName';
 ",CClientScript::POS_HEAD);
 
-$layoutData = Yii::app()->cache->get('form_'.$modelName);    // check the app cache for the data
+$scenario = isset($scenario) ? $scenario : 'Default';
+$nameLink = isset($nameLink) ? $nameLink : false;
+
+// check the app cache for the data
+$layoutData = Yii::app()->cache->get('form_'.$modelName.'_'.$scenario);    
 $fields = array();
 
-$scenario = isset($scenario) ? $scenario : 'Default';
 
 // remove this later, once all models extend X2Models
 if(method_exists($model,'getFields')) {
@@ -86,7 +89,7 @@ if($layoutData === false) {
 
     if(isset($layout)) {
         $layoutData = json_decode($layout->layout,true);
-        Yii::app()->cache->set('form_'.$modelName,$layoutData,0);    // cache the data
+        Yii::app()->cache->set('form_'.$modelName.'_'.$scenario,$layoutData,0);    // cache the data
     }
 }
 
@@ -222,8 +225,12 @@ if($layoutData !== false && isset($layoutData['sections']) && count($layoutData[
                                         if(isset($specialFields[$fieldName])) {
                                             $fieldHtml = $specialFields[$fieldName];
                                         } else {
-                                            $fieldHtml = $model->renderAttribute(
-                                                $field->fieldName,true,false);
+                                            if($field->fieldName == 'name' && $nameLink && $model->asa('X2LinkableBehavior')){
+                                                $fieldHtml = $model->link;
+                                            }else{
+                                                $fieldHtml = $model->renderAttribute(
+                                                        $field->fieldName, true, false);
+                                            }
                                         }
                                         if($fieldHtml === '') {
                                             $htmlString .= '&nbsp;';

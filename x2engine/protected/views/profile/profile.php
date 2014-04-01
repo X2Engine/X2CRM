@@ -41,7 +41,9 @@ get displayed in addition to the activity feed/profile information sections.
 
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/profile.js', CClientScript::POS_END);
-Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/profileCombined.css');
+Yii::app()->clientScript->registerCssFiles ('profileCombinedCss', array (
+    'profile.css', 'activityFeed.css', '../../../js/multiselect/css/ui.multiselect.css'
+));
 Yii::app()->clientScript->registerResponsiveCssFile (Yii::app()->getTheme()->getBaseUrl().'/css/responsiveActivityFeed.css');
 
 AuxLib::registerPassVarsToClientScriptScript (

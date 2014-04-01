@@ -216,9 +216,9 @@ class Formatter {
      * @return string
      */
     public static function formatTimePicker($width = '',$seconds = false){
-        if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh'){
+        /*if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh'){
             return "HH:mm".($seconds?':ss':'');
-        }
+        }*/
         $format = Yii::app()->locale->getTimeFormat($seconds?'medium':'short');
 
         // jquery specifies hours/minutes as hh/mm instead of HH//MM
@@ -235,10 +235,10 @@ class Formatter {
     public static function formatAMPM(){
         if(strstr(Yii::app()->locale->getTimeFormat(), "a") === false) {
             return false;
-        } else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
+        } /*else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
             // 24 hour format for china
             return false;
-        } else {
+        } */else {
             return true;
         }
     }
@@ -278,12 +278,12 @@ class Formatter {
                 Yii::app()->locale->getDateFormat('medium').' '.
                     Yii::app()->locale->getTimeFormat('short'), 
                 strtotime("tomorrow", $timestamp) - 60);
-        } else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
+        } /*else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
             return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short').
                 ' '.'HH:mm', strtotime("tomorrow", $timestamp) - 60);
-        } else {
+        } */else {
             return Yii::app()->dateFormatter->format(
-                Yii::app()->locale->getDateFormat('short').' '.
+                Yii::app()->locale->getDateFormat('medium').' '.
                     Yii::app()->locale->getTimeFormat('short'), 
                 strtotime("tomorrow", $timestamp) - 60);
         }
@@ -395,12 +395,12 @@ class Formatter {
                 Yii::app()->locale->getDateFormat('medium').' '.
                     Yii::app()->locale->getTimeFormat('short'), 
                 $timestamp);
-        }else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
+        }/*else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
             return Yii::app()->dateFormatter->format(
-                Yii::app()->locale->getDateFormat('short').' '.'HH:mm', $timestamp);
-        } else {
+                Yii::app()->locale->getDateFormat('medium').' '.'HH:mm', $timestamp);
+        } */else {
             return Yii::app()->dateFormatter->format(
-                Yii::app()->locale->getDateFormat('short').' '.
+                Yii::app()->locale->getDateFormat('medium').' '.
                     Yii::app()->locale->getTimeFormat('short'), 
                 $timestamp);
         }
@@ -424,7 +424,7 @@ class Formatter {
      * @param string $date
      * @return integer
      */
-    public static function parseDateTime($date,$length = 'short'){
+    public static function parseDateTime($date,$dateLength = 'medium', $timeLength = 'short'){
         if($date === null){
             return null;
         }elseif(is_numeric($date)){
@@ -432,10 +432,13 @@ class Formatter {
         }elseif(Yii::app()->locale->getId() == 'en'){
             return strtotime($date);
         } else {
+            /*AuxLib::debugLogR (Yii::app()->locale->getDateFormat($dateLength));
+            //AuxLib::debugLogR (Yii::app()->locale->getTimeFormat($timeLength));
+            //AuxLib::debugLogR ($date);*/
             return CDateTimeParser::parse(
                 $date, 
-                Yii::app()->locale->getDateFormat($length).' '.
-                Yii::app()->locale->getTimeFormat($length));
+                Yii::app()->locale->getDateFormat($dateLength).' '.
+                Yii::app()->locale->getTimeFormat($timeLength));
         }
     }
 
@@ -573,7 +576,7 @@ class Formatter {
             $shortCodePatterns[] = preg_quote($token,'#');
         }
         $phpOper = '[\[\]()<>=!^|?:*+%/\-\.]|and|or|xor|\s'; // PHP operators
-        $singleQuotedString = '\'[\w\s]*?\''; // Only simple strings w/alphanumerics, underscores and spaces currently supported
+        $singleQuotedString = '\'[\w\s\.;:,()]*?\''; // Only simple strings currently supported
         $validPattern = '#^return (?:'
             .self::getSafeWords()
             .(empty($shortCodePatterns)?'':('|'.implode('|',$shortCodePatterns)))

@@ -733,7 +733,10 @@ abstract class X2Model extends CActiveRecord {
     public static function getLinkedModelMock($modelClass, $name, $id, $allowEmpty=false){
         if($id !== null || $allowEmpty){
             // Take the shortcut for link generation:
-            $model = new $modelClass;
+            $model = X2Model::model($modelClass);
+            if(!$model instanceof X2Model) {
+                throw new CException("Error: model $modelClass does not refer to an existing child class of X2Model.");
+            }
             if($model->hasAttribute('id') && $model->hasAttribute('name')){
                 $model->id = $id;
                 $model->name = $name;
@@ -1012,8 +1015,8 @@ abstract class X2Model extends CActiveRecord {
                 }
 
             case 'phone':
-                $value = X2Model::getPhoneNumber($fieldName,get_class($this),$this->id);
-                return $render($value);
+                $value = X2Model::getPhoneNumber($fieldName,get_class($this),$this->id, $encode, $makeLinks);
+                return $value;
 
             case 'url':
                 if(!$makeLinks)
@@ -1129,21 +1132,38 @@ abstract class X2Model extends CActiveRecord {
                 return implode(':',array_map($pad,$t));
             case 'float':
             case 'int':
-                return Yii::app()->locale->numberFormatter->formatDecimal ($this->$fieldName);
+                if($fieldName != 'id')
+                    return Yii::app()->locale->numberFormatter->formatDecimal ($this->$fieldName);
             default:
                 return $render($this->$fieldName);
         }
     }
 
-    public static function getPhoneNumber($field, $class, $id){
-        $phoneCheck = CActiveRecord::model('PhoneNumber')->findByAttributes(array('modelId' => $id, 'modelType' => $class, 'fieldName' => $field));
-        if(isset($phoneCheck) && strlen($phoneCheck->number) == 10 && strpos($phoneCheck->number, '0') === false && strpos($phoneCheck->number, '1') === false){
-            $temp = $phoneCheck->number;
-            return "(".substr($temp, 0, 3).") ".substr($temp, 3, 3)."-".substr($temp, 6, 4);
+    /**
+     * @param string $field the name of the field
+     * @param string $class the name of the class with which the field is associated
+     * @param int $id
+     * @param bool $encode Whether to html encode the number
+     * @param bool $makeLink Whether return a phone link 
+     */
+    public static function getPhoneNumber($field, $class, $id, $encode=false, $makeLink=false){
+        $phoneCheck = CActiveRecord::model('PhoneNumber')
+            ->findByAttributes(array('modelId' => $id, 'modelType' => $class, 'fieldName' => $field));
+        if($phoneCheck instanceof PhoneNumber && strlen($phoneCheck->number) == 10 &&
+           strpos($phoneCheck->number, '0') === false && strpos($phoneCheck->number, '1') === false){
+
+            $number = (string) $phoneCheck->number;
+            $fmtNumber = "(".substr($number, 0, 3).") ".substr($number, 3, 3)."-".substr($number, 6, 4);
         }else{
             $record = X2Model::model($class)->findByPk($id);
-            if(isset($record) && $record->hasAttribute($field))
-                return CHtml::encode($record->$field);
+            if(isset($record) && $record->hasAttribute($field)) {
+                $number = (string) $record->$field;
+                $fmtNumber = $number;
+            }
+        }
+        if (isset ($fmtNumber) && $makeLink && !Yii::app()->params->profile->disablePhoneLinks) {
+            $fmtNumber = $encode ? CHtml::encode ($fmtNumber) : $fmtNumber;
+            return '<a href="tel:+1'.$number.'">'.$fmtNumber.'</a>';
         }
         return '';
     }
@@ -1182,7 +1202,7 @@ abstract class X2Model extends CActiveRecord {
                             'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
                                 ), true);
             case 'dateTime':
-                $model->$fieldName = Formatter::formatDateTime($model->$fieldName, 'short');
+                $model->$fieldName = Formatter::formatDateTime($model->$fieldName);
                 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                 return Yii::app()->controller->widget('CJuiDateTimePicker', array(
                             'model' => $model, //Model object
@@ -1567,7 +1587,7 @@ abstract class X2Model extends CActiveRecord {
         // This should only happen in the case that the field was not included
         // in the form submission data (with the exception of assignment fields), and the field is 
         // empty, and the record is new.
-        if($this->getIsNewRecord()) {
+        if($this->getIsNewRecord() && $this->scenario == 'insert') {
             // Set default values
             foreach($this->getFields(true) as $fieldName => $field) {
                 if(!isset($data[$fieldName]) && $this->$fieldName == '' && 
@@ -1581,7 +1601,6 @@ abstract class X2Model extends CActiveRecord {
                 }
             }
         }
-
     }
 
     /**

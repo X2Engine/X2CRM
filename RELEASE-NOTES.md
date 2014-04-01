@@ -1,4 +1,6 @@
 # 4.0 #
+3/20/2014
+
 * "X2Touch", the mobile layout, is no more. In its place will be a responsive,
   mobile-friendly layout.   
 * The formula-parsing method used in X2Flow has changed to improve security and 
@@ -12,6 +14,8 @@
   the content of the referenced field never containing quotes).
 
 # 3.7.3b #
+2/14/2014
+
 * This version, while it is mainly oriented towards fixing bugs, contains some
   extreme, far-reaching changes (for example, the refactoring of how lookup fields
   work) that may have introduced bugs that we have not seen/foreseen in our tests.
@@ -26,12 +30,14 @@
 
 # 3.7.1 #
 12/23/2013
+
 * For security purposes, the web lead form no longer permits setting options via
   query parameters, with the exception of CSS (i.e. color); rather, all options
   are now stored server-side. Existing web lead forms will thus need to be updated.
 
 # 3.7 #
 12/23/2013
+
 * In previous versions, the "greater than" and "less than" comparison operators 
   in X2Flow incorrectly resulted in the comparisons "greater than or equal to" 
   and "less than or equal to", respectively. In this version, that behavior is
@@ -47,6 +53,7 @@
 
 # 3.6.2 #
 11/26/2013
+
 * Hosting one's CRM on a different domain name than one's website will increase 
   the likelihood of public-facing resources like targeted content, web forms and
   the web tracker not working properly in some browsers. This is due to the 
@@ -64,6 +71,7 @@
 
 # 3.6.1 #
 11/22/2013
+
 * The targeted content embed method has been changed to resolve the previous 
   issue with Internet Explorer. As such, any embed codes generated in 3.6 will
   not work in this and future versions. To fix this issue, it will be necessary 
@@ -72,18 +80,21 @@
 
 # 3.6 #
 11/21/2013
+
 * The targeted content feature is designated "beta" because, in this version, 
   the embeddable code causes problems in Internet Explorer 8 and 9 when embedded
   in pages containing multiple iframes.
 
 # 3.1 #
 6/18/2013
+
 * In the deletion action of the API, the primary key can now be specified in
   either the GET or POST parameters. This way, the "DELETE" request type can be
   used for deletion, and not just the POST type of request.
 
 # 3.0.1 #
 5/13/2013
+
 * The API has undergone some fundamental changes in its response format:
   * It always responds in JSON-encoded objects for all actions, with the
     exception of checkPermissions, which responds with code 200, mimetype
@@ -107,6 +118,7 @@
 
 # 3.0 #
 5/1/2013
+
 * The automation designer, while largely complete, is still in active 
   development, and thus has been deemed a "beta" feature.
 * Quotes created before updating to 3.0 may display incorrect totals in email,
@@ -128,6 +140,7 @@
 
 # 2.1.1 #
 10/15/2012
+
 * Note: Any existing changelog data will be preserved, but not visible in the
   changelog table. In the next update we will include code to convert this data
   to the new format.

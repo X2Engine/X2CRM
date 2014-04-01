@@ -46,7 +46,6 @@ $this->actionMenu = array(
 ?>
 <div class="page-title icon profile"><h2><?php echo Yii::t('profile', 'Change Personal Settings'); ?></h2></div>
 
-
 <?php
 echo $this->renderPartial('_settings', array(
     'model' => $model,

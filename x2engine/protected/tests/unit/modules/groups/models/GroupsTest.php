@@ -96,8 +96,10 @@ class GroupTest extends CDbTestCase {
 
     public function testAfterDelete () {
         $group = Groups::model ()->findByPk ('1');
-        print ('id of group to delete: ');
-        print ($group->id);
+        if (self::VERBOSE) {
+            print ('id of group to delete: ');
+            print ($group->id);
+        }
         
         // assert that group to user records exist for this group
         $this->assertTrue (

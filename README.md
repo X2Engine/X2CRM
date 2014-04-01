@@ -1,31 +1,21 @@
 # X2Engine 4.0 #
-3/20/2014
+Patch/follow-up release 4.0.1 (see [CHANGELOG](CHANGELOG.md) for full history)
 
-New in 4.0 (see [CHANGELOG](CHANGELOG.md) for full history):
+3/31/2014
 
-* New in **Platinum Edition:**
-  * Browser fingerprinting system supplements web activity tracker for when contacts have cookies disabled
-  * Administrators can set default themes for all users
-  * The ability to import/export themes
-  * The ability to import and export flows from X2Flow
-  * Partner branding template (for authorized partners)
-* New in **Professional Edition:**
-  * Improvements to the actions publisher:
-    * New "products" tab, for logging the use of products in a project or with a contact (for example)
-    * New "event" tab through which calendar events associated with the record can be created
-    * Which tabs it displays can be customized
-* Responsive UI replaces X2Touch and makes the application more easy to use on a mobile device
-* Improved Relationships widget with the ability to link to any type of record, including custom modules
-* New Administrative tools:
-  * Can import any data type with the power and flexibility that was previously limited to contact imports
-  * New simpler data export for modules that emulates the exporter previously limited to Contacts
-  * Can customize the application name and description
-* FTP-based file management for compatibility with systems where files and directories are not owned by the web server (documentation coming soon)
-* New look & feel including new icon-based activity feed buttons and login page
-* Bug fixes to the Marketing module, updater, and more:
-  * [1043](http://x2software.com/index.php/bugReports/1043): Property "Media.title" is not defined.  
-  * [1091](http://x2software.com/index.php/bugReports/1091): Array to string conversion 
-  * Further improvements to the security fixes discovered earlier; see ["Multiple Vulnerabilities in X2Engine"](http://x2community.com/topic/1511-multiple-vulnerabilities-in-x2engine/#entry7354) for more information
+* Fixed Bugs:
+  * [1080](http://x2software.com/index.php/bugReports/1080): User Report
+  * [1096](http://x2software.com/index.php/bugReports/1096): web tracking links broken
+  * [1097](http://x2software.com/index.php/bugReports/1097): User Report
+  * [1104](http://x2software.com/index.php/bugReports/1104): AccountCampaignAction and its behaviors do not have a method or closure named "redirect".
+  * [1110](http://x2software.com/index.php/bugReports/1110): User Report
+  * [1112](http://x2software.com/index.php/bugReports/1112): User Report
+  * [1116](http://x2software.com/index.php/bugReports/1116): is_file(): open_basedir restriction in effect. File(/usr/share/pear/Users.php) is not within the allowed path(s): (/usr/wwws/users/tikeccbcgd:/usr/www/users/tikeccbcgd:/usr/home/tikeccbcgd:/usr/local/rmagic:/usr/www/users/he/_system_:/usr/share/php:/
+  * [1130](http://x2software.com/index.php/bugReports/1130): User Report
+  * [1137](http://x2software.com/index.php/bugReports/1137): User Report 
+  * [1143](http://x2software.com/index.php/bugReports/1143): Unable to resolve the request "bugReports/1,142".
+  * [1151](http://x2software.com/index.php/bugReports/1151): The system is unable to find the requested action "profile".  
+  * [1154](http://x2software.com/index.php/bugReports/1154): User Report 
 
 
 

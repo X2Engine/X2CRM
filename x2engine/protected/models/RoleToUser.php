@@ -125,4 +125,10 @@ class RoleToUser extends CActiveRecord
         Roles::clearCachedUserRoles ($this->userId);
         parent::afterSave ();
     }
+
+    public function afterDelete () {
+        // roles have been updated, clear the cached roles for the corresponding user
+        Roles::clearCachedUserRoles ($this->userId);
+        parent::afterSave ();
+    }
 }

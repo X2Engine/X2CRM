@@ -469,4 +469,23 @@ class MediaController extends x2base {
         echo $ret;
     }
 
+    public function actionGetItems(){
+        $model = X2Model::model ($this->modelClass);
+        if (isset ($model)) {
+            $tableName = $model->tableName ();
+            $sql = 
+                'SELECT id, fileName as value
+                 FROM '.$tableName.' 
+                 WHERE associationType!="theme" and fileName LIKE :qterm 
+                 ORDER BY fileName ASC';
+            $command = Yii::app()->db->createCommand($sql);
+            $qterm = $_GET['term'].'%';
+            $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
+            $result = $command->queryAll();
+            echo CJSON::encode($result);
+        }
+        Yii::app()->end();
+    }
+
+
 }

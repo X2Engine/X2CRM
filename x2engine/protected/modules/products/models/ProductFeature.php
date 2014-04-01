@@ -131,9 +131,6 @@ class ProductFeature extends X2Model {
 				case 'boolean':
 					$criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
 					break;
-				case 'link':
-					$criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
-					break;
 				case 'assignment':
 					$criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
 					break;

@@ -88,7 +88,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
                 <div class="cell">
                     <?php echo $form->label($actionModel, 'associationType'); ?>
                     <?php
-                    echo $form->dropDownList($actionModel, 'associationType', array_merge(array('none' => Yii::t('app','None'), 'calendar' => Yii::t('calendar', 'Calendar')), $modelList), array(
+                    echo $form->dropDownList($actionModel, 'associationType', array_merge(array('none' => Yii::t('app','None')), $modelList), array(
                         'ajax' => array(
                             'type' => 'POST', //request type
                             'url' => CController::createUrl('/actions/actions/parseType'), //url to call.
@@ -203,12 +203,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
                 </div>
                 <div class="cell">
                     <?php echo $form->label($actionModel, 'priority'); ?>
-                    <?php
-                    echo $form->dropDownList($actionModel, 'priority', array(
-                        '1' => Yii::t('actions', 'Low'),
-                        '2' => Yii::t('actions', 'Medium'),
-                        '3' => Yii::t('actions', 'High')));
-                    ?>
+                    <?php echo $form->dropDownList($actionModel, 'priority', Actions::getPriorityLabels()); ?>
 
                     <?php
                     if($actionModel->type == 'event'){

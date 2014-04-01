@@ -37,6 +37,8 @@
 // Imports that are required by properties/methods of this behavior:
 Yii::import('application.models.Admin');
 Yii::import('application.components.util.FileUtil');
+Yii::import('application.modules.users.models.*');
+
 
 /**
  * ApplicationConfigBehavior is a behavior for the application. It loads
@@ -226,8 +228,24 @@ class ApplicationConfigBehavior extends CBehavior {
      * without having to extend {@link Yii} and override its methods.
      */
     public function beginRequest(){
-        // $t0 = microtime(true);
-        $noSession = $this->owner->params->noSession || strpos($this->owner->request->getPathInfo(),'api')===0;
+        
+        // About the "noSession" property/variable:
+        //
+        // This variable, if True, indicates that the application is running in
+        // the context of either an API call or a console command, in which case
+        // there would not be the typical authenticated user and session
+        // variables one would need in a web request
+        //
+        // It's necessary because originally this method was written with
+        // absolutely no regard for compatibility with the API or Yii console,
+        // and thus certain lines of code that make references to the usual web
+        // environment with cookie-based authentication (which would fail in
+        // those cases) needed to be kept inside of conditional statements that
+        // are skipped over if in the console/API.
+        $this->owner->params->noSession =
+                $this->owner->params->noSession
+                || strpos($this->owner->request->getPathInfo(),'api/')===0;
+        $noSession = $this->owner->params->noSession;
 
         if(!$noSession){
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
@@ -282,28 +300,42 @@ class ApplicationConfigBehavior extends CBehavior {
         
         $this->cryptInit();
         
-        // Yii::import('application.components.ERememberFiltersBehavior');
-        // Yii::import('application.components.EButtonColumnWithClearFilters');
-        // $this->owner->messages->forceTranslation = true;
         $this->owner->messages->onMissingTranslation = array(new TranslationLogger, 'log');
-        $notGuest = True;
-        $uname = 'admin'; // Will always be admin in a console command
-        if(!$noSession){
-            $uname = $this->owner->user->getName();
-            $notGuest = !$this->owner->user->getIsGuest();
-        }
-
-        $sessionId = isset($_SESSION['sessionId']) ? $_SESSION['sessionId'] : session_id();
 
         // Set profile
-        $this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array('username' => $uname));
-        $session = X2Model::model('Session')->findByPk($sessionId);
-        if(isset($this->owner->params->profile)){
-            $_SESSION['fullscreen'] = $this->owner->params->profile->fullscreen;
+        //
+        // Get the Administrator's and the current user's profile.
+        $adminProf = X2Model::model('Profile')->findByPk(1);
+        $this->owner->params->adminProfile = $adminProf;
+        if(!$noSession){ // Typical web session:
+            $notGuest = !$this->owner->user->getIsGuest();
+            $this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array(
+                'username' => $this->owner->user->getName()
+                    ));
+        } else {
+            // Use the admin profile as the user profile.
+            //
+            // If a different profile is desired in an API call or console
+            // command, a different profile should be loaded.
+            //
+            // Using "admin" as the default profile should not affect
+            // permissions (that's what the "suModel" property is for). It is
+            // merely to account for cases where there is a reference to the
+            // "profile" property of some model or component class that would
+            // break the application outside the scope of a web request with a
+            // session and cookie-based authentication.
+            $notGuest = false;
+            $this->owner->params->profile = $adminProf;
         }
+        
 
-
+        // Set session variables
         if(!$noSession){
+            $sessionId = isset($_SESSION['sessionId']) ? $_SESSION['sessionId'] : session_id();
+            $session = X2Model::model('Session')->findByPk($sessionId);
+            if(!empty($this->owner->params->profile)){
+                $_SESSION['fullscreen'] = $this->owner->params->profile->fullscreen;
+            }
             if($notGuest && !($this->owner->request->getPathInfo() == 'site/getEvents')){
                 $this->owner->user->setReturnUrl($this->owner->request->requestUri);
                 if($session !== null){
@@ -313,6 +345,12 @@ class ApplicationConfigBehavior extends CBehavior {
                         $session->delete();
                         $this->owner->user->logout(false);
                     }else{
+                        // Print a warning message
+                        if($this->owner->session['debugEmailWarning']) {
+                            $this->owner->session['debugEmailWarning'] = 0;
+                            $this->owner->user->setFlash('admin.debugEmailMode',Yii::t('app','Note, email debugging mode is enabled. Emails will not actually be delivered.'));
+                        }
+
                         $session->lastUpdated = time();
                         $session->update(array('lastUpdated'));
 
@@ -337,45 +375,44 @@ class ApplicationConfigBehavior extends CBehavior {
             }
         }
 
+        // Configure logos
         if(!($logo = $this->owner->cache['x2Power'])){
             $logo = 'data:image/png;base64,'.base64_encode(file_get_contents(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'images', 'powered_by_x2engine.png'))));
             $this->owner->cache['x2Power'] = $logo;
         }
         $this->owner->params->x2Power = $logo;
+        $logo = Media::model()->findByAttributes(array(
+            'associationId' => 1,
+            'associationType' => 'logo'
+                ));
+        if(isset($logo))
+            $this->owner->params->logo = $logo->fileName;
 
-        $adminProf = X2Model::model('Profile')->findByPk(1);
-        $this->owner->params->adminProfile = $adminProf;
-
-        // set currency
+        // Set currency and load currency symbols
         $this->owner->params->currency = $this->settings->currency;
-
-        // set language
-        if(!empty($this->owner->params->profile->language))
-            $this->owner->language = $this->owner->params->profile->language;
-        else if(isset($adminProf))
-            $this->owner->language = $adminProf->language;
-
         $locale = $this->owner->locale;
         $curSyms = array();
         foreach($this->owner->params->supportedCurrencies as $curCode){
             $curSyms[$curCode] = $locale->getCurrencySymbol($curCode);
         }
         $this->owner->params->supportedCurrencySymbols = $curSyms; // Code to symbol
-        // set timezone
+
+        // Set language
+        if(!empty($this->owner->params->profile->language))
+            $this->owner->language = $this->owner->params->profile->language;
+        else if(isset($adminProf))
+            $this->owner->language = $adminProf->language;
+
+        // Set timezone
         if(!empty($this->owner->params->profile->timeZone))
             date_default_timezone_set($this->owner->params->profile->timeZone);
         elseif(!empty($adminProf->timeZone))
             date_default_timezone_set($adminProf->timeZone);
         else
             date_default_timezone_set('UTC');
-
-        $logo = Media::model()->findByAttributes(array('associationId' => 1, 'associationType' => 'logo'));
-        if(isset($logo))
-            $this->owner->params->logo = $logo->fileName;
-
         setlocale(LC_ALL, 'en_US.UTF-8');
 
-        // set base path and theme path globals for JS
+        // Set base path and theme path globals for JS (web UI only)
         if(!$noSession){
             $this->checkForMobileDevice ();
             $this->checkResponsiveLayout ();
@@ -484,25 +521,27 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     public function getAbsoluteBaseUrl(){
         if(!isset($this->_absoluteBaseUrl)){
-            if($this->owner->params->noSession){
+            if(php_sapi_name() == 'cli'){
+                // It's assumed that in this case, we're dealing with (for example)
+                // a cron script that sends emails and has to generate URLs. It
+                // needs info about how to access the CRM from the outside...
                 $this->_absoluteBaseUrl = '';
-                // Use the web API config file to construct the URL
-                $file = realpath($this->owner->basePath.'/../webLeadConfig.php');
-                if($file){
+                if($this->contEd('pro')
+                        && $this->settings->externalBaseUrl
+                        && $this->settings->externalBaseUri){
+                    // Use the base URL from "public info settings" since it's
+                    // available:
+                    $this->_absoluteBaseUrl = $this->settings->externalBaseUrl.$this->settings->externalBaseUri;
+                }else if($file = realpath($this->owner->basePath.'/../webConfig.php')){
+                    // Use the web API config file to construct the URL (our
+                    // last hope)
                     include($file);
                     if(isset($url))
                         $this->_absoluteBaseUrl = $url;
-                }
-                if(!isset($this->_absoluteBaseUrl)){
-                    $this->_absoluteBaseUrl = ''; // Default
-                    if($this->hasProperty('request')){
-                        // If this is an API request, there is still hope yet to resolve it
-                        try{
-                            $this->_absoluteBaseUrl = $this->owner->request->getBaseUrl(1);
-                        }catch(Exception $e){
-
-                        }
-                    }
+                } else {
+                    // There's nothing left we can legitimately do and have it
+                    // work correctly! Make something up.
+                    $this->_absoluteBaseUrl = 'http://localhost';
                 }
             }else{
                 $this->_absoluteBaseUrl = $this->owner->baseUrl;
@@ -654,6 +693,21 @@ class ApplicationConfigBehavior extends CBehavior {
         return $this->_externalWebRoot;
     }
 
+    /**
+     * "isGuest" wrapper that can be used from CLI
+     *
+     * Used in biz rules for RBAC items in place of Yii::app()->user->isGuest for
+     * the reason that Yii::app()->user is meaningless at the command line
+     * @return type
+     */
+    public function getIsUserGuest() {
+        if(php_sapi_name() == 'cli') {
+            return false;
+        } else {
+            return $this->owner->user->isGuest;
+        }
+    }
+
 	/**
 	 * Substitute user ID magic getter.
 	 *
@@ -667,8 +721,12 @@ class ApplicationConfigBehavior extends CBehavior {
                 $this->_suID = $this->owner->user->getId();
             }elseif(isset($this->_suModel)){
                 $this->_suID = $this->_suModel->id;
-            }else{
+            }elseif(php_sapi_name() == 'cli'){
+                // Assume admin
                 $this->_suID = 1;
+            }else{
+                // Assume nothing
+                $this->_suID = 0;
             }
         }
         return $this->_suID;
@@ -744,9 +802,29 @@ class ApplicationConfigBehavior extends CBehavior {
         if(!isset($this->_suModel)){
             if($this->isInSession)
                 $this->_suID == $this->owner->user->getId();
-            $this->_suModel = User::model()->findByPk($this->suID);
+            $this->_suModel = User::model()->findByPk($this->getSuID());
         }
         return $this->_suModel;
+    }
+
+    /**
+     * Substitute user name getter.
+     *
+     * This is intended to be safer than suModel->userName insofar as it defaults
+     * to "Guest" if no name/session has yet been established. It is expected that
+     * in console commands, API requests and unit testing, the {@link suModel}
+     * property be set as desired, so that this does not evaluate to "Guest"
+     */
+    public function getSuName(){
+        if($this->getIsInSession()) {
+            return $this->owner->user->getName();
+        }else{
+            if(!isset($this->_suModel)){
+                return 'Guest';
+            }else{
+                return $this->_suModel->username;
+            }
+        }
     }
     
     /**

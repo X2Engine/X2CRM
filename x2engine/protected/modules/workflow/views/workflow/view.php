@@ -35,6 +35,17 @@
  *****************************************************************************************/
 
 
+Yii::app()->clientScript->registerResponsiveCss('workflowDetailResponsiveCss',"
+
+@media (max-width: 526px) {
+    #process-status {
+        clear:both !important;
+    }
+}
+
+");
+
+
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/workflowFunnel.css');
 
 $this->setPageTitle(Yii::t('workflow', 'View Process'));
@@ -80,7 +91,7 @@ echo Workflow::renderWorkflowStats($workflowStatus);
 ?>
 </div>
 
-<div class="form" style="clear:none;">
+<div id='process-status' class="form" style="clear:none;">
 	<h2><?php echo Yii::t('workflow', 'Process Status'); ?></h2>
 	<?php $form = $this->beginWidget('CActiveForm', array(
 		'action'=>'view',

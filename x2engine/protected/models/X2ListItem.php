@@ -145,15 +145,15 @@ class X2ListItem extends CActiveRecord {
 		
 		if($this->list->campaign !== null) {
 			if($this->contact !== null) {
-				X2Flow::trigger('CampaingEmailOpenTrigger',array(
+				X2Flow::trigger('CampaignEmailOpenTrigger',array(
 					'model'=>$this->contact,
-					'campaign'=>$this->list->campaign
+					'campaign'=>$this->list->campaign->name
 				));
 			} else {
 				X2Flow::trigger('NewsletterEmailOpenTrigger',array(
 					'item'=>$this,
 					'email'=>$this->emailAddress,
-					'campaign'=>$this->list->campaign,
+					'campaign'=>$this->list->campaign->name,
 				));
 			}
 		}
@@ -175,16 +175,16 @@ class X2ListItem extends CActiveRecord {
 		
 		if($this->list->campaign !== null) {
 			if($this->contact !== null) {
-				X2Flow::trigger('CampaingEmalClickTrigger',array(
+				X2Flow::trigger('CampaignEmailClickTrigger',array(
 					'model'=>$this->contact,
-					'campaign'=>$this->list->campaign,
+					'campaign'=>$this->list->campaign->name,
 					'url'=>$url
 				));
 			} else {
-				X2Flow::trigger('NewsletterEmalClickTrigger',array(
+				X2Flow::trigger('NewsletterEmailClickTrigger',array(
 					'item'=>$this,
 					'email'=>$this->emailAddress,
-					'campaign'=>$this->list->campaign,
+					'campaign'=>$this->list->campaign->name,
 					'url'=>$url
 				));
 			}
@@ -213,16 +213,16 @@ class X2ListItem extends CActiveRecord {
 				$this->contact->lastActivity = time();
 				$this->contact->update(array('doNotEmail','lastActivity'));
 				
-				X2Flow::trigger('CampaingUnsubscribeTrigger',array(
+				X2Flow::trigger('CampaignUnsubscribeTrigger',array(
 					'model'=>$this->contact,
-					'campaign'=>$this->list->campaign
+					'campaign'=>$this->list->campaign->name
 				));
 			} elseif(isset($this->list)) {		// no contact, must be a newsletter
 			
 				X2Flow::trigger('NewsletterUnsubscribeTrigger',array(
 					'item'=>$this,
 					'email'=>$this->emailAddress,
-					'campaign'=>$this->list->campaign
+					'campaign'=>$this->list->campaign->name
 				));
 			}
 		}

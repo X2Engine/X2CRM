@@ -38,6 +38,7 @@ Yii::import('application.models.*');
 Yii::import('application.components.*');
 Yii::import('application.components.permissions.*');
 Yii::import('application.components.util.*');
+Yii::import('application.modules.users.models.*');
 Yii::import('application.modules.bugReports.models.*');
 
 /**
@@ -80,10 +81,10 @@ abstract class X2DbTestCase extends CDbTestCase {
                 copy($testFile, $file);
             }
         }
-
         EncryptedFieldsBehavior::setup(self::$key,self::$iv);
 
         Yii::app()->beginRequest();
+        Yii::app()->suModel = User::model()->findByPk(1);
     }
 
     public static function tearDownAppEnvironment() {
@@ -103,6 +104,8 @@ abstract class X2DbTestCase extends CDbTestCase {
         $testClass = get_called_class();
         $refFix = call_user_func("$testClass::referenceFixtures");
         $fm = Yii::app()->getComponent('fixture');
+        self::$_referenceFixtureRows = array();
+        self::$_referenceFixtureRecords = array();
         if(is_array($refFix)){
             $fm->load($refFix);
             foreach($refFix as $alias => $table){

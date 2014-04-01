@@ -115,10 +115,18 @@ class APIModelTest extends CURLDbTestCase {
 		$lookupModel->contactLookup();
 //		var_dump($lookupModel->attributes);
 		foreach($contact->attributes as $name=>$value) {
-			$this->assertArrayHasKey($name, $lookupModel->attributes, "Failed asserting that attribute $name was set in contact lookup.");
+			$this->assertArrayHasKey($name, $lookupModel->attributes, "Failed asserting that attribute $name was set in contact lookup. Response: ".json_encode($lookupModel->responseObject));
 			$this->assertEquals($value,$lookupModel->$name, "Failed asserting that attribute is not the same between existing model and looked-up model. What the heck is happening here?");
 		}
-
+        // Test using the "view" method instead:
+        $id = $lookupModel->id;
+		$lookupModel = $this->newModel();
+		$lookupModel->id = $id;
+		$lookupModel->contactLookup();
+		foreach($contact->attributes as $name=>$value) {
+			$this->assertArrayHasKey($name, $lookupModel->attributes, "Failed asserting that attribute $name was set in contact lookup. Response: ".json_encode($lookupModel->responseObject));
+			$this->assertEquals($value,$lookupModel->$name, "Failed asserting that attribute is not the same between existing model and looked-up model. What the heck is happening here?");
+		}
 		// Test getting permissions.
 		$this->assertFalse($model->checkAccess('ContactsDelete'),'Failed asserting proper response regarding permissions of unprivileged user.');
 		// Test deleting with an unprivileged user (which should fail).

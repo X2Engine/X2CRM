@@ -59,6 +59,7 @@ $confKeys = array(
 	'adminPass2',
 	'apiKey',
 	'app',
+    'baseUrl',
 	'buildDate',
 	'currency',
 	'currency2',
@@ -81,7 +82,6 @@ $confKeys = array(
 	'updaterVersion',
 	'user_agent',
 	'visibleModules',
-	'webLeadUrl',
 	'x2_version',
 	'type',
 	'startCron',
@@ -548,7 +548,7 @@ function installStage($stage) {
 			} else {
 				$gii = "array(\n\t'class'=>'system.gii.GiiModule',\n\t'password'=>'password',\n\t/* If the following is removed, Gii defaults to localhost only. Edit carefully to taste: */\n\t 'ipFilters'=>array('127.0.0.1', '::1'),\n)";
 			}
-			$config['webLeadUrl'] = is_int(strpos($config['webLeadUrl'], 'initialize.php')) ? substr($config['webLeadUrl'], 0, strpos($config['webLeadUrl'], 'initialize.php')) : $config['webLeadUrl'];
+			$config['baseUrl'] = is_int(strpos($config['baseUrl'], 'initialize.php')) ? substr($config['baseUrl'], 0, strpos($config['baseUrl'], 'initialize.php')) : $config['baseUrl'];
 			$X2Config = "<?php\n";
 			foreach (array('appName', 'email', 'host', 'user', 'pass', 'dbname', 'version') as $confKey)
 				$X2Config .= "\$$confKey = ".var_export($config[$confMap[$confKey]],1).";\n";
@@ -559,20 +559,25 @@ function installStage($stage) {
 			$config['time'] = time();
 			foreach ($dbKeys as $property)
 				$dbConfig['{' . $property . '}'] = $config[$property];
-			$contents = file_get_contents('webLeadConfig.php');
-			$contents = preg_replace('/\$url=\'\'/', "\$url='{$config['webLeadUrl']}'", $contents);
-			$contents = preg_replace('/\$user=\'\'/', "\$user='admin'", $contents);
-			$contents = preg_replace('/\$userKey=\'\'/', "\$userKey='{$config['adminUserKey']}'", $contents);
-			file_put_contents('webLeadConfig.php', $contents);
+			$contents = file_get_contents('webConfig.php');
+			$contents = preg_replace('/\$url\s*=\s*\'\'/', "\$url=".var_export($config['baseUrl'],1), $contents);
+			$contents = preg_replace('/\$user\s*=\s*\'\'/', "\$user=".var_export($config['adminUsername'],1), $contents);
+			$contents = preg_replace('/\$userKey\s*=\s*\'\'/', "\$userKey=".var_export($config['adminUserKey'],1), $contents);
+			file_put_contents('webConfig.php', $contents);
 			if ($config['test_db']) {
-				$filename = 'protected/config/X2Config-test.php';
+				$filename = implode(DIRECTORY_SEPARATOR,array(__DIR__,'protected','config','X2Config-test.php'));
 				if (!empty($config['test_url'])) {
-					$webTestConfigFile = dirname(__FILE__) . implode(DIRECTORY_SEPARATOR, array('', 'protected', 'tests', '')) . 'WebTestConfig.php';
-					$webTestConfig = "<?php define('TEST_BASE_URL','{$config['test_url']}/'); ?>";
+					$webTestConfigFile = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected', 'tests', 'WebTestConfig.php'));
+                    $webTestUrl = rtrim($config['test_url'],'/').'/';
+                    $webTestRoot = rtrim(preg_replace('#index-test\.php/?$#','',trim($config['test_url'])),'/').'/';
+					$webTestConfig = "<?php\n";
+                    $webTestConfig .= "define('TEST_BASE_URL',".var_export($webTestUrl,1).");\n";
+                    $webTestConfig .= "define('TEST_WEBROOT_URL',".var_export($webTestRoot,1).");\n";
+                    $webTestConfig .= "?>";
 					file_put_contents($webTestConfigFile, $webTestConfig);
 				}
 			} else
-				$filename = 'protected/config/X2Config.php';
+				$filename = implode(DIRECTORY_SEPARATOR,array(__DIR__,'protected','config','X2Config.php'));
 			$handle = fopen($filename, 'w') or RIP(installer_tr('Could not create configuration file: {filename}.',array('{filename}'=>$filename)));
 
 			// Write core application configuration:
@@ -746,7 +751,7 @@ if ($silent) {
 		$config[$checkbox] = (isset($_POST[$checkbox]) && $_POST[$checkbox] == 1) ? 1 : 0;
 	}
 	$config['unique_id'] = isset($_POST['unique_id']) ? $_POST['unique_id'] : 'none';
-	$config['webLeadUrl'] = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+	$config['baseUrl'] = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 }
 //if(!in_array($config['type'],array('Silent','Bitnami','Testing'))) // Special installation types
 //	$config['type'] = $config['test_db']==1?'Testing':($silent ? 'Silent' : 'On Premise');
@@ -850,7 +855,7 @@ try {
 } catch (PDOException $e) {
 	// Database connection failed. Send validation errors.
 	foreach (array('dbHost' => 'Host Name', 'dbName' => 'Database Name', 'dbUser' => 'Username', 'dbPass' => 'Password') as $attr => $label) {
-		if (empty($_POST[$attr])) {
+		if (empty($config[$attr])) {
 			addValidationError($attr, installer_tr('{attr}: cannot be blank', array('{attr}' => installer_t($label))));
 		} else {
 			addValidationError($attr, installer_tr('{attr}: please check that it is correct', array('{attr}' => installer_t($label))));
@@ -887,7 +892,7 @@ if (!$complete || $silent) {
 		foreach ($sendArgs as $urlKey) {
 			$stats[$urlKey] = $config[$urlKey];
 		}
-		$ch = curl_init('https://x2planet.com/installs/registry/activity?' . http_build_query($stats));
+		$ch = curl_init('http://x2planet.com/installs/registry/activity?' . http_build_query($stats));
 		curl_setopt($ch, CURLOPT_POST, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$gif = curl_exec($ch);
@@ -952,7 +957,7 @@ if (!$silent && $complete):
 					Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
 					<?php echo installer_t('All Rights Reserved.'); ?>
 					<?php if (!$config['test_db']): ?>
-						<img style="height:0;width:0" src="https://x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
+						<img style="height:0;width:0" src="http://x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
 						<?php endif; ?>
 				</div>
 			</div>

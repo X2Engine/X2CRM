@@ -38,7 +38,7 @@
 Step between full title bar and mobile title bar. Search bar minimizes and expands to make
 room for user menu links
 */
-@media (max-width: 915px) {
+/*@media (max-width: 915px) {
     body.enable-search-bar-modes #search-bar-box {
         display: none;
         width: 180px;
@@ -58,7 +58,7 @@ room for user menu links
     body.enable-search-bar-modes #search-bar-box {
         display: block !important;
     }
-}
+}*/
 
 
 

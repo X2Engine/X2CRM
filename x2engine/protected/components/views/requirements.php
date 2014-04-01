@@ -265,21 +265,30 @@ if(!is_writable(__FILE__)) {
 }
 
 
-// Check that the directive open_basedir is not arbitrarily set to some restricted 
-// jail directory off in god knows where
-$requirements['environment']['open_basedir'] = 1;
-$basedir = trim(ini_get('open_basedir'));
-$cwd = dirname(__FILE__);
-if(!empty($basedir)){
-    $allowCwd = 0;
+/**
+ * Tells if the directory is within the open_basedir restriction
+ */
+$isAllowedDir = function($path) {
+    $basedir = trim(ini_get('open_basedir'));
+    if($allowCwd = empty($basedir))
+        return 1;
     $basedirs = explode(PATH_SEPARATOR,$basedir);
     foreach($basedirs as $dir){
-        if(strpos($cwd,$dir) !== false){
+        if(empty($dir))
+            continue;
+        if(strpos($path,$dir) !== false){
             $allowCwd = 1;
             break;
         }
     }
-    if(!$allowCwd) {
+    return $allowCwd;
+};
+
+// Check that the directive open_basedir is not arbitrarily set to some restricted 
+// jail directory off in god knows where
+$requirements['environment']['open_basedir'] = 1;
+if(!empty($basedir)){
+    if(!$isAllowedDir(dirname(__FILE__))) {
     	$reqMessages[3][] = installer_t('The base directory configuration directive is set, and it does not include the current working directory.');
         $requirements['environment']['open_basedir'] = 0;
     }
@@ -354,9 +363,15 @@ if(!($requirements['extensions']['hash']=extension_loaded('hash'))){
 		$reqMessages[3][] = installer_t('Some hashing algorithms required for software updates are missing on this server:').' '.implode(', ',$algosNotAvail);
 }
 
+// Check the session save path:
+$ssp = ini_get('session.save_path');
+if(!is_writable($ssp)){
+	$reqMessages[3][] = strtr(installer_t('The path defined in session.save_path ({ssp}) is not writable.'), array('{ssp}' => $ssp));
+}
 
 // Miscellaneous functions:
 $requiredFunctions = array(
+    'php_sapi_name',
 	'mb_regex_encoding',
 	'getcwd',
 	'chmod'
@@ -546,10 +561,27 @@ if(!$canBackup && $requirements['functions']['proc_open']){
     $requirements['environment']['shell'] = 0;
 	$reqMessages[2][] = installer_t('The "mysqldump" and "mysql" command line utilities are unavailable on this system. X2Engine will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.');
 }
-// Check the session save path:
-$ssp = ini_get('session.save_path');
-if(!is_writable($ssp)){
-	$reqMessages[2][] = strtr(installer_t('The path defined in session.save_path ({ssp}) is not writable. Uploading files via the media module will not work.'), array('{ssp}' => $ssp));
+
+$giNotwork = installer_t('Google integration will not work.');
+if(!function_exists('sys_get_temp_dir')){
+    $message = installer_t('The function "sys_get_temp_dir" is unavailable.');
+    if($isAllowedDir('/tmp')){
+        if(!is_writable('/tmp')){
+            $reqMessages[2][] = $msg.' '.installer_t('The directory "/tmp" is not writable.').' '.$giNotwork;
+        }
+    } else {
+        $reqMessages[2][] = $msg.' '.installer_t('Use of the directory "/tmp" is not permitted on this system.').' '.$giNotwork;
+    }
+} else {
+    $tmp = sys_get_temp_dir();
+    if(!empty($tmp) && $isAllowedDir($tmp)){
+        if(!is_writable($tmp)){
+            $reqMessages[2][] = installer_t('The system temporary directory, according to "sys_get_temp_dir", is not writable.').' '.$giNotwork;
+        }
+    }else{
+        $reqMessages[2][] = installer_t('Usage of the system temporary directory, according to "sys_get_temp_dir", is either unknown or not permitted.').' '.$giNotwork;
+
+    }
 }
 
 ////////////////////////////////////////////////////////////

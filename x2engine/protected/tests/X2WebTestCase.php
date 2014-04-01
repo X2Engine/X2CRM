@@ -53,6 +53,8 @@ Yii::import ('application.components.permissions.*');
  */
 abstract class X2WebTestCase extends CWebTestCase {
 
+	public $fixtures = array(); // forces all fixtures without suffixes to be loaded
+
 	public $localSeleneseDir;
 
 	/**
@@ -95,7 +97,7 @@ abstract class X2WebTestCase extends CWebTestCase {
 		$this->openX2('/site/login');
 		foreach ($this->login as $fld => $val)
 			$this->type("name=LoginForm[$fld]", $val);
-		$this->clickAndWait("//input[@type='submit']");
+		$this->clickAndWait("css=#signin-button");
 		// Finally, make sure the login succeeded
 		$this->assertCorrectUser();
 	}

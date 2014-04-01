@@ -113,14 +113,6 @@ class Profile extends CActiveRecord {
                         'profileInfoIsMinimized'=>false, // profile page profile info section
                         'fullProfileInfo'=>false, // profile page profile info section
                     ),
-                    'actionPublisherTabs' => array(
-                        'PublisherCallTab'=>true,
-                        'PublisherTimeTab'=>true, 
-                        'PublisherActionTab'=>true,
-                        'PublisherCommentTab'=>true,
-                        'PublisherEventTab'=>false,
-                        'PublisherProductsTab'=>false,
-                    ),
                 ),
                 'maintainCurrentFieldsOrder' => true
             ),
@@ -321,15 +313,6 @@ class Profile extends CActiveRecord {
         }
 
         return $this->smartSearch ($criteria, $resultsPerPage, $uniqueId);
-    }
-
-    /**
-     * @param array $value This should match the structure of the actionPublisherTabs property
-     *  specified in the JSONFieldsDefaultValuesBehavior configuration
-     */
-    public function setActionPublisherTabs ($value) {
-        $this->actionPublisherTabs = $value;
-        $this->save ();
     }
 
     /**

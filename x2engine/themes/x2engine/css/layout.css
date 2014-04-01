@@ -1448,9 +1448,25 @@ body.disable-mobile-layout .page-title.icon.profile > h2 {
 
 
 
-
-
 #content .page-title {
+    -moz-border-radius: 3px 3px 0px 0px;
+    -o-border-radius: 3px 3px 0px 0px;
+    -webkit-border-radius: 3px 3px 0px 0px;
+    border-radius: 3px 3px 0px 0px;
+}
+
+#content .page-title-fixed-inner > .page-title {
+    border-radius: 0 0 3px 3px;
+    -moz-border-radius: 0 0 3px 3px;
+    -webkit-border-radius: 0 0 3px 3px;
+    -o-border-radius: 0 0 3px 3px;
+}
+
+#content .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-top-bar-inner > .page-title {
+    border-radius: 0;
+}
+
+#content .x2-gridview-fixed-top-bar-inner > .page-title {
     -moz-border-radius: 3px 3px 0px 0px;
     -o-border-radius: 3px 3px 0px 0px;
     -webkit-border-radius: 3px 3px 0px 0px;

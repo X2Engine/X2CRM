@@ -105,10 +105,10 @@ class ResponseUtilTest extends CURLTestCase {
             ob_end_flush();
             $this->assertTrue(false,'Ran into error in ResponseUtil::respond! '.$e->getMessage());
         }
-        $this->assertEquals("I have responded", $echoed,'Shutdown code (string) did not run properly!');
+        $this->assertEquals("I have\nresponded", $echoed,'Shutdown code (string) did not run properly!');
 
         // Test with a closure:
-        ResponseUtil::$shutdown = function(){echo " responded";};
+        ResponseUtil::$shutdown = function(){echo "responded";};
         ob_start();
         try {
             ResponseUtil::respond('I have',true,true);
@@ -117,7 +117,7 @@ class ResponseUtilTest extends CURLTestCase {
             ob_end_flush();
             $this->assertTrue(false,'Ran into error in ResponseUtil::respond! '.$e->getMessage());
         }
-        $this->assertEquals("I have responded", $echoed,'Shutdown code (closure) did not run!');
+        $this->assertEquals("I have\nresponded", $echoed,'Shutdown code (anonymous function) did not run properly!');
         ResponseUtil::$shutdown = $prevShutdown;
     }
 
@@ -141,7 +141,7 @@ class ResponseUtilTest extends CURLTestCase {
             ob_end_flush();
             $this->assertTrue(false, 'Ran into error in ResponseUtil::respond! '.$e->getMessage());
         }
-        $this->assertEquals('responded',$echoed,'ResponseUtil::respond() did not respond!');
+        $this->assertEquals("responded\n",$echoed,'ResponseUtil::respond() did not respond!');
         
         // A basic web response, without error:
         $ch = $this->getCurlHandle(array('{case}'=>'respond.errFalse'));
@@ -208,11 +208,11 @@ class ResponseUtilTest extends CURLTestCase {
         $r = json_decode(curl_exec($ch),1);
         $this->assertResponseCodeIs(500,$ch);
         $this->assertEquals('Internal server error: non-numeric HTTP response status code specifed.',$r['message']);
-
+        
         // Setting headers:
         $this->assertHasHeaders(array('{case}' => 'sendHttp.extraHeader'), array(
             'Content-Type' => 'application/json',
-            'Content-MD5' => 'NDIyY2NjNThlZjE0Yzk1NGRmMWJkZTRlODFlYWJmOTk='
+            'Content-MD5' => 'Y2M5ZmQ3OTU3ZGY1ZjJmNmVhOGY5YzhmMzUzOWE2MWI='
         ));
 
         // Setting the body in raw format

@@ -36,4 +36,10 @@
 
 $this->renderPartial(
     'application.components.views._detailView', 
-    array('model' => $model, 'modelName' => 'contacts', 'scenario'=>'Inline')); 
+    array(
+        'model' => $model,
+        'modelName' => 'contacts',
+        'scenario'=>'Inline',
+        'nameLink' => true,
+    )
+);

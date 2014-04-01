@@ -935,18 +935,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 
     }
 
-    public function testCheckPartner() {
-        $ube = $this->instantiateUBe();
-        $dataPath = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'tests','data','partner'));
-        $originalPartnerFiles = Yii::app()->basePath.DIRECTORY_SEPARATOR.'partner';
-        $expected = array(
-            'about' => '75e0d946a15236d655f5911bc965bf88',
-            'footer' => '75c98b390e04c0f48dd7d8b948da2905',
-            'login' => 'c6eb4836590c589ce4c9c323568f9237',
-        );
-        $this->assertEquals($expected,$ube->checkPartner());
-        
-    }
+    
 
     public function testCheckUpdates() {
         $ube = $this->instantiateUBe();
@@ -1053,7 +1042,8 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                         'mb_regex_encoding' => true,
                         'getcwd' => true,
                         'chmod' => true,
-                        'proc_open' => true
+                        'proc_open' => true,
+                        'php_sapi_name' => true
                     ),
                     'classes' =>
                     array(

@@ -52,7 +52,6 @@ class ChartsModule extends X2WebModule {
         ));
 
         // Set module specific javascript packages
-
         $this->packages = array(
              'jquery' => array(
                  'basePath' => $this->getBasePath(),
@@ -77,7 +76,6 @@ class ChartsModule extends X2WebModule {
                 'baseUrl' => $this->assetsUrl,
                 'css' => array(
                     'js/jqplot/jquery.jqplot.css',
-                    //'css/charts.css?v'.CACHE_BUSTER
                     'css/charts.css'
                 ),
                 'js' => array(

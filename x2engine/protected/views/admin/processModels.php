@@ -69,10 +69,8 @@ var record=0;
     Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
     Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
     Yii::app()->clientScript->registerScript('renderMultiSelect',"
-        $(document).ready(function() {
-                 $('.multiselect').multiselect();
-        });
-    ",CClientScript::POS_HEAD);
+        $('.multiselect').multiselect();
+    ",CClientScript::POS_READY);
     $fields = array();
     $selected = array();
     $newFields = array();
@@ -113,7 +111,7 @@ var record=0;
         echo "<tr>";
         echo "<td style='width:33%'>$attribute</td>";
         echo "<td style='width:33%'>".CHtml::dropDownList($attribute,
-                '', // 'DO NOT MAP' is selected in all cases. This allows fields removed from the multiselect to actually be ignored.
+                isset($importMap[$attribute])?$importMap[$attribute]:'',
                 array_merge(array(''=>Yii::t('admin','DO NOT MAP'),'createNew'=>Yii::t('admin','CREATE NEW FIELD')),X2Model::model($model)->attributeLabels()),
                 array('class'=>'import-attribute')
                 )."</td>";

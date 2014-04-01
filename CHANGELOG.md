@@ -1,6 +1,23 @@
+# 4.0.1 #
+3/31/2014
+
+* Fixed Bugs:
+  * [1080](http://x2software.com/index.php/bugReports/1080): User Report
+  * [1096](http://x2software.com/index.php/bugReports/1096): web tracking links broken
+  * [1097](http://x2software.com/index.php/bugReports/1097): User Report
+  * [1104](http://x2software.com/index.php/bugReports/1104): AccountCampaignAction and its behaviors do not have a method or closure named "redirect".
+  * [1110](http://x2software.com/index.php/bugReports/1110): User Report
+  * [1112](http://x2software.com/index.php/bugReports/1112): User Report
+  * [1116](http://x2software.com/index.php/bugReports/1116): is_file(): open_basedir restriction in effect. File(/usr/share/pear/Users.php) is not within the allowed path(s): (/usr/wwws/users/tikeccbcgd:/usr/www/users/tikeccbcgd:/usr/home/tikeccbcgd:/usr/local/rmagic:/usr/www/users/he/_system_:/usr/share/php:/
+  * [1130](http://x2software.com/index.php/bugReports/1130): User Report
+  * [1137](http://x2software.com/index.php/bugReports/1137): User Report 
+  * [1143](http://x2software.com/index.php/bugReports/1143): Unable to resolve the request "bugReports/1,142".
+  * [1151](http://x2software.com/index.php/bugReports/1151): The system is unable to find the requested action "profile".  
+  * [1154](http://x2software.com/index.php/bugReports/1154): User Report 
+
 # 4.0 #
 3/20/2014
-    
+
 * New in **Platinum Edition:**
   * Browser fingerprinting system supplements web activity tracker for when contacts have cookies disabled
   * Administrators can set default themes for all users
@@ -27,6 +44,7 @@
 
 # 3.7.5 #
 3/10/2014
+
 * Fixed Bugs:
   * [995](http://x2software.com/index.php/bugReports/995): array_combine(): Both parameters should have at least 1 element
   * [996](http://x2software.com/index.php/bugReports/996): file_get_contents(): Filename cannot be empty
@@ -40,6 +58,7 @@
 
 # 3.7.4 #
 3/4/2014
+
 * Fixed security holes listed in ["Multiple vulnerabilities in X2Engine"](http://hauntit.blogspot.com/2014/02/en-multiple-vulnerabilities-in-x2engine.html) published on [The HauntIT Blog](http://hauntit.blogspot.com/)
 * Fixed Bugs:
   * [773](http://x2software.com/index.php/bugReports/773): If a user lacks edit permission on that field but that field has a default value (like in Service Cases) the default value will not save.  
@@ -53,6 +72,7 @@
 
 # 3.7.3 #
 2/18/2014
+
 * Users can add custom percentage type fields via the fields manager
 * Minor/unlisted bugs fixed:
   * (Professional Edition) "Record viewed" X2Flow trigger wasn't working in Contacts
@@ -66,6 +86,7 @@
 
 # 3.7.3b #
 2/14/2014
+
 * Multiple security vulnerabilities patched in web forms, data import/export, and docs import/export
 * "Lookup" fields performance and functionality restoration overhaul:
   * Search/sort works without sorting on columns in joined tables
@@ -93,6 +114,7 @@
 
 # 3.7.2 #
 1/24/2014
+
 * Improved user session timeout method to fix compatibility issue with some servers
 * Fixed bug in Actions.getRelevantTimestamp 
 * Fixed star rating cancel button in Firefox
@@ -101,6 +123,7 @@
 
 # 3.7.1 #
 1/23/2014
+
 * Improvements to the fields manager
   * Better input validation, stability and security
   * New option to set default values for fields in new records
@@ -134,6 +157,7 @@
 
 # 3.7 #
 12/20/2013
+
 * Powerful new all-in-one user home page, featuring:
   * Re-positionable sections
   * Accounts, contacts and opportunities grid views
@@ -153,6 +177,7 @@
 
 # 3.6.3 #
 12/9/2013
+
 * Fixed Bugs:  
   * [286](http://x2software.com/index.php/bugReports/286): Clicking action frame links opens in iframe  
   * [373](http://x2software.com/index.php/bugReports/373): Undefined index: RecordViewChart  
@@ -170,6 +195,7 @@
 
 # 3.6.2 #
 11/26/2013
+
 * Changes to the web tracker allow broader browser support; see [release notes](RELEASE-NOTES.md) for details.
 * Bug fixes and improvements to the publisher in the Calendar view:
   * End time field was missing.
@@ -179,6 +205,7 @@
 
 # 3.6.1 #
 11/22/2013
+
 (internal release)
 * Issues in the new targeted content marketing system have been resolved.
 * Corrected an API behavioral issue: contacts created via API were not invoking the "record created" trigger
@@ -186,6 +213,7 @@
 
 # 3.6 #
 11/21/2013
+
 * Improvements to user preferences
   * User option to disable notifications popup
   * User option to transform all phone numbers into "tel:" links for click-to-call functionality with VoIP systems
@@ -218,6 +246,7 @@
 
 # 3.5.6 #
 10/22/2013
+
 * Improved data validation in the role editor
 * Changes to the software updater:
   * Bug fixes in `FileUtil::ccopy` and far more exhaustive [unit testing](https://github.com/X2Engine/X2Engine/blob/master/x2engine/protected/tests/unit/components/util/FileUtilTest.php) of that method
@@ -236,6 +265,7 @@
 
 # 3.5.5 #
 10/16/2013
+
 * Improvements to grid views:
   * The ability to use shift+click to select ranges of records
   * Mass tagging, field updates, record reassignments and mass deletion of selected records
@@ -268,6 +298,7 @@
 
 # 3.5.2 #
 9/20/2013
+
 * Fully-configurable batch timeout setting controls how much actual time can be spent in campaign emailing and cron events
 * Attribute replacement now works in the "Send a Test Email" feature of Campaigns
 * Long-overdue data validation in Role creator
@@ -286,10 +317,12 @@
 
 # 3.5.1 #
 9/12/2013
+
 * Minor bug fixes
 
 # 3.5 #
 9/6/2013
+
 * "Print Record" feature in nearly all modules shows print-friendly version of a record
 * "Recently Viewed" widget now includes all record types
 * Chart widget enhancements
@@ -315,11 +348,13 @@
 
 # 3.4.1 #
 8/22/2013
+
 * Miscellaneous (unlisted) bug fixes
 * Image gallery (Professional Edition only) now works in Internet Explorer
 
 # 3.4 #
 8/21/2013
+
 * New image gallery widget
 * Dropdowns can be customized to allow selecting multiple values
 * New activity feed chart feature: can filter data display by user
@@ -332,15 +367,18 @@
 
 # 3.3.2 #
 8/6/2013
+
 * Fixed bug in web tracker & web lead form
 
 # 3.3.1 #
 8/5/2013
+
 * Safeguard against duplicate update server requests
 * Fixed bug: incorrect created by / updated by / deleted by user
 
 # 3.3 #
 8/2/2013
+
 * Better translations
   * Vastly more comprehensive coverage
   * Added Polish language pack
@@ -359,6 +397,7 @@
 
 # 3.2 #
 7/10/2013
+
 * Enhancements to X2Flow Automation
   * Improved UI is more intuitive
   * You can now set time delays to run actions at a later date
@@ -374,6 +413,7 @@
 
 # 3.1.2 #
 6/28/2013
+
 * Improvements to theme settings
   * You can now save themes
   * Set custom gridview row colors
@@ -384,11 +424,13 @@
 
 # 3.1.1 #
 6/21/2013
+
 * Fixed bug creating new windows when notifications are received
 * Reverted some changes to UI
 
 # 3.1 #
 6/18/2013
+
 * Robust new resizable grid view
 * Enhancements to application UI
   * More compact layout
@@ -403,12 +445,14 @@
 
 # 3.0.2 #
 5/20/2013
+
 * New Services reporting tool
 * Rich text editor now available for activity feed posts and email signatures
 * Bug fixes
 
 # 3.0.1 #
 5/13/2013
+
 * Numerous bug fixes
 * Can now trigger automation on user login/logout
 * Docs module:
@@ -422,6 +466,7 @@
 
 # 3.0 #
 5/1/2013
+
 * (Professional Edition only) X2Flow automation system (beta)
   * Visual, drag-and-drop designer makes it easy to create convenient and 
     powerful automation flows
@@ -440,11 +485,13 @@
 
 # 2.9.1 #
 3/27/2013
+
 * Additional bugfixes
 * Better failsafe in updater: uses either of two remote copy methods depending on which is available
 
 # 2.9 #
 3/21/2013
+
 * Revamped web API
   * now supports operations on any module type, including custom ones
   *  Improved stability
@@ -460,6 +507,7 @@
 
 # 2.8.1 #
 2/20/2013
+
 * VCR controls for tag based search results
 * Fixed bugs:
   * Emailing contacts
@@ -470,6 +518,7 @@
 
 # 2.8 #
 2/13/2013
+
 * Dozens of bug fixes - thanks everyone for reporting bugs using the new bug reporting tool!
 * New theme and background settings
 * New manual bug reporting tool
@@ -479,17 +528,20 @@
 
 # 2.7.2 #
 2/1/2013
+
 * New UI look and feel, improved UI consistency
 * Numerous bug fixes
 
 # 2.7.1 #
 1/25/2013
+
 * Added an easy to use bug reporting tool
 * Activity feed now remembers minimized posts
 * Several bug fixes
 
 # 2.7 #
 1/23/2013
+
 * New Activity Feed
   * See all the activity on X2CRM in one place
   * Updates in real time
@@ -511,6 +563,7 @@
 
 # 2.5.2 #
 12/28/2012
+
 * Several bug fixes to v2.5 and the now-defunct release 2.5.1, including but not limited to:
   * Incorrect order/offset in VCR control navigation
   * Missing attribute errors when editing app settings and user profiles
@@ -518,6 +571,7 @@
 
 # 2.5 #
 12/18/2012
+
 * New web tracking system (Professional edition)
   * Track using a simple embed code on your website
   * Real time notifications when a contact visits the website
@@ -539,6 +593,7 @@
 
 # 2.2.1 #
 11/15/2012
+
 * Numerous improvements to Contacts importer
   * Improved UI
   * Better reliability
@@ -552,6 +607,7 @@
 
 # 2.2 #
 11/08/2012
+
 * Service module
   * Unique Case # and fields for nature of request and service status
   * Generate a custom Web Form to let contacts request a new service case
@@ -570,6 +626,7 @@
 
 # 2.1.1 #
 10/15/2012
+
 * Overhauled real-time notification and chat
   * Much lower server load, especially with multiple tabs
 * Improved URL handling (more efficient)
@@ -594,6 +651,7 @@
 
 # 2.1 #
 10/12/2012
+
 * Overhauled real-time notification and chat
   * Much lower server load, especially with multiple tabs
 * Improved URL handling (more efficient)
@@ -613,6 +671,7 @@
 
 # 2.0 #
 10/2/2012
+
 * New and greatly improved UI
 * New features in X2Touch Mobile
 * Renamed Sales to Opportunities
@@ -623,6 +682,7 @@
 
 # 1.6.6 #
 8/31/2012
+
 * New Workflow report in Charts module
 * Improved Lead Volume report
 * Improved phone number search (search is now formatting-insensitive)
@@ -634,10 +694,12 @@
 
 # 1.6.5.1 #
 8/28/2012
+
 * Bug fix patch; corrections to the software updater
 
 # 1.6.5 #
 8/24/2012
+
 * Powerful new web lead capture form editor
 * Enhanced record tagging abilities
 * New single-user lead distribution option
@@ -650,6 +712,7 @@
 
 # 1.6.1 #
 7/25/2012
+
 * New Tag-to-email campaing tool
 * New VCR controls for lists (all contacts, user-defined lists) allows you to
   go directly to the next record without going back to the list
@@ -658,6 +721,7 @@
 
 # 1.6 #
 7/18/2012
+
 * Improvements to list builder interface
 * Improvements to real-time notifications
 * Popup tooltips with contact details on gridview
@@ -670,6 +734,7 @@
 
 # 1.5 #
 6/19/2012
+
 * New full-featured Marketing module
   * Built on dynamic or static contact lists
   * Templates with contact info insertion
@@ -688,6 +753,7 @@
 
 # 1.4 #
 5/23/2012
+
 * Numerous bug fixes
 * Fine tuned the layout (background selecting works better, users can now toggle the full-width layout)
 * Major improvements to global search
@@ -702,6 +768,7 @@
 
 # 1.3 #
 5/7/2012
+
 * New dynamic layout (flexible width, support for screens as small as 800x600)
 * Added new widgets:
   * Contact Time Zone
@@ -711,12 +778,14 @@
 
 # 1.2.2 #
 3/23/2012
+
 * Added View Relationships: you can now see everything linked to a given record
 * Numerous bug fixes
 * Enhanced custom lead routing rules
 
 # 1.2.1 #
 3/16/2012
+
 * Added Contact Lists
   * Users can now create custom static or dynamic lists
 * Tons of bug fixes, particularly related to broken links
@@ -725,6 +794,7 @@
 
 # 1.2.0 #
 3/9/2012
+
 * Major Structural Changes
   * Modularization of code
   * Improvements to Calendar
@@ -733,10 +803,12 @@
 
 # 1.1.1 #
 2/29/2012
+
 * Minor post-release bug fixes.
 
 # 1.1.0 #
 2/29/2012
+
 * New Calendar module
   * View task due dates and new Event type actions
   * filter by user
@@ -750,15 +822,18 @@
 
 # 1.0.1 #
 2/21/2012
+
 * Various bug fixes and small improvements
 
 # 1.0 (GA) #
 2/20/2012
+
 * Various bug fixes
 * Translations are now mostly complete (except workflow and admin page). Expect a patch with the rest this week.
 
 # 0.9.10.1 #
 2/17/2012
+
 * Numerous Bug fixes (esp in X2Studio, Accounts and Sales)
 * Products Products module
   * Keep track of products used to generate quotes

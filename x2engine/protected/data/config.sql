@@ -98,7 +98,7 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 UPDATE x2_profile SET `widgets`='0:1:1:1:1:0:0:0:0:0:0:0:0',
 	`widgetOrder`='OnlineUsers:TimeZone:GoogleMaps:ChatBox:TagCloud:TwitterFeed:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
 /*&*/
-UPDATE `x2_auth_item` SET `bizrule`="return Yii::app()->user->name === '{adminUsername}';" WHERE `name`='admin';
+UPDATE `x2_auth_item` SET `bizrule`='return Yii::app()->suName === "{adminUsername}";' WHERE `name`='admin';
 /*&*/
 UPDATE `x2_users` SET `username`='{adminUsername}' WHERE `username`='admin';
 /*&*/

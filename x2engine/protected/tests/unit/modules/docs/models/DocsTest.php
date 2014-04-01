@@ -27,7 +27,7 @@ class DocsTest extends X2DbTestCase {
 		$textIn = array();
 		$textOutExpected = array();
 		$delimiter = "\n@@|@@\n";
-		foreach($this->contacts['testAnyone'] as $name=>$value) {
+		foreach($contact->attributes as $name=>$value) {
 			$textIn[] = '{'.$name.'}';
 			$textOutExpected[] = $contact->renderAttribute($name);
 		}

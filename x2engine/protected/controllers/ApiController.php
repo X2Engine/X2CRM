@@ -369,8 +369,15 @@ class ApiController extends x2base {
 		$attrs = $_POST;
 		unset($attrs['user']);
 		unset($attrs['userKey']);
-        $tempModel = new $this->modelClass;
+        // Use the "search" scenario to avoid default values
+        $tempModel = new $this->modelClass('search');
+
         $tempModel->setX2Fields($attrs);
+        // Some users might want to include ID in the lookup, and since it's
+        // read-only, it needs to be set manually.
+        if(isset($attrs['id']))
+            $tempModel->id = $attrs['id'];
+        // Only use non-null attributes
         $attrs = array_filter($tempModel->getAttributes());
 		$model = X2Model::model($this->modelClass)->findByAttributes($attrs);
 
@@ -567,6 +574,7 @@ class ApiController extends x2base {
 					$contact = X2Model::model('Contacts')->findByPk($phoneNumber->modelId);
 					if(isset($contact)){
 
+                        $contact->disableBehavior('changelog');
 						$contact->updateLastActivity();
 
 						$assignees = array($contact->assignedTo);

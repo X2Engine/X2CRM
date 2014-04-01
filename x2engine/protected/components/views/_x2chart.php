@@ -35,12 +35,6 @@
  *****************************************************************************************/
 
 if ($chartType === 'usersChart' || $chartType === 'eventsChart') {
-    /*Yii::app()->clientScript->registerScriptFile(
-        Yii::app()->getBaseUrl().'/js/X2Chart.js', CClientScript::POS_END);
-    Yii::app()->clientScript->registerScriptFile(
-        Yii::app()->getBaseUrl().'/js/X2EventsChart.js', CClientScript::POS_END);
-    Yii::app()->clientScript->registerScriptFile(
-        Yii::app()->getBaseUrl().'/js/X2UsersChart.js', CClientScript::POS_END);*/
     if (!$isAjaxRequest) {
         Yii::app()->clientScript->registerCoreScript('jquery');
         Yii::app()->clientScript->registerCoreScript('jquery.ui');
