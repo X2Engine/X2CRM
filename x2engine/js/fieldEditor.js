@@ -63,7 +63,7 @@ jQuery(document).ready(function() {
         // Refetch the page, in "customize" mode
         x2.fieldEditor.load('update',1);
     });
-    x2.fieldEditor.formArea.on('change','#fieldType,#dropdown-type', function() {
+    x2.fieldEditor.formArea.on('change','#fieldType,#dropdown-type,#assignment-multiplicity', function() {
         // Refetch the page, either to customize or to create new, based on class
         var mode = $(this).hasClass('new') ? 'create' : 'update';
         x2.fieldEditor.load(mode,1,0,1);

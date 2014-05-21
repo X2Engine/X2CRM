@@ -95,7 +95,9 @@
 	}
 	$subsLabels = $data->substituteLabels;
 	$sysUseLabels = $data->sysUseLabel;
-	$setSys = $data->userId == Credentials::SYS_ID ? $webUser->checkAccess('CredentialsSetDefaultSystemwide',array('model'=>$data,'userId'=>$data->userId)) : false;
+	$setSys = $data->userId == Credentials::SYS_ID 
+            ? $webUser->checkAccess('CredentialsSetDefaultSystemwide',array('model'=>$data,'userId'=>$webUser->id))
+            : false;
 	$nDefaultForMe = count($defaultOf);
 	$defaultForMe = $nDefaultForMe == count($subsLabels);
 	$nDefault = $setSys ? $nDefaultForMe + count($defaultOfSys) : $nDefaultForMe;
@@ -139,12 +141,16 @@
 		echo '<div class="default-apply">';
 		if(count($setFor) > 1 || $setSys) {
 			echo '&nbsp;'.Yii::t('app','for').'&nbsp;';
-			echo CHtml::dropDownList('userId',$webUser->id,$setFor);
+			echo CHtml::dropDownList('userId',$webUser->id,$setFor,array(
+                'class' => 'x2-select'
+            ));
 		} else {
 			echo CHtml::hiddenField('userId',$webUser->id);
 		}
 
-		echo '&nbsp;'.CHtml::submitButton(Yii::t('app', 'Apply'));
+		echo '&nbsp;'.CHtml::submitButton(Yii::t('app', 'Apply'),array(
+            'class' => 'x2-button',
+        ));
 		echo '</div>';
 		echo CHtml::endForm();
 		echo '</div>&nbsp;';

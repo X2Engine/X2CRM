@@ -55,13 +55,14 @@ CREATE TABLE x2_web_forms(
     lastUpdated          BIGINT NOT NULL,
     userEmailTemplate    INT,
     webleadEmailTemplate INT,
+    leadSource         VARCHAR(100),
     PRIMARY KEY (id)
 ) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES
-('marketing', 'Marketing', 1, 2, 0, 1, 0, 0, 0);
+('marketing', 'Marketing', 1, 3, 0, 1, 0, 0, 0);
 /*&*/
 INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe,keyType)

@@ -44,6 +44,8 @@ Yii::import('application.components.util.*');
  */
 class EncryptUtilTest extends FileOperTestCase {
 
+    const VERBOSE = 0;
+
 	/**
 	 * Random stuff that includes multibyte characters has been tossed into this
 	 * string just to give the test a nice big set of characters to work with
@@ -86,6 +88,18 @@ class EncryptUtilTest extends FileOperTestCase {
 		$this->assertEquals($expected,$enc->decrypt($encrypted),'Failed asserting the encryption key and IV were properly saved and re-used.');
 		$this->removeTestDirs();
 	}
+
+    public function testSecureUniqueIdHash64() {
+        foreach(range(1,3) as $method) {
+            foreach(range(1,2) as $hash) {
+                $id = EncryptUtil::secureUniqueIdHash64($method,$hash);
+                if(self::VERBOSE >= 1) {
+                    echo "\nmethod $method hash $hash $id";
+                }
+                $this->assertEquals(64,strlen($id));
+            }
+        }
+    }
 
 }
 

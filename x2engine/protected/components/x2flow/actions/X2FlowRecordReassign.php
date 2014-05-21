@@ -61,9 +61,18 @@ class X2FlowRecordReassign extends X2FlowAction {
             'modelRequired' => 1,
             'options' => array(
                 // array('name'=>'routeMode','label'=>'Routing Method','type'=>'dropdown','options'=>$leadRoutingModes),
-                array('name' => 'user', 'label' => 'User', 'type' => 'dropdown', 'multiple' => 1, 'options' => array('auto' => Yii::t('studio', 'Use Lead Routing')) + X2Model::getAssignmentOptions(true, true)),
+                array(
+                    'name' => 'user',
+                    'label' => 'User',
+                    'type' => 'dropdown',
+                    'multiple' => 1,
+                    'options' => array(
+                        'auto' => Yii::t('studio', 'Use Lead Routing')) + 
+                            X2Model::getAssignmentOptions(true, true)
+                ),
             // array('name'=>'onlineOnly','label'=>'Online Only?','optional'=>1,'type'=>'boolean','defaultVal'=>false),
-                ));
+            )
+        );
     }
 
     public function execute(&$params){
@@ -94,7 +103,7 @@ class X2FlowRecordReassign extends X2FlowAction {
         }
 
         $model->assignedTo = $assignedTo;
-        if($model->update (array ('assignedTo'))){
+        if($model->save ()){
             if(is_subclass_of($model, 'X2Model')){
                 return array(
                     true,

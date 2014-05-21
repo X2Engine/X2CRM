@@ -43,7 +43,6 @@ $this->pageTitle=Yii::app()->settings->appName . ' - ' . Yii::t('help','Icon Ref
 $cssString = "
     #icon-reference-title {
         width: 1002px;
-        margin-left: 50px;
         margin-right: 0;
         padding: 0 0 0 0;
     }

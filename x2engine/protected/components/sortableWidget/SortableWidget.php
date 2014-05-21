@@ -477,16 +477,6 @@ abstract class SortableWidget extends X2Widget {
      * Renders the show/hide settings menu icon as well as the settings menu content 
      */
     public function renderSettingsMenu () {
-        $this->addPackage (array (
-            'popupDropdownMenu' => array (
-                'baseUrl' => Yii::app()->baseUrl,
-                'js' => array (
-                    'js/PopupDropdownMenu.js',
-                ),
-                'depends' => array ('auxlib')
-            )
-        ));
-
         $themeUrl = Yii::app()->theme->getBaseUrl();
         $htmlStr = 
             "<a href='#' class='widget-settings-button x2-icon-button' style='display:none;'>";

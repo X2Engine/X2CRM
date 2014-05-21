@@ -79,6 +79,10 @@ Private static methods
 Public instance methods
 */
 
+GridViewStickyHeader.prototype.getIsStuck = function () {
+    return this._isStuck;
+};
+
 GridViewStickyHeader.prototype.makeStickyForMobile = function () {
     this._stateBeforeMobile = this._isStuck;
     this.makeSticky ();

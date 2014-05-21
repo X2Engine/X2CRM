@@ -82,7 +82,7 @@ foreach($list as $role){
                 'empty'=>Yii::t('admin','Select a role'),
                 'ajax' => array(
                 'type'=>'POST', //request type
-                'url'=>CController::createUrl('/admin/getRole'), //url to call.
+                'url'=>CController::createUrl('/admin/getRole', array('mode'=>'exception')), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#roleFormTwo', //selector to update
                 'complete'=>"function(){

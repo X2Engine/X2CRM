@@ -36,9 +36,11 @@
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
 Yii::app()->clientScript->registerCssFile(
-    Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
-Yii::app()->clientScript->registerCss('multiselectCss',"
-#content { border: none; background: none; }
+    Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css');
+Yii::app()->clientScript->registerCss('manageRolesCss',"
+#content {
+    border: none; background: none; 
+}
 .multiselect {
 	width: 460px;
 	height: 200px;
@@ -51,7 +53,12 @@ Yii::app()->clientScript->registerCss('multiselectCss',"
     padding-bottom: 5px;
 }
 
-",'screen, projection');
+#set-session-timeout-row {
+    margin: 5px 0;
+}
+
+
+");
 
 ?>
 <div id='roles-grid-container' class='x2-layout-island'>

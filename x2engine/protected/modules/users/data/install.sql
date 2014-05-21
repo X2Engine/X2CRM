@@ -5,6 +5,7 @@ CREATE TABLE x2_users (
     firstName              VARCHAR(100),
     lastName               VARCHAR(120),
     username               VARCHAR(50),
+    userAlias              VARCHAR(50) DEFAULT NULL,
     password               VARCHAR(100),
     title                  VARCHAR(50),
     department             VARCHAR(40),
@@ -33,7 +34,17 @@ CREATE TABLE x2_users (
     INDEX (username)
 ) COLLATE = utf8_general_ci;
 /*&*/
+DROP TABLE IF EXISTS x2_password_reset;
+/*&*/
+CREATE TABLE x2_password_reset (
+    id          CHAR(64) NOT NULL PRIMARY KEY,
+    ip          VARCHAR(39) DEFAULT NULL,
+    requested   BIGINT,
+    email       VARCHAR(250) DEFAULT NULL,
+    userId      INT DEFAULT NULL
+) COLLATE = utf8_general_ci, ENGINE = InnoDB;
+/*&*/
 INSERT INTO `x2_modules`
 (`name`,            title,            visible,     menuPosition,    searchable,    editable,    adminOnly,    custom,    toggleable)
 VALUES
-("users",            "Users",            1,            14,                0,            0,            1,            0,        0);
+("users",            "Users",            1,            16,                0,            0,            1,            0,        0);

@@ -56,11 +56,39 @@ class Fields extends CActiveRecord {
      */
     const NAMEID_DELIM = '_';
 
+    const RATING_MIN = 1;
+    const RATING_MAX = 5;
+
     private static $_purifier;
 
     private $_myTableName;
 
-        /**
+    /**
+     * PHP types corresponding to field types in X2Engine.
+     *
+     * This is to supplement Yii's active record functionality, which does not
+     * typecast column values according to their canonical type.
+     * @var type
+     */
+    public static $phpTypes = array(
+        'assignment' => 'string',
+        'boolean' => 'boolean',
+        'credentials' => 'integer',
+        'currency' => 'double',
+        'date' => 'integer',
+        'dateTime' => 'integer',
+        'dropdown' => 'string',
+        'email' => 'string',
+        'int' => 'integer',
+        'link' => 'string',
+        'optionalAssignment' => 'string',
+        'percentage' => 'double',
+        
+        'rating' => 'integer',
+        'varchar' => 'string',
+    );
+
+    /**
      * Legacy function kept for backwards compatibility.
      *
      * Moved from {@link Admin} and renamed from getModelList because it doesn't
@@ -108,86 +136,103 @@ class Fields extends CActiveRecord {
                 'title' => Yii::t('admin', 'Single Line Text'),
                 'validator' =>'safe',
                 'columnDefinition' => 'VARCHAR(255)',
+                'phpType' => 'string'
             ),
             'text' => array(
                 'title' => Yii::t('admin', 'Multiple Line Text Area'),
                 'validator' => 'safe',
                 'columnDefinition' => 'TEXT',
+                'phpType' => 'string'
             ),
             'date' =>array(
                 'title'=>Yii::t('admin','Date'),
                 'validator'=>'int',
                 'columnDefinition'=>'BIGINT',
+                'phpType' => 'integer'
             ),
             'dateTime' =>array(
                 'title'=>Yii::t('admin','Date/Time'),
                 'validator'=>'int',
                 'columnDefinition'=>'BIGINT',
+                'phpType' => 'integer'
             ),
             'dropdown'=>array(
                 'title'=>Yii::t('admin','Dropdown'),
                 'validator'=>'safe',
                 'columnDefinition'=>'VARCHAR(255)',
+                'phpType' => 'string'
             ),
             'int'=>array(
                 'title'=>Yii::t('admin','Number'),
                 'validator'=> 'int',
                 'columnDefinition'=>'BIGINT',
+                'phpType' => 'integer'
             ),
             'percentage'=>array(
                 'title'=>Yii::t('admin','Percentage'),
                 'validator' => 'numerical',
-                'columnDefinition' => 'FLOAT'
+                'columnDefinition' => 'FLOAT',
+                'phpType' => 'double'
             ),
             'email'=>array(
                 'title'=>Yii::t('admin','Email'),
                 'validator'=>'email',
                 'columnDefinition'=>'VARCHAR(255)',
+                'phpType' => 'string'
             ),
             'currency'=>array(
                 'title'=>Yii::t('admin','Currency'),
                 'validator'=>'numerical',
                 'columnDefinition'=>'DECIMAL(18,2)',
+                'phpType' => 'double'
             ),
             'url'=>array(
                 'title'=>Yii::t('admin','URL'),
                 'validator'=>'safe',
                 'columnDefinition'=>'VARCHAR(255)',
+                'phpType' => 'string'
             ),
             'float'=>array(
                 'title'=>Yii::t('admin','Decimal'),
                 'validator'=>'numerical',
-                'columnDefinition'=>'FLOAT'
+                'columnDefinition'=>'FLOAT',
+                'phpType' => 'double'
             ),
             'boolean'=>array(
                 'title'=>Yii::t('admin','Checkbox'),
                 'validator'=>'boolean',
                 'columnDefinition'=>'BOOLEAN NOT NULL DEFAULT 0',
+                'phpType' => 'boolean'
             ),
             'link'=>array(
                 'title'=>Yii::t('admin','Lookup'),
                 'validator'=>'safe',
                 'columnDefinition'=>'VARCHAR(255)',
+                'phpType' => 'integer'
             ),
             'rating'=>array(
                 'title'=>Yii::t('admin','Rating'),
                 'validator'=>'safe',
                 'columnDefinition'=>'VARCHAR(255)',
+                'phpType' => 'integer'
             ),
             'assignment'=>array(
                 'title'=>Yii::t('admin','Assignment'),
                 'validator'=>'safe',
-                'columnDefinition'=>'VARCHAR(255)',
+                'columnDefinition' => 'VARCHAR(255)',
+                'phpType' => 'string'
             ),
             'visibility'=>array(
                 'title'=>Yii::t('admin','Visibility'),
                 'validator'=>'int',
                 'columnDefinition'=>'INT NOT NULL DEFAULT 1',
+                'phpType' => 'boolean'
             ),
             'timerSum'=>array(
                 'title'=>Yii::t('admin','Action Timer Sum'),
                 'validator'=>'safe',
-                'columnDefinition'=>'INT'
+                'columnDefinition'=>'INT',
+                'phpType' => 'integer'
             ),
         );
         // No scenario, return all data
@@ -252,30 +297,6 @@ class Fields extends CActiveRecord {
             return $model->name;
         else
             return null;
-    }
-
-    /**
-     * Retrieves a list of model names.
-     *
-     * Obtains model names as an associative array with model names as the keys
-     * and human-readable model names as their values. This is used in place of
-     * {@link getDisplayedModelNamesList()} (formerly Admin::getModelList) where
-     * specifying values for {@link modelName}, because the value of that should
-     * ALWAYS be the name of the actual class, and {@link X2Model::getModelName()}
-     * is guaranteed to return a class name (or false, if the class does not
-     * exist).
-     *
-     * @return type
-     */
-    public static function getModelNames() {
-        $modelList = array();
-        foreach(X2Model::model('Modules')->findAllByAttributes(array('editable' => true, 'visible' => 1)) as $module) {
-            if($modelName = X2Model::getModelName($module->name))
-                $modelList[$modelName] = Yii::t('app',$module->title);
-            else // Custom module most likely
-                $modelList[ucfirst($module->name)] = Yii::t('app',$module->title);
-        }
-        return $modelList;
     }
 
     /**
@@ -370,8 +391,11 @@ class Fields extends CActiveRecord {
      * @return string A properly formatted assignment string
      */
     public static function parseUsers($arr){
+        /* filters out dummy option in multiselect element used to separate usernames from group 
+           names */
 		$str="";
         if(is_array($arr)){
+            $arr = array_filter ($arr, function ($a) { return $a !== ''; });
             $str=implode(', ',$arr);
         } else if(is_string($arr))
             $str = $arr;
@@ -496,6 +520,18 @@ class Fields extends CActiveRecord {
                 $this->dropIndex();
             }
         }
+        if ($this->isNewRecord) {
+            // A new fields permissions default to read/write for all roles
+            $dataProvider = new CActiveDataProvider('Roles');
+            foreach ($dataProvider->getData() as $role) {
+                $permission = new RoleToPermission();
+                $permission->roleId = $role->id;
+                $permission->fieldId = $this->id;
+                $permission->permission = 2;
+                $permission->save();
+            }
+        }
+        
         return parent::afterSave();
     }
 
@@ -726,7 +762,8 @@ class Fields extends CActiveRecord {
             array('fieldName','match','pattern'=>'/^[a-zA-Z]\w+$/','message'=>Yii::t('admin','Field name may only contain alphanumeric characters and underscores.')),
             array('fieldName','nonReserved'),
             array('modelName, fieldName, attributeLabel', 'required'),
-            array('modelName','in','range'=>array_keys(self::getModelNames()),'allowEmpty'=>false),
+            array(
+                'modelName','in','range'=>array_keys(X2Model::getModelNames()),'allowEmpty'=>false),
             array('defaultValue','validDefault'),
             array('relevance','in','range'=>array_keys(self::searchRelevance())),
             array('custom, modified, readOnly, searchable, required, uniqueConstraint', 'boolean'),

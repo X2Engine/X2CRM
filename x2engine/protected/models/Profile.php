@@ -112,6 +112,7 @@ class Profile extends CActiveRecord {
                         'x2flowShowLabels'=>true, // flow node labels
                         'profileInfoIsMinimized'=>false, // profile page profile info section
                         'fullProfileInfo'=>false, // profile page profile info section
+                        'perStageWorkflowView'=>true, // selected workflow view interface
                     ),
                 ),
                 'maintainCurrentFieldsOrder' => true
@@ -125,6 +126,7 @@ class Profile extends CActiveRecord {
                         'ProfilesGridViewProfileWidget',
                         'ContactsGridViewProfileWidget',
                         'AccountsGridViewProfileWidget',
+                        'ActionsGridViewProfileWidget',
                         'OpportunitiesGridViewProfileWidget',
                         'MarketingGridViewProfileWidget',
                         'ServicesGridViewProfileWidget',
@@ -171,7 +173,7 @@ class Profile extends CActiveRecord {
      */
     public function relations(){
         return array(
-            'user' => array(self::HAS_ONE, 'User', 'id')
+            'user' => array(self::HAS_ONE, 'User', array ('username' => 'username'))
         );
     }
 
@@ -321,7 +323,9 @@ class Profile extends CActiveRecord {
      * @param string $settingName The name of the JSON property
      * @param string $settingValue The value that the JSON property will bet set to
      */
-    public static function setMiscLayoutSetting ($settingName, $settingValue) {
+    public static function setMiscLayoutSetting (
+        $settingName, $settingValue, $suppressEcho=false) {
+
         $model = Profile::model ()->findByPk (Yii::app()->user->getId());
         $settings = $model->miscLayoutSettings;
         if (!in_array ($settingName, array_keys ($settings))) {
@@ -330,27 +334,30 @@ class Profile extends CActiveRecord {
         }
         $settings[$settingName] = $settingValue;
         $model->miscLayoutSettings = $settings;
+        $echoVal = '';
         if (!$model->save ()) {
             AuxLib::debugLog ('Error: setMiscLayoutSetting: failed to save model');
-            echo 'failure';
+            $echoVal = 'failure';
         } else {
-            echo 'success';
+            $echoVal = 'success';
         }
+
+        if (!$suppressEcho) echo $echoVal;
     }
 
     public static function setDetailView($value){
-        $model = ProfileChild::model()->findByPk(Yii::app()->user->getId()); // set user's preference for contact detail view
+        $model = Profile::model()->findByPk(Yii::app()->user->getId()); // set user's preference for contact detail view
         $model->showDetailView = ($value == 1) ? 1 : 0;
         $model->upadte(array('showDetailView'));
     }
 
     public static function getDetailView(){
-        $model = ProfileChild::model()->findByPk(Yii::app()->user->getId()); // get user's preference for contact detail view
+        $model = Profile::model()->findByPk(Yii::app()->user->getId()); // get user's preference for contact detail view
         return $model->showDetailView;
     }
 
     // public static function getSocialMedia() {
-    // $model = ProfileChild::model()->findByPk(Yii::app()->user->getId());    // get user's preference for contact social media info
+    // $model = Profile::model()->findByPk(Yii::app()->user->getId());    // get user's preference for contact social media info
     // return $model->showSocialMedia;
     // }
 
@@ -405,7 +412,7 @@ class Profile extends CActiveRecord {
     public static function getResultsPerPage(){
         if(!Yii::app()->user->isGuest)
             $resultsPerPage = Yii::app()->params->profile->resultsPerPage;
-        // $model = ProfileChild::model()->findByPk(Yii::app()->user->getId());    // get user's preferred results per page
+        // $model = Profile::model()->findByPk(Yii::app()->user->getId());    // get user's preferred results per page
         // $resultsPerPage = $model->resultsPerPage;
 
         return empty($resultsPerPage) ? 15 : $resultsPerPage;
@@ -444,7 +451,7 @@ class Profile extends CActiveRecord {
     public static function setGridviewSettings($gvSettings, $viewName = null){
         if(!Yii::app()->user->isGuest){
             if(isset($viewName)){
-                $fullGvSettings = ProfileChild::getGridviewSettings();
+                $fullGvSettings = Profile::getGridviewSettings();
                 $fullGvSettings[strtolower($viewName)] = $gvSettings;
                 Yii::app()->params->profile->gridviewSettings = json_encode($fullGvSettings); // encode array in JSON
             }else{
@@ -479,7 +486,7 @@ class Profile extends CActiveRecord {
     // add/update settings for a specific form, or save all at once
     public static function setFormSettings($formSettings, $formName = null){
         if(isset($formName)){
-            $fullFormSettings = ProfileChild::getFormSettings();
+            $fullFormSettings = Profile::getFormSettings();
             $fullFormSettings[strtolower($formName)] = $formSettings;
             Yii::app()->params->profile->formSettings = json_encode($fullFormSettings); // encode array in JSON
         }else{
@@ -492,7 +499,7 @@ class Profile extends CActiveRecord {
 
         if(Yii::app()->user->isGuest) // no widgets if the user isn't logged in
             return array();
-        // $model = ProfileChild::model('ProfileChild')->findByPk(Yii::app()->user->getId());
+        // $model = Profile::model('Profile')->findByPk(Yii::app()->user->getId());
         $model = Yii::app()->params->profile;
         if(!isset($model)){
             $model = Profile::model()->findByPk(Yii::app()->user->getId());
@@ -612,8 +619,10 @@ class Profile extends CActiveRecord {
                     $googleCalendar = $auth->getCalendarService();
 
                     // check if the access token needs to be refreshed
-                    // note that the google library automatically refreshes the access token if we need a new one,
-                    // we just need to check if this happend by calling a google api function that requires authorization,
+                    // note that the google library automatically refreshes the access token if 
+                    // we need a new one,
+                    // we just need to check if this happend by calling a google api function that 
+                    // requires authorization,
                     // and, if the access token has changed, save this new access token
                     if(!$googleCalendar){
                         Yii::app()->controller->redirect($auth->getAuthorizationUrl('calendar'));
@@ -1134,5 +1143,20 @@ class Profile extends CActiveRecord {
         $admin = Yii::app()->settings;
          
         return $this->theme;
+    }
+
+    /**
+     * Get the default email template for the specified module 
+     * @param string $moduleName
+     * @return mixed null if the module has no default template, the id of the default template
+     *  otherwise
+     */
+    public function getDefaultEmailTemplate ($moduleName) {
+        $defaultEmailTemplates = CJSON::decode ($this->defaultEmailTemplates);
+        if (isset ($defaultEmailTemplates[$moduleName])) {
+            return $defaultEmailTemplates[$moduleName];
+        } else {
+            return null;
+        }
     }
 }

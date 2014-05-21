@@ -222,6 +222,7 @@ Chart settings
 
 
 .chart-container .predefined-settings {
+    width: 100px;
     margin-top: 4px;
     margin-right: 4px;
 }

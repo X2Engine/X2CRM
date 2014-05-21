@@ -171,7 +171,7 @@ class TagBehavior extends CActiveRecordBehavior {
 				continue;
 			if(!in_array($tagName,$this->getTags())) {	// check for duplicate tag
 				$tag = new Tags;
-                $tag->tag = $tagName;
+                $tag->tag = '#'.ltrim($tagName,'#');
 				$tag->itemId = $this->getOwner()->id;
 				$tag->type = get_class($this->getOwner());
 				$tag->taggedBy = Yii::app()->getSuModel()->username;
@@ -183,7 +183,7 @@ class TagBehavior extends CActiveRecordBehavior {
 					$addedTags[] = $tagName;
 					$result = true;
 				} else {
-					throw new CHttpException('Failed saving tag: '.json_encode($tag->attributes));
+					throw new CHttpException(422,'Failed saving tag due to errors: '.json_encode($tag->errors));
 				}
 			}
 		}

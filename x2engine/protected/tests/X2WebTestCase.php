@@ -47,6 +47,7 @@
  */
 include('WebTestConfig.php');
 Yii::import ('application.components.permissions.*');
+Yii::import ('application.components.modules.users.models.*');
 
 /**
  * @package application.tests
@@ -54,6 +55,8 @@ Yii::import ('application.components.permissions.*');
 abstract class X2WebTestCase extends CWebTestCase {
 
 	public $fixtures = array(); // forces all fixtures without suffixes to be loaded
+
+    public $autoLogin = true;
 
 	public $localSeleneseDir;
 
@@ -76,7 +79,13 @@ abstract class X2WebTestCase extends CWebTestCase {
 	 */
 	public function assertCorrectUser() {
 		$this->assertElementPresent('css=#profile-dropdown > span:first-child');
-		$this->assertElementContainsText('css=#profile-dropdown > span:first-child', $this->login['username']);
+        $user = User::model ()->findByAttributes (array (
+            'username' => $this->login['username'],
+        ));
+        $alias = $user->alias;
+        if ($alias === null) $alias = $this->login['username'];
+		$this->assertElementContainsText(
+            'css=#profile-dropdown > span:first-child', $alias);
 	}
 
 	/**
@@ -99,6 +108,7 @@ abstract class X2WebTestCase extends CWebTestCase {
 			$this->type("name=LoginForm[$fld]", $val);
 		$this->clickAndWait("css=#signin-button");
 		// Finally, make sure the login succeeded
+        println ('login');
 		$this->assertCorrectUser();
 	}
 
@@ -116,6 +126,32 @@ abstract class X2WebTestCase extends CWebTestCase {
 	 */
 	public function openX2($r_uri) {
 		return $this->open(TEST_BASE_URL . $r_uri);
+	}
+
+	/**
+	 * Open a URI within the app
+	 * 
+	 * @param string $r_uri
+	 */
+	public function openPublic($r_uri) {
+		VERBOSE_MODE && print ('openPublic: '.TEST_WEBROOT_URL . $r_uri."\n");
+		return $this->open(TEST_WEBROOT_URL . $r_uri);
+	}
+
+    /**
+     * Opens page using domain which is a subdomain of TEST_WEBROOT_URL
+     */
+	public function openPublicUsingAlias($r_uri) {
+		VERBOSE_MODE && print ('openPublic: '.TEST_WEBROOT_URL_ALIAS . $r_uri."\n");
+		return $this->open(TEST_WEBROOT_URL_ALIAS . $r_uri);
+	}
+
+    /**
+     * Opens page using domain which is not a subdomain of TEST_WEBROOT_URL
+     */
+	public function openPublicUsingAlias2($r_uri) {
+		VERBOSE_MODE && print ('openPublic: '.TEST_WEBROOT_URL_ALIAS_2 . $r_uri."\n");
+		return $this->open(TEST_WEBROOT_URL_ALIAS_2 . $r_uri);
 	}
 
 	/**
@@ -169,15 +205,18 @@ abstract class X2WebTestCase extends CWebTestCase {
 	 * Selenese path to make it easier to locate/use Selenese HTML scripts.
 	 */
 	protected function setUp() {
+        X2DbTestCase::setUpAppEnvironment ();
 		parent::setUp();
 		$this->setSeleneseDir();
 		// Set the screenshot path to one visible from the web.
-		$this->screenshotPath = Yii::app()->basePath . implode(DIRECTORY_SEPARATOR, array('', '..', 'uploads', 'testing'));
-		$this->screenshotUrl = rtrim(TEST_BASE_URL, 'index-test.php') . 'uploads/testing';
+		//$this->screenshotPath = Yii::app()->basePath . implode(DIRECTORY_SEPARATOR, array('', '..', 'uploads', 'testing'));
+		//$this->screenshotUrl = rtrim(TEST_BASE_URL, 'index-test.php') . 'uploads/testing';
 		$this->setBrowserUrl(TEST_BASE_URL);
 		$this->prepareTestSession();
-		$this->openX2('/site/login');
-		$this->session();
+		if ($this->autoLogin) {
+            $this->openX2('/site/login');
+		    $this->session();
+        }
 	}
 
 }

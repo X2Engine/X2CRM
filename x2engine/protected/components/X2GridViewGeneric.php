@@ -40,7 +40,7 @@ Yii::import('X2GridViewBase');
 /**
  * Custom grid view display function.
  *
- * @package X2CRM.components
+ * @package application.components
  */
 class X2GridViewGeneric extends X2GridViewBase {
 
@@ -95,7 +95,28 @@ class X2GridViewGeneric extends X2GridViewBase {
         $this->columns = array_merge ($sortedColumns, $unsortedColumns);
     }
 
-    protected function setSummaryText () {}
+
+    public function setSummaryText () {
+
+        /* add a dropdown to the summary text that let's user set how many rows to show on each 
+           page */
+        $this->summaryText =  Yii::t('app', '<b>{start}&ndash;{end}</b> of <b>{count}</b>')
+        .'<div class="form no-border" style="display:inline;"> '
+        .CHtml::dropDownList(
+            'resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(),
+            array(
+                'ajax' => array(
+                    'url' => Yii::app()->controller->createUrl('/profile/setResultsPerPage'),
+                    'data' => 'js:{results:$(this).val()}',
+                    'complete' => 'function(response) { 
+                        $.fn.yiiGridView.update("'.$this->id.'"); 
+                    }',
+                ),
+                'style' => 'margin: 0;',
+                'class' => 'x2-select',
+            )
+        ).'</div>';
+    }
 
 }
 ?>

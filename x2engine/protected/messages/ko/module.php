@@ -31,4 +31,7 @@ return array (
 'Unable to create custom module directory.'=>'사용자 지정 모듈 디렉토리를 만들 수 없습니다.',
 'Unable to create config file for custom module.'=>'사용자 정의 모듈에 대한 구성 파일을 만들 수 없습니다.',
 'Unable to create table for custom module.'=>'사용자 정의 모듈의 테이블을 만들 수 없습니다.',
+'Import {X}'=>'가져 오기 {X}',
+'Export {X}'=>'수출 {X}',
+'{modelName} Attributes'=>'{modelName} 속성',
 );

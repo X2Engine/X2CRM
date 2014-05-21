@@ -56,4 +56,7 @@ return array (
 'Hello'=>'Hallo',
 'Web Form Case'=>'Web Form Case',
 'Thank you for contacting our Technical Support '=>'Bedankt dat u contact met onze Technische ondersteuning',
+'Import Services'=>'Import Services',
+'Export Services'=>'Export Services',
+'Case Name'=>'Zaak Naam',
 );

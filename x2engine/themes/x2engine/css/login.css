@@ -184,19 +184,27 @@
     text-align: center;
 }
 
-#login-box-outer{
+#login-box-outer, #password-reset-form-outer {
     z-index: 10000;
-    position: absolute;
-    left: 0;
-    right: 0;
     /*top: 197px;*/
-    bottom: 0;
     width: 100%;
     min-width: 410px;
     min-height: 442px;
     margin: auto;
 }
-
+#password-reset-form-outer > .container {
+    padding: 35px 24px 57px 24px;
+}
+#password-reset-form-outer {
+    position: relative;
+    margin-top:20%;
+}
+#login-box-outer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
 
 #login-form {
 	/* background: #f0f0f0; */ /* Old browsers */
@@ -351,11 +359,11 @@
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3d70b4', endColorstr='#417dcd',GradientType=0 ); /* IE6-9 */
 }
 
-#login-form #login-links a {
+#login-form .login-links a {
     opacity:0.5;
 }
 
-#login-form #login-links a:hover {
+#login-form .login-links a:hover {
     opacity:1;
 }
 
@@ -422,9 +430,9 @@
     text-align: center;
 }
 
-#login-links {
+.login-links.right {
     float: right;
-     text-align:center;
+    text-align:center;
 }
 
 #captcha-container {
@@ -472,13 +480,14 @@
     width: 100%;
     height: 100%;
     left: 0;
-    top: 0;
+    /*top: 0;*/
+    bottom: 0;
     position: absolute;
     background: url('../images/stripes_background.png') !important;
     /*background-attachment: fixed;*/
     background-size: cover;
     /*background-size: auto 100% !important;*/
-    background-position: center !important;
+    background-position: center -550px !important;
     background-repeat: no-repeat !important;
 }
 
@@ -487,6 +496,9 @@
         top: 0 !important;
         bottom: 0;
         height: 87%;
+    }
+    #racing-stripe {
+        background-position: center -650px !important;
     }
 }
 

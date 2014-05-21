@@ -38,7 +38,7 @@
 
 mb_internal_encoding('UTF-8');
 mb_regex_encoding('UTF-8');
-Yii::app()->params->profile = ProfileChild::model()->findByPk(1);
+Yii::app()->params->profile = Profile::model()->findByPk(1);
 ?>
 
 <!DOCTYPE html>
@@ -64,7 +64,7 @@ if (!empty($error)) { ?>
 	<p><?php echo $error; ?></p>
 <?php
 } else { ?>
-	<h1><?php echo Yii::t('contacts','Thank You!'); ?></h1>
+	<h1 id='web-form-submit-message'><?php echo Yii::t('contacts','Thank You!'); ?></h1>
 <?php
 if ($type === 'weblead') { ?>
 	<p><?php echo Yii::t('contacts','Thank you for your interest!'); ?></p>

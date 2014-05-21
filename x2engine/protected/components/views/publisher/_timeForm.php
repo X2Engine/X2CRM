@@ -22,7 +22,9 @@
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 ?>
 
-<div id="log-time-spent" style="display: none;">
+<div id='log-time-spent' class='publisher-form' 
+ <?php echo ($startVisible ? '' : "style='display: none;'"); ?>>
+
 
     <div class="row">
         <div class="text-area-wrapper">

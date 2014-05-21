@@ -41,6 +41,35 @@
 class Record {
 
     /**
+     * Merges records of different types
+     * @param array $recordArrs <type> => <array of records> 
+     * @param array $attrUnion Union of attribute names of each record type
+     * @return array An array of records with keys equal to the keys specified in $attrUnion and
+     *  with values corresponding to the values in $recordArrs. If a particular record type in
+     *  $recordArrs does not have one of the attributes in $attrUnion, that attribute will be set
+     *  to null;
+     */
+    public static function mergeMixedRecords (array $recordArrs, array $attrUnion) {
+        $recordTemplate = array ();
+        foreach ($attrUnion as $attr) {
+            $recordTemplate[$attr] = null;
+        }
+
+        $combinedRecords = array ();
+
+        foreach ($recordArrs as $recordType => $arr) {
+            foreach ($arr as $record) {
+                $combinedRecords[] = array_merge (
+                    ArrayUtil::normalizeToArray ($recordTemplate, $record),
+                    array ('recordType' => $recordType)
+                );
+            }
+        }
+
+        return $combinedRecords;
+    }
+
+    /**
      * Compiles new actions and contacts into a list for the "What's New" page
      * @param array $records
      * @param boolean $whatsNew

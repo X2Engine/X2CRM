@@ -50,9 +50,10 @@ AuxLib::registerPassVarsToClientScriptScript (
     'x2.profile', array ('isMyProfile' => ($isMyProfile ? 'true' : 'false')), 'profileScript');
 
 ?>
-<div id='profile-info-container-outer' class='x2-layout-island'>
+<div id='profile-info-container-outer'>
 <?php
 $this->renderPartial('_profileInfo', array('model'=>$model, 'isMyProfile'=>$isMyProfile)); 
+echo X2Html::getFlashes();
 ?>
 </div>
 <?php
@@ -113,7 +114,7 @@ displayWidgets (2, $layout, $this, $model);
 <?php
 }
 ?>
-<div id='activity-feed-container-outer' class='x2-layout-island'>
+<div id='activity-feed-container-outer'>
 <?php
 $this->renderPartial('_activityFeed', array(
     'dataProvider' => $dataProvider,

@@ -120,6 +120,10 @@ Publisher.prototype.reset = function () {
 Publisher.prototype.switchToTab = function (selectedTabId) {
     var that = this;
 
+    $('[aria-controls="' + selectedTabId + '"]').parent ().removeClass ('unselected-tab-row');
+    $('[aria-controls="' + selectedTabId + '"]').parent ().siblings ().
+        addClass ('unselected-tab-row');
+
     that.DEBUG && console.log ('selectedTabId = ');
     that.DEBUG && console.log (selectedTabId);
 
@@ -252,6 +256,10 @@ Publisher.prototype._init = function () {
         } else {
             $('[href="#' + that.initTabId +'"]').click (); // switch to initial tab
         }
+
+        // show the tab rows now that we've instantiated the tab widget
+        $('#publisher > ul').show (); 
+
     });
 };
 

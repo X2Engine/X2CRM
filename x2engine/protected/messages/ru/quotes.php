@@ -145,4 +145,6 @@ return array (
 'Are you sure you want to delete this quote?'=>'Вы уверены, что хотите удалить эту цитату?',
 'This quote is locked. Are you sure you want to update this quote?'=>'Эта цитата заблокирован. Вы уверены, что хотите обновить эту цитату?',
 'This quote is locked.'=>'Эта цитата заблокирован.',
+'Import Quotes'=>'Импорт Цитаты',
+'Export Quotes'=>'Экспорт Цитаты',
 );

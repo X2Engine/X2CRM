@@ -394,9 +394,27 @@ abstract class x2base extends X2Controller {
         );
 
         //convert any tags into links
-        $template = "\\1<a href=" . Yii::app()->createUrl('/search/search') . '?term=%23\\2' . ">#\\2</a>";
-        //$text = preg_replace('/(^|[>\s\.])#(\w\w+)($|[<\s\.])/u',$template,$text);
-        $text = preg_replace('/(^|[>\s\.])#(\w\w+)/u', $template, $text);
+        $matches = array();
+        // avoid matches that end with </span></a>, like other record links
+        preg_match('/(^|[>\s\.])(#\w\w+)(?!.*<\/span><\/a>)/u', $text, $matches);
+        $tags = Yii::app()->cache->get('x2_taglinks');
+        if ($tags === false) {
+            $dependency = new CDbCacheDependency('SELECT MAX(timestamp) FROM x2_tags');
+            $tags = Yii::app()->db->createCommand()
+                    ->selectDistinct('tag')
+                    ->from('x2_tags')
+                    ->queryColumn();
+            // cache either 10min or until a new tag is added
+            Yii::app()->cache->set('x2_taglinks', $tags, 600, $dependency);
+        }
+        if (sizeof ($matches) > 1 && $matches[2] !== null && 
+            array_search($matches[2], $tags) !== false) {
+
+            $template = "\\1<a href=" . Yii::app()->createUrl('/search/search') . 
+                '?term=%23\\2' . ">#\\2</a>";
+            //$text = preg_replace('/(^|[>\s\.])#(\w\w+)($|[<\s\.])/u',$template,$text);
+            $text = preg_replace('/(^|[>\s\.])#(\w\w+)/u', $template, $text);
+        }
 
         //TODO: separate convertUrl and convertLineBreak concerns
         if ($convertLineBreaks)
@@ -1104,10 +1122,6 @@ abstract class x2base extends X2Controller {
 		if (!Yii::app()->user->isGuest) {
 			$themeURL = Yii::app()->theme->getBaseUrl();
 			$this->portlets = Profile::getWidgets();
-			// foreach($widgets as $key=>$value) {
-			// $options = ProfileChild::parseWidget($value,$key);
-			// $this->portlets[$key] = $options;
-			// }
 		}
         $filterChain->run();
     }
@@ -1183,7 +1197,7 @@ abstract class x2base extends X2Controller {
      * @param string $modelType
      */
     public function actionAjaxGetModelAutocomplete ($modelType) {
-        InlineRelationships::renderModelAutocomplete ($modelType, true);
+        X2Model::renderModelAutocomplete ($modelType, true);
     }
 
     /**
@@ -1296,8 +1310,22 @@ abstract class x2base extends X2Controller {
     }
 
     /**
+     * Overrides parent method so that x2base's _pageTitle property is used instead of 
+     * CController's.
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+     */
+    public function setPageTitle($value) {
+        $this->_pageTitle = $value;
+    }
+
+    /**
      * Overrides parent method so that configurable app name is used instead of name
      * from the config file.
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
      */
     public function getPageTitle() {
         if($this->_pageTitle!==null) {
@@ -1316,5 +1344,13 @@ abstract class x2base extends X2Controller {
             }
         }
     }
+
+    /**
+     * Assumes that convention of (<module name> === ucfirst (<modelClass>)) is followed. 
+     * @return Module module associated with this controller.  
+     */
+    /*public function getModuleModel () {
+        return Modules::model()->findByAttributes (array ('name' => ucfirst ($this->modelClass)));
+    }*/
 
 }

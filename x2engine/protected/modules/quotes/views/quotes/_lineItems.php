@@ -70,11 +70,18 @@ $titleTranslations = array( // keys correspond to CSS classes of each input fiel
     'description'=>Yii::t('quotes', 'Comments')
 );
 
-Yii::app()->clientScript->registerCssFile($module->assetsUrl . '/css/lineItemsMain.css');
 if (!$readOnly) {
-    Yii::app()->clientScript->registerCssFile($module->assetsUrl . '/css/lineItemsWrite.css');
+    Yii::app()->clientScript->registerCssFiles('lineItemsCss',
+        array (
+            $module->assetsUrl . '/css/lineItemsMain.css',
+            $module->assetsUrl . '/css/lineItemsWrite.css',
+        ), false);
 } else {
-    Yii::app()->clientScript->registerCssFile($module->assetsUrl . '/css/lineItemsRead.css');
+    Yii::app()->clientScript->registerCssFiles('lineItemsCss',
+        array (
+            $module->assetsUrl . '/css/lineItemsMain.css',
+            $module->assetsUrl . '/css/lineItemsRead.css',
+        ), false);
 }
 
 Yii::app()->clientScript->registerScriptFile ($module->assetsUrl.'/js/LineItems.js', CClientScript::POS_HEAD);

@@ -41,13 +41,16 @@ Yii::app()->clientScript->registerCss('recordViewCss',"
     border: none !important;
 }
 ");
+Yii::app()->clientScript->registerResponsiveCssFile(
+    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
+
 Yii::app()->clientScript->registerCss ('servicesView', "
-	#contact-info-container {
+	/*#contact-info-container {
 		margin: -6px 5px 5px 5px !important;
-	}
+	}*/
 ");
 
-$authParams['assignedTo']=$model->assignedTo;
+$authParams['X2Model'] = $model;
 $menuItems = array(
 	array('label'=>Yii::t('services','All Cases'), 'url'=>array('index')),
 	array('label'=>Yii::t('services','Create Case'), 'url'=>array('create')),
@@ -99,7 +102,6 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
             'class' => 'x2-button icon right email',
             'title' => Yii::t('app', 'Open email form'),
             'onclick' => 'toggleEmailForm(); return false;',
-            'style' => (empty($model->contactId) ? "display:none" : '')
         )
     );
     ?>
@@ -147,11 +149,10 @@ $this->renderPartial(
 $this->endWidget();
 
 if($model->contactId) { // every service case should have a contact associated with it
-	$contact = Contacts::model()->findByPk($model->contactId);
+	$contact = $model->contactIdModel;
 	if($contact) { // if associated contact exists, display mini contact view
 		?>
 		<div id='contact-info-container'>
-		<h2> <?php echo Yii::t('actions','Contact Info'); ?> </h2>
 		<?php
 		$this->renderPartial(
             'application.modules.contacts.views.contacts._detailViewMini',

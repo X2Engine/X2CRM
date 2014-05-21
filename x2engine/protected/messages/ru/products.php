@@ -75,4 +75,7 @@ return array (
 // Misc Text
 'Create New Product'=>'Создать Новый продукт',
 'Update Product'=>'Обновление продуктов',
+'Import Products'=>'Импорт Продукция',
+'Export Products'=>'Экспорт товаров',
+'NameId'=>'NameId',
 );

@@ -60,7 +60,7 @@ foreach($list as $role){
                 'id'=>'editDropdown',
                 'ajax' => array(
                 'type'=>'POST', //request type
-                'url'=>CController::createUrl('/admin/getRole'), //url to call.
+                'url'=>CController::createUrl('/admin/getRole', array('mode'=>'edit')), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#roleForm', //selector to update
                 'complete'=>"function(){

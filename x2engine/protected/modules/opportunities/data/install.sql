@@ -25,7 +25,7 @@ CREATE TABLE x2_opportunities(
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES
-('opportunities', 'Opportunities', 1, 3, 1, 1, 0, 0, 0);
+('opportunities', 'Opportunities', 1, 5, 1, 1, 0, 0, 0);
 /*&*/
 INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)

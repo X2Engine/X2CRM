@@ -37,7 +37,8 @@
 $pieces = $model->editPermissions;
 $user = Yii::app()->user->getName();
 
-$authParams['assignedTo']=$model->createdBy;
+$authParams['X2Model']=$model;
+
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
 	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),

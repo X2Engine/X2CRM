@@ -34,6 +34,19 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$profile = Profile::model()->findByPk(Yii::app()->user->id);
+$this->showActions = $profile->showActions;
+
+// if user hasn't saved a type of action to show, show uncomple actions by default
+if(!$this->showActions) 
+    $this->showActions = 'uncomplete';
+if($this->showActions == 'uncomplete')
+	$model->complete = 'NO';
+else if ($this->showActions == 'complete')
+	$model->complete = 'YES';
+else
+	$model->complete = '';
+
 $menuItems = array(
 	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
 	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
@@ -69,6 +82,12 @@ x2.actionFrames.afterActionUpdate = (function () {
         $('#actions-grid').yiiGridView ('update');
     };
 }) ();
+function toggleShowActions() {
+	var show = $('#dropdown-show-actions').val(); // value of dropdown (which actions to show)
+	$.post(".json_encode(Yii::app()->controller->createUrl('/actions/actions/saveShowActions')).", {ShowActions: show}, function() {
+		$.fn.yiiGridView.update('actions-grid', {data: $.param($('#actions-grid input[name=\"Actions[complete]\"]'))});
+	});
+}
 ",CClientScript::POS_END);
 
 ?>
@@ -143,8 +162,9 @@ $this->widget('X2GridView', array(
                     Yii::t("app","None") : 
                     CHtml::link(
                         $data->associationName,
-                        array("/".$data->associationType."/".$data->associationType."/".
-                            $data->associationId),
+                        array("/".$data->associationType . (($data->associationType === "product") ? "s" : "") .
+                              "/".$data->associationType . (($data->associationType === "product") ? "s" : "") .
+                              "/".$data->associationId),
                         array("class"=>($data->associationType=="contacts" ? 
                             "contact-name" : null)))',
 			'type'=>'raw',

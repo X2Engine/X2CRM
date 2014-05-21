@@ -97,6 +97,10 @@ class CreateWebFormAction extends CAction {
             else
                 $model->params = null;
 
+            if (isset ($_POST['generateLead']) && isset ($_POST['leadSource'])) {
+                $model->leadSource = $_POST['leadSource'];
+            }
+
             
 
             $model->updatedBy = Yii::app()->user->getName();
@@ -109,18 +113,23 @@ class CreateWebFormAction extends CAction {
             }
         }else{
             if ($modelClass === 'Contacts') {
-                $condition = X2Model::model('Marketing')->getAccessCriteria()->condition;
 
-                $forms = WebForm::model()->findAll('type="weblead" AND '.$condition);
+                $criteria = X2Model::model('Marketing')->getAccessCriteria();
+                $condition = $criteria->condition;
+
+                $forms = WebForm::model()
+                    ->findAll('type="weblead" AND '.$condition, $criteria->params);
 
                 $this->controller->render(
                     'application.modules.marketing.views.marketing.webleadForm', 
                     array('forms' => $forms));
             } else if ($modelClass === 'Services') {
-                $condition = X2Model::model('Services')->getAccessCriteria()->condition;
+                $criteria = X2Model::model('Services')->getAccessCriteria();
+                $condition = $criteria->condition;
 
                 // get service web forms (other option is 'weblead' used by marketing module)
-                $forms = WebForm::model()->findAll('type="serviceCase" AND '.$condition); 
+                $forms = WebForm::model()
+                    ->findAll('type="serviceCase" AND '.$condition, $criteria->params);
 
                 $this->controller->render(
                     'application.modules.services.views.services.createWebFormView', 

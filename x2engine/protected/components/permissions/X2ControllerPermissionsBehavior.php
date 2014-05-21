@@ -49,7 +49,9 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
      * @return boolean True if the user can procede with the requested action
      */
     public function beforeAction($action = null){
-        if(is_int(Yii::app()->locked) && !Yii::app()->user->checkAccess('GeneralAdminSettingsTask')){
+        if(is_int(Yii::app()->locked) && 
+            !Yii::app()->user->checkAccess('GeneralAdminSettingsTask')){
+
             $this->owner->appLockout();
         }
         $auth = Yii::app()->authManager;
@@ -59,41 +61,46 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
         elseif(is_string($action)){
             $action = $this->owner->createAction($action);
         }
+        
         $actionId = $action->getId();
         // These actions all have a model provided with them but its assignment
         // should not be checked for an exception. They either have permission
         // for this action or they do not.
-        $exceptions = array('updateStageDetails', 'deleteList', 'updateList', 'userCalendarPermissions', 'exportList', 'updateLocation');
-        if(class_exists($this->owner->modelClass)){
-            $model = X2Model::model($this->owner->modelClass);
+        $exceptions = array(
+            'updateStageDetails',
+            'deleteList',
+            'updateList',
+            'userCalendarPermissions',
+            'exportList',
+            'updateLocation'
+        );
+        if(($this->owner->hasProperty('modelClass') || property_exists($this->owner,'modelClass'))
+                && class_exists($this->owner->modelClass)){
+            $staticModel = X2Model::model($this->owner->modelClass);
         }
-        if(isset($_GET['id']) && !in_array($actionId, $exceptions) && !Yii::app()->user->isGuest && isset($model)){
-            $retrieved = false;
-            if($model->hasAttribute('assignedTo')){ // If we have an assignment field, we may have an exception in the permissions
-                $model = X2Model::model($this->owner->modelClass)->findByPk($_GET['id']);
-                $retrieved = true;
-                if($model !== null){ // Pass the assigned to into the params array to be used for biz rules.
-                    $params['assignedTo'] = $model->assignedTo;
-                }
-            }
-
-            // If we have a created by field, we may have an exception in the permissions
-            if(isset($model) && $model->hasAttribute('createdBy')){
-                if(!$retrieved) // Skip fetching if it's here already
-                    $model = X2Model::model($this->owner->modelClass)->findByPk($_GET['id']);
-                if($model !== null){ // Pass the assigned to into the params array to be used for biz rules.
-                    $params['createdBy'] = $model->createdBy;
-                }
+        
+        if(isset($_GET['id'])
+                && !in_array($actionId, $exceptions)
+                && !Yii::app()->user->isGuest
+                && isset($staticModel)){
+            // Check assignment fields in the current model
+            $retrieved = true;
+            $model = $staticModel->findByPk($_GET['id']);
+            if($model instanceof X2Model) {
+                $params['X2Model'] = $model;
             }
         }
 
         // Generate the proper name for the auth item
         $actionAccess = ucfirst($this->owner->getId()).ucfirst($actionId);
         $authItem = $auth->getAuthItem($actionAccess);
+
         // Return true if the user is explicitly allowed to do it, or if there is no permission item, or if they are an admin
-        if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->params->isAdmin)
+        if(!($authItem instanceof CAuthItem)
+                || Yii::app()->user->checkAccess($actionAccess,$params)
+                || Yii::app()->params->isAdmin) {
             return true;
-        elseif(Yii::app()->user->isGuest){
+        } elseif(Yii::app()->user->isGuest){
             Yii::app()->user->returnUrl = Yii::app()->request->url;
             $this->owner->redirect($this->owner->createUrl('/site/login'));
         }else
@@ -101,7 +108,7 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
     }
 
     /**
-     * Determines if we have permission to edit something based on the assignedTo field.
+     * Determines if we have permission to view/edit/delete something based on the assignedTo field.
      *
      * @param mixed $model The model in question (subclass of {@link CActiveRecord} or 
      *  {@link X2Model}
@@ -112,37 +119,30 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
         $view = false;
         $edit = false;
-        $module = Yii::app()->controller->module;
-        $visField = X2Model::model('Fields')->findByAttributes(array('modelName' => get_class($model), 'type' => 'visibility'));
+        $module = $model instanceof X2Model
+                ? Yii::app()->getModule($model->module)
+                : Yii::app()->controller->module;
+
         if(isset($module)){
             $moduleAdmin = Yii::app()->user->checkAccess(ucfirst($module->name).'Admin');
         }else{
             $moduleAdmin = false;
         }
 
-        /* if we're the admin, visibility is public, there is no visibility/assignedTo, or it's
-          directly assigned to the user, then we're done */
-        if((Yii::app()->params->isAdmin || $moduleAdmin) || !$model->hasAttribute('assignedTo') ||
-                ($model->assignedTo == 'Anyone' &&
-                ($model->hasAttribute('visibility') && $model->visibility != 0) ||
-                !$model->hasAttribute('visibility')) ||
-                $model->assignedTo == Yii::app()->user->getName()){
+        if($model instanceof X2Model 
+           && $model->asa('permissions')!=null
+           && $module instanceof CModule) {
 
-            $edit = true;
-        }elseif(!isset($visField) || $model->{$visField->fieldName} == 1){
-
+            // Check assignment and visibility using X2PermissionsBehavior
+            $view = (Yii::app()->params->isAdmin || $moduleAdmin)
+                || $model->isVisibleTo(Yii::app()->getSuName());
+            $edit = (Yii::app()->params->isAdmin || $moduleAdmin)
+                || Yii::app()->authManager->checkAccess(ucfirst($module->name).'Update',
+                    Yii::app()->getSuID(), array('X2Model' => $model));
+        } else {
+            // No special permissions checks are available
             $view = true;
-        }else{
-            if(ctype_digit((string) $model->assignedTo) && !empty(Yii::app()->params->groups)){  // if assignedTo is numeric, it's a group
-                $edit = in_array($model->assignedTo, Yii::app()->params->groups); // if we're in the assignedTo group we act as owners
-            }elseif($model->visibility == 2){  // if record is shared with owner's groups, see if we're in any of those groups
-                $view = (bool) Yii::app()->db->createCommand(
-                                        'SELECT COUNT(*) FROM x2_group_to_user A JOIN x2_group_to_user B
-				     ON A.groupId=B.groupId AND A.username=:user1 AND B.username=:user2')
-                                ->bindValues(array(
-                                    ':user1' => $model->assignedTo, ':user2' => Yii::app()->user->getName()))
-                                ->queryScalar();
-            }
+            $edit = true;
         }
 
         $view = $view || $edit; // edit permission implies view permission

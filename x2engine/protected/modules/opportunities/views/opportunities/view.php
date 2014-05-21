@@ -40,17 +40,20 @@ Yii::app()->clientScript->registerCss('recordViewCss',"
     border: none !important;
 }
 ");
+Yii::app()->clientScript->registerResponsiveCssFile(
+    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
+
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relationships.js');
 
-$authParams['assignedTo'] = $model->assignedTo;
+$authParams['X2Model'] = $model;
 $menuItems = array(
 	array('label'=>Yii::t('opportunities','Opportunities List'), 'url'=>array('index')),
-	array('label'=>Yii::t('opportunities','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('opportunities','Create Opportunity'), 'url'=>array('create')),
 	array('label'=>Yii::t('opportunities','View')),
 	array('label'=>Yii::t('opportunities','Edit Opportunity'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Share Opportunity'),'url'=>array('shareOpportunity','id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+	array('label'=>Yii::t('opportunities','Delete Opportunity'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
     array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
 );

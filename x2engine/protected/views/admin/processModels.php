@@ -48,18 +48,36 @@ var record=0;
     if (isset($model))
         unset($_SESSION['model']);
 ?>
-<div class="page-title icon"><h2><?php echo Yii::t('admin','{model} Import', array('{model}'=>$model)); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin','{model} Import', array('{model}'=>X2Model::getModelTitle ($model))); ?></h2></div>
 <div class="form" >
 <div style="width:600px">
-<?php echo Yii::t('admin',"First, we'll need to make sure your fields have mapped properly for import. "); ?>
-<?php echo Yii::t('admin','Select the fields you wish to map. Fields that have been detected as matching an existing field have been selected. '); ?><br /><br />
-<?php echo Yii::t('admin','If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.') ?><br /><br />
-<?php echo Yii::t('admin','Fields that are not selected will not be mapped. To override a mapping, select the appropriate field from the corresponding drop down. If you believe a field was detected incorrectly, deselect it below, then manually override the mapping.'); ?>
+<?php
+if ($preselectedMap) {
+    echo Yii::t('admin', 'You have selected to upload and use the following import mapping: ')."<br><br>";
+    echo "<table>";
+    echo "<tr>";
+    echo "<td><strong>".Yii::t('admin','Your Field')."</strong></td>";
+    echo "<td><strong>".Yii::t('admin','Our Field')."</strong></td>";
+    echo "</tr>";
+    foreach ($importMap as $key => $val) {
+        echo "<tr>";
+        echo "<td style='width: 50%'>".$key."</td>";
+        echo "<td style='width: 50%'>".$val."</td>";
+        echo "</tr>";
+    }
+    echo "</table>";
+} else {
+    echo Yii::t('admin',"First, we'll need to make sure your fields have mapped properly for import. ");
+    echo Yii::t('admin','Select the fields you wish to map. Fields that have been detected as matching an existing field have been selected. ').'<br /><br />';
+    echo Yii::t('admin','If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.').'<br /><br />';
+    echo Yii::t('admin','Fields that are not selected will not be mapped. To override a mapping, select the appropriate field from the corresponding drop down. If you believe a field was detected incorrectly, deselect it below, then manually override the mapping.');
+}
+?>
 
 </div></<div><br /></div>
-<div id="import-container">
+<div id="import-container" class='form'>
 <div id="super-import-map-box">
-<h2><a href="#" class="clean-link" onclick="$('.import-hide').toggle();">[-]</a> <span class="import-hide">Import Map</span></h2>
+<h2> <span class="import-hide">Import Map</span></h2>
 <div id="import-map-box" class="import-hide form" style="width:600px">
     <div id="form-error-box" style="color:red">
 
@@ -94,7 +112,13 @@ var record=0;
     ));
 ?>
 
-<h2><a href='#' class='clean-link' onclick="$('#mapping-overrides').toggle();">[-]</a><?php echo Yii::t('admin', 'Override Mappings'); ?></h2>
+<br />
+<?php
+    echo CHtml::link(Yii::t('admin', 'Export Mapping'), '#', array('id'=>'export-map', 'class'=>'x2-button'));
+    echo CHtml::link(Yii::t('acmin', 'Download Mapping'), '#', array('id'=>'download-map', 'class'=>'x2-button', 'style'=>'display:none'));
+?>
+
+<h2><a href='#' class='clean-link' onclick="$('#mapping-overrides').toggle();">[-] </a><?php echo Yii::t('admin', 'Override Mappings'); ?></h2>
 <div id='mapping-overrides' style='display: none'>
 <?php echo Yii::t('admin','Below is a list of our fields, the fields you provided, and a few sample records that you are importing. ');?>
 <?php echo Yii::t('admin','Selecting "DO NOT MAP" will ignore the field and use the settings chosen above. Selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it. ') ?>
@@ -140,17 +164,17 @@ var record=0;
 <h2><?php echo Yii::t('admin','Process Import Data'); ?></h2>
 <div class="form" style="width:600px">
     <div class="row">
-        <div class="cell"><?php echo "<span class='x2-hint' title='This will attempt to create a record for any field that links to another record type (e.g. Account)'>[?]</span>"; ?></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"This will attempt to create a record for any field that links to another record type (e.g. Account)"),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('admin','Create records for link fields?'); ?></strong></div>
         <div class="cell"><?php echo CHtml::checkBox('create-records-box','checked');?></div>
     </div>
     <div class="row">
-        <div class="cell"><?php echo "<span class='x2-hint' title='These tags will be applied to any record created by the import.<br /><em>Example: web,newlead,urgent</em>'>[?]</span>"; ?></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"These tags will be applied to any record created by the import. Example: web,newlead,urgent."),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('marketing','Tags'); ?></strong></div>
         <div class="cell"><?php echo CHtml::textField('tags'); ?></div>
     </div>
     <div class="row">
-        <div class="cell"><?php echo "<span class='x2-hint' title='These fields will be applied to all imported records and override their respective mapped fields from the import.'>[?]</span>"; ?></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"These fields will be applied to all imported records and override their respective mapped fields from the import."),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('admin','Automatically fill certain fields?'); ?></strong></div>
         <div class="cell"><?php echo CHtml::checkBox('fill-fields-box');?></div>
 
@@ -164,7 +188,7 @@ var record=0;
         </div>
     </div>
     <div class="row">
-        <div class="cell"><?php echo "<span class='x2-hint' title=\"Anything entered here will be created as a comment and logged as an Action in the imported record's history.\">[?]</span>"; ?></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"Anything entered here will be created as a comment and logged as an Action in the imported record's history."),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('admin','Automatically log a comment on these records?'); ?></strong></div>
         <div class="cell"><?php echo CHtml::checkBox('log-comment-box');?></div>
         <div class="row">
@@ -176,14 +200,20 @@ var record=0;
         </div>
     </div>
     <div class="row">
-        <div class="cell"><?php echo "<span class='x2-hint' title=\"If this box is checked, all records will be assigned to users based on your lead routing settings.\">[?]</span>"; ?></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"If this box is checked, all records will be assigned to users based on your lead routing settings."),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('admin','Assign records via lead-routing?'); ?></strong></div>
         <div class="cell"><?php echo CHtml::checkBox('lead-routing-box');?></div>
     </div>
     <div class="row">
-        <div class="cell"><?php echo "<span class='x2-hint' title=\"If this box is checked, the activity feed will not be populated with the new records.\">[?]</span>"; ?></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"If this box is checked, the activity feed will not be populated with the new records."),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('admin','Skip posting new records to activity feed?'); ?></strong></div>
         <div class="cell"><?php echo CHtml::checkBox('activity-feed-box');?></div>
+    </div>
+    <div class="row">
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin','If checked, certain shortcuts will be taken to increase the speed of the import, which includes skipping the "record created" X2Flow trigger.'
+                . ' Leaving this option enabled is highly recommended, especially for large data sets.'),false); ?></div>
+        <div class="cell"><strong><?php echo Yii::t('admin','Performance mode'); ?></strong></div>
+        <div class="cell"><?php echo CHtml::checkBox('performance-mode','checked');?></div>
     </div>
 </div>
 <br /><br />
@@ -202,6 +232,12 @@ var record=0;
 
 </div>
 <script>
+    $(function() {
+        // Hide the import map box if a mapping was uploaded
+        if (<?php echo ($preselectedMap)? 'true':'false'; ?>)
+            $('#super-import-map-box').hide();
+    });
+    
     var attributeLabels = <?php echo json_encode(X2Model::model($model)->attributeLabels(), false);?>;
     $('#process-link').click(function(){
        prepareImport();
@@ -217,17 +253,17 @@ var record=0;
 
     function prepareImport(){
         $('#import-container').hide();
-        var attributes=new Array();
-        var keys=new Array();
-        var forcedAttributes=new Array();
-        var forcedValues=new Array();
+        var attributes=[];
+        var keys=[];
+        var forcedAttributes=[];
+        var forcedValues=[];
         var comment="";
         var routing=0;
         var skipActivityFeed=0;
         var newFields = <?php echo CJSON::encode($newFields); ?>;
         $('#importMapping').find(":checked").each(function(){
             keys.push($(this).val());
-            if (newFields.indexOf($(this).text()) != -1)
+            if (jQuery.inArray($(this).text(), newFields) != -1)
                 attributes.push('createNew');
             else
                 attributes.push($(this).text());
@@ -269,25 +305,31 @@ var record=0;
                 comment:comment,
                 routing:routing,
                 skipActivityFeed:skipActivityFeed,
-                model:"<?php echo $model; ?>"
+                model:"<?php echo $model; ?>",
+                preselectedMap:<?php echo ($preselectedMap)? 'true' : 'false'; ?>
             },
             success:function(data){
                 data=JSON.parse(data);
-                if(data[0]==3){
-                    $('#import-status').show();
-                    $('#import-container').show();
-                    var str="Import Preparation failed. The following required fields were not mapped: ";
-                    str = str + data[1] + "<br /><br />";
-                    $('#form-error-box').html(str);
-                }else if(data[0]!=2){
+                if (data[0]==0) {
                     $('#import-status').show();
                     var str="Import setup completed successfully...<br />Beginning import.";
                     importData(25);
                     $('#prep-status-box').html(str);
-                }else{
+                } else if(data[0]==1) {
+                    var str="Import preparation failed.  Failed to create the following fields: ";
+                    str = str + data[1] + "<br /><br />";
+                    $('#import-container').show();
+                    $('#form-error-box').html(str);
+                } else if (data[0]==2) {
                     var str="Import preparation failed.  The following fields already exist: ";
                     str = str + data[1] + "<br /><br />";
                     $('#import-container').show();
+                    $('#form-error-box').html(str);
+                } else if(data[0]==3) {
+                    $('#import-status').show();
+                    $('#import-container').show();
+                    var str="Import Preparation failed. The following required fields were not mapped: ";
+                    str = str + data[1] + "<br /><br />";
                     $('#form-error-box').html(str);
                 }
             },
@@ -400,4 +442,44 @@ var record=0;
         });
     });
 
+    $('#export-map').click(function() {
+        var keys = new Array();
+        var attributes = new Array();
+        var newFields = <?php echo CJSON::encode($newFields) ?>;
+        $('#importMapping').find(':checked').each(function(){
+            keys.push($(this).val());
+            if (jQuery.inArray($(this).text(), newFields) != -1)
+                attributes.push('createNew');
+            else
+                attributes.push($(this).text());
+        });
+        $('.import-attribute').each(function(){
+            if ($(this).val() != '') {
+                // Add mapping overrides that are not marked 'DO NOT MAP'
+                attributes.push($(this).val());
+                keys.push($(this).attr('name'));
+            }
+        });
+        $.ajax({
+            url: 'exportMapping',
+            type: 'POST',
+            data: {
+                model: "<?php echo $model; ?>",
+                attributes: attributes,
+                keys: keys
+            },
+            success: function() {
+                $('#download-map').show();
+            },
+            error: function() {
+                var str="Preparing the import map failed.  Aborting.";
+                $('#prep-status-box').css({'color':'red'});
+                $('#prep-status-box').html(str);
+            }
+        });
+    });
+    $('#download-map').click(function(e) {
+        e.preventDefault();
+        window.location.href = '<?php echo $this->createUrl('admin/downloadData', array('file'=>'importMapping.json')) ?>';
+    });
 </script>

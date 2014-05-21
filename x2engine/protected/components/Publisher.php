@@ -119,6 +119,8 @@ class Publisher extends X2Widget {
         $this->model = $model;
         $tabs = $this->tabs;
         $selectedTab = $this->tabs[0]->tabId;
+        $selectedTabObj = $this->tabs[0];
+        $selectedTabObj->startVisible = true;
 
         Yii::app()->clientScript
             ->registerCoreScript('jquery')
@@ -191,7 +193,7 @@ class Publisher extends X2Widget {
             };
 
         }) ();
-        ", CClientScript::POS_BEGIN);
+        ", CClientScript::POS_END);
 
         Yii::app()->clientScript->registerScript('loadEmails', "
 
@@ -253,7 +255,7 @@ class Publisher extends X2Widget {
                     array_map(function($p)use($that){return $that->$p;}, $this->viewParams)
                 ),
                 array (
-                    'tabs' => $tabs
+                    'tabs' => $tabs,
                 )
             )
         );

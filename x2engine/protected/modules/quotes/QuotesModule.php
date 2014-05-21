@@ -6,15 +6,14 @@
  */
 class QuotesModule extends X2WebModule {
 
-  private $_assetsUrl = null;
+    private $_assetsUrl = null;
 
-  public function getAssetsUrl()
-  {
-      if ($this->_assetsUrl === null)
-          $this->_assetsUrl = Yii::app()->getAssetManager()->publish(
-              Yii::getPathOfAlias('application.modules.quotes.assets'), false, -1, true );
-      return $this->_assetsUrl;
-  }
+    public function getAssetsUrl() {
+        if ($this->_assetsUrl === null)
+            $this->_assetsUrl = Yii::app()->getAssetManager()->publish(
+                Yii::getPathOfAlias('application.modules.quotes.assets'), false, -1, true );
+        return $this->_assetsUrl;
+    }
 
 	public function init() {
 		// this method is called when the module is being created

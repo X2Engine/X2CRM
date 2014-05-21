@@ -35,4 +35,8 @@ return array (
 'copy'=>'',
 'Saved at'=>'',
 'Document'=>'',
+'Leaving this field blank will preserve its default behavior.'=>'',
+'Create Quote Template'=>'',
+'Import Docs'=>'',
+'Export Docs'=>'',
 );

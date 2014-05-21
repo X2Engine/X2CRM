@@ -258,6 +258,16 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 		// $model->updatedBy = Yii::app()->user->getName();
 		// $model->save();
 		$type = get_class($model);
+
+                // Handle special types
+                $pluralize = array('Quote', 'Product');
+                if (in_array($type, $pluralize))
+                    $type .= "s";
+                else if ($type == 'Campaign')
+                    $type = "Marketing";
+                else if ($type == 'bugreports')
+                    $type = 'BugReports';
+
 		$excludeFields=array(
             'lastUpdated',
             'createDate',

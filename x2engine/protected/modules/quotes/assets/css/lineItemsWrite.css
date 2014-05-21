@@ -95,6 +95,7 @@
     display: none;
     max-height: 16em;
     overflow-y: scroll;
+    z-index: 5;
 	font-size: 10px !important;
 }
 

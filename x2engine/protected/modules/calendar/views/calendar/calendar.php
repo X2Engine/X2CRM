@@ -443,7 +443,7 @@ $(function() {
 
             if(event.source.source == 'google') {
                 var boxTitle = '<?php echo CHtml::encode (Yii::t('calendar', 'Google Event')); ?>';
-                if(event.source.editable) {
+                if(event.canEdit && event.source.editable) {
                     dialogWidth = 600;
                     $.post(
                         '<?php echo $urls['editGoogleEvent']; ?>', {
@@ -491,7 +491,7 @@ $(function() {
                 }
             } else {
 
-                if(event.source.editable) {
+                if(event.canEdit && event.source.editable) {
 
                     dialogWidth = 600;
                     $.post(
@@ -569,7 +569,7 @@ $(function() {
                         }
                     });
 
-                    if(event.source.editable && event.type != 'event') {
+                    if(event.canEdit && event.source.editable && event.type != 'event') {
                         if(event.complete == 'Yes') {
                             boxButtons.unshift({  // prepend button
                                 text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
@@ -608,7 +608,7 @@ $(function() {
                             window.location = event.associationUrl;
                         }
                     });
-                    if(event.source.editable && event.type != 'event') {
+                    if(event.canEdit && event.source.editable && event.type != 'event') {
                         if(event.complete == 'Yes') {
                             boxButtons.unshift({  // prepend button
                                 text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
@@ -639,7 +639,7 @@ $(function() {
                     }
                 } else { // action clicked
                     var boxTitle = 'Action';
-                    if(event.source.editable) {
+                    if(event.canEdit && event.source.editable) {
                         if(event.complete == 'Yes') {
                             boxButtons.unshift({  // prepend button
                                 text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',

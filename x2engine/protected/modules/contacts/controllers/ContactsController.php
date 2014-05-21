@@ -976,6 +976,7 @@ class ContactsController extends x2base {
         if(isset($_POST['Contacts'])){
             $oldAttributes = $model->attributes;
 
+            //AuxLib::debugLogR ($_POST);
             $model->setX2Fields($_POST['Contacts']);
             if($model->dupeCheck != '1'){
                 $model->dupeCheck = 1;
@@ -1071,7 +1072,7 @@ class ContactsController extends x2base {
             $criteria->addCondition($condition);
         }
 
-        $perPage = ProfileChild::getResultsPerPage();
+        $perPage = Profile::getResultsPerPage();
 
         //$criteria->offset = isset($_GET['page']) ? $_GET['page'] * $perPage - 3 : -3;
         //$criteria->limit = $perPage;
@@ -1187,28 +1188,13 @@ class ContactsController extends x2base {
         $list->visibility = 1;
 
         $contactModel = new Contacts;
-        $comparisonList = array(
-            '=' => Yii::t('contacts', 'equals'),
-            '>' => Yii::t('contacts', 'greater than'),
-            '<' => Yii::t('contacts', 'less than'),
-            '<>' => Yii::t('contacts', 'not equal to'),
-            'contains' => Yii::t('contacts', 'contains'),
-            'noContains' => Yii::t('contacts', 'does not contain'),
-            'empty' => Yii::t('contacts', 'empty'),
-            'notEmpty' => Yii::t('contacts', 'not empty'),
-            'list' => Yii::t('contacts', 'in list'),
-            'notList' => Yii::t('contacts', 'not in list'),
-        );
-
+        $comparisonList = X2List::getComparisonList();
         if(isset($_POST['X2List'])){
 
             $list->attributes = $_POST['X2List'];
             $list->modelName = 'Contacts';
             $list->createDate = time();
             $list->lastUpdated = time();
-
-            if($list->type == 'dynamic')
-                $criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId' => $list->id), new CDbCriteria(array('order' => 'id ASC')));
 
             if(isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])){
 
@@ -1224,27 +1210,6 @@ class ContactsController extends x2base {
                     $list->lastUpdated = time();
 
                     if($list->save()){
-
-                        X2ListCriterion::model()->deleteAllByAttributes(array('listId' => $list->id)); // delete old criteria
-
-                        for($i = 0; $i < count($attributes); $i++){ // create new criteria
-                            if((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags')
-                                    && array_key_exists($comparisons[$i], $comparisonList)){  //&& $values[$i] != ''
-                                $fieldRef = Fields::model()->findByAttributes(array('modelName' => 'Contacts', 'fieldName' => $attributes[$i]));
-                                if(isset($fieldRef) && $fieldRef->type == 'link'){
-                                    $lookup = X2Model::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name' => $values[$i]));
-                                    if(isset($lookup))
-                                        $values[$i] = $lookup->nameId;
-                                }
-                                $criterion = new X2ListCriterion;
-                                $criterion->listId = $list->id;
-                                $criterion->type = 'attribute';
-                                $criterion->attribute = $attributes[$i];
-                                $criterion->comparison = $comparisons[$i];
-                                $criterion->value = $values[$i];
-                                $criterion->save();
-                            }
-                        }
                         $this->redirect(array('/contacts/contacts/list','id'=>$list->id));
                     }
                 }
@@ -1283,18 +1248,8 @@ class ContactsController extends x2base {
             throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
 
         $contactModel = new Contacts;
-        $comparisonList = array(
-            '=' => Yii::t('contacts', 'equals'),
-            '>' => Yii::t('contacts', 'greater than'),
-            '<' => Yii::t('contacts', 'less than'),
-            '<>' => Yii::t('contacts', 'not equal to'),
-            'contains' => Yii::t('contacts', 'contains'),
-            'noContains' => Yii::t('contacts', 'does not contain'),
-            'empty' => Yii::t('contacts', 'empty'),
-            'notEmpty' => Yii::t('contacts', 'not empty'),
-            'list' => Yii::t('contacts', 'in list'),
-            'notList' => Yii::t('contacts', 'not in list'),
-        );
+        $comparisonList = X2List::getComparisonList();
+        $fields = $contactModel->getFields(true);
 
         if($list->type == 'dynamic'){
             $criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId' => $list->id), new CDbCriteria(array('order' => 'id ASC')));
@@ -1312,27 +1267,6 @@ class ContactsController extends x2base {
                     $list->lastUpdated = time();
 
                     if($list->save()){
-
-                        X2ListCriterion::model()->deleteAllByAttributes(array('listId' => $list->id)); // delete old criteria
-
-                        for($i = 0; $i < count($attributes); $i++){ // create new criteria
-                            if((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags')
-                                    && array_key_exists($comparisons[$i], $comparisonList)){  //&& $values[$i] != ''
-                                $fieldRef = Fields::model()->findByAttributes(array('modelName' => 'Contacts', 'fieldName' => $attributes[$i]));
-                                if(isset($fieldRef) && $fieldRef->type == 'link'){
-                                    $lookup = X2Model::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name' => $values[$i]));
-                                    if(isset($lookup))
-                                        $values[$i] = $lookup->nameId;
-                                }
-                                $criterion = new X2ListCriterion;
-                                $criterion->listId = $list->id;
-                                $criterion->type = 'attribute';
-                                $criterion->attribute = $attributes[$i];
-                                $criterion->comparison = $comparisons[$i];
-                                $criterion->value = $values[$i];
-                                $criterion->save();
-                            }
-                        }
                         $this->redirect(array('/contacts/contacts/list','id'=>$list->id));
                     }
                 }
@@ -1353,6 +1287,19 @@ class ContactsController extends x2base {
             $default->attribute = '';
             $default->comparison = 'contains';
             $criteriaModels[] = $default;
+        } else {
+            if($list->type = 'dynamic'){
+                foreach($criteriaModels as $criM){
+                    if($fields[$criM->attribute]->type == 'link'){
+                        $criM->value = implode(',', array_map(function($c){
+                                    list($name,$id) = Fields::nameAndId($c);
+                                    return $name;
+                                }, explode(',', $criM->value)
+                                )
+                        );
+                    }
+                }
+            }
         }
 
         $this->render('updateList', array(

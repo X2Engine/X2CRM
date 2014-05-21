@@ -121,8 +121,8 @@ class X2FlowWait extends X2FlowAction {
 
             // remove any models so the JSON doesn't get crazy long
 			if(is_object($params[$param]) && $params[$param] instanceof CActiveRecord){	
-				$tmpModel = $params['model'];
-                unset($params['model']);
+				$tmpModel = $params[$param];
+                unset($params[$param]);
             }
 		}
 

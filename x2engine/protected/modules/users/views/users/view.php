@@ -54,7 +54,7 @@ $this->actionMenu = $this->formatMenu(array(
 	'attributes'=>array(
 		'firstName',
 		'lastName',
-		'username',
+		empty($model->userAlias)?'username':'userAlias',
 		'title',
 		'department',
 		'officePhone',

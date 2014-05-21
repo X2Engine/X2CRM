@@ -48,7 +48,22 @@ class UserLoginTrigger extends X2FlowTrigger {
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
 			'options' => array(
-				array('name'=>'user','label'=>Yii::t('studio','User'),'type'=>'dropdown','multiple'=>1,'options'=>X2Model::getAssignmentOptions(true,false),'operators'=>array('=','<>','list','notList'),'optional'=>1),
-			));
+				array(
+                    'name'=>'user',
+                    'label'=>Yii::t('studio','User'),
+                    'type'=>'dropdown',
+                    'multiple'=>1,
+                    'options'=>array ('' => Yii::t('x2flow', 'Anyone')) + 
+                        X2Model::getAssignmentOptions(false,false),
+                    'operators'=>array(
+                        '=',
+                        '<>',
+                        'list',
+                        'notList'
+                    ),
+                    'optional'=>1
+                ),
+            )
+        );
 	}
 }

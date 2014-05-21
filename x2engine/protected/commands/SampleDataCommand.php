@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -97,8 +96,8 @@ class SampleDataCommand extends CConsoleCommand {
 
         // [edition] => [array of table names]
 		$tblEditions = require(realpath(Yii::app()->basePath . '/data/nonFreeTables.php'));
-		$nonFreeEditions = require(realpath(Yii::app()->basePath . '/data/editions.php'));
 		$allEditions = array_keys($tblEditions);
+        $nonFreeEditions = array_diff($allEditions,array('opensource'));
 		$specTemplate = array_fill_keys($allEditions, array());
 		$this->pdo = Yii::app()->db->pdoInstance;
 		$conf = realpath(Yii::app()->basePath . '/config/X2Config.php');
@@ -204,7 +203,10 @@ class SampleDataCommand extends CConsoleCommand {
 			),
 			'x2_users' => array(
 				'pk' => 'id',
-				'fields' => array('id', 'firstName', 'lastName', 'officePhone', 'cellPhone', 'showCalendars', 'calendarViewPermission', 'calendarEditPermission', 'calendarFilter', 'setCalendarPermissions'),
+				'fields' => array('id', 'firstName', 'lastName', 'officePhone',
+                    'cellPhone', 'showCalendars', 'calendarViewPermission',
+                    'calendarEditPermission', 'calendarFilter',
+                    'setCalendarPermissions','recentItems','topContacts'),
 				'where' => '`id`=1'
 			)
 		);
@@ -403,6 +405,80 @@ class SampleDataCommand extends CConsoleCommand {
 
 	}
 
+    /**
+     * "Compress" all sample data timestamps
+     *
+     * Brings all timestamps closer to "now" using a logarithmic scale. This is
+     * to bring really far-apart events closer together while avoiding too much
+     * "clumping" of events around the installation timestamp.
+     *
+     * @param array $newDisp The new furthest time into the past that any event
+     *  is allowed to go.
+     */
+    public function actionSquashtime($dtnew) {
+        $newDisp = (int) trim($dtnew);
+        echo "Finding the oldest event in the sample data...\n";
+        $dateFields = require(realpath(Yii::app()->basePath . '/data/dateFields.php'));
+        $installTimestamp = (integer) file_get_contents(implode(DIRECTORY_SEPARATOR,array(
+            Yii::app()->basePath,'data','dummy_data_date'
+        )));
+        $now = $installTimestamp;
+        $min = $now;
+        foreach($dateFields as $table => $columns) {
+            $newMin = Yii::app()->db->createCommand()
+                    ->select(count($columns) > 1
+                            ? 'LEAST(MIN(`'.implode('`),MIN(`',$columns).'`))'
+                            : 'MIN(`'.reset($columns).'`)')
+                    ->from($table)
+                    ->queryScalar();
+            if(!empty($newMin) && $newMin < $min) {
+                $min = $newMin;
+                echo "Older timestamp $newMin found in table $table\n";
+            }
+        }
+        echo "min: $min\nnow: $now\n";
+        $oldDisp = $installTimestamp - $min;
+
+        $yn = $this->prompt("The oldest record is $oldDisp seconds in the "
+                . "past. Are you sure you want to proceed with adjusting all "
+                . "timestamps logarithmically such that the old maximum time "
+                . "displacement into the past $oldDisp becomes the new, $newDisp?");
+        if(!preg_match('/^y(es)?$/i',trim($yn)))
+            Yii::app()->end();
+
+        foreach($dateFields as $table => $columns) {
+            foreach($columns as $column) {
+                list($setClause,$params) = $this->timeCompressSql($column,
+                        $installTimestamp,$oldDisp,$newDisp);
+                $sqlRun = "UPDATE `$table` ".$setClause;
+                Yii::app()->db->createCommand($sqlRun)
+                        ->execute($params);
+                echo 'Ran "'.strtr($sqlRun,$params)."\"\n";
+            }
+        }
+    }
+
+    /**
+     * Generates update SQL for a timestamp column to "compress" times
+     * 
+     * @param string $column Attribute/column name to be changed
+     * @param type $ti Timestamp of installation ("now")
+     * @param type $dtMax Furthest time into the past that events go
+     * @param type $dtMaxNew New furthest time into the past that events can go
+     * @return type
+     */
+    public function timeCompressSql($column,$ti,$dtMax,$dtMaxNew) {
+        $sql = "SET `$column`=(:ti1-:dtMaxNew*LOG2(1+(:ti2-`$column`)/:dtMax)) "
+                . "WHERE `$column` < :ti3";
+        $params = array(
+            ':ti1' => $ti,
+            ':ti2' => $ti,
+            ':ti3' => $ti,
+            ':dtMaxNew' => $dtMaxNew,
+            ':dtMax' => $dtMax
+        );
+        return array($sql,$params);
+    }
 }
 
 ?>

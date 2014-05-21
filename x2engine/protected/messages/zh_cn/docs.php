@@ -39,4 +39,8 @@ return array (
 'copy'=>'复制',
 'Saved at'=>'保存在',
 'Document'=>'文件',
+'Leaving this field blank will preserve its default behavior.'=>'离开这一领域的空白将保留其默认行为。',
+'Create Quote Template'=>'创建引用模板',
+'Import Docs'=>'导入文档',
+'Export Docs'=>'导出文档',
 );

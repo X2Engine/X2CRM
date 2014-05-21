@@ -44,7 +44,7 @@ Parameters:
 
 mb_internal_encoding('UTF-8');
 mb_regex_encoding('UTF-8');
-Yii::app()->params->profile = ProfileChild::model()->findByPk(1);
+Yii::app()->params->profile = Profile::model()->findByPk(1);
 if (empty($type)) $type = 'weblead';
 if (empty($model)) $model = Contacts::model ();
 

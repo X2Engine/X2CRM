@@ -180,4 +180,5 @@ return array (
 'Saved Searches'=>'Recherches sauvegardées',
 'Clicking this button will pull any relevant '=>'En cliquant sur ce bouton va tirer tout pertinent',
 'Drag tags here from the tag cloud widget or click to '=>'Drag Tags ici depuis le widget nuage ou cliquez pour',
+'Export {model}'=>'Export {model}',
 );

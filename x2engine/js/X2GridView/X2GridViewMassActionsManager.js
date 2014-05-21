@@ -79,6 +79,18 @@ Private static methods
 Public instance methods
 */
 
+/**
+ * @return bool true if the gridview header is fixed, false otherwise
+ */
+X2GridViewMassActionsManager.prototype.headerIsFixed = function () {
+
+    // header can only be unfixed if sticky header is enabled
+    if (typeof x2.gridViewStickyHeader !== 'undefined') {
+        return !x2.gridViewStickyHeader.getIsStuck ();
+    }
+    return true;
+};
+
 X2GridViewMassActionsManager.prototype.saveSelectedRecords = function () {
     this._previouslySelectedRecords = this._getSelectedRecords ();
 };
@@ -432,7 +444,7 @@ X2GridViewMassActionsManager.prototype._executeUncompleteSelected = function () 
  */
 X2GridViewMassActionsManager.prototype._executeRemoveFromList = function (dialog) {
     var that = this; 
-    var listId = window.location.search.replace (/(?:^[?]id=([^&]+))/, '$1');
+    var listId = window.location.href.replace (/.*contacts\/list\/id\/([0-9]+)#?$/, '$1');
     var selectedRecords = that._getSelectedRecords () 
     $.ajax({
         url: that.executeUrls['removeFromList'],
@@ -668,8 +680,11 @@ X2GridViewMassActionsManager.prototype._setUpMoreButtonBehavior = function () {
 
         $(moreDropDownList).show ();
         that.DEBUG && console.log ('massActionMoreButtonBehavior');
-        if (that.fixedHeader && !$('body').hasClass ('x2-mobile-layout')) {
-            $(moreDropDownList).attr ('style', 'left: ' + $(this).offset ().left + 'px;');
+        if (that.headerIsFixed () && !$('body').hasClass ('x2-mobile-layout')) {
+            $(moreDropDownList).css ({
+                left: $(this).offset ().left + 'px',
+                width: '175px'
+            });
         } else if ($('body').hasClass ('x2-mobile-layout')) {
             var moreButtonOffsetLeft = $(this).offset ().left;
             var moreMenuWidth = $(moreDropDownList).width ();

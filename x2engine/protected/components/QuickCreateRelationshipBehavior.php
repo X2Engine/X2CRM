@@ -65,7 +65,7 @@ class QuickCreateRelationshipBehavior extends CBehavior {
         if (isset (self::$_modelsWhichSupportQuickCreate)) {
             return self::$_modelsWhichSupportQuickCreate;
         }
-        self::$_modelsWhichSupportQuickCreate = array_diff (Fields::getModelNames(), 
+        self::$_modelsWhichSupportQuickCreate = array_diff (array_keys (X2Model::getModelNames()), 
                 array ('Docs', 'Groups', 'Campaign', 'Media', 'Quote',
                     'BugReports', 'Actions'));
         return self::$_modelsWhichSupportQuickCreate;
@@ -80,7 +80,7 @@ class QuickCreateRelationshipBehavior extends CBehavior {
         array_walk (
             $createUrls,
             function (&$val, $key) {
-                $moduleName = X2Model:: getModuleName ($key);
+                $moduleName = strtolower (X2Model::getModuleName ($key));
                 $val = Yii::app()->controller->createUrl ("/$moduleName/$moduleName/create");
             });
         return $createUrls;
@@ -119,7 +119,8 @@ class QuickCreateRelationshipBehavior extends CBehavior {
                     'Create a new {relatedModelClass} associated with this {modelClass}', 
                     array (
                         '{relatedModelClass}' => X2Model::getRecordName ($key), 
-                        '{modelClass}' => $modelName
+                        '{modelClass}' => 
+                            X2Model::getRecordName (X2Model::getModelName ($modelName))
                     )
                 );
             });

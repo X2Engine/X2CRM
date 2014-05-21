@@ -131,16 +131,7 @@ class ApiController extends x2base {
 			}
 
 			if ($userId != null && !$access) { // Skip this if we already have access
-				$this->log("Verifying that user with id=$userId can perform action $action...");
-				$access = $access || $userId == 1;
-				if (!$access) {
-					// Check role-based permissions:
-					$this->log('Checking for role-based privileges...');
-					$roles = RoleToUser::model()->findAllByAttributes(array('userId' => $userId));
-					foreach ($roles as $role) {
-						$access = $access || $auth->checkAccess($action, $role->roleId);
-					}
-				}
+                $access = $access || $auth->checkAccess($action,$userId);
 			}
 		} elseif($this->action->id != 'checkPermissions')
 			$this->log(sprintf("Auth item %s not found. Permitting action %s.",$action,$this->action->id));
@@ -173,8 +164,9 @@ class ApiController extends x2base {
         $model = $this->getModel(true);
         $model->setX2Fields($_POST);
 
-        if($this->modelClass === 'Contacts' && isset($_POST['x2_key'])){
-            $model->trackingKey = $_POST['x2_key']; // key is read-only, won't be set by setX2Fields
+        if($this->modelClass === 'Contacts' && isset($_POST['trackingKey'])){
+            // key is read-only, won't be set by setX2Fields
+            $model->trackingKey = $_POST['trackingKey']; 
         }
 
         $setUserFields = false;
@@ -637,10 +629,10 @@ class ApiController extends x2base {
 						if($failure) {
 							$message = 'Saving notifications failed.';
 						} else {
-							X2Flow::trigger('RecordVoipInboundTrigger', array(
+							/*X2Flow::trigger('RecordVoipInboundTrigger', array(
 								'model' => $contact,
 								'number' => $matches[0]
-							));
+							));*/
 							$message = 'Notifications created for user(s): '.implode(',',$usersSuccess);
 							if($partialFailure) {
 								$message .= '; saving notifications failed for users(s): '.implode(',',$usersFailure);
@@ -758,6 +750,7 @@ class ApiController extends x2base {
         if(is_int(Yii::app()->locked)) {
             $this->_sendResponse(503,"X2Engine is currently undergoing maintenance. Please try again later.");
         }
+        
         $filterChain->run();
     }
 

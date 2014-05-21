@@ -55,6 +55,7 @@ defined('X2_FTP_HOST') or define('X2_FTP_HOST', 'localhost');
 defined('X2_FTP_USER') or define('X2_FTP_USER', 'root');
 defined('X2_FTP_PASS') or define('X2_FTP_PASS', '');
 defined('X2_FTP_CHROOT_DIR') or define('X2_FTP_CHROOT_DIR', false);
+defined('X2_UPDATE_BETA') or define('X2_UPDATE_BETA',false);
 
 /**
  * Behavior class with application updater/upgrader utilities.
@@ -91,6 +92,7 @@ defined('X2_FTP_CHROOT_DIR') or define('X2_FTP_CHROOT_DIR', false);
  * @property string $updateDataRoute (read-only) Relative URL (to the base URL of the update server) from which to get update manifests.
  * @property string $updateDir (read-only) the directory of updates.
  * @property string $updatePackage (read-only) destination path for the update package.
+ * @property string $updateServer Base URL of the web server from which to fetch data and files
  * @property string $version Version of X2Engine
  * @property string $webRoot (read-only) Absolute path to the web root, even if not in a web request
  * @property array $webUpdaterActions (read-only) array of actions in the web-based updater utility.
@@ -373,11 +375,6 @@ class UpdaterBehavior extends ResponseBehavior {
         "components/views/requirements.php",
         "commands/UpdateCommand.php"
     );
-
-    /**
-     * Base URL of the web server from which to fetch data and files
-     */
-    public $updateServer = 'https://x2planet.com';
 
     /**
      * Converts an array formatted like a behavior or controller actions array
@@ -1509,14 +1506,22 @@ class UpdaterBehavior extends ResponseBehavior {
      */
     public function getRequirements() {
         if(!isset($this->_requirements)){
+            $reqScript = implode(DIRECTORY_SEPARATOR, array(
+                Yii::app()->basePath,
+                'components',
+                'views',
+                'requirements.php'
+            ));
+            if(!is_readable($reqScript))
+                throw new CException(Yii::t('admin', "Requirements check script at {path} is missing or not readable.",array('{path}'=>$reqScript)));
+            // The following two variables used internally by the requirements
+            // checking script:
             $returnArray = true;
             $thisFile = Yii::app()->request->scriptFile;
-            $throwForError = function($errno , $errstr , $errfile , $errline , $errcontext) {
-                throw new CException(Yii::t('admin', "Requirements check script encountered an internal error. You should try running it manually by copying it from {path} into the web root of your CRM. The error was as follows:", array('{path}' => 'protected/components/views/requirements.php'))."$errstr [$errno] : $errfile L$errline; $errcontext");
-            };
-            set_error_handler($throwForError);
-            $this->_requirements = require_once(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'components', 'views', 'requirements.php')));
-            restore_error_handler();
+            $this->_requirements = @require_once($reqScript);
+            if(!$this->_requirements) {
+                CException(Yii::t('admin', "Requirements check script encountered an internal error."));
+            }
         }
         return $this->_requirements;
     }
@@ -1655,6 +1660,13 @@ class UpdaterBehavior extends ResponseBehavior {
 
     public function getUpdatePackage() {
         return $this->webRoot.DIRECTORY_SEPARATOR.self::PKGFILE;
+    }
+
+    /**
+     * Base URL of the web server from which to fetch data and files
+     */
+    public function getUpdateServer() {
+        return X2_UPDATE_BETA ? 'http://beta.x2planet.com' : 'https://x2planet.com';
     }
 
     public function getVersion() {
@@ -1862,7 +1874,7 @@ class UpdaterBehavior extends ResponseBehavior {
         $compat = $this->getCompatibilityStatus();
         $web = !$this->isConsole;
         if($compat['allClear']) {
-            return Yii::t('admin','No poential compatibility issues could be found.');
+            return Yii::t('admin','No potential compatibility issues could be found.');
         }
         $messages = '';
 

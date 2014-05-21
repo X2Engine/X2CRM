@@ -58,26 +58,34 @@ class History extends X2Widget {
             $historyTabs = array(
                 'all' => Yii::t('app', 'All'),
                 'actions' => Yii::t('app', 'Actions'),
+                'overdueActions' => Yii::t('app', 'Overdue Actions'),
+                'incompleteActions' => Yii::t('app', 'Incomplete Actions'),
                 'attachments' => Yii::t('app', 'Attachments'),
+                'calls' => Yii::t('app', 'Calls'),
                 'comments' => Yii::t('app', 'Comments'),
+                'emails' => Yii::t('app', 'Emails'),
                 'event' => Yii::t('app', 'Events'),
                 'marketing' => Yii::t('app', 'Marketing'),
-                'webactivity' => Yii::t('app', 'Web Activity'),
-                'workflow' => Yii::t('app', 'Workflow'),
+                'time' => Yii::t('app', 'Logged Time'),
                  
+                'webactivity' => Yii::t('app', 'Web Activity'),
+                'workflow' => Yii::t('app', 'Process'),
             );
             $profile = Yii::app()->params->profile;
             if(isset($profile)){ // Load their saved preferences from the profile
-                $this->pageSize = $profile->historyShowAll ? 10000 : 10; // No way to give truly infinite pagination, fudge it by making it 10,000
+                // No way to give truly infinite pagination, fudge it by making it 10,000
+                $this->pageSize = $profile->historyShowAll ? 10000 : 10; 
                 $this->relationships = $profile->historyShowRels;
             }
-            if(isset($_GET['history']) && array_key_exists($_GET['history'], $historyTabs)){ // See if we can filter for what they wanted
+            // See if we can filter for what they wanted
+            if(isset($_GET['history']) && array_key_exists($_GET['history'], $historyTabs)){ 
                 $this->historyType = $_GET['history'];
             }
             if(isset($_GET['pageSize'])){
                 $this->pageSize = $_GET['pageSize'];
                 if(isset($profile)){
-                    $profile->historyShowAll = $this->pageSize > 10 ? 1 : 0; // Save profile preferences
+                    // Save profile preferences
+                    $profile->historyShowAll = $this->pageSize > 10 ? 1 : 0; 
                     $profile->update(array('historyShowAll'));
                 }
             }
@@ -142,50 +150,70 @@ class History extends X2Widget {
         ");
 
         $this->widget('application.components.X2ListView', array(
+            'pager' => array (
+                'class' => 'CLinkPager', 
+                'header' => '',
+                'firstPageCssClass' => '',
+                'lastPageCssClass' => '',
+                'prevPageLabel' => '<',
+                'nextPageLabel' => '>',
+                'firstPageLabel' => '<<',
+                'lastPageLabel' => '>>',
+            ),
             'id' => 'history',
             'dataProvider' => $this->getHistory(),
             'viewData' => array(
-                'relationshipFlag' => $this->relationships, // Pass relationship flag to the views so they can modify their layout slightly
+                // Pass relationship flag to the views so they can modify their layout slightly
+                'relationshipFlag' => $this->relationships, 
             ),
             'itemView' => 'application.modules.actions.views.actions._view',
             'htmlOptions' => array('class' => 'action list-view'),
             'template' => 
-                '<div class="form action-history-controls">'.
-                    CHtml::dropDownList('history-selector', $this->historyType, $historyTabs).
-                    '<span style="margin-top:5px;" class="right">'.
-                        CHtml::link(
-                            Yii::t('app', 'Toggle Text'), '#', 
-                            array(
-                                'id' => 'history-collapse', 'class' => 'x2-hint',
-                                'title' => Yii::t('app', 
-                                    'Click to toggle showing the full text of History items.'))).
-                        ' | '.
-                        CHtml::link(
-                            Yii::t('app', 'Show All'), '#', 
-                            array(
-                                'id' => 'show-history-link', 
-                                'class' => 'x2-hint', 
-                                'title' => Yii::t('app', 
-                                    'Click to increase the number of History items shown.'), 
-                                'style' => $this->pageSize > 10 ? 'display:none;' : ''
-                            )).
-                        CHtml::link(
-                            Yii::t('app', 'Show Less'), '#', 
-                            array(
-                                'id' => 'hide-history-link', 
-                                'class' => 'x2-hint',
-                                'title' => Yii::t('app', 
-                                    'Click to decrease the number of History items shown.'), 
-                                'style' => $this->pageSize > 10 ? '' : 'display:none;')).
-                        ((!Yii::app()->user->isGuest) ? 
-                            ' | '.CHtml::link(
-                                Yii::t('app', 'Relationships'), '#', 
-                                array(
-                                    'id' => 'show-relationships-link', 'class' => 'x2-hint',
-                                    'title' => Yii::t('app', 
-                                        'Click to toggle showing actions associated with related '.
-                                        'records.'))) : '')
-                .'</span></div> {sorter}{items}{pager}',
+            '<div class="form action-history-controls">'.
+                CHtml::dropDownList(
+                    'history-selector',
+                    $this->historyType,
+                    $historyTabs,
+                    array (
+                        'class' => 'x2-select'
+                    )
+                ).
+            '<span style="margin-top:5px;" class="right">'.
+                CHtml::link(
+                    Yii::t('app', 'Toggle Text'), '#', 
+                    array(
+                        'id' => 'history-collapse', 'class' => 'x2-hint', 
+                        'title' => 
+                            Yii::t('app', 'Click to toggle showing the full text of History items.')
+                    )
+                )
+                .' | '.CHtml::link(
+                    Yii::t('app', 'Show All'), '#', 
+                    array(
+                        'id' => 'show-history-link', 'class' => 'x2-hint', 
+                        'title' => 
+                            Yii::t('app', 'Click to increase the number of History items shown.'), 
+                        'style' => $this->pageSize > 10 ? 'display:none;' : ''
+                    )
+                )
+                .CHtml::link(
+                    Yii::t('app', 'Show Less'), '#', 
+                    array(
+                        'id' => 'hide-history-link', 'class' => 'x2-hint', '
+                        title' => 
+                            Yii::t('app', 'Click to decrease the number of History items shown.'), 
+                        'style' => $this->pageSize > 10 ? '' : 'display:none;'
+                    )
+                )
+                .((!Yii::app()->user->isGuest) ? 
+                    ' | '.CHtml::link(
+                        Yii::t('app', 'Relationships'), '#', 
+                        array(
+                            'id' => 'show-relationships-link', 'class' => 'x2-hint',
+                            'title' => 
+                Yii::t('app', 'Click to toggle showing actions associated with related records.'))) 
+                    : '')
+            .'</span></div> {sorter}{items}{pager}',
         ));
     }
 
@@ -199,15 +227,22 @@ class History extends X2Widget {
         $historyCriteria = array(
             'all' => '',
             'actions' => ' AND type IS NULL',
-            'workflow' => ' AND type="workflow"',
+            'overdueActions' => ' AND type IS NULL AND complete="NO" AND dueDate <= '.time (),
+            'incompleteActions' => ' AND type IS NULL AND complete="NO"',
+            'calls' => ' AND type="call"',
             'comments' => ' AND type="note"',
             'attachments' => ' AND type="attachment"',
             'event' => ' AND type="event"',
+            'emails' => 
+                ' AND type IN ("email","email_staged",'.
+                    '"email_opened","email_clicked","email_unsubscribed")',
             'marketing' => 
                 ' AND type IN ("email","webactivity","weblead","email_staged",'.
                     '"email_opened","email_clicked","email_unsubscribed","event")',
-            'webactivity' => 'AND type IN ("weblead","webactivity")',
              
+            'time' => ' AND type="time"',
+            'webactivity' => 'AND type IN ("weblead","webactivity")',
+            'workflow' => ' AND type="workflow"',
         );
         if($this->relationships){
             // Add association conditions for our relationships
@@ -236,20 +271,30 @@ class History extends X2Widget {
 				'associationId='.$this->associationId.' AND '.
 				'associationType="'.$this->associationType.'"';
         }
-        // Fudge replacing Opportunity and Quote because they're stored as plural in the actions table
+        /* Fudge replacing Opportunity and Quote because they're stored as plural in the actions 
+        table */
         $associationCondition =
 			str_replace('Opportunity', 'opportunities', $associationCondition);
         $associationCondition = str_replace('Quote', 'quotes', $associationCondition);
         $visibilityCondition = '';
-        $module = isset(Yii::app()->controller->module) ? Yii::app()->controller->module->getId() : Yii::app()->controller->getId();
+        $module = isset(Yii::app()->controller->module) ? 
+            Yii::app()->controller->module->getId() : Yii::app()->controller->getId();
         // Apply history privacy settings so that only allowed actions are viewable.
         if(!Yii::app()->user->checkAccess($module.'Admin')){
             if(Yii::app()->settings->historyPrivacy == 'user'){
                 $visibilityCondition = ' AND (assignedTo="'.Yii::app()->user->getName().'")';
             }elseif(Yii::app()->settings->historyPrivacy == 'group'){
-                $visibilityCondition = ' AND (t.assignedTo IN (SELECT DISTINCT b.username FROM x2_group_to_user a INNER JOIN x2_group_to_user b ON a.groupId=b.groupId WHERE a.username="'.Yii::app()->user->getName().'") OR (t.assignedTo="'.Yii::app()->user->getName().'"))';
+                $visibilityCondition = 
+                    ' AND (
+                        t.assignedTo IN (
+                            SELECT DISTINCT b.username 
+                            FROM x2_group_to_user a 
+                            INNER JOIN x2_group_to_user b ON a.groupId=b.groupId 
+                            WHERE a.username="'.Yii::app()->user->getName().'") OR 
+                            (t.assignedTo="'.Yii::app()->user->getName().'"))';
             }else{
-                $visibilityCondition = ' AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")';
+                $visibilityCondition = 
+                    ' AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")';
             }
         }
         return new CActiveDataProvider('Actions', array(

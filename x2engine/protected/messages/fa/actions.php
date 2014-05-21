@@ -146,4 +146,13 @@ return array (
 'Log Time'=>'ورود زمان',
 'Time started'=>'زمان آغاز شده',
 'Time ended'=>'زمان به پایان رسید',
+'Action Timer'=>'اکشن تایمر',
+'View Email'=>'مشاهده ایمیل',
+'Import Actions'=>'واردات عملیات',
+'Export Actions'=>'عملیات صادرات',
+'Action timers'=>'تایمر اکشن',
+'Time Started'=>'زمان آغاز شده',
+'Time Ended'=>'زمان به پایان رسیده است',
+'Association is required for actions of this type.'=>'انجمن عملیات از این نوع مورد نیاز است.',
+'Time Spent'=>'مدت زمان',
 );

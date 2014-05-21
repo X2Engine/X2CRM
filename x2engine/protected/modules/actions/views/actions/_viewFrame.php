@@ -69,9 +69,22 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
         <script type="text/javascript" src="<?php echo Yii::app()->clientScript->coreScriptUrl.'/jui/js/jquery-ui-i18n.min.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/jquery-ui-timepicker-addon.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/qtip/jquery.qtip.min.js'; ?>"></script>
-        <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/LGPL/jquery.formatCurrency-1.4.0.js'; ?>"></script>
+        <?php
+        $mmPath = Yii::getPathOfAlias('application.extensions.moneymask.assets');
+        $aMmPath = Yii::app()->getAssetManager()->publish($mmPath);
+        ?>
+        <script type="text/javascript" src="<?php echo "$aMmPath/jquery.maskMoney.js"; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/auxlib.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/X2Forms.js'; ?>"></script>
+        <script>
+            x2.forms = new x2.Forms ({
+                translations: <?php echo CJSON::encode (array (
+                    'Check All' => Yii::t('app', 'Check All'),
+                    'Uncheck All' => Yii::t('app', 'Uncheck All'),
+                    'selected' => Yii::t('app', 'selected'),
+                )); ?>
+            });
+        </script>
         <!-- -->
         <script type="text/javascript">
             $(document).ready(function() {
@@ -232,7 +245,7 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                     <span id="controls">
                         <?php 
                             if(Yii::app()->user->checkAccess(
-                                'ActionsComplete', array('assignedTo' => $model->assignedTo))){
+                                'ActionsComplete', array('X2Model' => $model))){
 
                                 if($model->complete != 'Yes'){ ?>
                                     <div class="control-button icon complete-button"></div>
@@ -244,17 +257,17 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                                 }
                         }
                         if(Yii::app()->user->checkAccess(
-                            'ActionsUpdate', array('assignedTo' => $model->assignedTo))){ ?>
+                            'ActionsUpdate', array('X2Model' => $model))){ ?>
                             <div class="control-button icon edit-button"></div>
                         <?php 
                         } 
                         if(Yii::app()->user->checkAccess(
-                            'ActionsDelete', array('assignedTo' => $model->assignedTo))){ ?>
+                            'ActionsDelete', array('X2Model' => $model))){ ?>
                             <div class="control-button icon delete-button" alt="[x]"></div>
                         <?php 
                         } 
                         if(Yii::app()->user->checkAccess(
-                            'ActionsToggleSticky', array('assignedTo' => $model->assignedTo))){
+                            'ActionsToggleSticky', array('X2Model' => $model))){
 
                             if(!$model->sticky){ ?>
                                 <div class="control-button icon sticky-button" 

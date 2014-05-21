@@ -180,4 +180,5 @@ return array (
 'Saved Searches'=>'חיפושים שמורים',
 'Clicking this button will pull any relevant '=>'לחיצה על כפתור זה יהיה למשוך את כל רלוונטי',
 'Drag tags here from the tag cloud widget or click to '=>'גרור תגים לכאן מיישומון תג הענן או לחץ כדי',
+'Export {model}'=>'יצוא {model}',
 );

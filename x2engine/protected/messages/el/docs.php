@@ -39,4 +39,8 @@ return array (
 'copy'=>'αντιγράψετε',
 'Saved at'=>'Αποθηκεύτηκε στο',
 'Document'=>'Έγγραφο',
+'Leaving this field blank will preserve its default behavior.'=>'Αφήνοντας αυτό το πεδίο κενό, θα διατηρήσει την προεπιλεγμένη συμπεριφορά του.',
+'Create Quote Template'=>'Δημιουργία προτύπου Παράθεση',
+'Import Docs'=>'Εισαγωγή Docs',
+'Export Docs'=>'Εξαγωγή Docs',
 );

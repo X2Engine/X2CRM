@@ -50,6 +50,11 @@
  */
 class WorkflowStage extends CActiveRecord {
 
+    /**
+     * Value of $requirePrevious which indicates that all previous stages are required
+     */
+    const REQUIRE_ALL = 1; 
+
 	public $_roles = array();
 	/**
 	 * Returns the static model of the specified AR class.
@@ -129,17 +134,20 @@ class WorkflowStage extends CActiveRecord {
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 * @return CActiveDataProvider the data provider that can return the models based on the 
+     *  search/filter conditions.
 	 */
 	public function search($id) {
 
-		$criteria = new CDbCriteria(array('condition'=>'workflowId='.$id,'order'=>'stageNumber ASC'));
+		$criteria = new CDbCriteria(
+            array('condition'=>'workflowId='.$id,'order'=>'stageNumber ASC'));
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 			'pagination'=>array(
-				'pageSize'=>ceil(ProfileChild::getResultsPerPage())
+				'pageSize'=>ceil(Profile::getResultsPerPage())
 			),
 		));
 	}
+
 }

@@ -34,22 +34,44 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss('viewNotificationsCss',"
 
+#clear-all-button {
+    margin-top: 4px;
+}
+
+");
 ?>
 <div class="flush-grid-view">
 <?php
 
 $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'actions-grid',
+	'id'=>'notifs-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'dataProvider'=>$dataProvider,
 	'template'=>'<div class="page-title"><h2>'.Yii::t('app','Notifications').'</h2>'
 		.CHtml::link(Yii::t('app','Clear All'),'#',array(
 			'class'=>'x2-button right',
+            'id' => 'clear-all-button',
 			'submit'=>array('/notifications/deleteAll'),
 			'confirm'=>Yii::t('app','Permanently delete all notifications?'
 		)))
 		.'<div class="title-bar right">{summary}</div></div>{items}{pager}',
+    'summaryText' => Yii::t('app', '<b>{start}&ndash;{end}</b> of <b>{count}</b>')
+    .'<div class="form no-border" style="display:inline;"> '
+    .CHtml::dropDownList(
+        'resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(),
+        array(
+            'ajax' => array(
+                'url' => Yii::app()->controller->createUrl('/profile/setResultsPerPage'),
+                'data' => 'js:{results:$(this).val()}',
+                'complete' => 'function(response) { 
+                    $.fn.yiiGridView.update("notifs-grid"); 
+                }',
+            ),
+            'style' => 'margin: 0;',
+        )
+    ).'</div>',
 	'columns'=>array(
 		array(
 			// 'name'=>'text',
@@ -77,6 +99,16 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		 ),
 	),
 	'rowCssClassExpression'=>'$data->viewed? "" : "unviewed"',
+    'pager' => array (
+        'class' => 'CLinkPager', 
+        'header' => '',
+        'firstPageCssClass' => '',
+        'lastPageCssClass' => '',
+        'prevPageLabel' => '<',
+        'nextPageLabel' => '>',
+        'firstPageLabel' => '<<',
+        'lastPageLabel' => '>>',
+    ),
 ));
 
 ?>

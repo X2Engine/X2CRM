@@ -54,8 +54,24 @@ Private static methods
 Public instance methods
 */
 
+WebleadFormDesigner.prototype._setUpGenerateLeadMenu = function () {
+
+    $('#generate-lead-checkbox').change (function () {
+        if ($(this).is (':checked')) {
+            $('#generate-lead-form').slideDown ();
+        } else {
+            $('#generate-lead-form').slideUp ();
+        }
+    });
+};
+
 /*
 Private instance methods
 */
+
+WebleadFormDesigner.prototype._init = function () {
+    this._setUpGenerateLeadMenu ();
+    WebFormDesigner.prototype._init.call (this);
+}
 
 

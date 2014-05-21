@@ -34,4 +34,7 @@ return array (
 'Campaign Form'=>'Formulario de Campaña',
 'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'Este formulario le permitirá generar una campaña para enviar contactos relacionados de las cuentas mostradas en el informe a continuación. Seleccione &quot;Contactos principales&quot; a sólo contactos de correo electrónico que se establecen como el contacto principal para obtener una cuenta. Seleccione &quot;Todos&quot; para enviar todos los contactos relacionados con cada cuenta.',
 'Primary Contact'=>'Contacto principal',
+'Import Accounts'=>'Cuentas de importación',
+'Export Accounts'=>'Cuentas de exportación',
+'Bug Report Attributes'=>'Bug Report Atributos',
 );

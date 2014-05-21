@@ -36,7 +36,7 @@
 
 $heading = $listModel->name; //Yii::t('contacts','All Contacts');
 
-$authParams['assignedTo'] = $listModel->assignedTo;
+$authParams['X2Model'] = $listModel;
 $menuItems = array(
     array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
     array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),

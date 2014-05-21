@@ -114,7 +114,7 @@ abstract class X2FlowAction extends X2FlowItem {
                     } elseif($params !== null){
 
                         if(is_string($value) && isset($params['model'])){
-                            $value = Formatter::replaceVariables($value, $params['model'], $type, $params);
+                            $value = Formatter::replaceVariables($value, $params['model'], $type);
                         }
                     }
                 }
@@ -150,6 +150,6 @@ abstract class X2FlowAction extends X2FlowItem {
     }
 
     public static function getActionInstances() {
-        return self::getInstances('actions',array(__CLASS__));
+        return self::getInstances('actions',array(__CLASS__, 'BaseX2FlowWorkflowStageAction'));
     }
 }

@@ -1,3 +1,26 @@
+# 4.1 #
+5/20/2014
+
+* __It has come to our attention that the very old "calendar permissions"
+  feature does not behave entirely as it was originally designed.__ Granting one
+  user edit permissions to another's calendar does not actually grant
+  permissions to edit the event itself, except in regard to the ability to
+  change the date of events via drag-and-drop. This is because event records are
+  actions, and hence the ability to edit an action is subject to the access
+  rules of the Actions module. This old feature (calendar permissions) was
+  designed before RBAC was employed in X2Engine to permit finer control over who
+  can edit what. In previous versions this would result in a bug, whereupon 
+  submitting the form to edit an action would result in no response/change (a
+  403 status from the server) when the user did not actually have access via
+  their Actions module permissions to edit the action. In this version, editing
+  of events is disabled in the UI when the action record itself cannot be
+  directly edited. Please note this, to avoid confusion; granting edit access on
+  a calendar will not always allow other users to actually change aspects of the
+  event record such as the description, association, color, and assignment. _It
+  will merely guarantee that the other user will be able to drag/drop events to
+  different dates._
+  
+
 # 4.0 #
 3/20/2014
 

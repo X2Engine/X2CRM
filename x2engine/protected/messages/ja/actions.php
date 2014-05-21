@@ -146,4 +146,13 @@ return array (
 'Log Time'=>'ログ時刻',
 'Time started'=>'タイム開始',
 'Time ended'=>'終了時間',
+'Action Timer'=>'アクション·タイマー',
+'View Email'=>'ビューメール',
+'Import Actions'=>'輸入アクション',
+'Export Actions'=>'輸出アクション',
+'Action timers'=>'アクション·タイマー',
+'Time Started'=>'時間スタート',
+'Time Ended'=>'終了した時刻',
+'Association is required for actions of this type.'=>'関連付けは、このタイプのアクションは必要となります。',
+'Time Spent'=>'費やした時間',
 );

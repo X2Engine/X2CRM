@@ -35,12 +35,12 @@
  *****************************************************************************************/
 
 //Reset widget settings if DocViewer code is new to your build
-if (!isset(ProfileChild::getWidgetSettings()->DocViewer)) {
+if (!isset(Profile::getWidgetSettings()->DocViewer)) {
     Yii::app()->params->profile->widgetSettings = null;
 }
 
 // find height of chat box, chat message, and use these to find height of widget
-$widgetSettings = ProfileChild::getWidgetSettings();
+$widgetSettings = Profile::getWidgetSettings();
 $docSettings = $widgetSettings->DocViewer;
 
 $docBoxHeight = $docSettings->docboxHeight;

@@ -27,7 +27,7 @@ CREATE TABLE x2_calendar_permissions (
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES
-("calendar", "Calendar", 1, 6, 0, 0, 0, 0, 0);
+("calendar", "Calendar", 1, 8, 0, 0, 0, 0, 0);
 /*&*/
 INSERT INTO `x2_fields`
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance)

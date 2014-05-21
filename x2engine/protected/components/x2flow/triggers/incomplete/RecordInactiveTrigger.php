@@ -49,7 +49,7 @@ class RecordInactiveTrigger extends X2FlowTrigger {
 			'info' => Yii::t('studio',$this->info),
 			'modelClass' => 'modelClass',
 			'options' => array(
-				array('name'=>'modelClass','label'=>Yii::t('studio','Record Type'),'type'=>'dropdown','options'=>X2Model::getModelTypes(true)),
+				array('name'=>'modelClass','label'=>Yii::t('studio','Record Type'),'type'=>'dropdown','options'=>X2Flow::getModelTypes(true)),
 				array('name'=>'duration','type'=>'numeric','label'=>Yii::t('studio','Duration (s)')),
 			));
 	}

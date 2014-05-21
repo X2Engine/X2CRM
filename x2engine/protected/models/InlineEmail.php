@@ -538,6 +538,7 @@ class InlineEmail extends CFormModel {
 		// This might be a console application! In that case, there's
 		// no controller application component available.
                 $url = rtrim(Yii::app()->absoluteBaseUrl,'/');
+
                 if(!empty($url))
                     $trackUrl = "$url/index.php/actions/emailOpened?uid={$this->uniqueId}&type=open";
                 else
@@ -621,7 +622,7 @@ class InlineEmail extends CFormModel {
      * the email is ambiguous and practically unknowable, and thus impractical
      * to create an email tracking record.
      *
-     * @param bool $replace Reset the image markup and unique ID, and replace
+     * @param bool $replace reset the image markup and unique ID, and replace
      * 	the existing tracking image.
      */
     public function insertTrackingImage($replace = false){
@@ -699,6 +700,10 @@ class InlineEmail extends CFormModel {
             // Get the template and associated model
 
             if(!empty($this->templateModel)){
+                if ($this->templateModel->emailTo !== null) {
+                    $this->to = Docs::replaceVariables(
+                        $this->templateModel->emailTo, $this->targetModel, array (), false, false);
+                }
                 // Replace variables in the subject and body of the email
                 $this->subject = Docs::replaceVariables($this->templateModel->subject, $this->targetModel);
                 // if(!empty($this->targetModel)) {
@@ -790,7 +795,7 @@ class InlineEmail extends CFormModel {
 
             // These attributes are context-sensitive and subject to change:
             $action->associationId = $model->id;
-            $action->associationType = lcfirst(get_class($model));
+            $action->associationType = $model->module;
             $action->type = 'email';
             $action->visibility = isset($model->visibility) ? $model->visibility : 1;
             $action->assignedTo = $this->userProfile->username;

@@ -58,28 +58,25 @@ class Admin extends CActiveRecord {
         return 'x2_admin';
     }
 
-    public function behaviors() {
-        return array(
-            'JSONEmbeddedModelFieldsBehavior' => array(
-                'class' => 'application.components.JSONEmbeddedModelFieldsBehavior',
-                'fixedModelFields' => array('emailDropbox' => 'EmailDropboxSettings'),
-                'transformAttributes' => array('emailDropbox'),
-            ),
+    public function behaviors(){
+        $behaviors = array(
             'JSONFieldsDefaultValuesBehavior' => array(
                 'class' => 'application.components.JSONFieldsDefaultValuesBehavior',
                 'transformAttributes' => array(
                     'actionPublisherTabs' => array(
-                        'PublisherCallTab'=>true,
-                        'PublisherTimeTab'=>true, 
-                        'PublisherActionTab'=>true,
-                        'PublisherCommentTab'=>true,
-                        'PublisherEventTab'=>false,
-                        'PublisherProductsTab'=>false,
+                        'PublisherCallTab' => true,
+                        'PublisherTimeTab' => true,
+                        'PublisherActionTab' => true,
+                        'PublisherCommentTab' => true,
+                        'PublisherEventTab' => false,
+                        'PublisherProductsTab' => false,
                     ),
                 ),
                 'maintainCurrentFieldsOrder' => true
             ),
         );
+        
+        return $behaviors;
     }
 
     /**
@@ -101,7 +98,8 @@ class Admin extends CActiveRecord {
             array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
             array('batchTimeout','numerical','integerOnly' => true),
-            array('emailBulkAccount,serviceCaseEmailAccount,emailDropbox', 'safe'),
+            array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
+            
             array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail'),
             array('serviceCaseEmailAccount', 'setDefaultEmailAccount', 'alias' => 'serviceCaseEmail'),
             array('webLeadEmailAccount','setDefaultEmailAccount','alias' => 'systemResponseEmail'),

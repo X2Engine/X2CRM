@@ -67,7 +67,7 @@ class X2SmartSearchModelBehavior extends CBehavior {
             }
         }
 
-        $dataProvider = new SmartDataProvider(get_class($this->owner), array(
+        $dataProvider = new SmartActiveDataProvider(get_class($this->owner), array(
                     'sort' => $sort,
                     'pagination' => array(
                         'pageSize' => $pageSize,

@@ -48,7 +48,7 @@ Yii::import('X2ButtonColumn');
  * @property bool $isAdmin If true, the grid view will be generated under the
  *  assumption that the user viewing it has full/administrative access to
  *  whichever module that it is being used in.
- * @package X2CRM.components
+ * @package application.components
  */
 abstract class X2GridViewBase extends CGridView {
     public $selectableRows = 0;
@@ -383,15 +383,13 @@ abstract class X2GridViewBase extends CGridView {
 
         $this->setSummaryText ();
 
-        /* after user moves to a different page, make sure the tool tips get added to the
-        newly showing rows */
-        $this->addToAfterAjaxUpdate ('
-                $(".qtip-hint").qtip({content:false});
-                $("#'.$this->getNamespacePrefix ().'-filter-hint").qtip ();
-        ');
+        $this->addToAfterAjaxUpdate ("
+            /* after user moves to a different page, make sure the tool tips get added to the
+            newly displayed rows */
+            $('.qtip-hint').qtip({content:false});
+            $('#".$this->getNamespacePrefix ()."-filter-hint').qtip ();
 
-        $this->addToAfterAjaxUpdate (
-            "$('#".$this->getId()."').gvSettings({
+            $('#".$this->getId()."').gvSettings({
                 viewName:'".$this->gvSettingsName."',
                 columnSelectorId:'".$this->columnSelectorId."',
                 columnSelectorHtml:'".addcslashes($this->columnSelectorHtml,"'")."',
@@ -477,7 +475,7 @@ abstract class X2GridViewBase extends CGridView {
 
     public static function getFilterHint() {
         $text = self::getFilterHintText ();
-        return X2Info::hint($text,false,'filter-hint');
+        return X2Html::hint($text,false,'filter-hint');
     }
 
     public static function getFilterHintText () {
@@ -497,7 +495,7 @@ abstract class X2GridViewBase extends CGridView {
 
 
     public function renderFilterHint() {
-        echo X2Info::hint(
+        echo X2Html::hint(
             self::getFilterHintText (),false,$this->getNamespacePrefix () . '-filter-hint',false,false);
     }
 

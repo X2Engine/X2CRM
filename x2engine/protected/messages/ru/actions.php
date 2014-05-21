@@ -234,4 +234,13 @@ return array (
 'Log Time'=>'Вход Время',
 'Time started'=>'Время начала',
 'Time ended'=>'Время закончилась',
+'Action Timer'=>'Действие Таймер',
+'View Email'=>'Посмотреть E-mail',
+'Import Actions'=>'Импорт Действия',
+'Export Actions'=>'Экспортировать действия',
+'Action timers'=>'Действие таймеры',
+'Time Started'=>'Время работы',
+'Time Ended'=>'Время, закончившийся',
+'Association is required for actions of this type.'=>'Ассоциация требуется для действия этого типа.',
+'Time Spent'=>'Время нахождения',
 );

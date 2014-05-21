@@ -47,7 +47,7 @@ class RecordViewTrigger extends X2FlowTrigger {
 			'title' => Yii::t('studio',$this->title),
 			'modelClass' => 'modelClass',
 			'options' => array(
-				array('name'=>'modelClass','label'=>Yii::t('studio','Record Type'),'type'=>'dropdown','options'=>X2Model::getModelTypes(true)),
+				array('name'=>'modelClass','label'=>Yii::t('studio','Record Type'),'type'=>'dropdown','options'=>X2Flow::getModelTypes(true)),
 			));
 	}
 }

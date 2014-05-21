@@ -181,7 +181,7 @@ if(empty($data->type) || $data->type == 'weblead'){
                 if(Yii::app()->user->checkAccess(
                     'ActionsUpdate',array('assignedTo'=>$data->assignedTo))){
 
-                    echo $data->type != 'attachment' ? 
+                    echo ($data->type != 'attachment' && $data->type != 'email') ?
                         ' '.CHtml::link(
                             CHtml::image($themeUrl.'/images/icons/Edit.png'), 
                             '#', array(

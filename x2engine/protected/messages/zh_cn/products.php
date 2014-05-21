@@ -21,4 +21,7 @@ return array (
 'Unit Price'=>'单价',
 
 // Misc Text
+'Import Products'=>'进口产品',
+'Export Products'=>'出口产品',
+'NameId'=>'NameId',
 );

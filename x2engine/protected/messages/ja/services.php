@@ -56,4 +56,7 @@ return array (
 'Hello'=>'こんにちは',
 'Web Form Case'=>'Webフォームケース',
 'Thank you for contacting our Technical Support '=>'当社の技術サポートにお問い合わせいただきありがとうございます',
+'Import Services'=>'サービスのインポート',
+'Export Services'=>'輸出サービス',
+'Case Name'=>'ケース名',
 );

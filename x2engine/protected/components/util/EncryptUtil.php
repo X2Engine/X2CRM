@@ -196,6 +196,43 @@ class EncryptUtil {
 			throw new Exception('Strength of the encryption key could not be verified.');
 		return $this->key;
 	}
+
+    /**
+     * Securely generates a random string of 64 characters (hex digits).
+     *
+     * @param mixed $method Forcefully specify a method of generation
+     * @param mixed $hash Forcefully specify a hashing method
+     */
+    public static function secureUniqueIdHash64($method=null,$hash=null) {
+
+        // First determine if a hashing algorithm is available:
+        if(function_exists('openssl_random_pseudo_bytes') && ($method === null || $method === 1)) {
+            // Use secure random number generation:
+            $rand = openssl_random_pseudo_bytes(1024);
+        } else if(function_exists('mt_rand') && ($method === null || $method === 2)) {
+            // Secure random unavailable. Use Mersenne Twister instead:
+            $charset = array_merge(
+                    range('a', 'z'), range('A', 'Z'), array_map(function($i){
+                        return (string) $i;
+                    }, range(0, 9)), array('!', '@', '#', '$', '%', '^', '&', '*', '(',
+                ')', '-', '_', '\\', '|', "'", '"', ';', ':', ',', '<', '.', '>', '[',
+                '{', ']', '}', '=', '+', ')')
+            );
+            $rand = implode('',array_map(function($i)use($charset){return $charset[mt_rand(0,90)];},range(1,128)));
+        } else if($method === null || $method === 3) {
+            // The extremely insecure default, if no sensible generation methods
+            // are available:
+            $rand = (string) time();
+        }
+        $algos = hash_algos();
+
+        if(in_array('sha256',$algos) && ($hash === null || $hash === 1)) {
+            return hash('sha256',uniqid().$rand);
+        } else if($hash === null || $hash === 2) {
+            // Clunky default method
+            return str_repeat(md5(uniqid().$rand),2);
+        }
+    }
 }
 
 ?>

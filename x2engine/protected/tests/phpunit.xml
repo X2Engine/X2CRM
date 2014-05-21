@@ -8,6 +8,7 @@
 	<selenium>
 		<!--<browser name="Firefox" browser="*firefox" host="127.0.0.1" port="4444" timeout="30000" />-->
 		<browser name="Chrome" browser="*googlechrome" host="127.0.0.1" port="4444" timeout="30000" />
+		<!--<browser name="Internet Explorer" browser="*iexplore" host="192.168.1.121" port="4444" timeout="30000" />-->
 	</selenium>
 
 </phpunit>

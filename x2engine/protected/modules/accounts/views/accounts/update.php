@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-$authParams['assignedTo']=$model->assignedTo;
+$authParams['X2Model']=$model;
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('accounts','All Accounts'), 'url'=>array('index')),
 	array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),

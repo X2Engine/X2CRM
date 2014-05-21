@@ -191,6 +191,12 @@ class AuxLib {
         Yii::log ($logMessage, 'error', 'application.debug');
     }
 
+    public static function debugLogExport ($arr) {
+        if (!YII_DEBUG) return;
+        $logMessage = var_export ($arr, true);
+        Yii::log ($logMessage, 'error', 'application.debug');
+    }
+
     public static function isIE8 () {
         $userAgentStr = strtolower(Yii::app()->request->userAgent);
         return preg_match('/msie 8/i', $userAgentStr);
@@ -263,6 +269,19 @@ class AuxLib {
         return array_combine ($placeholders, $arr);
     }
 
+    public static function arrToStrList ($arr) {
+        return '('.implode (',', $arr).')';
+    }
+
+    public static function coerceToArray (&$arr) {
+        if (is_string ($arr)) {
+            $arr = array ($arr);
+        } else if (is_array ($arr)) {
+        } else {
+            throw new CException ('Invalid argument type');
+        }
+    }
+
     /**
      * Prints stack trace 
      * @param int $limit If set, only the top $limit items on the call stack will get printed. 
@@ -271,10 +290,24 @@ class AuxLib {
      */
     public static function printStackTrace ($limit=null) {
         if ($limit !== null) {
-            AuxLib::debugLogR (array_slice (debug_backtrace (DEBUG_BACKTRACE_IGNORE_ARGS), $limit));
+            AuxLib::debugLogR (
+                array_slice (debug_backtrace (DEBUG_BACKTRACE_IGNORE_ARGS), 0, $limit));
         } else {
             AuxLib::debugLogR (debug_backtrace (DEBUG_BACKTRACE_IGNORE_ARGS));
         }
     }
+
+    /**
+     * Reformats and translates dropdown arrays to preserve sorting in {@link CJSON::encode()}
+     * @param array an associative array of dropdown options ($value => $label)
+     * @return array a 2-D array of values and labels
+     */
+    public static function dropdownForJson($options) {
+        $dropdownData = array();
+        foreach($options as $value => &$label)
+            $dropdownData[] = array($value,$label);
+        return $dropdownData;
+    }
+
 
 }

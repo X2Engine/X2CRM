@@ -89,15 +89,16 @@ abstract class X2FlowTrigger extends X2FlowItem {
     } */
 
     public static $genericConditions = array(
-        'attribute'            => 'Compare Attribute',
-        'current_user'        => 'Current User',
-        'month'                => 'Current Month',
-        'day_of_week'        => 'Day of Week',
-        'day_of_month'        => 'Day of Month',
-        'time_of_day'        => 'Time of Day',
-        'current_time'        => 'Current Time',
-        'user_active'        => 'User Logged In',
-        'on_list'            => 'On List',
+        'attribute' => 'Compare Attribute',
+        'workflow_status' => 'Process Status',
+        'current_user' => 'Current User',
+        'month' => 'Current Month',
+        'day_of_week' => 'Day of Week',
+        'day_of_month' => 'Day of Month',
+        'time_of_day' => 'Time of Day',
+        'current_time' => 'Current Time',
+        'user_active' => 'User Logged In',
+        'on_list' => 'On List',
         // 'workflow_status'    => 'Workflow Status',
         // 'current_local_time' => ''),
     );
@@ -176,9 +177,9 @@ abstract class X2FlowTrigger extends X2FlowItem {
                     'label' => Yii::t('studio','On List'),
                     'type' => 'lookup',
                     'linkType'=>'X2List',
-                    'linkSource'=>Yii::app()->controller->createUrl(CActiveRecord::model('X2List')->autoCompleteSource)
+                    'linkSource'=>Yii::app()->controller->createUrl(
+                        CActiveRecord::model('X2List')->autoCompleteSource)
                 );
-
             default:
                 return false;
             // case 'workflow_status':
@@ -252,7 +253,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
     }
 
     /**
-     * Default conidition processor for main config panel. Checks each option against the key in $params of the same name,
+     * Default condition processor for main config panel. Checks each option against the key in $params of the same name,
      * using an operator if provided (defaults to "=")
      * @return array (error status, message)
      */
@@ -319,11 +320,62 @@ abstract class X2FlowTrigger extends X2FlowItem {
     }
 
     /**
+     * Used to check workflow status condition
+     * @param Array $condition
+     * @param Array $params
+     * @return bool true for success, false otherwise
+     */
+    public static function checkWorkflowStatusCondition ($condition, &$params) {
+        if (!isset ($params['model']) || 
+            !isset ($condition['workflowId']) ||
+            !isset ($condition['stageNumber']) ||
+            !isset ($condition['stageState'])) {
+            
+            return false;
+        }
+
+        $model = $params['model'];
+        $workflowId = $condition['workflowId'];
+        $stageNumber = $condition['stageNumber'];
+        $stageState = $condition['stageState'];
+        $modelId = $model->id;
+        $type = lcfirst (X2Model::getModuleName (get_class ($model)));
+
+        $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
+        $stages = $workflowStatus['stages'];
+        if (!isset ($workflowStatus['stages'][$stageNumber])) return false;
+
+        $stage = $workflowStatus['stages'][$stageNumber];
+
+        $passed = false;
+        switch ($stageState) {
+            case 'completed':
+                $passed = Workflow::isCompleted ($workflowStatus, $stageNumber);
+                break;
+            case 'started':
+                $passed = Workflow::isStarted ($workflowStatus, $stageNumber);
+                break;
+            case 'notCompleted':
+                $passed = !Workflow::isCompleted ($workflowStatus, $stageNumber);
+                break;
+            case 'notStarted':
+                $passed = !Workflow::isStarted ($workflowStatus, $stageNumber);
+                break;
+            default: 
+                return false;
+        }
+        return $passed;
+    }
+
+    /**
      * @param Array $condition
      * @param Array $params
      * @return bool true for success, false otherwise
      */
     public static function checkCondition($condition,&$params) {
+        if ($condition['type'] === 'workflow_status') 
+            return self::checkWorkflowStatusCondition ($condition, $params);
+
         $model = isset($params['model'])? $params['model'] : null;
         $operator = isset($condition['operator'])? $condition['operator'] : '=';
         // $type = isset($condition['type'])? $condition['type'] : null;
@@ -790,6 +842,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
     }
 
     public static function getTriggerInstances(){
-        return self::getInstances('triggers',array(__CLASS__,'X2FlowSwitch','BaseTagTrigger'));
+        return self::getInstances('triggers',array(__CLASS__,'X2FlowSwitch','BaseTagTrigger','BaseWorkflowStageTrigger', 'BaseWorkflowTrigger'));
     }
 }

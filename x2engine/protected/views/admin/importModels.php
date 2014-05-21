@@ -36,7 +36,7 @@
  *****************************************************************************************/
 
 ?>
-<div class="page-title icon"><h2><?php echo Yii::t('admin','Import {model} from Template', array('{model}'=>$model)); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin','Import {model} from Template', array('{model}'=>X2Model::getModelTitle ($model))); ?></h2></div>
 <div class="form">
 
 <?php if(!empty($errors)){
@@ -64,6 +64,11 @@
     echo CHtml::fileField('data', '', array('id'=>'data'))."<br>";
     echo CHtml::hiddenField('model', $model);
     echo "<i>".Yii::t('app','Allowed filetypes: .csv')."</i><br><br>";
+    echo "<h3>".Yii::t('admin', 'Upload Import Map')." <a href='#' id='toggle-map-upload'>[+]</a></h3>";
+    echo "<div id='upload-map' style='display:none;'>";
+    echo CHtml::fileField('mapping', '', array('id'=>'mapping'))."<br>";
+    echo "<i>".Yii::t('app','Allowed filetypes: .json')."</i>";
+    echo "</div><br><br>";
     echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button'));
     echo CHtml::endForm();
     echo "</div>";
@@ -80,14 +85,27 @@
     $('#example-link').click(function(){
        $('#example-box').toggle(); 
     });
+    $('#toggle-map-upload').click(function() {
+        $('#upload-map').toggle();
+    });
     $(document).on('submit','#importModels',function(){
         var fileName=$("#data").val();
         var pieces=fileName.split('.');
         var ext=pieces[pieces.length-1];
         if(ext!='csv'){
-            $("#contacts").val("");
+            $("#data").val("");
             alert("File must be a .csv file.");
             return false;
+        }
+        var mapfileName = $('#mapping').val();
+        if (mapfileName != '') {
+            var pieces = mapfileName.split('.');
+            var ext = pieces[pieces.length - 1];
+            if (ext != 'json'){
+                $('#mapping').val("");
+                alert('Map file must be a .json file.');
+                return false;
+            }
         }
     });
 </script>

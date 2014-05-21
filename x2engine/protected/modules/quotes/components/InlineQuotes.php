@@ -144,8 +144,11 @@ class InlineQuotes extends X2Widget {
         $quotesAssetsUrl = $this->module->assetsUrl;
         Yii::app()->clientScript->registerScriptFile($quotesAssetsUrl.'/js/inlineQuotes.js', CClientScript::POS_HEAD);
         Yii::app()->clientScript->registerScriptFile($quotesAssetsUrl.'/js/LineItems.js', CClientScript::POS_HEAD);
-        Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsMain.css');
-        Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsWrite.css');
+
+        Yii::app()->clientScript->registerCssFiles('InlineQuotesCss', array (
+            $quotesAssetsUrl.'/css/lineItemsMain.css',
+            $quotesAssetsUrl.'/css/lineItemsWrite.css',
+        ), false);
         Yii::app()->clientScript->registerCoreScript('jquery.ui');
 
         $this->contact = X2Model::model ('Contacts')->findByPk ($this->contactId);

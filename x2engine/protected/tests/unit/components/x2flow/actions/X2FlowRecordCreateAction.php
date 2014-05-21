@@ -39,10 +39,12 @@
  */
 class X2FlowRecordCreateAction extends X2DbTestCase {
 
-    public $fixtures = array (
-        'x2flow' => array ('X2Flow', '.X2FlowRecordCreateAction'),
-        'accounts' => array ('Accounts', '_1'),
-    );
+    public static function referenceFixtures () {
+        return array (
+            'x2flow' => array ('X2Flow', '.X2FlowRecordCreateAction'),
+            'accounts' => array ('Accounts', '_1'),
+        );
+    }
 
     /**
      * The flow creates a contact with a company field pointing to the account that
@@ -51,18 +53,17 @@ class X2FlowRecordCreateAction extends X2DbTestCase {
     public function testCreateContactWithLinkTypeFieldSet () {
         $flow = X2FlowTestingAuxLib::getFlow ($this,'flow1');
         Yii::app()->params->isAdmin = false;
-        $account = Accounts::Model ()->findByAttributes ($this->accounts['account1']);
+        $account = $this->accounts ('account1');
         $params = array (
             'model' => $account,
             'modelClass' => 'Accounts',
         );
-        $retVal = X2FlowTestingAuxLib::executeFlow (
-            X2Flow::model ()->findByAttributes ($this->x2flow['flow1']), $params);
+        $retVal = X2FlowTestingAuxLib::executeFlow ($this->x2flow ('flow1'), $params);
 
         // assert flow executed without errors
         $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
 
-        //print_r ($retVal['trace']);
+        VERBOSE_MODE && print_r ($retVal['trace']);
 
         $createdContact = Contacts::model ()->findByAttributes (array (
                 'firstName' => 'test',
@@ -85,6 +86,33 @@ class X2FlowRecordCreateAction extends X2DbTestCase {
             return $elem->id; 
         }, $relatedX2Models)));
 
+    }
+
+    /**
+     * Tests the create relationship option 
+     */
+    public function testCreateRelationship () {
+        $params = array (
+            'user' => 'admin'
+        );
+        $account = $this->accounts ('account1');
+        $params = array (
+            'model' => $account,
+            'modelClass' => 'Accounts',
+        );
+        $retVal = X2FlowTestingAuxLib::executeFlow ($this->x2flow ('flow2'), $params);
+
+        VERBOSE_MODE && print_r ($retVal['trace']);
+        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
+
+        $lead = X2Leads::model()->findByAttributes (array ('name' => 'test'));
+        $this->assertTrue ($lead !== null);
+
+        // assert that lead is related to account
+        $relatedModels = $lead->getRelatedX2Models ();
+        $this->assertTrue (in_array ($account->id, array_map (function ($elem) {
+            return $elem->id; 
+        }, $relatedModels)));
     }
 }
 

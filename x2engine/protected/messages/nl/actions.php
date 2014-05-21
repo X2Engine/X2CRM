@@ -146,4 +146,13 @@ return array (
 'Log Time'=>'Inloggen Time',
 'Time started'=>'Tijd begonnen',
 'Time ended'=>'Tijd eindigde',
+'Action Timer'=>'Actie Timer',
+'View Email'=>'Mail naar',
+'Import Actions'=>'Import Acties',
+'Export Actions'=>'Exporthandelingen',
+'Action timers'=>'Actie timers',
+'Time Started'=>'Tijd Gestart',
+'Time Ended'=>'Time Ended',
+'Association is required for actions of this type.'=>'Vereniging is vereist voor acties van dit type.',
+'Time Spent'=>'Speeltijd',
 );

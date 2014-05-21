@@ -40,7 +40,7 @@ $themeURL = Yii::app()->theme->getBaseUrl();
 
 $count = 0;
 foreach($recentItems as $item) {
-	if(++$count > 5)
+	if(++$count > 10)
 		break;
 	echo '<li>';
     switch ($item['type']) {
@@ -99,6 +99,10 @@ foreach($recentItems as $item) {
         case 'g': // group
             $link = '<strong>'.Yii::t('app', 'Group').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
             echo CHtml::link($link,array('/groups/groups/view','id'=>$item['model']->id));
+            break;
+        case 'f': // x2flow
+            $link = '<strong>'.Yii::t('app', 'Flow').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
+            echo CHtml::link($link,array('/studio/flowDesigner','id'=>$item['model']->id));
             break;
         default:
             echo ('Error: recentItems.php: invalid item type');

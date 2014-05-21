@@ -1,3 +1,61 @@
+# 4.1 #
+5/20/2014
+
+* **Highlights**:
+  * _Process_ module:
+    * Powerful new "pipeline" view with drag and drop functionality, showing the combined deal value in each stage
+    * Sales process stage colors can be customized by the end user
+    * _(Professional Edition)_ New X2Flow triggers and actions for extending _Process_ with powerful automation capabilities
+  * _(Platinum Edition)_ X2Identity 2.0:
+    * View anonymous website visitors and their browser fingerprint parameters
+    * See when anonymous visitors return to your website
+  * 2nd-generation REST API (new):
+    * _(Coming Soon)_ X2Engine will be on [Zapier](https://zapier.com/)!
+    * _(Platinum Edition):_ Advanced API access settings
+  * _Leads_ module (new)
+    * Record basic contact information before it becomes a legitimate potential sale
+    * Convert to an opportunity with a button press when ready
+  * Activity Feed:
+    * _Digest emails:_ get periodic emails notifying you of what's happening in your CRM
+    * New dedicated activity feed page
+  * CSV importer:
+    * New feature enabling users to save and re-use import field mappings
+    * Performance improvements and bug fixes
+  * User management:
+    * New password reset feature
+    * New username change feature
+    * Full support for multiple assignment in the permissions system
+  * Email Templates:
+    * Support added for many modules (including custom modules), where previously only contacts and quotes were supported
+    * Template variable replacement added for the "To" field
+    * User setting for default email template to use for each module
+* General Changelog / Developer Notes:
+  * Fixed layout issue: unauthenticated users can see "Top Contacts" and "Recent Items" portlets, in addition to broken links in the top bar
+  * Fixed security loophole: if session expires, the client with the cookie would still be able to make one last successful request to the server
+  * The permissions system has been revamped to properly handle muliple assignment and group-wide visibility settings
+  * Fixed bug: rollback deletes preexisting linked records
+  * Fixed bug (Professional Edition): recurring VoIP notification popups
+  * Fixed bug: empty contact list when using "primary contact" campaign generator from Accounts
+  * Fixed bug: Upon deletion, a user's actions and contacts were not all getting properly reassigned.
+  * Fixed bug: import fails silently when "DO NOT MAP" specified for an attribute
+  * Performance improvements to the model importer (previously was taking as long as ~2s/record on systems with very large datasets)
+  * Fixed bug: deleting a dropdown without updating fields that reference it breaks grid views
+  * Contacts with empty names now get "#{id}" name link in grid view
+  * Fixed bug causing role exceptions to be applied to incorrect stages.
+  * Fixed bug preventing deal reports from being filtered by Account.
+  * Fixed a bug preventing filters from working in the Actions list view.
+  * Fixed issue with phone numbers not being rendered from the grid view.
+  * Fixed phone number field formatting issue
+  * Fixed updater bug: unnecessary catching of suppressed errors in requirements check script
+* Tracked Bug Fixes:
+  * [582](http://x2software.com/index.php/bugReports/582): Duplicate info going into web leads  
+  * [960](http://x2software.com/index.php/bugReports/960): No es posible resolver la solicitud "product/product/view"  
+  * [1051](http://x2software.com/index.php/bugReports/1051): links with # in them get converted to tag search links  
+  * [1183](http://x2software.com/index.php/bugReports/1183): Contacts and its behaviors do not have a method or closure named "getChanges".  
+  * [1201](http://x2software.com/index.php/bugReports/1201): Unable to resolve the request "product/product/view".  
+  * [1204](http://x2software.com/index.php/bugReports/1204): Cannot modify header information - headers already sent by (output started at /home3/bigmoney/public_html/knockoutmultimedia.co/crm/protected/controllers/ProfileController.php:516)  
+  * [1223](http://x2software.com/index.php/bugReports/1223): Cannot modify header information - headers already sent by (output started at /home/inspirah/public_html/crm/protected/modules/actions/controllers/ActionsController.php:799)
+
 # 4.0.1 #
 3/31/2014
 

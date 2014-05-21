@@ -418,4 +418,10 @@ class OpportunitiesController extends x2base {
         $result = $command->queryAll();
         echo CJSON::encode($result); exit;
     }
+
+    public function actionQtip($id){
+        $model = $this->loadModel($id);
+        $this->renderPartial('qtip', array('model' => $model));
+    }
+
 }

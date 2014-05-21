@@ -36,7 +36,7 @@
 
 $this->pageTitle = $model->name;
 
-$authParams['assignedTo'] = $model->createdBy;
+$authParams['X2Model'] = $model;
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','All Campaigns'), 'url'=>array('index')),
 	array('label'=>Yii::t('module','Create'), 'url'=>array('create')),

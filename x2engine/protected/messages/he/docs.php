@@ -39,4 +39,8 @@ return array (
 'copy'=>'להעתיק',
 'Saved at'=>'נצל ב',
 'Document'=>'מסמך',
+'Leaving this field blank will preserve its default behavior.'=>'השארת שדה זה ריק תשמור התנהגות ברירת מחדל.',
+'Create Quote Template'=>'יצירת תבנית ציטוט',
+'Import Docs'=>'Docs היבוא',
+'Export Docs'=>'Docs יצוא',
 );

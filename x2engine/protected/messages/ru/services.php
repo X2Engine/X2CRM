@@ -104,4 +104,7 @@ return array (
 'Hello'=>'Привет',
 'Web Form Case'=>'Дело веб-формы',
 'Thank you for contacting our Technical Support '=>'Спасибо за обращение в нашу службу технической поддержки',
+'Import Services'=>'Импорт Услуги',
+'Export Services'=>'Экспорт услуг',
+'Case Name'=>'Дело Имя',
 );

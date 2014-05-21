@@ -30,4 +30,6 @@ return array (
 'Create a new Opportunity associated with this Opportunity.'=>'Δημιουργήστε μια νέα ευκαιρία που σχετίζονται με αυτή την ευκαιρία.',
 'Opportunities Stage'=>'Ευκαιρίες Stage',
 'Relationships for Contact: '=>'Σχέσεις για Επικοινωνία:',
+'Import Opportunities'=>'Εισαγωγή Ευκαιρίες',
+'Export Opportunities'=>'Ευκαιρίες εξαγωγών',
 );

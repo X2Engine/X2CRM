@@ -177,4 +177,5 @@ return array (
 'Saved Searches'=>'저장된 검색',
 'Clicking this button will pull any relevant '=>'이 버튼을 클릭하면 모든 관련을 끌어',
 'Drag tags here from the tag cloud widget or click to '=>'드래그를 통해 태그 클라우드 위젯에서 여기에 태그하거나 클릭',
+'Export {model}'=>'수출 {model}',
 );

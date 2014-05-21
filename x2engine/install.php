@@ -532,6 +532,8 @@ $timezones = array(
                             }
                             if ($moduleLabel === 'Workflow') {
                                 $moduleLabel = 'Process';
+                            } else if ($moduleLabel === 'X2Leads') {
+                                $moduleLabel = 'Leads';
                             }
                             ?>
                             <div class="checkbox-grid-cell">
@@ -573,7 +575,7 @@ $timezones = array(
 			<?php
 			include(realpath('protected/components/UpdatesForm.php'));
 			// Configuration for the updates / optional info form:
-			$editions = array('pro');
+			$editions = array('pro', 'pla');
 			$edition = 'opensource';
 			foreach ($editions as $ed) // Add editional prefixes as necessary
 				if (file_exists("initialize_$ed.php"))

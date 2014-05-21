@@ -11,4 +11,5 @@ return array (
 'Error'=>'Σφάλμα',
 'Cannot delete; no parameters specified for finding a relationship record to delete.'=>'Δεν είναι δυνατή η διαγραφή? Δεν παραμέτρους που αναφέρονται για την εύρεση μιας εγγραφής σχέση με διαγραφή.',
 'No relationships deleted; none were found matching specfied parameters.'=>'Δεν σχέσεις διαγράφονται? Καμία δεν βρέθηκε ταιριάζουν specfied παραμέτρους.',
+'Couldn\'t perform {a} on model {m}'=>'Μπορούσα να \ &#39;t να εκτελέσει {a} με το μοντέλο {m}',
 );

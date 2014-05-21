@@ -225,7 +225,7 @@ class X2GridView extends X2GridViewBase {
             }elseif($this->allFields[$columnName]->type=='phone'){
                 $newColumn['type'] = 'raw';
                 $newColumn['value'] = 'X2Model::getPhoneNumber("'.$columnName.'","'.
-                    $this->modelName.'",$data["id"])';
+                    $this->modelName.'",$data["id"], false, true)';
             }
         } else if($columnName == 'tags') {
             $newColumn['id'] = $this->namespacePrefix.'C_'.'tags';
@@ -286,20 +286,19 @@ class X2GridView extends X2GridViewBase {
                 Profile::getPossibleResultsPerPage(), 
                 array(
                     'class' => 'x2-minimal-select',
-                    'onchange' => '$.ajax ({'.
-                        'data: {'.
-                            'results: $(this).val ()'.
-                        '},'.
-                        'url: "'.$this->controller->createUrl('/profile/setResultsPerPage').'",'.
-                        'complete: function (response) {'.
-                            'console.log ("setResultsPerPage after ajax");'.
-                            '$.fn.yiiGridView.update("'.$this->id.'", {'.
+                    'onchange' => '$.ajax ({
+                        data: {
+                            results: $(this).val ()
+                        },
+                        url: "'.$this->controller->createUrl('/profile/setResultsPerPage').'",
+                        complete: function (response) {
+                            $.fn.yiiGridView.update("'.$this->id.'", {'.
                                 (isset($this->modelName) ?
                                     'data: {'.$this->modelName.'_page: 1},' : '') .
                                     'complete: function () {}'.
-                            '});'.
-                        '}'.
-                    '});'
+                            '});
+                        }
+                    });'
                 )). 
             '</div>';
     }
@@ -351,6 +350,9 @@ class X2GridView extends X2GridViewBase {
     /**
      * Creates column objects and initializes them. Overrides CGridView's method, swapping
      * CDataColumn for X2DataColumn.
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
      */
     protected function initColumns() {
         if($this->columns===array()) {
@@ -369,7 +371,9 @@ class X2GridView extends X2GridViewBase {
                 $column=$this->createDataColumn($column);
             } else {
                 if(!isset($column['class']))
+                    /* x2modstart */ 
                     $column['class']='X2DataColumn';
+                    /* x2modend */ 
                 $column=Yii::createComponent($column, $this);
             }
             if(!$column->visible) {

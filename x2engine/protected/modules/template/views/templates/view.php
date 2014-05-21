@@ -42,6 +42,8 @@ Yii::app()->clientScript->registerCss('contactRecordViewCss',"
 }
 ");
 
+Yii::app()->clientScript->registerResponsiveCssFile(
+    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
 
 include("protected/modules/templates/templatesConfig.php");
 
@@ -51,11 +53,29 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName']))),
 	array('label'=>Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('module','Delete {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
+    array(
+        'label' => Yii::t('app', 'Send Email'), 'url' => '#',
+        'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
     array('label' => Yii::t('app', 'Attach A File/Photo'), 'url' => '#', 'linkOptions' => array('onclick' => 'toggleAttachmentForm(); return false;')),
     array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
+    array(
+        'label' => Yii::t('app', 'Print Record'),
+        'url' => '#',
+        'linkOptions' => array (
+            'onClick'=>"window.open('".
+                Yii::app()->createUrl('/site/printRecord', array (
+                    'modelClass' => "Templates",
+                    'id' => $model->id,
+                    'pageTitle' => 
+                        Yii::t('app', '{X}', array ('{X}' => $moduleConfig['recordName'])).': '.$model->name
+                ))."');"
+        ),
+    ),
 ));
+
 $modelType = json_encode("Templates");
 $modelId = json_encode($model->id);
+
 Yii::app()->clientScript->registerScript('widgetShowData', "
 $(function() {
 	$('body').data('modelType', $modelType);
@@ -95,12 +115,14 @@ $this->widget('InlineEmailForm',
 	array(
 		'attributes'=>array(
 			'to'=>implode (', ', $model->getRelatedContactsEmails ()),
-			'modelName'=> X2Model::getModuleModelName (),
+			'modelName'=> get_class ($model),
 			'modelId'=>$model->id,
 		),
 		'insertableAttributes' => 
             array(
-                Yii::t('accounts','Bug Report Attributes')=>$model->getEmailInsertableAttrs ($model)
+                Yii::t('module','{modelName} Attributes',
+                    array ('{modelName}' => get_class ($model))) => 
+                        $model->getEmailInsertableAttrs ($model)
             ),
 		'startHidden'=>true,
 	)

@@ -114,6 +114,7 @@ ChartWidget.prototype._setUpSettingsBehavior = function () {
             this.elementSelector + ' .chart-controls-container, ' +
             '.ui-datepicker-header, .ui-multiselect-header, .ui-multiselect-checkboxes',
         autoClose: false,
+        defaultOrientation: 'left',
         onClose: function () {
             if (!that._cursorInWidget)
                 $(that.element).find ('.submenu-title-bar .x2-icon-button').hide ();

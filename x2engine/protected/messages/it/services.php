@@ -56,4 +56,7 @@ return array (
 'Hello'=>'Ciao',
 'Web Form Case'=>'Caso Web Form',
 'Thank you for contacting our Technical Support '=>'Grazie per aver contattato il nostro supporto tecnico',
+'Import Services'=>'Importazione Servizi',
+'Export Services'=>'Export Services',
+'Case Name'=>'Causa Nome',
 );

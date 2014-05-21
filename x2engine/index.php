@@ -35,8 +35,8 @@
  *****************************************************************************************/
 
 // change the following paths if necessary
-$constants = dirname(__FILE__).DIRECTORY_SEPARATOR.'constants.php';
-$yii = implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), 'framework', 'yii.php'));
+$constants = __DIR__.DIRECTORY_SEPARATOR.'constants.php';
+$yii = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'framework', 'yii.php'));
 require_once($constants);
 require_once($yii);
 Yii::$enableIncludePath = false;
@@ -48,7 +48,7 @@ if(!empty($_SERVER['REMOTE_ADDR'])){
     $filename = 'install.php';
 
     if(file_exists($filename)){
-        header('Location: '.(!$indexReq ? $SERVER_['REQUEST_URI'] : $matches[1]).$filename);
+        header('Location: '.(!$indexReq ? $_SERVER['REQUEST_URI'] : $matches[1]).$filename);
         exit();
     }
     $config = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected', 'config', 'web.php'));

@@ -54,11 +54,6 @@ div.x2-layout {
 
 /* #main-column.half-width {border-right:1px solid #aaa;margin-right:-1px;} */
 /* .history.half-width {box-sizing:border-box;border-left:1px solid #aaa;} */
-
-div.half-width {
-	width:65%;
-	float:left;
-}
 #main-column {
     margin-top:5px;
 }
@@ -68,31 +63,10 @@ div.half-width {
 .history {
     padding:0 5px;
 }
-.history.half-width {
-    padding:0;
-}
-.history.half-width > div, .history.half-width > form {
-    margin:0 0px 5px 0;
-}
-
 #main-column > div.page-title-fixed-outer {
     margin:0 0 5px 0;/* padding-right:7px; */
 }
-#main-column.half-width > div.page-title-fixed-outer {
-    padding-right:10px;
-}
-/* .history.half-width > div, .history.half-width > form {padding-right:10px;margin-right:-10px;} */
 
-div.half-width > div.page-title, #main-column > div.page-title {
-    margin-left:0;
-}
-div.half-width > div.form {
-    background:#fff;
-}
-
-#main-column.half-width > div, #main-column.half-width > form {
-    margin:0 5px 5px 0px;
-}
 
 div.x2-layout a {
     text-decoration:none;
@@ -340,7 +314,7 @@ div.x2-layout .formInputBox .checkboxWrapper {
 }
 div.x2-layout .formItem input[type="text"],
 div.x2-layout .formItem textarea,
-input[type="text"].relationships-add-autocomplete {
+input[type="text"].record-name-autocomplete {
 	-webkit-appearance:none;
 	height:22px;
 	width:100% !important;
@@ -686,3 +660,116 @@ div.cron-job input.cron-enabled {
     display: inline-block;
 }
 
+
+
+.x2-forms-error-msg {
+    color: 'red'
+}
+
+
+
+/***********************************************************************
+* publish half width style  
+* Repeated 3 times:
+*   -once for browsers which don't support media queries
+*   -two more times for the cases where the right widgets are shown/hidden
+***********************************************************************/
+
+.history.half-width {
+    width: 35%;
+    margin-top: 5px;
+}
+
+div.half-width {
+	width:65%;
+	float:left;
+}
+.history.half-width {
+    padding:0;
+}
+.history.half-width > div, .history.half-width > form {
+    margin:0 0px 5px 0;
+}
+
+#main-column.half-width > div.page-title-fixed-outer {
+    padding-right:10px;
+}
+/* .history.half-width > div, .history.half-width > form {padding-right:10px;margin-right:-10px;} */
+
+div.half-width > div.page-title, #main-column > div.page-title {
+    margin-left:0;
+}
+div.half-width > div.form {
+    background:#fff;
+}
+
+#main-column.half-width > div, #main-column.half-width > form {
+    margin:0 5px 5px 0px;
+}
+
+
+@media (min-width: 1403px) {
+    .history {
+        width: 35%;
+        margin-top: 5px;
+    }
+
+    #main-column {
+        width:65%;
+        float:left;
+    }
+    .history {
+        padding:0;
+    }
+    .history > div, .history > form {
+        margin:0 0px 5px 0;
+    }
+
+    #main-column > div.page-title-fixed-outer {
+        padding-right:10px;
+    }
+
+    #main-column > div.page-title, #main-column > div.page-title {
+        margin-left:0;
+    }
+    #main-column > div.form {
+        background:#fff;
+    }
+
+    #main-column > div, #main-column > form {
+        margin:0 5px 5px 0px;
+    }
+}
+
+@media (min-width: 1122px) {
+    .no-widgets .history {
+        width: 35%;
+        margin-top: 5px;
+    }
+
+    .no-widgets #main-column {
+        width:65%;
+        float:left;
+    }
+    .no-widgets .history {
+        padding:0;
+    }
+    .no-widgets .history > div,.no-widgets  .history > form {
+        margin:0 0px 5px 0;
+    }
+
+    .no-widgets #main-column > div.page-title-fixed-outer {
+        padding-right:10px;
+    }
+
+    .no-widgets #main-column > div.page-title, .no-widgets #main-column > div.page-title {
+        margin-left:0;
+    }
+    .no-widgets #main-column > div.form {
+        background:#fff;
+    }
+
+    .no-widgets #main-column > div, .no-widgets #main-column > form {
+        margin:0 5px 5px 0px;
+    }
+}

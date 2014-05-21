@@ -43,8 +43,8 @@ $this->beginContent('//layouts/main');
 <!--<div id="sidebar-left">-->
     <!-- sidebar -->
     <div id='sidebar-left-widget-box'>
-    <?php
-
+        <?php
+    if(!Yii::app()->user->isGuest) {
         $echoedFirstSideBarLeft = false;
         // Echoes sidebar left container div if it hasn't already been echoed.
         if(!function_exists('echoFirstSideBarLeft')){
@@ -98,8 +98,7 @@ $this->beginContent('//layouts/main');
                     && $this->action->id == 'view'
                     && (!(isset($_GET['publicProfile']) && $_GET['publicProfile'])
                         && $_GET['id'] == Yii::app()->params->profile->id);
-            if($profile 
-                    || ((file_exists($controllerPath)|| file_exists($modulePath))
+            if($profile || ((file_exists($controllerPath) || file_exists($modulePath))
                             && $controller != 'profile')){
                 echoFirstSideBarLeft($echoedFirstSideBarLeft);
                 $this->renderPartial('_sidebarLeftExtraContent');
@@ -114,13 +113,13 @@ $this->beginContent('//layouts/main');
             'widgetName' => 'TopContacts',
             'widgetLabel' => 'Top Contacts'
         ));
-        echo "</div><div class='sidebar-left'>";
+        echo "</div><div class=\"sidebar-left\">";
         $this->widget('RecentItems',array(
             'id'=>'recent-items',
             'widgetName' => 'RecentItems',
             'widgetLabel' => 'Recent Items'
         ));
-
+        
         // collapse or expand left widget and save setting to user profile
         Yii::app()->clientScript->registerScript('leftWidgets','
             $(".left-widget-min-max").click(function(e){
@@ -150,9 +149,10 @@ $this->beginContent('//layouts/main');
                 });
             });
         ');
-        ?>
-        </div>
-    </div>
+        echo "</div><!-- .sidebar-left -->";
+    } ?>
+    </div><!-- #sidebar-left-widget-box -->
+    
 <!--</div>-->
 <!--</div>-->
 <div id="flexible-content">

@@ -38,7 +38,7 @@ mb_internal_encoding('UTF-8');
 mb_regex_encoding('UTF-8');
 
 
-Yii::app()->params->profile = ProfileChild::model()->findByPk(1);	// use the admin's profile since the user hasn't logged in
+Yii::app()->params->profile = Profile::model()->findByPk(1);	// use the admin's profile since the user hasn't logged in
 $jsVersion = '?'.Yii::app()->params->buildDate;
 
 // blueprint CSS framework
@@ -100,8 +100,12 @@ if(!empty(Yii::app()->params->profile->menuTextColor))
 	$themeCss .= '#main-menu-bar ul a, #main-menu-bar ul span {color:#'.Yii::app()->params->profile->menuTextColor.";}\n";
 
 
-Yii::app()->clientScript->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD);
-Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientScript::POS_HEAD);
+Yii::app()->clientScript
+        ->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD)
+        ->registerCss('applyTheme2',$theme2Css,'screen',CClientScript::POS_HEAD)
+        ->registerCssFile(Yii::app()->theme->getBaseUrl().'/css/login.css')
+        ->registerScriptFile(Yii::app()->getBaseUrl().'/js/auxlib.js')
+        ->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Forms.js');
 
 
 ?><!DOCTYPE html>

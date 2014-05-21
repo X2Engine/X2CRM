@@ -33,6 +33,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
 .x2-question-mark {
     cursor: default;
 }
@@ -52,10 +53,61 @@ Title bar for sections other than the main section (e.g. widgets)
     background:#ddd;
 }
 
+
+/***********************************************************************
+* x2-select
+***********************************************************************/
+
+.x2-select:focus {
+    color: black;
+}
+
+/* hide arrow on webkit browsers */
+.x2-select,
+.x2-minimal-select {
+    height: 20px;
+    display: inline-block !important;
+    /*margin-left: 5px !important;*/
+    margin-right: 10px !important;
+    float: none !important;
+    padding: 0 8px;
+    /*padding: 0 21px 0 7px;*/
+    outline: none;
+    color: #333;
+    text-decoration: none;
+    border-radius:             3px;
+    -moz-border-radius:         3px;
+    -webkit-border-radius:     3px;
+    -o-border-radius:         3px;
+}
+
+.x2-select {
+    border: 1px solid #BEBDBD;
+    background: #e9e9e9;
+}
+
+.x2-minimal-select {
+    background: none;
+    border: 1px solid white;
+}
+
+.page-title .x2-minimal-select {
+    border: 1px solid #cecece !important;
+}
+
+
+.x2-minimal-select:hover,
+.x2-minimal-select:focus {
+    border: 1px solid #BEBDBD;
+    background: rgb(228,228,228);
+}
+
+
 /*
 Select element which doesn't show border or background color difference until hover/click
 */
-.x2-minimal-select {
+/*.x2-minimal-select {
+    outline: none;
     background: none;
     border-radius:             3px !important;
     -moz-border-radius:         3px !important;
@@ -86,8 +138,9 @@ Select element which doesn't show border or background color difference until ho
 .submenu-title-bar .x2-minimal-select:focus {
     border: 1px solid #b4b4b4 !important;
     background-color:rgb(209, 209, 209);
-}
+}*/
 
+.x2-select option,
 .x2-minimal-select option {
     background-color:white;
 }
@@ -97,6 +150,7 @@ CSS "button" links to be used instead of actual buttons
 */
 .x2-button,
 .x2-minimal-button,
+.button-group-pager li,
 .ui-dialog .ui-dialog-buttonpane button { /* , a.search-button */
     display: inline-block;
     vertical-align: top;
@@ -117,18 +171,6 @@ CSS "button" links to be used instead of actual buttons
     -o-border-radius:         3px;
 }
 
-.x2-select {
-    padding: 0 8px;
-    border: 1px solid #BEBDBD;
-    background: #e9e9e9;
-    outline: none;
-    color: #333;
-    text-decoration: none;
-    border-radius:             3px;
-    -moz-border-radius:         3px;
-    -webkit-border-radius:     3px;
-    -o-border-radius:         3px;
-}
 
 .page-title .x2-button {
 
@@ -153,12 +195,10 @@ CSS "button" links to be used instead of actual buttons
     cursor: default;
 }
 
-.x2-select option {
-    background: white;
-}
-
 .x2-button:hover, .x2-minimal-button:hover, input.hover,
+.button-group-pager li:hover,
 .x2-select:hover,
+.x2-minimal-select:hover,
 .ui-dialog .ui-dialog-buttonpane button:hover {
     color: #000;
     background: rgb(228,228,228);
@@ -166,6 +206,8 @@ CSS "button" links to be used instead of actual buttons
 
 
 .x2-minimal-button:active, .x2-minimal-button.clicked, .x2-button:active, .x2-button.clicked, 
+.button-group-pager li.selected,
+.button-group-pager li:active,
 input.active, .ui-dialog .ui-dialog-buttonpane button:active {
     color: black;
     border-color: #A7A7A7;
@@ -173,10 +215,6 @@ input.active, .ui-dialog .ui-dialog-buttonpane button:active {
     -moz-box-shadow:     inset 0 1px 1px 0 #999;
     -webkit-box-shadow:     inset 0 1px 1px 0 #999;
     box-shadow:             inset 0 1px 1px 0 #999;
-}
-
-.x2-select:focus {
-    color: black;
 }
 
 .x2-button.clicked:hover,
@@ -331,26 +369,15 @@ small x2-button
     background: #bdbdbd;
 }
 
-.page-title .x2-minimal-select {
-    border: 1px solid #cecece !important;
-}
-
-.page-title .x2-minimal-select:hover {
-    background: #dfdfdf;
-    border: 1px solid #B8B8B8 !important;
-}
-
-.page-title .x2-minimal-select:focus {
-    background: #dfdfdf;
-    border: 1px solid #B8B8B8 !important;
-}
 
 .page-title .x2-button {
-    /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #CCCCCC 100%);
+    /*
+    background: -moz-linear-gradient(top,    #f0f0f0 0%, #CCCCCC 100%);
     background: -webkit-linear-gradient(top,    #f0f0f0 0%, #CCCCCC 100%);
     background: -o-linear-gradient(top,        #f0f0f0 0%, #CCCCCC 100%);
     background: -ms-linear-gradient(top,        #f0f0f0 0%, #CCCCCC 100%);
-    background: linear-gradient(to bottom, #f0f0f0 0%, #CCCCCC 100%);*/
+    background: linear-gradient(to bottom, #f0f0f0 0%, #CCCCCC 100%);
+    */
 }
 .page-title .x2-button:hover, .page-title input.hover {
     /*color: #000;
@@ -386,6 +413,41 @@ small x2-button
 
 
 
+/***********************************************************************
+* pager 
+***********************************************************************/
+
+.button-group-pager li {
+    padding: 0;
+}
+
+.button-group-pager li.first,
+.button-group-pager li.last {
+    display: none;
+}
+
+.button-group-pager li.previous,
+.button-group-pager li.page,
+.button-group-pager li.next {
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    margin-left: -2px;
+    margin-left: -4px;
+}
+
+.button-group-pager li a{
+    text-decoration: none;
+    color: rgb(119, 119, 119);
+    padding: 0px 8px 0px 8px;
+    display: block;
+}
+
+.button-group-pager li.hidden a {
+    color: rgb(174, 174, 174)
+}
+
+
 
 
 /**
@@ -394,12 +456,15 @@ small x2-button
 .x2-button-group {
     margin: 5px;
 }
+.button-group-pager li.selected, 
 .x2-button-group .x2-button.disabled {
     color: #bbbbbb;
 }
+.button-group-pager li, 
 .x2-button-group a.x2-button {
     cursor: pointer;
 }
+.button-group-pager li, 
 .x2-button-group .x2-button {
     vertical-align: middle;
     margin: -3px 0 0 0;
@@ -417,6 +482,7 @@ small x2-button
     -webkit-border-radius:     3px !important;
     -o-border-radius:         3px !important;
 }
+.button-group-pager .previous,
 .x2-button-group .x2-button:first-child {
     border-radius:             3px 0 0 3px;
     -moz-border-radius:         3px 0 0 3px;
@@ -424,6 +490,7 @@ small x2-button
     -o-border-radius:         3px 0 0 3px;
 }
 
+.button-group-pager .next, 
 .x2-button-group .x2-button.x2-last-child,
 .x2-button-group .x2-button:last-child {
     border-right-width: 1px;
@@ -563,7 +630,7 @@ small x2-button
 .ui-tabs .ui-tabs-nav li.ui-state-active.ui-state-hover {
     background: #eee;
 }
-.ui-tabs .form {
+#publisher .form {
     background: #eee;
     border-color: #D1D1D1;
     border-radius:             4px;
@@ -688,9 +755,9 @@ div.x2-sortlist li:first-child .handle {
 }
 div.x2-sortlist li .handle {
     width: 28px;
-    margin: 0 -35px -100px 0;
+    margin: 0 -35px -2000px 0;
     height: 0;
-    padding: 5px 0 100px 5px;
+    padding: 5px 0 2000px 5px;
     float: left;
 
     border: 1px solid #333;
@@ -1017,7 +1084,7 @@ Yii pager
 
 .yiiPager a:hover,
 .yiiPager .selected a {
-    text-decoration: underline !important;
+    /*text-decoration: underline !important;*/
 }
 
 .yiiPager a {
@@ -1212,7 +1279,8 @@ Ckeditor
 	-o-border-radius:		4px;
 }
 
-.popup-dropdown-menu ul {
+.popup-dropdown-menu ul,
+ul.popup-dropdown-menu {
     background: rgb(233, 233, 233);
     list-style: none;
     padding: 5px 0 5px 0;
@@ -1525,6 +1593,18 @@ button.ui-multiselect:focus {
 }
 
 
+.x2-multiselect-dropdown + .ui-multiselect {
+    border: 1px solid rgb(204, 204, 204) !important;
+}
+
+.x2-multiselect-dropdown-menu {
+    width: auto !important;
+}
+
+
+
+
+
 .x2-wide-slider {
     width: 80%;
     max-width: 340px;
@@ -1581,14 +1661,6 @@ div.form textarea.x2-xxwide-input {
 /***********************************************************************
 * X2Select 
 ***********************************************************************/
-
-.x2-custom-select-outer {
-}
-
-/*.x2-select {
-    position: absolute;
-    right: 99999999999999999px;
-}*/
 
 .x2-custom-select + select {
     margin: 3px 4px 5px 0px;
@@ -1716,6 +1788,10 @@ div.form textarea.x2-xxwide-input {
 #actionTimer a {
 }
 
+#actionTimerControl-form .x2-minimal-select {
+    width: 120px !important;    
+}
+
 #actionTimerControl-summary {
     display: block;
     border-top: 1px solid #CCCCCC;
@@ -1745,3 +1821,36 @@ div.form textarea.x2-xxwide-input {
     text-align: center;
 }
 
+
+/***********************************************************************
+* color picker 
+***********************************************************************/
+
+.sp-replacer { 
+    padding: 0 !important;
+}
+
+
+/***********************************************************************
+* settings button 
+***********************************************************************/
+
+.x2-settings-button {
+    cursor: pointer;
+    opacity: 0.7;
+}
+.x2-settings-button:hover {
+    opacity: 1;
+}
+
+/***********************************************************************
+* qtips 
+***********************************************************************/
+/*.x2-qtip .qtip-titlebar {
+    background-color: rgb(240,240,240) !important;
+}
+.x2-qtip,
+.x2-qtip .qtip-content {
+    border-color: rgb(223,223,223) !important;
+    background-color: white !important;
+}*/

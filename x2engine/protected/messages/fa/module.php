@@ -31,4 +31,7 @@ return array (
 'Unable to create custom module directory.'=>'قادر به ایجاد پوشه ماژول سفارشی.',
 'Unable to create config file for custom module.'=>'قادر به ایجاد فایل های پیکربندی برای ماژول های سفارشی.',
 'Unable to create table for custom module.'=>'قادر به ایجاد جدول برای ماژول سفارشی.',
+'Import {X}'=>'واردات {X}',
+'Export {X}'=>'صادرات {X}',
+'{modelName} Attributes'=>'{modelName} صفات',
 );

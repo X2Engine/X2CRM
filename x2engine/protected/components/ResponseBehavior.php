@@ -49,6 +49,7 @@ class ResponseBehavior extends CBehavior {
      */
     public function attach($owner){
         parent::attach($owner);
+        ResponseUtil::$includeExtraneousOutput = YII_DEBUG;
         if($this->handleErrors) {
             set_error_handler('ResponseUtil::respondWithError');
             register_shutdown_function('ResponseUtil::respondFatalErrorMessage');

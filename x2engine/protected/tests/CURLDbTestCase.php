@@ -71,7 +71,11 @@ abstract class CURLDbTestCase extends X2DbTestCase {
             503,
         );
     }
-
+    
+    public static function webscriptsBasePath() {
+        return implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'tests','webscripts'));
+    }
+    
     /**
      * Run a request and check that a header field is present in the response
      * @param type $params
@@ -94,7 +98,8 @@ abstract class CURLDbTestCase extends X2DbTestCase {
     }
 
     public function assertResponseCodeIs($code,$ch,$message='') {
-		$this->assertEquals($code,curl_getinfo($ch,CURLINFO_HTTP_CODE),$message);
+        $effectiveCode = curl_getinfo($ch,CURLINFO_HTTP_CODE);
+		$this->assertEquals($code,$effectiveCode,$message);
 	}
 
 	public function getCurlResponse($params,$postData=array()) {
@@ -109,6 +114,10 @@ abstract class CURLDbTestCase extends X2DbTestCase {
             CURLOPT_RETURNTRANSFER => true, // Return the response data from curl_exec()
             CURLOPT_HTTP200ALIASES => $this->getHttp200Aliases(),
         );
+        // Override defaults with custom options passed in via function argument.
+        //
+        // Cannot use array_merge because the keys are integers and array_merge
+        // wouldn't preserve/respect the original/intended keys
         foreach($options as $const => $opt) {
             $allOpts[$const] = $opt;
         }
@@ -117,7 +126,12 @@ abstract class CURLDbTestCase extends X2DbTestCase {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
         return $ch;
     }
-	
+
+    /**
+     * Format the URL to be requested
+     * @param type $params Replacement tokens to use for formatting the URL
+     * @return string
+     */
 	public function url($params = array()) {
 		return strtr($this->urlFormat(), $params);
 	}

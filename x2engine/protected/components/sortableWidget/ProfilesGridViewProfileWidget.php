@@ -107,7 +107,7 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
                         'fullName'=>array(
                             'name'=>'fullName',
                             'header'=>Yii::t('profile', 'Full Name'),
-                            'value'=>'CHtml::link($data->fullName,array("view","id"=>$data->id))',
+                            'value'=>'CHtml::link($data->user->fullName,array("view","id"=>$data->id))',
                             'type'=>'raw',
                         ),
                         'lastLogin'=>array(
@@ -128,6 +128,12 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
                                 ' class=\'".(Session::isOnline ($data->username) ? '.
                                 '"active-indicator" : "inactive-indicator")."\'></span>"',
                             'type'=>'raw',
+                        ),
+                        'username' => array(
+                            'name' => 'username',
+                            'header' => Yii::t('profile','Username'),
+                            'value' => 'CHtml::encode($data->user->alias)',
+                            'type' => 'raw'
                         ),
                     ),
                     'enableControls'=>false,

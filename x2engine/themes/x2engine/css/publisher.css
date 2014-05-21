@@ -42,3 +42,48 @@
     margin-right: -10px;
 }
 
+/***********************************************************************
+* multi row tabs 
+***********************************************************************/
+#publisher-tabs-row-2 {
+    background: #f8f8f8;
+    width: 100%; 
+    box-sizing: border-box;
+    border-radius: 4px 4px 0 0;
+    height: 31px;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    margin-bottom: -6px !important;
+    margin-top: 0px;
+    z-index: -1;
+    display: block !important;
+}
+#publisher-tabs-row-2 li:first-child {
+    margin-left: 3px;
+}
+#publisher-tabs-row-2 li {
+    margin-top: -1px;
+    height: 24px;
+}
+
+#publisher-tabs-row-2.unselected-tab-row {
+    background: #eee; 
+}
+
+/***********************************************************************
+* comment tab 
+***********************************************************************/
+
+#new-comment .text-area-wrapper {
+    margin-bottom: 5px;
+}
+
+/***********************************************************************
+* products tab 
+***********************************************************************/
+
+#products .text-area-wrapper {
+    margin-bottom: 5px;
+}
+
+

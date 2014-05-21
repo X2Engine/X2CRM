@@ -219,7 +219,7 @@ $(function() {
 ",CClientScript::POS_HEAD);
 
 // find height of chat box, chat message, and use these to find height of widget
-$widgetSettings = ProfileChild::getWidgetSettings();
+$widgetSettings = Profile::getWidgetSettings();
 $feedWidgetSettings = $widgetSettings->ChatBox;
 
 $feedboxHeight = $feedWidgetSettings->chatboxHeight;

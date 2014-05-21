@@ -135,8 +135,11 @@ class X2Flow extends CActiveRecord {
         $criteria->compare('lastUpdated', $this->lastUpdated, true);
 
         return new CActiveDataProvider($this, array(
-                    'criteria' => $criteria,
-                ));
+            'criteria' => $criteria,
+            'pagination' => array (
+                'pageSize' => Profile::getResultsPerPage(),
+            ),
+        ));
     }
 
     /**
@@ -197,6 +200,12 @@ class X2Flow extends CActiveRecord {
            (!is_object($params['model']) || !($params['model'] instanceof X2Model))) {
             // Invalid model provided
             return false;
+        } else if(isset($params['model'])) {
+            // Payload data is the model
+            ApiHook::runAll($triggerName,$params['model']);
+        } else {
+            // Payload data is just the parameters
+            ApiHook::runAll($triggerName,$params);
         }
 
         // increment stack depth before doing anything that might call X2Flow::trigger()
@@ -320,7 +329,7 @@ class X2Flow extends CActiveRecord {
 
         // increment stack depth before doing anything that might call X2Flow::trigger()
         self::$_triggerDepth++;
-        self::executeFlow ($flow, $params, $flowPath, $triggerLogId);
+        return self::executeFlow ($flow, $params, $flowPath, $triggerLogId);
         self::$_triggerDepth--;  // this trigger call is done; decrement the stack depth
     }
 
@@ -347,6 +356,7 @@ class X2Flow extends CActiveRecord {
 
             if($flowPath === null){
                 $trigger = X2FlowTrigger::create($flowData['trigger']);
+                assert ($trigger !== null);
                 if($trigger === null) {
                     $error = array (
                         'trace' => array (false, 'failed to load trigger class'));
@@ -538,10 +548,12 @@ class X2Flow extends CActiveRecord {
      * @return mixed the parsed value
      */
     public static function parseValue($value, $type, &$params = null){
+
         if(is_string($value) && isset($params['model'])){
             if(strpos($value, '=') === 0){
                 // It's a formula. Evaluate it.
                 $evald = Formatter::parseFormula($value, $params);
+
                 // Fail silently because there's not yet a good way of reporting
                 // problems that occur in parseFormula --
                 $value = '';
@@ -549,7 +561,7 @@ class X2Flow extends CActiveRecord {
                     $value = $evald[1];
             } else {
                 // Run token replacement:
-                $value = Formatter::replaceVariables($value, $params['model'], $type, $params);
+                $value = Formatter::replaceVariables($value, $params['model'], $type);
             }
         }
 
@@ -577,4 +589,10 @@ class X2Flow extends CActiveRecord {
                 return $value;
         }
     }
+
+
+    public static function getModelTypes($assoc=false) {
+        return array_diff_key (X2Model::getModelTypes ($assoc), array_flip (array ('Fingerprint')));
+    }
+
 }

@@ -215,9 +215,13 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
                     ?>
                 </div>
                 <div class="cell">
-                    <?php echo $form->label($actionModel, 'assignedTo'); ?>
-                    <?php echo $form->dropDownList($actionModel, 'assignedTo', X2Model::getAssignmentOptions(), array('id' => 'actionsAssignedToDropdown')); ?>
-                    <?php echo $form->error($actionModel, 'assignedTo'); ?>
+                    <?php 
+                    echo $form->label($actionModel, 'assignedTo');
+                    echo $actionModel->renderInput (
+                        'assignedTo', array('id' => 'actionsAssignedToDropdown')); 
+                    //echo $form->dropDownList($actionModel, 'assignedTo', X2Model::getAssignmentOptions(), array('id' => 'actionsAssignedToDropdown')); 
+                    echo $form->error($actionModel, 'assignedTo'); 
+                    ?>
                 </div>
 
                 <div class="cell">

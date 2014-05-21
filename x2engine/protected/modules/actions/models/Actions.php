@@ -38,9 +38,13 @@ Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_actions".
+ * @property X2Model $associatedModel The model with which the action is
+ *  associated, if any.
  * @package application.modules.actions.models
  */
 class Actions extends X2Model {
+
+    public $supportsWorkflow = false;
 
     /**
      * Types of actions that should be treated as emails
@@ -52,6 +56,8 @@ class Actions extends X2Model {
     public $actionDescriptionTemp = ""; // Easy way to get around action text records
 
     private static $_priorityLabels;
+
+    private $_associatedModel;
 
     /**
      * Returns the static model of the specified AR class.
@@ -108,8 +114,24 @@ class Actions extends X2Model {
             'workflow' => array(self::BELONGS_TO, 'Workflow', 'workflowId'),
             'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
             'timers' => array(self::HAS_MANY,'ActionTimer','actionId'),
-            'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
+            //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
+            'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
+            //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
         ));
+    }
+
+    /**
+     * Returns {@link associatedModel}.
+     * @return X2Model
+     */
+    public function getAssociatedModel() {
+        if(!isset($this->_associatedModel)
+                && !empty($this->associationType)
+                && !empty($this->associationId)) {
+            $this->_associatedModel = X2Model::model($this->associationType)
+                    ->findByPk($this->associationId);
+        }
+        return $this->_associatedModel;
     }
 
     /**
@@ -165,7 +187,7 @@ class Actions extends X2Model {
     }
 
 
-    public function getAttribute($name, $renderFlag = false){
+    public function getAttribute($name, $renderFlag = false, $makeLinks = false){
         if ($name === 'actionDescription') {
             $model = ActionText::model ()->findByAttributes (
                 array (
@@ -214,7 +236,9 @@ class Actions extends X2Model {
         if(empty($timeSpent) && !empty($this->completeDate) && !empty($this->dueDate) && $timed) {
             $this->timeSpent = $this->completeDate - $this->dueDate;
         }
+
         
+
         return parent::beforeSave();
     }
 
@@ -236,6 +260,8 @@ class Actions extends X2Model {
                 $this->actionText->save();
             }
         }
+
+        
         return parent::afterSave();
     }
 
@@ -254,39 +280,83 @@ class Actions extends X2Model {
     }
 
     /**
+     * Creates an event for each assignee 
+     */
+    public function createEvents ($eventType, $timestamp) {
+        $assignees = $this->getAssignees ();
+        foreach ($assignees as $assignee) {
+            $event = new Events;
+            $event->timestamp = $this->createDate;
+            $event->visibility = $this->visibility;
+            $event->type = $eventType;
+            $event->associationType = 'Actions';
+            $event->associationId = $this->id;
+            $event->user = $assignee;
+            $event->save();
+        }
+    }
+
+    /**
+     * Creates a notification for each assignee 
+     * @return array the notifications created by this method
+     */
+    public function createNotifications (
+        $notificationUsers='assigned', $createDate=null, $type='create') {
+
+        $notifications = array ();
+
+        if (!$createDate) $createDate = time ();
+
+        $assignees = array ();
+        switch ($notificationUsers) {
+            case 'me':
+                $assignees = array (Yii::app()->user->getName ());
+                break;
+            case 'assigned':
+                $assignees = $this->getAssignees (true);
+                break;
+            case 'both':
+                $assignees = array_unique (array_merge (
+                    $this->getAssignees (true),
+                    array (Yii::app()->user->getName ())));
+                break;
+        }
+        foreach ($assignees as $assignee) {
+            $notif = new Notification;
+            $notif->user = $assignee;
+            $notif->createdBy = (Yii::app()->params->noSession) ? 
+                'API' : Yii::app()->user->getName();
+            $notif->createDate = $createDate;
+            $notif->type = $type;
+            $notif->modelType = 'Actions';
+            $notif->modelId = $this->id;
+            if ($notif->save()) {
+                $notifications[] = $notif;
+            } else {
+                //AuxLib::debugLogR ($notif->getErrors ());
+            }
+        }
+        return $notifications;
+    }
+
+    /**
      * Creates an action reminder event.
      * Fires the onAfterCreate event in {@link X2Model::afterCreate}
      */
     public function afterCreate(){
         if(empty($this->type)){
-            $event = new Events;
-            $event->timestamp = $this->createDate;
-            $event->visibility = $this->visibility;
-            $event->type = 'record_create';
-            $event->associationType = 'Actions';
-            $event->associationId = $this->id;
-            $event->user = $this->assignedTo;
-            $event->save();
+            $this->createEvents ('record_create', $this->createDate);
         }
-        if(empty($this->type) && $this->complete !== 'Yes' && ($this->reminder == 1 || $this->reminder == 'Yes')){
-            $event = new Events;
-            $event->timestamp = $this->dueDate;
-            $event->visibility = $this->visibility;
-            $event->type = 'action_reminder';
-            $event->associationType = 'Actions';
-            $event->associationId = $this->id;
-            $event->user = $this->assignedTo;
-            $event->save();
+        if(empty($this->type) && $this->complete !== 'Yes' && 
+           ($this->reminder == 1 || $this->reminder == 'Yes')){
+
+            $this->createEvents ('action_reminder', $this->dueDate);
         }
-        if($this->scenario != 'noNotif' && (Yii::app()->params->noSession || $this->assignedTo != Yii::app()->user->getName())){
-            $notif = new Notification;
-            $notif->user = $this->assignedTo;
-            $notif->createdBy = (Yii::app()->params->noSession) ? 'API' : Yii::app()->user->getName();
-            $notif->createDate = time();
-            $notif->type = 'create';
-            $notif->modelType = 'Actions';
-            $notif->modelId = $this->id;
-            $notif->save();
+        if($this->scenario != 'noNotif' && 
+           (Yii::app()->params->noSession || 
+            !$this->isAssignedTo (Yii::app()->user->getName(), true))){
+
+            $this->createNotifications ();
         }
         if(Yii::app()->params->noSession && !$this->asa('changelog')){
             X2Flow::trigger('RecordCreateTrigger', array('model' => $this));
@@ -327,6 +397,44 @@ class Actions extends X2Model {
             'Black' => Yii::t('actions', 'Black'),
         );
     }
+
+    /**
+     * Sends email reminders to all assignees
+     */
+    /*public function sendEmailRemindersToAssignees () {
+        $emails = User::getEmails();
+
+        $assignees = $this->getAssignees (true);
+
+        foreach ($assignees as $assignee) {
+
+            if($this->associationId != 0){
+                $contact = X2Model::model('Contacts')->findByPk($this->associationId);
+                $name = $contact->firstName.' '.$contact->lastName;
+            } else
+                $name = Yii::t('actions', 'No one');
+            if(isset($emails[$assignee])){
+                $email = $emails[$assignee];
+            }else{
+                continue;
+            }
+            if(isset($this->type))
+                $type = $this->type;
+            else
+                $type = Yii::t('actions', 'Not specified');
+    
+            $subject = Yii::t('actions', 'Action Reminder:');
+            $body = Yii::t('actions', "Reminder, the following action is due today: \n Description: {description}\n Type: {type}.\n Associations: {name}.\nLink to the action: ", array('{description}' => $this->actionDescription, '{type}' => $type, '{name}' => $name))
+                    .Yii::app()->controller->createAbsoluteUrl('/actions/actions/view',array('id'=>$this->id));
+            $headers = 'From: '.Yii::app()->params['adminEmail'];
+    
+            if($this->associationType != 'none')
+                $body.="\n\n".Yii::t('actions', 'Link to the {type}', array('{type}' => ucfirst($this->associationType))).': '.Yii::app()->controller->createAbsoluteUrl(str_repeat('/'.$this->associationType,2).'/view',array('id'=>$this->associationId));
+            $body.="\n\n".Yii::t('actions', 'Powered by ').'<a href=http://x2engine.com>X2Engine</a>';
+    
+            mail($email, $subject, $body, $headers);
+        }
+    }*/
 
     /**
      * Marks the action complete and updates the record.
@@ -375,6 +483,9 @@ class Actions extends X2Model {
                 $notif->createDate = time();
                 $notif->save();
             }
+        } else {
+            $this->validate ();
+            //AuxLib::debugLogR ($this->getErrors ());
         }
         $this->enableBehavior('changelog');
 
@@ -513,34 +624,6 @@ class Actions extends X2Model {
             return Yii::t('app', '{n} month|{n} months', floor($seconds / 2592000)); // months (more than 90 days)
     }
 
-    // finds record for the "owner" of a action, using the owner type and ID
-    public static function getOwnerModel($ownerType, $ownerId){
-        if(!(empty($ownerType) || empty($ownerId)) && X2Model::getModelName($ownerType)){ // both ID and type must be set
-            return X2Model::model(X2Model::getModelName($ownerType))->findByPk($ownerId);
-
-            // if($ownerType=='projects')
-            // return X2Model::model('ProjectChild')->findByPk($ownerId);
-            // if($ownerType=='contacts')
-            // return X2Model::model('Contacts')->findByPk($ownerId);
-            // if($ownerType=='accounts')
-            // return X2Model::model('Accounts')->findByPk($ownerId);
-            // if($ownerType=='cases')
-            // return X2Model::model('CaseChild')->findByPk($ownerId);
-            // if($ownerType=='opportunities')
-            // return X2Model::model('Opportunity')->findByPk($ownerId);
-        }
-        return null; // either the type is unkown, or there simply is no owner
-    }
-
-    // creates virtual attribute for owner's name, if exists
-    public function getOwnerName(){
-        $ownerModel = Actions::getOwnerModel($this->ownerType, $this->ownerId);
-        if($ownerModel !== null)
-            return $ownerModel->name; // get name of owner
-        else
-            return false;
-    }
-
     public static function createCondition($filters){
         Yii::app()->params->profile->actionFilters = json_encode($filters);
         Yii::app()->params->profile->update(array('actionFilters'));
@@ -559,10 +642,14 @@ class Actions extends X2Model {
             }
             switch($filters['assignedTo']){
                 case 'me':
-                    $criteria->addCondition("assignedTo='".Yii::app()->user->getName()."'");
+                    list ($cond, $params) = self::model()->getAssignedToCondition (false);
+                    $criteria->addCondition($cond);
+                    $criteria->params = array_merge ($criteria->params, $params);
                     break;
                 case 'both':
-                    $criteria->addCondition("assignedTo='".Yii::app()->user->getName()."' OR assignedTo='Anyone' OR assignedTo=''");
+                    list ($cond, $params) = self::model()->getAssignedToCondition (true);
+                    $criteria->addCondition($cond);
+                    $criteria->params = array_merge ($criteria->params, $params);
                     break;
             }
             switch($filters['dateType']){
@@ -640,26 +727,28 @@ class Actions extends X2Model {
             $criteria->addCondition(
                 '(type = "" OR type IS NULL)');
             $criteria->addCondition(
-                "assignedTo='".Yii::app()->user->getName()."' AND complete!='Yes' AND ".
+                "assignedTo REGEXP BINARY :userNameRegex AND complete!='Yes' AND ".
                 "IFNULL(dueDate, createDate) <= '".strtotime('today 11:59 PM')."'");
+            $criteria->params = array_merge($criteria->params,array (
+                ':userNameRegex' => $this->getUserNameRegex ()
+            ));
         }
         return $this->searchBase($criteria);
     }
 
-    public function searchIndex(){
+    public function searchIndex($pageSize=null, $uniqueId=null){
         $criteria = new CDbCriteria;
+        $groupIds = User::getMe()->getGroupIds ();
+        list ($assignedToCondition, $params) = $this->getAssignedToCondition (); 
         $parameters = array(
             'condition' => 
-                "(assignedTo='Anyone' OR assignedTo='".Yii::app()->user->getName().
-                "' OR assignedTo='' OR assignedTo IN (
-                    SELECT groupId 
-                    FROM x2_group_to_user 
-                    WHERE userId='".Yii::app()->user->getId()."')
-                ) AND dueDate <= '".mktime(23, 59, 59)."' AND 
+                $assignedToCondition.
+                 " AND dueDate <= '".mktime(23, 59, 59)."' AND 
                     (type=\"\" OR type IS NULL)", 
-                'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
+                'limit' => ceil(Profile::getResultsPerPage() / 2), 
+            'params' => $params);
         $criteria->scopes = array('findAll' => array($parameters));
-        return $this->searchBase($criteria);
+        return $this->searchBase($criteria, $pageSize, $uniqueId);
     }
 
     public function searchComplete(){
@@ -668,7 +757,7 @@ class Actions extends X2Model {
             $parameters = array(
                 "condition" => 
                     "completedBy='".Yii::app()->user->getName()."' AND complete='Yes'", 
-                "limit" => ceil(ProfileChild::getResultsPerPage() / 2));
+                "limit" => ceil(Profile::getResultsPerPage() / 2));
             $criteria->scopes = array('findAll' => array($parameters));
         }
         return $this->searchBase($criteria);
@@ -676,60 +765,25 @@ class Actions extends X2Model {
 
     public function searchAll(){
         $criteria = new CDbCriteria;
+        list ($assignedToCondition, $params) = $this->getAssignedToCondition (); 
         $parameters = array(
             "condition" => 
-                "(assignedTo='".Yii::app()->user->getName()."' OR assignedTo IN (
-                    SELECT groupId 
-                    FROM x2_group_to_user 
-                    WHERE userId='".Yii::app()->user->getId()."'))", 
-            'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
+                $assignedToCondition,
+            'limit' => ceil(Profile::getResultsPerPage() / 2),
+            'params' => $params);
         $criteria->scopes = array('findAll' => array($parameters));
-        return $this->searchBase($criteria);
-    }
-
-    public function searchGroup(){
-        $criteria = new CDbCriteria;
-        if(!Yii::app()->user->checkAccess('ActionsAdmin')){
-            $parameters = array(
-                "condition" => 
-                    "(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR 
-                    assignedTo IN (
-                        SELECT groupId 
-                        FROM x2_group_to_user 
-                        WHERE userId='".Yii::app()->user->getId()."')) AND complete!='Yes'", 
-                'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
-            $criteria->scopes = array('findAll' => array($parameters));
-        }
         return $this->searchBase($criteria);
     }
 
     public function searchAllGroup(){
         $criteria = new CDbCriteria;
         if(!Yii::app()->user->checkAccess('ActionsAdmin')){
+            list ($assignedToCondition, $params) = $this->getAssignedToCondition (); 
             $parameters = array(
                 "condition" => 
-                    "(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR 
-                      assignedTo IN (
-                        SELECT groupId 
-                        FROM x2_group_to_user 
-                        WHERE userId='".Yii::app()->user->getId()."'))", 
-                'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
-            $criteria->scopes = array('findAll' => array($parameters));
-        }
-        return $this->searchBase($criteria);
-    }
-
-    public function searchAllComplete(){
-        $criteria = new CDbCriteria;
-        if(!Yii::app()->user->checkAccess('ActionsAdmin')){
-            $parameters = array(
-                "condition" => 
-                    "(visibility='1' OR assignedTo='".Yii::app()->user->getName()."' OR 
-                      assignedTo IN (
-                        SELECT groupId 
-                        FROM x2_group_to_user 
-                        WHERE userId='".Yii::app()->user->getId()."')) AND complete='Yes'", 
-                'limit' => ceil(ProfileChild::getResultsPerPage() / 2));
+                    "(visibility='1' OR ".$assignedToCondition.")",
+                'limit' => ceil(Profile::getResultsPerPage() / 2),
+                'params' => $params);
             $criteria->scopes = array('findAll' => array($parameters));
         }
         return $this->searchBase($criteria);
@@ -742,6 +796,9 @@ class Actions extends X2Model {
     }
 
     public function searchBase($criteria, $pageSize=null, $uniqueId=null){
+        if ($pageSize === null) {
+            $pageSize = Profile::getResultsPerPage ();
+        }
 
         $this->compareAttributes($criteria);
         /*$criteria->with = 'actionText';
@@ -760,7 +817,7 @@ class Actions extends X2Model {
                     'defaultOrder' => $order,
                 ),
                 'pagination' => array(
-                    'pageSize' => ProfileChild::getResultsPerPage()
+                    'pageSize' => $pageSize
                 ),
                 'criteria' => $criteria,
             ), $uniqueId);
@@ -778,20 +835,11 @@ class Actions extends X2Model {
         }
     }
 
+    /**
+     * TODO: unit test 
+     */
     public function syncGoogleCalendar($operation){
-        $profiles = array();
-
-        if(!is_numeric($this->assignedTo)){ // assigned to user
-            $profiles[] = X2Model::model('Profile')->findByAttributes(array('username' => $this->assignedTo));
-        }else{ // Assigned to group
-            $groups = Yii::app()->db->createCommand()
-                    ->select('userId')
-                    ->from('x2_group_to_user')
-                    ->where('groupId=:assignedTo', array(':assignedTo' => $this->assignedTo))
-                    ->queryAll();
-            foreach($groups as $group)
-                $profile[] = X2Model::model('Profile')->findByPk($group['userId']);
-        }
+        $profiles = $this->getProfilesOfAssignees ();
 
         foreach($profiles as &$profile){
             if($profile !== null){
@@ -819,7 +867,7 @@ class Actions extends X2Model {
             )
         );
     }
-     
+
     /**
      * Completes/uncompletes set of actions 
      * @param string $operation <'complete' | 'uncomplete'>
@@ -832,14 +880,7 @@ class Actions extends X2Model {
             if($action === null)
                 continue;
 
-            $inGroup = false;
-
-            // we have an action assigned to a group? Then check if we are in the group
-            if(ctype_digit((string) $action->assignedTo)) 
-                $inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
-
-            if(Yii::app()->user->getName() == $action->assignedTo || 
-               $action->assignedTo == 'Anyone' || $action->assignedTo == '' || $inGroup || 
+            if($action->isAssignedTo (Yii::app()->user->getName ()) ||
                Yii::app()->params->isAdmin){ // make sure current user can edit this action
 
                 if($operation === 'complete') {
@@ -861,6 +902,29 @@ class Actions extends X2Model {
 
       
 
+    /**
+     * @return array all profiles of assignees. For assignees which are groups, all profiles of
+     *  users in those groups are returned. If an assignee is included more than once,
+     *  duplicate profiles are removed.
+     */
+    public function getProfilesOfAssignees () {
+        $assignees = $this->getAssignees (true);  
+        $profiles = array ();
+
+        // prevent duplicate entries in $profiles by keeping track of included usernames
+        $usernames = array (); 
+
+        foreach ($assignees as $assignee) {
+            $profile = X2Model::model('Profile')->findByAttributes(array (
+                'username' => $assignee
+            ));
+            if ($profile) {
+                $profiles[] = $profile;
+            }
+        }
+        return $profiles;
+    }
+    
     /**
      * Override parent method so that action type can be set from X2Flow create action 
      */
@@ -900,7 +964,9 @@ class Actions extends X2Model {
      * @param type $encode
      * @return type
      */
-    public function renderAttribute($fieldName, $makeLinks = true, $textOnly = true, $encode = true){
+    public function renderAttribute(
+        $fieldName, $makeLinks = true, $textOnly = true, $encode = true){
+
         if($fieldName == 'priority'){
             return $encode?CHtml::encode($this->getPriorityLabel()):$this->getPriorityLabel();
         }else{

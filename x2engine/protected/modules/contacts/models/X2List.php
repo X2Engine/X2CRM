@@ -41,6 +41,16 @@
  */
 class X2List extends X2Model {
 
+    /**
+     * Attribute name, comparison operator and comparison value arrays for
+     * criteria generation.
+     *
+     * @var type
+     */
+    public $criteriaInput;
+
+    public $supportsWorkflow = false;
+
     private $_itemModel = null;
 
     private $_itemFields = array();
@@ -65,6 +75,9 @@ class X2List extends X2Model {
                 'class' => 'X2LinkableBehavior',
                 'baseRoute' => '/contacts/contacts/list',
                 'autoCompleteSource' => '/contacts/contacts/getLists',
+            ),
+            'X2PermissionsBehavior' => array(
+                'class' => 'application.components.permissions.X2PermissionsBehavior'
             )
         );
     }
@@ -90,6 +103,7 @@ class X2List extends X2Model {
         return array(
             'listItems' => array(self::HAS_MANY, 'X2ListItem', 'listId'),
             'campaign' => array(self::HAS_ONE, 'Campaign', array('listId' => 'nameId')),
+            'criteria' => array(self::HAS_MANY,'X2ListCriterion','listId'),
         );
     }
 
@@ -106,6 +120,25 @@ class X2List extends X2Model {
             'count' => Yii::t('contacts', 'Members'),
             'createDate' => Yii::t('contacts', 'Create Date'),
             'lastUpdated' => Yii::t('contacts', 'Last Updated'),
+        );
+    }
+
+    /**
+     * An array of valid comparison operators for criteria in dynamic lists
+     * @return array
+     */
+    public static function getComparisonList(){
+        return array(
+            '=' => Yii::t('contacts', 'equals'),
+            '>' => Yii::t('contacts', 'greater than'),
+            '<' => Yii::t('contacts', 'less than'),
+            '<>' => Yii::t('contacts', 'not equal to'),
+            'contains' => Yii::t('contacts', 'contains'),
+            'noContains' => Yii::t('contacts', 'does not contain'),
+            'empty' => Yii::t('contacts', 'empty'),
+            'notEmpty' => Yii::t('contacts', 'not empty'),
+            'list' => Yii::t('contacts', 'in list'),
+            'notList' => Yii::t('contacts', 'not in list'),
         );
     }
 
@@ -345,7 +378,7 @@ class X2List extends X2Model {
         return new CActiveDataProvider($this->modelName, array(
                     'criteria' => $this->queryCriteria(),
                     'pagination' => array(
-                        'pageSize' => isset($pageSize) ? $pageSize : ProfileChild::getResultsPerPage(),
+                        'pageSize' => isset($pageSize) ? $pageSize : Profile::getResultsPerPage(),
                     ),
                     'sort' => $sort
                 ));
@@ -478,7 +511,7 @@ class X2List extends X2Model {
                     'totalItemCount' => $count,
                     'params' => $params,
                     'pagination' => array(
-                        'pageSize' => isset($pageSize) ? $pageSize : ProfileChild::getResultsPerPage(),
+                        'pageSize' => isset($pageSize) ? $pageSize : Profile::getResultsPerPage(),
                     ),
                     'sort' => array(
                         //messing with attributes may cause columns to become unsortable
@@ -494,46 +527,35 @@ class X2List extends X2Model {
      * @return CSqlDataProvider
      */
     public function campaignDataProvider($pageSize = null){
-        // The following line should probably be removed (in addition to the
-        // access checks in queryCriteria) because here in the model is a very
-        // inappropriate place for an access check. Access logic should be
-        // resolved in the controller (or view, and in that case only to hide UI
-        // elements that a user should not be seeing because he/she does not have
-        // permission to use them). The line below is kept here for historical
-        // purposes, just in case it is needed for something terribly important.
-        //
-		// Case in point: let us say that a user does not have proper access to
-        // view a campaign, and cannot view it in practice. That would make this
-        // condition completely redundant; the check has already been performed.
-        // Let us then suppose the user does actually have access to view
-        // something that uses the contact list. In that scenario, the view where
-        // data from this provider is displayed would falsely report zero results
-        // while a different user would see X number of contacts in the campaign,
-        // and the campaign's scope would depend on who launches it instead of the
-        // actual criteria, when the user who saw it with zero contacts should have
-        // been denied access to it to begin with.
-        $conditions = X2Model::model('Campaign')->getAccessCriteria()->condition;
+		$criteria = X2Model::model('Campaign')->getAccessCriteria();
+		$conditions =$criteria->condition;
+
         $params = array('listId' => $this->id);
 
         $count = Yii::app()->db->createCommand()
                 ->select('count(*)')
                 ->from(X2ListItem::model()->tableName().' as list')
                 ->leftJoin(X2Model::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
-                ->where('list.listId=:listId AND ('.$conditions.')', array(':listId' => $this->id))
+                ->where(
+                    'list.listId=:listId AND ('.$conditions.')',
+                    array_merge (array(
+                        ':listId' => $this->id
+                    ), $criteria->params))
                 ->queryScalar();
 
         $sql = Yii::app()->db->createCommand()
                 ->select('list.*, t.*')
                 ->from(X2ListItem::model()->tableName().' as list')
                 ->leftJoin(X2Model::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
-                ->where('list.listId=:listId AND ('.$conditions.')', array(':listId' => $this->id))
+                ->where(
+                    'list.listId=:listId AND ('.$conditions.')')
                 ->getText();
 
         return new CSqlDataProvider($sql, array(
-                    'params' => $params,
+                    'params' => array_merge ($params, $criteria->params),
                     'totalItemCount' => $count,
                     'pagination' => array(
-                        'pageSize' => !empty($pageSize) ? $pageSize : ProfileChild::getResultsPerPage(),
+                        'pageSize' => !empty($pageSize) ? $pageSize : Profile::getResultsPerPage(),
                     ),
                     'sort' => array(
                         //messing with attributes may cause columns to become unsortable
@@ -664,6 +686,51 @@ class X2List extends X2Model {
     }
 
     /**
+     * Save associated criterion objects for a dynamic list
+     *
+     * Takes data from the dynamic list criteria designer form and turns them
+     * into {@link X2ListCriterion} records.
+     */
+    public function processCriteria(){
+        X2ListCriterion::model()->deleteAllByAttributes(array('listId' => $this->id)); // delete old criteria
+        foreach(array('attribute', 'comparison', 'value') as $property){
+            // My lazy refactor: bring properties into the current scope as
+            // temporary variables with their names pluralized
+            ${"{$property}s"} = $this->criteriaInput[$property];
+        }
+        $comparisonList = self::getComparisonList();
+        $contactModel = Contacts::model();
+        $fields = $contactModel->getFields(true);
+
+        for($i = 0; $i < count($attributes); $i++){ // create new criteria
+            if((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags') && array_key_exists($comparisons[$i], $comparisonList)){
+                $fieldRef = isset($fields[$attributes[$i]]) ? $fields[$attributes[$i]] : null;
+                if($fieldRef instanceof Fields && $fieldRef->type == 'link'){
+                    $nameList = explode(',', $values[$i]);
+                    $namesParams = AuxLib::bindArray($nameList);
+                    $namesIn = AuxLib::arrToStrList(array_keys($namesParams));
+                    $lookupModel = X2Model::model(ucfirst($fieldRef->linkType));
+                    $lookupModels = $lookupModel->findAllBySql(
+                            'SELECT * FROM `'.$lookupModel->tableName().'` '
+                            .'WHERE `name` IN '.$namesIn, $namesParams);
+                    if(!empty($lookupModels)){
+                        $values[$i] = implode(',', array_map(function($m){
+                                    return $m->nameId;
+                                }, $lookupModels)); //$lookup->nameId;
+                    }
+                }
+                $criterion = new X2ListCriterion;
+                $criterion->listId = $this->id;
+                $criterion->type = 'attribute';
+                $criterion->attribute = $attributes[$i];
+                $criterion->comparison = $comparisons[$i];
+                $criterion->value = $values[$i];
+                $criterion->save();
+            }
+        }
+    }
+
+    /**
      * Removes the specified ID(s) from this list
      * @param mixed $ids a single integer or an array of integer IDs
      */
@@ -718,6 +785,24 @@ class X2List extends X2Model {
                 $listNames[$list->id] = $list->name;
         }
         return $listNames;
+    }
+
+    public function setAttributes($values, $safeOnly = true){
+        if($this->type == 'dynamic'){
+            $this->criteriaInput = array();
+            foreach(array('attribute', 'comparison', 'value') as $property){
+                if(isset($values[$property]))
+                    $this->criteriaInput[$property] = $values[$property];
+            }
+        }
+        parent::setAttributes($values, $safeOnly);
+    }
+
+    public function afterSave(){
+        if($this->type == 'dynamic' && isset($this->criteriaInput)) {
+            $this->processCriteria();
+        }
+        return parent::afterSave();
     }
 
 }

@@ -109,7 +109,7 @@ echo CHtml::dropDownList(
         'options'=>array_merge(
             array(null=>array('selected'=>'selected')),
             array_fill_keys(array_keys($modelLabels),array('selected'=>false))),
-        'class' => 'left'
+        'class' => 'left x2-select'
     )
 );
 echo CHtml::endForm();

@@ -42,6 +42,7 @@ x2.fieldUtils = {
 
     templates:{
         conditionForm:$("#condition-templates li"),
+        workflowStatusConditionForm: $("#workflow-condition-template li"),
         conditionAttrCell:$("#condition-templates > .x2fields-attribute"),
         conditionOpCell:$("#condition-templates > .x2fields-operator"),
         conditionValCell:$("#condition-templates > .x2fields-value")
@@ -116,8 +117,9 @@ x2.fieldUtils = {
         }
     },
     /** 
-     *     Helper method:
-     *     Makes an array of [name,label] pairs from the more complex array from by {@link getModelAttributes()}
+     * Helper method:
+     * Makes an array of [name,label] pairs from the more complex array from by 
+     * {@link getModelAttributes()}
      */
     parseAttributeList:function(attributeList) {
         var options = [];
@@ -127,8 +129,9 @@ x2.fieldUtils = {
     },
     /** 
      * Helper method:
-     * Loops through attributes array from {@link getModelAttributes()} and returns the one with the specified name.
-     & Defaults to first attribute.
+     * Loops through attributes array from {@link getModelAttributes()} and returns the one with 
+     * the specified name.
+     * Defaults to first attribute.
      */
     getSelectedAttribute:function(attrName,attributeList) {
         var attr = null;
@@ -211,6 +214,8 @@ x2.fieldUtils = {
         }
     },
     createInput:function(attributes) {
+
+        var that = this;
         var dropdownOptions = attributes.options;
         
         var safeAttributes = {    // only these properties can actually be passed to $.attr()
@@ -218,6 +223,16 @@ x2.fieldUtils = {
             name:attributes.name,
             value:attributes.value
         };
+
+        /**
+         * This prevents auto formatting of the date/datetime input by the date/datetimepicker
+         * when the picker is closed. This allows users to enter insertable attributes into
+         * date/datetimepicker fields.
+         */
+        function preventAutoFormat (dateText, obj) {
+            $(this).val (dateText); // overwrite formatted text 
+        }
+
         switch(attributes.type) {
             case 'boolean':
                 if(typeof attributes.value === "undefined")
@@ -238,7 +253,8 @@ x2.fieldUtils = {
                     constrainInput: false,
                     // showOtherMonths: true,
                     // selectOtherMonths: true,
-                    dateFormat:yii.datePickerFormat
+                    dateFormat:yii.datePickerFormat,
+                    onClose: preventAutoFormat
                 });
             case 'dateTime':
                 return $('<input type="text" />').attr(safeAttributes).datetimepicker({
@@ -248,16 +264,113 @@ x2.fieldUtils = {
                     dateFormat:yii.datePickerFormat,
                     timeFormat:yii.timePickerFormat,
                     minDate:null,
-                    maxDate:null
+                    maxDate:null,
+                    onClose: preventAutoFormat
                 });
             case 'date':
                 return $('<input type="text" />').attr(safeAttributes).datepicker({
                     constrainInput: false,
                     showOtherMonths: true,
                     selectOtherMonths: true,
-                    dateFormat:yii.datePickerFormat
+                    dateFormat:yii.datePickerFormat,
+                    onClose: preventAutoFormat
                 });
-                
+            // allows you to create a dropdown whose options change depending on the value
+            // of another dropdown field.
+            case 'dependentDropdown':
+                if(attributes.value !== undefined && attributes.value instanceof Array)
+                    safeAttributes.multiple = "multiple";
+                var fieldDependencySelector = 
+                    'fieldset[name="' + attributes.dependency + '"] select';
+                var dropdown = this.buildDropdown(dropdownOptions,safeAttributes);
+
+                // store information about the dependent dropdown so that it can be updated
+                // after the form is added to the DOM
+                $(dropdown).attr ('data-dependent-dropdown', 'true');
+                $(dropdown).data ('data-dependency', fieldDependencySelector);
+
+                // look for a cached dropdown cache
+                if (typeof attributes.dropdownCache !== 'undefined') {
+                    $(dropdown).data ('dropdownCache', attributes.dropdownCache);
+                }
+
+                var first = true;
+
+                // fetch new options when dependency field changes
+                $(document).off ('change', fieldDependencySelector);
+                $(document).on ('change', fieldDependencySelector, function fetchOptions () {
+                    var cache = $(dropdown).data ('dropdownCache');
+
+                    // initialize the cache
+                    // store the cache in the jQuery data so that it can be saved in the config
+                    // cache.
+                    if (typeof cache === 'undefined') {
+                        cache = {};
+
+                        // the default dependency val is always the first option
+                        var defaultDependencyVal = 
+                            $(fieldDependencySelector).find ('option').first ().val ();
+
+                        // add the default dropdown to the cache
+                        // since this event gets triggered as soon as the form is added to the DOM,
+                        // the current options are the default options.
+                        var defaultOptions = [];
+                        $(dropdown).find ('option').each (function () {
+                            defaultOptions.push ([$(this).val (), $(this).html ()]);
+                        });
+                        cache[defaultDependencyVal] = defaultOptions;
+
+                        $(dropdown).data ('dropdownCache', cache);
+                    }
+
+                    var dependencyVal = $(fieldDependencySelector).val ();
+
+                    // look for dropdown in cache
+                    if (typeof cache[dependencyVal] !== 'undefined') { // cache hit
+                        var $newDropdown = that.buildDropdown (
+                            cache[dependencyVal], safeAttributes);
+                        $(dropdown).replaceWith ($newDropdown);
+                        dropdown = $newDropdown;
+                        if (first) {
+                            $(dropdown).val (attributes.value);
+                            first = false;
+                        }
+
+                        // transfer cache to new dropdown
+                        $(dropdown).data ('dropdownCache', cache); 
+                        return;
+                    }
+
+                    // cache miss
+                    x2.forms.inputLoading (dropdown);
+                    $.ajax ({
+                        url: attributes.optionsSource,
+                        type: 'get',
+                        dataType: 'json',
+                        data: {
+                            workflowId: dependencyVal,
+                            optional: (attributes.optional ? true : false)
+                        },
+                        success: function (data) {
+                            x2.forms.inputLoadingStop (dropdown);
+                            var $newDropdown = that.buildDropdown (data, safeAttributes);
+                            var cache = $(dropdown).data ('dropdownCache');
+                            $(dropdown).replaceWith ($newDropdown);
+                            dropdown = $newDropdown;
+                            cache[dependencyVal] = data;
+
+                            if (first) {
+                                $(dropdown).val (attributes.value);
+                                first = false;
+                            }
+
+                            // transfer cache to new dropdown
+                            $(dropdown).data ('dropdownCache', cache); 
+                        }
+                    });
+                });
+
+                return dropdown;
             case 'dropdown':
             case 'assignment':
             case 'optionalAssignment':
@@ -292,6 +405,66 @@ x2.fieldUtils = {
                     }
                 });
                 
+            // allows you to create an autocomplete whose source changes depending on the value
+            // of another autocomplete.
+            case 'dependentAutocomplete':
+                var textValue = '';
+
+                if(typeof safeAttributes.value === 'string') {
+                    textValue = safeAttributes.value.replace (/_[0-9]+$/, '');
+                }
+
+                var fieldDependencySelector = 
+                    'fieldset[name="' + attributes.dependency + '"] select';
+
+                var hidden = $('<input type="hidden" />').attr(safeAttributes);
+                var input = $('<input type="text" />').val(textValue).autocomplete({
+                    minLength:0,
+                    source:attributes.linkSource,
+                    select:function(event,ui) {
+                        $(this).val(ui.item.value);
+                        // console.debug(ui.item);
+                        $(this).next("input").val(ui.item.value+'_'+ui.item.id);
+                        return false; 
+                    }
+                }).keyup(function(){
+                    $(this).next("input").val(input.val());
+                });
+                $(input).attr ('data-default-text', 'Start typing to suggest...');
+                $(input).addClass ('x2-default-field');
+
+                // fetch new autocomplete when dependency field changes
+                $(document).on ('change', fieldDependencySelector, function () {
+                    x2.forms.inputLoading (input);
+                    $.ajax ({
+                        type: 'GET',
+                        url: attributes.getAutoCompleteUrl.replace (/\?.*$/, ''),
+                        data: {
+                            modelType: $(fieldDependencySelector).val ()
+                        },
+                        success: function (data) {
+                            x2.forms.inputLoadingStop (input);
+                            var inputParent = $(input).parent ();
+                            // remove extra element associated with autocomplete
+                            $(inputParent).find ('input').first ().next ('span').remove ();
+                            // replace the autocomplete
+                            $(inputParent).find ('input').first ().replaceWith (data);
+                            input = $(inputParent).find ('input').first ();
+
+                        }
+                    });
+                });
+                
+                // clear input when dependency field changes
+                $(document).on ('change', fieldDependencySelector, function () {
+                    $(input).val ('');
+                });
+                $(document).on ('keydown', fieldDependencySelector, function () {
+                    $(input).val ('');
+                });
+
+                return $(input).add(hidden);
+            
             case 'link':
                 if(attributes.linkSource) {
                     // console.debug('still alive');
@@ -303,7 +476,8 @@ x2.fieldUtils = {
                     //autocomplete with hidden id
                     
                     var textValue = '';
-                    if(safeAttributes.value !== undefined) {
+
+                    if(typeof safeAttributes === 'string') {
                         textValue = safeAttributes.value.replace (/_[0-9]+$/, '');
                     }
                     
@@ -320,10 +494,15 @@ x2.fieldUtils = {
                     }).keyup(function(){
                         $(this).next("input").val(input.val());
                     });
-                    // .change(function() {    //this is for when there is an initial id value supplied,
-                        // var current = $(this).val();    //and we want the text to display, not the id
+                    $(input).attr ('data-default-text', 'Start typing to suggest...');
+                    $(input).addClass ('x2-default-field');
+                    //this is for when there is an initial id value supplied,
+                    // .change(function() {    
+                        //and we want the text to display, not the id
+                        // var current = $(this).val();    
                         // if(current.match(/^\d+$/)) {
-                            // var match = $.grep(criteria,function(el,i) {    //we have saved the names of the record in our criteria json
+                            //we have saved the names of the record in our criteria json
+                            // var match = $.grep(criteria,function(el,i) {    
                                 // return current == el.value;
                             // });
                             // $(this).val(match[0].name);
@@ -332,7 +511,7 @@ x2.fieldUtils = {
                     return $(input).add(hidden);
                 }
                 // no break statement here; if there's no link source, just make a default input
-            
+
             case 'varchar':
             case 'email':
             case 'credId':
@@ -363,12 +542,11 @@ x2.fieldUtils = {
      * Generates an HTML <select> element with the specified name and options
      */
     buildDropdown:function(options,attributes) {
-        // console.debug(options);
         if(typeof attributes == "undefined")
             var attributes = {};
         var val = attributes.value;
         delete attributes.value;
-    
+
         var dropdown = $(document.createElement('select')).attr(attributes);
         for(var i in options) {
             $(document.createElement('option')).attr('value',options[i][0]).text(options[i][1]).
@@ -377,6 +555,33 @@ x2.fieldUtils = {
         dropdown.val(val);
         return dropdown;
         //return dropdown.val(val);
+    },
+
+    /**
+     * This gets called after a new config menu form gets inserted into the DOM. 
+     * This updates the dependent dropdown based on the value of the dropdown it depends on.
+     */
+    updateDependentDropdowns:function (form) {
+        // look for dependent dropdown elements in the form
+        $(form).find ('[data-dependent-dropdown="true"]').each (function () {
+            // grab the selector of the dropdown element dependency and trigger its change event.
+            // this causes the updated options to be fetched
+            $($(this).data ('data-dependency')).change ();
+        });
+    },
+
+    /**
+     * Checks for the presence of a dependent dropdown cache and returns it if found. This is used
+     * to save the dropdown cache when the config menu is torn down
+     * @return null|object
+     */
+    checkForDependentDropdownCache: function (fieldset) {
+            var select = $(fieldset).find ('select');
+            if ($(select).length && $(select).data ('dropdownCache')) {
+                return $(select).data ('dropdownCache');
+            }
+            return null;
     }
+
 }
 });

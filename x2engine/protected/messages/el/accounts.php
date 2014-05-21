@@ -34,4 +34,7 @@ return array (
 'Campaign Form'=>'Φόρμα καμπάνιας',
 'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'Το έντυπο αυτό θα σας επιτρέψει να δημιουργήσετε μια εκστρατεία για να στείλετε σχετικές επαφές των λογαριασμών εμφανίζονται στην αναφορά παρακάτω. Επιλέξτε το &quot;Primary Επαφές&quot; μόνο email επαφές για τις οποίες έχουν οριστεί ως ο κύριος υπεύθυνος επαφής για ένα λογαριασμό. Επιλέξτε &quot;All&quot; στο e-mail όλες τις σχετικές επαφές σε κάθε λογαριασμό.',
 'Primary Contact'=>'Πρωτοβάθμια Επικοινωνία',
+'Import Accounts'=>'Εισαγωγή Λογαριασμοί',
+'Export Accounts'=>'Λογαριασμοί των εξαγωγών',
+'Bug Report Attributes'=>'Χαρακτηριστικά Bug Report',
 );

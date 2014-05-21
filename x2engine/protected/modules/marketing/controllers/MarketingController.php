@@ -101,6 +101,8 @@ class MarketingController extends x2base {
         );
     }*/
 
+    
+
     /**
      * Returns a JSON array of the names of all campaigns filtered by a search term.
      *
@@ -382,7 +384,6 @@ class MarketingController extends x2base {
      * @param integer $id ID of the campaign to launch
      */
     public function actionLaunch($id){
-        AuxLib::debugLogR ('launch');
         $campaign = $this->loadModel($id);
 
         if(!isset($campaign)){

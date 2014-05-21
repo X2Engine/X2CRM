@@ -277,7 +277,7 @@ class APIModel {
                 unset($this->attributes[$key]);
             }
         }
-        $action = empty($this->attributes['id']) && count($this->attributes) > 1
+        $action = empty($this->attributes['id']) || count($this->attributes) > 1
             ? "api/lookup/model/$modelName"
             : "api/view/model/$modelName";
 		$this->responseObject = $this->_send($action,$this->attributes);

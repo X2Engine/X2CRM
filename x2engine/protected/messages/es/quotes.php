@@ -68,4 +68,6 @@ return array (
 'Are you sure you want to delete this quote?'=>'¿Está seguro de que desea eliminar esta cita?',
 'This quote is locked. Are you sure you want to update this quote?'=>'Esta cita está bloqueado. ¿Está seguro de que desea actualizar esta cita?',
 'This quote is locked.'=>'Esta cita está bloqueado.',
+'Import Quotes'=>'Importar Cotizaciones',
+'Export Quotes'=>'Exportación Cotizaciones',
 );

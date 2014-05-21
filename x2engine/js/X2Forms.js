@@ -35,11 +35,12 @@
 
 if (typeof x2 === 'undefined') x2 = {};
 
-x2.forms = (function () {
+x2.Forms = (function () {
 
 function X2Forms (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
+        translations: {}
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
@@ -59,7 +60,41 @@ Public instance methods
 */
 
 /**
- * Clears all inputs in form
+ * Initializes all elements with the class 'x2-multiselect-dropdown' as multiselect dropdown 
+ * elements. The value of the element's 'data-selected-text' attribute will be used as the
+ * text in the multiselect element indicating the number of options selected.
+ */
+X2Forms.prototype.initializeMultiselectDropdowns = function () {
+    var that = this;
+    $('.x2-multiselect-dropdown').each (function () {
+
+        // don't reinitialize
+        if ($(this).next ().hasClass ('.ui-multiselect')) return;
+
+        var selectedText = $(this).attr ('data-selected-text'); 
+        $(this).multiselect2 ({ 
+            selectedText: '# ' + selectedText + ' ' + that.translations['selected'],
+            checkAllText: that.translations['Check All'], 
+            uncheckAllText: that.translations['Uncheck All'], 
+            'classes': 'x2-multiselect-dropdown-menu'
+        });
+    });
+};
+
+/**
+ * Creates an error message element which can be appended to a form and cleared with clearForm ().
+ * @return object jQuery element containing specified error message
+ */
+X2Forms.prototype.errorMessage = function (message) {
+    return $('<span>', {
+        'class': 'x2-forms-error-msg',
+        text: message
+    });
+};
+
+/**
+ * Clears all inputs in form. Removes 'error' class from all inputs. Also clears all error message
+ * elements created by errorMessage ().
  * @param Object element containing the form
  * @param Bool preserveDefaults if true, values of form inputs will be set to their default values.
  *  Otherwise, they are set to the empty string.
@@ -78,6 +113,8 @@ X2Forms.prototype.clearForm = function (container, preserveDefaults) {
     } else {
         $(container).find ('textarea, input, select').val ('');
     }
+    $(container).find ('.error').removeClass ('error');
+    $(container).find ('.x2-forms-error-msg').remove ();
 };
 
 /**
@@ -211,7 +248,7 @@ X2Forms.prototype.toggleTextResponsive = function(field) {
 /**
  * Used to hide/show default text of input
  */
-X2Forms.prototype.toggleText = function(field) {
+X2Forms.prototype.toggleText = function(field, focus) {
     if(field.defaultValue==field.value) {
         field.value = ''
         field.style.color = 'black'
@@ -221,14 +258,14 @@ X2Forms.prototype.toggleText = function(field) {
     }
 };
 
+
 /**
  * Like toggleText except that it uses the attribute data-default-text to store the
  * placeholder value. This can be used for fields that are already populated on page load.
- * Unlike toggleText, this should not be called publicly. Instead, all fields with the class
- * 'x2-default-field' are automatically initialized.
+ * Instead, all fields with the class 'x2-default-field' are automatically initialized on page load.
  * @param object jQuery object
  */
-X2Forms.prototype._enableDefaultText = function (element) {
+X2Forms.prototype.enableDefaultText = function (element) {
     if (!$(element).attr ('data-default-text')) {
         return;
     }
@@ -237,13 +274,17 @@ X2Forms.prototype._enableDefaultText = function (element) {
         $(element).val (defaultText); 
         $(element).css ({color: '#aaa'});
     }
-    $(element).on ('blur', function () {
+    $(element).off ('blur.defaultText').
+        on ('blur.defaultText', function () {
+
         if ($(element).val () === '') {
             $(element).val (defaultText); 
             $(element).css ({color: '#aaa'});
         }
     });
-    $(element).on ('focus', function () {
+    $(element).off ('focus.defaultText').
+        on ('focus.defaultText', function () {
+
         if ($(element).val () === $(element).attr ('data-default-text')) {
             $(element).val (''); 
             $(element).css ({color: 'black'});
@@ -473,7 +514,26 @@ X2Forms.prototype.initX2FileInput = function() {
 
 };
 
+/**
+ * Hide input and place a loading gif in its place 
+ * @param object the input element
+ */
+X2Forms.prototype.inputLoading = function (elem) {
+    $(elem).hide ();
+    $(elem).before ($('<div>', {
+        'class': 'x2-loading-icon',
+        'style': 'height: 27px; background-size: 27px;'
+    }));
+};
 
+/**
+ * Remove loading gif created by inputLoading ()
+ * @param object the input element
+ */
+X2Forms.prototype.inputLoadingStop = function (elem) {
+    $(elem).prev ().remove ();
+    $(elem).show ();
+};
 
 /*
 Private instance methods
@@ -540,22 +600,38 @@ X2Forms.prototype._setUpFormElementBehavior = function () {
 
 };
 
+X2Forms.prototype.getElementWidth = function (elem) {
+    // determine width, using a clone if necessary
+    if (!$(elem).is (':visible')) {
+        var dummyElem = $(elem).clone ();
+        $('body').append (dummyElem);
+        var elemWidth = $(dummyElem).width () + 15;
+        //var elemHeight = $(dummyElem).height ();
+        dummyElem.remove ();
+    } else {
+        var elemWidth = $(elem).width ();
+        //var elemHeight = $(elem).height ();
+    }
+    return elemWidth;
+};
+
 /**
  * Initialize all the fields that have default values.
  */
-X2Forms.prototype._initializeDefaultFields = function () {
+X2Forms.prototype.initializeDefaultFields = function () {
     var that = this;
-    $('.x2-default-field').each (function () { that._enableDefaultText ($(this)); });
+    $('.x2-default-field').each (function () { that.enableDefaultText ($(this)); });
 };
 
 X2Forms.prototype._init = function () {
     var that = this;
     $(function () { 
         that._setUpFormElementBehavior (); 
-        that._initializeDefaultFields ();
+        that.initializeDefaultFields ();
+        that.initializeMultiselectDropdowns ();
     });
 };
 
-return new X2Forms ();
+return X2Forms;
 
 }) ();

@@ -31,4 +31,7 @@ return array (
 'Unable to create custom module directory.'=>'カスタムモジュールのディレクトリを作成できません。',
 'Unable to create config file for custom module.'=>'カスタムモジュールの設定ファイルを作成できません。',
 'Unable to create table for custom module.'=>'カスタムモジュールのためのテーブルを作成できません。',
+'Import {X}'=>'インポート{X}',
+'Export {X}'=>'輸出{X}',
+'{modelName} Attributes'=>'{modelName}の属性',
 );

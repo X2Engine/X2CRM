@@ -36,6 +36,29 @@
 
 Yii::app()->clientScript->registerCss('inlineRelationshipsCss',"
 
+#relationship-model-name-container {
+    text-align: left;
+    overflow: hidden;
+}
+#relationship-model-name-container label {
+    display: inline !important;
+}
+
+#quick-create-record {
+    position: relative;
+    top: 7px;
+    right: 9px;
+}
+
+#relationships-grid .summary {
+    margin-bottom: 6px;
+}
+
+#new-relationship-form .record-name-autocomplete {
+    width: 200px !important;
+    float: left;
+}
+
 #relationships-grid .x2grid-header-container {
     border-radius: 4px 4px 0 0;
     -moz-border-radius: 4px 4px 0 0;
@@ -59,23 +82,18 @@ Yii::app()->clientScript->registerCss('inlineRelationshipsCss',"
     margin-top: 11px;
 }
 
-#new-relationship-form {
-    width: 216px;
-}
-
 label[for=\"RelationshipModelName\"],
-#quick-create-record,
 #relationship-type {
     float: left;
 }
 
 label[for=\"RelationshipModelName\"] {
-    margin-top: 7px;
+    margin-top: 12px;
     margin-right: 6px;
 }
 
 #quick-create-record {
-    margin-left: 28px;
+    margin-left: 11px;
     margin-top: 2px;
 }
 
@@ -175,7 +193,7 @@ $columns = array(
 	array(
 		'name' => 'myModelName',
 		'header' => Yii::t("contacts", 'Type'),
-		'value' => '$data->myModelName',
+        'value' => 'X2Model::getModelTitle ($data->myModelName)',
 		'type' => 'raw',
 	),
 	array(
@@ -283,6 +301,7 @@ Public instance methods
  * @param string modelType 
  */
 InlineRelationships.prototype.initQuickCreateButton = function (modelType) {
+
     if (this._relationshipManager && 
         this._relationshipManager instanceof x2.RelationshipsManager) {
 
@@ -326,7 +345,12 @@ InlineRelationships.prototype._changeAutoComplete = function (modelType) {
             modelType: modelType
         },
         success: function (data) {
-            $('#inline-relationships-autocomplete-container').html (data); 
+            // remove span element used by jQuery widget
+            $('#inline-relationships-autocomplete-container input').
+                first ().next ('span').remove ();
+            // replace old autocomplete with the new one
+            $('#inline-relationships-autocomplete-container input').first ().replaceWith (data); 
+            // remove the loading gif
             $('#inline-relationships-autocomplete-container').prev ().remove ();
             $('#inline-relationships-autocomplete-container').show ();
         }
@@ -337,14 +361,15 @@ InlineRelationships.prototype._changeAutoComplete = function (modelType) {
  * submits relationship create form via AJAX, performs validation 
  */
 InlineRelationships.prototype._submitCreateRelationshipForm = function () {
+    var that = this; 
     if ($('#RelationshipModelId').val() === '') {
-        this.DEBUG && console.log ('model id is not set');
+        that.DEBUG && console.log ('model id is not set');
         return false;
     } else if (isNaN(parseInt($('#RelationshipModelId').val()))) {
-        this.DEBUG && console.log ('model id is NaN');
+        that.DEBUG && console.log ('model id is NaN');
         return false;
-    } else if($('#second-name-autocomplete').val() === '') {
-        this.DEBUG && console.log ('second name autocomplete is not set');
+    } else if($('.record-name-autocomplete').val() === '') {
+        that.DEBUG && console.log ('second name autocomplete is not set');
         return false;
     }
 
@@ -357,7 +382,10 @@ InlineRelationships.prototype._submitCreateRelationshipForm = function () {
 				alert('Relationship already exists.');
 			} else if(data === 'success') {
 				$.fn.yiiGridView.update('relationships-grid');
-				$('#second-name-autocomplete').val('');
+                var count = parseInt ($('#relationship-count').html ().match (/\((\d+)\)/)[1], 10);
+                $('#relationship-count').html ('(' + (count + 1) + ')');
+
+				$('.record-name-autocomplete').val('');
 				$('#RelationshipModelId').val('');
 			}
         }
@@ -416,23 +444,26 @@ x2.inlineRelationships.initQuickCreateButton ('Contacts');
 ?>
 
 <form id='new-relationship-form' class="form">
-    <input type="hidden" id='RelationshipModelId' name="RelationshipModelId">
     <input type="hidden" id='ModelId' name="ModelId" value="<?php echo $model->id; ?>">
     <input type="hidden" id='ModelName' name="ModelName" value="<?php echo $modelName; ?>">
 
     <div id='inline-relationships-autocomplete-container'>
     <?php
-    InlineRelationships::renderModelAutocomplete ('Contacts');
+    X2Model::renderModelAutocomplete ('Contacts');
     ?>
+    <input type="hidden" id='RelationshipModelId' name="RelationshipModelId">
     </div>
-    <div class='row'>
+    <div class='row' id='relationship-model-name-container'>
         <label for='RelationshipModelName'>
             <?php echo Yii::t('app', 'Link Type:'); ?>
         </label>
         <?php
         echo CHtml::dropDownList (
             'RelationshipModelName', 'Contacts', $linkableModelsOptions, 
-            array ('id' => 'relationship-type'));
+            array (
+                'id' => 'relationship-type',
+                'class' => 'x2-select',
+            ));
         echo CHtml::link(
             CHtml::image(Yii::app()->theme->getBaseUrl ().'/images/Plus_sign.png'),'#',
             array(

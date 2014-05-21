@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * @package application.modules.calendar.models 
+ * @package application.modules.calendar.models
  */
 class X2CalendarPermissions extends CActiveRecord
 {	

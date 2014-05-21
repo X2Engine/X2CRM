@@ -40,6 +40,9 @@ Yii::app()->clientScript->registerCss('recordViewCss',"
     border: none !important;
 }
 ");
+Yii::app()->clientScript->registerResponsiveCssFile(
+    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
+
 
 // quotes can be locked meaning they can't be changed anymore
 Yii::app()->clientScript->registerScript('LockedQuoteDialog', "
@@ -94,7 +97,7 @@ if($contactId) {
   $contact = false;
 }
 
-$authParams['assignedTo']=$model->assignedTo;
+$authParams['X2Model'] = $model;
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('quotes','Quotes List'), 'url'=>array('index')),
 	array('label'=>Yii::t('quotes','Invoice List'), 'url'=>array('indexInvoice')),

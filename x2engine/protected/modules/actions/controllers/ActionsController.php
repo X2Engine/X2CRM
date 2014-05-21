@@ -41,6 +41,7 @@
 class ActionsController extends x2base {
 
     public $modelClass = 'Actions';
+    public $showActions = null;
 
     /**
      * Specifies the access control rules.
@@ -55,7 +56,7 @@ class ActionsController extends x2base {
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array('index', 'view', 'create', 'createSplash', 'createInline', 'viewGroup', 'complete', //quickCreate
-                    'completeRedirect', 'update', 'quickUpdate', 'saveShowActions', 'viewAll', 'search', 'completeNew', 'parseType', 'uncomplete', 'uncompleteRedirect', 'delete', 'shareAction', 'inlineEmail', 'publisherCreate'),
+                    'completeRedirect', 'update', 'quickUpdate', 'saveShowActions', 'viewAll', 'search', 'completeNew', 'parseType', 'uncomplete', 'uncompleteRedirect', 'delete', 'shareAction', 'inlineEmail', 'publisherCreate','saveShowActions'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -78,6 +79,13 @@ class ActionsController extends x2base {
                 'class' => 'application.modules.actions.components.TimerControlAction',
             ),
         ));
+    }
+    public function actionSaveShowActions(){
+        if(isset($_POST['ShowActions'])){
+            $profile = Profile::model()->findByPk(Yii::app()->user->id);
+            $profile->showActions = $_POST['ShowActions'];
+            $profile->update();
+        }
     }
 
     /**
@@ -189,48 +197,21 @@ class ActionsController extends x2base {
         ));
     }
 
-    public function actionSendReminder(){
+    /*public function actionSendReminder(){
 
         $dataProvider = new CActiveDataProvider('Actions', array(
                     'criteria' => array(
                         'condition' => '(dueDate<"'.mktime(23, 59, 59).'" AND dueDate>"'.mktime(0, 0, 0).'" AND complete="No")',
                         )));
 
-        $emails = User::getEmails();
-
         $actionArray = $dataProvider->getData();
 
         foreach($actionArray as $action){
             if($action->reminder == 1){
-
-                if($action->associationId != 0){
-                    $contact = X2Model::model('Contacts')->findByPk($action->associationId);
-                    $name = $contact->firstName.' '.$contact->lastName;
-                } else
-                    $name = Yii::t('actions', 'No one');
-                if(isset($emails[$action->assignedTo])){
-                    $email = $emails[$action->assignedTo];
-                }else{
-                    continue;
-                }
-                if(isset($action->type))
-                    $type = $action->type;
-                else
-                    $type = Yii::t('actions', 'Not specified');
-
-                $subject = Yii::t('actions', 'Action Reminder:');
-                $body = Yii::t('actions', "Reminder, the following action is due today: \n Description: {description}\n Type: {type}.\n Associations: {name}.\nLink to the action: ", array('{description}' => $action->actionDescription, '{type}' => $type, '{name}' => $name))
-                        .Yii::app()->controller->createAbsoluteUrl('/actions/actions/view',array('id'=>$action->id));
-                $headers = 'From: '.Yii::app()->params['adminEmail'];
-
-                if($action->associationType != 'none')
-                    $body.="\n\n".Yii::t('actions', 'Link to the {type}', array('{type}' => ucfirst($action->associationType))).': '.Yii::app()->controller->createAbsoluteUrl(str_repeat('/'.$action->associationType,2).'/view',array('id'=>$action->associationId));
-                $body.="\n\n".Yii::t('actions', 'Powered by ').'<a href=http://x2engine.com>X2Engine</a>';
-
-                mail($email, $subject, $body, $headers);
+                $action->sendEmailRemindersToAssignees ();
             }
         }
-    }
+    }*/
 
     public function create($model, $oldAttributes, $api){
 
@@ -283,13 +264,13 @@ class ActionsController extends x2base {
         // $model->syncGoogleCalendar();
         // google sync
         /* if(!is_numeric($model->assignedTo)) { // assigned to user
-          $profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
+          $profile = Profile::model()->findByAttributes(array('username'=>$model->assignedTo));
           if(isset($profile))
           $profile->syncActionToGoogleCalendar($model); // sync action to Google Calendar if user has a Google Calendar
           } else { // Assigned to group
           $groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
           foreach($groups as $group) {
-          $profile = ProfileChild::model()->findByPk($group['userId']);
+          $profile = Profile::model()->findByPk($group['userId']);
           if(isset($profile))
           $profile->syncActionToGoogleCalendar($model);
           }
@@ -314,30 +295,10 @@ class ActionsController extends x2base {
             $model->setX2Fields($_POST['Actions']);
             if($model->save()){
                 if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
-                    $notif = new Notification;
-                    $notif->modelType = 'Actions';
-                    $notif->createdBy = Yii::app()->user->getName();
-                    $notif->modelId = $model->id;
-                    if($_POST['notificationUsers'] == 'me'){
-                        $notif->user = Yii::app()->user->getName();
-                    }else{
-                        $notif->user = $model->assignedTo;
-                    }
-                    $notif->createDate = $model->dueDate - ($_POST['notificationTime'] * 60);
-                    $notif->type = 'action_reminder';
-                    $notif->save();
-                    if($_POST['notificationUsers'] == 'both' && Yii::app()->user->getName() != $model->assignedTo){
-                        $notif2 = new Notification;
-                        $notif2->modelType = 'Actions';
-                        $notif2->createdBy = Yii::app()->user->getName();
-                        $notif2->modelId = $model->id;
-                        $notif2->user = Yii::app()->user->getName();
-                        $notif2->createDate = $model->dueDate - ($_POST['notificationTime'] * 60);
-                        $notif2->type = 'action_reminder';
-                        $notif2->save();
-                    }
+                    $model->createNotifications (
+                        $_POST['notificationUsers'],
+                        $model->dueDate - ($_POST['notificationTime'] * 60), 'action_reminder');
                 }
-
                 $model->syncGoogleCalendar('create');
                 $this->redirect(array('index'));
             }
@@ -350,10 +311,6 @@ class ActionsController extends x2base {
             'users' => $users,
             'modelList' => Fields::getDisplayedModelNamesList(),
         ));
-    }
-
-    private function createProductAction () {
-
     }
 
     public function actionPublisherCreate(){
@@ -396,6 +353,7 @@ class ActionsController extends x2base {
             $association = $this->getAssociation($model->associationType, $model->associationId);
 
             if($association){
+                
                 $model->associationName = $association->name;
                 if($association->hasAttribute('lastActivity')){
                     $association->lastActivity = time();
@@ -488,13 +446,13 @@ class ActionsController extends x2base {
 
         // now in Actions::synchGoogleCalendar()
         /* if( !is_numeric($model->assignedTo)) { // assigned to user
-          $profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
+          $profile = Profile::model()->findByAttributes(array('username'=>$model->assignedTo));
           if(isset($profile)) // prevent error for actions assigned to 'Anyone'
           $profile->updateGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
           } else { // Assigned to group
           $groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
           foreach($groups as $group) {
-          $profile = ProfileChild::model()->findByPk($group['userId']);
+          $profile = Profile::model()->findByPk($group['userId']);
           if(isset($profile)) // prevent error for actions assigned to 'Anyone'
           $profile->updateGoogleCalendarEvent($model);
           }
@@ -552,36 +510,24 @@ class ActionsController extends x2base {
                         'modelId' => $model->id,
                         'type' => 'action_reminder'
                             ));
+                    // TODO: unit test. refactor notifications deletion into model
+                    // if new notifications were added, delete the old ones
                     foreach($notifications as $notification){
-                        if($notification->user == $model->assignedTo && ($_POST['notificationUsers'] == 'assigned' || $_POST['notificationUsers'] == 'both')){
+                        if ($model->isAssignedTo ($notification->user, true) && 
+                           ($_POST['notificationUsers'] == 'assigned' || 
+                            $_POST['notificationUsers'] == 'both')){
+
                             $notification->delete();
-                        }elseif($notification->user == Yii::app()->user->getName() && ($_POST['notificationUsers'] == 'me' || $_POST['notificationUsers'] == 'both')){
+                        }elseif($notification->user == Yii::app()->user->getName() && 
+                            ($_POST['notificationUsers'] == 'me' || $_POST['notificationUsers'] == 'both')){
+
                             $notification->delete();
                         }
                     }
                 }elseif(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
-                    $notif = new Notification;
-                    $notif->modelType = 'Actions';
-                    $notif->modelId = $model->id;
-                    if($_POST['notificationUsers'] == 'me'){
-                        $notif->user = Yii::app()->user->getName();
-                    }else{
-                        $notif->user = $model->assignedTo;
-                    }
-                    $notif->createdBy = Yii::app()->user->getName();
-                    $notif->createDate = $model->dueDate - ($_POST['notificationTime'] * 60);
-                    $notif->type = 'action_reminder';
-                    $notif->save();
-                    if($_POST['notificationUsers'] == 'both' && Yii::app()->user->getName() != $model->assignedTo){
-                        $notif2 = new Notification;
-                        $notif2->modelType = 'Actions';
-                        $notif2->modelId = $model->id;
-                        $notif2->createdBy = Yii::app()->user->getName();
-                        $notif2->user = Yii::app()->user->getName();
-                        $notif2->createDate = $model->dueDate - ($_POST['notificationTime'] * 60);
-                        $notif2->type = 'action_reminder';
-                        $notif2->save();
-                    }
+                    $model->createNotifications (
+                        $_POST['notificationUsers'],
+                        $model->dueDate - ($_POST['notificationTime'] * 60), 'action_reminder');
                 }
                 if(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->settings->userActionBackdating){
                     $events = X2Model::model('Events')->findAllByAttributes(array(
@@ -621,6 +567,13 @@ class ActionsController extends x2base {
             $notifType = '';
             $notifTime = '';
         }
+
+        /* Set assignedTo back into an array only before re-rendering the input box with assignees 
+           selected */
+        $model->assignedTo = array_map(function($n){
+            return trim($n,',');
+        },explode(' ',$model->assignedTo));
+
         $this->render('update', array(
             'model' => $model,
             'users' => $users,
@@ -643,6 +596,17 @@ class ActionsController extends x2base {
             }
             if($model->save()){
                 $model->syncGoogleCalendar('update');
+            }
+            if (isset($_POST['isEvent']) && $_POST['isEvent']) {
+                // Update calendar event
+                $event = X2Model::model('Events')->findByAttributes(array(
+                    'associationType' => 'Actions',
+                    'associationId' => $model->id,
+                ));
+                if ($event !== null) {
+                    $event->timestamp = $model->dueDate;
+                    $event->update(array('timestamp'));
+                }
             }
         }
     }
@@ -701,13 +665,13 @@ class ActionsController extends x2base {
             $model->syncGoogleCalendar('delete');
 
             /* if(!is_numeric($model->assignedTo)) { // assigned to user
-              $profile = ProfileChild::model()->findByAttributes(array('username'=>$model->assignedTo));
+              $profile = Profile::model()->findByAttributes(array('username'=>$model->assignedTo));
               if(isset($profile))
               $profile->deleteGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
               } else { // Assigned to group
               $groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
               foreach($groups as $group) {
-              $profile = ProfileChild::model()->findByPk($group['userId']);
+              $profile = Profile::model()->findByPk($group['userId']);
               if(isset($profile))
               $profile->deleteGoogleCalendarEvent($model);
               } */
@@ -736,12 +700,8 @@ class ActionsController extends x2base {
             $notes = null;
         }
 
-        $inGroup = false;
-        if(is_numeric($model->assignedTo)){ // we have an action assigned to a group, check if we are in the group
-            $inGroup = Groups::inGroup(Yii::app()->user->id, $model->assignedTo);
-        }
-
-        if(Yii::app()->user->getName() == $model->assignedTo || $model->assignedTo == 'Anyone' || $model->assignedTo == "" || $inGroup || Yii::app()->params->isAdmin){
+        if($model->isAssignedTo (Yii::app()->user->getName ()) ||
+           Yii::app()->params->isAdmin){ // make sure current user can edit this action
 
             if(isset($_POST['note']) && !empty($_POST['note']))
                 $model->actionDescription = $model->actionDescription."\n\n".$_POST['note'];
@@ -793,11 +753,12 @@ class ActionsController extends x2base {
                 $box = "Yellow";
         }
         if($model->uncomplete()){
-            echo json_encode(array(
-                "<span style='color:grey'>".Yii::t('actions', 'Due: ')."</span>".Actions::parseStatus($model->dueDate).'</b>',
-                "background:url(".Yii::app()->theme->baseUrl."/images/icons/{$box}_box.png) 0 0px no-repeat transparent"
-            ));
-            if(!Yii::app()->request->isAjaxRequest){
+            if(Yii::app()->request->isAjaxRequest) {
+                echo json_encode(array(
+                    "<span style='color:grey'>".Yii::t('actions', 'Due: ')."</span>".Actions::parseStatus($model->dueDate).'</b>',
+                    "background:url(".Yii::app()->theme->baseUrl."/images/icons/{$box}_box.png) 0 0px no-repeat transparent"
+                ));
+            }else{
                 $this->redirect(array('/actions/'.$id));
             }
         }

@@ -138,6 +138,7 @@ class CStarRating extends CInputWidget
 	 */
 	public static function registerCssFile($url=null)
 	{
+        /* x2modstart */return;/* x2modend */ 
 		$cs=Yii::app()->getClientScript();
 		if($url===null)
 			$url=$cs->getCoreScriptUrl().'/rating/jquery.rating.css';

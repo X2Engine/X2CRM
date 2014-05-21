@@ -41,6 +41,9 @@ Yii::app()->clientScript->registerCss('recordViewCss',"
 }
 ");
 
+Yii::app()->clientScript->registerResponsiveCssFile(
+    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
+
 
 Yii::app()->clientScript->registerCss('campaignContentCss', '
 #attachments-title {
@@ -68,7 +71,7 @@ if($model->launchDate){
 
 $this->pageTitle = $model->name;
 $themeUrl = Yii::app()->theme->getBaseUrl();
-$authParams['assignedTo'] = $model->createdBy;
+$authParams['X2Model'] = $model;
 $this->actionMenu = $this->formatMenu(array(
     array('label' => Yii::t('marketing', 'All Campaigns'), 'url' => array('index')),
     array('label' => Yii::t('module', 'Create'), 'url' => array('create')),
@@ -127,8 +130,7 @@ $this->actionMenu = $this->formatMenu(array(
     ?>
     <div style="overflow: auto;">
         <?php
-        if(!$model->complete && in_array($model->type, array('Email', 'Call List')) &&
-                Yii::app()->user->checkAccess('MarketingLaunch')){
+        if(!$model->complete && Yii::app()->user->checkAccess('MarketingLaunch')){
 
             if($model->launchDate == 0){
                 echo CHtml::beginForm(array('launch', 'id' => $model->id));
@@ -161,13 +163,14 @@ $this->actionMenu = $this->formatMenu(array(
                 echo CHtml::submitButton(
                         Yii::t('marketing', 'Complete'), array('class' => 'x2-button left', 'style' => 'margin-left:0;'));
                 echo CHtml::endForm();
-                echo CHtml::Button(
-                        Yii::t('marketing', 'Send Test Email'), array(
-                    'id' => 'test-email-button',
-                    'class' => 'x2-button left',
-                    'onclick' => 'toggleEmailForm(); return false;'
-                        )
-                );
+                if($model->type == 'Email')
+                    echo CHtml::Button(
+                            Yii::t('marketing', 'Send Test Email'), array(
+                        'id' => 'test-email-button',
+                        'class' => 'x2-button left',
+                        'onclick' => 'toggleEmailForm(); return false;'
+                            )
+                    );
             }
         }
         ?>

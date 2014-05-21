@@ -163,7 +163,7 @@ more drop down list
 
 .x2-gridview-mass-action-buttons .more-drop-down-list.stuck {
     position: absolute !important;
-    top: 74px !important;
+    /*top: 74px !important;*/
 }
 
 .x2-gridview-mass-action-buttons .more-drop-down-list {
@@ -356,11 +356,17 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
     ?>
     <div class='mass-action-dialog' id="<?php echo $gridId; ?>-add-to-list-dialog" style="display: none;">
         <span>
-            <?php echo Yii::t('app', 'Select a list to which the selected records will be added'); 
+            <?php echo Yii::t('app', 'Select a list to which the selected records will be added.');
             ?>
         </span>
-        <?php echo CHtml::dropDownList (
-            'addToListTarget', null, X2List::getAllStaticListNames ($this)); ?>
+        <?php
+        $listNames  = X2List::getAllStaticListNames ($this);
+        echo empty($listNames)
+            ? '<br><br>'.Yii::t('app','There are no static lists to which '
+                    . 'contacts can be added.').' '.
+                CHtml::link(Yii::t('contacts','Create a List'),
+                            array('/contacts/contacts/createList'))
+            : CHtml::dropDownList ('addToListTarget',null, $listNames); ?>
     </div>
     <?php
     }

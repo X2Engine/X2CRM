@@ -125,7 +125,7 @@ WebFormDesigner.prototype._init = function () {
     // instantiate color pickers
     $.each(that.colorfields, function(i, field) {
         var selector = '#' + field;
-        setupSpectrum ($(selector));
+        x2.colorPicker.setUp ($(selector));
         x2.DEBUG && console.log ('color change: that = ');
         x2.DEBUG && console.log (that);
         $(selector).on ('change', function () { that.updateParams (); });
@@ -175,9 +175,9 @@ WebFormDesigner.prototype._init = function () {
         $('#embedcode').focus();  
         $.each(that.colorfields, function(i, field) {
             if ($('#'+field).val () === '') {
-                addCheckerImage ($('#'+field));
+                x2.colorPicker.addCheckerImage ($('#'+field));
             } else {
-                removeCheckerImage ($('#'+field));
+                x2.colorPicker.removeCheckerImage ($('#'+field));
             }
         });
 
@@ -342,10 +342,14 @@ WebFormDesigner.prototype._generateQuery = function (params) {
     return query;
 };
 
+
+
 /**
  * Use to refresh form data before submission
  */
-WebFormDesigner.prototype._refreshForm = function () {};
+WebFormDesigner.prototype._refreshForm = function () {
+     
+};
 
 // override in child prototype
 WebFormDesigner.prototype._appendToQuery = function (query) {
@@ -392,9 +396,15 @@ WebFormDesigner.prototype._updateExtraFields = function (form) {
     return;
 };
 
+
+
+
+
+
+
 // override in child prototype
 WebFormDesigner.prototype._updateCustomFields = function (form) {
-    return;
+     
 };
 
 // override in child prototype

@@ -49,3 +49,14 @@
     }
 }
 
+/* Inside the feed list items, shift the icon buttons below the date and hide the '|' separator 
+between the date and the icon buttons */
+@media (max-width: 400px) {
+    .event-bottom-row .comment-age {
+        display: block;
+    }
+    .event-bottom-row .comment-age + span {
+        display: none;
+    }
+}
+

@@ -76,7 +76,7 @@ if(!isset($model) && isset($modelType) && isset($modelId)){
 }
 
 if ($name === 'RecordViewChart') {
-	Yii::app()->clientScript->registerScript('chartShowHide', "
+	Yii::app()->clientScript->registerScript('recordViewChartJS', "
 		$(document).on ('chartWidgetMaximized', function () {
 			var chartName = 'actionHistoryChart';
 			".
@@ -85,9 +85,26 @@ if ($name === 'RecordViewChart') {
 			x2[chartName].chart.show ();
 			x2[chartName].chart.replot ();
 		});
-	");
 
-	Yii::app()->clientScript->registerScript('chartSubTypeSelection', "
+        this.popupDropdownMenu = new PopupDropdownMenu ({
+            containerElemSelector: '.chart-controls-container',
+            openButtonSelector: '#chart-settings-button',
+            onClickOutsideSelector: 
+                '#chart-settings-button, ' +
+                '.chart-controls-container, ' +
+                '.ui-datepicker-header, .ui-multiselect-header, .ui-multiselect-checkboxes',
+            autoClose: false,
+            defaultOrientation: 'left',
+            css: {
+                'max-width': '100%',
+                padding: '6px'
+            }
+        });
+
+        /***********************************************************************
+        * chart subtype selection  
+        ***********************************************************************/
+
 		$('#chart-subtype-selector').on ('click', function (evt) {
 			return false;
 		});
@@ -156,7 +173,12 @@ if($name == "InlineRelationships"){
 		} else {
 		?> 
         <span class="x2widget-title">
-            <b><?php echo Yii::t('app', $widget['title']).$relationshipCount; ?></b>
+            <b><?php echo Yii::t('app', $widget['title'])?></b>
+            <?php if ($relationshipCount !== '') { ?> 
+            <b id='relationship-count'>
+            <?php echo $relationshipCount; ?> 
+            </b>
+            <?php } ?>
         </span>
 		<?php
 		}
@@ -164,6 +186,14 @@ if($name == "InlineRelationships"){
 
         <?php if(!Yii::app()->user->isGuest){ ?>
             <div class="portlet-minimize">
+                <?php
+		        if ($name === 'RecordViewChart') {
+                    echo X2Html::settingsButton (Yii::t('app', 'Action History Chart Settings'), 
+                        array (
+                            'id' => 'chart-settings-button',
+                        ));
+                }
+                ?> 
                 <a onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false" 
                  href="#" class="x2widget-minimize">
 					<?php

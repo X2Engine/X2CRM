@@ -34,15 +34,85 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.util.AuxLib');
+
 /**
  * CModelBehavior class for permissions lookups on classes.
  *
  * X2PermissionsBehavior is a CModelBehavior which allows consistent lookup of
  * access levels and whether or not a user is allowed to view or edit a record.
  *
+ * @property string $assignmentAttr Name of the attribute to use for permissions
+ * @property string $visibilityAttr Name of the attribute to use for visibility setting
  * @package application.components.permissions
+ * @author Jake Houser <jake@x2engine.com>, Demitri Morgan <demitri@x2engine.com>
  */
 class X2PermissionsBehavior extends ModelPermissionsBehavior {
+
+    /**
+     * The access level for administrators.
+     *
+     * All records, public and private, will be included in indexes and searches.
+     */
+    const QUERY_ALL = 3;
+    /**
+     * The access level for users granted general access.
+     *
+     * All records marked public or viewable to groupmates (providing the user
+     * in question shares a group in common with the assignee(s)) will be
+     * included in indexes and searches.
+     */
+    const QUERY_PUBLIC = 2;
+    /**
+     * The access level for users granted "private" access.
+     *
+     * Only records assigned to the user in question, or assigned to the user's
+     * groups, will be included.
+     */
+    const QUERY_SELF = 1;
+
+    /**
+     * The access level for users granted no access.
+     *
+     * No records will be retrieved.
+     */
+    const QUERY_NONE = 0;
+
+    /**
+     * This visibility value implies "private"; ordinarily visible only to
+     * assignee(s)/owner(s) of the record
+     */
+    const VISIBILITY_PRIVATE = 0;
+
+    /**
+     * This visibility setting implies the record is public/shared, and anyone
+     * can view.
+     */
+    const VISIBILITY_PUBLIC = 1;
+
+    /**
+     * This visibility setting implies that the record is visible to the owners
+     * and other members of groups to which the owners belong ("groupmates").
+     */
+    const VISIBILITY_GROUPS = 2;
+
+    private $_assignmentAttr;
+    private $_visibilityAttr;
+    
+    /**
+     * "Caches" whether the assignment applies to a given user, for each user.
+     *
+     * Keyed with usernames; values are boolean for whether the assignment applies.
+     * @var type
+     */
+    private $_isAssignedTo = array();
+
+    /**
+     * Similar to {@link _isAssignedTo} but for visibility, which also utilizes
+     * the visibility setting on the model.
+     * @var type
+     */
+    private $_isVisibleTo = array();
 
     /**
      * Returns a CDbCriteria containing record-level access conditions.
@@ -50,48 +120,14 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      */
     public function getAccessCriteria(){
         $criteria = new CDbCriteria;
-
         $accessLevel = $this->getAccessLevel();
-
-        // Determine visibility attribute:
-        $visAttr = false;
-        if($this->owner->hasAttribute('visibility')){
-            $visAttr = 'visibility';
-        }else if($this->owner instanceof X2Model){
-            // Check for the existence of a visibility-type field
-            $fields = $this->owner->getFields();
-            foreach($fields as $field){
-                // Use the first visibility type field in the model (any
-                // additional fields would be superfluous)
-                if($field->type == 'visibility'){
-                    $visAttr = $field->fieldName;
-                    break;
-                }
-            }
-        }
-
-        // Determine assignment attribute:
-        $assignAttr = false;
-        if($this->owner->hasAttribute('assignedTo')) {
-            $assignAttr = 'assignedTo';
-        } elseif ($this->owner->hasAttribute('createdBy')) {
-            $assignAttr = 'createdBy';
-        } elseif ($this->owner instanceof X2Model) {
-            $fields = $this->owner->getFields();
-            foreach($fields as $field) {
-                // Use the first assignment field available:
-                if($field->type == 'assignment') {
-                    $assignAttr = $field->fieldName;
-                    break;
-                }
-            }
-        }
-
-        $conditions=$this->getAccessConditions($accessLevel, $visAttr,null,$assignAttr);
+        $conditions=$this->getAccessConditions($accessLevel);
         foreach($conditions as $arr){
             $criteria->addCondition($arr['condition'],$arr['operator']);
+            if(!empty($arr['params']))
+                $criteria->params = array_merge($criteria->params,$arr['params']);
         }
-
+        
         return $criteria;
     }
 
@@ -111,40 +147,77 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
         }else{ // User session not available; doing an operation through API or console
             $uid = Yii::app()->getSuID();
         }
-        $accessLevel = 0;
+        $accessLevel = self::QUERY_NONE;
         if(Yii::app()->authManager->checkAccess($module.'Admin', $uid)){
-            if($accessLevel < 3)
-                $accessLevel = 3;
+            if($accessLevel < self::QUERY_ALL)
+                $accessLevel = self::QUERY_ALL;
         }elseif(Yii::app()->authManager->checkAccess($module.'ReadOnlyAccess', $uid)){
-            if($accessLevel < 2)
-                $accessLevel = 2;
+            if($accessLevel < self::QUERY_PUBLIC)
+                $accessLevel = self::QUERY_PUBLIC;
         }elseif(Yii::app()->authManager->checkAccess($module.'PrivateReadOnlyAccess', $uid)){
-            if($accessLevel < 1)
-                $accessLevel = 1;
+            if($accessLevel < self::QUERY_SELF)
+                $accessLevel = self::QUERY_SELF;
         }
-        $roles = X2Model::model('RoleToUser')->findAllByAttributes(array('userId' => $uid));
-        foreach($roles as $role){
-            if(Yii::app()->authManager->checkAccess($module.'Admin', $role->roleId)){
-                if($accessLevel < 3)
-                    $accessLevel = 3;
-            }elseif(Yii::app()->authManager->checkAccess($module.'ReadOnlyAccess', $role->roleId)){
-                if($accessLevel < 2)
-                    $accessLevel = 2;
-            }elseif(Yii::app()->authManager->checkAccess($module.'PrivateReadOnlyAccess', $role->roleId)){
-                if($accessLevel < 1)
-                    $accessLevel = 1;
+        return $accessLevel;
+    }
+
+    /**
+     * Resolves/returns the assignment attribute to use in permission checks
+     * @return type
+     */
+    public function getAssignmentAttr(){
+        if(!isset($this->_assignmentAttr)){
+            $this->_assignmentAttr = false;
+            if($this->owner->hasAttribute('assignedTo')){
+                return $this->_assignmentAttr = 'assignedTo';
+            }elseif($this->owner->hasAttribute('createdBy')){
+                return $this->_assignmentAttr = 'createdBy';
+            }elseif($this->owner instanceof X2Model){
+                $fields = $this->owner->getFields();
+                foreach($fields as $field){
+                    // Use the first assignment field available:
+                    if($field->type == 'assignment'){
+                        $assignAttr = $field->fieldName;
+                        return $this->_assignmentAttr = $field->fieldName;
+                    }
+                }
             }
         }
-        /* temp */
-        // Remove this code after Custom Module refactor project.
-//        $item = Yii::app()->authManager->getAuthItem($module.'ReadOnlyAccess');
-//        if(is_null($item)){
-//            if($accessLevel < 2){
-//                $accessLevel = 2;
-//            }
-//        }
-        /* end temp */
-        return $accessLevel;
+        return $this->_assignmentAttr;
+    }
+
+    /**
+     * Resolves/returns the visibility attribute to use in permission checks
+     */
+    public function getVisibilityAttr(){
+        if(!isset($this->_visibilityAttr)){
+            $this->_visibilityAttr = false;
+            if($this->owner->hasAttribute('visibility')) {
+                return $this->_visibilityAttr = 'visibility';
+            } elseif($this->owner instanceof X2Model) {
+                $fields = $this->owner->getFields();
+                foreach($fields as $field){
+                    // Use the first assignment field available:
+                    if($field->type == 'visibility'){
+                        $assignAttr = $field->fieldName;
+                        return $this->_visibilityAttr = $field->fieldName;
+                    }
+                }
+            }
+        }
+        return $this->_visibilityAttr;
+    }
+    
+    /**
+     * Returns visibility dropdown menu options.
+     * @return type
+     */
+    public static function getVisibilityOptions() {
+        return array(
+            self::VISIBILITY_PUBLIC => Yii::t('app', 'Public'),
+            self::VISIBILITY_PRIVATE => Yii::t('app', 'Private'),
+            self::VISIBILITY_GROUPS => Yii::t('app', 'User\'s Groups')
+        );
     }
 
     /**
@@ -155,57 +228,284 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      *
      * @param Integer $accessLevel The user's access level. 0=no access, 1=own
      *  records, 2=public records, 3=full access
-     * @param boolean|string $visibilityAttr The attribute to use for visibility
-     *  settings. False signifies that visibility should be ignored.
-     * @param String $user The username to use in these checks (defaults to the
-     *  current user)
-     * @param boolean|string $assignmentAttr The attribute to use for assignment
-     *  and ownership. False signifies that it's to be treated as if owned by
-     *  the system/no one in particular.
      * @return String The SQL conditions
      */
-    public function getAccessConditions($accessLevel, $visibilityAttr = 'visibility', $user = null, $assignmentAttr='assignedTo'){
-        if($user === null){
-            if(Yii::app()->isInSession)
-                $user = Yii::app()->user->getName();
-            else
-                $user = Yii::app()->getSuModel()->username;
-        }
+    public function getAccessConditions($accessLevel){
+        $user = Yii::app()->getSuModel()->username;
+        $userId = Yii::app()->getSuModel()->id;
+        $assignmentAttr = $this->getAssignmentAttr();
+        $visibilityAttr = $this->getVisibilityAttr();
+        
+        if($assignmentAttr)
+            list($assignedToCondition,$params) = $this->getAssignedToCondition(false,'t');
 
-        if($accessLevel === 2 && $visibilityAttr === false) // level 2 access only works if we consider visibility,
-            $accessLevel = 3;  // so upgrade to full access
+        if($accessLevel === self::QUERY_PUBLIC && $visibilityAttr === false) // level 2 access only works if we consider visibility,
+            $accessLevel = self::QUERY_ALL;  // so upgrade to full access
         $ret = array();
         switch($accessLevel){
-            case 3:  // user can view everything
-                $ret[] = array('condition'=>'TRUE', 'operator'=>'AND');
+            case self::QUERY_ALL:
+                // User can view everything
+                $ret[] = array('condition'=>'TRUE', 'operator'=>'AND','params'=>array());
                 break;
-            case 1:  // user can view records they (or one of their groups) own
-                if($assignmentAttr != false){
-                    $ret[] = array('condition' => 't.'.$assignmentAttr.'="'.$user.'"', 'operator' => 'OR');
-                    $ret[] = array('condition' => 't.'.$assignmentAttr.' IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")', 'operator' => 'OR');
-                }
-                break;
-            case 2:  // user can view any public (shared) record
+            case self::QUERY_PUBLIC:
+                // User can view any public (shared) record
                 if($visibilityAttr != false){
-                    $ret[] = array('condition' => "t.$visibilityAttr=1", 'operator' => 'OR');
-                }
-                if($assignmentAttr != false){
-                    $ret[] = array('condition' => 't.'.$assignmentAttr.'="'.$user.'"', 'operator' => 'OR');
-                    $ret[] = array('condition' => 't.'.$assignmentAttr.' IN (SELECT groupId FROM x2_group_to_user WHERE username="'.$user.'")', 'operator' => 'OR');
                     $ret[] = array(
-                        'condition' => "(t.$visibilityAttr=2 AND t.$assignmentAttr IN (".
-                        'SELECT DISTINCT b.username '.
-                        'FROM x2_group_to_user a INNER JOIN x2_group_to_user b '.
-                        'ON a.groupId=b.groupId '.
-                        'WHERE a.username="'.$user.'"))', 'operator' => 'OR');
+                        'condition' => "t.$visibilityAttr=".self::VISIBILITY_PUBLIC,
+                        'operator' => 'OR',
+                        'params' => array()
+                    );
+                }
+                // Made visible among the user(s)' groupmates via "User's Groups"
+                // visibility setting:
+                $groupmatesRegex = self::getGroupmatesRegex();
+                if(!empty($groupmatesRegex)){
+                    $ret[] = array(
+                        'condition' => "(t.$visibilityAttr=".self::VISIBILITY_GROUPS.' '
+                        ."AND t.$assignmentAttr REGEXP BINARY :groupmatesRegex)",
+                        'operator' => 'OR',
+                        'params' => array(
+                            ':groupmatesRegex' => $groupmatesRegex
+                        ),
+                    );
+                }
+            // Continue to case 1 for group visibility / assignment
+            case 1:
+                // User can view records they (or one of their groups) own or
+                // have permission to view
+                if($assignmentAttr != false){
+                    $ret[] = array(
+                        'condition' => $assignedToCondition,
+                        'operator' => 'OR',
+                        'params' => $params
+                    );
+                }
+                // Visible to user groups:
+                $groupRegex = self::getGroupIdRegex();
+                if(!empty($groupRegex)){
+                    $ret[] = array(
+                        'condition' => "(t.$assignmentAttr REGEXP BINARY :visibilityGroupIdRegex)",
+                        'operator' => 'OR',
+                        'params' => array(
+                            ':visibilityGroupIdRegex' => $groupRegex
+                        )
+                    );
                 }
                 break;
-            default:
             case 0:  // can't view anything
+            default:
                 $ret[] = array('condition'=>'FALSE', 'operator'=>'AND');
         }
         return $ret;
     }
+
+    /**
+     * Checks assignment list, including membership to groups in assignment list
+     *
+     * @param string $username The username of the user for which to check assignment
+     * @param bool $excludeAnyone If true, isAssignedTo will not return true if
+     *  the record is assigned to anyone or no one.
+     * @return bool true of action is assigned to specified user, false otherwise
+     */
+    public function isAssignedTo ($username, $excludeAnyone=false) {
+        if(isset($this->_isAssignedTo[$username][$excludeAnyone]))
+            return $this->_isAssignedTo[$username][$excludeAnyone];
+        if(!$this->assignmentAttr) // No way to determine assignment
+            return true;
+
+        $user = $username === Yii::app()->getSuName()
+                ? Yii::app()->getSuModel()
+                : User::model ()->findByAttributes (array (
+                    'username' => $username
+                  ));
+
+        if (!($user instanceof User)) {
+            throw new CException (Yii::t('app', 'Invalid username'));
+        }
+
+        $isAssignedTo = false;
+        $assignees = explode(', ',$this->owner->getAttribute($this->assignmentAttr));
+        $groupIds = array_filter($assignees,'ctype_digit');
+        $usernames = array_diff($assignees,$groupIds);
+        
+        // Check for individual assignment (or "anyone" if applicable):
+        foreach ($usernames as $assignee) {
+            if ($assignee === 'Anyone' || (sizeof ($assignees) === 1 && $assignee === '')) {
+                if (!$excludeAnyone) {
+                    $isAssignedTo = true;
+                    break;
+                } else {
+                    continue;
+                }
+            } else if ($assignee === $username) {
+                $isAssignedTo = true;
+                break;
+            }
+        }
+
+        // Check for group assignment:
+        if(!$isAssignedTo && !empty($groupIds)) {
+            $userGroupsAssigned = array_intersect($groupIds,Groups::getUserGroups($user->id));
+            if(!empty($userGroupsAssigned)) {
+                $isAssignedTo = true;
+            }
+        }
+        $this->_isAssignedTo[$username][$excludeAnyone] = $isAssignedTo;
+        return $isAssignedTo;
+    }
+
+    /**
+     * Uses the visibility attribute and the assignment of the model to determine
+     * if a given named user has permission to view it.
+     *
+     * This property is superseded by the "PrivateReadOnlyAccess" class of 
+     * permission items, which are intended as restriction of users to view only
+     * items to which they are assigned.
+     *
+     * Rather, this determines the default visibility if there are no special
+     * restrictions in place.
+     * 
+     * @param string $username The username of the user for which to check visibility
+     * @param boolean $excludeAnyone Whether to avoid counting assignment "Anyone"
+     *  as assignment to the current user. The accepted behavior is that if
+     *  assignment is "Anyone" and visibility is private (0), non-admin users
+     *  should not be able to see the record, hence the default for this is true.
+     * @return type
+     */
+    public function isVisibleTo($username, $excludeAnyone = true){
+        if(!isset($this->_isVisibleTo[$username][$excludeAnyone])){
+            $this->_isVisibleTo[$username][$excludeAnyone] =
+                // Visible if assigned to current user
+                $this->isAssignedTo($username, $excludeAnyone)
+                // Visible if there is no visibility attribute
+                || !(bool) $this->visibilityAttr
+                || ( // Visibility setting in the model permits viewing
+                    // Visible if marked "public"
+                    $this->owner->getAttribute($this->visibilityAttr) == 1 
+                    || (
+                        // Visible if marked with visibility "Users' Groups"
+                        // and the current user has groups in common with
+                        // assignees of the current user:
+                        $this->owner->getAttribute($this->visibilityAttr) == 2
+                        && (bool) $this->assignmentAttr // Assignment attribute must exist
+                        && (bool) ($groupmatesRegex = self::getGroupmatesRegex())
+                        && preg_match('/'.$groupmatesRegex.'/',
+                                $this->owner->getAttribute($this->assignmentAttr))
+                    )
+                );
+        }
+        return $this->_isVisibleTo[$username][$excludeAnyone];
+    }
+
+    /**
+     * Returns SQL condition which can be used to determine if an action is assigned to the
+     *  current user.
+     * @param bool $includeAnyone If true, SQL condition will evaluate to true for actions assigned
+     *  to anyone or no one.
+     * @return array array (<SQL condition string>, <array of parameters>)
+     */
+    public function getAssignedToCondition ($includeAnyone=true,$alias=null) {
+        $prefix = empty($alias)?'':"$alias.";
+        $groupIdsRegex = self::getGroupIdRegex();
+        $condition =
+            "(". ($includeAnyone ? ($prefix.$this->assignmentAttr."='Anyone' OR assignedTo='' OR ") : '').
+             $prefix.$this->assignmentAttr." REGEXP BINARY :userNameRegex";
+        $params = array (
+            ':userNameRegex' => self::getUserNameRegex (),
+        );
+        if ($groupIdsRegex !== '') {
+            $condition .= " OR $prefix".$this->assignmentAttr." REGEXP BINARY :groupIdsRegex";
+            $params[':groupIdsRegex'] = $groupIdsRegex;
+        }
+        $condition .= ')';
+        return array ($condition, $params);
+    }
+
+    /**
+     * Determines all users to whom a record is assigned.
+     * 
+     * @param bool $getUsernamesFromGroups If true, usernames of all users in groups whose ids
+     *  are in the assignedTo string will also be returned
+     * @return array assignees of this action
+     */
+    public function getAssignees ($getUsernamesFromGroups = false) {
+        $assignment = $this->owner->getAttribute($this->getAssignmentAttr());
+        $assignees = !is_array($assignment)
+                ? explode (', ', $assignment)
+                : $assignment;
+
+        $assigneesNames = array ();
+
+        if($getUsernamesFromGroups){
+            // Obtain usernames from the groups assignment table
+            $groupIds = array_filter($assignees, 'ctype_digit');
+            if(!empty($groupIds)){
+                
+                $groupIdParam = AuxLib::bindArray($groupIds);
+                $groupUsers = Yii::app()->db->createCommand()
+                        ->select('username')
+                        ->from('x2_group_to_user')
+                        ->where('groupId IN '.AuxLib::arrToStrList(array_keys($groupIdParam)),$groupIdParam)
+                        ->queryColumn();
+                foreach($groupUsers as $username)
+                    $assigneesNames[] = $username;
+            }
+        }
+        foreach($assignees as $assignee){
+            if($assignee === 'Anyone'){
+                continue;
+            }else if(!ctype_digit($assignee)) {
+                // Not a group ID but a username
+                if(CActiveRecord::model('Profile')->exists('username=:u',array(
+                        ':u' => $assignee))){
+                    $assigneesNames[] = $assignee;
+                }
+            }
+        }
+
+        return array_unique ($assigneesNames);
+    }
+
+    /**
+     * Returns regex for performing SQL assignedTo field comparisons.
+     * @return string This can be inserted (with parameter binding) into SQL queries to
+     *  determine if an action is assigned to a given group.
+     */
+    public static function getGroupIdRegex () {
+        $groupIds = Groups::getUserGroups(Yii::app()->getSuId());
+        $groupIdRegex = '';
+        $i = 0;
+        foreach ($groupIds as $id) {
+            if ($i++ > 0) $groupIdRegex .= '|';
+            $groupIdRegex .= '((^|, )'.$id.'($|,))';
+        }
+        return $groupIdRegex;
+    }
+
+    /**
+     * Regular expression for matching against a list of users
+     *
+     * @param array $userNames
+     */
+    public static function getUsernameListRegex($usernames) {
+        return '(^|, )('.implode('|',$usernames).')($|, )';
+    }
+
+    public static function getGroupmatesRegex() {
+        $groupmates = Groups::getGroupmates(Yii::app()->getSuId());
+        return empty($groupmates)?null:self::getUsernameListRegex($groupmates);
+    }
+
+    /*
+     * Returns regex for performing SQL assignedTo field comparisons.
+     * @return string This can be inserted (with parameter binding) into SQL queries to
+     *  determine if an action is assigned to a given user.
+     */
+    public static function getUserNameRegex ($username=null) {
+        return '(^|, )'.($username===null?Yii::app()->getSuName():$username).'($|, )';
+    }
+
+
 
 }
 

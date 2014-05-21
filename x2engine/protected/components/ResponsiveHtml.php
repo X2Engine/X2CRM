@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * @package X2CRM.components
+ * @package application.components
  */
 class ResponsiveHtml extends CHtml {
 

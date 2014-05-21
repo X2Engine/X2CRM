@@ -33,6 +33,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+#profile-widgets-container .x2grid-header-container table,
+#profile-widgets-container-2 .x2grid-header-container table {
+    border:none;
+}
+
+#profile-widgets-container table,
+#profile-widgets-container-2 table {
+    margin:0;
+}
+
 #content .x2-layout-island {
     border: none;
 }
@@ -59,10 +69,6 @@
     border: none !important;
 }
 
-#content.wide-profile-widget-layout #profile-info-container-outer {
-    float: left;
-    width: 52%;
-}
 
 #activity-feed-container-outer {
     margin-top: 10px;
@@ -73,6 +79,191 @@
     -o-border-radius: 3px 3px 0px 0px;
     -webkit-border-radius: 3px 3px 0px 0px;
     border-radius: 3px 3px 0px 0px;
+}
+
+
+
+.profile-sort-placeholder {
+    height:200px;
+}
+
+#profile-info-container .page-title,
+#activity-feed-container .page-title {
+    line-height: 29px;
+    height: 30px;
+}
+
+#profile-info-container .page-title > h2,
+#activity-feed-container .page-title > h2 {
+    font-size: 17px;
+}
+
+#profile-info-container .page-title > h2 {
+    background-position: -1px -8px;
+}
+
+#activity-feed-container .page-title > h2 {
+    background-position: -1px 0px;
+    background-size: 29px;
+    padding-left: 34px;
+}
+
+
+@media (max-width: 657px){
+    #activity-feed-container .responsive-page-title > .mobile-dropdown-button,
+    #profile-info-container .responsive-page-title > .mobile-dropdown-button {
+        margin-top: -22px;
+        margin-right: 7px;
+    }
+}
+
+
+/***********************************************************************
+* profile layout responsive css is duplicated 3 times. Once so that two
+* column profile can be used in browsers which don't support media
+* queries and two more times so that the layout responds correctly
+* both when the right widgets are shown and when they are hidden.
+***********************************************************************/
+
+
+/* right widgets shown */
+/*@media (min-width: 1544px) {*/
+@media (min-width: 1444px) {
+    #profile-info-container-outer {
+        float: left;
+        width: 52%;
+    }
+    
+    /*  
+    Allows jQuery UI sortable to drop droppables into this container even if it's empty
+    */
+    #profile-widgets-container-2 {
+        padding-bottom:20px;
+        margin-bottom: -20px; /* prevent padding from taking up space in layout  */
+    }
+    
+    #profile-widgets-container-2.empty-widget-container {
+        padding-bottom:30px;
+    }
+    
+    /*  
+    Allows jQuery UI sortable to drop droppables into this container even if it's empty
+    */
+    #profile-widgets-container-inner {
+        padding-bottom:200px;
+        margin-bottom: -200px; /* prevent padding from taking up space in layout  */
+    }
+    
+    #profile-widgets-container-inner.empty-widget-container {
+        height: 100%;
+        position: fixed;
+        width: 33%;
+    }
+    
+    #profile-widgets-container-2 {
+        width: 52%;
+        clear: left;
+        float: left;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    #activity-feed-container-outer {
+        width: 52%;
+        clear: left;
+        float: left;
+        margin-left: 0;
+        margin-right: 0;
+        margin-top: 10px;
+    }
+    #activity-feed-container {
+        margin-right: 0;
+    }
+    
+    #profile-widgets-container {
+        float: right;
+        width: 48%;
+        margin-top: -10px;
+    }
+    
+    #profile-widgets-container-inner {
+        margin-left: 9px;
+    }
+}
+
+/* right widgets hidden */
+/*@media (min-width: 1232px) {*/
+@media (min-width: 1132px) {
+
+    .no-widgets #profile-info-container-outer {
+        float: left;
+        width: 52%;
+    }
+    
+    /*  
+    Allows jQuery UI sortable to drop droppables into this container even if it's empty
+    */
+    .no-widgets #profile-widgets-container-2 {
+        padding-bottom:20px;
+        margin-bottom: -20px; /* prevent padding from taking up space in layout  */
+    }
+    
+    .no-widgets #profile-widgets-container-2.empty-widget-container {
+        padding-bottom:30px;
+    }
+    
+    /*  
+    Allows jQuery UI sortable to drop droppables into this container even if it's empty
+    */
+    .no-widgets #profile-widgets-container-inner {
+        padding-bottom:200px;
+        margin-bottom: -200px; /* prevent padding from taking up space in layout  */
+    }
+    
+    .no-widgets #profile-widgets-container-inner.empty-widget-container {
+        height: 100%;
+        position: fixed;
+        width: 33%;
+    }
+    
+    .no-widgets #profile-widgets-container-2 {
+        width: 52%;
+        clear: left;
+        float: left;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .no-widgets #activity-feed-container-outer {
+        width: 52%;
+        clear: left;
+        float: left;
+        margin-left: 0;
+        margin-right: 0;
+        margin-top: 10px;
+    }
+    .no-widgets #activity-feed-container {
+        margin-right: 0;
+    }
+    
+    .no-widgets #profile-widgets-container {
+        float: right;
+        width: 48%;
+        margin-top: -10px;
+    }
+    
+    .no-widgets #profile-widgets-container-inner {
+        margin-left: 9px;
+    }
+
+}
+
+
+/* for browsers which don't support media queries */
+
+#content.wide-profile-widget-layout #profile-info-container-outer {
+    float: left;
+    width: 52%;
 }
 
 /*  
@@ -131,36 +322,5 @@ Allows jQuery UI sortable to drop droppables into this container even if it's em
     margin-left: 9px;
 }
 
-.profile-sort-placeholder {
-    height:200px;
-}
 
-#profile-info-container .page-title,
-#activity-feed-container .page-title {
-    line-height: 29px;
-    height: 30px;
-}
-
-#profile-info-container .page-title > h2,
-#activity-feed-container .page-title > h2 {
-    font-size: 17px;
-}
-
-#profile-info-container .page-title > h2 {
-    background-position: -1px -8px;
-}
-
-#activity-feed-container .page-title > h2 {
-    background-position: -1px 0px;
-    background-size: 29px;
-    padding-left: 34px;
-}
-
-@media (max-width: 657px){
-    #activity-feed-container .responsive-page-title > .mobile-dropdown-button,
-    #profile-info-container .responsive-page-title > .mobile-dropdown-button {
-        margin-top: -22px;
-        margin-right: 7px;
-    }
-}
 

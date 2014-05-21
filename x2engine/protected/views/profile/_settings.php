@@ -36,10 +36,14 @@
 
 Yii::app()->clientScript->registerScriptFile(
         Yii::app()->getBaseUrl().'/js/profileSettings.js', CClientScript::POS_END);
-Yii::app()->clientScript->registerScriptFile(
-        Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
 
 Yii::app()->clientScript->registerCss("profileSettings", "
+
+    
+#theme-attributes select, #theme-attributes button,
+#prefs-create-theme-hint {
+    display: inline-block;
+}
 
 /*
 prevents FF checkbox border cutoff
@@ -74,7 +78,6 @@ prevents FF checkbox border cutoff
 #settings-form .prefs-hint {
     height: 28px;
     color:#06c;
-    float: left;
     margin-right: 4px;
 }
 
@@ -170,11 +173,7 @@ select#backgroundImg,
 select#loginSounds,
 select#themeName,
 select#notificationSounds {
-    margin-right: 4px;
-}
-
-#themeName {
-    display: block;
+    /*margin-right: 4px;*/
 }
 
 #save-changes {
@@ -386,12 +385,12 @@ $form = $this->beginWidget('X2ActiveForm', array(
                     </option>
                 <?php } ?>
             </select>
-            <button type='button' class='x2-button x2-small-button left'
+            <button type='button' class='x2-button x2-small-button'
                     id='prefs-create-theme-button'>
                         <?php echo Yii::t('profile', 'Create Theme'); ?>
             </button>
             <span id="prefs-create-theme-hint" class='prefs-hint'>[?]</span>
-            <button type='button' class='x2-button x2-small-button left'
+            <button type='button' class='x2-button x2-small-button'
                     id='prefs-save-theme-button'>
                         <?php echo Yii::t('profile', 'Save Theme'); ?>
             </button>
@@ -487,7 +486,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
                 <?php echo Yii::t('app', 'Background Tiling') ?>
             </label>
             <select id="backgroundTiling" name="preferences[backgroundTiling]"
-             class='theme-attr left x2-select'>
+             class='theme-attr x2-select'>
                         <?php
                         $tilingOptions = array(
                             'stretch', 'center', 'repeat', 'repeat-x', 'repeat-y');
@@ -508,7 +507,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
                 <?php echo Yii::t('profile', 'Background Image'); ?>
             </label>
             <select id="backgroundImg" name="preferences[backgroundImg]"
-                    class='theme-attr left x2-select'>
+                    class='theme-attr x2-select'>
                 <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
                 <?php foreach ($myBackgrounds->data as $background) { ?>
                     <option value="<?php
@@ -532,7 +531,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
             <label for="loginSounds">
                 <?php echo Yii::t('profile', 'Login Sound'); ?>
             </label>
-            <select id="loginSounds" name="preferences[loginSound]" class='left x2-select'>
+            <select id="loginSounds" name="preferences[loginSound]" class='x2-select'>
                 <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
                 <?php foreach($myLoginSounds->data as $loginSound){ ?>
                     <option value="<?php
@@ -559,7 +558,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
                 <?php echo Yii::t('profile', 'Notification Sound'); ?>
             </label>
             <select id="notificationSounds" name="preferences[notificationSound]"
-                    class='left x2-select'>
+                    class='x2-select'>
                 <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
                 <?php foreach($myNotificationSounds->data as $notificationSound){ ?>
                     <option value="<?php

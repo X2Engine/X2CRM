@@ -42,6 +42,27 @@
 class Formatter {
 
     /**
+     * Return a value cast after a named PHP type
+     * @param type $value
+     * @param type $type
+     * @return type
+     */
+    public static function typeCast($value,$type) {
+        switch($type) {
+            case 'bool':
+            case 'boolean':
+                return (boolean) $value;
+            case 'double':
+                return (double) $value;
+            case 'int':
+            case 'integer':
+                return (integer) $value;
+            default:
+                return (string) $value;
+        }
+    }
+    
+    /**
      * Converts a record's Description or Background Info to deal with the discrepancy
      * between MySQL/PHP line breaks and HTML line breaks.
      */
@@ -76,11 +97,16 @@ class Formatter {
      * @param string $value The value to parse
      * @param X2Model $model The model on which to operate with attribute replacement
      * @param bool $renderFlag The render flag to pass to {@link X2Model::getAttribute()}
-     * @param array $params Optional additional replacement codes to use
+     * @param bool $makeLinks If the render flag is set, determines whether to render attributes
+     *  as links
      */
-    public static function getReplacementTokens($value,$model,$renderFlag,$params=array()) {
-        $codes = $params;
+    public static function getReplacementTokens($value,$model,$renderFlag,$makeLinks) {
         // Pattern will match {attr}, {attr1.attr2}, {attr1.attr2.attr3}, etc.
+        $codes = array();
+        // Types of each value for the short codes:
+        $codeTypes = array();
+        $fieldTypes = array_map(function($f){return $f['phpType'];},Fields::getFieldTypes());
+        $fields = $model->getFields(true);
         preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
         if(!empty($matches[0])){
             foreach($matches[0] as $match){
@@ -95,19 +121,42 @@ class Formatter {
                         $newModel = $tmpModel; // If we got a model from our short code, use that
                         $attr = implode('.',$pieces); // Also, set the attribute to have the first item removed.
                     }
-                    $codes['{'.$match.'}'] = $newModel->getAttribute($attr, $renderFlag);
+                    $codes['{'.$match.'}'] = $newModel->getAttribute(
+                        $attr, $renderFlag, $makeLinks);
+                        $codeTypes[$match] = isset($fields[$attr])
+                                && isset($fieldTypes[$fields[$attr]->type])
+                                ? $fieldTypes[$fields[$match]->type]
+                                : 'string';
                 }else{ // Standard attribute
                     if(isset($params[$match])){ // First check if we provided a value for this attribute
                         $codes['{'.$match.'}'] = $params[$match];
+                        $codeTypes[$match] = gettype($params[$match]);
                     }elseif($model->hasAttribute($match)){ // Next ensure the attribute exists on the model
-                        $codes['{'.$match.'}'] = $model->getAttribute($match, $renderFlag);
+                        $codes['{'.$match.'}'] = $model->getAttribute(
+                            $match, $renderFlag, $makeLinks);
+                        $codeTypes[$match] = isset($fields[$match]) 
+                                && isset($fieldTypes[$fields[$match]->type])
+                                ? $fieldTypes[$fields[$match]->type]
+                                : 'string';
+                        
                     }else{ // Finally, try to parse it as a short code if nothing else worked
                         $shortCodeValue = Formatter::parseShortCode($match, $model);
                         if(!is_null($shortCodeValue)){
                             $codes['{'.$match.'}'] = $shortCodeValue;
+                            $codeTypes[$match] = gettype($shortCodeValue);
                         }
                     }
                 }
+            }
+        }
+
+        // ensure that value of replacement token is of an acceptable type
+        foreach ($codes as $name => $val) {
+            if(!in_array(gettype ($val),array("boolean","integer","double","string","NULL"))) {
+                // remove invalid value
+                unset ($codes[$name]);
+            } elseif(isset($codeTypes[$name])) {
+                $codes[$name] = self::typeCast($val, $codeTypes[$name]);
             }
         }
         return $codes;
@@ -498,18 +547,24 @@ class Formatter {
      * function or just display what we get as is.
      * @param Array $params Optional extra parameters which may include default values
      * for the attributes in question.
+     * @param bool $renderFlag (optional) If true, overrides use of $type parameter to determine
+     *  if attribute should be rendered
+     * @param bool $makeLinks If the render flag is set, determines whether to render attributes
+     *  as links
      * @return String A modified version of $value with attributes replaced.
      */
-    public static function replaceVariables($value, $model, $type = '', $params = array()){
+    public static function replaceVariables(
+        $value, $model, $type = '', $renderFlag=true, $makeLinks=true){
+
         $matches = array();
-        if($type === '' || $type === 'text' || $type === 'richtext'){
+        if($renderFlag && ($type === '' || $type === 'text' || $type === 'richtext')){
             $renderFlag = true;
         }else{
             $renderFlag = false;
         }
         
-        $shortCodeValues = self::getReplacementTokens($value,$model,$renderFlag,$params);
-        
+        $shortCodeValues = self::getReplacementTokens($value,$model,$renderFlag,$makeLinks);
+
         return strtr($value,$shortCodeValues);
     }
 
@@ -536,7 +591,7 @@ class Formatter {
         
         // If we find a model, relace any variables inside of our formula (i.e. {lastUpdated})
         if(isset($params['model'])){ 
-            $replacementTokens = self::getReplacementTokens($formula, $params['model'], false);
+            $replacementTokens = self::getReplacementTokens($formula, $params['model'], false, false);
         } else {
             $replacementTokens = $params;
         }
@@ -548,16 +603,20 @@ class Formatter {
         // This step is VITALLY IMPORTANT to the security and stability of
         // X2Flow's formula parsing.
         foreach(array_keys($replacementTokens) as $token) {
-            if(!in_array(gettype($replacementTokens[$token]),array("boolean","integer","double","string","NULL"))) {
+            $type = gettype($replacementTokens[$token]);
+
+            if(!in_array($type,array("boolean","integer","double","string","NULL"))) {
                 // Safeguard against "array to string conversion" and "warning,
                 // object of class X could not be converted to string" errors.
                 // This case shouldn't happen and is not valid, so nothing
                 // smarter need be done here than to simply set the replacement
                 // value to its corresponding token.
-                $replacementTokens[$token] = $token;
+                $replacementTokens[$token] = var_export($token,true);
+
+            } else if ($type === 'string') {
+                // Escape/convert values into valid PHP expressions
+                $replacementTokens[$token] = var_export($replacementTokens[$token],true);
             }
-            // Escape/convert values into valid PHP expressions
-            $replacementTokens[$token] = var_export($replacementTokens[$token],true);
         }
 
         // Prepare formula for eval:
@@ -575,13 +634,17 @@ class Formatter {
         foreach(array_keys($replacementTokens) as $token) {
             $shortCodePatterns[] = preg_quote($token,'#');
         }
-        $phpOper = '[\[\]()<>=!^|?:*+%/\-\.]|and|or|xor|\s'; // PHP operators
+        $phpOper = '[\[\]()<>=!^|?:*+%/\-\.]|and |or |xor |\s'; // PHP operators
         $singleQuotedString = '\'[\w\s\.;:,()]*?\''; // Only simple strings currently supported
+        $number = '[0-9]+(?:\.[0-9]+)?';
+        $boolean = '(?:false|true)';
         $validPattern = '#^return (?:'
             .self::getSafeWords()
             .(empty($shortCodePatterns)?'':('|'.implode('|',$shortCodePatterns)))
             .'|'.$phpOper
-            .'|'.$singleQuotedString.')*;$#';
+            .'|'.$number
+            .'|'.$boolean
+            .'|'.$singleQuotedString.')*;$#i';
         if(!preg_match($validPattern,$formula)) {
             return array(false,Yii::t('admin','Input evaluates to an invalid formula: ').strtr($formula,$replacementTokens));
         }
@@ -606,7 +669,7 @@ class Formatter {
      * @param String $key The key of the short code to be used
      * @param X2Model $model The model having variables replaced, some short codes
      * use a model
-     * @return String|null Returns the result of code evaluation if a short code
+     * @return mixed Returns the result of code evaluation if a short code
      * existed for the index $key, otherwise null
      */
     public static function parseShortCode($key, $model){
@@ -632,8 +695,8 @@ class Formatter {
      */
     private static function getSafeWords(){
         $safeWords = array(
-            'echo',
-            'time',
+            'echo[ (]',
+            'time[ (]',
         );
         return implode('|',$safeWords);
     }
@@ -650,6 +713,15 @@ class Formatter {
         } else {
             return $text;
         }
+    }
+
+    /**
+     * @param float|int $value 
+     * @return string value formatted as currency using app-wide currency setting
+     */
+    public static function formatCurrency ($value) {
+        return Yii::app()->locale->numberFormatter->formatCurrency (
+            $value, Yii::app()->params->currency);
     }
 
 }

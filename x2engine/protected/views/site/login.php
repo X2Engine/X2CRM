@@ -34,10 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl().'/css/login.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/auxlib.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Forms.js');
-
 $this->pageTitle=Yii::app()->name . ' - Login';
 
 $hasProfile = false;
@@ -164,7 +160,7 @@ document.getElementById('LoginForm_username').focus (); // for when autofocus is
     
                 if($model->useCaptcha && CCaptcha::checkRequirements()) { 
                 ?>
-                <div class="row captha-row">
+                <div class="row captcha-row">
                     <?php
                     echo '<div id="captcha-container">';
                     $this->widget('CCaptcha', array(
@@ -188,39 +184,46 @@ document.getElementById('LoginForm_username').focus (); // for when autofocus is
                         echo Yii::t('app', 'Sign In');
                         ?>
                     </button>
-                </div>
+                </div><!-- #signin-button-container -->
                 <div class='row bottom-row'>
                 <div class="cell remember-me-cell">
-                    <?php 
+                    <?php
                     if ($model->rememberMe) {
                         echo $form->hiddenField($model, 'rememberMe', array('value' => 1));
                     ?>
-                    <a href='<?php echo Yii::app()->createUrl ('/site/site/forgetMe'); ?>'
-                     class='x2-link x2-minimal-link'>
+                    <a href="<?php echo Yii::app()->createUrl ('/site/site/forgetMe'); ?>"
+                     class="x2-link x2-minimal-link">
                         <?php echo Yii::t('app', 'Change User'); ?>
                     </a>
                     <?php
                     } else {
                         echo $form->checkBox(
-                            $model, 'rememberMe', array('value' => '1', 'uncheckedValue' => '0')); 
-                        echo $form->label($model, 'rememberMe', array('style' => 'font-size:10px;')); 
-                        echo $form->error($model, 'rememberMe'); 
-                    }
+                            $model, 'rememberMe', array('value' => '1', 'uncheckedValue' => '0'));
+                        echo $form->label(
+                            $model, 'rememberMe', array('style' => 'font-size:10px;'));
+                        echo $form->error($model, 'rememberMe');
+                    }?>
+                </div>
+                <div class='cell login-links right'>
+                    <?php
+                    echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app', 'Sign in with Google'),
+                        (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') .
+                        ((substr($_SERVER['HTTP_HOST'], 0, 4)=='www.')?substr($_SERVER['HTTP_HOST'], 4):$_SERVER['HTTP_HOST']) .
+                        $this->createUrl('/site/googleLogin'), array('class' => 'x2touch-link'));
                     ?>
                 </div>
-                <div id='login-links' class='cell'>
-                <?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app', 'Sign in with Google'),
-                        (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . 
-                        ((substr($_SERVER['HTTP_HOST'], 0, 4)=='www.')?substr($_SERVER['HTTP_HOST'], 4):$_SERVER['HTTP_HOST']) . 
-                        $this->createUrl('/site/googleLogin'), array('class' => 'x2touch-link')); ?>
+                </div><!-- .row.bottom-row -->
+                <div class="row login-links">
+                    <?php
+                    echo CHtml::link(Yii::t('app','Need help?'),array('/site/anonHelp'));
+                    ?>
                 </div>
-                </div>
-        </div>
-        </div>
-    </div>
+        </div><!-- #login-form-inputs-container -->
+        </div><!-- .row -->
+    </div><!-- # login-form -->
 <?php $this->endWidget(); ?>
-</div>
-</div>
+</div><!-- #login-box -->
+</div><!-- #login-page -->
 <?php
 $this->renderPartial ('loginCompanyInfo');
 ?>

@@ -16,6 +16,7 @@ return array(
 	'testUser' => array(
 		'id' => 2,
 		'username' => 'testuser',
+        'userAlias' => 'ImATestToo',
 		'firstName' => 'Sales',
 		'lastName' => 'Rep',
 		'emailAddress' => 'sales@rep.com',

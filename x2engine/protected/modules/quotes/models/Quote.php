@@ -49,6 +49,8 @@ Yii::import('application.models.X2Model');
  */
 class Quote extends X2Model {
 
+    public $supportsWorkflow = false;
+
 	/**
 	 * Holds the set of line items
 	 * @var array
@@ -261,7 +263,10 @@ class Quote extends X2Model {
 		$curSym = Yii::app()->locale->getCurrencySymbol($defaultCurrency);
 		foreach($this->_lineItems as $lineItem) {
 			$lineItem->quoteId = $this->id;
-			if(empty($lineItem->currency))
+                        $product = X2Model::model('Products')->findByAttributes(array('name'=>$lineItem->name));
+                        if (isset($product))
+                            $lineItem->productId = $product->id;
+            if(empty($lineItem->currency))
 				$lineItem->currency = $defaultCurrency;
 			if($lineItem->isPercentAdjustment) {
 				$lineItem->adjustment = Fields::strToNumeric(
@@ -305,6 +310,9 @@ class Quote extends X2Model {
 		if(isset($this->_lineItems)){
 			foreach($this->_lineItems as $item){
 				$item->quoteId = $this->id;
+                                $product = X2Model::model('Products')->findByAttributes(array('name'=>$item->name));
+                                if (isset($product))
+                                    $item->productId = $product->id;
 				$item->save();
 			}
 		}
@@ -596,7 +604,7 @@ class Quote extends X2Model {
 	}
 
 	public function search($pageSize=null, $uniqueId=null) {
-	    $pageSize = $pageSize === null ? ProfileChild::getResultsPerPage() : $pageSize;
+	    $pageSize = $pageSize === null ? Profile::getResultsPerPage() : $pageSize;
 		$criteria = new CDbCriteria;
 		$parameters = array('limit' => ceil($pageSize));
 		$criteria->scopes = array('findAll' => array($parameters));
@@ -607,7 +615,7 @@ class Quote extends X2Model {
 
 	public function searchInvoice() {
 		$criteria = new CDbCriteria;
-		$parameters = array('limit' => ceil(ProfileChild::getResultsPerPage()));
+		$parameters = array('limit' => ceil(Profile::getResultsPerPage()));
 		$criteria->scopes = array('findAll' => array($parameters));
 		$criteria->addCondition("t.type='invoice'");
 

@@ -36,7 +36,7 @@
 
 $menuItems = array(
 	array('label'=>Yii::t('opportunities','Opportunities List')),
-	array('label'=>Yii::t('opportunities','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('opportunities','Create Opportunity'), 'url'=>array('create')),
         array('label'=>Yii::t('opportunities', 'Import Opportunities'), 'url'=>array('admin/importModels', 'model'=>'Opportunity'), 'visible'=>Yii::app()->params->isAdmin),
         array('label'=>Yii::t('opportunities', 'Export Opportunities'), 'url'=>array('admin/exportModels', 'model'=>'Opportunity'), 'visible'=>Yii::app()->params->isAdmin),
 );

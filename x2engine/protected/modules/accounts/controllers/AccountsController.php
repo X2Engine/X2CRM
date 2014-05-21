@@ -50,7 +50,7 @@ class AccountsController extends x2base {
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array('index', 'view', 'create', 'update', 'search', 'addUser', 'removeUser', 
-                    'addNote', 'deleteNote', 'saveChanges', 'delete', 'shareAccount', 'inlineEmail'),
+                    'addNote', 'deleteNote', 'saveChanges', 'delete', 'shareAccount', 'inlineEmail', 'qtip'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -114,15 +114,13 @@ class AccountsController extends x2base {
      */
     public function actionView($id){
         $model = $this->loadModel($id);
-        if($this->checkPermissions($model, 'view')){
+        if(!parent::checkPermissions($model, 'view'))
+            $this->denied();
+        
+        // add account to user's recent item list
+        User::addRecentItem('a', $id, Yii::app()->user->getId());
 
-            // add account to user's recent item list
-            User::addRecentItem('a', $id, Yii::app()->user->getId());
-
-            parent::view($model, 'accounts');
-        }else{
-            $this->redirect('index');
-        }
+        parent::view($model, 'accounts');
     }
 
     public function actionShareAccount($id){
@@ -226,7 +224,6 @@ class AccountsController extends x2base {
      */
     public function actionUpdate($id){
         $model = $this->loadModel($id);
-        $model->assignedTo = explode(', ',$model->assignedTo);
         if(isset($_POST['Accounts'])){
             $model->setX2Fields($_POST['Accounts']);
             if($model->save())
@@ -356,15 +353,8 @@ class AccountsController extends x2base {
      * @param integer $id the ID of the model to be deleted
      */
     public function actionDelete($id){
-        $model = $this->loadModel($id);
         if(Yii::app()->request->isPostRequest){
-            $event = new Events;
-            $event->type = 'record_deleted';
-            $event->associationType = $this->modelClass;
-            $event->associationId = $model->id;
-            $event->text = $model->name;
-            $event->user = Yii::app()->user->getName();
-            $event->save();
+            $model = $this->loadModel($id);
             Actions::model()->deleteAll('associationId='.$id.' AND associationType=\'account\'');
             $this->cleanUpTags($model);
             $model->delete();
@@ -382,6 +372,11 @@ class AccountsController extends x2base {
 
         $model = new Accounts('search');
         $this->render('index', array('model' => $model));
+    }
+
+    public function actionQtip($id){
+        $model = $this->loadModel($id);
+        $this->renderPartial('qtip', array('model' => $model));
     }
      
 }

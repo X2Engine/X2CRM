@@ -52,14 +52,17 @@ class CommonSiteControllerBehavior extends CBehavior {
         Session::cleanUpSessions();
 
         $ip = $this->owner->getRealIp();
-
+        $userModel = $model->getUser();
+        $isRealUser = $userModel instanceof User;
+        $effectiveUsername = $isRealUser ? $userModel->username : $model->username;
+        $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
         /* increment count on every session with this user/IP, to prevent brute force attacks 
            using session_id spoofing or whatever */
         Yii::app()->db->createCommand(
             'UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND 
             CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
                 ->bindValues(
-                    array(':time' => time(), ':name' => $model->username, ':ip' => $ip))
+                    array(':time' => time(), ':name' => $effectiveUsername, ':ip' => $ip))
                 ->execute();
 
         $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
@@ -109,11 +112,9 @@ class CommonSiteControllerBehavior extends CBehavior {
             $session->status = -2;
         }
 
-        if($activeUser === false){
+        if($isActiveUser === false){
             $model->verifyCode = ''; // clear captcha code
             $model->validate (); // validate captcha if it's being used
-            $model->addError('username', Yii::t('app', 'Incorrect username or password.'));
-            $model->addError('password', Yii::t('app', 'Incorrect username or password.'));
             $session->save();
         }else{
             if($model->validate() && $model->login()){  // user successfully logged in
@@ -163,10 +164,6 @@ class CommonSiteControllerBehavior extends CBehavior {
 
             } else{ // login failed
                 $model->verifyCode = ''; // clear captcha code
-                if($model->hasErrors()){
-                    $model->addError('username', Yii::t('app', 'Incorrect username or password.'));
-                    $model->addError('password', Yii::t('app', 'Incorrect username or password.'));
-                }
                 $session->save();
             }
         }

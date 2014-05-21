@@ -87,21 +87,11 @@ $(document).ready(function() {
 	</div>
 
 	<div class="row">
-		<?php 
-        echo $form->labelEx($model,'username'); 
-		echo $model->username=='admin'?
-				$form->textField(
-                    $model,'username',array('size'=>20,'maxlength'=>20,'disabled'=>'disabled')):
-				$form->textField($model,'username',array('size'=>20,'maxlength'=>20)); 
-		echo $form->error($model,'username'); 
-
-        if ($update) {
-        ?>
-        <div class='input-warning'>
-            <?php echo Yii::t('users','Changing the username is NOT advised.'); ?>
-        </div>
-        <?php
-        }
+		<?php
+        $unameAttr = $update?'userAlias':'username';
+        echo $form->labelEx($model,$unameAttr);
+		echo $form->textField($model,$unameAttr,array('size'=>20,'maxlength'=>20));
+		echo $form->error($model,$unameAttr);
         ?>
 	</div>
 

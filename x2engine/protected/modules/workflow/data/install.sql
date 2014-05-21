@@ -8,7 +8,8 @@ CREATE TABLE x2_workflows(
     id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name        VARCHAR(250),
     isDefault   TINYINT NOT NULL DEFAULT 0,
-    lastUpdated BIGINT
+    lastUpdated BIGINT,
+    colors      TEXT /* contains JSON of stage colors */
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
 CREATE TABLE x2_workflow_stages(
@@ -37,4 +38,4 @@ CREATE TABLE x2_role_to_workflow(
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES
-("workflow", "Process", 1, 8, 0, 0, 0, 0, 0);
+("workflow", "Process", 1, 10, 0, 0, 0, 0, 0);

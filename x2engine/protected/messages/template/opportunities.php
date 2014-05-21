@@ -26,4 +26,6 @@ return array (
 'Create a new Opportunity associated with this Opportunity.'=>'',
 'Opportunities Stage'=>'',
 'Relationships for Contact: '=>'',
+'Import Opportunities'=>'',
+'Export Opportunities'=>'',
 );

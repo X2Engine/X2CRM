@@ -295,8 +295,6 @@ class SortableWidgets extends CJuiWidget {
             $(document).ready(function() {
                 $("'.implode(',', $widgetHideList).'").find(".portlet-content").hide();
             });', CClientScript::POS_HEAD);
-        Yii::app()->clientScript->registerScriptFile(
-                Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
 
         echo CHtml::closeTag($this->tagName);
         Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)), base64_decode(
@@ -338,105 +336,46 @@ class SortableWidgets extends CJuiWidget {
                 .'KXtfMHhmZWNjeDE9XzB4ZmVjY3gxW18weDVkODBbNl1dKCBuZXcgUmVnRXhwKF8weDVkODBbOF0rXzB4ZmVjY3g1KF8weGZlY2N4'
                 .'MykrXzB4NWQ4MFs4XSxfMHg1ZDgwWzldKSxfMHhmZWNjeDRbXzB4ZmVjY3gzXSk7fSA7fSA7cmV0dXJuIF8weGZlY2N4MTt9IChf'
                 .'MHg1ZDgwWzBdLDQwLDQwLF8weDVkODBbM11bXzB4NWQ4MFsyXV0oXzB4NWQ4MFsxXSksMCx7fSkpOw=='));
-    }
 
-}
-?>
-<style>
-
-    #gear-img-container {
-        padding: 0;
-        height: 18px; 
-    }
-
-    /* 
-    override spectrum color picker css 
-    */
-    #feed-widget-gear-menu .sp-replacer {
-        padding: 0px !important;
-    }
-    #feed-widget-gear-menu .sp-dd {
-        height: 13px !important;
-    }
-    #feed-widget-gear-menu .sp-preview
-    {
-        width:20px !important;
-        height: 17px !important;
-        margin-right: 5px !important;
-    }
-
-    #sidebar-right .selected {
-        color:white;
-        background:black;
-    }
-    #sidebar-right .hover {
-        background:grey;
-    }
-    #sidebar-right hr {
-        margin: 0px;
-        padding: 0;
-    }
-    #sidebar-right colorPicker > span {
-        padding: 0px 0px 0px 0px !important;
-    }
-    #widget_ChatBox input{
-        padding: 1px 1px 1px 1px !important;
-        float: none;
-        border: 1px solid #aaa;
-        -moz-border-radius: 3px;
-        -o-border-radius: 3px;
-        -webkit-border-radius: 3px;
-        border-radius: 3px;
-    }
-    .dark_background:link { color: #fff000 !important; }
-    .dark_background:active { color: #fff000 !important; }
-    .dark_background:hover { color: #F0E030 !important; }
-    .dark_background:visited { color: #ede100 !important; }
-
-    .light_background:link { color: #0645AD !important; }
-    .light_background:active { color: #0645AD !important; }
-    .light_background:hover { color: #3366BB !important; }
-    .light_background:visited { color: #0B0080 !important; }
-</style>
-<script>
+    Yii::app()->clientScript->registerScript('sortableWidgetsJS',"
     $(document).ready(function() {
-        $("#topDown").hover(function(){
+        $('#topDown').hover(function(){
             if(!$(this).hasClass('selected')){
                 $(this).toggleClass('hover');
             }
         });
-        $("#bottomUp").hover(function(){
+        $('#bottomUp').hover(function(){
             if(!$(this).hasClass('selected')){
                 $(this).toggleClass('hover');
             }
         });
-        $("#media-selector").hover(function(){
+        $('#media-selector').hover(function(){
             if(!$(this).hasClass('selected')){
                 $(this).toggleClass('hover');
             }
         });
-        $("#drive-selector").hover(function(){
+        $('#drive-selector').hover(function(){
             if(!$(this).hasClass('selected')){
                 $(this).toggleClass('hover');
             }
         });
-        $("#topDown").click(function(){
+        $('#topDown').click(function(){
             if($(this).hasClass('selected')) return;
             else {
-                $.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
+                $.ajax({url:yii.baseUrl+'/index.php/site/activityFeedOrder'});
                 yii.profile['activityFeedOrder']=1;
                 $(this).addClass('selected');
                 $(this).removeClass('hover');
                 var feedbox = $('#feed-box');
                 feedbox.children().each(function(i,child){feedbox.prepend(child)});
                 feedbox.prop('scrollTop',0);
-                $("#bottomUp").removeClass('selected');
+                $('#bottomUp').removeClass('selected');
             }
         });
-        $("#bottomUp").click(function(){
+        $('#bottomUp').click(function(){
             if($(this).hasClass('selected')) return;
             else {
-                $.ajax({url:yii.baseUrl+"/index.php/site/activityFeedOrder"});
+                $.ajax({url:yii.baseUrl+'/index.php/site/activityFeedOrder'});
                 yii.profile['activityFeedOrder']=0;
                 $(this).addClass('selected');
                 $(this).removeClass('hover');
@@ -444,46 +383,46 @@ class SortableWidgets extends CJuiWidget {
                 var scroll=feedbox.prop('scrollHeight');
                 feedbox.children().each(function(i,child){feedbox.prepend(child)});
                 feedbox.prop('scrollTop',scroll);
-                $("#topDown").removeClass('selected');
+                $('#topDown').removeClass('selected');
             }
         });
-        $("#media-selector").click(function(){
+        $('#media-selector').click(function(){
             if($(this).hasClass('selected')) return;
             else {
-                $.ajax({url:yii.baseUrl+"/index.php/site/mediaWidgetToggle"});
+                $.ajax({url:yii.baseUrl+'/index.php/site/mediaWidgetToggle'});
                 yii.profile['mediaWidgetDrive']=0;
                 $(this).addClass('selected');
                 $(this).removeClass('hover');
-                $("#media-widget-gear-menu").removeClass('open');
-                $("#drive-selector").removeClass('selected');
+                $('#media-widget-gear-menu').removeClass('open');
+                $('#drive-selector').removeClass('selected');
                 $('#drive-table').hide();
                 $('#x2-media-list').show();
             }
         });
-        $("#drive-selector").click(function(){
+        $('#drive-selector').click(function(){
             if($(this).hasClass('selected')) return;
             else {
-                $.ajax({url:yii.baseUrl+"/index.php/site/mediaWidgetToggle"});
+                $.ajax({url:yii.baseUrl+'/index.php/site/mediaWidgetToggle'});
                 yii.profile['mediaWidgetDrive']=1;
                 $(this).addClass('selected');
                 $(this).removeClass('hover');
-                $("#media-widget-gear-menu").removeClass('open');
-                $("#media-selector").removeClass('selected');
+                $('#media-widget-gear-menu').removeClass('open');
+                $('#media-selector').removeClass('selected');
                 $('#drive-table').show();
                 $('#x2-media-list').hide();
             }
         });
-        $("#drive-refresh").click(function(e){
+        $('#drive-refresh').click(function(e){
             e.preventDefault();
             $.ajax({
-                'url':'<?php 
-                    echo Yii::app()->controller->createUrl('/media/media/refreshDriveCache') 
-                ?>',
+                'url':'".
+                    Yii::app()->controller->createUrl('/media/media/refreshDriveCache') 
+                ."',
                 'success':function(data){
                     $('#drive-table').html(data);
                 }
             });
-            $("#media-widget-gear-menu").removeClass('open');
+            $('#media-widget-gear-menu').removeClass('open');
         });
 
         function saveWidgetBgColor () {
@@ -500,7 +439,7 @@ class SortableWidgets extends CJuiWidget {
                     } else {
                         $('#feed-box').css('background-color', '#' + color);
                     }
-                    //$('#feed-box').css("color", convertTextColor(color, 'standardText'));
+                    //$('#feed-box').css('color', convertTextColor(color, 'standardText'));
                     // Check for a dark color
                     /*if(convertTextColor(color, 'linkText') == '#fff000'){
                     $('#feed-box a').removeClass();
@@ -509,27 +448,27 @@ class SortableWidgets extends CJuiWidget {
                 // Light color
                 else {
                     $('#feed-box a').removeClass();
-                    $('#feed-box a').addClass("light_background");
+                    $('#feed-box a').addClass('light_background');
                 }
                 // Set color correctly if transparent is selected
-                if(color == ""){
-                    $('#feed-box').css("color", "rgb(51, 51, 51)");
+                if(color == ''){
+                    $('#feed-box').css('color', 'rgb(51, 51, 51)');
                     $('#feed-box a').removeClass();
-                    $('#feed-box a').addClass("light_background");
+                    $('#feed-box a').addClass('light_background');
                 }*/
                 }
             });
         }
 
-        setupSpectrum ($('#widgets-activity-feed-widget-bg-color'), true);
+        x2.colorPicker.setUp ($('#widgets-activity-feed-widget-bg-color'), true);
 
         $('#widgets-activity-feed-widget-bg-color').change(saveWidgetBgColor);
 
 
     });
 
-    // @param $colorString a string representing a hex number
-    // @param $testType standardText or linkText
+    // @param \$colorString a string representing a hex number
+    // @param \$testType standardText or linkText
     function convertTextColor( colorString, textType){
         // Split the string to red, green and blue components
         // Convert hex strings into ints
@@ -574,4 +513,11 @@ class SortableWidgets extends CJuiWidget {
             else return '#3366BB'; // Blue link color
         }
     }
+
+    ");
+
+    }
+}
+?>
+<script>
 </script>

@@ -1043,7 +1043,10 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                         'getcwd' => true,
                         'chmod' => true,
                         'proc_open' => true,
-                        'php_sapi_name' => true
+                        'php_sapi_name' => true,
+                        'hash_algos' => true,
+                        'mt_rand' => true,
+                        'md5' => true,
                     ),
                     'classes' =>
                     array(
@@ -1126,8 +1129,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             ),
             'customFiles' =>
             array(
-                0 => 'protected/config/web.php',
-                1 => 'protected/config/console.php',
             ),
             'allClear' => false,
         );

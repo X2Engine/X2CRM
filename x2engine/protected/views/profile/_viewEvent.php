@@ -166,11 +166,15 @@ if($data->important && isset($data->fontColor)){
             echo Formatter::convertLineBreaks(x2base::convertUrls($data->getText()));
             ?>
         </span>
-    <div class='event-bottom-buttons'>
+    <div class='event-bottom-row'>
         <span class="comment-age" id="<?php echo $data->id."-".$data->timestamp; ?>" 
          style="<?php echo $style; ?>">
             <?php echo Formatter::formatFeedTimestamp($data->timestamp); ?>
-        </span> | 
+        </span> 
+        <span>
+            | 
+        </span>
+        <span class='event-icon-button-container'>
             <?php 
             echo CHtml::link(
                 CHtml::image (
@@ -352,6 +356,7 @@ if($data->important && isset($data->fontColor)){
                 )
             );
             ?>
+            </span>
     </div>
         <?php ?>
     </div>

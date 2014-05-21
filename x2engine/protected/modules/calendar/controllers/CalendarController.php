@@ -497,7 +497,7 @@ class CalendarController extends x2base {
                         'start' => date('Y-m-d H:i', $action->dueDate),
                         'id' => $action->id,
                         'complete' => $action->complete,
-                        'allDay' => false,
+                        'allDay' => false
                     );
                     end($events);
                     $last = key($events);
@@ -506,6 +506,7 @@ class CalendarController extends x2base {
                     if($action->color)
                         $events[$last]['color'] = $action->color;
                 }
+                $events[$last]['canEdit'] = Yii::app()->user->checkAccess('ActionsUpdate',array('X2Model'=>$action));
                 $events[$last]['linked'] = $linked;
             }
         }
@@ -588,7 +589,7 @@ class CalendarController extends x2base {
     /**
      * return a json string of actions associated with the specified shared calendar
      */
-    public function actionJsonFeedShared($calendarId){
+    /*public function actionJsonFeedShared($calendarId){
         $actions = Actions::model()->with('actionText')->findAllByAttributes(array('calendarId' => $calendarId));
         $events = array();
         $user = User::model()->findByPk(Yii::app()->user->id); // get user profile
@@ -664,7 +665,7 @@ class CalendarController extends x2base {
             }
         }
         echo CJSON::encode($events);
-    }
+    }*/
 
     public function actionJsonFeedGoogle($calendarId){
         $calendar = X2Calendar::model()->findByPk($calendarId);
@@ -840,7 +841,7 @@ class CalendarController extends x2base {
             if($action->completeDate)
                 $action->completeDate += ($dayDelta * 86400) + ($minuteDelta * 60);
 
-            $profile = ProfileChild::model()->findByAttributes(array('username' => $action->assignedTo));
+            $profile = Profile::model()->findByAttributes(array('username' => $action->assignedTo));
             if(isset($profile))
                 $profile->updateGoogleCalendarEvent($action); // update action in Google Calendar if user has a Google Calendar
 
@@ -926,7 +927,7 @@ class CalendarController extends x2base {
             else if($action->type == 'event') // event without end date? give it one
                 $action->completeDate = $action->dueDate + ($dayDelta * 86400) + ($minuteDelta * 60);
 
-            $profile = ProfileChild::model()->findByAttributes(array('username' => $action->assignedTo));
+            $profile = Profile::model()->findByAttributes(array('username' => $action->assignedTo));
             if(isset($profile))
                 $profile->updateGoogleCalendarEvent($action); // update action in Google Calendar if user has a Google Calendar
 
@@ -1055,7 +1056,7 @@ class CalendarController extends x2base {
 
             $action = Actions::model()->findByPk($id);
 
-            $profile = ProfileChild::model()->findByAttributes(array('username' => $action->assignedTo));
+            $profile = Profile::model()->findByAttributes(array('username' => $action->assignedTo));
             if(isset($profile))
                 $profile->deleteGoogleCalendarEvent($action); // update action in Google Calendar if user has a Google Calendar
             X2Model::model('Events')->deleteAllByAttributes(array('associationType' => 'Actions', 'type' => 'calendar_event', 'associationId' => $action->id));
@@ -1281,20 +1282,31 @@ class CalendarController extends x2base {
      *  events are to be loaded and returned
      * @param type $start Beginning time range
      * @param type $end End time range
+     * @param mixed $includePublic Set to 1 or boolean true to include all
+     *  calendar events 
      * @return array An array of action records
      */
-    public function calendarActions($calendarUser,$start,$end) {
-        $filter = explode(',',$this->currentUser->calendarFilter); // action types user doesn't want filtered
-        $action = new Actions;
-        $criteria = $action->getAccessCriteria();
-        $criteria->compare('assignedTo',$calendarUser);
+    public function calendarActions($calendarUser, $start, $end){
+        $filter = explode(',', $this->currentUser->calendarFilter); // action types user doesn't want filtered
+        $staticAction = Actions::model();
+        // View permissions for the viewing user
+        $criteria = $staticAction->getAccessCriteria();
+        // Assignment condition: all events for the user whose calendar is being viewed:
+        $criteria->addCondition('`assignedTo` REGEXP BINARY :unameRegex');
+        $criteria->params[':unameRegex'] = X2PermissionsBehavior::getUserNameRegex($calendarUser);
+        // Action type filters:
         $criteria->addCondition(self::constructFilterClause($filter));
         $criteria->addCondition("`type` IS NULL OR `type`='' OR `type`!='quotes'");
-        $criteria->addCondition('(`dueDate` >= :start1 AND `dueDate` <= :end1) OR (`completeDate` >= :start2 AND `completeDate` <= :end2)');
-        $criteria->params = array_merge($criteria->params,array(':start1'=>$start,':start2'=>$start,':end1'=>$end,':end2'=>$end));
+        $criteria->addCondition('(`dueDate` >= :start1 AND `dueDate` <= :end1) '
+                .'OR (`completeDate` >= :start2 AND `completeDate` <= :end2)');
+        $criteria->params = array_merge($criteria->params, array(
+            ':start1' => $start,
+            ':start2' => $start,
+            ':end1' => $end,
+            ':end2' => $end
+        ));
         return Actions::model()->with('actionText')->findAll($criteria);
     }
-
 
     /**
      * Getter function for {@link $currentUser}

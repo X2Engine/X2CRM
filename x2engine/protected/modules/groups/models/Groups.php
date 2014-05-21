@@ -41,6 +41,9 @@ Yii::import('application.models.X2Model');
  * @package application.modules.groups.models
  */
 class Groups extends X2Model {
+
+    public $supportsWorkflow = false;
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Groups the static model class
@@ -176,7 +179,8 @@ class Groups extends X2Model {
 	 * Find out if a user belongs to a group
 	 */
 	public static function inGroup($userId, $groupId) {
-		return GroupToUser::model()->exists("userId=$userId AND groupId=$groupId");
+        $groups = self::getUserGroups($userId);
+        return in_array($groupId,$groups);
 	}
 
 	/** 
@@ -195,15 +199,50 @@ class Groups extends X2Model {
 		} else {
 			$userGroups = array();
 		}
-
+        
 		$userGroups[$userId] = Yii::app()->db->createCommand()	// get array of groupIds
 			->select('groupId')
 			->from('x2_group_to_user')
 			->where('userId=:userId', array (':userId' => $userId))->queryColumn();
 
-		if($cache === true)
-			Yii::app()->cache->set('user_groups',$userGroups,259200); // cache user groups for 3 days
+		if($cache === true) {
+            // cache user groups for 3 days
+			Yii::app()->cache->set('user_groups',$userGroups,259200); 
+        }
 
 		return $userGroups[$userId];
 	}
+
+        /**
+     * Gets a list of names of all users having a group in common with a user.
+     *
+     * @param integer $userId User's ID
+     * @param boolean $cache Whether to cache or not
+     * @return array
+     */
+    public static function getGroupmates($userId,$cache=true) {
+       	if($cache === true && ($groupmates = Yii::app()->cache->get('user_groupmates')) !== false){
+            if(isset($groupmates[$userId]))
+                return $groupmates[$userId];
+        } else{
+            $groupmates = array();
+        }
+
+        $userGroups = self::getUserGroups($userId,$cache);
+        $groupmates[$userId] = array();
+        if(!empty($userGroups)) {
+            $groupParam = AuxLib::bindArray($userGroups,'gid_');
+            $inGroup = AuxLib::arrToStrList(array_keys($groupParam));
+
+            $groupmates[$userId] = Yii::app()->db->createCommand()
+                    ->select('DISTINCT(gtu.username)')
+                    ->from(GroupToUser::model()->tableName().' gtu')
+                    ->join(User::model()->tableName().' u',
+                            'gtu.userId=u.id AND gtu.groupId IN '.$inGroup, $groupParam)
+                    ->queryColumn();
+        }
+        if($cache === true)
+            Yii::app()->cache->set('user_groupmates',$groupmates,259200);
+        return $groupmates[$userId];
+    }
 }

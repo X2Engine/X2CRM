@@ -70,7 +70,7 @@ class InlineEmailAction extends CAction {
         $makeEvent = isset($_GET['skipEvent']) ? !((bool) $_GET['skipEvent']) : 1;
 		// Check to see if the user is requesting a new template
 		if(isset($_GET['template'])){
-			$scenario = 'template';;
+			$scenario = 'template';
 		}
 		$model->setScenario($scenario);
 
@@ -146,7 +146,9 @@ class InlineEmailAction extends CAction {
 				// quote mode, in which case we need to include templates and
 				// insertable attributes for setting it all up properly:
 				$response['insertableAttributes'] = $model->insertableAttributes;
-				$templates = array(0=>Yii::t('docs','Custom Message')) + Docs::getEmailTemplates($model->modelName=='Quote'?'quote':'email');
+				$templates = array(0=>Yii::t('docs','Custom Message')) + 
+                    Docs::getEmailTemplates($model->modelName=='Quote'?'quote':'email',
+                    $_POST['associationType']);
 				$response['templateList'] = array();
 				foreach($templates as $id=>$templateName) {
 					$response['templateList'][] = array('id'=>$id,'name'=>$templateName);

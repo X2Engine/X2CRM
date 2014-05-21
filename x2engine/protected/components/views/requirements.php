@@ -63,6 +63,7 @@ if(!$standalone){
 	// Check being called/included inside another script
 	$document = '{bodyContent}';
 }
+$tryCurl = 0;
 
 
 ///////////////////////////////////////////////
@@ -72,6 +73,11 @@ if(!$standalone){
 // due to missing/disabled functions on the server itself, these functions will
 // print an appropriate message for the occasion.
 
+/**
+ * Wrapper for die()
+ * 
+ * @global type $standalone
+ */
 function RIP(){
 	global $standalone;
 	if($standalone){
@@ -79,7 +85,18 @@ function RIP(){
 	}
 }
 
-// Error handler.
+/**
+ * Error handler.
+ * 
+ * @global type $document
+ * @global array $totalFailure
+ * @global boolean $responding
+ * @global type $standalone
+ * @param type $no
+ * @param type $st
+ * @param type $fi
+ * @param type $ln
+ */
 function handleReqError($no, $st, $fi = Null, $ln = Null){
 	global $document, $totalFailure, $responding, $standalone;
     $fatal = $no === E_ERROR;
@@ -93,7 +110,15 @@ function handleReqError($no, $st, $fi = Null, $ln = Null){
     }
 }
 
-// Exception handler.
+/**
+ * Exception handler.
+ *
+ * @global type $document
+ * @global array $totalFailure
+ * @global boolean $responding
+ * @global type $standalone
+ * @param type $e
+ */
 function handleReqException($e){
     global $document, $totalFailure, $responding, $standalone;
     $responding = true;
@@ -117,7 +142,14 @@ function handleReqException($e){
     RIP();
 }
 
-// Shutdown function (for fatal errors, i.e. call to undefined function)
+/**
+ * Shutdown function (for fatal errors, i.e. call to undefined function)
+ * 
+ * @global type $document
+ * @global array $totalFailure
+ * @global boolean $responding
+ * @global type $standalone
+ */
 function reqShutdown(){
     global $document, $totalFailure, $responding, $standalone;
     $error = error_get_last();
@@ -136,53 +168,34 @@ function reqShutdown(){
     }
 }
 
-// Throws an exception when encountering an error for easier handling.
+/**
+ * Throws an exception when encountering an error for easier handling.
+ * 
+ * @param type $no
+ * @param type $st
+ * @param type $fi
+ * @param type $ln
+ * @throws Exception
+ */
 function exceptionForError($no, $st, $fi = Null, $ln = Null){
 	throw new Exception("Error [$no]: $st $fi L$ln");
 }
 
-if(!$returnArray){
-    set_error_handler('handleReqError');
-    set_exception_handler('handleReqException');
-    register_shutdown_function('reqShutdown');
-}
-//////////////////////////////
-// X2Engine Requirements Check //
-//////////////////////////////
-// "Cannot {scenario} X2Engine"
-if(!isset($scenario))
-	$scenario = 'install';
+/////////////////////
+// EXTRA FUNCTIONS //
+/////////////////////
 
-// Get PHP info
-ob_start();
-phpinfo();
-$pi = ob_get_contents();
-preg_match('%(<style[^>]*>.*</style>)%ms',$pi,$phpInfoStyle);
-preg_match('%<body>(.*)</body>%ms',$pi,$phpInfoContent);
-ob_end_clean();
-if(count($phpInfoStyle))
-	$phpInfoStyle = $phpInfoStyle[1];
-else
-	$phpInfoStyle = '';
-if(count($phpInfoContent))
-	$phpInfoContent = $phpInfoContent[1];
-else
-	$phpInfoStyle = '';
-
-$phpInfoStyle .= '<style>
-.hidden {display: none;}
-</style>';
-
-// Declare the function since the script is not being used from within the installer
-if(!function_exists('installer_t')){
-    function installer_t($msg){
-		return $msg;
-	}
-
-}
-if(!function_exists('installer_tr')) {
-    function installer_tr($msg,$params = array()){
-        return strtr($msg,$params);
+/**
+ * Attempt to query a host name's DNS record.
+ * 
+ * @param type $hostname
+ * @return boolean
+ */
+function checkDNS($hostname) {
+    if(function_exists('dns_check_record')) {
+        return (integer) @dns_check_record($hostname);
+    } else {
+        return 0;
     }
 }
 
@@ -221,6 +234,97 @@ function checkServerVar($thisFile = null){
 		return installer_t('Unable to determine URL path info. Please make sure $_SERVER["PATH_INFO"] (or $_SERVER["PHP_SELF"] and $_SERVER["SCRIPT_NAME"]) contains proper value.');
 
 	return '';
+}
+
+/**
+ * Tells if the directory is within the open_basedir restriction
+ *
+ * @param type $path
+ * @return int
+ */
+function isAllowedDir($path) {
+    $basedir = trim(ini_get('open_basedir'));
+    if($allowCwd = empty($basedir))
+        return 1;
+    $basedirs = explode(PATH_SEPARATOR,$basedir);
+    foreach($basedirs as $dir){
+        if(empty($dir))
+            continue;
+        if(strpos($path,$dir) !== false){
+            $allowCwd = 1;
+            break;
+        }
+    }
+    return $allowCwd;
+}
+
+/**
+ * Attempt to access a remote URL
+ *
+ * @global bool $tryCurl
+ * @param string $url
+ * @return bool Whether access succeeded
+ */
+function tryGetRemote($url) {
+    global $tryCurl;
+    if($tryCurl || !(bool) ($response = @file_get_contents($url))){
+        // Function file_get_contents not available, or failed:
+		$ch = @curl_init($url);
+        if(!(bool) $ch)
+            return 0;
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_POST, 0);
+		$response = @curl_exec($ch);
+		curl_close($ch);
+    }
+    return (int) (bool) $response;
+}
+
+// Set error handlers
+if(!$returnArray){
+    set_error_handler('handleReqError');
+    set_exception_handler('handleReqException');
+    register_shutdown_function('reqShutdown');
+}
+/////////////////////////////////
+// X2Engine Requirements Check //
+/////////////////////////////////
+
+// Set scenario: "Cannot {scenario} X2Engine"
+if(!isset($scenario))
+	$scenario = 'install';
+
+// Get PHP info
+ob_start();
+phpinfo();
+$pi = ob_get_contents();
+preg_match('%(<style[^>]*>.*</style>)%ms',$pi,$phpInfoStyle);
+preg_match('%<body>(.*)</body>%ms',$pi,$phpInfoContent);
+ob_end_clean();
+if(count($phpInfoStyle))
+	$phpInfoStyle = $phpInfoStyle[1];
+else
+	$phpInfoStyle = '';
+if(count($phpInfoContent))
+	$phpInfoContent = $phpInfoContent[1];
+else
+	$phpInfoStyle = '';
+
+$phpInfoStyle .= '<style>
+.hidden {display: none;}
+</style>';
+
+// Declare the function since the script is not being used from within the installer
+if(!function_exists('installer_t')){
+    function installer_t($msg){
+		return $msg;
+	}
+
+}
+if(!function_exists('installer_tr')) {
+    function installer_tr($msg,$params = array()){
+        return strtr($msg,$params);
+    }
 }
 
 $canInstall = True;
@@ -265,30 +369,13 @@ if(!is_writable(__FILE__)) {
 }
 
 
-/**
- * Tells if the directory is within the open_basedir restriction
- */
-$isAllowedDir = function($path) {
-    $basedir = trim(ini_get('open_basedir'));
-    if($allowCwd = empty($basedir))
-        return 1;
-    $basedirs = explode(PATH_SEPARATOR,$basedir);
-    foreach($basedirs as $dir){
-        if(empty($dir))
-            continue;
-        if(strpos($path,$dir) !== false){
-            $allowCwd = 1;
-            break;
-        }
-    }
-    return $allowCwd;
-};
+
 
 // Check that the directive open_basedir is not arbitrarily set to some restricted 
 // jail directory off in god knows where
 $requirements['environment']['open_basedir'] = 1;
 if(!empty($basedir)){
-    if(!$isAllowedDir(dirname(__FILE__))) {
+    if(!isAllowedDir(dirname(__FILE__))) {
     	$reqMessages[3][] = installer_t('The base directory configuration directive is set, and it does not include the current working directory.');
         $requirements['environment']['open_basedir'] = 0;
     }
@@ -374,7 +461,10 @@ $requiredFunctions = array(
     'php_sapi_name',
 	'mb_regex_encoding',
 	'getcwd',
-	'chmod'
+	'chmod',
+    'hash_algos',
+    'mt_rand',
+    'md5'
 );
 $missingFunctions = array();
 foreach($requiredFunctions as $function)
@@ -426,41 +516,6 @@ if(!(bool) ($requirements['environment']['allow_url_fopen']=@ini_get('allow_url_
 ///////////////////////
 // NETWORK DIAGNOSIS //
 ///////////////////////
-
-/**
- * Attempt to access a remote URL
- *
- * @global bool $tryCurl
- * @param string $url
- * @return bool Whether access succeeded
- */
-function tryGetRemote($url) {
-    global $tryCurl;
-    if($tryCurl || !(bool) ($response = @file_get_contents($url))){
-        // Function file_get_contents not available, or failed:
-		$ch = @curl_init($url);
-        if(!(bool) $ch)
-            return 0;
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_POST, 0);
-		$response = @curl_exec($ch);
-		curl_close($ch);
-    }
-    return (int) (bool) $response;
-}
-
-/**
- * Attempt to query a host name's DNS record.
- * @param type $hostname
- * @return boolean
- */
-function checkDNS($hostname) {
-    if(function_exists('dns_check_record')) {
-        return (integer) @dns_check_record($hostname);
-    } else {
-        return 0;
-    }
-}
 
 // Re-usable messages for network diagnosis:
 $updateMethodMsg = installer_t('Software updates will have to be performed using the "offline" method.');
@@ -559,27 +614,27 @@ if($canBackup){
 }
 if(!$canBackup && $requirements['functions']['proc_open']){
     $requirements['environment']['shell'] = 0;
-	$reqMessages[2][] = installer_t('The "mysqldump" and "mysql" command line utilities are unavailable on this system. X2Engine will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.');
+	$reqMessages[1][] = installer_t('The "mysqldump" and "mysql" command line utilities are unavailable on this system. X2Engine will not be able to automatically make a backup of its database during software updates, or automatically restore its database in the event of a failed update.');
 }
 
 $giNotwork = installer_t('Google integration will not work.');
 if(!function_exists('sys_get_temp_dir')){
     $message = installer_t('The function "sys_get_temp_dir" is unavailable.');
-    if($isAllowedDir('/tmp')){
+    if(isAllowedDir('/tmp')){
         if(!is_writable('/tmp')){
-            $reqMessages[2][] = $msg.' '.installer_t('The directory "/tmp" is not writable.').' '.$giNotwork;
+            $reqMessages[1][] = $msg.' '.installer_t('The directory "/tmp" is not writable.').' '.$giNotwork;
         }
     } else {
-        $reqMessages[2][] = $msg.' '.installer_t('Use of the directory "/tmp" is not permitted on this system.').' '.$giNotwork;
+        $reqMessages[1][] = $msg.' '.installer_t('Use of the directory "/tmp" is not permitted on this system.').' '.$giNotwork;
     }
 } else {
     $tmp = sys_get_temp_dir();
-    if(!empty($tmp) && $isAllowedDir($tmp)){
+    if(!empty($tmp) && isAllowedDir($tmp)){
         if(!is_writable($tmp)){
-            $reqMessages[2][] = installer_t('The system temporary directory, according to "sys_get_temp_dir", is not writable.').' '.$giNotwork;
+            $reqMessages[1][] = installer_t('The system temporary directory, according to "sys_get_temp_dir", is not writable.').' '.$giNotwork;
         }
     }else{
-        $reqMessages[2][] = installer_t('Usage of the system temporary directory, according to "sys_get_temp_dir", is either unknown or not permitted.').' '.$giNotwork;
+        $reqMessages[1][] = installer_t('Usage of the system temporary directory, according to "sys_get_temp_dir", is either unknown or not permitted.').' '.$giNotwork;
 
     }
 }
@@ -697,7 +752,8 @@ if($standalone){
 			'YABtitvxQEn6dgAAAABJRU5ErkJggg==';
 	$output .= '<div style="display:block;float:none;margin-left:275px; width: 150px; display:inline-block"><img style="display:block;float:none;" src="data:image/png;base64,'.$imgData.'"><br />';
     $output .= '<a style="display:block;float:none; padding:0; color: #6A6AA8;font-family:monospace;font-weight:bold; text-decoration:none;" href="javascript:void(0);" onclick="showHidePhpInfo(this);">[ + phpinfo()]</a></div><br /><br />';
-    $output .= "<div id=\"phpInfoContent\" class=\"hidden\">$phpInfoContent</div>";
+    $output .= "<div id=\"phpInfoContent\" class=\"hidden\"><div style=\"font-family:monospace;text-align:center\">PHP_SAPI == \"".
+            PHP_SAPI."\"</div><br />$phpInfoContent</div>";
     $output .= '
 <script type="text/javascript">
 function showHidePhpInfo(elt) {

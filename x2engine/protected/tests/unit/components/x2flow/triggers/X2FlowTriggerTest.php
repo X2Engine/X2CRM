@@ -44,7 +44,7 @@ class X2FlowTriggerTest extends X2TestCase {
 
     public function testGetTriggerInstances() {
         X2FlowTestingAuxLib::assertGetInstances(
-            $this, 'Trigger',array('X2FlowTrigger','X2FlowSwitch','BaseTagTrigger'));
+            $this, 'Trigger',array('X2FlowTrigger','X2FlowSwitch','BaseTagTrigger','BaseWorkflowStageTrigger','BaseWorkflowTrigger'));
     }
     
 }

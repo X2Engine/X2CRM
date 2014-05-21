@@ -14,6 +14,12 @@ RewriteCond %{REQUEST_FILENAME} !favicon\.ico$|sitemap\.xml$|crossdomain\.xml$
 
 # otherwise forward it to index.php
 RewriteRule . index.php
+
+# Allows PHP to moderate HTTP Basic authorization in CGI/FCGI so that the REST
+# API's authentication method can work in shared hosting environments
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 </IfModule>
 <Files email.php>
 Order allow,deny

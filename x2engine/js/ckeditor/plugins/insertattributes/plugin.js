@@ -111,11 +111,3 @@ CKEDITOR.plugins.add('insertattributes',{
 });
 
 
-
-
-
-
-
-
-
-

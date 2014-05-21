@@ -61,14 +61,14 @@ ALTER TABLE x2_profile CHANGE `language` language varchar(40) DEFAULT '{language
 /*&*/
 ALTER TABLE x2_admin CHANGE `emailFromAddr` emailFromAddr varchar(255) NOT NULL DEFAULT '{bulkEmail}';
 /*&*/
-INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin, userKey)
-        VALUES ('web','admin','admin','{adminPass}','{adminEmail}','1', '0', '{adminUserKey}');
+INSERT INTO x2_users (id, firstName, lastName, username, password, emailAddress, status, lastLogin, userKey)
+        VALUES (1,'web','admin','{adminUsername}','{adminPass}','{adminEmail}','1','0','{adminUserKey}');
 /*&*/
 INSERT INTO x2_users (firstName, lastName, username, password, emailAddress, status, lastLogin)
         VALUES ('API','User','api','{apiKey}','{adminEmail}' ,'0', '0');
 /*&*/
 INSERT INTO x2_profile (fullName, username, emailAddress, status)
-		VALUES ('Web Admin', 'admin', '{adminEmail}','1');
+		VALUES ('Web Admin', '{adminUsername}', '{adminEmail}','1');
 /*&*/
 INSERT INTO x2_profile (fullName, username, emailAddress, status)
 		VALUES ('API User', 'api', '{adminEmail}','0');
@@ -98,9 +98,10 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 UPDATE x2_profile SET `widgets`='0:1:1:1:1:0:0:0:0:0:0:0:0',
 	`widgetOrder`='OnlineUsers:TimeZone:GoogleMaps:ChatBox:TagCloud:TwitterFeed:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
 /*&*/
-UPDATE `x2_users` SET `username`='{adminUsername}' WHERE `username`='admin';
-/*&*/
-UPDATE `x2_profile` SET `username`='{adminUsername}' WHERE `username`='admin';
+INSERT INTO `x2_modules`
+(`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
+VALUES
+('x2Activity', 'Activity', 1, 0, 0, 0, 0, 0, 0);
 /*&*/
 UPDATE `x2_modules` SET `visible`=0;
 /*&*/

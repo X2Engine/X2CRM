@@ -33,49 +33,57 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?>
-    <style>
-        tip-title {
-            text-align: center;
-            font-weight: bold;
-        }
-        tip {
-            text-align: center;
-        }
-        #tip-content{
-            margin-right:22px;
-        }
-    </style>
 
-    <span class="tip-refresh" title="Refresh Tip"></span>
-    <div id="tip-content">
-        <tip-title>
-            <div id="tip-title">
-                <?php
-                echo $module." Tip";
-                ?>
-            </div>
-        </tip-title>
-        <tip>
-            <div id="tip">
-                <?php
-                echo $tip;
-                ?>
-            </div>
-        </tip>
-    </div>
-    <script>
-        $(".tip-refresh").click(function() {
-            $.ajax({
-                url:yii.baseUrl+"/index.php/site/getTip",
-                success:function(data){
-                    data=JSON.parse(data);
-                    $('#tip-content').fadeOut(400,function(){
-                        $('#tip-title').text(data['module'] + " Tip");
-                        $('#tip').text(data['tip']);
-                        $('#tip-content').fadeIn();
-                    });
-                }
-            });
+Yii::app()->clientScript->registerScript('tipScript',"
+    $('.tip-refresh').click(function() {
+        $.ajax({
+            url:yii.baseUrl+'/index.php/site/getTip',
+            dataType: 'json',
+            success:function(data){
+                $('#tip-content').fadeOut(400,function(){
+                    $('#tip-title').text(data['module'] + ' Tip');
+                    $('#tip').text(data['tip']);
+                    $('#tip-content').fadeIn();
+                });
+            }
         });
-    </script>
+    });
+");
+
+Yii::app()->clientScript->registerCss('tipCss',"
+.tip-title {
+    text-align: center;
+    font-weight: bold;
+}
+.tip {
+    text-align: center;
+}
+#tip-content{
+    margin-right:22px;
+}
+.tip-refresh {
+    opacity: 0.4;
+}
+.tip-refresh:hover {
+    opacity: 0.6;
+}
+");
+
+?>
+<span class="tip-refresh" title="Refresh Tip"></span>
+<div id="tip-content">
+    <div class='tip-title'>
+        <div id="tip-title">
+            <?php
+            echo $module." Tip";
+            ?>
+        </div>
+    </div>
+    <div class='tip'>
+        <div id="tip">
+            <?php
+            echo $tip;
+            ?>
+        </div>
+    </div>
+</div>

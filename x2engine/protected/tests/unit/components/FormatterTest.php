@@ -60,12 +60,28 @@ class FormatterTest extends X2DbTestCase {
         //
         // system call:
         $formula = '=exec("echo YOU SHOULD NOT SEE THIS MESSAGE, EVER");';
-        $evald = Formatter::parseFormula($formula,array());
+        $evald = Formatter::parseFormula($formula,array('model'=>$contact));
         $this->assertFalse($evald[0]);
         $formula = '="Unfortunately, string expressions in formulae with anything
             aside from spaces, alphanumerics and underscores aren\'t supported yet."';
         $evald = Formatter::parseFormula($formula,array());
         $this->assertFalse($evald[0]);
+
+        // Test typecasting:
+        //
+        // integer:
+        $contact->createDate = '1';
+        $evald = Formatter::parseFormula("={createDate}+2",array('model'=>$contact));
+        $this->assertEquals(3,$evald[0]);
+        // boolean:
+        $contact->doNotEmail = true;
+        $evald = Formatter::parseFormula("={doNotEmail} or false",array('model'=>$contact));
+        $this->assertTrue($evald[0]);
+        // double:
+        $contact->dealvalue = '25.3';
+        $evald = Formatter::parseFormula("={dealvalue}*44.1",array('model'=>$contact));
+        $this->assertEquals(1115.73,$evald[0]);
+
     }
 }
 

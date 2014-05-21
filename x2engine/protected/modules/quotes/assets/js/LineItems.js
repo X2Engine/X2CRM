@@ -44,6 +44,7 @@ x2.LineItems = (function () {
 function LineItems (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
+        DEBUG: false && x2.DEBUG,
         currency: null,
         /**
          * @param bool Set to true for read-only version of the line items table
@@ -80,6 +81,9 @@ function LineItems (argsDict) {
         namespacePrefix: null
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    var that = this;
+
+    this.PERCENT_KEY_CODE = 53;
 
     this._containerElemSelector = '#' + this.namespacePrefix + '-line-items-table';
     this._lineItemsSelector = this._containerElemSelector + ' .line-items';
@@ -91,6 +95,12 @@ function LineItems (argsDict) {
 
     this._lineCounter = 0; // used to differentiate name values of input fields
     this._clickedLineItem = null;
+
+
+    $(function () {
+        // used to instantiate moneyMask fields
+        that._currencyConfig = $.extend ({}, x2.currencyInfo, {'affixStay' : true});
+    });
 
     this._init ();
 };
@@ -140,13 +150,14 @@ extract the price from the row element and convert the currency to a Number
 */
 LineItems.prototype.getPrice = function (rowElement) {
     var that = this;
-    var price = $(rowElement).find (".price").toNumber(
+    return $(rowElement).find ('.price').maskMoney ('unmasked')[0];
+    /*var price = $(rowElement).find (".price").toNumber(
         {region: that.currency});
     if (price.val () === '') price.val (0); // convert invalid input to 0
     price = parseFloat (price.val ());
     $(rowElement).find (".price").formatCurrency(
         {region: that.currency});
-    return price;
+    return price;*/
 };
 
 /*
@@ -160,12 +171,13 @@ LineItems.prototype.getAdjustment = function (rowElement, adjustmentType) {
         adjustment = parseFloat (that.removePercentSign (
             $(rowElement).find (".adjustment").val ()), 10);
     } else { // adjustmentType === 'linear' || adjustmentType === 'totalLinear'
-        adjustment = $(rowElement).find (".adjustment").toNumber(
+        adjustment = $(rowElement).find (".adjustment").maskMoney ('unmasked')[0];
+        /*adjustment = $(rowElement).find (".adjustment").toNumber(
             {region: that.currency});
         if (adjustment.val () === '') adjustment.val (0); // convert invalid input to 0
         adjustment = parseFloat (adjustment.val ());
         $(rowElement).find (".adjustment").formatCurrency(
-            {region: that.currency});
+            {region: that.currency});*/
     }
     return adjustment;
 };
@@ -197,6 +209,11 @@ LineItems.prototype.calculateLineTotal = function (rowElement) {
         lineTotal += lineTotal * (adjustment / 100.0);
     }
 
+    that.DEBUG && console.log ('calculateLineTotal: ');
+
+    that.DEBUG && console.log ('lineTotal = ');
+    that.DEBUG && console.log (lineTotal);
+
     return lineTotal;
 };
 
@@ -224,8 +241,10 @@ LineItems.prototype.setLineTotals = function (lineTotals) {
     var that = this;
     $(that._containerElemSelector + ' .line-item').each (function (index, element) {
         total = lineTotals.shift ();
-        $(element).find ('.line-item-total').val (total).formatCurrency (
-            {'region': that.currency});
+        that.DEBUG && console.log ('setLineTotals: setting total to ' + total);
+        that.DEBUG && console.log (typeof total);
+        $(element).find ('.line-item-total').val (that.fmtAsDecimal (total)).maskMoney ('mask');/*.formatCurrency (
+            {'region': that.currency});*/
     });
 };
 
@@ -236,12 +255,13 @@ The converted currency is returned.
 */
 LineItems.prototype.extractCurrency = function (element) {
     var that = this;
-    $(element).toNumber(
+    return $(element).maskMoney ('unmasked')[0];
+    /*$(element).toNumber(
         {'region': that.currency});
     var currency = parseFloat ($(element).val ());
     $(element).formatCurrency(
         {region: that.currency});
-    return currency;
+    return currency;*/
 };
 
 /*
@@ -274,19 +294,43 @@ Displays the subtotal in the line items table in the DOM
 */
 LineItems.prototype.setSubtotal = function (subtotal) {
     var that = this;
-    $(that._subtotalSelector).val(subtotal.toString ());
-    $(that._subtotalSelector).formatCurrency(
-        {region: that.currency});
+    //$(that._subtotalSelector).val(subtotal.toString ()).maskMoney ('mask');
+    $(that._subtotalSelector).val(this.fmtAsDecimal (subtotal)).maskMoney ('mask');
+    /*$(that._subtotalSelector).formatCurrency(
+        {region: that.currency});*/
 };
+
+/**
+ * Prepares input value for maskMoney.  
+ * @param number number
+ */
+LineItems.prototype.fmtAsDecimal = function (number) {
+    var that = this;
+    that.DEBUG && console.log ('number = ');
+    that.DEBUG && console.log (number);
+    that.DEBUG && console.log (typeof number);
+
+    if (number === Math.floor (number)) {
+        number = number.toString () + '.00';
+    } else if (typeof number === 'number') {
+        number = number.toFixed (2).toString ();
+    }
+    return number;
+}
 
 /*
 Displays the total in the line items table in the DOM
 */
 LineItems.prototype.setTotal = function (total) {
     var that = this;
-    $(that._totalSelector).val(total.toString ());
-    $(that._totalSelector).formatCurrency(
-        {region: that.currency});
+    that.DEBUG && console.log ('setTotal');
+    that.DEBUG && console.log ('total = ');
+    that.DEBUG && console.log (total);
+
+    //$(that._totalSelector).val(total.toString ()).maskMoney ('mask');;
+    $(that._totalSelector).val(this.fmtAsDecimal (total)).maskMoney ('mask');
+    /*$(that._totalSelector).formatCurrency(
+        {region: that.currency});*/
 };
 
 /*
@@ -309,7 +353,9 @@ LineItems.prototype.calculateTotal = function (subtotal) {
 /*
 Insert a new line item row into the quotes line item table
 */
-LineItems.prototype.addLineItem = function (fillLineItem, values /* set if fillLineItem is true */) {
+LineItems.prototype.addLineItem = function (
+    fillLineItem, values /* set if fillLineItem is true */) {
+
     var that = this;
     if (!fillLineItem) {
             values = { // default values,
@@ -414,6 +460,12 @@ LineItems.prototype.addLineItem = function (fillLineItem, values /* set if fillL
 
     $(that._lineItemsSelector).append (lineItemRow);
 
+    this.maskMoney ([
+        lineItemRow.find ('.adjustment'),
+        lineItemRow.find ('.price'),
+        lineItemRow.find ('.line-item-total')
+    ]);
+
     if (!that.readOnly) { // set up product select menu behavior
         var productNameInput = $(lineItemRow).find ('input.product-name');
         $(productNameInput).autocomplete ({
@@ -429,14 +481,10 @@ LineItems.prototype.addLineItem = function (fillLineItem, values /* set if fillL
         $('tbody.sortable').sortable ('refresh');
     }
     if (!fillLineItem) { // format default input field values
-        lineItemRow.find ('.adjustment').formatCurrency (
-            {region: that.currency});
-        lineItemRow.find ('.price').formatCurrency (
-            {'region': that.currency});
-        lineItemRow.find ('.line-item-total').val (0).formatCurrency (
-            {'region': that.currency});
+        lineItemRow.find ('.line-item-total').val (0).maskMoney ('mask');
         if ($(that._containerElemSelector + ' .quote-table').find ('tr.line-item').length === 1 &&
-                $(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length > 0) {
+            $(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length > 0) {
+
             $(that._subtotalRowSelector).show ();
         }
     }
@@ -444,17 +492,73 @@ LineItems.prototype.addLineItem = function (fillLineItem, values /* set if fillL
     that.resetLineNums ();
 };
 
+/**
+ * Simple wrapper around maskMoney instantiation function. Customizes behavior of maskMoney plugin
+ * and automatically instantiates with config.
+ * @param object|array elem input to convert to a money mask field 
+ */
+LineItems.prototype.maskMoney = function (elem) {
+    var that = this;
+
+    // gets bound to the inputs change event. If the input contains a '%' symbol, treat it as
+    // a percentage: remove the maskMoney behavior. Otherwise, reformat the field as a currency.
+    function changeX2MaskMoney (evt) {
+        that.DEBUG && console.log ('changeX2MaskMoney');
+        that.DEBUG && console.log ($(this).val ())
+        if ($(this).val ().match (/%/)) {
+            that.DEBUG && console.log ('destroying');
+            $(this).data ('destroyed', true); // save the state so that we'll know to reinitialize
+            $(this).maskMoney ('destroy');
+        } else {
+            if ($(this).data ('destroyed')) { 
+                that.maskMoney ($(this));
+            }
+            $(this).data ('destroyed', false);
+            $(this).maskMoney ('mask');
+        }
+    }
+
+    // remove default behavior of maskMoney plugin. This prevents currency from being reformatted
+    // as the user types, which would prevent the entry of '%' symbols.
+    function unbindDefaultEvents (elem) {
+        $(elem).unbind ('keypress.maskMoney');
+        $(elem).unbind ('keydown.maskMoney');
+        $(elem).unbind ('blur.maskMoney');
+        $(elem).unbind ('focus.maskMoney');
+        $(elem).unbind ('click.maskMoney');
+        $(elem).unbind ('cut.maskMoney');
+        $(elem).unbind ('paste.maskMoney');
+    }
+
+    that.DEBUG && console.log (elem);
+    if (elem instanceof Array) {
+        $(elem).each (function (i, elem) { 
+            $(elem).unbind ('change.x2MaskMoney').bind ('change.x2MaskMoney', changeX2MaskMoney); 
+            that.DEBUG && console.log (elem); 
+            $(elem).maskMoney (that._currencyConfig); 
+            unbindDefaultEvents (elem);
+        });
+    } else {
+        $(elem).unbind ('change.x2MaskMoney').bind ('change.x2MaskMoney', changeX2MaskMoney);
+        var elem = $(elem).maskMoney (this._currencyConfig);
+        unbindDefaultEvents (elem);
+        return elem;
+    }
+};
+
 /*
 Insert a new adjustment row into the quotes line item table
 */
-LineItems.prototype.addAdjustment = function (fillAdjustment, values /* set if fillAdjustment is true */) {
+LineItems.prototype.addAdjustment = function (
+    fillAdjustment, values /* set if fillAdjustment is true */) {
+
     var that = this;
     if (!fillAdjustment) {
             values = { // default values
-                    "adjustment-name": ['' /* default input value */, false /* validation error */],
-                    "adjustment": ['0', false],
-                    "description": ['', false],
-                    "adjustment-type": ['totalLinear', false]
+                "adjustment-name": ['' /* default input value */, false /* validation error */],
+                "adjustment": ['0', false],
+                "description": ['', false],
+                "adjustment-type": ['totalLinear', false]
             }
     }
 
@@ -527,13 +631,12 @@ LineItems.prototype.addAdjustment = function (fillAdjustment, values /* set if f
     }
 
     $(that._adjustmentsSelector).append (lineItemRow);
+    this.maskMoney (lineItemRow.find ('.adjustment'));
 
     if (!that.readOnly) {
         $('tbody.sortable').sortable ('refresh');
     }
     if (!fillAdjustment) { // format default input field values
-        lineItemRow.find ('.adjustment').formatCurrency (
-        {region: that.currency});
         if ($(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length === 1) {
             $(that._subtotalRowSelector).show ();
         }
@@ -551,8 +654,8 @@ LineItems.prototype.selectProductFromAutocomplete = function (event, ui) {
     $(event.target).val (lineItemName);
     var lineItemPrice = $(event.target).attr ('name').replace (/name/, 'price');
     var lineItemDescription = $(event.target).attr ('name').replace (/name/, 'description');
-    $('[name="' + lineItemPrice + '"]').val (that.productPrices[lineItemName]).
-        formatCurrency ({region: that.currency});
+    $('[name="' + lineItemPrice + '"]').val (that.productPrices[lineItemName]).maskMoney ('mask');/*.
+        formatCurrency ({region: that.currency});*/
     $('[name="' + lineItemDescription + '"]').val (that.productDescriptions[lineItemName]);
     that.validateName (event.target);
     that.updateTotals ();
@@ -566,9 +669,9 @@ LineItems.prototype.selectProductFromDropDown = function (event, ui) {
     var lineItemName = ui.item.text ();
     $(that._clickedLineItem).val (lineItemName);
     var lineItemPrice = $(that._clickedLineItem).attr ('name').replace (/name/, 'price');
-    var lineItemDescription = $(that._clickedLineItem).attr ('name').replace (/name/, 'description');
-    $('[name="' + lineItemPrice + '"]').val (that.productPrices[lineItemName]).
-        formatCurrency ({region: that.currency});
+    var lineItemDescription = 
+        $(that._clickedLineItem).attr ('name').replace (/name/, 'description');
+    $('[name="' + lineItemPrice + '"]').val (that.productPrices[lineItemName]).maskMoney ('mask');
     $('[name="' + lineItemDescription + '"]').val (that.productDescriptions[lineItemName]);
     that.validateName (that._clickedLineItem);
     that.updateTotals ();
@@ -577,15 +680,15 @@ LineItems.prototype.selectProductFromDropDown = function (event, ui) {
 
 LineItems.prototype.formatAutocompleteWidget = function (element) {
     var that = this;
-        var widget = $(element).autocomplete ("widget");
-        $(widget).css ({
-                "font-size": "10px",
-                "max-height": "16em",
-                "overflow-y": "scroll"
-        });
-        $(window).resize (function () {
-            $(widget).hide ();
-        });
+    var widget = $(element).autocomplete ("widget");
+    $(widget).css ({
+            "font-size": "10px",
+            "max-height": "16em",
+            "overflow-y": "scroll"
+    });
+    $(window).resize (function () {
+        $(widget).hide ();
+    });
 };
 
 /*
@@ -648,10 +751,16 @@ LineItems.prototype.updateTotals = function () {
         that.setTotal (subtotal);
     }
 
-    if ($(that._containerElemSelector + ' .quote-table').children ().find ('.error').length !== 0) {
+    if ($(that._containerElemSelector + ' .quote-table').children ().find ('.error').length 
+        !== 0) {
+
         var calculationErrors = 0
-        $(that._containerElemSelector + ' .quote-table').children ().find ('.error').each (function (index, element) {
-            if (!($(element).hasClass ('product-name') || $(element).hasClass ('adjustment-name'))) {
+        $(that._containerElemSelector + ' .quote-table').children ().find ('.error').each (
+            function (index, element) {
+
+            if (!($(element).hasClass ('product-name') || 
+                $(element).hasClass ('adjustment-name'))) {
+
                 $(element).parents ('.line-item').children ().find ('.line-item-total').val ("");
                 calculationErrors++;
             }
@@ -748,8 +857,8 @@ LineItems.prototype.getErrorMessage = function (element) {
         errorMessage = "Adjustment Label cannot be blank.";
     } else if (elemClass.match (/adjustment/)) {
         var temporaryElem = $("<input>", {val: 50});
-        var exampleCurrency = $(temporaryElem).
-            formatCurrency ({region: that.currency}).val ();
+        var exampleCurrency = this.maskMoney ($(temporaryElem)).val ();
+            //formatCurrency ({region: that.currency}).val ();
         errorMessage = "Adjustment must be a currency amount or a percentage (e.g. \"" +
             exampleCurrency + "\" or \"-50%\").";
     }
@@ -762,7 +871,9 @@ Helper for update button click event
 */
 LineItems.prototype.validateAllInputs = function () {
     var that = this;
-    $(that._containerElemSelector + ' .quote-table').find ('input').each (function (index, element) {
+    $(that._containerElemSelector + ' .quote-table').find ('input').each (
+        function (index, element) {
+
         if ($(element).val () === "" &&
                 $(element).hasClass ('line-item-field') &&
                 !$(element).hasClass ('description')) {
@@ -797,8 +908,11 @@ LineItems.prototype.validateAllInputs = function () {
 
 LineItems.prototype.setupValidationEvents = function () {
     var that = this;
+    that.DEBUG && console.log ('setupValidationEvents');
     $(this._lineItemsSelector+','+this._adjustmentsSelector).on ('change', 
         '.line-item-field.adjustment', function (event) {
+
+            that.DEBUG && console.log ('setupValidationEvents: change');
             that.checkAdjustment (event.target);
             that.updateTotals ();
     });
@@ -810,7 +924,9 @@ LineItems.prototype.setupValidationEvents = function () {
             that.updateTotals ();
     });
     $(this._lineItemsSelector+','+this._adjustmentsSelector).on (
-        'blur', '.line-item-field.product-name, .line-item-field.adjustment-name', function (event) {
+        'blur', '.line-item-field.product-name, .line-item-field.adjustment-name', 
+        function (event) {
+
         that.validateName (event.target);
     });
 };
@@ -924,12 +1040,15 @@ Private instance methods
 LineItems.prototype._init = function () {
     var that = this;
     $(function () {
+        that.maskMoney ([$(that._totalSelector), $(that._subtotalSelector)]);
+
         if (that.readOnly) {
             that.populateQuotesTable ();
         } else {
             that.setupEditingBehavior ();
         }
 
+        // hide subtotal row if there aren't any adjustments
         if ($(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length === 0 ||
                 $(that._containerElemSelector + '.quote-table').
                     find ('tr.line-item').length === 0) {

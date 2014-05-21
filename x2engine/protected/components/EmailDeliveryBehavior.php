@@ -102,7 +102,7 @@ class EmailDeliveryBehavior extends CBehavior {
     public static function addressHeaderToArray($header) {
         // First, tokenize all pieces of the header to avoid splitting inside of
         // recipient names:
-        preg_match_all('/"(?:\\\\.|[^\\\\"])*"|\S+/', $header, $matches);
+        preg_match_all('/"(?:\\\\.|[^\\\\"])*"|[^,\s]+/', $header, $matches);
         $tokenCount = 0;
         $values = array();
         foreach($matches[0] as $matchedPiece) {
@@ -180,7 +180,9 @@ class EmailDeliveryBehavior extends CBehavior {
      * Any special authentication and security should take place in here.
      *
      * @param array $addresses This array must contain "to", "cc" and/or "bcc"
-     *  keys, and the values for each of these should be 
+     *  keys, and values must be arrays of recipients. Each recipient is expressed
+     *  as a 2-element array with the first element being the name, and the second
+     *  the email address.
      * @throws Exception
      * @return array
      */
@@ -283,6 +285,10 @@ class EmailDeliveryBehavior extends CBehavior {
         )));
     }
 
+    /**
+     * Getter for {@link from}
+     * @return array
+     */
     public function getFrom(){
         if(!isset($this->_from)) {
 			if($this->credentials)
@@ -290,11 +296,21 @@ class EmailDeliveryBehavior extends CBehavior {
 					'name' => $this->credentials->auth->senderName,
 					'address' => $this->credentials->auth->email
 				);
-			else
-				$this->_from = array(
-					'name' => $this->userProfile->fullName,
-					'address' => $this->userProfile->emailAddress
-				);
+			else {
+                if(empty($this->userProfile)){
+                    // The application:
+                    $this->_from = array(
+                        'name' => Yii::app()->settings->appName,
+                        'address' => Yii::app()->settings->emailFromAddr
+                    );
+                }else{
+                    // Current acting user:
+                    $this->_from = array(
+                        'name' => $this->userProfile->fullName,
+                        'address' => $this->userProfile->emailAddress
+                    );
+                }
+            }
 		}
         return $this->_from;
     }

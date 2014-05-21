@@ -146,4 +146,13 @@ return array (
 'Log Time'=>'Log Zeit',
 'Time started'=>'Zeit begonnen',
 'Time ended'=>'Zeit beendet',
+'Action Timer'=>'Action-Timer',
+'View Email'=>'E-Mail anzeigen',
+'Import Actions'=>'Import Aktionen',
+'Export Actions'=>'Export Actions',
+'Action timers'=>'Action-Timer',
+'Time Started'=>'Mal gestartet',
+'Time Ended'=>'Zeit beendet',
+'Association is required for actions of this type.'=>'Verein ist für Maßnahmen dieser Art erforderlich.',
+'Time Spent'=>'Gesamte',
 );

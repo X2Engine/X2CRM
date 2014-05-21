@@ -33,89 +33,126 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+
+
+if (isset ($_GET['suppressTitle']) && !$_GET['suppressTitle']) {
 ?>
 
 <h2><?php echo $contact->renderAttribute('name'); ?></h2>
 
 <?php
+}
 if(isset($_GET['fields'])){
     $fields=$_GET['fields'];
     if(count($fields)>0){
         $attrLabels=$contact->attributeLabels();
         foreach($fields as $field){
             if($contact->hasAttribute($field) && !empty($contact->$field)){
-                echo Yii::t('contacts', $attrLabels[$field]).": <strong> ".$contact->getAttribute($field,true)."</strong><br />";
+                echo Yii::t('contacts', $attrLabels[$field]).": <strong> ".
+                    $contact->getAttribute($field,true)."</strong><br />";
             }else{
                 if($field=='link'){
-                    echo CHtml::link(Yii::t('contacts','Link to Record'),$this->createUrl('view',array('id'=>$contact->id)),array('style'=>'text-decoration:none;'))."<br />";
+                    echo CHtml::link(
+                        Yii::t('contacts','Link to Record'),
+                        $this->createUrl('view',array('id'=>$contact->id)),
+                        array('style'=>'text-decoration:none;'))."<br />";
                 }elseif($field=='directions'){
                     if(!empty(Yii::app()->settings->corporateAddress))
-                        echo CHtml::link(Yii::t('contacts','Directions from Corporate'),'#',array('style'=>'text-decoration:none;','id'=>'corporate-directions','class'=>'directions'))."<br />";
+                        echo CHtml::link(
+                            Yii::t('contacts','Directions from Corporate'),'#',
+                            array(
+                                'style'=>'text-decoration:none;',
+                                'id'=>'corporate-directions',
+                                'class'=>'directions'
+                            )
+                        )."<br />";
                     if(!empty(Yii::app()->params->profile->address))
-                        echo CHtml::link(Yii::t('contacts','Directions from Personal Address'),'#',array('style'=>'text-decoration:none;','id'=>'personal-directions','class'=>'directions'));
+                        echo CHtml::link(
+                            Yii::t('contacts','Directions from Personal Address'),
+                            '#',
+                            array(
+                                'style'=>'text-decoration:none;',
+                                'id'=>'personal-directions',
+                                'class'=>'directions'
+                            ));
                 }
             }
         }
     }
 }else{
-?>
+
+/* Contact Info */ 
+if(isset($contact->email) || isset($contact->website)) { 
+    if(isset($contact->email) && $contact->email != "") { 
+        echo Yii::t('contacts', 'Email').": "; 
+        ?> 
+        <strong><?php echo $contact->renderAttribute('email', false); ?></strong>
+        <br />
+    <?php 
+    } 
+    if(isset($contact->website) && $contact->website != "") { 
+        echo Yii::t('contacts', 'Website: '); 
+        ?> 
+        <strong><?php echo $contact->renderAttribute('website', false); ?></strong>
+        <br />
+    <?php 
+    } 
+    ?>
+    <br />
+<?php 
+} 
 
 
-<?php /* Contact Info */ ?>
-<?php if(isset($contact->email) || isset($contact->website)) { ?>
-	<?php if(isset($contact->email) && $contact->email != "") { ?>
-		<?php echo Yii::t('contacts', 'Email').": "; ?> <strong><?php echo $contact->renderAttribute('email'); ?></strong><br />
-	<?php } ?>
+/* Sales and Marketing */ 
+if(isset($contact->leadtype) ||
+    isset($contact->leadstatus) ||
+    isset($contact->leadDate) ||
+    isset($contact->interest) ||
+    isset($contact->dalevalue) ||
+    isset($contact->closedate) ||
+    isset($contact->closestatus)) { 
 
-	<?php if(isset($contact->website) && $contact->website != "") { ?>
-		<?php echo Yii::t('contacts', 'Website: '); ?> <strong><?php echo $contact->renderAttribute('website'); ?></strong><br />
-	<?php } ?>
-	<br />
-<?php } ?>
+    if(isset($contact->leadtype) && $contact->leadtype != "") { 
+        echo Yii::t('contacts', 'Lead Type').": "; 
+        ?> 
+        <strong><?php echo $contact->renderAttribute('leadtype'); ?></strong>
+        <br />
+    <?php 
+    } 
 
+    if(isset($contact->leadstatus) && $contact->leadstatus != "") { ?>
+        <?php echo Yii::t('contacts', 'Lead Status').": "; ?> 
+        <strong><?php echo $contact->renderAttribute('leadstatus'); ?></strong><br />
+    <?php 
+    } 
 
-<?php /* Sales and Marketing */ ?>
-<?php if(isset($contact->leadtype) ||
-		isset($contact->leadstatus) ||
-		isset($contact->leadDate) ||
-		isset($contact->interest) ||
-		isset($contact->dalevalue) ||
-		isset($contact->closedate) ||
-		isset($contact->closestatus)) { ?>
-	<?php if(isset($contact->leadtype) && $contact->leadtype != "") { ?>
-	    <?php echo Yii::t('contacts', 'Lead Type').": "; ?> <strong><?php echo $contact->renderAttribute('leadtype'); ?></strong><br />
-	<?php } ?>
+    if(isset($contact->leadDate) && $contact->leadDate != "") { ?>
+        <?php echo Yii::t('contacts', 'Lead Date').": "; ?>
+        <strong><?php echo Formatter::formatLongDate($contact->leadDate); ?></strong><br />
+    <?php } 
 
-	<?php if(isset($contact->leadstatus) && $contact->leadstatus != "") { ?>
-		<?php echo Yii::t('contacts', 'Lead Status').": "; ?> <strong><?php echo $contact->renderAttribute('leadstatus'); ?></strong><br />
-	<?php } ?>
+    if(isset($contact->interest) && $contact->interest != "") { ?>
+        <?php echo Yii::t('contacts', 'Interest').": "; ?> <strong><?php echo $contact->renderAttribute('interest'); ?></strong><br />
+    <?php } ?>
 
+    <?php if(isset($contact->dalevalue) && $contact->dealvalue != "") { ?>
+        <?php echo Yii::t('contacts', 'Deal Value').": "; ?> <strong><?php echo $contact->renderAttribute('dealvalue'); ?></strong><br />
+    <?php } ?>
 
-	<?php if(isset($contact->leadDate) && $contact->leadDate != "") { ?>
-		<?php echo Yii::t('contacts', 'Lead Date').": "; ?> <strong><?php echo Formatter::formatLongDate($contact->leadDate); ?></strong><br />
-	<?php } ?>
+    <?php if(isset($contact->closedate) && $contact->closedate != "") { ?>
+        <?php echo Yii::t('contacts', 'Close Date').": "; ?> <strong><?php echo Formatter::formatLongDate($contact->closedate); ?></strong><br />
+    <?php } ?>
 
-
-	<?php if(isset($contact->interest) && $contact->interest != "") { ?>
-		<?php echo Yii::t('contacts', 'Interest').": "; ?> <strong><?php echo $contact->renderAttribute('interest'); ?></strong><br />
-	<?php } ?>
-
-	<?php if(isset($contact->dalevalue) && $contact->dealvalue != "") { ?>
-		<?php echo Yii::t('contacts', 'Deal Value').": "; ?> <strong><?php echo $contact->renderAttribute('dealvalue'); ?></strong><br />
-	<?php } ?>
-
-	<?php if(isset($contact->closedate) && $contact->closedate != "") { ?>
-		<?php echo Yii::t('contacts', 'Close Date').": "; ?> <strong><?php echo Formatter::formatLongDate($contact->closedate); ?></strong><br />
-	<?php } ?>
-
-	<?php if(isset($contact->dealstatus) && $contact->dealstatus != "") { ?>
-		<?php echo Yii::t('contacts', 'Deal Status').": "; ?> <strong><?php echo $contact->renderAttribute('dealstatus'); ?></strong><br />
-	<?php } ?>
-	<br />
+    <?php if(isset($contact->dealstatus) && $contact->dealstatus != "") { ?>
+        <?php echo Yii::t('contacts', 'Deal Status').": "; ?> <strong><?php echo $contact->renderAttribute('dealstatus'); ?></strong><br />
+    <?php } ?>
+    <br />
 <?php } ?>
 
 <?php if(isset($contact->backgroundInfo) && $contact->backgroundInfo != "") { ?>
-		<?php echo Yii::t('contacts', 'Background Info').": "; ?> <strong><?php echo $contact->renderAttribute('backgroundInfo'); ?></strong><br />
+        <?php echo Yii::t('contacts', 'Background Info').": "; ?> <strong><?php echo $contact->renderAttribute('backgroundInfo'); ?></strong><br />
 <?php }
 
 } ?>
+</div>

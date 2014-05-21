@@ -163,6 +163,15 @@ abstract class GridViewWidget extends SortableWidget {
                             background: rgb(221, 221, 221)!important;
                         }
 
+                        .sortable-widget-container div.page-title .x2-minimal-select:hover + .after-x2-minimal-select-outer > .after-x2-minimal-select,
+                        .sortable-widget-container div.page-title .x2-minimal-select:focus + .after-x2-minimal-select-outer > .after-x2-minimal-select {
+
+                            background: rgb(221, 221, 221)!important;
+                            background-image: url(".Yii::app()->theme->getBaseUrl ()."/images/icons/Collapse_Widget.png) !important;
+                            background-repeat: no-repeat !important;
+                            background-position: 7px !important;
+                        }
+
                         .grid-widget-title-bar-dummy-element {
                             height: 33px;
                         }

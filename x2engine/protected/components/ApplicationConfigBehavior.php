@@ -48,6 +48,8 @@ Yii::import('application.modules.users.models.*');
  * @property string $absoluteBaseUrl (read-only) the base URL of the web
  *  application, independent of whether there is a web request.
  * @property string $edition The "edition" of the software.
+ * @property array $editionHierarchy Information about software sets as defined
+ *  in the static configuration file protected/data/editionHierarchy.php
  * @property array $editions (read-only) The editions that apply to the app.
  * @property string $externalAbsoluteBaseUrl (read-only) the absolute base url
  *  of the application to use when creating URLs to be viewed publicly
@@ -71,11 +73,7 @@ class ApplicationConfigBehavior extends CBehavior {
      * edition, when testing software subsets)
      * @var type
      */
-    private static $_editions = array(
-        'opensource' => array('opensource'=>'opensource','pro'=>0,'pla'=>0),
-        'pro' => array('opensource'=>'opensource','pro'=>'pro','pla'=>0),
-        'pla' => array('opensource'=>'opensource','pro'=>'pro','pla'=>'pla'),
-    );
+    private static $_editions;
     /**
      * Software edition detection based on logo presence.
      * @var type 
@@ -244,11 +242,14 @@ class ApplicationConfigBehavior extends CBehavior {
         // are skipped over if in the console/API.
         $this->owner->params->noSession =
                 $this->owner->params->noSession
-                || strpos($this->owner->request->getPathInfo(),'api/')===0;
+                || strpos($this->owner->request->getPathInfo(),'api/')===0
+                || strpos($this->owner->request->getPathInfo(),'api2/')===0;
         $noSession = $this->owner->params->noSession;
 
         if(!$noSession){
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
+                Yii::import('application.models.Roles');
+                Yii::import('application.components.X2AuthManager');
                 Yii::import('application.components.X2WebUser');
                 Yii::import('application.components.X2MessageSource');
                 Yii::import('application.components.Formatter');
@@ -329,7 +330,10 @@ class ApplicationConfigBehavior extends CBehavior {
             // session and cookie-based authentication.
             $notGuest = false;
             $this->owner->params->profile = $adminProf;
-            $this->setSuModel($this->owner->params->profile->user);
+            $userModel = $this->owner->params->profile->user;
+            $this->setSuModel($userModel instanceof User
+                    ? $userModel
+                    : User::model()->findByPk(1));
         }
         
         
@@ -348,6 +352,10 @@ class ApplicationConfigBehavior extends CBehavior {
                         SessionLog::logSession($this->owner->user->getName(), $sessionId, 'activeTimeout');
                         $session->delete();
                         $this->owner->user->logout(false);
+                        $this->_suModel = null;
+                        $this->_suID = null;
+                        $this->setUserAccessParameters(null);
+                        
                     }else{
                         // Print a warning message
                         if($this->owner->session['debugEmailWarning']) {
@@ -364,14 +372,6 @@ class ApplicationConfigBehavior extends CBehavior {
                     $this->owner->user->logout(false);
                 }
 
-
-                $userId = $this->owner->user->getId();
-                if(!is_null($userId)){
-                    $this->owner->params->groups = Groups::getUserGroups($userId);
-                    $this->owner->params->roles = $this->owner->user->getRoles();
-
-                    $this->owner->params->isAdmin = $this->owner->user->checkAccess('AdminIndex');
-                }
             }elseif(!($this->owner->request->getPathInfo() == 'site/getEvents')){
                 $guestRole = Roles::model()->findByAttributes(array('name' => 'Guest'));
                 if(isset($guestRole))
@@ -381,7 +381,12 @@ class ApplicationConfigBehavior extends CBehavior {
 
         // Configure logos
         if(!($logo = $this->owner->cache['x2Power'])){
-            $logo = 'data:image/png;base64,'.base64_encode(file_get_contents(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'images', 'powered_by_x2engine.png'))));
+            $logo = 'data:image/png;base64,'.base64_encode(file_get_contents(implode(DIRECTORY_SEPARATOR, array(
+                        Yii::app()->basePath,
+                        '..',
+                        'images',
+                        'powered_by_x2engine.png'
+            ))));
             $this->owner->cache['x2Power'] = $logo;
         }
         $this->owner->params->x2Power = $logo;
@@ -465,7 +470,7 @@ class ApplicationConfigBehavior extends CBehavior {
      * @return boolean
      */
     public function contEd($edition) {
-        return (bool) self::$_editions[$this->getEdition()][$edition];
+        return (bool) $this->editionHierarchy[$this->getEdition()][$edition];
     }
 
     /**
@@ -605,10 +610,26 @@ class ApplicationConfigBehavior extends CBehavior {
     }
 
     /**
+     * Returns the edition hierarchy defined in the static configuration.
+     *
+     * @return type
+     */
+    public function getEditionHierarchy() {
+        if(!isset(self::$_editions)) {
+            self::$_editions = require(implode(DIRECTORY_SEPARATOR,array(
+                Yii::app()->basePath,
+                'data',
+                'editionHierarchy.php'
+            )));
+        }
+        return self::$_editions;
+    }
+
+    /**
      * Returns editions "contained" by the app's current edition
      */
     public function getEditions() {
-        return array_filter(self::$_editions[$this->getEdition()]);
+        return array_filter($this->editionHierarchy[$this->getEdition()]);
     }
 
     /**
@@ -716,15 +737,15 @@ class ApplicationConfigBehavior extends CBehavior {
 	 * Substitute user ID magic getter.
 	 *
 	 * If the user has already been looked up or set, method will defer to its
-	 * value for id.
+	 * value for id. Defers to the value of id in {@link suModel}.
 	 * @return type
 	 */
 	public function getSuID(){
-        if(!isset($this->_suID)){
-            if($this->isInSession){
-                $this->_suID = (integer) $this->owner->user->getId();
-            }elseif(isset($this->_suModel)){
+        if(!isset($this->_suID) || isset($this->_suModel)){
+            if(isset($this->_suModel)){
                 $this->_suID = (integer) $this->_suModel->id;
+            }elseif($this->isInSession){
+                $this->_suID = (integer) $this->owner->user->getId();
             }elseif(php_sapi_name() == 'cli'){
                 // Assume admin
                 $this->_suID = 1;
@@ -837,6 +858,24 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     public function setSuModel(User $user){
         $this->_suModel = $user;
+        if($user->id !== null)
+            $this->setUserAccessParameters($user->id);
+    }
+
+    /**
+     * Adds parameters that are used to determine user access
+     * @param type $userId
+     */
+    public function setUserAccessParameters($userId) {
+        if($userId !== null){
+            $this->owner->params->groups = Groups::getUserGroups($userId);
+            $this->owner->params->roles = Roles::getUserRoles($userId);
+            $this->owner->params->isAdmin = $this->owner->authManager->checkAccess('AdminIndex', $userId);
+        } else {
+            $this->owner->params->groups = array();
+            $this->owner->params->roles = array();
+            $this->owner->params->isAdmin = false;
+        }
     }
 
     /**

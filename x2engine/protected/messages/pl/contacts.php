@@ -177,4 +177,5 @@ return array (
 'Saved Searches'=>'Zapisane wyszukiwania',
 'Clicking this button will pull any relevant '=>'Kliknięcie tego przycisku spowoduje wyciągnąć wszelkie istotne',
 'Drag tags here from the tag cloud widget or click to '=>'Przeciągnij znaczniki tutaj z widgetu Chmura tagów lub kliknij',
+'Export {model}'=>'Eksport {model}',
 );

@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS x2_actions;
 /*&*/
 CREATE TABLE x2_actions    (
     id                        INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    assignedTo                VARCHAR(50),
+    assignedTo                VARCHAR(255),
     calendarId                INT,
     subject                   VARCHAR(255),
     visibility                INT NOT NULL DEFAULT 1,
@@ -47,13 +47,13 @@ CREATE TABLE x2_action_text    (
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES
-("actions", "Actions", 1, 5, 1, 0, 0, 0, 0);
+("actions", "Actions", 1, 7, 1, 0, 0, 0, 0);
 /*&*/
 INSERT INTO `x2_fields`
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)
 VALUES
 ("Actions", "id",                "ID",               0, 0, "varchar",    0, 1, NULL, 0, 0, "",     1, 1, 'PRI'),
-("Actions", "assignedTo",        "Assigned To",      0, 0, "assignment", 0, 0, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "assignedTo",        "Assigned To",      0, 0, "assignment", 0, 0, 'multiple', 0, 0, "",     0, 1, NULL),
 ("Actions", "subject",           "Subject",          0, 0, "varchar",    1, 0, NULL, 1, 0, "High", 0, 1, NULL),
 ("Actions", "actionDescription", "Description",      0, 0, "text",       0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "visibility",        "Visibility",       0, 0, "visibility", 0, 0, NULL, 0, 0, "",     0, 1, NULL),
@@ -66,7 +66,7 @@ VALUES
 ("Actions", "createDate",        "Create Date",      0, 0, "dateTime",   0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "complete",          "Complete",         0, 0, "varchar",    0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "reminder",          "Reminder",         0, 0, "varchar",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
-("Actions", "completedBy",       "Completed By",     0, 0, "assignedTo", 0, 1, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "completedBy",       "Completed By",     0, 0, "assignment", 0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "completeDate",      "Date Completed",   0, 0, "dateTime",   0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "lastUpdated",       "Last Updated",     0, 0, "dateTime",   0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "updatedBy",         "Updated By",       0, 0, "varchar",    0, 1, NULL, 0, 0, "",     0, 1, NULL),

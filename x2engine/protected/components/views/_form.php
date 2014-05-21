@@ -115,30 +115,20 @@ if(isset($layout)) {
     echo $form->errorSummary($model).' ';
     
     $layoutData = json_decode($layout->layout,true);
-    $formSettings = ProfileChild::getFormSettings($modelName);
+    $formSettings = Profile::getFormSettings($modelName);
     
     if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
     
         $fieldPermissions = array();
+        $bypassPermissions = false;
         
         if(!isset($specialFields))
             $specialFields = array();
         
         if(!Yii::app()->params->isAdmin && !empty(Yii::app()->params->roles)) {
-            $rolePermissions = Yii::app()->db->createCommand()
-                ->select('fieldId, permission')
-                ->from('x2_role_to_permission')
-                ->join('x2_fields','x2_fields.modelName="'.$modelName.
-                    '" AND x2_fields.id=fieldId AND roleId IN ('.
-                        implode(',',Yii::app()->params->roles).')')
-                ->queryAll();
-        
-            foreach($rolePermissions as &$permission) {
-                if(!isset($fieldPermissions[$permission['fieldId']]) || 
-                   $fieldPermissions[$permission['fieldId']] < (int)$permission['permission']) {
-                    $fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
-                }
-            }
+            $fieldPermissions= $model->getFieldPermissions ();
+        } else {
+            $bypassPermissions = true;
         }
         
         $i = 0;
@@ -204,14 +194,16 @@ if(isset($layout)) {
                                                 continue;
                                             }
         
-                                            if(isset($fieldPermissions[$field->id])) {
-                                                if($fieldPermissions[$field->id] == 0) {
+                                            if(isset($fieldPermissions[$field->fieldName])) {
+                                                if($fieldPermissions[$field->fieldName] == 0) {
                                                     unset($item);
                                                     $htmlString .= '</div></div>';
                                                     continue;
-                                                } elseif($fieldPermissions[$field->id] == 1) {
+                                                } elseif($fieldPermissions[$field->fieldName] == 1) {
                                                     $item['readOnly']=true;
                                                 }
+                                            } else if (!$bypassPermissions) {
+                                                continue;
                                             }
                                             $noItems = false;
         

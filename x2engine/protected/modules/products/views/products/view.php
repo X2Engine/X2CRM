@@ -41,6 +41,11 @@ Yii::app()->clientScript->registerCss('recordViewCss',"
     border: none !important;
 }
 ");
+Yii::app()->clientScript->registerResponsiveCssFile(
+    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
+
+
+
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 $menuItems = array(
@@ -102,7 +107,15 @@ $(function() {
 	)); 
 ?>
 
-<?php $this->widget('Attachments',array('associationType'=>'products','associationId'=>$model->id)); ?>
+<?php 
+$this->widget(
+    'Attachments',
+    array(
+        'associationType'=>'products',
+        'associationId'=>$model->id,
+    )
+); 
+?>
 </div>
 <div class="history half-width">
 <?php

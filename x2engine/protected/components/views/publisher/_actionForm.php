@@ -23,7 +23,8 @@
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 ?>
 
-<div id='new-action' class='publisher-form' style='display: none;'>
+<div id='new-action' class='publisher-form' 
+ <?php echo ($startVisible ? '' : "style='display: none;'"); ?>>
 
     <div class="row">
         <div class="text-area-wrapper">
@@ -80,7 +81,7 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                 '2' => Yii::t('actions', 'Medium'),
                 '3' => Yii::t('actions', 'High'))
                     ,
-                array('class'=>'action-priority')
+                array('class'=>'action-priority x2-select')
             );
             ?>
         </div><!-- .cell -->
@@ -90,9 +91,8 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
             <?php 
             /* Users */ 
             echo $form->label($model, 'assignedTo',array('class'=>'action-assigned-to-label')); 
-            echo $form->dropDownList(
-                $model, 'assignedTo', X2Model::getAssignmentOptions(true,true), 
-                array('class' => 'action-assignment-dropdown')); 
+            echo $model->renderInput (
+                'assignedTo', array('class' => 'action-assignment-dropdown')); 
             echo $form->label($model, 'visibility',array('class'=>'action-visibility-label')); 
             echo $form->dropDownList(
                 $model, 'visibility', 
@@ -100,7 +100,9 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                     0 => Yii::t('actions', 'Private'), 1 => Yii::t('actions', 'Public'),
                     2 => Yii::t('actions', "User's Group")
                 ),
-                array('class'=>'action-visibility-dropdown')); 
+                array(
+                    'class'=>'action-visibility-dropdown x2-select',
+                )); 
             ?>
         </div><!-- .cell -->
         

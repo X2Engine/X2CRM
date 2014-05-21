@@ -125,6 +125,16 @@ ul.filter-hint b {
     margin-left: -80px;
 }
 
+#recent-items > .portlet-content {
+    max-height: 203px;
+    overflow: hidden;
+}
+
+#recent-items > .portlet-content:hover {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
 #actions .portlet-content, #recent-items .portlet-content,
 #top-contacts .portlet-content {
     padding: 0 0 5px 0;
@@ -559,10 +569,6 @@ p.descrip{
 } */
 
 
-.history.half-width {
-    width: 35%;
-    margin-top: 5px;
-}
 .history .text-area-wrapper {
     margin: 0;
     padding: 2px 4px;
@@ -822,6 +828,9 @@ div.img-box.record_create.Opportunity-create {
 }
 div.img-box.record_create.Product-create {
     background-image: url(../images/products.png);
+}
+div.img-box.record_create.X2Leads-create {
+    background-image: url(../images/x2Leads.png);
 }
 div.img-box.record_create.Docs-create {
     background-image: url(../images/docs.png);
@@ -1498,3 +1507,5 @@ span.x2-down-arrow {
     width: 0px !important;
     height: 0px !important;
 }
+
+

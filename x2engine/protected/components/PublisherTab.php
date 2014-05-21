@@ -41,24 +41,29 @@ abstract class PublisherTab extends X2Widget {
     
     /**
      * Path to 
-     * @param String 
+     * @var String 
      */
     public $viewFile;
 
     /**
-     * @param String 
+     * @var String 
      */
     public $title;
 
     /**
+     * @var bool If true, tab content container will be rendered with contents shown   
+     */
+    public $startVisible = false;
+
+    /**
      * Id of tab content container
-     * @param String 
+     * @var String 
      */
     public $tabId; 
 
     /**
      * Name of tab JS prototype 
-     * @param String
+     * @var String
      */
     public $tabPrototypeName = 'PublisherTab';
 
@@ -122,7 +127,8 @@ abstract class PublisherTab extends X2Widget {
         Yii::app()->clientScript->registerPackages ($this->packages);
         Yii::app()->clientScript->registerScript (
             $this->tabId.'Script', $this->setupScript, CClientScript::POS_END);
-        Yii::app()->controller->renderPartial ($this->viewFile, $viewParams);
+        Yii::app()->controller->renderPartial ($this->viewFile, array_merge (
+            $viewParams, array ('startVisible' => $this->startVisible)));
     }
 
     public function renderTitle () {

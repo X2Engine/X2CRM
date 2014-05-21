@@ -98,8 +98,7 @@ CREATE TABLE x2_admin(
 	gaTracking_public			VARCHAR(20) NULL,
 	gaTracking_internal			VARCHAR(20) NULL,
     sessionLog                  TINYINT         DEFAULT 0,
-    userActionBackdating        TINYINT         DEFAULT 0,
-    emailDropbox                TEXT,
+    userActionBackdating        TINYINT         DEFAULT 0, 
     historyPrivacy              VARCHAR(20) DEFAULT "default",
     batchTimeout                INT DEFAULT 300,
     externalBaseUrl             VARCHAR(255) DEFAULT NULL,
@@ -107,6 +106,18 @@ CREATE TABLE x2_admin(
     appName                     VARCHAR(255) DEFAULT NULL,
     appDescription              VARCHAR(255) DEFAULT NULL
 ) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_api_hooks;
+/*&*/
+CREATE TABLE x2_api_hooks (
+    id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    event       VARCHAR(50),
+    modelName   VARCHAR(100),
+    target_url  VARCHAR(255),
+    userId      INT NOT NULL DEFAULT 1,
+    INDEX(event,modelName),
+    INDEX(target_url)
+) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
 /*&*/
@@ -321,18 +332,10 @@ CREATE TABLE x2_profile(
 	widgets					VARCHAR(255),
 	widgetOrder				TEXT,
 	widgetSettings			TEXT,
+	defaultEmailTemplates	TEXT,
 	activityFeedOrder       TINYINT         DEFAULT 0,
-    /*backgroundColor			VARCHAR(6)		NULL,
-	menuBgColor				VARCHAR(6)		NULL,
-	menuTextColor			VARCHAR(6)		NULL,
-	pageHeaderBgColor		VARCHAR(6)		NULL,
-	pageHeaderTextColor		VARCHAR(6)		NULL,
-    activityFeedWidgetBgColor       VARCHAR(6)              NULL,
-    activityFeedWidgetTextColor     VARCHAR(6)              NULL,
-	backgroundImg			VARCHAR(100)	NULL DEFAULT "",
-	backgroundTiling		VARCHAR(10)		NULL DEFAULT "",
-	pageOpacity				INT				NULL,*/
     theme                   TEXT,
+    showActions				VARCHAR(20),
     profileWidgetLayout     TEXT,
     miscLayoutSettings      TEXT,
     notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",
@@ -392,7 +395,7 @@ CREATE TABLE x2_roles (
 	name					VARCHAR(250),
 	users					TEXT,
         timeout                                 INT
-) ENGINE InnoDB COLLATE = utf8_general_ci;
+) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_role_exceptions;
 /*&*/
@@ -400,8 +403,8 @@ CREATE TABLE x2_role_exceptions (
 	id						INT				NOT NULL AUTO_INCREMENT primary key,
 	workflowId				INT,
 	stageId					INT,
-	roleId					INT,
-	replacementId int
+	roleId					INT, /* points to id of an x2_roles record */
+	replacementId           int /* points to id of a dummy x2_roles record */
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_role_to_permission;

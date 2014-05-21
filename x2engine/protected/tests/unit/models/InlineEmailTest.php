@@ -1,5 +1,6 @@
 <?php
 
+include('WebTestConfig.php');
 Yii::import('application.modules.actions.models.*');
 Yii::import('application.modules.contacts.models.*');
 Yii::import('application.modules.docs.models.*');
@@ -16,13 +17,14 @@ Yii::import('application.components.ResponseBehavior');
 class InlineEmailTest extends X2DbTestCase {
     // Set to 1 to enable testing actual sending of email.
 
-    const TESTDELIVERY = 0;
+    const TESTDELIVERY = 1;
 
     public static function referenceFixtures(){
         return array(
-            'docs' => 'Docs',
+            'docs' => array ('Docs', '.InlineEmailTest'),
             'quote' => 'Quote',
             'contacts' => 'Contacts',
+            'accounts' => array ('Accounts', '.InlineEmailTest'),
             'profile' => 'Profile',
             'user' => 'User',
             'credentials' => 'Credentials'
@@ -39,8 +41,9 @@ class InlineEmailTest extends X2DbTestCase {
     public $method = 'mail'; // Set to the delivery type...
 
     public $sender = array('name' => "", 'address' => ''); // Sender email..
-
-    public $recipient = array(array(/* Name: */ '', /* Address: */ '')); // Recipient email addresses...
+    
+    // Recipient email addresses...
+    public $recipient = array(array(/* Name: */ 'test email name', /* Address: */ TEST_EMAIL_TO)); 
     /**
      * Email model.
      * @var InlineEmail
@@ -94,11 +97,21 @@ class InlineEmailTest extends X2DbTestCase {
         $url = Yii::app()->getAbsoluteBaseUrl();
         $image = "<img src=\"$url/index.php/actions/emailOpened?uid={$this->eml->uniqueId}&type=open\"/>";
         $fullImage = InlineEmail::insertedPattern('track', $image);
-        $this->assertEquals($image, $this->eml->trackingImage, 'Failed asserting that the tracking image is as expected. '.$message);
-        $this->assertTrue(strpos($this->eml->message, $fullImage) !== false, 'Failed asserting that the body contains the tracking image; body ='.$this->eml->message.$message);
-        $this->assertRegExp(InlineEmail::UIDREGEX, $this->eml->trackingImage, 'Failed asserting that the tracking image has a unique id.'.$message);
+        $this->assertEquals(
+            $image, $this->eml->trackingImage,
+            'Failed asserting that the tracking image is as expected. '.$message);
+        $this->assertTrue(
+            strpos($this->eml->message, $fullImage) !== false,
+            'Failed asserting that the body contains the tracking image; body ='.
+                $this->eml->message.$message);
+        $this->assertRegExp(
+            InlineEmail::UIDREGEX, $this->eml->trackingImage,
+            'Failed asserting that the tracking image has a unique id.'.$message);
         preg_match(InlineEmail::UIDREGEX, $this->eml->trackingImage, $matchId);
-        $this->assertEquals($this->eml->uniqueId, $matchId[1], "Failed asserting that the UID in the image tracking tag matches the one in the model.".$message);
+        $this->assertEquals(
+            $this->eml->uniqueId, $matchId[1],
+            "Failed asserting that the UID in the image tracking tag matches the one in the model.".
+            $message);
     }
 
     public function assertModelUpdated($modelFixture, $modelAlias, $message = null){
@@ -189,6 +202,21 @@ class InlineEmailTest extends X2DbTestCase {
         $this->eml->prepareBody();
         $this->assertEquals(str_replace('{name}', $this->contacts['testAnyone']['name'], $template->subject), $this->eml->subject);
         $this->assertEquals(str_replace('{name}', $this->contacts['testAnyone']['name'], $template->text), $this->eml->message);
+    }
+
+    public function testPrepareBodyWithAccountTemplate(){
+        $this->eml = new InlineEmail('template');
+        $template = $this->docs('testAccountEmailTemplate');
+        $this->eml->template = $template->id;
+        $this->eml->modelId = $this->accounts('testAccount')->id;
+        $this->eml->modelName = 'Accounts';
+        $this->eml->userProfile = $profile = $this->profile('testProfile');
+        $this->assertEquals($template->id, $this->eml->templateModel->id, 'Failed asserting that the template was properly chosen.');
+        $this->eml->prepareBody();
+
+        // assert that {description} insertable attribute, when placed inside the 'To:' field in the
+        // email template gets properly replaced with the account's attribute
+        $this->assertEquals(str_replace('{description}', $this->accounts['testAccount']['description'], $template->emailTo), $this->eml->to);
     }
 
     public function testDeliver(){

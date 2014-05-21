@@ -456,6 +456,7 @@ function addValidationError($attr, $error) {
  * @param type $module
  */
 function installModule($module, $respond = True) {
+    if ($module === 'x2Activity') return;
 	global $dbo;
 	$moduleName = installer_t($module);
 	$regPath = "protected/modules/$module/register.php";
@@ -497,7 +498,9 @@ function installModule($module, $respond = True) {
  * @param $stage The named stage of installation.
  */
 function installStage($stage) {
-	global $editions, $dbConfig, $dbKeys, $dateFields, $enabledModules, $dbo, $config, $confMap, $response, $silent, $stageLabels, $write;
+	global $editions, $dbConfig, $dbKeys, $dateFields, $enabledModules, $dbo, 
+            $config, $confMap, $response, $silent, $stageLabels, $write,
+            $nonFreeTables,$editionHierarchy;
 
 	switch ($stage) {
 		case 'validate':
@@ -660,6 +663,18 @@ function installStage($stage) {
 						$time2 = $time * 2;
 						$timeDiff = $time - (int) trim($dateGen);
 						foreach ($dateFields as $table => $fields) {
+                            $tableEdition = 'opensource';
+                            foreach($editions as $ed) {
+                                if(in_array($table,$nonFreeTables[$ed])) {
+                                    $tableEdition = $ed;
+                                    break;
+                                }
+                            }
+                            if(!(bool) $editionHierarchy[$config['edition']][$tableEdition]) {
+                                // Table not "contained" in the current edition
+                                continue;
+                            }
+
 							foreach ($fields as $field) {
                                 try {
                                     $dbo->exec("UPDATE `$table` SET `$field`=`$field`+$timeDiff WHERE `$field` IS NOT NULL AND `$field`!=0 AND `$field`!=''");
@@ -717,19 +732,22 @@ foreach ($confKeys as $key) {
 }
 // Load static app configuration files:
 $staticConfig = array(
-	'editions' => 'protected/data/editions.php',
 	'stageLabels' => 'protected/data/installStageLabels.php',
 	'enabledModules' => 'protected/data/enabledModules.php',
-	'dateFields' => 'protected/data/dateFields.php'
+	'dateFields' => 'protected/data/dateFields.php',
+    'nonFreeTables' => 'protected/data/nonFreeTables.php',
+    'editionHierarchy' => 'protected/data/editionHierarchy.php',
 );
 foreach ($staticConfig as $varName => $path) {
 	$realpath = realpath($path);
 	if ($realpath) {
-		${$varName} = require_once($realpath);
+		${$varName} = require($realpath);
 	} else {
 		RIP("Could not find static configuration file $path.");
 	}
 }
+// Non-free editions to consider
+$editions = array_diff(array_keys($editionHierarchy),array('opensource'));
 
 baseConfig();
 

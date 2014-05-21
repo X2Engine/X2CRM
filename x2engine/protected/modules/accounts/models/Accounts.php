@@ -234,7 +234,7 @@ class Accounts extends X2Model {
 					'defaultOrder'=>'t.lastUpdated DESC'	// true = ASC
 				),
 				'pagination'=>array(
-					'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
+					'pageSize'=>isset($pageSize)? $pageSize : Profile::getResultsPerPage(),
 				),
 			));
 

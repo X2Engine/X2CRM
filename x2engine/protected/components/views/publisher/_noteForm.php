@@ -20,17 +20,11 @@
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
  ********************************************************************************/
 
-Yii::app()->clientScript->registerCss('noteFormCss',"
+?>
 
-#new-comment .text-area-wrapper {
-    margin-bottom: 5px;
-}
+<div id='new-comment' class='publisher-form' 
+ <?php echo ($startVisible ? '' : "style='display: none;'"); ?>>
 
-");
-
- ?>
-
-<div id='new-comment' class='publisher-form' style='display: none;'>
 
 <div class="row">
     <div class="text-area-wrapper">

@@ -50,6 +50,7 @@ $this->actionMenu = $this->formatMenu(array(
         'url'=>array('webTracker'),
         'visible'=>(Yii::app()->contEd('pro'))
     ),
+    
 	array(
         'label'=>Yii::t('app','X2Flow'),
         'url'=>array('/studio/flowIndex'),

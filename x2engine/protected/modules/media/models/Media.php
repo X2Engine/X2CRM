@@ -48,6 +48,8 @@
  */
 class Media extends X2Model {
 
+    public $supportsWorkflow = false;
+
     public $_path;
     public $_url;
 

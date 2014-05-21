@@ -35,7 +35,6 @@
  *****************************************************************************************/
 
 
-$authParams['assignedTo'] = $model->username;
 $this->actionMenu = array(
 	array('label'=>Yii::t('profile','View Profile'), 'url'=>array('view','id'=>$model->id)),
 	array('label'=>Yii::t('profile','Edit Profile')),

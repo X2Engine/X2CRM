@@ -82,6 +82,7 @@ class WebFormAction extends CAction {
     private function handleWebleadFormSubmission (X2Model $model, $extractedParams) {
         $newRecord = $model->isNewRecord;
         if(isset($_POST['Contacts'])) {
+
             $model->createEvent = false;
             $model->setX2Fields($_POST['Contacts'], true);
             // Extra sanitizing
@@ -108,6 +109,7 @@ class WebFormAction extends CAction {
 
             
 
+
             $model->validate ();
             if(!$model->hasErrors()){
 
@@ -121,10 +123,14 @@ class WebFormAction extends CAction {
                 }
 
                 if(count($duplicates) > 0){ //use existing record, update background info
+                    /**/AuxLib::debugLogR ('found dup');
                     $newBgInfo = $model->backgroundInfo;
                     $model = $duplicates[0];
                     $oldBgInfo = $model->backgroundInfo;
-                    $model->backgroundInfo .= (($oldBgInfo && $newBgInfo) ? "\n" : '') . $newBgInfo;
+                    if ($newBgInfo !== $oldBgInfo) {
+                        $model->backgroundInfo .= 
+                            (($oldBgInfo && $newBgInfo) ? "\n" : '') . $newBgInfo;
+                    }
 
                     
 
@@ -140,17 +146,24 @@ class WebFormAction extends CAction {
 
                     
 
+                    $success = $model->save();
+
                     
 
-                    $success = $model->save();
                     //TODO: upload profile picture url from webleadfb
                 }
                 
                 if($success){
+
+                    self::generateLead ($model, $extractedParams['leadSource']);
+
                     self::addTags ($model);
-                    $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ? array() : explode(',',$_POST['tags']));
-                    if($newRecord)
-                        X2Flow::trigger('WebleadTrigger', array('model' => $model, 'tags' => $tags));
+                    $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ? 
+                        array() : explode(',',$_POST['tags']));
+                    if($newRecord) {
+                        X2Flow::trigger(
+                            'WebleadTrigger', array('model' => $model, 'tags' => $tags));
+                    }
 
                     //use the submitted info to create an action
                     $action = new Actions;
@@ -232,7 +245,7 @@ class WebFormAction extends CAction {
                     
                 } else {
                     $errMsg = 'Error: WebListenerAction.php: model failed to save';
-                    AuxLib::debugLog ($errMsg);
+                    /**/AuxLib::debugLog ($errMsg);
                     Yii::log ($errMsg, '', 'application.debug');
                 }
 
@@ -460,7 +473,7 @@ class WebFormAction extends CAction {
                             }
                         } else {
                             $errMsg = 'Error: actionWebForm.php: sendUserEmail failed';
-                            AuxLib::debugLog ($errMsg);
+                            /**/AuxLib::debugLog ($errMsg);
                             Yii::log ($errMsg, '', 'application.debug');
                         }
                     }
@@ -510,12 +523,39 @@ class WebFormAction extends CAction {
 
         $extractedParams = array ();
 
+        if (isset ($_GET['webFormId'])) { 
+            $webForm = WebForm::model()->findByPk($_GET['webFormId']);
+        } 
+        $extractedParams['leadSource'] = null;
+        if (isset ($webForm)) { // new method
+            if (!empty ($webForm->leadSource)) 
+                $extractedParams['leadSource'] = $webForm->leadSource;
+        }
+
         
 
         if ($modelClass === 'Contacts') {
             $this->handleWebleadFormSubmission ($model, $extractedParams);
         } else if ($modelClass === 'Services') {
             $this->handleServiceFormSubmission ($model, $extractedParams);
+        }
+
+    }
+
+    /**
+     * Creates a new lead and associates it with the contact
+     * @param Contacts $contact
+     * @param null|string $leadSource
+     */
+    private static function generateLead (
+        Contacts $contact, $leadSource=null) {
+
+        $lead = new X2Leads ('webForm');
+        $lead->name = $contact->firstName.' '.$contact->lastName;
+        $lead->leadSource = $leadSource;
+        // disable validation to prevent saving from failing if leadSource isn't set
+        if ($lead->save (false)) {
+            Relationships::create ('X2Leads', $lead->id, 'Contacts', $contact->id);
         }
 
     }

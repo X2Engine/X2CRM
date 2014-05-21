@@ -80,7 +80,6 @@ class X2FlowCreateAction extends X2FlowAction {
 		$action->actionDescription = $this->parseOption('description',$params);
 		$action->priority = $this->parseOption('priority',$params);
 		$action->visibility = $this->parseOption('visibility',$params);
-		// $action->
 
 		if(isset($params['model']))
 			$action->assignedTo = $this->parseOption('assignedTo',$params);

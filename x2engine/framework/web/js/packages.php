@@ -29,8 +29,8 @@ return array(
 	),
 	'jquery.ui'=>array(
         /* x2modstart */ 
-		//'js'=>array(YII_DEBUG ? 'jui/js/jquery-ui.js' : 'jui/js/jquery-ui.min.js'),
-		'js'=>array('jui/js/jquery-ui.min.js'),
+		'js'=>array(YII_DEBUG ? 'jui/js/jquery-ui.js' : 'jui/js/jquery-ui.min.js'),
+		//'js'=>array('jui/js/jquery-ui.min.js'),
         /* x2modend */ 
 		'depends'=>array('jquery'),
 	),

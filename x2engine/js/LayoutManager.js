@@ -68,7 +68,8 @@ x2.LayoutManager = function (argsDict) {
 
     this._halfWidthSelector = '#main-column, .history'; 
     this._hideSideBarLeftThreshold = 657;
-    this._hideWidgetsThreshold = 1040;
+    //this._hideWidgetsThreshold = 1040;
+    this._hideWidgetsThreshold = 940;
     this._fullSearchBarThreshold = x2.logoWidth ? x2.logoWidth + 915 : 915;
     this._publisherHalfWidthThreshold = 940;
     this._titleBarThresholds;
@@ -128,6 +129,13 @@ x2.LayoutManager.prototype.setHalfWidthThreshold = function (halfWidthThreshold)
  * @var function a function which optionally accepts the parameters (windowWidth, contentWidth)
  */
 x2.LayoutManager.prototype.addFnToResizeQueue = function (fn) {
+	/*var $contentDiv = $('div#content');
+    var that = this;
+    $(window).resize (function () {
+		that.windowWidth = window.innerWidth || $(window).width ();
+		that.contentWidth = $contentDiv.width();
+        fn (that.windowWidth, that.contentWidth); 
+    });*/
     this._resizeFnQueue.push (fn);
 };
 

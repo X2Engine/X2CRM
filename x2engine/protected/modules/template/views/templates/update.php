@@ -44,6 +44,6 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','Delete {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 ));
 ?>
-<div class="page-title"><h2><?php echo Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName'])); ?> #<?php echo $model->id; ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName'])); ?> <?php echo $model->name; ?></h2></div>
 
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users, 'modelName'=>'templates')); ?>

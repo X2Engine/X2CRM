@@ -62,11 +62,22 @@ class X2FlowEmail extends X2FlowAction {
                     'options'=>$credOpts),
 				array('name'=>'to','label'=>Yii::t('studio','To:'),'type'=>'email'),
 				//array('name'=>'from','label'=>Yii::t('studio','From:'),'type'=>'email'),
-				array('name'=>'template','label'=>Yii::t('studio','Template'),'type'=>'dropdown','options'=>array(''=>Yii::t('studio','Custom'))+Docs::getEmailTemplates(),'optional'=>1),
+				array(
+                    'name'=>'template','label'=>Yii::t('studio','Template'),
+                    'type'=>'dropdown',
+                    'options'=>array(''=>Yii::t('studio','Custom')) +
+                        Docs::getEmailTemplates('email'),
+                    'optional'=>1
+                ),
 				array('name'=>'subject','label'=>Yii::t('studio','Subject'),'optional'=>1),
 				array('name'=>'cc','label'=>Yii::t('studio','CC:'),'optional'=>1,'type'=>'email'),
 				array('name'=>'bcc','label'=>Yii::t('studio','BCC:'),'optional'=>1,'type'=>'email'),
-				array('name'=>'body','label'=>Yii::t('studio','Message'),'optional'=>1,'type'=>'richtext'),
+				array(
+                    'name'=>'body',
+                    'label'=>Yii::t('studio','Message'),
+                    'optional'=>1,
+                    'type'=>'richtext'
+                ),
 				// 'time','dateTime'),
 			));
 	}
@@ -85,7 +96,7 @@ class X2FlowEmail extends X2FlowAction {
 		if(isset($options['bcc']['value'])){
 			$eml->bcc = $this->parseOption('bcc',$params);
         }
-		$eml->to = $this->parseOption('to',$params);
+		$eml->to = Formatter::replaceVariables ($this->parseOption('to',$params), $params['model']);
 
 		//$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
         $eml->credId = $this->parseOption('from',$params);

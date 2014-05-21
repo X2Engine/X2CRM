@@ -11,4 +11,5 @@ return array (
 'Error'=>'오류',
 'Cannot delete; no parameters specified for finding a relationship record to delete.'=>'삭제할 수 없습니다 매개 변수는 삭제할 관계 기록을 찾기 위해 지정합니다.',
 'No relationships deleted; none were found matching specfied parameters.'=>'아무 관계가 삭제되지, 아무도 specfie​​d 매개 변수와 일치하는 찾을 수 없습니다.',
+'Couldn\'t perform {a} on model {m}'=>'맛있 \ &#39;t 수행 {a} 모델에 {m}',
 );

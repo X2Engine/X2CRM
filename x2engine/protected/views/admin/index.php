@@ -224,6 +224,9 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <div class="cell span-6">
             <?php echo CHtml::link(Yii::t('admin', 'Set a Default Theme'), array('/admin/setDefaultTheme')); ?><br><?php echo Yii::t('admin', 'Set a deafult theme which will automatically be set for all new users.'); ?>
         </div>
+        <div class="cell span-6">
+            <?php echo CHtml::link(Yii::t('admin', 'REST API'), array('/admin/api2Settings')); ?><br><?php echo Yii::t('admin', 'Advanced API security and access control settings.'); ?>
+        </div>
         <?php $editionEnd('pla'); ?>
     </div><!-- .row -->
 </div>

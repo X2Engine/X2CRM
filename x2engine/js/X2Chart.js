@@ -3484,7 +3484,7 @@ X2Chart.prototype.setUpChartSettings = function () {
                 title: thisX2Chart.translations['Create Chart Setting'],
                 autoOpen: true,
                 height: "auto",
-                width: 850,
+                width: 550,
                 resizable: false,
                 show: 'fade',
                 hide: 'fade',

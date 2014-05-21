@@ -22,7 +22,9 @@
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
  ?>
 
-<div id='log-a-call' class='publisher-form' style="display: none;">
+<div id='log-a-call' class='publisher-form' 
+ <?php echo ($startVisible ? '' : "style='display: none;'"); ?>>
+
 
     <div class="row">
         <div>
@@ -40,10 +42,17 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                         'update' => '#quickNote2',
                         'complete' => 'function() {
                             auxlib.getElement("#call-action-description").val(""); 
-                        }'
+                        }',
+                    ),
+                    'class' => 'x2-select',
                 )
-            ));
-            echo CHtml::dropDownList('quickNote2', '', array('' => '-')); 
+            );
+            echo CHtml::dropDownList(
+                'quickNote2',
+                '',
+                array('' => '-'),
+                array ('class' => 'x2-select')
+            ); 
             ?>
         </div>
     </div>

@@ -48,39 +48,8 @@ Yii::app()->clientScript->registerCss('contactRecordViewCss',"
 
 ");
 
-Yii::app()->clientScript->registerResponsiveCss('responsiveContactRecordViewCss',"
-@media (max-width: 657px) {
-
-    .sidebar-left:first-child {
-        margin-top: 40px;
-    }
-    body.show-right-bar .page-title-fixed-inner .page-title {
-        position: relative;
-        right: 316px;
-    }
-
-}
-
-@media (max-width: 699px) {
-    .page-title .summary {
-        display: none !important;
-    }
-}
-
-@media (max-width: 641px) {
-    .page-title > .x2-button {
-        display: none !important;
-    }
-    .page-title .vcrPager {
-        margin-left: 0;
-    }
-    .page-title h2 {
-        maring-right: 0;
-    }
-}
-
-");
-
+Yii::app()->clientScript->registerResponsiveCssFile(
+    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
 
 $this->setPageTitle(empty($model->name) ? $model->firstName." ".$model->lastName : $model->name);
 
@@ -97,7 +66,7 @@ $result = Yii::app()->db->createCommand()
         ->queryAll();
 $subscribed = !empty($result); // if we got any results then user is subscribed
 
-$authParams['assignedTo'] = $model->assignedTo;
+$authParams['X2Model'] = $model;
 $menuItems = array(
     array('label' => Yii::t('contacts', 'All Contacts'), 'url' => array('index')),
     array('label' => Yii::t('contacts', 'Lists'), 'url' => array('lists')),

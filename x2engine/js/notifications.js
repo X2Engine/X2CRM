@@ -520,16 +520,6 @@ x2.Notifs.prototype._openNotifications = function () {
 
     $('#notif-box').fadeIn({
         duration: 300,
-        step: function () { // resize multiline notifications and reposition x button
-            $(this).find('.notif').each (function () {
-                $(this).height ($(this).find ('.msg').height ());
-                $(this).find ('.close').position ({
-                    my: "right-4 top+4",
-                    at: "right top",
-                    of: $(this)
-                });
-            });
-        },
         complete: function () {
             $('#notif-box-shadow-correct').show ();
             $('#notif-box-shadow-correct').position ({ // IE bug fix, forces repaint
@@ -586,8 +576,10 @@ x2.Notifs.prototype._addNotifications = function (notifData, append, firstCall) 
 
     /* loop through the notifications backwards (they're ordered by ID descending, so start 
        with the oldest) */
+    var timeNow = new Date();
+    var uTimeNow = timeNow.getTime()/1000.0;
     for (var i = notifData.length - 1; i >= 0; --i) {
-        var timeNow = new Date();
+        
 
         var notifId = notifData[i].id;
         //console.log ('addNotifications: notifId = ' + notifId);
@@ -596,9 +588,10 @@ x2.Notifs.prototype._addNotifications = function (notifData, append, firstCall) 
         newNotifNum++;
         
         if (notifData[i].type == 'voip_call' && 
-            timeNow.getTime() / 1000 - notifData[i].timestamp < 2*x2.notifUpdateInterval &&
-            that._windowId == that._masterId) { 
-            // Screen pop only if less than 2*interval ago and master window
+            uTimeNow - notifData[i].timestamp < 2*x2.notifUpdateInterval/1000 &&
+            that._windowId == that._masterId) {
+            // Screen pop only if less than 2*interval ago, and master window,
+            // and unread.
 
             window.open (yii.baseUrl+'/index.php/contacts/'+notifData[i].modelId);
         }
@@ -618,15 +611,6 @@ x2.Notifs.prototype._addNotifications = function (notifData, append, firstCall) 
             notif.addClass('unviewed');
             newNotif = true;
         }
-
-        $notifBox.find ('.notif').each (function () {
-            $(this).height ($(this).find ('.msg').height ());
-            $(this).find ('.close').position ({
-                my: "right-4 top+4",
-                at: "right top",
-                of: $(this)
-            });
-        });
 
     }
 

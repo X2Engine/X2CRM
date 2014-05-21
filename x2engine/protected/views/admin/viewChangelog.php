@@ -55,7 +55,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
         array(
             'name' => 'recordName',
             'header' => Yii::t('admin', 'Record'),
-            'value' => 'CHtml::link($data->recordName,Yii::app()->controller->createUrl(strtolower($data->type)."/".$data->itemId))',
+            'value' => '($data->changed !== "delete") ? CHtml::link($data->recordName,Yii::app()->controller->createUrl(lcfirst($data->type)."/".$data->itemId)) : $data->recordName',
             'type' => 'raw',
         ),
         'changed',

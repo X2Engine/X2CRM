@@ -156,35 +156,22 @@ class X2ClientScript extends NLSClientScript {
     }
 
     public function getCurrencyConfigScript () {
-        // Declare currency format(s) from Yii for the formatCurrency plugin
+        // Declare currency format(s) from Yii for the jQuery maskMoney plugin
         $locale = Yii::app()->locale;
-        $cldFormat = array();
-        foreach(explode(';', $locale->getCurrencyFormat()) as $format){
-            $newFormat = preg_replace('/¤/', '%s', $format);
 
-            // The number, in positive/negative
-            $newFormat = preg_replace('/[#,\.0]+/', '%n', $newFormat); 
-            $cldFormat[] = $newFormat;
-        }
-        if(count($cldFormat) == 1){ // Default convention if no negative format is defined
-            $cldFormat[] = $locale->getNumberSymbol('minusSign').$cldFormat[0];
-        }
         $decSym = $locale->getNumberSymbol('decimal');
         $grpSym = $locale->getNumberSymbol('group');
+        $curSym = Yii::app()->getLocale()->getCurrencySymbol(Yii::app()->params['currency']); 
 
         // Declare:
-        $cldScript = '(function($) {'."\n";
-        foreach(Yii::app()->params->supportedCurrencySymbols as $curCode => $curSym){
-            $cldScript .= '$.formatCurrency.regions["'.$curCode.'"] = '.CJSON::encode(array(
-                        'symbol' => $curSym,
-                        'positiveFormat' => $cldFormat[0],
-                        'negativeFormat' => $cldFormat[1],
-                        'decimalSymbol' => $decSym,
-                        'digitGroupSymbol' => $grpSym,
-                        'groupDigits' => true
-                    )).";\n";
-        }
-        $cldScript .= "\n})(jQuery);";
+        $cldScript = 
+            '(function($) {
+                x2.currencyInfo = '.CJSON::encode(array(
+                    'prefix' => $curSym,
+                    'decimal' => $decSym,
+                    'thousands' => $grpSym,
+                )).";
+            })(jQuery);";
 
         return $cldScript;
     }
@@ -390,6 +377,7 @@ class X2ClientScript extends NLSClientScript {
             'x2forms.css',
             'form.css',
             'publisher.css',
+            'sortableWidgets.css',
             '../../../js/bgrins-spectrum-2c2010c/spectrum.css',
             '../../../js/qtip/jquery.qtip.min.css',
             '../../../js/checklistDropdown/jquery.multiselect.css',
@@ -410,6 +398,71 @@ class X2ClientScript extends NLSClientScript {
             $this->registerCssFiles ('responsiveCombinedCss', 
                 $responsiveCssFiles, 'screen, projection');
         }
+    }
+
+    /**
+     * Instantiates the Flashes utility class 
+     */
+    public function registerX2Flashes () {
+        $this->registerScriptFile($this->baseUrl.'/js/X2Flashes.js', CClientScript::POS_END);
+        $this->registerScript ('registerX2Flashes', "
+        (function () {
+            x2.flashes = new x2.Flashes ({
+                containerSelector: 'x2-flashes-container',
+                expandWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
+                    '/images/icons/Expand_Widget.png'."',
+                collapseWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
+                    '/images/icons/Collapse_Widget.png'."',
+                closeWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
+                    '/images/icons/Close_Widget.png'."',
+                translations: ".CJSON::encode (array (
+                    'noticeFlashList' => Yii::t('app', 'Action exectuted with'),
+                    'errorFlashList' => Yii::t('app', 'Action exectuted with'),
+                    'noticeItemName' => Yii::t('app', 'warnings'),
+                    'errorItemName' => Yii::t('app', 'errors'),
+                    'successItemName' => Yii::t('app', 'Close'),
+                    'close' => Yii::t('app', 'Close'),
+                ))."
+            });
+        }) ();
+        ", CClientScript::POS_READY);
+    }
+
+    private function registerX2ModelMappingsScript () {
+        $this->registerScript('x2ModelMappingsScript',"
+            x2.associationModels = ".CJSON::encode (X2Model::$associationModels).";
+            x2.modelNameToModuleName = ".CJSON::encode (X2Model::$modelNameToModuleName).";
+        ", CClientScript::POS_READY);
+    }
+
+
+    /**
+     * Instantiates the x2.Forms utitility class
+     */
+    private function registerX2Forms () {
+        $this->registerScriptFile($this->baseUrl.'/js/X2Forms.js');
+        $this->registerScript('registerX2Forms',"
+            x2.forms = new x2.Forms ({
+                translations: ".CJSON::encode (array (
+                    'Check All' => Yii::t('app', 'Check All'),
+                    'Uncheck All' => Yii::t('app', 'Uncheck All'),
+                    'selected' => Yii::t('app', 'selected'),
+                ))."
+            });
+        ", CClientScript::POS_END);
+    }
+
+    /**
+     * Passes locale-specific date format strings to JS. 
+     */
+    private function registerDateFormats () {
+        $this->registerScript('registerDateFormats',"
+            x2.dateFormats = {
+                dateFormat: '".Formatter::formatDatePicker()."',
+                timeFormat: '".Formatter::formatTimePicker()."',
+                ampm: '".Formatter::formatAMPM()."'
+            };
+        ", CClientScript::POS_END);
     }
 
     /**
@@ -442,6 +495,10 @@ class X2ClientScript extends NLSClientScript {
                 ), 'passAuxLibVars'
         );
 
+        $cs->registerX2ModelMappingsScript ();
+        $cs->registerX2Forms ();
+        $cs->registerDateFormats ();
+
         // custom scripts
         $cs->registerScriptFile($baseUrl.'/js/json2.js')
                 ->registerScriptFile($baseUrl.'/js/webtoolkit.sha256.js')
@@ -451,14 +508,14 @@ class X2ClientScript extends NLSClientScript {
                 ->registerScriptFile($baseUrl.'/js/LayoutManager.js')
                 //->registerScriptFile($baseUrl.'/js/X2Select.js')
                 ->registerScriptFile($baseUrl.'/js/media.js')
-                ->registerScriptFile($baseUrl.'/js/X2Forms.js')
-                ->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js')
                 ->registerScript('formatCurrency-locales', $cldScript, CCLientScript::POS_HEAD)
                 ->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js')
                 ->registerScriptFile($baseUrl.'/js/widgets.js')
                 ->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js')
                 ->registerScriptFile($baseUrl.'/js/ActionFrames.js')
                 ->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js')
+                ->registerScriptFile($baseUrl.'/js/ColorPicker.js', CCLientScript::POS_END)
+                ->registerScriptFile($baseUrl.'/js/PopupDropdownMenu.js', CCLientScript::POS_END)
                 ->registerScriptFile($baseUrl.'/js/checklistDropdown/jquery.multiselect.js');
 
         if(IS_IPAD){

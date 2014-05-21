@@ -31,4 +31,7 @@ return array (
 'Unable to create custom module directory.'=>'',
 'Unable to create config file for custom module.'=>'',
 'Unable to create table for custom module.'=>'',
+'Import {X}'=>'',
+'Export {X}'=>'',
+'{modelName} Attributes'=>'',
 );

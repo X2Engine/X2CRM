@@ -33,6 +33,23 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+label[for='generateLead'] {
+    font-size: 16px !important;
+    color: #555;
+}
+label[for='generateLead'] + input {
+    margin-top: 11px !important;
+    margin-bottom: -11px !important;
+}
+label[for='generateLead'] + input + span {
+    position: relative;
+    top: -3px;
+}
+
+#generate-lead-form {
+    margin-top: 10px;
+}
+
 
 /* override spectrum color picker css */
 div#web-form .sp-replacer {

@@ -280,7 +280,7 @@ class Credentials extends CActiveRecord {
 	}
 
 	/**
-	 * Gets the default service record for the user of a given type.
+	 * Gets the default service record ID for the user of a given type.
 	 */
 	public function getDefaultUserAccount($userId=null,$type='email'){
 		$userId = $userId === null ? Yii::app()->user->id : $userId;

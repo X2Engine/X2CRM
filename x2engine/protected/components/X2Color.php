@@ -69,6 +69,50 @@ class X2Color {
 		
 		return $r.$g.$b;
 	}
+
+    public static function rgb2hex2($r, $g=-1, $b=-1) {
+        if (is_array($r) && sizeof($r) == 3)
+            list($r, $g, $b) = $r;
+
+        $r = intval($r); 
+        $g = intval($g);
+        $b = intval($b);
+
+        $r = dechex($r<0?0:($r>255?255:$r));
+        $g = dechex($g<0?0:($g>255?255:$g));
+        $b = dechex($b<0?0:($b>255?255:$b));
+
+        $color = (strlen($r) < 2?'0':'').$r;
+        $color .= (strlen($g) < 2?'0':'').$g;
+        $color .= (strlen($b) < 2?'0':'').$b;
+        return '#'.$color;
+    }
+
+    public static function hex2rgb2($color) {
+        if ($color[0] == '#')
+            $color = substr($color, 1);
+
+        if (strlen($color) == 6)
+            list($r, $g, $b) = array($color[0].$color[1],
+                                     $color[2].$color[3],
+                                     $color[4].$color[5]);
+        else if (strlen($color) == 3)
+            list($r, $g, $b) = array($color[0].$color[0], $color[1].$color[1], $color[2].$color[2]);
+        else
+            return false;
+
+        $r = hexdec($r); $g = hexdec($g); $b = hexdec($b);
+
+        return array($r, $g, $b);
+    }
+
+    /*public static function lighten ($r, $g, $b, $percent=-5) {
+        $colors = self::rgb2hex2 (array_map (function ($a) {
+            return $a > 255 ? 255 : $a;
+        }, array (($percent / 100) * $r, ($percent / 100) * $g, ($percent / 100) * $b
+        )));
+        return $colors;
+    }*/
 	
 	public static function gradientCss($color1,$color2) {
 		return "background:$color1;

@@ -347,13 +347,82 @@ auxlib.validatePhotoFileExt = function (name) {
     return isLegalExtension;
 };
 
-auxlib.map = function (callback, array) {
-    var arrLen = array.length;
-    var newArr = [];
-    for (var i = 0; i < arrLen; ++i) {
-        newArr.push (callback (array[i])); 
+/**
+ * @param array|object array
+ * @return object An object whose keys are the values of array and whose values are the indices
+ *  of array
+ */
+auxlib.flip = function (array) {
+    var result = {};
+    if (array instanceof Array) {
+        var arrLen = array.length;
+        for (var i = 0; i < arrLen; ++i) {
+            result[array[i]] = i;
+        }
+    } else {
+        for (var i in array) {
+            result[array[i]] = i;
+        }
+    }
+    return result;
+};
+
+auxlib.filter = function (callback, array) {
+    if (array instanceof Array) {
+        var newArr = [];
+        var arrLen = array.length;
+        for (var i = 0; i < arrLen; i++) {
+            if (callback (array[i], i, array)) {
+                newArr.push (array[i]);
+            }
+        }
+    } else {
+        var newObj = {};
+        for (var i in array) {
+            if (callback (array[i], i, array)) {
+                newObj[i] = array[i];
+            }
+        }
     }
     return newArr;
+};
+
+/**
+ * Used to map both arrays and objects 
+ * @param function callback 
+ * @param mixed array array or object 
+ * @return mixed
+ */
+auxlib.map = function (callback, array) {
+    if (array instanceof Array) {
+        var arrLen = array.length;
+        var newArr = [];
+        for (var i = 0; i < arrLen; ++i) {
+            newArr.push (callback (array[i])); 
+        }
+        return newArr;
+    } else { 
+        var newObj = {};
+        for (var i in array) {
+            newObj[i] = callback(array[i]);
+        }
+        return newObj;
+    }
+};
+
+auxlib.sum = function (array) {
+    return auxlib.reduce (function (a, b) { return a + b; }, array);
+};
+
+auxlib.reduce = function (callback, array) {
+    var value = array[0];
+    var arrLen = array.length;
+    if (arrLen === 1) return value;
+    var newArr = [];
+    for (var i = 0; i < arrLen - 1; ++i) {
+        value = callback (value, array[i + 1], i, array);
+    }
+    return value;
 };
 
 
@@ -369,4 +438,92 @@ auxlib.getElement = (function () {
         return elements[selector];
     };
 }) ();
+
+auxlib.classToSelector = function (classStr) {
+    return '.' + classStr.split (' ').join ('.');
+};
+
+/**
+ * Uses the maskMoney jQuery plugin to convert the currency to a number.
+ * @param string currencyStr A formatted curency string
+ * @param string currency The user's currency setting
+ * @return number the currency string converted to a number
+ */
+auxlib.currencyToNumber = function (currencyStr, currency) {
+    var tmp = $('<input>', {
+        id: 'auxlib-tmp-value-input',
+        style: 'display: none;'
+    });
+    $('body').append (tmp);
+
+    var number = $(tmp).val (currencyStr).maskMoney (x2.currencyInfo).maskMoney ('unmasked')[0];
+    $(tmp).remove ();
+    return number;
+};
+
+/**
+ * Uses the maskMoney jQuery plugin to format the number as a currency string
+ * @param number 
+ * @param string currency The user's currency setting
+ * @return string the formatted currency string 
+ */
+auxlib.numberToCurrency = function (number, currency) {
+    var tmp = $('<input>', {
+        id: 'auxlib-tmp-value-input',
+        style: 'display: none;'
+    });
+    $('body').append (tmp);
+    number = number.toFixed (2);
+
+    var str = 
+        $(tmp).val (number).maskMoney (x2.currencyInfo).maskMoney ('mask').val ()
+    $(tmp).remove ();
+
+    return str;
+};
+
+auxlib.assert = function (conditional, str) {
+    if (!x2.DEBUG) return;
+    if (console.assert) {
+        /**/console.assert (conditional, str);
+    } else {
+        if (!conditional) {
+            throw new Error (str);
+        }
+    }
+}
+
+auxlib.trace = function () { 
+    if (!x2.DEBUG) return;
+    if (console.trace) {
+        /**/console.trace ();
+    }
+};
+
+auxlib.getUnselected = function (elem) {
+    return auxlib.map (function (a) {
+        return $(a).val ();
+    },$.makeArray ($(elem).children ().not (':selected')));
+};
+
+
+$(function () {
+
+    /**
+     * Sets up fixed y behavior. By setting the class of an element to fix-y and giving an attribute
+     * data-fix-y set to some number, the element will be fixed the specified offset from the top
+     * of the screen.
+     */
+    $('.fix-y').each (function () {
+        var y = parseInt ($(this).attr ('data-fix-y'), 10);
+        var that = this;
+        $(window).scroll (function () {
+            //console.log ('break'); 
+            //console.log ($(that).css ('display'));
+            $(that).css ({
+                top: $(window).scrollTop () + y
+            });
+        });
+    });
+});
 

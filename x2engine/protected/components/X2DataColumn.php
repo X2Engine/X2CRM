@@ -109,7 +109,7 @@ class X2DataColumn extends CDataColumn {
                 break;
             case 'dropdown':
                 $dropdown = Dropdowns::model()->findByPk($this->fieldModel['linkType']);
-                if(!$dropdown->multi) {
+                if($dropdown instanceof Dropdowns && !$dropdown->multi) {
                     $options = json_decode($dropdown->options,1);
                     $defaultOption = array('' => '- '.Yii::t('app', 'Select').' -');
                     $options = is_array($options) ? 

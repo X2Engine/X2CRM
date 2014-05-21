@@ -11,4 +11,5 @@ return array (
 'Error'=>'שגיאה',
 'Cannot delete; no parameters specified for finding a relationship record to delete.'=>'לא יכול למחוק; אין פרמטרים שצוינו למציאת רשומת יחסים למחוק.',
 'No relationships deleted; none were found matching specfied parameters.'=>'אין יחסים יימחקו; אף נמצאו התאמת הפרמטרים specfied.',
+'Couldn\'t perform {a} on model {m}'=>'לא הצלחתי \ לא לבצע {a} בדגם {m}',
 );

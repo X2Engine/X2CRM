@@ -186,7 +186,18 @@ class FileUtilTest extends FileOperTestCase {
     }
 
     public function testFormatSize(){
-        $this->assertEquals('10 KB', FileUtil::formatSize(1024 * 10));
+        $sizes = array(
+            '0 B' => 0,
+            '200 B' => 200,
+            '10 KB' => 1024 * 10,
+            '6 MB' => 6 * 1024*1024,
+            '2 GB' => 2 * pow(1024, 3),
+            '3 TB' => 3 * pow(1024, 4),
+            //'99 PB' => 99 * pow(1024, 5),
+        );
+        foreach ($sizes as $readable => $size) {
+            $this->assertEquals($readable, FileUtil::formatSize($size));
+        }
     }
 
     public function testGetContents(){

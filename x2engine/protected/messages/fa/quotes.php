@@ -68,4 +68,6 @@ return array (
 'Are you sure you want to delete this quote?'=>'آیا مطمئن هستید که می خواهید این نقل قول را حذف کنید؟',
 'This quote is locked. Are you sure you want to update this quote?'=>'این نقل قول قفل شده است. آیا مطمئن هستید که می خواهید برای به روز رسانی این نقل قول؟',
 'This quote is locked.'=>'این نقل قول قفل شده است.',
+'Import Quotes'=>'واردات نقل قول',
+'Export Quotes'=>'نقل قول صادرات',
 );

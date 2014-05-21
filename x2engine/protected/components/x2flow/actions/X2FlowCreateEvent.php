@@ -55,8 +55,13 @@ class X2FlowCreateEvent extends X2FlowAction {
                 array('name' => 'type', 'label' => Yii::t('studio', 'Post Type'), 'type' => 'dropdown', 'options' => $eventTypes),
                 array('name' => 'text', 'label' => Yii::t('studio', 'Text'), 'type' => 'text'),
                 array('name' => 'user', 'optional' => 1, 'label' => 'User (optional)', 'type' => 'dropdown', 'options' => array('' => '----------', 'auto' => 'Auto') + X2Model::getAssignmentOptions(false, false)),
-                array('name' => 'createNotif', 'label' => Yii::t('studio', 'Create Notification?'), 'type' => 'boolean', 'defaultVal' => true),
-                ));
+                array(
+                    'name' => 'createNotif', 'label' => Yii::t('studio', 'Create Notification?'),
+                    'type' => 'boolean',
+                    'defaultVal' => true
+                ),
+            )
+        );
     }
 
     public function execute(&$params){

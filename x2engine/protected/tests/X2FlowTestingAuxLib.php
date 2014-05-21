@@ -83,6 +83,39 @@ class X2FlowTestingAuxLib {
     }
 
     /**
+     * Flattens the X2Flow trace, making it much easier to read programmatically. 
+     * @param array $trace One of the return value of executeFlow ()
+     * @return array flattened trace
+     */
+    public function flattenTrace ($trace) {
+        if (!$trace[0]) return false;
+        $flattenedTrace = array (array ('action' => 'start', 'error' => $trace[0]));
+        $trace = $trace[1];
+        while (true) {
+            $complete = true;
+            foreach ($trace as $action) {
+                if ($action[0] === 'X2FlowSwitch') {
+                    array_push ($flattenedTrace, array (
+                        'action' => $action[0],
+                        'branch' => $action[1],
+                    ));
+                    $trace = $action[2];
+                    $complete = false;
+                    break;
+                } else {
+                    array_push ($flattenedTrace, array (
+                        'action' => $action[0],
+                        'error' => $action[1][0],
+                        'message' => $action[1][1],
+                    ));
+                }
+            }
+            if ($complete) break;
+        }
+        return $flattenedTrace;
+    }
+
+    /**
      * Returns array of decoded flows from fixture records
      * @param X2DbTestCase $context A test case for which to obtain data
      * @param string $fixtureName The name of the fixture to pull from

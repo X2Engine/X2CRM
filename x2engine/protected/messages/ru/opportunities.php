@@ -105,4 +105,6 @@ return array (
 'Create a new Opportunity associated with this Opportunity.'=>'Создайте новые возможности, связанные с этой возможности.',
 'Opportunities Stage'=>'Возможности Стадия',
 'Relationships for Contact: '=>'Отношения для связи:',
+'Import Opportunities'=>'Импорт Возможности',
+'Export Opportunities'=>'Экспортные возможности',
 );

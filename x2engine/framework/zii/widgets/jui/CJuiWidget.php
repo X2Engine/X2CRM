@@ -51,9 +51,9 @@ abstract class CJuiWidget extends CWidget
 	 * This property can also be set as false, which means the widget will not include any script file,
 	 * and it is your responsibility to explicitly include it somewhere else.
 	 */
-	public $scriptFile='jquery-ui.min.js';
+	//public $scriptFile='jquery-ui.min.js';
      /* x2modstart */ 
-	/*protected $_scriptFile='jquery-ui.js';
+	protected $_scriptFile;
 
     public function setScriptFile ($scriptFile) {
         $this->_scriptFile = $scriptFile;
@@ -67,7 +67,7 @@ abstract class CJuiWidget extends CWidget
             $this->_scriptFile = $scriptFile;
         }
         return $this->_scriptFile;
-    }*/
+    }
     /* x2modend */ 
 
 	/**

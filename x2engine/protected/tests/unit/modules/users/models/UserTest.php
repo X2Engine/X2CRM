@@ -38,6 +38,9 @@
 Yii::import('application.models.*');
 Yii::import('application.modules.groups.models.*');
 Yii::import('application.modules.users.models.*');
+Yii::import('application.modules.actions.models.*');
+Yii::import('application.modules.contacts.models.*');
+Yii::import('application.modules.accounts.models.*');
 Yii::import('application.components.*');
 Yii::import('application.components.permissions.*');
 Yii::import('application.components.util.*');
@@ -48,33 +51,128 @@ Yii::import('application.components.util.*');
  */
 class UserTest extends CDbTestCase {
 
-    const VERBOSE = 0;
 
     public $fixtures = array (
         'users' => 'User',
         'groups' => array ('Groups', '_1'),
         'groupToUser' => array ('GroupToUser', '_2'),
+        'actions' => array ('Actions', '.UserTest'),
+        'contacts' => array ('Contacts', '.UserTest'),
+        'events' => array ('Events', '.UserTest'),
+        'social' => array ('Social', '.UserTest'),
+        'profile' => array ('Profile', '.UserTest'),
     );
 
     public function testAfterDelete () {
         $user = User::model ()->findByPk ('2');
-        if(self::VERBOSE){
+        if(VERBOSE_MODE){
             print ('id of user to delete: ');
             print ($user->id);
         }
         
         // assert that group to user records exist for this user
         $this->assertTrue (
-            sizeof (GroupToUser::model ()->findByAttributes (array ('userId' => $user->id))) > 0);
-        $user->delete ();
+            sizeof (
+                GroupToUser::model ()->findAllByAttributes (array ('userId' => $user->id))) > 0);
+        $this->assertTrue ($user->delete ());
+
+        VERBOSE_MODE && print ('looking for groupToUser records with userId = '.$user->id);
+        GroupToUser::model ()->refresh ();
 
         // assert that group to user records were deleted
         $this->assertTrue (
             sizeof (
-                GroupToUser::model ()->findByAttributes (array ('userId' => $user->id))) === 0);
+                GroupToUser::model ()->findAllByAttributes (array ('userId' => $user->id))) === 0);
 
+
+        // test profile deletion
+        $this->assertTrue (
+            sizeof (Profile::model()->findAllByAttributes (
+                array ('username' => $user->username))) === 0);
+
+        // test social deletion
+        $this->assertTrue (
+            sizeof (Social::model()->findAllByAttributes (
+                array ('user' => $user->username))) === 0);
+        $this->assertTrue (
+            sizeof (
+                Social::model()->findAllByAttributes (array ('associationId' => $user->id))) === 0);
+
+        // test event deletion
+        $this->assertTrue (
+            sizeof (Events::model()->findAll (
+                "user=:username OR (type='feed' AND associationId=".$user->id.")", 
+                array (':username' => $user->username))) === 0);
     }
 
+    public function testBeforeDelete () {
+        $user = $this->users ('testUser');
+        $user->delete ();
+
+        /*
+        actions reassignment
+        */
+
+        // reassigned but left valid complete/updatedBy fields
+        $action1 = $this->actions ('action1');
+        $this->assertTrue ($action1->assignedTo === 'Anyone');
+        $this->assertTrue ($action1->completedBy === 'testUser2');
+        $this->assertTrue ($action1->updatedBy === 'testUser2');
+
+        // reassigned and updated completedBy field
+        $action2 = $this->actions ('action2');
+        $this->assertTrue ($action2->assignedTo === 'Anyone');
+        $this->assertTrue ($action2->completedBy === 'admin');
+        $this->assertTrue ($action2->updatedBy === 'testUser2');
+
+        // reassigned and updated updatedBy fields
+        $action3 = $this->actions ('action3');
+        $this->assertTrue ($action3->assignedTo === 'Anyone');
+        $this->assertTrue ($action3->completedBy === 'testUser2');
+        $this->assertTrue ($action3->updatedBy === 'admin');
+
+
+        /*
+        contacts reassignment 
+        */
+
+        // reassigned but left valid updatedBy field
+        $conctact1 = $this->contacts ('contact1');
+        $this->assertTrue ($conctact1->assignedTo === 'Anyone');
+        $this->assertTrue ($conctact1->updatedBy === 'testUser2');
+
+        // reassigned but changed invalid updatedBy field
+        $contact2 = $this->contacts ('contact2');
+        $this->assertTrue ($contact2->assignedTo === 'Anyone');
+        $this->assertTrue ($contact2->updatedBy === 'admin');
+    }
+
+    public function testUserAliasUnique() {
+        $admin = $this->users('admin');
+        $admin->userAlias = $this->users('testUser')->username;
+        $admin->validate(array('userAlias'));
+        $this->assertTrue($admin->hasErrors('userAlias'));
+
+        $newUser = new User;
+        $newUser->username = $this->users('testUser')->userAlias;
+        $newUser->validate(array('username'));
+        $this->assertTrue($newUser->hasErrors('username'));
+    }
+
+    public function testFindByAlias () {
+        $foundByName = User::model()->findByAlias($this->users('testUser')->username);
+        $foundByAlias = User::model()->findByAlias($this->users('testUser')->userAlias);
+        $this->assertEquals($this->users('testUser')->id,$foundByName->id);
+        $this->assertEquals($foundByName->id,$foundByAlias->id);
+    }
+
+    public function testGetAlias() {
+        $user = new User;
+        $user->username = 'imauser';
+        $this->assertEquals($user->username,$user->alias);
+        $user->userAlias = 'imausertoo';
+        $this->assertEquals($user->userAlias,$user->alias);
+    }
 }
 
 ?>

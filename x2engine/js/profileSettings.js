@@ -225,7 +225,7 @@ function setupPrefsEventListeners () {
     Trigger change event when color is picked.
     */
     $('.color-picker-input').each (function (index, element) {
-        setupSpectrum ($(element), true);
+        x2.colorPicker.setUp ($(element), true);
     });
 
 	$('#menuBgColor').change(function() {
@@ -235,7 +235,6 @@ function setupPrefsEventListeners () {
         var text = $(this).val();
 		if(text === '') {
 			$('#header').css('background','').addClass('defaultBg');
-            //addCheckerImage ($(this));
 		} else {
 			$('#header').removeClass('defaultBg').css('background','#' + text);
 		}
@@ -248,7 +247,6 @@ function setupPrefsEventListeners () {
         }
 		var text = $(colorInputElem).val();
 		if(text === '') {
-            //addCheckerImage ($(colorInputElem));
 			$(targetElem).css(CSSProperty, CSSdefault);
 		} else {
 			$(targetElem).css(CSSProperty, '#' + text);
@@ -292,7 +290,7 @@ function setupPrefsEventListeners () {
 
         // make color picker color match input field without triggering change events
         if (text !== '') { 
-            removeCheckerImage ($(this));
+            x2.colorPicker.removeCheckerImage ($(this));
             $(this).next ('div.sp-replacer').find ('.sp-preview-inner').css (
                 'background', '#' + text);
         }

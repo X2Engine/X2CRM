@@ -52,7 +52,8 @@ class X2FlowRecordUpdate extends X2FlowAction {
             // 'modelClass' => 'modelClass',
             'options' => array(
                 array('name' => 'attributes'),
-                ));
+            )
+        );
     }
 
     public function execute(&$params){

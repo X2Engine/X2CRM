@@ -83,4 +83,7 @@ return array (
 'Unable to create custom module directory.'=>'Не удается создать каталог пользовательского модуля.',
 'Unable to create config file for custom module.'=>'Не удается создать файл конфигурации для пользовательского модуля.',
 'Unable to create table for custom module.'=>'Невозможно создать таблицу для пользовательского модуля.',
+'Import {X}'=>'Импорт {X}',
+'Export {X}'=>'Экспорт {X}',
+'{modelName} Attributes'=>'{modelName} Атрибуты',
 );

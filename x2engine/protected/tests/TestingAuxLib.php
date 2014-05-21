@@ -41,6 +41,7 @@
  * @package application.tests
  */
 class TestingAuxLib  {
+
      
     /**
      * Method used by TestingAuxLibTest to test setPublic 
@@ -83,8 +84,14 @@ class TestingAuxLib  {
         $identity = new UserIdentity($username, $password);
         $identity->authenticate ();
 		if($identity->errorCode === UserIdentity::ERROR_NONE) {
-            Yii::app()->user->login ($identity, 2592000);
-            return true;
+            if (Yii::app()->user->login ($identity, 2592000)) {
+                if ($username === 'admin') {
+                    Yii::app()->params->isAdmin = true;
+                } else {
+                    Yii::app()->params->isAdmin = false;
+                }
+                return true;
+            }
         }
         return false;
     }

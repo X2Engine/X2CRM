@@ -203,8 +203,8 @@ class Opportunity extends X2Model {
 
 	public function search($resultsPerPage=null, $uniqueId=null) {
 		$criteria=new CDbCriteria;
-		// $parameters=array("condition"=>"salesStage='Working'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
-		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+		// $parameters=array("condition"=>"salesStage='Working'",'limit'=>ceil(Profile::getResultsPerPage()));
+		$parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
 		$criteria->scopes=array('findAll'=>array($parameters));
 
 		return $this->searchBase($criteria, $resultsPerPage, $uniqueId);

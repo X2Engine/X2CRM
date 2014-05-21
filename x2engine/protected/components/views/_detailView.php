@@ -97,7 +97,7 @@ if($layoutData !== false && isset($layoutData['sections']) && count($layoutData[
 ?>
     <div class="x2-layout<?php if(isset($halfWidth) && $halfWidth) echo ' half-width'; ?>">
     <?php
-    $formSettings = ProfileChild::getFormSettings($modelName);
+    $formSettings = Profile::getFormSettings($modelName);
     
     $fieldPermissions = array();
     

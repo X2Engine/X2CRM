@@ -56,4 +56,7 @@ return array (
 'Hello'=>'שלום',
 'Web Form Case'=>'קייס טופס אינטרנט',
 'Thank you for contacting our Technical Support '=>'תודה על פנייתך התמיכה הטכנית שלנו',
+'Import Services'=>'שירותי יבוא',
+'Export Services'=>'יצוא שירותים',
+'Case Name'=>'שם תיק',
 );

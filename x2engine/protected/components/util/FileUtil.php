@@ -529,7 +529,7 @@ class FileUtil {
      * @return type
      */
     public static function formatSize($bytes, $places = 0){
-        $sz = 'BKMGTP';
+        $sz = array('', 'K', 'M', 'G', 'T', 'P');
         $factor = floor((strlen($bytes) - 1) / 3);
         return sprintf("%.{$places}f ", $bytes / pow(1024, $factor)).@$sz[$factor]."B";
     }

@@ -60,9 +60,15 @@ $config['import'] = array_merge($config['import'], array('application.tests.*', 
 $config['components']['log']['routes'] = array(
 	array(
 		'class' => 'CFileLogRoute',
+		'logFile' => php_sapi_name() == 'cli' ? 'system-test.log' : 'system-test-web.log',
+        'levels' => 'error,warning,trace,info',
+        'categories' => 'system.*'
+	),
+	array(
+		'class' => 'CFileLogRoute',
 		'logFile' => php_sapi_name() == 'cli' ? 'test.log' : 'test-web.log',
         'levels' => 'error,warning,trace,info',
-        'categories' => 'application.*,system.*'
+        'categories' => 'application.*'
 	)
 );
 $config['params']['automatedTesting'] = true;

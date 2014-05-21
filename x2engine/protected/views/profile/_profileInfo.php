@@ -34,7 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/PopupDropdownMenu.js');
 
 Yii::app()->clientScript->registerCss("viewProfile", "
 
@@ -263,7 +262,7 @@ if ($isMyProfile) {
     $fullProfileInfo = $miscLayoutSettings['fullProfileInfo'];
 }
 ?>
-<div id='profile-info-container'>
+<div id='profile-info-container' class='x2-layout-island'>
 
 <div class="responsive-page-title page-title icon profile">
     <h2>
@@ -383,7 +382,7 @@ if ($isMyProfile) {
     </tr>
     <tr>
         <td class="label"><?php echo $attributeLabels['username']; ?></td>
-        <td><b><?php echo CHtml::encode($model->username); ?></b></td>
+        <td><b><?php echo CHtml::encode($model->user->alias); ?></b></td>
     </tr>
     <tr>
         <td class="label"><?php echo $attributeLabels['officePhone']; ?></td>

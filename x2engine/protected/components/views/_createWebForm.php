@@ -52,9 +52,6 @@ if (YII_DEBUG &&
 }
 
 
-Yii::app()->clientScript->registerScriptFile(
-    Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
-
 
     $height = 325;
 
@@ -234,6 +231,33 @@ Yii::app()->clientScript->registerScript('webleadForm','
     </div>
 
 </div>
+
+<?php
+if ($webFormType === 'weblead') {
+?>
+<div class='row'>
+    <div class="cell">
+        <label class='left-label' 
+         for='generateLead'><?php echo Yii::t('app', 'Generate Lead: '); ?></label>
+        <input id='generate-lead-checkbox' type='checkbox'  name='generateLead'>
+        <?php
+        echo X2Html::hint (
+            Yii::t('app', 'If you have this box checked, a new lead record will associated with '.
+                'the new contact when the web lead form is submitted. The web lead form must be '.
+                'saved for this feature to take effect.'), false, null, true);
+        ?>
+        <div id='generate-lead-form' style='display: none;'>
+        <?php
+        echo CHtml::activeLabel (X2Model::model ('Contacts'), 'leadSource');
+        echo X2Model::model ('X2Leads')->renderInput (
+            'leadSource', array ('class' => 'left-label'));
+        ?>
+        </div>
+    </div>
+</div>
+<?php
+}
+?>
 
 <div class="row">
     <div id="settings" class="cell">

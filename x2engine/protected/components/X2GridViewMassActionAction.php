@@ -78,23 +78,46 @@ class X2GridViewMassActionAction extends CAction {
      * Delete selected records
      */
     private function deleteSelected ($gvSelection) {
+        if (!isset ($_POST['modelType'])) {
+
+            throw new CHttpException (400, Yii::t('app', 'Bad request.'));
+            return;
+        }
         $_GET['ajax'] = true; // prevent controller delete action from redirecting
+
         $updatedRecordsNum = sizeof ($gvSelection);
         $unauthorized = 0;
+        $failed = 0;
         foreach ($gvSelection as $recordId) {
-            if(!ctype_digit((string) $recordId))
-                throw new CHttpException(400, Yii::t('app', 'Invalid selection.'));
-            try{
-                if($this->controller->beforeAction('delete'))
-                    $this->controller->actionDelete ($recordId);
-            }catch(CHttpException $e){
-                if($e->statusCode==403)
-                    $unauthorized++;
-                else
-                    throw $e;
+
+            // controller action permissions only work for the module's main model
+            if (X2Model::getModelName (Yii::app()->controller->module->name) === 
+                $_POST['modelType']) {
+
+                if(!ctype_digit((string) $recordId))
+                    throw new CHttpException(400, Yii::t('app', 'Invalid selection.'));
+                try{
+                    if($this->controller->beforeAction('delete'))
+                        $this->controller->actionDelete ($recordId);
+                }catch(CHttpException $e){
+                    if($e->statusCode==403)
+                        $unauthorized++;
+                    else
+                        throw $e;
+                }
+            } else if (Yii::app()->params->isAdmin) {
+                // at the time of implementing this, the only model types that this applies to
+                // are AnonContact and Fingerprint, both of which can only be deleted by admin users
+
+                $model = X2Model::model ($_POST['modelType']);
+                if ($model) {
+                    $model->deleteAllByAttributes (array ('id' => $recordId));
+                }
+            } else {
+                $unauthorized++;
             }
         }
-        $updatedRecordsNum = $updatedRecordsNum - $unauthorized;
+        $updatedRecordsNum = $updatedRecordsNum - $unauthorized - $failed;
         self::$successFlashes[] = Yii::t(
             'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
             ' deleted', array('{updatedRecordsNum}' => $updatedRecordsNum)
@@ -104,8 +127,7 @@ class X2GridViewMassActionAction extends CAction {
                 'app', 'You were not authorized to delete {unauthorized} record'.
                 ($unauthorized === 1 ? '' : 's'), array('{unauthorized}' => $unauthorized)
             );
-        }
-
+        } 
 
     }
 
@@ -192,12 +214,13 @@ class X2GridViewMassActionAction extends CAction {
             $model->setX2Fields($fields);
 
             if (!$model->save()) {
-                $errorMsg = $model->getErrors();
-                self::$noticeFlashes[] = Yii::t(
-                    'app', 'Record {recordId} could not be updated'.
-                        ($errorMsg ? (': '.$errorMsg) : ''),
-                    array ('{recordId}' => $recordId)
-                );
+                $errors = $model->getAllErrorMessages();
+                foreach ($errors as $err) {
+                    self::$noticeFlashes[] = Yii::t(
+                        'app', 'Record {recordId} could not be updated: '.$err,
+                        array ('{recordId}' => $recordId)
+                    );
+                }
                 continue;
             }
             $updatedRecordsNum++;

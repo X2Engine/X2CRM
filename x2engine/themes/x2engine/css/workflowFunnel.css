@@ -103,7 +103,7 @@ div.workflow-funnel-stage {
 }
 
 @media (max-width: 434px) {
-    .workflow-status .workflow-status-string {
+    #funnel-container .workflow-status-string {
         display: none;
     }
 }

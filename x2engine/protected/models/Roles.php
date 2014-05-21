@@ -92,7 +92,7 @@ class Roles extends CActiveRecord {
                 'not'=>true,
                 'pattern'=> '/^('.implode('|',array_map(function($n){return preg_quote($n);},self::getAuthNames())).')/i',
                 'message'=>Yii::t('admin','The name you entered is reserved or belongs to the system.')),
-                        array('timeout', 'numerical', 'integerOnly' => true),
+            array('timeout', 'numerical', 'integerOnly' => true, 'min' => 5),
 			array('users', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -154,11 +154,13 @@ class Roles extends CActiveRecord {
         Yii::app()->cache->delete (self::getUserCacheVar ($userId));
     }
 
-	/* Looks up roles held by the specified user.
+	/**
+     * Determines roles of the specified user, including group-inherited roles.
+     *
 	 * Uses cache to lookup/store roles.
 	 *
-	 * @param Integer $userId user to look up roles for
-	 * @param Boolean $cache whether to use cache
+	 * @param integer $userId user to look up roles for
+	 * @param boolean $cache whether to use cache
 	 * @return Array array of roleIds
 	 */
 	public static function getUserRoles($userId,$cache=true) {
@@ -201,6 +203,7 @@ class Roles extends CActiveRecord {
         $cacheVar = 'user_roles_timeout'.$userId;
         if($cache === true && ($timeout = Yii::app()->cache->get($cacheVar)) !== false)
             return $timeout;
+
 
         $userRoles = Roles::getUserRoles($userId);
         $availableTimeouts = array();

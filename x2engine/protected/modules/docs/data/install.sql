@@ -5,7 +5,9 @@ CREATE TABLE `x2_docs` (
     name            VARCHAR(100) NOT NULL,
     nameId          VARCHAR(250) DEFAULT NULL,
     subject         VARCHAR(255),
+    emailTo         TEXT, 
     type            VARCHAR(10) NOT NULL DEFAULT '',
+    associationType VARCHAR(250) DEFAULT NULL,
     text            LONGTEXT NOT NULL,
     createdBy       VARCHAR(60) DEFAULT NULL,
     createDate      BIGINT,
@@ -19,7 +21,7 @@ CREATE TABLE `x2_docs` (
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES
-('docs', 'Docs', 1, 7, 0, 0, 0, 0, 0);
+('docs', 'Docs', 1, 9, 0, 0, 0, 0, 0);
 /*&*/
 INSERT INTO `x2_fields`
 (`modelName`, `fieldName`, `attributeLabel`, `modified`, `custom`, `type`, `required`, `readOnly`, `linkType`, `searchable`, `relevance`, `isVirtual`,`keyType`)
@@ -32,7 +34,9 @@ VALUES
 ('Docs', 'name',            'Name',             0, 0, 'varchar',    1, 0, NULL,   0, NULL, 0, NULL),
 ('Docs', 'nameId',          'NameID',           0, 0, 'varchar',    0, 1, NULL,   0, NULL, 0, 'FIX'),
 ('Docs', 'subject',         'Subject',          0, 0, 'varchar',    0, 0, NULL,   0, NULL, 0, NULL),
+('Docs', 'emailTo',         'To:',              0, 0, 'text',       0, 0, NULL,   0, NULL, 0, NULL),
 ('Docs', 'text',            'Body',             0, 0, 'text',       1, 0, NULL,   0, NULL, 0, NULL),
 ('Docs', 'type',            'Type',             0, 0, 'varchar',    0, 0, NULL,   0, NULL, 0, NULL),
+('Docs', 'associationType', 'Record Type',      0, 0, 'varchar',    0, 0, NULL,   0, NULL, 0, NULL),
 ('Docs', 'updatedBy',       'Updated By',       0, 0, 'assignment', 0, 1, NULL,   0, NULL, 0, NULL),
 ('Docs', 'visibility',      'Visibility',       0, 0, 'visibility', 0, 0, NULL,   0, NULL, 0, NULL);

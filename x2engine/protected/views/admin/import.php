@@ -37,7 +37,8 @@
 <div class="page-title"><h2><?php echo Yii::t('admin','Import Data from Template'); ?></h2></div>
 <div class='admin-form-container'>
 <div class="form">
-<?php echo Yii::t('admin','To import your data a CSV file, please  upload the file here using the form below.'); ?>
+<?php echo Yii::t('admin','To import your data a CSV file, please upload the file here using the form below.').
+        ' '.Yii::t('admin','Please note, this installation of X2Engine must have all the same fields as the source data.'); ?>
 <br><br>
 <?php echo Yii::t('admin','This import has a very specific style of data formatting required to be used. To get a better example of the formatting, export a set of data and look at how it is formatted.  A brief description is also provided here.'); ?>
 <br><br>

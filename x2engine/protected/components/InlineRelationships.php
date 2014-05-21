@@ -68,19 +68,17 @@ class InlineRelationships extends X2Widget {
         } 
         $actionAccess = ucfirst($moduleName).'Update';
         $authItem = Yii::app()->authManager->getAuthItem($actionAccess);
-        $params = array ();
-        if ($this->model->hasAttribute ('assignedTo')) {
-            $params['assignedTo'] = $this->model->assignedTo;
-        }
-        return (!isset($authItem) || Yii::app()->user->checkAccess($actionAccess, $params));
+        return (!isset($authItem) || Yii::app()->user->checkAccess($actionAccess, array(
+            'X2Model' => $this->model
+        )));
     }
 
 	public function run(){
-        $linkableModels = Modules::getNamesOfModelsOfModules ();
+        $linkableModels = X2Model::getModelTypesWhichSupportRelationships(true);
 
         // used to instantiate html dropdown
-        $linkableModelsOptions = array_flip ($linkableModels);
-        array_walk ($linkableModelsOptions, function (&$val, $key) { $val = $key; });
+        $linkableModelsOptions = $linkableModels;
+        //array_walk ($linkableModelsOptions, function (&$val, $key) { $val = $key; });
 
         $modelsWhichSupportQuickCreate = 
             QuickCreateRelationshipBehavior::getModelsWhichSupportQuickCreate ();
@@ -114,52 +112,6 @@ class InlineRelationships extends X2Widget {
 		));
 	}
 
-    /**
-     * @param string $modelClass the model class for which the autocomplete should be rendered
-     * @param bool $ajax if true, registered scripts are processed with ajaxRender
-     */
-    public static function renderModelAutocomplete ($modelClass, $ajax=false) {
-        if (!$modelClass::model ()->asa ('X2LinkableBehavior')) {
-
-            throw new CException (
-                Yii::t('app', 
-                    'Error: renderModelAutocomplete: $modelClass does not have '.
-                     'X2LinkableBehavior'));
-        }
-
-        if ($ajax) Yii::app()->clientScript->scriptMap['*.css'] = false;
-        
-        $renderWidget = function () use ($modelClass) {
-            Yii::app ()->controller->widget('zii.widgets.jui.CJuiAutoComplete', array(
-                'name'=>'',
-                'source' => Yii::app()->controller->createUrl(
-                    X2Model::model ($modelClass)->autoCompleteSource),
-                'value'=>Yii::t('app','Start typing to suggest...'),
-                'options' => array(
-                    'minLength' => '1',
-                    'select' => 
-                        'js:function (event, ui) {
-                            $(this).val(ui.item.value);
-                            $("#RelationshipModelId").val(ui.item.id);
-                            return false;
-                        }',
-                ),
-                'htmlOptions'=>array(
-                    'id'=>'second-name-autocomplete',
-                    'class'=>'relationships-add-autocomplete',
-                    'onfocus' => 'x2.forms.toggleText(this);',
-                    'onblur' => 'x2.forms.toggleText(this);',
-                    'style'=>'color:#aaa',
-                ),
-            ));
-        };
-
-        if ($ajax) {
-            X2Widget::ajaxRender ($renderWidget);
-        } else {
-            $renderWidget ();
-        }
-    }
 
 }
 

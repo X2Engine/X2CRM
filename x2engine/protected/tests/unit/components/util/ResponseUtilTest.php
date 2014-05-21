@@ -49,24 +49,7 @@ Yii::import('application.components.util.ResponseUtil');
 class ResponseUtilTest extends CURLTestCase {
 
     public function getHttp200Aliases(){
-        return array(
-            201,
-            204,
-            304,
-            400,
-            401,
-            402,
-            403,
-            404,
-            405,
-            410,
-            415,
-            422,
-            429,
-            500,
-            501,
-            503,
-        );
+        return array_keys(ResponseUtil::getStatusMessages());
     }
 
     public static $scriptPath;
@@ -148,14 +131,14 @@ class ResponseUtilTest extends CURLTestCase {
         $response = json_decode(curl_exec($ch),1);
         $this->assertTrue(is_array($response));
         $this->assertFalse($response['error']);
-        $this->assertEquals($response['message'],'errFalse');
+        $this->assertEquals('errFalse', $response['message']);
         $this->assertResponseCodeIs(200, $ch);
         // With error:
         $ch = $this->getCurlHandle(array('{case}'=>'respond.errTrue'));
         $response = json_decode(curl_exec($ch),1);
         $this->assertTrue(is_array($response));
         $this->assertTrue($response['error']);
-        $this->assertEquals($response['message'],'errTrue');
+        $this->assertEquals('errTrue', $response['message']);
         $this->assertResponseCodeIs(400, $ch);
         // With extra attribute:
         $ch = $this->getCurlHandle(array('{case}'=>'respond.property'));
@@ -207,7 +190,7 @@ class ResponseUtilTest extends CURLTestCase {
         $ch = $this->getCurlHandle(array('{case}'=>'sendHttp.badCode'));
         $r = json_decode(curl_exec($ch),1);
         $this->assertResponseCodeIs(500,$ch);
-        $this->assertEquals('Internal server error: non-numeric HTTP response status code specifed.',$r['message']);
+        $this->assertEquals('Internal server error: invalid or non-numeric HTTP response status code specifed.',$r['message']);
         
         // Setting headers:
         $this->assertHasHeaders(array('{case}' => 'sendHttp.extraHeader'), array(
@@ -228,7 +211,10 @@ class ResponseUtilTest extends CURLTestCase {
     public function testSetProperties() {
         $r = $this->getResponseObject(array('{case}'=>'setProperties'));
         $this->assertEquals(array(
-            'foo'=>'bar','message'=>'ni','error' => false
+            'foo'=>'bar',
+            'message'=>'ni',
+            'error' => false,
+            'status' => 200
         ),$r);
         // array('foo'=>'bar','message'=>'ni')
     }

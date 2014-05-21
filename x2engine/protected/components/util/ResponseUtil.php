@@ -70,6 +70,15 @@ class ResponseUtil implements ArrayAccess {
      */
     public static $errorCode = 500;
 
+    /**
+     * Whether to include or ignore any unintentional output
+     *
+     * If false, any extra output generated within the scope of the response (i.e.
+     * error messages) will be excluded from the response altogether.
+     * @var boolean
+     */
+    public static $includeExtraneousOutput = false;
+
    /**
      * Shutdown method.
      *
@@ -128,23 +137,64 @@ class ResponseUtil implements ArrayAccess {
     private static $_response = null;
 
     private static $_statusMessages = array(
+        100 => 'Continue',
+        101 => 'Switching Protocols',
         200 => 'OK',
         201 => 'Created',
+        202 => 'Accepted',
+        203 => 'Non-Authoritative Information',
         204 => 'No content',
+        205 => 'Reset Content',
+        206 => 'Partial Content',
+        301 => 'Moved Permanently',
+        302 => 'Found',
+        303 => 'See Other',
         304 => 'Not Modified',
+        305 => 'Use Proxy',
+        307 => 'Temporary Redirect',
+        308 => 'Permanent Redirect',
         400 => 'Bad Request',
         401 => 'Unauthorized',
         402 => 'Payment Required',
         403 => 'Forbidden',
         404 => 'Not Found',
         405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        407 => 'Proxy Authentication Required',
+        408 => 'Request Timeout',
+        409 => 'Conflict',
         410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Request Entity Too Large',
+        414 => 'Request-URI Too Long',
         415 => 'Unsupported Media Type', // Incorrect content type in request
+        416 => 'Requested Range Not Satisfiable',
+        417 => 'Expectation Failed',
+        418 => 'I\'m a teapot',
         422 => 'Unprocessable Entity', // Validation errors
+        423 => 'Locked',
+        424 => 'Failed Dependency',
+        425 => 'Unordered Collection',
+        426 => 'Upgrade Required',
         429 => 'Too Many Requests',
+        431 => 'Request Header Fields Too Large',
+        444 => 'No Response',
+        494 => 'Request Header Too Large',
+        495 => 'Cert Error',
+        497 => 'HTTP to HTTPS',
+        499 => 'Client Closed Request',
         500 => 'Internal Server Error',
         501 => 'Not Implemented',
         503 => 'Service Unavailable',
+        504 => 'Gateway Timeout',
+        505 => 'HTTP Version Not Supported',
+        506 => 'Variant Also Negotiates',
+        507 => 'Insufficient Storage',
+        508 => 'Loop Detected',
+        509 => 'Bandwidth Limit Exceeded',
+        510 => 'Not Extended',
+        511 => 'Network Authentication Required'
     );
     
     /**
@@ -198,12 +248,20 @@ class ResponseUtil implements ArrayAccess {
     }
 
     /**
+     * Returns the static array of status messages, i.e. for reference
+     * @return array
+     */
+    public static function getStatusMessages() {
+        return self::$_statusMessages;
+    }
+
+    /**
      * Returns true or false based on whether or not the current thread of PHP
      * is being run from the command line.
      * @return bool
      */
     public static function isCli(){
-        return (php_sapi_name() == 'cli');
+        return (empty($_SERVER['SERVER_NAME']) || php_sapi_name()==='cli');
     }
     /**
      * Universal, web-agnostic response function.
@@ -303,7 +361,7 @@ class ResponseUtil implements ArrayAccess {
      * @param integer $status
      * @return string
      */
-    private static function statusMessage($code){
+    public static function statusMessage($code){
         $codes = self::$_statusMessages;
         return isset($codes[$code]) ? $codes[$code] : '';
     }
@@ -386,27 +444,31 @@ class ResponseUtil implements ArrayAccess {
         // will soon be sent.
         $output = ob_get_clean();
         ob_end_clean();
+        $extraOutput = self::$includeExtraneousOutput && !empty($output);
 
         // Set the response content
         if($status !== null && !array_key_exists((integer) $status,self::$_statusMessages)){
             // Invalid call to this method. Fail noisily.
             $this->_status = self::$errorCode;
-            $body = '{"error":true,"message":"Internal server error: non-numeric HTTP response status code specifed."}';
+            $body = '{"error":true,"message":"Internal server error: invalid or '
+                    . 'non-numeric HTTP response status code specifed.","status":500}';
         } else if(!extension_loaded('json') || isset($this->body)) {
             // We might be doing something other than responding in JSON
             if(!isset($this->body)){
-                if($this->httpHeader['Content-Type'] == 'application/json'){
+                if(strpos($this->httpHeader['Content-Type'],'application/json')===0){
                     // JSON-format responding in use but not available
                     $this->_status = self::$errorCode;
-                    $body = '{"error":true,"message":"The JSON PHP extension is required, but this server lacks it."}';
+                    $body = '{"error":true,"message":"The JSON PHP extension is required,'
+                            . ' but this server lacks it.","status":'.$this->_status.'}';
                 } else {
                     // Simply echo the message if JSON isn't available.
-                    $body = $output.' '.$message;
+                    $body = ($extraOutput?($output.' '):'').$message;
                 }
             } else {
                 // The "body" property is in use, which overrides the standard
                 // way of responding with JSON-encoded properties
-                $body = $output.$this->body;
+                $body = ($extraOutput?($output.' '):'').$this->body;
+                $this->_status = $status;
             }
         } else {
             if($status != null) {
@@ -420,12 +482,16 @@ class ResponseUtil implements ArrayAccess {
             // Set universal response properties:
             if(empty($message) && !empty($response['message']))
                 $message = $response['message'];
-            $response['message'] = $message.(empty($output)
-                    ? ''
-                    : " Note, extraneous output was generated in the scope of this response: $output");
+            $response['message'] = $message.($extraOutput
+                    ? " Note, extraneous output was generated in the scope of this response: $output"
+                    : '');
             $response['error'] = $error === null
-                    ? !in_array($this->_status, array(200, 201, 204, 304))
+                    ? $this->_status >= 400
                     : (bool) $error;
+            // Include the status code in the envelope for clients that can't
+            // read HTTP headers:
+            $response['status'] = $this->_status;
+            // Compose the body of the response as a JSON-encoded object:
             $body = json_encode($response);
         }
 

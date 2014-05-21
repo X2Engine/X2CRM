@@ -176,7 +176,7 @@ fixed header disabled for mobile layout (should eventually be made sticky)
 
     .x2-gridview-mass-action-buttons .more-drop-down-list {
         position: absolute !important;
-        top: 74px;
+        /*top: 74px;*/
     }
 
 }

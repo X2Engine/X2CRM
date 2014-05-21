@@ -57,4 +57,52 @@
         }
     }
 
- }
+    /**
+     * Provides a way to add a '?' with a tooltip to show users how to use the app
+     * 
+     * @param type $text
+     * @param type $superScript
+     * @param type $id
+     * @param type $brackets
+     * @param type $encode
+     * @return type
+     */
+    public static function hint(
+        $text, $superScript = true, $id = null, $brackets = false, $encode = true){
+
+        $htmlOptions = array(
+            'class' => 'x2-hint x2-question-mark',
+            'title' => $encode ? htmlentities($text, ENT_QUOTES) : $text,
+        );
+        if($id !== null){
+            $htmlOptions['id'] = $id;
+        }
+        if($brackets){
+            $mark = '[?]';
+        }else{
+            $mark = '?';
+        }
+        /*return parent::image (Yii::app()->theme->getBaseUrl ().'/images/hint_icon.png',
+            $mark, $htmlOptions);*/
+        return parent::tag($superScript ? 'sup' : 'span', $htmlOptions, $mark);
+    }
+
+    /**
+     * Generates a settings button 
+     * @param string $alt the image alt
+     * @param array $htmlOptions options to be applied to the settings button
+     * @return string 
+     */
+    public static function settingsButton ($alt='', $htmlOptions) {
+        if (!isset ($htmlOptions['class'])) {
+            $htmlOptions['class'] = '';
+        }
+        $htmlOptions['class'] .= ' x2-settings-button';
+
+        return self::image(
+            Yii::app()->theme->baseUrl.'/images/widgets.png', $alt, 
+            $htmlOptions);
+    }
+
+
+}

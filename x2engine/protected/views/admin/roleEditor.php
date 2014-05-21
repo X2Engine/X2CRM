@@ -58,7 +58,8 @@ $selected=array();
 $unselected=array();
 $fields=Fields::model()->findAllBySql("SELECT * FROM x2_fields ORDER BY modelName ASC");
 foreach($fields as $field){
-        $unselected[$field->id]=$field->modelName." - ".$field->attributeLabel;
+    $unselected[$field->id] = 
+        X2Model::getModelTitle ($field->modelName)." - ".$field->attributeLabel;
 }
 $users=User::getNames();
 unset($users['']);

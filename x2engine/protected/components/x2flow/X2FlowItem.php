@@ -76,23 +76,26 @@ abstract class X2FlowItem extends CComponent {
     public function validateOptions(&$paramRules,&$params=null) {
         $configOptions = &$this->config['options'];
         // die(var_dump($configOptions));
-        foreach($paramRules['options'] as &$optRule) {    // loop through options defined in paramRules() and make sure they're all set in $config
+
+        // loop through options defined in paramRules() and make sure they're all set in $config
+        foreach($paramRules['options'] as &$optRule) {    
             if(!isset($optRule['name']))        // don't worry about unnamed params
                 continue;
             $optName = &$optRule['name'];
 
-            if(!isset($configOptions[$optName])) {  // each option must be present in $this->config and $params
+            // each option must be present in $this->config and $params
+            if(!isset($configOptions[$optName])) {  
                 continue;                            // but just ignore them for future proofing
             }
-
-            // if($params !== null && !isset($params[$optName]))    // if params are provided, check them for this option name
+            // if params are provided, check them for this option name
+            // if($params !== null && !isset($params[$optName]))    
                 // return false;
-            // this is disabled because it doesn't work if every option in $options doesn't correspond to a $param.
-            // the ultimate solution is to separate params and options completely. if a trigger/action is going to
-            // require params, it should define this separately. the reason for the way it is now is that you can
-            // set up an action with very little code. by assuming $params corresponds to $options, check() can
+            // this is disabled because it doesn't work if every option in $options doesn't 
+            // correspond to a $param. the ultimate solution is to separate params and options 
+            // completely. if a trigger/action is going to require params, it should define this 
+            // separately. the reason for the way it is now is that you can set up an action with 
+            // very little code. by assuming $params corresponds to $options, check() can
             // treat each option like a condition and compare it to the param.
-
 
             $option = &$configOptions[$optName];
             // set optional flag
@@ -103,10 +106,13 @@ abstract class X2FlowItem extends CComponent {
             if(isset($optRule['type']))
                 $option['type'] = $optRule['type'];
             // if there's an operator setting, it must be valid
-            if(isset($optRule['operator']) && !in_array($optRule['operators'],$configOptions['operator']))
+            if(isset($optRule['operator']) && 
+               !in_array($optRule['operators'],$configOptions['operator'])) {
+
                 return array (
                     false,
                     Yii::t('studio', 'Flow item validation error'));
+            }
 
             // value must not be empty, unless it's an optional setting
             if(!isset($option['value']) || $option['value'] === null || $option['value'] === '') {
@@ -114,9 +120,15 @@ abstract class X2FlowItem extends CComponent {
                     $option[$optName] = $optRule['defaultVal'];
                 } elseif(!$option['optional']) {
                     // if not, fail if it was required
-                    return array (
-                        false,
-                        Yii::t('studio', 'Required flow item input missing'));
+                    if (YII_DEBUG)
+                        return array ( false,
+                            Yii::t('studio', 
+                                'Required flow item input missing: {optName} was left blank.',
+                                array ('{optName}' => $optName)));
+                    else
+                        return array (
+                            false,
+                            Yii::t('studio', 'Required flow item input missing'));
                 }
             }
         }
@@ -167,18 +179,6 @@ abstract class X2FlowItem extends CComponent {
     }
 
     /**
-     * Reformats and translates dropdown arrays to preserve sorting in {@link CJSON::encode()}
-     * @param array an associative array of dropdown options ($value => $label)
-     * @return array a 2-D array of values and labels
-     */
-    public static function dropdownForJson($options) {
-        $dropdownData = array();
-        foreach($options as $value => &$label)
-            $dropdownData[] = array($value,$label);
-        return $dropdownData;
-    }
-
-    /**
      * Calculates a time offset from a number and a unit
      * @param int $time the number of time units to add
      * @param string $unit the unit of time
@@ -201,8 +201,10 @@ abstract class X2FlowItem extends CComponent {
         }
     }
 
-    /*
-     *
+    /**
+     * @param string $name the name of the option
+     * @param array $params the parameters passed to trigger ()
+     * @return mixed null if the option was not set by the user, the parsed value otherwise
      */
     public function parseOption($name,&$params) {
         $options = &$this->config['options'];

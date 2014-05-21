@@ -40,11 +40,14 @@ Yii::app()->clientScript->registerCss('recordViewCss',"
     border: none !important;
 }
 ");
+Yii::app()->clientScript->registerResponsiveCssFile(
+    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
+
 
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relationships.js');
 
-$authParams['assignedTo']=$model->assignedTo;
+$authParams['X2Model']=$model;
 $menuItems = array(
 	array('label'=>Yii::t('accounts','All Accounts'), 'url'=>array('index')),
 	array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
@@ -52,6 +55,9 @@ $menuItems = array(
 	array('label'=>Yii::t('accounts','Edit Account'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Share Account'),'url'=>array('shareAccount','id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+    array(
+        'label' => Yii::t('app', 'Send Email'), 'url' => '#',
+        'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
     array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
 //	array('label'=>Yii::t('quotes','Quotes/Invoices'),'url'=>'javascript:void(0)','linkOptions'=>array('onclick'=>'x2.inlineQuotes.toggle(); return false;')),
@@ -129,7 +135,7 @@ $this->widget('InlineEmailForm',
 			'modelName'=>'Accounts',
 			'modelId'=>$model->id,
 		),
-		'templateType' => 'accountEmail',
+		'templateType' => 'email',
 		'insertableAttributes' => 
             array(Yii::t('accounts','Account Attributes')=>$model->getEmailInsertableAttrs ()),
 		'startHidden'=>true,
@@ -180,6 +186,6 @@ $this->widget('History',array('associationType'=>'accounts','associationId'=>$mo
 ?>
 </div>
 
-<?php $this->widget('CStarRating',array('name'=>'rating-js-fix', 'htmlOptions'=>array('style'=>'display:none;'))); ?>
+<?php //$this->widget('CStarRating',array('name'=>'rating-js-fix', 'htmlOptions'=>array('style'=>'display:none;'))); ?>
 
 

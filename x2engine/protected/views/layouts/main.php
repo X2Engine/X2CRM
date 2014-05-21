@@ -226,6 +226,16 @@ foreach($modules as $moduleItem){
 $defaultAction = 'index';
 
 foreach($standardMenuItems as $key => $value){
+    if ($key === 'x2Activity' && !$isGuest) {
+        $menuItems[$key] = array(
+            'label' => Yii::t('app', $value), 
+            'itemOptions' => array ('class' => 'top-bar-module-link'),
+            'url' => array("/profile/activity"),
+            'active' => (strtolower($module) == strtolower($key)) ? true : null);
+        continue;
+    }
+
+
     $file = Yii::app()->file->set('protected/controllers/'.ucfirst($key).'Controller.php');
     $action = ucfirst($key).ucfirst($defaultAction);
     $authItem = $auth->getAuthItem($action);
@@ -275,14 +285,15 @@ if($menuItemCount > $maxMenuItems){
 }
 
 //add "More" to main menu
+if(!$isGuest) {
 $menuItems[] = array(
-    'label' => Yii::t('app', 'More'), 
-    // the more menu should display all items hidden in the main menu
-    'items' => $menuItems,
-    'itemOptions' => array(
-        'id' => 'more-menu',
-        'class' => 'dropdown'));
-
+        'label' => Yii::t('app', 'More'),
+        // the more menu should display all items hidden in the main menu
+        'items' => $menuItems,
+        'itemOptions' => array(
+            'id' => 'more-menu',
+            'class' => 'dropdown'));
+}
 /*
 // commented out since default logo size is different than display size
 
@@ -407,31 +418,30 @@ $userMenuItems = array(
 );
 
 
-
-$userMenu2 = array (
-    array('label' => CHtml::link(
-        '<span>'.$notifCount.'</span>', '#', 
-        array('id' => 'main-menu-notif', 'style' => 'z-index:999;')),
-        'itemOptions' => array('class' => 'special')),
-    array('label' => CHtml::link(
-        '<span>&nbsp;</span>', '#', array('class' => 'x2-button', 'id' => 'fullscreen-button')),
-        'itemOptions' => array('class' => 'search-bar special')),
-    array('label' => CHtml::link('<div class="widget-icon"></div>', '#', array(
-            'id' => 'widget-button',
-            'class' => 'x2-button',
-            'title' => 'hidden widgets'
-        )).$widgetMenu,
-        'itemOptions' => array('class' => 'search-bar special'
-    )),
-    array(
-        'label' => CHtml::image(
-            $avatar, '', array('height' => 25, 'width' => 25)).Yii::app()->user->getName(),
-        'itemOptions' => array(
-            'id' => 'profile-dropdown', 'class' => 'dropdown'),
-        'items' => $userMenuItems
-    ),
-);
-
+if(!$isGuest){
+    $userMenu2 = array(
+        array('label' => CHtml::link(
+                    '<span>'.$notifCount.'</span>', '#', array('id' => 'main-menu-notif', 'style' => 'z-index:999;')),
+            'itemOptions' => array('class' => 'special')),
+        array('label' => CHtml::link(
+                    '<span>&nbsp;</span>', '#', array('class' => 'x2-button', 'id' => 'fullscreen-button')),
+            'itemOptions' => array('class' => 'search-bar special')),
+        array('label' => CHtml::link('<div class="widget-icon"></div>', '#', array(
+                'id' => 'widget-button',
+                'class' => 'x2-button',
+                'title' => 'hidden widgets'
+            )).$widgetMenu,
+            'itemOptions' => array('class' => 'search-bar special'
+            )),
+        array(
+            'label' => CHtml::image(
+                    $avatar, '', array('height' => 25, 'width' => 25)).Yii::app()->getSuModel()->getAlias(),
+            'itemOptions' => array(
+                'id' => 'profile-dropdown', 'class' => 'dropdown'),
+            'items' => $userMenuItems
+        ),
+    );
+}
 ?><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo Yii::app()->language; ?>" lang="<?php echo Yii::app()->language; ?>">
 
@@ -506,8 +516,11 @@ if (RESPONSIVE_LAYOUT) {
                     <div class='x2-bar'></div>
                     <div class='x2-bar'></div>
                 </div>
-                <a href="<?php echo $this->createUrl (
-                    '/profile/view', array ('id' => Yii::app()->user->getId())); ?>" 
+                <a href="<?php echo $isGuest
+                        ? $this->createUrl('/site/login')
+                        : $this->createUrl ('/profile/view', array (
+                            'id' => Yii::app()->user->getId()
+                        )); ?>"
                  id='search-bar-title' class='special'>
                 <?php
                 echo CHtml::image(

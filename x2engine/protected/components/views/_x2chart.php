@@ -176,7 +176,7 @@ Yii::app()->clientScript->registerScript(
 <div id="<?php echo $chartType; ?>-chart-container" class="chart-container form" 
  <?php echo ($hideByDefault ? 'style="display: none;"' : ''); ?>>
 
-    <div class='chart-controls-container widget-settings-menu-content'>
+    <div class='chart-controls-container widget-settings-menu-content' style='display: none;'>
 
     <?php
     if ($chartType === 'eventsChart') {
@@ -330,7 +330,7 @@ Yii::app()->clientScript->registerScript(
             if (!$suppressDateRangeSelector) {
             ?>
             <select id="<?php echo $chartType; ?>-date-range-selector"
-             class="date-range-selector x2-minimal-select">
+             class="date-range-selector x2-select">
                  <option value="Custom"><?php echo Yii::t('app', 'Custom'); ?></option>
                  <option value="Today"><?php echo Yii::t('app', 'Today'); ?></option>
                  <option value="Yesterday"><?php echo Yii::t('app', 'Yesterday'); ?></option>
@@ -364,7 +364,7 @@ Yii::app()->clientScript->registerScript(
          title='<?php echo Yii::t('app', 'Delete predefined chart setting'); ?>'>
             [x]
         </a>
-        <select id="<?php echo $chartType; ?>-predefined-settings" class="x2-minimal-select predefined-settings right">
+        <select id="<?php echo $chartType; ?>-predefined-settings" class="x2-select predefined-settings right">
             <option value="" id="<?php echo $chartType; ?>-custom-settings-option" 
              class="custom-settings-option">
                 <?php echo Yii::t('app', 'Custom'); ?>
@@ -422,7 +422,8 @@ Yii::app()->clientScript->registerScript(
 if (!$suppressChartSettings) {
 ?>
 
-<div id="<?php echo $chartType; ?>-create-chart-setting-dialog" class="create-chart-setting-dialog">
+<div id="<?php echo $chartType; ?>-create-chart-setting-dialog" 
+ class="create-chart-setting-dialog" style='display: none;'>
     <div class='chart-setting-name-input-container'>
         <span class='left'> <?php echo Yii::t('app', 'Setting Name'); ?>: </span>
         <input id="<?php echo $chartType; ?>-chart-setting-name" class="chart-setting-name"> </input>
