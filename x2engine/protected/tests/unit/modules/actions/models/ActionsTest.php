@@ -210,7 +210,7 @@ class ActionsTest extends CDbTestCase {
     }
 
     public function testChangeCompleteState () {
-        TestingAuxLib::login ('admin', 'admin');
+        TestingAuxLib::suLogin ('admin');
         VERBOSE_MODE && print (Yii::app()->user->name ."\n");
         VERBOSE_MODE && print ((int) Yii::app()->params->isAdmin);
         VERBOSE_MODE && print ("\n");

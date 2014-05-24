@@ -99,6 +99,9 @@ class CreateWebFormAction extends CAction {
 
             if (isset ($_POST['generateLead']) && isset ($_POST['leadSource'])) {
                 $model->leadSource = $_POST['leadSource'];
+                $model->generateLead = 1;
+            } else {
+                $model->generateLead = 0;
             }
 
             

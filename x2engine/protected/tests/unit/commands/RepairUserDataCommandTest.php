@@ -74,10 +74,11 @@ class RepairUserDataCommandTest extends CDbTestCase {
      * data.
      */
     public function testCommand () {
+        $this->assertTrue(YII_UNIT_TESTING,'YII_UNIT_TESTING must be set to TRUE for this test to run properly.');
         $user = $this->users ('testUser');
         Yii::app()->db->createCommand (
             'delete from x2_users where username="testUser"'
-        );
+        )->execute();
 
         /*
         actions reassignment
@@ -124,7 +125,15 @@ class RepairUserDataCommandTest extends CDbTestCase {
 
         $return_var;
         $output = array ();
-        VERBOSE_MODE && println (exec ("../yiic repairuserdata repair --username='testUser'", $return_var, $output));
+        $command = Yii::app()->basePath."/yiic repairuserdata repair --username='testUser'";
+        if(VERBOSE_MODE)
+            println("Running $command...");
+        ob_start();
+        println (exec ($command, $return_var, $output));
+        if(VERBOSE_MODE)
+            ob_end_flush();
+        else
+            ob_end_clean();
         VERBOSE_MODE && println ($output);
         VERBOSE_MODE && print_r ($return_var);
 

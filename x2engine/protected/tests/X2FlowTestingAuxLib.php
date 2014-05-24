@@ -45,6 +45,35 @@ Yii::import('application.components.x2flow.triggers.*');
 class X2FlowTestingAuxLib {
 
     /**
+     * Clears all trigger logs
+     */
+    public function clearLogs () {
+        Yii::app()->db->createCommand ('delete from x2_trigger_logs where 1=1')
+            ->execute ();
+        $count = Yii::app()->db->createCommand (
+            'select count(*) from x2_trigger_logs
+             where 1=1')
+             ->queryScalar ();
+        $this->assertTrue ($count === '0');
+    }
+
+    /**
+     * Returns trace of log for specified flow 
+     * @return null|array
+     */
+    public function getTraceByFlowId ($flowId) {
+        $log = TriggerLog::model()->findByAttributes (array (
+            'flowId' => $flowId,
+        ));
+        if ($log) {
+            $decodedLog = CJSON::decode ($log->triggerLog);
+            return $decodedLog[1];
+        } else {
+            return $log;
+        }
+    }
+
+    /**
      * Decodes flow from flow fixture record. 
      * @param X2DbTestCase $context
      * @param string $rowAlias The row within the fixture to get

@@ -496,9 +496,9 @@ $curl = ($requirements['extensions']['curl']=extension_loaded("curl")) && functi
 if(!$curl){
 	$curlMissingIssues = array(
 		installer_t('Time zone widget will not work'),
-		installer_t('Contact views may be inaccessible'),
 		installer_t('Google integration will not work'),
-		installer_t('Built-in error reporter will not work')
+		installer_t('Built-in error reporter will not work'),
+		installer_t('API web hooks (and thus, Zapier integration) will not work')
 	);
 	$reqMessages[2][] = '<a href="http://php.net/manual/book.curl.php">cURL</a>: '.$rbm.'. '.installer_t('This will result in the following issues:').'<ul><li>'.implode('</li><li>', $curlMissingIssues).'</li></ul>'.installer_t('Furthermore, please note: without this extension, the requirements check script could not check the outbound internet connection of this server.');
 }

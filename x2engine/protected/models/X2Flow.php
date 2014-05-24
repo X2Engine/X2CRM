@@ -46,6 +46,7 @@
  * The followings are the available model relations:
  * @property FlowItems[] $flowItems
  * @property FlowParams[] $flowParams
+ * @package application.models
  */
 Yii::import('application.components.x2flow.X2FlowItem');
 Yii::import('application.components.x2flow.actions.*');
@@ -200,13 +201,10 @@ class X2Flow extends CActiveRecord {
            (!is_object($params['model']) || !($params['model'] instanceof X2Model))) {
             // Invalid model provided
             return false;
-        } else if(isset($params['model'])) {
-            // Payload data is the model
-            ApiHook::runAll($triggerName,$params['model']);
-        } else {
-            // Payload data is just the parameters
-            ApiHook::runAll($triggerName,$params);
         }
+        
+        // Communicate the event to third-party systems, if any
+        ApiHook::runAll($triggerName,$params);
 
         // increment stack depth before doing anything that might call X2Flow::trigger()
         self::$_triggerDepth++;

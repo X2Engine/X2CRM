@@ -48,8 +48,6 @@ Yii::import('application.components.util.*');
  */
 class GroupTest extends CDbTestCase {
 
-    const VERBOSE = 0;
-
     public $fixtures = array (
         'users' => 'User',
         'groups' => array ('Groups', '_1'),
@@ -65,7 +63,7 @@ class GroupTest extends CDbTestCase {
             $groupModel = Groups::model ()->findByAttributes ($val);
             $userIds = array_map (function ($a) { return $a['id']; }, $groupModel->users);
 
-            if(self::VERBOSE) {
+            if(VERBOSE_MODE) {
                 print ($groupModel->id."\n");
                 print_r ($userIds);
             }
@@ -96,7 +94,7 @@ class GroupTest extends CDbTestCase {
 
     public function testAfterDelete () {
         $group = Groups::model ()->findByPk ('1');
-        if (self::VERBOSE) {
+        if (VERBOSE_MODE) {
             print ('id of group to delete: ');
             print ($group->id);
         }

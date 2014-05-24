@@ -45,8 +45,6 @@ Yii::import('application.tests.X2TestCase');
  */
 class X2FlowItemTest extends X2DbTestCase {
 
-    const VERBOSE = 0;
-
     public $fixtures = array (
         'x2flow' => array ('X2Flow', '_1')
     );
@@ -55,7 +53,7 @@ class X2FlowItemTest extends X2DbTestCase {
         if(get_class($this) == 'X2FlowItemTest'){
             $flow = X2FlowTestingAuxLib::getFlow($this, 'flow1');
             $item = X2FlowItem::create($flow['trigger']);
-            if(self::VERBOSE) print ('testCreate: '.get_class($item));
+            if(VERBOSE_MODE) print ('testCreate: '.get_class($item));
             $this->assertTrue(get_class($item) === $flow['trigger']['type']);
         }
     }

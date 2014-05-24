@@ -74,11 +74,17 @@ abstract class X2WebTestCase extends CWebTestCase {
 	protected $screenshotUrl = null;
 	public $firstLogin = true;
 
+    public function waitForPageToLoad () {
+        $this->waitForCondition (
+            "window.document.readyState === 'complete'", 5000);
+    }
+
 	/**
 	 * Asserts that the correct user is logged in.
 	 */
 	public function assertCorrectUser() {
-		$this->assertElementPresent('css=#profile-dropdown > span:first-child');
+        $this->waitForCondition (
+            "window.document.querySelector ('#profile-dropdown > span:first-child')", 5000);
         $user = User::model ()->findByAttributes (array (
             'username' => $this->login['username'],
         ));
@@ -103,12 +109,13 @@ abstract class X2WebTestCase extends CWebTestCase {
 	 * Uses the current user credentials in {@link $login} to log into the web app.
 	 */
 	public function login() {
-		$this->openX2('/site/login');
+		$this->openX2('site/login');
 		foreach ($this->login as $fld => $val)
 			$this->type("name=LoginForm[$fld]", $val);
 		$this->clickAndWait("css=#signin-button");
 		// Finally, make sure the login succeeded
-        println ('login');
+        VERBOSE_MODE && println ('login');
+        $this->waitForPageToLoad ();
 		$this->assertCorrectUser();
 	}
 
@@ -218,6 +225,12 @@ abstract class X2WebTestCase extends CWebTestCase {
 		    $this->session();
         }
 	}
+
+    public function assertJSCondition ($jsCond, $expected) {
+        $this->storeEval ($jsCond, 'retVal');
+        $retVal = $this->getExpression ('${retVal}');
+        $this->assertEquals ($retVal, $expected);
+    }
 
 }
 

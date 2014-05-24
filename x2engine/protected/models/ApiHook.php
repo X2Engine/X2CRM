@@ -96,7 +96,8 @@ class ApiHook extends CActiveRecord {
     }
 
     /**
-     * Composes and returns a {@link CDbCriteria} property array for getting hooks
+     * Composes and returns a {@link CDbCriteria}-compatible property array for
+     * querying hooks for any given event.
      * 
      * Creates the criteria properties for fetching all hooks for a specified 
      * model name, event name and user ID.
@@ -111,8 +112,8 @@ class ApiHook extends CActiveRecord {
         $criteria = array(
             'condition' => "`t`.`event`=:event "
                 . "AND `t`.`userId`".($userId != X2_PRIMARY_ADMIN_ID
-                    ? " IN (".X2_PRIMARY_ADMIN_ID.",:userId)"
-                    : "=:userId"),
+                    ? " IN (".X2_PRIMARY_ADMIN_ID.",:userId)" // User hooks + system hooks
+                    : "=:userId"), // Admin's hooks (also apply system-wide)
             'params' => array(
                 ':event' => $event,
                 ':userId' => $userId
@@ -153,6 +154,11 @@ class ApiHook extends CActiveRecord {
         
         return $timeout;
     }
+
+    public function insert($attributes = null){
+        $this->createDate = time();
+        return parent::insert($attributes);
+    }
     
     /**
      * Validator for limiting the number of hooks on a given action.
@@ -179,8 +185,8 @@ class ApiHook extends CActiveRecord {
     public function rules() {
         return array(
             array('event','maxBatchSize'),
-            array('target_url','required'),
-            array('target_url','unique')
+            array('directPayload','boolean','allowEmpty'=>true),
+            array('target_url','required')
         );
     }
 
@@ -204,48 +210,34 @@ class ApiHook extends CActiveRecord {
      * @param integer $userId the ID of the acting user in running the API hook
      */
     public static function runAll($event,$output=null,$userId=null) {
-        $modelName = ($output instanceof X2Model)
-                ? get_class($output)
+        $modelName = (isset($output['model']) && $output['model'] instanceof X2Model)
+                ? get_class($output['model'])
                 : null;
         $userId = $userId === null
                 ? Yii::app()->getSuId()
-                : $userId;            
+                : $userId;
 
+        // Cache the current query and use the cached value if the number of
+        // records and last updated time haven't changed
+        $cacheDep = new CDbCacheDependency('SELECT MAX(`createDate`),COUNT(*) '
+                . 'FROM `'.self::model()->tableName().'`');
+        $hookCriteria = self::criteria($event, $modelName, $userId);
         return array_map(function($h)use($output){
             return $h->run($output);
-        },self::model()->findAll(self::criteria($event, $modelName, $userId)));
+        },self::model()->cache(86400,$cacheDep)->findAll($hookCriteria));
     }
 
     /**
      * Sends a request to pull data from X2Engine, or to delete/unsubscribe.
      *
      * @param string $method Request method to use
-     * @param mixed $data an explicit array to JSON-encode and send, or a model
-     *  that is an instance of {@link X2Model}. In the latter case, a resource
-     *  URL within the API will be sent.
+     * @param array $data an array to JSON-encode and send
      */
-    public function send($method,$data = null) {
-        // Determine the body of the request to send
-        if($data instanceof X2Model) {
-            // Send a resource URL for the remote end to retrieve
-            $payload = json_encode(array(
-                'resource_url' => Yii::app()->createExternalUrl('/api2/model',array(
-                    '_class' => get_class($data),
-                    '_id' => $data->id
-                ))
-            ));
-        } elseif(!is_object($data) && !is_resource($data)) {
-            // Just JSON-encode and directly send the payload
-            $output = $data;
-            if(is_array($output)) {
-                foreach(array_keys($output) as $i) { // models to attributes
-                    if($output[$i] instanceof CActiveRecord) {
-                        $output[$i] = $output[$i]->attributes;
-                    }
-                }
-            }
-            $payload = json_encode($output);
-        }
+    public function send($method,$data) {
+        if(!extension_loaded('curl'))
+            return;
+        // Compose the body of the request to send
+        $payload = json_encode($this->walkData($data));
 
         // Start a cURL session and configure the request
         $this->_ch = curl_init($this->target_url);
@@ -271,6 +263,54 @@ class ApiHook extends CActiveRecord {
 
     public function tableName() {
         return 'x2_api_hooks';
+    }
+
+    /**
+     * Recursively walk a payload variable, converting it appropriately to an
+     * array so that it can be JSON-encoded.
+     *
+     * @param type $payload The data to be converted to an array.
+     * @param type $key An array key at any level if the recursion depth is
+     *  nonzero; null otherwise.
+     * @return array If the key is not null, it will return a 2-element array
+     *  with its first element being the key (or a different one) and the second
+     *  the converted value; $key === null implies the first level of recursion
+     */
+    private function walkData($payload,$key=null){
+        switch(gettype($payload)){
+            case 'array':
+                $output = array();
+                foreach($payload as $nestedKey=>$value) {
+                    list($outKey,$outValue) = $this->walkData($value,$nestedKey);
+                    $output[$outKey] = $outValue;
+                }
+                return $key === null
+                        ? $output // Top level of recursion
+                        : array($key,$output); // A nested array at key $key
+            case 'object':
+                if($payload instanceof CActiveRecord){
+                    // Send a resource URL for the remote end to retrieve, if
+                    // if it's X2Model we're working with, or direct payload is
+                    // disabled. Otherwise, send the attributes directly.
+                    $direct = $this->directPayload || !($payload instanceof X2Model);
+                    $extraFields = $payload instanceof Actions
+                            ? array('actionDescription'=>$payload->getActionDescription())
+                            : array();
+                    return array(
+                        $direct ? $key : 'resource_url',
+                        $direct ? array_merge($payload->attributes,$extraFields)
+                                : Yii::app()->createExternalUrl('/api2/model', array(
+                                    '_class' => get_class($payload),
+                                    '_id' => $payload->id
+                    )));
+                } else {
+                    return array($key,'Object');
+                }
+            case 'resource':
+                return array($key,'Resource');
+            default:
+                return array($key,$payload);
+        }
     }
 
 }

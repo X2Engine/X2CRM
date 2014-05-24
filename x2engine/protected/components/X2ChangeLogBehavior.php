@@ -352,7 +352,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 					foreach($users as $user) {
 						$event=new Events;
 						$event->user=$user;
-						$event->associationType='Notifications';
+						$event->associationType='Notification';
 						$event->type='notif';
 
 						$notif = new Notification;
@@ -407,7 +407,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 						$event=new Events;
 						$event->type='notif';
 						$event->user=$model->assignedTo;
-						$event->associationType='Notifications';
+						$event->associationType='Notification';
 
 						$notif = new Notification;
 						$notif->user = $model->assignedTo;

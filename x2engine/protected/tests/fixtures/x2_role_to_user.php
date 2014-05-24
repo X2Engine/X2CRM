@@ -21,4 +21,9 @@ return array(
         'userId' => 3,
         'type' => 'user',
     ),
+    'overlordUserGroup' => array(
+        'roleId' => 3,
+        'userId' => 3,
+        'type' => 'group'
+    )
 );

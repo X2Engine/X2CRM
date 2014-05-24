@@ -103,6 +103,7 @@ class Events extends CActiveRecord {
                 break;
             case 'BugReports':
                 $model = 'bug report';
+                break;
             case 'X2Leads':
                 $model = 'lead';
                 break;
@@ -620,39 +621,6 @@ class Events extends CActiveRecord {
     }
 
     /**
-     * Run RBAC on events to see which ones the user truly has permission to view.
-     *
-     * @param array $events An array of event objects to test
-     * @param Profile $myProfile User profile associated with the viewer
-     * @return type
-     */
-    public static function permissionFilter($events,$userId) {
-        $displayedEvents = array();
-        foreach($events as $event) {
-            $associatedModel = $event->getAssociatedModel();
-            if($associatedModel instanceof X2Model) {
-                $accessItem = ucfirst($associatedModel->module).'View';
-                $authParam = array('X2Model'=>$associatedModel);
-                if(!Yii::app()->authManager->checkAccess($accessItem,$userId,$authParam))
-                    continue;
-                if($associatedModel instanceof Actions 
-                        && $associatedModel->associatedModel instanceof X2Model) {
-                    // Also check the model with which the action is associated
-                    $associatedModel = $associatedModel->getAssociatedModel();
-                    if($associatedModel instanceof X2Model){
-                        $accessItem = ucfirst($associatedModel->module).'View';
-                        $authParam = array('X2Model' => $associatedModel);
-                        if(!Yii::app()->authManager->checkAccess($accessItem, $userId, $authParam))
-                            continue;
-                    }
-                }
-            }
-            $displayedEvents[] = $event;
-        }
-        return $displayedEvents;
-    }
-
-    /**
      * Delete expired events (expiration defined by "Event Deletion Time" admin setting
      */
     public static function deleteOldEvents() {
@@ -977,7 +945,7 @@ class Events extends CActiveRecord {
         if (!Yii::app()->params->isAdmin && !Yii::app()->user->isGuest) {
             if (Yii::app()->settings->historyPrivacy == 'user') {
                 $visibilityCondition = ' AND (associationId=' . Yii::app()->user->getId() .
-                        ' OR `user`=' . $prefix . 'currUsername)';
+                        ' OR fuser`=' . $prefix . 'currUsername)';
             } elseif (Yii::app()->settings->historyPrivacy == 'group') {
                 $visibilityCondition = ' AND (`user` IN (' .
                         'SELECT DISTINCT b.username ' .
@@ -1022,8 +990,7 @@ class Events extends CActiveRecord {
         $parameters['params'] = $sqlParams;
         $criteria->scopes = array('findAll' => array($parameters));
         return array(
-            'events' => self::permissionFilter(X2Model::model('Events')->findAll($criteria),
-                    Yii::app()->getSuId())
+            'events' => X2Model::model('Events')->findAll($criteria),
         );
     }
 
@@ -1082,36 +1049,26 @@ class Events extends CActiveRecord {
                 $timeRange = 24 * 60 * 60;
                 break;
         }
-        $condition.= " AND timestamp BETWEEN ".(time() - $timeRange)." AND ".time();
+        $condition.= " AND timestamp BETWEEN " . (time() - $timeRange) . " AND " . time();
 
-        // Get event data
-        $events = new CActiveDataProvider('Events', array(
-            'criteria' => array(
-                'condition' => $condition,
-                'order' => 'timestamp DESC',
-                'limit' => $limit,
-                'params' => $params,
-            )
-        ));
-        $events = Events::permissionFilter($events->getData(), $userId);
-        $userNames = array_unique(array_map(function($e){return $e->user;},$events));
-        $eventTypes = array_unique(array_map(function($e){return $e->type;},$events));
-        $typeCount = array_fill_keys($eventTypes,0);
-        $userCount = array_fill_keys($userNames,0);
-        foreach($events as $event) {
-            $typeCount[$event->type]++;
-            $userCount[$event->user]++;
-        }
-        asort($typeCount);
-        asort($userCount);
-        $topTypes = array_slice($typeCount, 0, 5, true);
-        $topUsers = array_slice($userCount, 0, 5, true);
-        $topTypeNames = array_keys($topTypes);
-        $topUserNames = array_keys($topUsers);
-        $topTypeCount = array_values($topTypes);
-        $topUserCount = array_values($topUsers);
+        $topTypes = Yii::app()->db->createCommand()
+                ->select('type, COUNT(type)')
+                ->from('x2_events')
+                ->where($condition, $params)
+                ->group('type')
+                ->order('COUNT(type) DESC')
+                ->limit(5)
+                ->queryAll();
 
-        // Format the email
+        $topUsers = Yii::app()->db->createCommand()
+                ->select('user, COUNT(user)')
+                ->from('x2_events')
+                ->where($condition, $params)
+                ->group('user')
+                ->order('COUNT(user) DESC')
+                ->limit(5)
+                ->queryAll();
+
         $msg .= "<tr><td style='text-align:center;'>";
         $msg .= "<div>" . Yii::t('profile', "Here's your {range} update on what's been going on in X2Engine!", array(
                     '{range}' => Yii::t('profile', $range))) . "</div><br>"
@@ -1122,15 +1079,15 @@ class Events extends CActiveRecord {
         $msg .= "<tr><th>".Yii::t('profile',"Top Activity")."</th><th>".Yii::t('profile',"Top Users")."</th></tr>";
         for ($i = 0; $i < 5; $i++) {
             $msg .= "<tr><td style='text-align:center;'>";
-            if (isset($topTypeNames[$i])) {
-                $type = Events::parseType($topTypeNames[$i]);
-                $count = $topTypeCount[$i];
+            if (isset($topTypes[$i])) {
+                $type = Events::parseType($topTypes[$i]['type']);
+                $count = $topTypes[$i]['COUNT(type)'];
                 $msg .= $count . " " . $type;
             }
             $msg .= "</td><td style='text-align:center;'>";
-            if (isset($topUserNames[$i]) && $topUserCount[$i] > 0) {
-                $username = User::getUserLinks($topUserNames[$i], false, true);
-                $count = $topUserCount[$i];
+            if (isset($topUsers[$i]) && $topUsers[$i]['COUNT(user)'] > 0) {
+                $username = User::getUserLinks($topUsers[$i]['user'], false, true);
+                $count = $topUsers[$i]['COUNT(user)'];
                 $msg .= $count ." ". Yii::t('profile',"events from") ." ".$username . ".";
             }
             $msg .= "</td></tr>";
@@ -1142,8 +1099,16 @@ class Events extends CActiveRecord {
                 ."</td></tr>";
         $msg .= "</td></tr>";
         $msg .= "<tr><td style='text-align:center'><hr width='60%'><table><tbody>";
+        $events = new CActiveDataProvider('Events', array(
+            'criteria' => array(
+                'condition' => $condition,
+                'order' => 'timestamp DESC',
+                'limit' => $limit,
+                'params' => $params,
+            )
+        ));
 
-        foreach ($events as $event) {
+        foreach ($events->getData() as $event) {
             $msg .= "<tr>";
             $avatar = Yii::app()->db->createCommand()
                     ->select('avatar')
@@ -1236,17 +1201,6 @@ class Events extends CActiveRecord {
             'associationType' => Yii::t('admin', 'Association Type'),
             'associationId' => Yii::t('admin', 'Association ID'),
         );
-    }
-
-    /**
-     * Returns the active record object associated with the event, if applicable
-     * @return X2Model|boolean
-     */
-    public function getAssociatedModel() {
-        return !empty($this->associationType)
-               && ($staticModel = X2Model::model($this->associationType)) instanceof CActiveRecord
-                ? $staticModel->findByPk($this->associationId)
-                : false;
     }
 
 }

@@ -55,6 +55,11 @@
   * [1201](http://x2software.com/index.php/bugReports/1201): Unable to resolve the request "product/product/view".  
   * [1204](http://x2software.com/index.php/bugReports/1204): Cannot modify header information - headers already sent by (output started at /home3/bigmoney/public_html/knockoutmultimedia.co/crm/protected/controllers/ProfileController.php:516)  
   * [1223](http://x2software.com/index.php/bugReports/1223): Cannot modify header information - headers already sent by (output started at /home/inspirah/public_html/crm/protected/modules/actions/controllers/ActionsController.php:799)
+* Bugs fixed in 4.1.1:
+  * Lead conversion PHP error
+  * (Platinum Edition) "Raw Input" API settings option not saving properly
+  * "Linkable Behavior" + custom modules backwards incompatibility
+  * Web lead form not respecting when "Create Lead" option is disabled
 
 # 4.0.1 #
 3/31/2014

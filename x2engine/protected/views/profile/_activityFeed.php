@@ -290,7 +290,7 @@ $this->widget('zii.widgets.CListView', array(
                         'onRenderComplete'=>'js:function(){
                             x2.activityFeed.makePostsExpandable ();
                             if(x2.activityFeed.minimizeFeed){
-                                minimizePosts();
+                                x2.activityFeed.minimizePosts();
                             }
                             if(x2.activityFeed.commentFlag){
                                 $(".comment-link").click();
@@ -318,7 +318,7 @@ $this->widget('zii.widgets.CListView', array(
                         'onRenderComplete'=>'js:function(){
                             x2.activityFeed.makePostsExpandable ();
                             if(x2.activityFeed.minimizeFeed){
-                                minimizePosts();
+                                x2.activityFeed.minimizePosts();
                             }
                             if(x2.activityFeed.commentFlag){
                                 $(".comment-link").click();

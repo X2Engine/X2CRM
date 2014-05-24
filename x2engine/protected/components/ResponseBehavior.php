@@ -35,12 +35,25 @@ class ResponseBehavior extends CBehavior {
     public $handleExceptions = false;
 
 	private $_isConsole;
-    
+
+    /**
+     * These properties will be automatically "mirrored" in instances of this
+     * class. In other words, the setter method for this class will map the
+     * property to the similarly-named property in {@link ResponseUtil}.
+     * @var array
+     */
+    private static $_ruProperties = array(
+        'errorCode',
+        'exitNonFatal',
+        'longErrorTrace',
+        'shutdown'
+    );
+
     private $_logCategory = 'application';
 
     public function __construct(){
         // Establish a graceful shutdown method by default:
-        ResponseUtil::$shutdown = "Yii::app()->end();";
+        $this->ruProperty('shutdown',"Yii::app()->end();");
     }
 
     /**
@@ -49,12 +62,15 @@ class ResponseBehavior extends CBehavior {
      */
     public function attach($owner){
         parent::attach($owner);
-        ResponseUtil::$includeExtraneousOutput = YII_DEBUG;
+        $this->ruProperty('includeExtraneousOutput',YII_DEBUG);
         if($this->handleErrors) {
-            set_error_handler('ResponseUtil::respondWithError');
-            register_shutdown_function('ResponseUtil::respondFatalErrorMessage');
+            if(method_exists('ResponseUtil','respondWithError'))
+                set_error_handler('ResponseUtil::respondWithError');
+            if(method_exists('ResponseUtil','respondFatalErrorMessage'))
+                register_shutdown_function('ResponseUtil::respondFatalErrorMessage');
         }
-        if($this->handleExceptions) {
+        if($this->handleExceptions
+                && method_exists('ResponseUtil','respondWithException')) {
     		set_exception_handler('ResponseUtil::respondWithException');
         }
 
@@ -138,23 +154,38 @@ class ResponseBehavior extends CBehavior {
     // Setter Methods //
     ////////////////////
 
-
     /**
-     * Set the default error code in {@link ResponseUtil}
+     * Sets a named static property of {@link ResponseUtil}, if it exists.
+     *
+     * This is a means of hedging the behavior against backwards compatibility
+     * glitches of versions 3.5 - 3.7.5 wherein ResponseUtil was not declared
+     * as a dependency (despite how it was later) and thus not updated during
+     * self-refreshes.
+     *
+     * @param type $name
      * @param type $value
      */
-    public function setErrorCode($value) {
-        ResponseUtil::$errorCode = $value;
+    public function ruProperty($name,$value) {
+        if(property_exists('ResponseUtil',$name))
+            ResponseUtil::${$name} = $value;
     }
 
     /**
+     * Set the default error code in {@link ResponseUtil}
+     * @param integer $value
+     */
+    public function setErrorCode($value) {
+        $this->ruProperty('errorCode',(integer) $value);
+    }
+
+	/**
 	 * Sets {@link ResponseUtil::$exitNonFatal}
 	 * @return bool
 	 */
 	public function setExitNonFatal($value){
-		ResponseUtil::$exitNonFatal = (bool) $value;
+		$this->ruProperty('exitNonFatal',(bool) $value);
 	}
-    
+
 	/**
 	 * {@link isConsole}
 	 */
@@ -173,14 +204,12 @@ class ResponseBehavior extends CBehavior {
 	 * {@link longErrorTrace}
 	 */
 	public function setLongErrorTrace($value){
-		ResponseUtil::$longErrorTrace = (bool) $value;
-	}
+		$this->ruProperty('longErrorTrace',(bool) $value);
+    }
 
     public function setShutdown($value) {
-        ResponseUtil::$shutdown = (bool) $value;
+        $this->ruProperty('shutdown',(bool) $value);
     }
 }
-
-
 
 ?>

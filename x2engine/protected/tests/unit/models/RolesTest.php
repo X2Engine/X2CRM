@@ -45,7 +45,8 @@ class RolesTest extends X2DbTestCase {
         return array(
             'user' => 'User',
             'role' => 'Roles',
-            'roleToUser' => 'RoleToUser'
+            'roleToUser' => 'RoleToUser',
+            'groupToUser' => 'GroupToUser'
         );
     }
 
@@ -69,26 +70,35 @@ class RolesTest extends X2DbTestCase {
     }
 
     /**
-     * Ensure that upon deletion of roleToUser records, roles updates immediately (doesn't use an
-     * outdated cache entry)
+     * Ensure that upon deletion of roleToUser records, roles update immediately
+     * (do not use an outdated cache entry)
      */
     public function testGetUserRoles () {
-        Yii::app()->cache->flush();
         $userId = $this->user['testUser']['id'];
-        // print_r ($userId);
         $userRoles = Roles::getUserRoles ($userId);
 
-        // assert that user has roles
+        // Assert that user has roles
         $this->assertTrue (sizeof ($userRoles) > 0);
+        // Specifically, these (user groups only):
+        $this->assertEquals(array(
+            1,2
+        ),$userRoles);
+
+        // Test group-inherited user roles; fixture entry "testUser5" is a
+        // member of a group:
+        $userRoles = Roles::getUserRoles($this->user['testUser5']['id']);
+        $this->assertEquals(array(3),$userRoles);
 
         // Iterate over and remove records explicitly to raise the afterDelete event
-        $records = RoleToUser::model()->findAllByAttributes(array('userId'=>$userId));
+        $records = RoleToUser::model()->findAllByAttributes(array(
+            'userId'=>$userId,
+            'type'=>'user'));
         foreach ($records as $record) {
             $record->delete();
         }
         $userRoles = Roles::getUserRoles ($userId);
 
-        // assert that user has no roles 
+        // assert that user has no roles
         $this->assertTrue (sizeof ($userRoles) === 0);
     }
 }

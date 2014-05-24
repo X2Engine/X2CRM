@@ -111,7 +111,7 @@ Send post text to server via Ajax
 ActivityFeed.prototype.publishPostAndroid = function  () {
     var that = this;
     $.ajax({
-        url:"that.publishPost",
+        url:"publishPost",
         type:"POST",
         data:{
             "text":$("#Events_text").val(),
@@ -329,7 +329,7 @@ ActivityFeed.prototype.minimizePosts = function (){
             var text=element;
             var oldText=$(element).html();
             $.ajax({
-                url:"that.minimizePosts",
+                url:"minimizePosts",
                 type:"GET",
                 data:{"minimize":"minimize"},
                 success:function(){
@@ -350,7 +350,7 @@ ActivityFeed.prototype.restorePosts = function (){
     $('.items').find ('.event-text').each (function (index, element) {
         var text = element;
         $.ajax({
-            url:"that.minimizePosts",
+            url:"minimizePosts",
             type:"GET",
             data:{"minimize":"restore"},
             success:function(){
@@ -1160,8 +1160,8 @@ ActivityFeed.prototype.updateEventList = function  () {
         });
     });
 
-    var lastEventId=x2.activityFeed.lastEventId;
-    var lastTimestamp=x2.activityFeed.lastTimestamp;
+    var lastEventId=that.lastEventId;
+    var lastTimestamp=that.lastTimestamp;
     function updateFeed(){
         $.ajax({
             url:"getEvents",

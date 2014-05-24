@@ -313,15 +313,12 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
         if(!$this->assignmentAttr) // No way to determine assignment
             return true;
 
+        // User model corresponding to the specified username
         $user = $username === Yii::app()->getSuName()
                 ? Yii::app()->getSuModel()
                 : User::model ()->findByAttributes (array (
                     'username' => $username
                   ));
-
-        if (!($user instanceof User)) {
-            throw new CException (Yii::t('app', 'Invalid username'));
-        }
 
         $isAssignedTo = false;
         $assignees = explode(', ',$this->owner->getAttribute($this->assignmentAttr));
@@ -344,7 +341,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
         }
 
         // Check for group assignment:
-        if(!$isAssignedTo && !empty($groupIds)) {
+        if(!$isAssignedTo && !empty($groupIds) && $user instanceof User) {
             $userGroupsAssigned = array_intersect($groupIds,Groups::getUserGroups($user->id));
             if(!empty($userGroupsAssigned)) {
                 $isAssignedTo = true;

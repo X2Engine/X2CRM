@@ -40,12 +40,17 @@ $this->pageTitle = CHtml::encode (
 
 Yii::app()->clientScript->registerResponsiveCssFile(
     Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
-Yii::app()->clientScript->registerCss('recordViewCss',"
+Yii::app()->clientScript->registerCss('leadViewCss',"
 
 #content {
     background: none !important;
     border: none !important;
 }
+
+#conversion-warning-dialog ul {
+    padding-left: 25px !important;
+}
+
 ");
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relationships.js');
@@ -58,15 +63,71 @@ $menuItems = array(
 	array('label'=>Yii::t('x2Leads','Delete Lead'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
     array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
-    array('label' => Yii::t('x2Leads', 'Convert to Opportunity'), 'url' => array ('convertLead', 'id' => $model->id)),
+    array(
+        'label' => Yii::t('x2Leads', 'Convert to Opportunity'),
+        'url' => '#',
+        'linkOptions' => array ('id' => 'convert-lead-button'),
+    ),
 );
-$modelType = json_encode("x2Leads");
-$modelId = json_encode($model->id);
-Yii::app()->clientScript->registerScript('widgetShowData', "
+Yii::app()->clientScript->registerScript('leadsJS', "
+
+// widget data
 $(function() {
-	$('body').data('modelType', $modelType);
-	$('body').data('modelId', $modelId);
-});");
+	$('body').data('modelType', 'x2Leads');
+	$('body').data('modelId', $model->id);
+});
+
+(function () {
+
+    var conversionIncompatibilityWarnings = ".CJSON::encode ($conversionIncompatibilityWarnings).";
+
+    $('#convert-lead-button').click (function () {
+
+        // no incompatibilities present. convert the lead
+        if (!conversionIncompatibilityWarnings.length) {
+            window.location = '".$this->createUrl (
+                '/x2Leads/x2Leads/convertLead', array ('id' => $model->id))."';
+            return false;
+        }
+
+        if ($('#conversion-warning-dialog').closest ('.ui-dialog').length) {
+            $('#conversion-warning-dialog').dialog ('open');
+        } else {
+            // show the warning dialog to the user
+            $('#conversion-warning-dialog').dialog ({
+                title: '".Yii::t('x2Leads', 'Lead Conversion Warning')."',
+                autoOpen: true,
+                width: 500,
+                buttons: [
+                    {
+                        text: '".Yii::t('x2Leads', 'Convert Anyway')."',
+                        id: 'force-convert-button',
+                        click: function () {
+                            window.location = '".$this->createUrl (
+                                '/x2Leads/x2Leads/convertLead', array (
+                                'id' => $model->id,
+                                'force' => true,
+                            ))."';
+                        }
+                    },
+                    {
+                        text: '".Yii::t('x2Leads', 'Cancel')."',
+                        id: 'force-convert-button',
+                        click: function () {
+                            $('#conversion-warning-dialog').dialog ('close');
+                        }
+                    }
+                ]
+            });
+        }
+        return false;
+    });
+
+}) ();
+
+
+
+");
 
 $menuItems[] = array(
 	'label' => Yii::t('app', 'Print Record'), 
@@ -89,14 +150,25 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
     <div class="page-title-fixed-inner">
-<div class="page-title icon x2Leads">
+    <div class="page-title icon x2Leads">
 	<h2><span class="no-bold"><?php echo Yii::t('x2Leads','Leads:'); ?> </span><?php echo CHtml::encode($model->name); ?></h2>
 	<?php echo CHtml::link('<span></span>',array('update', 'id'=>$model->id),array('class'=>'x2-button icon edit right')); ?>
-</div>
-</div>
+    </div>
+    </div>
 </div>
 <div id="main-column" class="half-width">
 <?php
+
+if ($opportunity instanceof Opportunity) {
+    ?>
+    <div class='form'>
+    <?php
+    echo CHtml::errorSummary ($opportunity, Yii::t('x2Leads', 'Lead conversion failed.'));
+    ?>
+    </div>
+    <?php
+}
+
 $this->beginWidget('CActiveForm', array(
 	'id'=>'contacts-form',
 	'enableAjaxValidation'=>false,
@@ -144,6 +216,27 @@ $this->widget('Publisher',
 
 $this->widget('History',array('associationType'=>'x2Leads','associationId'=>$model->id));
 ?>
+</div>
+
+<div id='conversion-warning-dialog' style='display: none;' class='form'>
+    <p><?php 
+    echo Yii::t('x2Leads', 'Converting this lead to an opportunity could result in data from your'.
+        ' lead being lost. The following field incompatibilities have been detected: '); ?>
+    </p>
+    <ul class='errorSummary'>
+    <?php
+    foreach ($conversionIncompatibilityWarnings as $message) {
+        ?>
+        <li><?php echo $message ?></li>
+        <?php
+    }
+    ?>
+    </ul>
+    <p><?php 
+    echo Yii::t('x2Leads', 'To resolve these incompatibilities, make sure that every custom '.
+        'leads field has a corresponding opportunities custom field of the same name and type.');
+    ?>
+    </p>
 </div>
 
 <?php $this->widget('CStarRating',array('name'=>'rating-js-fix', 'htmlOptions'=>array('style'=>'display:none;'))); ?>

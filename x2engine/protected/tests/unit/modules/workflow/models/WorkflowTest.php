@@ -62,7 +62,7 @@ class WorkflowTest extends X2DbTestCase {
         // admin should have permissions for all stages
         $this->assertTrue (!in_array (0, $permissions));
 
-        $this->assertTrue (TestingAuxLib::login ('testuser', 'password'));
+        $this->assertTrue (TestingAuxLib::suLogin('testuser'));
         $status = Workflow::getWorkflowStatus ($workflow->id);
         $permissions = Workflow::getStagePermissions ($status);
         VERBOSE_MODE && print_r ($permissions);
@@ -70,7 +70,7 @@ class WorkflowTest extends X2DbTestCase {
         // testuser does not have permission for stage 4
         $this->assertFalse ($permissions[3]);
 
-        $this->assertTrue (TestingAuxLib::login ('admin', 'admin'));
+        $this->assertTrue (TestingAuxLib::suLogin ('admin'));
     }
 
     public function testCanUncomplete () {
@@ -84,7 +84,7 @@ class WorkflowTest extends X2DbTestCase {
         // admin user unaffected by backdate window
         $this->assertTrue ($success);
         
-        $this->assertTrue (TestingAuxLib::login ('testuser', 'password'));
+        $this->assertTrue (TestingAuxLib::suLogin ('testuser'));
 
         list ($success, $status) = Workflow::revertStage (
             $workflow->id, 4, $model);
@@ -92,7 +92,7 @@ class WorkflowTest extends X2DbTestCase {
         // can't revert because backdate window has passed
         $this->assertFalse ($success);
 
-        $this->assertTrue (TestingAuxLib::login ('admin', 'admin'));
+        $this->assertTrue (TestingAuxLib::suLogin ('admin'));
     }
 
     public function testMoveFromStageAToStageB () {
@@ -101,39 +101,39 @@ class WorkflowTest extends X2DbTestCase {
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 4, 5, $model, array ('4' => 'test comment'));
-        if (!$retVal[0]) println ($retVal[1]);
+        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 5, 1, $model);
-        if (!$retVal[0]) println ($retVal[1]);
+        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 1, 5, $model);
-        if (!$retVal[0]) println ($retVal[1]);
+        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
         // should fail since stage 4 requires a comment
         $this->assertFalse ($retVal[0]);
 
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 1, 4, $model);
-        if (!$retVal[0]) println ($retVal[1]);
+        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 4, 1, $model);
-        if (!$retVal[0]) println ($retVal[1]);
+        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
-        $this->assertTrue (TestingAuxLib::login ('testuser', 'password'));
+        $this->assertTrue (TestingAuxLib::suLogin ('testuser'));
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 1, 4, $model);
-        if (!$retVal[0]) println ($retVal[1]);
+        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
         // should fail since testuser doesn't have permission to go through stage 3
         $this->assertFalse ($retVal[0]);
 
-        $this->assertTrue (TestingAuxLib::login ('admin', 'admin'));
+        $this->assertTrue (TestingAuxLib::suLogin ('admin'));
     }
 
     public function testCompleteStage () {
@@ -145,7 +145,6 @@ class WorkflowTest extends X2DbTestCase {
 
         // failed to completed next stage because comment is required
         $this->assertFalse ($success);
-
         list ($success, $status) = Workflow::completeStage (
             $workflow->id, 4, $model, 'test comment');
 

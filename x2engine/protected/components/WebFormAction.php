@@ -155,7 +155,8 @@ class WebFormAction extends CAction {
                 
                 if($success){
 
-                    self::generateLead ($model, $extractedParams['leadSource']);
+                    if ($extractedParams['generateLead'])
+                        self::generateLead ($model, $extractedParams['leadSource']);
 
                     self::addTags ($model);
                     $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ? 
@@ -527,9 +528,12 @@ class WebFormAction extends CAction {
             $webForm = WebForm::model()->findByPk($_GET['webFormId']);
         } 
         $extractedParams['leadSource'] = null;
+        $extractedParams['generateLead'] = false;
         if (isset ($webForm)) { // new method
             if (!empty ($webForm->leadSource)) 
                 $extractedParams['leadSource'] = $webForm->leadSource;
+            if (!empty ($webForm->generateLead)) 
+                $extractedParams['generateLead'] = $webForm->generateLead;
         }
 
         

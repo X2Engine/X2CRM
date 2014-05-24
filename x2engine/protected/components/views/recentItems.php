@@ -84,6 +84,10 @@ foreach($recentItems as $item) {
             $link = '<strong>'.Yii::t('app', 'Doc').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
             echo CHtml::link($link,array('/docs/docs/view','id'=>$item['model']->id));
             break;
+        case 'l': // media object
+            $link = '<strong>'.Yii::t('app', 'Lead').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
+            echo CHtml::link($link,array('/x2Leads/x2Leads/view','id'=>$item['model']->id));
+            break;
         case 'm': // media object
             $link = '<strong>'.Yii::t('app', 'File').':<br/>'.CHtml::encode($item['model']->fileName).'</strong>';
             echo CHtml::link($link,array('/media/media/view','id'=>$item['model']->id));

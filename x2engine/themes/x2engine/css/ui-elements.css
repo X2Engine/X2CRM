@@ -243,6 +243,8 @@ input.active, .ui-dialog .ui-dialog-buttonpane button:active {
     box-shadow:             inset 0 1px 1px 0 #4A7500 !important;
 }
 
+
+.ui-dialog .ui-dialog-buttonpane button.urgent,
 a.x2-button.urgent, input.x2-button.urgent, button.x2-button.urgent, 
 a.x2-minimal-button.urgent, input.x2-minimal-button.urgent, button.x2-minimal-button.urgent { 
     background-color: #E8382A;
@@ -250,11 +252,13 @@ a.x2-minimal-button.urgent, input.x2-minimal-button.urgent, button.x2-minimal-bu
     text-shadow: rgba(0,0,0,0.5) 0 1px 3px;
     color: #fff;
 }
+.ui-dialog .ui-dialog-buttonpane button.urgent:hover,
 a.x2-button.urgent:hover, input.x2-button.urgent:hover, button.x2-button.urgent:hover,
 a.x2-minimal-button.urgent:hover, input.x2-minimal-button.urgent:hover, button.x2-minimal-button.urgent:hover {
     background-color: #CF3225;
 }
 
+.ui-dialog .ui-dialog-buttonpane button.urgent:active,
 a.x2-button.urgent:active, input.x2-button.urgent:active, button.x2-button.urgent:active,
 a.x2-minimal-button.urgent:active, input.x2-minimal-button.urgent:active, button.x2-minimal-button.urgent:active {
     background-color: #A8291E;

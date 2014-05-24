@@ -93,16 +93,22 @@ class X2LeadsController extends x2base {
     /**
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
+     * @param null|Opportunity Set by actionConvertLead in the case that conversion fails
      */
-    public function actionView($id) {
+    public function actionView($id, $opportunity=null) {
         $type = 'x2Leads';
         $model = $this->loadModel($id);
         if($this->checkPermissions($model,'view')){
 
             // add opportunity to user's recent item list
-            User::addRecentItem('o', $id, Yii::app()->user->getId()); 
+            User::addRecentItem('l', $id, Yii::app()->user->getId()); 
 
-            parent::view($model, $type);
+            parent::view($model, $type, array (
+                'conversionIncompatibilityWarnings' => 
+                    $model->getConversionIncompatibilityWarnings (),
+                'opportunity' => 
+                    $opportunity,
+            ));
         }else{
             $this->redirect('index');
         }
@@ -228,13 +234,17 @@ class X2LeadsController extends x2base {
 
     /**
      * Converts a lead to an opportunity 
+     * @param int $id id of the lead
+     * @param bool $force If true, lead conversion will be attempted even if there are compatibility
+     *  issues.
      */
-    public function actionConvertLead ($id/*, $type */) {
-        $to = 'Opportunity';
+    public function actionConvertLead ($id, $force=false) {
         $model = $this->loadModel ($id);
-        if ($newOpportunity = $model->convertToOpportunity ()) {
+        $newOpportunity = $model->convertToOpportunity ($force);
+        if ($newOpportunity instanceof Opportunity && !$newOpportunity->hasErrors ()) {
             $this->redirect($this->createUrl (
                     '/opportunities/opportunities/view', array ('id' => $newOpportunity->id)));
         }
+        $this->actionView ($id, $newOpportunity);
     }
 }

@@ -179,7 +179,6 @@ class User extends CActiveRecord {
     }
 
     public function afterDelete () {
-        print ('afterDelete');
         // delete related social records (e.g. notes)
         $social=Social::model()->findAllByAttributes(array('user'=>$this->username));
         foreach($social as $socialItem){
@@ -357,6 +356,9 @@ class User extends CActiveRecord {
                 case 'd': // document
                     $record = X2Model::model('Docs')->findByPk($itemId);
                     break;
+                case 'l': // x2leads object
+                    $record = X2Model::model('X2Leads')->findByPk($itemId);
+                    break;
                 case 'm': // media object
                     $record = X2Model::model('Media')->findByPk($itemId);
                     break;
@@ -373,7 +375,7 @@ class User extends CActiveRecord {
                     $record = X2Flow::model()->findByPk($itemId);
                     break;
                 default:
-                    printR('Warning: getRecentItems: invalid item type');
+                    printR('Warning: getRecentItems: invalid item type'.$itemType);
                     continue;
             }
             if(!is_null($record)) //only include item if the record ID exists
@@ -383,19 +385,20 @@ class User extends CActiveRecord {
     }
 
     private static $validRecentItemTypes = array(
-        'c', // contact
-        't', // action
-        'p', // campaign
-        'o', // opportunity
-        'w', // workflow
-        's', // service case
-        'd', // doc
-        'm', // media object
-        'r', // product
-        'q', // quote
-        'g', // group
         'a', // account
+        'c', // contact
+        'd', // doc
         'f', // x2flow
+        'g', // group
+        'l', // x2lead object
+        'm', // media object
+        'o', // opportunity
+        'p', // campaign
+        'q', // quote
+        'r', // product
+        's', // service case
+        't', // action
+        'w', // workflow
     );
 
     public static function addRecentItem($type, $itemId, $userId){

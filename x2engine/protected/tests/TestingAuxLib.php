@@ -77,7 +77,14 @@ class TestingAuxLib  {
     }
 
     /**
-     * Log in with the specified credentials 
+     * Log in with the specified credentials .
+     *
+     * NOTE: in a non-web environment (i.e. command line, running PHPUnit)
+     * this is not guaranteed to work, because Yii::app()->user is designed for
+     * web sessions. To authenticate in the established web-or-console-agnostic
+     * method, use {@link ApplicationConfigBehavior::setSuModel} (or
+     * {@link suLogin}) instead.
+     *
      * @return bool true if login was successful, false otherwise
      */
     public static function login ($username, $password) {
@@ -94,6 +101,23 @@ class TestingAuxLib  {
             }
         }
         return false;
+    }
+
+    /**
+     * Sets the substitute user model property of the application singleton
+     *
+     * This establishes a pseudo-session so that non-web-specific components'
+     * methods that need userspace data to run properly can be executed from the
+     * command line and do not need to depend on web-session-specific components.
+     *
+     * @param type $username
+     */
+    public static function suLogin($username) {
+        $user = User::model()->findByAlias($username);
+        if(!($user instanceof User))
+            return false;
+        Yii::app()->setSuModel($user);
+        return true;
     }
 
 }

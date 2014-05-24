@@ -344,38 +344,40 @@ class ApplicationConfigBehavior extends CBehavior {
             if(!empty($this->owner->params->profile)){
                 $_SESSION['fullscreen'] = $this->owner->params->profile->fullscreen;
             }
-            if($notGuest && !($this->owner->request->getPathInfo() == 'site/getEvents')){
-                $this->owner->user->setReturnUrl($this->owner->request->requestUri);
-                if($session !== null){
-                    $timeout = Roles::getUserTimeout($this->owner->user->getId());
-                    if($session->lastUpdated + $timeout < time()){
-                        SessionLog::logSession($this->owner->user->getName(), $sessionId, 'activeTimeout');
-                        $session->delete();
-                        $this->owner->user->logout(false);
-                        $this->_suModel = null;
-                        $this->_suID = null;
-                        $this->setUserAccessParameters(null);
-                        
-                    }else{
-                        // Print a warning message
-                        if($this->owner->session['debugEmailWarning']) {
-                            $this->owner->session['debugEmailWarning'] = 0;
-                            $this->owner->user->setFlash('admin.debugEmailMode',Yii::t('app','Note, email debugging mode is enabled. Emails will not actually be delivered.'));
+            if(!($this->owner->request->getPathInfo() == 'site/getEvents')){
+                if($notGuest){
+                    $this->owner->user->setReturnUrl($this->owner->request->requestUri);
+                    if($session != null){
+                        $timeout = Roles::getUserTimeout($this->owner->user->getId());
+                        if($session->lastUpdated + $timeout < time()){
+                            SessionLog::logSession($this->owner->user->getName(), $sessionId, 'activeTimeout');
+                            $session->delete();
+                            $this->owner->user->logout(false);
+                            $this->_suModel = null;
+                            $this->_suID = null;
+                            $this->setUserAccessParameters(null);
+                        }else{
+                            // Print a warning message
+                            if($this->owner->session['debugEmailWarning']){
+                                $this->owner->session['debugEmailWarning'] = 0;
+                                $this->owner->user->setFlash('admin.debugEmailMode',
+                                        Yii::t('app', 'Note, email debugging mode '
+                                                . 'is enabled. Emails will not '
+                                                . 'actually be delivered.'));
+                            }
+
+                            $session->lastUpdated = time();
+                            $session->update(array('lastUpdated'));
+
+                            $this->owner->params->sessionStatus = $session->status;
                         }
-
-                        $session->lastUpdated = time();
-                        $session->update(array('lastUpdated'));
-
-                        $this->owner->params->sessionStatus = $session->status;
+                    }else{
+                        $this->owner->user->logout(false);
                     }
                 }else{
-                    $this->owner->user->logout(false);
+                    // Guest
+                    $this->setUserAccessParameters(null);
                 }
-
-            }elseif(!($this->owner->request->getPathInfo() == 'site/getEvents')){
-                $guestRole = Roles::model()->findByAttributes(array('name' => 'Guest'));
-                if(isset($guestRole))
-                    $this->owner->params->roles = array($guestRole->id);
             }
         }
 
@@ -867,15 +869,11 @@ class ApplicationConfigBehavior extends CBehavior {
      * @param type $userId
      */
     public function setUserAccessParameters($userId) {
-        if($userId !== null){
-            $this->owner->params->groups = Groups::getUserGroups($userId);
-            $this->owner->params->roles = Roles::getUserRoles($userId);
-            $this->owner->params->isAdmin = $this->owner->authManager->checkAccess('AdminIndex', $userId);
-        } else {
-            $this->owner->params->groups = array();
-            $this->owner->params->roles = array();
-            $this->owner->params->isAdmin = false;
-        }
+        $this->owner->params->groups = Groups::getUserGroups($userId);
+        $this->owner->params->roles = Roles::getUserRoles($userId);
+        $this->owner->params->isAdmin = $userId !== null
+                ? $this->owner->authManager->checkAccess('AdminIndex', $userId)
+                : false; 
     }
 
     /**

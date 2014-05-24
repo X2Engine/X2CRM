@@ -61,6 +61,18 @@ return array(
 		'lastUpdated' => time(),
 		'lastLogin' => time(),
 		'status' => 1
+	),
+	'testUser5' => array(
+		'id' => 6,
+		'username' => 'testuser5',
+		'firstName' => 'Sales5',
+		'lastName' => 'Rep5',
+		'emailAddress' => 'sales5@rep.com',
+		'password' => '5f4dcc3b5aa765d61d8327deb882cf99', // "password"
+		'userKey' => '5f4dcc3b5aa765d61d8327deb882cf99',
+		'lastUpdated' => time(),
+		'lastLogin' => time(),
+		'status' => 1
 	)
 );
 ?>

@@ -17,7 +17,7 @@ Yii::import('application.components.ResponseBehavior');
 class InlineEmailTest extends X2DbTestCase {
     // Set to 1 to enable testing actual sending of email.
 
-    const TESTDELIVERY = 1;
+    const TESTDELIVERY = 0;
 
     public static function referenceFixtures(){
         return array(
@@ -235,6 +235,7 @@ class InlineEmailTest extends X2DbTestCase {
             $this->eml->attachments = array();
             $status = $this->eml->deliver();
             $this->assertTrue(in_array('200', $status), 'Failed asserting successful return code. Status = '.CJSON::encode($status));
+            println("Check email at address ".TEST_EMAIL_TO. ' for the delivered test message.');
             // No further assertions in this method. Chiggity check yo inbox.
         }
     }

@@ -129,12 +129,12 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
         $this->type("name=Contacts[lastName]", 'test');
         $this->type("name=Contacts[email]", 'test@test.com');
         $this->click("css=#submit");
+
         // wait for iframe to load new page
         $this->waitForCondition (
             "selenium.browserbot.getCurrentWindow(document.getElementsByName ('web-form-iframe').length && document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null)",
             4000);
         $this->pause (5000); // wait for database changes to enact
-
     }
 
     /**
@@ -151,6 +151,16 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
         VERBOSE_MODE && println (
             'contact created. new contact\'s tracking key = '.$contact->trackingKey);
         return $contact;
+    }
+
+    protected function clearContact () {
+        Yii::app()->db->createCommand ('delete from x2_contacts where email="test@test.com"')
+            ->execute ();
+        $count = Yii::app()->db->createCommand (
+            'select count(*) from x2_contacts
+             where email="test@test.com"')
+             ->queryScalar ();
+        $this->assertTrue ($count === '0');
     }
 
     /**

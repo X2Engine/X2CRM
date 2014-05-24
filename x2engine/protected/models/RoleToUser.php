@@ -127,8 +127,21 @@ class RoleToUser extends CActiveRecord
     }
 
     public function afterDelete () {
-        // roles have been updated, clear the cached roles for the corresponding user
-        Roles::clearCachedUserRoles ($this->userId);
+        // Roles have been updated, clear the cached roles for the corresponding
+        // user (or for all group members, if a group)
+        if($this->type == 'user') {
+            Roles::clearCachedUserRoles ($this->userId);
+        } elseif($this->type == 'group') {
+            // Clear the role cache for all users who were in the group
+            $group = Groups::model()->findByPk($this->userId);
+            if(!empty($group)) {
+                if(count($group->users)>0) {
+                    foreach($group->users as $user) {
+                        Roles::clearCachedUserRoles($user->id);
+                    }
+                }
+            }
+        }
         parent::afterSave ();
     }
 }

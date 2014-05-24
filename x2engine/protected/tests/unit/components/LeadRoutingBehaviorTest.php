@@ -47,8 +47,6 @@ Yii::import('application.components.util.*');
  */
 class LeadRoutingBehaviorTest extends CDbTestCase {
 
-    const VERBOSE = 0;
-
     public $fixtures = array (
         'leadRouting' => array ('LeadRouting', '_1'),
         'users' => array ('User', '_1'),
@@ -84,7 +82,7 @@ class LeadRoutingBehaviorTest extends CDbTestCase {
         );
         $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(self::VERBOSE) print ("Getting assignee: username = $username\n");
+        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'Anyone');
 
         Yii::app()->settings->onlineOnly = false;
@@ -94,7 +92,7 @@ class LeadRoutingBehaviorTest extends CDbTestCase {
         );
         $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(self::VERBOSE) print ("Getting assignee: username = $username\n");
+        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'testUser1');
     }
 
@@ -106,7 +104,7 @@ class LeadRoutingBehaviorTest extends CDbTestCase {
         );
         $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(self::VERBOSE) print ("Getting assignee: username = $username\n");
+        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'testUser1');
 
         $_POST['Contacts'] = array (
@@ -115,7 +113,7 @@ class LeadRoutingBehaviorTest extends CDbTestCase {
         );
         $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(self::VERBOSE) print ("Getting assignee: username = $username\n");
+        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'testUser2');
 
         $_POST['Contacts'] = array (
@@ -124,7 +122,7 @@ class LeadRoutingBehaviorTest extends CDbTestCase {
         );
         $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(self::VERBOSE) print ("Getting assignee: username = $username\n");
+        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'Anyone');
 	}
 

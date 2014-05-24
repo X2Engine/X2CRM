@@ -1,5 +1,4 @@
-<?php
-
+<!--
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -34,34 +33,11 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
-// uncomment the following to define a path alias
-// Yii::setPathOfAlias('local','path/to/local-folder');
-// This is the main Web application configuration. Any writable
-// CWebApplication properties can be configured here.
-
-$config = require("main.php");
-
-unset($config['theme']);
-$config['components']['fixture'] = array(
-	'class' => 'system.test.CDbFixtureManager',
-);
-
-unset($config['components']['urlManager']);
-$config['params']['noSession'] = true;
-
-$config['import'] = array_merge($config['import'], array('application.components.*','application.models.*'));
-$config['components']['log']['routes'] = array(
-	array(
-		'class' => 'CFileLogRoute',
-		'logFile' => 'console.log',
-	)
-);
-
-$custom = dirname(__FILE__).'/../../custom/protected/config/'.(YII_UNIT_TESTING?'test':'console').'.php';
-if($custom = realpath($custom)) {
-	include($custom);
-}
-
-return $config;
-?>
+-->
+<html>
+<head>
+</head>
+<body>
+<iframe name="web-form-iframe" src="http://www.testdomain.com/index-test.php/contacts/weblead?fg=%23000000&bgc=%23f0f0f0&bc=%23f0f0f0&iframeHeight=350&webFormId=0&css=&webFormId=6" frameborder="0" scrolling="0" width="800" height="800"></iframe>
+</body>
+</html>

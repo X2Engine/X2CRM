@@ -250,7 +250,7 @@ if ($webFormType === 'weblead') {
         <?php
         echo CHtml::activeLabel (X2Model::model ('Contacts'), 'leadSource');
         echo X2Model::model ('X2Leads')->renderInput (
-            'leadSource', array ('class' => 'left-label'));
+            'leadSource', array ('class' => 'left-label', 'name' => 'leadSource'));
         ?>
         </div>
     </div>

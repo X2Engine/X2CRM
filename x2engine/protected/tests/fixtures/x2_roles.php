@@ -11,4 +11,9 @@ return array(
         'name' => 'Peons',
         'timeout' => '600',
     ),
+    'secret' => array(
+        'id' => 3,
+        'name' => 'SecretOverlords',
+        'timeout' => '60',
+    ),
 );

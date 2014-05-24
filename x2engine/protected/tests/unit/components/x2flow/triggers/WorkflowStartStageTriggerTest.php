@@ -35,33 +35,48 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-// uncomment the following to define a path alias
-// Yii::setPathOfAlias('local','path/to/local-folder');
-// This is the main Web application configuration. Any writable
-// CWebApplication properties can be configured here.
+/**
+ * @package application.tests.unit.components.x2flow.triggers
+ */
+class WorkflowStartStageTriggerTest extends X2DbTestCase {
 
-$config = require("main.php");
+    public $fixtures = array (
+        'contacts' => array ('Contacts', '.WorkflowTests'),
+        'actions' => array ('Actions', '.WorkflowTests'),
+    );
 
-unset($config['theme']);
-$config['components']['fixture'] = array(
-	'class' => 'system.test.CDbFixtureManager',
-);
+    public static function referenceFixtures(){
+        return array(
+            'x2flow' => array ('X2Flow', '.WorkflowStartStageTriggerTest'),
+            'workflows' => array ('Workflow', '.WorkflowTests'),
+            'workflowStages' => array ('WorkflowStage', '.WorkflowTests'),
+            'roleToWorkflow' => array (':x2_role_to_workflow', '.WorkflowTests'),
+        );
+    }
 
-unset($config['components']['urlManager']);
-$config['params']['noSession'] = true;
+    /**
+     * Trigger the flow by completing a workflow stage on the contact. Assert that the flow 
+     * executes without errors.
+     */
+    public function testFlowExecution () {
+        X2FlowTestingAuxLib::clearLogs ();
+        $workflow = $this->workflows ('workflow2'); 
+        $model = $this->contacts ('contact935');
+        // complete stage 4, autostarting stage 5. This should trigger the flow
+        $retVal = Workflow::completeStage (
+            $workflow->id, 4, $model, 'test comment');
+        $newLog = X2FlowTestingAuxLib::getTraceByFlowId ($this->x2flow ('flow1')->id);
+        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($newLog));
 
-$config['import'] = array_merge($config['import'], array('application.components.*','application.models.*'));
-$config['components']['log']['routes'] = array(
-	array(
-		'class' => 'CFileLogRoute',
-		'logFile' => 'console.log',
-	)
-);
+        // complete stage 5. This shouldn't trigger the flow since the flow checks that stage
+        // 4 was completed
+        X2FlowTestingAuxLib::clearLogs ();
+        $retVal = Workflow::completeStage (
+            $workflow->id, 5, $model, '');
+        $newLog = X2FlowTestingAuxLib::getTraceByFlowId ($this->x2flow ('flow1')->id);
+        $this->assertFalse (X2FlowTestingAuxLib::checkTrace ($newLog));
+    }
 
-$custom = dirname(__FILE__).'/../../custom/protected/config/'.(YII_UNIT_TESTING?'test':'console').'.php';
-if($custom = realpath($custom)) {
-	include($custom);
 }
 
-return $config;
 ?>

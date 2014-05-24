@@ -974,8 +974,6 @@ class ProfileController extends x2base {
                         $profile, $isMyProfile, $filters, $filtersOn));
 
         $data = $dataProvider->getData();
-        $dataProvider = new CArrayDataProvider(Events::permissionFilter($data, Yii::app()->getSuId()));
-
         if (isset($data[count($data) - 1]))
             $firstId = $data[count($data) - 1]->id;
         else
@@ -1117,7 +1115,8 @@ class ProfileController extends x2base {
             return false;
 
 
-        $result = Events::getEvents($lastEventId, $lastTimestamp, null, null, null, $myProfile, $profile);
+        $result = Events::getEvents(
+            $lastEventId, $lastTimestamp, null, null, null, $myProfile, $profile);
 
         $events = $result['events'];
         $eventData = "";

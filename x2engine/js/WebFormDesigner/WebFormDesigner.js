@@ -373,8 +373,8 @@ Populate form with form settings
 WebFormDesigner.prototype._updateFields = function (form) {
     var that = this;
 
-    x2.DEBUG && console.log ('_updateFields');
-    x2.DEBUG && console.log (form.params);
+    that.DEBUG && console.log ('_updateFields');
+    that.DEBUG && console.log (form.params);
     $('#web-form-name').val(form.name);
     if (form.params) {
         $.each(form.params, function(key, value) {

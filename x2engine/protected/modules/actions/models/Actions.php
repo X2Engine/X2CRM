@@ -38,8 +38,6 @@ Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_actions".
- * @property X2Model $associatedModel The model with which the action is
- *  associated, if any.
  * @package application.modules.actions.models
  */
 class Actions extends X2Model {
@@ -56,8 +54,6 @@ class Actions extends X2Model {
     public $actionDescriptionTemp = ""; // Easy way to get around action text records
 
     private static $_priorityLabels;
-
-    private $_associatedModel;
 
     /**
      * Returns the static model of the specified AR class.
@@ -118,20 +114,6 @@ class Actions extends X2Model {
             'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
             //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
         ));
-    }
-
-    /**
-     * Returns {@link associatedModel}.
-     * @return X2Model
-     */
-    public function getAssociatedModel() {
-        if(!isset($this->_associatedModel)
-                && !empty($this->associationType)
-                && !empty($this->associationId)) {
-            $this->_associatedModel = X2Model::model($this->associationType)
-                    ->findByPk($this->associationId);
-        }
-        return $this->_associatedModel;
     }
 
     /**

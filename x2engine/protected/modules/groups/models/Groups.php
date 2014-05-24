@@ -187,11 +187,13 @@ class Groups extends X2Model {
      * Looks up groups to which the specified user belongs.
 	 * Uses cache to lookup/store groups.
 	 *
-	 * @param Integer $userId user to look up groups for
-	 * @param Boolean $cache whether to use cache
+	 * @param integer $userId user to look up groups for
+	 * @param boolean $cache whether to use cache
 	 * @return Array array of groupIds
 	 */
 	public static function getUserGroups($userId,$cache=true) {
+        if($userId === null)
+            return array();
 		// check the app cache for user's groups
 		if($cache === true && ($userGroups = Yii::app()->cache->get('user_groups')) !== false) {
 			if(isset($userGroups[$userId]))

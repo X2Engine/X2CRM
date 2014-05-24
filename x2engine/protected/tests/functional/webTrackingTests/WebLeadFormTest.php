@@ -50,6 +50,7 @@ class WebLeadFormTest extends WebTrackingTestBase {
     public $fixtures = array(
         // disables fingerprinting
         'admin' => array ('Admin', '.cookieTrackingTests'),
+        'webForms' => array ('WebForm', '.WebLeadFormTest'),
     );
 
     /**
@@ -58,6 +59,37 @@ class WebLeadFormTest extends WebTrackingTestBase {
     public function testAssertDebugMode () {
         $this->assertTrue (YII_DEBUG && WebListenerAction::DEBUG_TRACK);
     }
+
+    protected function assertLeadCreated () {
+        $lead = X2Leads::model()->findByAttributes (array (
+            'name' => 'test test',
+            'leadSource' => 'facebook',
+        ));
+        $this->assertTrue ($lead !== null);
+        VERBOSE_MODE && println (
+            'lead created');
+        return $lead;
+    }
+
+    protected function clearLead () {
+        Yii::app()->db->createCommand ('delete from x2_x2leads where name="test test"')
+            ->execute ();
+        $count = Yii::app()->db->createCommand (
+            'select count(*) from x2_contacts
+             where name="test test"')
+             ->queryScalar ();
+        $this->assertTrue ($count === '0');
+    }
+
+    protected function assertLeadNotCreated () {
+        $lead = X2Leads::model()->findByAttributes (array (
+            'name' => 'test test',
+            'leadSource' => 'Facebook',
+        ));
+        $this->assertTrue ($lead === null);
+        return $lead;
+    }
+
 
     /**
      * Submit web lead form and wait for success message
@@ -91,6 +123,53 @@ class WebLeadFormTest extends WebTrackingTestBase {
         $this->assertCookie ('regexp:.*x2_key.*');
         $this->assertWebActivityGeneration ();
     }
+
+    /**
+     * Submit a web form that was created with the generate lead option checked. Assert that
+     * a lead gets generated.
+     */
+    public function testGenerateLead () {
+        $this->clearContact ();
+        $this->clearLead ();
+
+        $this->openPublic('x2WebTrackingTestPages/webFormTestGenerateLead.html');
+        $this->type("name=Contacts[firstName]", 'test');
+        $this->type("name=Contacts[lastName]", 'test');
+        $this->type("name=Contacts[email]", 'test@test.com');
+        $this->click("css=#submit");
+        // wait for iframe to load new page
+        $this->waitForCondition (
+            "selenium.browserbot.getCurrentWindow(document.getElementsByName ('web-form-iframe').length && document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null)",
+            4000);
+        $this->pause (5000); // wait for database changes to enact
+
+        $this->assertContactCreated ();
+        $this->assertLeadCreated ();
+    }
+
+    /**
+     * Submit a web form that was created with the generate lead option unchecked. Assert that
+     * a lead doesn't get generated.
+     */
+    public function testDontGenerateLead () {
+        $this->clearContact ();
+        $this->clearLead ();
+
+        $this->openPublic('x2WebTrackingTestPages/webFormTestDontGenerateLead.html');
+        $this->type("name=Contacts[firstName]", 'test');
+        $this->type("name=Contacts[lastName]", 'test');
+        $this->type("name=Contacts[email]", 'test@test.com');
+        $this->click("css=#submit");
+        // wait for iframe to load new page
+        $this->waitForCondition (
+            "selenium.browserbot.getCurrentWindow(document.getElementsByName ('web-form-iframe').length && document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null)",
+            4000);
+        $this->pause (5000); // wait for database changes to enact
+
+        $this->assertContactCreated ();
+        $this->assertLeadNotCreated ();
+    }
+
 
 }
 

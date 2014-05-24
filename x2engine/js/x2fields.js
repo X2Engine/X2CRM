@@ -477,7 +477,7 @@ x2.fieldUtils = {
                     
                     var textValue = '';
 
-                    if(typeof safeAttributes === 'string') {
+                    if(typeof safeAttributes.value === 'string') {
                         textValue = safeAttributes.value.replace (/_[0-9]+$/, '');
                     }
                     

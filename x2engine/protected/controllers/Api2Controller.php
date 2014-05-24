@@ -215,16 +215,9 @@ class Api2Controller extends CController {
                 $this->send(429, "The maximum number of hooks ({$maximum}) has "
                 . "been reached for events of this type.");
             }
-            foreach($hook->getValidators('target_url') as $validator) {
-                $validator->validate($hook,'target_url');
-                if($hook->hasErrors('target_url')) {
-                    if($validator instanceof CUniqueValidator) {
-                        $this->send(409,'There is already a hook corresponding to this URL.');
-                    } else {
-                        $this->response['errors'] = $hook->errors;
-                        $this->send(422);
-                    }
-                }
+            if(!$hook->validate()) {
+                $this->response['errors'] = $hook->errors;
+                $this->send(422);
             }
             if($hook->save()) {
                 $this->response->httpHeader['Location'] = 

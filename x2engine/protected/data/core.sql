@@ -110,12 +110,15 @@ CREATE TABLE x2_admin(
 DROP TABLE IF EXISTS x2_api_hooks;
 /*&*/
 CREATE TABLE x2_api_hooks (
-    id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    event       VARCHAR(50),
-    modelName   VARCHAR(100),
-    target_url  VARCHAR(255),
-    userId      INT NOT NULL DEFAULT 1,
+    id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    event           VARCHAR(50), -- Event name. Should be named after an X2Flow trigger.
+    modelName       VARCHAR(100), -- Class of the model to which the hook corresponds.
+    target_url      VARCHAR(255), -- Target URL that the REST hook will ping.
+    userId          INT NOT NULL DEFAULT 1, -- ID of user who created the subscription.
+    directPayload   TINYINT DEFAULT 0, -- Send the model directly, as part of the payload.
+    createDate  BIGINT DEFAULT NULL, -- Creation timestamp
     INDEX(event,modelName),
+    INDEX(createDate),
     INDEX(target_url)
 ) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/

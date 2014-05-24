@@ -49,12 +49,17 @@
  */
 class X2LinkableBehavior extends CActiveRecordBehavior {
 
-    public $module;
     public $baseRoute;
     public $viewRoute;
     public $autoCompleteSource;
     public $icon;
 
+    /**
+     * Stores {@link module}
+     * @var string
+     */
+    private $_module;
+    
     /**
      * Attaches the behavior object to the model.
      *
@@ -64,14 +69,14 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 
         parent::attach($owner);
 
-        if (!isset($this->module)) {
-            if (!Yii::app()->params->noSession) {
+        if ($this->getModule() === null) {
+            if (!Yii::app()->controller instanceof CController) {
                 if (isset($this->baseRoute)) {
                     // try to extract it from $baseRoute (old custom modules)
                     $this->module = preg_replace(
                             '/\/.*/', '', preg_replace('/^\//', '', $this->baseRoute));
                 } else {
-                    // assume the model name is the same as the controller
+                    // assume the model name is the same as the module/controller
                     $this->module = strtolower(get_class($this->owner));
                 }
             } else {
@@ -94,6 +99,20 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 			$this->autoCompleteSource = $this->baseRoute.'/getItems';
 	}
 
+    /**
+     * Gets the {@link module} property.
+     * @return string|null
+     */
+    public function getModule() {
+        if(isset($this->_module)) {
+            return $this->_module;
+        } else if(property_exists($this->owner,'module')) {
+            return $this->owner->module;
+        } else {
+            return null;
+        }
+    }
+
 	/**
 	 * Generates a url to the view of the object.
 	 *
@@ -101,9 +120,8 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 	 */
     public function getUrl(){
         $url = null;
-        if(Yii::app()->hasProperty('controller')) // Use the controller
-            if((bool) Yii::app()->controller)
-                $url = Yii::app()->controller->createAbsoluteUrl($this->viewRoute, array('id' => $this->owner->id));
+        if(Yii::app()->controller instanceof CController) // Use the controller
+            $url = Yii::app()->controller->createAbsoluteUrl($this->viewRoute, array('id' => $this->owner->id));
         if(empty($url)) // Construct an absolute URL; no web request data available.
             $url = Yii::app()->absoluteBaseUrl.'/index.php'.$this->viewRoute.'/'.$this->owner->id;
         return $url;
@@ -189,6 +207,14 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
             echo CJSON::encode($result);
         }
         Yii::app()->end();
+    }
+
+    /**
+     * Sets the {@link module} property
+     * @param string $value
+     */
+    public function setModule($value) {
+        $this->_module = $value;
     }
 
 }
