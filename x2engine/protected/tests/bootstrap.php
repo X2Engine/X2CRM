@@ -13,9 +13,6 @@ require_once($yiit);
 Yii::getLogger()->autoFlush = 1;
 Yii::getLogger()->autoDump = true;
 
-// set this to true to enable verbose output during tests
-defined('VERBOSE_MODE') or define('VERBOSE_MODE',true);
-
 function println ($message) {
     print ($message . "\n");
 }

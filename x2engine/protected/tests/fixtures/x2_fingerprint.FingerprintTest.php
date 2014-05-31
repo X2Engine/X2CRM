@@ -123,7 +123,48 @@ return array(
         'localStorage' => '1',
         'sessionStorage' => '1',
         'fonts' => '1221111',
-    )
+    ),
+    // same as fingerprint 8 except it's anonymous
+    'fingerprint7' => array (
+        'id' => '17',
+        // not the real hash, just needs to be same as fingerprint8's hash
+        'fingerprint' => '1078454351', 
+        'createDate' => '1399066909',
+        'anonymous' => '1',
+        'plugins' => NULL,
+        'userAgent' => 'fingerprint 7/8 Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+        'language' => 'fingerprint 7/8 en-US',
+        'screenRes' => 'fingerprint 7/8 1080x1920x24',
+        'timezone' => '333',
+        'cookiesEnabled' => '1',
+        'indexedDB' => '0',
+        'addBehavior' => '1',
+        'javaEnabled' => '0',
+        'localStorage' => '1',
+        'sessionStorage' => '1',
+        'canvasFingerprint' => '3336293228',
+        'fonts' => '1333111',
+    ),
+    'fingerprint8' => array (
+        'id' => '16',
+        // not the real hash, just needs to be same as fingerprint7's hash
+        'fingerprint' => '1078454351', 
+        'createDate' => '1399066909',
+        'anonymous' => '0',
+        'plugins' => NULL,
+        'userAgent' => 'fingerprint 7/8 Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+        'language' => 'fingerprint 7/8 en-US',
+        'screenRes' => 'fingerprint 7/8 1080x1920x24',
+        'timezone' => '333',
+        'cookiesEnabled' => '1',
+        'indexedDB' => '0',
+        'addBehavior' => '1',
+        'javaEnabled' => '0',
+        'localStorage' => '1',
+        'sessionStorage' => '1',
+        'canvasFingerprint' => '3336293228',
+        'fonts' => '1333111',
+    ),
 );
 
 ?>

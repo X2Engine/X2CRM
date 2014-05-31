@@ -253,7 +253,14 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
 }elseif($data->type == 'quotes'){
     $quotePrint = (bool)  preg_match('/^\d+$/',$data->actionDescription);
     $objectId = $quotePrint ? $data->actionDescription : $data->id;
-    echo CHtml::link('[View quote]', 'javascript:void(0);', array('onclick' => 'return false;', 'id' => $objectId, 'class' => $quotePrint ? 'quote-print-frame' : 'quote-frame'));
+    echo CHtml::link(
+        '[View quote]', 'javascript:void(0);',
+        array(
+            'onclick' => 'return false;',
+            'id' => $objectId,
+            'class' => $quotePrint ? 'quote-print-frame' : 'quote-frame'
+        )
+    );
 } else
     echo Yii::app()->controller->convertUrls(CHtml::encode($data->actionDescription)); // convert LF and CRLF to <br />
 ?>

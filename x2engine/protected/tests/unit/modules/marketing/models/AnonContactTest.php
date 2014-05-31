@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -34,40 +35,55 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-/**
- * @package application.components
- */
-class PublisherActionTab extends PublisherTab {
-    
-    public $viewFile = 'application.components.views.publisher._actionForm';
+Yii::import('application.modules.actions.models.*');
 
-    public $title = 'Action';
+class AnonContactTest extends X2DbTestCase {
 
-    public $tabId = 'new-action'; 
+    public $fixtures = array (
+        'contacts' => array ('Contacts', '.FingerprintTest'),
+        'anonContacts' => array ('AnonContact', '.FingerprintTest'),
+        'fingerprints' => array ('Fingerprint', '.FingerprintTest'),
+    );
 
-    public $tabPrototypeName = 'PublisherActionTab';
+    public function testBeforeSave () {
+        $lastModifiedId = Yii::app()->db->createCommand()
+            ->select('id')
+            ->from('x2_anon_contact')
+            ->order('lastUpdated ASC')
+            ->queryScalar();
 
+        $anonContact = X2Model::model('AnonContact')->findByPk($lastModifiedId);
+        $this->assertNotEquals (null, $anonContact);
+        $action = new Actions;
+        $action->setAttributes (array (
+            'id' => 1000000000,
+            'associationType' => 'anoncontact',
+            'associationId' => $lastModifiedId,
+            'createDate' => time (),
+            'lastUpdated' => time (),
+            'completeDate' => time (),
+        ), false);
+        $this->assertSaves ($action);
 
-    /**
-     * Magic getter. Returns this widget's packages. 
-     */
-    public function getPackages () {
-        if (!isset ($this->_packages)) {
-            $this->_packages = array_merge (
-                parent::getPackages (),
-                array (
-                    'PublisherActionTabJS' => array(
-                        'baseUrl' => Yii::app()->request->baseUrl,
-                        'js' => array(
-                            'js/publisher/PublisherActionTab.js',
-                        ),
-                        'depends' => array ('PublisherTabJS')
-                    ),
-                )
-            );
-        }
-        return $this->_packages;
+        // set max to 0 to check if anon contact gets deleted on before save event
+        Yii::app()->settings->maxAnonContacts = 0;
+        $anonContact = new AnonContact;
+        $anonContact->setAttributes (array (
+            'trackingKey' => 'test',
+            'createDate' => time (),
+            'fingerprintId' => 20000,
+        ), false);
+        $this->assertSaves ($anonContact);
+
+        $anonContact = X2Model::model('AnonContact')->findByPk($lastModifiedId);
+        $action = X2Model::model('Actions')->findByPk($action->id);
+        // should have deleted this anon contact before the new anon contact was saved
+        $this->assertEquals (null, $anonContact);
+        // should also have deleted action associated with deleted anon contact
+        $this->assertEquals (null, $action);
     }
 
 
 }
+
+?>

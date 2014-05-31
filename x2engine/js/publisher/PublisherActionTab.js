@@ -1,4 +1,3 @@
-<?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -34,40 +33,71 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-/**
- * @package application.components
- */
-class PublisherActionTab extends PublisherTab {
-    
-    public $viewFile = 'application.components.views.publisher._actionForm';
+if(typeof x2 == 'undefined')
+    x2 = {};
+if(typeof x2.publisher == 'undefined')
+    x2.publisher = {};
 
-    public $title = 'Action';
+x2.PublisherActionTab = (function () {
 
-    public $tabId = 'new-action'; 
+function PublisherActionTab (argsDict) {
+    argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
 
-    public $tabPrototypeName = 'PublisherActionTab';
-
-
-    /**
-     * Magic getter. Returns this widget's packages. 
-     */
-    public function getPackages () {
-        if (!isset ($this->_packages)) {
-            $this->_packages = array_merge (
-                parent::getPackages (),
-                array (
-                    'PublisherActionTabJS' => array(
-                        'baseUrl' => Yii::app()->request->baseUrl,
-                        'js' => array(
-                            'js/publisher/PublisherActionTab.js',
-                        ),
-                        'depends' => array ('PublisherTabJS')
-                    ),
-                )
-            );
-        }
-        return $this->_packages;
-    }
-
-
+	x2.PublisherTab.call (this, argsDict);	
 }
+
+PublisherActionTab.prototype = auxlib.create (x2.PublisherTab.prototype);
+
+/*
+Public static methods
+*/
+
+/*
+Private static methods
+*/
+
+/*
+Public instance methods
+*/
+
+/**
+ * Hide the reminder container after submission
+ */
+PublisherActionTab.prototype.reset = function () {
+    x2.PublisherTab.prototype.reset.call (this);
+    $('#action-reminder-inputs').slideUp ();
+};
+
+
+/*
+Private instance methods
+*/
+
+/**
+ * Set up reminder subsection dropdown container
+ */
+PublisherActionTab.prototype._setUpActionReminders = function () {
+    $('#Actions_reminder').change (function () {
+        if ($(this).is (':checked') ) {
+            $('#action-reminder-inputs').slideDown ();
+        } else {
+            $('#action-reminder-inputs').slideUp ();
+        }
+        return false;
+    });
+};
+
+PublisherActionTab.prototype._init = function () {
+    var that = this;
+
+    this._setUpActionReminders ();
+    x2.PublisherTab.prototype._init.call (this);
+};
+
+return PublisherActionTab;
+
+}) ();
+

@@ -33,6 +33,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+#content {
+    margin-top: -1px !important;
+}
+
 @media (max-width: 657px) {
 
     /* shift down action menu to make room for fixed header */ 

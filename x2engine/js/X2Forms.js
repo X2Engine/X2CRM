@@ -93,6 +93,42 @@ X2Forms.prototype.errorMessage = function (message) {
 };
 
 /**
+ * Returns a jQuery element corresponding to an error box. The error box will
+ * contain the specified errorHeader and a bulleted list of the specified error
+ * messages.
+ * @param string errorHeader 
+ * @param string errorHeader 
+ * @param object css
+ */
+X2Forms.prototype.errorSummary = function (errorHeader, errorMessages, css) {
+    var css = typeof css === 'undefined' ? [] : css; 
+	var errorBox = $('<div>', {'class': 'error-summary-container'}).append (
+		$("<div>", { 'class': "error-summary"}).append (
+			$("<p>", { text: errorHeader }),
+			$("<ul>")
+	));
+    $(errorBox).css (css);
+    if (typeof errorMessages === 'string') {
+        $(errorBox).find ('.error-summary').
+            find ('ul').append ($("<li> " + errorMessages + " </li>"));
+    } else {
+        for (var i in errorMessages) {
+            var msg = errorMessages[i];
+            $(errorBox).find ('.error-summary').
+                find ('ul').append ($("<li> " + msg + " </li>"));
+        }
+    }
+	return errorBox;
+}
+
+
+X2Forms.prototype.clearErrorMessages = function (form) {
+    $(form).find ('.x2-forms-error-msg').remove ();
+    $(form).find ('.error-summary-container').remove ();
+    $(form).find ('.error').removeClass ('error');
+};
+
+/**
  * Clears all inputs in form. Removes 'error' class from all inputs. Also clears all error message
  * elements created by errorMessage ().
  * @param Object element containing the form
@@ -104,6 +140,7 @@ X2Forms.prototype.clearForm = function (container, preserveDefaults) {
     if (preserveDefaults) {
         $(container).find ('textarea, input, select').each (function () {
             var defaultVal = $(this).attr ('data-default') || $(this)[0].defaultValue;
+
             if (typeof defaultVal === 'undefined') {
                 $(this).val (''); 
             } else {
@@ -113,8 +150,10 @@ X2Forms.prototype.clearForm = function (container, preserveDefaults) {
     } else {
         $(container).find ('textarea, input, select').val ('');
     }
+    $(container).find ('[type="checkbox"]').prop ("checked", false);
     $(container).find ('.error').removeClass ('error');
     $(container).find ('.x2-forms-error-msg').remove ();
+    $(container).find ('.error-summary-container').remove ();
 };
 
 /**
@@ -519,11 +558,11 @@ X2Forms.prototype.initX2FileInput = function() {
  * @param object the input element
  */
 X2Forms.prototype.inputLoading = function (elem) {
-    $(elem).hide ();
     $(elem).before ($('<div>', {
         'class': 'x2-loading-icon',
-        'style': 'height: 27px; background-size: 27px;'
+        'style': 'height: 27px; background-size: 27px; width: ' + $(elem).width () + 'px;'
     }));
+    $(elem).hide ();
 };
 
 /**

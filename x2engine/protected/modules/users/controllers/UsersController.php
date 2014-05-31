@@ -105,11 +105,14 @@ class UsersController extends x2base {
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
+        $unhashedPassword = '';
         if(isset($_POST['User'])) {
             $model->attributes=$_POST['User'];
             //$this->updateChangelog($model);
+            $unhashedPassword = $model->password;
             $model->password = md5($model->password);
-            $model->userKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
+            $model->userKey=substr(str_shuffle(str_repeat(
+                'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
             $profile=new Profile;
             $profile->fullName=$model->firstName." ".$model->lastName;
             $profile->username=$model->username;
@@ -120,38 +123,39 @@ class UsersController extends x2base {
              
 
             if($model->save()){
-                                $profile->id=$model->id;
-                                $profile->save();
-                                if(isset($_POST['roles'])){
-                                    $roles=$_POST['roles'];
-                                    foreach($roles as $role){
-                                        $link=new RoleToUser;
-                                        $link->roleId=$role;
-                                        $link->userId=$model->id;
-                                        $link->type="user";
-                                        $link->save();
-                                    }
-                                }
-                                if(isset($_POST['groups'])){
-                                    $groups=$_POST['groups'];
-                                    foreach($groups as $group){
-                                        $link=new GroupToUser;
-                                        $link->groupId=$group;
-                                        $link->userId=$model->id;
-                                        $link->username=$model->username;
-                                        $link->save();
-                                    }
-                                }
+                $profile->id=$model->id;
+                $profile->save();
+                if(isset($_POST['roles'])){
+                    $roles=$_POST['roles'];
+                    foreach($roles as $role){
+                        $link=new RoleToUser;
+                        $link->roleId=$role;
+                        $link->userId=$model->id;
+                        $link->type="user";
+                        $link->save();
+                    }
+                }
+                if(isset($_POST['groups'])){
+                    $groups=$_POST['groups'];
+                    foreach($groups as $group){
+                        $link=new GroupToUser;
+                        $link->groupId=$group;
+                        $link->userId=$model->id;
+                        $link->username=$model->username;
+                        $link->save();
+                    }
+                }
                 $this->redirect(array('view','id'=>$model->id));
-                        }
+            }
         }
+        $model->password = $unhashedPassword;
 
         $this->render('create',array(
             'model'=>$model,
-                        'groups'=>$groups,
-                        'roles'=>$roles,
-                        'selectedGroups'=>array(),
-                        'selectedRoles'=>array(),
+            'groups'=>$groups,
+            'roles'=>$roles,
+            'selectedGroups'=>array(),
+            'selectedRoles'=>array(),
         ));
     }
 
@@ -315,6 +319,9 @@ class UsersController extends x2base {
                         $this->redirect(array('view','id'=>$model->id));
                     }
         }
+
+        if (!isset ($model->userAlias)) $model->userAlias = $model->username;
+
         $this->render('update',array(
             'model'=>$model,
                         'groups'=>$groups,

@@ -37,6 +37,7 @@
 
 $this->beginContent('//layouts/main');
 //$themeURL = Yii::app()->theme->getBaseUrl();
+LeftWidget::registerScript ();
 
 ?>
 
@@ -45,111 +46,39 @@ $this->beginContent('//layouts/main');
     <div id='sidebar-left-widget-box'>
         <?php
     if(!Yii::app()->user->isGuest) {
-        $echoedFirstSideBarLeft = false;
-        // Echoes sidebar left container div if it hasn't already been echoed.
-        if(!function_exists('echoFirstSideBarLeft')){
-            function echoFirstSideBarLeft (&$echoedFirstSideBarLeft) {
-                if (!$echoedFirstSideBarLeft) {
-                    echo '<div class="sidebar-left">';
-                    $echoedFirstSideBarLeft = true;
-                }
-            }
+        $layout = Yii::app()->params->profile->getLayout ();
+        $leftWidgets = array_intersect_key (
+            $layout['left'], array_flip (array ('RecentItems', 'ActionMenu', 'TopContacts')));
+        $that = $this;
+        $leftWidgetRenderingFns = array (
+            'ActionMenu' => function () {
+                Yii::app()->controller->renderPartial ('application.views.layouts._actionMenu');
+            },
+            'TopContacts' => function () use ($that) {
+                echo "<div id='x2widget_TopContacts' class='sidebar-left'>";
+                $that->widget('TopContacts',array(
+                    'id'=>'top-contacts',
+                    'widgetName' => 'TopContacts',
+                    'widgetLabel' => 'Top Contacts'
+                ));
+                echo "</div><!-- .sidebar-left -->";
+            },
+            'RecentItems' => function () use ($that) {
+                echo "<div id='x2widget_RecentItems' class=\"sidebar-left\">";
+                $that->widget('RecentItems',array(
+                    'id'=>'recent-items',
+                    'widgetName' => 'RecentItems',
+                    'widgetLabel' => 'Recent Items'
+                ));
+                echo "</div><!-- .sidebar-left -->";
+            },
+        );
+
+        // render the left widgets in order
+        foreach ($leftWidgets as $name => $settings) {
+            $leftWidgetRenderingFns[$name] ();
         }
 
-        if(isset($this->actionMenu) && !empty($this->actionMenu)) {
-            echoFirstSideBarLeft ($echoedFirstSideBarLeft);
-            $this->beginWidget('LeftWidget',array(
-                'widgetLabel'=>Yii::t('app','Actions'),
-                'widgetName' => 'ActionMenu',
-                'id'=>'actions'
-            ));
-
-            $this->widget(
-                'zii.widgets.CMenu',array('items'=>$this->actionMenu,'encodeLabel'=>true));
-            $this->endWidget();
-        }
-
-        foreach($this->leftPortlets as &$portlet) {
-            echoFirstSideBarLeft ($echoedFirstSideBarLeft);
-            $this->beginWidget('zii.widgets.CPortlet',$portlet['options']);
-            echo $portlet['content'];
-            $this->endWidget();
-        }
-
-        if(isset($this->modelClass)){
-            $module = ($this->module instanceof CModule) ? $this->module->id : $this->id;
-            $controller = $this->id;
-            // Determine if there's left sidebar content to render:
-            $modulePath = implode(DIRECTORY_SEPARATOR,array(
-                Yii::app()->basePath,
-                'modules',
-                $module,
-                'views',
-                $controller,
-                '_sidebarLeftExtraContent.php'
-            ));
-            $controllerPath = implode(DIRECTORY_SEPARATOR,array(
-                Yii::app()->basePath,
-                'views',
-                $controller,
-                '_sidebarLeftExtraContent.php'
-            ));
-            $profile = $this->id == 'profile'
-                    && $this->action->id == 'view'
-                    && (!(isset($_GET['publicProfile']) && $_GET['publicProfile'])
-                        && $_GET['id'] == Yii::app()->params->profile->id);
-            if($profile || ((file_exists($controllerPath) || file_exists($modulePath))
-                            && $controller != 'profile')){
-                echoFirstSideBarLeft($echoedFirstSideBarLeft);
-                $this->renderPartial('_sidebarLeftExtraContent');
-            }
-        }
-
-        if ($echoedFirstSideBarLeft) echo "</div>";
-
-        echo "<div class='sidebar-left'>";
-        $this->widget('TopContacts',array(
-            'id'=>'top-contacts',
-            'widgetName' => 'TopContacts',
-            'widgetLabel' => 'Top Contacts'
-        ));
-        echo "</div><div class=\"sidebar-left\">";
-        $this->widget('RecentItems',array(
-            'id'=>'recent-items',
-            'widgetName' => 'RecentItems',
-            'widgetLabel' => 'Recent Items'
-        ));
-        
-        // collapse or expand left widget and save setting to user profile
-        Yii::app()->clientScript->registerScript('leftWidgets','
-            $(".left-widget-min-max").click(function(e){
-                e.preventDefault();
-                var link=this;
-                var action = $(this).attr ("value");
-                $.ajax({
-                    url:"'.Yii::app()->request->getScriptUrl ().'/site/minMaxLeftWidget'.'",
-                    data:{
-                        action: action,
-                        widgetName: $(link).attr ("name")
-                    },
-                    success:function(data){
-                        if (data === "failure") return;
-                        if(action === "expand"){
-                            $(link).html("<img src=\'"+yii.themeBaseUrl+"/images/icons/'.
-                                'Collapse_Widget.png\' />");
-                            $(link).parents(".portlet-decoration").next().slideDown();
-                            $(link).attr ("value", "collapse");
-                        }else if(action === "collapse"){
-                            $(link).html("<img src=\'"+yii.themeBaseUrl+"/images/icons/'.
-                                'Expand_Widget.png\' />");
-                            $(link).parents(".portlet-decoration").next().slideUp();
-                            $(link).attr ("value", "expand");
-                        }
-                    }
-                });
-            });
-        ');
-        echo "</div><!-- .sidebar-left -->";
     } ?>
     </div><!-- #sidebar-left-widget-box -->
     

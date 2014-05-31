@@ -68,6 +68,7 @@ class History extends X2Widget {
                 'marketing' => Yii::t('app', 'Marketing'),
                 'time' => Yii::t('app', 'Logged Time'),
                  
+                'quotes' => Yii::t('app', 'Quotes'),
                 'webactivity' => Yii::t('app', 'Web Activity'),
                 'workflow' => Yii::t('app', 'Process'),
             );
@@ -240,6 +241,7 @@ class History extends X2Widget {
                 ' AND type IN ("email","webactivity","weblead","email_staged",'.
                     '"email_opened","email_clicked","email_unsubscribed","event")',
              
+            'quotes' => 'AND type="quotes"',
             'time' => ' AND type="time"',
             'webactivity' => 'AND type IN ("weblead","webactivity")',
             'workflow' => ' AND type="workflow"',

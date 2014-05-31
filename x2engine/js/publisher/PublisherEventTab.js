@@ -1,4 +1,3 @@
-<?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -35,39 +34,55 @@
  *****************************************************************************************/
 
 /**
- * @package application.components
+ * Prototype for publisher tab with hours and minutes time fields 
  */
-class PublisherActionTab extends PublisherTab {
-    
-    public $viewFile = 'application.components.views.publisher._actionForm';
 
-    public $title = 'Action';
+if(typeof x2 == 'undefined')
+    x2 = {};
+if(typeof x2.publisher == 'undefined')
+    x2.publisher = {};
 
-    public $tabId = 'new-action'; 
+x2.PublisherEventTab = (function () {
 
-    public $tabPrototypeName = 'PublisherActionTab';
+function PublisherEventTab (argsDict) {
+    argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
 
-
-    /**
-     * Magic getter. Returns this widget's packages. 
-     */
-    public function getPackages () {
-        if (!isset ($this->_packages)) {
-            $this->_packages = array_merge (
-                parent::getPackages (),
-                array (
-                    'PublisherActionTabJS' => array(
-                        'baseUrl' => Yii::app()->request->baseUrl,
-                        'js' => array(
-                            'js/publisher/PublisherActionTab.js',
-                        ),
-                        'depends' => array ('PublisherTabJS')
-                    ),
-                )
-            );
-        }
-        return $this->_packages;
-    }
-
-
+	x2.PublisherTab.call (this, argsDict);	
 }
+
+PublisherEventTab.prototype = auxlib.create (x2.PublisherTimeTab.prototype);
+
+/*
+Public static methods
+*/
+
+/*
+Private static methods
+*/
+
+/*
+Public instance methods
+*/
+
+/**
+ * Hide the autocomplete container after submission
+ */
+PublisherEventTab.prototype.reset = function () {
+    x2.PublisherTab.prototype.reset.call (this);
+    if ($('#association-type-autocomplete-container').length) {
+        $('#association-type-autocomplete-container').hide ();
+    }
+};
+
+
+/*
+Private instance methods
+*/
+
+return PublisherEventTab;
+
+}) ();
+

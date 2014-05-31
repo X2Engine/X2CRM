@@ -336,19 +336,22 @@ class ContactsController extends x2base {
     public function actionGetItems(){
         $model = new Contacts('search');
         $visCriteria = $model->getAccessCriteria();
+        list($fullNameCol,$fullNameParam) = Formatter::fullNameSelect('firstName', 'lastName', 'value');
+        // This is necessary because the query won't work if one simply compares
+        // the ad-hoc column "value" as "value LIKE :qterm".
+        list($fullNameCol2,$fullNameParam2) = Formatter::fullNameSelect('firstName', 'lastName');
         $sql = 
-            'SELECT id, city, state, country, email, 
-                IF(assignedTo > 0, (SELECT name FROM x2_groups WHERE id=assignedTo), 
-                   (SELECT fullname from x2_profile WHERE username=assignedTo)) 
-            as assignedTo, CONCAT(firstName," ",lastName) as value 
+            'SELECT id, city, state, country, email, assignedTo, '.$fullNameCol.'
             FROM x2_contacts t 
             WHERE (firstName LIKE :qterm OR lastName LIKE :qterm OR 
-                CONCAT(firstName," ",lastName) LIKE :qterm) AND ('.$visCriteria->condition.') 
+                '.$fullNameCol2.' LIKE :qterm) AND ('.$visCriteria->condition.')
             ORDER BY firstName ASC';
         $command = Yii::app()->db->createCommand($sql);
-        $qterm = $_GET['term'].'%';
-        $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
-        $result = $command->queryAll();
+        $params = array(':qterm'=>$_GET['term'].'%') + $fullNameParam + $fullNameParam2;
+        $result = $command->queryAll(true,$params);
+        foreach(array_keys($result) as $key) {
+            $result[$key]['assignedTo'] = implode(', ',$model->getAssigneeNames($result[$key]['assignedTo']));
+        }
         echo CJSON::encode($result);
         exit;
     }

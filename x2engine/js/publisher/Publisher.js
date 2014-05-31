@@ -222,18 +222,7 @@ Publisher.prototype._setUpSaveButtonBehavior = function () {
         if (!that.beforeSubmit ()) {
             return false;
         }
-
-        // submit current tab contents
-        $.ajax ({
-            url: that.publisherCreateUrl,
-            type: 'POST',
-            data: that._form.serialize (),
-            success: function () {
-                that.updates();
-                that.reset();
-            }
-        });
-
+        that._selectedTab.submit (that, that._form);
         return false;
     });
 

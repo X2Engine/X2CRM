@@ -1011,64 +1011,7 @@ class ProfileController extends x2base {
         );
     }
 
-    public function actionDeleteActivityReport($id, $deleteKey) {
-        $event = X2Model::model('CronEvent')->findByPk($id);
-        $eventData = json_decode($event->data,true);
-        if($deleteKey == $eventData['deleteKey']){
-            $event->delete();
-            echo Yii::t('profile','You will no longer receive this activity feed report.');
-        }else{
-            echo Yii::t('profile','You do not have permission to delete this activity feed report.');
-        }
-    }
-
-    public function actionCreateActivityReport($filters) {
-        $filters = json_encode($_GET);
-        if (isset($_POST['userId'])) {
-            $hour = $_POST['hour'];
-            $filters = $_POST['filters'];
-            $userId = $_POST['userId'];
-            $limit = $_POST['limit'];
-            $range = $_POST['range'];
-            $interval = 0;
-            switch ($range) {
-                case 'daily':
-                    $interval = 24 * 60 * 60;
-                    $hour = strtotime('+1 day ' . $hour);
-                    break;
-                case 'weekly':
-                    $interval = 7 * 24 * 60 * 60;
-                    $hour = strtotime('+1 week ' . $hour);
-                    break;
-                case 'monthly':
-                    $interval = 30 * 24 * 60 * 60;
-                    $hour = strtotime('+1 month ' . $hour);
-                    break;
-                default:
-                    throw new CHttpException (400, Yii::t('profile', 'Bad request'));
-            }
-            $data = json_encode(array(
-                'userId' => $userId,
-                'range' => $range,
-                'limit' => $limit,
-                'filters' => $filters,
-                'deleteKey' => sha1(microtime(true).mt_rand(10000,90000)),
-            ));
-            Yii::app()->db->createCommand()
-                    ->insert('x2_cron_events', array(
-                        'type' => 'activity_report',
-                        'recurring' => 1,
-                        'time' => $hour,
-                        'interval' => $interval,
-                        'data' => $data,
-                        'createDate' => time(),
-            ));
-            $this->redirect('index');
-        }
-        $this->render('createActivityReport', array(
-            'filters' => $filters,
-        ));
-    }
+    
 
     public function actionActivity() {
         $id = Yii::app()->params->profile->id;

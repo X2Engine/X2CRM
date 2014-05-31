@@ -325,12 +325,7 @@ echo CHtml::link(
     array('class'=>'x2-button', 'id'=>'sidebar-apply-feed-filters'));
 echo "</div>";
 echo "<br>";
-echo "<div id='sidebar-full-controls-button-container'>";
-echo CHtml::link(
-        Yii::t('app','Create Report'),'#',
-        array('class'=>'x2-button x2-hint','style'=>'color:#000','id'=>'sidebar-create-activity-report',
-            'title'=>Yii::t('app','Create an email report using the selected filters which will be mailed to you periodically.')));
-echo "</div>";
+
 $this->endWidget();
 echo "</div>";
 
@@ -409,46 +404,7 @@ Yii::app()->clientScript->registerScript('feed-filters','
             "&default=" + defaultFilters;
         return false;
     });
-    $("#sidebar-create-activity-report").click(function(e){
-        e.preventDefault();
-        var visibility=new Array();
-        $.each($(".visibility.filter-checkbox"),function(){
-            if(typeof $(this).attr("checked")=="undefined"){
-                visibility.push($(this).attr("name"));
-            }
-        });
-
-        var users=new Array();
-        $.each($(".users.filter-checkbox"),function(){
-            if(typeof $(this).attr("checked")=="undefined"){
-                users.push($(this).attr("name"));
-            }
-        });
-
-        var eventTypes=new Array();
-        $.each($(".event-type.filter-checkbox"),function(){
-            if(typeof $(this).attr("checked")=="undefined"){
-                eventTypes.push($(this).attr("name"));
-            }
-        });
-
-        var subtypes=new Array();
-        $.each($(".subtypes.filter-checkbox"),function(){
-            if(typeof $(this).attr("checked")=="undefined"){
-                subtypes.push($(this).attr("name"));
-            }
-        });
-
-        var defaultCheckbox=$("#sidebar-filter-default");
-        var defaultFilters=false;
-        if($(defaultCheckbox).attr("checked")=="checked"){
-            defaultFilters=true;
-        }
-        window.location= "createActivityReport" + "?filters=true&visibility=" + visibility + 
-            "&users=" + users+"&types=" + eventTypes +"&subtypes=" + subtypes + 
-            "&default=" + defaultFilters;
-        return false;
-    });
+    
     $(".filter-control-button").click(function(e){
         e.preventDefault();
         var link=this;

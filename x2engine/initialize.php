@@ -38,9 +38,9 @@
 // Global Objects //
 ////////////////////
 // Run the silent installer with default values?
-$silent = isset($_GET['silent']) || (isset($argv) && in_array('silent', $argv));
-// Response object for AJAX-driven installation
-$response = array();
+$silent = php_sapi_name() === 'cli'
+    || isset($_GET['silent'])
+    || (isset($argv) && in_array('silent', $argv));
 // Whether a response is already in progress
 $responding = false;
 // Configuration values passed to PDOStatement::execute for parameter binding
@@ -153,84 +153,27 @@ $confMap = array(
 	'installType' => 'type',
 );
 
-/**
- * Function for communicating status messages to the installer (whether command line or browser)
- *
- * @param $message The message with which to respond
- * @param $error The error, if any
- */
-function respond($message, $error = 0) {
-	global $response, $silent, $responding;
-	$responding = true;
-	if ($error)
-		$response['globalError'] = $error;
-	if ($silent) {
-		echo "$message\n";
-	} else if (isset($_GET['stage']) || isset($_POST['testDb']) || isset($_POST['testCron'])) {
-		header('Content-Type: application/json');
-		$response['message'] = $message;
-		$response['error'] = (bool) $error;
-		echo json_encode($response);
-		exit(0);
-	}
-}
+require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__,'protected','components','util','ResponseUtil.php')));
+
+// AJAX-driven installation needs "OK" status to work properly, even if there
+// are errors to display:
+ResponseUtil::$errorCode = 200;
+
+// Response object for AJAX-driven installation
+$response = new ResponseUtil;
 
 /**
- * Wrapper for "die"; agnostic to whether the installation is web or command line
+ * Convenience wrapper for ResponseUtil::respond
  *
  * @param string $message
  */
 function RIP($message) {
-	global $silent, $response;
-	if ($silent) {
-		die($message . "\n");
-	} else {
-		$response['failed'] = 1;
-		respond($message,1);
-	}
+    ResponseUtil::respond($message,1);
 }
 
-/**
- * Error-handling function: displays info about what went horribly wrong if anything
- *
- * @param type $no
- * @param type $st
- * @param type $fi
- * @param type $ln
- */
-function respondWithError($no, $st, $fi = Null, $ln = Null) {
-	RIP("PHP Error [$no]: $st ($fi, L$ln)");
-}
-
-/**
- * Exception-handling function: displays full exception message, if any wasn't caught.
- *
- * @param Exception $exception
- */
-function respondWithException($exception) {
-	RIP("Uncaught exception with message: " . $exception->getMessage());
-}
-
-/**
- * Shutdown function for fatal errors
- *
- * @global boolean $responding
- */
-function respondFatalErrorMessage() {
-	global $responding;
-	$error = error_get_last();
-	if ($error != null && !$responding) {
-		$errno = $error["type"];
-		$errfile = $error["file"];
-		$errline = $error["line"];
-		$errstr = $error["message"];
-		RIP("PHP ".($errno==E_PARSE?'parse':'fatal')." error [$errno]: $errstr in $errfile L$errline");
-	}
-}
-
-set_error_handler('respondWithError');
-set_exception_handler('respondWithException');
-register_shutdown_function('respondFatalErrorMessage');
+set_error_handler('ResponseUtil::respondWithError');
+set_exception_handler('ResponseUtil::respondWithException');
+register_shutdown_function('ResponseUtil::respondFatalErrorMessage');
 ini_set('display_errors',0);
 // Test the connection and exit:
 if (isset($_POST['testDb'])) {
@@ -293,13 +236,13 @@ if (isset($_POST['testDb'])) {
 	}
     $con->exec("DROP TABLE `x2_test_table`");
 
-	respond(installer_t("Connection successful!"));
+	ResponseUtil::respond(installer_t("Connection successful!"));
 }elseif(isset($_POST['testCron'])){
     require_once 'protected/components/util/CommandUtil.php';
     $command = new CommandUtil();
     try{
         $command->loadCrontab();
-        respond(installer_t('Cron can be used on this system'));
+        ResponseUtil::respond(installer_t('Cron can be used on this system'));
     }catch(Exception $e){
     	if($e->getCode() == 1)
 		RIP(installer_t('The "crontab" command does not exist on this system, so there is no way to set up cron jobs.'));
@@ -417,7 +360,7 @@ function outputErrors() {
  */
 function addError($message) {
 	global $response;
-	if (!isset($response['errors'])) {
+	if (!array_key_exists('errors',$response)) {
 		$response['errors'] = array();
 	}
 	$response['errors'][] = $message;
@@ -437,16 +380,24 @@ function addSqlError($message) {
  * @param type $attr
  * @param type $error
  */
-function addValidationError($attr, $error) {
-	global $response, $silent;
-	if (isset($_GET['stage']) || $silent) {
-		if (!isset($response['errors']))
-			$response['errors'] = array();
-		$response['errors'][$attr] = installer_t($error);
-	} else {
-		// Slip the validation error into the GET parameters as [attribute]--[errormessage]
-		$response['errors'][] = "$attr--$error";
-	}
+function addValidationError($attr, $error){
+    global $response, $silent;
+    $errors = array();
+    if(isset($response['errors'])) {
+        // We have to extract the damn thing and then set it after appending
+        // error messages rather than simply setting elements of the nested
+        // array because PHP.
+        //
+        // http://stackoverflow.com/a/2881533/1325798
+        $errors = $response['errors'];
+    }
+    if(isset($_GET['stage']) || $silent){
+        $errors[$attr] = installer_t($error);
+    }else{
+        // Slip the validation error into the GET parameters as [attribute]--[errormessage]
+        $errors[] = "$attr--$error";
+    }
+    $response['errors'] = $errors;
 }
 
 /**
@@ -486,7 +437,7 @@ function installModule($module, $respond = True) {
 			}
 		}
 		if ($respond)
-			respond(installer_tr('Module "{module}" installed.', array('{module}' => $moduleName)));
+			ResponseUtil::respond(installer_tr('Module "{module}" installed.', array('{module}' => $moduleName)));
 	} else {
 		RIP(installer_tr('Failed to install module "{module}"; could not find configuration file at {path}.', array('{module}' => $moduleName, '{path}' => $regPath)));
 	}
@@ -526,7 +477,7 @@ function installStage($stage) {
 				addValidationError('adminPass2', 'Admin passwords did not match.');
 			if (!empty($response['errors'])) {
                 if(!$silent) {
-                    respond(installer_t('Please correct the following errors:'));
+                    RIP(installer_t('Please correct the following errors:'));
                 } else {
                     outputErrors();
                 }
@@ -570,13 +521,28 @@ function installStage($stage) {
 			if ($config['test_db']) {
 				$filename = implode(DIRECTORY_SEPARATOR,array(__DIR__,'protected','config','X2Config-test.php'));
 				if (!empty($config['test_url'])) {
-					$webTestConfigFile = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected', 'tests', 'WebTestConfig.php'));
+                    $defaultConfig = file_get_contents(implode(DIRECTORY_SEPARATOR, array(
+                        __DIR__,
+                        'protected',
+                        'tests',
+                        'WebTestConfig_example.php'
+                    )));
+					$webTestConfigFile = implode(DIRECTORY_SEPARATOR, array(
+                        __DIR__,
+                        'protected',
+                        'tests',
+                        'WebTestConfig.php'
+                    ));
                     $webTestUrl = rtrim($config['test_url'],'/').'/';
                     $webTestRoot = rtrim(preg_replace('#index-test\.php/?$#','',trim($config['test_url'])),'/').'/';
-					$webTestConfig = "<?php\n";
-                    $webTestConfig .= "define('TEST_BASE_URL',".var_export($webTestUrl,1).");\n";
-                    $webTestConfig .= "define('TEST_WEBROOT_URL',".var_export($webTestRoot,1).");\n";
-                    $webTestConfig .= "?>";
+                    $testConstants = array(
+                        'TEST_BASE_URL'=> var_export($webTestUrl,1),
+                        'TEST_WEBROOT_URL' => var_export($webTestRoot,1)
+                    );
+                    $webTestConfig = $defaultConfig;
+                    foreach($testConstants as $name => $value) {
+                        $webTestConfig = preg_replace("/^defined\('$name'\) or define\('$name'\s*,.*$/m","defined('$name') or define('$name',$value);",$webTestConfig);
+                    }
 					file_put_contents($webTestConfigFile, $webTestConfig);
 				}
 			} else
@@ -715,7 +681,7 @@ function installStage($stage) {
 			break;
 	}
 	if (in_array($stage, array_keys($stageLabels)) && $stage != 'finalize' && !($stage == 'validate' && $silent))
-		respond(installer_tr("Completed: {stage}", array('{stage}' => $stageLabels[$stage])));
+		ResponseUtil::respond(installer_tr("Completed: {stage}", array('{stage}' => $stageLabels[$stage])));
 }
 
 require_once('protected/components/util/FileUtil.php');
@@ -879,7 +845,8 @@ try {
 			addValidationError($attr, installer_tr('{attr}: please check that it is correct', array('{attr}' => installer_t($label))));
 		}
 	}
-	respond(installer_t('Database connection error'), htmlentities($e->getMessage()));
+    $response['errors'] = array(htmlentities($e->getMessage()));
+	ResponseUtil::respond(installer_t('Database connection error'),1);
 }
 
 //////////////////////////////
@@ -905,7 +872,7 @@ if (!$complete || $silent) {
 	outputErrors();
 	$installTime = time();
 	file_put_contents(implode(DIRECTORY_SEPARATOR,array(realpath('protected/data'),'install_timestamp')),$installTime);
-	respond(installer_tr('Installation completed {time}.',array('{time}' => strftime('%D %T',$installTime))));
+	ResponseUtil::respond(installer_tr('Installation completed {time}.',array('{time}' => strftime('%D %T',$installTime))));
 	if ($silent && function_exists('curl_init') && $config['type'] != 'Testing') {
 		foreach ($sendArgs as $urlKey) {
 			$stats[$urlKey] = $config[$urlKey];

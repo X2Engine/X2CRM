@@ -294,7 +294,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 break;
             case 0:  // can't view anything
             default:
-                $ret[] = array('condition'=>'FALSE', 'operator'=>'AND');
+                $ret[] = array('condition'=>'FALSE', 'operator'=>'AND', 'params'=>array());
         }
         return $ret;
     }
@@ -416,6 +416,40 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
         }
         $condition .= ')';
         return array ($condition, $params);
+    }
+
+    /**
+     * Generates a display-friendly list of assignees
+     * 
+     * @param mixed $value If specified, use as the assignment instead of the
+     *  current model's assignment field.
+     */
+    public function getAssigneeNames($value = false) {
+        $assignment = !$value
+                ? $this->owner->getAttribute($this->getAssignmentAttr())
+                : $value;
+        $assignees = !is_array($assignment)
+                ? explode (', ', $assignment)
+                : $assignment;
+
+        $groupIds = array_filter($assignees,'ctype_digit');
+        $userNames = array_diff($assignees, $groupIds);
+        $userNameParam = AuxLib::bindArray($userNames);
+        $userFullNames = !empty($userNames)
+                ? array_map(function($u){
+                    return Formatter::fullName($u['firstName'], $u['lastName']);
+                }, Yii::app()->db->createCommand()->select('firstName,lastName')
+                                ->from(User::model()->tableName())
+                                ->where('username IN '.AuxLib::arrToStrList(array_keys($userNameParam)), $userNameParam)
+                                ->queryAll())
+                : array();
+        $groupIdParam = AuxLib::bindArray($groupIds);
+        $groupNames = !empty($groupIds)
+                ? Yii::app()->db->createCommand()->select('name')->from(Groups::model()->tableName())
+                    ->where('id IN '.AuxLib::arrToStrList(array_keys($groupIdParam)), $groupIdParam)
+                    ->queryColumn()
+                : array();
+        return array_merge($userFullNames,$groupNames);
     }
 
     /**

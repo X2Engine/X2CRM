@@ -137,6 +137,19 @@ abstract class X2DbTestCase extends CDbTestCase {
         self::tearDownAppEnvironment();
     }
 
+    /**
+     * Assert thet the model can be saved without error and, if errors are present, print
+     * out the corresponding error messages.
+     * @param CActiveRecord $model
+     */
+    public function assertSaves (CActiveRecord $model) {
+        $saved = $model->save ();
+        if ($model->hasErrors ()) {
+            VERBOSE_MODE && print_r ($model->getErrors ());
+        }
+        $this->assertTrue ($saved);
+    }
+
     public function __get($name) {
         if(array_key_exists($name,self::$_referenceFixtureRows)) {
             return self::$_referenceFixtureRows[$name];

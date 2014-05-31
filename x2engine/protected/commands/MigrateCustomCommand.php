@@ -122,7 +122,8 @@ class MigrateCustomCommand extends X2ConsoleCommand {
             $msg = $this->formatter($msg)->bold()->color('red')->format();
             $delBranch = $this->prompt($msg,'y');
         }
-        if(strtolower($delBranch)!='n') {
+        if(strtolower($delBranch)=='n') {
+            return;
         }
         
         // Assume we're starting a new update, so clean everything up:
@@ -222,7 +223,7 @@ class MigrateCustomCommand extends X2ConsoleCommand {
     }
 
     public function copyForth(){
-        $this->headerMsg('-- Copying customized files, excluding controller classes , into the Git repository --');
+        $this->headerMsg('-- Copying customized files into the Git repository --');
         $this->sys("{$this->rsync} {$this->source}/ {$this->gitdir}/x2engine/");
     }
 
@@ -378,6 +379,8 @@ class MigrateCustomCommand extends X2ConsoleCommand {
     public function initParams($params) {
         foreach($params as $name=>$value) {
             if($this->canSetProperty($name) || property_exists($this, $name)) {
+                if($name=='gitdir' || $name == 'source')
+                    $value = rtrim($value,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
                 $this->params[$name] = $name;
                 $this->$name = $value;
             }

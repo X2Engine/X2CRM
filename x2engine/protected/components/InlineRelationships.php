@@ -75,6 +75,7 @@ class InlineRelationships extends X2Widget {
 
 	public function run(){
         $linkableModels = X2Model::getModelTypesWhichSupportRelationships(true);
+         
 
         // used to instantiate html dropdown
         $linkableModelsOptions = $linkableModels;

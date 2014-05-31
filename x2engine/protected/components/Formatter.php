@@ -279,6 +279,73 @@ class Formatter {
     }
 
     /**
+     * Formats a full name according to the name format settigns
+     * @param type $firstName
+     * @param type $lastName
+     */
+    public static function fullName($firstName,$lastName) {
+        return !empty(Yii::app()->settings->contactNameFormat)
+                    ? strtr(Yii::app()->settings->contactNameFormat, compact('lastName', 'firstName'))
+                    : "$firstName $lastName";
+    }
+
+    /**
+     * Generates a column clause using CONCAT based on the full name format as
+     * defined in the general settings
+     * 
+     * @param type $firstNameCol
+     * @param type $lastNameCol
+     * @param type $as
+     * @return array An array with the first element being the SQL, the second any parameters to bind.
+     */
+    public static function fullNameSelect($firstNameCol,$lastNameCol,$as=false) {
+        $pre = ':fullName_'.uniqid().'_';
+        $columns = array(
+            'firstName' => $firstNameCol,
+            'lastName' => $lastNameCol,
+        );
+        $format = empty(Yii::app()->settings->contactNameFormat)
+                ? 'firstName lastName'
+                : Yii::app()->settings->contactNameFormat;
+        $placeholderPositions = array();
+        foreach($columns as $placeholder => $columnName) {
+            if(($pos = mb_strpos($format,$placeholder)) !== false) {
+                $placeholderPositions[$placeholder] = $pos;
+            }
+        }
+        asort($placeholderPositions);
+        $concatItems = array();
+        $params = array();
+        $lenTot = mb_strlen($format);
+        $n_p = 0;
+        $pos = 0;
+
+        foreach($placeholderPositions as $placeholder => $position){
+            // Get extraneous text into a parameter:
+            if($position > $pos){
+                $leadIn = mb_substr($format,$pos,$position-$pos);
+                if(!empty($leadIn)) {
+                    $concatItems[] = $param = "{$pre}_inter_$n_p";
+                    $params[$param] = $leadIn;
+                    $n_p++;
+                }
+                $pos += mb_strlen($leadIn);
+            }
+            $concatItems[] = "`{$columns[$placeholder]}`";
+            $pos += mb_strlen($placeholder);
+        }
+        if($pos < $lenTot-1) {
+            $trailing = mb_substr($format,$pos);
+            $concatItems[] = $param = "{$pre}_trailing";
+            $params[$param] = $trailing;
+        }
+        return array(
+            "CONCAT(".implode(',', $concatItems).")".($as ? " AS `$as`" : ''),
+            $params
+        );
+    }
+
+    /**
      * Check if am/pm is being used in this locale.
      */
     public static function formatAMPM(){
@@ -635,7 +702,7 @@ class Formatter {
             $shortCodePatterns[] = preg_quote($token,'#');
         }
         $phpOper = '[\[\]()<>=!^|?:*+%/\-\.]|and |or |xor |\s'; // PHP operators
-        $singleQuotedString = '\'[\w\s\.;:,()]*?\''; // Only simple strings currently supported
+        $singleQuotedString = '\'[^\']*\''; // Only simple strings currently supported
         $number = '[0-9]+(?:\.[0-9]+)?';
         $boolean = '(?:false|true)';
         $validPattern = '#^return (?:'

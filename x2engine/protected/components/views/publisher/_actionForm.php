@@ -69,42 +69,76 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                 ), // fix datepicker so it's always on top
             ));
             ?>
-        </div>
+        </div><!-- .cell  - the due date and reminder option-->
             
         <div class="cell">
             <?php 
             echo CHtml::activeLabel(
                 $model,'priority',
                 array('class'=>'action-priority-label')); 
-            echo $form->dropDownList($model, 'priority', array(
-                '1' => Yii::t('actions', 'Low'),
-                '2' => Yii::t('actions', 'Medium'),
-                '3' => Yii::t('actions', 'High'))
-                    ,
+            echo $form->dropDownList($model, 'priority', Actions::getPriorityLabels(),
                 array('class'=>'action-priority x2-select')
             );
             ?>
         </div><!-- .cell -->
            
-        <?php /* Assigned To */ ?>
         <div class="cell">
+            <?php /* Assigned To */ ?>
+            <div class="cell">
+                <?php 
+                /* Users */ 
+                echo $form->label($model, 'assignedTo',array('class'=>'action-assigned-to-label')); 
+                echo $model->renderInput (
+                    'assignedTo', array('class' => 'action-assignment-dropdown')); 
+                ?>
+            </div><!-- .cell -->
+            <div class="cell">
+                <?php 
+                echo $form->label($model, 'visibility',array('class'=>'action-visibility-label')); 
+                echo $form->dropDownList(
+                    $model, 'visibility', 
+                    X2PermissionsBehavior::getVisibilityOptions(),
+                    array(
+                        'class'=>'action-visibility-dropdown x2-select',
+                    )); 
+                ?>
+            </div><!-- .cell -->
+        </div>
+        <div class='row' id='action-reminder-container'>
             <?php 
-            /* Users */ 
-            echo $form->label($model, 'assignedTo',array('class'=>'action-assigned-to-label')); 
-            echo $model->renderInput (
-                'assignedTo', array('class' => 'action-assignment-dropdown')); 
-            echo $form->label($model, 'visibility',array('class'=>'action-visibility-label')); 
-            echo $form->dropDownList(
-                $model, 'visibility', 
-                array(
-                    0 => Yii::t('actions', 'Private'), 1 => Yii::t('actions', 'Public'),
-                    2 => Yii::t('actions', "User's Group")
-                ),
-                array(
-                    'class'=>'action-visibility-dropdown x2-select',
-                )); 
+            echo $form->checkBox($model, 'reminder', array ('data-default' => '0')); 
+            echo CHtml::label(Yii::t('actions', 'Create Reminder'),'reminder');
             ?>
-        </div><!-- .cell -->
+            <div style='display: none;' id='action-reminder-inputs'>
+                <?php 
+                echo 
+                    '<div>'.Yii::t('actions', 'Create a notification reminder for ').'</div>'.
+                    CHtml::dropDownList(
+                        'notificationUsers', !empty($notifType) ? $notifType : 'assigned',
+                        array(
+                            'me' => Yii::t('actions', 'me'),
+                            'assigned' => Yii::t('actions', 'the assigned user'),
+                            'both' => Yii::t('actions', 'me and the assigned user'),
+                        ),
+                        array (
+                            'class' => 'left'
+                        )
+                    ).
+                    CHtml::dropDownList(
+                        'notificationTime', !empty($notifTime) ? $notifTime : 15,
+                        array(
+                            1 => Yii::t('actions', '1 minute'),
+                            5 => Yii::t('actions', '5 minutes'),
+                            10 => Yii::t('actions', '10 minutes'),
+                            15 => Yii::t('actions', '15 minutes'),
+                            30 => Yii::t('actions', '30 minutes'),
+                            60 => Yii::t('actions', '1 hour')
+                        )
+                    ).
+                    '<div>'.Yii::t('actions', ' before this action is due.').'</div>';
+                ?>
+            </div><!-- #action-reminders -->
+        </div>
         
     </div><!-- #action-event-panel -->
 </div>

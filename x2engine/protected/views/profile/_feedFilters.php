@@ -207,10 +207,7 @@ echo CHtml::checkBox('setDefault', false,
     )
 );
 echo "<label for='setDefault'>".Yii::t('app','Set Default')."</label>";
-echo CHtml::link(
-        Yii::t('app','Create Report'),'#',
-        array('class'=>'x2-button x2-hint','style'=>'color:#000;margin-left:5px;','id'=>'create-activity-report',
-            'title'=>Yii::t('app','Create an email report using the selected filters which will be mailed to you periodically.')));
+
 echo "</div>";
 echo "</div>";
 

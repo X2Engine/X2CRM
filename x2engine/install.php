@@ -303,15 +303,6 @@ $timezones = array(
 
 	<script type="text/javascript">
 
-	function validate(form) {
-		if(form.adminPass.value == form.adminPass2.value) {
-			return true;
-		} else {
-			alert("Passwords do not match!");
-			return false;
-		}
-	}
-
 	function installStageRequest(stage,formData,done,fail,always) {
 		done = typeof done == 'undefined' ? function(){} : done;
 		fail = typeof fail == 'undefined' ? function(){} : fail;
@@ -332,7 +323,7 @@ $timezones = array(
 		if (typeof thisStage != 'undefined') {
 			if (thisStage=='validate') {
 				installStageRequest('validate',formData,(function(data) {
-					if(data.errors || data.globalError) {
+					if(data.error || data.errors || data.globalError) {
 						box.html($("<h3>").text(data.message));
 						if(data.globalError)
 							box.append($("<span>").text(data.globalError).addClass('error'));
@@ -362,8 +353,8 @@ $timezones = array(
 					progressList.insertAfter(messageHeader);
 				}
 				installStageRequest(thisStage,formData,(function(data) {
-					progressList.append($('<li>').text(data.message).css({color: (data.failed ? 'red':'green')}));
-					if(!data.failed)
+					progressList.append($('<li>').text(data.message).css({color: (data.error ? 'red':'green')}));
+					if(!data.error)
 						installStage(stagesRemaining,formData,form,nDone+1,data);
 					else
 						box.find('img').remove();
@@ -428,7 +419,7 @@ $timezones = array(
                 var message = '';
                 var okImage = '<img src="<?php echo $themeURL; ?>/images/OK.png">';
                 var notOkImage = '<img src="<?php echo $themeURL; ?>/images/NOT_OK.png">';
-                if (r.errors || r.globalError || r.failed) {
+                if (r.errors || r.globalError || r.error) {
                     message =  notOkImage + '<span class="error">'+r.message+'</span>';
                 } else {
                     message = okImage + r.message;
@@ -469,7 +460,7 @@ $timezones = array(
                 else
                     echo "<span class=\"error\">Note: cannot find requirements check script.</span>";
                 ?>
-                <form name="install" id="install" action="initialize.php" method="POST" onSubmit="return validate(this);">
+                <form name="install" id="install" action="initialize.php" method="POST">
                     <h2><?php echo installer_t('X2Engine Application Info'); ?></h2><hr>
                     <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2Engine'); ?>" style="width:190px" /></div>
                     <div class="row"><label for="language"><?php echo installer_t('Default Language'); ?></label>

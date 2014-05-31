@@ -798,8 +798,8 @@ class Profile extends CActiveRecord {
     }
 
     /**
-     * Inits a layout for viewing a module. The layout is a set of associative arrays
-     * with the following format:
+     * Initializes widget layout. The layout is a set of associative arrays with the following 
+     * format:
      * array (
      * 'left'=> array()
      *  'content' => array(
@@ -810,7 +810,7 @@ class Profile extends CActiveRecord {
      * 'right' => array()
      * )
      *
-     * The layout should be json encoded and saved in the layout column of the user's profile.
+     * The layout should be json encoded and saved in profile layout property.
      *
      * @return array
      */
@@ -940,9 +940,9 @@ class Profile extends CActiveRecord {
     }
 
 
-    /*
-      Private helper function to update users layout elements to match the set of layout
-      elements specified in initLayout ().
+    /**
+     * Private helper function to update users layout elements to match the set of layout
+     * elements specified in initLayout ().
      */
     private function addRemoveLayoutElements($position, &$layout, $initLayout){
 

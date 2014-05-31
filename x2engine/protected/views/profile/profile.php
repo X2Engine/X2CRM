@@ -50,6 +50,7 @@ AuxLib::registerPassVarsToClientScriptScript (
     'x2.profile', array ('isMyProfile' => ($isMyProfile ? 'true' : 'false')), 'profileScript');
 
 ?>
+<div id='profile-content-container' <?php echo ($isMyProfile ? 'class="full-profile"' : ''); ?>>
 <div id='profile-info-container-outer'>
 <?php
 $this->renderPartial('_profileInfo', array('model'=>$model, 'isMyProfile'=>$isMyProfile)); 
@@ -128,4 +129,5 @@ $this->renderPartial('_activityFeed', array(
     'isMyProfile' => $isMyProfile
 ));
 ?>
+</div>
 </div>

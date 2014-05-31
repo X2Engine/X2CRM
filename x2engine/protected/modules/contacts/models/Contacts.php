@@ -52,6 +52,19 @@ class Contacts extends X2Model {
     public static function model($className=__CLASS__) { return parent::model($className); }
 
     /**
+     * @return array relational rules.
+     */
+    public function relations() {
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array_merge (parent::relations (), 
+                array (
+                    'fingerprint' => array(self::BELONGS_TO, 'Fingerprint', 'fingerprintId'),
+                )
+            );
+    }
+
+    /**
      * @return string the associated database table name
      */
     public function tableName() { return 'x2_contacts'; }

@@ -1371,7 +1371,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $script = 'protected/tests/data/updatemigration/touch.php';
         copy($ube->webRoot.DIRECTORY_SEPARATOR.FileUtil::rpath($script),$ube->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
         ob_start();
-        $ube->runMigrationScripts(array($script),&$ran);
+        $ube->runMigrationScripts(array($script),$ran);
         ob_end_clean();
         $this->assertEquals(1,count($ran));
         $this->assertFileExists($testfile = $ube->webRoot.DIRECTORY_SEPARATOR.'testfile');

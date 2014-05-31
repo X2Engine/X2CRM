@@ -60,6 +60,7 @@ function echoTabRow ($tabs, $rowNum=1) {
         $tab->renderTab (array (
             'form' => $form,
             'model' => $model,
+            'associationType' => $associationType,
         ));
     }
     if(Yii::app()->user->isGuest){ 
@@ -78,10 +79,14 @@ function echoTabRow ($tabs, $rowNum=1) {
     <?php 
     } 
     echo CHtml::hiddenField('SelectedTab', ''); // currently selected tab  
-    echo $form->hiddenField($model, 'associationType'); 
-    echo $form->hiddenField($model, 'associationId'); 
+    if ($associationType !== 'calendar') {
+        echo $form->hiddenField($model, 'associationType'); 
+        echo $form->hiddenField($model, 'associationId'); 
+    }
     ?>
-    <input type='submit' value='Save' id='save-publisher' class='x2-button'>
+    <div class='row'>
+        <input type='submit' value='Save' id='save-publisher' class='x2-button'>
+    </div>
     </div>
 </div>
 

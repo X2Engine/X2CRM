@@ -821,20 +821,23 @@ class WorkflowController extends x2base {
         $gridConfig = array (
             'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
             'template'=> 
-                '<div class="page-title">{title}'.
+                '<div class="page-title">{title}{buttons}'.
                 '</div>{items}{pager}',
             'fixedHeader' => false,
-            'viewName' => 'workflowView',
             'fullscreen' => false,
+	        'buttons'=>array('columnSelector','autoResize'),
         );
         
-        if(isset($contactsDataProvider) && !empty ($contactsDataProvider)) {
+        if(isset($contactsDataProvider) && !empty ($contactsDataProvider) && 
+            // only render the grid that's requested if an X2GridView update request is being made
+           (!isset ($_GET['ajax']) || $_GET['ajax'] === 'contacts-grid')) {
 
         $this->renderPartial ('_ajaxRequestedStageMembers', 
             array ('gridConfig' => array_merge (
                 $gridConfig,
                 array (
                     'gvSettingsName' => 'contactsStageMembers',
+                    'viewName' => 'workflowViewContacts',
                     'defaultGvSettings'=>array(
                         'name' => 125,
                         'dealvalue' => 165,
@@ -844,6 +847,7 @@ class WorkflowController extends x2base {
                     ),
                     'dataProvider' => $contactsDataProvider,
                     'id'=>'contacts-grid',
+                    'ajaxUpdate'=>'contacts-grid',
                     'modelName' => 'Contacts',
                     'title' => Yii::t('contacts','Contacts'),
                     'specialColumns'=>array(
@@ -876,7 +880,8 @@ class WorkflowController extends x2base {
         
         }
         
-        if(isset ($opportunitiesDataProvider) && !empty($opportunitiesDataProvider)) {
+        if(isset ($opportunitiesDataProvider) && !empty($opportunitiesDataProvider) &&
+           (!isset ($_GET['ajax']) || $_GET['ajax'] === 'opportunities-grid')) {
 
         $this->renderPartial ('_ajaxRequestedStageMembers', 
             array ('gridConfig' => array_merge (
@@ -891,7 +896,9 @@ class WorkflowController extends x2base {
                     ),
                     'dataProvider' => $opportunitiesDataProvider,
                     'id'=>'opportunities-grid',
+                    'ajaxUpdate'=>'opportunities-grid',
                     'modelName' => 'Opportunity',
+                    'viewName' => 'workflowViewOpportunities',
                     'gvSettingsName' => 'opportunityStageMembers',
                     'title' => Yii::t('opportunitites','Opportunities'),
                     'specialColumns'=>array(
@@ -926,31 +933,43 @@ class WorkflowController extends x2base {
             )), false, true);
         }
 
-        if(isset ($accountsDataProvider) && !empty($accountsDataProvider)) {
+        if(isset ($accountsDataProvider) && !empty($accountsDataProvider) && 
+           (!isset ($_GET['ajax']) || $_GET['ajax'] === 'accounts-grid')) {
 
         $this->renderPartial ('_ajaxRequestedStageMembers', 
             array ('gridConfig' => array_merge (
                 $gridConfig,
                 array (
                     'gvSettingsName' => 'accountsStageMembers',
+                    'viewName' => 'workflowViewAccounts',
                     'dataProvider' => $accountsDataProvider,
                     'id'=>'accounts-grid',
+                    'ajaxUpdate'=>'accounts-grid',
                     'modelName' => 'Accounts',
                     'title' => Yii::t('accounts','Accounts'),
                     'defaultGvSettings'=>array(
                         'name' => 125,
-                        'annualRevenue' => 165,
+                        'dealvalue' => 165,
+                        'dealstatus' => 80,
+                        'lastUpdated' => 80,
                         'assignedTo' => 80,
                     ),
                     'specialColumns'=>array(
                         'name' => array(
-                            'header'=>X2Model::model('Accounts')->getAttributeLabel('name'),
                             'name'=>'name',
+                            'header'=>Yii::t('accounts','Name'),
                             'value'=>'CHtml::link('.
-                                '$data["name"],'.
-                                'array("/accounts/accounts/view","id"=>$data["id"]))',
+                                '$data["name"],array("/accounts/accounts/view",'.'
+                                    "id"=>$data["id"]))',
                             'type'=>'raw',
-                            'htmlOptions'=>array('width'=>'40%'),
+                            'htmlOptions'=>array('width'=>'30%')
+                        ),
+                        'lastUpdated' => array(
+                            'name'=>'lastUpdated',
+                            'header'=>Yii::t('accounts','Expected Close Date'),
+                            'value'=>'Formatter::formatDate($data["lastUpdated"])',
+                            'type'=>'raw',
+                            'htmlOptions'=>array('width'=>'15%')
                         ),
                         'assignedTo' => array(
                             'header'=>X2Model::model('Accounts')->getAttributeLabel('assignedTo'),
@@ -983,14 +1002,18 @@ class WorkflowController extends x2base {
         $dateRange = self::getDateRange ();
         $expectedCloseDateDateRange=self::getDateRange(
             'expectedCloseDateStart', 'expectedCloseDateEnd', 'expectedCloseDateRange');
-        list ($totalValue, $projectedValue, $currentAmount, $count) = Workflow::getStageValue (
-            $id, $stage, $users, $modelType, $dateRange, $expectedCloseDateDateRange);
-        $this->renderPartial ('_dataSummary', array (
-            'totalValue' => Formatter::formatCurrency ($totalValue),
-            'projectedValue' => Formatter::formatCurrency ($projectedValue),
-            'currentAmount' => Formatter::formatCurrency ($currentAmount),
-            'count' => $count,
-        ));
+        $workflow = Workflow::model ()->findByPk ($id);
+        if ($workflow !== null) {
+            list ($totalValue, $projectedValue, $currentAmount, $count) = Workflow::getStageValue (
+                $id, $stage, $users, $modelType, $dateRange, $expectedCloseDateDateRange);
+            $this->renderPartial ('_dataSummary', array (
+                'stageName' => $workflow->getStageName ($stage),
+                'totalValue' => Formatter::formatCurrency ($totalValue),
+                'projectedValue' => Formatter::formatCurrency ($projectedValue),
+                'currentAmount' => Formatter::formatCurrency ($currentAmount),
+                'count' => $count,
+            ));
+        }
     }
 
     

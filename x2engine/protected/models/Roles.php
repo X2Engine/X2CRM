@@ -237,17 +237,15 @@ class Roles extends CActiveRecord {
                     ->from('x2_roles')
                     ->where('id=:role', array(':role' => $role))
                     ->queryScalar();
-            if(isset($timeout))
-                $availableTimeouts[] = $timeout;
-            unset($timeout);
+            if(!is_null($timeout))
+                $availableTimeouts[] = (integer) $timeout;
         }
+
         $availableTimeouts[] = Yii::app()->settings->timeout;
-        if(count($availableTimeouts) > 0){
-            $timeout = max($availableTimeouts);
-            if($cache === true)
-                Yii::app()->cache->set($cacheVar, $timeout, 259200);
-            return $timeout;
-        }
+        $timeout = max($availableTimeouts);
+        if($cache === true)
+            Yii::app()->cache->set($cacheVar, $timeout, 259200);
+        return $timeout;
     }
 
     private static function getUserCacheVar ($userId) {

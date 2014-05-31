@@ -36,7 +36,7 @@
  *****************************************************************************************/
 
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin','Import {model} from Template', array('{model}'=>X2Model::getModelTitle ($model))); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin','Import {model} from Template', array('{model}'=>(empty($model)? "" : X2Model::getModelTitle ($model)))); ?></h2></div>
 <div class="form">
 
 <?php if(!empty($errors)){

@@ -370,12 +370,10 @@ show left menu
 /*
 hide right widget bar 
 */
-@media (max-width: 1040px) {
+@media (max-width: 940px) {
     #sidebar-right {
         display: none;
     }
 }
-
-
 
 

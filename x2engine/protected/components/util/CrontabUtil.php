@@ -191,7 +191,7 @@ class CrontabUtil {
      * @param string $crontab The cron table.
      * @return array
      */
-    public static function crontabToArray($crontab){
+    public static function crontabToArray(&$crontab){
         try{
             self::addCronMarker($crontab,true);
         }catch(Exception $e){

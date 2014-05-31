@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -34,40 +35,26 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.modules.contacts.models.*');
+
 /**
- * @package application.components
+ * @package application.tests.unit.modules.contacts.models
  */
-class PublisherActionTab extends PublisherTab {
-    
-    public $viewFile = 'application.components.views.publisher._actionForm';
+class ContactsTest extends X2DbTestCase {
 
-    public $title = 'Action';
-
-    public $tabId = 'new-action'; 
-
-    public $tabPrototypeName = 'PublisherActionTab';
-
-
-    /**
-     * Magic getter. Returns this widget's packages. 
-     */
-    public function getPackages () {
-        if (!isset ($this->_packages)) {
-            $this->_packages = array_merge (
-                parent::getPackages (),
-                array (
-                    'PublisherActionTabJS' => array(
-                        'baseUrl' => Yii::app()->request->baseUrl,
-                        'js' => array(
-                            'js/publisher/PublisherActionTab.js',
-                        ),
-                        'depends' => array ('PublisherTabJS')
-                    ),
-                )
-            );
-        }
-        return $this->_packages;
+    public static function referenceFixtures () {
+        return array(
+            'contacts' => array ('Contacts', '.FingerprintTest'),
+            'anonContacts' => array ('AnonContact', '.FingerprintTest'),
+            'fingerprints' => array ('Fingerprint', '.FingerprintTest'),
+        );
     }
 
+    public function testRelations() {
+        $contact = $this->contacts ('contact1');
+        $this->assertTrue ($contact->fingerprint instanceof Fingerprint);
+    }
 
 }
+
+?>

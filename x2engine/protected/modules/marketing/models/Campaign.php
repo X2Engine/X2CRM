@@ -167,7 +167,8 @@ class Campaign extends X2Model {
         $conditions=$this->getAccessConditions($accessLevel);
 		foreach($conditions as $arr){
             $criteria->addCondition($arr['condition'],$arr['operator']);
-            $criteria->params = array_merge($criteria->params,$arr['params']);
+            if (is_array($arr['params']))
+                $criteria->params = array_merge($criteria->params,$arr['params']);
         }
 
 		return $criteria;

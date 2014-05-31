@@ -71,7 +71,7 @@ class X2CalendarPermissions extends CActiveRecord
 			foreach($users as $user) {
 				$first = $user->firstName;
 				$last = $user->lastName;
-				$fullname = $first . ' ' . $last;
+				$fullname = Formatter::fullName($first, $last);
 				$username = $user->username;
 				$names[$username] = $fullname;
 			}
@@ -92,7 +92,7 @@ class X2CalendarPermissions extends CActiveRecord
 					$user = $users[$permission->user_id];
 					$first = $user->firstName;
 					$last = $user->lastName;
-					$fullname = $first . ' ' . $last;
+					$fullname = Formatter::fullName($first, $last);
 					$username = $user->username;
 					$names[$username] = $fullname;
 				}
@@ -104,7 +104,7 @@ class X2CalendarPermissions extends CActiveRecord
 				if(!in_array($user->id, $checked)) {
 					$first = $user->firstName;
 					$last = $user->lastName;
-					$fullname = $first . ' ' . $last;
+					$fullname = Formatter::fullName($first, $last);
 					$username = $user->username;
 					$names[$username] = $fullname;
 				}
@@ -114,7 +114,7 @@ class X2CalendarPermissions extends CActiveRecord
 			$user = $users[Yii::app()->user->id];
 			$first = $user->firstName;
 			$last = $user->lastName;
-			$fullname = $first . ' ' . $last;
+			$fullname = Formatter::fullName($first, $last);
 			$username = $user->username;
 			$names[$username] = $fullname;
 		
@@ -147,7 +147,7 @@ class X2CalendarPermissions extends CActiveRecord
 			foreach($users as $user) {
 				$first = $user->firstName;
 				$last = $user->lastName;
-				$fullname = $first . ' ' . $last;
+				$fullname = Formatter::fullName($first, $last);
 				$username = $user->username;
 				$names[$username] = $fullname;
 			}
@@ -168,7 +168,7 @@ class X2CalendarPermissions extends CActiveRecord
 					$user = $users[$permission->user_id];
 					$first = $user->firstName;
 					$last = $user->lastName;
-					$fullname = $first . ' ' . $last;
+					$fullname = Formatter::fullName($first, $last);
 					$username = $user->username;
 					$names[$username] = $fullname;
 				}
@@ -181,7 +181,7 @@ class X2CalendarPermissions extends CActiveRecord
 			$user = $users[Yii::app()->user->id];
 			$first = $user->firstName;
 			$last = $user->lastName;
-			$fullname = $first . ' ' . $last;
+			$fullname = Formatter::fullName($first, $last);
 			$username = $user->username;
 			$names[$username] = $fullname;
 		

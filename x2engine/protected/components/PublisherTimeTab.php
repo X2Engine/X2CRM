@@ -60,7 +60,7 @@ class PublisherTimeTab extends PublisherTab {
             $this->_packages = array_merge (
                 parent::getPackages (),
                 array (
-                    'PublisherTimeTabTabJS' => array(
+                    'PublisherTimeTabJS' => array(
                         'baseUrl' => Yii::app()->request->baseUrl,
                         'js' => array(
                             'js/publisher/PublisherTimeTab.js',

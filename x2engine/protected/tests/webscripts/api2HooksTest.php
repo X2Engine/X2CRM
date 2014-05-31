@@ -54,7 +54,6 @@ $users = require(implode(DIRECTORY_SEPARATOR,array(
 
 $requestData = array();
 $requestData['body'] = json_decode(file_get_contents('php://input'),1);
-$requestData['headers'] = getallheaders();
 
 $hookName = isset($_GET['name'])?$_GET['name']:null;
 

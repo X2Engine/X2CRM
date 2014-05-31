@@ -386,7 +386,7 @@ x2.fieldUtils = {
                 }).autocomplete({
                     minLength:0,
                     source:function(request,response) {
-                        lastTag = request.term.split(/,\s*/).pop();    // delegate back to autocomplete, but extract the last term
+                        var lastTag = request.term.split(/,\s*/).pop();    // delegate back to autocomplete, but extract the last term
                         response($.ui.autocomplete.filter(x2.allTags,lastTag));
                     },
                     focus:function() {    // prevent value inserted on focus

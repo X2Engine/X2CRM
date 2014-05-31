@@ -34,6 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$model->fullName = $model->user->getFullName();
 
 Yii::app()->clientScript->registerCss("viewProfile", "
 

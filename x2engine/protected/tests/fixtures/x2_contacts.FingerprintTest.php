@@ -69,6 +69,23 @@ return array(
         'lastUpdated' => 3,
 		'fingerprintId' => '14',
 	),
+    // about the same as anon contact 2 but not anonymous
+	'contact5' => array(
+		'id' => 50004,
+		'name' => 'ftest ftest4',
+        'nameId' => 'ftest ftest4_50004',
+        'company' => 'Black Mesa_1',
+		'firstName' => 'testf',
+		'lastName' => 'testf4',
+		'email' => 'testf@testf.com',
+		'assignedTo' => 'Anyone',
+		'visibility' => 1,
+		'phone' => '(234) 918-2348',
+		'phone2' => '398-103-6291',
+		'trackingKey' => '12345678901234567890',
+        'lastUpdated' => 2,
+		'fingerprintId' => '16',
+	),
 );
 
 ?>

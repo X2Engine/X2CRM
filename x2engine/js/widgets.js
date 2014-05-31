@@ -77,6 +77,15 @@ $(function() {
         },
         handle: $(this).find ('.x2widget-header')
     });
+
+    // handle when user rearranges left widgets
+    $('#sidebar-left-widget-box').sortable({
+        update: function(event, ui) {
+            $.post(yii.scriptUrl+'/site/reorderWidgets',
+                $(this).sortable('serialize') + '&block=left');
+        },
+        handle: $(this).find ('.sidebar-left > div:first-child .portlet-title')
+    });
     
     $('.x2-widget-menu-item').draggable({
         revert: 'invalid', 

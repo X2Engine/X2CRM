@@ -141,13 +141,11 @@ auxlib.destroyErrorBox = function (parentElem) {
 	}
 }
 
-/*
-Returns a jQuery element corresponding to an error box. The error box will
-contain the specified errorHeader and a bulleted list of the specified error
-messages.
-Parameters:
-	errorHeader - a string
-	errorMessages - an array of strings
+/**
+ * Returns a jQuery element corresponding to an error box. The error box will
+ * contain the specified errorHeader and a bulleted list of the specified error
+ * messages.
+ * @deprecated Use X2Forms.prototype.errorSummary instead
 */
 auxlib.createErrorBox = function (errorHeader, errorMessages) {
 	var errorBox = $('<div>', {'class': 'error-summary-container'}).append (
@@ -162,9 +160,6 @@ auxlib.createErrorBox = function (errorHeader, errorMessages) {
 	}
 	return errorBox;
 }
-
-
-
 
 /*
 Select an option from a select element

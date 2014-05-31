@@ -21,6 +21,52 @@
  ********************************************************************************/
 
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+Yii::app()->clientScript->registerCss('eventTabCss',"
+
+#calendar + br + #publisher-form #save-publisher {
+    float: right !important;
+}
+
+");
+
+if ($associationType === 'calendar') {
+    Yii::app()->clientScript->registerScript('eventTabJS',"
+(function () {
+
+$('#Actions_associationType').change (function () {
+    var that = this;
+    if ($(this).val () === 'calendar') {
+        $('#association-type-autocomplete-container').hide ();
+        return false;
+    }
+    x2.forms.inputLoading ($(this));
+    $.ajax ({
+        type: 'GET',
+        url: '".Yii::app()->controller->createUrl ('ajaxGetModelAutocomplete')."',
+        data: {
+            modelType: x2.associationModels[$(this).val ()],
+            name: 'Actions[associationName]'
+        },
+        success: function (data) {
+            if (data !== 'failure') {
+                // remove span element used by jQuery widget
+                $('#association-type-autocomplete-container input').
+                    first ().next ('span').remove ();
+                // replace old autocomplete with the new one
+                $('#association-type-autocomplete-container input').first ().replaceWith (data); 
+                $('#association-type-autocomplete-container').show ();
+            } else {
+                $('#association-type-autocomplete-container').hide ();
+            }
+            x2.forms.inputLoadingStop ($(that));
+        }
+    });
+});
+
+}) ();
+    ", CClientScript::POS_READY);
+}
+
 ?>
 
 <div id='new-event' class='publisher-form' 
@@ -134,6 +180,10 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
             echo $form->label($model, 'assignedTo',array('class'=>'action-assigned-to-label')); 
             echo $model->renderInput (
                 'assignedTo', array('class' => 'action-assignment-dropdown')); 
+            ?>
+        </div><!-- .cell -->
+        <div class='cell'>
+            <?php
             echo $form->label($model, 'visibility',array('class'=>'action-visibility-label')); 
             echo $form->dropDownList(
                 $model, 'visibility', 
@@ -142,8 +192,56 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                     2 => Yii::t('actions', "User's Group")
                 ),
                 array('class'=>'action-visibility-dropdown')); 
+
             ?>
-        </div><!-- .cell -->
+        </div>
+        <?php
+        if ($associationType === 'calendar') {
+        ?>
+        <div class='cell'>
+            <?php
+            echo $form->label(
+                $model, 'associationType',
+                array('class'=>'action-associationType-label')); 
+            $associationTypeOptions = X2Model::getAssociationTypeOptions ();
+            unset ($associationTypeOptions['calendar']);
+            $associationTypeOptions = 
+                array ('calendar' => '-------------------') + $associationTypeOptions;
+
+            echo $form->dropDownList(
+                $model, 'associationType', 
+                $associationTypeOptions,
+                array('class'=>'action-associationType-dropdown')); 
+            ?>
+            <div id='association-type-autocomplete-container' <?php 
+             echo ($model->associationType === 'calendar' ? 'style="display: none;"' : ''); ?>>
+            <?php
+                echo CHtml::label(
+                    Yii::t('app', 'Association Name'),
+                    'associationName',
+                    array('class'=>'action-associationName-label')); 
+                $autocomplete = X2Model::renderModelAutocomplete (
+                    X2Model::getModelName ($model->associationType), false, array (
+                        'name' => 'Actions[associationName]'
+                    ));
+                if ($autocomplete !== 'failure') {
+                    echo $autocomplete;
+                } else {
+                    // dummy input to be replaced with autocomplete
+                    echo '<input disabled="disabled">';
+                }
+                echo $form->hiddenField($model, 'associationId', array (
+                    'data-default' => ''
+                )); 
+            ?>
+            </div>
+            <?php
+            echo CHtml::hiddenField('calendarEventTab', true); 
+            ?>
+        </div>
+        <?php  
+        }
+        ?> 
         
     </div><!-- #action-event-panel -->
 </div>

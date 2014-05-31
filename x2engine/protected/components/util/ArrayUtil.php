@@ -169,6 +169,16 @@ class ArrayUtil {
         return false;
     }
 
+    /**
+     * Retrieve the first entry from an associative array 
+     * @param array $array
+     */
+    public static function assocArrayShift (&$array) {
+        $keys = array_keys ($array); 
+        return array ($keys[0] => array_shift ($array));
+    }
+
+
 }
 
 ?>

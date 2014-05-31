@@ -1196,8 +1196,12 @@ abstract class x2base extends X2Controller {
      * Called by the InlineRelationships widget to render autocomplete widgets 
      * @param string $modelType
      */
-    public function actionAjaxGetModelAutocomplete ($modelType) {
-        X2Model::renderModelAutocomplete ($modelType, true);
+    public function actionAjaxGetModelAutocomplete ($modelType, $name=null) {
+        $htmlOptions = array ();
+        if ($name) {
+            $htmlOptions['name'] = $name;
+        }
+        X2Model::renderModelAutocomplete ($modelType, true, $htmlOptions);
     }
 
     /**

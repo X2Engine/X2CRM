@@ -2955,6 +2955,9 @@ class AdminController extends Controller {
              * $_SESSION['importMap'][<x2_attribute>] = <metadata_attribute>
              */
             foreach($meta as $metaVal){
+                // Ignore the import failures column
+                if ($metaVal == 'X2_Import_Failures')
+                    continue;
                 // Same reason as $originalAttributes
                 $originalMetaVal = $metaVal;
                 $metaVal = strtolower(preg_replace('/[\W|_]/', '', $metaVal));
@@ -3054,12 +3057,18 @@ class AdminController extends Controller {
                 $_SESSION['errors'] = Yii::t('admin', "Empty CSV or no metadata specified");
                 $this->redirect('importModels');
             }
+
             // Set our file offset for importing Contacts
             $_SESSION['offset'] = ftell($fp);
             $_SESSION['metaData'] = $meta;
             $failedContacts = fopen($this->safePath('failedRecords.csv'), 'w+');
-            fputcsv($failedContacts, $meta);
+            // Add the import failures column to the failed records meta
+            $failedHeader = $meta;
+            if (end($meta) != 'X2_Import_Failures')
+                $failedHeader[] = 'X2_Import_Failures';
+            fputcsv($failedContacts, $failedHeader);
             fclose($failedContacts);
+
             $x2attributes = array_keys(X2Model::model(str_replace(' ', '', $_SESSION['model']))->attributes);
             while("" === end($x2attributes)){
                 array_pop($x2attributes);
@@ -3117,6 +3126,8 @@ class AdminController extends Controller {
                 }
             }
             fclose($fp);
+            // Remove the import failures column; the user doesn't need to know about it
+            $meta = array_filter($meta, function($x) { return $x !== 'X2_Import_Failures'; });
 
             $this->render('processModels', array(
                 'attributes' => $x2attributes,
@@ -3203,7 +3214,7 @@ class AdminController extends Controller {
                                         break;
                                     $className = ucfirst($fieldRecord->linkType);
                                     if(ctype_digit($importAttributes[$attribute])){
-                                        $lookup = X2Model::model($className)->findPk($importAttributes[$attribute]);
+                                        $lookup = X2Model::model($className)->findByPk($importAttributes[$attribute]);
                                         $model->$importMap[$attribute] = $importAttributes[$attribute];
                                         if(!empty($lookup)){
                                             // Create a link to the existing record
@@ -3392,6 +3403,15 @@ class AdminController extends Controller {
                     }else{
                         // If the import failed, then put the data into the failedRecords CSV for easy recovery.
                         $failedRecords = fopen($this->safePath('failedRecords.csv'), 'a+');
+                        $errorMsg = array();
+                        foreach ($model->errors as $error)
+                            $errorMsg[] = strtr(implode(' ', array_values($error)), '"', "'");
+                        $errorMsg = implode(' ', $errorMsg);
+                        // Add the error to the last column of the csv record
+                        if (end($metaData) === 'X2_Import_Failures')
+                            $arr[count($arr)-1] = $errorMsg;
+                        else
+                            $arr[] = $errorMsg;
                         fputcsv($failedRecords, $arr);
                         fclose($failedRecords);
                         $_SESSION['failed']++;
@@ -4293,8 +4313,14 @@ class AdminController extends Controller {
                     ->query();
             $missingAttrs = array();
             foreach ($requiredAttrs as $attr) {
+                // Skip visibility, it can be set for them
                 if (strtolower($attr['fieldName']) == 'visibility')
                     continue;
+                // Ignore missing first/last name, this can be inferred from full name
+                if ($model === 'Contacts' && ($attr['fieldName'] === 'firstName' || $attr['fieldName'] === 'lastName')
+                        && in_array('name', array_values($importMap)))
+                    continue;
+                // Otherwise, a required field is missing and should be reported to the user
                 if (!in_array($attr['fieldName'], array_values($importMap)))
                     $missingAttrs[] = $attr['attributeLabel'];
             }

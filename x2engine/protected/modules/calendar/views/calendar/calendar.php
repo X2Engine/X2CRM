@@ -279,11 +279,11 @@ $(function() {
             right: 'month basicWeek agendaDay prev,next'
         },
         eventRender: function(event, element, view) {
-            // prevent rendering of duplicate events
-            if ($('#action-id-' + event.id).length) element.remove (); 
+            // prevent rendering of duplicate events on same view
+            if ($('#' + view.name + '-action-id-' + event.id).length) element.remove (); 
 
             // store action id in the element so that we can prevent duplicates from being rendered
-            $(element).attr ('id', 'action-id-' + event.id);
+            $(element).attr ('id', view.name + '-action-id-' + event.id);
 
             $(element).css('font-size', '0.8em');
             if(view.name == 'month' || view.name == 'basicWeek')

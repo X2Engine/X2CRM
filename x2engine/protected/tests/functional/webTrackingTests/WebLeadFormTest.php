@@ -133,6 +133,8 @@ class WebLeadFormTest extends WebTrackingTestBase {
         $this->clearLead ();
 
         $this->openPublic('x2WebTrackingTestPages/webFormTestGenerateLead.html');
+        if ($this->isOpera ()) $this->pause (5000);
+
         $this->type("name=Contacts[firstName]", 'test');
         $this->type("name=Contacts[lastName]", 'test');
         $this->type("name=Contacts[email]", 'test@test.com');
@@ -156,6 +158,8 @@ class WebLeadFormTest extends WebTrackingTestBase {
         $this->clearLead ();
 
         $this->openPublic('x2WebTrackingTestPages/webFormTestDontGenerateLead.html');
+        if ($this->isOpera ()) $this->pause (5000);
+
         $this->type("name=Contacts[firstName]", 'test');
         $this->type("name=Contacts[lastName]", 'test');
         $this->type("name=Contacts[email]", 'test@test.com');

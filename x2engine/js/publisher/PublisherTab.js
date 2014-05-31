@@ -71,10 +71,36 @@ Private static methods
 Public instance methods
 */
 
+PublisherTab.prototype.submit = function (publisher, form) {
+    var that = this;
+
+    x2.forms.clearErrorMessages ($(form));
+
+    // submit tab contents
+    $.ajax ({
+        url: publisher.publisherCreateUrl,
+        type: 'POST',
+        data: form.serialize (),
+        success: function (data) {
+            if (data !== '') {
+                $(form).find ('.form').append (x2.forms.errorSummary ('', data));
+                $(that._elemSelector).find ('[name="Actions\\[associationName\\]"]').
+                    addClass ('error');
+                $(form).find ('input.hightlight').removeClass ('highlight');
+            } else {
+                publisher.updates();
+                publisher.reset();
+            }
+        }
+    });
+
+};
+
 /**
  * Clears tab's form inputs 
  */
 PublisherTab.prototype.reset = function () {
+    var that = this;
     x2.forms.clearForm (this._element, true);
 };
 

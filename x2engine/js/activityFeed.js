@@ -1296,18 +1296,7 @@ ActivityFeed.prototype._setUpFilters = function () {
             "&default=" + defaultFilters;
         return false;
     });
-    $("#create-activity-report").click(function(e){
-        e.preventDefault();
-        var visibility=auxlib.getUnselected ($("#visibilityFilters"));
-        var users=auxlib.getUnselected($("#relevantUsers"));
-        var eventTypes=auxlib.getUnselected($("#eventTypes"));
-        var subtypes=auxlib.getUnselected($("#socialSubtypes"));
-        var defaultFilters=$("#filter-default").is (":checked");
-        window.location= "createActivityReport" + "?filters=true&visibility=" + visibility + 
-            "&users=" + users+"&types=" + eventTypes +"&subtypes=" + subtypes + 
-            "&default=" + defaultFilters;
-        return false;
-    });
+    
     $(".full-filters").click(function(e){
         e.preventDefault();
         $("#simple-controls").hide();

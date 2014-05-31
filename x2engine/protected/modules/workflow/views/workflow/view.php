@@ -130,7 +130,7 @@ Yii::app()->clientScript->registerCss('dragAndDropCss',"
     display: none !important;
 }
 
-#content .yiiPager {
+#stage-member-lists-container .yiiPager {
     display: none;
 }
 

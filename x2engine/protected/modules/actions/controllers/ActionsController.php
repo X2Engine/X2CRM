@@ -318,6 +318,21 @@ class ActionsController extends x2base {
            (!Yii::app()->user->isGuest || 
             Yii::app()->user->checkAccess($_POST['Actions']['associationType'].'View'))) {
 
+            // if association name is sent without id, try to lookup the record by name and type
+            if (isset ($_POST['calendarEventTab']) && $_POST['calendarEventTab'] &&
+                isset ($_POST['Actions']['associationName']) && 
+                empty ($_POST['Actions']['associationId'])) {
+
+                $associatedModel = X2Model::getModelOfTypeWithName (
+                    $_POST['Actions']['associationType'], $_POST['Actions']['associationName']);
+                if ($associatedModel) {
+                    $_POST['Actions']['associationId'] = $associatedModel->id;
+                } else {
+                    echo Yii::t('actions', 'Invalid association name');
+                    Yii::app()->end ();
+                }
+            }
+
             if(!Yii::app()->user->isGuest){
                 $model = new Actions;
             }else{
@@ -326,7 +341,7 @@ class ActionsController extends x2base {
             }
             $model->setX2Fields($_POST['Actions']);
 
-            // format dates
+            // format dates,
             if (isset ($_POST[get_class($model)]['dueDate'])) {
                 $model->dueDate = Formatter::parseDateTime($_POST[get_class($model)]['dueDate']);
             }
@@ -410,6 +425,12 @@ class ActionsController extends x2base {
                 $model->disableBehavior('changelog');
 
             if($model->save()){ // action saved to database *
+                if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
+                    $model->createNotifications(
+                            $_POST['notificationUsers'], 
+                            $model->dueDate - ($_POST['notificationTime'] * 60),
+                            'action_reminder');
+                }
                 
                 X2Model::updateTimerTotals(
                     $model->associationId,X2Model::getModelName($model->associationType));

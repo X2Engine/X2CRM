@@ -184,7 +184,8 @@ class Actions extends X2Model {
 
 
     /**
-     * Fixes up record association, parses dates (since this doesn't use {@link X2Model::setX2Fields()})
+     * Fixes up record association, parses dates (since this doesn't use 
+     * {@link X2Model::setX2Fields()})
      * @return boolean whether or not to save
      */
     public function beforeSave(){

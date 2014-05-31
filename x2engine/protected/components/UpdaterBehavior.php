@@ -903,7 +903,7 @@ class UpdaterBehavior extends ResponseBehavior {
         if(file_exists($lockFile)) {
             $lockTime =  (int) trim(file_get_contents($lockFile));
             if(time()-$lockTime > 3600) // No operation should take longer than an hour
-                FileUtil::removeLockfile($lockfile);
+                FileUtil::removeLockfile($lockFile);
             else
                 throw new CException(Yii::t('admin', 'An operation that began {t} is in progress (to apply database and file changes to X2Engine). If you are seeing this message, and the stated time is less than a minute ago, this is most likely because your web browser made a duplicate request to the server. Please stand by while the operation completes. Otherwise, you may delete the lock file {file} and try again.',array('{t}'=>strftime('%h %e, %r',$lockTime),'{file}'=>$this->lockFile)),self::ERR_ISLOCKED);
         }

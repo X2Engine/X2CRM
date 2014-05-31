@@ -41,6 +41,7 @@ Yii::import('application.components.X2TimestampBehavior');
 Yii::import('application.components.TagBehavior');
 
 Yii::import('application.modules.users.models.*');
+Yii::import('application.models.X2Flow');
 
 /**
  * General model class that uses dynamic fields
@@ -309,6 +310,24 @@ abstract class X2Model extends CActiveRecord {
         }
         return self::$_modelNames;
     }
+
+
+    /**
+     * Returns the translated module titles indexed by association type
+     * @return array 
+     */
+    public static function getAssociationTypeOptions () {
+        // keep last duplicates (array_unique would keep the first duplicate)
+        $associationTypes = array_flip (array_flip (self::$associationModels));
+        unset ($associationTypes['']);
+
+        foreach ($associationTypes as $typeOrModuleName => $modelName) {
+            $associationTypes[$typeOrModuleName] = self::getModelTitle ($modelName);
+        }
+         
+        return $associationTypes;
+    }
+
 
 
     /**
@@ -618,15 +637,15 @@ abstract class X2Model extends CActiveRecord {
         ));
         // Clear out old relationships:
         Yii::app()->db->createCommand()
-                ->delete(Relationships::model()->tableName(),
-                        '(`firstType`=:ft AND `firstId`=:fid) '
-                        . 'OR (`secondType`=:st AND `secondId`=:sid)',
-                        array(
-                            ':ft' => $class,
-                            ':fid' => $this->id,
-                            ':st' => $class,
-                            ':sid' => $this->id
-                        ));
+            ->delete(Relationships::model()->tableName(),
+                    '(`firstType`=:ft AND `firstId`=:fid) '
+                    . 'OR (`secondType`=:st AND `secondId`=:sid)',
+                    array(
+                        ':ft' => $class,
+                        ':fid' => $this->id,
+                        ':st' => $class,
+                        ':sid' => $this->id
+                    ));
         // Clear out old phone numbers
         X2Model::model('PhoneNumber')->deleteAllByAttributes(array(
             'modelId' => $this->id,
@@ -2023,7 +2042,7 @@ abstract class X2Model extends CActiveRecord {
         else
             return null;
     }
-    
+
     /**
      * Picks the primary key attribute out of an associative aray and finds the record
      * @param array $params
@@ -2362,12 +2381,15 @@ abstract class X2Model extends CActiveRecord {
     }
 
     public static function getModelOfTypeWithName ($type, $name) {
-        if(!(empty($type) || empty($name)) && 
-           X2Model::getModelName($type)){ // both ID and type must be set
+        $modelName = X2Model::getModelName($type); // both ID and type must be set
+        if(!(empty($type) || empty($name)) && $modelName){ // both ID and type must be set
 
-            return X2Model::model(X2Model::getModelName($type))->findByAttributes (array (
-                'name' => $name
-            ));
+            $model = X2Model::model($modelName);
+            if ($model->hasAttribute ('name')) {
+                return $model->findByAttributes (array (
+                    'name' => $name
+                ));
+            }
         }
         return null; // invalid type or invalid name 
     }
@@ -2380,18 +2402,23 @@ abstract class X2Model extends CActiveRecord {
         $modelClass, $ajax=false, $htmlOptions=array ()) {
 
         if (!class_exists ($modelClass) || !$modelClass::model ()->asa ('X2LinkableBehavior')) {
-
-            throw new CException (
+            if ($ajax) {
+                echo 'failure';
+                return;
+            } else {
+                return 'failure';
+            }
+            /*throw new CException (
                 Yii::t('app', 
                     'Error: renderModelAutocomplete: {modelClass} does not have '.
-                     'X2LinkableBehavior', array ('{modelClass}' => $modelClass)));
+                     'X2LinkableBehavior', array ('{modelClass}' => $modelClass)));*/
         }
 
         if ($ajax) Yii::app()->clientScript->scriptMap['*.css'] = false;
         
         $renderWidget = function () use ($modelClass, $htmlOptions) {
             Yii::app ()->controller->widget('zii.widgets.jui.CJuiAutoComplete', array(
-                'name'=>'recordName',
+                'name'=>(isset ($htmlOptions['name']) ? $htmlOptions['name'] : 'recordName'),
                 'source' => Yii::app()->controller->createUrl(
                     X2Model::model ($modelClass)->autoCompleteSource),
                 'value'=>Yii::t('app','Start typing to suggest...'),

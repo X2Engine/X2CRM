@@ -97,6 +97,7 @@ class User extends CActiveRecord {
         return array(
             array('status', 'required'),
             array('firstName, lastName, username, password', 'required', 'on' => 'insert'),
+            array('userAlias', 'required', 'on' => 'update'),
             array('status, lastLogin, login', 'numerical', 'integerOnly' => true),
             array('firstName, username, userAlias, title, updatedBy', 'length', 'max' => 20),
             array('lastName, department, officePhone, cellPhone, homePhone', 'length', 'max' => 40),
@@ -106,7 +107,16 @@ class User extends CActiveRecord {
             array('backgroundInfo', 'safe'),
             array('username','in','not'=>true,'range'=>array('Guest','Anyone'),'message'=>Yii::t('users','The specified username is reserved for system usage.')),
             array('username', 'unique', 'allowEmpty' => false),
-            array('userAlias', 'unique', 'allowEmpty' => true),
+            array('userAlias', 'unique', 'allowEmpty' => false),
+            array('userAlias', 'match', 'pattern' => '/^\s+$/', 'not' => true),
+            array(
+                'userAlias',
+                'match',
+                'pattern' => '/^(\s+\S+\s+)|(\s+\S+)|(\S+\s+)$/',
+                'not' => true,
+                'message' => Yii::t(
+                    'users', 'Username cannot contain trailing or leading whitespace.'),
+            ),
             array('username,userAlias','userAliasUnique'),
             array('username', 'match', 'pattern' => '/^\d+$/', 'not' => true), // No numeric usernames. That will break association with groups.
             array('username','match','pattern'=>'/^\w+$/'), // Username must be alphanumerics/underscores only
@@ -257,18 +267,19 @@ class User extends CActiveRecord {
     }
 
 
+    /**
+     * Populates an array of choices for an assignment dropdown menu
+     * @return type
+     */
     public static function getNames(){
 
         $userNames = array();
-        $query = Yii::app()->db->createCommand()
-                ->select('username, CONCAT(firstName," ",lastName) AS name')
-                ->from('x2_users')
-                ->where('status=1')
-                ->order('name ASC')
-                ->query();
+        $userModels = self::model()->findAllByAttributes(array('status' => 1));
+        $userNames = array_combine(
+                array_map(function($u){return $u->username;},$userModels),
+                array_map(function($u){return $u->getFullName();},$userModels)
+        );
 
-        while(($row = $query->read()) !== false)
-            $userNames[$row['username']] = $row['name'];
         natcasesort($userNames);
 
         return array('Anyone' => Yii::t('app', 'Anyone')) + $userNames;
@@ -516,7 +527,7 @@ class User extends CActiveRecord {
             'firstName' => Yii::t('users', 'First Name'),
             'lastName' => Yii::t('users', 'Last Name'),
             'username' => Yii::t('users', 'Username'),
-            'userAlias' => Yii::t('users', 'User Alias'),
+            'userAlias' => Yii::t('users', 'Username'),
             'password' => Yii::t('users', 'Password'),
             'title' => Yii::t('users', 'Title'),
             'department' => Yii::t('users', 'Department'),
@@ -583,7 +594,11 @@ class User extends CActiveRecord {
      */
     public function userAliasUnique($attribute,$params=array()) {
         $otherAttribute = $attribute=='username'?'userAlias':'username';
-        if(!empty($this->$attribute) && self::model()->exists("`$otherAttribute` = BINARY :u",array(':u'=>$this->$attribute))) {
+        if(!empty($this->$attribute) && 
+           self::model()->exists(
+               (isset ($this->id) ? "id != $this->id AND " : '') . "`$otherAttribute` = BINARY :u",
+               array(':u'=>$this->$attribute))) {
+
             $this->addError($attribute,Yii::t('users','That name is already taken.'));
         }
     }
@@ -620,11 +635,7 @@ class User extends CActiveRecord {
      */
     public function getFullName(){
         if(!isset($this->_fullName)){
-            $this->_fullName = !empty(Yii::app()->settings->contactNameFormat)
-                    ? strtr(Yii::app()->settings->contactNameFormat, $this->getAttributes(array(
-                                'lastName', 'firstName'
-                    )))
-                    : $this->firstName.' '.$this->lastName;
+            $this->_fullName = Formatter::fullName($this->firstName, $this->lastName);
         }
         return $this->_fullName;
     }

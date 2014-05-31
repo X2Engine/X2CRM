@@ -54,8 +54,8 @@ class SiteController extends x2base {
         ));
     }
 
-	public function behaviors() {
-		return array_merge (parent::behaviors (), array(
+    public function behaviors() {
+        return array_merge (parent::behaviors (), array(
             'CommonSiteControllerBehavior' => array('class' => 'application.components.CommonSiteControllerBehavior'),
         ));
     }
@@ -1952,20 +1952,38 @@ class SiteController extends x2base {
         if(isset($_POST['x2widget']) && isset($_POST['x2widget'])){
             $widgets = $_POST['x2widget']; // list of widgets
             $block = $_POST['block']; // left, right, or center
-
             $layout = Yii::app()->params->profile->getLayout();
 
-            $newOrder = array();
+            if ($block === 'left') {
 
-            foreach($widgets as $name){
-                foreach($layout[$block] as $key => $widget){
-                    if($key == $name){
-                        $newOrder[$key] = $widget;
+                $newOrder = array();
+
+                // remove ordered left widgets from the layout and prepend them to the list
+                // of left widgets in the new order
+                foreach($widgets as $name){
+                    foreach($layout[$block] as $key => $widget){
+                        if($key == $name){
+                            $newOrder[$key] = $widget;
+                            unset ($layout[$block][$key]);
+                        }
                     }
                 }
-            }
+                $layout[$block] = $newOrder + $layout[$block];
 
-            $layout[$block] = $newOrder;
+            } else {
+                $newOrder = array();
+
+                foreach($widgets as $name){
+                    foreach($layout[$block] as $key => $widget){
+                        if($key == $name){
+                            $newOrder[$key] = $widget;
+                        }
+                    }
+                }
+
+                $layout[$block] = $newOrder;
+                Yii::app()->params->profile->saveLayout($layout);
+            }
             Yii::app()->params->profile->saveLayout($layout);
         }
     }

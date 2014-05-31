@@ -198,26 +198,26 @@ class Publisher extends X2Widget {
         Yii::app()->clientScript->registerScript('loadEmails', "
 
         $(document).on('ready',function(){
-            var t;
+            var timeout;
             $(document).on('mouseenter','.email-frame',function(){
                 var id=$(this).attr('id');
-                t=setTimeout(function(){x2.publisher.loadFrame(id,'Email')},500);
+                timeout = setTimeout(function(){x2.publisher.loadFrame(id,'Email')},500);
             });
             $(document).on('mouseleave','.email-frame',function(){
-                clearTimeout(t);
+                clearTimeout(timeout);
             });
-            $('.quote-frame').mouseenter(function(){
+            $(document).on ('mouseenter', '.quote-frame', function(){
                 var id=$(this).attr('id');
-                t=setTimeout(function(){x2.publisher.loadFrame(id,'Quote')},500);
+                timeout = setTimeout(function(){x2.publisher.loadFrame(id,'Quote')},500);
             }).mouseleave(function(){
-                clearTimeout(t);
+                clearTimeout(timeout);
             }); // Legacy quote pop-out view
 
             $('.quote-print-frame').mouseenter(function(){
                 var id=$(this).attr('id');
-                t=setTimeout(function(){x2.publisher.loadFrame(id,'QuotePrint')},500);
+                timeout = setTimeout(function(){x2.publisher.loadFrame(id,'QuotePrint')},500);
             }).mouseleave(function(){
-                clearTimeout(t);
+                clearTimeout(timeout);
             }); // New quote pop-out view
         });
         ", CClientScript::POS_HEAD);

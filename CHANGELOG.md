@@ -1,3 +1,36 @@
+# 4.1.2 (beta) #
+5/30/2014
+
+* General Changelog / Developer Notes:
+  * (Platinum Edition): Fixes to X2Identity and browser fingerprinting
+    * Scalability issues in X2Identity, specifically the browser fingerprint match query
+    * Automatic removal of orphaned fingerprint records
+  * Fixes/improvements to user management:
+    * Validation rules; both username and user aliasing
+    * User alias auto-populates with username
+    * User update page
+  * Small bug fixes in process funnel, record import
+  * Action reminder notifications now available in the publisher
+  * (Professional Edition) Fixed "Email Contact" X2Flow action for non-contact/non-action record types
+  * Fixed calendar bug: multiply-assigned events show up multiple times (for each user calendar)
+* Tracked Bug Fixes:
+  * [1246](http://x2software.com/index.php/bugReports/1246): array_merge() [<a href='function.array-merge'>function.array-merge</a>]: Argument #2 is not an array  
+  * [1247](http://x2software.com/index.php/bugReports/1247): Class:  not found.  
+  * [1264](http://x2software.com/index.php/bugReports/1264): CDbCommand failed to execute the SQL statement: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'giertsen_x2engine.x2_cron_events' doesn't exist
+
+# 4.1.1 #
+5/23/2014
+
+* General Changelog / Developer Notes:
+  * Activity feed JS bug fixes
+  * Backwards compatibility fixes for ResponseBehavior and X2LinkableBehavior
+  * Bug fixes in roles
+  * Improvements to webhooks: better payload composition logic + safeguards for systems w/o cURL libraries
+  * Lead conversion bug fix
+  * (Platinum Edition) "Raw Input" API settings option not saving properly
+  * "Linkable Behavior" + custom modules backwards incompatibility
+  * Web lead form not respecting when "Create Lead" option is disabled
+
 # 4.1 #
 5/20/2014
 

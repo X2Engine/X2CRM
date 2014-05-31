@@ -46,12 +46,31 @@
  * <test installation ip>    www2.testdomain.com
  * <test installation ip>    www.testdomain2.com
  *
- * Also, the domain used in your TEST_BASE_URL and TEST_WEBROOT_URL (specified in WebTestConfig.php)
- * should be www.testdomain.com.
+ * Also, the domain used in your WEBTRACKING_TEST_BASE_URL and WEBTRACKING_TEST_WEBROOT_URL
+ * (specified in WebTestConfig.php) should be www.testdomain.com.
  *
  * @package application.tests.functional.modules.contacts
  */
 abstract class WebTrackingTestBase extends X2WebTestCase {
+
+    /**
+     * Open a URI within the app
+     * 
+     * @param string $r_uri
+     */
+    public function openX2($r_uri) {
+        return $this->open(WEBTRACKING_TEST_BASE_URL . $r_uri);
+    }
+
+    /**
+     * Open a URI within the app
+     * 
+     * @param string $r_uri
+     */
+    public function openPublic($r_uri) {
+        VERBOSE_MODE && print ('openPublic: '.WEBTRACKING_TEST_WEBROOT_URL . $r_uri."\n");
+        return $this->open(WEBTRACKING_TEST_WEBROOT_URL . $r_uri);
+    }
 
     /**
      * Copy over all the test pages to the web root 
@@ -108,6 +127,15 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
         return $this->getExpression ('${isIE8}') === 'true';
     }
 
+    /**
+     * @return bool true if browser that's currently being used is Opera, false otherwise
+     */
+    protected function isOpera () {
+        $this->storeEval (
+            "!!window.navigator.userAgent.match(/opera/i)", 'isOpera');
+        return $this->getExpression ('${isOpera}') === 'true';
+    }
+
     protected function setIdentityThreshold ($threshold) {
         $admin = Admin::model()->findByPk (1);
         $admin->identityThreshold = $threshold;
@@ -125,6 +153,12 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
         } else {
             $this->openPublic('x2WebTrackingTestPages/webFormTest.html');
         }
+
+        // the waitFor condition doesn't seem to work on Opera, so just wait a fixed amount of time
+        if ($this->isOpera ()) $this->pause (5000);
+        $this->waitForCondition (
+            "window.document.getElementsByName ('web-form-iframe').length && window.document.getElementsByName ('web-form-iframe')[0].contentWindow.document.readyState === 'complete'", 4000);
+
         $this->type("name=Contacts[firstName]", 'test');
         $this->type("name=Contacts[lastName]", 'test');
         $this->type("name=Contacts[email]", 'test@test.com');
@@ -132,9 +166,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
 
         // wait for iframe to load new page
         $this->waitForCondition (
-            "selenium.browserbot.getCurrentWindow(document.getElementsByName ('web-form-iframe').length && document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null)",
-            4000);
-        $this->pause (5000); // wait for database changes to enact
+            "window.document.getElementsByName ('web-form-iframe').length && window.document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null", 4000);
     }
 
     /**

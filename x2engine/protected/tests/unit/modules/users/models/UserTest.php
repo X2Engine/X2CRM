@@ -49,7 +49,7 @@ Yii::import('application.components.util.*');
  *
  * @package application.tests.unit.components
  */
-class UserTest extends CDbTestCase {
+class UserTest extends X2DbTestCase {
 
 
     public $fixtures = array (
@@ -157,6 +157,41 @@ class UserTest extends CDbTestCase {
         $newUser->username = $this->users('testUser')->userAlias;
         $newUser->validate(array('username'));
         $this->assertTrue($newUser->hasErrors('username'));
+
+        // ensure that user can have alias which matches their own username
+        $newUser = new User;
+        $newUser->username = 'username';
+        $newUser->userAlias = 'username';
+        $newUser->validate (array ('username'));
+        $newUser->validate (array ('userAlias'));
+        $this->assertFalse($newUser->hasErrors('username'));
+        if ($newUser->hasErrors ()) {
+            VERBOSE_MODE && print_r ($newUser->getErrors ());
+        }
+    }
+
+    public function testUpdate () {
+        $user = $this->users ('admin');
+        $user->userAlias = $user->username;
+        $this->assertSaves ($user);
+
+        $user->userAlias = '      ';
+        $this->assertFalse ($user->save ());
+
+        $user->userAlias = 'admin  ';
+        $this->assertFalse ($user->save ());
+
+        $user->userAlias = '  admin  ';
+        $this->assertFalse ($user->save ());
+
+        $user->userAlias = '  admin';
+        $this->assertFalse ($user->save ());
+
+        $user->userAlias = '';
+        $this->assertFalse ($user->save ());
+
+        $user->userAlias = 'admin';
+        $this->assertSaves ($user);
     }
 
     public function testFindByAlias () {

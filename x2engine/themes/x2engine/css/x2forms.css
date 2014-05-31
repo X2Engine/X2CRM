@@ -663,7 +663,7 @@ div.cron-job input.cron-enabled {
 
 
 .x2-forms-error-msg {
-    color: 'red'
+    color: red;
 }
 
 

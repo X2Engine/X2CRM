@@ -39,6 +39,9 @@
  *
  * @package application.controllers
  */
+Yii::import('application.models.Relationships');
+Yii::import('application.models.Tags');
+
 class NotificationsController extends CController {
 
     public function accessRules() {

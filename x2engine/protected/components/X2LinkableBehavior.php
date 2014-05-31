@@ -69,23 +69,16 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 
         parent::attach($owner);
 
-        if ($this->getModule() === null) {
-            if (!Yii::app()->controller instanceof CController) {
-                if (isset($this->baseRoute)) {
-                    // try to extract it from $baseRoute (old custom modules)
-                    $this->module = preg_replace(
-                            '/\/.*/', '', preg_replace('/^\//', '', $this->baseRoute));
-                } else {
-                    // assume the model name is the same as the module/controller
-                    $this->module = strtolower(get_class($this->owner));
-                }
-            } else {
-                if (!isset($this->baseRoute, $this->autoCompleteSource))
-                    throw new Exception(
-                    'Class ' . get_class($owner) . ' has not declared properties ' .
-                    '"baseRoute" or "autoCompleteSource" for using X2LinkableBehavior, ' .
-                    'yet neither has it declared "module". There is thus no way of ' .
-                    'resolving links.');
+        if ($this->getModule() === null){
+            // Resolve the module
+            if(isset($this->baseRoute)){
+                // Try to extract it from $baseRoute (old custom modules)
+                $this->module = preg_replace(
+                        '/\/.*/', '', preg_replace('/^\//', '', $this->baseRoute));
+            }else{
+                // Assume the model name is the same as the module/controller
+                // (also true of custom modules)
+                $this->module = strtolower(get_class($this->owner));
             }
         }
 
@@ -96,7 +89,8 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
             $this->viewRoute = $this->baseRoute;
 
 		if(!isset($this->autoCompleteSource))
-			$this->autoCompleteSource = $this->baseRoute.'/getItems';
+			$this->autoCompleteSource = 
+                $this->baseRoute.'/getItems?modelType='.get_class ($this->owner);
 	}
 
     /**

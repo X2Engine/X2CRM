@@ -56,9 +56,52 @@ class LeftWidget extends CPortlet {
 	 */
     public $widgetLabel;
 
+
     protected $isCollapsed = false;
 
     private $_openTag;
+
+    /**
+     * Class added to the porlet decoration to indicate that the widget is collapsed
+     * @var string 
+     */
+    public static $leftWidgetCollapsedClass = 'left-widget-collapsed';
+
+    public static function registerScript () {
+        // collapse or expand left widget and save setting to user profile
+        Yii::app()->clientScript->registerScript('leftWidgets','
+            $(".left-widget-min-max").click(function(e){
+                e.preventDefault();
+                var link=this;
+                var action = $(this).attr ("value");
+                $.ajax({
+                    url:"'.Yii::app()->request->getScriptUrl ().'/site/minMaxLeftWidget'.'",
+                    data:{
+                        action: action,
+                        widgetName: $(link).attr ("name")
+                    },
+                    success:function(data){
+                        if (data === "failure") return;
+                        if(action === "expand"){
+                            $(link).html("<img src=\'"+yii.themeBaseUrl+"/images/icons/'.
+                                'Collapse_Widget.png\' />");
+                            $(link).parents(".portlet-decoration").next().slideDown();
+                            $(link).attr ("value", "collapse");
+                            $(link).parents (".portlet-decoration").parent ().
+                                removeClass ("'.self::$leftWidgetCollapsedClass.'")
+                        }else if(action === "collapse"){
+                            $(link).html("<img src=\'"+yii.themeBaseUrl+"/images/icons/'.
+                                'Expand_Widget.png\' />");
+                            $(link).parents(".portlet-decoration").next().slideUp();
+                            $(link).attr ("value", "expand");
+                            $(link).parents (".portlet-decoration").parent ().
+                                addClass ("'.self::$leftWidgetCollapsedClass.'")
+                        }
+                    }
+                });
+            });
+        ');
+    }
 
 	/**
 	 * Sets the label in the widget title and determines whether this left widget should 
@@ -88,16 +131,22 @@ class LeftWidget extends CPortlet {
         $this->htmlOptions = array(
             'class' => (!$this->isCollapsed ? "" : "hidden-filter")
         );
-    }
 
+    }
 
 	/**
      * overrides parent method so that content gets hidden/shown depending on value
      * of isCollapsed
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
 	 */
 	public function init()
 	{
+        /* x2modstart */ 
         $this->initTitleBar ();
+        /* x2modend */ 
+
 		ob_start();
 		ob_implicit_flush(false);
 
@@ -105,6 +154,12 @@ class LeftWidget extends CPortlet {
 			$this->id=$this->htmlOptions['id'];
 		else
 			$this->htmlOptions['id']=$this->id;
+
+        /* x2modstart */ 
+        if ($this->isCollapsed)
+            $this->htmlOptions['class'] = self::$leftWidgetCollapsedClass;
+        /* x2modend */ 
+
 		echo CHtml::openTag($this->tagName,$this->htmlOptions)."\n";
 		$this->renderDecoration();
         /* x2modstart */ 
@@ -119,6 +174,9 @@ class LeftWidget extends CPortlet {
 	/**
 	 * Overrides parent method since private property _openTag gets set in init ().
      * This is identical to the parent method.
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
 	 */
 	public function run()
 	{

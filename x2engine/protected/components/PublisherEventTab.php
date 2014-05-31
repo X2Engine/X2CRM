@@ -37,7 +37,7 @@
 /**
  * @package application.components
  */
-class PublisherEventTab extends PublisherTab {
+class PublisherEventTab extends PublisherTimeTab {
     
     public $viewFile = 'application.components.views.publisher._eventForm';
 
@@ -45,7 +45,7 @@ class PublisherEventTab extends PublisherTab {
 
     public $tabId = 'new-event'; 
 
-    public $tabPrototypeName = 'PublisherTimeTab';
+    public $tabPrototypeName = 'PublisherEventTab';
 
     /**
      * Packages which will be registered when the widget content gets rendered.
@@ -60,12 +60,12 @@ class PublisherEventTab extends PublisherTab {
             $this->_packages = array_merge (
                 parent::getPackages (),
                 array (
-                    'PublisherTimeTabTabJS' => array(
+                    'PublisherEventTabTabJS' => array(
                         'baseUrl' => Yii::app()->request->baseUrl,
                         'js' => array(
-                            'js/publisher/PublisherTimeTab.js',
+                            'js/publisher/PublisherEventTab.js',
                         ),
-                        'depends' => array ('PublisherTabJS')
+                        'depends' => array ('PublisherTimeTabJS')
                     ),
                 )
             );

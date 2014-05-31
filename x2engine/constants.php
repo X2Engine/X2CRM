@@ -33,4 +33,7 @@ defined('YII_UNIT_TESTING') or define('YII_UNIT_TESTING',false);
 // ID of the default admin user
 defined('X2_PRIMARY_ADMIN_ID') or define('X2_PRIMARY_ADMIN_ID',1);
 
+// Set to true to enable updating to beta versions
+defined('X2_UPDATE_BETA') or define('X2_UPDATE_BETA',false);
+
 ?>

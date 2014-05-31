@@ -1,6 +1,6 @@
 # X2Engine 4.1 #
-Follow-up point release 4.1.1
-5/23/2014
+Follow-up point release 4.1.2 (beta)
+5/30/2014
 
 New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
 
@@ -18,8 +18,8 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
   * _Leads_ module (new)
     * Record basic contact information before it becomes a legitimate potential sale
     * Convert to an opportunity with a button press when ready
-  * Activity Feed:
-    * _Digest emails:_ get periodic emails notifying you of what's happening in your CRM
+  *  Activity Feed:
+    * _(Professional Edition) Digest emails:_ get periodic emails notifying you of what's happening in your CRM
     * New dedicated activity feed page
   * CSV importer:
     * New feature enabling users to save and re-use import field mappings
@@ -58,11 +58,32 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
   * [1201](http://x2software.com/index.php/bugReports/1201): Unable to resolve the request "product/product/view".  
   * [1204](http://x2software.com/index.php/bugReports/1204): Cannot modify header information - headers already sent by (output started at /home3/bigmoney/public_html/knockoutmultimedia.co/crm/protected/controllers/ProfileController.php:516)  
   * [1223](http://x2software.com/index.php/bugReports/1223): Cannot modify header information - headers already sent by (output started at /home/inspirah/public_html/crm/protected/modules/actions/controllers/ActionsController.php:799)
-* Bugs fixed in 4.1.1:
-  * Lead conversion PHP error
+* Changes in 4.1.1 (5/23/2014):
+  * Activity feed JS bug fixes
+  * Backwards compatibility fixes for ResponseBehavior and X2LinkableBehavior
+  * Bug fixes in roles
+  * Improvements to webhooks: better payload composition logic + safeguards for systems w/o cURL libraries
+  * Lead conversion bug fix
   * (Platinum Edition) "Raw Input" API settings option not saving properly
   * "Linkable Behavior" + custom modules backwards incompatibility
   * Web lead form not respecting when "Create Lead" option is disabled
+* Changes in 4.1.2 (5/30/2014):
+  * General Changelog / Developer Notes:
+    * (Platinum Edition): Fixes to X2Identity and browser fingerprinting
+      * Scalability issues in X2Identity, specifically the browser fingerprint match query
+      * Automatic removal of orphaned fingerprint records
+    * Fixes/improvements to user management:
+      * Validation rules; both username and user aliasing
+      * User alias auto-populates with username
+      * User update page
+    * Small bug fixes in process funnel, record import
+    * Action reminder notifications now available in the publisher
+    * (Professional Edition) Fixed "Email Contact" X2Flow action for non-contact/non-action record types
+    * Fixed calendar bug: multiply-assigned events show up multiple times (for each user calendar)
+  * Tracked Bug Fixes:
+    * [1246](http://x2software.com/index.php/bugReports/1246): array_merge() [<a href='function.array-merge'>function.array-merge</a>]: Argument #2 is not an array  
+    * [1247](http://x2software.com/index.php/bugReports/1247): Class:  not found.  
+    * [1264](http://x2software.com/index.php/bugReports/1264): CDbCommand failed to execute the SQL statement: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'giertsen_x2engine.x2_cron_events' doesn't exist
 
 # Introduction #
 Welcome to  X2Engine!

@@ -53,6 +53,14 @@ class FingerprintTest extends X2DbTestCase {
         return count ($this->getMatchedAttributes ($fingerprint1, $fingerprint2));
     }
 
+    public function testRelations() {
+        $anonContact = $this->anonContacts ('anonContact2');
+        $this->assertTrue ($anonContact->fingerprint instanceof Fingerprint);
+    }
+
+    /**
+     * @return array Array of matched attributes with reductions in bits of entropy 
+     */
     public function getMatchedAttributes (Fingerprint $fingerprint1, Fingerprint $fingerprint2) {
         return array_intersect (
             array_filter ($fingerprint1->getFingerprintAttributes (), function ($a) {
@@ -111,6 +119,42 @@ class FingerprintTest extends X2DbTestCase {
         // should return contact4 instead of contact3, even though they have fingerprints with 
         // identical attributes since contact4 was updated more recently
         $this->assertTrue ($contact->id === $this->contacts ('contact4')->id);
+
+
+        Yii::app()->settings->identityThreshold = sizeof (
+            Fingerprint::getFingerprintAttributeNames ());
+        list ($contact, $bits) = 
+            Fingerprint::partialMatch ($fingerprint4->getAttributes ());
+
+        // contact should be null since partial match should not be performed if a perfect match
+        // is required (i.e. when identity threshold is same as max number of attributes
+        $this->assertEquals ($contact, null);
+
+    }
+
+    public function testPartialMatchTieBreaking () {
+        $fingerprint7 = $this->fingerprints('fingerprint7');
+        $fingerprint8 = $this->fingerprints('fingerprint8');
+
+        $matched = $this->calculateMatchCount ($fingerprint7, $fingerprint8);
+
+        // fingerprints should be identical, except that 7 is anonymous. Therefore, number of 
+        // matched attributes should be one less than number of possible attributes since plugins 
+        // attribute in either fingerprint is null.
+        $this->assertEquals (
+            sizeof (Fingerprint::getFingerprintAttributeNames ()) - 1, $matched);
+
+        Yii::app()->settings->identityThreshold = $matched;
+
+        list ($contact, $bits) = 
+            Fingerprint::partialMatch ($fingerprint7->getAttributes ());
+        $this->assertEquals (
+            Fingerprint::getReductionInBitsOfEntropy (
+                $this->getMatchedAttributes ($fingerprint7, $fingerprint8)), $bits);
+
+        // should return contact5 instead of anonContact3, even though they have fingerprints with 
+        // identical attributes since contacts are chosen before anon contacts
+        $this->assertTrue ($contact->id === $this->contacts ('contact5')->id);
     }
 
     public function testCalculateProbability() {
@@ -163,14 +207,16 @@ class FingerprintTest extends X2DbTestCase {
         $fingerprint6 = $this->fingerprints('fingerprint6');
 
         // Ensure track() can locate a Contact by fingerprint
-        list($contact, $bits) = Fingerprint::track($fingerprint1->fingerprint, $fingerprint1->getAttributes());
+        list($contact, $bits) = Fingerprint::track(
+            $fingerprint1->fingerprint, $fingerprint1->getAttributes());
         $this->assertNotNull($contact);
         $this->assertNotNull($bits);
         $this->assertTrue($contact instanceof Contacts);
         $this->assertEquals($this->contacts('contact1')->id, $contact->id);
 
         // Ensure track() can locate an AnonContact by fingerprint
-        list($contact, $bits) = Fingerprint::track($fingerprint6->fingerprint, $fingerprint6->getAttributes());
+        list($contact, $bits) = Fingerprint::track(
+            $fingerprint6->fingerprint, $fingerprint6->getAttributes());
         $this->assertNotNull($contact);
         $this->assertNotNull($bits);
         $this->assertTrue($contact instanceof AnonContact);

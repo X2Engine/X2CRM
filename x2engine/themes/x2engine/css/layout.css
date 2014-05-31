@@ -769,20 +769,13 @@ span.x2-hidden-widgets-menu-item.ui-draggable {
 	/* background:#fff; */
 	/* border:none; */
 }
-/* body.no-widgets {min-width:720px;} */
-body.no-widgets #content-container {
-    padding-right:0;
-}
-body.no-widgets #sidebar-right {
-    display:none;
-}
-/* body.no-widgets #content {margin:0px 0 0 0;} */
 
 /* #sidebar-left-container {float:left;width:150px;background:none;} */
 
 #actions {
     margin-bottom: 0;
 }
+
 
 .sidebar-left {
     background: white;
@@ -801,6 +794,13 @@ body.no-widgets #sidebar-right {
 	-webkit-border-radius:	4px;
 	-o-border-radius:		4px;
 }	/* Left sidebar */
+
+/*
+Remove border radius from left widget title bars which are preceded by a collapsed left widget
+*/
+.sidebar-left > .left-widget-collapsed + div {
+    background: #ddd;
+}
 
 /* .sidebar-left {
 	margin-top:5px;
@@ -892,11 +892,14 @@ body.no-widgets #sidebar-right {
 	overflow:auto;
 	background:#fff;
     clear:both;
+
+}
+
+.sidebar-left > div:last-child  > .portlet-content {
 	border-radius:			0 0 4px 4px;
 	-moz-border-radius:		0 0 4px 4px;
 	-webkit-border-radius:	0 0 4px 4px;
 	-o-border-radius:		0 0 4px 4px;
-
 }
 /* .portlet:last-child .portlet-content {
 	border-radius:			0 0 4px 4px;
@@ -952,9 +955,6 @@ body.no-widgets #sidebar-right {
 #content-container {
     overflow:hidden;
     zoom:1;
-}
-body.no-widgets #content-container {
-    margin-right:0;
 }
 
 
@@ -1143,12 +1143,26 @@ div.page-title-fixed-outer div.page-title {
 	-o-border-radius:		0 0 4px 4px;
 }
 
+div.page-title-fixed-outer {
+    padding-right:9px;
+}
+
+
+
+/*
+duplicated css for browsers which don't support media queries
+*/
+body.no-widgets #content-container {
+    padding-right:0;
+    margin-right:0;
+}
+body.no-widgets #sidebar-right {
+    display:none;
+}
+
 .no-widgets div.page-title-fixed-outer div.page-title {
     margin-right: 0px;
 }
-
-/* .no-borders.no-widgets div.page-title-fixed-outer {padding-right:18px;} */
-/* .no-widgets div.page-title-fixed-outer {padding-right:20px;} */
 .no-widgets div.page-title-fixed-inner,
 .no-widgets .x2-gridview-fixed-top-bar-inner {
     padding-right:0 !important;
@@ -1156,9 +1170,48 @@ div.page-title-fixed-outer div.page-title {
 .no-widgets div.page-title-fixed-outer {
     padding-right:5px;
 }
-div.page-title-fixed-outer {
-    padding-right:9px;
+
+.no-widgets div.page-title-fixed-inner,
+.no-widgets .x2-gridview-fixed-top-bar-inner {
+    padding-right:0 !important;
 }
+.no-widgets div.page-title-fixed-outer {
+    padding-right:5px;
+}
+
+@media (max-width: 940px) {
+    div.page-title-fixed-outer div.page-title {
+        margin-right: 0px;
+    }
+    div.page-title-fixed-inner,
+    .x2-gridview-fixed-top-bar-inner {
+        padding-right:0 !important;
+    }
+    div.page-title-fixed-outer {
+        padding-right:5px;
+    }
+
+    #content-container {
+        padding-right:0;
+        margin-right:0;
+    }
+    #sidebar-right {
+        display:none;
+    }
+
+    div.page-title-fixed-inner,
+    .x2-gridview-fixed-top-bar-inner {
+        padding-right:0 !important;
+    }
+    div.page-title-fixed-outer {
+        padding-right:5px;
+    }
+}
+
+
+
+
+
 
 .half-width div.page-title-fixed-outer div.page-title {
     margin-right:35%;

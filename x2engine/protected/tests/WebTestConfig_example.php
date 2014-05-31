@@ -1,14 +1,11 @@
 <?php
-define('TEST_BASE_URL','http://localhost/x2engine/index-test.php/');
-define('TEST_WEBROOT_URL','http://localhost/x2engine/');
 
-// used to test cross-domain webtracker requests
-//define('TEST_BASE_URL_ALIAS',''); // should be a subdomain of TESET_BASE_URL
-//define('TEST_WEBROOT_URL_ALIAS',''); // should be a subdomain of TESET_BASE_URL
-//define('TEST_BASE_URL_ALIAS_2',''); // should not be a subdomain of TESET_BASE_URL
-//define('TEST_WEBROOT_URL_ALIAS_2',''); // should not be a subdomain of TESET_BASE_URL
+// For web tests, i.e. Selenium functional tests or API tests via CURL
+defined('TEST_BASE_URL') or define('TEST_BASE_URL','http://localhost/x2engine/index-test.php/');
+defined('TEST_WEBROOT_URL') or define('TEST_WEBROOT_URL','http://localhost/x2engine/');
 
-// used to send test emails during InlineEmail test
-define('TEST_EMAIL_TO','');
+// For Selenium webtracking functional tests
+define('WEBTRACKING_TEST_BASE_URL','http://www.testdomain.com/index-test.php/');
+define('WEBTRACKING_TEST_WEBROOT_URL','http://www.testdomain.com/');
 
 ?>

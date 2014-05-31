@@ -18,7 +18,17 @@ return array(
       'trackingKey' => '5BdjEQiIsezyOFsDCsKM0lyyM9lzaM1M',
       'email' => NULL,
       'leadScore' => NULL,
-    )
+    ),
+    // about the same as contact 5
+    'anonContact3' => array (
+      'id' => '3',
+      'createDate' => '1399064929',
+      'lastUpdated' => 2,
+      'fingerprintId' => '17',
+      'trackingKey' => '5BdjEQiIsezyOFsDCsKM0lyyM9lzaM1M',
+      'email' => NULL,
+      'leadScore' => NULL,
+    ),
 );
 
 ?>

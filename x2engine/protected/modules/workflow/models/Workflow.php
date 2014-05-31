@@ -677,6 +677,22 @@ class Workflow extends CActiveRecord {
     }
 
     /**
+     * @return string Name of stage with given stage number 
+     */
+    public function getStageName ($stageNumber) {
+        $stageName = Yii::app()->db->createCommand()
+            ->select('name')
+            ->from('x2_workflow_stages')
+            ->where('workflowId=:id AND stageNumber=:stageNumber',
+                array(
+                    ':id'=>$this->id,
+                    ':stageNumber'=>$stageNumber,
+                ))
+            ->queryScalar();
+        return $stageName;
+    }
+
+    /**
      * @param array return value of getWorkflowStatus 
      * @return <array of strings> one for each stage
      */
@@ -1599,14 +1615,14 @@ class Workflow extends CActiveRecord {
 
     /**
      * @param int $workflowId 
-     * @param int $stageId 
+     * @param int $stageNumber 
      * @param string $user user filter
      * @param string $modelType 
      * @param array $dateRange 
      * @return array (<totalValue>, <projectedValue>, <currentAmount>, <count>)
      */
     public static function getStageValue (
-        $workflowId, $stageId, $user, $modelType, $dateRange, $expectedCloseDateDateRange) {
+        $workflowId, $stageNumber, $user, $modelType, $dateRange, $expectedCloseDateDateRange) {
 
         $models = self::getModelsFromTypesArr ($modelType);
 
@@ -1630,13 +1646,13 @@ class Workflow extends CActiveRecord {
                 'x2_actions.createDate BETWEEN :date1 AND :date2
                 AND x2_actions.type="workflow" AND x2_actions.workflowId=:workflowId
                 AND x2_actions.associationType=:associationType
-                AND x2_actions.stageNumber=:stageId '.$userString.'
+                AND x2_actions.stageNumber=:stageNumber '.$userString.'
                 AND x2_actions.complete!="Yes" 
                 AND (x2_actions.completeDate IS NULL OR x2_actions.completeDate=0)';
             $attributeParams=array_merge ($attributeParams, array(
                 ':date1'=>$dateRange['start'],
                 ':date2'=>$dateRange['end'],
-                ':stageId'=>$stageId,
+                ':stageNumber'=>$stageNumber,
                 ':workflowId'=>$workflowId,
                 ':associationType'=>$modelName,
             ));

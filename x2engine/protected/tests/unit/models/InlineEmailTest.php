@@ -1,6 +1,5 @@
 <?php
 
-include('WebTestConfig.php');
 Yii::import('application.modules.actions.models.*');
 Yii::import('application.modules.contacts.models.*');
 Yii::import('application.modules.docs.models.*');

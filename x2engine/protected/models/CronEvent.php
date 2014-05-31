@@ -76,6 +76,28 @@ class CronEvent extends CActiveRecord {
 		);
 	}
 
+    /**
+     * Sets/updates the next execution time of a recurring cron event.
+     *
+     * This method should be called on all recurring cron events, after the
+     * action of said events has been taken. It is expected that the "time"
+     * attribute never be in the future when this method runs.
+     * 
+     * @return type
+     */
+    public function recur($update = true) {
+        if((integer) $this->interval <= 0)
+            return;
+        $this->lastExecution = time();
+        $interval = (integer) max($this->interval, 1);
+        // If the last execution time is more than one interval's
+        // length into the past, add more intervals' worth of time
+        $intervals = (integer) max(floor(($this->lastExecution - $this->time) / $interval)+1, 1);
+        $this->time = $this->time + $this->interval * $intervals;
+        if($update)
+            $this->update(array('lastExecution', 'time'));
+    }
+
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.

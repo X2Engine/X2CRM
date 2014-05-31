@@ -108,8 +108,10 @@ class MarketingController extends x2base {
      *
      * @return string A JSON array of strings
      */
-    public function actionGetItems(){
-        $sql = 'SELECT id, name as value FROM x2_campaigns WHERE name LIKE :qterm ORDER BY name ASC';
+    public function actionGetItems($modelType){
+         
+            $sql = 'SELECT id, name as value FROM x2_campaigns WHERE name LIKE :qterm ORDER BY name ASC';
+         
         $command = Yii::app()->db->createCommand($sql);
         $qterm = '%'.$_GET['term'].'%';
         $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);

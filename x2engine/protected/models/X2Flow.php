@@ -51,6 +51,7 @@
 Yii::import('application.components.x2flow.X2FlowItem');
 Yii::import('application.components.x2flow.actions.*');
 Yii::import('application.components.x2flow.triggers.*');
+Yii::import('application.models.ApiHook');
 
 class X2Flow extends CActiveRecord {
     /**
