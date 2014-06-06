@@ -149,11 +149,14 @@ class UserTest extends X2DbTestCase {
 
     public function testUserAliasUnique() {
         $admin = $this->users('admin');
+
+        // can't set username to someone else's username
         $admin->userAlias = $this->users('testUser')->username;
         $admin->validate(array('userAlias'));
         $this->assertTrue($admin->hasErrors('userAlias'));
 
         $newUser = new User;
+        // can't set username to someone else's user alias
         $newUser->username = $this->users('testUser')->userAlias;
         $newUser->validate(array('username'));
         $this->assertTrue($newUser->hasErrors('username'));
@@ -172,21 +175,22 @@ class UserTest extends X2DbTestCase {
 
     public function testUpdate () {
         $user = $this->users ('admin');
+
+        // should be able to set userAlias to username
         $user->userAlias = $user->username;
         $this->assertSaves ($user);
 
+        // user alias cannot have trailing or leading whitespace
         $user->userAlias = '      ';
         $this->assertFalse ($user->save ());
-
         $user->userAlias = 'admin  ';
         $this->assertFalse ($user->save ());
-
         $user->userAlias = '  admin  ';
         $this->assertFalse ($user->save ());
-
         $user->userAlias = '  admin';
         $this->assertFalse ($user->save ());
 
+        // also cannot be the empty string
         $user->userAlias = '';
         $this->assertFalse ($user->save ());
 
@@ -207,6 +211,21 @@ class UserTest extends X2DbTestCase {
         $this->assertEquals($user->username,$user->alias);
         $user->userAlias = 'imausertoo';
         $this->assertEquals($user->userAlias,$user->alias);
+    }
+
+    public function testCreate () {
+        $user = new User;
+        $user->setAttributes (array (
+            'firstName' => 'test', 
+            'lastName' => 'test',
+            'username' => 'test',
+            'password' => 'test',
+            'status' => 1,
+        ), false);
+
+        $this->assertSaves ($user);
+        // user alias should get set automatically in beforeValidate ()
+        $this->assertEquals ('test', $user->userAlias);
     }
 }
 

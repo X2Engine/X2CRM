@@ -38,7 +38,7 @@
 /**
  * @package application.tests.unit.components.x2flow.triggers
  */
-class WorkflowStartStageTriggerTest extends X2DbTestCase {
+class WorkflowStartStageTriggerTest extends X2FlowTestBase {
 
     public $fixtures = array (
         'contacts' => array ('Contacts', '.WorkflowTests'),
@@ -59,22 +59,22 @@ class WorkflowStartStageTriggerTest extends X2DbTestCase {
      * executes without errors.
      */
     public function testFlowExecution () {
-        X2FlowTestingAuxLib::clearLogs ();
+        $this->clearLogs ();
         $workflow = $this->workflows ('workflow2'); 
         $model = $this->contacts ('contact935');
         // complete stage 4, autostarting stage 5. This should trigger the flow
         $retVal = Workflow::completeStage (
             $workflow->id, 4, $model, 'test comment');
-        $newLog = X2FlowTestingAuxLib::getTraceByFlowId ($this->x2flow ('flow1')->id);
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($newLog));
+        $newLog = $this->getTraceByFlowId ($this->x2flow ('flow1')->id);
+        $this->assertTrue ($this->checkTrace ($newLog));
 
         // complete stage 5. This shouldn't trigger the flow since the flow checks that stage
         // 4 was completed
-        X2FlowTestingAuxLib::clearLogs ();
+        $this->clearLogs ();
         $retVal = Workflow::completeStage (
             $workflow->id, 5, $model, '');
-        $newLog = X2FlowTestingAuxLib::getTraceByFlowId ($this->x2flow ('flow1')->id);
-        $this->assertFalse (X2FlowTestingAuxLib::checkTrace ($newLog));
+        $newLog = $this->getTraceByFlowId ($this->x2flow ('flow1')->id);
+        $this->assertFalse ($this->checkTrace ($newLog));
     }
 
 }

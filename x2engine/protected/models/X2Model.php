@@ -317,14 +317,14 @@ abstract class X2Model extends CActiveRecord {
      * @return array 
      */
     public static function getAssociationTypeOptions () {
-        // keep last duplicates (array_unique would keep the first duplicate)
-        $associationTypes = array_flip (array_flip (self::$associationModels));
-        unset ($associationTypes['']);
-
-        foreach ($associationTypes as $typeOrModuleName => $modelName) {
-            $associationTypes[$typeOrModuleName] = self::getModelTitle ($modelName);
-        }
+        $modelNames = array_keys (self::getModelNames ());
          
+
+        $associationTypes = array ();
+        foreach ($modelNames as $modelName) {
+            $associationTypes[self::getAssociationType ($modelName)] = self::getModelTitle (
+                $modelName);
+        }
         return $associationTypes;
     }
 
@@ -333,16 +333,28 @@ abstract class X2Model extends CActiveRecord {
     /**
      * Returns the title of the model to display in the UI
      */
-    public static function getModelTitle ($modelClass){
+    public static function getModelTitle ($modelClass, $singular=false){
         if(!isset(self::$translatedModelTitles[$modelClass])){
             $title = isset(self::$modelTitles[$modelClass])
                     ? self::$modelTitles[$modelClass]
                     : $modelClass;
+            if ($singular) {
+                $title = preg_replace ("/ies$/", 'y', $title);
+                $title = preg_replace ("/s$/", '', $title);
+            }
             self::$translatedModelTitles[$modelClass] = Yii::t(
                 isset (self::model($modelClass)->module) 
                 ? self::model($modelClass)->module : 'app', $title);
         }
         return self::$translatedModelTitles[$modelClass];
+    }
+
+    public static function getTranslatedModelTitles ($singular=false) {
+        $modelTitles = array ();
+        foreach (self::$modelTitles as $model => $title) {
+            $modelTitles[$model] = self::getModelTitle ($model, $singular);  
+        }
+        return $modelTitles;
     }
 
     /**
@@ -444,6 +456,15 @@ abstract class X2Model extends CActiveRecord {
         }
         $criteria->params = $params;
         return self::model(get_class($this))->find($criteria);
+    }
+
+    /**
+     * Finds a model via a nameId reference
+     * @param type $nameId
+     * @return type
+     */
+    public function findByNameId($nameId) {
+        return self::model()->findByAttributes(compact('nameId'));
     }
 
     /**
@@ -646,6 +667,7 @@ abstract class X2Model extends CActiveRecord {
                         ':st' => $class,
                         ':sid' => $this->id
                     ));
+
         // Clear out old phone numbers
         X2Model::model('PhoneNumber')->deleteAllByAttributes(array(
             'modelId' => $this->id,
@@ -659,6 +681,13 @@ abstract class X2Model extends CActiveRecord {
             $this->nameId = $this->name;
             $this->updateNameIdRefs();
         }
+
+        // clear out associated actions
+        Actions::model()->deleteAllByAttributes(
+            array(
+                'associationType' => strtolower (self::getAssociationType (get_class ($this))),
+                'associationId' => $this->id
+            ));
 
         if($this->hasEventHandler('onAfterDelete'))
             $this->onAfterDelete(new CEvent($this));

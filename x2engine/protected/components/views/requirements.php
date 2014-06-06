@@ -512,6 +512,22 @@ if(!(bool) ($requirements['environment']['allow_url_fopen']=@ini_get('allow_url_
 		$reqMessages[1][] = installer_t('The PHP configuration option "allow_url_fopen" is disabled. CURL will be used for making all HTTP requests during updates.');
 }
 
+// Check memory allocation limits
+$maxMem = ini_get('memory_limit');
+if(!empty($maxMem) && preg_match('/(\d+)([BKMG])/i',$maxMem,$match)) {
+    $multiplier = array(
+        'b' => 1,
+        'k' => 1024,
+        'm' => 1048576,
+        'g' => 1073741824
+    );
+    $maxBytes = ((integer)$match[1])*$multiplier[strtolower($match[2])];
+} else {
+    $maxBytes = (integer) $maxMem;
+}
+if((bool)$maxBytes && $maxBytes <= 33554432) {
+    $reqMessages[2][] = installer_t('The memory limit is set to 32 megabytes or lower in the PHP configuration. Please consider raising this limit. X2Engine may otherwise encounter fatal runtime errors.');
+}
 
 ///////////////////////
 // NETWORK DIAGNOSIS //

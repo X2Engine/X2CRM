@@ -30,11 +30,21 @@ Yii::app()->clientScript->registerCss('eventTabCss',"
 ");
 
 if ($associationType === 'calendar') {
+    $associationTypeOptions = X2Model::getAssociationTypeOptions ();
+    unset ($associationTypeOptions['calendar']);
+    $associationTypeOptions = 
+        array ('calendar' => '-------------------') + $associationTypeOptions;
+    $associationModels = array (); 
+    // get the association type => model name mapping for available options
+    foreach ($associationTypeOptions as $typ => $title) {
+        $associationModels[$typ] = X2Model::getModelName ($typ);
+    }
     Yii::app()->clientScript->registerScript('eventTabJS',"
 (function () {
 
 $('#Actions_associationType').change (function () {
     var that = this;
+    var associationModels = ".CJSON::encode ($associationModels).";
     if ($(this).val () === 'calendar') {
         $('#association-type-autocomplete-container').hide ();
         return false;
@@ -44,7 +54,7 @@ $('#Actions_associationType').change (function () {
         type: 'GET',
         url: '".Yii::app()->controller->createUrl ('ajaxGetModelAutocomplete')."',
         data: {
-            modelType: x2.associationModels[$(this).val ()],
+            modelType: associationModels[$(this).val ()],
             name: 'Actions[associationName]'
         },
         success: function (data) {
@@ -148,7 +158,7 @@ $('#Actions_associationType').change (function () {
                 'htmlOptions' => array(
                     // fix datepicker so it's always on top
                     'onClick' => "$('#ui-datepicker-div').css('z-index', '100');", 
-                    'class' => 'action-complete-date',
+                    'class' => 'action-complete-date x2-forms',
                     'id' => 'event-form-action-complete-date'
                 ),
             ));
@@ -203,10 +213,6 @@ $('#Actions_associationType').change (function () {
             echo $form->label(
                 $model, 'associationType',
                 array('class'=>'action-associationType-label')); 
-            $associationTypeOptions = X2Model::getAssociationTypeOptions ();
-            unset ($associationTypeOptions['calendar']);
-            $associationTypeOptions = 
-                array ('calendar' => '-------------------') + $associationTypeOptions;
 
             echo $form->dropDownList(
                 $model, 'associationType', 

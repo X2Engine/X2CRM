@@ -78,6 +78,22 @@ PublisherEventTab.prototype.reset = function () {
 };
 
 
+/**
+ * @param Bool True if form input is valid, false otherwise
+ */
+PublisherEventTab.prototype.validate = function () {
+    var errors = !x2.PublisherTab.prototype.validate.call (this);
+
+    if ($('#event-form-action-due-date').val () === '') {
+        errors |= true;
+        $('#event-form-action-due-date').addClass ('error');
+        x2.forms.errorSummaryAppend (this._element, this.translations['startDateError']);
+    }
+
+    return !errors;
+};
+
+
 /*
 Private instance methods
 */

@@ -35,7 +35,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-class X2FlowTestingAuxLibTest extends X2DbTestCase {
+class X2FlowTestBaseTest extends X2FlowTestBase {
 
     public $fixtures = array (
         'x2flow' => array ('X2Flow', '_1'),
@@ -43,7 +43,7 @@ class X2FlowTestingAuxLibTest extends X2DbTestCase {
     );
 
     public function testGetFlow () {
-        $this->assertTrue (is_array (X2FlowTestingAuxLib::getFlow ($this)));
+        $this->assertTrue (is_array ($this->getFlow ($this)));
     }
 
     public function testExecuteFlow () {
@@ -51,7 +51,7 @@ class X2FlowTestingAuxLibTest extends X2DbTestCase {
             'model' => Accounts::Model ()->findByAttributes ($this->accounts['account1']),
             'modelClass' => 'Accounts',
         );
-        $this->assertTrue (is_array (X2FlowTestingAuxLib::executeFlow (
+        $this->assertTrue (is_array ($this->executeFlow (
             X2Flow::Model ()->findByAttributes ($this->x2flow['flow1']), $params)));
     }
 
@@ -88,7 +88,7 @@ class X2FlowTestingAuxLibTest extends X2DbTestCase {
                 )
             )
         );
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($trace));
+        $this->assertTrue ($this->checkTrace ($trace));
 
         // this trace shows a flow which executed with errors
         $trace =  array (
@@ -121,7 +121,7 @@ class X2FlowTestingAuxLibTest extends X2DbTestCase {
                 )
             )
         );
-        $this->assertFalse (X2FlowTestingAuxLib::checkTrace ($trace));
+        $this->assertFalse ($this->checkTrace ($trace));
     }
 }
 

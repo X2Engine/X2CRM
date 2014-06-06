@@ -299,6 +299,10 @@ Yii::app()->clientScript->registerCss('dragAndDropCss',"
 ***********************************************************************/
 
 #stage-member-lists-container .stage-member-name {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 135px;
+    overflow: hidden;
     height: 30px;
     float: left;
 }

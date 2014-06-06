@@ -45,7 +45,7 @@ Yii::import ('application.components.permissions.*');
 /**
  * @package application.tests.unit.components.x2flow.triggers
  */
-class X2FlowSwitchTest extends X2DbTestCase {
+class X2FlowSwitchTest extends X2FlowTestBase {
 
     public $fixtures = array (
         'contacts' => array ('Contacts', '.WorkflowTests'),
@@ -68,9 +68,9 @@ class X2FlowSwitchTest extends X2DbTestCase {
         $params = array (
             'model' => $this->contacts ('contact935'),
         );
-        $retVal = X2FlowTestingAuxLib::executeFlow ($flow10, $params);
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
-        $trace = X2FlowTestingAuxLib::flattenTrace ($retVal['trace']);
+        $retVal = $this->executeFlow ($flow10, $params);
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
+        $trace = $this->flattenTrace ($retVal['trace']);
         VERBOSE_MODE && print_r ($trace);
 
         // this contact has completed the stage that's checked by this flow. The conditional
@@ -78,9 +78,9 @@ class X2FlowSwitchTest extends X2DbTestCase {
         $this->assertTrue ($trace[1]['branch']);
 
         $flow11 = $this->x2flow ('flow11');
-        $retVal = X2FlowTestingAuxLib::executeFlow ($flow11, $params);
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
-        $trace = X2FlowTestingAuxLib::flattenTrace ($retVal['trace']);
+        $retVal = $this->executeFlow ($flow11, $params);
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
+        $trace = $this->flattenTrace ($retVal['trace']);
         VERBOSE_MODE && print_r ($trace);
 
         // this contact has not completed the stage that's checked by this flow. The conditional
@@ -96,9 +96,9 @@ class X2FlowSwitchTest extends X2DbTestCase {
         $params = array (
             'model' => $this->contacts ('contact935'),
         );
-        $retVal = X2FlowTestingAuxLib::executeFlow ($flow, $params);
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
-        $trace = X2FlowTestingAuxLib::flattenTrace ($retVal['trace']);
+        $retVal = $this->executeFlow ($flow, $params);
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
+        $trace = $this->flattenTrace ($retVal['trace']);
         VERBOSE_MODE && print_r ($trace);
 
         // this contact has completed the stage that's checked by this flow. The conditional
@@ -106,9 +106,9 @@ class X2FlowSwitchTest extends X2DbTestCase {
         $this->assertFalse ($trace[1]['branch']);
 
         $flow = $this->x2flow ('flow13');
-        $retVal = X2FlowTestingAuxLib::executeFlow ($flow, $params);
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
-        $trace = X2FlowTestingAuxLib::flattenTrace ($retVal['trace']);
+        $retVal = $this->executeFlow ($flow, $params);
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
+        $trace = $this->flattenTrace ($retVal['trace']);
         VERBOSE_MODE && print_r ($trace);
 
         // this contact has not completed the stage that's checked by this flow. The conditional
@@ -121,9 +121,9 @@ class X2FlowSwitchTest extends X2DbTestCase {
         $params = array (
             'model' => $this->contacts ('contact935'),
         );
-        $retVal = X2FlowTestingAuxLib::executeFlow ($flow, $params);
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
-        $trace = X2FlowTestingAuxLib::flattenTrace ($retVal['trace']);
+        $retVal = $this->executeFlow ($flow, $params);
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
+        $trace = $this->flattenTrace ($retVal['trace']);
         VERBOSE_MODE && print_r ($trace);
 
         // this contact has started the stage that's checked by this flow. The conditional
@@ -131,9 +131,9 @@ class X2FlowSwitchTest extends X2DbTestCase {
         $this->assertTrue ($trace[1]['branch']);
 
         $flow = $this->x2flow ('flow15');
-        $retVal = X2FlowTestingAuxLib::executeFlow ($flow, $params);
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
-        $trace = X2FlowTestingAuxLib::flattenTrace ($retVal['trace']);
+        $retVal = $this->executeFlow ($flow, $params);
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
+        $trace = $this->flattenTrace ($retVal['trace']);
         VERBOSE_MODE && print_r ($trace);
 
         // this contact has not started the stage that's checked by this flow. The conditional
@@ -147,9 +147,9 @@ class X2FlowSwitchTest extends X2DbTestCase {
         $params = array (
             'model' => $this->contacts ('contact935'),
         );
-        $retVal = X2FlowTestingAuxLib::executeFlow ($flow, $params);
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
-        $trace = X2FlowTestingAuxLib::flattenTrace ($retVal['trace']);
+        $retVal = $this->executeFlow ($flow, $params);
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
+        $trace = $this->flattenTrace ($retVal['trace']);
         VERBOSE_MODE && print_r ($trace);
 
         // this contact has started the stage that's checked by this flow. The conditional
@@ -157,9 +157,9 @@ class X2FlowSwitchTest extends X2DbTestCase {
         $this->assertFalse ($trace[1]['branch']);
 
         $flow = $this->x2flow ('flow17');
-        $retVal = X2FlowTestingAuxLib::executeFlow ($flow, $params);
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
-        $trace = X2FlowTestingAuxLib::flattenTrace ($retVal['trace']);
+        $retVal = $this->executeFlow ($flow, $params);
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
+        $trace = $this->flattenTrace ($retVal['trace']);
         VERBOSE_MODE && print_r ($trace);
 
         // this contact has not started the stage that's checked by this flow. The conditional

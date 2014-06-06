@@ -676,7 +676,7 @@ span.x2-hidden-widgets-menu-item.ui-draggable {
 	top:40px;
 	background:#f0f0f0;
 	position:absolute;
-	right:179px;
+	right:160px;
 	z-index:2000;
 	border-radius:			4px;
 	-moz-border-radius:		4px;
@@ -1015,8 +1015,19 @@ div.page-title {
     border-bottom: none;
 }
 
+div.page-title h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: auto;
+    padding-right: 14px;
+}
+
 .grid-view div.page-title {
     border-bottom: 1px solid #666;
+}
+.grid-view div.page-title h2 {
+    overflow: visible;
 }
 
 /* used when elements with page-title class are not at the top of the content box */
@@ -1286,7 +1297,8 @@ div.page-title .x2-button-group {
     /*margin:0 5px 0 0;*/
     margin: 0;
 }
-div.page-title > .x2-button {
+div.page-title > .x2-button,
+.responsive-menu-items > .x2-button {
 	vertical-align:middle;
 	margin:5px 5px 0 0;
 	padding:0 5px;

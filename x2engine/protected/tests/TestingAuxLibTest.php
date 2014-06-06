@@ -35,7 +35,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
 class X2FlowTestingAuxLibTest extends CDbTestCase {
 
     public function testSetPublic () {

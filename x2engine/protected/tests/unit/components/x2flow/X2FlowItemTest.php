@@ -43,7 +43,7 @@ Yii::import('application.tests.X2TestCase');
  * @package application.tests.unit.components.x2flow
  * @author Demitri Morgan <demitri@x2engine.com>, Derek Mueller <derek@x2engine.com>
  */
-class X2FlowItemTest extends X2DbTestCase {
+class X2FlowItemTest extends X2FlowTestBase {
 
     public $fixtures = array (
         'x2flow' => array ('X2Flow', '_1')
@@ -51,7 +51,7 @@ class X2FlowItemTest extends X2DbTestCase {
 
     public function testCreate () {
         if(get_class($this) == 'X2FlowItemTest'){
-            $flow = X2FlowTestingAuxLib::getFlow($this, 'flow1');
+            $flow = $this->getFlow($this, 'flow1');
             $item = X2FlowItem::create($flow['trigger']);
             if(VERBOSE_MODE) print ('testCreate: '.get_class($item));
             $this->assertTrue(get_class($item) === $flow['trigger']['type']);

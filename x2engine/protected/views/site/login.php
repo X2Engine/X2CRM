@@ -228,5 +228,3 @@ document.getElementById('LoginForm_username').focus (); // for when autofocus is
 $this->renderPartial ('loginCompanyInfo');
 ?>
 </div>
-<div id="racing-stripe">
-</div>

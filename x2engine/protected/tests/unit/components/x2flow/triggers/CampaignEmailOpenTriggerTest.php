@@ -44,7 +44,7 @@ Yii::import ('application.components.permissions.*');
 /**
  * @package application.tests.unit.components.x2flow.triggers
  */
-class CampaignEmailOpenTriggerTest extends X2DbTestCase {
+class CampaignEmailOpenTriggerTest extends X2FlowTestBase {
 
     public $fixtures = array (
         'x2flow' => array ('X2Flow', '_1'),
@@ -66,11 +66,11 @@ class CampaignEmailOpenTriggerTest extends X2DbTestCase {
             'campaign' => $listItem->list->campaign->name,
         );
 
-        $retVal = X2FlowTestingAuxLib::executeFlow (
+        $retVal = $this->executeFlow (
             X2Flow::model ()->findByAttributes ($this->x2flow['flow9']), $params);
 
         // assert flow executed without errors
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
     }
 
 }

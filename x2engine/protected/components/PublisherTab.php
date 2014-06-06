@@ -90,6 +90,10 @@ abstract class PublisherTab extends X2Widget {
                         translations: {
                             beforeSubmit: '".addslashes(
                                 Yii::t('actions', 'Please enter a description.'))."',
+                            startDateError: '".addslashes(
+                                Yii::t('actions', 'Please enter a start date.'))."',
+                            endDateError: '".addslashes(
+                                Yii::t('actions', 'Please enter an end date.'))."',
                         }
                     });
                     x2.publisher.addTab (tab);

@@ -109,6 +109,7 @@ class WebFormAction extends CAction {
 
             
 
+            //if (empty ($model->visibility)) $model->visibility = 1;
 
             $model->validate ();
             if(!$model->hasErrors()){
@@ -551,8 +552,7 @@ class WebFormAction extends CAction {
      * @param Contacts $contact
      * @param null|string $leadSource
      */
-    private static function generateLead (
-        Contacts $contact, $leadSource=null) {
+    private static function generateLead (Contacts $contact, $leadSource=null) {
 
         $lead = new X2Leads ('webForm');
         $lead->name = $contact->firstName.' '.$contact->lastName;

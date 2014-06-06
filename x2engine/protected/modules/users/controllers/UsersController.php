@@ -93,14 +93,14 @@ class UsersController extends x2base {
      */
     public function actionCreate() {
         $model=new User;
-                $groups=array();
-                foreach(Groups::model()->findAll() as $group){
-                    $groups[$group->id]=$group->name;
-                }
-                $roles=array();
-                foreach(Roles::model()->findAll() as $role){
-                    $roles[$role->id]=$role->name;
-                }
+        $groups=array();
+        foreach(Groups::model()->findAll() as $group){
+            $groups[$group->id]=$group->name;
+        }
+        $roles=array();
+        foreach(Roles::model()->findAll() as $role){
+            $roles[$role->id]=$role->name;
+        }
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
@@ -211,123 +211,121 @@ class UsersController extends x2base {
      */
     public function actionUpdate($id) {
         $model=$this->loadModel($id);
-                $groups=array();
-                foreach(Groups::model()->findAll() as $group){
-                    $groups[$group->id]=$group->name;
-                }
-                $selectedGroups=array();
-                foreach(GroupToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
-                    $selectedGroups[]=$link->groupId;
-                }
-                $roles=array();
-                foreach(Roles::model()->findAll() as $role){
-                    $roles[$role->id]=$role->name;
-                }
-                $selectedRoles=array();
-                foreach(RoleToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
-                    $selectedRoles[]=$link->roleId;
-                }
+        $groups=array();
+        foreach(Groups::model()->findAll() as $group){
+            $groups[$group->id]=$group->name;
+        }
+        $selectedGroups=array();
+        foreach(GroupToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
+            $selectedGroups[]=$link->groupId;
+        }
+        $roles=array();
+        foreach(Roles::model()->findAll() as $role){
+            $roles[$role->id]=$role->name;
+        }
+        $selectedRoles=array();
+        foreach(RoleToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
+            $selectedRoles[]=$link->roleId;
+        }
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
         if(isset($_POST['User'])) {
-                    $old=$model->attributes;
-                    $temp=$model->password;
-                    $model->attributes=$_POST['User'];
+            $old=$model->attributes;
+            $temp=$model->password;
+            $model->attributes=$_POST['User'];
 
-                    if($model->password!="")
-                        $model->password = md5($model->password);
-                    else
-                        $model->password=$temp;
-                    if(empty($model->userKey)){
-                        $model->userKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
+            if($model->password!="")
+                $model->password = md5($model->password);
+            else
+                $model->password=$temp;
+            if(empty($model->userKey)){
+                $model->userKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
+            }
+            if($model->save()){
+                $profile = $model->profile;
+                if(!empty($profile)) {
+                    $profile->emailAddress = $model->emailAddress;
+                    $profile->fullName = $model->firstName.' '.$model->lastName;
+                    $profile->save();
+                }
+                if($old['username']!=$model->username){
+                    $fieldRecords=Fields::model()->findAllByAttributes(array('fieldName'=>'assignedTo'));
+                    $modelList=array();
+                    foreach($fieldRecords as $record){
+                        $modelList[$record->modelName]=$record->linkType;
                     }
-                    if($model->save()){
-                        $profile = $model->profile;
-                        if(!empty($profile)) {
-                            $profile->emailAddress = $model->emailAddress;
-                            $profile->fullName = $model->firstName.' '.$model->lastName;
-                            $profile->save();
-                        }
-                        if($old['username']!=$model->username){
-                            $fieldRecords=Fields::model()->findAllByAttributes(array('fieldName'=>'assignedTo'));
-                            $modelList=array();
-                            foreach($fieldRecords as $record){
-                                $modelList[$record->modelName]=$record->linkType;
+                    foreach($modelList as $modelName=>$type){
+                        if($modelName=='Quotes')
+                            $modelName="Quote";
+                        if($modelName=='Products')
+                            $modelName='Product';
+                        if(empty($type)){
+                            $list=X2Model::model($modelName)->findAllByAttributes(array('assignedTo'=>$old['username']));
+                            foreach($list as $item){
+                                $item->assignedTo=$model->username;
+                                $item->save();
                             }
-                            foreach($modelList as $modelName=>$type){
-                                if($modelName=='Quotes')
-                                    $modelName="Quote";
-                                if($modelName=='Products')
-                                    $modelName='Product';
-                                if(empty($type)){
-                                    $list=X2Model::model($modelName)->findAllByAttributes(array('assignedTo'=>$old['username']));
-                                    foreach($list as $item){
-                                        $item->assignedTo=$model->username;
-                                        $item->save();
-                                    }
-                                }else{
-                                    $list=X2Model::model($modelName)->findAllBySql(
-                                            "SELECT * FROM ".X2Model::model($modelName)->tableName()
-                                            ." WHERE assignedTo LIKE '%".$old['username']."%'");
-                                    foreach($list as $item){
-                                        $assignedTo=explode(", ",$item->assignedTo);
-                                        $key=array_search($old['username'],$assignedTo);
-                                        if($key>=0){
-                                            $assignedTo[$key]=$model->username;
-                                        }
-                                        $item->assignedTo=implode(", ",$assignedTo);
-                                        $item->save();
-                                    }
+                        }else{
+                            $list=X2Model::model($modelName)->findAllBySql(
+                                    "SELECT * FROM ".X2Model::model($modelName)->tableName()
+                                    ." WHERE assignedTo LIKE '%".$old['username']."%'");
+                            foreach($list as $item){
+                                $assignedTo=explode(", ",$item->assignedTo);
+                                $key=array_search($old['username'],$assignedTo);
+                                if($key>=0){
+                                    $assignedTo[$key]=$model->username;
                                 }
-                            }
-
-                            $profile=Profile::model()->findByAttributes(array('username'=>$old['username']));
-                            if(isset($profile)){
-                                $profile->username=$model->username;
-                                $profile->save();
-                            }
-
-                        }
-                        foreach(RoleToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
-                            $link->delete();
-                        }
-                        foreach(GroupToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
-                            $link->delete();
-                        }
-                        if(isset($_POST['roles'])){
-                            $roles=$_POST['roles'];
-                            foreach($roles as $role){
-                                $link=new RoleToUser;
-                                $link->roleId=$role;
-                                $link->type="user";
-                                $link->userId=$model->id;
-                                $link->save();
+                                $item->assignedTo=implode(", ",$assignedTo);
+                                $item->save();
                             }
                         }
-                        if(isset($_POST['groups'])){
-                            $groups=$_POST['groups'];
-                            foreach($groups as $group){
-                                $link=new GroupToUser;
-                                $link->groupId=$group;
-                                $link->userId=$model->id;
-                                $link->username=$model->username;
-                                $link->save();
-                            }
-                        }
-                        $this->redirect(array('view','id'=>$model->id));
                     }
-        }
 
-        if (!isset ($model->userAlias)) $model->userAlias = $model->username;
+                    $profile=Profile::model()->findByAttributes(array('username'=>$old['username']));
+                    if(isset($profile)){
+                        $profile->username=$model->username;
+                        $profile->save();
+                    }
+
+                }
+                foreach(RoleToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
+                    $link->delete();
+                }
+                foreach(GroupToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
+                    $link->delete();
+                }
+                if(isset($_POST['roles'])){
+                    $roles=$_POST['roles'];
+                    foreach($roles as $role){
+                        $link=new RoleToUser;
+                        $link->roleId=$role;
+                        $link->type="user";
+                        $link->userId=$model->id;
+                        $link->save();
+                    }
+                }
+                if(isset($_POST['groups'])){
+                    $groups=$_POST['groups'];
+                    foreach($groups as $group){
+                        $link=new GroupToUser;
+                        $link->groupId=$group;
+                        $link->userId=$model->id;
+                        $link->username=$model->username;
+                        $link->save();
+                    }
+                }
+                $this->redirect(array('view','id'=>$model->id));
+            }
+        }
 
         $this->render('update',array(
             'model'=>$model,
-                        'groups'=>$groups,
-                        'roles'=>$roles,
-                        'selectedGroups'=>$selectedGroups,
-                        'selectedRoles'=>$selectedRoles,
+            'groups'=>$groups,
+            'roles'=>$roles,
+            'selectedGroups'=>$selectedGroups,
+            'selectedRoles'=>$selectedRoles,
         ));
     }
 

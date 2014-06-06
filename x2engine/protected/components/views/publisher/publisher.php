@@ -23,8 +23,7 @@
 $form = $this->beginWidget('CActiveForm', array('id' => 'publisher-form')); 
 
 function echoTabRow ($tabs, $rowNum=1) {
-    ?> 
-        <ul id='publisher-tabs-row-<?php echo $rowNum; ?>' style='display: none;'>
+    ?><ul id='publisher-tabs-row-<?php echo $rowNum; ?>' style='display: none;'>
             <?php 
             // Publisher tabs
             foreach ($tabs as $tab) {
@@ -33,13 +32,12 @@ function echoTabRow ($tabs, $rowNum=1) {
                 ?> </li> <?php
             }
             ?>
-        </ul>
-    <?php    
+        </ul><?php    
 }
 
 ?>
 
-<div id="publisher">
+<div id="publisher" <?php echo (sizeof ($tabs) > 4 ? 'class="multi-row-tabs-publisher"' : ''); ?>>
     <?php
     $tabsTmp = $tabs;
     if (sizeof ($tabs) > 4) {
@@ -53,6 +51,7 @@ function echoTabRow ($tabs, $rowNum=1) {
         echoTabRow ($tabsTmp);
     }
     ?>
+    <div class='clearfix'></div>
     <div class="form x2-layout-island">
     <?php
     // Publisher tab content 

@@ -546,7 +546,7 @@ class X2Flow extends CActiveRecord {
      * @param string $type the X2Fields type for this value
      * @return mixed the parsed value
      */
-    public static function parseValue($value, $type, &$params = null){
+    public static function parseValue($value, $type, &$params = null, $renderFlag=true){
 
         if(is_string($value) && isset($params['model'])){
             if(strpos($value, '=') === 0){
@@ -560,7 +560,7 @@ class X2Flow extends CActiveRecord {
                     $value = $evald[1];
             } else {
                 // Run token replacement:
-                $value = Formatter::replaceVariables($value, $params['model'], $type);
+                $value = Formatter::replaceVariables($value, $params['model'], $type, $renderFlag);
             }
         }
 

@@ -1458,8 +1458,6 @@ class ContactsController extends x2base {
             $model = $this->loadModel($id);
             $model->clearTags();
             $model->delete();
-
-            Actions::model()->deleteAllByAttributes(array('associationType' => 'contacts', 'associationId' => $id));
         } else {
             throw new CHttpException(400, Yii::t('app', 'Invalid request. Please do not repeat this request again.'));
         }

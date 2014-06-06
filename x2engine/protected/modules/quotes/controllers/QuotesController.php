@@ -206,7 +206,7 @@ class QuotesController extends x2base {
 				// the response code manually:
 				header('HTTP/1.1 400 Validation Error');
 			}
-			$this->renderPartial('create', $viewData);
+			$this->renderPartial('create', $viewData,false,true);
 		}
 	}
 
@@ -247,7 +247,7 @@ class QuotesController extends x2base {
 				// the response code manually:
 				header('HTTP/1.1 400 Validation Error');
 			}
-			$this->renderPartial('update', $viewData);
+			$this->renderPartial('update', $viewData,false,true);
 		}
 	}
 

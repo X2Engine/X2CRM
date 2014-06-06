@@ -248,22 +248,28 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                                 'ActionsComplete', array('X2Model' => $model))){
 
                                 if($model->complete != 'Yes'){ ?>
-                                    <div class="control-button icon complete-button"></div>
+                                    <div class="control-button icon complete-button"
+                                     title="<?php echo Yii::t('actions', 'Complete action'); ?>">
+                                    </div>
                                 <?php 
                                 } else { 
                                 ?>
-                                    <div class="control-button icon uncomplete-button"></div>
+                                    <div class="control-button icon uncomplete-button"
+                                     title="<?php echo Yii::t('actions', 'Uncomplete action'); ?>">
+                                    </div>
                                 <?php 
                                 }
                         }
                         if(Yii::app()->user->checkAccess(
                             'ActionsUpdate', array('X2Model' => $model))){ ?>
-                            <div class="control-button icon edit-button"></div>
+                            <div class="control-button icon edit-button"
+                             title="<?php echo Yii::t('actions', 'Edit action'); ?>"></div>
                         <?php 
                         } 
                         if(Yii::app()->user->checkAccess(
                             'ActionsDelete', array('X2Model' => $model))){ ?>
-                            <div class="control-button icon delete-button" alt="[x]"></div>
+                            <div class="control-button icon delete-button" alt="[x]"
+                             title="<?php echo Yii::t('actions', 'Delete action'); ?>"></div>
                         <?php 
                         } 
                         if(Yii::app()->user->checkAccess(

@@ -37,7 +37,7 @@
 /**
  * @package application.tests.unit.components.x2flow.actions
  */
-class X2FlowWorkflowStartStageTest extends X2DbTestCase {
+class X2FlowWorkflowStartStageTest extends X2FlowTestBase {
 
     public $fixtures = array (
         'x2flow' => array ('X2Flow', '.X2FlowWorkflowStartStageTest'),
@@ -50,11 +50,11 @@ class X2FlowWorkflowStartStageTest extends X2DbTestCase {
         $params = array (
             'user' => 'admin'
         );
-        $retVal = X2FlowTestingAuxLib::executeFlow (
+        $retVal = $this->executeFlow (
             X2Flow::model ()->findByAttributes ($this->x2flow['flow1']), $params);
 
         // assert flow executed with error indicating that model was invalid
-        $this->assertFalse (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
+        $this->assertFalse ($this->checkTrace ($retVal['trace']));
 
     }
 }

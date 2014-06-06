@@ -109,8 +109,7 @@ class WebTrackerTest extends WebTrackingTestBase {
      * make requests to a separate domain should not prevent web tracking.
      */
     public function testWebTrackerAcrossDomains () {
-
-        println ('testWebTrackerAcrossDomains: isIE8 () === '.$this->isIE8());
+        VERBOSE_MODE && println ('testWebTrackerAcrossDomains: isIE8 () === '.$this->isIE8());
 
         $this->deleteAllVisibleCookies ();
         $this->assertNotCookie ('regexp:.*x2_key.*');

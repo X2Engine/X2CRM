@@ -83,6 +83,22 @@ class AnonContactTest extends X2DbTestCase {
         $this->assertEquals (null, $action);
     }
 
+    public function testAfterDelete () {
+        $anonContact = $this->anonContacts ('anonContact1');
+        $action = new Actions;
+        $action->setAttributes (array (
+            'subject' => 'test',
+            'associationName' => $anonContact->id,
+            'associationId' => $anonContact->id,
+            'associationType' => 'anoncontact',
+        ), false);
+        $this->assertSaves ($action);
+
+        $this->assertTrue ($anonContact->delete ());
+        // ensure that associated action gets deleted with the anon contact
+        $this->assertEquals (null,  Actions::model ()->findByPk ($action->id));
+    }
+
 
 }
 

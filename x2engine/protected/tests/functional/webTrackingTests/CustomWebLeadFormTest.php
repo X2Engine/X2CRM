@@ -106,7 +106,7 @@ class CustomWebLeadFormTest extends WebTrackingTestBase {
         $this->clearWebActivity ();
         $this->openPublic('/x2WebTrackingTestPages/webTrackerTest.html');
         $this->pause (5000); // wait for database changes to enact
-        $this->assertNoWebActivityGeneration (WEBTRACKING_TEST_WEBROOT_URL);
+        $this->assertNoWebActivityGeneration (TEST_WEBROOT_URL_ALIAS_1);
 
         $this->submitCustomWebForm ();
         $this->assertCookie ('regexp:.*x2_key.*');
@@ -150,7 +150,7 @@ class CustomWebLeadFormTest extends WebTrackingTestBase {
         $this->clearWebActivity ();
         $this->openPublic('/x2WebTrackingTestPages/webTrackerTestDifferentSubdomain.html');
         $this->pause (5000); // wait for database changes to enact
-        $this->assertNoWebActivityGeneration (WEBTRACKING_TEST_WEBROOT_URL);
+        $this->assertNoWebActivityGeneration (TEST_WEBROOT_URL_ALIAS_1);
 
         $this->submitCustomWebForm ('differentSubdomain');
         $this->assertCookie ('regexp:.*x2_key.*');

@@ -173,6 +173,10 @@ class NotificationsController extends CController {
                     'modelId' => $model->modelId,
                     'type'=>$model->type,
                 );
+                if($model->type == 'voip_call') {
+                    $model->viewed = 1;
+                    $model->update('viewed');
+                }
             }
         }
         return $notifications;

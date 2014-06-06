@@ -40,7 +40,6 @@ Yii::import('application.modules.actions.models.Actions');
 Yii::import('application.modules.accounts.models.Accounts');
 
 /**
- * 
  * @package application.tests.functional.modules.contacts
  */
 class WebLeadFormTest extends WebTrackingTestBase {

@@ -836,6 +836,11 @@ class AdminController extends Controller {
         if(isset($_POST['role']) && !in_array($_POST['role'], array('authenticated', 'guest', 'admin'))){
             $id = $_POST['role'];
             $role = Roles::model()->findByAttributes(array('name' => $id));
+            if (!isset($role)) {
+                // Nonexistent role
+                Yii::app()->user->setFlash('error', Yii::t('admin', 'Role does not exist'));
+                $this->redirect('manageRoles');
+            }
             $id = $role->id;
             $userRoles = RoleToUser::model()->findAllByAttributes(array('roleId' => $role->id));
             foreach($userRoles as $userRole){
@@ -3198,7 +3203,16 @@ class AdminController extends Controller {
                      * data.
                      */
                     foreach($metaData as $attribute){
-                        if(isset($importMap[$attribute]) && $model->hasAttribute($importMap[$attribute])){
+                        if (isset($importMap[$attribute]) && $model->hasAttribute ($importMap[$attribute])) {
+                            if (!empty($model->$importMap[$attributes]) || empty($importAttributes[$attribute])) {
+                                /**
+                                 * Skip setting the attribute if it has already been set or if the entry from
+                                 * the CSV is empty. This allows multiple fields in the CSV to be mapped to the
+                                 * same attribute in X2, for example, if there are records with one field set and
+                                 * not the other, or vice versa.
+                                 */
+                                continue;
+                            }
                             if (strtolower($attribute) === 'id') {
                                 // ensure the provided id is valid
                                 if (!preg_match('/^\d$/', $importAttributes[$attribute]) || $importAttributes[$attribute] >= 4294967295) {
@@ -4258,25 +4272,36 @@ class AdminController extends Controller {
     /**
      * Parse the given keys and attributes to ensure required fields are
      * mapped and new fields are to be created.
-     * @param array $model
+     * @param string $model name of the model
      * @param array $keys
      * @param array $attributes
-     * @param boolean $export
+     * @param boolean $createFields whether or not to create new fields
      */
-    protected function verifyImportMap($model, $keys, $attributes, $export = false) {
+    protected function verifyImportMap($model, $keys, $attributes, $createFields = false) {
         if (!empty($keys) && !empty($attributes)) {
             // New import map is the provided data
             $importMap = array_combine($keys, $attributes);
             $conflictingFields = array();
             $failedFields = array();
+
+            // To keep track of fields that were mapped multiple times
+            $mappedValues = array();
+            $multiMappings = array();
+
             foreach ($importMap as $key => &$value) {
+                if (in_array($value, $mappedValues) && !in_array($value, $multiMappings)) {
+                    // This attribute is mapped to two different fields in X2
+                    $multiMappings[] = $value;
+                } else if ($value !== 'createNew') {
+                    $mappedValues[] = $value;
+                }
                 // Loop through and figure out if we need to create new fields
                 $origKey = $key;
                 $key = Formatter::deCamelCase($key);
                 $key = preg_replace('/\[W|_]/', ' ', $key);
                 $key = mb_convert_case($key, MB_CASE_TITLE, "UTF-8");
                 $key = preg_replace('/\W/', '', $key);
-                if ($value == 'createNew' && !$export) {
+                if ($value == 'createNew' && !$createFields) {
                     $importMap[$origKey] = 'c_' . strtolower($key);
                     $fieldLookup = Fields::model()->findByAttributes(array('modelName' => $model, 'fieldName' => $key));
                     if (isset($fieldLookup)) {
@@ -4330,6 +4355,8 @@ class AdminController extends Controller {
                 echo CJSON::encode(array("3", implode(', ', $missingAttrs)));
             } else if (!empty($failedFields)) {
                 echo CJSON::encode(array("1", implode(', ', $failedFields)));
+            } else if (!empty($multiMappings)) {
+                echo CJSON::encode(array("4", implode(', ', $multiMappings)));
             } else {
                 echo CJSON::encode(array("0"));
             }

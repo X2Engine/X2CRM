@@ -257,8 +257,8 @@ class OpportunitiesController extends x2base {
                 $model->associatedContacts=implode(', ',$model->associatedContacts);
 
             // $this->update($model,$temp);
-            $model->save();
-            $this->redirect(array('view','id'=>$model->id));
+            if($model->save())
+                $this->redirect(array('view','id'=>$model->id));
         }
         /* Set assignedTo back into an array only before re-rendering the input box with assignees 
            selected */

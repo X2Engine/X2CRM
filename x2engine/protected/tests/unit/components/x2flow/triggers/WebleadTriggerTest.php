@@ -44,7 +44,7 @@ Yii::import ('application.components.permissions.*');
 /**
  * @package application.tests.unit.components.x2flow.triggers
  */
-class WebleadTriggerTest extends X2DbTestCase {
+class WebleadTriggerTest extends X2FlowTestBase {
 
     public $fixtures = array (
         'x2flow' => array ('X2Flow', '_1'),
@@ -55,7 +55,7 @@ class WebleadTriggerTest extends X2DbTestCase {
      * Trigger config contains leadSource = 'Google' condition
      */
     public function testCheckWithNoTagsAndWithConditions () {
-        $flows = X2FlowTestingAuxLib::getFlows ($this);
+        $flows = $this->getFlows ($this);
         $flow3 = $flows['flow3'];
 
         $params = array (
@@ -82,7 +82,7 @@ class WebleadTriggerTest extends X2DbTestCase {
      * Trigger config contains leadSource = 'Google' condition #successful tag condition
      */
     public function testCheckWithTagsAndWithConditions () {
-        $flows = X2FlowTestingAuxLib::getFlows ($this);
+        $flows = $this->getFlows ($this);
         $flow4 = $flows['flow4'];
 
         $params = array (

@@ -314,6 +314,7 @@ div.x2-layout .formInputBox .checkboxWrapper {
 }
 div.x2-layout .formItem input[type="text"],
 div.x2-layout .formItem textarea,
+div.x2-layout .formItem textarea,
 input[type="text"].record-name-autocomplete {
 	-webkit-appearance:none;
 	height:22px;

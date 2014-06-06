@@ -45,7 +45,7 @@ Yii::import ('application.components.permissions.*');
  * Used to ensure that link type field conditions in X2Flow are functional
  * @package application.tests.unit.components.x2flow.triggers
  */
-class LinkTypeFieldComparisonTest extends X2DbTestCase {
+class LinkTypeFieldComparisonTest extends X2FlowTestBase {
 
     public $fixtures = array (
         'x2flow' => array ('X2Flow', '_1'),
@@ -63,11 +63,11 @@ class LinkTypeFieldComparisonTest extends X2DbTestCase {
             'model' => $contact
         );
 
-        $retVal = X2FlowTestingAuxLib::executeFlow (
+        $retVal = $this->executeFlow (
             X2Flow::model ()->findByAttributes ($this->x2flow['flow8']), $params);
 
         // contact has incorrect company name
-        $this->assertFalse (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
+        $this->assertFalse ($this->checkTrace ($retVal['trace']));
 
         $contact = Contacts::model()
             ->findByAttributes ($this->contacts['contact1']);
@@ -75,11 +75,11 @@ class LinkTypeFieldComparisonTest extends X2DbTestCase {
             'model' => $contact
         );
 
-        $retVal = X2FlowTestingAuxLib::executeFlow (
+        $retVal = $this->executeFlow (
             X2Flow::model ()->findByAttributes ($this->x2flow['flow8']), $params);
 
         // contact has correct company name
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
     }
 
 }

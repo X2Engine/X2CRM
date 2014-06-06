@@ -135,12 +135,17 @@ PublisherTab.prototype.blur = function () {
 PublisherTab.prototype.focus = function () {
 };
 
+
 /**
  * @param Bool True if form input is valid, false otherwise
  */
 PublisherTab.prototype.validate = function () {
-    if (this._element.find ('.action-description').val () === '') {
-        alert(this.translations['beforeSubmit']);
+    x2.forms.clearErrorMessages (this._element);
+    var actionDescription$ = this._element.find ('.action-description');
+
+    if (actionDescription$.val () === '') {
+        actionDescription$.parent ().addClass ('error');
+        x2.forms.errorSummaryAppend (this._element, this.translations['beforeSubmit']);
         return false;
     } else {
         return true;

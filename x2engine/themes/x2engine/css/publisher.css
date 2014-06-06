@@ -34,29 +34,41 @@
  *****************************************************************************************/
 
 #publisher > .ui-tabs-nav {
-    display: inline-block;
-    margin-bottom: -3px;
+    /*display: inline-block;*/
+    display: block;
+    float: left;
+    margin-bottom: 0px;
 }
 
 #publisher > #publisher-tabs-row-1 {
     margin-right: -10px;
 }
 
+#publisher.multi-row-tabs-publisher .form {
+    position: relative;
+    top: -1px;
+}
+
 /***********************************************************************
 * multi row tabs 
 ***********************************************************************/
+
+#publisher-tabs-row-2.ui-tabs-nav li.ui-state-active {
+    position: relative;
+    z-index: 1;
+}
+
 #publisher-tabs-row-2 {
     background: #f8f8f8;
     width: 100%; 
     box-sizing: border-box;
     border-radius: 4px 4px 0 0;
-    height: 31px;
+    height: 32px;
     border: 1px solid #ccc;
     border-bottom: none;
     margin-bottom: -6px !important;
     margin-top: 0px;
-    z-index: -1;
-    display: block !important;
+    /*display: block !important;*/
 }
 #publisher-tabs-row-2 li:first-child {
     margin-left: 3px;

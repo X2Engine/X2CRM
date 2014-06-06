@@ -118,11 +118,18 @@ else
 $this->actionMenu[] = array('label'=>Yii::t('quotes','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?'));
 $this->actionMenu[] = array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;'));
 $this->actionMenu[] = array(
-	'label'=>($model->type == 'invoice'? Yii::t('quotes', 'Print Invoice') : Yii::t('quotes','Print Quote')), 
+	'label'=>($model->type == 'invoice' ? 
+        Yii::t('quotes', 'Print Invoice') : Yii::t('quotes','Print Quote')), 
 	'url'=>'#', 'linkOptions'=>array(
 		'onClick'=>"window.open('". Yii::app()->createUrl('/quotes/quotes/print', 
 		array('id'=>$model->id)) ."')")
 );
+if($model->type !== 'invoice') { 
+    $this->actionMenu[] = array(
+        'label' => Yii::t('quotes', 'Convert To Invoice'),
+        'url' => array ('convertToInvoice', 'id' => $model->id),
+    );
+} 
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 ?>
@@ -131,8 +138,6 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 <div class="page-title-fixed-outer">
     <div class="page-title-fixed-inner">
 <div class="responsive-page-title page-title icon quotes">
-<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
-<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 	<h2><span class="no-bold"><?php echo ($model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?></span> <?php echo $model->name==''?'#'.$model->id:CHtml::encode($model->name); ?></h2>
     <?php
     echo ResponsiveHtml::gripButton ();
@@ -143,14 +148,28 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 		<a class="x2-button icon edit right" href="#" onClick="dialogStrictLock();"><span></span></a>
 	<?php } else { ?>
 		<a class="x2-button icon edit right" href="#" onClick="dialogLock();"><span></span></a>
-	<?php } ?>
-<?php } else { ?>
-	<?php echo CHtml::link('<span></span>', array('update', 'id'=>$model->id), array('class'=>'x2-button icon edit right')); ?>
-<?php } ?>
+	<?php } 
+} else { 
+	echo CHtml::link('<span></span>', array('update', 'id'=>$model->id), array('class'=>'x2-button icon edit right')); 
+} 
+echo CHtml::link(
+    '<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/icons/email_button.png'.
+        '"></img>', '#',
+    array(
+        'class' => 'x2-button icon right email',
+        'title' => Yii::t('app', 'Open email form'),
+        'onclick' => 'toggleEmailForm(); return false;'
+    )
+);
+if($model->type !== 'invoice') { ?>
+	<a class="x2-button right" href="<?php 
+        echo $this->createUrl('convertToInvoice',array('id'=>$model->id));?>">
+        <?php echo Yii::t('quotes', 'Convert To Invoice'); ?>
+    </a>
+<?php 
+} 
 
-<?php if($model->type != 'invoice') { ?>
-	<a class="x2-button right" href="<?php echo $this->createUrl('convertToInvoice',array('id'=>$model->id));?>"><?php echo Yii::t('quotes', 'Convert To Invoice'); ?></a>
-<?php } ?>
+?>
     </div>
 </div>
 </div>

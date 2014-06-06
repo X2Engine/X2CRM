@@ -81,7 +81,7 @@ class X2LeadsController extends x2base {
     }
 
     public function actionGetItems(){
-        $sql = 'SELECT id, name as value FROM x2_leads WHERE name LIKE :qterm ORDER BY name ASC';
+        $sql = 'SELECT id, name as value FROM x2_x2leads WHERE name LIKE :qterm ORDER BY name ASC';
         $command = Yii::app()->db->createCommand($sql);
         $qterm = $_GET['term'].'%';
         $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);

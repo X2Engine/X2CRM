@@ -40,10 +40,10 @@
  * @package application.tests.unit.components.x2flow.triggers
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class X2FlowTriggerTest extends X2TestCase {
+class X2FlowTriggerTest extends X2FlowTestBase {
 
     public function testGetTriggerInstances() {
-        X2FlowTestingAuxLib::assertGetInstances(
+        $this->assertGetInstances(
             $this, 'Trigger',array('X2FlowTrigger','X2FlowSwitch','BaseTagTrigger','BaseWorkflowStageTrigger','BaseWorkflowTrigger'));
     }
     

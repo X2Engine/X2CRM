@@ -89,6 +89,17 @@ class User extends CActiveRecord {
     }
 
     /**
+     * Used to automatically set the user alias to the user name when a user is created.
+     */
+    public function beforeValidate () {
+        if ($this->scenario === 'insert') {
+            if ($this->userAlias === null)
+                $this->userAlias = $this->username;
+        }
+        return parent::beforeValidate ();
+    }
+
+    /**
      * @return array validation rules for model attributes.
      */
     public function rules(){
@@ -96,8 +107,9 @@ class User extends CActiveRecord {
         // will receive user inputs.
         return array(
             array('status', 'required'),
-            array('firstName, lastName, username, password', 'required', 'on' => 'insert'),
-            array('userAlias', 'required', 'on' => 'update'),
+            array('password', 'required', 'on' => 'insert'),
+            array('firstName, lastName, username', 'required'),
+            array('userAlias', 'required'),
             array('status, lastLogin, login', 'numerical', 'integerOnly' => true),
             array('firstName, username, userAlias, title, updatedBy', 'length', 'max' => 20),
             array('lastName, department, officePhone, cellPhone, homePhone', 'length', 'max' => 40),
@@ -112,7 +124,7 @@ class User extends CActiveRecord {
             array(
                 'userAlias',
                 'match',
-                'pattern' => '/^(\s+\S+\s+)|(\s+\S+)|(\S+\s+)$/',
+                'pattern' => '/^((\s+\S+\s+)|(\s+\S+)|(\S+\s+))$/',
                 'not' => true,
                 'message' => Yii::t(
                     'users', 'Username cannot contain trailing or leading whitespace.'),

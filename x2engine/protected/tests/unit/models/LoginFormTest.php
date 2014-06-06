@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -34,17 +35,40 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.tests.unit.components.x2flow.X2FlowItemTest');
-
 /**
  * 
- * @package application.tests.unit.components.x2flow.actions
+ * @package
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class X2FlowActionTest extends X2FlowTestBase {
+class LoginFormTest extends X2DbTestCase {
 
-    public function testGetActionInstances() {
-        $this->assertGetInstances($this,'Action',array('X2FlowAction', 'BaseX2FlowWorkflowStageAction'));
+    public static function referenceFixtures(){
+        return array(
+            'user' => 'User'
+        );
+    }
+
+    public function testGetUser() {
+        $lf = new LoginForm;
+        // Use username
+        $lf->username = $this->user('testUser')->username;
+        $lf->password = 'password';
+        $this->assertEquals($this->user('testUser')->id,$lf->getUser()->id);
+        $this->assertEquals($this->user('testUser')->id,$lf->getUser()->id);
+        $lf = new LoginForm;
+        // Use alias
+        $lf->username = $this->user('testUser')->userAlias;
+        $lf->password = 'password';
+        $this->assertEquals($this->user('testUser')->id,$lf->getUser()->id);
+        $this->assertEquals($this->user('testUser')->id,$lf->getUser()->id);
+    }
+
+    public function testGetSessionUsername() {
+        // Must be username
+        $lf = new LoginForm;
+        $lf->username = $this->user('testUser')->userAlias;
+        $lf->password = 'password';
+        $this->assertEquals($this->user('testUser')->username,$lf->getSessionUsername());
     }
 }
 

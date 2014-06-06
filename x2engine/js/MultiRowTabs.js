@@ -36,7 +36,7 @@
 
 $.widget ("x2.multiRowTabs", $.ui.tabs, {
     _getList: function () {
-		return this.element.find( "ol,ul" ).slice(0, 2);
+		return this.element.children ( "ol,ul" ).slice(0, 2);
     }
 });
 

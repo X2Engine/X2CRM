@@ -1,6 +1,6 @@
 # X2Engine 4.1 #
-Follow-up point release 4.1.2 (beta)
-5/30/2014
+Follow-up point release 4.1.2
+6/6/2014
 
 New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
 
@@ -84,6 +84,9 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
     * [1246](http://x2software.com/index.php/bugReports/1246): array_merge() [<a href='function.array-merge'>function.array-merge</a>]: Argument #2 is not an array  
     * [1247](http://x2software.com/index.php/bugReports/1247): Class:  not found.  
     * [1264](http://x2software.com/index.php/bugReports/1264): CDbCommand failed to execute the SQL statement: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'giertsen_x2engine.x2_cron_events' doesn't exist
+    * [1268](http://x2software.com/index.php/bugReports/1268): Trying to get property of non-object  
+    * [1280](http://x2software.com/index.php/bugReports/1280): Emailed quotes not tracked properly  
+    * [1295](http://x2software.com/index.php/bugReports/1295): Validation errors not shown when updating an opportunity 
 
 # Introduction #
 Welcome to  X2Engine!

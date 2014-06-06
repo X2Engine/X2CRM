@@ -35,15 +35,17 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.x2flow.*');
-Yii::import('application.components.x2flow.actions.*');
-Yii::import('application.components.x2flow.triggers.*');
+Yii::import ('application.modules.contacts.models.*');
+Yii::import ('application.modules.workflow.models.*');
+Yii::import ('application.components.*');
+Yii::import ('application.components.x2flow.*');
+Yii::import ('application.components.x2flow.triggers.*');
+Yii::import ('application.components.permissions.*');
 
 /**
- * Utility methods for flow related unit tests.
+ * @package application.tests.unit.components.x2flow.triggers
  */
-class X2FlowTestingAuxLib {
-
+abstract class X2FlowTestBase extends X2DbTestCase {
     /**
      * Clears all trigger logs
      */
@@ -75,7 +77,7 @@ class X2FlowTestingAuxLib {
 
     /**
      * Decodes flow from flow fixture record. 
-     * @param X2DbTestCase $context
+     * @param X2FlowTestBase $context
      * @param string $rowAlias The row within the fixture to get
      * @param string $fixtureName Name of the fixture from which to get data
      * @return array decoded flow JSON string
@@ -146,7 +148,7 @@ class X2FlowTestingAuxLib {
 
     /**
      * Returns array of decoded flows from fixture records
-     * @param X2DbTestCase $context A test case for which to obtain data
+     * @param X2FlowTestBase $context A test case for which to obtain data
      * @param string $fixtureName The name of the fixture to pull from
      * @return <array of arrays> decoded flow JSON strings
      */

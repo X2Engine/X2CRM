@@ -1,4 +1,13 @@
-# 4.1.2 (beta) #
+# 4.1.2 #
+6/6/2014
+* General Changelog / Developer Notes:
+  * Fixed inline quotes form
+* Tracked Bug Fixes:  
+  * [1268](http://x2software.com/index.php/bugReports/1268): Trying to get property of non-object  
+  * [1280](http://x2software.com/index.php/bugReports/1280): Emailed quotes not tracked properly  
+  * [1295](http://x2software.com/index.php/bugReports/1295): Validation errors not shown when updating an opportunity 
+
+# 4.1.2b (beta) #
 5/30/2014
 
 * General Changelog / Developer Notes:

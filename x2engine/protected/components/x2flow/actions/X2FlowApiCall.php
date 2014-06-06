@@ -82,7 +82,8 @@ class X2FlowApiCall extends X2FlowAction {
                 $data=array();
                 foreach($this->config['attributes'] as $param){
                     if(isset($param['name'],$param['value'])){
-                        $data[$param['name']]=X2Flow::parseValue($param['value'],'',$params);
+                        $data[$param['name']]=X2Flow::parseValue(
+                            $param['value'],'',$params, false);
                     }
                 }
                 $data = http_build_query($data);
@@ -96,6 +97,7 @@ class X2FlowApiCall extends X2FlowAction {
                     $httpOptions['header'] = implode("\r\n", $headers);
                 }
             }
+
             $context = stream_context_create(array('http' => $httpOptions));
             if(@file_get_contents($url, false, $context)!==false){
                 return array(true, "Remote API call succeeded");

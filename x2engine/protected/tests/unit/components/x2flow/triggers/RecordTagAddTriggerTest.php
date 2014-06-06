@@ -44,7 +44,7 @@ Yii::import ('application.components.permissions.*');
 /**
  * @package application.tests.unit.components.x2flow.triggers
  */
-class RecordTagAddTriggerTest extends X2DbTestCase {
+class RecordTagAddTriggerTest extends X2FlowTestBase {
 
     public $fixtures = array (
         'x2flow' => array ('X2Flow', '_1'),
@@ -55,7 +55,7 @@ class RecordTagAddTriggerTest extends X2DbTestCase {
      * Trigger config only contains tag condition 
      */
     public function testCheckWithTags () {
-        $flow = X2FlowTestingAuxLib::getFlow ($this,'flow1');
+        $flow = $this->getFlow ($this,'flow1');
         $params = array (
             'model' => Accounts::Model ()->findByAttributes ($this->accounts['account1']),
             'modelClass' => 'Accounts',
@@ -81,7 +81,7 @@ class RecordTagAddTriggerTest extends X2DbTestCase {
      * Trigger config contains tag condition (must have '#successful') and name='account1' condition
      */
     public function testCheckWithTagsAndConditions () {
-        $flows = X2FlowTestingAuxLib::getFlows ($this);
+        $flows = $this->getFlows ($this);
         $flow2 = $flows['flow2'];
         $params = array (
             'model' => Accounts::Model ()->findByAttributes ($this->accounts['account2']),

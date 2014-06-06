@@ -808,13 +808,22 @@ class ActionsController extends x2base {
                     $note = new Actions;
                     switch($action->type){
                         case 'email_quote':
-                            $note->type = 'emailOpened_quote';
-                            break;
                         case 'email_invoice':
-                            $note->type = 'emailOpened_invoice';
+                            $subType = str_replace('email_','',$action->type);
+                            $note->type = "emailOpened_$subType";
+                            $quote = Quote::model()->findByPk($action->associationId);
+                            if($quote instanceof Quote) {
+                                $contact = $quote->associatedContactsModel;
+                                if($contact instanceof Contacts){
+                                    $note->associationType = 'contacts';
+                                    $note->associationId = $contact->id;
+                                }
+                            }
                             break;
                         default:
                             $note->type = 'emailOpened';
+                            $note->associationType = $action->associationType;
+                            $note->associationId = $action->associationId;
                     }
                     $now = time();
                     $note->createDate = $now;
@@ -822,8 +831,7 @@ class ActionsController extends x2base {
                     $note->completeDate = $now;
                     $note->complete = 'Yes';
                     $note->updatedBy = 'admin';
-                    $note->associationType = $action->associationType;
-                    $note->associationId = $action->associationId;
+                    
                     $note->associationName = $action->associationName;
                     $note->visibility = $action->visibility;
                     $note->assignedTo = $action->assignedTo;
@@ -843,12 +851,15 @@ class ActionsController extends x2base {
                             default:
                                 $event->subtype = 'email';
                         }
-                        $contact = X2Model::model('Contacts')->findByPk($action->associationId);
+                        
+                        $contact = isset($quote) && $quote instanceof Quote
+                                ? $quote->associatedContactsModel
+                                : X2Model::model('Contacts')->findByPk($action->associationId);
                         if(isset($contact)){
                             $event->user = $contact->assignedTo;
                         }
                         $event->associationType = 'Contacts';
-                        $event->associationId = $note->associationId;
+                        $event->associationId = isset($contact) ? $contact->id : $note->associationId;
                         if($action->associationType == 'services'){
                             $case = X2Model::model('Services')->findByPk($action->associationId);
                             if(isset($case) && is_numeric($case->contactId)){

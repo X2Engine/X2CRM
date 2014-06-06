@@ -476,19 +476,15 @@
     height: 16px;
 }
 
-#racing-stripe {
-    width: 100%;
-    height: 100%;
-    left: 0;
-    /*top: 0;*/
-    bottom: 0;
-    position: absolute;
+
+/*
+racing stripe
+*/
+body {
     background: url('../images/stripes_background.png') !important;
-    /*background-attachment: fixed;*/
-    background-size: cover;
-    /*background-size: auto 100% !important;*/
     background-position: center -550px !important;
     background-repeat: no-repeat !important;
+
 }
 
 @media (max-width:657px) {
@@ -497,7 +493,7 @@
         bottom: 0;
         height: 87%;
     }
-    #racing-stripe {
+    body {
         background-position: center -650px !important;
     }
 }

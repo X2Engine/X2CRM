@@ -49,18 +49,22 @@ Yii::app()->clientScript->registerCss('calendarResponsiveCss',"
 }
 
 
-    #calendar.half-width {
-        float: left;
-        width: 70%;
-    }
+#calendar.half-width {
+    float: left;
+    width: 70%;
+}
 
-    #publisher-form.half-width {
-        overflow: hidden;
-        margin-top: -15px;
-    }
-    #publisher-form.half-width > #publisher {
-        padding-left: 8px;
-    }
+#publisher-form.half-width {
+    overflow: hidden;
+    margin-top: -15px;
+}
+#publisher-form.half-width > #publisher {
+    padding-left: 8px;
+}
+
+#publisher-tabs-row-1 {
+    float: none !important;
+}
 ");
 
 // register fullcalendar css and js
@@ -280,10 +284,29 @@ $(function() {
         },
         eventRender: function(event, element, view) {
             // prevent rendering of duplicate events on same view
-            if ($('#' + view.name + '-action-id-' + event.id).length) element.remove (); 
+            var potentialDuplicates = 
+                $.makeArray ($('[data-action-uid="' + view.name + '-action-id-' + event.id + '"]'));
 
-            // store action id in the element so that we can prevent duplicates from being rendered
-            $(element).attr ('id', view.name + '-action-id-' + event.id);
+            // duplicate events are fetched when:
+            //  1. An event is assigned to multiple users
+            //  2. An event spans multiple weeks
+            //  3. An event is viewed in multiple views (day, week, month)
+            // Only the first case is erroneous. 
+            // We avoid removing duplicates associated with case 2 by ensuring that duplicate 
+            // events in the same view are part of the same calendar.
+            // We avoid removing duplicates associated with case 3 by adding the event view to the 
+            // event uid. 
+            for (var i in potentialDuplicates) {
+                if ($(potentialDuplicates[i]).attr ('data-action-calendarAssignment') !== 
+                    event.calendarAssignment) {
+
+                    element.remove (); 
+                    return;
+                }
+            }
+
+            $(element).attr ('data-action-uid', view.name + '-action-id-' + event.id);
+            $(element).attr ('data-action-calendarAssignment', event.calendarAssignment);
 
             $(element).css('font-size', '0.8em');
             if(view.name == 'month' || view.name == 'basicWeek')
@@ -428,15 +451,13 @@ $(function() {
             var viewAction = $('<div></div>', {id: 'dialog-content' + '_' + event.id});  
             var focusButton = 'Close';
             var dialogWidth = 390;
-            var associations = {
-                'contacts':'<?php echo CHtml::encode (Yii::t('calendar','Contact')); ?>',
-                'accounts':'<?php echo CHtml::encode (Yii::t('calendar','Account')); ?>',
-                'opportunities':'<?php echo CHtml::encode (Yii::t('calendar','Opportunity')); ?>',
-                'campaigns':'<?php echo CHtml::encode (Yii::t('calendar','Campaign')); ?>',
-                'services':'<?php echo CHtml::encode (Yii::t('calendar','Case')); ?>',
-                'quotes':'<?php echo CHtml::encode (Yii::t('calendar','Quote')); ?>',
-                'products':'<?php echo CHtml::encode (Yii::t('calendar','Product')); ?>'
-            };
+            var translatedModelTitles = <?php echo CJSON::encode (
+                X2Model::getTranslatedModelTitles (true));  ?>; 
+            var associations = {};
+            for (var associationType in x2.associationModels) {
+                associations[associationType] = 
+                    translatedModelTitles[x2.associationModels[associationType]];
+            }
 
             var boxButtons =  [ // buttons on bottom of dialog
                 {
@@ -598,16 +619,17 @@ $(function() {
                     }
                 } else if(event.associationType == 'contacts') { 
                     // action associated with a contact clicked
-
                     if(event.type == 'event')
                         boxTitle = 'Contact Event';
                     else
                         boxTitle = 'Contact Action';
-                    if(viewAction.linked) {
+
+                    if(event.linked) {
                         viewAction.prepend(
                             '<b><a href="' + event.associationUrl + '">' + event.associationName + 
                             '</a></b><br />');
                     }
+
                     boxButtons.unshift({  //prepend button
                         text: '<?php echo CHtml::encode (Yii::t('contacts', 'View Contact')); ?>',
                         click: function() {

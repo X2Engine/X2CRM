@@ -93,13 +93,13 @@ class CommonSiteControllerBehavior extends CBehavior {
         if($session === null){
             $session = new Session;
             $session->id = $sessionId;
-            $session->user = $model->username;
+            $session->user = $model->getSessionUserName();
             $session->lastUpdated = time();
             $session->status = 0;
             $session->IP = $ip;
         }else{
             $session->lastUpdated = time();
-            $session->user = $model->username;
+            $session->user = $model->getSessionUserName();
             if($session->status < -1) {
                 $model->useCaptcha = true;
                 if($session->status < -2)

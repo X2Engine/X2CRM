@@ -429,17 +429,35 @@ class CalendarController extends x2base {
         $events = array();
         foreach($actions as $action){
             if($action->visibility >= 1 || // don't show private actions,
-                    $action->assignedTo == Yii::app()->user->name || // unless they belong to current user
+                    // unless they belong to current user
+                    $action->assignedTo == Yii::app()->user->name || 
                     Yii::app()->params->isAdmin){ // admin sees all
-                $linked = !empty($action->associationType) && strtolower($action->associationType) != 'none' && class_exists(X2Model::getModelName($action->associationType));
-                $associationUrl = $linked ? $this->createUrl(str_repeat('/'.$action->associationType,2).'/view',array('id'=>$action->associationId)) : '';
+
+                $linked = !empty($action->associationType) && 
+                    strtolower($action->associationType) != 'none' && 
+                    class_exists(X2Model::getModelName($action->associationType));
+                if ($linked) {
+                    $associatedModel = X2Model::getMOdelOfTypeWithId (
+                        X2Model::getModelName($action->associationType), $action->associationId);
+                    if ($associatedModel) {
+                        $associationUrl = $associatedModel->getUrl ();
+                    } else {
+                        $associationUrl = '';
+                    }
+                }
                 $description = $action->actionDescription;
-                if(in_array($action->type, array('email', 'emailFrom', 'email_quote', 'email_invoice', 'emailOpened', 'emailOpened_quote', 'emailOpened_invoice'))){
+                if(in_array($action->type, 
+                    array(
+                        'email', 'emailFrom', 'email_quote', 'email_invoice', 'emailOpened',
+                        'emailOpened_quote', 'emailOpened_invoice'))){
+
                     $actionHeaderPattern = InlineEmail::insertedPattern('ah', '(.*)', 1, 'mis');
                     if(!preg_match($actionHeaderPattern, $description, $matches)){
-                        $description = preg_replace('/<b>(.*?)<\/b>(.*)/mis', '', $description); // Legacy action header
+                        // Legacy action header
+                        $description = preg_replace('/<b>(.*?)<\/b>(.*)/mis', '', $description); 
                     }else{
-                        $description = preg_replace($actionHeaderPattern, '', $description); // Current action header
+                        // Current action header
+                        $description = preg_replace($actionHeaderPattern, '', $description); 
                     }
                     $description = preg_replace('/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail--\!>/s', '', $description);
                     $description = preg_replace('/<\!--BeginSignature-->(.*?)<\!--EndSignature-->/mis', '', $description);
@@ -459,6 +477,7 @@ class CalendarController extends x2base {
                         'associationType' => $action->associationType,
                         'type' => 'event',
                         'allDay' => false,
+                        'calendarAssignment' => $user,
                     );
                     end($events);
                     $last = key($events);
@@ -482,7 +501,8 @@ class CalendarController extends x2base {
                         'associationType' => $action->associationType,
                         'associationUrl' => $associationUrl,
                         'associationName' => $action->associationName,
-                        'allDay' => false
+                        'allDay' => false,
+                        'calendarAssignment' => $user,
                     );
                     end($events);
                     $last = key($events);
@@ -497,7 +517,8 @@ class CalendarController extends x2base {
                         'start' => date('Y-m-d H:i', $action->dueDate),
                         'id' => $action->id,
                         'complete' => $action->complete,
-                        'allDay' => false
+                        'allDay' => false,
+                        'calendarAssignment' => $user,
                     );
                     end($events);
                     $last = key($events);
@@ -534,6 +555,7 @@ class CalendarController extends x2base {
                         'associationType' => $action->associationType,
                         'type' => 'event',
                         'allDay' => false,
+                        'calendarAssignment' => $groupId,
                     );
                     end($events);
                     $last = key($events);
@@ -557,6 +579,7 @@ class CalendarController extends x2base {
                         'associationType' => 'contacts',
                         'associationUrl' => $this->createUrl('/contacts/contacts/view',array('id'=>$action->associationId)),
                         'associationName' => $action->associationName,
+                        'calendarAssignment' => $groupId,
                         'allDay' => false,
                     );
                     end($events);
@@ -573,6 +596,7 @@ class CalendarController extends x2base {
                         'id' => $action->id,
                         'complete' => $action->complete,
                         'allDay' => false,
+                        'calendarAssignment' => $groupId,
                     );
                     end($events);
                     $last = key($events);
@@ -585,87 +609,6 @@ class CalendarController extends x2base {
         }
         echo CJSON::encode($events);
     }
-
-    /**
-     * return a json string of actions associated with the specified shared calendar
-     */
-    /*public function actionJsonFeedShared($calendarId){
-        $actions = Actions::model()->with('actionText')->findAllByAttributes(array('calendarId' => $calendarId));
-        $events = array();
-        $user = User::model()->findByPk(Yii::app()->user->id); // get user profile
-        $filter = explode(',', $user->calendarFilter); // action types user doesn't want filtered
-        $possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered
-        foreach($actions as $action){
-            if($action->visibility >= 1 || $action->assignedTo == Yii::app()->user->name || Yii::app()->params->isAdmin){ // don't show private actions, unless they belong to current user
-                if(in_array($action->type, $possibleFilters)) // type of action user might filter?
-                    if(!in_array($action->type, $filter)) // filter actions user doesn't want to see
-                        continue;
-                if(!in_array('completed', $filter)) // filter completed actions if user doesn't want to see them
-                    if($action->complete == 'Yes')
-                        continue;
-                $description = $action->actionDescription;
-                $title = mb_substr($description, 0, 30, 'UTF-8');
-                if($action->type == 'event'){
-                    $events[] = array(
-                        'title' => $title,
-                        'description' => $description,
-                        'start' => date('Y-m-d H:i', $action->dueDate),
-                        'id' => $action->id,
-                        'complete' => $action->complete,
-                        'associationType' => $action->associationType,
-                        'type' => 'event',
-                        'allDay' => false,
-                    );
-                    end($events);
-                    $last = key($events);
-                    if($action->completeDate)
-                        $events[$last]['end'] = date('Y-m-d H:i', $action->completeDate);
-                    if($action->allDay)
-                        $events[$last]['allDay'] = $action->allDay;
-                    if($action->color)
-                        $events[$last]['color'] = $action->color;
-                    if($action->associationType == 'contacts'){
-                        $events[$last]['associationUrl'] = $this->createUrl('/contacts/contacts/view',array('id'=>$action->associationId));
-                        $events[$last]['associationName'] = $action->associationName;
-                    }
-                }else if($action->associationType == 'contacts'){
-                    $events[] = array(
-                        'title' => $title,
-                        'description' => $description,
-                        'start' => date('Y-m-d H:i', $action->dueDate),
-                        'id' => $action->id,
-                        'complete' => $action->complete,
-                        'associationType' => 'contacts',
-                        'associationUrl' => $this->createUrl('/contacts/contacts/view',array('id'=>$action->associationId)),
-                        'associationName' => $action->associationName,
-                        'allDay' => false,
-                    );
-                    end($events);
-                    $last = key($events);
-                    if($action->allDay)
-                        $events[$last]['allDay'] = $action->allDay;
-                    if($action->color)
-                        $events[$last]['color'] = $action->color;
-                } else{
-                    $events[] = array(
-                        'title' => $title,
-                        'description' => $description,
-                        'start' => date('Y-m-d H:i', $action->dueDate),
-                        'id' => $action->id,
-                        'complete' => $action->complete,
-                        'allDay' => false,
-                    );
-                    end($events);
-                    $last = key($events);
-                    if($action->allDay)
-                        $events[$last]['allDay'] = $action->allDay;
-                    if($action->color)
-                        $events[$last]['color'] = $action->color;
-                }
-            }
-        }
-        echo CJSON::encode($events);
-    }*/
 
     public function actionJsonFeedGoogle($calendarId){
         $calendar = X2Calendar::model()->findByPk($calendarId);

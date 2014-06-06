@@ -98,8 +98,8 @@ class LoginForm extends CFormModel {
                     $this->addError('username',Yii::t('app','Login for that user account has been disabled.'));
                     $this->addError('password',Yii::t('app','Login for that user account has been disabled.'));
                 }else{
-                    $this->addError('username', Yii::t('app', 'Incorrect username or password.'));
-                    $this->addError('password', Yii::t('app', 'Incorrect username or password.'));
+                    $this->addError('username', Yii::t('app', 'Incorrect username or password. Note, usernames are case sensitive.'));
+                    $this->addError('password', Yii::t('app', 'Incorrect username or password. Note, usernames are case sensitive.'));
                 }
             }
 		}
@@ -152,6 +152,17 @@ class LoginForm extends CFormModel {
      */
     public function getUser() {
         return $this->getIdentity()->getUserModel();
+    }
+
+    /**
+     * Resolves the correct username to use for login form security and sessions
+     *
+     * @return type
+     */
+    public function getSessionUserName() {
+        if((($user = $this->getUser()) instanceof User))
+            return $user->username;
+        return $this->username;
     }
 
 }

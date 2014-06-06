@@ -37,7 +37,7 @@
 /**
  * @package application.tests.unit.components.x2flow.actions
  */
-class X2FlowRecordCreateAction extends X2DbTestCase {
+class X2FlowRecordCreateAction extends X2FlowTestBase {
 
     public static function referenceFixtures () {
         return array (
@@ -51,17 +51,17 @@ class X2FlowRecordCreateAction extends X2DbTestCase {
      * triggered the flow.
      */
     public function testCreateContactWithLinkTypeFieldSet () {
-        $flow = X2FlowTestingAuxLib::getFlow ($this,'flow1');
+        $flow = $this->getFlow ($this,'flow1');
         Yii::app()->params->isAdmin = false;
         $account = $this->accounts ('account1');
         $params = array (
             'model' => $account,
             'modelClass' => 'Accounts',
         );
-        $retVal = X2FlowTestingAuxLib::executeFlow ($this->x2flow ('flow1'), $params);
+        $retVal = $this->executeFlow ($this->x2flow ('flow1'), $params);
 
         // assert flow executed without errors
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
 
         VERBOSE_MODE && print_r ($retVal['trace']);
 
@@ -100,10 +100,10 @@ class X2FlowRecordCreateAction extends X2DbTestCase {
             'model' => $account,
             'modelClass' => 'Accounts',
         );
-        $retVal = X2FlowTestingAuxLib::executeFlow ($this->x2flow ('flow2'), $params);
+        $retVal = $this->executeFlow ($this->x2flow ('flow2'), $params);
 
         VERBOSE_MODE && print_r ($retVal['trace']);
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
 
         $lead = X2Leads::model()->findByAttributes (array ('name' => 'test'));
         $this->assertTrue ($lead !== null);

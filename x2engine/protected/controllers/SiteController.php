@@ -1450,7 +1450,7 @@ class SiteController extends x2base {
                         if($session === null){
                             $session = new Session;
                             $session->id = $sessionId;
-                            $session->user = $model->username;
+                            $session->user = $model->getSessionUsername();
                             $session->lastUpdated = time();
                             $session->status = 1;
                             $session->IP = $ip;

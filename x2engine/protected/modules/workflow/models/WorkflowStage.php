@@ -128,7 +128,7 @@ class WorkflowStage extends CActiveRecord {
 			'value' => Yii::t('workflow','Value'),
 			'roles' => Yii::t('workflow','Roles'),
 			'requirePrevious' => Yii::t('workflow','Required Stages'),
-			'requireComment' => Yii::t('workflow','Comment'),
+			'requireComment' => Yii::t('workflow','Require Comment?'),
 		);
 	}
 

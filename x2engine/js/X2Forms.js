@@ -92,6 +92,7 @@ X2Forms.prototype.errorMessage = function (message) {
     });
 };
 
+
 /**
  * Returns a jQuery element corresponding to an error box. The error box will
  * contain the specified errorHeader and a bulleted list of the specified error
@@ -103,24 +104,29 @@ X2Forms.prototype.errorMessage = function (message) {
 X2Forms.prototype.errorSummary = function (errorHeader, errorMessages, css) {
     var css = typeof css === 'undefined' ? [] : css; 
 	var errorBox = $('<div>', {'class': 'error-summary-container'}).append (
-		$("<div>", { 'class': "error-summary"}).append (
-			$("<p>", { text: errorHeader }),
-			$("<ul>")
-	));
-    $(errorBox).css (css);
-    if (typeof errorMessages === 'string') {
-        $(errorBox).find ('.error-summary').
-            find ('ul').append ($("<li> " + errorMessages + " </li>"));
-    } else {
-        for (var i in errorMessages) {
-            var msg = errorMessages[i];
-            $(errorBox).find ('.error-summary').
-                find ('ul').append ($("<li> " + msg + " </li>"));
-        }
+		$("<div>", { 'class': "error-summary"}).append ($("<ul>")));
+    if (errorHeader !== '') {
+        errorBox.find ('.error-summary').prepend ($('<p>', { text: errorHeader }));
     }
+    $(errorBox).css (css);
+    this._appendErrorMessages (errorBox, errorMessages);
 	return errorBox;
-}
+};
 
+/**
+ * Appends error messages to error summary if one exists. Otherwise, a new error summary is created
+ * with the given error messages and appended to the form
+ * @param object form$
+ * @param array|string errorMessages
+ */
+X2Forms.prototype.errorSummaryAppend = function (form$, errorMessages) {
+    var errorSummary$ = form$.find ('.error-summary');
+    if (!errorSummary$.length) {
+        form$.append (this.errorSummary ('', errorMessages));
+    } else {
+        this._appendErrorMessages (errorSummary$.parent (), errorMessages);
+    }
+};
 
 X2Forms.prototype.clearErrorMessages = function (form) {
     $(form).find ('.x2-forms-error-msg').remove ();
@@ -560,9 +566,14 @@ X2Forms.prototype.initX2FileInput = function() {
 X2Forms.prototype.inputLoading = function (elem) {
     $(elem).before ($('<div>', {
         'class': 'x2-loading-icon',
-        'style': 'height: 27px; background-size: 27px; width: ' + $(elem).width () + 'px;'
+        style: 'position: absolute; height: 27px; background-size: 27px;'
     }));
-    $(elem).hide ();
+    $(elem).prev ().position ({
+        my: 'center',
+        at: 'center',
+        of: $(elem)
+    });
+    $(elem).css ({'visibility': 'hidden'});
 };
 
 /**
@@ -571,7 +582,31 @@ X2Forms.prototype.inputLoading = function (elem) {
  */
 X2Forms.prototype.inputLoadingStop = function (elem) {
     $(elem).prev ().remove ();
-    $(elem).show ();
+    $(elem).css ({'visibility': ''});
+};
+
+
+X2Forms.prototype.getElementWidth = function (elem) {
+    // determine width, using a clone if necessary
+    if (!$(elem).is (':visible')) {
+        var dummyElem = $(elem).clone ();
+        $('body').append (dummyElem);
+        var elemWidth = $(dummyElem).width () + 15;
+        //var elemHeight = $(dummyElem).height ();
+        dummyElem.remove ();
+    } else {
+        var elemWidth = $(elem).width ();
+        //var elemHeight = $(elem).height ();
+    }
+    return elemWidth;
+};
+
+/**
+ * Initialize all the fields that have default values.
+ */
+X2Forms.prototype.initializeDefaultFields = function () {
+    var that = this;
+    $('.x2-default-field').each (function () { that.enableDefaultText ($(this)); });
 };
 
 /*
@@ -639,27 +674,22 @@ X2Forms.prototype._setUpFormElementBehavior = function () {
 
 };
 
-X2Forms.prototype.getElementWidth = function (elem) {
-    // determine width, using a clone if necessary
-    if (!$(elem).is (':visible')) {
-        var dummyElem = $(elem).clone ();
-        $('body').append (dummyElem);
-        var elemWidth = $(dummyElem).width () + 15;
-        //var elemHeight = $(dummyElem).height ();
-        dummyElem.remove ();
-    } else {
-        var elemWidth = $(elem).width ();
-        //var elemHeight = $(elem).height ();
-    }
-    return elemWidth;
-};
-
 /**
- * Initialize all the fields that have default values.
+ * Appends error messages to the given error summary container
+ * @param object errorBox
+ * @param array|string errorMessages
  */
-X2Forms.prototype.initializeDefaultFields = function () {
-    var that = this;
-    $('.x2-default-field').each (function () { that.enableDefaultText ($(this)); });
+X2Forms.prototype._appendErrorMessages = function (errorBox, errorMessages) {
+    if (typeof errorMessages === 'string') {
+        $(errorBox).find ('.error-summary').
+            find ('ul').append ($("<li> " + errorMessages + " </li>"));
+    } else {
+        for (var i in errorMessages) {
+            var msg = errorMessages[i];
+            $(errorBox).find ('.error-summary').
+                find ('ul').append ($("<li> " + msg + " </li>"));
+        }
+    }
 };
 
 X2Forms.prototype._init = function () {

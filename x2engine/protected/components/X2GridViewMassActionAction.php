@@ -109,9 +109,13 @@ class X2GridViewMassActionAction extends CAction {
                 // at the time of implementing this, the only model types that this applies to
                 // are AnonContact and Fingerprint, both of which can only be deleted by admin users
 
-                $model = X2Model::model ($_POST['modelType']);
-                if ($model) {
-                    $model->deleteAllByAttributes (array ('id' => $recordId));
+                if (class_exists ($_POST['modelType'])) {
+                    $model = X2Model::model ($_POST['modelType'])->findByPk ($recordId);
+                    if (!$model || !$model->delete ()) {
+                        $failed++;
+                    }
+                } else {
+                    $failed++;
                 }
             } else {
                 $unauthorized++;

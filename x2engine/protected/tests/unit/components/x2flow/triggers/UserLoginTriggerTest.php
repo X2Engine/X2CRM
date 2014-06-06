@@ -44,7 +44,7 @@ Yii::import ('application.components.permissions.*');
 /**
  * @package application.tests.unit.components.x2flow.triggers
  */
-class UserLoginTriggerTest extends X2DbTestCase {
+class UserLoginTriggerTest extends X2FlowTestBase {
 
     public $fixtures = array (
         'x2flow' => array ('X2Flow', '.UserLoginTriggerTest'),
@@ -56,28 +56,28 @@ class UserLoginTriggerTest extends X2DbTestCase {
             'user' => 'admin'
         );
         // flow does not checks username since option is set to 'Anyone'
-        $retVal = X2FlowTestingAuxLib::executeFlow ($this->x2flow('flow1'), $params);
+        $retVal = $this->executeFlow ($this->x2flow('flow1'), $params);
 
         // assert flow executed without error
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
 
         $params = array (
             'user' => 'admin'
         );
         // flow does checks that username equals 'admin'
-        $retVal = X2FlowTestingAuxLib::executeFlow ($this->x2flow('flow2'), $params);
+        $retVal = $this->executeFlow ($this->x2flow('flow2'), $params);
 
         // assert flow executed without error
-        $this->assertTrue (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
 
         $params = array (
             'user' => 'notAdmin'
         );
         // flow does checks that username equals 'admin'
-        $retVal = X2FlowTestingAuxLib::executeFlow ($this->x2flow('flow2'), $params);
+        $retVal = $this->executeFlow ($this->x2flow('flow2'), $params);
 
         // assert flow fails on username validation check
-        $this->assertFalse (X2FlowTestingAuxLib::checkTrace ($retVal['trace']));
+        $this->assertFalse ($this->checkTrace ($retVal['trace']));
     }
 
 }

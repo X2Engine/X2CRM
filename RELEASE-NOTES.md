@@ -13,6 +13,7 @@ as follows:
 # 4.1 #
 5/20/2014
 
+* Usernames are now case-sensitive.
 * __It has come to our attention that the very old "calendar permissions"
   feature does not behave entirely as it was originally designed.__ Granting one
   user edit permissions to another's calendar does not actually grant

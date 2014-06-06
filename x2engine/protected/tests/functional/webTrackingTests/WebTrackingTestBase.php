@@ -42,16 +42,89 @@
  * For these tests to function properly, it's necessary to add the following lines to
  * your hosts file:
  *
- * <test installation ip>    www.testdomain.com
- * <test installation ip>    www2.testdomain.com
- * <test installation ip>    www.testdomain2.com
+ * <test installation ip>    www.x2engingtestdomain.com
+ * <test installation ip>    www2.x2enginetestdomain.com
+ * <test installation ip>    www.x2enginetestdomain2.com
  *
- * Also, the domain used in your WEBTRACKING_TEST_BASE_URL and WEBTRACKING_TEST_WEBROOT_URL
- * (specified in WebTestConfig.php) should be www.testdomain.com.
+ * With that hosts file configured, the following constants should be defined in your 
+ * WebTestConfig.php file:
+ *
+ * define('TEST_BASE_URL_ALIAS_1','http://www.x2enginetestdomain.com/index-test.php/');
+ * define('TEST_BASE_URL_ALIAS_2','http://www.x2enginetestdomain2.com/index-test.php/');
+ * define('TEST_BASE_URL_ALIAS_3','http://www2.x2enginetestdomain.com/index-test.php/');
+ * define('TEST_WEBROOT_URL_ALIAS_1','http://www.x2enginetestdomain.com/');
+ * define('TEST_WEBROOT_URL_ALIAS_2','http://www.x2enginetestdomain2.com/');
+ * define('TEST_WEBROOT_URL_ALIAS_3','http://www2.x2enginetestdomain.com/');
  *
  * @package application.tests.functional.modules.contacts
+ * @requires OS Linux 
  */
 abstract class WebTrackingTestBase extends X2WebTestCase {
+
+    private static $_webTrackingTestBaseUrl;
+    private static $_webTrackingTestWebrootUrl;
+    protected static $skipAllTests = false;
+
+    /**
+     * Copy over all the test pages to the web root 
+     */
+    public static function setUpBeforeClass () {
+        // ensure that a directory with the same name isn't already in the web root
+        exec ('ls ../../', $output);
+        if (TEST_BASE_URL_ALIAS_1 === '' ||
+            TEST_BASE_URL_ALIAS_2 === '' ||
+            TEST_BASE_URL_ALIAS_3 === '' ||
+            TEST_WEBROOT_URL_ALIAS_1 === '' ||
+            TEST_WEBROOT_URL_ALIAS_2 === '' ||
+            TEST_WEBROOT_URL_ALIAS_3 === '') {
+
+            VERBOSE_MODE && println ('Warning: tests are being aborted because the web tracking '.
+                'test constants have not been properly configured.');
+            self::$skipAllTests = true;
+        } else if (in_array ('x2WebTrackingTestPages', $output)) {
+            VERBOSE_MODE && println ('Warning: tests are being aborted because the directory '.
+                '"x2WebTrackingTestPages" already exists in the webroot');
+            self::$skipAllTests = true;
+        } else {
+            // copy over webscripts and perform replacement on URL tokens
+            exec ('cp -rn webscripts/x2WebTrackingTestPages ../../');
+            exec ('find ../../x2WebTrackingTestPages -type f', $files);
+            // perform URL token replacements
+            foreach ($files as $file) {
+                $content = file_get_contents ($file);
+                $content = preg_replace (
+                    '/TEST_BASE_URL_ALIAS_1/', TEST_BASE_URL_ALIAS_1, $content);
+                $content = preg_replace (
+                    '/TEST_BASE_URL_ALIAS_2/', TEST_BASE_URL_ALIAS_2, $content);
+                $content = preg_replace (
+                    '/TEST_BASE_URL_ALIAS_3/', TEST_BASE_URL_ALIAS_3, $content);
+                $content = preg_replace (
+                    '/TEST_WEBROOT_URL_ALIAS_1/', TEST_WEBROOT_URL_ALIAS_1, $content);
+                $content = preg_replace (
+                    '/TEST_WEBROOT_URL_ALIAS_2/', TEST_WEBROOT_URL_ALIAS_2, $content);
+                $content = preg_replace (
+                    '/TEST_WEBROOT_URL_ALIAS_3/', TEST_WEBROOT_URL_ALIAS_3, $content);
+                file_put_contents ($file, $content);
+            }
+        }
+        parent::setUpBeforeClass ();
+    }
+
+    public function setUp () {
+        if (self::$skipAllTests) {
+            $this->markTestSkipped ();
+        }
+        parent::setUp ();
+    }
+
+    /**
+     * Remove all the test pages that were copied over 
+     */
+    public static function tearDownAfterClass () {
+        if (!self::$skipAllTests)
+            exec ('rm -r ../../x2WebTrackingTestPages');
+        parent::tearDownAfterClass ();
+    }
 
     /**
      * Open a URI within the app
@@ -59,7 +132,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
      * @param string $r_uri
      */
     public function openX2($r_uri) {
-        return $this->open(WEBTRACKING_TEST_BASE_URL . $r_uri);
+        return $this->open(TEST_BASE_URL_ALIAS_1 . $r_uri);
     }
 
     /**
@@ -68,32 +141,8 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
      * @param string $r_uri
      */
     public function openPublic($r_uri) {
-        VERBOSE_MODE && print ('openPublic: '.WEBTRACKING_TEST_WEBROOT_URL . $r_uri."\n");
-        return $this->open(WEBTRACKING_TEST_WEBROOT_URL . $r_uri);
-    }
-
-    /**
-     * Copy over all the test pages to the web root 
-     */
-    public static function setUpBeforeClass () {
-
-        // ensure that a directory with the same name isn't already in the web root
-        exec ('ls ../../', $output);
-        if (in_array ('x2WebTrackingTestPages', $output)) {
-            VERBOSE_MODE && println ('Warning: tests are being aborted because the directory '.
-                '"x2WebTrackingTestPages" already exists in the webroot');
-        }
-
-        exec ('cp -rn webscripts/x2WebTrackingTestPages ../../');
-        parent::setUpBeforeClass ();
-    }
-
-    /**
-     * Remove all the test pages that were copied over 
-     */
-    public static function tearDownAfterClass () {
-        exec ('rm -r ../../x2WebTrackingTestPages');
-        parent::tearDownAfterClass ();
+        VERBOSE_MODE && print ('openPublic: '.TEST_WEBROOT_URL_ALIAS_1 . $r_uri."\n");
+        return $this->open(TEST_WEBROOT_URL_ALIAS_1 . $r_uri);
     }
 
     /**

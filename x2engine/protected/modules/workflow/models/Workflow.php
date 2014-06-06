@@ -1265,12 +1265,6 @@ class Workflow extends CActiveRecord {
                            $nextAction->stageNumber = $i;
                            // $nextAction->actionDescription = $comment;
                            $nextAction->save();
-                           $event=new Events;
-                           $event->type='workflow_start';
-                           $event->associationType='Actions';
-                           $event->user=Yii::app()->user->getName();
-                           $event->associationId=$nextAction->id;
-                           $event->save();
    
                            X2Flow::trigger('WorkflowStartStageTrigger',array(
                                'workflow'=>$nextAction->workflow,
@@ -1519,8 +1513,6 @@ class Workflow extends CActiveRecord {
                     ':sn'=>$action->stageNumber,
                     ':id'=>$action->workflowId))
                 ->queryScalar();
-        
-        $stageText = Yii::t('workflow','<b>Stage {n}: {stageName}</b> in <b>{workflowName}</b>',array('{n}'=>$action->stageNumber,'{stageName}'=>$stageName,'{workflowName}'=>$workflowName));
         
         $event = new Events;
         $event->associationType = 'Actions';

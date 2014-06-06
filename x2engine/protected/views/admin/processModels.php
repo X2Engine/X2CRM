@@ -312,29 +312,42 @@ if ($preselectedMap) {
                 data=JSON.parse(data);
                 if (data[0]==0) {
                     $('#import-status').show();
-                    var str="Import setup completed successfully...<br />Beginning import.";
+                    var str="<?php echo Yii::t('admin', "Import setup completed successfully...<br />Beginning import."); ?>";
                     importData(25);
                     $('#prep-status-box').html(str);
                 } else if(data[0]==1) {
-                    var str="Import preparation failed.  Failed to create the following fields: ";
+                    var str="<?php echo Yii::t('admin', "Import preparation failed.  Failed to create the following fields: "); ?>";
                     str = str + data[1] + "<br /><br />";
                     $('#import-container').show();
                     $('#form-error-box').html(str);
                 } else if (data[0]==2) {
-                    var str="Import preparation failed.  The following fields already exist: ";
+                    var str="<?php echo Yii::t('admin', "Import preparation failed.  The following fields already exist: "); ?>";
                     str = str + data[1] + "<br /><br />";
                     $('#import-container').show();
                     $('#form-error-box').html(str);
                 } else if(data[0]==3) {
                     $('#import-status').show();
                     $('#import-container').show();
-                    var str="Import Preparation failed. The following required fields were not mapped: ";
+                    var str="<?php echo Yii::t('admin', "Import Preparation failed. The following required fields were not mapped: "); ?>";
                     str = str + data[1] + "<br /><br />";
                     $('#form-error-box').html(str);
+                } else if (data[0]==4) {
+                    $('#import-status').show();
+                    var fields = data[1];
+                    var confirmMsg = '<?php echo Yii::t('admin', "You have mapped multiple columns to the same field, are you sure ".
+                                        "you would like to proceed? The following fields were mapped more than once: "); ?>' + fields;
+                    if (window.confirm(confirmMsg)) {
+                        var str="<?php echo Yii::t('admin', "Import setup completed successfully...<br />Beginning import."); ?>";
+                        importData(25);
+                        $('#prep-status-box').html(str);
+                    } else {
+                        var str="<?php echo Yii::t('admin', "Import cancelled."); ?>";
+                        $('#failures-box').html(str);
+                    }
                 }
             },
             error:function(){
-                var str="Import preparation failed.  Aborting import.";
+                var str="<?php echo Yii::t('admin', "Import preparation failed.  Aborting import."); ?>";
                 $('#prep-status-box').css({'color':'red'});
                 $('#prep-status-box').html(str);
             }
@@ -351,30 +364,37 @@ if ($preselectedMap) {
             success:function(data){
                 data=JSON.parse(data);
                 if(data[0]!=1){
-                    str=data[1]+" <b><?php echo $model; ?></b> have been successfully imported.";
+                    str=data[1]+"<?php echo Yii::t('admin', " <b>{model}</b> have been successfully imported.",
+                            array('{model}' => $model)); ?>";
                     created=JSON.parse(data[3]);
                     for(type in created){
                         if(created[type]>0){
-                            str+="<br />"+created[type]+" <b>"+type+"</b> were created and linked to <?php echo $model; ?>.";
+                            str+="<br />"+created[type]+" <b>"+type+"</b> <?php echo Yii::t('admin', "were created and linked to {model}.",
+                                    array('{model}' => $model)); ?>";
                         }
                     }
                     $('#status-box').html(str);
                     if(data[2]>0){
-                        str=data[2]+" <b><?php echo $model; ?></b> have failed validation and were not imported.";
+                        str=data[2]+"<?php echo Yii::t('admin', " <b>{model}</b> have failed validation and were not imported.",
+                                array('{model}' => $model)); ?>";
                         $("#failures-box").html(str);
                     }
                     importData(count);
                 }else{
-                    str=data[1]+" <b><?php echo $model; ?></b> have been successfully imported.";
+                    str=data[1]+"<?php echo Yii::t('admin', " <b>{model}</b> have been successfully imported.",
+                            array('{model}' => $model)); ?>";
                     created=JSON.parse(data[3]);
                     for(type in created){
                         if(created[type]>0){
-                            str+="<br />"+created[type]+" <b>"+type+"</b> were created and linked to <?php echo $model; ?>.";
+                            str+="<br />"+created[type]+" <b>"+type+"</b> <?php echo Yii::t('admin', "were created and linked to {model}.",
+                                array('{model}' => $model)); ?>";
                         }
                     }
                     $('#status-box').html(str);
                     if(data[2]>0){
-                        str=data[2]+" <b><?php echo $model; ?></b> have failed validation and were not imported. Click here to recover them: <a href=\"#\" id=\"download-link\" class=\"x2-button\">Download</a>";
+                        str=data[2]+'<?php echo Yii::t('admin', " <b>{model}</b> have failed validation and were not imported. ".
+                                "Click here to recover them: ", array('{model}' => $model))."<a href=\"#\" id=\"download-link\" class=\"x2-button\">".
+                                Yii::t('admin', "Download")."</a>"; ?>';
                         $("#failures-box").html(str);
                         $('#download-link').click(function(e) {
                             e.preventDefault();  //stop the browser from following
@@ -384,9 +404,9 @@ if ($preselectedMap) {
                     $.ajax({
                         url:'cleanUpModelImport',
                         complete:function(){
-                            var str="<strong>Import Complete.</strong>";
+                            var str="<strong><?php echo Yii::t('admin', "Import Complete."); ?></strong>";
                             $('#prep-status-box').html(str);
-                            alert('Import Complete!');
+                            alert('<?php echo Yii::t('admin', 'Import Complete!'); ?>');
                         }
                     });
                 }
@@ -472,7 +492,7 @@ if ($preselectedMap) {
                 $('#download-map').show();
             },
             error: function() {
-                var str="Preparing the import map failed.  Aborting.";
+                var str="<?php echo Yii::t('admin', "Preparing the import map failed.  Aborting."); ?>";
                 $('#prep-status-box').css({'color':'red'});
                 $('#prep-status-box').html(str);
             }

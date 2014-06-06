@@ -884,7 +884,6 @@ class InlineEmail extends CFormModel {
                 $action->disableBehavior('changelog');
 
                 if($action->save()){
-                    $this->trackEmail($action->id);
                     // Now create an event for it:
                     if($makeEvent && !$skipEvent){
                         $event = new Events;

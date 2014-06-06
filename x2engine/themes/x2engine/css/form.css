@@ -377,7 +377,16 @@ div.text-area-wrapper {
 	border-radius:			2px;
 	background:#fff;
 }
-div.text-area-wrapper textarea {width:100%;margin:0;padding:0 !important;border:none;}
+div.text-area-wrapper.error {
+	background:#FEE !important;
+	border-color:#C00 !important;
+}
+div.text-area-wrapper textarea {
+    width:100%;
+    margin:0;
+    padding:0 !important;
+    border:none;
+}
 
 div.form input, div.form textarea, /*div.form select,*/ div.form button,
 .ui-dialog input {

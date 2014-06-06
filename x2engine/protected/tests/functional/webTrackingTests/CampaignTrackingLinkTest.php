@@ -127,7 +127,7 @@ class CampaignTrackingLinkTest extends WebTrackingTestBase {
 
         // Set URL/URI to verify proper link generation:
         $admin = Yii::app()->settings;
-        $admin->externalBaseUrl = WEBTRACKING_TEST_WEBROOT_URL;
+        $admin->externalBaseUrl = TEST_WEBROOT_URL_ALIAS_1;
         $admin->externalBaseUri = '';
 
         // generate unique id and associate it with the test contact
@@ -152,7 +152,7 @@ class CampaignTrackingLinkTest extends WebTrackingTestBase {
      * properly set in the contact's browser
      */
     public function testThatCampaignClickInitiatesCookieTracking () {
-        $this->deleteAllVisibleCookies (WEBTRACKING_TEST_WEBROOT_URL);
+        $this->deleteAllVisibleCookies (TEST_WEBROOT_URL_ALIAS_1);
         // we haven't simulated the tracking link click yet so tracking should fail
         $this->assertWebTrackerCannotTrackWithCookie ();
 
@@ -162,7 +162,7 @@ class CampaignTrackingLinkTest extends WebTrackingTestBase {
 
         // Set URL/URI to verify proper link generation:
         $admin = Yii::app()->settings;
-        $admin->externalBaseUrl = WEBTRACKING_TEST_WEBROOT_URL; 
+        $admin->externalBaseUrl = TEST_WEBROOT_URL_ALIAS_1; 
         $admin->externalBaseUri = '';
 
         // generate unique id and associate it with the test contact

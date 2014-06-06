@@ -587,13 +587,15 @@ x2.Notifs.prototype._addNotifications = function (notifData, append, firstCall) 
         if (that._checkIfAlreadyReceived (notifId)) continue;
         newNotifNum++;
         
-        if (notifData[i].type == 'voip_call' && 
-            uTimeNow - notifData[i].timestamp < 2*x2.notifUpdateInterval/1000 &&
-            that._windowId == that._masterId) {
+        if (notifData[i].type === 'voip_call'
+                && uTimeNow - notifData[i].timestamp < 2*x2.notifUpdateInterval/1000
+                && that._windowId === that._masterId
+                && notifData[i].viewed == '0'
+                && !that.disablePopup) {
             // Screen pop only if less than 2*interval ago, and master window,
             // and unread.
-
-            window.open (yii.baseUrl+'/index.php/contacts/'+notifData[i].modelId);
+            var newWindow = window.open (yii.baseUrl+'/index.php/contacts/'+notifData[i].modelId,'_blank');
+            newWindow.focus();
         }
 
         var notif = $(document.createElement('div'))

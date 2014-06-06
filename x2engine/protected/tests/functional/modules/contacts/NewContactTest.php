@@ -16,6 +16,9 @@ class NewContactTest extends X2WebTestCase {
 	);
 	
 	public function testNewContactAndAccount() {
+        $this->markTestSkipped ();
+        return;
+
 		$this->openX2('/contacts/create');
 		$this->localSelenese('NewContactAndAccount.html');
 	}

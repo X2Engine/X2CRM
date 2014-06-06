@@ -81,7 +81,8 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'header'=>Yii::t('admin', 'Session Timeout')
         ),
 	),
-)); ?>
+)); 
+X2Html::getFlashes(); ?>
 <br>
 <a style='margin-left: 5px;' href="#" onclick="$('#addRole').toggle();$('#deleteRole').hide();$('#editRole').hide();$('#exception').hide();" class="x2-button">Add Role</a>
 <a href="#" onclick="$('#deleteRole').toggle();$('#addRole').hide();$('#editRole').hide();$('#exception').hide();" class="x2-button">Delete Role</a>
