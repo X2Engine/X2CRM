@@ -66,6 +66,16 @@ class VisitAllPagesAsAdminTest extends VisitAllPagesTest {
         ));
     }
 
+	public function testUsersPages () {
+        $this->visitPages (array (
+            'users/admin',
+            'users/1',
+            'users/update/id/1',
+            'users/inviteUsers',
+            'users/create',
+        ));
+	}
+
     public function testAdminPages () {
         $this->visitPages (array (
             'admin/index',
@@ -97,7 +107,15 @@ class VisitAllPagesAsAdminTest extends VisitAllPagesTest {
             'admin/emailSetup',
             'admin/emailDropboxSettings',
             'admin/importModels',
+            'admin/importModels?model=X2Leads',
+            'admin/importModels?model=Actions',
+            'admin/importModels?model=Product',
+            'admin/importModels?model=Quotes',
+            'admin/importModels?model=Services',
+            'admin/importModels?model=Contacts',
+            'admin/importModels?model=Accounts',
             'admin/exportModels',
+            'admin/exportModels?model=Actions',
             'admin/export',
             'admin/import',
             'admin/rollbackImport',

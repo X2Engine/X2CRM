@@ -115,7 +115,6 @@ abstract class X2Model extends CActiveRecord {
         'Media' => 'Media',
         'Opportunity' => 'Opportunities',
         'Quote' => 'Quotes',
-        'Reports' => 'Reports',
         'Services' => 'Services',
         'User' => 'Users',
         'WebForm' => 'Marketing',
@@ -137,14 +136,11 @@ abstract class X2Model extends CActiveRecord {
         'Media' => 'Media',
         'Opportunity' => 'Opportunities',
         'Quote' => 'Quotes',
-        'Reports' => 'Reports',
         'Services' => 'Services',
         'User' => 'Users',
         'WebForm' => 'Web Forms',
         'Workflow' => 'Processes',
         'X2Calendar' => 'Calendars',
-        'AnonContact' => 'Anonymous Contacts',
-        'Fingerprint' => 'Fingerprints',
     );
 
     public static $translatedModelTitles = array();

@@ -76,10 +76,7 @@ return array(
         'externalBaseUri' => NULL,
         'appName' => 'X2Engine',
         'appDescription' => 'Your App Description',
-        'enableFingerprinting' => '0',
-        'identityThreshold' => '12',
-        'maxAnonContacts' => '5000',
-        'maxAnonActions' => '10000',
+         
     )
 );
 ?>

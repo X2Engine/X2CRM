@@ -2,6 +2,7 @@
 
 require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__, 'testconstants.php')));
 require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__,'..','..','constants.php')));
+require_once(__DIR__.DIRECTORY_SEPARATOR.'WebTestConfig.php');
 $yiit=implode(DIRECTORY_SEPARATOR,array(__DIR__,'..','..','framework','yiit.php'));
 $config=require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__,'..','config','test.php')));
 

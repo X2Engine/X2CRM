@@ -185,11 +185,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
         return $this->getExpression ('${isOpera}') === 'true';
     }
 
-    protected function setIdentityThreshold ($threshold) {
-        $admin = Admin::model()->findByPk (1);
-        $admin->identityThreshold = $threshold;
-        return $admin->save ();
-    }
+     
 
     /**
      * Submits the web lead form and ensures successful submission

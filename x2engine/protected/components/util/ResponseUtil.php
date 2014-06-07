@@ -445,6 +445,7 @@ class ResponseUtil implements ArrayAccess {
         $output = ob_get_clean();
         ob_end_clean();
         $extraOutput = self::$includeExtraneousOutput && !empty($output);
+        $status = $status === null ? ((bool)$error ? self::$errorCode : 200) : $status;
 
         // Set the response content
         if($status !== null && !array_key_exists((integer) $status,self::$_statusMessages)){
@@ -462,13 +463,14 @@ class ResponseUtil implements ArrayAccess {
                             . ' but this server lacks it.","status":'.$this->_status.'}';
                 } else {
                     // Simply echo the message if JSON isn't available.
+                    $this->_status = $status;
                     $body = ($extraOutput?($output.' '):'').$message;
                 }
             } else {
                 // The "body" property is in use, which overrides the standard
                 // way of responding with JSON-encoded properties
-                $body = ($extraOutput?($output.' '):'').$this->body;
                 $this->_status = $status;
+                $body = ($extraOutput?($output.' '):'').$this->body;
             }
         } else {
             if($status != null) {

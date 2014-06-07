@@ -1,3 +1,10 @@
+# 4.1.3 #
+6/6/2014
+* Tracked Bug Fixes:  
+  * [1304](http://x2software.com/index.php/bugReports/1304): JS broken on "full edit page" for actions  
+  * [1307](http://x2software.com/index.php/bugReports/1307): Class: AnonContact not found.  
+  * [1309](http://x2software.com/index.php/bugReports/1309): Class: Reports not found.
+
 # 4.1.2 #
 6/6/2014
 * General Changelog / Developer Notes:

@@ -93,7 +93,7 @@ abstract class CURLDbTestCase extends X2DbTestCase {
         $header = substr($response, 0, $headerSize);
         foreach($fields as $field => $value){
             $this->assertRegExp(
-                    sprintf('/^%s: %s\s*$/', preg_quote($field, '/'), preg_quote($value, '/')), $header, "Header $field not found in response, or was not equal to \"$value\"");
+                    sprintf('/^%s: %s/', preg_quote($field, '/'), preg_quote($value, '/')), $header, "Header $field not found in response, or was not equal to \"$value\"");
         }
     }
 

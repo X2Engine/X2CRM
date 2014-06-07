@@ -1133,7 +1133,15 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             'allClear' => false,
         );
 
-        $this->assertEquals($expected,$ube->compatibilityStatus);
+        $compatStatus = $ube->compatibilityStatus;
+        $this->assertArrayHasKey('req', $compatStatus);
+        $this->assertArrayHasKey('requirements', $compatStatus['req']);
+        $this->assertArrayHasKey('canInstall', $compatStatus['req']);
+        $this->assertArrayHasKey('conflictingFields', $compatStatus);
+        $this->assertEquals($expected['conflictingFields'],$compatStatus['conflictingFields']);
+        if($compatStatus['req']['canInstall']){
+            $this->assertEquals($expected,$compatStatus);
+        }
         
     }
 
@@ -1371,7 +1379,8 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $script = 'protected/tests/data/updatemigration/touch.php';
         copy($ube->webRoot.DIRECTORY_SEPARATOR.FileUtil::rpath($script),$ube->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
         ob_start();
-        $ube->runMigrationScripts(array($script),$ran);
+        $scripts = array($script);
+        $ube->runMigrationScripts($scripts,$ran);
         ob_end_clean();
         $this->assertEquals(1,count($ran));
         $this->assertFileExists($testfile = $ube->webRoot.DIRECTORY_SEPARATOR.'testfile');

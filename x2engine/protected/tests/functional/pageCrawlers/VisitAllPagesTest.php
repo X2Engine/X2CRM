@@ -44,6 +44,23 @@ Yii::import('application.modules.accounts.models.Accounts');
  */
 abstract class VisitAllPagesTest extends X2WebTestCase {
 
+
+    public static function setUpBeforeClass () {
+        /* x2tempstart */ 
+        // quick way of getting leads data until we extend reference fixtures to web test
+        // cases
+        Yii::app()->db->createCommand ("
+        DELETE from x2_x2leads where id in (1, 2, 3, 4, 5);
+        INSERT INTO x2_x2leads values 
+            (1, 'test', 'test_1', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            (2, 'test', 'test_2', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            (3, 'test', 'test_3', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            (4, 'test', 'test_4', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            (5, 'test', 'test_5', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        ")->execute ();
+        /* x2tempend */
+    }
+
     /**
      * visits page and checks for php errors
      * @param string $page URI of page
@@ -63,28 +80,6 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
             $this->assertNoPHPErrors ($page);
         }
     }
-
-	public function testServicesPages () {
-        $this->visitPages (array (
-            'services/index',
-            'services/3',
-            'services/create',
-            'services/update/id/3',
-            'services/servicesReport',
-            'services/createWebForm',
-        ));
-	}
-
-	public function testProfilePages () {
-        $this->visitPages (array (
-            'profile/1',
-            'profile/1?publicProfile=1',
-            'profile/update/1',
-            'profile/settings/1',
-            'profile/changePassword/1',
-            'profile/manageCredentials'
-        ));
-	}
 
 	public function testContactPages () {
         $this->visitPages (array (
@@ -122,7 +117,17 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
             'weblist/view?id=18',
             'weblist/update?id=18',
             'marketing/webleadForm',
-            'marketing/webTracker',
+             
+        ));
+	}
+
+	public function testLeadsPages () {
+        $this->visitPages (array (
+            'x2Leads/index',
+            'x2Leads/create',
+            'x2Leads/1',
+            'x2Leads/update/id/1',
+            'x2Leads/delete/id/1',
         ));
 	}
 
@@ -135,6 +140,141 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
             'opportunities/update/id/51',
         ));
 	}
+
+	public function testServicesPages () {
+        $this->visitPages (array (
+            'services/index',
+            'services/3',
+            'services/create',
+            'services/update/id/3',
+            'services/servicesReport',
+            'services/createWebForm',
+        ));
+	}
+
+	public function testActionsPages () {
+        $this->visitPages (array (
+            'actions/index',
+            'actions/create',
+            'actions/1',
+            'actions/update/id/1',
+            'actions/shareAction/id/1',
+            'actions/viewGroup',
+            'actions/viewAll',
+        ));
+	}
+
+	public function testCalendarPages () {
+        $this->visitPages (array (
+            'calendar/index',
+            'calendar/myCalendarPermissions',
+            'calendar/userCalendarPermissions',
+            'calendar/userCalendarPermissions/id/1',
+        ));
+	}
+
+	public function testDocsPages () {
+        $this->visitPages (array (
+            'docs/index',
+            'docs/create',
+            'docs/createEmail',
+            'docs/createQuote',
+            'docs/1',
+            'docs/update/id/1',
+            'docs/changePermissions/id/1',
+            'docs/exportToHtml/id/1',
+        ));
+	}
+
+	public function testWorkflowPages () {
+        $this->visitPages (array (
+            'workflow/index',
+            'workflow/create',
+            'workflow/1?perStageWorkflowView=true',
+            'workflow/1?perStageWorkflowView=false',
+            'workflow/update/id/1',
+        ));
+	}
+
+	public function testProductsPages () {
+        $this->visitPages (array (
+            'products/index',
+            'products/1',
+            'products/create',
+            'products/update/id/1',
+            //'site/printRecord/1?modelClass=Product&pageTitle=Product%3A+Semiconductor',
+        ));
+	}
+
+	public function testQuotesPages () {
+        $this->visitPages (array (
+            'quotes/index',
+            'quotes/indexInvoice',
+            'quotes/1',
+            'quotes/convertToInvoice/id/1',
+            'quotes/create',
+            'quotes/update/id/1',
+        ));
+	}
+
+     
+
+	public function testChartsPages () {
+        $this->visitPages (array (
+            'charts/leadVolume',
+            'charts/marketing',
+            'charts/pipeline',
+            'charts/sales',
+        ));
+	}
+
+	public function testMediaPages () {
+        $this->visitPages (array (
+            'media/index',
+            'media/1',
+            'media/upload',
+            'media/update/id/1',
+        ));
+	}
+
+	public function testGroupsPages () {
+        $this->visitPages (array (
+            'groups/index',
+            'groups/1',
+            'groups/update/id/1',
+            'groups/create',
+        ));
+	}
+
+	public function testBugReportsPages () {
+        $this->visitPages (array (
+            'groups/bugReports',
+            'groups/create',
+        ));
+	}
+
+	public function testSitePages () {
+        $this->visitPages (array (
+            'site/viewNotifications',
+            'site/page?view=iconreference',
+            'site/page?view=about',
+            'site/bugReport',
+        ));
+    }
+
+	public function testProfilePages () {
+        $this->visitPages (array (
+            'profile/profiles',
+            'profile/activity',
+            'profile/1',
+            'profile/1?publicProfile=1',
+            'profile/update/1',
+            'profile/settings/1',
+            'profile/changePassword/1',
+            'profile/manageCredentials'
+        ));
+	}
+
 }
 
 ?>

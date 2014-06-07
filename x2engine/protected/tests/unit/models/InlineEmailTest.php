@@ -94,7 +94,7 @@ class InlineEmailTest extends X2DbTestCase {
         $tt = InlineEmail::TRACKTAG;
         include(realpath(Yii::app()->basePath.'/../webConfig.php'));
         $url = Yii::app()->getAbsoluteBaseUrl();
-        $image = "<img src=\"$url/index.php/actions/emailOpened?uid={$this->eml->uniqueId}&type=open\"/>";
+        $image = "<img src=\"".rtrim($url,'/')."/index.php/actions/emailOpened?uid={$this->eml->uniqueId}&type=open\"/>";
         $fullImage = InlineEmail::insertedPattern('track', $image);
         $this->assertEquals(
             $image, $this->eml->trackingImage,
