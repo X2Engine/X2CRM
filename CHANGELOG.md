@@ -1,5 +1,18 @@
+# 4.1.4b (beta) #
+6/18/2014
+
+* General changelog / developer notes:
+  * Recognition for memory limit in requirements check script
+  * Fixed action timers bug (duplicate timer records created via publisher)
+  * Proper handling of completion/uncompletion of actions in X2Flow
+  * Profile layout bug fix
+* Tracked Bug Fixes:  
+  * [1320](http://x2software.com/index.php/bugReports/1320): Importer broken  
+  * [1343](http://x2software.com/index.php/bugReports/1343): User Report (XSS vulnerability)
+
 # 4.1.3 #
 6/6/2014
+
 * Tracked Bug Fixes:  
   * [1304](http://x2software.com/index.php/bugReports/1304): JS broken on "full edit page" for actions  
   * [1307](http://x2software.com/index.php/bugReports/1307): Class: AnonContact not found.  
@@ -7,6 +20,7 @@
 
 # 4.1.2 #
 6/6/2014
+
 * General Changelog / Developer Notes:
   * Fixed inline quotes form
 * Tracked Bug Fixes:  

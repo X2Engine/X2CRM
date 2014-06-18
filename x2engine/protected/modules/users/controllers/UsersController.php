@@ -231,6 +231,9 @@ class UsersController extends x2base {
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
+        if (!isset($model->userAlias))
+            $model->userAlias = $model->username;
+
         if(isset($_POST['User'])) {
             $old=$model->attributes;
             $temp=$model->password;

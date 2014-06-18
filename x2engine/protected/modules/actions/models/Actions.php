@@ -53,6 +53,11 @@ class Actions extends X2Model {
     public $verifyCode; // CAPTCHA for guests using the publisher
     public $actionDescriptionTemp = ""; // Easy way to get around action text records
 
+    /**
+     * Skips creating action timer records for "timed" types if true
+     */
+    public $skipActionTimers = false;
+
     private static $_priorityLabels;
 
     /**

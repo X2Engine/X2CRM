@@ -525,7 +525,7 @@ if(!empty($maxMem) && preg_match('/(\d+)([BKMG])/i',$maxMem,$match)) {
 } else {
     $maxBytes = (integer) $maxMem;
 }
-if((bool)$maxBytes && $maxBytes <= 33554432) {
+if((bool)((int)$maxBytes+1) && $maxBytes <= 33554432) {
     $reqMessages[2][] = installer_t('The memory limit is set to 32 megabytes or lower in the PHP configuration. Please consider raising this limit. X2Engine may otherwise encounter fatal runtime errors.');
 }
 

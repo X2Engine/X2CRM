@@ -126,6 +126,17 @@ abstract class X2FlowAction extends X2FlowItem {
             $model->setScenario ('X2Flow');
         $model->setX2Fields ($data);
 
+        if ($model instanceof Actions && isset($data['complete'])) {
+            switch($data['complete']) {
+                case 'Yes':
+                    $model->complete();
+                    break;
+                case 'No':
+                    $model->uncomplete();
+                    break;
+            }
+        }
+
         return true;
     }
 

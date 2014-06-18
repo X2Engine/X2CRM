@@ -1,6 +1,6 @@
 # X2Engine 4.1 #
-Follow-up point release 4.1.3
-6/6/2014
+Follow-up point release 4.1.4b
+6/18/2014
 
 New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
 
@@ -67,7 +67,7 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
   * (Platinum Edition) "Raw Input" API settings option not saving properly
   * "Linkable Behavior" + custom modules backwards incompatibility
   * Web lead form not respecting when "Create Lead" option is disabled
-* Changes in 4.1.2 (6/6/2014):
+* Changes in 4.1.2 (5/30/2014):
   * General Changelog / Developer Notes:
     * (Platinum Edition): Fixes to X2Identity and browser fingerprinting
       * Scalability issues in X2Identity, specifically the browser fingerprint match query
@@ -92,6 +92,15 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
     * [1304](http://x2software.com/index.php/bugReports/1304): JS broken on "full edit page" for actions  
     * [1307](http://x2software.com/index.php/bugReports/1307): Class: AnonContact not found.  
     * [1309](http://x2software.com/index.php/bugReports/1309): Class: Reports not found.
+* Changes in 4.1.4 (6/18/2014):
+  * General changelog / developer notes:
+    * Recognition for memory limit in requirements check script
+    * Fixed action timers bug (duplicate timer records created via publisher)
+    * Proper handling of completion/uncompletion of actions in X2Flow
+    * Profile layout bug fix
+  * Tracked Bug Fixes:  
+    * [1320](http://x2software.com/index.php/bugReports/1320): Importer broken  
+    * [1343](http://x2software.com/index.php/bugReports/1343): User Report (XSS vulnerability)
 
 # Introduction #
 Welcome to  X2Engine!

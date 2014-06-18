@@ -817,16 +817,16 @@ class Profile extends CActiveRecord {
     function initLayout(){
         $layout = array(
             'left' => array(
+                'ActionMenu' => array(
+                    'title' => 'Actions',
+                    'minimize' => false,
+                ),
                 'TopContacts' => array(
                     'title' => 'Top Contacts',
                     'minimize' => false,
                 ),
                 'RecentItems' => array(
                     'title' => 'Recently Viewed',
-                    'minimize' => false,
-                ),
-                'ActionMenu' => array(
-                    'title' => 'Actions',
                     'minimize' => false,
                 ),
                 'ActionTimer' => array(

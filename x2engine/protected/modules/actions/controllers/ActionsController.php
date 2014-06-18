@@ -424,6 +424,7 @@ class ActionsController extends x2base {
             if(!empty($model->type))
                 $model->disableBehavior('changelog');
 
+            
             if($model->save()){ // action saved to database *
                 if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
                     $model->createNotifications(

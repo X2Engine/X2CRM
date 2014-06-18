@@ -320,7 +320,7 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                 echo "</span></span>";
                 echo "<span class='field-value'>";
                 if(!empty($model->subject)){
-                    echo "<b>".$model->subject."</b><br><br>";
+                    echo "<b>".$model->renderAttribute('subject', false)."</b><br><br>";
                 }elseif(!empty($model->type)){
                     echo "<b>".ucfirst($model->type)."</b><br><br>";
                 }
