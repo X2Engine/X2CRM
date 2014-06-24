@@ -262,22 +262,20 @@ $this->renderPartial('_detailView',
 */
 $this->endWidget();
 
-if($contact){ // if associated contact exists, setup inline email form
-	$this->widget('InlineEmailForm', array(
-		'attributes' => array(
-			'to' => '"'.$contact->name.'" <'.$contact->email.'>, ',
-			// 'subject'=>'hi',
-			// 'redirect'=>'contacts/'.$model->id,
-			'modelName' => 'Quote',
-			'modelId' => $model->id,
-			'message' => $this->getPrintQuote($model->id, true),
-			'subject' => $model->type == ('invoice' ? Yii::t('quotes', 'Invoice') : Yii::t('quotes', 'Quote')).'('.Yii::app()->settings->appName.'): '.$model->name,
-		),
-		'startHidden' => true,
-		'templateType' => 'quote',
-	)
-	);
-}
+$this->widget('InlineEmailForm', array(
+    'attributes' => array(
+        'to' => !empty($contact) && $contact instanceof Contacts?'"'.$contact->name.'" <'.$contact->email.'>, ':'',
+        // 'subject'=>'hi',
+        // 'redirect'=>'contacts/'.$model->id,
+        'modelName' => 'Quote',
+        'modelId' => $model->id,
+        'message' => $this->getPrintQuote($model->id, true),
+        'subject' => $model->type == ('invoice' ? Yii::t('quotes', 'Invoice') : Yii::t('quotes', 'Quote')).'('.Yii::app()->settings->appName.'): '.$model->name,
+    ),
+    'startHidden' => true,
+    'templateType' => 'quote',
+        )
+);
 ?>
 <?php $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'Quote')); ?>
 

@@ -74,7 +74,7 @@ class TagBehavior extends CActiveRecordBehavior {
 				$tagModel->type = get_class($this->getOwner());
 				$tagModel->itemId = $this->getOwner()->id;
 				$tagModel->itemName = $this->getOwner()->name;
-				$tagModel->taggedBy = Yii::app()->getSuModel()->username;
+				$tagModel->taggedBy = Yii::app()->getSuName();
 				$tagModel->timestamp = time();
 				if($tagModel->save())
 					$newTags[] = $tag;
@@ -174,7 +174,7 @@ class TagBehavior extends CActiveRecordBehavior {
                 $tag->tag = '#'.ltrim($tagName,'#');
 				$tag->itemId = $this->getOwner()->id;
 				$tag->type = get_class($this->getOwner());
-				$tag->taggedBy = Yii::app()->getSuModel()->username;
+				$tag->taggedBy = Yii::app()->getSuName();
 				$tag->timestamp = time();
 				$tag->itemName = $this->getOwner()->name;
 

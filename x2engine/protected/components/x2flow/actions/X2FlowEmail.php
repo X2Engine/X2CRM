@@ -44,17 +44,21 @@ class X2FlowEmail extends X2FlowAction {
 	public $info = 'Send a template or custom email to the specified address.';
 
 	public function paramRules() {
-        $credOptsDict = Credentials::getCredentialOptions (null, true);
-        $credOpts = $credOptsDict['credentials'];
-        $selectedOpt = $credOptsDict['selectedOption'];
-        foreach ($credOpts as $key=>$val) {
-            if ($key == $selectedOpt) {
-                $credOpts = array ($key => $val) + $credOpts; // move to beginning of array
-                break;
+        if(Yii::app()->isInSession){
+            $credOptsDict = Credentials::getCredentialOptions(null, true);
+            $credOpts = $credOptsDict['credentials'];
+            $selectedOpt = $credOptsDict['selectedOption'];
+            foreach($credOpts as $key => $val){
+                if($key == $selectedOpt){
+                    $credOpts = array($key => $val) + $credOpts; // move to beginning of array
+                    break;
+                }
             }
+        }else{
+            $credOpts = array();
         }
 
-		return array(
+        return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
 			'options' => array(

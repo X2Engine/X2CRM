@@ -1,3 +1,12 @@
+# 4.1.4 #
+6/24/2014
+
+* General changelog/developer notes:
+  * Fixed bug in tagBehavior: added safeguard for no web session (i.e. in scope of web lead form submission)
+  * Inline email form in the Quotes module has been expanded to work without an associated Contact
+* Tracked Bug Fixes:  
+  * [1340](http://x2software.com/index.php/bugReports/1340): User Report
+
 # 4.1.4b (beta) #
 6/18/2014
 
