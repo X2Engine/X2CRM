@@ -3204,7 +3204,7 @@ class AdminController extends Controller {
                      */
                     foreach($metaData as $attribute){
                         if (isset($importMap[$attribute]) && $model->hasAttribute ($importMap[$attribute])) {
-                            if (!empty($model->$importMap[$attributes]) || empty($importAttributes[$attribute])) {
+                            if (!empty($model->$importMap[$attribute]) || empty($importAttributes[$attribute])) {
                                 /**
                                  * Skip setting the attribute if it has already been set or if the entry from
                                  * the CSV is empty. This allows multiple fields in the CSV to be mapped to the
