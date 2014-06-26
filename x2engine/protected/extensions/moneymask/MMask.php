@@ -44,6 +44,10 @@ class MMask extends CWidget {
          // modification: updated property name for new version of jQuery plugin
          isset($this->config['prefix']) ? '' : 
             $this->config['prefix'] = Yii::app()->getLocale()->getCurrencySymbol($this->currency);
+
+         // restore the prefix to an empty string if a currency symbol could not be resolved
+         if ($this->config['prefix'] == null)
+             $this->config['prefix'] = "";
          /* x2modend */ 
 
          /* x2modstart */ 

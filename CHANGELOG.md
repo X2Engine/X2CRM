@@ -1,3 +1,10 @@
+# 4.1.5 #
+6/26/2014
+
+* General changelog/developer notes:
+  * Included several commits from internal tree that were missed in the previous release
+  * Fixed MoneyMask bug: when unsupported currencies are in use, validation was failing
+
 # 4.1.4 #
 6/24/2014
 

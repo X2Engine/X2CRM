@@ -37,6 +37,18 @@
  class X2Html extends CHtml {
 
     /**
+     * Safeguarded override of {@link CHtml::encode()}
+     * 
+     * Converts the text's encoding to avoid "invalid multibyte sequence" errors
+     */
+    public static function encode($text) {
+        if (!mb_detect_encoding($text, Yii::app()->charset, true)) {
+            $text = mb_convert_encoding($text, Yii::app()->charset, 'ISO-8859-1');
+        }
+        return parent::encode($text);
+    }
+
+    /**
      * Returns html for error, success, and notice flashes. 
      */
     public static function getFlashes () {

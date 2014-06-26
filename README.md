@@ -1,6 +1,6 @@
 # X2Engine 4.1 #
-Follow-up point release 4.1.4
-6/24/2014
+Follow-up point release 4.1.5
+6/26/2014
 
 New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
 
@@ -104,6 +104,11 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
     * [1320](http://x2software.com/index.php/bugReports/1320): Importer broken  
     * [1343](http://x2software.com/index.php/bugReports/1343): User Report (XSS vulnerability)
     * [1340](http://x2software.com/index.php/bugReports/1340): User Report
+* Changes in 4.1.5 (6/26/2014):
+  * General changelog/developer notes:
+    * Included several commits from internal tree that were missed in the previous release
+    * Fixed MoneyMask bug: when unsupported currencies are in use, validation was failing
+
 
 # Introduction #
 Welcome to  X2Engine!
@@ -155,15 +160,6 @@ will run X2Engine.
 5. You are now ready to use X2Engine.  If you chose to install Dummy Data,  you 
    will have numerous sample records (i.e. about 1100 contacts) to play with.
 
-
-# Creating the Action Reminder Cronjob #
-As we don't have access to your server, you'll need to create a cronjob to make 
-the server send out action reminders. You can either do this on your own server 
-or use a free service on the internet to run it for you.  All you need to do is 
-have the cronjob access the url once a day to send out action reminders:
-
-    http://www.[yourserver].com/[path to x2engine]/actions/sendReminder
-
 # Languages #
 Most of the  included language packs were produced by  copy/paste  from  Google 
 Translate and copy/paste.  If you have any  corrections,  suggestions or custom 
@@ -193,4 +189,10 @@ to get you started!
   .htaccess file (the application will still work without it.)
 - eAccelerator may cause PHP errors on various pages  ("Invalid Opcode").  This 
   is due to a bug in eAccelerator, and can be fixed by disabling or updating
-  eAccelerator.
+  eAccelerator. Furthermore, eAccelerator causes PHP to fail when using 
+  anonymous functions. In general, it is recommended that you disable 
+  eAccelerator altogether.
+- Version 2 of the API will not work in a web directory that is password-protected.
+  This is because there can only be one "Auth" header in HTTP requests, and the web
+  server would in this case require an Auth header distinct from the one required 
+  to authenticate with the API.

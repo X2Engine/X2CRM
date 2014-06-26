@@ -167,7 +167,7 @@ class X2ClientScript extends NLSClientScript {
         $cldScript = 
             '(function($) {
                 x2.currencyInfo = '.CJSON::encode(array(
-                    'prefix' => $curSym,
+                    'prefix' => isset($curSym)? $curSym : "",
                     'decimal' => $decSym,
                     'thousands' => $grpSym,
                 )).";
