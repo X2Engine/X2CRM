@@ -41,6 +41,7 @@
  */
 Yii::import('application.models.Relationships');
 Yii::import('application.models.Tags');
+Yii::import('application.components.X2Html');
 
 class NotificationsController extends CController {
 
