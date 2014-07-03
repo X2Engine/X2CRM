@@ -860,6 +860,7 @@ if (!$complete && !$silent)
 // Install everything all at once:
 if (($silent || !isset($_GET['stage'])) && !$complete) {
 	// Install core schema/data, modules, and configure:
+    ResponseUtil::respond("-- Installing version {$config['x2_version']} --");
 	foreach (array('validate','core', 'RBAC', 'timezoneData', 'module', 'config', 'dummy_data', 'finalize') as $component)
 		installStage($component);
 } else if (isset($_GET['stage'])) {

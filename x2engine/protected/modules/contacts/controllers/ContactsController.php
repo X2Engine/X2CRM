@@ -169,6 +169,7 @@ class ContactsController extends x2base {
             if(isset($this->portlets['GoogleMaps']))
                 $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
 
+
             // Update the VCR list information to preserve what list we came from
             if(isset($_COOKIE['vcr-list'])){
                 Yii::app()->user->setState('vcr-list', $_COOKIE['vcr-list']);
@@ -1165,7 +1166,8 @@ class ContactsController extends x2base {
         $list = X2List::load($id);
 
         if(!isset($list)){
-            Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
+            Yii::app()->user->setFlash(
+                'error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('lists'));
         }
 
@@ -1173,7 +1175,9 @@ class ContactsController extends x2base {
         Yii::app()->user->setState('vcr-list', $id);
         $dataProvider = $model->searchList($id);
         $list->count = $dataProvider->totalItemCount;
-        $list->save();
+        $list->runWithoutBehavior ('X2FlowTriggerBehavior', function () use ($list) {
+            $list->save();
+        });
 
         X2Flow::trigger('RecordViewTrigger',array('model'=>$list));
         $this->render('list', array(
@@ -1397,62 +1401,7 @@ class ContactsController extends x2base {
         ));
     }
 
-    /**
-     * An AJAX called function which exports Contact data to a CSV via pagination
-     * @param int $page The page of the data provider to export
-     */
-    public function actionExportSet($page){
-        Contacts::$autoPopulateFields = false;
-        $file = $this->safePath($_SESSION['contactExportFile']);
-        $fields = X2Model::model('Contacts')->getFields();
-        $fp = fopen($file, 'a+');
-        // Load data provider based on export criteria
-        $dp = new CActiveDataProvider('Contacts', array(
-                    'criteria' => isset($_SESSION['exportContactCriteria']) ? $_SESSION['exportContactCriteria'] : array(),
-                    'pagination' => array(
-                        'pageSize' => 100,
-                    ),
-                ));
-        // Flip through to the right page.
-        $pg = $dp->getPagination();
-        $pg->setCurrentPage($page);
-        $dp->setPagination($pg);
-        $records = $dp->getData();
-        $pageCount = $dp->getPagination()->getPageCount();
-        // We need to set our data to be human friendly, so loop through all the
-        // records and format any date / link / visibility fields.
-        foreach($records as $record){
-            foreach($fields as $field){
-                $fieldName = $field->fieldName;
-                if($field->type == 'date' || $field->type == 'dateTime'){
-                    if(is_numeric($record->$fieldName))
-                        $record->$fieldName = Formatter::formatLongDateTime($record->$fieldName);
-                }elseif($field->type == 'link'){
-                    $name = $record->$fieldName;
-                    if(!empty($field->linkType)){
-                        list($name, $id) = Fields::nameAndId($name);
-                    }
-                    if(!empty($name))
-                        $record->$fieldName = $name;
-                }elseif($fieldName == 'visibility'){
-                    $record->$fieldName = $record->$fieldName == 1 ? 'Public' : 'Private';
-                }
-            }
-            // Enforce metadata to ensure accuracy of column order, then export.
-            $combinedMeta = array_combine($_SESSION['contactExportMeta'], $_SESSION['contactExportMeta']);
-            $tempAttributes = array_intersect_key($record->attributes, $combinedMeta);
-            $tempAttributes = array_merge($combinedMeta, $tempAttributes);
-            fputcsv($fp, $tempAttributes);
-        }
-
-        unset($dp);
-
-        fclose($fp);
-        if($page + 1 < $pageCount){
-            echo $page + 1;
-        }
-    }
-
+    
     public function actionDelete($id){
         if(Yii::app()->request->isPostRequest){
             $model = $this->loadModel($id);

@@ -47,8 +47,10 @@ $('#Actions_associationType').change (function () {
     var associationModels = ".CJSON::encode ($associationModels).";
     if ($(this).val () === 'calendar') {
         $('#association-type-autocomplete-container').hide ();
+        $('#association-type-autocomplete-container input').attr ('disabled', 'disabled');
         return false;
     }
+    $('#association-type-autocomplete-container input').removeAttr ('disabled');
     x2.forms.inputLoading ($(this));
     $.ajax ({
         type: 'GET',

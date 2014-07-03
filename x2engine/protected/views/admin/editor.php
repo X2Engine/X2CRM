@@ -162,7 +162,14 @@ echo CHtml::hiddenField('layout', '', array('id' => 'layoutHiddenField'));
         <div id="editorFieldList" class="formSortable">
             <?php
             // get list of all fields, sort by attribute label alphabetically
-            $fields = Fields::model()->findAllByAttributes(array('modelName' => $modelName), new CDbCriteria(array('order' => 'attributeLabel ASC')));
+            $fields = Fields::model()->findAllByAttributes(
+                array('modelName' => $modelName),
+                new CDbCriteria(
+                    array(
+                        'order' => 'attributeLabel ASC',
+                        'condition' => 'keyType IS NULL OR (keyType!="PRI" AND keyType!="FIX")',
+                    )
+            ));
             foreach($fields as &$field){
                 $type = '';
                 switch($field->type){

@@ -174,7 +174,7 @@ GridViewStickyHeader.prototype.checkX2GridViewHeaderSticky = function () {
 
         $(window).unbind ('scroll.stickyHeader').
             bind ('scroll.stickyHeader',
-                function () { that._checkX2GridViewHeaderUnsticky; });
+                function () { that.checkX2GridViewHeaderUnsticky (); });
 
         this._cachedTitleContainerOffsetTop =
             $(titleContainer).offset ().top;
@@ -225,7 +225,7 @@ GridViewStickyHeader.prototype.checkX2GridViewHeaderUnsticky = function () {
 
         $(window).unbind ('scroll.stickyHeader').
             bind ('scroll.stickyHeader', function () { 
-                that._checkX2GridViewHeaderSticky; 
+                that.checkX2GridViewHeaderSticky (); 
             });
     }
 };

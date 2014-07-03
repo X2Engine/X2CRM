@@ -104,7 +104,13 @@ CREATE TABLE x2_admin(
     externalBaseUrl             VARCHAR(255) DEFAULT NULL,
     externalBaseUri             VARCHAR(255) DEFAULT NULL,
     appName                     VARCHAR(255) DEFAULT NULL,
-    appDescription              VARCHAR(255) DEFAULT NULL
+    appDescription              VARCHAR(255) DEFAULT NULL,
+    /* If set to 1, prevents X2Flow from sending emails to contacts that have doNotEmail set to 1 */
+    x2FlowRespectsDoNotEmail    TINYINT DEFAULT 0,
+    /* This is the rich text that gets displayed to contacts after they've clicked a do not email 
+       link */
+    doNotEmailPage   LONGTEXT DEFAULT NULL,
+    doNotEmailLinkText          VARCHAR(255) DEFAULT NULL
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_api_hooks;
@@ -374,6 +380,7 @@ CREATE TABLE x2_profile(
     historyShowAll          TINYINT         DEFAULT 0,
     historyShowRels         TINYINT         DEFAULT 0,
     googleRefreshToken      VARCHAR(255),
+	leadRoutingAvailability	TINYINT			DEFAULT 1,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
@@ -588,7 +595,7 @@ CREATE TABLE x2_flows(
 	name					VARCHAR(100)	NOT NULL,
 	triggerType				VARCHAR(40)		NOT NULL,
 	modelClass				VARCHAR(40),
-	flow					TEXT,
+	flow					LONGTEXT,
 	createDate				BIGINT			NOT NULL,
 	lastUpdated				BIGINT			NOT NULL
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;

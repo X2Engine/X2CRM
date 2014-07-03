@@ -103,6 +103,9 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
     }
 
     public function testPrepareEmail() {
+	if(!Yii::app()->contEd('pro')) {
+            $this->markTestSkipped();
+	}
         $cmb = $this->instantiate();
         $contact = $this->contacts('testUser_unsent');
         $recipientAddress = $contact->email;

@@ -53,7 +53,7 @@ class MarketingController extends x2base {
     public function accessRules(){
         return array(
             array('allow', // allow all users
-                'actions' => array('click'),
+                'actions' => array('click', 'doNotEmailLinkClick'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform the following actions
@@ -502,6 +502,23 @@ class MarketingController extends x2base {
         }
     }
 
+    public function actionDoNotEmailLinkClick ($x2_key) {
+        $contact = Contacts::model ()->findByAttributes (array (
+            'trackingKey' => $x2_key,
+        ));
+        if ($contact !== null) {
+            $contact->doNotEmail = true;
+            if ($contact->update ()) {
+                if (Yii::app()->settings->doNotEmailPage) {
+                    echo Yii::app()->settings->doNotEmailPage;
+                } else {
+                    echo Admin::getDoNotEmailDefaultPage ();
+                }
+            }
+        }
+
+    }
+
     /**
      * Track when an email is viewed, a link is clicked, or the recipient unsubscribes
      *
@@ -534,7 +551,8 @@ class MarketingController extends x2base {
                 header('Content-Type: image/gif');
                 echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
             }elseif($type == 'unsub' && !empty($email)){
-                Contacts::model()->updateAll(array('doNotEmail' => true), 'email=:email', array(':email' => $email));
+                Contacts::model()->updateAll(
+                    array('doNotEmail' => true), 'email=:email', array(':email' => $email));
                 X2ListItem::model()->updateAll(array('unsubscribed' => time()), 'emailAddress=:email AND unsubscribed=0', array('email' => $email));
                 $message = Yii::t('marketing', 'You have been unsubscribed');
                 echo '<html><head><title>'.$message.'</title></head><body>'.$message.'</body></html>';

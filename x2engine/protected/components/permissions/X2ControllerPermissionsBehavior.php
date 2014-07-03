@@ -180,6 +180,10 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
                 }else{
                     $action = ucfirst($this->owner->getId().ucfirst($item['url'][0]));
                 }
+                // For special actions within the Admin controller that use the "checkAdminOn" 
+                // biz rule method: add a module parameter for proper checking
+                if($this->owner->getModule() instanceof CModule)
+                    $params['module'] = $this->owner->getModule()->getId();
                 $authItem = $auth->getAuthItem($action);
                 if(!isset($item['visible']) || $item['visible'] == true){
                     $item['visible'] = Yii::app()->user->checkAccess($action, $params) || is_null($authItem);

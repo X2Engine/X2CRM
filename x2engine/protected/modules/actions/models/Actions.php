@@ -53,11 +53,6 @@ class Actions extends X2Model {
     public $verifyCode; // CAPTCHA for guests using the publisher
     public $actionDescriptionTemp = ""; // Easy way to get around action text records
 
-    /**
-     * Skips creating action timer records for "timed" types if true
-     */
-    public $skipActionTimers = false;
-
     private static $_priorityLabels;
 
     /**
@@ -82,6 +77,7 @@ class Actions extends X2Model {
                 'module' => 'actions'
             ),
             'X2TimestampBehavior' => array('class' => 'X2TimestampBehavior'),
+            'X2FlowTriggerBehavior' => array('class' => 'X2FlowTriggerBehavior'),
             'tags' => array('class' => 'TagBehavior'),
             'ERememberFiltersBehavior' => array(
                 'class' => 'application.components.ERememberFiltersBehavior',
@@ -345,9 +341,6 @@ class Actions extends X2Model {
             !$this->isAssignedTo (Yii::app()->user->getName(), true))){
 
             $this->createNotifications ();
-        }
-        if(Yii::app()->params->noSession && !$this->asa('changelog')){
-            X2Flow::trigger('RecordCreateTrigger', array('model' => $this));
         }
         parent::afterCreate();
     }

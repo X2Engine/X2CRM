@@ -161,6 +161,6 @@ abstract class X2FlowAction extends X2FlowItem {
     }
 
     public static function getActionInstances() {
-        return self::getInstances('actions',array(__CLASS__, 'BaseX2FlowWorkflowStageAction'));
+        return self::getInstances('actions',array(__CLASS__, 'BaseX2FlowWorkflowStageAction', 'BaseX2FlowEmail'));
     }
 }

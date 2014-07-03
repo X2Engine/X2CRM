@@ -1,3 +1,11 @@
+# 4.1.6b #
+7/3/2014
+
+* The "required" validation rule now applies, globally, to all instances of 
+  updating as well as all instances of saving. Users can now no longer save 
+  and then empty the field after going back to edit. This may disrupt existing 
+  workflows that depended on this erroneous behavior.
+
 # 4.1.2b #
 5/30/2014
 

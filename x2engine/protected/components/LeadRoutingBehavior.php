@@ -54,21 +54,34 @@ class LeadRoutingBehavior extends CBehavior {
 		$type = $admin->leadDistribution;
 		if ($type == "") {
 			return "Anyone";
-		} elseif ($type == "evenDistro") {
+		} elseif ($type == "evenDistro") { // legacy lead routing option
 			return $this->evenDistro();
 		} elseif ($type == "trueRoundRobin") {
 			return $this->roundRobin();
 		} elseif ($type == "customRoundRobin") {
             return $this->customRoundRobin ($contact);
 		} elseif ($type=='singleUser') {
-            $user = User::model()->findByPk($admin->rrId);
-            if(isset($user)){
-                return $user->username;
-            }else{
-                return "Anyone";
-            }
+            return $this->singleUser ();
         }
 	}
+
+    public function singleUser () {
+		$admin = &Yii::app()->settings;
+        $user = User::model()->findByPk($admin->rrId);
+        if(isset($user)){
+            $username = $user->username;
+
+            if (($admin->onlineOnly && !in_array ($username, Session::getOnlineUsers())) ||
+                !in_array ($username, Profile::getUsernamesOfAvailableUsers ())) {
+
+                return 'Anyone';
+            } else {
+                return $username;
+            }
+        }else{
+            return "Anyone";
+        }
+    }
 
 	/**
 	 * Picks the next asignee for custom round robin lead routing rule.
@@ -101,6 +114,9 @@ class LeadRoutingBehavior extends CBehavior {
     }
 
 	/**
+     * Legacy lead routing option. This can no longer be selected option from the lead routing
+     * admin page.
+     *
 	 * Picks the next asignee such that the resulting routing distribution 
 	 * would be even.
 	 * 
@@ -125,6 +141,8 @@ class LeadRoutingBehavior extends CBehavior {
 		}else {
 			$users = $usernames;
 		}
+
+        $users = array_values (array_intersect (Profile::getUsernamesOfAvailableUsers (), $users));
 
 		$numbers = array();
 		foreach ($users as $user) {
@@ -159,7 +177,8 @@ class LeadRoutingBehavior extends CBehavior {
 		$users = X2Model::model('User')->findAll();
 		foreach ($users as $userRecord) {
 			//exclude admin from candidates
-			if ($userRecord->username != 'admin' && $userRecord->username!='api') $usernames[] = $userRecord->username;
+			if ($userRecord->username != 'admin' && $userRecord->username!='api') 
+                $usernames[] = $userRecord->username;
 		}
 		if ($online == 1) {
 			$userList = array();
@@ -170,6 +189,10 @@ class LeadRoutingBehavior extends CBehavior {
 		}else {
 			$userList = $usernames;
 		}
+
+        $userList = array_values (
+            array_intersect (Profile::getUsernamesOfAvailableUsers (), $userList));
+
 		$rrId = $this->getRoundRobin();
         if(count($userList)>0){
             $i = $rrId % count($userList);
@@ -276,6 +299,13 @@ class LeadRoutingBehavior extends CBehavior {
                         $users=$usernames;
                     }
 				}
+
+                if ($rule->groupType == self::WITHIN_GROUPS) {
+                    $users = array_values (
+                        array_intersect (
+                            Profile::model ()->getUsernamesOfAvailableUsers (), $users));
+                }
+
 				$users[] = $rule->rrId;
 				$rule->rrId++;
 				$rule->save();

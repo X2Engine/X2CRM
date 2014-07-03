@@ -38,6 +38,7 @@
 <div class='span-24'>
     <div class="form">
         <?php
+
         $form = $this->beginWidget('CActiveForm', array(
             'id' => 'settings-form',
             'enableAjaxValidation' => false,
@@ -61,6 +62,9 @@
                         array('install')
         );
         $this->renderPartial('stayUpdated', array('form' => $updatesForm));
+        if(Yii::app()->params->isAdmin && Yii::app()->contEd('pro') && Yii::app()->settings->unique_id != '') {
+            echo '<strong>'.Yii::t('app','Your license key is:').'</strong>&nbsp;<tt>'.Yii::app()->settings->unique_id.'</tt><br /><br />';
+        }
         ?>
         <input type="hidden" id="adminEmail" name="adminEmail" value="<?php echo $model->emailFromAddr; ?>" />
         <input type="hidden" id="language" name="language" value="<?php echo Yii::app()->language; ?>" />

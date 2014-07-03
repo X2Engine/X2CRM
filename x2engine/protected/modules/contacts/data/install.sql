@@ -84,7 +84,7 @@ CREATE TABLE x2_list_criteria (
     type       VARCHAR(20) NULL,
     attribute  VARCHAR(40) NULL,
     comparison VARCHAR(10) NULL,
-    value      VARCHAR(100) NOT NULL,
+    value      VARCHAR(255) NOT NULL,
     INDEX (listId),
     FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE InnoDB COLLATE utf8_general_ci;

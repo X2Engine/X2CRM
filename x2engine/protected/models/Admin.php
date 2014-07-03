@@ -51,6 +51,17 @@ class Admin extends CActiveRecord {
         return parent::model($className);
     }
 
+    public static function getDoNotEmailLinkDefaultText () {
+        return Yii::t('admin', 'I do not wish to receive these emails.');
+    }
+
+    public static function getDoNotEmailDefaultPage () {
+        $message = Yii::t(
+            'admin', 'You will no longer receive emails from this sender.');
+        return '<html><head><title>'.$message.
+            '</title></head><body>'.$message.'</body></html>';
+    }
+
     /**
      * @return string the associated database table name
      */
@@ -110,7 +121,10 @@ class Admin extends CActiveRecord {
             array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array ('appDescription', 'length', 'max' => 255),
-            array ('appName', 'safe')
+            array (
+                'appName,x2FlowRespectsDoNotEmail,doNotEmailLinkPage,doNotEmailLinkText',
+                'safe'
+            ),
                 // The following rule is used by search().
                 // Please remove those attributes that should not be searched.
                 // array('id, accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, chatPollTime, menuVisibility, currency', 'safe', 'on'=>'search'),
@@ -180,6 +194,10 @@ class Admin extends CActiveRecord {
             'externalBaseUrl' => Yii::t('app','External / Public Base URL'),
             'externalBaseUri' => Yii::t('app','External / Public Base URI'),
             'appName' => Yii::t('app','Application Name'),
+            'x2FlowRespectsDoNotEmail' => Yii::t(
+                'app','Respect contacts\' "Do not email" settings?'),
+            'doNotEmailLinkText' => Yii::t('app','"Do not email" Link Text'),
+            'doNotEmailLinkPage' => Yii::t('app','"Do not email" Page'),
         );
     }
 

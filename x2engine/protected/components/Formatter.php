@@ -42,6 +42,17 @@
 class Formatter {
 
     /**
+     * Removes invalid/corrupt multibyte sequences from text.
+     */
+    public static function mbSanitize($text) {
+        $newText = $text;
+        if (!mb_detect_encoding($text, Yii::app()->charset, true)) {
+            $newText = mb_convert_encoding($text, Yii::app()->charset, 'ISO-8859-1');
+        }
+        return $newText;
+    }
+
+    /**
      * Return a value cast after a named PHP type
      * @param type $value
      * @param type $type
@@ -743,7 +754,7 @@ class Formatter {
         $path = implode(DIRECTORY_SEPARATOR,
             array(Yii::app()->basePath,'components','x2flow','shortcodes.php'));
         if(file_exists($path)){
-            $shortCodes = include($path);
+            $shortCodes = include(Yii::getCustomPath ($path));
             if(isset($shortCodes[$key])){
                 return eval($shortCodes[$key]);
             }

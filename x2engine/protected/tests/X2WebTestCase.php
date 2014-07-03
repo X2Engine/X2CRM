@@ -196,7 +196,10 @@ abstract class X2WebTestCase extends CWebTestCase {
      * Selenese path to make it easier to locate/use Selenese HTML scripts.
      */
     protected function setUp() {
-        X2DbTestCase::setUpAppEnvironment ();
+        // print out test name
+        VERBOSE_MODE && println ("\n".$this->getName ());
+
+        X2DbTestCase::setUpAppEnvironment (true);
         parent::setUp();
         $this->setSeleneseDir();
         // Set the screenshot path to one visible from the web.

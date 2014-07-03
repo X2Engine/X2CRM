@@ -58,6 +58,14 @@ Yii::app()->clientScript->registerCss('manageFieldsCSS',"
     margin-left: 9px;
 }
 
+#createUpdateField-loading {
+    display: none;
+    position: absolute;
+    opacity: 0.5;
+    z-index: 100;
+    background: white url(".Yii::app()->theme->baseUrl."/images/loading.gif) no-repeat center scroll;
+}
+
 ");
 
 Yii::app()->clientScript->registerMain();
@@ -109,6 +117,7 @@ Yii::app()->clientScript->registerScript('fieldEditor-config', 'x2.fieldEditor.l
     <a href="javascript:void(0);" onclick="$('#createUpdateField').show();$('#removeField').hide();x2.fieldEditor.load('update')" class="x2-button"><?php echo Yii::t('admin','Customize Field');?></a>
     <br>
     <br>
+    <div id="createUpdateField-loading"></div>
     <div id="createUpdateField" style="display:none">
     </div>
 

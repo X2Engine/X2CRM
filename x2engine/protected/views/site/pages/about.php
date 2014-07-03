@@ -59,8 +59,9 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 ?>
 
 <div class='center-column-container form left' >
-	<b><?php echo Yii::t('app','Version')." ".Yii::app()->params->version;?><br>
-	<?php echo Yii::app()->getEditionLabel(true); ?></b><br>
+    <b><?php echo Yii::t('app','Version')." ".Yii::app()->params->version;?></b><br>
+	<b><?php echo Yii::app()->getEditionLabel(true); ?></b><br>
+    <?php if(Yii::app()->params->isAdmin && Yii::app()->contEd('pro')){ echo '<strong>'.Yii::t('app','License').'</strong>&nbsp;<tt>'.Yii::app()->settings->unique_id.'</tt><br />'; } ?>
 	<?php echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,'long',null); ?>.<br><br>
 	<?php
 	if(Yii::app()->edition==='opensource')
@@ -90,14 +91,14 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 			<li>John Roberts</li>
 			<li>Demitri Morgan</li>
 			<li>Derek Mueller</li>
-			<li>Sandra Tam</li>
 			<li>Tony Zavala</li>
 			<li>Raymond Colebaugh</li>
 			<li>Jake Houser</li>
 		</ul>
 		</div><br>
-		<h4 class="clear"><?php echo Yii::t('app','Past Contributors');?></h4>
+		<h4 class="clear"><?php echo Yii::t('app','Contributors');?></h4>
 		<ul class="inline">
+			<li>Sandra Tam</li>
             <li>Matthew Pearson</li>
 			<li>James Thomas</li>
 			<li>Andrew Hoffman</li>

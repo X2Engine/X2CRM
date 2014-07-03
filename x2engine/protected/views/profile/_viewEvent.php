@@ -102,8 +102,16 @@ if($data->sticky){
 }else{
     if(!isset($noDateBreak) || !$noDateBreak){
         if(isset($_SESSION['lastDate']) && $_SESSION['lastDate'] !== date("M j", $data->timestamp)){
-            echo "<div class='view top-level date-break".($_SESSION['firstFlag'] ? " first" : "")."'
-                       id='"."date-break-".($data->timestamp)."'>- ".(date("M j", time()) == date("M j", $data->timestamp) ? Yii::t('app', "Today") : Yii::app()->locale->dateFormatter->formatDateTime($data->timestamp, 'long', null))." -</div>";
+            echo 
+                "<div class='view top-level date-break".($_SESSION['firstFlag'] ? " first" : "")."'
+                  id='"."date-break-".($data->timestamp)."'>
+                    - ".(date("M j", time()) == date("M j", $data->timestamp) ? 
+                        Yii::t('app', "Today") : 
+                        Yii::app()->locale->dateFormatter->format(
+                            'EEEE', $data->timestamp).', '.
+                        Yii::app()->locale->dateFormatter->formatDateTime(
+                            $data->timestamp, 'long', null))." -
+                </div>";
             $_SESSION['lastDate'] = date("M j", $data->timestamp);
             $_SESSION['firstFlag'] = false;
         }else{

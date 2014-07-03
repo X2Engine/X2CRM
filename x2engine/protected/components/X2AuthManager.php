@@ -105,8 +105,7 @@ class X2AuthManager extends CDbAuthManager {
         $roles = Roles::getUserRoles($userId);
         $assignments = array();
         foreach($roles as $roleId) {
-            $assignments = array_merge($assignments,
-                    parent::getAuthAssignments($roleId));
+            $assignments = array_merge($assignments, parent::getAuthAssignments($roleId));
         }
 
         // Prepare the username for the session-agnostic permissions check:
@@ -135,6 +134,57 @@ class X2AuthManager extends CDbAuthManager {
 		}
 
         return $hasAccess;
+    }
+
+    /**
+     * Checks for admin access on a specific named module.
+     *
+     * Originally written as a kludge to bypass checking for overall admin access when
+     * performing a generic admin action that is specific to a module. Specifically, it
+     * was written for exporting models as a fix for 4.1.6, wherein otherwise a user would
+     * need full admin rights and not just contact module admin rights to export contacts.
+     *
+     * Note, since this starts its own chain of recursive access checking, extreme caution
+     * should be used when using this method inside of a business rule, because infinite 
+     * loops could potentially occur.
+     *
+     * @param array $params An associative array that is presumed to contain a "userId"
+     *  element that refers to the user ID (as if $params is as within a business rule),
+     *  and also expects a model (or module) parameter.
+     */
+    public function checkAdminOn($params) {
+        if(!isset($params['userId']))
+            return false;
+
+        // Look in the $_GET superglobal for 'model' if the 'model' parameter is not available
+        $modelName = isset($params['model'])
+            ? ($params['model'] instanceof X2Model ? get_class($params['model']) : $params['model'])
+            : (isset($_GET['model']) ? $_GET['model'] : null);
+
+        // Determine the module on which admin access will be checked, based on a model class:
+        if(empty($params['module']) && !empty($modelName)) {
+            if(($staticModel = X2Model::model($modelName)) instanceof X2Model) {
+                if(($lb = $staticModel->asa('X2LinkableBehavior')) instanceof X2LinkableBehavior) {
+                    $module = !empty($lb->module)?$lb->module:null;
+                }
+            }
+        }
+        if(!isset($module)) // Check if module parameter is specified and use it if so:
+            $module = isset($params['module']) ? $params['module'] : null;
+
+        if(!empty($module)) {
+           // Perform a check for the existence of the item name (because, per the original 
+           // design of X2Engine's permissions, for backwards compatibility: if no auth 
+           // item exists, permission will be granted by default).
+           $itemName = ucfirst($module).'AdminAccess';
+            if(!(bool)$this->getAuthItem($itemName))
+                return false;
+        } else {
+            // Use the generic administrator auth item if there is no module specified:
+            $itemName = 'administrator';
+        }
+        AuxLib::debugLogR(compact('params','itemName','userId','module','modelName'));
+        return $this->checkAccess($itemName,$params['userId'],$params);
     }
 
     /**

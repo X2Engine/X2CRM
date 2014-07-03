@@ -190,6 +190,11 @@ div.form input[type="checkbox"].left + label {
     line-height: 18px;
     padding-left: 16px;
 }
+div.form input[type="checkbox"] + .x2-question-mark {
+    margin-left: 2px;
+    position: relative;
+    top: -3px;
+}
 
 label.left + .x2-hint {
     margin-left: 3px;
@@ -221,7 +226,8 @@ div.form .left-label {
     margin-top: 7px;
     margin-right: 2px;
 }
-div.form .left-label + input[type='checkbox'] {
+div.form .left-label + input[type='checkbox'],
+div.form .left-label + input + input[type='checkbox'] {
     margin-top: 7px;
     margin-bottom: -7px;
     margin-left: 3px;

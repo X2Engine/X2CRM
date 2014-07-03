@@ -175,7 +175,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
             case 'on_list':
                 return array(
                     'label' => Yii::t('studio','On List'),
-                    'type' => 'lookup',
+                    'type' => 'link',
                     'linkType'=>'X2List',
                     'linkSource'=>Yii::app()->controller->createUrl(
                         CActiveRecord::model('X2List')->autoCompleteSource)
@@ -409,10 +409,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
                 } else {
                     $attrVal = $model->getAttribute ($attr);
                 }
-                /*print_r ($attrVal);
-                print_r ($model->getAttribute ($attr));
-                print_r ($field);
-                print_r ($params);*/
 
                 return self::evalComparison(
                     $attrVal,$operator, X2Flow::parseValue($value,$field->type,$params));
@@ -446,14 +442,17 @@ abstract class X2FlowTrigger extends X2FlowItem {
             case 'on_list':
                 if(!isset($model,$value))
                     return false;
-                $list = CActiveRecord::model('X2List')->findByPk($value);        // look up specified list
-                if($list === null || $list->modelName !== get_class($model))
-                    return false;
-                $listCriteria = $list->queryCriteria(false); // don't use access rules
-                $listCriteria->compare('t.id',$model->id);
-                return $model->exists($listCriteria);        // see if this record is on the list
+                $value = X2Flow::parseValue ($value, 'link');
 
+                // look up specified list
+                if(is_numeric($value)){
+                    $list = CActiveRecord::model('X2List')->findByPk($value);
+                }else{
+                    $list = CActiveRecord::model('X2List')->findByAttributes(
+                        array('name'=>$value));
+                }
 
+                return ($list !== null && $list->hasRecord ($model));
             case 'workflow_status':
                 if(!isset($model,$condition['workflowId'],$condition['stageNumber']))
                     return false;
@@ -519,13 +518,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @return boolean
      */
     public static function evalComparison($subject,$operator,$value=null) {
-        /*print_r('$subject  = ');
-        print_r($subject);
-        print_r('$operator  = ');
-        print_r($operator);
-        print_r('$value  = ');
-        print_r($value);*/
-
         // $value needs to be a comma separated list
         if(in_array($operator,array('list','notList','between'),true) && !is_array($value)) {    
             $value = explode(',',$value);

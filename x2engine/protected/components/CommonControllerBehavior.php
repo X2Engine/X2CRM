@@ -138,7 +138,10 @@ class CommonControllerBehavior extends CBehavior {
 			if(array_key_exists($var,$_SERVER)){
 				foreach(explode(',',$_SERVER[$var]) as $ip) {
 					$ip = trim($ip);
-					if(filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false)
+                    $filters = FILTER_FLAG_IPV4 | FILTER_FLAG_NO_RES_RANGE;
+                    if (!YII_DEBUG)
+                        $filters = $filters | FILTER_FLAG_NO_PRIV_RANGE;
+					if(filter_var($ip, FILTER_VALIDATE_IP, $filters) !== false)
 						return $ip;
 				}
 			}

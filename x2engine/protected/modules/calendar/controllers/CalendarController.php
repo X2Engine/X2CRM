@@ -605,6 +605,7 @@ class CalendarController extends x2base {
                     if($action->color)
                         $events[$last]['color'] = $action->color;
                 }
+                $events[$last]['canEdit'] = Yii::app()->user->checkAccess('ActionsUpdate',array('X2Model'=>$action));
             }
         }
         echo CJSON::encode($events);

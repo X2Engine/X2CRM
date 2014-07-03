@@ -153,7 +153,7 @@ $this->widget('X2GridView', array(
         '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
         '<div id="x2-gridview-page-title" '.
          'class="page-title x2-gridview-fixed-title">{title}{buttons}{massActionButtons}'
-            .(Yii::app()->user->checkAccess('ContactsExportContacts') ? 
+            .(Yii::app()->user->checkAccess('AdminExportModels',array('module'=>'contacts')) ? 
                 CHtml::link(
                     Yii::t('app','Export'),
                     array('/admin/exportModels','model'=>'Contacts', 'listId'=>$listModel->id),

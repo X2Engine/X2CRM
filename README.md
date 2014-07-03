@@ -1,6 +1,6 @@
 # X2Engine 4.1 #
-Follow-up point release 4.1.5
-6/26/2014
+Follow-up point release 4.1.6b (beta)
+7/3/2014
 
 New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
 
@@ -56,8 +56,8 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
   * [1051](http://x2software.com/index.php/bugReports/1051): links with # in them get converted to tag search links  
   * [1183](http://x2software.com/index.php/bugReports/1183): Contacts and its behaviors do not have a method or closure named "getChanges".  
   * [1201](http://x2software.com/index.php/bugReports/1201): Unable to resolve the request "product/product/view".  
-  * [1204](http://x2software.com/index.php/bugReports/1204): Cannot modify header information - headers already sent by (output started at /home3/bigmoney/public_html/knockoutmultimedia.co/crm/protected/controllers/ProfileController.php:516)  
-  * [1223](http://x2software.com/index.php/bugReports/1223): Cannot modify header information - headers already sent by (output started at /home/inspirah/public_html/crm/protected/modules/actions/controllers/ActionsController.php:799)
+  * [1204](http://x2software.com/index.php/bugReports/1204): Cannot modify header information - headers already sent 
+  * [1223](http://x2software.com/index.php/bugReports/1223): Cannot modify header information - headers already sent
 * Changes in 4.1.1 (5/23/2014):
   * Activity feed JS bug fixes
   * Backwards compatibility fixes for ResponseBehavior and X2LinkableBehavior
@@ -67,7 +67,7 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
   * (Platinum Edition) "Raw Input" API settings option not saving properly
   * "Linkable Behavior" + custom modules backwards incompatibility
   * Web lead form not respecting when "Create Lead" option is disabled
-* Changes in 4.1.2 (5/30/2014):
+* Changes in 4.1.2 (6/6/2014):
   * General Changelog / Developer Notes:
     * (Platinum Edition): Fixes to X2Identity and browser fingerprinting
       * Scalability issues in X2Identity, specifically the browser fingerprint match query
@@ -81,9 +81,9 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
     * (Professional Edition) Fixed "Email Contact" X2Flow action for non-contact/non-action record types
     * Fixed calendar bug: multiply-assigned events show up multiple times (for each user calendar)
   * Tracked Bug Fixes:
-    * [1246](http://x2software.com/index.php/bugReports/1246): array_merge() [<a href='function.array-merge'>function.array-merge</a>]: Argument #2 is not an array  
+    * [1246](http://x2software.com/index.php/bugReports/1246): array\_merge() [<a href='function.array-merge'>function.array-merge</a>]: Argument #2 is not an array  
     * [1247](http://x2software.com/index.php/bugReports/1247): Class:  not found.  
-    * [1264](http://x2software.com/index.php/bugReports/1264): CDbCommand failed to execute the SQL statement: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'giertsen_x2engine.x2_cron_events' doesn't exist
+    * [1264](http://x2software.com/index.php/bugReports/1264): CDbCommand failed to execute the SQL statement: SQLSTATE[42S02]: Base table or view not found
     * [1268](http://x2software.com/index.php/bugReports/1268): Trying to get property of non-object  
     * [1280](http://x2software.com/index.php/bugReports/1280): Emailed quotes not tracked properly  
     * [1295](http://x2software.com/index.php/bugReports/1295): Validation errors not shown when updating an opportunity 
@@ -108,6 +108,89 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
   * General changelog/developer notes:
     * Included several commits from internal tree that were missed in the previous release
     * Fixed MoneyMask bug: when unsupported currencies are in use, validation was failing
+* Changes in 4.1.6 (beta) (7/3/2014):
+    * Highlights
+      * New "available" lead routing option:
+        * Users can set online/offline availability, i.e. when they go on vacation
+        * Lead routing can be configured to respect this option, i.e. avoid assigning records to unavailable users
+      * "Loading" status/visual overlay when adding fields
+      * Global import/export tool now supports custom fields
+      * Custom short-codes feature for templates and X2Flow: create an analogue of protected/components/x2flow/shortcodes.php in custom/ to define your own custom codes
+      * Can rename media files
+      * (Platinum Edition) Reverse IP lookup in X2Identity
+      * X2Flow emails can be configured to include a "do not email"
+    * General changelog/developer notes
+      * X2Flow improvements (Professional Edition):
+        * Update trigger no longer fired during creation of contact lists (this was a bug)
+        * Triggers in general will fire less during times when not apropos
+        * Flow configuration storage field is not LONGTEXT as opposed to TEXT, allowing it to store far greater and more sophisticated flows
+        * Fix to "on\_list" condition 
+      * Contact added as default field in Opportunities, and inline emailer can be used on opportunity views
+      * Miscellaneous bug fixes in:
+        * Contacts can be properly moved between time zones 
+        * Activity feed events report generation
+        * Actions module
+        * X2Identity (Platinum Edition)
+        * X2GridView: header not hiding properly when scrolling over the bottom of the grid
+        * Publisher: Event form not properly validating when clearing the association type field
+        * Inline Emailer: switching templates while viewing quotes now works as intended 
+        * Updater: post-completion redirect to the wrong page
+        * Permissions: users who have "admin" access to a given module can export records of that module
+        * X2GridView: Grid view no longer breaks from HTML tag truncation in text-type fields
+        * Calendar: group-assigned events could not be edited by group members
+        * X2Studio: critical internal-use-only fields are not available for the user to accidentally enter data into
+        * Importer: will not fail when CSV contains multibyte characters but no byte order mark, or invalid multibyte sequences
+      * Global validation bug fix: "required" rule now respected both on update and save 
+      * (Professional Edition only) License key now viewable by administrators on the app info and updater settings pages
+      * User-friendly error & feedback messages on the Edit Roles page
+      * Added day of week to activity feed date headers 
+    * Tracked Bug Fixes:  
+      * [1340](http://x2software.com/index.php/bugReports/1340): User Report  
+      * [1345](http://x2software.com/index.php/bugReports/1345): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens  
+* Changes in 4.1.6 (beta) (7/3/2014): 
+    * Highlights
+      * New "available" lead routing option:
+        * Users can set online/offline availability, i.e. when they go on vacation
+        * Lead routing can be configured to respect this option, i.e. avoid assigning records to unavailable users
+      * "Loading" status/visual overlay when adding fields
+      * Global import/export tool now supports custom fields
+      * Custom short-codes feature for templates and X2Flow: create an analogue of protected/components/x2flow/shortcodes.php in custom/ to define your own custom codes
+      * Can rename media files
+      * (Professional Edition) X2Flow emails can be configured to include a customizable "Do Not Email" link
+      * (Platinum Edition) Reverse IP lookup in X2Identity
+    * General changelog/developer notes
+      * X2Flow improvements (Professional Edition):
+        * Update trigger no longer fired during creation of contact lists (this was a bug)
+        * Triggers in general will fire less during times when not apropos
+        * Flow configuration storage field is now LONGTEXT as opposed to TEXT, allowing it to store far greater and more sophisticated flows
+        * Fix to "on_list" condition 
+      * Contact added as default field in Opportunities, and inline emailer can be used on opportunity views
+      * Miscellaneous bug fixes in:
+        * Contacts can be properly moved between time zones 
+        * Activity feed events report generation
+        * Actions module
+        * X2Identity (Platinum Edition)
+          * The first Action created for a new anonymous contact is now correctly associated with it
+          * Fingerprint attributes associated with a new anonymous contact are now being saved properly from the newsletter form
+          * Fingerprint record is now handled properly on conversion from an anonymous contact to a contact, previously it would be unnecessarily deleted
+        * X2GridView: header not hiding properly when scrolling over the bottom of the grid
+        * Publisher: Event form not properly validating when clearing the association type field
+        * Inline Emailer: switching templates while viewing quotes now works as intended 
+        * Updater: post-completion redirect to the wrong page
+        * Permissions: users who have "admin" access to a given module can export records of that module
+        * X2GridView: Grid view no longer breaks from HTML tag truncation in text-type fields
+        * Calendar: group-assigned events could not be edited by group members
+        * X2Studio: critical internal-use-only fields are not available for the user to accidentally enter data into
+        * Importer: will not fail when CSV contains multibyte characters but no byte order mark, or invalid multibyte sequences
+      * Global validation bug fix: "required" rule now respected both on update and save 
+      * (Professional Edition only) License key now viewable by administrators on the app info and updater settings pages
+      * User-friendly error & feedback messages on the Edit Roles page
+      * Added day of week to activity feed date headers 
+    * Tracked Bug Fixes:  
+      * [1340](http://x2software.com/index.php/bugReports/1340): User Report  
+      * [1345](http://x2software.com/index.php/bugReports/1345): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens  
+
+
 
 
 # Introduction #
@@ -162,7 +245,7 @@ will run X2Engine.
 
 # Languages #
 Most of the  included language packs were produced by  copy/paste  from  Google 
-Translate and copy/paste.  If you have any  corrections,  suggestions or custom 
+Translate.  If you have any  corrections,  suggestions or custom 
 language packs, please feel free to post them on www.x2community.com
 
 We greatly appreciate your input for internationalization!

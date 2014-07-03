@@ -49,7 +49,8 @@
 <h3><?php echo Yii::t('contacts','Upload File'); ?></h3>
 <?php echo CHtml::form('import','post',array('enctype'=>'multipart/form-data','id'=>'file-form')); ?>
 <?php echo CHtml::fileField('data', '', array('id'=>'data')); ?> <br><br>
-<?php echo Yii::t('admin','Overwrite old data?');?><br>
+<?php echo Yii::t('admin','Overwrite old data');?>
+<?php echo X2Html::hint("Overwriting is disabled on Fields as this would remove all currently existing data in that field."); ?><br>
 <?php echo CHtml::dropDownList('overwrite', '', array('0'=>Yii::t('app','No'),'1'=>Yii::t('app','Yes')),array('id'=>'overwrite-selector')); ?> <br><br>
 <?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button','id'=>'import-button')); ?>
 <?php echo CHtml::endForm(); ?>

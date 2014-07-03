@@ -524,12 +524,9 @@ function stageCompletion(i) {
     var countdown = function() {
         if(secondsBefore==0) {
             messageState(ind,'done');
-            if(scenario == 'upgrade') // Go to about page
-                window.location.href = '<?php echo CHtml::normalizeUrl(array('/site/page','view'=>'about')); ?>';
-            else // Reload to log out
-                window.location.reload();
+            window.location.href = '<?php echo CHtml::normalizeUrl(array('/site/page','view'=>'about')); ?>';
         } else {
-            updateHeader.text(<?php echo json_encode(Yii::t('admin','All operations complete. Redirecting in {0}')); ?>.format(secondsBefore).toString());
+            updateHeader.text(<?php echo json_encode(Yii::t('admin','All operations complete. Redirecting in {0}')); ?>.format(secondsBefore.toString()));
             secondsBefore--;
             setTimeout(countdown,1000);
         }
@@ -820,7 +817,18 @@ if(in_array($scenario,array('message','error'))) {
 <!-- Section w/disclaimers and "before proceeding" messages -->
 <div id="update-disclaimers">
 <h3><?php echo Yii::t('admin', 'Before Proceeding'); ?></h3>
-<?php echo Yii::t('admin', 'The following precautions are highly recommended:') ?><br />
+
+<?php
+$timeout = (int) ini_get('max_execution_time');
+if($timeout < 300 && $timeout != 0 && $timeout != -1) { ?>
+<strong><?php echo Yii::t('admin','Disclaimer'); ?></strong><br />
+<?php echo Yii::t('admin',"Your web server's maximum request time, {n} seconds, may not be long enough for safely using the web-based updater, especially if updating from a very old version.",array('{n}'=>$timeout)).' ';
+$wikiPage = CHtml::link('"Using the Web Updater"','http://wiki.x2engine.com/wiki/Software_Updates_and_Upgrades#Using_the_Web_Updater',array('target'=>'_blank'));
+echo Yii::t('admin','For more information, see {article} in the official X2Engine updating guide.',array('{article}'=>$wikiPage));
+?><br /><br />
+<?php } ?>
+
+<strong><?php echo Yii::t('admin', 'The following precautions are highly recommended:') ?></strong><br />
 <ul style="margin-top:10px;">
     <li><?php echo Yii::t('admin', "Make a backup copy of X2Engine's database:") ?>
         <ul>

@@ -51,4 +51,28 @@ class X2ActiveForm extends CActiveForm {
         return CHtml::activeDropDownList($model,$attribute,$data,$htmlOptions);
     }
 
+    public function richTextArea (CModel $model, $attribute, array $htmlOptions=array ()) {
+		Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/emailEditor.js', CClientScript::POS_END);
+		Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js', CClientScript::POS_END);
+		Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js', CClientScript::POS_END);
+
+        if (isset ($htmlOptions['class'])) {
+            $htmlOptions['class'] .= ' x2-rich-textarea';
+        } else {
+            $htmlOptions['class'] = 'x2-rich-textarea';
+        }
+
+        if (!isset ($htmlOptions['width'])) {
+            $htmlOptions['width'] = '725px';
+        }
+        if (!isset ($htmlOptions['height'])) {
+            $htmlOptions['height'] = '125px';
+        }
+
+        return $this->textArea ($model, $attribute, $htmlOptions);
+    }
+
 }

@@ -67,7 +67,7 @@ class X2DataColumn extends CDataColumn {
             $value = $this->data->renderAttribute(
                 $this->name, false, true); 
             if($this->data->getField($this->name)->type == 'text')
-                $value = Formatter::truncateText(preg_replace("/\<br ?\/?\>/"," ",$value),100);
+                $value = preg_replace("/\<br ?\/?\>/"," ",$value);
         }
         echo $value === null ? $this->grid->nullDisplay : $value; 
     }
@@ -109,16 +109,25 @@ class X2DataColumn extends CDataColumn {
                 break;
             case 'dropdown':
                 $dropdown = Dropdowns::model()->findByPk($this->fieldModel['linkType']);
-                if($dropdown instanceof Dropdowns && !$dropdown->multi) {
+                if($dropdown instanceof Dropdowns) {
                     $options = json_decode($dropdown->options,1);
+                    if (!$dropdown->multi) {
                     $defaultOption = array('' => '- '.Yii::t('app', 'Select').' -');
                     $options = is_array($options) ? 
                         array_merge($defaultOption,$options) : $defaultOption;
-                    $selected = isset($options[$this->grid->filter->{$this->name}]) ? 
-                        $this->grid->filter->{$this->name} : '';
+                    }
+                    //$selected = isset($options[$this->grid->filter->{$this->name}]) ? 
+                        //$this->grid->filter->{$this->name} : '';
                     echo CHtml::activeDropdownList(
                         $this->grid->filter, $this->name, $options,
-                        array('class' => 'x2-minimal-select-filtercol'));
+                        array(
+                            'class' => 'x2-minimal-select-filtercol'.
+                                ($dropdown->multi ? 
+                                 ' x2-multiselect-dropdown x2-datacolumn-multiselect' : ''),
+                            'multiple' => $dropdown->multi ? 'multiple' : '',
+                            'data-selected-text' => $dropdown->multi ? 'option(s)' : '',
+                        )
+                    );
                 } else {
                     parent::renderFilterCellContent();
                 }

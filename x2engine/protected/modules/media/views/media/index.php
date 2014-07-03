@@ -88,6 +88,7 @@ $this->widget('X2GridView', array(
     'gvSettingsName' => 'media-index',
 	'defaultGvSettings'=>array(
 		'fileName' => 285,
+		'name' => 114,
 		'associationType' => 85,
 		'createDate' => 94,
 		'uploadedBy' => 114,

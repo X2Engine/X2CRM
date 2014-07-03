@@ -40,8 +40,8 @@ $menuItems = array(
     array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
     array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
     array('label'=>Yii::t('contacts','View List')),
-    array('label'=>Yii::t('contacts','Import Contacts'), 'url'=>array('admin/importModels', 'model'=>'Contacts'), 'visible'=>Yii::app()->params->isAdmin),
-    array('label'=>Yii::t('contacts', 'Export Contacts'),'url'=>array('admin/exportModels', 'model'=>'Contacts'), 'visible'=>Yii::app()->params->isAdmin),
+    array('label'=>Yii::t('contacts','Import Contacts'), 'url'=>array('admin/importModels', 'model'=>'Contacts')),
+    array('label'=>Yii::t('contacts', 'Export Contacts'),'url'=>array('admin/exportModels', 'model'=>'Contacts')),
     array('label'=>Yii::t('contacts','Contact Map'),'url'=>array('googleMaps')),
     array('label'=>Yii::t('contacts','Saved Maps'),'url'=>array('savedMaps')),
     //array('label'=>Yii::t('contacts','Saved Searches'),'url'=>array('savedSearches'))

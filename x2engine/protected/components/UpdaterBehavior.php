@@ -2013,7 +2013,7 @@ class UpdaterBehavior extends ResponseBehavior {
      * @param type $ran List of database changes and other scripts that have
      *  already been run
      */
-    public function runMigrationScripts($scripts, &$ran = array()){
+    public function runMigrationScripts($scripts, &$ran){
         $that = $this;
         $script = '';
         $scriptExc = function($e) use(&$ran, &$script, $that){

@@ -466,6 +466,31 @@ class InlineEmail extends CFormModel {
     }
 
     /**
+     * @return bool false if any one of the recipient contacts has their doNotEmail field set to 
+     *  true, true otherwise
+     */
+    public function checkDoNotEmailFields () {
+        $allRecipientContacts = array();
+        foreach($this->recipients as $target){
+            foreach (Contacts::model()->findAllByAttributes(
+                array('email' => $target[1])) as $contact) {
+
+                $allRecipientContacts[] = $contact;
+            }
+        }
+        if (array_reduce (
+            $allRecipientContacts,
+            function ($carry, $item) {
+                return $carry || $item->doNotEmail;
+            }, false)) {
+        
+            return false; 
+        }
+        return true;
+    }
+
+
+    /**
      * Magic getter for {@link signature}
      *
      * Retrieves the email signature from the preexisting body, or from the
@@ -908,5 +933,44 @@ class InlineEmail extends CFormModel {
     public function deliver() {
         return $this->asa('emailDelivery')->deliverEmail($this->mailingList,$this->subject,$this->message,$this->attachments);
     }
+
+    /**
+     * Insert a "Do Not Email" link into the body of the email message. The link contains the 
+     * contact's trackingKey in it's get parameters. When clicked, the contact's doNotEmail field
+     * will be set to 1.
+     * @param Contacts $contact
+     */
+    public function appendDoNotEmailLink (Contacts $contact) {
+        // Insert unsubscribe link placeholder in the email body if there is
+        // none already:
+        if(!preg_match('/\{doNotEmailLink\}/', $this->message)){
+            $doNotEmailLinkText = "<br/>\n-----------------------<br/>\n"
+                    .Yii::t('app', 
+                        'To stop receiving emails from this sender, click here').
+                    ": {doNotEmailLink}";
+            // Insert
+            if(strpos($this->message,'</body>')!==false) {
+                $this->message = str_replace(
+                    '</body>',$doNotEmailLinkText.'</body>',$this->message);
+            } else {
+                $this->message .= $doNotEmailLinkText;
+            }
+        }
+
+        // Insert do not email link(s):
+        $doNotEmailUrl = Yii::app()->createExternalUrl(
+            '/marketing/marketing/doNotEmailLinkClick', array(
+                'x2_key' => $contact->trackingKey,
+            ));
+        if (Yii::app()->settings->doNotEmailLinkText !== null) {
+            $linkText = Yii::app()->settings->doNotEmailLinkText;
+        } else {
+            $linkText = Admin::getDoNotEmailLinkDefaultText ();
+        }
+        $this->message = preg_replace(
+            '/\{doNotEmailLink\}/', '<a href="'.$doNotEmailUrl.'">'.
+            $linkText.'</a>', $this->message);
+    }
+
 
 }

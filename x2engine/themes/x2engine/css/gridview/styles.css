@@ -437,3 +437,12 @@ Remove extra border when pager isn't shown
     background-color: rgb(233, 233, 233);
 }
 
+/***********************************************************************
+* multiselect 
+***********************************************************************/
+
+.x2-datacolumn-multiselect + button {
+    width: 100% !important;
+    border: none !important;
+    padding: 0 !important;
+}

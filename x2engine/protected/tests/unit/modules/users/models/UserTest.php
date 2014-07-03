@@ -66,8 +66,8 @@ class UserTest extends X2DbTestCase {
     public function testAfterDelete () {
         $user = User::model ()->findByPk ('2');
         if(VERBOSE_MODE){
-            print ('id of user to delete: ');
-            print ($user->id);
+            /**/print ('id of user to delete: ');
+            /**/print ($user->id);
         }
         
         // assert that group to user records exist for this user

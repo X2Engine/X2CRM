@@ -140,6 +140,9 @@ class Contacts extends X2Model {
             $this->trackingKey = self::getNewTrackingKey();
         }
 
+        // invalidate cached timezone
+        if (isset($this->timezone))
+            $this->timezone = null;
 
         return parent::beforeSave();
     }
@@ -435,11 +438,7 @@ class Contacts extends X2Model {
         return null;
     }
 
-     
-     
-     
-
-
+    
 
 
     function ucwords_specific ($string, $delimiters = '', $encoding = NULL)

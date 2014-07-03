@@ -1076,7 +1076,7 @@ class Events extends CActiveRecord {
         $msg .= "</tr></td>";
 
         $msg .= "<tr><td><table width='100%'><tbody>";
-        $msg .= "<tr><th>".Yii::t('profile',"Top Activity")."</th><th>".Yii::t('profile',"Top Users")."</th></tr>";
+        $msg .= "<tr><th>" . Yii::t('profile', "Top Activity") . "</th><th>" . Yii::t('profile', "Top Users") . "</th></tr>";
         for ($i = 0; $i < 5; $i++) {
             $msg .= "<tr><td style='text-align:center;'>";
             if (isset($topTypes[$i])) {
@@ -1088,24 +1088,26 @@ class Events extends CActiveRecord {
             if (isset($topUsers[$i]) && $topUsers[$i]['COUNT(user)'] > 0) {
                 $username = User::getUserLinks($topUsers[$i]['user'], false, true);
                 $count = $topUsers[$i]['COUNT(user)'];
-                $msg .= $count ." ". Yii::t('profile',"events from") ." ".$username . ".";
+                $msg .= $count . " " . Yii::t('profile', "events from") . " " . $username . ".";
             }
             $msg .= "</td></tr>";
         }
         $msg .= "</tbody></table></td></tr>";
         $msg .= "<tr><td style='text-align:center'><hr width='60%'>";
-        $msg .= "<tr><td style='text-align:center;'>".
-                Yii::t('profile',"Here's the 10 most recent items on the Activity Feed.")
-                ."</td></tr>";
+        $msg .= "<tr><td style='text-align:center;'>" .
+                Yii::t('profile', "Here's the {limit} most recent items on the Activity Feed.", array('{limit}' => $limit))
+                . "</td></tr>";
         $msg .= "</td></tr>";
         $msg .= "<tr><td style='text-align:center'><hr width='60%'><table><tbody>";
         $events = new CActiveDataProvider('Events', array(
             'criteria' => array(
                 'condition' => $condition,
                 'order' => 'timestamp DESC',
-                'limit' => $limit,
                 'params' => $params,
-            )
+            ),
+            'pagination' => array(
+                'pageSize' => $limit
+            ),
         ));
 
         foreach ($events->getData() as $event) {
@@ -1149,7 +1151,7 @@ class Events extends CActiveRecord {
         $msg .= "</tbody></table></td></tr>";
 
         $msg .= "<tr><td style='text-align:center'><hr width='60%'><table><tbody>";
-        $msg .= Yii::t('profile',"To stop receiving this report, ") . CHtml::link(Yii::t('profile','click here'), Yii::app()->getBaseUrl(true) . '/index.php/profile/deleteActivityReport?id=' . $eventId . '&deleteKey=' . $deleteKey);
+        $msg .= Yii::t('profile', "To stop receiving this report, ") . CHtml::link(Yii::t('profile', 'click here'), Yii::app()->getBaseUrl(true) . '/index.php/profile/deleteActivityReport?id=' . $eventId . '&deleteKey=' . $deleteKey);
         $msg .= "</tbody></table></td></tr>";
 
         $msg .= '</tbody></table></td></tr></tbody></table></td></tr>';

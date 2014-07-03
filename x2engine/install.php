@@ -444,7 +444,7 @@ $timezones = array(
                 }
             }
             ?>
-            <h2 id="title"><?php echo installer_t('Installation Page'); ?></h2>
+            <h2 id="title"><?php echo installer_t('Install X2Engine Version').'&nbsp'.$version; ?></h2>
 
 
 
@@ -461,7 +461,7 @@ $timezones = array(
                     echo "<span class=\"error\">Note: cannot find requirements check script.</span>";
                 ?>
                 <form name="install" id="install" action="initialize.php" method="POST">
-                    <h2><?php echo installer_t('X2Engine Application Info'); ?></h2><hr>
+                    <h2><?php echo installer_t('Application Info'); ?></h2><hr>
                     <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2Engine'); ?>" style="width:190px" /></div>
                     <div class="row"><label for="language"><?php echo installer_t('Default Language'); ?></label>
                         <select name="language" id="language" onChange="changeLang(this.options[this.selectedIndex].value);" style="width:200px"><option value="">English</option>

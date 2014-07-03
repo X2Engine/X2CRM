@@ -55,6 +55,7 @@ $menuItems = array(
 	array('label'=>Yii::t('accounts','Share Opportunity'),'url'=>array('shareOpportunity','id'=>$model->id)),
 	array('label'=>Yii::t('opportunities','Delete Opportunity'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
+	array('label'=>Yii::t('app','Email Contact'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;'),'visible'=>(bool) $model->contactName),
     array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
 );
 $modelType = json_encode("Opportunities");
@@ -96,6 +97,16 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 	<h2><span class="no-bold"><?php echo Yii::t('opportunities','Opportunity:'); ?> </span><?php echo CHtml::encode($model->name); ?></h2>
 	<?php echo CHtml::link('<span></span>',array('update', 'id'=>$model->id),array('class'=>'x2-button icon edit right')); ?>
+    <?php if ((bool) $model->contactName) {
+        echo CHtml::link(
+        '<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/icons/email_button.png'.
+            '"></img>', '#',
+        array(
+            'class' => 'x2-button icon right email',
+            'title' => Yii::t('app', 'Open email form'),
+            'onclick' => 'toggleEmailForm(); return false;'
+        ));
+    } ?>
 </div>
 </div>
 </div>
@@ -130,6 +141,19 @@ $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelTy
     </div>
 
 <?php 
+if((bool) $model->contactName){ // if associated contact exists, setup inline email form
+    $contact = $model->getLinkedModel('contactName');
+	$this->widget('InlineEmailForm', array(
+		'attributes' => array(
+			'to' => '"'.$contact->name.'" <'.$contact->email.'>, ',
+			'modelName' => 'Opportunity',
+			'modelId' => $model->id,
+		),
+		'startHidden' => true,
+	)
+	);
+}
+
 $this->widget(
     'Attachments',
     array(

@@ -78,7 +78,8 @@ class X2List extends X2Model {
             ),
             'X2PermissionsBehavior' => array(
                 'class' => 'application.components.permissions.X2PermissionsBehavior'
-            )
+            ),
+            'X2FlowTriggerBehavior' => array('class' => 'X2FlowTriggerBehavior'),
         );
     }
 
@@ -758,11 +759,19 @@ class X2List extends X2Model {
      * @param integer $id the ID of the record
      * @return boolean whether or not record is in this list
      */
-    public function hasRecord($id){
+    /*public function hasRecord($id){
         $criteria = $this->queryCriteria(false); // don't use access rules
         $criteria->compare('id', $id);
 
         return X2Model::model($this->modelName)->exists($criteria);
+    }*/
+
+    public function hasRecord ($model) {
+        if($this->modelName !== get_class($model))
+            return false;
+        $listCriteria = $this->queryCriteria(false); // don't use access rules
+        $listCriteria->compare('t.id',$model->id);
+        return $model->exists($listCriteria);        // see if this record is on the list
     }
 
     public static function getRoute($id){

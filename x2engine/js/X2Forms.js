@@ -692,12 +692,26 @@ X2Forms.prototype._appendErrorMessages = function (errorBox, errorMessages) {
     }
 };
 
+/**
+ * Auto-instantiate CKEditor rich textareas
+ */
+X2Forms.prototype.setUpRichTextareas = function () {
+    $('.x2-rich-textarea').each (function () {
+        createCKEditor ($(this).attr ('id'), {
+            height: $(this).attr ('height') + 'px',
+            width: $(this).attr ('width') + 'px',
+            fullPage: true
+        });
+    });
+};
+
 X2Forms.prototype._init = function () {
     var that = this;
     $(function () { 
         that._setUpFormElementBehavior (); 
         that.initializeDefaultFields ();
         that.initializeMultiselectDropdowns ();
+        that.setUpRichTextareas ();
     });
 };
 

@@ -253,6 +253,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 Yii::import('application.components.X2WebUser');
                 Yii::import('application.components.X2MessageSource');
                 Yii::import('application.components.Formatter');
+                Yii::import('application.components.X2Html');
                 Yii::import('application.components.JSONEmbeddedModelFieldsBehavior');
                 Yii::import('application.components.TransformedFieldStorageBehavior');
                 Yii::import('application.components.EncryptedFieldsBehavior');
@@ -520,7 +521,9 @@ class ApplicationConfigBehavior extends CBehavior {
         if($this->owner->controller instanceof CController){ // Standard in-web-request URL generation
             return $this->externalWebRoot.$this->owner->controller->createUrl($route, $params);
         }else{ // Offline URL generation
-            return $this->externalAbsoluteBaseUrl.'/index.php/'.trim($route, '/').'?'.http_build_query($params, '', '&');
+            return $this->externalAbsoluteBaseUrl.
+                (YII_DEBUG && YII_UNIT_TESTING ? '/index-test.php/' : '/index.php/').
+                trim($route, '/').'?'.http_build_query($params, '', '&');
         }
     }
 
@@ -532,7 +535,7 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     public function getAbsoluteBaseUrl(){
         if(!isset($this->_absoluteBaseUrl)){
-            if(php_sapi_name() == 'cli'){
+            if(ResponseUtil::isCli()){
                 // It's assumed that in this case, we're dealing with (for example)
                 // a cron script that sends emails and has to generate URLs. It
                 // needs info about how to access the CRM from the outside...
@@ -702,7 +705,11 @@ class ApplicationConfigBehavior extends CBehavior {
     public function getExternalAbsoluteBaseUrl(){
         if(!isset($this->_externalAbsoluteBaseUrl)){
             $eabu = $this->settings->externalBaseUri;
-            $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.(empty($eabu) ? $this->owner->baseUrl : $eabu);
+            if (!YII_DEBUG || !YII_UNIT_TESTING) {
+                $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.(empty($eabu) ? $this->owner->baseUrl : $eabu);
+            } else { // during a unit test, owner->baseUrl is not the web root
+                $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.$eabu;
+            }
         }
         return $this->_externalAbsoluteBaseUrl;
     }
@@ -884,6 +891,7 @@ class ApplicationConfigBehavior extends CBehavior {
         Yii::import('application.controllers.X2Controller');
         Yii::import('application.controllers.x2base');
         Yii::import('application.components.*');
+        Yii::import('application.components.X2GridView.*');
         Yii::import('application.components.filters.*');
         Yii::import('application.components.util.*');
         Yii::import('application.components.permissions.*');

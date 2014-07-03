@@ -109,7 +109,7 @@ class WebFormAction extends CAction {
 
             
 
-            //if (empty ($model->visibility)) $model->visibility = 1;
+            if (empty ($model->visibility)) $model->visibility = 1;
 
             $model->validate ();
             if(!$model->hasErrors()){

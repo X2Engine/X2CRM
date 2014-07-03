@@ -123,10 +123,15 @@ class EmailDeliveryBehavior extends CBehavior {
             $matches = array();
             $emailValidator = new CEmailValidator;
 
-            if($emailValidator->validateValue($recipient)) // if it's just a simple email, we're done!
+            // if it's just a simple email, we're done!
+            if($emailValidator->validateValue($recipient)) {
                 $headerArray[] = array('', $recipient);
-            elseif(strlen($recipient) < 255 && preg_match('/^"?([^"]*)"?\s*<(.+)>$/i', $recipient, $matches)){ // otherwise, it must be of the variety <email@example.com> "Bob Slydel"
-                if(count($matches) == 3 && $emailValidator->validateValue($matches[2])){  // (with or without quotes)
+            } elseif(strlen($recipient) < 255 && 
+                preg_match('/^"?([^"]*)"?\s*<(.+)>$/i', $recipient, $matches)){ 
+                // otherwise, it must be of the variety <email@example.com> "Bob Slydel"
+
+                // (with or without quotes)
+                if(count($matches) == 3 && $emailValidator->validateValue($matches[2])){  
                     $headerArray[] = array($matches[1], $matches[2]);
                 }else{
                     throw new CException(Yii::t('app', 'Invalid email address list.'));

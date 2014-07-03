@@ -158,16 +158,27 @@ if(!empty($this->model->status)){
             <?php echo $form->textField($this->model, 'subject', array('style' => 'width: 265px;', 'tabindex' => '4')); ?>
             <?php
             $templateList = Docs::getEmailTemplates($type, $associationType);
+            $target = $this->model->targetModel;
             echo $form->label(
-                $this->model, 'template', 
+                $this->model, 'template',
                 array(
                     'class' => 'x2-email-label',
                     'style' => 'float: none; margin-left: 10px; vertical-align: text-top;'
                 ));
-            echo $form->dropDownList(
-                $this->model, 'template', 
-                array('0' => Yii::t('docs', 'Custom Message')) + $templateList,
-                array('id' => 'email-template'));
+            if (!isset($this->template) && $target instanceof Quote && isset($target->template)) {
+                // When sending an InlineEmail targeting a Quote
+                list($templateName, $selectedTemplate) = Fields::nameAndId($target->template);
+
+                echo CHtml::dropDownList(
+                    'template', $selectedTemplate,
+                    array('0' => Yii::t('docs', 'Custom Message')) + $templateList,
+                    array('id' => 'email-template'));
+            } else {
+                echo $form->dropDownList(
+                    $this->model, 'template',
+                    array('0' => Yii::t('docs', 'Custom Message')) + $templateList,
+                    array('id' => 'email-template'));
+            }
             ?>
 
         </div>

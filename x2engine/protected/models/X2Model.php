@@ -37,6 +37,7 @@
 
 Yii::import('application.components.X2LinkableBehavior');
 Yii::import('application.components.X2ChangeLogBehavior');
+Yii::import('application.components.x2flow.X2FlowTriggerBehavior');
 Yii::import('application.components.X2TimestampBehavior');
 Yii::import('application.components.TagBehavior');
 
@@ -231,6 +232,17 @@ abstract class X2Model extends CActiveRecord {
     }
 
     /**
+     * Runs specified function without the specified behavior
+     * @param string $behaviorName 
+     * @param function $fn 
+     */
+    public function runWithoutBehavior ($behaviorName, $fn) {
+        $this->disableBehavior ($behaviorName); 
+        $fn ();
+        $this->enableBehavior ($behaviorName); 
+    }
+
+    /**
      * Returns name of records associated with model type or $type if none could be found
      * @param string $type class name of subclass of X2Model
      * @param bool $plural if true, the record name will be pluralized
@@ -296,7 +308,7 @@ abstract class X2Model extends CActiveRecord {
         if (!isset (self::$_modelNames)) {
             self::$_modelNames = array ();
             foreach(X2Model::model('Modules')
-                ->findAllByAttributes(array('editable' => true, 'visible' => 1)) as $module) {
+                ->findAllByAttributes(array ('visible' => 1, 'editable' => true)) as $module) {
 
                 if($modelName = X2Model::getModelName($module->name))
                     self::$_modelNames[$modelName] = Yii::t('app',$module->title);
@@ -558,6 +570,7 @@ abstract class X2Model extends CActiveRecord {
         $behaviors = array(
             'X2LinkableBehavior' => array('class' => 'X2LinkableBehavior'),
             'X2TimestampBehavior' => array('class' => 'X2TimestampBehavior'),
+            'X2FlowTriggerBehavior' => array('class' => 'X2FlowTriggerBehavior'),
             'tags' => array('class' => 'TagBehavior'),
             'changelog' => array('class' => 'X2ChangeLogBehavior'),
             'permissions' => array('class' => 'X2PermissionsBehavior'),
@@ -632,12 +645,9 @@ abstract class X2Model extends CActiveRecord {
         $this->updateNameIdRefs();
         /* x2tempend */
 
-        X2Flow::trigger('RecordUpdateTrigger',array(
-            'model'=>$this->getOwner()
-        ));
-
-        if($this->hasEventHandler('onAfterUpdate'))
+        if($this->hasEventHandler('onAfterUpdate')) {
             $this->onAfterUpdate(new CEvent($this));
+        }
     }
 
     /**
@@ -688,6 +698,31 @@ abstract class X2Model extends CActiveRecord {
         if($this->hasEventHandler('onAfterDelete'))
             $this->onAfterDelete(new CEvent($this));
     }
+
+    /**
+     * Modified to enable/disable X2Flow record update trigger.
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+     */
+	public function save($runValidation=true,$attributes=null)
+	{
+		if(!$runValidation || $this->validate($attributes)) {
+            /* x2modstart */ 
+            if ($this->asa ('X2FlowTriggerBehavior')) {
+                $this->enableUpdateTrigger ();
+            }
+			$retVal = $this->getIsNewRecord() ? 
+                $this->insert($attributes) : $this->update($attributes);
+            if ($this->asa ('X2FlowTriggerBehavior')) {
+                $this->disableUpdateTrigger ();
+            }
+            /* x2modend */ 
+            return $retVal;
+		} else {
+			return false;
+        }
+	}
+
 
     /**
      * Runs when a model is saved.
@@ -822,7 +857,7 @@ abstract class X2Model extends CActiveRecord {
         }
 
         return array(
-            array(implode(',', $fieldRules['required']), 'required', 'on' => 'insert'),
+            array(implode(',', $fieldRules['required']), 'required'),
             array(implode(',', $fieldRules['unique']), 'unique'),
             array(implode(',', $fieldRules['numerical']), 'numerical'),
             array(implode(',', $fieldRules['email']), 'email'),
@@ -1189,7 +1224,9 @@ abstract class X2Model extends CActiveRecord {
         // Alter and save the nameId field:
         if($succeeded && self::$autoPopulateFields) {
             $this->updateNameId(true);
-            X2Flow::trigger('RecordCreateTrigger',array('model'=>$this));
+
+            if ($this->hasEventHandler ('onAfterInsert'))
+                $this->onAfterInsert (new CEvent ($this));
         }
         return $succeeded;
     }
@@ -1366,10 +1403,13 @@ abstract class X2Model extends CActiveRecord {
                 return $textOnly ? $render($this->$fieldName) : CHtml::checkbox('', $this->$fieldName, array('onclick' => 'return false;', 'onkeydown' => 'return false;'));
 
             case 'currency':
-                if($this instanceof Product) // products have their own currency
-                    return Yii::app()->locale->numberFormatter->formatCurrency($this->$fieldName, $this->currency);
-                else
-                    return empty($this->$fieldName) ? "&nbsp;" : Yii::app()->locale->numberFormatter->formatCurrency($this->$fieldName, Yii::app()->params['currency']);
+                if($this instanceof Product) { // products have their own currency
+                    return Formatter::formatCurrency ($this->$fieldName, $this->currency);
+                } else {
+                    return empty($this->$fieldName) ? 
+                        "&nbsp;" : 
+                        Formatter::formatCurrency ($this->$fieldName);
+                }
 
             case 'percentage':
                 return $this->$fieldName !== null && $this->$fieldName !== '' ? (string) ($render($this->$fieldName))."%" : null;
@@ -1441,10 +1481,22 @@ abstract class X2Model extends CActiveRecord {
             $fmtNumber = $encode ? CHtml::encode ($fmtNumber) : $fmtNumber;
             return '<a href="tel:+1'.$number.'">'.$fmtNumber.'</a>';
         }
-        return '';
+        return isset($fmtNumber)? $fmtNumber : '';
     }
 
     public static function renderModelInput(CModel $model, Fields $field, $htmlOptions=array()) {
+        if ($field->required) {
+            if (isset ($htmlOptions['class'])) {
+                $htmlOptions['class'] .= ' x2-required';
+            } else {
+                $htmlOptions = array_merge (
+                    array (
+                        'class' => 'x2-required'
+                    ),
+                    $htmlOptions
+                );
+            }
+        }
         $fieldName = $field->fieldName;
         if(!isset($field))
             return null;
@@ -1497,7 +1549,9 @@ abstract class X2Model extends CActiveRecord {
                             'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
                                 ), true);
             case 'dropdown':
-                $om = Dropdowns::getItems($field->linkType, null, true); // Note: if desired to translate dropdown options, change the seecond argument to $model->module
+                // Note: if desired to translate dropdown options, change the seecond argument to 
+                // $model->module
+                $om = Dropdowns::getItems($field->linkType, null, true); 
                 $multi = (bool) $om['multi'];
                 $dropdowns = $om['options'];
                 $curVal = $multi ? CJSON::decode($model->{$field->fieldName}) : $model->{$field->fieldName};
@@ -1528,7 +1582,12 @@ abstract class X2Model extends CActiveRecord {
                         $curVal = array();
                     foreach($curVal as $option)
                         $multiSelectOptions[$option] = array('selected' => 'selected');
-                    $htmlOptions = array_merge($htmlOptions, array('options' => $multiSelectOptions, 'multiple' => 'multiple'));
+                    $htmlOptions = array_merge(
+                        $htmlOptions, 
+                        array(
+                            'options' => $multiSelectOptions,
+                            'multiple' => 'multiple'
+                        ));
                 } else{
                     $htmlOptions = array_merge($htmlOptions, array('empty' => Yii::t('app', "Select an option")));
                 }
@@ -1630,13 +1689,17 @@ abstract class X2Model extends CActiveRecord {
                         ? explode(', ',$model->$fieldName)
                         : $model->$fieldName)
                     : self::getDefaultAssignment ();
-                return CHtml::activeDropDownList($model, $fieldName, X2Model::getAssignmentOptions(true, true), array_merge(array(
-                                    // 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-                                    // 'disabled'=>$item['readOnly']? 'disabled' : null,
-                                    'title' => $field->attributeLabel,
-                                    'id' => $field->modelName.'_'.$fieldName.'_assignedToDropdown',
-                                    'multiple' => ($field->linkType == 'multiple' ? 'multiple' : null),
-                                        ), $htmlOptions));
+                return CHtml::activeDropDownList(
+                    $model, $fieldName, X2Model::getAssignmentOptions(true, true), 
+                    array_merge(array(
+                        // 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+                        // 'disabled'=>$item['readOnly']? 'disabled' : null,
+                        'title' => $field->attributeLabel,
+                        'id' => $field->modelName.'_'.$fieldName.'_assignedToDropdown',
+                        'multiple' => 
+                            ($field->linkType == 'multiple' ?  'multiple' : null),
+                    ), $htmlOptions)
+                );
             /*
               $group = is_numeric($model->$fieldName);
               // if(is_numeric($model->assignedTo)){
@@ -2015,12 +2078,18 @@ abstract class X2Model extends CActiveRecord {
     }
 
     protected function compareDropdown($ddId, $value){
-        if(is_null($value) || $value == '')
+        if(is_null($value) || $value == '') {
             return null;
+        }
         $dropdown = X2Model::model('Dropdowns')->findByPk($ddId);
+        $multi = $dropdown->multi;
         if(isset($dropdown)){
-            if(!is_null($dropdown->getDropdownIndex($ddId, $value))){
-                return $dropdown->getDropdownIndex($ddId, $value);
+            $index = $dropdown->getDropdownIndex($ddId, $value, $multi);
+            if(!is_null($index)){
+                if ($multi)
+                    return CJSON::encode ($index);
+                else 
+                    return $index;
             }else{
                 return -1;
             }
@@ -2561,6 +2630,55 @@ abstract class X2Model extends CActiveRecord {
             $event->save();
         }
 
+    }
+
+    /**
+     * Returns list of insertable attribute tokens which can be used for this model 
+     * @param int $_depth (private) 
+     * @return array of strings
+     */
+    private static $getInsertableAttributeTokensDepth = 0; // limits recursive depth
+    public function getInsertableAttributeTokens () {
+        X2Model::$getInsertableAttributeTokensDepth++;
+        $tokens = array ();
+        if (X2Model::$getInsertableAttributeTokensDepth > 2) return $tokens;
+
+        // simple tokens
+        $tokens = array_merge (
+            $tokens, array_map (function ($elem) { return '{'.$elem.'}'; }, $this->attributeNames ()));
+
+        // assignment tokens
+        if (X2Model::$getInsertableAttributeTokensDepth < 2) {
+            $assignmentFields = array_filter (
+                $this->fields, function ($elem) { return $elem->type === 'assignment'; });
+            foreach ($assignmentFields as $field) {
+                $assignmentModel = X2Model::model('Profile');
+                $tokens = array_merge (
+                    $tokens,
+                    array_map (function ($elem) use ($field) { 
+                        return '{'.$field->fieldName.'.'.$elem.'}';
+                    }, $assignmentModel->attributeNames ())
+                );
+            }
+        }
+
+        // link tokens
+        if (X2Model::$getInsertableAttributeTokensDepth < 2) {
+            $linkFields = array_filter ($this->fields, function ($elem) { return $elem->type === 'link'; });
+            foreach ($linkFields as $field) {
+                $linkModelName = $field->linkType;
+                $linkModel = $linkModelName::model ();
+                $tokens = array_merge (
+                    $tokens,
+                    array_map (function ($elem) use ($field) { 
+                        return '{'.$field->fieldName.'.'.preg_replace ('/\{|\}/', '', $elem).'}';
+                    }, $linkModel->getInsertableAttributeTokens ())
+                );
+            }
+        }
+
+        X2Model::$getInsertableAttributeTokensDepth--;
+        return $tokens;
     }
 
 }

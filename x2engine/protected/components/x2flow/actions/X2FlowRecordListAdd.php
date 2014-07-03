@@ -60,7 +60,8 @@ class X2FlowRecordListAdd extends X2FlowAction {
         if(is_numeric($listIdentifier)){
             $list = CActiveRecord::model('X2List')->findByPk($listIdentifier);
         }else{
-            $list = CActiveRecord::model('X2List')->findByAttributes(array('name'=>$listIdentifier));
+            $list = CActiveRecord::model('X2List')->findByAttributes(
+                array('name'=>$listIdentifier));
         }
 		if($list !== null && $list->modelName === get_class($params['model'])) {
 			if ($list->addIds($params['model']->id)) {

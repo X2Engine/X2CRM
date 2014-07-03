@@ -14,7 +14,7 @@ CREATE TABLE x2_users (
     homePhone              VARCHAR(40),
     address                VARCHAR(100),
     backgroundInfo         TEXT,
-    emailAddress           VARCHAR(100) NOT NULL,
+    emailAddress           VARCHAR(100) DEFAULT NULL,
     status                 TINYINT NOT NULL,
     temporary              TINYINT DEFAULT 0,
     lastUpdated            VARCHAR(50),

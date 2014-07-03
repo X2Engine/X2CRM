@@ -162,12 +162,27 @@ class Dropdowns extends CActiveRecord {
         }
     }
 
+    /**
+     * Returns dropdown value(s) for given key(s)
+     * @return array|string 
+     */
     public function getDropdownIndex($id, $key){
         $arr = Dropdowns::getItems($id);
-        if(array_search($key, $arr) !== false){
-            return array_search($key, $arr);
-        }else{
-            return $key;
+        if (is_array ($key)) {
+            return array_map (function ($value) use ($arr) {
+                $index = array_search($value, $arr);
+                if ($index === false) {
+                    return $value;
+                } else {
+                    return $index;
+                }
+            }, $key);
+        } else {
+            if(array_search($key, $arr) !== false){
+                return array_search($key, $arr);
+            }else{
+                return $key;
+            }
         }
     }
 

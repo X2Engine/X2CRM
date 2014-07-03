@@ -45,7 +45,7 @@ Yii::import ('application.components.permissions.*');
 /**
  * @package application.tests.unit.components.x2flow.triggers
  */
-abstract class X2FlowTestBase extends X2DbTestCase {
+class X2FlowTestBase extends X2DbTestCase {
     /**
      * Clears all trigger logs
      */
@@ -180,7 +180,7 @@ abstract class X2FlowTestBase extends X2DbTestCase {
         $classFiles = array();
         foreach($allFiles as $file) {
             $classPath = $actionsPath.DIRECTORY_SEPARATOR.$file;
-            if(is_file($classPath) && !is_dir($classPath)) {
+            if(preg_match ("/\.php$/", $file) && is_file($classPath) && !is_dir($classPath)) {
                 $classFiles[] = substr($file,0,-4);
             }
         }

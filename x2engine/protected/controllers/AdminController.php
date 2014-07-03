@@ -87,14 +87,14 @@ class AdminController extends Controller {
      */
     public function actions(){
         return array_merge($this->webUpdaterActions, array(
-                    
-                    'automateTranslation' => array(
-                        'class' => 'X2TranslationAction'
-                    ),
-                    'viewLog' => array(
-                        'class' => 'LogViewerAction',
-                    ),
-                ));
+            
+            'automateTranslation' => array(
+                'class' => 'X2TranslationAction',
+            ),
+            'viewLog' => array(
+                'class' => 'LogViewerAction',
+            ),
+        ));
     }
 
     /**
@@ -1304,6 +1304,12 @@ class AdminController extends Controller {
                     $rolePerm->permission = 0;
                     $rolePerm->save();
                 }
+            } else {
+                foreach ($model->getErrors() as $err)
+                    $errors = $err;
+                $errors = implode(',', $errors);
+                Yii::app()->user->setFlash('error',Yii::t('admin',
+                    "Unable to save role: {errors}", array('{errors}'=>$errors)));
             }
             $this->redirect('manageRoles');
         }
@@ -1675,6 +1681,12 @@ class AdminController extends Controller {
             if($admin->save()){
                 $this->redirect('emailSetup');
             }
+        } else {
+            // set defaults
+            if (!isset ($admin->doNotEmailLinkText))
+                $admin->doNotEmailLinkText = Admin::getDoNotEmailLinkDefaultText ();
+            if (!isset ($admin->doNotEmailPage))
+                $admin->doNotEmailPage = Admin::getDoNotEmailDefaultPage ();
         }
 
         $this->render('emailSetup', array(
@@ -3188,11 +3200,14 @@ class AdminController extends Controller {
                     unset($_POST);
                     $relationships = array();
                     $linkedRecordPreexist = array();
+                    // Nix all invalid multibyte sequences to avoid errors
+                    $arr = array_map('Formatter::mbSanitize',$arr);
                     if(!empty($metaData) && !empty($arr)){
                         $importAttributes = array_combine($metaData, $arr);
                     }else{
                         continue;
                     }
+
                     $model = new $modelName;
                     if ($_SESSION['skipActivityFeed'] === 1)
                         $model->createEvent = false;
@@ -3932,6 +3947,15 @@ class AdminController extends Controller {
                 }
             }
         }
+        $extraModels = array('Fields', 'Dropdowns');
+        foreach ($extraModels as $model) {
+            if (class_exists($model)) {
+                $fieldCount = X2Model::model($model)->count();
+                if ($fieldCount > 0)
+                    $modelList[$model] = array('name' => Yii::t('app', $model), 'count' => $fieldCount);
+            }
+        }
+
         $this->render('export', array(
             'modelList' => $modelList,
         ));
@@ -4490,6 +4514,13 @@ class AdminController extends Controller {
                             $saveFlag = true;
                             if($lookupFlag){
                                 if($_SESSION['overwrite'] == 1){ // If the user specified to overwrite, delete the old lookup
+                                    if ($modelType === "Fields") {
+                                        /**
+                                         * Leave fields intact; the record information would be deleted when
+                                         * the column is removed by Fields' afterDelete hook.
+                                         */
+                                        continue;
+                                    }
                                     $lookup->disableBehavior('changelog');
                                     $lookup->delete();
                                 }else{
@@ -4523,6 +4554,11 @@ class AdminController extends Controller {
                                     $importLink->importId = $_SESSION['importId'];
                                     $importLink->timestamp = time();
                                     $importLink->save();
+                                }
+                                if ($modelType === "Fields") {
+                                    // If we're creating a field, we must also recreate the respective table index
+                                    if (isset($model->keyType))
+                                        $model->createIndex($model->keyType === "UNI");
                                 }
                                 // Relic of when action description wasn't a field, not sure if necessary.
                                 if($modelType == 'Actions' && isset($attributes['actionDescription'])){

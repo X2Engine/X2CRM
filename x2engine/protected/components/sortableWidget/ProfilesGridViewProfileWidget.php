@@ -101,7 +101,7 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
                         '{summary}{topPager}</div>{items}{pager}',
                     'modelAttrColumnNames'=>array (
                         'tagLine', 'username', 'officePhone', 'cellPhone', 'emailAddress', 
-                        'googleId', 'isActive'
+                        'googleId', 'isActive', 'leadRoutingAvailability',
                     ),
                     'specialColumns'=>array(
                         'fullName'=>array(
@@ -133,6 +133,14 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
                             'name' => 'username',
                             'header' => Yii::t('profile','Username'),
                             'value' => 'CHtml::encode($data->user->alias)',
+                            'type' => 'raw'
+                        ),
+                        'leadRoutingAvailability' => array(
+                            'name' => 'leadRoutingAvailability',
+                            'header' => Yii::t('profile','Lead Routing Availability'),
+                            'value' => 'CHtml::encode($data->leadRoutingAvailability ? 
+                                Yii::t("profile", "Available") :
+                                Yii::t("profile", "Unavailable"))',
                             'type' => 'raw'
                         ),
                     ),

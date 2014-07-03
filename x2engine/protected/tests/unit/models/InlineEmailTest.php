@@ -2,6 +2,7 @@
 
 Yii::import('application.modules.actions.models.*');
 Yii::import('application.modules.contacts.models.*');
+Yii::import('application.modules.accounts.models.*');
 Yii::import('application.modules.docs.models.*');
 Yii::import('application.modules.quotes.models.*');
 Yii::import('application.modules.user.models.*');

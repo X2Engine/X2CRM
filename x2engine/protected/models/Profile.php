@@ -336,7 +336,7 @@ class Profile extends CActiveRecord {
         $model->miscLayoutSettings = $settings;
         $echoVal = '';
         if (!$model->save ()) {
-            AuxLib::debugLog ('Error: setMiscLayoutSetting: failed to save model');
+            //AuxLib::debugLog ('Error: setMiscLayoutSetting: failed to save model');
             $echoVal = 'failure';
         } else {
             $echoVal = 'success';
@@ -1159,4 +1159,18 @@ class Profile extends CActiveRecord {
             return null;
         }
     }
+
+    /**
+     * @return array usernames of users available to receive leads
+     */
+    public function getUsernamesOfAvailableUsers () {
+        return array_map (function ($row) {
+            return $row['username'];
+        }, Yii::app()->db->createCommand ("
+            select username from x2_profile 
+            where leadRoutingAvailability=1
+        ")->queryAll ());
+    }
+
+
 }

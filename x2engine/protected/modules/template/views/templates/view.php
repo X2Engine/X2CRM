@@ -51,7 +51,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),
 	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
 	array('label'=>Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName']))),
-	array('label'=>Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('module','Edit {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('module','Delete {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
     array(
         'label' => Yii::t('app', 'Send Email'), 'url' => '#',
@@ -85,7 +85,7 @@ $(function() {
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
     <div class="page-title-fixed-inner">
-<div class="page-title">
+<div class="page-title icon">
     <h2>
         <?php 
         echo Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName'])); ?>: <?php 
@@ -93,6 +93,13 @@ $(function() {
         ?>
     </h2>
     <?php
+    echo CHtml::link(
+        '<span></span>', $this->createUrl('update', array('id' => $model->id)),
+        array(
+            'class' => 'x2-button icon edit right',
+            'title' => Yii::t('app', 'Edit {X}', array('{X}'=>$moduleConfig['recordName'])),
+        )
+    );
     echo CHtml::link(
         '<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/icons/email_button.png'.
             '"></img>', '#',

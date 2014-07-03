@@ -185,7 +185,7 @@ abstract class X2GridViewBase extends CGridView {
 
                 $(window).unbind ('scroll.stickyHeader').
                     bind ('scroll.stickyHeader', function () {
-                        x2.gridViewStickyHeader.checkX2GridViewHeaderSticky
+                        x2.gridViewStickyHeader.checkX2GridViewHeaderSticky ();
                     });
             }
         ";
@@ -388,6 +388,8 @@ abstract class X2GridViewBase extends CGridView {
             newly displayed rows */
             $('.qtip-hint').qtip({content:false});
             $('#".$this->getNamespacePrefix ()."-filter-hint').qtip ();
+            // refresh checklist dropdown filters for multi-dropdown fields
+            x2.forms.initializeMultiselectDropdowns ();
 
             $('#".$this->getId()."').gvSettings({
                 viewName:'".$this->gvSettingsName."',

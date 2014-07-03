@@ -49,15 +49,33 @@ class X2FlowRecordListRemove extends X2FlowAction {
 			'info' => Yii::t('studio',$this->info),
 			'modelRequired' => 'Contacts',
 			'options' => array(
-				array('name'=>'listId','label'=>Yii::t('studio','List'),'type'=>'link','linkType'=>'X2List','linkSource'=>Yii::app()->controller->createUrl(
-					CActiveRecord::model('X2List')->autoCompleteSource
-				)),
+				array(
+                    'name'=>'listId',
+                    'label'=>Yii::t('studio','List'),
+                    'type'=>'link',
+                    'linkType'=>'X2List',
+                    'linkSource'=>Yii::app()->createUrl(
+					    CActiveRecord::model('X2List')->autoCompleteSource
+				    )
+                ),
 			));
 	}
 
 	public function execute(&$params) {
-		$list = CActiveRecord::model('X2List')->findByPk($this->parseOption('listId',$params));
-		if($list !== null && $list->modelName === get_class($params['model'])) {
+        $listId = $this->parseOption('listId',$params);
+        if(is_numeric($listId)){
+            $list = CActiveRecord::model('X2List')->findByPk($listId);
+        }else{
+            $list = CActiveRecord::model('X2List')->findByAttributes(
+                array('name'=>$listId));
+        }
+		
+        if($list === null) {
+            return array (false, Yii::t('studio', 'List could not be found'));
+        } else if ($list->modelName !== get_class($params['model'])) {
+            return array (false, Yii::t('studio', 'The selected list does not contain records '.
+                'of this type'));
+        } else { // $list !== null && $list->modelName === get_class($params['model'])
 			if ($list->removeIds($params['model']->id)) {  
                 return array (true, "");
             }

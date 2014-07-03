@@ -70,7 +70,7 @@ abstract class X2DbTestCase extends CDbTestCase {
     /**
      * Performs environmental set-up similar to that in {@link ApplicationConfigBehavior}
      */
-    public static function setUpAppEnvironment() {
+    public static function setUpAppEnvironment($full=false) {
         // uses a specific key/iv for unit testing
         foreach(array('iv','key') as $ext) {
             $file = Yii::app()->basePath."/config/encryption.$ext";
@@ -82,7 +82,14 @@ abstract class X2DbTestCase extends CDbTestCase {
             }
         }
         EncryptedFieldsBehavior::setup(self::$key,self::$iv);
+        if ($full) self::setUpAppEnvironment2 ();
+    }
 
+    /**
+     * For environment setup actions which can't be performed until after the reference fixtures
+     * have been set up.
+     */
+    public static function setUpAppEnvironment2 () {
         Yii::app()->beginRequest();
         Yii::app()->suModel = User::model()->findByPk(1);
     }
@@ -98,7 +105,7 @@ abstract class X2DbTestCase extends CDbTestCase {
      * sets up some special environment variables before proceeding.
      */
     public static function setUpBeforeClass(){
-        self::setUpAppEnvironment();
+        self::setUpAppEnvironment(); 
         // Load "reference fixtures", needed for reference, which do not need
         // to be reloaded after every single test method:
         $testClass = get_called_class();
@@ -126,6 +133,7 @@ abstract class X2DbTestCase extends CDbTestCase {
                 }
             }
         }
+        self::setUpAppEnvironment2(); 
         parent::setUpBeforeClass();
     }
 

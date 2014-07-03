@@ -159,6 +159,9 @@ class MediaController extends x2base {
             $model->associationId = $_POST['Media']['associationId'];
             $model->private = $_POST['Media']['private'];
             $model->path; // File type setter is embedded in the magic getter for path
+            $model->name = $_POST['Media']['name'];
+            if (empty($model->name))
+                $model->name = $model->fileName;
             if($_POST['Media']['description'])
                 $model->description = $_POST['Media']['description'];
 
@@ -277,6 +280,12 @@ class MediaController extends x2base {
             $model->private = $_POST['Media']['private'];
             if($_POST['Media']['description'])
                 $model->description = $_POST['Media']['description'];
+            if (! $model->drive) {
+                // Handle setting the name if the Media isn't stored on Drive
+                $model->name = $_POST['Media']['name'];
+                if (empty($model->name))
+                    $model->name = $model->fileName;
+            }
             if($model->save())
                 $this->redirect(array('view', 'id' => $model->id));
         }
