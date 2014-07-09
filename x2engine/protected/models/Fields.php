@@ -234,6 +234,12 @@ class Fields extends CActiveRecord {
                 'columnDefinition'=>'INT',
                 'phpType' => 'integer'
             ),
+            'phone'=>array(
+                'title'=>Yii::t('admin','Phone Number'),
+                'validator'=>'safe',
+                'columnDefinition'=>'VARCHAR(40)',
+                'phpType' => 'string'
+            ),
         );
         // No scenario, return all data
         if(empty($scenario)){

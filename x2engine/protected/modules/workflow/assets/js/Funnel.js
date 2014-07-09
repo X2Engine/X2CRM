@@ -130,16 +130,25 @@ Funnel.prototype._addStageNameLinks = function () {
         $(link).addClass ('stage-name-link-' + i);
         $(link).addClass ('stage-name-link');
         $(link).css ({
-            position: 'absolute',
-            left: -125,
-            'white-space': 'nowrap',
-            'text-overflow': 'ellipsis',
-            width: '80px',
-            overflow: 'hidden',
             top: this._stageCentroids[i].y - 7 
         });
         $(this.containerSelector).append (link);
     }
+
+    // retrieve max width of stage name links and shift all links over by that amount
+    var maxWidth = Math.max.apply (null, auxlib.map (function (a) {
+        return $(a).width ();
+    }, $.makeArray ($(this.containerSelector).find ('.stage-name-link'))));
+
+    var extraSpace = 20;
+    $(this.containerSelector).find ('.stage-name-link').each (function (i, elem) {
+        $(elem).css ('left', -maxWidth - extraSpace);
+    });
+
+    var extraMargin = 18;
+    $(this.containerSelector).css (
+        'margin-left', maxWidth + extraSpace + extraMargin);
+
 };
 
 /**
@@ -174,7 +183,7 @@ Funnel.prototype._addTotals = function () {
             auxlib.map (function (a) { return parseInt (a, 10); }, this.recordsPerStage)) + '</b>',
         css: {
             position: 'absolute',
-            left: -125,
+            left: $(this.containerSelector).find ('.stage-name-link').last ().css ('left'),
             top: this._funnelHeight + 10,
         }
     });
@@ -229,7 +238,6 @@ Funnel.prototype._init = function () {
     that._addStageNameLinks ();
     that._addStageValues ();
     that._addTotals ();
-
 };
 
 return Funnel;

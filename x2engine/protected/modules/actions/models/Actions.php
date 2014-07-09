@@ -41,6 +41,8 @@ Yii::import('application.models.X2Model');
  * @package application.modules.actions.models
  */
 class Actions extends X2Model {
+    
+    public $skipActionTimers = false;
 
     public $supportsWorkflow = false;
 

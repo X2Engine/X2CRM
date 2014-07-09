@@ -108,45 +108,6 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
   * General changelog/developer notes:
     * Included several commits from internal tree that were missed in the previous release
     * Fixed MoneyMask bug: when unsupported currencies are in use, validation was failing
-* Changes in 4.1.6 (beta) (7/3/2014):
-    * Highlights
-      * New "available" lead routing option:
-        * Users can set online/offline availability, i.e. when they go on vacation
-        * Lead routing can be configured to respect this option, i.e. avoid assigning records to unavailable users
-      * "Loading" status/visual overlay when adding fields
-      * Global import/export tool now supports custom fields
-      * Custom short-codes feature for templates and X2Flow: create an analogue of protected/components/x2flow/shortcodes.php in custom/ to define your own custom codes
-      * Can rename media files
-      * (Platinum Edition) Reverse IP lookup in X2Identity
-      * X2Flow emails can be configured to include a "do not email"
-    * General changelog/developer notes
-      * X2Flow improvements (Professional Edition):
-        * Update trigger no longer fired during creation of contact lists (this was a bug)
-        * Triggers in general will fire less during times when not apropos
-        * Flow configuration storage field is not LONGTEXT as opposed to TEXT, allowing it to store far greater and more sophisticated flows
-        * Fix to "on\_list" condition 
-      * Contact added as default field in Opportunities, and inline emailer can be used on opportunity views
-      * Miscellaneous bug fixes in:
-        * Contacts can be properly moved between time zones 
-        * Activity feed events report generation
-        * Actions module
-        * X2Identity (Platinum Edition)
-        * X2GridView: header not hiding properly when scrolling over the bottom of the grid
-        * Publisher: Event form not properly validating when clearing the association type field
-        * Inline Emailer: switching templates while viewing quotes now works as intended 
-        * Updater: post-completion redirect to the wrong page
-        * Permissions: users who have "admin" access to a given module can export records of that module
-        * X2GridView: Grid view no longer breaks from HTML tag truncation in text-type fields
-        * Calendar: group-assigned events could not be edited by group members
-        * X2Studio: critical internal-use-only fields are not available for the user to accidentally enter data into
-        * Importer: will not fail when CSV contains multibyte characters but no byte order mark, or invalid multibyte sequences
-      * Global validation bug fix: "required" rule now respected both on update and save 
-      * (Professional Edition only) License key now viewable by administrators on the app info and updater settings pages
-      * User-friendly error & feedback messages on the Edit Roles page
-      * Added day of week to activity feed date headers 
-    * Tracked Bug Fixes:  
-      * [1340](http://x2software.com/index.php/bugReports/1340): User Report  
-      * [1345](http://x2software.com/index.php/bugReports/1345): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens  
 * Changes in 4.1.6 (beta) (7/3/2014): 
     * Highlights
       * New "available" lead routing option:
@@ -156,6 +117,8 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
       * Global import/export tool now supports custom fields
       * Custom short-codes feature for templates and X2Flow: create an analogue of protected/components/x2flow/shortcodes.php in custom/ to define your own custom codes
       * Can rename media files
+      * Process UI improvement: Quickly switch between processes from the funnel and pipeline views
+      * (Professional Edition) Improved activity feed reports with a page to manage reports and the ability to send a test report
       * (Professional Edition) X2Flow emails can be configured to include a customizable "Do Not Email" link
       * (Platinum Edition) Reverse IP lookup in X2Identity
     * General changelog/developer notes
@@ -186,6 +149,8 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
       * (Professional Edition only) License key now viewable by administrators on the app info and updater settings pages
       * User-friendly error & feedback messages on the Edit Roles page
       * Added day of week to activity feed date headers 
+      * Fixed regex matching on imported ids
+      * Added missing phone type in Field Manager
     * Tracked Bug Fixes:  
       * [1340](http://x2software.com/index.php/bugReports/1340): User Report  
       * [1345](http://x2software.com/index.php/bugReports/1345): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens  

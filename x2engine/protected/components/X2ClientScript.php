@@ -52,6 +52,21 @@ class X2ClientScript extends NLSClientScript {
     private $_scriptUrl;
     private $_themeUrl;
     private $_cacheBuster;
+    public $packages;
+
+    public function getPackages () {
+        if (!isset ($this->packages)) {
+            $this->packages = array (
+                'auxlib' => array(
+                    'baseUrl' => Yii::app()->request->baseUrl,
+                    'js' => array(
+                        'js/auxlib.js',
+                    ),
+                ),
+            );
+        }
+        return $this->packages;
+    }
 
     /**
      * @param string returns cache buster value. Append this value to names of files upon 
@@ -141,18 +156,21 @@ class X2ClientScript extends NLSClientScript {
      * Registers a set of packages at the specified position
      * @param Array $packages 
      * @param Integer $position 
+     * @param bool $useCorePackages 
      */
     public function registerPackages ($packages, $position=null) {
         if ($position === null) {
             $position = CClientScript::POS_END;
         }
-        Yii::app()->clientScript->packages = $packages;
+        $oldPackages = Yii::app()->clientScript->packages;
+        Yii::app()->clientScript->packages = array_merge ($this->getPackages (), $packages);
         $oldCoreScriptPosition = Yii::app()->clientScript->coreScriptPosition;
         Yii::app()->clientScript->coreScriptPosition = $position;
         foreach (array_keys ($packages) as $packageName) {
             Yii::app()->clientScript->registerPackage ($packageName);
         }
         Yii::app()->clientScript->coreScriptPosition = $oldCoreScriptPosition;
+        Yii::app()->clientScript->packages = $oldPackages;
     }
 
     public function getCurrencyConfigScript () {

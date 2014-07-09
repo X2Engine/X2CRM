@@ -33,7 +33,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-if (!auxlib) var auxlib = {};
+if (typeof auxlib === 'undefined') auxlib = {};
+if (typeof x2 === 'undefined') x2 = {};
+
 auxlib.DEBUG = true;
 
 auxlib.error = function (message) {
@@ -488,7 +490,7 @@ auxlib.assert = function (conditional, str) {
     }
 }
 
-auxlib.trace = function () { 
+/**/auxlib.trace = function () { 
     if (!x2.DEBUG) return;
     if (console.trace) {
         /**/console.trace ();

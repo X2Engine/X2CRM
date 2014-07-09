@@ -1,4 +1,14 @@
-# 4.1.6b #
+# 4.1.6b2 (beta) #
+7/8/2014
+
+* Highlights
+  * (Professional Edition) Improved activity feed reports with a page to manage reports and the ability to send a test report
+  * Process UI improvement: Quickly switch between processes from the funnel and pipeline views
+* General changelog/developer notes
+  * Fixed regex matching on imported ids
+  * Added missing phone type in Field Manager
+
+# 4.1.6b (beta) #
 7/3/2014
 
 * Highlights

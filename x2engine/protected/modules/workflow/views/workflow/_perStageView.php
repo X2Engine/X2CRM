@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 ?>
-<div class='x2-layout-island x2-layout-island-merge-top-bottom'>
+<div id='per-stage-view-container-first' class='x2-layout-island x2-layout-island-merge-top-bottom'>
     <?php
     $this->renderFunnelView (
         $model->id, $dateRange, $expectedCloseDateDateRange, $users, null, $modelType);

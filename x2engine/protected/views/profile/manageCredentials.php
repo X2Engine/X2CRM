@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -36,21 +35,22 @@
  *****************************************************************************************/
 
 $this->actionMenu = array(
-	array('label'=>Yii::t('profile','View Profile'), 'url'=>array('view','id'=>$profile->id)),
-	array('label'=>Yii::t('profile','Edit Profile'),'url'=>array('update','id'=>$profile->id)),
-	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$profile->id),'visible'=>($profile->id==Yii::app()->user->id)),
-	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$profile->id),'visible'=>($profile->id==Yii::app()->user->id)),
-	array('label'=>Yii::t('profile','Manage Apps'))
+    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $profile->id)),
+    array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $profile->id)),
+    array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
+    array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
+    array('label' => Yii::t('profile', 'Manage Apps')),
+    
 );
 
-Yii::app()->clientScript->registerScript ('manageCredentialsScript', "
+Yii::app()->clientScript->registerScript('manageCredentialsScript', "
 
     function validate () {
         auxlib.destroyErrorFeedbackBox ($('#class'));
         if ($('#class').val () === '') {
             auxlib.createErrorFeedbackBox ({
                 'prevElem': $('#class'),
-                'message': '".Yii::t ('app', 'Account type required')."'
+                'message': '" . Yii::t('app', 'Account type required') . "'
             });
             return false;
         }
@@ -58,61 +58,53 @@ Yii::app()->clientScript->registerScript ('manageCredentialsScript', "
     }
 
 ", CClientScript::POS_HEAD);
-
 ?>
 
 <div class="page-title icon profile">
-    <h2><?php echo Yii::t('profile','Manage Passwords for Third-Party Applications'); ?></h2>
+    <h2><?php echo Yii::t('profile', 'Manage Passwords for Third-Party Applications'); ?></h2>
 </div>
 <div class="credentials-storage">
 <?php
 $crit = new CDbCriteria(array(
-		'condition'=>'userId=:uid OR userId=-1',
-		'order' => 'name ASC',
-		'params' => array(':uid' => $profile->user->id),
-	)
+    'condition' => 'userId=:uid OR userId=-1',
+    'order' => 'name ASC',
+    'params' => array(':uid' => $profile->user->id),
+        )
 );
 $staticModel = Credentials::model();
 $staticModel->private = 0;
-if(Yii::app()->user->checkAccess('CredentialsSelectNonPrivate',array('model'=>$staticModel)))
-	$crit->addCondition('private=0','OR');
+if (Yii::app()->user->checkAccess('CredentialsSelectNonPrivate', array('model' => $staticModel)))
+    $crit->addCondition('private=0', 'OR');
 
-$dp = new CActiveDataProvider('Credentials',array(
-	'criteria' => $crit,
-));
+$dp = new CActiveDataProvider('Credentials', array(
+    'criteria' => $crit,
+        ));
 $this->widget('zii.widgets.CListView', array(
-	'dataProvider' => $dp,
-	'itemView' => '_credentialsView',
-	'itemsCssClass' => 'credentials-list',
-	'summaryText' => '',
-	'emptyText' => ''
+    'dataProvider' => $dp,
+    'itemView' => '_credentialsView',
+    'itemsCssClass' => 'credentials-list',
+    'summaryText' => '',
+    'emptyText' => ''
 ));
 ?>
 
-<?php
-echo CHtml::beginForm(
-    array('/profile/createUpdateCredentials'),
-    'get',
-    array (
+    <?php
+    echo CHtml::beginForm(
+            array('/profile/createUpdateCredentials'), 'get', array(
         'onSubmit' => 'return validate ();'
-    )
-);
-echo CHtml::submitButton(
-    Yii::t('app','Add New'),array('class'=>'x2-button','style'=>'float:left;margin-top:0'));
-$modelLabels = Credentials::model()->authModelLabels;
-$types = array_merge(array(null=>'- '.Yii::t('app','select a type').' -'),$modelLabels);
-echo CHtml::dropDownList(
-    'class',
-    'EmailAccount',
-    $types,
-    array(
-        'options'=>array_merge(
-            array(null=>array('selected'=>'selected')),
-            array_fill_keys(array_keys($modelLabels),array('selected'=>false))),
+            )
+    );
+    echo CHtml::submitButton(
+            Yii::t('app', 'Add New'), array('class' => 'x2-button', 'style' => 'float:left;margin-top:0'));
+    $modelLabels = Credentials::model()->authModelLabels;
+    $types = array_merge(array(null => '- ' . Yii::t('app', 'select a type') . ' -'), $modelLabels);
+    echo CHtml::dropDownList(
+            'class', 'EmailAccount', $types, array(
+        'options' => array_merge(
+                array(null => array('selected' => 'selected')), array_fill_keys(array_keys($modelLabels), array('selected' => false))),
         'class' => 'left x2-select'
-    )
-);
-echo CHtml::endForm();
-
-?>
+            )
+    );
+    echo CHtml::endForm();
+    ?>
 </div>

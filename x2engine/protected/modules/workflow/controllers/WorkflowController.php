@@ -111,10 +111,13 @@ class WorkflowController extends x2base {
         //$params = ($this->getPerStageViewParams ($id, $viewStage, $users));
         //AuxLib::debugLogR ($params['expectedCloseDateDateRange']);
 
+		$workflows = Workflow::getList(false);	// no "none" options
+
         $this->render('view',
             array_merge (
                 array (
                     'perStageWorkflowView' => $perStageWorkflowView,
+                    'workflows' => $workflows,
                 ),
                 ($perStageWorkflowView ? 
                     $this->getPerStageViewParams ($id, $viewStage, $users) :

@@ -1,5 +1,3 @@
-<?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -35,22 +33,61 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = array(
-    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials', 'id' => $profile->id)),
-    
-);
-?>
 
-<div class="page-title"><h2><?php echo $model->pageTitle; ?></h2></div>
-<div style="padding:10px; display:inline-block;">
-<?php
-$this->renderPartial('_credentialsForm', array('model' => $model, 'includeTitle' => false, 'user' => $profile->user));
+var x2 = typeof x2 === 'undefined' ? {} : x2; 
 
-echo "<span>$message</span>";
-?>
+x2.history = (function (window) {
 
-</div>
+/**
+ * Provides method wrappers for History.js
+ */
+function History (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict; 
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    this._pushingState = false;
+}
+
+/*
+Public static methods
+*/
+
+/*
+Private static methods
+*/
+
+/*
+Public instance methods
+*/
+
+/**
+ * Prevents non-standard behavior of History.js which would trigger a statechange event when state
+ * is pushed.
+ */
+History.prototype.pushState = function (stateObj, title, url) {
+    this._pushingState = true;
+    window.History.pushState (stateObj, title, url);
+    this._pushingState = false;
+};
+
+/**
+ * Prevents non-standard behavior of History.js which would trigger a statechange event when state
+ * is pushed.
+ */
+History.prototype.bind = function (callback) {
+    var that = this;
+    window.History.Adapter.bind (window, 'statechange', function () {
+        if (that._pushingState) return;
+        callback.call (this, Array.prototype.slice.call (arguments));
+    });
+};
+
+/*
+Private instance methods
+*/
+
+return new History ();
+
+}) (window);

@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -68,7 +67,8 @@ class ProfileController extends x2base {
                     'updatePost', 'loadTheme', 'createTheme', 'saveTheme', 'saveMiscLayoutSetting',
                     'createUpdateCredentials', 'manageCredentials', 'deleteCredentials',
                     'setDefaultCredentials', 'activity', 'ajaxSaveDefaultEmailTemplate',
-                    'deleteActivityReport','createActivityReport'),
+                    'deleteActivityReport', 'createActivityReport', 'manageEmailReports',
+                    'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -523,11 +523,11 @@ class ProfileController extends x2base {
     public function actionUploadPhoto($id) {
         if ($id == Yii::app()->user->getId()) {
             $prof = Profile::model()->findByPk($id);
-            if(isset($_FILES['photo'])){
-                if($_FILES["photo"]["error"]) {
+            if (isset($_FILES['photo'])) {
+                if ($_FILES["photo"]["error"]) {
                     Yii::app()->user->setFlash('error', Yii::t('app', "There was an error uploading the file."));
-                } else if($_FILES["photo"]["size"] < 2000000){
-                    if($prof->avatar != '' && isset($prof->avatar) && file_exists($prof->avatar)){
+                } else if ($_FILES["photo"]["size"] < 2000000) {
+                    if ($prof->avatar != '' && isset($prof->avatar) && file_exists($prof->avatar)) {
                         unlink($prof->avatar);
                     }
                     $temp = CUploadedFile::getInstanceByName('photo');
@@ -539,7 +539,7 @@ class ProfileController extends x2base {
                     if ($prof->save()) {
                         
                     }
-                }else{
+                } else {
                     Yii::app()->user->setFlash('error', Yii::t('app', "File is too large!"));
                 }
             }
@@ -1059,7 +1059,7 @@ class ProfileController extends x2base {
 
 
         $result = Events::getEvents(
-            $lastEventId, $lastTimestamp, null, null, null, $myProfile, $profile);
+                        $lastEventId, $lastTimestamp, null, null, null, $myProfile, $profile);
 
         $events = $result['events'];
         $eventData = "";
@@ -1472,15 +1472,15 @@ class ProfileController extends x2base {
 
             if ($templateId !== '') {
                 $template = Docs::model()->findByPk($templateId);
-                if (!$this->checkPermissions ($template, 'view')) {
+                if (!$this->checkPermissions($template, 'view')) {
                     $errors = true;
                     $message = Yii::t(
-                        'profile', 'You do not have permission to view that template');
+                                    'profile', 'You do not have permission to view that template');
                 } else {
                     // check that template exists, that it's of the correct doc type, and is 
                     // associated with the correct model type
-                    if ($template && $template->type === 'email' && 
-                        $template->associationType === X2Model::getModelName ($moduleName)) {
+                    if ($template && $template->type === 'email' &&
+                            $template->associationType === X2Model::getModelName($moduleName)) {
 
                         $defaultEmailTemplates[$moduleName] = $templateId;
                         $profile->defaultEmailTemplates = CJSON::encode($defaultEmailTemplates);

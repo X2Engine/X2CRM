@@ -1,4 +1,3 @@
-<?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -34,73 +33,35 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$form = $this->beginWidget('CActiveForm', array('id' => 'publisher-form')); 
-
-function echoTabRow ($tabs, $rowNum=1) {
-    ?><ul id='publisher-tabs-row-<?php echo $rowNum; ?>' style='display: none;'>
-            <?php 
-            // Publisher tabs
-            foreach ($tabs as $tab) {
-                ?> <li> <?php
-                $tab->renderTitle ();
-                ?> </li> <?php
-            }
-            ?>
-        </ul><?php    
+/* responsive title bar behaves differently on this page from how it does on others. these 
+lines compensate for that. */
+@media (max-width: 657px) {
+    .responsive-menu-items {
+        margin-top: 29px !important;
+        margin-right: -19px !important;
+    }
+    .responsive-page-title > .mobile-dropdown-button {
+        margin-top: 9px !important;
+    }
 }
 
-?>
+/*@media (max-width: 526px) {
+    #process-status {
+        clear:both !important;
+    }
+}
 
-<div id="publisher" <?php echo (sizeof ($tabs) > 4 ? 'class="multi-row-tabs-publisher"' : ''); ?>>
-    <?php
-    $tabsTmp = $tabs;
-    if (sizeof ($tabs) > 4) {
-        $rowNum = 0;
-        while (sizeof ($tabsTmp)) {
-            $tabRow = array_slice ($tabsTmp, 0, 3);
-            echoTabRow ($tabRow, ++$rowNum);
-            $tabsTmp = array_slice ($tabsTmp, 3);
-        }
-    } else {
-        echoTabRow ($tabsTmp);
+@media (max-width: 1036px) {
+    #process-status-container { 
+        clear: both !important;
     }
-    ?>
-    <div class='clearfix'></div>
-    <div class="form x2-layout-island">
-    <?php
-    // Publisher tab content 
-    foreach ($tabs as $tab) {
-        $tab->renderTab (array (
-            'form' => $form,
-            'model' => $model,
-            'associationType' => $associationType,
-        ));
+    #process-status-container form { 
+        width: auto !important;
     }
-    if(Yii::app()->user->isGuest){ 
-    ?>
-        <div class="row">
-            <?php
-            $this->widget('CCaptcha', array(
-                'captchaAction' => '/actions/actions/captcha',
-                'buttonOptions' => array(
-                    'style' => 'display:block;',
-                ),
-            ));
-            ?>
-            <?php echo $form->textField($model, 'verifyCode'); ?>
-        </div>
-    <?php 
-    } 
-    echo CHtml::hiddenField('SelectedTab', ''); // currently selected tab  
-    if ($associationType !== 'calendar') {
-        echo $form->hiddenField($model, 'associationType'); 
-        echo $form->hiddenField($model, 'associationId'); 
+    #process-status-container form > .row { 
+        float: left !important;
+        clear: none !important;
     }
-    ?>
-    <div class='row'>
-        <input type='submit' value='Save' id='save-publisher' class='x2-button'>
-    </div>
-    </div>
-</div>
+}*/
 
-<?php $this->endWidget(); ?>
+

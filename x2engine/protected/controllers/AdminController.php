@@ -3230,7 +3230,7 @@ class AdminController extends Controller {
                             }
                             if (strtolower($attribute) === 'id') {
                                 // ensure the provided id is valid
-                                if (!preg_match('/^\d$/', $importAttributes[$attribute]) || $importAttributes[$attribute] >= 4294967295) {
+                                if (!preg_match('/^\d+$/', $importAttributes[$attribute]) || $importAttributes[$attribute] >= 4294967295) {
                                     unset($importMap[$attribute]);
                                     unset($importAttributes[$attribute]);
                                     continue;

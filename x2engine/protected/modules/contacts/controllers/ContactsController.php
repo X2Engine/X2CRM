@@ -348,7 +348,7 @@ class ContactsController extends x2base {
                 '.$fullNameCol2.' LIKE :qterm) AND ('.$visCriteria->condition.')
             ORDER BY firstName ASC';
         $command = Yii::app()->db->createCommand($sql);
-        $params = array(':qterm'=>$_GET['term'].'%') + $fullNameParam + $fullNameParam2;
+        $params = array(':qterm'=>$_GET['term'].'%') + $fullNameParam + $fullNameParam2 + $visCriteria->params;
         $result = $command->queryAll(true,$params);
         foreach(array_keys($result) as $key) {
             $result[$key]['assignedTo'] = implode(', ',$model->getAssigneeNames($result[$key]['assignedTo']));
