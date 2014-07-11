@@ -1,3 +1,9 @@
+# 4.1.6 #
+7/10/2014
+
+* Tracked Bug Fixes:  
+  * https://github.com/X2Engine/X2Engine/issues/28
+
 # 4.1.6b2 (beta) #
 7/8/2014
 

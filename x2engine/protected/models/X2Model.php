@@ -708,12 +708,15 @@ abstract class X2Model extends CActiveRecord {
 	{
 		if(!$runValidation || $this->validate($attributes)) {
             /* x2modstart */ 
-            if ($this->asa ('X2FlowTriggerBehavior')) {
+            if ($this->asa ('X2FlowTriggerBehavior') && 
+                $this->asa('X2FlowTriggerBehavior')->enabled) {
                 $this->enableUpdateTrigger ();
             }
 			$retVal = $this->getIsNewRecord() ? 
                 $this->insert($attributes) : $this->update($attributes);
-            if ($this->asa ('X2FlowTriggerBehavior')) {
+            if ($this->asa ('X2FlowTriggerBehavior') && 
+                $this->asa('X2FlowTriggerBehavior')->enabled) {
+
                 $this->disableUpdateTrigger ();
             }
             /* x2modend */ 
@@ -731,7 +734,6 @@ abstract class X2Model extends CActiveRecord {
      * Fires onAfterSave event.
      */
     public function afterSave(){
-
         if($this->_runAfterCreate)
             $this->afterCreate();
         else
@@ -2175,7 +2177,10 @@ abstract class X2Model extends CActiveRecord {
         $this->_oldAttributes['nameId'] = $this->nameId;
         $this->nameId = Fields::nameId($this->name, $this->id);
         if($save){
-            $this->update(array('nameId'));
+            $that = $this;
+            $this->runWithoutBehavior ('X2FlowTriggerBehavior', function () use ($that) {
+                $that->update(array('nameId'));
+            });
         }
     }
 

@@ -391,7 +391,7 @@ class X2Flow extends CActiveRecord {
                             'retVal' => $flowRetVal,
                         );
                     }catch(Exception $e){
-                        AuxLib::debugLogR ($e->getTrace ());
+                        //AuxLib::debugLogR ($e->getTrace ());
                         return array ('trace' => array (false, $e->getMessage()));
                         // whatever.
                     }
@@ -405,7 +405,7 @@ class X2Flow extends CActiveRecord {
                             true, $flow->traverse(
                                 $flowPath, $flowData['items'], $params, 0, $triggerLogId)));
                 } catch(Exception $e) {
-                    AuxLib::debugLogR ($e->getTrace ());
+                    //AuxLib::debugLogR ($e->getTrace ());
                     return array (
                         'trace' => array (false, $e->getMessage())); // whatever.
                 }

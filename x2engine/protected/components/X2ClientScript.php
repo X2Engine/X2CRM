@@ -52,11 +52,11 @@ class X2ClientScript extends NLSClientScript {
     private $_scriptUrl;
     private $_themeUrl;
     private $_cacheBuster;
-    public $packages;
+    private $_defaultPackages;
 
-    public function getPackages () {
-        if (!isset ($this->packages)) {
-            $this->packages = array (
+    public function getDefaultPackages () {
+        if (!isset ($this->_defaultPackages)) {
+            $this->_defaultPackages = array (
                 'auxlib' => array(
                     'baseUrl' => Yii::app()->request->baseUrl,
                     'js' => array(
@@ -65,7 +65,7 @@ class X2ClientScript extends NLSClientScript {
                 ),
             );
         }
-        return $this->packages;
+        return $this->_defaultPackages;
     }
 
     /**
@@ -156,14 +156,19 @@ class X2ClientScript extends NLSClientScript {
      * Registers a set of packages at the specified position
      * @param Array $packages 
      * @param Integer $position 
-     * @param bool $useCorePackages 
+     * @param bool $useDefaultPackages 
      */
-    public function registerPackages ($packages, $position=null) {
+    public function registerPackages ($packages, $position=null, $useDefaultPackages=false) {
         if ($position === null) {
             $position = CClientScript::POS_END;
         }
         $oldPackages = Yii::app()->clientScript->packages;
-        Yii::app()->clientScript->packages = array_merge ($this->getPackages (), $packages);
+        if ($useDefaultPackages) {
+            Yii::app()->clientScript->packages = array_merge (
+                $this->getDefaultPackages (), $packages);
+        } else {
+            Yii::app()->clientScript->packages = $packages;
+        }
         $oldCoreScriptPosition = Yii::app()->clientScript->coreScriptPosition;
         Yii::app()->clientScript->coreScriptPosition = $position;
         foreach (array_keys ($packages) as $packageName) {

@@ -34,20 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$listItemColors = Workflow::getPipelineListItemColors ($colors, true);
-$listItemColorCss = '';
-for ($i = 1; $i <= count ($listItemColors); ++$i) {
-    $listItemColorCss .= 
-    "#workflow-stage-$i .stage-member-container {
-        background-color: ".$listItemColors[$i - 1][0].";
-    }
-    #workflow-stage-$i .stage-member-container:hover {
-        background-color: ".$listItemColors[$i - 1][1].";
-    }";
-}
-Yii::app()->clientScript->registerCss('stageMemberColorCss',$listItemColorCss);
-
-
 
 // drag and drop CSS always gets loaded, this prevents layout thrashing when the UI changes 
 Yii::app()->clientScript->registerCssFile($this->module->assetsUrl.'/css/dragAndDrop.css');
@@ -68,7 +54,7 @@ Yii::app()->clientScript->registerPackages (array (
         ),
         'depends' => array ('history', 'auxlib'),
     ),
-));
+), null, true);
 
 Yii::app()->clientScript->registerScript('getWorkflowStage',"
 
@@ -180,10 +166,15 @@ WorkflowViewManager.prototype._changeUI = function (perStageWorkflowView, workfl
  * Push browser state to preserve back button funtionality across ajax loaded pages
  */
 WorkflowViewManager.prototype._pushState =  function (workflowId, perStageWorkflowView) {
+    var newUrl = window.location.href.replace (/workflow\/\d+/, 'workflow/' + workflowId);
+    newUrl = newUrl.replace (/id=\d+/, 'id=' + workflowId);
+    perStageWorkflowViewGETParamVal = perStageWorkflowView ? 'true' : 'false';
+    newUrl = newUrl.replace (
+        /perStageWorkflowView=[^&]+/, 'perStageWorkflowView=' + perStageWorkflowViewGETParamVal);
+
     x2.history.pushState (
         { workflowId: workflowId, 
-          perStageWorkflowView: perStageWorkflowView }, '', 
-        window.location);
+          perStageWorkflowView: perStageWorkflowView }, '', newUrl);
 };
 
 WorkflowViewManager.prototype._setUpWorkflowSelection = function () {
@@ -199,7 +190,6 @@ WorkflowViewManager.prototype._setUpWorkflowSelection = function () {
             that.workflowId = workflowId;
         });
         
-    this._pushState (that.workflowId, that.perStageWorkflowView);
     x2.history.bind (function () {
         var state = window.History.getState ();
 

@@ -63,9 +63,18 @@ abstract class X2DbTestCase extends CDbTestCase {
         return array();
     }
 
+    protected static $skipAllTests = false;
+
     private static $_referenceFixtureRecords = array();
 
     private static $_referenceFixtureRows = array();
+
+    public function setUp () {
+        if (self::$skipAllTests) {
+            $this->markTestSkipped ();
+        }
+        parent::setUp ();
+    }
 
     /**
      * Performs environmental set-up similar to that in {@link ApplicationConfigBehavior}

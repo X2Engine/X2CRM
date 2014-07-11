@@ -44,6 +44,18 @@ Yii::app()->clientScript->registerScriptFile(
     Yii::app()->request->baseUrl.'/js/X2QtipManager.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerX2Flashes ();
 
+$listItemColors = Workflow::getPipelineListItemColors ($colors, true);
+$listItemColorCss = '';
+for ($i = 1; $i <= count ($listItemColors); ++$i) {
+    $listItemColorCss .= 
+    "#workflow-stage-$i .stage-member-container {
+        background-color: ".$listItemColors[$i - 1][0].";
+    }
+    #workflow-stage-$i .stage-member-container:hover {
+        background-color: ".$listItemColors[$i - 1][1].";
+    }";
+}
+Yii::app()->clientScript->registerCss('stageMemberColorCss',$listItemColorCss);
 
 
 $stages = $model->stages;

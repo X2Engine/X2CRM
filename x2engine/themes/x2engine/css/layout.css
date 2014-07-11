@@ -1282,7 +1282,10 @@ div.page-title .title-bar a, div.page-title .summary a, div.page-title .x2-hint 
 }
 
 div.page-title .title-bar a:hover, div.page-title .summary a:hover, div.page-title .x2-hint:hover {color:#0070FF;text-shadow:none;text-decoration:underline;}
-div.page-title .title-bar .x2-button {color:#000;}
+div.page-title .title-bar .x2-button {
+    color:#000;
+    margin-top:4px;
+}
 div.page-title .title-bar .x2-button:hover {color:#000;text-decoration:none;}
 
 div.page-title div.form select {

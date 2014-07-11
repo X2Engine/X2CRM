@@ -1,5 +1,5 @@
 # X2Engine 4.1 #
-Follow-up point release 4.1.6b (beta)
+Follow-up point release 4.1.6
 7/3/2014
 
 New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
@@ -108,7 +108,7 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
   * General changelog/developer notes:
     * Included several commits from internal tree that were missed in the previous release
     * Fixed MoneyMask bug: when unsupported currencies are in use, validation was failing
-* Changes in 4.1.6 (beta) (7/3/2014): 
+* Changes in 4.1.6 (7/3/2014): 
     * Highlights
       * New "available" lead routing option:
         * Users can set online/offline availability, i.e. when they go on vacation
@@ -154,6 +154,7 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
     * Tracked Bug Fixes:  
       * [1340](http://x2software.com/index.php/bugReports/1340): User Report  
       * [1345](http://x2software.com/index.php/bugReports/1345): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens  
+      * https://github.com/X2Engine/X2Engine/issues/28
 
 
 
