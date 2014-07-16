@@ -38,8 +38,6 @@ Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/profile.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/profile.css');
 Yii::app()->clientScript->registerScriptFile(
-	Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
-Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/jquery-expander/jquery.expander.js', CClientScript::POS_END);
 
 // used for rich editing in new post text field

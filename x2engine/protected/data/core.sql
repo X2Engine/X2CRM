@@ -43,10 +43,12 @@ CREATE TABLE x2_admin(
 	enableWebTracker		TINYINT			DEFAULT 1,
 	currency				VARCHAR(3)		NULL,
 	chatPollTime			INT				DEFAULT 2000,
+    defaultTheme            INT             NULL,
 	ignoreUpdates			TINYINT			DEFAULT 0,
 	rrId					INT				DEFAULT 0,
 	leadDistribution		VARCHAR(255),
 	onlineOnly				TINYINT,
+    actionPublisherTabs     TEXT,
 	emailBulkAccount		INT	NOT NULL DEFAULT -1,
 	emailNotificationAccount	INT NOT NULL DEFAULT -1,
 	emailFromName			VARCHAR(255)	NOT NULL DEFAULT "X2Engine",
@@ -64,6 +66,7 @@ CREATE TABLE x2_admin(
 	emailUser				VARCHAR(255),
 	emailPass				VARCHAR(255),
 	emailSecurity			VARCHAR(10),
+    enforceDefaultTheme     TINYINT         DEFAULT 0,
 	installDate				BIGINT			NOT NULL,
 	updateDate				BIGINT			NOT NULL,
 	updateInterval			INT				NOT NULL DEFAULT 0,
@@ -88,20 +91,42 @@ CREATE TABLE x2_admin(
 	serviceDistribution			varchar(255),
 	serviceOnlineOnly			TINYINT,
     corporateAddress            TEXT,
-    eventDeletionTime           INT,
+    eventDeletionTime           INT, 
     eventDeletionTypes          TEXT,
     properCaseNames             INT             DEFAULT 1,
     contactNameFormat           VARCHAR(255),
 	gaTracking_public			VARCHAR(20) NULL,
 	gaTracking_internal			VARCHAR(20) NULL,
     sessionLog                  TINYINT         DEFAULT 0,
-    userActionBackdating        TINYINT         DEFAULT 0,
-    emailDropbox                TEXT,
+    userActionBackdating        TINYINT         DEFAULT 0, 
     historyPrivacy              VARCHAR(20) DEFAULT "default",
     batchTimeout                INT DEFAULT 300,
     externalBaseUrl             VARCHAR(255) DEFAULT NULL,
-    externalBaseUri             VARCHAR(255) DEFAULT NULL
+    externalBaseUri             VARCHAR(255) DEFAULT NULL,
+    appName                     VARCHAR(255) DEFAULT NULL,
+    appDescription              VARCHAR(255) DEFAULT NULL,
+    /* If set to 1, prevents X2Flow from sending emails to contacts that have doNotEmail set to 1 */
+    x2FlowRespectsDoNotEmail    TINYINT DEFAULT 0,
+    /* This is the rich text that gets displayed to contacts after they've clicked a do not email 
+       link */
+    doNotEmailPage   LONGTEXT DEFAULT NULL,
+    doNotEmailLinkText          VARCHAR(255) DEFAULT NULL
 ) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_api_hooks;
+/*&*/
+CREATE TABLE x2_api_hooks (
+    id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    event           VARCHAR(50), -- Event name. Should be named after an X2Flow trigger.
+    modelName       VARCHAR(100), -- Class of the model to which the hook corresponds.
+    target_url      VARCHAR(255), -- Target URL that the REST hook will ping.
+    userId          INT NOT NULL DEFAULT 1, -- ID of user who created the subscription.
+    directPayload   TINYINT DEFAULT 0, -- Send the model directly, as part of the payload.
+    createDate  BIGINT DEFAULT NULL, -- Creation timestamp
+    INDEX(event,modelName),
+    INDEX(createDate),
+    INDEX(target_url)
+) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_changelog;
 /*&*/
@@ -316,18 +341,10 @@ CREATE TABLE x2_profile(
 	widgets					VARCHAR(255),
 	widgetOrder				TEXT,
 	widgetSettings			TEXT,
+	defaultEmailTemplates	TEXT,
 	activityFeedOrder       TINYINT         DEFAULT 0,
-    /*backgroundColor			VARCHAR(6)		NULL,
-	menuBgColor				VARCHAR(6)		NULL,
-	menuTextColor			VARCHAR(6)		NULL,
-	pageHeaderBgColor		VARCHAR(6)		NULL,
-	pageHeaderTextColor		VARCHAR(6)		NULL,
-    activityFeedWidgetBgColor       VARCHAR(6)              NULL,
-    activityFeedWidgetTextColor     VARCHAR(6)              NULL,
-	backgroundImg			VARCHAR(100)	NULL DEFAULT "",
-	backgroundTiling		VARCHAR(10)		NULL DEFAULT "",
-	pageOpacity				INT				NULL,*/
     theme                   TEXT,
+    showActions				VARCHAR(20),
     profileWidgetLayout     TEXT,
     miscLayoutSettings      TEXT,
     notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",
@@ -363,6 +380,7 @@ CREATE TABLE x2_profile(
     historyShowAll          TINYINT         DEFAULT 0,
     historyShowRels         TINYINT         DEFAULT 0,
     googleRefreshToken      VARCHAR(255),
+	leadRoutingAvailability	TINYINT			DEFAULT 1,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
@@ -387,7 +405,7 @@ CREATE TABLE x2_roles (
 	name					VARCHAR(250),
 	users					TEXT,
         timeout                                 INT
-) ENGINE InnoDB COLLATE = utf8_general_ci;
+) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_role_exceptions;
 /*&*/
@@ -395,8 +413,8 @@ CREATE TABLE x2_role_exceptions (
 	id						INT				NOT NULL AUTO_INCREMENT primary key,
 	workflowId				INT,
 	stageId					INT,
-	roleId					INT,
-	replacementId int
+	roleId					INT, /* points to id of an x2_roles record */
+	replacementId           int /* points to id of a dummy x2_roles record */
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_role_to_permission;
@@ -577,7 +595,7 @@ CREATE TABLE x2_flows(
 	name					VARCHAR(100)	NOT NULL,
 	triggerType				VARCHAR(40)		NOT NULL,
 	modelClass				VARCHAR(40),
-	flow					TEXT,
+	flow					LONGTEXT,
 	createDate				BIGINT			NOT NULL,
 	lastUpdated				BIGINT			NOT NULL
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;

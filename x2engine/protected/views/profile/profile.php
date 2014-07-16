@@ -41,15 +41,20 @@ get displayed in addition to the activity feed/profile information sections.
 
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/profile.js', CClientScript::POS_END);
-Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/profileCombined.css');
+Yii::app()->clientScript->registerCssFiles ('profileCombinedCss', array (
+    'profile.css', 'activityFeed.css', '../../../js/multiselect/css/ui.multiselect.css'
+));
+Yii::app()->clientScript->registerResponsiveCssFile (Yii::app()->getTheme()->getBaseUrl().'/css/responsiveActivityFeed.css');
 
 AuxLib::registerPassVarsToClientScriptScript (
     'x2.profile', array ('isMyProfile' => ($isMyProfile ? 'true' : 'false')), 'profileScript');
 
 ?>
-<div id='profile-info-container-outer' class='x2-layout-island'>
+<div id='profile-content-container' <?php echo ($isMyProfile ? 'class="full-profile"' : ''); ?>>
+<div id='profile-info-container-outer'>
 <?php
 $this->renderPartial('_profileInfo', array('model'=>$model, 'isMyProfile'=>$isMyProfile)); 
+echo X2Html::getFlashes();
 ?>
 </div>
 <?php
@@ -110,7 +115,7 @@ displayWidgets (2, $layout, $this, $model);
 <?php
 }
 ?>
-<div id='activity-feed-container-outer' class='x2-layout-island'>
+<div id='activity-feed-container-outer'>
 <?php
 $this->renderPartial('_activityFeed', array(
     'dataProvider' => $dataProvider,
@@ -124,4 +129,5 @@ $this->renderPartial('_activityFeed', array(
     'isMyProfile' => $isMyProfile
 ));
 ?>
+</div>
 </div>

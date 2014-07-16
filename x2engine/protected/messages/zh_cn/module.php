@@ -31,4 +31,7 @@ return array (
 'Unable to create custom module directory.'=>'无法创建自定义模块目录。',
 'Unable to create config file for custom module.'=>'无法创建自定义模块配置文件。',
 'Unable to create table for custom module.'=>'无法创建表，自定义模块。',
+'Import {X}'=>'进口{X}',
+'Export {X}'=>'导出{X}',
+'{modelName} Attributes'=>'{modelName}属性',
 );

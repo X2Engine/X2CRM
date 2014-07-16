@@ -146,4 +146,13 @@ return array (
 'Log Time'=>'登录时间',
 'Time started'=>'开始时间',
 'Time ended'=>'结束时间',
+'Action Timer'=>'定时器动作',
+'View Email'=>'查看电子邮件',
+'Import Actions'=>'导入操作',
+'Export Actions'=>'导出操作',
+'Action timers'=>'动作计时器',
+'Time Started'=>'开始时间',
+'Time Ended'=>'截止时间',
+'Association is required for actions of this type.'=>'关联是需要这种类型的操作。',
+'Time Spent'=>'所花费的时间',
 );

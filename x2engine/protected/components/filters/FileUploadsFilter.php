@@ -47,8 +47,13 @@ class FileUploadsFilter extends CFilter {
 
     /**
      * Regular expression for blacklisted files.
+     *
+     * Does not match end of string to prevent circumvention via the methods
+     * described in OWASP's Unrestricted File Upload article:
+     * 
+     * https://www.owasp.org/index.php/Unrestricted_File_Upload#Using_Black-List_for_Files.E2.80.99_Extensions
      */
-    const EXT_BLACKLIST = '/\.\s*(?P<ext>html|htm|js|jsb|mhtml|mht|xhtml|xht|php|phtml|php3|php4|php5|phps|shtml|jhtml|pl|py|cgi|exe|scr|dll|msi|vbs|bat|com|pif|cmd|vxd|cpl|ini|conf|cnf|key|iv)\s*$/';
+    const EXT_BLACKLIST = '/\.\s*(?P<ext>html|htm|js|jsb|mhtml|mht|xhtml|xht|php|phtml|php3|php4|php5|phps|shtml|jhtml|pl|py|cgi|exe|scr|dll|msi|vbs|bat|com|pif|cmd|vxd|cpl|ini|conf|cnf|key|iv|htaccess)\b/';
 
     /**
      * List of mime-types that uploaded files should never have
@@ -64,10 +69,13 @@ class FileUploadsFilter extends CFilter {
 
     /**
      * Returns true if the file is safe to upload.
+     *
+     * Will use fileinfo if available for determining mime type of the uploaded file.
      * @param array $file
      */
     public function checkFilename($filename){
         if(preg_match(self::EXT_BLACKLIST, $filename,$match)){
+            AuxLib::debugLog('Throwing exception for array: '.var_export($_FILES,1));
             throw new CHttpException(403,Yii::t('app','Forbidden file type: {ext}',array('{ext}'=>$match['ext'])));
         }
     }
@@ -89,13 +97,28 @@ class FileUploadsFilter extends CFilter {
                 foreach($input['name'] as $name){
                     $this->checkFileName($name);
                 }
-                if($forbidden = count(array_intersect($input['type'], $this->_mimeBlacklist)) > 0){
+                if((bool) ($finfo = FileUtil::finfo())) {
+                    $types = array();
+                    foreach ($input['tmp_name'] as $path) {
+                        if(file_exists($path)) {
+                            $types[] = finfo_file($finfo, $path, FILEINFO_MIME);
+                        }
+                    }
+                } else {
+                    $types = $input['type'];
+                }
+                if($forbidden = count(array_intersect($types, $this->_mimeBlacklist)) > 0){
                     throw new CHttpException(403, Yii::t('app', 'List of uploaded files includes forbidden MIME types: {types}', array('{types}' => implode(',', $forbidden))));
                 }
             }else{
                 // One file in this input field
                 $this->checkFileName($input['name']);
-                if(in_array($input['type'],$this->_mimeBlacklist)) {
+                if(file_exists($input['tmp_name']) && (bool) ($finfo = FileUtil::finfo())) {
+                    $type = finfo_file($finfo, $input['tmp_name'], FILEINFO_MIME);
+                } else  {
+                    $type = $input['type'];
+                }
+                if(in_array($type,$this->_mimeBlacklist)) {
                     throw new CHttpException(403, Yii::t('app','Forbidden MIME type for file: {file}',array('{file}'=>$input['name'])));
                 }
             }

@@ -49,8 +49,6 @@ class SmartDataProvider extends CActiveDataProvider {
 	public function __construct($modelClass,$config=array(), $uniqueId=null) {
 		parent::__construct($modelClass, $config);
 
-        //AuxLib::debugLogR ($_GET);
-
 		//Sort and page saving code modified from:
 		//http://www.stupidannoyingproblems.com/2012/04/yii-grid-view-remembering-filters-pagination-and-sort-settings/
 
@@ -58,11 +56,10 @@ class SmartDataProvider extends CActiveDataProvider {
             $statePrefix = $uniqueId . (isset ($_GET['id']) ? '/'.$_GET['id'] : '');
         } else {
 		    //a string unique to each controller/action (and optionally id) combination
-		    $statePrefix = Yii::app()->controller->uniqueid .'/'. Yii::app()->controller->action->id . (isset($_GET['id']) ? '/'.$_GET['id'] : '');
+		    $statePrefix = 
+                Yii::app()->controller->uniqueid .'/'. Yii::app()->controller->action->id . 
+                    (isset($_GET['id']) ? '/'.$_GET['id'] : '');
         }
-
-        //AuxLib::debugLog ($this->getId());
-        //AuxLib::debugLog ($statePrefix);
 
 		// store also sorting order
 		$key = $this->getId()!='' ? $this->getId().'_sort' : 'sort';
@@ -92,7 +89,8 @@ class SmartDataProvider extends CActiveDataProvider {
 
 	/**
 	 * Returns the pagination object.
-	 * @return CPagination the pagination object. If this is false, it means the pagination is disabled.
+	 * @return CPagination the pagination object. If this is false, it means the pagination is 
+     *  disabled.
 	 */
 	public function getPagination() {
 		if($this->_pagination===null) {

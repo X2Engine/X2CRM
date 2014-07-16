@@ -40,18 +40,24 @@
  * @package application.components.x2flow.actions
  */
 class CampaignUnsubscribeTrigger extends X2FlowTrigger {
-	public $title = 'Unsubscribed from Campaign';
-	public $info = 'Triggers when a contact clicks the "unsubscribe" link in a campaign email.';
-	
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'modelClass' => 'Contacts',
-			'options' => array(
-				array('name'=>'campaign','label'=>Yii::t('studio','Campaign'),'type'=>'link','linkType'=>'Campaign','optional'=>1,'linkSource'=>Yii::app()->controller->createUrl(
-					CActiveRecord::model('Campaign')->autoCompleteSource
-				)),
-			));
-	}
+    public $title = 'Unsubscribed from Campaign';
+    public $info = 'Triggers when a contact clicks the "unsubscribe" link in a campaign email.';
+    
+    public function paramRules() {
+        return array(
+            'title' => Yii::t('studio',$this->title),
+            'info' => Yii::t('studio',$this->info),
+            'modelClass' => 'Contacts',
+            'options' => array(
+                array(
+                    'name'=>'campaign',
+                    'label'=>Yii::t('studio','Campaign'),
+                    'type'=>'link',
+                    'linkType'=>'Campaign',
+                    'optional'=>1,
+                    'linkSource'=>Yii::app()->createUrl(
+                        CActiveRecord::model('Campaign')->autoCompleteSource)
+                ),
+            ));
+    }
 }

@@ -36,7 +36,9 @@
 
 $menuItems = array(
 	array('label'=>Yii::t('opportunities','Opportunities List')),
-	array('label'=>Yii::t('opportunities','Create'), 'url'=>array('create')),
+	array('label'=>Yii::t('opportunities','Create Opportunity'), 'url'=>array('create')),
+        array('label'=>Yii::t('opportunities', 'Import Opportunities'), 'url'=>array('admin/importModels', 'model'=>'Opportunity'), 'visible'=>Yii::app()->params->isAdmin),
+        array('label'=>Yii::t('opportunities', 'Export Opportunities'), 'url'=>array('admin/exportModels', 'model'=>'Opportunity'), 'visible'=>Yii::app()->params->isAdmin),
 );
 
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
@@ -67,7 +69,7 @@ $('.search-form form').submit(function(){
 )); ?>
 </div><!-- search-form -->
 <?php
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'opportunities-grid',
 	'title'=>Yii::t('opportunities','Opportunities'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),

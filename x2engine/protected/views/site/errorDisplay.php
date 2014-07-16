@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 $errorTitle = Yii::t('app', 'Error {code}', array('{code}' => $code));
-$this->pageTitle = Yii::app()->name.' - '.$errorTitle;
+$this->pageTitle = Yii::app()->settings->appName.' - '.$errorTitle;
 ?>
 <div class="page-title">
     <h2><?php echo $errorTitle; ?></h2>

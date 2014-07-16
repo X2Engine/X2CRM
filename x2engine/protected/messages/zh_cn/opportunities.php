@@ -30,4 +30,6 @@ return array (
 'Create a new Opportunity associated with this Opportunity.'=>'创建一个新的机会，这个机会。',
 'Opportunities Stage'=>'机会阶段',
 'Relationships for Contact: '=>'联系关系：',
+'Import Opportunities'=>'进口机会',
+'Export Opportunities'=>'出口商机',
 );

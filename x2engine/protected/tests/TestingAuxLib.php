@@ -42,6 +42,14 @@
  */
 class TestingAuxLib  {
 
+     
+    /**
+     * Method used by TestingAuxLibTest to test setPublic 
+     */
+    private function privateMethod ($arg1, $arg2) {
+        return array ($arg1, $arg2);
+    }
+
     /**
      * Updates timestamps of session records 
      */
@@ -51,6 +59,65 @@ class TestingAuxLib  {
             $model->lastUpdated = time ();
             $model->save ();
         }
+    }
+
+    /**
+     * Used to invoke methods which are protected or private.
+     * @param string $className 
+     * @param string $methodName 
+     * @return function Takes an array of arguments as a parameter and calls
+     *  the specified method with those arguments.
+     */
+    public static function setPublic ($className, $methodName) {
+        $method = new ReflectionMethod ($className, $methodName);
+        $method->setAccessible (TRUE);
+        return function ($arguments) use ($method, $className) {
+            return $method->invokeArgs (new $className (), $arguments);
+        };
+    }
+
+    /**
+     * Log in with the specified credentials .
+     *
+     * NOTE: in a non-web environment (i.e. command line, running PHPUnit)
+     * this is not guaranteed to work, because Yii::app()->user is designed for
+     * web sessions. To authenticate in the established web-or-console-agnostic
+     * method, use {@link ApplicationConfigBehavior::setSuModel} (or
+     * {@link suLogin}) instead.
+     *
+     * @return bool true if login was successful, false otherwise
+     */
+    public static function login ($username, $password) {
+        $identity = new UserIdentity($username, $password);
+        $identity->authenticate ();
+		if($identity->errorCode === UserIdentity::ERROR_NONE) {
+            if (Yii::app()->user->login ($identity, 2592000)) {
+                if ($username === 'admin') {
+                    Yii::app()->params->isAdmin = true;
+                } else {
+                    Yii::app()->params->isAdmin = false;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Sets the substitute user model property of the application singleton
+     *
+     * This establishes a pseudo-session so that non-web-specific components'
+     * methods that need userspace data to run properly can be executed from the
+     * command line and do not need to depend on web-session-specific components.
+     *
+     * @param type $username
+     */
+    public static function suLogin($username) {
+        $user = User::model()->findByAlias($username);
+        if(!($user instanceof User))
+            return false;
+        Yii::app()->setSuModel($user);
+        return true;
     }
 
 }

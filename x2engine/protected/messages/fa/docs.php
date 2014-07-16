@@ -39,4 +39,8 @@ return array (
 'copy'=>'کپی',
 'Saved at'=>'ذخیره شده در',
 'Document'=>'سند',
+'Leaving this field blank will preserve its default behavior.'=>'ترک این زمینه خالی خواهد رفتار پیش فرض خود را حفظ کند.',
+'Create Quote Template'=>'ایجاد الگو نقل قول',
+'Import Docs'=>'واردات اسناد',
+'Export Docs'=>'اسناد صادرات',
 );

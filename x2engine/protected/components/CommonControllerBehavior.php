@@ -57,6 +57,9 @@ class CommonControllerBehavior extends CBehavior {
 	 */
 	private $_model;
 
+    public $redirectOnNullModel = true;
+    public $throwOnNullModel = true;
+
     /**
      * Model class specified by the property {@link x2base.modelClass} or
      * determined automatically based on controller ID, if possible.
@@ -80,7 +83,9 @@ class CommonControllerBehavior extends CBehavior {
 	 *	nothing that can be done to correctly resolve the model.
 	 * @param bool $throw Whether to throw a 404 upon not finding the model
 	 */
-	public function getModel($id=null,$throw=true){
+	public function getModel($id=null){
+        $throw = $this->throwOnNullModel;
+        $redirect = $this->redirectOnNullModel;
 		if(!isset($this->_model)) {
             // Special case for Admin: let the ID be the one and only record if unspecified
             if($this->resolvedModelClass == 'Admin' && empty($id))
@@ -92,9 +97,14 @@ class CommonControllerBehavior extends CBehavior {
             }
             
             // ID was never specified, so there's no way to tell which record to
-            // load. Thus, redirect to index:
-			if($id === null)
-				$this->owner->redirect(array('index'));
+            // load. Redirect or throw an exception based on function args.
+			if($id === null) {
+                if($redirect) {
+                    $this->owner->redirect(array('index'));
+                } elseif($throw) {
+                    throw new CHttpException(401,Yii::t('app','Invalid request; no record ID specified.'));
+                }
+            }
 
             // Look up model; ID specified
             $this->_model = CActiveRecord::model($this->resolvedModelClass)->findByPk((int) $id);
@@ -128,7 +138,10 @@ class CommonControllerBehavior extends CBehavior {
 			if(array_key_exists($var,$_SERVER)){
 				foreach(explode(',',$_SERVER[$var]) as $ip) {
 					$ip = trim($ip);
-					if(filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false)
+                    $filters = FILTER_FLAG_IPV4 | FILTER_FLAG_NO_RES_RANGE;
+                    if (!YII_DEBUG)
+                        $filters = $filters | FILTER_FLAG_NO_PRIV_RANGE;
+					if(filter_var($ip, FILTER_VALIDATE_IP, $filters) !== false)
 						return $ip;
 				}
 			}

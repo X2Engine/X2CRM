@@ -67,7 +67,7 @@ echo $this->renderPartial('application.components.views._form',
 		'form'=>$form,
 		'users'=>$users,
 		'modelName'=>'Quote',
-		'isQuickCreate'=>true, // let us create the CActiveForm in this file
+		'suppressForm'=>true, // let us create the CActiveForm in this file
 		'scenario' => $quick ? 'Inline' : 'Default',
 	)
 );
@@ -75,9 +75,9 @@ echo $this->renderPartial('application.components.views._form',
 echo $this->renderPartial('_lineItems', array(
 	'model' => $model,
 	'products' => $products,
-	'readOnly' => false
-		)
-);
+	'readOnly' => false,
+    'namespacePrefix' => 'quotes'
+));
 
 $templateRec = Yii::app()->db->createCommand()->select('nameId,name')->from('x2_docs')->where("type='quote'")->queryAll();
 $templates = array();
@@ -85,24 +85,14 @@ $templates[null] = '(none)';
 foreach($templateRec as $tmplRec){
 	$templates[$tmplRec['nameId']] = $tmplRec['name'];
 }
-echo '<div style="display:inline-block">';
+echo '<div style="display:inline-block; margin: 8px 11px;">';
 echo '<strong>'.$form->label($model, 'template').'</strong>&nbsp;';
 echo $form->dropDownList($model, 'template', $templates).'&nbsp;'.CHtml::tag('span', array('class' => 'x2-hint', 'title' => Yii::t('quotes', 'To create a template for quotes and invoices, go to the Docs module and select "{crQu}".', array('{crQu}' => Yii::t('docs', 'Create Quote')))), '[?]');
 echo '</div><br />';
 echo '	<div class="row buttons" style="padding-left:0">'."\n";
-echo CHtml::submitButton(Yii::t('app', 'Create'), array('class' => 'x2-button'.($quick?' highlight':''), 'id' => 'quote-save-button', 'tabindex' => 25))."\n";
+echo CHtml::submitButton(Yii::t('app', 'Create'), array('class' => 'x2-button'.($quick?' highlight':''), 'id' => 'quote-save-button', 'tabindex' => 25,'onClick' => 'return x2.quoteslineItems.validateAllInputs ();'))."\n";
 echo $quick?CHtml::button(Yii::t('app','Cancel'),array('class'=>'x2-button right','id'=>'quote-cancel-button','tabindex'=>24))."\n":'';
 echo "	</div>\n";
 echo '<div id="quotes-errors"></div>';
 $this->endWidget();
-
-if($quick){
-	echo '<br /><br /><hr /><script id="quick-quote-form">'."\n";
-	foreach(Yii::app()->clientScript->scripts[CClientScript::POS_READY] as $id => $script) {
-		if(strpos($id,'logo')===false)
-			echo "$script\n";
-	}
-	echo "</script>";
-}
-
 ?>

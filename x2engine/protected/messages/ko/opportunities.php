@@ -26,4 +26,6 @@ return array (
 'Create a new Opportunity associated with this Opportunity.'=>'이 기회에 관련된 새로운 기회를 만들 수 있습니다.',
 'Opportunities Stage'=>'기회 단계',
 'Relationships for Contact: '=>'연락 관계 :',
+'Import Opportunities'=>'수입 기회',
+'Export Opportunities'=>'수출 기회',
 );

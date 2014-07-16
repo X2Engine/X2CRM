@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 $this->pageTitle = $newRecord->renderAttribute('name');
-$authParams['assignedTo'] = $newRecord->assignedTo;
+$authParams['X2Model'] = $newRecord;
 $this->actionMenu = $this->formatMenu(array(
     array('label' => Yii::t('contacts', 'All Contacts'), 'url' => array('index')),
     array('label' => Yii::t('contacts', 'Lists'), 'url' => array('lists')),
@@ -64,7 +64,7 @@ $this->actionMenu = $this->formatMenu(array(
         'class' => 'x2-button highlight'
     ));
     echo "</span>";
-    if(Yii::app()->user->checkAccess('ContactsUpdate')){
+    if(Yii::app()->user->checkAccess('ContactsUpdate',$authParams)){
         echo "<span style='float:left'>";
         if($count<100){
             echo CHtml::ajaxButton(Yii::t('contacts',"Keep + Hide Others"), $this->createUrl('/contacts/contacts/ignoreDuplicates'), array(
@@ -87,7 +87,7 @@ $this->actionMenu = $this->formatMenu(array(
         }
         echo "</span>";
     }
-    if(Yii::app()->user->checkAccess('ContactsDelete')){
+    if(Yii::app()->user->checkAccess('ContactsDelete',$authParams)){
         echo "<span style='float:left'>";
         echo CHtml::ajaxButton(Yii::t('contacts',"Keep + Delete Others"), $this->createUrl('/contacts/contacts/ignoreDuplicates'), array(
             'type' => 'POST',
@@ -128,13 +128,13 @@ foreach($duplicates as $duplicate){
         'type' => 'POST',
         'data' => array('ref' => $ref, 'action' => null, 'id' => $duplicate->id, 'newId' => $newRecord->id),
         'success' => 'function(data){
-            window.location="'.$this->createUrl('/contacts/contacts/view').'?id="+data;
+            window.location="'.$this->createUrl('/contacts/contacts/view').'?id='.$duplicate->id.'";
         }'
             ), array(
         'class' => 'x2-button highlight'
     ));
     echo "</span>";
-    if(Yii::app()->user->checkAccess('ContactsUpdate', array('assignedTo' => $duplicate->assignedTo))){
+    if(Yii::app()->user->checkAccess('ContactsUpdate',$authParams)){
         echo "<span style='float:left'>";
         echo CHtml::ajaxButton(Yii::t('contacts',"Hide This Record"), $this->createUrl('/contacts/contacts/discardNew'), array(
             'type' => 'POST',
@@ -148,7 +148,7 @@ foreach($duplicates as $duplicate){
         ));
         echo "</span>";
     }
-    if(Yii::app()->user->checkAccess('ContactsDelete', array('assignedTo' => $duplicate->assignedTo))){
+    if(Yii::app()->user->checkAccess('ContactsDelete', $authParams)){
         echo "<span style='float:left'>";
         echo CHtml::ajaxButton(Yii::t('contacts',"Delete This Record"), $this->createUrl('/contacts/contacts/discardNew'), array(
             'type' => 'POST',

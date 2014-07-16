@@ -206,7 +206,7 @@ class QuotesController extends x2base {
 				// the response code manually:
 				header('HTTP/1.1 400 Validation Error');
 			}
-			$this->renderPartial('create', $viewData);
+			$this->renderPartial('create', $viewData,false,true);
 		}
 	}
 
@@ -247,7 +247,7 @@ class QuotesController extends x2base {
 				// the response code manually:
 				header('HTTP/1.1 400 Validation Error');
 			}
-			$this->renderPartial('update', $viewData);
+			$this->renderPartial('update', $viewData,false,true);
 		}
 	}
 
@@ -268,7 +268,8 @@ class QuotesController extends x2base {
 	 * @return type
 	 */
 	public function getPrintQuote($id = null,$email = false) {
-		$model = $this->getModel($id,false);
+        $this->throwOnNullModel = false;
+		$model = $this->getModel($id);
 		if($model == null)
 			return Yii::t('quotes','Quote {id} does not exist. It may have been deleted.',array('{id}'=>$id));
 		if (! ($model->templateModel instanceof Docs)) { // Legacy view (very, very plain!)
@@ -811,5 +812,9 @@ class QuotesController extends x2base {
 		$result = $command->queryAll();
 		echo CJSON::encode($result); exit;
 	}
+
+    public function actionGetItems ($term) {
+        X2LinkableBehavior::getItems ($term);
+    }
 
 }

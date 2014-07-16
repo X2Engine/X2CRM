@@ -107,7 +107,7 @@ div.form, div.wide.form {
 	-webkit-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
 	box-shadow:				0 1px 6px rgba(0,0,0,0.5); */
 	background:#fff;
-	border:1px solid #aaa;
+	/*border:1px solid #C2C2C2;*/
 	clear:both;
 	margin:0 0 5px 0;
 	padding:5px 10px;
@@ -136,7 +136,8 @@ div.form.hidden {
 div.form.details a {
 	text-decoration:none;
 }
-div.form.no-border input, div.form.no-border textarea, div.form.no-border select, div.form.no-border button {
+div.form.no-border input, div.form.no-border textarea, 
+div.form.no-border select, div.form.no-border button {
 	margin:0;
 }
 
@@ -185,11 +186,25 @@ div.form select,
 div.form input[type="checkbox"] {
 	-webkit-appearance:checkbox;
 }
+div.form input[type="checkbox"].left + label {
+    line-height: 18px;
+    padding-left: 16px;
+}
+div.form input[type="checkbox"] + .x2-question-mark {
+    margin-left: 2px;
+    position: relative;
+    top: -3px;
+}
+
+label.left + .x2-hint {
+    margin-left: 3px;
+}
+
 div.form input[type="button"], div.form input[type="submit"] {
 	-webkit-appearance:button;
 }
 div.form input[type="file"] {
-	border:none;
+	/*border:none;*/
 }
 div.form fieldset {
 	-moz-border-radius:7px;
@@ -205,6 +220,17 @@ div.form label {
 	display:block;
 	font-size:11px;
 	font-weight:bold;
+}
+div.form .left-label {
+    float: left;
+    margin-top: 7px;
+    margin-right: 2px;
+}
+div.form .left-label + input[type='checkbox'],
+div.form .left-label + input + input[type='checkbox'] {
+    margin-top: 7px;
+    margin-bottom: -7px;
+    margin-left: 3px;
 }
 div.form textarea {
 	/* overflow:hidden; */
@@ -240,7 +266,11 @@ div.form span.required {
 div.form div.error label,div.form label.error,div.form span.error {
 	color: #C00;
 }
-div.form div.error input,div.form div.error textarea,div.form div.error select,div.form input.error,div.form textarea.error,div.form select.error,
+div.form div.error input,
+div.form div.error textarea,
+div.form div.error select,
+div.form input.error,
+div.form textarea.error,div.form select.error,
 .ui-dialog input.error {
 	background: #FEE;
 	border-color: #C00;
@@ -295,13 +325,14 @@ div.form .background-row a.delete-link {
 	float:right;
 	background:none;
 }
-.admin-screen h2 {
+.admin-screen div.x2-layout-island h2 {
 	background-repeat:no-repeat;
 	background-position:middle left;
 	background-color:transparent;
 	padding-left:55px;
 	line-height:48px;
 }
+
 .admin-screen h2#admin-email {background-image:url(../images/admin_email.png);}
 .admin-screen h2#admin-settings {background-image:url(../images/admin_settings.png);}
 .admin-screen h2#admin-studio {background-image:url(../images/admin_studio.png);}
@@ -340,6 +371,7 @@ div.form textarea {
 	width:556px;
 	padding:2px 4px;
 }
+
 div.text-area-wrapper {
 	width:auto;
 	margin:0 0 5px 0;
@@ -351,9 +383,18 @@ div.text-area-wrapper {
 	border-radius:			2px;
 	background:#fff;
 }
-div.text-area-wrapper textarea {width:100%;margin:0;padding:0 !important;border:none;}
+div.text-area-wrapper.error {
+	background:#FEE !important;
+	border-color:#C00 !important;
+}
+div.text-area-wrapper textarea {
+    width:100%;
+    margin:0;
+    padding:0 !important;
+    border:none;
+}
 
-div.form input, div.form textarea, div.form select, div.form button,
+div.form input, div.form textarea, /*div.form select,*/ div.form button,
 .ui-dialog input {
 	font-size:12px;
 	font-family:Arial, Helvetica, sans-serif;

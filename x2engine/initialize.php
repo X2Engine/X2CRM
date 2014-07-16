@@ -38,9 +38,9 @@
 // Global Objects //
 ////////////////////
 // Run the silent installer with default values?
-$silent = isset($_GET['silent']) || (isset($argv) && in_array('silent', $argv));
-// Response object for AJAX-driven installation
-$response = array();
+$silent = php_sapi_name() === 'cli'
+    || isset($_GET['silent'])
+    || (isset($argv) && in_array('silent', $argv));
 // Whether a response is already in progress
 $responding = false;
 // Configuration values passed to PDOStatement::execute for parameter binding
@@ -59,6 +59,7 @@ $confKeys = array(
 	'adminPass2',
 	'apiKey',
 	'app',
+    'baseUrl',
 	'buildDate',
 	'currency',
 	'currency2',
@@ -81,7 +82,6 @@ $confKeys = array(
 	'updaterVersion',
 	'user_agent',
 	'visibleModules',
-	'webLeadUrl',
 	'x2_version',
 	'type',
 	'startCron',
@@ -119,7 +119,8 @@ $dbKeys = array(
 	'bulkEmail',
 	'language',
 	'timezone',
-	'visibleModules'
+	'visibleModules',
+    'app'
 );
 // Values gathered for statistical/anonymous survey purposes:
 $sendArgs = array(
@@ -152,84 +153,27 @@ $confMap = array(
 	'installType' => 'type',
 );
 
-/**
- * Function for communicating status messages to the installer (whether command line or browser)
- *
- * @param $message The message with which to respond
- * @param $error The error, if any
- */
-function respond($message, $error = 0) {
-	global $response, $silent, $responding;
-	$responding = true;
-	if ($error)
-		$response['globalError'] = $error;
-	if ($silent) {
-		echo "$message\n";
-	} else if (isset($_GET['stage']) || isset($_POST['testDb']) || isset($_POST['testCron'])) {
-		header('Content-Type: application/json');
-		$response['message'] = $message;
-		$response['error'] = (bool) $error;
-		echo json_encode($response);
-		exit(0);
-	}
-}
+require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__,'protected','components','util','ResponseUtil.php')));
+
+// AJAX-driven installation needs "OK" status to work properly, even if there
+// are errors to display:
+ResponseUtil::$errorCode = 200;
+
+// Response object for AJAX-driven installation
+$response = new ResponseUtil;
 
 /**
- * Wrapper for "die"; agnostic to whether the installation is web or command line
+ * Convenience wrapper for ResponseUtil::respond
  *
  * @param string $message
  */
 function RIP($message) {
-	global $silent, $response;
-	if ($silent) {
-		die($message . "\n");
-	} else {
-		$response['failed'] = 1;
-		respond($message,1);
-	}
+    ResponseUtil::respond($message,1);
 }
 
-/**
- * Error-handling function: displays info about what went horribly wrong if anything
- *
- * @param type $no
- * @param type $st
- * @param type $fi
- * @param type $ln
- */
-function respondWithError($no, $st, $fi = Null, $ln = Null) {
-	RIP("PHP Error [$no]: $st ($fi, L$ln)");
-}
-
-/**
- * Exception-handling function: displays full exception message, if any wasn't caught.
- *
- * @param Exception $exception
- */
-function respondWithException($exception) {
-	RIP("Uncaught exception with message: " . $exception->getMessage());
-}
-
-/**
- * Shutdown function for fatal errors
- *
- * @global boolean $responding
- */
-function respondFatalErrorMessage() {
-	global $responding;
-	$error = error_get_last();
-	if ($error != null && !$responding) {
-		$errno = $error["type"];
-		$errfile = $error["file"];
-		$errline = $error["line"];
-		$errstr = $error["message"];
-		RIP("PHP ".($errno==E_PARSE?'parse':'fatal')." error [$errno]: $errstr in $errfile L$errline");
-	}
-}
-
-set_error_handler('respondWithError');
-set_exception_handler('respondWithException');
-register_shutdown_function('respondFatalErrorMessage');
+set_error_handler('ResponseUtil::respondWithError');
+set_exception_handler('ResponseUtil::respondWithException');
+register_shutdown_function('ResponseUtil::respondFatalErrorMessage');
 ini_set('display_errors',0);
 // Test the connection and exit:
 if (isset($_POST['testDb'])) {
@@ -292,13 +236,13 @@ if (isset($_POST['testDb'])) {
 	}
     $con->exec("DROP TABLE `x2_test_table`");
 
-	respond(installer_t("Connection successful!"));
+	ResponseUtil::respond(installer_t("Connection successful!"));
 }elseif(isset($_POST['testCron'])){
     require_once 'protected/components/util/CommandUtil.php';
     $command = new CommandUtil();
     try{
         $command->loadCrontab();
-        respond(installer_t('Cron can be used on this system'));
+        ResponseUtil::respond(installer_t('Cron can be used on this system'));
     }catch(Exception $e){
     	if($e->getCode() == 1)
 		RIP(installer_t('The "crontab" command does not exist on this system, so there is no way to set up cron jobs.'));
@@ -416,7 +360,7 @@ function outputErrors() {
  */
 function addError($message) {
 	global $response;
-	if (!isset($response['errors'])) {
+	if (!array_key_exists('errors',$response)) {
 		$response['errors'] = array();
 	}
 	$response['errors'][] = $message;
@@ -436,16 +380,24 @@ function addSqlError($message) {
  * @param type $attr
  * @param type $error
  */
-function addValidationError($attr, $error) {
-	global $response, $silent;
-	if (isset($_GET['stage']) || $silent) {
-		if (!isset($response['errors']))
-			$response['errors'] = array();
-		$response['errors'][$attr] = installer_t($error);
-	} else {
-		// Slip the validation error into the GET parameters as [attribute]--[errormessage]
-		$response['errors'][] = "$attr--$error";
-	}
+function addValidationError($attr, $error){
+    global $response, $silent;
+    $errors = array();
+    if(isset($response['errors'])) {
+        // We have to extract the damn thing and then set it after appending
+        // error messages rather than simply setting elements of the nested
+        // array because PHP.
+        //
+        // http://stackoverflow.com/a/2881533/1325798
+        $errors = $response['errors'];
+    }
+    if(isset($_GET['stage']) || $silent){
+        $errors[$attr] = installer_t($error);
+    }else{
+        // Slip the validation error into the GET parameters as [attribute]--[errormessage]
+        $errors[] = "$attr--$error";
+    }
+    $response['errors'] = $errors;
 }
 
 /**
@@ -455,6 +407,7 @@ function addValidationError($attr, $error) {
  * @param type $module
  */
 function installModule($module, $respond = True) {
+    if ($module === 'x2Activity') return;
 	global $dbo;
 	$moduleName = installer_t($module);
 	$regPath = "protected/modules/$module/register.php";
@@ -484,7 +437,7 @@ function installModule($module, $respond = True) {
 			}
 		}
 		if ($respond)
-			respond(installer_tr('Module "{module}" installed.', array('{module}' => $moduleName)));
+			ResponseUtil::respond(installer_tr('Module "{module}" installed.', array('{module}' => $moduleName)));
 	} else {
 		RIP(installer_tr('Failed to install module "{module}"; could not find configuration file at {path}.', array('{module}' => $moduleName, '{path}' => $regPath)));
 	}
@@ -496,7 +449,9 @@ function installModule($module, $respond = True) {
  * @param $stage The named stage of installation.
  */
 function installStage($stage) {
-	global $editions, $dbConfig, $dbKeys, $dateFields, $enabledModules, $dbo, $config, $confMap, $response, $silent, $stageLabels, $write;
+	global $editions, $dbConfig, $dbKeys, $dateFields, $enabledModules, $dbo, 
+            $config, $confMap, $response, $silent, $stageLabels, $write,
+            $nonFreeTables,$editionHierarchy;
 
 	switch ($stage) {
 		case 'validate':
@@ -522,7 +477,7 @@ function installStage($stage) {
 				addValidationError('adminPass2', 'Admin passwords did not match.');
 			if (!empty($response['errors'])) {
                 if(!$silent) {
-                    respond(installer_t('Please correct the following errors:'));
+                    RIP(installer_t('Please correct the following errors:'));
                 } else {
                     outputErrors();
                 }
@@ -547,7 +502,7 @@ function installStage($stage) {
 			} else {
 				$gii = "array(\n\t'class'=>'system.gii.GiiModule',\n\t'password'=>'password',\n\t/* If the following is removed, Gii defaults to localhost only. Edit carefully to taste: */\n\t 'ipFilters'=>array('127.0.0.1', '::1'),\n)";
 			}
-			$config['webLeadUrl'] = is_int(strpos($config['webLeadUrl'], 'initialize.php')) ? substr($config['webLeadUrl'], 0, strpos($config['webLeadUrl'], 'initialize.php')) : $config['webLeadUrl'];
+			$config['baseUrl'] = is_int(strpos($config['baseUrl'], 'initialize.php')) ? substr($config['baseUrl'], 0, strpos($config['baseUrl'], 'initialize.php')) : $config['baseUrl'];
 			$X2Config = "<?php\n";
 			foreach (array('appName', 'email', 'host', 'user', 'pass', 'dbname', 'version') as $confKey)
 				$X2Config .= "\$$confKey = ".var_export($config[$confMap[$confKey]],1).";\n";
@@ -558,20 +513,40 @@ function installStage($stage) {
 			$config['time'] = time();
 			foreach ($dbKeys as $property)
 				$dbConfig['{' . $property . '}'] = $config[$property];
-			$contents = file_get_contents('webLeadConfig.php');
-			$contents = preg_replace('/\$url=\'\'/', "\$url='{$config['webLeadUrl']}'", $contents);
-			$contents = preg_replace('/\$user=\'\'/', "\$user='admin'", $contents);
-			$contents = preg_replace('/\$userKey=\'\'/', "\$userKey='{$config['adminUserKey']}'", $contents);
-			file_put_contents('webLeadConfig.php', $contents);
+			$contents = file_get_contents('webConfig.php');
+			$contents = preg_replace('/\$url\s*=\s*\'\'/', "\$url=".var_export($config['baseUrl'],1), $contents);
+			$contents = preg_replace('/\$user\s*=\s*\'\'/', "\$user=".var_export($config['adminUsername'],1), $contents);
+			$contents = preg_replace('/\$userKey\s*=\s*\'\'/', "\$userKey=".var_export($config['adminUserKey'],1), $contents);
+			file_put_contents('webConfig.php', $contents);
 			if ($config['test_db']) {
-				$filename = 'protected/config/X2Config-test.php';
+				$filename = implode(DIRECTORY_SEPARATOR,array(__DIR__,'protected','config','X2Config-test.php'));
 				if (!empty($config['test_url'])) {
-					$webTestConfigFile = dirname(__FILE__) . implode(DIRECTORY_SEPARATOR, array('', 'protected', 'tests', '')) . 'WebTestConfig.php';
-					$webTestConfig = "<?php define('TEST_BASE_URL','{$config['test_url']}/'); ?>";
+                    $defaultConfig = file_get_contents(implode(DIRECTORY_SEPARATOR, array(
+                        __DIR__,
+                        'protected',
+                        'tests',
+                        'WebTestConfig_example.php'
+                    )));
+					$webTestConfigFile = implode(DIRECTORY_SEPARATOR, array(
+                        __DIR__,
+                        'protected',
+                        'tests',
+                        'WebTestConfig.php'
+                    ));
+                    $webTestUrl = rtrim($config['test_url'],'/').'/';
+                    $webTestRoot = rtrim(preg_replace('#index-test\.php/?$#','',trim($config['test_url'])),'/').'/';
+                    $testConstants = array(
+                        'TEST_BASE_URL'=> var_export($webTestUrl,1),
+                        'TEST_WEBROOT_URL' => var_export($webTestRoot,1)
+                    );
+                    $webTestConfig = $defaultConfig;
+                    foreach($testConstants as $name => $value) {
+                        $webTestConfig = preg_replace("/^defined\('$name'\) or define\('$name'\s*,.*$/m","defined('$name') or define('$name',$value);",$webTestConfig);
+                    }
 					file_put_contents($webTestConfigFile, $webTestConfig);
 				}
 			} else
-				$filename = 'protected/config/X2Config.php';
+				$filename = implode(DIRECTORY_SEPARATOR,array(__DIR__,'protected','config','X2Config.php'));
 			$handle = fopen($filename, 'w') or RIP(installer_tr('Could not create configuration file: {filename}.',array('{filename}'=>$filename)));
 
 			// Write core application configuration:
@@ -587,7 +562,7 @@ function installStage($stage) {
 			$dbConfig['{adminPass}'] = md5($config['adminPass']);
 			$dbConfig['{adminUserKey}'] = $config['adminUserKey'];
 			try {
-				foreach (array('', '-pro') as $suffix) {
+				foreach (array('', '-pro', '-pla') as $suffix) {
 					$sqlPath = "protected/data/config$suffix.sql";
 					$sqlFile = realpath($sqlPath);
 					if ($sqlFile) {
@@ -654,6 +629,18 @@ function installStage($stage) {
 						$time2 = $time * 2;
 						$timeDiff = $time - (int) trim($dateGen);
 						foreach ($dateFields as $table => $fields) {
+                            $tableEdition = 'opensource';
+                            foreach($editions as $ed) {
+                                if(in_array($table,$nonFreeTables[$ed])) {
+                                    $tableEdition = $ed;
+                                    break;
+                                }
+                            }
+                            if(!(bool) $editionHierarchy[$config['edition']][$tableEdition]) {
+                                // Table not "contained" in the current edition
+                                continue;
+                            }
+
 							foreach ($fields as $field) {
                                 try {
                                     $dbo->exec("UPDATE `$table` SET `$field`=`$field`+$timeDiff WHERE `$field` IS NOT NULL AND `$field`!=0 AND `$field`!=''");
@@ -694,7 +681,7 @@ function installStage($stage) {
 			break;
 	}
 	if (in_array($stage, array_keys($stageLabels)) && $stage != 'finalize' && !($stage == 'validate' && $silent))
-		respond(installer_tr("Completed: {stage}", array('{stage}' => $stageLabels[$stage])));
+		ResponseUtil::respond(installer_tr("Completed: {stage}", array('{stage}' => $stageLabels[$stage])));
 }
 
 require_once('protected/components/util/FileUtil.php');
@@ -711,19 +698,22 @@ foreach ($confKeys as $key) {
 }
 // Load static app configuration files:
 $staticConfig = array(
-	'editions' => 'protected/data/editions.php',
 	'stageLabels' => 'protected/data/installStageLabels.php',
 	'enabledModules' => 'protected/data/enabledModules.php',
-	'dateFields' => 'protected/data/dateFields.php'
+	'dateFields' => 'protected/data/dateFields.php',
+    'nonFreeTables' => 'protected/data/nonFreeTables.php',
+    'editionHierarchy' => 'protected/data/editionHierarchy.php',
 );
 foreach ($staticConfig as $varName => $path) {
 	$realpath = realpath($path);
 	if ($realpath) {
-		${$varName} = require_once($realpath);
+		${$varName} = require($realpath);
 	} else {
 		RIP("Could not find static configuration file $path.");
 	}
 }
+// Non-free editions to consider
+$editions = array_diff(array_keys($editionHierarchy),array('opensource'));
 
 baseConfig();
 
@@ -745,7 +735,7 @@ if ($silent) {
 		$config[$checkbox] = (isset($_POST[$checkbox]) && $_POST[$checkbox] == 1) ? 1 : 0;
 	}
 	$config['unique_id'] = isset($_POST['unique_id']) ? $_POST['unique_id'] : 'none';
-	$config['webLeadUrl'] = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+	$config['baseUrl'] = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 }
 //if(!in_array($config['type'],array('Silent','Bitnami','Testing'))) // Special installation types
 //	$config['type'] = $config['test_db']==1?'Testing':($silent ? 'Silent' : 'On Premise');
@@ -849,13 +839,14 @@ try {
 } catch (PDOException $e) {
 	// Database connection failed. Send validation errors.
 	foreach (array('dbHost' => 'Host Name', 'dbName' => 'Database Name', 'dbUser' => 'Username', 'dbPass' => 'Password') as $attr => $label) {
-		if (empty($_POST[$attr])) {
+		if (empty($config[$attr])) {
 			addValidationError($attr, installer_tr('{attr}: cannot be blank', array('{attr}' => installer_t($label))));
 		} else {
 			addValidationError($attr, installer_tr('{attr}: please check that it is correct', array('{attr}' => installer_t($label))));
 		}
 	}
-	respond(installer_t('Database connection error'), htmlentities($e->getMessage()));
+    $response['errors'] = array(htmlentities($e->getMessage()));
+	ResponseUtil::respond(installer_t('Database connection error'),1);
 }
 
 //////////////////////////////
@@ -869,6 +860,7 @@ if (!$complete && !$silent)
 // Install everything all at once:
 if (($silent || !isset($_GET['stage'])) && !$complete) {
 	// Install core schema/data, modules, and configure:
+    ResponseUtil::respond("-- Installing version {$config['x2_version']} --");
 	foreach (array('validate','core', 'RBAC', 'timezoneData', 'module', 'config', 'dummy_data', 'finalize') as $component)
 		installStage($component);
 } else if (isset($_GET['stage'])) {
@@ -881,7 +873,7 @@ if (!$complete || $silent) {
 	outputErrors();
 	$installTime = time();
 	file_put_contents(implode(DIRECTORY_SEPARATOR,array(realpath('protected/data'),'install_timestamp')),$installTime);
-	respond(installer_tr('Installation completed {time}.',array('{time}' => strftime('%D %T',$installTime))));
+	ResponseUtil::respond(installer_tr('Installation completed {time}.',array('{time}' => strftime('%D %T',$installTime))));
 	if ($silent && function_exists('curl_init') && $config['type'] != 'Testing') {
 		foreach ($sendArgs as $urlKey) {
 			$stats[$urlKey] = $config[$urlKey];

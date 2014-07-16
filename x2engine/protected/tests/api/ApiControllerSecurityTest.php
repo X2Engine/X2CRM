@@ -46,7 +46,7 @@ Yii::import('application.modules.users.models.User');
  * @package application.tests.api
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class ApiControllerSecurityTest extends CURLTestCase {
+class ApiControllerSecurityTest extends CURLDbTestCase {
 	
 	public $fixtures = array(
 		'users' => 'User',

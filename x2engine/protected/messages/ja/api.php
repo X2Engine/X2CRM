@@ -11,4 +11,5 @@ return array (
 'Error'=>'エラー',
 'Cannot delete; no parameters specified for finding a relationship record to delete.'=>'削除することはできません。はパラメータは削除するリレーションシップ·レコードを見つけるために指定されていません。',
 'No relationships deleted; none were found matching specfied parameters.'=>'いいえ関係は削除されません。いずれもspecfie​​dパラメータに一致する見つかりませんでした。',
+'Couldn\'t perform {a} on model {m}'=>'Couldn \ &#39;トン行う{a}モデル{m}',
 );

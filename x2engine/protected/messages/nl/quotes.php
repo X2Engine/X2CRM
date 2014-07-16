@@ -68,4 +68,6 @@ return array (
 'Are you sure you want to delete this quote?'=>'Weet u zeker dat u dit citaat verwijderen?',
 'This quote is locked. Are you sure you want to update this quote?'=>'Dit citaat is vergrendeld. Weet u zeker dat u dit citaat updaten?',
 'This quote is locked.'=>'Dit citaat is vergrendeld.',
+'Import Quotes'=>'Quotes import',
+'Export Quotes'=>'Export Quotes',
 );

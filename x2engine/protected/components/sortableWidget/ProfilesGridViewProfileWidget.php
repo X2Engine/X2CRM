@@ -96,17 +96,18 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
                         'lastLogin' => 80,
                     ),
                     'template'=>
-                        '<div class="page-title">{buttons}{filterHint}'.
+                        '<div class="page-title"><h2 class="grid-widget-title-bar-dummy-element">'.
+                        '</h2>{buttons}{filterHint}'.
                         '{summary}{topPager}</div>{items}{pager}',
                     'modelAttrColumnNames'=>array (
                         'tagLine', 'username', 'officePhone', 'cellPhone', 'emailAddress', 
-                        'googleId', 'isActive'
+                        'googleId', 'isActive', 'leadRoutingAvailability',
                     ),
                     'specialColumns'=>array(
                         'fullName'=>array(
                             'name'=>'fullName',
                             'header'=>Yii::t('profile', 'Full Name'),
-                            'value'=>'CHtml::link($data->fullName,array("view","id"=>$data->id))',
+                            'value'=>'CHtml::link($data->user->fullName,array("view","id"=>$data->id))',
                             'type'=>'raw',
                         ),
                         'lastLogin'=>array(
@@ -127,6 +128,20 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
                                 ' class=\'".(Session::isOnline ($data->username) ? '.
                                 '"active-indicator" : "inactive-indicator")."\'></span>"',
                             'type'=>'raw',
+                        ),
+                        'username' => array(
+                            'name' => 'username',
+                            'header' => Yii::t('profile','Username'),
+                            'value' => 'CHtml::encode($data->user->alias)',
+                            'type' => 'raw'
+                        ),
+                        'leadRoutingAvailability' => array(
+                            'name' => 'leadRoutingAvailability',
+                            'header' => Yii::t('profile','Lead Routing Availability'),
+                            'value' => 'CHtml::encode($data->leadRoutingAvailability ? 
+                                Yii::t("profile", "Available") :
+                                Yii::t("profile", "Unavailable"))',
+                            'type' => 'raw'
                         ),
                     ),
                     'enableControls'=>false,

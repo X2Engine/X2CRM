@@ -34,9 +34,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin','Add Exception'); ?></h2></div>
+<div class="page-title rounded-top"><h2><?php echo Yii::t('admin','Add Exception'); ?></h2></div>
 <div class="form">
-<div style="width:500px">
+<div style="max-width:500px">
     <?php echo Yii::t('admin',"Adding an exception will alter a Role's behavior while the contact is on a particular process stage.  You can change which fields are editable by whom to be dependent on where a contact is in the process this way.") ?>
 </div><br>
 <?php
@@ -82,7 +82,7 @@ foreach($list as $role){
                 'empty'=>Yii::t('admin','Select a role'),
                 'ajax' => array(
                 'type'=>'POST', //request type
-                'url'=>CController::createUrl('/admin/getRole'), //url to call.
+                'url'=>CController::createUrl('/admin/getRole', array('mode'=>'exception')), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#roleFormTwo', //selector to update
                 'complete'=>"function(){

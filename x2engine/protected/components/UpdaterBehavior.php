@@ -41,17 +41,31 @@ Yii::import('application.models.Admin');
 // Extra safeguard, in case automatic creation fails, to maintain that the
 // sub-components-directories aliases are valid:
 foreach(array('util') as $compDir){
-    $compDir = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'components', $compDir));
-    if(!is_dir($compDir))
-        mkdir($compDir);
-    Yii::import("application.components.$compDir.*");
+    $compDirPath = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'components', $compDir));
+    if(!is_dir($compDirPath))
+        @mkdir($compDirPath);
+    if(is_dir($compDirPath))
+        Yii::import("application.components.$compDir.*");
 }
 
 
 
+defined('X2_FTP_FILEOPER') or define('X2_FTP_FILEOPER', false);
+defined('X2_FTP_HOST') or define('X2_FTP_HOST', 'localhost');
+defined('X2_FTP_USER') or define('X2_FTP_USER', 'root');
+defined('X2_FTP_PASS') or define('X2_FTP_PASS', '');
+defined('X2_FTP_CHROOT_DIR') or define('X2_FTP_CHROOT_DIR', false);
+defined('X2_UPDATE_BETA') or define('X2_UPDATE_BETA',false);
+
 /**
  * Behavior class with application updater/upgrader utilities.
  *
+ * Note to all future developers: it is important to bear in mind that if you
+ * need to make changes to the updates system or the updater in general, they
+ * must be backwards-compatible with all earlier versions of the software (or as
+ * far back as possible).
+ *
+ * @property string $backCompatFile Path to the backwards compatibility flag file.
  * @property array $checksums When running an update, this is a list of all MD5 hashes of files to be applied, with filenames their keys and checksums their values.
  * @property string $checksumsContent The contents of the package contents digest file.
  * @property array $compatibilityStatus An array specifying compatibility issues.
@@ -78,6 +92,7 @@ foreach(array('util') as $compDir){
  * @property string $updateDataRoute (read-only) Relative URL (to the base URL of the update server) from which to get update manifests.
  * @property string $updateDir (read-only) the directory of updates.
  * @property string $updatePackage (read-only) destination path for the update package.
+ * @property string $updateServer Base URL of the web server from which to fetch data and files
  * @property string $version Version of X2Engine
  * @property string $webRoot (read-only) Absolute path to the web root, even if not in a web request
  * @property array $webUpdaterActions (read-only) array of actions in the web-based updater utility.
@@ -109,6 +124,8 @@ class UpdaterBehavior extends ResponseBehavior {
 
     const LOGFILE = 'update_db_restore.log';
 
+    const BCOFILE = 'backcompat.run';
+
     // Whatever you do, DO NOT change this to a blank string. It WILL result in
     // the obliteration of all files in the app!
     const UPDATE_DIR = 'update';
@@ -139,7 +156,6 @@ class UpdaterBehavior extends ResponseBehavior {
     const ERR_NOPROCOP = 11;
 
     const ERR_DATABASE = 12;
-
 
     // File statuses:
 
@@ -354,15 +370,11 @@ class UpdaterBehavior extends ResponseBehavior {
         "components/UpdaterBehavior.php",
         "components/util/FileUtil.php",
         "components/util/EncryptUtil.php",
+        "components/util/ResponseUtil.php",
         "components/ResponseBehavior.php",
         "components/views/requirements.php",
         "commands/UpdateCommand.php"
     );
-
-    /**
-     * Base URL of the web server from which to fetch data and files
-     */
-    public $updateServer = 'https://x2planet.com';
 
     /**
      * Converts an array formatted like a behavior or controller actions array
@@ -409,6 +421,64 @@ class UpdaterBehavior extends ResponseBehavior {
             throw new CException($message);
         }
         return $success;
+    }
+
+    /**
+     * Backwards compatibility hacks - I mean, hooks - to run after self-updating.
+     *
+     * Sometimes, downloading a copy of itself isn't enough. The updater must do
+     * additional work after it self-updates in order to resolve unforeseen
+     * post-refresh issues.
+     *
+     * This works by creating a file in the runtime folder that counts as
+     * evidence that it has been run already and thus does not need to be run
+     * again (to avoid endless redirect loops in the web updater, for instance).
+     *
+     * This was added because the decision was made to add ResponseUtil as a
+     * dependency, yet because the file already exists as of many versions
+     * before, it wouldn't be automatically fetched, because the earlier version
+     * of the updater wouldn't have known that it needed to be updated first.
+     * 
+     * @return bool True or false; true indicates that action has been taken,
+     *  whereas false indicates no action needs to be taken nor has been taken.
+     */
+    public function backCompatHooks($latestUpdaterVersion) {
+        $runFlag = $this->backCompatFile;
+        if(file_exists($runFlag)) {
+            return false;
+        }
+        // Create the "flag" file as evidence that this function has been run:
+        if(@file_put_contents($runFlag,time()) === false)
+            return false; // Nothing more that can or should be done past here.
+
+
+        $version = $this->configVars['version'];
+        $updaterVersion = $this->configVars['updaterVersion'];
+        
+        $this->output(Yii::t('admin', 'Running backwards compatibility actions for this version.'));
+
+        // This variable indicates that a second self-update should be performed:
+        $action = false;
+
+        // Missing requirement ResponseUtil before 4.0:
+        if (version_compare($version, '4.0') < 0
+                && version_compare($version,'3.4') >= 0) {
+            $action = true;
+            $this->downloadSourceFile("protected/components/util/ResponseUtil.php") ;
+            $this->applyFiles(self::TMP_DIR);
+        }
+
+        // Any other problems that arise in future versions to go here
+
+        return $action;
+    }
+
+    public function attach($owner) {
+        if (X2_FTP_FILEOPER && ! $this->isConsole){
+            $dir = str_replace('protected', '', Yii::app()->basePath);
+            FileUtil::ftpInit(X2_FTP_HOST, X2_FTP_USER, X2_FTP_PASS, $dir, X2_FTP_CHROOT_DIR);
+        }
+        parent::attach($owner);
     }
 
     /**
@@ -618,6 +688,9 @@ class UpdaterBehavior extends ResponseBehavior {
         return true;
     }
 
+    
+
+
     /**
      * Securely obtain the latest version.
      */
@@ -658,7 +731,7 @@ class UpdaterBehavior extends ResponseBehavior {
     }
 
     /**
-     * Deletes the update package folder.
+     * Deletes the update package folder
      *
      * @param string $dir
      */
@@ -830,7 +903,7 @@ class UpdaterBehavior extends ResponseBehavior {
         if(file_exists($lockFile)) {
             $lockTime =  (int) trim(file_get_contents($lockFile));
             if(time()-$lockTime > 3600) // No operation should take longer than an hour
-                unlink($lockFile);
+                FileUtil::removeLockfile($lockFile);
             else
                 throw new CException(Yii::t('admin', 'An operation that began {t} is in progress (to apply database and file changes to X2Engine). If you are seeing this message, and the stated time is less than a minute ago, this is most likely because your web browser made a duplicate request to the server. Please stand by while the operation completes. Otherwise, you may delete the lock file {file} and try again.',array('{t}'=>strftime('%h %e, %r',$lockTime),'{file}'=>$this->lockFile)),self::ERR_ISLOCKED);
         }
@@ -851,7 +924,7 @@ class UpdaterBehavior extends ResponseBehavior {
         // No turning back now. This is it!
         //
         // Create the lockfile:
-        file_put_contents($lockFile, time());
+        FileUtil::createLockfile($lockFile);
 
         // Run the necessary database changes:
         try{
@@ -861,11 +934,13 @@ class UpdaterBehavior extends ResponseBehavior {
             // The operation cannot proceed and is technically finished 
             // executing, so there's no use keeping the lock file around except
             // to frustrate and confuse the end user.
-            unlink($lockFile);
+            FileUtil::removeLockfile($lockFile);
             // Toss the Exception back up so it propagates through the stack and
             // the caller can use its message for responding to the user:
             throw $e;
         }
+
+        $lastException = null;
 
         try{
             // The hardest part of the update (database changes) is now done. If any
@@ -877,8 +952,6 @@ class UpdaterBehavior extends ResponseBehavior {
             $this->applyFiles();
             // Delete old files:
             $this->removeFiles($this->manifest['deletionList']);
-            $lastException = null;
-
             $this->output(Yii::t('admin','Cleaning up...'));
             if($this->scenario == 'update'){
                 $this->resetAssets();
@@ -897,24 +970,27 @@ class UpdaterBehavior extends ResponseBehavior {
         }
 
         // Remove the lock file
-        unlink($lockFile);
+        FileUtil::removeLockfile($lockFile);
+        // Remove the backwards compatibility flag since the update is now done
+        if(file_exists($bcFile = $this->backCompatFile))
+            unlink($bcFile);
 
         // Clear the cache
         $cache = Yii::app()->cache;
         if(!empty($cache))
             $cache->flush();
         // Clear the auth cache
-        Yii::app()->db->createCommand('DELETE FROM x2_auth_cache')->execute();
+        Yii::app()->db->createCommand('DELETE FROM x2_auth_cache WHERE 1')->execute();
         if($this->scenario == 'update'){
             // Log everyone out; session data may now be obsolete.
             Yii::app()->db->createCommand('DELETE FROM x2_sessions')->execute();
         }
 
         // Done.
-        if(empty($lastException)) {
-            return false;
+        if($lastException instanceof Exception) {
+            throw new CException(Yii::t('admin','Encountered an issue after applying database changes. The error message given was {msg}.',array('{msg}'=>$lastException->getMessage())));
         }else{
-            throw new CException($message);
+            return false;
         }
     }
     
@@ -994,6 +1070,14 @@ class UpdaterBehavior extends ResponseBehavior {
     }
 
     /**
+     * Returns the path to the backwards-compatibility flag file.
+     * @return string
+     */
+    public function getBackCompatFile() {
+        return implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'runtime',self::BCOFILE));
+    }
+
+    /**
      * Parse output formatted according to that of md5sum into an array of
      * hashes indexed by filename. If no output is specified, the update
      * package's content digest will be used as input.
@@ -1040,7 +1124,7 @@ class UpdaterBehavior extends ResponseBehavior {
             ////////////////////////////////
             
             $req = $this->requirements;
-            $allClear = $allClear && !$req['hasMessages'];
+            $allClear = $allClear && $req['canInstall'];
 
             /////////////////////////////////
             // Check database permissions: //
@@ -1126,6 +1210,17 @@ class UpdaterBehavior extends ResponseBehavior {
                     // statements generated by the update builder.
                 }
             }
+            // Special case for Actions.actionDescription, which was deleted
+            // from the fields table in 3.0 due to a structural change and and
+            // added back in 3.5.5:
+            if(version_compare($this->version,'3.0') < 0 && isset($conflictingFields['Actions']['actionDescription'])) {
+                unset($conflictingFields['Actions']['actionDescription']);
+                if(count($conflictingFields['Actions']) == 0) {
+                    unset($conflictingFields['Actions']);
+                }
+            }
+
+
             $allClear = $allClear && empty($conflictingFields);
 
             ///////////////////////////////////////////////////
@@ -1142,6 +1237,7 @@ class UpdaterBehavior extends ResponseBehavior {
                     }
                 }
             }
+
             $this->_compatibilityStatus = compact('req','databasePermissionError', 'modules', 'conflictingFields', 'customFiles', 'allClear');
         }
         return $this->_compatibilityStatus;
@@ -1156,9 +1252,14 @@ class UpdaterBehavior extends ResponseBehavior {
             $configPath = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'config', self::$configFilename));
             if(!file_exists($configPath))
                 $this->regenerateConfig();
-            include($configPath);
-            $this->version = $version;
-            $this->_configVars = compact(array_keys(get_defined_vars()));
+            $populateVars = function($path) {
+                include($path);
+                $vars = compact(array_keys(get_defined_vars()));
+                unset($vars['path']);
+                return $vars;
+            };
+            $this->_configVars = $populateVars($configPath);
+            $this->version = $this->_configVars['version'];
         }
         return $this->_configVars;
     }
@@ -1405,14 +1506,22 @@ class UpdaterBehavior extends ResponseBehavior {
      */
     public function getRequirements() {
         if(!isset($this->_requirements)){
+            $reqScript = implode(DIRECTORY_SEPARATOR, array(
+                Yii::app()->basePath,
+                'components',
+                'views',
+                'requirements.php'
+            ));
+            if(!is_readable($reqScript))
+                throw new CException(Yii::t('admin', "Requirements check script at {path} is missing or not readable.",array('{path}'=>$reqScript)));
+            // The following two variables used internally by the requirements
+            // checking script:
             $returnArray = true;
             $thisFile = Yii::app()->request->scriptFile;
-            $throwForError = function($errno , $errstr , $errfile , $errline , $errcontext) {
-                throw new CException(Yii::t('admin', "Requirements check script encountered an internal error. You should try running it manually by copying it from {path} into the web root of your CRM. The error was as follows:", array('{path}' => 'protected/components/views/requirements.php'))."$errstr [$errno] : $errfile L$errline; $errcontext");
-            };
-            set_error_handler($throwForError);
-            $this->_requirements = require_once(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'components', 'views', 'requirements.php')));
-            restore_error_handler();
+            $this->_requirements = @require_once($reqScript);
+            if(!$this->_requirements) {
+                CException(Yii::t('admin', "Requirements check script encountered an internal error."));
+            }
         }
         return $this->_requirements;
     }
@@ -1553,6 +1662,13 @@ class UpdaterBehavior extends ResponseBehavior {
         return $this->webRoot.DIRECTORY_SEPARATOR.self::PKGFILE;
     }
 
+    /**
+     * Base URL of the web server from which to fetch data and files
+     */
+    public function getUpdateServer() {
+        return X2_UPDATE_BETA ? 'http://beta.x2planet.com' : 'https://x2planet.com';
+    }
+
     public function getVersion() {
         if(!isset($this->_version))
             $this->_version = Yii::app()->params->version;
@@ -1643,10 +1759,11 @@ class UpdaterBehavior extends ResponseBehavior {
      * @param type $newversion If set, change the version to this value in the resulting config file
      * @param type $newupdaterVersion If set, change the updater version to this value in the resulting config file
      * @param type $newbuildDate If set, change the build date to this value in the resulting config file
+     * @param string $newAppName If set, will be used to replace the app name in the config file. 
      * @return bool
      * @throws Exception
      */
-    public function regenerateConfig($newversion = Null, $newupdaterVersion = Null, $newbuildDate = null){
+    public function regenerateConfig($newversion = Null, $newupdaterVersion = Null, $newbuildDate = null, $newAppName=null){
 
         $newbuildDate = $newbuildDate == null ? time() : $newbuildDate;
         $basePath = Yii::app()->basePath;
@@ -1664,6 +1781,9 @@ class UpdaterBehavior extends ResponseBehavior {
                 $appName = Yii::app()->name;
             else
                 $appName = "X2Engine";
+        }
+        if ($newAppName) {
+            $appName = $newAppName;
         }
         if(!isset($email)){
             if(!empty($this->settings->emailFromAddr))
@@ -1754,7 +1874,7 @@ class UpdaterBehavior extends ResponseBehavior {
         $compat = $this->getCompatibilityStatus();
         $web = !$this->isConsole;
         if($compat['allClear']) {
-            return Yii::t('admin','No poential compatibility issues could be found.');
+            return Yii::t('admin','No potential compatibility issues could be found.');
         }
         $messages = '';
 
@@ -1893,7 +2013,7 @@ class UpdaterBehavior extends ResponseBehavior {
      * @param type $ran List of database changes and other scripts that have
      *  already been run
      */
-    public function runMigrationScripts($scripts, &$ran = array()){
+    public function runMigrationScripts($scripts, &$ran){
         $that = $this;
         $script = '';
         $scriptExc = function($e) use(&$ran, &$script, $that){
@@ -2015,7 +2135,7 @@ class UpdaterBehavior extends ResponseBehavior {
         if($throw) {
             throw new CException($message,self::ERR_DATABASE);
         } else {
-            self::respond($message,1,1);
+            $this->respond($message,1,1);
         }
 
     }
@@ -2100,18 +2220,18 @@ class UpdaterBehavior extends ResponseBehavior {
      * @return array
      */
     public function updateUpdater($updaterCheck){
-
-        // The files directly involved in the update process:
-        $updaterFiles = $this->updaterFiles;
-        // The web-based updater's action classes, which are defined separately:
-        $updaterActions = $this->getWebUpdaterActions(false);
-        foreach($updaterActions as $name => $properties){
-            $updaterFiles[] = self::classAliasPath($properties['class']);
-        }
         
+        if(version_compare($this->configVars['updaterVersion'], $updaterCheck) >= 0)
+            return array();
+
+        $updaterFiles = $this->updaterFiles;
+
         // Retrieve the update package contents' files' digests:
-        $md5sums = FileUtil::getContents($this->updateServer.'/'.$this->getUpdateDataRoute($this->configVars['updaterVersion']).'/contents.md5');
-        preg_match_all(':^(?<md5sum>[a-f0-9]{32})\s+source/protected/(?<filename>\S.*)$:m',$md5sums,$md5s);
+        $md5sums_content = FileUtil::getContents($this->updateServer.'/'.$this->getUpdateDataRoute($this->configVars['updaterVersion']).'/contents.md5');
+        if(!(bool) $md5sums_content) {
+            throw new CException(Yii::t('admin','Unknown update server error.'),self::ERR_UPSERVER);
+        }
+        preg_match_all(':^(?<md5sum>[a-f0-9]{32})\s+source/protected/(?<filename>\S.*)$:m',$md5sums_content,$md5s);
         $md5sums = array();
         for($i=0;$i<count($md5s[0]);$i++) {
             $md5sums[$md5s['md5sum'][$i]] = $md5s['filename'][$i];
@@ -2140,17 +2260,24 @@ class UpdaterBehavior extends ResponseBehavior {
                 $failed2Retrieve[] = "protected/$file";
         }
 
+        $failedDownload = (bool) count($failed2Retrieve);
         // Copy the files into the live install
-        if(!(bool) count($failed2Retrieve) && (bool) count($updaterFiles)) {
+        if(!$failedDownload && (bool) count($updaterFiles)) {
             $this->applyFiles(self::TMP_DIR);
             // Remove the temporary directory:
             FileUtil::rrmdir($this->webRoot.DIRECTORY_SEPARATOR.self::TMP_DIR);
+        } else {
+            $errorResponse = json_decode($md5sums_content,1);
+            if(isset($errorResponse['errors'])) {
+                throw new CException($errorResponse['errors']);
+            }
         }
 
         // Write the new updater version into the configuration; else
         // the app will get stuck in a redirect loop
-        if(!count($failed2Retrieve))
+        if(!$failedDownload) {
             $this->regenerateConfig(Null, $updaterCheck, Null);
+        }
         return $failed2Retrieve;
     }
 

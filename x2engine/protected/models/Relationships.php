@@ -44,8 +44,7 @@
  * @property string $secondType
  * @property integer $secondId
  */
-class Relationships extends CActiveRecord
-{
+class Relationships extends CActiveRecord {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Relationships the static model class
@@ -77,7 +76,7 @@ class Relationships extends CActiveRecord
 			array('firstType,firstId, secondType, secondId','required','on'=>'api'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, firstType, firstId, secondType, secondId', 'safe', 'on'=>'search,api'),
+			array('firstType, firstId, secondType, secondId', 'safe', 'on'=>'search,api'),
 		);
 	}
 
@@ -120,11 +119,19 @@ class Relationships extends CActiveRecord
 	 *
 	 */
 	public static function create($firstType, $firstId, $secondType, $secondId) {
-		$relationship = Relationships::model()->findByAttributes(array('firstType'=>$firstType, 'firstId'=>$firstId, 'secondType'=>$secondType, 'secondId'=>$secondId));
+		$relationship = Relationships::model()
+            ->findByAttributes(
+                array('firstType'=>$firstType, 'firstId'=>$firstId, 'secondType'=>$secondType,
+                    'secondId'=>$secondId));
+
 		if($relationship)
 			return false;
 
-		$relationship = Relationships::model()->findByAttributes(array('firstType'=>$secondType, 'firstId'=>$secondId, 'secondType'=>$firstType, 'secondId'=>$firstId));
+		$relationship = Relationships::model()->
+            findByAttributes(
+                array('firstType'=>$secondType, 'firstId'=>$secondId, 'secondType'=>$firstType,
+                    'secondId'=>$firstId));
+
 		if($relationship)
 			return false;
 		

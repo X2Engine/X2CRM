@@ -46,10 +46,12 @@
  * The followings are the available model relations:
  * @property FlowItems[] $flowItems
  * @property FlowParams[] $flowParams
+ * @package application.models
  */
 Yii::import('application.components.x2flow.X2FlowItem');
 Yii::import('application.components.x2flow.actions.*');
 Yii::import('application.components.x2flow.triggers.*');
+Yii::import('application.models.ApiHook');
 
 class X2Flow extends CActiveRecord {
     /**
@@ -135,8 +137,11 @@ class X2Flow extends CActiveRecord {
         $criteria->compare('lastUpdated', $this->lastUpdated, true);
 
         return new CActiveDataProvider($this, array(
-                    'criteria' => $criteria,
-                ));
+            'criteria' => $criteria,
+            'pagination' => array (
+                'pageSize' => Profile::getResultsPerPage(),
+            ),
+        ));
     }
 
     /**
@@ -198,6 +203,9 @@ class X2Flow extends CActiveRecord {
             // Invalid model provided
             return false;
         }
+        
+        // Communicate the event to third-party systems, if any
+        ApiHook::runAll($triggerName,$params);
 
         // increment stack depth before doing anything that might call X2Flow::trigger()
         self::$_triggerDepth++;
@@ -300,6 +308,31 @@ class X2Flow extends CActiveRecord {
     }
 
     /**
+     * Can be called to resume execution of flow that paused for the wait action. 
+     * @param X2Flow &$flow the object representing the flow to run
+     * @param array &$params an associative array of params, usually including 'model'=>$model,
+     * @param mixed $flowPath an array of directions to a specific point in the flow. Defaults to
+     *  null.
+     */
+    public static function resumeFlowExecution (
+        &$flow, &$params, $flowPath = null, $triggerLogId=null){
+
+        if(self::$_triggerDepth > self::MAX_TRIGGER_DEPTH) // ...have we delved too deep?
+            return;
+
+        if(isset($params['model']) &&
+           (!is_object($params['model']) || !($params['model'] instanceof X2Model))) {
+            // Invalid model provided
+            return false;
+        }
+
+        // increment stack depth before doing anything that might call X2Flow::trigger()
+        self::$_triggerDepth++;
+        return self::executeFlow ($flow, $params, $flowPath, $triggerLogId);
+        self::$_triggerDepth--;  // this trigger call is done; decrement the stack depth
+    }
+
+    /**
      * Executes a flow, starting by checking the trigger, passing params to each trigger/action,
      * and calling {@link X2Flow::executeBranch()}
      *
@@ -309,7 +342,7 @@ class X2Flow extends CActiveRecord {
      *  null.
      * Will skip checking the trigger conditions if not null, otherwise runs the entire flow.
      */
-    public static function executeFlow(&$flow, &$params, $flowPath = null, $triggerLogId=null){
+    private static function executeFlow(&$flow, &$params, $flowPath = null, $triggerLogId=null){
         $error = ''; //array($flow->name);
 
         $flowData = CJSON::decode($flow->flow); // parse JSON flow data
@@ -322,6 +355,7 @@ class X2Flow extends CActiveRecord {
 
             if($flowPath === null){
                 $trigger = X2FlowTrigger::create($flowData['trigger']);
+                assert ($trigger !== null);
                 if($trigger === null) {
                     $error = array (
                         'trace' => array (false, 'failed to load trigger class'));
@@ -329,6 +363,7 @@ class X2Flow extends CActiveRecord {
                 $validateRetArr = $trigger->validate($params, $flow->id);
                 if (!$validateRetArr[0]) {
                     $error = $validateRetArr;
+                    return array ('trace' => $error);
                 } else if (sizeof ($validateRetArr) === 3) { // trigger has return value
                     return array (
                         'trace' => $validateRetArr,
@@ -356,6 +391,7 @@ class X2Flow extends CActiveRecord {
                             'retVal' => $flowRetVal,
                         );
                     }catch(Exception $e){
+                        //AuxLib::debugLogR ($e->getTrace ());
                         return array ('trace' => array (false, $e->getMessage()));
                         // whatever.
                     }
@@ -369,6 +405,7 @@ class X2Flow extends CActiveRecord {
                             true, $flow->traverse(
                                 $flowPath, $flowData['items'], $params, 0, $triggerLogId)));
                 } catch(Exception $e) {
+                    //AuxLib::debugLogR ($e->getTrace ());
                     return array (
                         'trace' => array (false, $e->getMessage())); // whatever.
                 }
@@ -511,15 +548,21 @@ class X2Flow extends CActiveRecord {
      * @param string $type the X2Fields type for this value
      * @return mixed the parsed value
      */
-    public static function parseValue($value, $type, &$params = null){
-        if(is_string($value)){
+    public static function parseValue($value, $type, &$params = null, $renderFlag=true){
+
+        if(is_string($value) && isset($params['model'])){
             if(strpos($value, '=') === 0){
-                return Formatter::parseFormula($value, $type, $params);
-            }
-        }
-        if($params !== null){
-            if(is_string($value) && isset($params['model'])){
-                $value = Formatter::replaceVariables($value, $params['model'], $type, $params);
+                // It's a formula. Evaluate it.
+                $evald = Formatter::parseFormula($value, $params);
+
+                // Fail silently because there's not yet a good way of reporting
+                // problems that occur in parseFormula --
+                $value = '';
+                if($evald[0])
+                    $value = $evald[1];
+            } else {
+                // Run token replacement:
+                $value = Formatter::replaceVariables($value, $params['model'], $type, $renderFlag);
             }
         }
 
@@ -539,12 +582,18 @@ class X2Flow extends CActiveRecord {
                     $value = strtotime($value);
                 return $value === false ? null : $value;
             case 'link':
-                $pieces = explode('::', $value);
+                $pieces = explode('_', $value);
                 if(count($pieces) > 1)
-                    return (int) $pieces[0];
+                    return $pieces[0];
                 return $value;
             default:
                 return $value;
         }
     }
+
+
+    public static function getModelTypes($assoc=false) {
+        return array_diff_key (X2Model::getModelTypes ($assoc), array_flip (array ('Fingerprint')));
+    }
+
 }

@@ -38,8 +38,13 @@ if ($this instanceof X2WidgetList) {
     Yii::app()->clientScript->registerCoreScript('jquery');
     Yii::app()->clientScript->registerCoreScript('jquery.ui');
     Yii::app()->clientScript->packages = X2WidgetList::packages ();
-    Yii::app()->clientScript->registerPackage('widgetListCombinedCss');
-    Yii::app()->clientScript->registerPackage('widgetListCombinedCss2');
+    Yii::app()->clientScript->registerCssFiles ('widgetCombinedCss', array (
+        "galleryWidgetCssOverrides.css",
+        "../../../js/gallerymanager/bootstrap/css/bootstrap.css",
+        "../../../js/jqplot/jquery.jqplot.css",
+        "x2chart.css",
+        "workflowFunnel.css",
+    ));
     if ($name === 'GalleryWidget') {
         Yii::import('application.extensions.gallerymanager.GalleryManager');
         $galleryWidget = new GalleryManager ();
@@ -71,7 +76,7 @@ if(!isset($model) && isset($modelType) && isset($modelId)){
 }
 
 if ($name === 'RecordViewChart') {
-	Yii::app()->clientScript->registerScript('chartShowHide', "
+	Yii::app()->clientScript->registerScript('recordViewChartJS', "
 		$(document).on ('chartWidgetMaximized', function () {
 			var chartName = 'actionHistoryChart';
 			".
@@ -80,9 +85,26 @@ if ($name === 'RecordViewChart') {
 			x2[chartName].chart.show ();
 			x2[chartName].chart.replot ();
 		});
-	");
 
-	Yii::app()->clientScript->registerScript('chartSubTypeSelection', "
+        this.popupDropdownMenu = new PopupDropdownMenu ({
+            containerElemSelector: '.chart-controls-container',
+            openButtonSelector: '#chart-settings-button',
+            onClickOutsideSelector: 
+                '#chart-settings-button, ' +
+                '.chart-controls-container, ' +
+                '.ui-datepicker-header, .ui-multiselect-header, .ui-multiselect-checkboxes',
+            autoClose: false,
+            defaultOrientation: 'left',
+            css: {
+                'max-width': '100%',
+                padding: '6px'
+            }
+        });
+
+        /***********************************************************************
+        * chart subtype selection  
+        ***********************************************************************/
+
 		$('#chart-subtype-selector').on ('click', function (evt) {
 			return false;
 		});
@@ -139,7 +161,7 @@ if($name == "InlineRelationships"){
 				<b><?php echo Yii::t('app', Yii::t('app', 'Action History')); ?></b>
 			</span>
 			<!--  -->
-			<select id='chart-subtype-selector'>
+			<select id='chart-subtype-selector' class='x2-select'>
 				<option value='line'>
 					<?php echo Yii::t('app', 'Line Chart'); ?>
 				</option>
@@ -151,7 +173,12 @@ if($name == "InlineRelationships"){
 		} else {
 		?> 
         <span class="x2widget-title">
-            <b><?php echo Yii::t('app', $widget['title']).$relationshipCount; ?></b>
+            <b><?php echo Yii::t('app', $widget['title'])?></b>
+            <?php if ($relationshipCount !== '') { ?> 
+            <b id='relationship-count'>
+            <?php echo $relationshipCount; ?> 
+            </b>
+            <?php } ?>
         </span>
 		<?php
 		}
@@ -159,6 +186,14 @@ if($name == "InlineRelationships"){
 
         <?php if(!Yii::app()->user->isGuest){ ?>
             <div class="portlet-minimize">
+                <?php
+		        if ($name === 'RecordViewChart') {
+                    echo X2Html::settingsButton (Yii::t('app', 'Action History Chart Settings'), 
+                        array (
+                            'id' => 'chart-settings-button',
+                        ));
+                }
+                ?> 
                 <a onclick="$('#x2widget_<?php echo $name; ?>').minimizeWidget(); return false" 
                  href="#" class="x2widget-minimize">
 					<?php
@@ -166,31 +201,40 @@ if($name == "InlineRelationships"){
 						echo CHtml::image(
                             $themeUrl.'/images/icons/Expand_Widget.png', 
                             Yii::t('app', 'Maximize Widget'),
-							array ('title' => Yii::t('app', 'Maximize Widget')));
+							array (
+                                'title' => Yii::t('app', 'Maximize Widget'),
+                                'class' => 'center-widget-maximize-button',
+                            ));
 					} else {
 						echo CHtml::image(
                             $themeUrl.'/images/icons/Collapse_Widget.png', 
                             Yii::t('app', 'Minimize Widget'),
-							array ('title' => Yii::t('app', 'Minimize Widget')));
+							array (
+                                'title' => Yii::t('app', 'Minimize Widget'),
+                                'class' => 'center-widget-minimize-button',
+                            ));
 					}
 					?>
 				</a>
 				<?php
-					echo CHtml::image(
+					/*echo CHtml::image(
 						$themeUrl.'/css/gridview/arrow_both.png',
 						Yii::t('app', 'Sort Widget'),
 						array (
 							'title' => Yii::t('app', 'Sort Widget'),
 							'class' => 'widget-sort-handle'
 						)
-					);
+					);*/
 				?>
                 <a onclick="$('#x2widget_<?php echo $name; ?>').hideWidget(); return false" 
                  href="#">
 					<?php 
                     echo CHtml::image(
                         $themeUrl.'/images/icons/Close_Widget.png', Yii::t('app', 'Close Widget'),
-						array ('title' => Yii::t('app', 'Close Widget'))); 
+						array (
+                            'title' => Yii::t('app', 'Close Widget'),
+                            'class' => 'center-widget-close-button',
+                        )); 
                     ?>
 				</a>
             </div>
@@ -199,19 +243,20 @@ if($name == "InlineRelationships"){
     <div class="x2widget-container" 
      style="<?php echo $widget['minimize'] ? 'display: none;' : ''; ?>">
         <?php 
-        $widgetParams = array (
+        $params = array (
             'widget' => $widget,
             'name' => $name, 
             'model' => $model, 
-            'modelType' => $modelType
+            'modelType' => $modelType,
+            'widgetParams' => (isset ($widgetParams) ? $widgetParams : array ())
         ); 
         if (isset ($moduleName)) {
-            $widgetParams['moduleName'] = $moduleName;
+            $params['moduleName'] = $moduleName;
         }
         if(isset($this->controller)){ // not ajax  
-            $this->render('x2widget', $widgetParams);
+            $this->render('x2widget', $params);
         } else { // we are in an ajax call 
-            $this->renderPartial('application.components.views.x2widget', $widgetParams);
+            $this->renderPartial('application.components.views.x2widget', $params);
         } 
         ?>
     </div>

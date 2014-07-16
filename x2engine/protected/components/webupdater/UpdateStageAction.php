@@ -44,16 +44,25 @@ Yii::import('application.components.webupdater.*');
  */
 class UpdateStageAction extends WebUpdaterAction {
 
+    public function behaviors() {
+        return array(
+			'UpdaterBehavior' => array(
+				'class' => 'application.components.UpdaterBehavior',
+                'errorCode' => 200, // Simple UI-based error reporting
+                'handleErrors' => true,
+                'handleExceptions' => true
+			)
+		);
+    }
+
 	public function run($stage,$scenario,$version,$uniqueId,$autoRestore=0){
-        set_exception_handler('ResponseBehavior::respondWithException');
-        set_error_handler('ResponseBehavior::respondWithError');
         $this->scenario = $scenario;
 		if(Yii::app()->request->isAjaxRequest){
             switch($stage) {
                 case 'download':
                     // Download the update/upgrade package
                     $this->downloadPackage($version,$uniqueId,$this->edition);
-                    self::respond(Yii::t('admin','Successfully downloaded package.'));
+                    $this->respond(Yii::t('admin','Successfully downloaded package.'));
                     break;
                 case 'enact':
                     // The final and most critical part of the update, where
@@ -61,7 +70,7 @@ class UpdateStageAction extends WebUpdaterAction {
                     $autoRestore = (bool) $autoRestore;
                     $this->uniqueId = $uniqueId;
                     $this->enactChanges($autoRestore);
-                    self::respond(Yii::t('admin', 'All done.'));
+                    $this->respond(Yii::t('admin', 'All done.'));
                     break;
                 case 'check':
                     // Retrive the manifest of changes pre-emptively, or load
@@ -76,22 +85,22 @@ class UpdateStageAction extends WebUpdaterAction {
                         $data = $this->getUpdateData($version,$uniqueId,$this->edition);
                         if(array_key_exists('errors',$data)) {
                             // The update server doesn't like us.
-                            self::respond($data['errors'],1);
+                            $this->respond($data['errors'],1);
                             break;
                         }
                         $this->manifest = $data;
                     }
 
                     $cStatus = $this->getCompatibilityStatus();
-                    $this->addResponseProperty('allClear',$cStatus['allClear']);
-                    $this->addResponseProperty('manifest',$this->manifest);
-                    $this->addResponseProperty('compatibilityStatus',$cStatus);
-                    self::respond($this->renderCompatibilityMessages('strong',array('style'=>'text-decoration:underline;')));
+                    $this->response['allClear'] = $cStatus['allClear'];
+                    $this->response['manifest'] = $this->manifest;
+                    $this->response['compatibilityStatus'] = $cStatus;
+                    $this->respond($this->renderCompatibilityMessages('strong',array('style'=>'text-decoration:underline;')));
                     break;
                 case 'unpack':
                     // Unpack the zip file
                     $this->unpack();
-                    self::respond(Yii::t('admin','Successfully extracted package.'));
+                    $this->respond(Yii::t('admin','Successfully extracted package.'));
                     break;
                 case 'verify':
                     try{
@@ -99,21 +108,21 @@ class UpdateStageAction extends WebUpdaterAction {
                         $this->checkIf('packageApplies');
                         // The JSON returned by this action should include all the
                         // necessary data to render warning messages concerning files.
-                        $this->addResponseProperty('statusCodes', array(
+                        $this->response['statusCodes'] = array(
                             'present' => UpdaterBehavior::FILE_PRESENT,
                             'corrupt' => UpdaterBehavior::FILE_CORRUPT,
                             'missing' => UpdaterBehavior::FILE_MISSING
-                        ));
-                        $this->addResponseProperty('filesStatus', $this->filesStatus);
-                        $this->addResponseProperty('filesByStatus', $this->filesByStatus);
-                        self::respond(Yii::t('admin', 'Files checked.'), !((bool) $this->files) || $this->filesStatus[UpdaterBehavior::FILE_CORRUPT] > 0 || $this->filesStatus[UpdaterBehavior::FILE_MISSING] > 0);
+                        );
+                        $this->response['filesStatus'] = $this->filesStatus;
+                        $this->response['filesByStatus'] = $this->filesByStatus;
+                        $this->respond(Yii::t('admin', 'Files checked.'), !((bool) $this->files) || $this->filesStatus[UpdaterBehavior::FILE_CORRUPT] > 0 || $this->filesStatus[UpdaterBehavior::FILE_MISSING] > 0);
                     }catch(Exception $e){
-                        self::respond($e->getMessage(), true);
+                        $this->respond($e->getMessage(), true);
                     }
                     break;
             }
 		}else{
-			self::respond('Update requests must be made via AJAX.',true);
+			$this->respond('Update requests must be made via AJAX.',true);
 		}
 	}
 }

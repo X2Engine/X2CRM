@@ -103,6 +103,9 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
     }
 
     public function testPrepareEmail() {
+	if(!Yii::app()->contEd('pro')) {
+            $this->markTestSkipped();
+	}
         $cmb = $this->instantiate();
         $contact = $this->contacts('testUser_unsent');
         $recipientAddress = $contact->email;
@@ -115,13 +118,19 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         
         $this->assertEquals($recipientAddress,$email);
         $this->assertEquals(str_replace('{firstName}',$contact->firstName,$this->campaign('testUser')->subject),$subject);
-        // Find the contact's name:
-        $replaceVars = array('{firstName}'=> $contact->firstName, '{signature}' => $this->users('testUser')->profile->signature);
+        // Find the contact's name and tracking key:
+        $replaceVars = array(
+            '{firstName}' => $contact->firstName,
+            '{signature}' => $this->users('testUser')->profile->signature,
+            '{trackingKey}' => $uniqueId
+        );
         $this->assertRegExp('/'.preg_quote(strtr($this->campaign('testUser')->content,$replaceVars),'/').'/',$message,'Variable replacement didn\'t take place');
         // Find the tracking image:
         $this->assertRegExp('/'.preg_quote('<img src="'.$admin->externalBaseUrl.$admin->externalBaseUri.'/index.php/marketing/marketing/click?uid='.$uniqueId,'/').'/',$message,'Tracking image not inserted');
         // Find the unsubscribe link:
         $this->assertRegExp('/'.preg_quote('To stop receiving these messages, click here: <a href="http://examplecrm.com/X2Engine/index.php/marketing/marketing/click?uid='.$uniqueId.'&type=unsub&email='.rawurlencode($recipientAddress).'">unsubscribe</a>','/').'/',$message,'Unsubscribe link not inserted');
+        // Find the tracking key:
+        $this->assertRegExp('/'.preg_quote('visit http://example.com/?x2_key=','/').$uniqueId.'/',$message,'Tracking key not inserted!');
     }
 
 

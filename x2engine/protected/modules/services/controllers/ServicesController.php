@@ -93,7 +93,10 @@ class ServicesController extends x2base {
         return array_merge(parent::behaviors(), array(
             'ServiceRoutingBehavior' => array(
                 'class' => 'ServiceRoutingBehavior'
-            )
+            ),
+            'QuickCreateRelationshipBehavior' => array(
+                'class' => 'QuickCreateRelationshipBehavior',
+            ),
         ));
     }
 
@@ -174,54 +177,20 @@ class ServicesController extends x2base {
             $model->setX2Fields($_POST['Services']);
 
             if(isset($_POST['x2ajax'])){ // we're creating a case with "Create Case" button in contacts view
-                // if($this->create($model,$temp, '1')) { // success creating case?
-                if($model->save()){ // success creating case?
-                    $model->name = $model->id; // every model needs a name field to work with X2GridView and a few other places, for service cases the id of the case is the name
-                    $model->update(array('name'));
-                    if(isset($_POST['ModelName']) && isset($_POST['ModelId'])){ // we are creating this case from within a contact, so set up a relationship with the contact
-                        Relationships::create($_POST['ModelName'], $_POST['ModelId'], 'Services', $model->id);
-                    }
+                /* every model needs a name field to work with X2GridView and a few other places, 
+                   for service cases the id of the case is the name */
+                $model->name = $model->id; 
+                $ajaxErrors = $this->quickCreate ($model);
 
-                    echo json_encode(
-                            array(
-                                'status' => 'success',
-                                'name' => $model->name,
-                                'id' => $model->id,
-                            )
-                    ); // ajax response
-                    Yii::app()->end(); // we're done
-                }else{
-                    $x2ajaxCreateError = true; // used at the bottom of this function to return an error via ajax
-                }
             }elseif($model->save()){
                 $this->redirect(array('view', 'id' => $model->id));
                 // $this->create($model,$temp, '0');
             }
         }
 
-        // set default options for dropdowns
-        if(!isset($model->status) || $model->status == ''){
-            $model->status = "New";
-        }
-
-        if(!isset($model->impact) || $model->impact == ''){
-            $model->impact = "3 - Moderate";
-        }
-
-        if(isset($_POST['x2ajax'])){ // we're creating a case with "Create Case" button in contacts view
-            Yii::app()->clientScript->scriptMap['*.js'] = false; // don't return javascript files in ajax response (that kills things)
-            Yii::app()->clientScript->scriptMap['*.css'] = false;
-            if(isset($x2ajaxCreateError) && $x2ajaxCreateError == true){ // user entered bad via ajax?
-                $page = $this->renderPartial('application.components.views._form', array('model' => $model, 'users' => $users, 'modelName' => 'services'), true, true);
-                echo json_encode(// return the form with errors and a status indicating there are errors
-                        array(
-                            'status' => 'userError',
-                            'page' => $page,
-                        )
-                );
-            }else{ // return the create form via ajax
-                $this->renderPartial('application.components.views._form', array('model' => $model, 'users' => $users, 'modelName' => 'services'), false, true);
-            }
+        // we're creating a case with "Create Case" button in contacts view
+        if(isset($_POST['x2ajax'])){
+            $this->renderInlineCreateForm ($model, isset ($ajaxErrors) ? $ajaxErrors : false);
         }else{
             $this->render('create', array(// normal (non-ajax) create
                 'model' => $model,

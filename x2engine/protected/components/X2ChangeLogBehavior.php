@@ -72,7 +72,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 	 */
 	public function getEditingUsername() {
 		if (!isset($this->_editingUsername))
-			$this->_editingUsername = Yii::app()->suModel->username;
+			$this->_editingUsername = Yii::app()->getSuName();
 		return $this->_editingUsername;
 	}
 
@@ -142,10 +142,6 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 	 */
 	public function afterUpdate($event) {
 		if($this->validated) {
-			X2Flow::trigger('RecordUpdateTrigger',array(
-				'model'=>$this->getOwner()
-			));
-
 			$changes = $this->getChanges();
 			$this->updateChangelog($changes);
 		}
@@ -262,6 +258,16 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 		// $model->updatedBy = Yii::app()->user->getName();
 		// $model->save();
 		$type = get_class($model);
+
+                // Handle special types
+                $pluralize = array('Quote', 'Product');
+                if (in_array($type, $pluralize))
+                    $type .= "s";
+                else if ($type == 'Campaign')
+                    $type = "Marketing";
+                else if ($type == 'bugreports')
+                    $type = 'BugReports';
+
 		$excludeFields=array(
             'lastUpdated',
             'createDate',
@@ -346,7 +352,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 					foreach($users as $user) {
 						$event=new Events;
 						$event->user=$user;
-						$event->associationType='Notifications';
+						$event->associationType='Notification';
 						$event->type='notif';
 
 						$notif = new Notification;
@@ -401,7 +407,7 @@ class X2ChangeLogBehavior extends CActiveRecordBehavior  {
 						$event=new Events;
 						$event->type='notif';
 						$event->user=$model->assignedTo;
-						$event->associationType='Notifications';
+						$event->associationType='Notification';
 
 						$notif = new Notification;
 						$notif->user = $model->assignedTo;

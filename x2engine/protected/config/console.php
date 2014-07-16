@@ -58,7 +58,7 @@ $config['components']['log']['routes'] = array(
 	)
 );
 
-$custom = dirname(__FILE__).'/../../custom/protected/config/console.php';
+$custom = dirname(__FILE__).'/../../custom/protected/config/'.(YII_UNIT_TESTING?'test':'console').'.php';
 if($custom = realpath($custom)) {
 	include($custom);
 }

@@ -37,13 +37,12 @@
 
 <?php
 $this->layout = '//layouts/column1';
-$this->pageTitle=Yii::app()->name . ' - ' . Yii::t('help','Icon Reference');
+$this->pageTitle=Yii::app()->settings->appName . ' - ' . Yii::t('help','Icon Reference');
 
 
 $cssString = "
     #icon-reference-title {
         width: 1002px;
-        margin-left: 50px;
         margin-right: 0;
         padding: 0 0 0 0;
     }
@@ -126,7 +125,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
                 <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/feed.png' . "'/>"; ?>
             </div>
             <div class="icon-description">
-                <p> <?php echo CHtml::link (Yii::t('app', 'Activity Feed'), array ('/profile/profile')); ?> </p>
+                <p> <?php echo CHtml::link (Yii::t('app', 'Activity Feed'), array ('/profile/view', 'id' => Yii::app()->user->getId())); ?> </p>
             </div>
         </div>
         <div class="row">

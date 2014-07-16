@@ -75,18 +75,18 @@ class ArrayUtil {
 	}
 
     /**
-     * A recursive version of normalizeToArray (). 
+     * A recursive version of normalizeToArray () which maintains order of current fields. 
      *
 	 * @param array $expectedFields The array with key => default value pairs
 	 * @param array $currentFields The array to copy values from
 	 * @return array
      */
-	public static function normalizeToArrayR ($expectedFields, $currentFields) {
+	public static function normalizeToArrayR ($expectedFields, $currentFields,$maintainOrder=true) {
         $fields = array ();
 
         /* 
         Use values in current fields if they are present, otherwise use default values in
-        expected fields. If the default value is an array, Apply array normalization 
+        expected fields. If the default value is an array, apply array normalization 
         recursively.
         */
         foreach ($expectedFields as $key => $val) {
@@ -102,26 +102,30 @@ class ArrayUtil {
             }
         }
 
-        /*
-        Maintain array ordering of current fields
-        */
-        $orderedFields = array ();
-        foreach ($currentFields as $key => $val) {
-            if (in_array ($key, array_keys ($fields))) {
-                $orderedFields[$key] = $fields[$key];
-                unset ($fields[$key]);
+        if ($maintainOrder) {
+            /*
+            Maintain array ordering of current fields
+            */
+            $orderedFields = array ();
+            foreach ($currentFields as $key => $val) {
+                if (in_array ($key, array_keys ($fields))) {
+                    $orderedFields[$key] = $fields[$key];
+                    unset ($fields[$key]);
+                }
             }
+
+            /* 
+            Add fields not specified in currentFields. These fields can't be sorted so they are 
+            simply appended.
+            */
+            foreach ($fields as $key => $val) {
+                $orderedFields[$key] = $fields[$key];
+            }
+
+            $fields = $orderedFields;
         }
 
-        /* 
-        Add fields not specified in currentFields. These fields can't be sorted so they are 
-        simply appended.
-        */
-        foreach ($fields as $key => $val) {
-            $orderedFields[$key] = $fields[$key];
-        }
-
-        return $orderedFields;
+        return $fields;
     }
 
     /**
@@ -164,6 +168,16 @@ class ArrayUtil {
         }
         return false;
     }
+
+    /**
+     * Retrieve the first entry from an associative array 
+     * @param array $array
+     */
+    public static function assocArrayShift (&$array) {
+        $keys = array_keys ($array); 
+        return array ($keys[0] => array_shift ($array));
+    }
+
 
 }
 

@@ -62,6 +62,8 @@ function SortableWidget (argsDict) {
     // the widget content container (excludes the top bar)
     this.contentContainer = $('#' + this.widgetClass + '-widget-content-container');
 
+    this._settingsMenuContentSelector = this.elementSelector  + ' .widget-settings-menu-content';
+
     SortableWidget.sortableWidgets.push (this);
 
     this._init ();
@@ -284,7 +286,7 @@ SortableWidget.prototype._setUpTitleBarBehavior = function () {
         $(this.element).mouseleave (function () {
             that._cursorInWidget = false;
             if (!(that._settingsBehaviorEnabled &&
-                  $(that.elementSelector  + ' .widget-settings-menu-content').is (':visible'))) {
+                  $(that._settingsMenuContentSelector).is (':visible'))) {
                 $(that.element).find ('.submenu-title-bar .x2-icon-button').hide ();
             }
         });
@@ -299,6 +301,7 @@ SortableWidget.prototype._setUpSettingsBehavior = function () {
     this.popupDropdownMenu = new PopupDropdownMenu ({
         containerElemSelector: this.elementSelector + ' .widget-settings-menu-content',
         openButtonSelector: this.elementSelector + ' .widget-settings-button',
+        defaultOrientation: 'left',
         onClose: function () {
             if (!that._cursorInWidget)
                 $(that.element).find ('.submenu-title-bar .x2-icon-button').hide ();

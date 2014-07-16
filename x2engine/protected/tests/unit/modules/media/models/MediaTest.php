@@ -60,6 +60,28 @@ class MediaTest extends X2DbTestCase {
 		$this->assertFileExists($image->path);
 	}
         
+        public function testGetFilePath() {
+            $image = $this->media("bg");
+            $expected = implode(DIRECTORY_SEPARATOR, array('uploads', $image->fileName));
+            $this->assertEquals($expected, Media::getFilePath(null, $image->fileName));
+        }
+        
+        public function testFileExists() {
+            $image = $this->media("bg");
+            $this->assertTrue($image->fileExists());
+            $image = $this->media("testfile");
+            $this->assertFalse($image->fileExists());
+        }
+        
+        public function testGetImage() {
+            $image = $this->media('bg');
+            $this->assertTrue($image->fileExists());
+            $this->assertTrue($image->isImage());
+            $expected = '<img class="attachment-img" src="'.Yii::app()->baseUrl.'/uploads/'.$image->fileName.'" alt="" />';
+            $imageTag = $image->getImage();
+            $this->assertEquals($expected, $imageTag);
+        }
+        
         public function testGetPath() {
             $source = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'tests', 'data', 'media', 'testfile.txt'));
             $dest = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'uploads', 'media', 'admin', 'testfile.txt'));
@@ -103,6 +125,26 @@ class MediaTest extends X2DbTestCase {
 		$this->assertEquals(array('height'=>682,'width'=>1024),CJSON::decode($image->resolveDimensions()));
 		$this->assertEquals(array('height'=>682,'width'=>1024),CJSON::decode(Yii::app()->db->createCommand()->select('dimensions')->from('x2_media')->where("id=:id",array(':id'=>$image->id))->queryScalar()));
 	}
+        
+        public function testGetFmtDimensions() {
+            $image = $this->media('bg');
+            $this->assertEquals('1024 x 682', $image->getFmtDimensions());
+        }
+
+        public function testToBytes() {
+            $fn = TestingAuxLib::setPublic('Media', 'toBytes');
+            $testSizes = array(
+                '3PB' => 3 * pow(1024, 5),
+                '1g' => 1024 * 1024 * 1024,
+                '2m' => 2 * 1024 * 1024,
+                '1MB' => 1024 * 1024,
+                '1k' => 1024,
+                666 => 666,
+            );
+            foreach ($testSizes as $readable => $bytes) {
+                $this->assertEquals($bytes, $fn (array($readable)));
+            }
+        }
 }
 
 ?>

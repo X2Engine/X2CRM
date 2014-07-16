@@ -42,7 +42,17 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 ?>
-<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','File: '); ?></span> <?php echo $model->drive?$model->name:$model->fileName; ?></h2></div>
+<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','File: '); ?></span> <?php echo $model->renderAttribute (($model->drive || !empty($model->name))? "name" : "fileName"); ?></h2>
+<?php
+echo CHtml::link(
+    '<span></span>', $this->createUrl('update', array('id' => $model->id)),
+    array(
+        'class' => 'x2-button icon edit right',
+        'title' => Yii::t('app', 'Edit Media'),
+    ));
+?>
+</div>
+
 <div id="main-column" class="half-width">
 <?php
 

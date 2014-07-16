@@ -97,7 +97,8 @@ class ServiceRoutingBehavior extends CBehavior {
 		$numbers = array();
 		foreach ($users as $user) {
 			if ($user != 'admin' && $user!='api') {
-				$actions = X2Model::model('Actions')->findAllByAttributes(array('assignedTo' => $user, 'complete' => 'No'));
+				$actions = X2Model::model('Actions')
+                    ->findAllByAttributes(array('assignedTo' => $user, 'complete' => 'No'));
 				if (isset($actions))
 					$numbers[$user] = count($actions);
 				else

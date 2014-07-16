@@ -265,4 +265,8 @@ class GroupsController extends x2base {
 		Yii::app()->cache->delete('user_roles');
 	}
 
+    public function actionGetItems ($term) {
+        X2LinkableBehavior::getItems ($term);
+    }
+
 }

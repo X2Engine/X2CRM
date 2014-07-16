@@ -180,4 +180,5 @@ return array (
 'Saved Searches'=>'Opgeslagen zoekopdrachten',
 'Clicking this button will pull any relevant '=>'Door te klikken op deze knop zal alle relevante trekken',
 'Drag tags here from the tag cloud widget or click to '=>'Sleep-tags hier van de tag cloud widget of klik om',
+'Export {model}'=>'Export {model}',
 );

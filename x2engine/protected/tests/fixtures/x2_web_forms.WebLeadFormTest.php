@@ -1,0 +1,48 @@
+<?php
+
+return array (  
+    'GenerateLeadTest' => 
+    array (
+        'id' => '5',
+        'name' => 'GenerateLeadTest',
+        'type' => 'weblead',
+        'description' => NULL,
+        'modelName' => 'Contacts',
+        'fields' => '[{"fieldName":"firstName","required":true,"label":"","position":"top","type":"normal"},{"fieldName":"lastName","required":true,"label":"","position":"top","type":"normal"},{"fieldName":"email","required":true,"label":"","position":"top","type":"normal"},{"fieldName":"phone","required":false,"label":"","position":"top","type":"normal"},{"fieldName":"backgroundInfo","required":false,"label":"","position":"top","type":"normal"}]',
+        'params' => '{"fg":"#000000","bgc":"#f0f0f0","bc":"#f0f0f0"}',
+        'css' => '',
+        'header' => '',
+        'visibility' => '1',
+        'assignedTo' => 'admin',
+        'createdBy' => 'admin',
+        'updatedBy' => 'admin',
+        'createDate' => '1400707165',
+        'lastUpdated' => '1400707165',
+        'userEmailTemplate' => NULL,
+        'webleadEmailTemplate' => NULL,
+        'leadSource' => 'Facebook',
+        'generateLead' => '1',
+    ),
+    'DontGenerateLeadTest' => 
+    array (
+        'id' => '6',
+        'name' => 'Don\'tGenerateLeadTest',
+        'type' => 'weblead',
+        'description' => NULL,
+        'modelName' => 'Contacts',
+        'fields' => '[{"fieldName":"firstName","required":true,"label":"","position":"top","type":"normal"},{"fieldName":"lastName","required":true,"label":"","position":"top","type":"normal"},{"fieldName":"email","required":true,"label":"","position":"top","type":"normal"},{"fieldName":"phone","required":false,"label":"","position":"top","type":"normal"},{"fieldName":"backgroundInfo","required":false,"label":"","position":"top","type":"normal"}]',
+        'params' => '{"fg":"#000000","bgc":"#f0f0f0","bc":"#f0f0f0"}',
+        'css' => '',
+        'header' => '',
+        'visibility' => '1',
+        'assignedTo' => 'admin',
+        'createdBy' => 'admin',
+        'updatedBy' => 'admin',
+        'createDate' => '1400707180',
+        'lastUpdated' => '1400707180',
+        'userEmailTemplate' => NULL,
+        'webleadEmailTemplate' => NULL,
+        'leadSource' => NULL,
+        'generateLead' => '0',
+    ),
+);

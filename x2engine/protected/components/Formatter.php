@@ -42,6 +42,38 @@
 class Formatter {
 
     /**
+     * Removes invalid/corrupt multibyte sequences from text.
+     */
+    public static function mbSanitize($text) {
+        $newText = $text;
+        if (!mb_detect_encoding($text, Yii::app()->charset, true)) {
+            $newText = mb_convert_encoding($text, Yii::app()->charset, 'ISO-8859-1');
+        }
+        return $newText;
+    }
+
+    /**
+     * Return a value cast after a named PHP type
+     * @param type $value
+     * @param type $type
+     * @return type
+     */
+    public static function typeCast($value,$type) {
+        switch($type) {
+            case 'bool':
+            case 'boolean':
+                return (boolean) $value;
+            case 'double':
+                return (double) $value;
+            case 'int':
+            case 'integer':
+                return (integer) $value;
+            default:
+                return (string) $value;
+        }
+    }
+    
+    /**
      * Converts a record's Description or Background Info to deal with the discrepancy
      * between MySQL/PHP line breaks and HTML line breaks.
      */
@@ -68,6 +100,77 @@ class Formatter {
         }
 
         return $text;
+    }
+
+    /**
+     * Parses text for short codes and returns an associative array of them.
+     *
+     * @param string $value The value to parse
+     * @param X2Model $model The model on which to operate with attribute replacement
+     * @param bool $renderFlag The render flag to pass to {@link X2Model::getAttribute()}
+     * @param bool $makeLinks If the render flag is set, determines whether to render attributes
+     *  as links
+     */
+    public static function getReplacementTokens($value,$model,$renderFlag,$makeLinks) {
+        // Pattern will match {attr}, {attr1.attr2}, {attr1.attr2.attr3}, etc.
+        $codes = array();
+        // Types of each value for the short codes:
+        $codeTypes = array();
+        $fieldTypes = array_map(function($f){return $f['phpType'];},Fields::getFieldTypes());
+        $fields = $model->getFields(true);
+        preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
+        if(!empty($matches[0])){
+            foreach($matches[0] as $match){
+                $match = substr($match, 1, -1); // Remove the "{" and "}" characters
+                $attr = $match;
+                if(strpos($match, '.') !== false){ // We found a link attribute (i.e. {company.name})
+                    $newModel = $model;
+                    $pieces = explode('.',$match);
+                    $first = array_shift($pieces);
+                    $tmpModel = Formatter::parseShortCode($first, $newModel); // First check if the first piece is part of a short code, like "user"
+                    if(isset($tmpModel) && $tmpModel instanceof CActiveRecord){
+                        $newModel = $tmpModel; // If we got a model from our short code, use that
+                        $attr = implode('.',$pieces); // Also, set the attribute to have the first item removed.
+                    }
+                    $codes['{'.$match.'}'] = $newModel->getAttribute(
+                        $attr, $renderFlag, $makeLinks);
+                        $codeTypes[$match] = isset($fields[$attr])
+                                && isset($fieldTypes[$fields[$attr]->type])
+                                ? $fieldTypes[$fields[$match]->type]
+                                : 'string';
+                }else{ // Standard attribute
+                    if(isset($params[$match])){ // First check if we provided a value for this attribute
+                        $codes['{'.$match.'}'] = $params[$match];
+                        $codeTypes[$match] = gettype($params[$match]);
+                    }elseif($model->hasAttribute($match)){ // Next ensure the attribute exists on the model
+                        $codes['{'.$match.'}'] = $model->getAttribute(
+                            $match, $renderFlag, $makeLinks);
+                        $codeTypes[$match] = isset($fields[$match]) 
+                                && isset($fieldTypes[$fields[$match]->type])
+                                ? $fieldTypes[$fields[$match]->type]
+                                : 'string';
+                        
+                    }else{ // Finally, try to parse it as a short code if nothing else worked
+                        $shortCodeValue = Formatter::parseShortCode($match, $model);
+                        if(!is_null($shortCodeValue)){
+                            $codes['{'.$match.'}'] = $shortCodeValue;
+                            $codeTypes[$match] = gettype($shortCodeValue);
+                        }
+                    }
+                }
+            }
+        }
+
+        // ensure that value of replacement token is of an acceptable type
+        foreach ($codes as $name => $val) {
+            if(!in_array(gettype ($val),array("boolean","integer","double","string","NULL"))) {
+                // remove invalid value
+                unset ($codes[$name]);
+            } elseif(isset($codeTypes[$name])) {
+                $codes[$name] = self::typeCast($val, $codeTypes[$name]);
+            }
+        }
+        return $codes;
     }
 
     /*     * * Date Format Functions ** */
@@ -125,7 +228,7 @@ class Formatter {
                 return "MM d, yy";
         } else{
             // translate Yii date format to jquery
-            $format = Yii::app()->locale->getDateFormat('short'); 
+            $format = Yii::app()->locale->getDateFormat('medium'); 
             $format = str_replace('yy', 'y', $format);
             $format = str_replace('MM', 'mm', $format);
             $format = str_replace('M', 'm', $format);
@@ -173,9 +276,9 @@ class Formatter {
      * @return string
      */
     public static function formatTimePicker($width = '',$seconds = false){
-        if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh'){
+        /*if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh'){
             return "HH:mm".($seconds?':ss':'');
-        }
+        }*/
         $format = Yii::app()->locale->getTimeFormat($seconds?'medium':'short');
 
         // jquery specifies hours/minutes as hh/mm instead of HH//MM
@@ -187,15 +290,82 @@ class Formatter {
     }
 
     /**
+     * Formats a full name according to the name format settigns
+     * @param type $firstName
+     * @param type $lastName
+     */
+    public static function fullName($firstName,$lastName) {
+        return !empty(Yii::app()->settings->contactNameFormat)
+                    ? strtr(Yii::app()->settings->contactNameFormat, compact('lastName', 'firstName'))
+                    : "$firstName $lastName";
+    }
+
+    /**
+     * Generates a column clause using CONCAT based on the full name format as
+     * defined in the general settings
+     * 
+     * @param type $firstNameCol
+     * @param type $lastNameCol
+     * @param type $as
+     * @return array An array with the first element being the SQL, the second any parameters to bind.
+     */
+    public static function fullNameSelect($firstNameCol,$lastNameCol,$as=false) {
+        $pre = ':fullName_'.uniqid().'_';
+        $columns = array(
+            'firstName' => $firstNameCol,
+            'lastName' => $lastNameCol,
+        );
+        $format = empty(Yii::app()->settings->contactNameFormat)
+                ? 'firstName lastName'
+                : Yii::app()->settings->contactNameFormat;
+        $placeholderPositions = array();
+        foreach($columns as $placeholder => $columnName) {
+            if(($pos = mb_strpos($format,$placeholder)) !== false) {
+                $placeholderPositions[$placeholder] = $pos;
+            }
+        }
+        asort($placeholderPositions);
+        $concatItems = array();
+        $params = array();
+        $lenTot = mb_strlen($format);
+        $n_p = 0;
+        $pos = 0;
+
+        foreach($placeholderPositions as $placeholder => $position){
+            // Get extraneous text into a parameter:
+            if($position > $pos){
+                $leadIn = mb_substr($format,$pos,$position-$pos);
+                if(!empty($leadIn)) {
+                    $concatItems[] = $param = "{$pre}_inter_$n_p";
+                    $params[$param] = $leadIn;
+                    $n_p++;
+                }
+                $pos += mb_strlen($leadIn);
+            }
+            $concatItems[] = "`{$columns[$placeholder]}`";
+            $pos += mb_strlen($placeholder);
+        }
+        if($pos < $lenTot-1) {
+            $trailing = mb_substr($format,$pos);
+            $concatItems[] = $param = "{$pre}_trailing";
+            $params[$param] = $trailing;
+        }
+        return array(
+            "CONCAT(".implode(',', $concatItems).")".($as ? " AS `$as`" : ''),
+            $params
+        );
+    }
+
+    /**
      * Check if am/pm is being used in this locale.
      */
     public static function formatAMPM(){
         if(strstr(Yii::app()->locale->getTimeFormat(), "a") === false) {
             return false;
-        } else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
+        } /*else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
             // 24 hour format for china
             return false;
-        } else {
+        } */else {
             return true;
         }
     }
@@ -235,12 +405,12 @@ class Formatter {
                 Yii::app()->locale->getDateFormat('medium').' '.
                     Yii::app()->locale->getTimeFormat('short'), 
                 strtotime("tomorrow", $timestamp) - 60);
-        } else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
+        } /*else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
             return Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat('short').
                 ' '.'HH:mm', strtotime("tomorrow", $timestamp) - 60);
-        } else {
+        } */else {
             return Yii::app()->dateFormatter->format(
-                Yii::app()->locale->getDateFormat('short').' '.
+                Yii::app()->locale->getDateFormat('medium').' '.
                     Yii::app()->locale->getTimeFormat('short'), 
                 strtotime("tomorrow", $timestamp) - 60);
         }
@@ -295,13 +465,14 @@ class Formatter {
         $ret = '';
 
         if($informal && $due['year'] == $now['year']){  // is the due date this year?
-            if($due['yday'] == $now['yday'] && $width == 'long')  // is the due date today?
+            if($due['yday'] == $now['yday'] && $width == 'long') { // is the due date today?
                 $ret = Yii::t('app', 'Today');
-            else if($due['yday'] == $now['yday'] + 1 && $width == 'long') // is it tomorrow?
+            } else if($due['yday'] == $now['yday'] + 1 && $width == 'long') { // is it tomorrow? 
                 $ret = Yii::t('app', 'Tomorrow');
-            else
+            } else {
                 $ret = Yii::app()->dateFormatter->format(
                     Yii::app()->locale->getDateFormat($width), $date); // any other day this year
+            }
         } else{
             $ret = Yii::app()->dateFormatter->format(
                 Yii::app()->locale->getDateFormat($width), $date); // due date is after this year
@@ -351,12 +522,12 @@ class Formatter {
                 Yii::app()->locale->getDateFormat('medium').' '.
                     Yii::app()->locale->getTimeFormat('short'), 
                 $timestamp);
-        }else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
+        }/*else if(Yii::app()->locale->getLanguageId(Yii::app()->locale->getId()) == 'zh') {
             return Yii::app()->dateFormatter->format(
-                Yii::app()->locale->getDateFormat('short').' '.'HH:mm', $timestamp);
-        } else {
+                Yii::app()->locale->getDateFormat('medium').' '.'HH:mm', $timestamp);
+        } */else {
             return Yii::app()->dateFormatter->format(
-                Yii::app()->locale->getDateFormat('short').' '.
+                Yii::app()->locale->getDateFormat('medium').' '.
                     Yii::app()->locale->getTimeFormat('short'), 
                 $timestamp);
         }
@@ -372,7 +543,7 @@ class Formatter {
         if(Yii::app()->locale->getId() == 'en')
             return strtotime($date);
         else
-            return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('short'));
+            return CDateTimeParser::parse($date, Yii::app()->locale->getDateFormat('medium'));
     }
 
     /**
@@ -380,7 +551,7 @@ class Formatter {
      * @param string $date
      * @return integer
      */
-    public static function parseDateTime($date,$length = 'short'){
+    public static function parseDateTime($date,$dateLength = 'medium', $timeLength = 'short'){
         if($date === null){
             return null;
         }elseif(is_numeric($date)){
@@ -388,10 +559,13 @@ class Formatter {
         }elseif(Yii::app()->locale->getId() == 'en'){
             return strtotime($date);
         } else {
+            /*AuxLib::debugLogR (Yii::app()->locale->getDateFormat($dateLength));
+            //AuxLib::debugLogR (Yii::app()->locale->getTimeFormat($timeLength));
+            //AuxLib::debugLogR ($date);*/
             return CDateTimeParser::parse(
                 $date, 
-                Yii::app()->locale->getDateFormat($length).' '.
-                Yii::app()->locale->getTimeFormat($length));
+                Yii::app()->locale->getDateFormat($dateLength).' '.
+                Yii::app()->locale->getTimeFormat($timeLength));
         }
     }
 
@@ -451,46 +625,25 @@ class Formatter {
      * function or just display what we get as is.
      * @param Array $params Optional extra parameters which may include default values
      * for the attributes in question.
+     * @param bool $renderFlag (optional) If true, overrides use of $type parameter to determine
+     *  if attribute should be rendered
+     * @param bool $makeLinks If the render flag is set, determines whether to render attributes
+     *  as links
      * @return String A modified version of $value with attributes replaced.
      */
-    public static function replaceVariables($value, $model, $type = '', $params = array()){
+    public static function replaceVariables(
+        $value, $model, $type = '', $renderFlag=true, $makeLinks=true){
+
         $matches = array();
-        if($type === '' || $type === 'text' || $type === 'richtext'){
+        if($renderFlag && ($type === '' || $type === 'text' || $type === 'richtext')){
             $renderFlag = true;
         }else{
             $renderFlag = false;
         }
-        // Pattern will match {attr}, {attr1.attr2}, {attr1.attr2.attr3}, etc.
-        preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
-        if(!empty($matches[0])){
-            foreach($matches[0] as $match){
-                $match = substr($match, 1, -1); // Remove the "{" and "}" characters
-                $attr = $match;
-                if(strpos($match, '.') !== false){ // We found a link attribute (i.e. {company.name})
-                    $newModel = $model;
-                    $pieces = explode('.',$match);
-                    $first = array_shift($pieces);
-                    $tmpModel = Formatter::parseShortCode($first, $newModel); // First check if the first piece is part of a short code, like "user"
-                    if(isset($tmpModel) && $tmpModel instanceof CActiveRecord){
-                        $newModel = $tmpModel; // If we got a model from our short code, use that
-                        $attr = implode('.',$pieces); // Also, set the attribute to have the first item removed.
-                    }
-                    $value = preg_replace('/{'.$match.'}/i', $newModel->getAttribute($attr, $renderFlag), $value); // Replaced the matched value with the attribute
-                }else{ // Standard attribute
-                    if(isset($params[$match])){ // First check if we provided a value for this attribute
-                        $value = $params[$match];
-                    }elseif($model->hasAttribute($match)){ // Next ensure the attribute exists on the model
-                        $value = preg_replace('/{'.$match.'}/i', $model->getAttribute($match, $renderFlag), $value);
-                    }else{ // Finally, try to parse it as a short code if nothing else worked
-                        $shortCodeValue = Formatter::parseShortCode($match, $model);
-                        if(!is_null($shortCodeValue)){
-                            $value = preg_replace('/{'.$match.'}/i', $shortCodeValue, $value);
-                        }
-                    }
-                }
-            }
-        }
-        return $value;
+        
+        $shortCodeValues = self::getReplacementTokens($value,$model,$renderFlag,$makeLinks);
+
+        return strtr($value,$shortCodeValues);
     }
 
     /**
@@ -502,36 +655,85 @@ class Formatter {
      * and strip any which are not allowed. This should generally be used for
      * mathematical operations, like calculating dynamic date offsets.
      *
-     * @param String $formula The code to be executed
-     * @param String $type Deprecated variable which is preserved here for compatibility
-     * @param Array $params Optional extra parameters, notably the Model triggering the flow
-     * @return String The parsed value to be used in flow execution
+     * @param string $input The code to be executed
+     * @param array $params Optional extra parameters, notably the Model triggering the flow
+     * @return array An array with the first element true or false corresponding to
+     *  whether execution succeeded, the second, the value returned by the formula.
      */
-    public static function parseFormula($formula, $type = '', $params = array()){
-        $formula = substr($formula, 1); // Remove the "=" character from in front
-        if(isset($params['model'])){ // If we find a model, relace any variables inside of our formula (i.e. {lastUpdated})
-            $formula = Formatter::replaceVariables($formula, $params['model'], 'formula', $params);
+    public static function parseFormula($input,$params = array()){
+        if(strpos($input,'=') !== 0) {
+            return array(false,Yii::t('admin','Formula does not begin with "="'));
         }
+        
+        $formula = substr($input, 1); // Remove the "=" character from in front
+        
+        // If we find a model, relace any variables inside of our formula (i.e. {lastUpdated})
+        if(isset($params['model'])){ 
+            $replacementTokens = self::getReplacementTokens($formula, $params['model'], false, false);
+        } else {
+            $replacementTokens = $params;
+        }
+        
+        // Run through all short codes and ensure they're proper PHP expressions
+        // that correspond to their value, i.e. strings will become string
+        // expressions, integers will become integers, etc.
+        //
+        // This step is VITALLY IMPORTANT to the security and stability of
+        // X2Flow's formula parsing.
+        foreach(array_keys($replacementTokens) as $token) {
+            $type = gettype($replacementTokens[$token]);
+
+            if(!in_array($type,array("boolean","integer","double","string","NULL"))) {
+                // Safeguard against "array to string conversion" and "warning,
+                // object of class X could not be converted to string" errors.
+                // This case shouldn't happen and is not valid, so nothing
+                // smarter need be done here than to simply set the replacement
+                // value to its corresponding token.
+                $replacementTokens[$token] = var_export($token,true);
+
+            } else if ($type === 'string') {
+                // Escape/convert values into valid PHP expressions
+                $replacementTokens[$token] = var_export($replacementTokens[$token],true);
+            }
+        }
+
+        // Prepare formula for eval:
         if(strpos($formula, ';') !== strlen($formula) - 1){
-            $formula.=';'; // Eval required a ";" at the end to execute properly, make sure on exists.
+            // Eval requires a ";" at the end to execute properly
+            $formula.=';';
         }
         if(strpos($formula, 'return ') !== 0){
-            $formula = 'return '.$formula; // Eval requries a "return" at the front.
+            // Eval requries a "return" at the front.
+            $formula = 'return '.$formula;
         }
-        $formula = preg_replace(array(
-            '!/\*.*?\*/!s', // Match comments where malicious code could be injected
-            '/\n\s*\n/', // Match lines with only whitespace
-            '/(\S*)\w(?<!'.self::getSafeWords().')(\s*)\((.*?)\)/' // Remove functions not listed in safe words.
-            ),array(
-                '',
-                "\n",
-                'null'
-            ),$formula);
+
+        // Validity check: ensure the formula only consists of "safe" functions,
+        // the existing variable tokens, spaces, and PHP operators:
+        foreach(array_keys($replacementTokens) as $token) {
+            $shortCodePatterns[] = preg_quote($token,'#');
+        }
+        $phpOper = '[\[\]()<>=!^|?:*+%/\-\.]|and |or |xor |\s'; // PHP operators
+        $singleQuotedString = '\'[^\']*\''; // Only simple strings currently supported
+        $number = '[0-9]+(?:\.[0-9]+)?';
+        $boolean = '(?:false|true)';
+        $validPattern = '#^return (?:'
+            .self::getSafeWords()
+            .(empty($shortCodePatterns)?'':('|'.implode('|',$shortCodePatterns)))
+            .'|'.$phpOper
+            .'|'.$number
+            .'|'.$boolean
+            .'|'.$singleQuotedString.')*;$#i';
+        if(!preg_match($validPattern,$formula)) {
+            return array(false,Yii::t('admin','Input evaluates to an invalid formula: ').strtr($formula,$replacementTokens));
+        }
+
         try{
-            return eval($formula); // Execute our sanitized formula.
+            $retVal = @eval(strtr($formula,$replacementTokens));
         }catch(Exception $e){
-            // Hide errors from badly written user input.
+            return array(false,Yii::t('admin','Evaluated statement encountered an exception: '.$e->getMessage()));
         }
+
+        return array(true,$retVal);
     }
 
     /**
@@ -545,14 +747,14 @@ class Formatter {
      * @param String $key The key of the short code to be used
      * @param X2Model $model The model having variables replaced, some short codes
      * use a model
-     * @return String|null Returns the result of code evaluation if a short code
+     * @return mixed Returns the result of code evaluation if a short code
      * existed for the index $key, otherwise null
      */
     public static function parseShortCode($key, $model){
         $path = implode(DIRECTORY_SEPARATOR,
             array(Yii::app()->basePath,'components','x2flow','shortcodes.php'));
         if(file_exists($path)){
-            $shortCodes = include($path);
+            $shortCodes = include(Yii::getCustomPath ($path));
             if(isset($shortCodes[$key])){
                 return eval($shortCodes[$key]);
             }
@@ -571,11 +773,9 @@ class Formatter {
      */
     private static function getSafeWords(){
         $safeWords = array(
-            'echo',
-            'time',
-            'return',
+            'echo[ (]',
+            'time[ (]',
         );
-        $safeWords = array_map (function ($word) { return '\s'.$word; }, $safeWords);
         return implode('|',$safeWords);
     }
 
@@ -591,6 +791,15 @@ class Formatter {
         } else {
             return $text;
         }
+    }
+
+    /**
+     * @param float|int $value 
+     * @return string value formatted as currency using app-wide currency setting
+     */
+    public static function formatCurrency ($value) {
+        return Yii::app()->locale->numberFormatter->formatCurrency (
+            $value, Yii::app()->params->currency);
     }
 
 }

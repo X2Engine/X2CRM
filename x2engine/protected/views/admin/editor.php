@@ -38,7 +38,6 @@
 // ",CClientScript::POS_READY);
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2formEditor.js');
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2gridview.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/colResizable-1.3.min.js');
 
 if(isset($layoutModel) && !empty($layoutModel->layout)){
@@ -163,7 +162,14 @@ echo CHtml::hiddenField('layout', '', array('id' => 'layoutHiddenField'));
         <div id="editorFieldList" class="formSortable">
             <?php
             // get list of all fields, sort by attribute label alphabetically
-            $fields = Fields::model()->findAllByAttributes(array('modelName' => $modelName), new CDbCriteria(array('order' => 'attributeLabel ASC')));
+            $fields = Fields::model()->findAllByAttributes(
+                array('modelName' => $modelName),
+                new CDbCriteria(
+                    array(
+                        'order' => 'attributeLabel ASC',
+                        'condition' => 'keyType IS NULL OR (keyType!="PRI" AND keyType!="FIX")',
+                    )
+            ));
             foreach($fields as &$field){
                 $type = '';
                 switch($field->type){

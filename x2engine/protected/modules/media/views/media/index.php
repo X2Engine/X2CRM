@@ -69,37 +69,26 @@ $(function() {
 });
 ');
 
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id' => 'media-grid',
 	'title'=>Yii::t('media','Media & File Library'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> '<div class="page-title icon media">{title}{buttons}{filterHint}'.
-            
-            '{summary}</div>{items}{pager}',
-	/*
-	'template'=>'<div class="page-title"><h2>'.$heading.'</h2><div class="title-bar">'
-		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-		.CHtml::link(Yii::t('app','Clear Filters'),array(Yii::app()->controller->action->id,'clearFilters'=>1)) . ' | '
-		.X2GridView::getFilterHint()
-		.'{summary}</div></div>{items}{pager}',
-	 */
+	'template'=> 
+        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
+        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
+        '<div id="x2-gridview-page-title" '.
+         'class="page-title icon media x2-gridview-fixed-title">'.
+        '{title}{buttons}{filterHint}'.
+        
+        '{summary}{topPager}{items}{pager}',
 	'dataProvider' => $model->search(),
-	'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
-		. '<div class="form no-border" style="display:inline;"> '
-		. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
-		    	'ajax' => array(
-		    		'url' => $this->createUrl('/profile/setResultsPerPage'),
-		    		'complete' => "function(response) { $.fn.yiiGridView.update('media-grid', {data: {'id_page': 1}}) }",
-		    		'data' => "js: {results: $(this).val()}",
-		    	),
-		    	'style' => 'margin: 0;',
-		    ))
-		. ' </div>'
-		. Yii::t('app', 'results per page.'),
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+    'fixedHeader'=>true,
 	'filter'=>$model,
+    'gvSettingsName' => 'media-index',
 	'defaultGvSettings'=>array(
 		'fileName' => 285,
+		'name' => 114,
 		'associationType' => 85,
 		'createDate' => 94,
 		'uploadedBy' => 114,
@@ -111,7 +100,7 @@ $this->widget('application.components.X2GridView', array(
 			'name' => 'fileName',
 			'header' => Yii::t('media','File Name'),
 			'type' => 'raw',
-			'value' => '$data["drive"]?CHtml::link($data["title"],array("view","id"=>$data->id), array("class" => "media-name")):CHtml::link(CHtml::encode($data["fileName"]), array("view","id"=>$data->id), array("class" => "media-name"))',
+			'value' => '$data["drive"]?CHtml::link($data["name"],array("view","id"=>$data->id), array("class" => "media-name")):CHtml::link(CHtml::encode($data["fileName"]), array("view","id"=>$data->id), array("class" => "media-name"))',
 		),
 		'uploadedBy' => array(
 			'name' => 'uploadedBy',

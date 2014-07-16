@@ -39,6 +39,9 @@
  *
  * @package application.controllers
  */
+Yii::import('application.models.Relationships');
+Yii::import('application.models.Tags');
+
 class NotificationsController extends CController {
 
     public function accessRules() {
@@ -170,6 +173,10 @@ class NotificationsController extends CController {
                     'modelId' => $model->modelId,
                     'type'=>$model->type,
                 );
+                if($model->type == 'voip_call') {
+                    $model->viewed = 1;
+                    $model->update('viewed');
+                }
             }
         }
         return $notifications;

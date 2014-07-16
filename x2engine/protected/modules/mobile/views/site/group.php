@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->pageTitle = Yii::app()->name . ' - Group Chat';
+$this->pageTitle = Yii::app()->settings->appName . ' - Group Chat';
 
 // add script to poll for new messageses
 Yii::app()->clientScript->registerScript('updateChat', "

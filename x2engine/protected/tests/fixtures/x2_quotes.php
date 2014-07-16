@@ -9,7 +9,7 @@ return array(
 	'docsTest' => array(
 		'id' => 8,
 		'name' => 'Pro, Training & Data Migration',
-		'accountName' => 1,
+		'accountName' => 'Black Mesa_1',
 		'salesStage' => NULL,
 		'expectedCloseDate' => NULL,
 		'probability' => '78',
@@ -18,7 +18,7 @@ return array(
 		'assignedTo' => 'testuser',
 		'createDate' => '1364263940',
 		'createdBy' => 'testuser',
-		'associatedContacts' => '12345',
+		'associatedContacts' => 'Testfirstname Testlastname_12345',
 		'lastUpdated' => '1365200895',
 		'lastActivity' => '1364909293',
 		'updatedBy' => 'admin',

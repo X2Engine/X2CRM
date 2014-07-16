@@ -37,6 +37,8 @@
 // Imports that are required by properties/methods of this behavior:
 Yii::import('application.models.Admin');
 Yii::import('application.components.util.FileUtil');
+Yii::import('application.modules.users.models.*');
+
 
 /**
  * ApplicationConfigBehavior is a behavior for the application. It loads
@@ -46,6 +48,9 @@ Yii::import('application.components.util.FileUtil');
  * @property string $absoluteBaseUrl (read-only) the base URL of the web
  *  application, independent of whether there is a web request.
  * @property string $edition The "edition" of the software.
+ * @property array $editionHierarchy Information about software sets as defined
+ *  in the static configuration file protected/data/editionHierarchy.php
+ * @property array $editions (read-only) The editions that apply to the app.
  * @property string $externalAbsoluteBaseUrl (read-only) the absolute base url
  *  of the application to use when creating URLs to be viewed publicly
  * @property string $externalWebRoot (read-only) The absolute base webroot URL
@@ -63,10 +68,19 @@ Yii::import('application.components.util.FileUtil');
  */
 class ApplicationConfigBehavior extends CBehavior {
 
-    private static $_editions = array(
-        'opensource' => array('pro'=>0,'pla'=>0),
-        'pro' => array('pro'=>'pro','pla'=>0),
-        'pla' => array('pro'=>'pro','pla'=>'pla'),
+    /**
+     * Stores information about software edition sets (for manually setting
+     * edition, when testing software subsets)
+     * @var type
+     */
+    private static $_editions;
+    /**
+     * Software edition detection based on logo presence.
+     * @var type 
+     */
+    private static $_logoHashes = array(
+        'pro'=>'c3409244acae439caedac31c91ad5690',
+        'pla'=>'ca9d776db62cfc80848525ff880ec325'
     );
 
     private $_absoluteBaseUrl;
@@ -137,9 +151,11 @@ class ApplicationConfigBehavior extends CBehavior {
             $uploadedBy = $this->owner->db->createCommand()
                 ->select('uploadedBy')->from('x2_media')->where($where, $params)->queryRow();
             if(!empty($uploadedBy['uploadedBy'])){
-                $notificationSound = $this->owner->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
+                $notificationSound = $this->owner->baseUrl.'/uploads/media/'.
+                    $uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
             }else{
-                $notificationSound = $this->owner->baseUrl.'/uploads/'.$profile->notificationSound;
+                $notificationSound = $this->owner->baseUrl.'/uploads/'.
+                    $profile->notificationSound;
             }
         }
         return '
@@ -148,7 +164,8 @@ class ApplicationConfigBehavior extends CBehavior {
                     baseUrl: "'.$this->owner->baseUrl.'",
                     scriptUrl: "'.$this->owner->request->scriptUrl.'",
                     themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
-                    language: "'.($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
+                    language: "'.
+                        ($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
                     datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
                     timePickerFormat: "'.Formatter::formatTimePicker().'"
                     '.($profile ? '
@@ -161,7 +178,43 @@ class ApplicationConfigBehavior extends CBehavior {
             }
             x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
             x2.notifUpdateInterval = '.$this->settings->chatPollTime.';
+            x2.isAndroid = '.(IS_ANDROID ? 'true' : 'false').';
+            x2.isIPad = '.(IS_IPAD ? 'true' : 'false').';
         ';
+    }
+
+    /**
+     * Checks if user is on mobile device and sets appropriate constants 
+     */
+    private function checkForMobileDevice () {
+        $userAgentStr = strtolower($this->owner->request->userAgent);
+        $isAndroid = preg_match('/android/', $userAgentStr);
+        if($isAndroid){
+            define('IS_ANDROID', true);
+        }else{
+            define('IS_ANDROID', false);
+        }
+        $isIPad = preg_match('/ipad/', $userAgentStr);
+        if($isIPad){
+            //define('IS_IPAD', true);
+            define('IS_IPAD', false);
+        }else{
+            define('IS_IPAD', false);
+        }
+    }
+
+    /**
+     * Checks if responsive layout should be used based on requested action
+     */
+    private function checkResponsiveLayout () {
+        if (AuxLib::isIE8 () || strpos ($this->owner->request->getPathInfo(), 'admin') === 0 ||
+            preg_match ('/flowDesigner(\/\d+)?$/', $this->owner->request->getPathInfo())) {
+
+            define('RESPONSIVE_LAYOUT', false);
+        } else {
+            define('RESPONSIVE_LAYOUT', true);
+            //define('RESPONSIVE_LAYOUT', false);
+        }
     }
 
     /**
@@ -173,14 +226,34 @@ class ApplicationConfigBehavior extends CBehavior {
      * without having to extend {@link Yii} and override its methods.
      */
     public function beginRequest(){
-        // $t0 = microtime(true);
-        $noSession = $this->owner->params->noSession || strpos($this->owner->request->getPathInfo(),'api')===0;
+        
+        // About the "noSession" property/variable:
+        //
+        // This variable, if True, indicates that the application is running in
+        // the context of either an API call or a console command, in which case
+        // there would not be the typical authenticated user and session
+        // variables one would need in a web request
+        //
+        // It's necessary because originally this method was written with
+        // absolutely no regard for compatibility with the API or Yii console,
+        // and thus certain lines of code that make references to the usual web
+        // environment with cookie-based authentication (which would fail in
+        // those cases) needed to be kept inside of conditional statements that
+        // are skipped over if in the console/API.
+        $this->owner->params->noSession =
+                $this->owner->params->noSession
+                || strpos($this->owner->request->getPathInfo(),'api/')===0
+                || strpos($this->owner->request->getPathInfo(),'api2/')===0;
+        $noSession = $this->owner->params->noSession;
 
         if(!$noSession){
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
+                Yii::import('application.models.Roles');
+                Yii::import('application.components.X2AuthManager');
                 Yii::import('application.components.X2WebUser');
                 Yii::import('application.components.X2MessageSource');
                 Yii::import('application.components.Formatter');
+                Yii::import('application.components.X2Html');
                 Yii::import('application.components.JSONEmbeddedModelFieldsBehavior');
                 Yii::import('application.components.TransformedFieldStorageBehavior');
                 Yii::import('application.components.EncryptedFieldsBehavior');
@@ -229,112 +302,132 @@ class ApplicationConfigBehavior extends CBehavior {
         
         $this->cryptInit();
         
-        // Yii::import('application.components.ERememberFiltersBehavior');
-        // Yii::import('application.components.EButtonColumnWithClearFilters');
-        // $this->owner->messages->forceTranslation = true;
         $this->owner->messages->onMissingTranslation = array(new TranslationLogger, 'log');
-        $notGuest = True;
-        $uname = 'admin'; // Will always be admin in a console command
-        if(!$noSession){
-            $uname = $this->owner->user->getName();
-            $notGuest = !$this->owner->user->getIsGuest();
-        }
-
-        $sessionId = isset($_SESSION['sessionId']) ? $_SESSION['sessionId'] : session_id();
 
         // Set profile
-        $this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array('username' => $uname));
-        $session = X2Model::model('Session')->findByPk($sessionId);
-        if(isset($this->owner->params->profile)){
-            $_SESSION['fullscreen'] = $this->owner->params->profile->fullscreen;
+        //
+        // Get the Administrator's and the current user's profile.
+        $adminProf = Profile::model()->findByPk(1);
+        $this->owner->params->adminProfile = $adminProf;
+        if(!$noSession){ // Typical web session:
+            $notGuest = !$this->owner->user->getIsGuest();
+            if($notGuest) {
+                $this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array(
+                    'username' => $this->owner->user->getName()
+                        ));
+                $this->setSuModel($this->owner->params->profile->user);
+            }
+        } else {
+            // Use the admin profile as the user profile.
+            //
+            // If a different profile is desired in an API call or console
+            // command, a different profile should be loaded.
+            //
+            // Using "admin" as the default profile should not affect
+            // permissions (that's what the "suModel" property is for). It is
+            // merely to account for cases where there is a reference to the
+            // "profile" property of some model or component class that would
+            // break the application outside the scope of a web request with a
+            // session and cookie-based authentication.
+            $notGuest = false;
+            $this->owner->params->profile = $adminProf;
+            $userModel = $this->owner->params->profile->user;
+            $this->setSuModel($userModel instanceof User
+                    ? $userModel
+                    : User::model()->findByPk(1));
         }
-
-
+        
+        
+        // Set session variables
         if(!$noSession){
-            if($notGuest && !($this->owner->request->getPathInfo() == 'site/getEvents')){
-                $this->owner->user->setReturnUrl($this->owner->request->requestUri);
-                if($session !== null){
-                    $timeout = Roles::getUserTimeout($this->owner->user->getId());
-                    if($session->lastUpdated + $timeout < time()){
-                        SessionLog::logSession($this->owner->user->getName(), $sessionId, 'activeTimeout');
-                        $session->delete();
-                        $this->owner->user->logout(false);
-                    }else{
-                        $session->lastUpdated = time();
-                        $session->update(array('lastUpdated'));
+            $sessionId = isset($_SESSION['sessionId']) ? $_SESSION['sessionId'] : session_id();
+            $session = X2Model::model('Session')->findByPk($sessionId);
+            if(!empty($this->owner->params->profile)){
+                $_SESSION['fullscreen'] = $this->owner->params->profile->fullscreen;
+            }
+            if(!($this->owner->request->getPathInfo() == 'site/getEvents')){
+                if($notGuest){
+                    $this->owner->user->setReturnUrl($this->owner->request->requestUri);
+                    if($session != null){
+                        $timeout = Roles::getUserTimeout($this->owner->user->getId());
+                        if($session->lastUpdated + $timeout < time()){
+                            SessionLog::logSession($this->owner->user->getName(), $sessionId, 'activeTimeout');
+                            $session->delete();
+                            $this->owner->user->logout(false);
+                            $this->_suModel = null;
+                            $this->_suID = null;
+                            $this->setUserAccessParameters(null);
+                        }else{
+                            // Print a warning message
+                            if($this->owner->session['debugEmailWarning']){
+                                $this->owner->session['debugEmailWarning'] = 0;
+                                $this->owner->user->setFlash('admin.debugEmailMode',
+                                        Yii::t('app', 'Note, email debugging mode '
+                                                . 'is enabled. Emails will not '
+                                                . 'actually be delivered.'));
+                            }
 
-                        $this->owner->params->sessionStatus = $session->status;
+                            $session->lastUpdated = time();
+                            $session->update(array('lastUpdated'));
+
+                            $this->owner->params->sessionStatus = $session->status;
+                        }
+                    }else{
+                        $this->owner->user->logout(false);
                     }
                 }else{
-                    $this->owner->user->logout(false);
+                    // Guest
+                    $this->setUserAccessParameters(null);
                 }
-
-
-                $userId = $this->owner->user->getId();
-                if(!is_null($userId)){
-                    $this->owner->params->groups = Groups::getUserGroups($userId);
-                    $this->owner->params->roles = Roles::getUserRoles($userId);
-
-                    $this->owner->params->isAdmin = $this->owner->user->checkAccess('AdminIndex');
-                }
-            }elseif(!($this->owner->request->getPathInfo() == 'site/getEvents')){
-                $guestRole = Roles::model()->findByAttributes(array('name' => 'Guest'));
-                if(isset($guestRole))
-                    $this->owner->params->roles = array($guestRole->id);
             }
         }
 
-        $adminProf = X2Model::model('Profile')->findByPk(1);
-        $this->owner->params->adminProfile = $adminProf;
+        // Configure logos
+        if(!($logo = $this->owner->cache['x2Power'])){
+            $logo = 'data:image/png;base64,'.base64_encode(file_get_contents(implode(DIRECTORY_SEPARATOR, array(
+                        Yii::app()->basePath,
+                        '..',
+                        'images',
+                        'powered_by_x2engine.png'
+            ))));
+            $this->owner->cache['x2Power'] = $logo;
+        }
+        $this->owner->params->x2Power = $logo;
+        $logo = Media::model()->findByAttributes(array(
+            'associationId' => 1,
+            'associationType' => 'logo'
+                ));
+        if(isset($logo))
+            $this->owner->params->logo = $logo->fileName;
 
-        // set currency
+        // Set currency and load currency symbols
         $this->owner->params->currency = $this->settings->currency;
-
-        // set language
-        if(!empty($this->owner->params->profile->language))
-            $this->owner->language = $this->owner->params->profile->language;
-        else if(isset($adminProf))
-            $this->owner->language = $adminProf->language;
-
         $locale = $this->owner->locale;
         $curSyms = array();
         foreach($this->owner->params->supportedCurrencies as $curCode){
             $curSyms[$curCode] = $locale->getCurrencySymbol($curCode);
         }
         $this->owner->params->supportedCurrencySymbols = $curSyms; // Code to symbol
-        // set timezone
+
+        // Set language
+        if(!empty($this->owner->params->profile->language))
+            $this->owner->language = $this->owner->params->profile->language;
+        else if(isset($adminProf))
+            $this->owner->language = $adminProf->language;
+
+        // Set timezone
         if(!empty($this->owner->params->profile->timeZone))
             date_default_timezone_set($this->owner->params->profile->timeZone);
         elseif(!empty($adminProf->timeZone))
             date_default_timezone_set($adminProf->timeZone);
         else
             date_default_timezone_set('UTC');
-
-        $logo = Media::model()->findByAttributes(array('associationId' => 1, 'associationType' => 'logo'));
-        if(isset($logo))
-            $this->owner->params->logo = $logo->fileName;
-
-
-        // set edition
-        if(YII_DEBUG){
-            if(PRO_VERSION)
-                $this->owner->params->edition = 'pro';
-            else
-                $this->owner->params->edition = 'opensource';
-        } else{
-            $this->owner->params->edition = $this->settings->edition;
-        }
-
-        if($this->owner->params->edition === 'pro'){
-            $proLogo = 'images/x2engine_crm_pro.png';
-            if(!file_exists($proLogo) || hash_file('md5', $proLogo) !== '31a192054302bc68e1ed5a59c36ce731')
-                $this->owner->params->edition = 'opensource';
-        }
-
         setlocale(LC_ALL, 'en_US.UTF-8');
 
-        // set base path and theme path globals for JS
+        // Set base path and theme path globals for JS (web UI only)
         if(!$noSession){
+            $this->checkForMobileDevice ();
+            $this->checkResponsiveLayout ();
             if($notGuest){
                 $profile = $this->owner->params->profile;
                 if(isset($profile)){
@@ -342,37 +435,14 @@ class ApplicationConfigBehavior extends CBehavior {
                 }else{
                     $yiiString = $this->getJSGlobalsSetupScript ();
                 }
+                if(!$this->owner->request->isAjaxRequest)
+                    Yii::app()->clientScript->registerScript(md5($this->owner->name), 'var _x2p=["\x24\x28\x69\x29\x2E\x68\x28\x6A\x28\x29\x7B\x6B\x20\x62\x3D\x24\x28\x22\x23\x6D\x2D\x6C\x2D\x6E\x22\x29\x3B\x36\x28\x32\x20\x67\x3D\x3D\x22\x33\x22\x7C\x7C\x32\x20\x34\x3D\x3D\x22\x33\x22\x29\x7B\x35\x28\x22\x64\x20\x39\x20\x63\x20\x65\x20\x66\x2E\x22\x29\x7D\x37\x7B\x36\x28\x21\x62\x2E\x38\x7C\x7C\x28\x34\x28\x62\x2E\x77\x28\x22\x6F\x22\x29\x29\x21\x3D\x22\x41\x22\x29\x7C\x7C\x21\x62\x2E\x7A\x28\x22\x3A\x79\x22\x29\x7C\x7C\x62\x2E\x43\x28\x29\x3D\x3D\x30\x7C\x7C\x62\x2E\x44\x3D\x3D\x30\x7C\x7C\x62\x2E\x78\x28\x22\x72\x22\x29\x21\x3D\x22\x31\x22\x29\x7B\x24\x28\x22\x61\x22\x29\x2E\x71\x28\x22\x70\x22\x29\x3B\x35\x28\x22\x73\x20\x74\x20\x76\x20\x75\x20\x42\x2E\x22\x29\x7D\x7D\x7D\x29\x3B","\x7C","\x73\x70\x6C\x69\x74","\x7C\x7C\x74\x79\x70\x65\x6F\x66\x7C\x75\x6E\x64\x65\x66\x69\x6E\x65\x64\x7C\x53\x48\x41\x32\x35\x36\x7C\x61\x6C\x65\x72\x74\x7C\x69\x66\x7C\x65\x6C\x73\x65\x7C\x6C\x65\x6E\x67\x74\x68\x7C\x4A\x61\x76\x61\x53\x63\x72\x69\x70\x74\x7C\x7C\x7C\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x7C\x49\x6D\x70\x6F\x72\x74\x61\x6E\x74\x7C\x61\x72\x65\x7C\x6D\x69\x73\x73\x69\x6E\x67\x7C\x6A\x51\x75\x65\x72\x79\x7C\x6C\x6F\x61\x64\x7C\x77\x69\x6E\x64\x6F\x77\x7C\x66\x75\x6E\x63\x74\x69\x6F\x6E\x7C\x76\x61\x72\x7C\x62\x79\x7C\x70\x6F\x77\x65\x72\x65\x64\x7C\x78\x32\x65\x6E\x67\x69\x6E\x65\x7C\x73\x72\x63\x7C\x68\x72\x65\x66\x7C\x72\x65\x6D\x6F\x76\x65\x41\x74\x74\x72\x7C\x6F\x70\x61\x63\x69\x74\x79\x7C\x50\x6C\x65\x61\x73\x65\x7C\x70\x75\x74\x7C\x6C\x6F\x67\x6F\x7C\x74\x68\x65\x7C\x61\x74\x74\x72\x7C\x63\x73\x73\x7C\x76\x69\x73\x69\x62\x6C\x65\x7C\x69\x73\x7C\x30\x65\x31\x65\x32\x34\x37\x30\x64\x30\x30\x32\x36\x36\x33\x64\x30\x38\x30\x64\x34\x35\x62\x39\x63\x37\x34\x65\x32\x63\x61\x36\x30\x62\x62\x61\x31\x64\x38\x64\x64\x33\x65\x66\x35\x61\x31\x32\x33\x33\x64\x61\x61\x33\x62\x64\x61\x36\x36\x64\x32\x63\x61\x65\x7C\x62\x61\x63\x6B\x7C\x68\x65\x69\x67\x68\x74\x7C\x77\x69\x64\x74\x68","","\x66\x72\x6F\x6D\x43\x68\x61\x72\x43\x6F\x64\x65","\x72\x65\x70\x6C\x61\x63\x65","\x5C\x77\x2B","\x5C\x62","\x67"];eval(function (_0xfeccx1,_0xfeccx2,_0xfeccx3,_0xfeccx4,_0xfeccx5,_0xfeccx6){_0xfeccx5=function (_0xfeccx3){return (_0xfeccx3<_0xfeccx2?_x2p[4]:_0xfeccx5(parseInt(_0xfeccx3/_0xfeccx2)))+((_0xfeccx3=_0xfeccx3%_0xfeccx2)>35?String[_x2p[5]](_0xfeccx3+29):_0xfeccx3.toString(36));} ;if(!_x2p[4][_x2p[6]](/^/,String)){while(_0xfeccx3--){_0xfeccx6[_0xfeccx5(_0xfeccx3)]=_0xfeccx4[_0xfeccx3]||_0xfeccx5(_0xfeccx3);} ;_0xfeccx4=[function (_0xfeccx5){return _0xfeccx6[_0xfeccx5];} ];_0xfeccx5=function (){return _x2p[7];} ;_0xfeccx3=1;} ;while(_0xfeccx3--){if(_0xfeccx4[_0xfeccx3]){_0xfeccx1=_0xfeccx1[_x2p[6]]( new RegExp(_x2p[8]+_0xfeccx5(_0xfeccx3)+_x2p[8],_x2p[9]),_0xfeccx4[_0xfeccx3]);} ;} ;return _0xfeccx1;} (_x2p[0],40,40,_x2p[3][_x2p[2]](_x2p[1]),0,{}));');
             }else{
                 $yiiString = $this->getJSGlobalsSetupScript ();
             }
 
-            $userAgentStr = strtolower($this->owner->request->userAgent);
-            $isAndroid = preg_match('/android/', $userAgentStr);
-            if($isAndroid){
-                define('IS_ANDROID', true);
-                $yiiString .= '
-					x2.isAndroid = true;
-				';
-            }else{
-                define('IS_ANDROID', false);
-                $yiiString .= '
-					x2.isAndroid = false;
-				';
-            }
-            $isIPad = preg_match('/ipad/', $userAgentStr);
-            if($isIPad){
-                define('IS_IPAD', true);
-                $yiiString .= '
-					x2.isIPad = true;
-				';
-            }else{
-                define('IS_IPAD', false);
-                $yiiString .= '
-					x2.isIPad = false;
-				';
-            }
-
-            $this->owner->clientScript->registerScript('setParams', $yiiString, CClientScript::POS_HEAD);
+            $this->owner->clientScript->registerScript(
+                'setParams', $yiiString, CClientScript::POS_HEAD);
             $cs = $this->owner->clientScript;
             $baseUrl = $this->owner->request->baseUrl;
             $jsVersion = '?'.$this->owner->params->buildDate;
@@ -385,13 +455,25 @@ class ApplicationConfigBehavior extends CBehavior {
               'media.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'modernizr.custom.66175.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'publisher.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'relationships.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+              //'relationships.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'tags.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'translator.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'widgets.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               'x2forms.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
               ); */
         }
+    }
+
+    /**
+     * Returns true or false for whether or not the application's current edition
+     * contains a given edition.
+     * 
+     * @param string $edition The edition. With "opensource", this function will
+     *  always evaluate to true.
+     * @return boolean
+     */
+    public function contEd($edition) {
+        return (bool) $this->editionHierarchy[$this->getEdition()][$edition];
     }
 
     /**
@@ -439,7 +521,9 @@ class ApplicationConfigBehavior extends CBehavior {
         if($this->owner->controller instanceof CController){ // Standard in-web-request URL generation
             return $this->externalWebRoot.$this->owner->controller->createUrl($route, $params);
         }else{ // Offline URL generation
-            return $this->externalAbsoluteBaseUrl.'/index.php/'.trim($route, '/').'?'.http_build_query($params, '', '&');
+            return $this->externalAbsoluteBaseUrl.
+                (YII_DEBUG && YII_UNIT_TESTING ? '/index-test.php/' : '/index.php/').
+                trim($route, '/').'?'.http_build_query($params, '', '&');
         }
     }
 
@@ -451,25 +535,27 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     public function getAbsoluteBaseUrl(){
         if(!isset($this->_absoluteBaseUrl)){
-            if($this->owner->params->noSession){
+            if(ResponseUtil::isCli()){
+                // It's assumed that in this case, we're dealing with (for example)
+                // a cron script that sends emails and has to generate URLs. It
+                // needs info about how to access the CRM from the outside...
                 $this->_absoluteBaseUrl = '';
-                // Use the web API config file to construct the URL
-                $file = realpath($this->owner->basePath.'/../webLeadConfig.php');
-                if($file){
+                if($this->contEd('pro')
+                        && $this->settings->externalBaseUrl
+                        && $this->settings->externalBaseUri){
+                    // Use the base URL from "public info settings" since it's
+                    // available:
+                    $this->_absoluteBaseUrl = $this->settings->externalBaseUrl.$this->settings->externalBaseUri;
+                }else if($file = realpath($this->owner->basePath.'/../webConfig.php')){
+                    // Use the web API config file to construct the URL (our
+                    // last hope)
                     include($file);
                     if(isset($url))
                         $this->_absoluteBaseUrl = $url;
-                }
-                if(!isset($this->_absoluteBaseUrl)){
-                    $this->_absoluteBaseUrl = ''; // Default
-                    if($this->hasProperty('request')){
-                        // If this is an API request, there is still hope yet to resolve it
-                        try{
-                            $this->_absoluteBaseUrl = $this->owner->request->getBaseUrl(1);
-                        }catch(Exception $e){
-
-                        }
-                    }
+                } else {
+                    // There's nothing left we can legitimately do and have it
+                    // work correctly! Make something up.
+                    $this->_absoluteBaseUrl = 'http://localhost';
                 }
             }else{
                 $this->_absoluteBaseUrl = $this->owner->baseUrl;
@@ -507,17 +593,123 @@ class ApplicationConfigBehavior extends CBehavior {
                     default:
                         $this->_edition = 'opensource';
                 }
-            } else {
-                $this->_edition = $this->settings->edition;
+            }else{
+                $this->_edition = 'opensource';
+                foreach(array('pla', 'pro') as $ed){
+                    $logo = "images/x2engine_crm_$ed.png";
+                    $logoPath = implode(DIRECTORY_SEPARATOR, array(
+                        $this->owner->basePath,
+                        '..',
+                        FileUtil::rpath($logo)
+                    ));
+                    if(file_exists($logoPath)){
+                        if(md5_file($logoPath) == self::$_logoHashes[$ed]){
+                            $this->_edition = $ed;
+                            break;
+                        }
+                    }
+                }
             }
         }
         return $this->_edition;
     }
 
+    /**
+     * Returns the edition hierarchy defined in the static configuration.
+     *
+     * @return type
+     */
+    public function getEditionHierarchy() {
+        if(!isset(self::$_editions)) {
+            self::$_editions = require(implode(DIRECTORY_SEPARATOR,array(
+                Yii::app()->basePath,
+                'data',
+                'editionHierarchy.php'
+            )));
+        }
+        return self::$_editions;
+    }
+
+    /**
+     * Returns editions "contained" by the app's current edition
+     */
+    public function getEditions() {
+        return array_filter($this->editionHierarchy[$this->getEdition()]);
+    }
+
+    /**
+     * Returns the name of the software edition.
+     */
+    public function getEditionLabel($addPrefix = false) {
+        $labels = $this->getEditionLabels($addPrefix);
+        return $labels[$this->getEdition()];
+    }
+
+    public function getEditionLabels($addPrefix = false) {
+        $prefix = $addPrefix?'X2Engine ':'';
+        return array(
+            'opensource' => $prefix.'Open Source Edition',
+            'pro' => $prefix.'Professional Edition',
+            'pla' => $prefix.'Platinum Edition'
+        );
+    }
+
+    /**
+     * @return string url of favicon image file for the current version
+     */
+    public function getFavIconUrl () {
+        $baseUrl = Yii::app()->clientScript->baseUrl;
+        $faviconUrl;
+        switch (Yii::app()->edition) {
+            case 'opensource':
+                $faviconUrl = $baseUrl.'/images/faviconOpensource.ico';
+                break;
+            case 'pro':
+                $faviconUrl = $baseUrl.'/images/faviconPro.ico';
+                break;
+            case 'pla':
+                $faviconUrl = $baseUrl.'/images/faviconPla.ico';
+                break;
+            default:
+                if (YII_DEBUG) {
+                    throw new CException (Yii::t('Error: getFavIconLink: default on switch'));
+                }
+        }
+        return $faviconUrl;
+    }
+
+    /**
+     * @return string url of login logo image file for the current version
+     */
+    public function getLoginLogoUrl () {
+        $baseUrl = Yii::app()->clientScript->baseUrl;
+        $loginLogoUrl;
+        switch (Yii::app()->edition) {
+            case 'opensource':
+                $loginLogoUrl = $baseUrl.'/images/x2engineLoginLogoOpensource.png';
+                break;
+            case 'pro':
+                $loginLogoUrl = $baseUrl.'/images/x2engineLoginLogoPro.png';
+                break;
+            case 'pla':
+                $loginLogoUrl = $baseUrl.'/images/x2engineLoginLogoPla.png';
+                break;
+            default:
+                if (YII_DEBUG) {
+                    throw new CException (Yii::t('Error: getFavIconLink: default on switch'));
+                }
+        }
+        return $loginLogoUrl;
+    }
+
     public function getExternalAbsoluteBaseUrl(){
         if(!isset($this->_externalAbsoluteBaseUrl)){
             $eabu = $this->settings->externalBaseUri;
-            $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.(empty($eabu) ? $this->owner->baseUrl : $eabu);
+            if (!YII_DEBUG || !YII_UNIT_TESTING) {
+                $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.(empty($eabu) ? $this->owner->baseUrl : $eabu);
+            } else { // during a unit test, owner->baseUrl is not the web root
+                $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.$eabu;
+            }
         }
         return $this->_externalAbsoluteBaseUrl;
     }
@@ -535,21 +727,40 @@ class ApplicationConfigBehavior extends CBehavior {
         return $this->_externalWebRoot;
     }
 
+    /**
+     * "isGuest" wrapper that can be used from CLI
+     *
+     * Used in biz rules for RBAC items in place of Yii::app()->user->isGuest for
+     * the reason that Yii::app()->user is meaningless at the command line
+     * @return type
+     */
+    public function getIsUserGuest() {
+        if(php_sapi_name() == 'cli') {
+            return false;
+        } else {
+            return $this->owner->user->isGuest;
+        }
+    }
+
 	/**
 	 * Substitute user ID magic getter.
 	 *
 	 * If the user has already been looked up or set, method will defer to its
-	 * value for id.
+	 * value for id. Defers to the value of id in {@link suModel}.
 	 * @return type
 	 */
 	public function getSuID(){
-        if(!isset($this->_suID)){
-            if($this->isInSession){
-                $this->_suID = $this->owner->user->getId();
-            }elseif(isset($this->_suModel)){
-                $this->_suID = $this->_suModel->id;
-            }else{
+        if(!isset($this->_suID) || isset($this->_suModel)){
+            if(isset($this->_suModel)){
+                $this->_suID = (integer) $this->_suModel->id;
+            }elseif($this->isInSession){
+                $this->_suID = (integer) $this->owner->user->getId();
+            }elseif(php_sapi_name() == 'cli'){
+                // Assume admin
                 $this->_suID = 1;
+            }else{
+                // Assume nothing/treat as guest
+                $this->_suID = null;
             }
         }
         return $this->_suID;
@@ -624,10 +835,30 @@ class ApplicationConfigBehavior extends CBehavior {
     public function getSuModel(){
         if(!isset($this->_suModel)){
             if($this->isInSession)
-                $this->_suID == $this->owner->user->getId();
-            $this->_suModel = User::model()->findByPk($this->suID);
+                $this->_suID == $this->getOwner()->getUser()->getId();
+            $this->_suModel = User::model()->findByPk($this->getSuID());
         }
         return $this->_suModel;
+    }
+
+    /**
+     * Substitute user name getter.
+     *
+     * This is intended to be safer than suModel->userName insofar as it defaults
+     * to "Guest" if no name/session has yet been established. It is expected that
+     * in console commands, API requests and unit testing, the {@link suModel}
+     * property be set as desired, so that this does not evaluate to "Guest"
+     */
+    public function getSuName(){
+        if($this->getIsInSession()) {
+            return $this->owner->user->getName();
+        }else{
+            if(!isset($this->_suModel)){
+                return 'Guest';
+            }else{
+                return $this->_suModel->username;
+            }
+        }
     }
     
     /**
@@ -636,6 +867,20 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     public function setSuModel(User $user){
         $this->_suModel = $user;
+        if($user->id !== null)
+            $this->setUserAccessParameters($user->id);
+    }
+
+    /**
+     * Adds parameters that are used to determine user access
+     * @param type $userId
+     */
+    public function setUserAccessParameters($userId) {
+        $this->owner->params->groups = Groups::getUserGroups($userId);
+        $this->owner->params->roles = Roles::getUserRoles($userId);
+        $this->owner->params->isAdmin = $userId !== null
+                ? $this->owner->authManager->checkAccess('AdminIndex', $userId)
+                : false; 
     }
 
     /**
@@ -646,12 +891,12 @@ class ApplicationConfigBehavior extends CBehavior {
         Yii::import('application.controllers.X2Controller');
         Yii::import('application.controllers.x2base');
         Yii::import('application.components.*');
+        Yii::import('application.components.X2GridView.*');
         Yii::import('application.components.filters.*');
         Yii::import('application.components.util.*');
         Yii::import('application.components.permissions.*');
         Yii::import('application.modules.media.models.Media');
         Yii::import('application.modules.groups.models.Groups');
-        Yii::import('application.extensions.gallerymanager.models.*');
 
         $modules = $this->owner->modules;
         $arr = array();

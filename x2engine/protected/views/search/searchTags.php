@@ -49,7 +49,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'template'=>'<div class="page-title"><h2>'.Yii::t('app','Search Results').'</h2>'
 		.CHtml::link(Yii::t('marketing','Email These Contacts'),
 			array('/marketing/marketing/createFromTag','tag'=>$term),
-			array('class'=>'x2-button left','style'=>'margin-bottom:2px;'))
+			array('class'=>'x2-button left','style'=>'margin-top:3px;'))
 		.'<div class="title-bar">{summary}</div></div>{items}{pager}',
 	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
 	'columns' => array(

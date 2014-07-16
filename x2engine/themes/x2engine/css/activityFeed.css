@@ -192,19 +192,6 @@ Miscellaneous
 
 #activity-feed.list-view .view.top-level.activity-feed {padding:5px;overflow:auto;}
 
-div#filter-controls div.portlet-content {
-    text-align: center;
-}
-
-div#full-controls-button-container {
-    text-align: center;
-
-}
-
-a#toggle-filters-link {
-    margin-top: -8px;
-    margin-bottom: 4px;
-}
 
 /* make sticky feed posts broadcast bg color take fill entire space */
 #sticky-feed .top-level.activity-feed {
@@ -228,8 +215,18 @@ to float around the truncated text. */
 }
 
 
-.event-bottom-buttons {
-    margin-top: 2px;
+.event-bottom-row {
+    margin-top: -5px;
+}
+
+.event-bottom-row .comment-age {
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.event-bottom-row .event-icon-button-container {
+    display: inline-block;
+    margin-top: -7px;
 }
 
 div#post-form {
@@ -242,9 +239,79 @@ div#post-form {
 }
 
 #activity-feed-container {
-	border: 1px solid #c5c5c5;
 	border-radius:			4px 4px 4px 4px;
 	-moz-border-radius:		4px 4px 4px 4px;
 	-webkit-border-radius:	4px 4px 4px 4px;
 	-o-border-radius:		4px 4px 4px 4px;
+}
+
+.feed-comment-icon,
+.broadcast-icon,
+.like-icon,
+.sticky-icon,
+.unsticky-icon,
+.unlike-icon,
+.feed-make-important-icon,
+.feed-make-unimportant-icon {
+    /*-webkit-filter: grayscale(100%);*/
+    position: relative;
+    top: 7px;
+    height: 20px;
+    opacity: 0.9;
+}
+
+.sticky-icon {
+    opacity: 0.8;
+}
+
+.sticky-icon:hover {
+    opacity: 0.9;
+}
+
+.unsticky-icon:hover,
+.feed-make-important-icon:hover,
+.feed-make-unimportant-icon:hover {
+    opacity: 1; 
+}
+
+.feed-comment-icon {
+    opacity: 0.5;
+}
+
+.broadcast-icon {
+    opacity: 0.6;
+}
+.broadcast-icon:hover {
+    opacity: 0.7;
+}
+
+.like-icon,
+.unlike-icon {
+    opacity: 0.55;
+}
+
+.like-icon:hover,
+.unlike-icon:hover {
+    opacity: 0.65;
+}
+
+.feed-comment-icon:hover {
+    opacity: 0.6;
+}
+
+
+#activity-feed-settings-button {
+    cursor: pointer;
+    float: right;
+    margin-top: 5px;
+    opacity: 0.7;
+}
+#activity-feed-settings-button:hover {
+    opacity: 1;
+}
+
+
+#second-row-buttons-container {
+    display: block;
+    margin-top: 7px;
 }

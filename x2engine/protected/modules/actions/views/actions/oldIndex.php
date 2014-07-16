@@ -34,11 +34,26 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$profile = Profile::model()->findByPk(Yii::app()->user->id);
+$this->showActions = $profile->showActions;
+
+// if user hasn't saved a type of action to show, show uncomple actions by default
+if(!$this->showActions) 
+    $this->showActions = 'uncomplete';
+if($this->showActions == 'uncomplete')
+	$model->complete = 'NO';
+else if ($this->showActions == 'complete')
+	$model->complete = 'YES';
+else
+	$model->complete = '';
+
 $menuItems = array(
 	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
 	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
 	array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
 	array('label'=>Yii::t('actions','Create'),'url'=>array('create')),
+        array('label'=>Yii::t('actions', 'Import Actions'), 'url'=>array('admin/importModels', 'model'=>'Actions'), 'visible'=>Yii::app()->params->isAdmin),
+        array('label'=>Yii::t('actions', 'Export Actions'), 'url'=>array('admin/exportModels', 'model'=>'Actions'), 'visible'=>Yii::app()->params->isAdmin),
 );
 
 if($this->route === 'actions/actions/index') {
@@ -67,7 +82,13 @@ x2.actionFrames.afterActionUpdate = (function () {
         $('#actions-grid').yiiGridView ('update');
     };
 }) ();
-",CClientScript::POS_HEAD);
+function toggleShowActions() {
+	var show = $('#dropdown-show-actions').val(); // value of dropdown (which actions to show)
+	$.post(".json_encode(Yii::app()->controller->createUrl('/actions/actions/saveShowActions')).", {ShowActions: show}, function() {
+		$.fn.yiiGridView.update('actions-grid', {data: $.param($('#actions-grid input[name=\"Actions[complete]\"]'))});
+	});
+}
+",CClientScript::POS_END);
 
 ?>
 <div class="search-form" style="display:none">
@@ -76,7 +97,7 @@ x2.actionFrames.afterActionUpdate = (function () {
 )); ?>
 </div><!-- search-form -->
 <?php
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'actions-grid',
     'title'=>$heading,
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.
@@ -88,14 +109,19 @@ $this->widget('application.components.X2GridView', array(
         'qtipSelector' => ".contact-name"
     ),
     'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> '<div class="page-title icon actions">{title}{buttons}'
-		.CHtml::link(
+    'template'=> 
+        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
+        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
+        '<div id="x2-gridview-page-title" '.
+         'class="page-title icon actions x2-gridview-fixed-title">'.
+        '{title}{buttons}'.
+        CHtml::link(
             Yii::t('actions','Switch to List'),
             array('index','toggleView'=>1),
             array('class'=>'x2-button')
-        ).
-        '{filterHint}'. 
-        '{summary}</div>{items}{pager}',
+        ).'{filterHint}'.'{summary}{topPager}'.
+        '{items}{pager}',
+    'fixedHeader' => true,
 	'dataProvider'=>$dataProvider,
     'massActions' => array ('delete', 'tag', 'updateField', 'completeAction', 'uncompleteAction'),
 	// 'enableSorting'=>false,
@@ -126,6 +152,7 @@ $this->widget('application.components.X2GridView', array(
                         CHtml::encode(Formatter::trimText($data->actionDescription)),
                     array("view","id"=>$data->id))',
 			'type'=>'raw',
+            'filter' => false,
 		),
 		'associationName'=>array(
 			'name'=>'associationName',
@@ -135,8 +162,9 @@ $this->widget('application.components.X2GridView', array(
                     Yii::t("app","None") : 
                     CHtml::link(
                         $data->associationName,
-                        array("/".$data->associationType."/".$data->associationType."/".
-                            $data->associationId),
+                        array("/".$data->associationType . (($data->associationType === "product") ? "s" : "") .
+                              "/".$data->associationType . (($data->associationType === "product") ? "s" : "") .
+                              "/".$data->associationId),
                         array("class"=>($data->associationType=="contacts" ? 
                             "contact-name" : null)))',
 			'type'=>'raw',

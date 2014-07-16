@@ -145,4 +145,13 @@ return array (
 'Log Time'=>'',
 'Time started'=>'',
 'Time ended'=>'',
+'Action Timer'=>'',
+'View Email'=>'',
+'Import Actions'=>'',
+'Export Actions'=>'',
+'Action timers'=>'',
+'Time Started'=>'',
+'Time Ended'=>'',
+'Association is required for actions of this type.'=>'',
+'Time Spent'=>'',
 );

@@ -5,6 +5,7 @@ CREATE TABLE x2_opportunities(
     `name`             VARCHAR(255)    NOT NULL,
     nameId             VARCHAR(250) DEFAULT NULL,
     accountName        VARCHAR(100),
+    contactName        VARCHAR(100),
     quoteAmount        DECIMAL(18,2),
     salesStage         VARCHAR(20),
     expectedCloseDate  BIGINT,
@@ -25,7 +26,7 @@ CREATE TABLE x2_opportunities(
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES
-('opportunities', 'Opportunities', 1, 3, 1, 1, 0, 0, 0);
+('opportunities', 'Opportunities', 1, 5, 1, 1, 0, 0, 0);
 /*&*/
 INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)
@@ -34,6 +35,7 @@ VALUES
 ('Opportunity', 'name',              'Name',                0, 0, 'varchar',    1, 0, NULL,       1, 0, 'High',   0, 1, NULL),
 ('Opportunity', 'nameId',            'NameID',              0, 0, 'varchar',    0, 1, NULL,       1, 0, 'High',   0, 1, 'FIX'),
 ('Opportunity', 'accountName',       'Account',             0, 0, 'link',       0, 0, 'Accounts', 0, 0, '',       0, 1, 'MUL'),
+('Opportunity', 'contactName',       'Contact',             0, 0, 'link',       0, 0, 'Contacts', 0, 0, '',       0, 1, 'MUL'),
 ('Opportunity', 'quoteAmount',       'Quote Amount',        0, 0, 'currency',   0, 0, NULL,       0, 0, '',       0, 1, NULL),
 ('Opportunity', 'salesStage',        'Sales Stage',         0, 0, 'dropdown',   0, 0, '105',      0, 0, '',       0, 1, NULL),
 ('Opportunity', 'expectedCloseDate', 'Expected Close Date', 0, 0, 'date',       0, 0, NULL,       0, 0, '',       0, 1, NULL),

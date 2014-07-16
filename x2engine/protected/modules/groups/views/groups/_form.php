@@ -67,9 +67,11 @@ $(document).ready(function() {
 	<?php echo $form->errorSummary($model); ?>
 
 	<div class="row">
-		<?php echo $form->labelEx($model,'name'); ?>
-		<?php echo $form->textField($model,'name',array('size'=>60,'maxlength'=>259)); ?>
-		<?php echo $form->error($model,'name'); ?>
+		<?php 
+        echo $form->labelEx($model,'name'); 
+		echo $form->textField($model,'name',array('maxlength'=>259, 'class'=>'x2-wide-input')); 
+		echo $form->error($model,'name'); 
+        ?>
 	</div>
         <label><?php echo Yii::t('groups','Users');?></label>
         <?php echo CHtml::dropDownList('users[]', isset($selected)?$selected:"", X2Model::getAssignmentOptions(false, false), array('class'=>'multiselect', 'multiple'=>'multiple')); ?>

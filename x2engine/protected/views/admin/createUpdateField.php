@@ -40,7 +40,7 @@
  * Intended to be rendered partially, via AJAX, in {@link AdminController::actionCreateUpdateField()}
  */
 
-?><div class="page-title"><h2><?php echo $new ? Yii::t('admin', "Add A Custom Field") : Yii::t('admin', 'Customize Fields'); ?></h2></div>
+?><div class="page-title rounded-top"><h2><?php echo $new ? Yii::t('admin', "Add A Custom Field") : Yii::t('admin', 'Customize Fields'); ?></h2></div>
 <?php echo '<h3 id="createUpdateField-message" style="color:'.($error ? 'red' : 'green').'">'.$message.'</h3>'; ?>
 
 <div class="form" id="createUpdateField-container">
@@ -56,7 +56,7 @@
         <?php if($new){ ?>
             <div class="row">
                 <?php echo $form->labelEx($model, 'modelName'); ?>
-                <?php echo $form->dropDownList($model, 'modelName', Fields::getModelNames()); ?>
+                <?php echo $form->dropDownList($model, 'modelName', X2Model::getModelNames()); ?>
                 <?php echo $form->error($model, 'modelName'); ?>
             </div>
 
@@ -70,15 +70,8 @@
             <div class="row">
                 <?php echo $form->labelEx($model, 'modelName'); ?>
                 <?php
-                $modelList = array();
-                foreach(X2Model::model('Modules')->findAllByAttributes(array('editable' => true)) as $module){
-                    if(!($modelName = X2Model::getModelName($module->name))){
-                        $modelName = ucfirst($module->name);
-                    }
-
-                    $modelList[$modelName] = Yii::t('app', $module->title);
-                }
-                echo $form->dropDownList($model, 'modelName', $modelList, array(
+                echo $form->dropDownList($model, 'modelName', 
+                        X2Model::getModelNames(), array(
                     'empty' => Yii::t('admin', 'Select a model'),
                     'id' => 'modelName-existing'
                 ));
@@ -131,6 +124,7 @@
         </div>
             <div class="row">
                 <?php
+                // Render a dropdown menu for the "linkType" field
                 if($model->type == "dropdown"){
                     $dropdowns = Dropdowns::model()->findAll();
                     $arr = array();
@@ -140,6 +134,16 @@
 
                     echo CHtml::activeDropDownList($model, 'linkType', $arr, array(
                         'id' => 'dropdown-type',
+                        'class' => ($new ? 'new' : 'existing')
+                    ));
+                }elseif($model->type == 'assignment') {
+                    $assignTypeName = 'linkType';
+                    echo CHtml::label(Yii::t('app','Type'),CHtml::resolveName($model,$assignTypeName));
+                    echo CHtml::activeDropDownList($model,'linkType',array(
+                        NULL => Yii::t('app','Single'),
+                        'multiple' => Yii::t('app','Multiple')
+                    ),array(
+                        'id' => 'assignment-multiplicity',
                         'class' => ($new ? 'new' : 'existing')
                     ));
                 }elseif($model->type == 'link'){
@@ -155,6 +159,8 @@
                     }
                     echo CHtml::activeDropDownList($model, 'linkType', $arr);
                 } 
+
+                
 
                 if($model->type != 'timerSum') {
                     $dummyFieldName = 'customized_field';

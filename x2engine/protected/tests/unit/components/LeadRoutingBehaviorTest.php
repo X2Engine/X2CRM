@@ -45,9 +45,7 @@ Yii::import('application.components.util.*');
  *
  * @package application.tests.unit.components
  */
-class LeadRoutingBehaviorTest extends CDbTestCase {
-
-    const VERBOSE = 0;
+class LeadRoutingBehaviorTest extends X2DbTestCase {
 
     public $fixtures = array (
         'leadRouting' => array ('LeadRouting', '_1'),
@@ -56,27 +54,135 @@ class LeadRoutingBehaviorTest extends CDbTestCase {
         'groups' => array ('Groups', '_1'),
         'groupToUser' => array ('GroupToUser', '_1'),
         'contacts' => array ('Contacts', '_1'),
+        'profiles' => array ('Profile', '.LeadRoutingBehaviorTest'),
     );
 
-    public static function setUpBeforeClass () {
-        X2DbTestCase::setUpAppEnvironment ();
-        Yii::app()->settings->leadDistribution = 'customRoundRobin';
-        Yii::app()->db->createCommand ()
-            ->delete ('x2_users', 'true');
-        parent::setUpBeforeClass ();
-    }
-
-    public static function tearDownAfterClass () {
-        parent::tearDownAfterClass ();
-    }
-
-    protected function setUp () {
-        Yii::app()->settings->onlineOnly = false;
+    public function setUp () {
+        // default onlineOnly value
+        Yii::app()->settings->onlineOnly = 0;
+        $this->assertSaves (Yii::app()->settings);
         parent::setUp ();
     }
 
+    public function testFreeForAll () {
+        Yii::app()->settings->leadDistribution = '';
+        $_POST['Contacts'] = array (
+            'firstName' => 'contact1',
+            'lastName' => 'contact1'
+        );
+        $leadRouting = new LeadRoutingBehavior ();
+        $this->assertEquals ('Anyone', $leadRouting->getNextAssignee ()); 
+    }
+
+    public function testRoundRobin () {
+        Yii::app()->settings->rrId = 0;
+        Yii::app()->settings->leadDistribution = 'trueRoundRobin';
+        $this->assertSaves (Yii::app()->settings);
+        $_POST['Contacts'] = array (
+            'firstName' => 'contact1',
+            'lastName' => 'contact1'
+        );
+        $leadRouting = new LeadRoutingBehavior ();
+        $this->assertEquals ('testUser1', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser2', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser3', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser4', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser1', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser2', $leadRouting->getNextAssignee ()); 
+    }
+
+    public function testRoundRobinOnlineOnly () {
+        Yii::app()->settings->rrId = 0;
+        Yii::app()->settings->leadDistribution = 'trueRoundRobin';
+        Yii::app()->settings->onlineOnly = 1;
+        $this->assertTrue (Yii::app()->settings->save ());
+        $testUser1 = $this->profiles ('testProfile1');
+        $this->assertSaves ($testUser1);
+        $_POST['Contacts'] = array (
+            'firstName' => 'contact1',
+            'lastName' => 'contact1'
+        );
+        $leadRouting = new LeadRoutingBehavior ();
+        $this->assertEquals ('testUser2', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser3', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser2', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser3', $leadRouting->getNextAssignee ()); 
+    }
+
+    public function testRoundRobinAvailableOnly () {
+        Yii::app()->settings->rrId = 0;
+        Yii::app()->settings->leadDistribution = 'trueRoundRobin';
+        $this->assertTrue (Yii::app()->settings->save ());
+        $testUser1 = $this->profiles ('testProfile1');
+        $testUser1->leadRoutingAvailability = 0; 
+        $this->assertSaves ($testUser1);
+        $_POST['Contacts'] = array (
+            'firstName' => 'contact1',
+            'lastName' => 'contact1'
+        );
+        $leadRouting = new LeadRoutingBehavior ();
+        $this->assertEquals ('testUser2', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser3', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser4', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser2', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser3', $leadRouting->getNextAssignee ()); 
+        $this->assertEquals ('testUser4', $leadRouting->getNextAssignee ()); 
+    }
+
+    public function testSingleUser () {
+        $testUser2 = $this->users ('user2');
+        Yii::app()->settings->rrId = $testUser2->id;
+        $this->assertSaves (Yii::app()->settings);
+        Yii::app()->settings->leadDistribution = 'singleUser';
+        $_POST['Contacts'] = array (
+            'firstName' => 'contact1',
+            'lastName' => 'contact1'
+        );
+        $leadRouting = new LeadRoutingBehavior ();
+        $this->assertEquals ('testUser2', $leadRouting->getNextAssignee ()); 
+    }
+
+    public function testSingleUserOnlineOnly () {
+        TestingAuxLib::setUpSessions($this->sessions);
+        $testUser2 = $this->users ('user2');
+        Yii::app()->settings->rrId = $testUser2->id;
+        Yii::app()->settings->onlineOnly = 1;
+        Yii::app()->settings->leadDistribution = 'singleUser';
+        $this->assertSaves (Yii::app()->settings);
+        $_POST['Contacts'] = array (
+            'firstName' => 'contact1',
+            'lastName' => 'contact1'
+        );
+        $leadRouting = new LeadRoutingBehavior ();
+        $this->assertEquals ('testUser2', $leadRouting->getNextAssignee ()); 
+
+        $testUser1 = $this->users ('user1');
+        Yii::app()->settings->rrId = $testUser1->id;
+        $this->assertSaves (Yii::app()->settings);
+        $leadRouting = new LeadRoutingBehavior ();
+        $this->assertEquals ('Anyone', $leadRouting->getNextAssignee ()); 
+    }
+
+    public function testSingleUserAvailableOnly () {
+        $testProfile2 = $this->profiles ('testProfile2');
+        $testProfile2->leadRoutingAvailability = 0;
+        $this->assertSaves ($testProfile2);
+        $testUser2 = $this->users ('user2');
+        Yii::app()->settings->rrId = $testUser2->id;
+        Yii::app()->settings->leadDistribution = 'singleUser';
+        $this->assertSaves (Yii::app()->settings);
+        $_POST['Contacts'] = array (
+            'firstName' => 'contact1',
+            'lastName' => 'contact1'
+        );
+        $leadRouting = new LeadRoutingBehavior ();
+        $this->assertEquals ('Anyone', $leadRouting->getNextAssignee ()); 
+    }
+
 	public function testCustomRoundRobinOnlineOnly () {
-        Yii::app()->settings->onlineOnly = true;
+        Yii::app()->settings->onlineOnly = 1;
+        Yii::app()->settings->leadDistribution = 'customRoundRobin';
+        $this->assertSaves (Yii::app()->settings);
         TestingAuxLib::setUpSessions($this->sessions);
         $_POST['Contacts'] = array (
             'firstName' => 'contact1',
@@ -84,21 +190,23 @@ class LeadRoutingBehaviorTest extends CDbTestCase {
         );
         $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(self::VERBOSE) print ("Getting assignee: username = $username\n");
+        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'Anyone');
 
-        Yii::app()->settings->onlineOnly = false;
+        Yii::app()->settings->onlineOnly = 0;
         $_POST['Contacts'] = array (
             'firstName' => 'contact1',
             'lastName' => 'contact1'
         );
         $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(self::VERBOSE) print ("Getting assignee: username = $username\n");
+        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'testUser1');
     }
 
 	public function testCustomRoundRobin () {
+        Yii::app()->settings->leadDistribution = 'customRoundRobin';
+        $this->assertSaves (Yii::app()->settings);
         TestingAuxLib::setUpSessions($this->sessions);
         $_POST['Contacts'] = array (
             'firstName' => 'contact1',
@@ -106,26 +214,100 @@ class LeadRoutingBehaviorTest extends CDbTestCase {
         );
         $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(self::VERBOSE) print ("Getting assignee: username = $username\n");
+        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'testUser1');
 
         $_POST['Contacts'] = array (
             'firstName' => 'contact2',
             'lastName' => 'contact2'
         );
-        $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(self::VERBOSE) print ("Getting assignee: username = $username\n");
+        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'testUser2');
 
         $_POST['Contacts'] = array (
             'firstName' => 'contact3',
             'lastName' => 'contact3'
         );
-        $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(self::VERBOSE) print ("Getting assignee: username = $username\n");
+        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'Anyone');
+
+        $_POST['Contacts'] = array (
+            'firstName' => 'contact4',
+            'lastName' => 'contact4'
+        );
+
+        $this->assertEquals ('testUser1', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser2', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser3', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser4', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser1', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser2', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser3', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser4', $leadRouting->customRoundRobin ()); 
+	}
+
+	public function testCustomRoundRobinAvailableOnly () {
+        Yii::app()->settings->leadDistribution = 'customRoundRobin';
+        $this->assertSaves (Yii::app()->settings);
+        $leadRouting = new LeadRoutingBehavior ();
+        $testUser1 = $this->profiles ('testProfile1');
+        $testUser1->leadRoutingAvailability = 0; 
+        $this->assertSaves ($testUser1);
+
+        $_POST['Contacts'] = array (
+            'firstName' => 'contact4',
+            'lastName' => 'contact4'
+        );
+
+        $this->assertEquals ('testUser2', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser3', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser4', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser2', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser3', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser4', $leadRouting->customRoundRobin ()); 
+	}
+
+	public function testCustomRoundRobinBetweenGroups () {
+        $rule3 = $this->leadRouting ('leadRouting3'); 
+        $rule3->groupType = 1;
+        $rule3->users = '1, 2';
+        $this->assertSaves ($rule3);
+        Yii::app()->settings->leadDistribution = 'customRoundRobin';
+        $this->assertSaves (Yii::app()->settings);
+        $leadRouting = new LeadRoutingBehavior ();
+
+        $_POST['Contacts'] = array (
+            'firstName' => 'contact4',
+            'lastName' => 'contact4'
+        );
+
+        $this->assertEquals ('1', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('2', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('1', $leadRouting->customRoundRobin ()); 
+	}
+
+	public function testCustomRoundRobinWithinGroups () {
+        $rule3 = $this->leadRouting ('leadRouting3'); 
+        $rule3->groupType = 0;
+        $rule3->users = '1';
+        $this->assertSaves ($rule3);
+        Yii::app()->settings->leadDistribution = 'customRoundRobin';
+        $this->assertSaves (Yii::app()->settings);
+        $leadRouting = new LeadRoutingBehavior ();
+
+        $_POST['Contacts'] = array (
+            'firstName' => 'contact4',
+            'lastName' => 'contact4'
+        );
+
+        $this->assertEquals ('testUser1', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser2', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser4', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser1', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser2', $leadRouting->customRoundRobin ()); 
+        $this->assertEquals ('testUser4', $leadRouting->customRoundRobin ()); 
 	}
 
 }

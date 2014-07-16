@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 // find height of note box, note message, and use these to find height of widget
-$widgetSettings = ProfileChild::getWidgetSettings();
+$widgetSettings = Profile::getWidgetSettings();
 $noteSettings = $widgetSettings->NoteBox;
 
 $noteboxHeight = $noteSettings->noteboxHeight;

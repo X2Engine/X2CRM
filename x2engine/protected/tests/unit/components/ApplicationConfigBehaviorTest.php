@@ -64,22 +64,7 @@ class ApplicationConfigBehaviorTest extends X2TestCase {
         }
     }
 
-    public function testGetEdition() {
-        if(YII_DEBUG) {
-            switch(PRO_VERSION) {
-                case 1:
-                    $this->assertEquals('pro',Yii::app()->edition,'Forced edition (debug), should be "pro"');
-                    break;
-                case 2:
-                    $this->assertEquals('pla',Yii::app()->edition,'Forced edition (debug), should be "pla"');
-                    break;
-                default:
-                    $this->assertEquals('opensource',Yii::app()->edition,'Forced edition (debug), should be "opensource"');
-            }
-        } else {
-            $this->assertEquals('pla',Yii::app()->edition,'Automatically-determined; should be "pla" for the superset');
-        }
-    }
+    
 }
 
 ?>

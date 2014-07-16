@@ -104,4 +104,7 @@ return array (
 'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'Эта форма позволит вам создавать кампании связанных с почтой Контакты Счетной отображается в отчете ниже. Выберите &quot;Primary Контакты&quot; только контактов электронной почты, которые устанавливаются в качестве основного контактного счета. Выберите &quot;Все&quot; по электронной почте всех связанных контактов на каждой учетной записи.',
 'Create a new Account associated with this Account.'=>'Создать новую учетную запись, связанные с этим счетом.',
 'Primary Contact'=>'Основное контактное лицо',
+'Import Accounts'=>'Импорт счета',
+'Export Accounts'=>'Экспорт счета',
+'Bug Report Attributes'=>'Сообщение об ошибке Атрибуты',
 );

@@ -34,6 +34,7 @@
  *****************************************************************************************/
 
 .x2-layout {
+    min-width: 598px;
 	border: 1px solid black !important;
 	/*border: none !important;
 	background: #ffffff !important;*/
@@ -223,14 +224,11 @@ div.x2-layout .formItem.leftLabel label {
 }
 div.x2-layout .formItem input[type="text"], 
 div.x2-layout .formItem textarea, 
-input[type="text"].relationships-add-autocomplete {
+input[type="text"].record-name-autocomplete {
 	-moz-border-radius:		0px 0 0 0 !important;
 	-o-border-radius:		0px 0 0 0 !important;
 	-webkit-border-radius:	0px 0 0 0 !important;
 	border-radius:			0px 0 0 0 !important;
 	background:#fff !important;
 }
-
-
-
 

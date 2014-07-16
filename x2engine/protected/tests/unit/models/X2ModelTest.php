@@ -65,17 +65,17 @@ class X2ModelTest extends X2DbTestCase {
 
     private $_nameFields;
 
-    public function nameFields() {
-        if(!isset($this->_nameFields)) {
+    public function nameFields(){
+        if(!isset($this->_nameFields)){
             $this->_nameFields = array();
-            $this->_nameFields[] = Fields::model()->findByAttributes(array('fieldName'=>'firstName','modelName'=>'Contacts'));
-            $this->_nameFields[] = Fields::model()->findByAttributes(array('fieldName'=>'lastName','modelName'=>'Contacts'));
+            $this->_nameFields[] = Fields::model()->findByAttributes(array('fieldName' => 'firstName', 'modelName' => 'Contacts'));
+            $this->_nameFields[] = Fields::model()->findByAttributes(array('fieldName' => 'lastName', 'modelName' => 'Contacts'));
         }
         return $this->_nameFields;
     }
 
-    public function setDefaultName() {
-        list($firstName,$lastName) = $this->nameFields();
+    public function setDefaultName(){
+        list($firstName, $lastName) = $this->nameFields();
         $firstName->defaultValue = 'Gustavo';
         $lastName->defaultValue = 'Fring';
         $firstName->save();
@@ -101,12 +101,12 @@ class X2ModelTest extends X2DbTestCase {
         $this->resetNameFields();
         parent::tearDown();
     }
-    
+
     /**
      * Test setting default values in new records
      */
-    public function testDefaultValues() {
-        foreach(X2Model::model('Contacts')->getFields() as $field) {
+    public function testDefaultValues(){
+        foreach(X2Model::model('Contacts')->getFields() as $field){
             // Retrieve new values:
             $field->refresh();
         }
@@ -123,31 +123,61 @@ class X2ModelTest extends X2DbTestCase {
         $contact->setX2Fields($input);
         $this->assertEquals('Gustavo', $contact->firstName);
         $this->assertEquals('Fring', $contact->lastName);
-     }
+    }
 
-     public function testFindByEmail() {
-         $c = Contacts::model()->findByEmail($this->contact('testAnyone')->email);
-         $this->assertTrue((bool) $c);
-         $this->assertEquals($this->contact('testAnyone')->id,$c->id);
-     }
+    public function testFindByEmail(){
+        $c = Contacts::model()->findByEmail($this->contact('testAnyone')->email);
+        $this->assertTrue((bool) $c);
+        $this->assertEquals($this->contact('testAnyone')->id, $c->id);
+    }
 
-     /**
-      * A cursory test of the auto-ref update for the link-type fields refactor.
-      */
-     public function testUpdateNameIdRefs() {
-         $account = $this->account('testQuote');
-         $contact = $this->contact('testAnyone');
-         // Test name change:
-         $account->refresh();
-         $account->name = 'A smouldering crater left behind by the G-man';
-         $account->save();
-         $contact->refresh();
-         $this->assertEquals(Fields::nameId($account->name,$account->id),$contact->company);
-         // Test deletion:
-         $account->delete();
-         $contact->refresh();
-         $this->assertEquals($account->name,$contact->company);
-     }
+    /**
+     * A cursory test of the auto-ref update for the link-type fields refactor.
+     */
+    public function testUpdateNameIdRefs(){
+        $account = $this->account('testQuote');
+        $contact = $this->contact('testAnyone');
+        // Test name change:
+        $account->refresh();
+        $account->name = 'A smouldering crater left behind by the G-man';
+        $account->save();
+        $contact->refresh();
+        $this->assertEquals(Fields::nameId($account->name, $account->id), $contact->company);
+        // Test deletion:
+        $account->delete();
+        $contact->refresh();
+        $this->assertEquals($account->name, $contact->company);
+    }
+
+    public function testMassUpdateNameId(){
+        $contact = $this->contact('testAnyone');
+        // First, need to break all the nameIds...
+        Contacts::model()->updateAll(array('nameId'=>null));
+        // Try with the mass update method, one ID:
+        X2Model::massUpdateNameId('Contacts', array($contact->id));
+        $contact->refresh();
+        $this->assertEquals(Fields::nameId($contact->name,$contact->id),$contact->nameId);
+        // Again, but with the "ids" parameter an int instead of an array
+        X2Model::massUpdateNameId('Contacts', $contact->id);
+        $contact->refresh();
+        $this->assertEquals(Fields::nameId($contact->name,$contact->id),$contact->nameId);
+        // Try again, multiple records:
+        $contact2 = $this->contact('testUser');
+        Contacts::model()->updateAll(array('nameId'=>null));
+        X2Model::massUpdateNameId('Contacts',array($contact->id,$contact2->id));
+        $contact->refresh();
+        $contact2->refresh();
+        $this->assertEquals(Fields::nameId($contact->name,$contact->id),$contact->nameId);
+        $this->assertEquals(Fields::nameId($contact2->name,$contact2->id),$contact2->nameId);
+        // Try one last time, all records:
+        Contacts::model()->updateAll(array('nameId'=>null));
+        X2Model::massUpdateNameId('Contacts');
+        $contact->refresh();
+        $contact2->refresh();
+        $this->assertEquals(Fields::nameId($contact->name,$contact->id),$contact->nameId);
+        $this->assertEquals(Fields::nameId($contact2->name,$contact2->id),$contact2->nameId);
+    }
+
 }
 
 ?>

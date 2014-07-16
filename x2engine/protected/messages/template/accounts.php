@@ -34,4 +34,7 @@ return array (
 'Campaign Form'=>'',
 'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'',
 'Primary Contact'=>'',
+'Import Accounts'=>'',
+'Export Accounts'=>'',
+'Bug Report Attributes'=>'',
 );

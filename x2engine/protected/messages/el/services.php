@@ -56,4 +56,7 @@ return array (
 'Hello'=>'Γεια σας',
 'Web Form Case'=>'Υπόθεση Web Form',
 'Thank you for contacting our Technical Support '=>'Σας ευχαριστούμε για την επικοινωνία με την Τεχνική Υποστήριξη μας',
+'Import Services'=>'Εισαγωγή Υπηρεσίες',
+'Export Services'=>'Εξαγωγή Υπηρεσίες',
+'Case Name'=>'Υπόθεση Όνομα',
 );

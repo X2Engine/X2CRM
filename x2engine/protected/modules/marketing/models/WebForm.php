@@ -54,6 +54,7 @@ class WebForm extends CActiveRecord {
 			array('description, modelName, fields', 'safe'),
 			array('id, visibility, createDate, lastUpdated', 'numerical', 'integerOnly'=>true),
 			array('name, type, modelName', 'length', 'max'=>100),
+            array('generateLead', 'boolean'),
 			array('description', 'length', 'max'=>255),
 			array('assignedTo, createdBy, updatedBy', 'length', 'max'=>20),
 			// The following rule is used by search().

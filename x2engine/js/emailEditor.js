@@ -244,7 +244,7 @@ function setupEmailAttachments(droppableId) {
                 });
 
                 attachment.after(newFileChooser);
-                initX2FileInput();
+                x2.forms.initX2FileInput();
             }
         }
     }).on('click','.remove a',function() {	// remove attachments when user clicks on the X

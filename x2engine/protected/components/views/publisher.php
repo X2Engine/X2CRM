@@ -38,21 +38,25 @@
 //////////////////////////////////////
 // The action description text area //
 //////////////////////////////////////
-$saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/actions/publisherCreate'), array(
-    'beforeSend' => "x2.publisher.beforeSubmit",
-    'success' => "function(data) {
-        x2.publisher.updates();
-        x2.publisher.reset();
-         // event detected by x2chart.js
-        $(document).trigger ('newlyPublishedAction');
-    }",
-    'type' => 'POST',
-        ), array('id' => 'save-publisher', 'class' => 'x2-button'));
+$saveButton = CHtml::ajaxSubmitButton(
+    Yii::t('app', 'Save'), array('/actions/actions/publisherCreate'), 
+    array(
+        'beforeSend' => "x2.publisher.beforeSubmit",
+        'success' => "function(data) {
+            x2.publisher.updates();
+            x2.publisher.reset();
+             // event detected by x2chart.js
+            $(document).trigger ('newlyPublishedAction');
+        }",
+        'type' => 'POST',
+    ), 
+    array('id' => 'save-publisher', 'class' => 'x2-button')
+);
 
+
+$users = User::getNames(); 
+$form = $this->beginWidget('CActiveForm', array('id' => 'publisher-form')); 
 ?>
-
-<?php $users = User::getNames(); ?>
-<?php $form = $this->beginWidget('CActiveForm', array('id' => 'publisher-form')); ?>
 <div id="publisher">
     
 
@@ -64,14 +68,41 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
         // record types) will be displayed.
         ?>
         <ul>
-            <?php if(!$hiddenTabs['log-a-call']) { ?><li><a href="#log-a-call"><?php echo Yii::t('actions', 'Log A Call'); ?></a></li><?php } ?>
-            <?php if(!$hiddenTabs['log-time-spent']) { ?><li><a href="#log-time-spent"><?php echo Yii::t('actions', 'Log Time'); ?></a></li><?php } ?>
-            <?php if(!$hiddenTabs['new-action']) { ?><li><a href="#new-action"><b>+</b><?php echo Yii::t('actions', 'Action'); ?></a></li><?php } ?>
-            <?php if(!$hiddenTabs['new-comment']) { ?><li style='margin-right: 0'><a href="#new-comment"><b>+</b><?php echo Yii::t('actions', 'Comment'); ?></a></li><?php } ?>
+            <?php 
+            if(!$hiddenTabs['log-a-call']) { 
+            ?>
+            <li>
+                <a href="#log-a-call"><?php echo Yii::t('actions', 'Log A Call'); ?></a>
+            </li>
+            <?php 
+            } 
+            if(!$hiddenTabs['log-time-spent']) { 
+            ?>
+            <li>
+                <a href="#log-time-spent"><?php echo Yii::t('actions', 'Log Time'); ?></a>
+            </li>
+            <?php 
+            } 
+            if(!$hiddenTabs['new-action']) { 
+            ?>
+            <li>
+                <a href="#new-action"><b>+</b><?php echo Yii::t('actions', 'Action'); ?></a>
+            </li>
+            <?php 
+            }
+            if(!$hiddenTabs['new-comment']) { 
+            ?>
+            <li style='margin-right: 0'>
+                <a href="#new-comment"><b>+</b><?php echo Yii::t('actions', 'Comment'); ?></a>
+            </li>
+            <?php 
+            } 
+            ?>
         </ul>
     <?php } ?>
     <div class="form x2-layout-island">
-    <?php if(!$calendar) {
+    <?php 
+        if(!$calendar) {
         ///////////////////////////
         // Publisher tab content //
         ///////////////////////////
@@ -80,28 +111,39 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
         // inputs when not in calendar mode, specific to each tab, should go in.
         ?>
         <div class="row">
-            <?php if(!$hiddenTabs['log-a-call']) { ?>
+            <?php 
+            if(!$hiddenTabs['log-a-call']) { 
+            ?>
             <div id="log-a-call">
-            <?php echo CHtml::label(Yii::t('app','Quick Note'), 'quickNote', array('style' => 'display:inline-block;')); ?>
-            <?php
-            echo CHtml::dropDownList('quickNote', '', array_merge(array('' => '-'), Dropdowns::getItems(117)), array(
-                'ajax' => array(
-                    'type' => 'GET', //request type
-                    'url' => Yii::app()->controller->createUrl('/site/dynamicDropdown'),
-                    'data' => 'js:{"val":$(this).val(),"dropdownId":"117"}',
-                    'update' => '#quickNote2',
-                    'complete' => 'function() {'.
-                        'x2.publisher.getElement("#action-description").val(""); '.
-                    '}'
+            <?php 
+            echo CHtml::label(
+                Yii::t('app','Quick Note'), 'quickNote',
+                array('style' => 'display:inline-block;')); 
+            echo CHtml::dropDownList(
+                'quickNote', '', array_merge(array('' => '-'), Dropdowns::getItems(117)), 
+                array(
+                    'ajax' => array(
+                        'type' => 'GET', //request type
+                        'url' => Yii::app()->controller->createUrl('/site/dynamicDropdown'),
+                        'data' => 'js:{"val":$(this).val(),"dropdownId":"117"}',
+                        'update' => '#quickNote2',
+                        'complete' => 'function() {
+                            auxlib.getElement("#action-description").val(""); 
+                        }'
                 )
             ));
+            echo CHtml::dropDownList('quickNote2', '', array('' => '-')); 
             ?>
-            <?php echo CHtml::dropDownList('quickNote2', '', array('' => '-')); ?>
-            </div><?php } ?>
-            <?php foreach(array('log-time-spent','new-action','new-comment') as $tab) { ?>
-            <?php if(!$hiddenTabs[$tab]) { ?><div id="<?php echo $tab; ?>"></div><?php } ?>
-            <?php } ?>
-         </div>
+            </div>
+            <?php 
+            } 
+            foreach(array('log-time-spent','new-action','new-comment') as $tab) { 
+                if(!$hiddenTabs[$tab]) { ?>
+                    <div id="<?php echo $tab; ?>"></div>
+                <?php 
+                } 
+            } ?> 
+            </div>
     <?php } else { ?>
         <span class="publisher-widget-title"><?php echo Yii::t('actions','New Event') ?></span>
     <?php } ?>
@@ -129,32 +171,41 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
             ?>
             <?php echo $form->textField($model, 'verifyCode'); ?>
         </div>
-    <?php } ?>
-    <?php echo CHtml::hiddenField('SelectedTab', ''); // currently selected tab  ?>
-    <?php echo $form->hiddenField($model, 'associationType'); ?>
-    <?php echo $form->hiddenField($model, 'associationId'); ?>
+    <?php } 
+    echo CHtml::hiddenField('SelectedTab', ''); // currently selected tab  
+    echo $form->hiddenField($model, 'associationType'); 
+    echo $form->hiddenField($model, 'associationId'); 
+    ?>
     
     <div id="action-event-panel" class="row">
         
         <div class="cell" id="action-duration" style="display:none;">
             <div class="action-duration-input">
                 <label for="timetrack-hours"><?php echo Yii::t('actions','Hours'); ?></label>
-                <input class="action-duration-display" type="number" min="0" max="99" name="timetrack-hours" />
+                <input class="action-duration-display" type="number" min="0" max="99" 
+                 name="timetrack-hours" />
             </div>
             <span class="action-duration-display">:</span>
             <div class="action-duration-input">
                 <label for="timetrack-minutes"><?php echo Yii::t('actions','Minutes'); ?></label>
-                <input class="action-duration-display" type="number" min="0" max="59" name="timetrack-minutes" />
+                <input class="action-duration-display" type="number" min="0" max="59" 
+                 name="timetrack-minutes" />
             </div>
         </div><!-- #action-duration .cell -->
 
         <div class="cell">
 
-            <?php echo CHtml::activeLabel($model,'dueDate',array('id' =>  'action-due-date-label', 'style' => 'display: none;')); ?>
-            <?php echo CHtml::activeLabel($model,'dueDate',array('label'=>Yii::t('actions', 'Start Date'),'id' => 'action-start-date-label', 'style' => 'display: none;')); ?>
-            <?php echo CHtml::activeLabel($model,'dueDate',array('label'=>Yii::t('actions', 'Time started'),'id' => 'action-start-time-label', 'style' => 'display: none;')); ?>
-
-            <?php
+            <?php 
+            echo CHtml::activeLabel(
+                $model,'dueDate',
+                array('id' =>  'action-due-date-label', 'style' => 'display: none;')); 
+            echo CHtml::activeLabel(
+                $model,'dueDate',array('label'=>Yii::t('actions', 'Start Date'),
+                'id' => 'action-start-date-label', 'style' => 'display: none;')); 
+            echo CHtml::activeLabel(
+                $model,'dueDate',
+                array('label'=>Yii::t('actions', 'Time started'),
+                    'id' => 'action-start-time-label', 'style' => 'display: none;')); 
             Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
             $this->widget('CJuiDateTimePicker', array(
                 'model' => $model, //Model object
@@ -174,8 +225,16 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
                 ), // fix datepicker so it's always on top
             ));
 
-            echo CHtml::activeLabel($model,'completeDate',array('label'=>Yii::t('actions', 'End Date'),'id' => 'action-end-date-label', 'style' => 'display: none;'));
-            echo CHtml::activeLabel($model,'completeDate', array('label'=>Yii::t('actions', 'Time ended'),'id' => 'action-end-time-label', 'style' => 'display: none;'));
+            echo CHtml::activeLabel(
+                $model,'completeDate',
+                array(
+                    'label'=>Yii::t('actions', 'End Date'), 'id' => 'action-end-date-label',
+                    'style' => 'display: none;'));
+            echo CHtml::activeLabel(
+                $model,'completeDate', 
+                array(
+                    'label'=>Yii::t('actions', 'Time ended'),'id' => 'action-end-time-label',
+                    'style' => 'display: none;'));
 
             $model->dueDate = Formatter::formatDateTime(time());
             Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
@@ -192,7 +251,8 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
                 ), // jquery plugin options
                 'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
                 'htmlOptions' => array(
-                    'onClick' => "$('#ui-datepicker-div').css('z-index', '20');", // fix datepicker so it's always on top
+                    // fix datepicker so it's always on top
+                    'onClick' => "$('#ui-datepicker-div').css('z-index', '20');", 
                     'style' => 'display: none;',
                     'id' => 'action-complete-date',
                 ),
@@ -201,8 +261,10 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
         </div><!-- .cell -->
             
         <div class="cell">
-            <?php echo CHtml::activeLabel($model,'priority',array('id'=>'action-priority-label','style'=>'display: none;')); ?>
-            <?php
+            <?php 
+            echo CHtml::activeLabel(
+                $model,'priority',
+                array('id'=>'action-priority-label','style'=>'display: none;')); 
             echo $form->dropDownList($model, 'priority', array(
                 '1' => Yii::t('actions', 'Low'),
                 '2' => Yii::t('actions', 'Medium'),
@@ -210,20 +272,30 @@ $saveButton = CHtml::ajaxSubmitButton(Yii::t('app', 'Save'), array('/actions/act
                     ,
                 array('id'=>'action-priority')
             );
-            ?>
             
-            <?php echo $form->label($model, 'color',array('id'=>'action-color-label')); ?>
-            <?php echo $form->dropDownList($model, 'color', Actions::getColors(),array('id'=>'action-color-dropdown')); ?>
+            $form->label($model, 'color',array('id'=>'action-color-label')); 
+            echo $form->dropDownList(
+                $model, 'color', Actions::getColors(),array('id'=>'action-color-dropdown')); 
+            ?>
         </div><!-- .cell -->
            
         <?php /* Assinged To */ ?>
         <div class="cell">
-            <?php /* Users */ ?>
-            <?php echo $form->label($model, 'assignedTo',array('id'=>'action-assigned-to-label')); ?>
-            <?php echo $form->dropDownList($model, 'assignedTo', X2Model::getAssignmentOptions(true,true), array('id' => 'action-assignment-dropdown')); ?>
-
-            <?php echo $form->label($model, 'visibility',array('id'=>'action-visibility-label')); ?>
-            <?php echo $form->dropDownList($model, 'visibility', array(0 => Yii::t('actions', 'Private'), 1 => Yii::t('actions', 'Public'), 2 => Yii::t('actions', "User's Group")),array('id'=>'action-visibility-dropdown')); ?>
+            <?php 
+            /* Users */ 
+            echo $form->label($model, 'assignedTo',array('id'=>'action-assigned-to-label')); 
+            echo $form->dropDownList(
+                $model, 'assignedTo', X2Model::getAssignmentOptions(true,true), 
+                array('id' => 'action-assignment-dropdown')); 
+            echo $form->label($model, 'visibility',array('id'=>'action-visibility-label')); 
+            echo $form->dropDownList(
+                $model, 'visibility', 
+                array(
+                    0 => Yii::t('actions', 'Private'), 1 => Yii::t('actions', 'Public'),
+                    2 => Yii::t('actions', "User's Group")
+                ),
+                array('id'=>'action-visibility-dropdown')); 
+            ?>
         </div><!-- .cell -->
         
     </div><!-- #action-event-panel -->

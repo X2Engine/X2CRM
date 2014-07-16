@@ -34,188 +34,376 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->setPageTitle(Yii::t('workflow', 'View Process'));
 
-$user=isset($_GET['users'])?$_GET['users']:''; 
+// drag and drop CSS always gets loaded, this prevents layout thrashing when the UI changes 
+Yii::app()->clientScript->registerCssFile($this->module->assetsUrl.'/css/dragAndDrop.css');
+
+Yii::app()->clientScript->registerCssFile($this->module->assetsUrl.'/css/view.css');
+
+Yii::app()->clientScript->registerResponsiveCssFile(
+    $this->module->assetsUrl.'/css/responsiveDetailView.css');
+
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/workflowFunnel.css');
+
+
+Yii::app()->clientScript->registerPackages (array (
+    'X2History' => array (
+        'baseUrl' => Yii::app()->request->baseUrl,                       
+        'js' => array (
+            'js/X2History.js', 
+        ),
+        'depends' => array ('history', 'auxlib'),
+    ),
+), null, true);
+
 Yii::app()->clientScript->registerScript('getWorkflowStage',"
 
-function getStageMembers(stage) {
+x2.WorkflowViewManager = (function () {
+
+function WorkflowViewManager (argsDict) {
+    argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        perStageWorkflowView: true,
+        workflowId: $model->id
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+
+    this._init ();
+}
+
+/**
+ * @param Number modelId (optional)
+ */
+WorkflowViewManager._getQueryString = function (modelId, ajax) {
+    var ajax = typeof ajax === 'undefined' ? true : ajax; 
+    var modelId = typeof modelId === 'undefined' ? $model->id : modelId; 
+    return (
+        (ajax ? 'workflowAjax=true&' : '') + 'id=' + modelId +
+        '&start=".Formatter::formatDate($dateRange['start'])."' +
+        '&end=".Formatter::formatDate($dateRange['end'])."' +
+        '&range=".$dateRange['range']."' +
+        '&expectedCloseDateStart=".Formatter::formatDate($expectedCloseDateDateRange['start'])."' +
+        '&expectedCloseDateEnd=".Formatter::formatDate($expectedCloseDateDateRange['end'])."' +
+        '&expectedCloseDateRange=".$expectedCloseDateDateRange['range']."' +
+        '&users=".$users."' +
+        '&modelType=".urlencode (CJSON::encode ($modelType))."');
+};
+
+/**
+ * Requests stage member grids via AJAX 
+ */
+WorkflowViewManager.getStageMembers = function (stage) {
 	$.ajax({
 		url: '" . CHtml::normalizeUrl(array('/workflow/workflow/getStageMembers')) . "',
 		type: 'GET',
-		data: 'workflowId=".$model->id."&stage='+stage+'&modelId=".$model->id."&type=contacts&start=".Formatter::formatDate($dateRange['start'])."&end=".Formatter::formatDate($dateRange['end'])."&range=".$dateRange['range']."&user=".$user."',
+		data: 
+            WorkflowViewManager._getQueryString () + '&stage=' + stage,
 		success: function(response) {
-			if(response!='')
-				$('#workflow-gridview').html(response);
+			if(response === '') return;
+            $('#workflow-gridview').html(response);
+            $('#workflow-gridview').removeClass ('x2-layout-island');
+            $('#workflow-gridview').removeClass ('x2-layout-island-merge-bottom');
+            $('#content .x2-layout-island-merge-top-bottom').
+                removeClass ('x2-layout-island-merge-top-bottom').
+                addClass ('x2-layout-island-merge-top');
             $.ajax({
                 url: '" . CHtml::normalizeUrl(array('/workflow/workflow/getStageValue')) . "',
-                data: 'workflowId=".$model->id."&stageId='+stage+'"."&user=".$user."',
+                data: 
+                    WorkflowViewManager._getQueryString () + '&stage=' + stage,
                 success: function(response) {
                     $('#data-summary-box').html(response);
                 }
             });
 		}
 	});
-}
+};
+
+/**
+ * Depresses button in interface selection button group corresponding to currently selected
+ * interface
+ * @param bool perStageWorkflowView
+ */
+WorkflowViewManager.prototype._updateChangeUIButtons = function (perStageWorkflowView) {
+    $('#interface-selection').children ().removeClass ('disabled-link');
+    if (perStageWorkflowView) {
+        $('#per-stage-view-button').addClass ('disabled-link');
+        $('#workflow-filters').hide ();
+        $('#add-a-deal-button').hide ();
+    } else {
+        $('#drag-and-drop-view-button').addClass ('disabled-link');
+        $('#workflow-filters').show ();
+        $('#add-a-deal-button').show ();
+    }
+};
+
+/**
+ * @param bool perStageWorkflowView 
+ * @param Number workflowId (optional)
+ */
+WorkflowViewManager.prototype._changeUI = function (perStageWorkflowView, workflowId) {
+    var that = this;
+    $.ajax ({
+        url: '".CHtml::normalizeUrl (array ('/workflow/workflow/changeUI'))."',                 
+		type: 'GET',
+		data: 
+            WorkflowViewManager._getQueryString (workflowId) + 
+            '&perStageWorkflowView=' + perStageWorkflowView,
+        success: function (data) {
+            if (data !== '') {
+                that._pushState (workflowId, perStageWorkflowView);
+                $('.page-title').siblings ().remove ();
+                $('.page-title').after ($('<div>'));
+                $('.page-title').next ().replaceWith (data);
+                that._updateChangeUIButtons (perStageWorkflowView);
+                that.perStageWorkflowView = perStageWorkflowView;
+                x2.forms.initializeMultiselectDropdowns ();
+            }
+        }
+    });
+};
+
+/**
+ * Push browser state to preserve back button funtionality across ajax loaded pages
+ */
+WorkflowViewManager.prototype._pushState =  function (workflowId, perStageWorkflowView) {
+    var newUrl = window.location.href.replace (/workflow\/\d+/, 'workflow/' + workflowId);
+    newUrl = newUrl.replace (/id=\d+/, 'id=' + workflowId);
+    perStageWorkflowViewGETParamVal = perStageWorkflowView ? 'true' : 'false';
+    newUrl = newUrl.replace (
+        /perStageWorkflowView=[^&]+/, 'perStageWorkflowView=' + perStageWorkflowViewGETParamVal);
+
+    x2.history.pushState (
+        { workflowId: workflowId, 
+          perStageWorkflowView: perStageWorkflowView }, '', newUrl);
+};
+
+WorkflowViewManager.prototype._setUpWorkflowSelection = function () {
+    var that = this;
+
+    $('#title-bar-workflow-select').unbind ('click._setUpWorkflowSelection')
+        .bind ('click._setUpWorkflowSelection', function () {
+
+            var workflowId = $(this).val ();
+            if (workflowId !== that.workflowId) {
+                that._changeUI (that.perStageWorkflowView, workflowId);
+            }
+            that.workflowId = workflowId;
+        });
+        
+    x2.history.bind (function () {
+        var state = window.History.getState ();
+
+        workflowId = state.data.workflowId;
+        perStageWorkflowView = state.data.perStageWorkflowView;
+
+        that._changeUI (perStageWorkflowView, workflowId);
+        $('#title-bar-workflow-select').val (workflowId);
+        if (typeof workflowId !== 'undefined') {
+            that.workflowId = workflowId;
+        } 
+        return false;
+    });
+
+};
+
+/**
+ * Unselect pipeline/funnel menu item and selects funnel/pipeline menu item, respectively.
+ * @param object menuItem the currently selected menu item <li> element
+ * @param bool pipeline
+ */
+WorkflowViewManager.prototype._swapViewMenuItems = function (menuItem, pipeline) {
+    var pipeline = typeof pipeline === 'undefined' ? false : pipeline; 
+
+    $(menuItem).children ().first ().replaceWith ($('<span>', {
+        html: $(menuItem).children ().first ().html (),
+        id: $(menuItem).children ().first ().attr ('id')
+    }));
+    if (pipeline) {
+        $(menuItem).next ().children ().first ().replaceWith ($('<a>', {
+            html: $(menuItem).next ().children ().first ().html (),
+            id: $(menuItem).next ().children ().first ().attr ('id'),
+            href: '#',
+        }));
+    } else {
+        $(menuItem).prev ().children ().first ().replaceWith ($('<a>', {
+            html: $(menuItem).prev ().children ().first ().html (),
+            id: $(menuItem).prev ().children ().first ().attr ('id'),
+            href: '#'
+        }));
+    }
+};
+
+
+
+/**
+ * Set up behavior of interface selection buttons 
+ */
+WorkflowViewManager.prototype._setUpUIChangeBehavior = function () {
+    var that = this;
+    $('#interface-selection a').click (function (evt) {
+        evt.preventDefault ();
+        var id = $(this).attr ('id');                                                
+
+        if (id === 'per-stage-view-button') {
+            if (!that.perStageWorkflowView) {
+                that._swapViewMenuItems ($('#funnel-view-menu-item').closest ('li'), true);
+                that._changeUI (true, that.workflowId);
+            }
+        } else { // id === 'drag-and-drop-view-button
+            if (that.perStageWorkflowView) {
+                that._swapViewMenuItems ($('#pipeline-view-menu-item').closest ('li'), false);
+                that._changeUI (false, that.workflowId);
+            }
+        }
+
+        return false;
+    });
+    $('#funnel-view-menu-item').closest ('li').click (function (evt) {
+        if (!that.perStageWorkflowView) {
+            that._swapViewMenuItems (this, true);
+            that._changeUI (true, that.workflowId);
+        }
+        return false;
+    });
+    $('#pipeline-view-menu-item').closest ('li').click (function (evt) {
+        if (that.perStageWorkflowView) {
+            that._swapViewMenuItems (this, false);
+            that._changeUI (false, that.workflowId);
+        }
+        return false;
+    });
+};
+
+WorkflowViewManager.prototype._init = function () {
+    this._setUpUIChangeBehavior ();
+    this._setUpWorkflowSelection ();
+};
+
+return WorkflowViewManager;
+
+}) ();
+
+$(function () { 
+    x2.workflowViewManager = new x2.WorkflowViewManager ({
+        perStageWorkflowView: ".($perStageWorkflowView ? 'true' : 'false')."
+    }); 
+});
+
+
 ",CClientScript::POS_HEAD);
+
+$this->setPageTitle(Yii::t('workflow', 'View Process'));
+
 $isAdmin = (Yii::app()->params->isAdmin);
+
+
+$workflowViewMenuItems = array (
+	array(
+        'label'=>Yii::t('app','Funnel View'),
+        'linkOptions' => array ('id' => 'funnel-view-menu-item'),
+    ),
+	array(
+        'label'=>Yii::t('app','Pipeline View'),
+        'linkOptions' => array ('id' => 'pipeline-view-menu-item'),
+    ),
+);
+
+if ($perStageWorkflowView) {
+    $workflowViewMenuItems[1]['url'] = '#';
+} else {
+    $workflowViewMenuItems[0]['url'] = '#'; 
+}
+
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('workflow','All Processes'), 'url'=>array('index')),
 	array('label'=>Yii::t('app','Create'), 'url'=>array('create'), 'visible'=>$isAdmin),
-	array('label'=>Yii::t('app','View')),
-	array('label'=>Yii::t('workflow','Edit Process'), 'url'=>array('update', 'id'=>$model->id), 'visible'=>$isAdmin),
-	array('label'=>Yii::t('workflow','Delete Process'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 'visible'=>$isAdmin),
+	array(
+        'label'=>Yii::t('workflow','Edit Process'), 
+        'url'=>array('update', 'id'=>$model->id), 
+        'visible'=>$isAdmin),
+    $workflowViewMenuItems[0],
+    $workflowViewMenuItems[1],
+	array(
+        'label'=>Yii::t('workflow','Delete Process'), 
+        'url'=>'#', 
+        'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),
+        'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 
+        'visible'=>$isAdmin
+    ),
 ));
 
 ?>
-<div class="page-title icon workflow"><h2><span class="no-bold"><?php echo Yii::t('workflow','Process:'); ?></span> <?php echo $model->name; ?></h2></div>
-<div style="width:300px;float:left;padding:10px;">
-<?php
+<div id='content-container-inner'>
+<div class="responsive-page-title page-title icon workflow x2-layout-island x2-layout-island-merge-bottom">
+    <h2><span class="no-bold"><?php echo Yii::t('workflow','Process:'); ?></span> 
+        <?php 
+        echo CHtml::dropDownList ('workflows', $model->id, $workflows, array (
+            'class' => 'x2-minimal-select x2-select',
+            'id' => 'title-bar-workflow-select',
+        ));
+        ?>
+    </h2>
+    <?php 
+    echo ResponsiveHtml::gripButton ();
+    ?>
+    <div class='responsive-menu-items'>
+    <div id='interface-selection' class='x2-button-group right'>
+        <a href='#' id='per-stage-view-button' 
+         title='<?php echo Yii::t('workflow', 'Funnel View'); ?>'
+         class='x2-button<?php echo ($perStageWorkflowView ? ' disabled-link' : ''); ?>'>
+         <div></div>
+         <div></div>
+         <div></div>
+        </a>
+        <a href='#' id='drag-and-drop-view-button' 
+         title='<?php echo Yii::t('workflow', 'Pipeline View'); ?>'
+         class='x2-button<?php echo ($perStageWorkflowView ? '': ' disabled-link'); ?>'>
+         <div></div>
+         <div></div>
+         <div></div>
+        </a>
+    </div>
 
-$workflowStatus = Workflow::getWorkflowStatus($model->id);	// true = include dropdowns
-echo Workflow::renderWorkflowStats($workflowStatus);
-?>
-</div>
+    <a href='#' id='workflow-filters' class='filter-button right x2-button'
+     title='<?php echo Yii::t('workflow', 'Filters'); ?>'
+     <?php echo ($perStageWorkflowView ? 'style="display: none;"' : ''); ?>><span></span>
+    </a>
+    <a href='#' id='add-a-deal-button' class='right x2-button'
+     <?php echo ($perStageWorkflowView ? 'style="display: none;"' : ''); ?>>
+     <?php echo Yii::t('app', 'Add a Deal'); ?>   
+    </a>
 
-<div class="form" style="clear:none;">
-	<h2><?php echo Yii::t('workflow', 'Process Status'); ?></h2>
-	<?php $form = $this->beginWidget('CActiveForm', array(
-		'action'=>'view',
-		'id'=>'dateRangeForm',
-		'enableAjaxValidation'=>false,
-		'method'=>'get',
-        'htmlOptions'=>array(
-            'style'=>'width:400px;float:left;'
-        )
-	)); ?>
-	<div class="row">
-		<div class="cell">
-			<?php echo CHtml::label(Yii::t('charts', 'Start Date'),'startDate'); ?>
-			<?php
-			Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-			
-			$this->widget('CJuiDateTimePicker',array(
-				'name'=>'start',
-				// 'value'=>$startDate,
-				'value'=>Formatter::formatDate($dateRange['start']),
-				// 'title'=>Yii::t('app','Start Date'),
-				// 'model'=>$model, //Model object
-				// 'attribute'=>$field->fieldName, //attribute name
-				'mode'=>'date', //use "time","date" or "datetime" (default)
-				'options'=>array(
-					'dateFormat'=>Formatter::formatDatePicker(),
-					'changeMonth'=>true,
-					'changeYear'=>true,
-
-				), // jquery plugin options
-				'htmlOptions'=>array('id'=>'startDate','width'=>20),
-				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
-			));
-			?>
-		</div>
-		<div class="cell">
-			<?php echo CHtml::label(Yii::t('charts', 'End Date'),'startDate'); ?>
-			<?php
-			$this->widget('CJuiDateTimePicker',array(
-				'name'=>'end',
-				'value'=>Formatter::formatDate($dateRange['end']),
-				// 'value'=>$endDate,
-				'mode'=>'date', //use "time","date" or "datetime" (default)
-				'options'=>array(
-					'dateFormat'=>Formatter::formatDatePicker(),
-					'changeMonth'=>true,
-					'changeYear'=>true,
-				),
-				'htmlOptions'=>array('id'=>'endDate','width'=>20),
-				'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
-			));
-			?>
-		</div>
-		<div class="cell">
-			<?php echo CHtml::label(Yii::t('charts', 'Date Range'),'range'); ?>
-			<?php
-			echo CHtml::dropDownList('range',$dateRange['range'],array(
-				'custom'=>Yii::t('charts','Custom'),
-				'thisWeek'=>Yii::t('charts','This Week'),
-				'thisMonth'=>Yii::t('charts','This Month'),
-				'lastWeek'=>Yii::t('charts','Last Week'),
-				'lastMonth'=>Yii::t('charts','Last Month'),
-				// 'lastQuarter'=>Yii::t('charts','Last Quarter'),
-				'thisYear'=>Yii::t('charts','This Year'),
-				'lastYear'=>Yii::t('charts','Last Year'),
-								'all'=>Yii::t('charts','All Time'),
-				
-			),array('id'=>'dateRange'));
-			?>
-		</div>
-	</div>
-	<div class="row">
-        <div class="cell">
-            <?php echo CHtml::label(Yii::t('workflow','User'), 'users');?>
-            <?php echo CHtml::dropDownList('users',$user,array_merge(array(''=>Yii::t('app','All')),User::getNames())); ?>
-        </div>
-        <?php echo CHtml::hiddenField('id',$model->id); ?>
-		<div class="cell">
-			<?php echo CHtml::submitButton(Yii::t('charts','Go'),array('name'=>'','class'=>'x2-button','style'=>'margin-top:13px;')); ?>
-		</div>
-	</div>
-	<?php $this->endWidget();?>
-    <div id="data-summary-box" style="float:right;">
-        
     </div>
 </div>
-
-<div id="workflow-gridview" style="clear:both;">
 <?php
-if(isset($viewStage)){
-	echo Yii::app()->controller->actionGetStageMembers($model->id,$viewStage,Formatter::formatDate($dateRange['start']),Formatter::formatDate($dateRange['end']),$dateRange['range'],$user);
-}else {
-$this->widget('zii.widgets.grid.CGridView', array(
-	// 'id'=>'docs-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '{items}{pager}',
-	'dataProvider'=>X2Model::model('WorkflowStage')->search($model->id),
-	// 'filter'=>$model,
-	'columns'=>array(
-		array(
-			'name'=>'stageNumber',
-			'header'=>'#',
-			'headerHtmlOptions'=>array('style'=>'width:8%;'),
-		),
-		array(
-			'name'=>'name',
-			// 'value'=>'CHtml::link($data->title,array("view","id"=>$data->name))',
-			'type'=>'raw',
-			// 'htmlOptions'=>array('width'=>'30%'),
-		),
-		array(
-			'name'=>'requirePrevious',
-			'value'=>'Yii::t("app",($data->requirePrevious? "Yes" : "No"))',
-			'type'=>'raw',
-			'headerHtmlOptions'=>array('style'=>'width:15%;'),
-		),
-		array(
-			'name'=>'requireComment',
-			'value'=>'Yii::t("app",($data->requireComment? "Yes" : "No"))',
-			'type'=>'raw',
-			'headerHtmlOptions'=>array('style'=>'width:15%;'),
-		),
-		array(
-			'name'=>'conversionRate',
-			// 'value'=>'User::getUserLinks($data->createdBy)',
-			// 'type'=>'raw',
-			'headerHtmlOptions'=>array('style'=>'width:15%;'),
-		),
-		array(
-			'name'=>'value',
-			// 'value'=>'User::getUserLinks($data->createdBy)',
-			// 'type'=>'raw',
-			'headerHtmlOptions'=>array('style'=>'width:15%;'),
-		),
-	),
-));
+if ($perStageWorkflowView) {
+    $this->renderPartial ('_perStageView',
+        array (
+            'model'=>$model,
+            'modelType'=>$modelType,
+            'viewStage'=>$viewStage,
+            'dateRange'=>$dateRange,
+            'expectedCloseDateDateRange'=>$expectedCloseDateDateRange,
+            'users'=>$users,
+        )
+    );
+} else {
+    $this->renderPartial ('_dragAndDropView',
+        array (
+            'model'=>$model,
+            'modelType'=>$modelType,
+            'dateRange'=>$dateRange,
+            'expectedCloseDateDateRange'=>$expectedCloseDateDateRange,
+            'colors'=>$colors,
+            'memberListContainerSelectors'=>$memberListContainerSelectors,
+            'stagePermissions'=>$stagePermissions,
+            'stagesWhichRequireComments'=>$stagesWhichRequireComments,
+            'stageNames'=>$stageNames,
+            'stageValues' => $stageValues,
+            'users'=>$users,
+            'listItemColors' => $listItemColors,
+        )
+    );
 }
 ?>
 </div>
-
-

@@ -39,8 +39,10 @@ class IasPager extends CLinkPager {
 
         
         $cs = Yii::app()->clientScript;
-        $cs->registerScript('infscrl', $js, CClientScript::POS_READY);
-
+        /* x2modstart */ 
+        // added uid to script name
+        $cs->registerScript('infscrl'.$this->listViewId, $js, CClientScript::POS_READY);
+        /* x2modend */ 
 
         $buttons = $this->createPageButtons();
 

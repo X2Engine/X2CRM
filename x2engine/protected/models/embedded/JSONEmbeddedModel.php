@@ -80,10 +80,12 @@ abstract class JSONEmbeddedModel extends CModel {
     }
 
     /**
-     * Child classes implementing this should generate the detail view. The
-     * resulting markup should be echoed out, not returned.
+     * Child classes implementing this should override this function to generate
+     * a detail view. The resulting markup should be echoed out, not returned.
      */
-    public abstract function detailView();
+    public function detailView() {
+
+    }
 
     /**
      * A UI-friendly name that the model should be called.

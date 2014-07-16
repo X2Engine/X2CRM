@@ -45,9 +45,3 @@ if($this->action->id == 'createEmail'){
 $this->renderPartial('_docPageHeader',compact('title','model'));
 
 echo $this->renderPartial('_form', array('model'=>$model,'users'=>$users));
-
-
-
-
-
-

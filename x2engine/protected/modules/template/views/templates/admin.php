@@ -65,7 +65,7 @@ $('.search-form form').submit(function(){
 )); ?>
 </div><!-- search-form -->
 
-<?php $this->widget('application.components.X2GridView', array(
+<?php $this->widget('X2GridView', array(
 	'id'=>'templates-grid',
 	'title'=>'Templates',
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),

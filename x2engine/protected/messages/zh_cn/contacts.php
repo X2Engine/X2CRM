@@ -180,4 +180,5 @@ return array (
 'Saved Searches'=>'保存的搜索',
 'Clicking this button will pull any relevant '=>'单击此按钮将拉动相关的任何',
 'Drag tags here from the tag cloud widget or click to '=>'拖放标签从这里标签云小工具或点击',
+'Export {model}'=>'导出{model}',
 );

@@ -35,8 +35,13 @@
  *****************************************************************************************/
 
 /**
- * 
+ * Base class for behaviors respecting the establishment of access permissions
  *
+ * @property boolean|string $assignmentAttr The attribute to use for assignment
+ *  and ownership. False signifies that it's to be treated as if owned by the
+ *  system/no one in particular.
+ * @property boolean|string $visibilityAttr The attribute to use for visibility
+ *  settings. False signifies that visibility should be ignored.
  * @package application.components.permissions
  */
 abstract class ModelPermissionsBehavior extends CActiveRecordBehavior {
@@ -59,18 +64,18 @@ abstract class ModelPermissionsBehavior extends CActiveRecordBehavior {
      * Generates SQL condition to filter out records the user doesn't have
      *  permission to see.
      * This method is used by the 'accessControl' filter.
-     * @param Integer $accessLevel The user's access level. 0=no access, 1=own
+     * @param integer $accessLevel The user's access level. 0=no access, 1=own
      *  records, 2=public records, 3=full access
-     * @param boolean|string $visibilityAttr The attribute to use for visibility
-     *   settings. False signifies that visibility should be ignored.
-     * @param String $user The username to use in these checks (defaults to
-     *  current user)
-     * @param boolean|string $assignmentAttr The attribute to use for assignment
-     *  and ownership. False signifies that it's to be treated as if owned by
-     *  the system/no one in particular.
      * @return String The SQL conditions
      */
-    abstract function getAccessConditions($accessLevel, $visibilityAttr = 'visibility', $user = null, $assignmentAttr='assignedTo');
+    abstract function getAccessConditions($accessLevel);
+
+    abstract function getAssignmentAttr();
+
+    /**
+     * Returns
+     */
+    abstract function getVisibilityAttr();
 
 }
 

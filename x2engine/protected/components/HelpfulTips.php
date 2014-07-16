@@ -46,33 +46,27 @@ class HelpfulTips extends X2Widget {
 	public function init() {
 		parent::init();
 	}
+
+    public function getNewTip(){
+        //opensource or pro
+        $edition = yii::app()->settings->edition;
+        //True or False
+        $admin = Yii::app()->params->isAdmin;
+        //Check user type and editon to deliever an appropriate tip
+        $command = Yii::app()->db->createCommand()
+                ->select('*')
+                ->from('x2_tips')
+                ->where("edition IN ('".implode("','", Yii::app()->editions)."')");
+        if(!Yii::app()->params->isAdmin){
+            $command->andWhere('admin = 0');
+        }
+        return $command->order('rand()')->queryRow();
+    }
 	/**
 	 * Creates the widget. 
 	 */
-	public function run() {
-            //opensource or pro
-            $edition = yii::app()->settings->edition;
-            //True or False
-            $admin = Yii::app()->params->isAdmin;
-            //Check user type and editon to deliever an appropriate tip
-            if($edition == 'pro'){
-                if($admin){
-                    $where = 'TRUE';
-                } else {
-                    $where = 'admin = 0';                
-                }   
-            } else if($admin){
-                $where = 'edition = "opensource"';
-            } else {
-                $where = 'admin = 0 AND edition = "opensource"';
-            }
-            $tip=Yii::app()->db->createCommand()
-                    ->select('*')
-                    ->from('x2_tips')
-                    ->where($where)
-                    ->order('rand()')
-                    ->queryRow(); 
-            $this->render('tip',$tip);
-	}
+	public function run(){
+        $this->render('tip', $this->getNewTip());
+    }
 }
 ?>

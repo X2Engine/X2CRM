@@ -162,16 +162,17 @@ class X2DateUtil {
      * in the code and could probably be refactored.
      * @return array An array with the date range values
      */
-    public static function getDateRange() {
+    public static function getDateRange(
+        $startKey='start',$endKey='end',$rangeKey='range', $defaultRange='custom') {
 
         $dateRange = array();
         $dateRange['strict'] = false;
         if (isset($_GET['strict']) && $_GET['strict'])
             $dateRange['strict'] = true;
 
-        $dateRange['range'] = 'custom';
-        if (isset($_GET['range']))
-            $dateRange['range'] = $_GET['range'];
+        $dateRange['range'] = $defaultRange;
+        if (isset($_GET[$rangeKey]))
+            $dateRange['range'] = $_GET[$rangeKey];
 
         switch ($dateRange['range']) {
 
@@ -202,8 +203,8 @@ class X2DateUtil {
             case 'all':
                 $dateRange['start'] = 0;        // every record
                 $dateRange['end'] = time();
-                if (isset($_GET['end'])) {
-                    $dateRange['end'] = Formatter::parseDate($_GET['end']);
+                if (isset($_GET[$endKey])) {
+                    $dateRange['end'] = Formatter::parseDate($_GET[$endKey]);
                     if ($dateRange['end'] == false)
                         $dateRange['end'] = time();
                     else
@@ -214,8 +215,8 @@ class X2DateUtil {
             case 'custom':
             default:
                 $dateRange['end'] = time();
-                if (isset($_GET['end'])) {
-                    $dateRange['end'] = Formatter::parseDate($_GET['end']);
+                if (isset($_GET[$endKey])) {
+                    $dateRange['end'] = Formatter::parseDate($_GET[$endKey]);
                     if ($dateRange['end'] == false)
                         $dateRange['end'] = time();
                     else
@@ -223,8 +224,8 @@ class X2DateUtil {
                 }
 
                 $dateRange['start'] = strtotime('1 month ago', $dateRange['end']);
-                if (isset($_GET['start'])) {
-                    $dateRange['start'] = Formatter::parseDate($_GET['start']);
+                if (isset($_GET[$startKey])) {
+                    $dateRange['start'] = Formatter::parseDate($_GET[$startKey]);
                     if ($dateRange['start'] == false)
                         $dateRange['start'] = strtotime('-30 days 0:00', $dateRange['end']);
                     else

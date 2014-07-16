@@ -101,6 +101,19 @@
 	</div>
 	
 	<div class="row">
+		<div class="cell">
+			<?php 
+            echo $form->labelEx($model,'leadRoutingAvailability'); 
+			echo $form->checkBox($model, 'leadRoutingAvailability');
+            echo X2Html::hint (
+                Yii::t('profile', 'Uncheck this box if you do no want to be automatically '.
+                    'assigned new leads through lead routing.'),
+                false, null, true);
+            ?>
+		</div>
+	</div>
+
+	<div class="row">
 		<?php
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');

@@ -46,6 +46,9 @@
  * @package application.modules.marketing.models
  */
 class Campaign extends X2Model {
+
+    public $supportsWorkflow = false;
+
 	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
@@ -141,9 +144,8 @@ class Campaign extends X2Model {
 				$condition .= 'OR (t.visibility=2 AND t.assignedTo IN
 					(SELECT username FROM x2_group_to_user WHERE groupId IN
 						(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-		}
-        if(!Yii::app()->user->checkAccess('MarketingAdminAccess'))
             $criteria->addCondition($condition);
+		}
 		return $this->searchBase($criteria);
 	}
 
@@ -154,19 +156,32 @@ class Campaign extends X2Model {
 	public function getAccessCriteria() {
 		$criteria = new CDbCriteria;
 
-		$accessLevel = 0;
+		$accessLevel = X2PermissionsBehavior::QUERY_NONE;
 		if(Yii::app()->user->checkAccess('MarketingAdmin'))
-			$accessLevel = 3;
+			$accessLevel = X2PermissionsBehavior::QUERY_ALL;
 		elseif(Yii::app()->user->checkAccess('MarketingView'))
-			$accessLevel = 2;
+			$accessLevel = X2PermissionsBehavior::QUERY_PUBLIC;
 		elseif(Yii::app()->user->checkAccess('MarketingViewPrivate'))
-			$accessLevel = 1;
+			$accessLevel = X2PermissionsBehavior::QUERY_SELF;
 
         $conditions=$this->getAccessConditions($accessLevel);
 		foreach($conditions as $arr){
             $criteria->addCondition($arr['condition'],$arr['operator']);
+            if (is_array($arr['params']))
+                $criteria->params = array_merge($criteria->params,$arr['params']);
         }
 
 		return $criteria;
 	}
+
+    /**
+     * Override of {@link X2Model::setX2Fields}
+     *
+     * Skips HTML purification for the content so that tracking links will work.
+     */
+    public function setX2Fields(&$data, $filter = false){
+        $originalContent = isset($data['content'])?$data['content']:null;
+        parent::setX2Fields($data, $filter);
+        $this->content = $originalContent;
+    }
 }

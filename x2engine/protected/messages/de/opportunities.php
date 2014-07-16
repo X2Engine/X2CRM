@@ -30,4 +30,6 @@ return array (
 'Create a new Opportunity associated with this Opportunity.'=>'Erstellen Sie eine neue Chance mit dieser Möglichkeit verbunden.',
 'Opportunities Stage'=>'Chancen Bühne',
 'Relationships for Contact: '=>'Beziehungen für Kontakt:',
+'Import Opportunities'=>'Import Chancen',
+'Export Opportunities'=>'Exportchancen',
 );

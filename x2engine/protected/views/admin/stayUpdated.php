@@ -93,7 +93,7 @@
 
 		<div class="row">
 			<label for="info"><?php echo $form->label['info']; ?></label>
-			<textarea style="width:360px;height:100px;" rows="5" height="50" width="100" columns="10" name="info" id="info"></textarea>
+			<textarea class='x2-extra-wide-input' style="height:100px;" rows="5" height="50" width="100" columns="10" name="info" id="info"></textarea>
 		</div><!-- .row -->
 	</div><!-- #receiveUpdates-form -->
 

@@ -33,7 +33,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-if (!auxlib) var auxlib = {};
+if (typeof auxlib === 'undefined') auxlib = {};
+if (typeof x2 === 'undefined') x2 = {};
+
 auxlib.DEBUG = true;
 
 auxlib.error = function (message) {
@@ -141,13 +143,11 @@ auxlib.destroyErrorBox = function (parentElem) {
 	}
 }
 
-/*
-Returns a jQuery element corresponding to an error box. The error box will
-contain the specified errorHeader and a bulleted list of the specified error
-messages.
-Parameters:
-	errorHeader - a string
-	errorMessages - an array of strings
+/**
+ * Returns a jQuery element corresponding to an error box. The error box will
+ * contain the specified errorHeader and a bulleted list of the specified error
+ * messages.
+ * @deprecated Use X2Forms.prototype.errorSummary instead
 */
 auxlib.createErrorBox = function (errorHeader, errorMessages) {
 	var errorBox = $('<div>', {'class': 'error-summary-container'}).append (
@@ -163,9 +163,6 @@ auxlib.createErrorBox = function (errorHeader, errorMessages) {
 	return errorBox;
 }
 
-
-
-
 /*
 Select an option from a select element
 Parameters:
@@ -173,8 +170,10 @@ Parameters:
 	setting - the value of the option to be selected
 */
 auxlib.selectOptionFromSelector = function (selector, setting) {
+    if (!$(selector).children ('[value="' + setting + '"]').length) return;
 	$(selector).children (':selected').removeAttr ('selected');
 	$(selector).children ('[value="' + setting + '"]').attr ('selected', 'selected');
+    $(selector).val (setting).change ();
 }
 
 
@@ -184,7 +183,7 @@ is not defined.
 */
 auxlib.applyArgs = function (obj, defaultArgs, args) {
 	for (var i in defaultArgs) {
-		if (args[i] === undefined) {
+		if (typeof args[i] === 'undefined') {
 			obj[i] = defaultArgs[i];
 		} else {
 			obj[i] = args[i];
@@ -194,18 +193,41 @@ auxlib.applyArgs = function (obj, defaultArgs, args) {
 
 /**
  * Calls callback when user clicks outside of elem
- * Only works for elements with no children, can only be used on one element at a time
- * @param object elem jQuery element
+ * @param object elem jQuery element(s)
  * @param function callback 
+ * @param boolean one if true, event handler will be bound until user clicks outside element
  */
-auxlib.onClickOutside = function (elem, callback) {
-    $("body").unbind ('click.onClickOutside');
-    $("body").bind ('click.onClickOutside', function (evt) {
-        if ($(evt.target)[0] !== $(elem)[0]) {
-            callback ();
+auxlib.onClickOutside = (function () {
+    var i = 0; // used to give events unique ids                               
+    return function (elem, callback, one, eventNamespace) {
+        var eventNamespace = typeof eventNamespace === 'undefined' ? ++i : eventNamespace; 
+        var one = typeof one === 'undefined' ?  false : one;          
+        var selector = elem.selector;
+
+        var clickCallback = function (evt) {
+            // clicked outside if target or target's parents do not match specified elements
+            if ($.inArray ($(evt.target)[0], $(elem)) === -1 && 
+                $(evt.target).closest (selector).length === 0) {
+
+                callback.call (elem);
+                return true;
+            } 
+            return false;
+        };
+        var evtName = 'click.onClickOutside' + eventNamespace;
+        $("body").unbind (evtName);
+        if (one) {
+            $("body").one (evtName, function (evt) {
+                if (!clickCallback (evt)) { // didn't click outside, rebind
+                    auxlib.onClickOutside (elem, callback, one, eventNamespace);
+                }
+            });
+        } else {
+            $("body").bind ('click.onClickOutside' + eventNamespace, clickCallback);
         }
-    });
-};
+        return evtName; 
+    };
+}) ();
 
 auxlib.makeDialogClosableWithOutsideClick = function (dialogElem) {
     $("body").on ('click', function (evt) {
@@ -322,11 +344,183 @@ auxlib.validatePhotoFileExt = function (name) {
     return isLegalExtension;
 };
 
-auxlib.map = function (callback, array) {
-    var arrLen = array.length;
-    var newArr = [];
-    for (var i = 0; i < arrLen; ++i) {
-        newArr.push (callback (array[i])); 
+/**
+ * @param array|object array
+ * @return object An object whose keys are the values of array and whose values are the indices
+ *  of array
+ */
+auxlib.flip = function (array) {
+    var result = {};
+    if (array instanceof Array) {
+        var arrLen = array.length;
+        for (var i = 0; i < arrLen; ++i) {
+            result[array[i]] = i;
+        }
+    } else {
+        for (var i in array) {
+            result[array[i]] = i;
+        }
+    }
+    return result;
+};
+
+auxlib.filter = function (callback, array) {
+    if (array instanceof Array) {
+        var newArr = [];
+        var arrLen = array.length;
+        for (var i = 0; i < arrLen; i++) {
+            if (callback (array[i], i, array)) {
+                newArr.push (array[i]);
+            }
+        }
+    } else {
+        var newObj = {};
+        for (var i in array) {
+            if (callback (array[i], i, array)) {
+                newObj[i] = array[i];
+            }
+        }
     }
     return newArr;
 };
+
+/**
+ * Used to map both arrays and objects 
+ * @param function callback 
+ * @param mixed array array or object 
+ * @return mixed
+ */
+auxlib.map = function (callback, array) {
+    if (array instanceof Array) {
+        var arrLen = array.length;
+        var newArr = [];
+        for (var i = 0; i < arrLen; ++i) {
+            newArr.push (callback (array[i])); 
+        }
+        return newArr;
+    } else { 
+        var newObj = {};
+        for (var i in array) {
+            newObj[i] = callback(array[i]);
+        }
+        return newObj;
+    }
+};
+
+auxlib.sum = function (array) {
+    return auxlib.reduce (function (a, b) { return a + b; }, array);
+};
+
+auxlib.reduce = function (callback, array) {
+    var value = array[0];
+    var arrLen = array.length;
+    if (arrLen === 1) return value;
+    var newArr = [];
+    for (var i = 0; i < arrLen - 1; ++i) {
+        value = callback (value, array[i + 1], i, array);
+    }
+    return value;
+};
+
+
+/**
+ * "Magic getter" method which caches jQuery objects so they don't have to be
+ * looked up a second time from the DOM
+ */
+auxlib.getElement = (function () {
+    var elements = {};
+    return function (selector) {
+        if(typeof elements[selector] === 'undefined')
+            elements[selector] = $(selector);
+        return elements[selector];
+    };
+}) ();
+
+auxlib.classToSelector = function (classStr) {
+    return '.' + classStr.split (' ').join ('.');
+};
+
+/**
+ * Uses the maskMoney jQuery plugin to convert the currency to a number.
+ * @param string currencyStr A formatted curency string
+ * @param string currency The user's currency setting
+ * @return number the currency string converted to a number
+ */
+auxlib.currencyToNumber = function (currencyStr, currency) {
+    var tmp = $('<input>', {
+        id: 'auxlib-tmp-value-input',
+        style: 'display: none;'
+    });
+    $('body').append (tmp);
+
+    var number = $(tmp).val (currencyStr).maskMoney (x2.currencyInfo).maskMoney ('unmasked')[0];
+    $(tmp).remove ();
+    return number;
+};
+
+/**
+ * Uses the maskMoney jQuery plugin to format the number as a currency string
+ * @param number 
+ * @param string currency The user's currency setting
+ * @return string the formatted currency string 
+ */
+auxlib.numberToCurrency = function (number, currency) {
+    var tmp = $('<input>', {
+        id: 'auxlib-tmp-value-input',
+        style: 'display: none;'
+    });
+    $('body').append (tmp);
+    number = number.toFixed (2);
+
+    var str = 
+        $(tmp).val (number).maskMoney (x2.currencyInfo).maskMoney ('mask').val ()
+    $(tmp).remove ();
+
+    return str;
+};
+
+auxlib.assert = function (conditional, str) {
+    if (!x2.DEBUG) return;
+    if (console.assert) {
+        /**/console.assert (conditional, str);
+    } else {
+        if (!conditional) {
+            throw new Error (str);
+        }
+    }
+}
+
+/**/auxlib.trace = function () { 
+    if (!x2.DEBUG) return;
+    if (console.trace) {
+        /**/console.trace ();
+    }
+};
+
+auxlib.getUnselected = function (elem) {
+    return auxlib.map (function (a) {
+        return $(a).val ();
+    },$.makeArray ($(elem).children ().not (':selected')));
+};
+
+
+$(function () {
+
+    /**
+     * Sets up fixed y behavior. By setting the class of an element to fix-y and giving an attribute
+     * data-fix-y set to some number, the element will be fixed the specified offset from the top
+     * of the screen.
+     */
+    $('.fix-y').each (function () {
+        var y = parseInt ($(this).attr ('data-fix-y'), 10);
+        var that = this;
+        $(window).scroll (function () {
+            //console.log ('break'); 
+            //console.log ($(that).css ('display'));
+            $(that).css ({
+                top: $(window).scrollTop () + y
+            });
+        });
+    });
+});
+

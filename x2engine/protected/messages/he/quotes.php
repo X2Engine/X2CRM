@@ -68,4 +68,6 @@ return array (
 'Are you sure you want to delete this quote?'=>'האם אתה בטוח שברצונך למחוק את הציטוט הזה?',
 'This quote is locked. Are you sure you want to update this quote?'=>'ציטוט זה נעול. האם אתה בטוח שאתה רוצה לעדכן את הציטוט הזה?',
 'This quote is locked.'=>'ציטוט זה נעול.',
+'Import Quotes'=>'ציטוטים יבוא',
+'Export Quotes'=>'ציטוטים יצוא',
 );

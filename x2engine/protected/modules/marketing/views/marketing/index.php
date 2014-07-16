@@ -39,22 +39,33 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','All Campaigns')),
 	array('label'=>Yii::t('marketing','Create Campaign'), 'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/contacts/lists')),
-	array(
-        'label'=>Yii::t('marketing','Newsletters'), 
-        'url'=>array('/marketing/weblist/index'),
-        'visible'=>(Yii::app()->params->edition==='pro')
-    ),
-	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
-	array(
-        'label'=>Yii::t('marketing','Web Tracker'), 
-        'url'=>array('webTracker'),
-        'visible'=>(Yii::app()->params->edition==='pro')
-    ),
-	array(
-        'label'=>Yii::t('app','X2Flow'),
-        'url'=>array('/studio/flowIndex'),
-        'visible'=>(Yii::app()->params->edition==='pro')
-    ),
+        array(
+            'label'=>Yii::t('marketing', 'Import Campaigns'),
+            'url'=>array('admin/importModels', 'model'=>'Campaign'),
+            'visible'=>Yii::app()->params->isAdmin
+        ),
+        array(
+            'label'=>Yii::t('marketing', 'Export Campaigns'),
+            'url'=>array('admin/exportModels', 'model'=>'Campaign'),
+            'visible'=>Yii::app()->params->isAdmin
+        ),
+        array(
+            'label' => Yii::t('marketing', 'Newsletters'),
+            'url' => array('/marketing/weblist/index'),
+            'visible' => (Yii::app()->contEd('pro'))
+        ),
+        array('label' => Yii::t('marketing', 'Web Lead Form'), 'url' => array('webleadForm')),
+        array(
+            'label' => Yii::t('marketing', 'Web Tracker'),
+            'url' => array('webTracker'),
+            'visible' => (Yii::app()->contEd('pro'))
+        ),
+    
+        array(
+            'label' => Yii::t('app', 'X2Flow'),
+            'url' => array('/studio/flowIndex'),
+            'visible' => (Yii::app()->contEd('pro'))
+        ),
 ));
 
 Yii::app()->clientScript->registerScript('search', "
@@ -84,7 +95,7 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 </div><!-- search-form -->
 <?php
 
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'marketing-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'title'=>Yii::t('marketing','Campaigns'),

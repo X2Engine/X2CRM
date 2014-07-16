@@ -58,7 +58,8 @@ $selected=array();
 $unselected=array();
 $fields=Fields::model()->findAllBySql("SELECT * FROM x2_fields ORDER BY modelName ASC");
 foreach($fields as $field){
-        $unselected[$field->id]=$field->modelName." - ".$field->attributeLabel;
+    $unselected[$field->id] = 
+        X2Model::getModelTitle ($field->modelName)." - ".$field->attributeLabel;
 }
 $users=User::getNames();
 unset($users['']);
@@ -71,9 +72,9 @@ foreach($groups as $group){
 }
 /* end x2temp */
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin','Add Role'); ?></h2></div>
+<div class="page-title rounded-top"><h2><?php echo Yii::t('admin','Add Role'); ?></h2></div>
 <div class="form">
-<div style="width:600px">
+<div style="max-width:600px">
     <?php echo Yii::t('admin','Roles allow you to control which fields are editable on a record and by whom.  To add a role, enter the name, a list of users, and a list of fields they are allowed to view or edit.  Any field not included will be assumed to be unavailable to users of that Role.') ?>
 </div>
 

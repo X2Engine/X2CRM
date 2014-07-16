@@ -52,4 +52,7 @@ return array (
 'Hello'=>'',
 'Web Form Case'=>'',
 'Thank you for contacting our Technical Support '=>'',
+'Import Services'=>'',
+'Export Services'=>'',
+'Case Name'=>'',
 );

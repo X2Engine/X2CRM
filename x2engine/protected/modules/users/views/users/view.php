@@ -54,7 +54,7 @@ $this->actionMenu = $this->formatMenu(array(
 	'attributes'=>array(
 		'firstName',
 		'lastName',
-		'username',
+		empty($model->userAlias)?'username':'userAlias',
 		'title',
 		'department',
 		'officePhone',
@@ -83,8 +83,14 @@ foreach($actionHistory as $action) {
 			array(
 				'label'=>'Action Description',
 				'type'=>'raw',
-				'value'=>CHtml::link(CHtml::encode($action->actionDescription),
-							 array('/actions/actions/view','id'=>$action->id)),
+				'value'=> in_array($action->type,Actions::$emailTypes)
+                   ? CHtml::link(Yii::t('actions','View Email'),'javascript:void(0)',array(
+                       'class' => 'action-frame-link',
+                       'data-action-id' => $action->id,
+                   ))
+                   : CHtml::link($action->actionDescription,
+                        		 array('/actions/actions/view','id'=>$action->id))
+                
 			),
 			'assignedTo',
                         array(

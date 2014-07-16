@@ -51,6 +51,17 @@ class Admin extends CActiveRecord {
         return parent::model($className);
     }
 
+    public static function getDoNotEmailLinkDefaultText () {
+        return Yii::t('admin', 'I do not wish to receive these emails.');
+    }
+
+    public static function getDoNotEmailDefaultPage () {
+        $message = Yii::t(
+            'admin', 'You will no longer receive emails from this sender.');
+        return '<html><head><title>'.$message.
+            '</title></head><body>'.$message.'</body></html>';
+    }
+
     /**
      * @return string the associated database table name
      */
@@ -58,15 +69,25 @@ class Admin extends CActiveRecord {
         return 'x2_admin';
     }
 
-    public function behaviors() {
-        return array(
-            'JSONEmbeddedModelFieldsBehavior' => array(
-                'class' => 'application.components.JSONEmbeddedModelFieldsBehavior',
-                'fixedModelFields' => array('emailDropbox' => 'EmailDropboxSettings'),
-                'transformAttributes' => array('emailDropbox'),
-                
-            )
+    public function behaviors(){
+        $behaviors = array(
+            'JSONFieldsDefaultValuesBehavior' => array(
+                'class' => 'application.components.JSONFieldsDefaultValuesBehavior',
+                'transformAttributes' => array(
+                    'actionPublisherTabs' => array(
+                        'PublisherCallTab' => true,
+                        'PublisherTimeTab' => true,
+                        'PublisherActionTab' => true,
+                        'PublisherCommentTab' => true,
+                        'PublisherEventTab' => false,
+                        'PublisherProductsTab' => false,
+                    ),
+                ),
+                'maintainCurrentFieldsOrder' => true
+            ),
         );
+        
+        return $behaviors;
     }
 
     /**
@@ -88,16 +109,22 @@ class Admin extends CActiveRecord {
             array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
             array('batchTimeout','numerical','integerOnly' => true),
-            array('emailBulkAccount,serviceCaseEmailAccount,emailDropbox', 'safe'),
+            array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
+            
             array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail'),
             array('serviceCaseEmailAccount', 'setDefaultEmailAccount', 'alias' => 'serviceCaseEmail'),
-	    array('webLeadEmailAccount','setDefaultEmailAccount','alias' => 'systemResponseEmail'),
-	    array('emailNotificationAccount','setDefaultEmailAccount','alias'=>'systemNotificationEmail'),
+            array('webLeadEmailAccount','setDefaultEmailAccount','alias' => 'systemResponseEmail'),
+            array('emailNotificationAccount','setDefaultEmailAccount','alias'=>'systemNotificationEmail'),
             array('emailSignature', 'length', 'max' => 4096),
             array('externalBaseUrl','url','allowEmpty'=>true),
             array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
             array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
+            array ('appDescription', 'length', 'max' => 255),
+            array (
+                'appName,x2FlowRespectsDoNotEmail,doNotEmailLinkPage,doNotEmailLinkText',
+                'safe'
+            ),
                 // The following rule is used by search().
                 // Please remove those attributes that should not be searched.
                 // array('id, accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, chatPollTime, menuVisibility, currency', 'safe', 'on'=>'search'),
@@ -165,7 +192,12 @@ class Admin extends CActiveRecord {
             'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
             'batchTimeout' => Yii::t('app','Time limit on batch actions'),
             'externalBaseUrl' => Yii::t('app','External / Public Base URL'),
-            'externalBaseUri' => Yii::t('app','External / Public Base URI')
+            'externalBaseUri' => Yii::t('app','External / Public Base URI'),
+            'appName' => Yii::t('app','Application Name'),
+            'x2FlowRespectsDoNotEmail' => Yii::t(
+                'app','Respect contacts\' "Do not email" settings?'),
+            'doNotEmailLinkText' => Yii::t('app','"Do not email" Link Text'),
+            'doNotEmailLinkPage' => Yii::t('app','"Do not email" Page'),
         );
     }
 
@@ -217,6 +249,15 @@ class Admin extends CActiveRecord {
             $this->emailCount = 0;
         }
         return $this->emailCount + $nEmail > $this->emailBatchSize;
+    }
+
+    /**
+     * @param array $value This should match the structure of the actionPublisherTabs property
+     *  specified in the JSONFieldsDefaultValuesBehavior configuration
+     */
+    public function setActionPublisherTabs ($value) {
+        $this->actionPublisherTabs = $value;
+        $this->save ();
     }
 
 }

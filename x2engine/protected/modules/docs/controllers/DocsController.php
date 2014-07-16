@@ -126,7 +126,8 @@ class DocsController extends x2base {
 		$model = $this->loadModel($id);
         $response = array(
             'body' => $model->text,
-            'subject' => $model->subject
+            'subject' => $model->subject,
+            'to' => $model->emailTo
         );
         if($replace)
             foreach(array_keys($response) as $key)
@@ -198,6 +199,7 @@ class DocsController extends x2base {
 		unset($users[Yii::app()->user->getName()]);
 		$model = new Docs;
 		$model->type = 'email';
+		$model->associationType = 'Contacts';
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);

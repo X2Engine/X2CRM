@@ -40,7 +40,7 @@ $this->actionMenu = $this->formatMenu(array(
 ));
 
 Yii::app()->clientScript->registerScript('highlightButton','
-$("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
+$("#feed-form textarea").bind("focus blur",function(){ x2.forms.toggleText(this); })
 	.change(function(){
 		if($(this).val()=="")
 			$("#save-button").removeClass("highlight");

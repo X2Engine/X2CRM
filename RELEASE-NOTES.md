@@ -1,4 +1,65 @@
+# 4.1.6b #
+7/3/2014
+
+* The "required" validation rule now applies, globally, to all instances of 
+  updating as well as all instances of saving. Users can now no longer save 
+  and then empty the field after going back to edit. This may disrupt existing 
+  workflows that depended on this erroneous behavior.
+
+# 4.1.2b #
+5/30/2014
+
+To update to this and all future beta releases, you must enable beta releases,
+as follows:
+
+1. Create a file "constants-custom.php" in the root level of X2Engine. You can 
+   easily do this by renaming "constants-custom.example.php" to that name (remove ".custom").
+2. Look for the following line, and in it, change "false" to "true":
+  <pre>defined('X2\_UPDATE\_BETA') or define('X2\_UPDATE\_BETA',false);</pre>
+
+
+# 4.1 #
+5/20/2014
+
+* **Usernames are now case-sensitive.**
+* __It has come to our attention that the very old "calendar permissions"
+  feature does not behave entirely as it was originally designed.__ Granting one
+  user edit permissions to another's calendar does not actually grant
+  permissions to edit the event itself, except in regard to the ability to
+  change the date of events via drag-and-drop. This is because event records are
+  actions, and hence the ability to edit an action is subject to the access
+  rules of the Actions module. This old feature (calendar permissions) was
+  designed before RBAC was employed in X2Engine to permit finer control over who
+  can edit what. In previous versions this would result in a bug, whereupon 
+  submitting the form to edit an action would result in no response/change (a
+  403 status from the server) when the user did not actually have access via
+  their Actions module permissions to edit the action. In this version, editing
+  of events is disabled in the UI when the action record itself cannot be
+  directly edited. Please note this, to avoid confusion; granting edit access on
+  a calendar will not always allow other users to actually change aspects of the
+  event record such as the description, association, color, and assignment. _It
+  will merely guarantee that the other user will be able to drag/drop events to
+  different dates._
+  
+
+# 4.0 #
+3/20/2014
+
+* "X2Touch", the mobile layout, is no more. In its place will be a responsive,
+  mobile-friendly layout.   
+* The formula-parsing method used in X2Flow has changed to improve security and 
+  stability. Principally, it no longer filters/sanitizes the input by blacklisting
+  patterns in the input. Furthermore owing to how the input needs to be evaluated
+  as PHP code, all replacement values are escaped using 
+  [var_export](http://php.net/var_export). The previous design was found to be 
+  problematic in numerous ways, most notably how character sequences would remain
+  unquoted in the resulting code (which would cause "undefined constant" errors
+  unless the end user explicitly inserted quotes around it, and somehow enforced
+  the content of the referenced field never containing quotes).
+
 # 3.7.3b #
+2/14/2014
+
 * This version, while it is mainly oriented towards fixing bugs, contains some
   extreme, far-reaching changes (for example, the refactoring of how lookup fields
   work) that may have introduced bugs that we have not seen/foreseen in our tests.
@@ -13,12 +74,14 @@
 
 # 3.7.1 #
 12/23/2013
+
 * For security purposes, the web lead form no longer permits setting options via
   query parameters, with the exception of CSS (i.e. color); rather, all options
   are now stored server-side. Existing web lead forms will thus need to be updated.
 
 # 3.7 #
 12/23/2013
+
 * In previous versions, the "greater than" and "less than" comparison operators 
   in X2Flow incorrectly resulted in the comparisons "greater than or equal to" 
   and "less than or equal to", respectively. In this version, that behavior is
@@ -34,6 +97,7 @@
 
 # 3.6.2 #
 11/26/2013
+
 * Hosting one's CRM on a different domain name than one's website will increase 
   the likelihood of public-facing resources like targeted content, web forms and
   the web tracker not working properly in some browsers. This is due to the 
@@ -51,6 +115,7 @@
 
 # 3.6.1 #
 11/22/2013
+
 * The targeted content embed method has been changed to resolve the previous 
   issue with Internet Explorer. As such, any embed codes generated in 3.6 will
   not work in this and future versions. To fix this issue, it will be necessary 
@@ -59,18 +124,21 @@
 
 # 3.6 #
 11/21/2013
+
 * The targeted content feature is designated "beta" because, in this version, 
   the embeddable code causes problems in Internet Explorer 8 and 9 when embedded
   in pages containing multiple iframes.
 
 # 3.1 #
 6/18/2013
+
 * In the deletion action of the API, the primary key can now be specified in
   either the GET or POST parameters. This way, the "DELETE" request type can be
   used for deletion, and not just the POST type of request.
 
 # 3.0.1 #
 5/13/2013
+
 * The API has undergone some fundamental changes in its response format:
   * It always responds in JSON-encoded objects for all actions, with the
     exception of checkPermissions, which responds with code 200, mimetype
@@ -94,6 +162,7 @@
 
 # 3.0 #
 5/1/2013
+
 * The automation designer, while largely complete, is still in active 
   development, and thus has been deemed a "beta" feature.
 * Quotes created before updating to 3.0 may display incorrect totals in email,
@@ -115,6 +184,7 @@
 
 # 2.1.1 #
 10/15/2012
+
 * Note: Any existing changelog data will be preserved, but not visible in the
   changelog table. In the next update we will include code to convert this data
   to the new format.

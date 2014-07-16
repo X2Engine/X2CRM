@@ -40,8 +40,10 @@
 function X2QtipManager (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
-        loadingText: '',
+        loadingText: 'Loading...',
+        dataAttrTitle: false,
         qtipSelector: '',
+        modelType: 'contacts',
         DEBUG: x2.DEBUG && false
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -59,23 +61,17 @@ Private static methods
 Public instance methods
 */
 
+/**
+ * Initializes qtip objects for all links returned by query on qtipSelector
+ */
 X2QtipManager.prototype.refresh = function () {
     var that = this; 
     that.DEBUG && console.log ('refresh');
 	$(that.qtipSelector).each(function (i) {
-		var contactId = $(this).attr("href").match(/\d+$/);
+		var recordId = $(this).attr("href").match(/\d+$/);
 
-		if(contactId !== null && contactId.length) {
-			$(this).qtip({
-				content: {
-					text: that.loadingText,
-					ajax: {
-						url: yii.scriptUrl+"/contacts/qtip",
-						data: { id: contactId[0] },
-						method: "get"
-					}
-				}, style: {}
-			});
+		if(recordId !== null && recordId.length) {
+			$(this).qtip(that._getConfig ($(this), recordId[0]));
 		}
 	});
 };
@@ -84,3 +80,40 @@ X2QtipManager.prototype.refresh = function () {
 Private instance methods
 */
 
+X2QtipManager.prototype._getConfig = function (elem, recordId) {
+    var that = this;
+    var config = {
+        content: {
+            text: function (event, api) {
+                $.ajax ({
+                    url: yii.scriptUrl+'/'+that.modelType+'/qtip',
+                    data: { 
+                        id: recordId,
+                        suppressTitle: that.dataAttrTitle ? 1 : 0
+                    },
+                    method: "get"
+                }).then (function (content) {
+                    api.set ('content.text', content);
+                });
+                return that.loadingText;
+            }, 
+        },
+        style: {
+            classes: 'x2-qtip',
+            tip: {
+                corner: true,
+            }
+        },
+        position: {
+            viewport: $(window),
+            my: 'top center',
+            at: 'bottom center',
+            target: $(elem),
+            effect: false
+        },
+    };
+    if (that.dataAttrTitle) {
+        config.content.title = $(elem).attr ('data-qtip-title');
+    }
+    return config;
+};

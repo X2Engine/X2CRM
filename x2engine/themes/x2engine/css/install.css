@@ -66,6 +66,8 @@ h2#title {clear:none;}
 	display:block;
 	margin:0 10px 10px 0;
 	float:left;
+    width: 100px;
+    height: auto;
 }
 #installer-box h1, #installer-box h3 {
 	text-align:center;

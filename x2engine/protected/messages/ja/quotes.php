@@ -68,4 +68,6 @@ return array (
 'Are you sure you want to delete this quote?'=>'あなたは、この引用符を削除してもよろしいですか？',
 'This quote is locked. Are you sure you want to update this quote?'=>'この引用は、ロックされています。あなたは、この見積もりを更新してもよろしいですか？',
 'This quote is locked.'=>'この引用は、ロックされています。',
+'Import Quotes'=>'インポートの声',
+'Export Quotes'=>'輸出の声',
 );

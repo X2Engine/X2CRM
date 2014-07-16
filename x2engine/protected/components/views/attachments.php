@@ -34,6 +34,15 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss('attachmentsCss',"
+
+#attachment-form input,
+#attachment-form select {
+    margin-right: 11px;
+}
+
+");
+
 $script = "
 x2.attachments = (function () {
 
@@ -118,7 +127,7 @@ echo $script;
 ?>
 <div id="attachment-form-top"></div>
 <div id="attachment-form"<?php if($startHidden) echo ' style="display:none;"'; ?>>
-    <div class="form">
+    <div class="form x2-layout-island">
         <?php
         if (!$mobile) {
         ?>

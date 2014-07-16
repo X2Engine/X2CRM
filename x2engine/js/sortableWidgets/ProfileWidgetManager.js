@@ -47,7 +47,7 @@ function ProfileWidgetManager (argsDict) {
     var defaultArgs = {
         cssSelectorPrefix: 'profile', 
         widgetType: 'profile',
-        connectedContainerSelector: '',
+        connectedContainerSelector: '', // class shared by all columns containing sortable widgets
     };
 
 	SortableWidgetManager.call (this, argsDict);	

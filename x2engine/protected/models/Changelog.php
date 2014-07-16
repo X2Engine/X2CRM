@@ -126,7 +126,7 @@ class Changelog extends CActiveRecord {
 
 		$criteria=new CDbCriteria;
 
-		$parameters = array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$parameters = array('limit'=>ceil(Profile::getResultsPerPage()));
 		$criteria->scopes = array('findAll'=>array($parameters));
 
 		$criteria->compare('id',$this->id);
@@ -145,7 +145,7 @@ class Changelog extends CActiveRecord {
 				'defaultOrder'=>'timestamp DESC',
 			),
 			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
+				'pageSize'=>Profile::getResultsPerPage(),
 			),
 			'criteria'=>$criteria,
 		));

@@ -56,4 +56,7 @@ return array (
 'Hello'=>'你好',
 'Web Form Case'=>'Web窗体案例',
 'Thank you for contacting our Technical Support '=>'感谢您联系我们的技术支持',
+'Import Services'=>'进口服务',
+'Export Services'=>'出口服务',
+'Case Name'=>'案例名称',
 );

@@ -159,5 +159,15 @@ class Session extends CActiveRecord {
                 $session->delete();
             }
         }
+
+        // check timeout on sessions not corresponding to any existing user
+        $defaultTimeout = 900;
+        self::model ()->deleteAll (
+            array (
+                'condition' => 'lastUpdated < :cutoff and 
+                    user not in (select distinct (username) from x2_users)',
+                'params' => array (':cutoff' => time () - $defaultTimeout)
+            )
+        );
     }
 }

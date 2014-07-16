@@ -53,7 +53,7 @@ class MarketingController extends x2base {
     public function accessRules(){
         return array(
             array('allow', // allow all users
-                'actions' => array('click'),
+                'actions' => array('click', 'doNotEmailLinkClick'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform the following actions
@@ -101,13 +101,17 @@ class MarketingController extends x2base {
         );
     }*/
 
+    
+
     /**
      * Returns a JSON array of the names of all campaigns filtered by a search term.
      *
      * @return string A JSON array of strings
      */
-    public function actionGetItems(){
-        $sql = 'SELECT id, name as value FROM x2_campaigns WHERE name LIKE :qterm ORDER BY name ASC';
+    public function actionGetItems($modelType){
+         
+            $sql = 'SELECT id, name as value FROM x2_campaigns WHERE name LIKE :qterm ORDER BY name ASC';
+         
         $command = Yii::app()->db->createCommand($sql);
         $qterm = '%'.$_GET['term'].'%';
         $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
@@ -382,7 +386,6 @@ class MarketingController extends x2base {
      * @param integer $id ID of the campaign to launch
      */
     public function actionLaunch($id){
-        AuxLib::debugLogR ('launch');
         $campaign = $this->loadModel($id);
 
         if(!isset($campaign)){
@@ -420,9 +423,12 @@ class MarketingController extends x2base {
                 $this->redirect(array('view', 'id' => $id));
             }
             $newList->type = 'campaign';
-            $newList->save();
-            $campaign->list = $newList;
-            $campaign->listId = $newList->nameId;
+            if($newList->save()) {
+                $campaign->list = $newList;
+                $campaign->listId = $newList->nameId;
+            } else {
+                Yii::app()->user->setFlash('error', Yii::t('marketing', 'Failed to save temporary list.'));
+            }
         }
 
         $campaign->launchDate = time();
@@ -485,15 +491,32 @@ class MarketingController extends x2base {
         $email = $this->recipient->email;
         if($this->campaign instanceof Campaign && $this->listItem instanceof X2ListItem) {
             $this->sendIndividualMail();
-            $this->addResponseProperty('fullStop',$this->fullStop);
+            $this->response['fullStop'] = $this->fullStop;
             $status = $this->status;
             // Actual SMTP (or elsewise) delivery error that should stop the batch:
             $error = ($status['code']!=200 && $this->undeliverable) || $this->fullStop;
-            $this->addResponseProperty('status', $this->status);
-            self::respond($status['message'],$error);
+            $this->response['status'] = $this->status;
+            $this->respond($status['message'],$error);
         } else {
-            self::respond(Yii::t('marketing','Specified campaign does not exist.'),1);
+            $this->respond(Yii::t('marketing','Specified campaign does not exist.'),1);
         }
+    }
+
+    public function actionDoNotEmailLinkClick ($x2_key) {
+        $contact = Contacts::model ()->findByAttributes (array (
+            'trackingKey' => $x2_key,
+        ));
+        if ($contact !== null) {
+            $contact->doNotEmail = true;
+            if ($contact->update ()) {
+                if (Yii::app()->settings->doNotEmailPage) {
+                    echo Yii::app()->settings->doNotEmailPage;
+                } else {
+                    echo Admin::getDoNotEmailDefaultPage ();
+                }
+            }
+        }
+
     }
 
     /**
@@ -519,13 +542,17 @@ class MarketingController extends x2base {
         //we can't track anything if the listitem was deleted, but at least prevent breaking links
         if($item === null || $item->list->campaign === null){
             if($type == 'click'){
+                // VERY legacy; corresponds to the old commented-out tracking
+                // links code that was in version 3.6 or so moved into
+                // CampaignMailingBehavior.prepareEmail
                 $this->redirect(urldecode($url));
             }elseif($type == 'open'){
                 //return a one pixel transparent gif
                 header('Content-Type: image/gif');
                 echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
             }elseif($type == 'unsub' && !empty($email)){
-                Contacts::model()->updateAll(array('doNotEmail' => true), 'email=:email', array(':email' => $email));
+                Contacts::model()->updateAll(
+                    array('doNotEmail' => true), 'email=:email', array(':email' => $email));
                 X2ListItem::model()->updateAll(array('unsubscribed' => time()), 'emailAddress=:email AND unsubscribed=0', array('email' => $email));
                 $message = Yii::t('marketing', 'You have been unsubscribed');
                 echo '<html><head><title>'.$message.'</title></head><body>'.$message.'</body></html>';
@@ -591,7 +618,7 @@ class MarketingController extends x2base {
             foreach($weblists as $weblist){
                 $weblistAction = new Actions();
                 $weblistAction->disableBehavior('changelog');
-                $weblistAction->id = 0;
+                //$weblistAction->id = 0; // this causes primary key contraint violation errors
                 $weblistAction->isNewRecord = true;
                 $weblistAction->type = 'email_unsubscribed';
                 $weblistAction->associationType = 'X2List';
@@ -634,6 +661,7 @@ class MarketingController extends x2base {
             else
                 $action->actionDescription = Yii::t('marketing', 'Campaign').': '.$item->list->campaign->name."\n\n".Yii::t('marketing', 'Contact has opened the email').".";
         } elseif($type == 'click'){
+            // More legacy code corresponding to the disabled tracking links feature:
             $item->markClicked($url);
 
             $action->type = 'email_clicked';
@@ -691,6 +719,7 @@ class MarketingController extends x2base {
         if(isset($_POST['Admin']['enableWebTracker'], $_POST['Admin']['webTrackerCooldown'])){
             $admin->enableWebTracker = $_POST['Admin']['enableWebTracker'];
             $admin->webTrackerCooldown = $_POST['Admin']['webTrackerCooldown'];
+            
             $admin->save();
         }
         $this->render('webTracker', array('admin' => $admin));

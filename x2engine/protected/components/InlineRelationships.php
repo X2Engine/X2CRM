@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -49,21 +48,71 @@ class InlineRelationships extends X2Widget {
 	public $startHidden = false;
 	public $modelName = "";
     public $moduleName = "";
+
+    /**
+     * Used to prepopulate create relationship forms
+     * @var array (<model class> => <array of default values indexed by attr name>)
+     */
+    public $defaultsByRelatedModelType = array ();
+
 	private $_relatedModels;
 
 	public function init(){
-
 		parent::init();
 	}
 
+    private function checkModuleUpdatePermissions () {
+        $moduleName = '';
+        if (is_object (Yii::app()->controller->module)) {
+            $moduleName = Yii::app()->controller->module->name;
+        } 
+        $actionAccess = ucfirst($moduleName).'Update';
+        $authItem = Yii::app()->authManager->getAuthItem($actionAccess);
+        return (!isset($authItem) || Yii::app()->user->checkAccess($actionAccess, array(
+            'X2Model' => $this->model
+        )));
+    }
+
 	public function run(){
+        $linkableModels = X2Model::getModelTypesWhichSupportRelationships(true);
+         
+
+        // used to instantiate html dropdown
+        $linkableModelsOptions = $linkableModels;
+        //array_walk ($linkableModelsOptions, function (&$val, $key) { $val = $key; });
+
+        $modelsWhichSupportQuickCreate = 
+            QuickCreateRelationshipBehavior::getModelsWhichSupportQuickCreate ();
+
+        // get create action urls for each linkable model
+        $createUrls = QuickCreateRelationshipBehavior::getCreateUrlsForModels (
+            $modelsWhichSupportQuickCreate);
+
+        // get create relationship tooltips for each linkable model
+        $tooltips = QuickCreateRelationshipBehavior::getDialogTooltipsForModels (
+            $modelsWhichSupportQuickCreate, $this->modelName);
+
+        // get create relationship dialog titles for each linkable model
+        $dialogTitles = QuickCreateRelationshipBehavior::getDialogTitlesForModels (
+            $modelsWhichSupportQuickCreate);
+
+        $hasUpdatePermissions = $this->checkModuleUpdatePermissions ();
+
 		$this->render('inlineRelationships', array(
 			'model' => $this->model,
 			'modelName' => $this->model->myModelName,
 			'startHidden' => $this->startHidden,
-            'moduleName' => $this->moduleName
+            'moduleName' => $this->moduleName,
+            'linkableModelsOptions' => $linkableModelsOptions,
+            'dialogTitles' => $dialogTitles,
+            'tooltips' => $tooltips,
+            'createUrls' => $createUrls,
+            'defaultsByRelatedModelType' => $this->defaultsByRelatedModelType,
+            'modelsWhichSupportQuickCreate' => $modelsWhichSupportQuickCreate,
+            'hasUpdatePermissions' => $hasUpdatePermissions
 		));
 	}
+
 
 }
 

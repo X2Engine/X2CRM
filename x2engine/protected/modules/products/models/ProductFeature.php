@@ -11,7 +11,10 @@
  * @author demetrius
  */
 class ProductFeature extends X2Model {
-    	/**
+
+    public $supportsWorkflow = false;
+
+    /**
 	 * Returns the static model of the specified AR class.
 	 * @return Template the static model class
 	 */
@@ -131,9 +134,6 @@ class ProductFeature extends X2Model {
 				case 'boolean':
 					$criteria->compare($field->fieldName,$this->compareBoolean($this->$fieldName), true);
 					break;
-				case 'link':
-					$criteria->compare($field->fieldName,$this->compareLookup($field, $this->$fieldName), true);
-					break;
 				case 'assignment':
 					$criteria->compare($field->fieldName,$this->compareAssignment($this->$fieldName), true);
 					break;
@@ -146,7 +146,7 @@ class ProductFeature extends X2Model {
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
+				'pageSize'=>Profile::getResultsPerPage(),
 			),
 		));
 	}

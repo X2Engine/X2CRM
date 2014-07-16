@@ -35,6 +35,118 @@
 if(typeof x2 == 'undefined')
     x2 = {};
 
+
+x2.InlineEmailEditorManager = (function () {
+
+/**
+ * Manages interaction with inline email widget. Eventually, the functions in this file
+ * which are outside this class should be moved into this class.
+ */
+function InlineEmailEditorManager (argsDict) {
+    argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        translations: [],
+        saveDefaultTemplateUrl: '' // points to action which saves default email template
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+
+    this._settingsDialog = null;
+
+    this._init ();
+
+}
+
+/*
+Public static methods
+*/
+
+/*
+Private static methods
+*/
+
+/*
+Public instance methods
+*/
+
+/*
+Private instance methods
+*/
+
+/**
+ * Sets up the behavior of the settings menu 
+ */
+InlineEmailEditorManager.prototype._setUpEmailSettingsMenuBehavior = function () {
+    var that = this;
+
+    // open the save default template dialog
+    $('#email-settings-menu').children ().first ().unbind ('click.setUpEmailSettingsMenuBehavior').
+        bind ('click.setUpEmailSettingsMenuBehavior', function () {
+            that._settingsDialog.dialog ('open');
+        });
+};
+
+/**
+ * Saves the default template setting 
+ */
+InlineEmailEditorManager.prototype._saveDefaultTemplate = function (data) {
+    var that = this;
+    $.ajax ({
+        url: this.saveDefaultTemplateUrl,
+        type: 'GET',
+        dataType: 'json',
+        data: data,
+        success:function (data) {
+            if (data.success) {
+                that._settingsDialog.dialog ('close');
+            } else {
+                $('#email-settings-menu').find ('form').
+                    append (x2.forms.errorMessage (data.message));
+            }
+        }
+    });
+};
+
+/**
+ * Sets up the default template settings dialog
+ */
+InlineEmailEditorManager.prototype._setUpSettingsDialog = function () {
+    var that = this;
+    this._settingsDialog = $('#email-settings-dialog').dialog ({
+        title: this.translations['defaultTemplateDialogTitle'],
+        width: 500,
+        autoOpen: false,
+        buttons: [
+            {
+                text: that.translations['Cancel'],
+                click: function () {
+                    $(this).dialog ('close');
+                }
+            },
+            {
+                text: that.translations['Save'],
+                click: function () {
+                    that._saveDefaultTemplate (
+                        auxlib.formToJSON ($('#email-settings-dialog').find ('form')));
+                }
+            },
+        ],
+        close: function () {
+            x2.forms.clearForm ($('#email-settings-menu').find ('form'));
+        }
+
+    });
+};
+
+InlineEmailEditorManager.prototype._init = function () {
+    this._setUpSettingsDialog ();
+    this._setUpEmailSettingsMenuBehavior ();
+};
+
+return InlineEmailEditorManager;
+
+}) ();
+
+
 x2.inlineEmailEditor = {};
 x2.inlineEmailEditor.isSetUp = false;
 
@@ -46,19 +158,29 @@ $(function() {
     }
 
     /**
-     *    Initializes CKEditor in the email form, and the datetimepicker for the "send later" dropdown.
+     * Initializes CKEditor in the email form, and the datetimepicker for the "send later" dropdown.
      */
     $(document).on('setupInlineEmailEditor',function(){
 
         if(window.inlineEmailEditor)
             window.inlineEmailEditor.destroy(true);
         $('#email-message').val(x2.inlineEmailOriginalBody);
-        window.inlineEmailEditor = createCKEditor('email-message',{fullPage:true,height:'300px',tabIndex:5,insertableAttributes:x2.insertableAttributes}, function() {
-            if(typeof inlineEmailEditorCallback == 'function') {
-                inlineEmailEditorCallback(); // call a callback function after the inline email editor is created (if function exists)
-            }
-            x2.inlineEmailEditor.isSetUp = true;
-        });
+        window.inlineEmailEditor = createCKEditor(
+            'email-message',
+            {
+                toolbarStartupExpanded: !$('body').hasClass ('x2-mobile-layout'),
+                fullPage:true,
+                height:'300px',
+                tabIndex:5,
+                insertableAttributes:x2.insertableAttributes
+            }, function() {
+                if(typeof inlineEmailEditorCallback == 'function') {
+                    /* call a callback function after the inline email editor is created (if 
+                       function exists) */
+                    inlineEmailEditorCallback(); 
+                }
+                x2.inlineEmailEditor.isSetUp = true;
+            });
         
         setupEmailAttachments('email-attachments');
     });
@@ -114,7 +236,7 @@ $(function() {
  * a different model, i.e. a quote.
  */
 function toggleEmailForm(mode) {
-    if (!x2.inlineEmailEditor.isSetUp) return;
+    if (!x2.inlineEmailEditor.isSetUp && !x2.isAndroid) return;
     mode = (typeof mode == 'undefined') ? 'default' : mode;
     if(typeof x2.inlineQuotes != 'undefined') {
         if(typeof x2.inlineQuotes.inlineEmailConfig == 'undefined')
@@ -163,7 +285,7 @@ function setupInlineEmailForm() {
     
     // setupEmailAttachments();
     
-    initX2FileInput();
+    x2.forms.initX2FileInput();
     
     $(document).mouseup(function() {
         $('input.x2-file-input[type=file]').next().removeClass('active');
@@ -246,6 +368,9 @@ function handleInlineEmailActionResponse(data, textStatus, jqXHR) {
                 $('#email-message').val (data.attributes.message);    
             else 
                 window.inlineEmailEditor.setData(data.attributes.message);
+
+            if (typeof data.attributes.to !== 'undefined' && data.attributes.to !== '')
+                $('input[name="InlineEmail[to]"]').val(data.attributes.to);
             $('input[name="InlineEmail[subject]"]').val(data.attributes.subject);
         } else { // Email was sent successfully. Reset everything.
             
@@ -261,3 +386,5 @@ function handleInlineEmailActionResponse(data, textStatus, jqXHR) {
     }
     return false;
 }
+
+

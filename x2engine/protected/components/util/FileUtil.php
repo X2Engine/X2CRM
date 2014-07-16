@@ -46,9 +46,15 @@
  */
 class FileUtil {
 
+    const ERR_FTPOPER = 100;
+
     public static $_finfo;
 
     public static $alwaysCurl = false;
+
+    public static $fileOper = "php";
+    public static $ftpChroot = false;
+    private static $_ftpStream;
 
     /**
      * Copies a file or directory recursively.
@@ -74,7 +80,7 @@ class FileUtil {
         // a trailing slash, and is platform-agnostic:
         $target = rtrim(self::rpath($target), $ds);
         // Make the target into a relative path:
-        if($relTarget)
+        if($relTarget && self::$fileOper !== 'ftp')
             $target = self::relpath($target);
         // Safeguard against overwriting files:
         if(!$remote && is_dir($source) && !is_dir($target) && is_file($target))
@@ -90,14 +96,28 @@ class FileUtil {
         // If a directory is being copied and $contents is false: it's assumed
         //  that the target is a destination directory and not part of the tree
         //  to be copied.
-        $pathNodes = explode($ds, $target);
+        $pathNodes = explode($ds, self::ftpStripChroot($target));
         if($contents)
             array_pop($pathNodes);
         for($i = 0; $i <= count($pathNodes); $i++){
             $parent = implode($ds, array_slice($pathNodes, 0, $i));
-            if(!is_dir($parent) && $parent != ''){
-                if(!@mkdir($parent))
-                    throw new Exception("Failed to create directory $parent");
+            // If we are using an FTP chroot, prepend the $parent path with the chroot dir
+            // so that is_dir() is accurate.
+            if (self::$fileOper === 'ftp' && self::$ftpChroot !== false && !self::isRelative($parent))
+                $verifyDir = self::$ftpChroot.$parent;
+            else
+                $verifyDir = $parent;
+            if($parent != '' && !is_dir($verifyDir)){
+                switch (self::$fileOper) {
+                    case 'ftp':
+                        if (!@ftp_mkdir(self::$_ftpStream, self::ftpStripChroot($parent)))
+                            throw new Exception("Failed to create directory $parent", self::ERR_FTPOPER);
+                        break;
+                    case 'php':
+                    default:
+                        if(!@mkdir($parent))
+                            throw new Exception("Failed to create directory $parent");
+                }
             }
         }
 
@@ -136,7 +156,15 @@ class FileUtil {
                     $target = $target.$ds.array_pop($sourceNodes);
                 }
                 if(!is_dir($target)){
-                    mkdir($target);
+                    switch (self::$fileOper) {
+                        case 'ftp':
+                            if (!@ftp_mkdir(self::$_ftpStream, self::ftpStripChroot($target)))
+                                throw new Exception("Unable to create directory $target", self::ERR_FTPOPER);
+                            break;
+                        case 'php':
+                        default:
+                            mkdir($target);
+                    }
                 }
                 $return = true;
                 $files = scandir($source);
@@ -154,9 +182,34 @@ class FileUtil {
                 }
                 return $return;
             }else{
-                return @copy($source, $target) !== false;
+                switch (self::$fileOper) {
+                    case 'ftp':
+                        return @ftp_put(self::$_ftpStream, self::ftpStripChroot($target), $source, FTP_BINARY);
+                    case 'php':
+                    default:
+                        return @copy($source, $target) !== false;
+                }
             }
         }
+    }
+
+    /**
+     * Change to a given directory relative to the FTP stream's
+     * current working directory
+     * @param string $target
+     */
+    public static function cdftp($target) {
+        $target = self::ftpStripChroot($target);
+        $src = ftp_pwd(self::$_ftpStream);
+        if ($src === '/')
+            $cd = $target;
+        else {
+            $cd = self::relpath($target, $src . DIRECTORY_SEPARATOR);
+            if (empty($cd))
+                return;
+        }
+        if (!@ftp_chdir(self::$_ftpStream, $cd))
+            throw new Exception("Unable to change to directory '$cd' from '$src'", self::ERR_FTPOPER);
     }
 
     /**
@@ -182,6 +235,26 @@ class FileUtil {
         return $a;
     }
 
+
+    /**
+     * Create a lockfile using the appropriate functionality, depending
+     * on the selected file operation.
+     * @param String $lockfile
+     */
+    public static function createLockfile($lockfile) {
+        switch (self::$fileOper) {
+            case 'ftp':
+                $stream = fopen('data://text/plain,'.time(), 'r');
+                if (!@ftp_fput(self::$_ftpStream, self::ftpStripChroot($lockfile), $stream, FTP_BINARY))
+                    throw new Exception("Unable to create lockfile $lockfile", self::ERR_FTPOPER);
+                fclose($stream);
+                break;
+            case 'php':
+            default:
+                file_put_contents($lockfile, time());
+        }
+    }
+
     /**
      * Initializes and returns a CURL resource handle
      * @param string $url
@@ -201,6 +274,54 @@ class FileUtil {
     }
 
     /**
+     * Closes the current FTP stream and resets the file
+     * operation method to 'php'
+     */
+    public static function ftpClose() {
+        ftp_close(self::$_ftpStream);
+        self::$ftpChroot = false;
+        self::$fileOper = 'php';
+    }
+
+    /**
+     * Initializes the FTP functionality. This connects to
+     * the FTP server, logs in, and sets PASV mode.
+     * Optionally, you can specify the chroot directory and a directory to
+     * change to, e.g.: the web root or the test directory. This is recommended
+     * if working with relative paths.
+     * @param String $host The FTP server to connect to
+     * @param String $user The FTP user.
+     * @param String $pass Specified FTP user's password.
+     * @param String $dir Initial directory to change to, or null by default
+     * to disable.
+     * @param String $chroot The chosen chroot directory for the user.
+     */
+    public static function ftpInit($host, $user, $pass, $dir = null, $chroot = null) {
+        if (!self::$_ftpStream = ftp_connect($host))
+            throw new Exception("The updater is unable to connect to $host. Please check your FTP connection settings.", self::ERR_FTPOPER);
+        if (!@ftp_login(self::$_ftpStream, $user, $pass))
+            throw new Exception("Unable to login as user $user", self::ERR_FTPOPER);
+        ftp_pasv(self::$_ftpStream, true);
+        if ($chroot !== null)
+            self::$ftpChroot = $chroot;
+        if ($dir !== null)
+            self::cdftp($dir);
+        self::$fileOper = "ftp";
+    }
+
+    public static function ftpStripChroot($dir) {
+        if (self::$ftpChroot === false || self::isRelative($dir)) // Don't modify a relative path
+            return $dir;
+        else {
+            $replaced = str_replace(self::$ftpChroot, '', $dir);
+            // Add a leading slash if missing
+            if (!preg_match('/^(\/|\\\)/', $replaced))
+                    $replaced = DIRECTORY_SEPARATOR.$replaced;
+            return $replaced;
+        }
+    }
+
+    /**
      * Wrapper for file_get_contents that attempts to use CURL if allow_url_fopen is disabled.
      *
      * @param type $source
@@ -216,6 +337,17 @@ class FileUtil {
             // Use the usual copy method
             return @file_get_contents($source, $use_include_path, $context);
         }
+    }
+
+    /**
+     * Returns whether the given parameter is a relative path
+     * @param string $path
+     * @return boolean Whether the path is relative
+     */
+    public static function isRelative($path) {
+        // Paths that start with .. or a word character, but not a Windows
+        // drive specification (C:\).
+        return preg_match('/^\.\./', $path) || preg_match('/^\w[^:]/', $path);
     }
 
     /**
@@ -240,6 +372,24 @@ class FileUtil {
             }
         }
         return $p2;
+    }
+
+    /**
+     * Remove a lockfile using the appropriate functionality, depending
+     * on the selected file operation.
+     * @param String $lockfile
+     */
+    public static function removeLockfile($lockfile) {
+        switch (self::$fileOper) {
+            case 'ftp':
+                $lockfile = self::ftpStripChroot($lockfile);
+                if (!@ftp_delete(self::$_ftpStream, $lockfile))
+                    throw new Exception("Unable to delete the lockfile $lockfile", self::ERR_FTPOPER);
+                break;
+            case 'php':
+            default:
+                unlink($lockfile);
+        }
     }
 
     /**
@@ -336,9 +486,25 @@ class FileUtil {
             reset($objects);
             if(!$excluded)
                 if(!preg_match($special, $path))
-                    rmdir($path);
+                    switch (self::$fileOper) {
+                        case 'ftp':
+                            $path = self::ftpStripChroot($path);
+                            ftp_rmdir(self::$_ftpStream, $path);
+                            break;
+                        case 'php':
+                        default:
+                            rmdir($path);
+                    }
         } else
-            unlink($path);
+            switch (self::$fileOper) {
+                case 'ftp':
+                    $path = self::ftpStripChroot($path);
+                    ftp_delete(self::$_ftpStream, $path);
+                    break;
+                case 'php':
+                default:
+                    unlink($path);
+            }
         return $excluded;
     }
 
@@ -363,7 +529,7 @@ class FileUtil {
      * @return type
      */
     public static function formatSize($bytes, $places = 0){
-        $sz = 'BKMGTP';
+        $sz = array('', 'K', 'M', 'G', 'T', 'P');
         $factor = floor((strlen($bytes) - 1) / 3);
         return sprintf("%.{$places}f ", $bytes / pow(1024, $factor)).@$sz[$factor]."B";
     }

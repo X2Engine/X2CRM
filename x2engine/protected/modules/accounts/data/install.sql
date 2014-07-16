@@ -25,6 +25,21 @@ CREATE TABLE `x2_accounts` (
     lastUpdated        BIGINT,
     lastActivity       BIGINT,
     updatedBy          VARCHAR(50),
+
+    /* sales and marketing attributes */
+    leadtype       VARCHAR(250),
+    leadSource     VARCHAR(40),
+    leadstatus     VARCHAR(250),
+    leadDate       BIGINT,
+    leadscore      INT,
+    interest       VARCHAR(250),
+    dealvalue      DECIMAL(18,2),
+    closedate      BIGINT,
+    rating         TINYINT,
+    dealstatus     VARCHAR(250),
+    expectedCloseDate  BIGINT,
+
+
     UNIQUE(nameId),
     INDEX(parentAccount),
     INDEX(primaryContact)
@@ -33,11 +48,25 @@ CREATE TABLE `x2_accounts` (
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES
-('accounts', 'Accounts', 1, 1, 1, 1, 0, 0, 0);
+('accounts', 'Accounts', 1, 2, 1, 1, 0, 0, 0);
 /*&*/
 INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)
 VALUES
+
+/* sales and marketing fields */
+('Accounts', 'leadtype',       'Lead Type',        0, 0, 'dropdown',   0, 0, '102',        0, 0, '',       0, 1, NULL),
+('Accounts', 'leadSource',     'Lead Source',      0, 0, 'dropdown',   0, 0, '103',        0, 0, '',       0, 1, NULL),
+('Accounts', 'leadstatus',     'Lead Status',      0, 0, 'dropdown',   0, 0, '104',        0, 0, '',       0, 1, NULL),
+('Accounts', 'leadDate',       'Lead Date',        0, 0, 'date',       0, 0, NULL,         0, 0, '',       0, 1, NULL),
+('Accounts', 'leadscore',      'Lead Score',       0, 0, 'rating',     0, 0, NULL,         0, 0, '',       0, 1, NULL),
+('Accounts', 'interest',       'Interest',         0, 0, 'varchar',    0, 0, NULL,         0, 0, '',       0, 1, NULL),
+('Accounts', 'dealvalue',      'Deal Value',       0, 0, 'currency',   0, 0, NULL,         0, 0, '',       0, 1, NULL),
+('Accounts', 'closedate',      'Close Date',       0, 0, 'date',       0, 0, NULL,         0, 0, '',       0, 1, NULL),
+('Accounts', 'rating',         'Confidence',       0, 0, 'rating',     0, 0, NULL,         0, 0, '',       0, 1, NULL),
+('Accounts', 'dealstatus',     'Deal Status',      0, 0, 'dropdown',   0, 0, '105',        0, 0, '',       0, 1, NULL),
+('Accounts', 'expectedCloseDate', 'Expected Close Date', 0, 0, 'date',       0, 0, NULL,       0, 0, '',       0, 1, NULL),
+
 ('Accounts', 'name',           'Name',            0, 0, 'varchar',    1, 0, NULL,       1, 0, 'High',   0, 1, NULL),
 ('Accounts', 'nameId',         'NameID',          0, 0, 'varchar',    0, 1, NULL,       1, 0, 'High',   0, 1, 'FIX'),
 ('Accounts', 'id',             'ID',              0, 0, 'varchar',    0, 1, NULL,       0, 0, '',       1, 1, 'PRI'),
@@ -61,3 +90,4 @@ VALUES
 ('Accounts', 'lastUpdated',    'Last Updated',    0, 0, 'dateTime',   0, 1, NULL,       0, 0, '',       0, 1, NULL),
 ('Accounts', 'lastActivity',   'Last Activity',   0, 0, 'dateTime',   0, 1, NULL,       0, 0, '',       0, 1, NULL),
 ('Accounts', 'updatedBy',      'Updated By',      0, 0, 'varchar',    0, 1, NULL,       0, 0, '',       0, 1, NULL);
+

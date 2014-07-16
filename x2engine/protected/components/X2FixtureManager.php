@@ -45,6 +45,9 @@ class X2FixtureManager extends CDbFixtureManager {
 	 * Override of {@link CDbFixtureManager}'s resetTable 
 	 * 
 	 * Permits array-style definition of init scripts much like fixture files
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
 	 */
 	public function resetTable($tableName) {
 		$initFile = $this->basePath . DIRECTORY_SEPARATOR . $tableName . $this->initScriptSuffix;
@@ -66,6 +69,9 @@ class X2FixtureManager extends CDbFixtureManager {
      * Modified to enable fixture file suffixing. A fixture file suffix can be specified by 
      *  setting a value in the fixtures array to an array with two properties:
      *      array (<tableName|modelClass>, <file suffix>)
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
      */
     public function loadFixture($tableName,/* x2modstart */ $suffix=''/* x2modend */)
     {
@@ -110,6 +116,9 @@ class X2FixtureManager extends CDbFixtureManager {
      * Modified to enable fixture file suffixing. A fixture file suffix can be specified by 
      *  setting a value in the fixtures array to an array with two properties:
      *      array (<tableName|modelClass>, <file suffix>)
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
      */
     public function load($fixtures)
     {

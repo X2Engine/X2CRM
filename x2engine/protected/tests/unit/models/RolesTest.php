@@ -45,15 +45,13 @@ class RolesTest extends X2DbTestCase {
         return array(
             'user' => 'User',
             'role' => 'Roles',
-            'roleToUser' => 'RoleToUser'
+            'roleToUser' => 'RoleToUser',
+            'groupToUser' => 'GroupToUser'
         );
     }
 
-    /**
-     *
-     */
     public function testGetUserTimeout() {
-        Yii::app()->cache->flush();
+        $this->assertTrue (Yii::app()->cache->flush());
         $defaultTimeout = 60;
         Yii::app()->settings->timeout = $defaultTimeout;
         // admin's timeout should be the big one based on role
@@ -69,6 +67,39 @@ class RolesTest extends X2DbTestCase {
         // fixtures have been modified otherwise
         RoleToUser::model()->deleteAllByAttributes(array('userId'=>$this->user('testUser3')->id));
         $this->assertEquals($defaultTimeout,Roles::getUserTimeout($this->user('testUser3')->id));
+    }
+
+    /**
+     * Ensure that upon deletion of roleToUser records, roles update immediately
+     * (do not use an outdated cache entry)
+     */
+    public function testGetUserRoles () {
+        $userId = $this->user['testUser']['id'];
+        $userRoles = Roles::getUserRoles ($userId);
+
+        // Assert that user has roles
+        $this->assertTrue (sizeof ($userRoles) > 0);
+        // Specifically, these (user groups only):
+        $this->assertEquals(array(
+            1,2
+        ),$userRoles);
+
+        // Test group-inherited user roles; fixture entry "testUser5" is a
+        // member of a group:
+        $userRoles = Roles::getUserRoles($this->user['testUser5']['id']);
+        $this->assertEquals(array(3),$userRoles);
+
+        // Iterate over and remove records explicitly to raise the afterDelete event
+        $records = RoleToUser::model()->findAllByAttributes(array(
+            'userId'=>$userId,
+            'type'=>'user'));
+        foreach ($records as $record) {
+            $record->delete();
+        }
+        $userRoles = Roles::getUserRoles ($userId);
+
+        // assert that user has no roles
+        $this->assertTrue (sizeof ($userRoles) === 0);
     }
 }
 

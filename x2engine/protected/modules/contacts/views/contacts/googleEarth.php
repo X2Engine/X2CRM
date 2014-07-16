@@ -34,12 +34,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 $menuItems = array(
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
-    array('label'=>Yii::t('contacts','Import Contacts'),'url'=>array('importExcel')),
-	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('exportContacts')),
+    array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
+    array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
+    array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
+    array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
+    array('label'=>Yii::t('contacts','Import Contacts'),'url'=>array('/admin/importModels', 'model'=>'Contacts')),
+    array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('/admin/exportModels', 'model'=>'Contacts')),
     array('label'=>Yii::t('contacts','Contact Map')),
     array('label'=>Yii::t('contacts','Saved Maps'),'url'=>array('savedMaps')),
 );
@@ -276,7 +276,17 @@ $('#save-button').click(function(e){
 ");
 ?>
 
-
+<div class='page-title icon contacts'>
+    <h2><?php echo Yii::t('contacts','Contact Map');?></h2>
+    <?php 
+    echo CHtml::link(
+        Yii::t('contacts','Save Map'),'#',
+        array(
+            'class'=>'x2-button right',
+            'id'=>'save-button',
+        ));
+    ?>
+</div>
 <div id="controls" class="form">
 
 <?php
@@ -292,8 +302,8 @@ $('#save-button').click(function(e){
 
     ?>
     <div class="row">
+        <h2 style='margin-top: 5px'><?php echo Yii::t('contacts','Filters');?></h2>
         <div class="cell">
-            <h2><?php echo Yii::t('contacts','Map Filters');?></h2>
             <?php if(!empty($contactId)) { ?>
                 <a href="#" id="hide-marker-link" style="text-decoration:none;"><?php echo Yii::t('contacts','Clear Marker');?></a>
             <?php } ?>
@@ -311,9 +321,6 @@ $('#save-button').click(function(e){
 
         <div class="cell">
             <?php echo CHtml::submitButton(Yii::t('charts', 'Go'), array('class' => 'x2-button', 'style' => 'margin-top:13px;')); ?>
-        </div>
-        <div class="cell" style="float:right;">
-            <?php echo CHtml::link(Yii::t('contacts','Save Map'),'#',array('class'=>'x2-button','id'=>'save-button','style'=>'margin-top:12.5px;')); ?>
         </div>
     </div>
     <div class="row">

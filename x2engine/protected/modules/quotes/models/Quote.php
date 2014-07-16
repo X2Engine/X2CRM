@@ -49,6 +49,8 @@ Yii::import('application.models.X2Model');
  */
 class Quote extends X2Model {
 
+    public $supportsWorkflow = false;
+
 	/**
 	 * Holds the set of line items
 	 * @var array
@@ -118,26 +120,6 @@ class Quote extends X2Model {
 	}
 
 	/**
-	 * Magic getter for {@link contact}
-	 *
-	 * In earlier versions, there was a function that enabled associating more than
-	 * one contact with a quote (that didn't work) by storing contact IDs in a
-	 * space delineated list, {@link associatedContacts}. In case there are any
-	 * records that reflect this, this method fetches the first; the way it
-	 * retrieves the contact is meant to be backwards-compatible.
-	 */
-	public function getContact(){
-		if(!isset($this->_contact)){
-			$this->_contact = null;
-            $contactNameId = Fields::nameAndId ($this->associatedContacts);
-            $contactId = $contactNameId[1];
-			if(!empty($contactId))
-				$this->_contact = Contacts::model()->findByPk($contactId);
-		}
-		return $this->_contact;
-	}
-
-	/**
 	 * Magic getter for {@link productLines}
 	 */
 	public function getProductLines(){
@@ -155,15 +137,16 @@ class Quote extends X2Model {
 	}
 
 	/**
-	 * @return array relational rules.
-	 */
-	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array_merge(parent::relations(), array(
-					'products' => array(self::HAS_MANY, 'QuoteProduct', 'quoteId', 'order' => 'lineNumber ASC'),
-				));
-	}
+     * @return array relational rules.
+     */
+    public function relations(){
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array_merge(parent::relations(), array(
+                    'products' => array(self::HAS_MANY, 'QuoteProduct', 'quoteId', 'order' => 'lineNumber ASC'),
+                    'contact' => array(self::BELONGS_TO, 'Contacts', array('associatedContacts' => 'nameId'))
+                ));
+    }
 
 	/**
 	 * @return string the associated database table name
@@ -280,7 +263,10 @@ class Quote extends X2Model {
 		$curSym = Yii::app()->locale->getCurrencySymbol($defaultCurrency);
 		foreach($this->_lineItems as $lineItem) {
 			$lineItem->quoteId = $this->id;
-			if(empty($lineItem->currency))
+                        $product = X2Model::model('Products')->findByAttributes(array('name'=>$lineItem->name));
+                        if (isset($product))
+                            $lineItem->productId = $product->id;
+            if(empty($lineItem->currency))
 				$lineItem->currency = $defaultCurrency;
 			if($lineItem->isPercentAdjustment) {
 				$lineItem->adjustment = Fields::strToNumeric(
@@ -324,6 +310,9 @@ class Quote extends X2Model {
 		if(isset($this->_lineItems)){
 			foreach($this->_lineItems as $item){
 				$item->quoteId = $this->id;
+                                $product = X2Model::model('Products')->findByAttributes(array('name'=>$item->name));
+                                if (isset($product))
+                                    $item->productId = $product->id;
 				$item->save();
 			}
 		}
@@ -615,18 +604,18 @@ class Quote extends X2Model {
 	}
 
 	public function search($pageSize=null, $uniqueId=null) {
-	    $pageSize = $pageSize === null ? ProfileChild::getResultsPerPage() : $pageSize;
+	    $pageSize = $pageSize === null ? Profile::getResultsPerPage() : $pageSize;
 		$criteria = new CDbCriteria;
 		$parameters = array('limit' => ceil($pageSize));
 		$criteria->scopes = array('findAll' => array($parameters));
-		$criteria->addCondition("t.type!='invoice' OR t.type IS NULL");
+		$criteria->addCondition("(t.type!='invoice' and type!='dummyQuote') OR t.type IS NULL");
 
 		return $this->searchBase($criteria, $pageSize, $uniqueId);
 	}
 
 	public function searchInvoice() {
 		$criteria = new CDbCriteria;
-		$parameters = array('limit' => ceil(ProfileChild::getResultsPerPage()));
+		$parameters = array('limit' => ceil(Profile::getResultsPerPage()));
 		$criteria->scopes = array('findAll' => array($parameters));
 		$criteria->addCondition("t.type='invoice'");
 

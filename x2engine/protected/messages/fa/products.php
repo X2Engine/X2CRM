@@ -21,4 +21,7 @@ return array (
 'Unit Price'=>'قیمت تکی',
 
 // Misc Text
+'Import Products'=>'واردات محصولات',
+'Export Products'=>'صادرات محصولات',
+'NameId'=>'NameId',
 );

@@ -146,4 +146,13 @@ return array (
 'Log Time'=>'Σύνδεση Ώρα',
 'Time started'=>'Ώρα ξεκίνησε',
 'Time ended'=>'Χρόνος που έληξε',
+'Action Timer'=>'Δράση Timer',
+'View Email'=>'View Email',
+'Import Actions'=>'Εισαγωγή Δράσεις',
+'Export Actions'=>'Εξαγωγή Δράσεις',
+'Action timers'=>'Χρονόμετρα Δράση',
+'Time Started'=>'Ώρα Ξεκίνησε',
+'Time Ended'=>'Χρόνος που έληξε',
+'Association is required for actions of this type.'=>'Σύλλογος απαιτούνται για τις δράσεις αυτού του τύπου.',
+'Time Spent'=>'Χρόνος που ήταν',
 );

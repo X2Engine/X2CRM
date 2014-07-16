@@ -50,7 +50,7 @@ abstract class BaseTagTrigger extends X2FlowTrigger {
                     'name'=>'modelClass',
                     'label'=>Yii::t('studio','Record Type'),
                     'type'=>'dropdown',
-                    'options'=>X2Model::getModelTypes(true)
+                    'options'=>X2Flow::getModelTypes(true)
                 ),
 				array(
                     'name'=>'tags',

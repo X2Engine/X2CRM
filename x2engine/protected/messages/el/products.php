@@ -21,4 +21,7 @@ return array (
 'Unit Price'=>'Κόστος Υπηρεσίας',
 
 // Misc Text
+'Import Products'=>'Εισαγωγή Προϊόντα',
+'Export Products'=>'Εξαγωγή Προϊόντα',
+'NameId'=>'NameId',
 );

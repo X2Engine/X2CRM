@@ -31,4 +31,7 @@ return array (
 'Unable to create custom module directory.'=>'אין אפשרות ליצור ספריית מודול מותאמת אישית.',
 'Unable to create config file for custom module.'=>'אין אפשרות ליצור קובץ config עבור מודול מותאם אישית.',
 'Unable to create table for custom module.'=>'לא ניתן ליצור שולחן למודול מותאם אישית.',
+'Import {X}'=>'היבוא {X}',
+'Export {X}'=>'היצוא {X}',
+'{modelName} Attributes'=>'{modelName} תכונות',
 );

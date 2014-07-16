@@ -34,6 +34,27 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
+Yii::app()->clientScript->registerCss('filterControlsCss',"
+
+#filter-controls > .portlet-content {
+    padding: 5px 0px !important;
+}
+
+#filter-controls > .portlet-content > .x2-button-group {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+#sidebar-full-controls-button-container {
+    text-align:center;
+}
+#sidebar-full-controls-button-container > .toggle-filters-link {
+    margin-bottom: 4px;
+}
+
+");
+
 if(isset($_SESSION['filters'])){
     $filters=$_SESSION['filters'];
 }else{
@@ -61,23 +82,23 @@ foreach($eventTypeList as $key=>$value){
         $eventTypes[$value['type']]=Events::parseType($value['type']);
 }
 $profile=Yii::app()->params->profile;
-$this->beginWidget('zii.widgets.CPortlet',
+$this->beginWidget('LeftWidget',
     array(
-        'title'=>Yii::t('app', 'Filter Controls'),
+        'widgetLabel'=>Yii::t('app', 'Filter Controls'),
+        'widgetName' => 'FilterControls',
         'id'=>'filter-controls',
     )
 );
 echo '<div class="x2-button-group">';
-echo '<a href="#" id="simple-filters" class="x2-button'.
+echo '<a href="#" class="simple-filters x2-button'.
     ($profile->fullFeedControls?"":" disabled-link").'" style="width:42px">'.
     Yii::t('app','Simple').'</a>';
-echo '<a href="#" id="full-filters" class="x2-button x2-last-child'.
+echo '<a href="#" class="full-filters x2-button x2-last-child'.
     ($profile->fullFeedControls?" disabled-link":"").'" style="width:42px">'.
     Yii::t('app','Full').'</a>';
 echo "</div>\n";
-$this->endWidget();
 $filterList=json_decode($profile->feedFilters,true);
-echo "<div id='full-controls'".($profile->fullFeedControls?"":"style='display:none;'").
+echo "<div id='sidebar-full-controls'".($profile->fullFeedControls?"":"style='display:none;'").
     ">";
 $visFilters=$filters['visibility'];
 $this->beginWidget('zii.widgets.CPortlet',
@@ -285,7 +306,7 @@ foreach($socialSubtypes as $key=>$value) {
         array(
             'title'=>$title,
             'class'=>$class,
-            'id'=>'filter-default'
+            'id'=>'sidebar-filter-default'
         )
     );
     $filterDisplayName = $value; // capitalize filter name for label
@@ -295,23 +316,26 @@ foreach($socialSubtypes as $key=>$value) {
 echo "</ul>\n";
 echo "<br />";
 
-echo "<div id='full-controls-button-container'>";
+echo "<div id='sidebar-full-controls-button-container'>";
 echo CHtml::link(
     Yii::t('app','Uncheck Filters'),'#',
-    array('id'=>'toggle-filters-link','class'=>'x2-button'));
+    array('class'=>'toggle-filters-link x2-button'));
 echo CHtml::link(
     Yii::t('app','Apply Filters'),'#',
-    array('class'=>'x2-button','id'=>'apply-feed-filters'));
+    array('class'=>'x2-button', 'id'=>'sidebar-apply-feed-filters'));
 echo "</div>";
+echo "<br>";
+
 $this->endWidget();
 echo "</div>";
 
-echo "<div id='simple-controls'".
+echo "<div id='sidebar-simple-controls'".
     ($profile->fullFeedControls?"style='display:none;'":"").">";
 
-$this->beginWidget('zii.widgets.CPortlet',
+$this->beginWidget('LeftWidget',
     array(
-        'title'=>Yii::t('app', 'Event Types'),
+        'widgetLabel'=>Yii::t('app', 'Event Types'),
+        'widgetName' => 'SimpleFilterControlEventTypes',
         'id'=>'type-filter',
     )
 );
@@ -333,9 +357,10 @@ foreach($eventTypes as $type=>$name) {
     )."<br>";
 }
 $this->endWidget();
+$this->endWidget();
 echo "</div>";
 Yii::app()->clientScript->registerScript('feed-filters','
-    $("#apply-feed-filters").click(function(e){
+    $("#sidebar-apply-feed-filters").click(function(e){
         e.preventDefault();
         var visibility=new Array();
         $.each($(".visibility.filter-checkbox"),function(){
@@ -365,7 +390,7 @@ Yii::app()->clientScript->registerScript('feed-filters','
             }
         });
 
-        var defaultCheckbox=$("#filter-default");
+        var defaultCheckbox=$("#sidebar-filter-default");
         var defaultFilters=false;
         if($(defaultCheckbox).attr("checked")=="checked"){
             defaultFilters=true;
@@ -377,27 +402,9 @@ Yii::app()->clientScript->registerScript('feed-filters','
         window.location= pieces2[0] + "?filters=true&visibility=" + visibility + 
             "&users=" + users+"&types=" + eventTypes +"&subtypes=" + subtypes + 
             "&default=" + defaultFilters;
+        return false;
     });
-    $("#full-filters").click(function(e){
-        e.preventDefault();
-        $("#simple-controls").hide();
-        $("#full-controls").show();
-        $.ajax({
-            url:"toggleFeedControls"
-        });
-        $(this).addClass("disabled-link");
-        $(this).prev().removeClass("disabled-link");
-    });
-    $("#simple-filters").click(function(e){
-        e.preventDefault();
-        $("#full-controls").hide();
-        $("#simple-controls").show();
-        $.ajax({
-            url:"toggleFeedControls"
-        });
-        $(this).addClass("disabled-link");
-        $(this).next().removeClass("disabled-link");
-    });
+    
     $(".filter-control-button").click(function(e){
         e.preventDefault();
         var link=this;
@@ -436,16 +443,17 @@ Yii::app()->clientScript->registerScript('feed-filters','
             data:{filter:$(this).attr("title")},
             success:function(data){
                 if(data==1){
-                    $(link).html(
-                        "<img src=\'"+yii.themeBaseUrl+"/images/icons/Collapse_Widget'.
-                            '.png\' />");
+                    $(link).html("<img src=\'"+yii.themeBaseUrl+
+                        "/images/icons/Collapse_Widget.png\' />");
                     $(link).parents(".portlet-decoration").next().slideDown();
                 }else if(data==0){
-                    $(link).html("<img src=\'"+yii.themeBaseUrl+"/images/icons/'.
-                        'Expand_Widget.png\' />");
+                    $(link).html("<img src=\'"+yii.themeBaseUrl+
+                        "/images/icons/Expand_Widget.png\' />");
                     $(link).parents(".portlet-decoration").next().slideUp();
                 }
             }
         });
     });
+
+
 ');

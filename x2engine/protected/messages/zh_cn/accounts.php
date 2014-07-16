@@ -34,4 +34,7 @@ return array (
 'Campaign Form'=>'运动形式',
 'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'这种形式可以让你产生一个运动，在下面的报告中显示的帐户与邮件相关的联系。选择“主要联系人”设置为帐户的主要联系人的电子邮件联系。选择“全部”，每个帐户上的所有相关联系人发送电子邮件。',
 'Primary Contact'=>'主要联系人',
+'Import Accounts'=>'汇入帐户',
+'Export Accounts'=>'出口占',
+'Bug Report Attributes'=>'错误报告属性',
 );

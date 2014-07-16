@@ -39,4 +39,8 @@ return array (
 'copy'=>'コピー',
 'Saved at'=>'に保存',
 'Document'=>'文書',
+'Leaving this field blank will preserve its default behavior.'=>'このフィールドを空白のままにすると、デフォルトの動作を維持します。',
+'Create Quote Template'=>'引用テンプレートの作成',
+'Import Docs'=>'インポートドキュメント',
+'Export Docs'=>'輸出ドキュメント',
 );

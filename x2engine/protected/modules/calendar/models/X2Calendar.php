@@ -34,7 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 /**
- * @package application.modules.calendar.models 
+ * @package application.modules.calendar.models
+ *
+ * @deprecated
+ * @todo Find out if this class is still actually used for anything. Delete it
+ *  and anything else associated with it (i.e. the database table) if not.
  */
 class X2Calendar extends CActiveRecord
 {
@@ -238,7 +242,7 @@ class X2Calendar extends CActiveRecord
 
 	public function search() {
 		$criteria=new CDbCriteria;
-		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+		$parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
 		if(!Yii::app()->user->checkAccess('CalendarAdminAccess')) // if not admin
 			$criteria->condition = "createdBy='". Yii::app()->user->name . "'"; // user can only edit shared calendar they have created
 		$criteria->scopes=array('findAll'=>array($parameters));
@@ -254,7 +258,7 @@ class X2Calendar extends CActiveRecord
 				'defaultOrder'=>'createDate ASC',
 			),
 			'pagination'=>array(
-				'pageSize'=>ProfileChild::getResultsPerPage(),
+				'pageSize'=>Profile::getResultsPerPage(),
 			),
 			'criteria'=>$criteria,
 		));

@@ -34,13 +34,17 @@
  *****************************************************************************************/
 
 
+.x2-question-mark {
+    cursor: default;
+}
+
+.x2-hide {
+    display: none;
+}
+
 body {
     font-size: 10pt;
 }
-
-
-
-
 
 /*
 Title bar for sections other than the main section (e.g. widgets)
@@ -49,10 +53,61 @@ Title bar for sections other than the main section (e.g. widgets)
     background:#ddd;
 }
 
+
+/***********************************************************************
+* x2-select
+***********************************************************************/
+
+.x2-select:focus {
+    color: black;
+}
+
+/* hide arrow on webkit browsers */
+.x2-select,
+.x2-minimal-select {
+    height: 20px;
+    display: inline-block !important;
+    /*margin-left: 5px !important;*/
+    margin-right: 10px !important;
+    float: none !important;
+    padding: 0 8px;
+    /*padding: 0 21px 0 7px;*/
+    outline: none;
+    color: #333;
+    text-decoration: none;
+    border-radius:             3px;
+    -moz-border-radius:         3px;
+    -webkit-border-radius:     3px;
+    -o-border-radius:         3px;
+}
+
+.x2-select {
+    border: 1px solid #BEBDBD;
+    background: #e9e9e9;
+}
+
+.x2-minimal-select {
+    background: none;
+    border: 1px solid white;
+}
+
+.page-title .x2-minimal-select {
+    border: 1px solid #cecece !important;
+}
+
+
+.x2-minimal-select:hover,
+.x2-minimal-select:focus {
+    border: 1px solid #BEBDBD;
+    background: rgb(228,228,228);
+}
+
+
 /*
 Select element which doesn't show border or background color difference until hover/click
 */
-.x2-minimal-select {
+/*.x2-minimal-select {
+    outline: none;
     background: none;
     border-radius:             3px !important;
     -moz-border-radius:         3px !important;
@@ -83,20 +138,19 @@ Select element which doesn't show border or background color difference until ho
 .submenu-title-bar .x2-minimal-select:focus {
     border: 1px solid #b4b4b4 !important;
     background-color:rgb(209, 209, 209);
-}
+}*/
 
+.x2-select option,
 .x2-minimal-select option {
     background-color:white;
 }
-
- 
-
 
 /* 
 CSS "button" links to be used instead of actual buttons 
 */
 .x2-button,
 .x2-minimal-button,
+.button-group-pager li,
 .ui-dialog .ui-dialog-buttonpane button { /* , a.search-button */
     display: inline-block;
     vertical-align: top;
@@ -117,17 +171,6 @@ CSS "button" links to be used instead of actual buttons
     -o-border-radius:         3px;
 }
 
-.x2-select {
-    padding: 0 8px;
-    border: 1px solid #BEBDBD;
-    background: #e9e9e9;
-    color: #333;
-    text-decoration: none;
-    border-radius:             3px;
-    -moz-border-radius:         3px;
-    -webkit-border-radius:     3px;
-    -o-border-radius:         3px;
-}
 
 .page-title .x2-button {
 
@@ -152,12 +195,10 @@ CSS "button" links to be used instead of actual buttons
     cursor: default;
 }
 
-.x2-select option {
-    background: white;
-}
-
 .x2-button:hover, .x2-minimal-button:hover, input.hover,
+.button-group-pager li:hover,
 .x2-select:hover,
+.x2-minimal-select:hover,
 .ui-dialog .ui-dialog-buttonpane button:hover {
     color: #000;
     background: rgb(228,228,228);
@@ -165,6 +206,8 @@ CSS "button" links to be used instead of actual buttons
 
 
 .x2-minimal-button:active, .x2-minimal-button.clicked, .x2-button:active, .x2-button.clicked, 
+.button-group-pager li.selected,
+.button-group-pager li:active,
 input.active, .ui-dialog .ui-dialog-buttonpane button:active {
     color: black;
     border-color: #A7A7A7;
@@ -172,11 +215,6 @@ input.active, .ui-dialog .ui-dialog-buttonpane button:active {
     -moz-box-shadow:     inset 0 1px 1px 0 #999;
     -webkit-box-shadow:     inset 0 1px 1px 0 #999;
     box-shadow:             inset 0 1px 1px 0 #999;
-}
-
-.x2-select:focus {
-    color: black;
-    border-color: #BEBDBD;
 }
 
 .x2-button.clicked:hover,
@@ -205,6 +243,8 @@ input.active, .ui-dialog .ui-dialog-buttonpane button:active {
     box-shadow:             inset 0 1px 1px 0 #4A7500 !important;
 }
 
+
+.ui-dialog .ui-dialog-buttonpane button.urgent,
 a.x2-button.urgent, input.x2-button.urgent, button.x2-button.urgent, 
 a.x2-minimal-button.urgent, input.x2-minimal-button.urgent, button.x2-minimal-button.urgent { 
     background-color: #E8382A;
@@ -212,11 +252,13 @@ a.x2-minimal-button.urgent, input.x2-minimal-button.urgent, button.x2-minimal-bu
     text-shadow: rgba(0,0,0,0.5) 0 1px 3px;
     color: #fff;
 }
+.ui-dialog .ui-dialog-buttonpane button.urgent:hover,
 a.x2-button.urgent:hover, input.x2-button.urgent:hover, button.x2-button.urgent:hover,
 a.x2-minimal-button.urgent:hover, input.x2-minimal-button.urgent:hover, button.x2-minimal-button.urgent:hover {
     background-color: #CF3225;
 }
 
+.ui-dialog .ui-dialog-buttonpane button.urgent:active,
 a.x2-button.urgent:active, input.x2-button.urgent:active, button.x2-button.urgent:active,
 a.x2-minimal-button.urgent:active, input.x2-minimal-button.urgent:active, button.x2-minimal-button.urgent:active {
     background-color: #A8291E;
@@ -274,6 +316,37 @@ a.x2-button span.add-button {
 }
 
 
+.x2-button.x2-blue {
+	border:1px solid #3173CC;
+	background: #5B97E7; /* Old browsers */
+}
+
+.x2-button.x2-blue:hover {
+	background: #488fe2; /* Old browsers */
+}
+
+.x2-button.x2-blue:active {
+	background: #3d70b4; /* Old browsers */
+}
+
+.x2-button.x2-green {
+    border: 1px solid rgb(69, 177, 59);
+    background:rgb(94, 197, 85);
+}
+
+.x2-button.x2-green:hover {
+    background: rgb(102, 204, 93);
+}
+
+.x2-button.x2-green:active {
+    background: rgb(86, 170, 79);
+}
+
+.x2-button.x2-silver {
+    color: rgb(66,66,66) !important;
+}
+
+
 
 /*
 small x2-button
@@ -300,26 +373,15 @@ small x2-button
     background: #bdbdbd;
 }
 
-.page-title .x2-minimal-select {
-    border: 1px solid #cecece !important;
-}
-
-.page-title .x2-minimal-select:hover {
-    background: #dfdfdf;
-    border: 1px solid #B8B8B8 !important;
-}
-
-.page-title .x2-minimal-select:focus {
-    background: #dfdfdf;
-    border: 1px solid #B8B8B8 !important;
-}
 
 .page-title .x2-button {
-    /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #CCCCCC 100%);
+    /*
+    background: -moz-linear-gradient(top,    #f0f0f0 0%, #CCCCCC 100%);
     background: -webkit-linear-gradient(top,    #f0f0f0 0%, #CCCCCC 100%);
     background: -o-linear-gradient(top,        #f0f0f0 0%, #CCCCCC 100%);
     background: -ms-linear-gradient(top,        #f0f0f0 0%, #CCCCCC 100%);
-    background: linear-gradient(to bottom, #f0f0f0 0%, #CCCCCC 100%);*/
+    background: linear-gradient(to bottom, #f0f0f0 0%, #CCCCCC 100%);
+    */
 }
 .page-title .x2-button:hover, .page-title input.hover {
     /*color: #000;
@@ -355,6 +417,41 @@ small x2-button
 
 
 
+/***********************************************************************
+* pager 
+***********************************************************************/
+
+.button-group-pager li {
+    padding: 0;
+}
+
+.button-group-pager li.first,
+.button-group-pager li.last {
+    display: none;
+}
+
+.button-group-pager li.previous,
+.button-group-pager li.page,
+.button-group-pager li.next {
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    margin-left: -2px;
+    margin-left: -4px;
+}
+
+.button-group-pager li a{
+    text-decoration: none;
+    color: rgb(119, 119, 119);
+    padding: 0px 8px 0px 8px;
+    display: block;
+}
+
+.button-group-pager li.hidden a {
+    color: rgb(174, 174, 174)
+}
+
+
 
 
 /**
@@ -363,12 +460,15 @@ small x2-button
 .x2-button-group {
     margin: 5px;
 }
+.button-group-pager li.selected, 
 .x2-button-group .x2-button.disabled {
     color: #bbbbbb;
 }
+.button-group-pager li, 
 .x2-button-group a.x2-button {
     cursor: pointer;
 }
+.button-group-pager li, 
 .x2-button-group .x2-button {
     vertical-align: middle;
     margin: -3px 0 0 0;
@@ -386,6 +486,7 @@ small x2-button
     -webkit-border-radius:     3px !important;
     -o-border-radius:         3px !important;
 }
+.button-group-pager .previous,
 .x2-button-group .x2-button:first-child {
     border-radius:             3px 0 0 3px;
     -moz-border-radius:         3px 0 0 3px;
@@ -393,6 +494,7 @@ small x2-button
     -o-border-radius:         3px 0 0 3px;
 }
 
+.button-group-pager .next, 
 .x2-button-group .x2-button.x2-last-child,
 .x2-button-group .x2-button:last-child {
     border-right-width: 1px;
@@ -474,85 +576,6 @@ small x2-button
 }*/
 
 
-/***********************************************************************
-UI Multiselect
-***********************************************************************/
-
-.ui-multiselect-menu div.ui-widget-header.ui-corner-all.ui-multiselect-header.ui-helper-clearfix {
-    background:none; 
-    border:none;
-}
-
-
-.ui-multiselect-menu .ui-state-hover {
-    background: rgb(228,228,228);
-    border: 1px solid white;
-}
-
-
-button.ui-multiselect {
-    border: 1px solid white;
-    background: none;
-}
-
-button.ui-multiselect:focus {
-    border: 1px solid white;
-}
-
-.ui-multiselect {
-    font-size: 1em;
-}
-
-.ui-multiselect.ui-helper-clearfix.ui-widget {
-    padding: 0 0 0 0;
-}
-
-
-.ui-multiselect .ui-widget-header {
-    margin: -3px -3px 0 -3px !important;
-    font-weight: bold !important;
-    background: #444 !important;
-    color: #fff !important;
-    font-family: Arial, Helvetica, sans-serif !important;
-    border: 1px solid rgb(168,168,168);
-    background: #eee !important;
-    /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
-    background: -webkit-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
-    background: -o-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
-    background: -ms-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
-    background: linear-gradient(to bottom,    #f0f0f0 0%, #dddddd 100%) !important;*/
-    color: black !important;
-    border-radius:             4px 4px 0 0;
-    -moz-border-radius:         4px 4px 0 0;
-    -webkit-border-radius:     4px 4px 0 0;
-    -o-border-radius:         4px 4px 0 0;
-    /*text-shadow: 0 1px 0 #fff !important;*/
-    -webkit-appearance: none !important;
-    /*-moz-box-shadow:     inset 0 1px 0 0 #fff !important;
-    -webkit-box-shadow:     inset 0 1px 0 0 #fff !important;
-    box-shadow:             inset 0 1px 0 0 #fff !important;*/
-}
-
-
-.ui-multiselect .ui-element {
-    background: #eee !important;
-    border: none !important;
-    /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
-    background: -webkit-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
-    background: -o-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
-    background: -ms-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
-    background: linear-gradient(to bottom,    #f0f0f0 0%, #dddddd 100%) !important;*/
-}
-
-.ui-multiselect.ui-helper-clearfix.ui-widget {
-    border: 1px solid rgb(168,168,168);
-}
-
-.form .ui-multiselect .ui-helper-clearfix.ui-widget-header {
-    margin-right: -5px !important;
-}
-
-
 
 
 
@@ -568,12 +591,13 @@ button.ui-multiselect:focus {
     margin: 0 0 0 0;
     padding: 0;
 }
-.ui-tabs .ui-tabs-nav li {
+.ui-tabs .ui-tabs-nav > li {
     /* top: 0px !important; */
     background: #f8f8f8;
     font-size: 10pt;
     margin: 0 2px 0 0;
     border: 1px solid #ccc;
+    border-bottom: none;
     font-family: Arial, Helvetica, sans-serif;
     /* font-weight: bold; */
 
@@ -581,16 +605,13 @@ button.ui-multiselect:focus {
     -moz-border-radius:         4px 4px 0 0;
     -webkit-border-radius:     4px 4px 0 0;
     -o-border-radius:         4px 4px 0 0;
-
-    -moz-box-shadow: inset 0 1px 0 0 #fff;
-    -webkit-box-shadow: inset 0 1px 0 0 #fff;
-    box-shadow: inset 0 1px 0 0 #fff;
 }
 
-.history .ui-tabs .ui-tabs-nav li a {
+.history .ui-tabs .ui-tabs-nav > li a {
+    outline: 0;
     padding: 4px 7px;
 }
-.history .ui-tabs .ui-tabs-nav li a b {
+.history .ui-tabs .ui-tabs-nav > li a b {
     font-size: 20px;
     line-height: 12px;
     margin-top: -2px;
@@ -599,23 +620,24 @@ button.ui-multiselect:focus {
     vertical-align: middle;
     color: #579100;
 }
-.history .ui-tabs .ui-tabs-nav li:first-child {
+.history .ui-tabs .ui-tabs-nav > li:first-child {
     margin-left: 6px;
 }
-.ui-tabs .ui-tabs-nav li.ui-state-active {
-    border-color: #999;
+.ui-tabs .ui-tabs-nav > li.ui-state-active {
+    border-color: #D1D1D1;
     border-bottom-color: #eee;
     background:#eee;
 }
-.ui-tabs .ui-tabs-nav li.ui-state-hover {
+.ui-tabs .ui-tabs-nav > li.ui-state-hover {
     background: #fff;
 }
-.ui-tabs .ui-tabs-nav li.ui-state-active.ui-state-hover {
+
+.ui-tabs .ui-tabs-nav > li.ui-state-active.ui-state-hover {
     background: #eee;
 }
-.ui-tabs .form {
+#publisher .form {
     background: #eee;
-    border-color: #999;
+    border-color: #D1D1D1;
     border-radius:             4px;
     -moz-border-radius:         4px;
     -webkit-border-radius:     4px;
@@ -738,9 +760,9 @@ div.x2-sortlist li:first-child .handle {
 }
 div.x2-sortlist li .handle {
     width: 28px;
-    margin: 0 -35px -100px 0;
+    margin: 0 -35px -2000px 0;
     height: 0;
-    padding: 5px 0 100px 5px;
+    padding: 5px 0 2000px 5px;
     float: left;
 
     border: 1px solid #333;
@@ -987,6 +1009,7 @@ button.ui-button.ui-dialog-titlebar-close {
 
 .ui-dialog {
     border: 1px solid #9b9b9b !important;
+    z-index: 900000;
 }
 
 .ui-dialog {
@@ -1020,6 +1043,10 @@ timepicker
 
 .ui-timepicker-div dl:first-child {
     margin-bottom: 32px !important;
+}
+
+#ui-datepicker-div {
+    z-index: 100;
 }
 
 .ui-datepicker .ui-datepicker-header.ui-widget-header.ui-helper-clearfix.ui-corner-all {
@@ -1062,7 +1089,7 @@ Yii pager
 
 .yiiPager a:hover,
 .yiiPager .selected a {
-    text-decoration: underline !important;
+    /*text-decoration: underline !important;*/
 }
 
 .yiiPager a {
@@ -1257,7 +1284,8 @@ Ckeditor
 	-o-border-radius:		4px;
 }
 
-.popup-dropdown-menu ul {
+.popup-dropdown-menu ul,
+ul.popup-dropdown-menu {
     background: rgb(233, 233, 233);
     list-style: none;
     padding: 5px 0 5px 0;
@@ -1355,3 +1383,479 @@ close button
 .x2-enlargeable-image-modal input:hover {
     background-color: rgb(44, 44, 44);
 }
+
+/***********************************************************************
+* custom checkboxes 
+***********************************************************************/
+
+
+/*input[type='checkbox']:checked::after {
+    content: ' ';
+    width: 11px;
+    height: 11px;
+    display: block;
+    background-position-y: 11px;
+    border: 1px solid rgb(196, 196, 196);
+    background-image: url('../images/icons/Complete.png');
+    text-shadow: none;
+    box-shadow: none;
+    background-size: 15px;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 2px;
+}
+input[type='checkbox']::after {
+    content: ' ';
+    width: 11px;
+    height: 11px;
+    display: block;
+    border: 1px solid rgb(196, 196, 196);
+    background: white;
+    text-shadow: none;
+    box-shadow: none;
+    border-radius: 2px;
+}*/
+
+
+
+/***********************************************************************
+* VCR Controls
+***********************************************************************/
+
+div.vcrPager {
+    display: block;
+    float: right;
+    margin-left: 15px;
+    line-height: 1.1em;
+}
+
+div.vcrPager div.summary {
+    display: block;
+    float: left;
+    margin-top: 5px;
+}
+div.vcrPager div.summary a {
+    display: block;
+    font-size: 10px;
+    text-decoration: none;
+    margin-bottom: -3px;
+
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -ms-text-overflow: ellipsis;
+}
+div.vcrPager div.summary a:hover {
+    text-decoration: underline;
+}
+div.page-title div.vcrPager a.x2-button {
+    margin: 5px 0 0 0px;
+    padding: 0 12px;
+}
+
+.vcrPager .hidden a {
+    display: none;
+}
+.vcrPager .x2-button.disabled {
+    color: #bbbbbb;
+}
+.vcrPager .x2-button.disabled:hover {
+    background-color: #eee;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#ddd));
+    background: -moz-linear-gradient(top,  #f0f0f0,  #ddd);
+}
+
+
+
+.mobile-dropdown-button {
+    cursor: pointer;
+}
+
+
+
+
+/***********************************************************************
+UI Multiselect
+***********************************************************************/
+
+.ui-multiselect-menu div.ui-widget-header.ui-corner-all.ui-multiselect-header.ui-helper-clearfix {
+    background:none; 
+    border:none;
+}
+
+.ui-multiselect-menu .ui-state-hover {
+    background: rgb(228,228,228);
+    border: 1px solid white;
+}
+
+
+button.ui-multiselect {
+    border: 1px solid white;
+    background: none;
+}
+
+button.ui-multiselect:focus {
+    border: 1px solid white;
+}
+
+.ui-multiselect {
+    font-size: 1em;
+}
+
+.ui-multiselect.ui-helper-clearfix.ui-widget {
+    padding: 0 0 0 0;
+}
+
+
+.ui-multiselect .ui-widget-header {
+    margin: -3px -3px 0 -3px !important;
+    font-weight: bold !important;
+    background: #444 !important;
+    color: #fff !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    border: 1px solid rgb(168,168,168);
+    background: #eee !important;
+    /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
+    background: -webkit-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
+    background: -o-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
+    background: -ms-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
+    background: linear-gradient(to bottom,    #f0f0f0 0%, #dddddd 100%) !important;*/
+    color: black !important;
+    border-radius:             4px 4px 0 0;
+    -moz-border-radius:         4px 4px 0 0;
+    -webkit-border-radius:     4px 4px 0 0;
+    -o-border-radius:         4px 4px 0 0;
+    /*text-shadow: 0 1px 0 #fff !important;*/
+    -webkit-appearance: none !important;
+    /*-moz-box-shadow:     inset 0 1px 0 0 #fff !important;
+    -webkit-box-shadow:     inset 0 1px 0 0 #fff !important;
+    box-shadow:             inset 0 1px 0 0 #fff !important;*/
+}
+
+
+.ui-multiselect .ui-element {
+    background: #eee !important;
+    border: none !important;
+    /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
+    background: -webkit-linear-gradient(top,    #f0f0f0 0%, #dddddd 100%) !important;
+    background: -o-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
+    background: -ms-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
+    background: linear-gradient(to bottom,    #f0f0f0 0%, #dddddd 100%) !important;*/
+}
+
+.ui-multiselect.ui-helper-clearfix.ui-widget {
+    border: 1px solid rgb(168,168,168);
+}
+
+.ui-multiselect  .ui-helper-clearfix {
+    margin: 0;
+    border: none !important;
+    border-radius: 0 !important;
+    border-left: 1px solid gray !important;
+}
+
+.ui-multiselect .available.connected-list {
+}
+
+.ui-multiselect {
+    max-width: 555px;
+    width: auto !important;
+    border: none !important;
+}
+
+.ui-multiselect .selected,
+.ui-multiselect .available {
+    /*width: 50%;*/
+}
+
+.ui-multiselect.ui-helper-clearfix {
+    min-width: 352px;
+}
+
+.ui-multiselect div.selected {
+    border-left: 1px solid rgb(218, 218, 218) !important;
+    border-top: 1px solid rgb(218, 218, 218) !important;
+    border-bottom: 1px solid rgb(218, 218, 218) !important;
+    /*border-radius:             4px 0 0 4px;
+    -moz-border-radius:         4px 0 0 4px;
+    -webkit-border-radius:     4px 0 0 4px;
+    -o-border-radius:         4px 0 0 4px;*/
+}
+.ui-multiselect div.available {
+    border: 1px solid rgb(218, 218, 218) !important;
+    /*border-radius:             0px 4px 4px 0;
+    -moz-border-radius:         0px 4px 4px 0;
+    -webkit-border-radius:     0px 4px 4px 0;
+    -o-border-radius:         0px 4px 4px 0;*/
+}
+
+.ui-multiselect .ui-widget-header {
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+}
+
+
+.x2-multiselect-dropdown + .ui-multiselect {
+    border: 1px solid rgb(204, 204, 204);
+}
+
+.x2-multiselect-dropdown-menu {
+    width: auto !important;
+}
+
+
+
+
+
+.x2-wide-slider {
+    width: 80%;
+    max-width: 340px;
+}
+
+
+.x2-wide-input,
+textarea.x2-wide-input,
+div.form textarea.x2-wide-input {
+    max-width: 260px;
+    width: 90%
+}
+.x2-extra-wide-input,
+textarea.x2-extra-wide-input,
+div.form textarea.x2-extra-wide-input {
+    max-width: 360px;
+    width: 90%
+}
+
+.x2-xxwide-input,
+textarea.x2-xxwide-input,
+div.form textarea.x2-xxwide-input {
+    max-width: 600px;
+    width: 90%;
+}
+
+/***********************************************************************
+* tags 
+***********************************************************************/
+
+
+/* tags dragged from tag cloud */
+.x2-tag.x2-link.ui-draggable-dragging {
+    z-index: 1500;
+}
+
+/* placeholder text */
+.x2-tag-list .tag-container-placeholder {
+    color: rgb(117,117,117);
+}
+
+
+/***********************************************************************
+* FileUtil 
+***********************************************************************/
+
+.x2-file-error {
+    display: inline-block;
+    color: red;
+    margin-left: 2px;
+}
+
+
+/***********************************************************************
+* X2Select 
+***********************************************************************/
+
+.x2-custom-select + select {
+    margin: 3px 4px 5px 0px;
+    padding: 2px 4px;
+}
+
+.x2-custom-select {
+    width: 157px;
+    height: 16px;
+    border-radius: 4px 4px 4px 4px;
+    -moz-border-radius: 4px 4px 4px 4px;
+    -webkit-border-radius: 4px 4px 4px 4px;
+    -o-border-radius: 4px 4px 4px 4px;
+
+    background: rgb(230, 230, 230);
+    border: 1px solid rgb(214, 214, 214);
+    cursor: default;
+    margin: 3px 4px 5px 0px;
+    padding: 2px 15px 2px 4px;
+    display: inline-block;
+}
+
+.x2-custom-select-menu {
+    width: 157px;
+    overflow-y: auto;
+    max-height: 200px;
+    position: absolute;
+    background: white;
+    display: block;
+    z-index: 200;
+    border: 1px solid lightgrey;
+    clear: both;
+    list-style: none;
+    box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.1) ;
+    -moz-box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.1);
+    -o-box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.1);
+    margin-left: 4px;
+    margin-bottom: 0;
+    margin-right: 0;
+}
+
+.x2-custom-select-menu > li {
+    margin-left: -20px;
+    padding: 4px 0 4px 11px;
+    cursor: default;
+}
+
+.x2-custom-select-menu > li:hover {
+    background: rgb(240,240,240);
+}
+
+.x2-custom-select-triangle {
+    position: relative;
+    opacity: 0.7;
+    top: 4px;
+    display: inline-block;
+    background: url(../images/icons/Collapse_Widget.png);
+    margin-left: -18px !important;
+    margin-right: 18px !important;
+    background-size: 10px auto;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 1px solid transparent;
+    margin: 3px 4px 5px 0px;
+    padding: 2px 4px;
+}
+
+.x2-custom-select-empty + .x2-custom-select-triangle {
+    top: -7px;
+}
+
+
+.x2-custom-select:hover + .x2-custom-select-triangle {
+    opacity: 0.9;
+}
+
+
+
+/***********************************************************************
+* center widgets 
+***********************************************************************/
+
+.center-widget-minimize-button,
+.center-widget-maximize-button,
+.center-widget-close-button
+{
+    opacity: 0.7;
+}
+
+.center-widget-minimize-button:hover,
+.center-widget-maximize-button:hover,
+.center-widget-close-button:hover
+{
+    opacity: 0.8;
+}
+
+/***********************************************************************
+* action buttons
+***********************************************************************/
+
+.uncomplete-button,
+.edit-button,
+.delete-button,
+.update-button > img,
+.complete-button > img {
+    opacity: 0.75;
+}
+
+.uncomplete-button:hover,
+.edit-button:hover,
+.delete-button:hover,
+.update-button > img:hover,
+.complete-button > img:hover {
+    opacity: 0.85;
+}
+
+
+/***********************************************************************
+* action timer 
+***********************************************************************/
+#actionTimer {
+    text-align: center;
+}
+#actionTimer a {
+}
+
+#actionTimerControl-form .x2-minimal-select {
+    width: 120px !important;    
+}
+
+#actionTimerControl-summary {
+    display: block;
+    border-top: 1px solid #CCCCCC;
+    margin-top: 5px;
+}
+#actionTimerControl-total {
+    font-family: Consolas, monaco, monospace;
+}
+#actionTimerDisplay {
+    font-size: 15px;
+    font-family: Consolas, monaco, monospace;
+    display:block;
+    margin-bottom: 3px;
+    border-bottom: 1px solid #CCCCCC;
+
+}
+
+#actionTimerLog-form textarea {
+    width: 100%;
+    max-width: 100%;
+    height: 100px;
+}
+
+#actionTimerLog-form input[type="submit"] {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+
+/***********************************************************************
+* color picker 
+***********************************************************************/
+
+.sp-replacer { 
+    padding: 0 !important;
+}
+
+
+/***********************************************************************
+* settings button 
+***********************************************************************/
+
+.x2-settings-button {
+    cursor: pointer;
+    opacity: 0.7;
+}
+.x2-settings-button:hover {
+    opacity: 1;
+}
+
+/***********************************************************************
+* qtips 
+***********************************************************************/
+/*.x2-qtip .qtip-titlebar {
+    background-color: rgb(240,240,240) !important;
+}
+.x2-qtip,
+.x2-qtip .qtip-content {
+    border-color: rgb(223,223,223) !important;
+    background-color: white !important;
+}*/

@@ -693,6 +693,10 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         FileUtil::rrmdir($newDirPath);
     }
 
+    public function testApplyFilesFtp() {
+        $this->useFtp("testApplyFiles");
+    }
+
     public function testCheckFiles() {
         $ube = $this->instantiateUBe();
         $this->prereq($ube,'checksums with actual files');
@@ -931,6 +935,8 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 
     }
 
+    
+
     public function testCheckUpdates() {
         $ube = $this->instantiateUBe();
         $version = $ube->checkUpdates(true);
@@ -950,6 +956,10 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $this->assertFileExists($ube->updatePackage);
     }
 
+    public function testDownloadPackageFtp() {
+        $this->useFtp('testDownloadPackage');
+    }
+
     public function testDownloadSourceFile(){
         $ube = $this->instantiateUBe();
         $file = "protected/components/views/requirements.php";
@@ -959,6 +969,10 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $ube->downloadSourceFile($file, $ube->getSourceFileRoute('opensource','none'));
         $this->assertFileExists($tmpdir.DIRECTORY_SEPARATOR.$file);
         FileUtil::rrmdir($tmpdir);
+    }
+
+    public function testDownloadSourceFileFtp() {
+        $this->useFtp('testDownloadSourceFile');
     }
 
     /**
@@ -973,6 +987,10 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             $this->assertEnactChanges();
         else
             $this->markTestSkipped('Skipping; TEST_LEVEL not set to 2 (this is a very slow test).');
+    }
+
+    public function testEnactChangesFtp() {
+        $this->useFtp('testEnactChanges');
     }
 
     // enactDatabaseChanges is protected and called in enactChanges, so it's
@@ -1024,7 +1042,11 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                         'mb_regex_encoding' => true,
                         'getcwd' => true,
                         'chmod' => true,
-                        'proc_open' => true
+                        'proc_open' => true,
+                        'php_sapi_name' => true,
+                        'hash_algos' => true,
+                        'mt_rand' => true,
+                        'md5' => true,
                     ),
                     'classes' =>
                     array(
@@ -1107,13 +1129,19 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             ),
             'customFiles' =>
             array(
-                0 => 'protected/config/web.php',
-                1 => 'protected/config/console.php',
             ),
             'allClear' => false,
         );
 
-        $this->assertEquals($expected,$ube->compatibilityStatus);
+        $compatStatus = $ube->compatibilityStatus;
+        $this->assertArrayHasKey('req', $compatStatus);
+        $this->assertArrayHasKey('requirements', $compatStatus['req']);
+        $this->assertArrayHasKey('canInstall', $compatStatus['req']);
+        $this->assertArrayHasKey('conflictingFields', $compatStatus);
+        $this->assertEquals($expected['conflictingFields'],$compatStatus['conflictingFields']);
+        if($compatStatus['req']['canInstall']){
+            $this->assertEquals($expected,$compatStatus);
+        }
         
     }
 
@@ -1351,7 +1379,8 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $script = 'protected/tests/data/updatemigration/touch.php';
         copy($ube->webRoot.DIRECTORY_SEPARATOR.FileUtil::rpath($script),$ube->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
         ob_start();
-        $ube->runMigrationScripts(array($script),&$ran);
+        $scripts = array($script);
+        $ube->runMigrationScripts($scripts,$ran);
         ob_end_clean();
         $this->assertEquals(1,count($ran));
         $this->assertFileExists($testfile = $ube->webRoot.DIRECTORY_SEPARATOR.'testfile');

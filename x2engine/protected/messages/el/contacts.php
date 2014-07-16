@@ -180,4 +180,5 @@ return array (
 'Saved Searches'=>'Αποθηκευμένες αναζητήσεις',
 'Clicking this button will pull any relevant '=>'Κάνοντας κλικ σε αυτό το κουμπί, θα τραβήξει κάθε σχετική',
 'Drag tags here from the tag cloud widget or click to '=>'Σύρετε ετικέτες εδώ από το widget σύννεφο tag ή κάντε κλικ στο',
+'Export {model}'=>'Εξαγωγή {model}',
 );

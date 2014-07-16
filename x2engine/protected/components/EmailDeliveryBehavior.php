@@ -48,6 +48,8 @@
  */
 class EmailDeliveryBehavior extends CBehavior {
 
+    const DEBUG_EMAIL = 0;
+
     /**
      * Stores the email credentials, if an account has been defined and is used.
      * @var mixed
@@ -100,7 +102,7 @@ class EmailDeliveryBehavior extends CBehavior {
     public static function addressHeaderToArray($header) {
         // First, tokenize all pieces of the header to avoid splitting inside of
         // recipient names:
-        preg_match_all('/"(?:\\\\.|[^\\\\"])*"|\S+/', $header, $matches);
+        preg_match_all('/"(?:\\\\.|[^\\\\"])*"|[^,\s]+/', $header, $matches);
         $tokenCount = 0;
         $values = array();
         foreach($matches[0] as $matchedPiece) {
@@ -121,10 +123,15 @@ class EmailDeliveryBehavior extends CBehavior {
             $matches = array();
             $emailValidator = new CEmailValidator;
 
-            if($emailValidator->validateValue($recipient)) // if it's just a simple email, we're done!
+            // if it's just a simple email, we're done!
+            if($emailValidator->validateValue($recipient)) {
                 $headerArray[] = array('', $recipient);
-            elseif(strlen($recipient) < 255 && preg_match('/^"?([^"]*)"?\s*<(.+)>$/i', $recipient, $matches)){ // otherwise, it must be of the variety <email@example.com> "Bob Slydel"
-                if(count($matches) == 3 && $emailValidator->validateValue($matches[2])){  // (with or without quotes)
+            } elseif(strlen($recipient) < 255 && 
+                preg_match('/^"?([^"]*)"?\s*<(.+)>$/i', $recipient, $matches)){ 
+                // otherwise, it must be of the variety <email@example.com> "Bob Slydel"
+
+                // (with or without quotes)
+                if(count($matches) == 3 && $emailValidator->validateValue($matches[2])){  
                     $headerArray[] = array($matches[1], $matches[2]);
                 }else{
                     throw new CException(Yii::t('app', 'Invalid email address list.'));
@@ -178,12 +185,14 @@ class EmailDeliveryBehavior extends CBehavior {
      * Any special authentication and security should take place in here.
      *
      * @param array $addresses This array must contain "to", "cc" and/or "bcc"
-     *  keys, and the values for each of these should be 
+     *  keys, and values must be arrays of recipients. Each recipient is expressed
+     *  as a 2-element array with the first element being the name, and the second
+     *  the email address.
      * @throws Exception
      * @return array
      */
     public function deliverEmail($addresses, $subject, $message, $attachments = array()){
-        if(YII_DEBUG) {
+        if(YII_DEBUG && self::DEBUG_EMAIL) {
             // Fake a successful send
             AuxLib::debugLog('Faking an email delivery to address(es): '.var_export($addresses,1));
             return $this->status = $this->getDebugStatus();
@@ -281,6 +290,10 @@ class EmailDeliveryBehavior extends CBehavior {
         )));
     }
 
+    /**
+     * Getter for {@link from}
+     * @return array
+     */
     public function getFrom(){
         if(!isset($this->_from)) {
 			if($this->credentials)
@@ -288,11 +301,21 @@ class EmailDeliveryBehavior extends CBehavior {
 					'name' => $this->credentials->auth->senderName,
 					'address' => $this->credentials->auth->email
 				);
-			else
-				$this->_from = array(
-					'name' => $this->userProfile->fullName,
-					'address' => $this->userProfile->emailAddress
-				);
+			else {
+                if(empty($this->userProfile)){
+                    // The application:
+                    $this->_from = array(
+                        'name' => Yii::app()->settings->appName,
+                        'address' => Yii::app()->settings->emailFromAddr
+                    );
+                }else{
+                    // Current acting user:
+                    $this->_from = array(
+                        'name' => $this->userProfile->fullName,
+                        'address' => $this->userProfile->emailAddress
+                    );
+                }
+            }
 		}
         return $this->_from;
     }

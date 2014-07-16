@@ -64,4 +64,6 @@ return array (
 'Are you sure you want to delete this quote?'=>'당신은 당신이 견적을 삭제 하시겠습니까?',
 'This quote is locked. Are you sure you want to update this quote?'=>'이 견적은 잠겨 있습니다. 당신은 당신이 견적을 업데이트 하시겠습니까?',
 'This quote is locked.'=>'이 견적은 잠겨 있습니다.',
+'Import Quotes'=>'수입 지수',
+'Export Quotes'=>'수출 지수',
 );

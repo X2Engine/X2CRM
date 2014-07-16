@@ -76,14 +76,41 @@ class InlineEmailForm extends X2Widget {
 
     public $skipEvent = 0;
 
+    /**
+     * @var string the association type of the email templates
+     */
+    private $associationType = null;
+
     public function init(){
 
         // Prepare the model for initially displayed input:
         $this->model = new InlineEmail();
-        if(isset($this->targetModel))
+        if(isset($this->targetModel)) {
             $this->model->targetModel = $this->targetModel;
+        }
+        $this->associationType = X2Model::getModelName (Yii::app()->controller->module->name);
+
         // Bring in attributes set in the configuration:
         $this->model->attributes = $this->attributes;
+
+        if (empty ($this->template)) {
+            // check for a default template
+            $defaultTemplateId = Yii::app()->params->profile->getDefaultEmailTemplate (
+                Yii::app()->controller->module->name);
+
+            // if there's a default set for this module
+            if ($defaultTemplateId !== null) {
+                $defaultTemplateDoc = Docs::model()->findByPk ($defaultTemplateId);
+
+                // ensure that template is still a valid default
+                if ($defaultTemplateDoc && 
+                    $defaultTemplateDoc->associationType === $this->associationType) {
+
+                    $this->template = $defaultTemplateId;
+                }
+            }
+        }
+
         if(empty($this->template)){
             if(empty($this->model->message))
                 $this->model->message = InlineEmail::emptyBody();
@@ -91,24 +118,56 @@ class InlineEmailForm extends X2Widget {
         }else{
             // Fill in the body with a template:
             $this->model->scenario = 'template';
+            if (!empty ($this->template))
+                $this->model->template = $this->template;
             $this->model->prepareBody();
         }
 
-        // If insertable attributes aren't set, use the inline email model's getInsertableAttributes() method to generate them.
+        // If insertable attributes aren't set, use the inline email model's 
+        // getInsertableAttributes() method to generate them.
         if((bool) $this->model->targetModel && !isset($this->insertableAttributes)){
             $this->insertableAttributes = $this->model->insertableAttributes;
         }
 
+        Yii::app()->clientScript->registerScript('InlineEmailFormJS',"
+        $(function () {
+            x2.inlineEmailEditorManager = new x2.InlineEmailEditorManager ({
+                translations: ".CJSON::encode (array (
+                    'defaultTemplateDialogTitle' => 
+                        Yii::t('app', 'Set a Default Email Template'),
+                    'Cancel' => Yii::t('app', 'Cancel'),
+                    'Save' => Yii::t('app', 'Save'),
+                )).",
+                saveDefaultTemplateUrl: '".
+                    Yii::app()->controller->createUrl (
+                        '/profile/profile/ajaxSaveDefaultEmailTemplate')."'
+            });
+        });
+        ", CClientScript::POS_END);
+
         // Load resources:
-        Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
-        Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
         Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
-        Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/inlineEmailForm.js', CClientScript::POS_BEGIN);
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/inlineEmailForm.js', CClientScript::POS_END);
         if(!empty($this->insertableAttributes)){
-            Yii::app()->clientScript->registerScript('setInsertableAttributes', 'x2.insertableAttributes = '.CJSON::encode($this->insertableAttributes).';', CClientScript::POS_HEAD);
+            Yii::app()->clientScript->registerScript('setInsertableAttributes', 
+            'x2.insertableAttributes = '.CJSON::encode($this->insertableAttributes).';', 
+            CClientScript::POS_HEAD);
         }
-        Yii::app()->clientScript->registerScript('storeOriginalInlineEmailMessage', 'x2.inlineEmailOriginalBody = $("#email-message").val();', CClientScript::POS_READY); //'.CJSON::encode($this->model->message).';',CClientScript::POS_READY);
-        Yii::app()->clientScript->registerScript('toggleEmailForm', ($this->startHidden ? "window.hideInlineEmail = true;\n" : "window.hideInlineEmail = false;\n"), CClientScript::POS_HEAD);
+        Yii::app()->clientScript->registerScript('storeOriginalInlineEmailMessage', 
+            'x2.inlineEmailOriginalBody = $("#email-message").val();', 
+        CClientScript::POS_READY); 
+            //'.CJSON::encode($this->model->message).';',CClientScript::POS_READY);
+
+        Yii::app()->clientScript->registerScript('toggleEmailForm', 
+            ($this->startHidden ? 
+            "window.hideInlineEmail = true;\n" : 
+            "window.hideInlineEmail = false;\n"
+        ), CClientScript::POS_HEAD);
 
         parent::init();
     }
@@ -117,6 +176,7 @@ class InlineEmailForm extends X2Widget {
         // First get user credentials:
         $this->render('application.components.views.inlineEmailForm', array(
             'type' => $this->templateType,
+            'associationType' => $this->associationType,
             'specialFields' => $this->specialFields,
         ));
     }

@@ -54,21 +54,34 @@ class LeadRoutingBehavior extends CBehavior {
 		$type = $admin->leadDistribution;
 		if ($type == "") {
 			return "Anyone";
-		} elseif ($type == "evenDistro") {
+		} elseif ($type == "evenDistro") { // legacy lead routing option
 			return $this->evenDistro();
 		} elseif ($type == "trueRoundRobin") {
 			return $this->roundRobin();
 		} elseif ($type == "customRoundRobin") {
             return $this->customRoundRobin ($contact);
 		} elseif ($type=='singleUser') {
-            $user = User::model()->findByPk($admin->rrId);
-            if(isset($user)){
-                return $user->username;
-            }else{
-                return "Anyone";
-            }
+            return $this->singleUser ();
         }
 	}
+
+    public function singleUser () {
+		$admin = &Yii::app()->settings;
+        $user = User::model()->findByPk($admin->rrId);
+        if(isset($user)){
+            $username = $user->username;
+
+            if (($admin->onlineOnly && !in_array ($username, Session::getOnlineUsers())) ||
+                !in_array ($username, Profile::getUsernamesOfAvailableUsers ())) {
+
+                return 'Anyone';
+            } else {
+                return $username;
+            }
+        }else{
+            return "Anyone";
+        }
+    }
 
 	/**
 	 * Picks the next asignee for custom round robin lead routing rule.
@@ -101,6 +114,9 @@ class LeadRoutingBehavior extends CBehavior {
     }
 
 	/**
+     * Legacy lead routing option. This can no longer be selected option from the lead routing
+     * admin page.
+     *
 	 * Picks the next asignee such that the resulting routing distribution 
 	 * would be even.
 	 * 
@@ -125,6 +141,8 @@ class LeadRoutingBehavior extends CBehavior {
 		}else {
 			$users = $usernames;
 		}
+
+        $users = array_values (array_intersect (Profile::getUsernamesOfAvailableUsers (), $users));
 
 		$numbers = array();
 		foreach ($users as $user) {
@@ -159,7 +177,8 @@ class LeadRoutingBehavior extends CBehavior {
 		$users = X2Model::model('User')->findAll();
 		foreach ($users as $userRecord) {
 			//exclude admin from candidates
-			if ($userRecord->username != 'admin' && $userRecord->username!='api') $usernames[] = $userRecord->username;
+			if ($userRecord->username != 'admin' && $userRecord->username!='api') 
+                $usernames[] = $userRecord->username;
 		}
 		if ($online == 1) {
 			$userList = array();
@@ -170,6 +189,10 @@ class LeadRoutingBehavior extends CBehavior {
 		}else {
 			$userList = $usernames;
 		}
+
+        $userList = array_values (
+            array_intersect (Profile::getUsernamesOfAvailableUsers (), $userList));
+
 		$rrId = $this->getRoundRobin();
         if(count($userList)>0){
             $i = $rrId % count($userList);
@@ -198,6 +221,9 @@ class LeadRoutingBehavior extends CBehavior {
 		$admin->rrId = $admin->rrId + 1;
 		$admin->save();
 	}
+
+    const WITHIN_GROUPS = 0;
+    const BETWEEN_GROUPS = 1;
 
 	/**
 	 * Obtains lead routing rules.
@@ -254,25 +280,32 @@ class LeadRoutingBehavior extends CBehavior {
 					$groups = explode(", ", $groups);
 					$users = array();
 					foreach ($groups as $group) {
-						if ($rule->groupType == 0) {
+						if ($rule->groupType == self::WITHIN_GROUPS) {
 							$links = GroupToUser::model()->findAllByAttributes(
                                 array('groupId' => $group));
 							foreach ($links as $link) {
 								$usernames[] = User::model()->findByPk($link->userId)->username;
 							}
-						} else {
+						} else { // $rule->groupType == self::BETWEEN_GROUPS
 							$users[] = $group;
 						}
 					}
-					if ($online == 1 && $rule->groupType == 0) {
+					if ($online == 1 && $rule->groupType == self::WITHIN_GROUPS) {
 						foreach ($usernames as $user) {
 							if (in_array($user, $sessions))
 								$users[] = $user;
 						}
-					}elseif($rule->groupType == 0){
+					}elseif($rule->groupType == self::WITHIN_GROUPS){
                         $users=$usernames;
                     }
 				}
+
+                if ($rule->groupType == self::WITHIN_GROUPS) {
+                    $users = array_values (
+                        array_intersect (
+                            Profile::model ()->getUsernamesOfAvailableUsers (), $users));
+                }
+
 				$users[] = $rule->rrId;
 				$rule->rrId++;
 				$rule->save();

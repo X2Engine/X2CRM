@@ -54,25 +54,26 @@ div.x2-layout {
 
 /* #main-column.half-width {border-right:1px solid #aaa;margin-right:-1px;} */
 /* .history.half-width {box-sizing:border-box;border-left:1px solid #aaa;} */
-
-div.half-width {
-	width:65%;
-	float:left;
+#main-column {
+    margin-top:5px;
 }
-#main-column {margin-top:5px;}
-#main-column > div, #main-column > form {margin:0 5px 5px 5px;}
-.history {padding:0 5px;}
-.history.half-width {padding:0;}
-.history.half-width > div, .history.half-width > form {margin:0 5px 5px 0;}
+#main-column > div, #main-column > form {
+    margin:0 0px 5px 0px;
+}
+.history {
+    padding:0 5px;
+}
+#main-column > div.page-title-fixed-outer {
+    margin:0 0 5px 0;/* padding-right:7px; */
+}
 
-#main-column > div.page-title-fixed-outer {margin:0 0 5px 0;/* padding-right:7px; */}
-#main-column.half-width > div.page-title-fixed-outer {padding-right:10px;}
-/* .history.half-width > div, .history.half-width > form {padding-right:10px;margin-right:-10px;} */
 
-div.half-width > div.page-title, #main-column > div.page-title {margin-left:0;}
-div.half-width > div.form {background:#fff;}
-div.x2-layout a {text-decoration:none;}
-div.x2-layout a:hover {text-decoration:underline;}
+div.x2-layout a {
+    text-decoration:none;
+}
+div.x2-layout a:hover {
+    text-decoration:underline;
+}
 /* Form Sections */
 div.x2-layout .formSection {
 	/* background:#fff; */
@@ -174,6 +175,23 @@ div.x2-layout .showSection .sectionTitle {
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 
+div.x2-layout .formSection a.formSectionShow,
+div.x2-layout .formSection a.formSectionHide {
+    display: block;
+    margin-left: 2px;
+    margin-top: 2px;
+    opacity: 0.6;
+    height: 2px;
+}
+
+div.x2-layout .formSection a.formSectionShow img {
+    height: 9px;
+}
+
+div.x2-layout .formSection a.formSectionHide img {
+    height: 7px;
+}
+
 div.x2-layout .formSection a.formSectionShow {
 	display:block;
 	margin-left: 2px;
@@ -264,6 +282,9 @@ div.x2-layout .formItem label.groupLabel {
 	display:inline;
 	margin-left:5px;
 }
+div.x2-layout input[type='checkbox'] {
+    height: 11px;
+}
 div.x2-layout .formInputBox {
 	float:left;		/* disable */
 	/* width:auto; */
@@ -291,7 +312,10 @@ div.x2-layout .formInputBox .checkboxWrapper {
 	border: 1px solid #CCC;
 	border-radius: 0 3px 3px 0; */
 }
-div.x2-layout .formItem input[type="text"], div.x2-layout .formItem textarea, input[type="text"].relationships-add-autocomplete {
+div.x2-layout .formItem input[type="text"],
+div.x2-layout .formItem textarea,
+div.x2-layout .formItem textarea,
+input[type="text"].record-name-autocomplete {
 	-webkit-appearance:none;
 	height:22px;
 	width:100% !important;
@@ -321,14 +345,29 @@ div.x2-layout .formInputBox textarea {
     padding:2px;
 }
 div.x2-layout .formInputBox select {width:100%;}
-div.x2-layout .formInputBox input.input-percentage { background: #FFFFFF url(../images/formEditor/percentage.gif) no-repeat 95%;}
+div.x2-layout .formInputBox input.input-percentage {
+    background: #FFFFFF url(../images/formEditor/percentage.gif) no-repeat 95%;
+}
 
-div.x2-layout .tableWrapper .grid-view table.items {clear:none;margin-top:0;}
-div.x2-layout .tableWrapper .grid-view table.items {border:none;}
+div.x2-layout .tableWrapper .grid-view table.items {
+    clear:none;margin-top:0;
+}
+div.x2-layout .tableWrapper .grid-view table.items {
+    border:none;
+}
 
 
-div.x2-layout div.error label,div.x2-layout label.error,div.x2-layout span.error {color:#C00;}
-div.x2-layout div.error input,div.x2-layout div.error textarea,div.x2-layout div.error select,div.x2-layout input.error,div.x2-layout textarea.error,div.x2-layout select.error {
+div.x2-layout div.error label,
+div.x2-layout label.error,
+div.x2-layout span.error {
+    color:#C00;
+}
+div.x2-layout div.error input,
+div.x2-layout div.error textarea,
+div.x2-layout div.error select,
+div.x2-layout input.error,
+div.x2-layout textarea.error,
+div.x2-layout select.error {
 	background:#FEE !important;
 	border-color:#C00 !important;
 }
@@ -343,9 +382,15 @@ div.x2-layout .errorSummary {
 	padding:5px;
 	margin-bottom:1px;
 }
-div.x2-layout .errorMessage {color:red;font-size:0.9em;}
-div.x2-layout .errorSummary p {margin:0;padding:5px;}
-div.x2-layout .errorSummary ul {margin:0;padding:0 0 0 20px;}
+div.x2-layout .errorMessage {
+    color:red;font-size:0.9em;
+}
+div.x2-layout .errorSummary p {
+    margin:0;padding:5px;
+}
+div.x2-layout .errorSummary ul {
+    margin:0;padding:0 0 0 20px;
+}
 
 
 
@@ -353,7 +398,10 @@ div.x2-layout .errorSummary ul {margin:0;padding:0 0 0 20px;}
 
 
 /* Editor CSS Begins Here */
-div.x2-layout.editMode td {border:1px dashed #f00;border-width:1px 1px 1px 0;}
+div.x2-layout.editMode td {
+    border:1px dashed #f00;
+    border-width:1px 1px 1px 0;
+}
 div.x2-layout.editMode .formSectionHeader {
 	width:100%;
 	background:#fff;
@@ -365,11 +413,16 @@ div.x2-layout.editMode .formSectionHeader a {
 	width:auto;
 	margin:0 5px;
 }
-div.x2-layout.editMode .showSection .formSectionHeader a.formSectionShow {display:none;}
-div.x2-layout.editMode .formSectionHeader a.formSectionHide {display:none;}
+div.x2-layout.editMode .showSection .formSectionHeader a.formSectionShow {
+    display:none;
+}
+div.x2-layout.editMode .formSectionHeader a.formSectionHide {
+    display:none;
+}
 
 
-div.x2-layout.editMode .formSectionHeader .formSectionShow, div.x2-layout.editMode .formSectionHeader .formSectionHide {
+div.x2-layout.editMode .formSectionHeader .formSectionShow, 
+div.x2-layout.editMode .formSectionHeader .formSectionHide {
 	float:left;
 }
 div.x2-layout.editMode .showSection .sectionTitle {
@@ -400,8 +453,14 @@ div.x2-layout.editMode .formTabOrder {
 	border-radius:			0 1px 0 4px;
 }
 
-div.x2-layout.editMode .formItem.selected {background:#90bede;}
-div.x2-layout.editMode .formItem.selected label, div.x2-layout.editMode .formItem.selected input, div.x2-layout.editMode .formItem.selected textarea  {border-color:#64879f;background:#90bede;}
+div.x2-layout.editMode .formItem.selected {
+    background:#90bede;
+}
+div.x2-layout.editMode .formItem.selected label, 
+div.x2-layout.editMode .formItem.selected input, 
+div.x2-layout.editMode .formItem.selected textarea  {
+    border-color:#64879f;background:#90bede;
+}
 
 div.x2-layout.editMode .formItem.ui-sortable-helper {
 	margin-right:0;
@@ -472,8 +531,12 @@ div.x2-layout.editMode .formInputBox {
 	-webkit-box-shadow:	0 0 10px 0 rgba(0,0,0,0.75);
 	box-shadow:			0 0 10px 0 rgba(0,0,0,0.75);
 }
-div.x2-layout.editMode #formEditorControls {margin-bottom:0;}
-#formEditorControls a.x2-button {margin-bottom:0;}
+div.x2-layout.editMode #formEditorControls {
+    margin-bottom:0;
+}
+#formEditorControls a.x2-button {
+    margin-bottom:0;
+}
 #formEditorControls .formItemOptions {
 	float:right;
 	margin:0 5px 0 0;
@@ -532,24 +595,44 @@ div.x2-layout.editMode #formEditorControls {margin-bottom:0;}
 	font-size:12px;
 	font-weight:normal;
 }
-#editorFieldList label.emailIcon, 		ul.fieldlist li label.emailIcon	{background:url(../images/formEditor/email_icon.gif)	2px 0px no-repeat transparent;}
-#editorFieldList label.phoneIcon, 		ul.fieldlist li label.phoneIcon	{background:url(../images/formEditor/phone_icon.gif)	2px 0px no-repeat transparent;}
-#editorFieldList label.booleanIcon, 	ul.fieldlist li label.booleanIcon	{background:url(../images/formEditor/boolean_icon.gif)	2px 0px no-repeat transparent;}
-#editorFieldList label.dropdownIcon, 	ul.fieldlist li label.dropdownIcon	{background:url(../images/formEditor/dropdown_icon.gif)	2px 0px no-repeat transparent;}
-#editorFieldList label.dateIcon, 		ul.fieldlist li label.dateIcon		{background:url(../images/formEditor/date_icon.gif)		2px	0px no-repeat transparent;}
-#editorFieldList label.textIcon, 		ul.fieldlist li label.textIcon		{background:url(../images/formEditor/text_icon.gif)		2px	0px no-repeat transparent;}
-#editorFieldList label.varcharIcon, 	ul.fieldlist li label.varcharIcon	{background:url(../images/formEditor/varchar_icon.gif)	2px 0px no-repeat transparent;}
-#editorFieldList label.percentageIcon, 	ul.fieldlist li label.percentageIcon	{background:url(../images/formEditor/percentage_icon.gif)	2px 0px no-repeat transparent;}
+#editorFieldList label.emailIcon, 		ul.fieldlist li label.emailIcon	{
+    background:url(../images/formEditor/email_icon.gif)	2px 0px no-repeat transparent;
+}
+#editorFieldList label.phoneIcon, 		ul.fieldlist li label.phoneIcon	{
+    background:url(../images/formEditor/phone_icon.gif)	2px 0px no-repeat transparent;
+}
+#editorFieldList label.booleanIcon, 	ul.fieldlist li label.booleanIcon	{
+    background:url(../images/formEditor/boolean_icon.gif)	2px 0px no-repeat transparent;
+}
+#editorFieldList label.dropdownIcon, 	ul.fieldlist li label.dropdownIcon	{
+    background:url(../images/formEditor/dropdown_icon.gif)	2px 0px no-repeat transparent;
+}
+#editorFieldList label.dateIcon, 		ul.fieldlist li label.dateIcon		{
+    background:url(../images/formEditor/date_icon.gif)		2px	0px no-repeat transparent;
+}
+#editorFieldList label.textIcon, 		ul.fieldlist li label.textIcon		{
+    background:url(../images/formEditor/text_icon.gif)		2px	0px no-repeat transparent;
+}
+#editorFieldList label.varcharIcon, 	ul.fieldlist li label.varcharIcon	{
+    background:url(../images/formEditor/varchar_icon.gif)	2px 0px no-repeat transparent;
+}
+#editorFieldList label.percentageIcon, 	ul.fieldlist li label.percentageIcon	{
+    background:url(../images/formEditor/percentage_icon.gif)	2px 0px no-repeat transparent;
+}
 
 
 /* Tab Order Mode */
 #formEditor.tabOrderMode .formTabOrder {display:block;}
 
-span.create-account, span#create-contact {
+.quick-create-button:hover {
+    color: #699C1C
+}
+
+.quick-create-button {
 	font-size: 24px;
 	font-weight: bold;
 	vertical-align: middle;
-	color: #579100;
+    color: #82C71A;
 	display: inline-block;
 	cursor: pointer;
 }
@@ -576,4 +659,118 @@ div.cron-job label.cron-checkitem.big {
 }
 div.cron-job input.cron-enabled {
     display: inline-block;
+}
+
+
+
+.x2-forms-error-msg {
+    color: red;
+}
+
+
+
+/***********************************************************************
+* publish half width style  
+* Repeated 3 times:
+*   -once for browsers which don't support media queries
+*   -two more times for the cases where the right widgets are shown/hidden
+***********************************************************************/
+
+.history.half-width {
+    width: 35%;
+    margin-top: 5px;
+}
+
+div.half-width {
+	width:65%;
+	float:left;
+}
+.history.half-width {
+    padding:0;
+}
+.history.half-width > div, .history.half-width > form {
+    margin:0 0px 5px 0;
+}
+
+#main-column.half-width > div.page-title-fixed-outer {
+    padding-right:10px;
+}
+/* .history.half-width > div, .history.half-width > form {padding-right:10px;margin-right:-10px;} */
+
+div.half-width > div.page-title, #main-column > div.page-title {
+    margin-left:0;
+}
+div.half-width > div.form {
+    background:#fff;
+}
+
+#main-column.half-width > div, #main-column.half-width > form {
+    margin:0 5px 5px 0px;
+}
+
+
+@media (min-width: 1403px) {
+    .history {
+        width: 35%;
+        margin-top: 5px;
+    }
+
+    #main-column {
+        width:65%;
+        float:left;
+    }
+    .history {
+        padding:0;
+    }
+    .history > div, .history > form {
+        margin:0 0px 5px 0;
+    }
+
+    #main-column > div.page-title-fixed-outer {
+        padding-right:10px;
+    }
+
+    #main-column > div.page-title, #main-column > div.page-title {
+        margin-left:0;
+    }
+    #main-column > div.form {
+        background:#fff;
+    }
+
+    #main-column > div, #main-column > form {
+        margin:0 5px 5px 0px;
+    }
+}
+
+@media (min-width: 1122px) {
+    .no-widgets .history {
+        width: 35%;
+        margin-top: 5px;
+    }
+
+    .no-widgets #main-column {
+        width:65%;
+        float:left;
+    }
+    .no-widgets .history {
+        padding:0;
+    }
+    .no-widgets .history > div,.no-widgets  .history > form {
+        margin:0 0px 5px 0;
+    }
+
+    .no-widgets #main-column > div.page-title-fixed-outer {
+        padding-right:10px;
+    }
+
+    .no-widgets #main-column > div.page-title, .no-widgets #main-column > div.page-title {
+        margin-left:0;
+    }
+    .no-widgets #main-column > div.form {
+        background:#fff;
+    }
+
+    .no-widgets #main-column > div, .no-widgets #main-column > form {
+        margin:0 5px 5px 0px;
+    }
 }

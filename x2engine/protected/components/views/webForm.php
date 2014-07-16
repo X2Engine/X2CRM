@@ -44,7 +44,7 @@ Parameters:
 
 mb_internal_encoding('UTF-8');
 mb_regex_encoding('UTF-8');
-Yii::app()->params->profile = ProfileChild::model()->findByPk(1);
+Yii::app()->params->profile = Profile::model()->findByPk(1);
 if (empty($type)) $type = 'weblead';
 if (empty($model)) $model = Contacts::model ();
 
@@ -148,6 +148,7 @@ if ($type === 'service') {
 </script>
 
 <?php
+
 
 ?>
 
@@ -310,6 +311,8 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
 }
 
 renderFields ($fieldList, $type, $form, $model, $contactFields);
+
+
 
 ?>
 <div class="submit-button-row row">

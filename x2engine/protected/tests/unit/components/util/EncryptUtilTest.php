@@ -87,6 +87,18 @@ class EncryptUtilTest extends FileOperTestCase {
 		$this->removeTestDirs();
 	}
 
+    public function testSecureUniqueIdHash64() {
+        foreach(range(1,3) as $method) {
+            foreach(range(1,2) as $hash) {
+                $id = EncryptUtil::secureUniqueIdHash64($method,$hash);
+                if(VERBOSE_MODE >= 1) {
+                    echo "\nmethod $method hash $hash $id";
+                }
+                $this->assertEquals(64,strlen($id));
+            }
+        }
+    }
+
 }
 
 ?>

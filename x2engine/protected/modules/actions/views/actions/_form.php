@@ -34,6 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
 Yii::app()->clientScript->registerScript('validate', '
 $(document).ready(function(){
 	$("#actions-newCreate-form").submit(function(){
@@ -72,19 +73,22 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
     ?>
     <div class="row">
         <b><?php echo $form->labelEx($actionModel, 'subject'); ?></b>
-        <?php echo $form->textField($actionModel, 'subject', array('size' => 80)); ?>
+        <?php echo $form->textField($actionModel, 'subject', array('class' => 'x2-xxwide-input')); ?>
         <div class="row">
             <b><?php echo $form->labelEx($actionModel, 'actionDescription'); ?></b>
             <?php //echo $form->label($actionModel,'actionDescription'); ?>
-            <div class="text-area-wrapper">
-                <?php echo $form->textArea($actionModel, 'actionDescription', array('rows' => (6), 'cols' => 40)); ?>
-                <?php //echo $form->error($actionModel,'actionDescription'); ?>
+            <div>
+                <?php 
+                echo $form->textArea(
+                    $actionModel, 'actionDescription', array('class' => 'x2-xxwide-input', 'rows' => (6))); 
+                //echo $form->error($actionModel,'actionDescription'); 
+                ?>
             </div>
             <div class="row">
                 <div class="cell">
                     <?php echo $form->label($actionModel, 'associationType'); ?>
                     <?php
-                    echo $form->dropDownList($actionModel, 'associationType', array_merge(array('none' => Yii::t('app','None'), 'calendar' => Yii::t('calendar', 'Calendar')), $modelList), array(
+                    echo $form->dropDownList($actionModel, 'associationType', array_merge(array('none' => Yii::t('app','None')), $modelList), array(
                         'ajax' => array(
                             'type' => 'POST', //request type
                             'url' => CController::createUrl('/actions/actions/parseType'), //url to call.
@@ -199,12 +203,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
                 </div>
                 <div class="cell">
                     <?php echo $form->label($actionModel, 'priority'); ?>
-                    <?php
-                    echo $form->dropDownList($actionModel, 'priority', array(
-                        '1' => Yii::t('actions', 'Low'),
-                        '2' => Yii::t('actions', 'Medium'),
-                        '3' => Yii::t('actions', 'High')));
-                    ?>
+                    <?php echo $form->dropDownList($actionModel, 'priority', Actions::getPriorityLabels()); ?>
 
                     <?php
                     if($actionModel->type == 'event'){
@@ -216,9 +215,13 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
                     ?>
                 </div>
                 <div class="cell">
-                    <?php echo $form->label($actionModel, 'assignedTo'); ?>
-                    <?php echo $form->dropDownList($actionModel, 'assignedTo', X2Model::getAssignmentOptions(), array('id' => 'actionsAssignedToDropdown')); ?>
-                    <?php echo $form->error($actionModel, 'assignedTo'); ?>
+                    <?php 
+                    echo $form->label($actionModel, 'assignedTo');
+                    echo $actionModel->renderInput (
+                        'assignedTo', array('id' => 'actionsAssignedToDropdown')); 
+                    //echo $form->dropDownList($actionModel, 'assignedTo', X2Model::getAssignmentOptions(), array('id' => 'actionsAssignedToDropdown')); 
+                    echo $form->error($actionModel, 'assignedTo'); 
+                    ?>
                 </div>
 
                 <div class="cell">

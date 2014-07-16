@@ -12,6 +12,11 @@ return array(
         'priority' => 2,
         'users' => 'testUser2',
     ),
+    'leadRouting3' => array (
+        'criteria' => '["firstName,=,contact4"]', 
+        'priority' => 2,
+        'users' => 'testUser1, testUser2, testUser3, testUser4',
+    ),
 );
 
 ?>

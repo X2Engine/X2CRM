@@ -47,6 +47,12 @@ class Roles extends CActiveRecord {
     private static $_authNames;
 
     /**
+     * Runtime storage array of user roles indexed by user ID
+     * @var type
+     */
+    private static $_userRoles;
+
+    /**
      * Retrieves a list of restricted (non-permissible) role names.
      */
     public static function getAuthNames() {
@@ -92,7 +98,7 @@ class Roles extends CActiveRecord {
                 'not'=>true,
                 'pattern'=> '/^('.implode('|',array_map(function($n){return preg_quote($n);},self::getAuthNames())).')/i',
                 'message'=>Yii::t('admin','The name you entered is reserved or belongs to the system.')),
-                        array('timeout', 'numerical', 'integerOnly' => true),
+            array('timeout', 'numerical', 'integerOnly' => true, 'min' => 5),
 			array('users', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -139,42 +145,75 @@ class Roles extends CActiveRecord {
 		));
 	}
 
-	/* Looks up roles held by the specified user.
+    /**
+     * Get roles from cache 
+     */
+    public static function getCachedUserRoles ($userId) {
+		// check the app cache for user's roles
+		return Yii::app()->cache->get(self::getUserCacheVar ($userId));
+    }
+
+    /**
+     * Clear role cache for specified user 
+     */
+    public static function clearCachedUserRoles ($userId) {
+        if(isset(self::$_userRoles[$userId]))
+            unset(self::$_userRoles[$userId]);
+        Yii::app()->cache->delete (self::getUserCacheVar ($userId));
+    }
+
+	/**
+     * Determines roles of the specified user, including group-inherited roles.
+     *
 	 * Uses cache to lookup/store roles.
 	 *
-	 * @param Integer $userId user to look up roles for
-	 * @param Boolean $cache whether to use cache
+	 * @param integer $userId user for which to look up roles. Note, null user ID
+     *  implies guest.
+	 * @param boolean $cache whether to use cache
 	 * @return Array array of roleIds
 	 */
 	public static function getUserRoles($userId,$cache=true) {
-		$cacheVar = 'user_roles_'.$userId;
-
+        if(isset(self::$_userRoles[$userId]))
+            return self::$_userRoles[$userId];
 		// check the app cache for user's roles
-		if($cache === true && ($userRoles = Yii::app()->cache->get($cacheVar)) !== false) {
-			if(isset($userRoles[$userId]))
-				return $userRoles[$userId];
-		} else {
-			$userRoles = array();
+		if($cache === true
+                && ($userRoles = self::getCachedUserRoles ($userId)) !== false) {
+			self::$_userRoles[$userId] = $userRoles;
+            return $userRoles;
 		}
+        $userRoles = array();
 
-		$userRoles = Yii::app()->db->createCommand() // lookup the user's roles
-			->select('roleId')
-			->from('x2_role_to_user')
-			->where('type="user" AND userId=:userId')
-			->queryColumn(array(':userId'=>$userId));
+        if($userId !== null){ // Authenticated user
+            $userRoles = Yii::app()->db->createCommand() // lookup the user's roles
+                    ->select('roleId')
+                    ->from('x2_role_to_user')
+                    ->where('`type`="user" AND `userId`=:userId')
+                    ->queryColumn(array(':userId' => $userId));
 
-		$groupRoles = Yii::app()->db->createCommand()	// lookup roles of all the user's groups
-			->select('x2_role_to_user.roleId')
-			->from('x2_group_to_user')
-			->join('x2_role_to_user','x2_role_to_user.userId=x2_group_to_user.groupId AND x2_group_to_user.userId=:userId AND type="group"')
-			->queryColumn(array(':userId' => $userId));
+            $groupRoles = Yii::app()->db->createCommand() // lookup roles of all the user's groups
+                    ->select('rtu.roleId')
+                    ->from('x2_group_to_user gtu')
+                    ->join('x2_role_to_user rtu', 'rtu.userId=gtu.groupId '
+                            .'AND gtu.userId=:userId '
+                            .'AND type="group"')
+                    ->queryColumn(array(':userId' => $userId));
+        }else{ // Guest
+            $groupRoles = array();
+            $userRoles = array();
+            $guestRole = self::model()->findByAttributes(array('name' => 'Guest'));
+            if(!empty($guestRole))
+                $userRoles = array($guestRole->id);
+        }
 
-		$userRoles[$userId] = array_unique($userRoles + $groupRoles);  // combine all the roles, remove duplicates
+        // Combine all the roles, remove duplicates:
+        $userRoles = array_unique($userRoles + $groupRoles);
 
+        // Cache/store:
+        self::$_userRoles[$userId] = $userRoles;
 		if($cache === true)
-			Yii::app()->cache->set($cacheVar,$userRoles,259200); // cache user groups for 3 days
+			Yii::app()->cache->set(self::getUserCacheVar ($userId),$userRoles,259200); // cache user groups for 3 days
 
-		return $userRoles[$userId];
+		return $userRoles;
 	}
 
     /**
@@ -189,6 +228,7 @@ class Roles extends CActiveRecord {
         if($cache === true && ($timeout = Yii::app()->cache->get($cacheVar)) !== false)
             return $timeout;
 
+
         $userRoles = Roles::getUserRoles($userId);
         $availableTimeouts = array();
         foreach($userRoles as $role){
@@ -197,17 +237,19 @@ class Roles extends CActiveRecord {
                     ->from('x2_roles')
                     ->where('id=:role', array(':role' => $role))
                     ->queryScalar();
-            if(isset($timeout))
-                $availableTimeouts[] = $timeout;
-            unset($timeout);
+            if(!is_null($timeout))
+                $availableTimeouts[] = (integer) $timeout;
         }
+
         $availableTimeouts[] = Yii::app()->settings->timeout;
-        if(count($availableTimeouts) > 0){
-            $timeout = max($availableTimeouts);
-            if($cache === true)
-                Yii::app()->cache->set($cacheVar, $timeout, 259200);
-            return $timeout;
-        }
+        $timeout = max($availableTimeouts);
+        if($cache === true)
+            Yii::app()->cache->set($cacheVar, $timeout, 259200);
+        return $timeout;
+    }
+
+    private static function getUserCacheVar ($userId) {
+		return 'user_roles_'.($userId===null?'guest':$userId);
     }
 
 }

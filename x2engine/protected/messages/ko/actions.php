@@ -146,4 +146,13 @@ return array (
 'Log Time'=>'로그인 시간',
 'Time started'=>'시간 시작',
 'Time ended'=>'종료 시간',
+'Action Timer'=>'액션 타이머',
+'View Email'=>'보기 이메일',
+'Import Actions'=>'가져 오기 작업',
+'Export Actions'=>'수출 작업',
+'Action timers'=>'액션 타이머',
+'Time Started'=>'시간 시작',
+'Time Ended'=>'종료 시간',
+'Association is required for actions of this type.'=>'협회는 이러한 유형의 작업이 필요합니다.',
+'Time Spent'=>'소비 시간',
 );

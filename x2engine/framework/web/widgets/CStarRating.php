@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -138,6 +138,7 @@ class CStarRating extends CInputWidget
 	 */
 	public static function registerCssFile($url=null)
 	{
+        /* x2modstart */return;/* x2modend */ 
 		$cs=Yii::app()->getClientScript();
 		if($url===null)
 			$url=$cs->getCoreScriptUrl().'/rating/jquery.rating.css';

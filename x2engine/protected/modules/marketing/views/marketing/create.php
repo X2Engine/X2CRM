@@ -42,18 +42,19 @@ $this->actionMenu = $this->formatMenu(array(
 	array(
         'label'=>Yii::t('marketing','Newsletters'), 
         'url'=>array('/marketing/weblist/index'),
-        'visible'=>(Yii::app()->params->edition==='pro')
+        'visible'=>(Yii::app()->contEd('pro'))
     ),
 	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
 	array(
         'label'=>Yii::t('marketing','Web Tracker'), 
         'url'=>array('webTracker'),
-        'visible'=>(Yii::app()->params->edition==='pro')
+        'visible'=>(Yii::app()->contEd('pro'))
     ),
+    
 	array(
         'label'=>Yii::t('app','X2Flow'),
         'url'=>array('/studio/flowIndex'),
-        'visible'=>(Yii::app()->params->edition==='pro')
+        'visible'=>(Yii::app()->contEd('pro'))
     ),
 ));
 
@@ -62,6 +63,7 @@ $form = $this->beginWidget('CActiveForm', array(
 	'enableAjaxValidation'=>false
 ));
 ?>
+
 <div class="page-title icon marketing">
 	<h2><?php echo Yii::t('marketing','Create Campaign'); ?></h2>
 	<?php echo CHtml::submitButton(Yii::t('module','Create'),array('class'=>'x2-button highlight right')); ?>
@@ -70,3 +72,4 @@ $form = $this->beginWidget('CActiveForm', array(
 $this->renderPartial('_form', array('model'=>$model, 'modelName'=>'Campaign','form'=>$form));
 
 $this->endWidget();
+?>

@@ -31,4 +31,7 @@ return array (
 'Unable to create custom module directory.'=>'Impossibile creare la directory del modulo personalizzato.',
 'Unable to create config file for custom module.'=>'Impossibile creare il file di configurazione per il modulo personalizzato.',
 'Unable to create table for custom module.'=>'Impossibile creare la tabella per il modulo personalizzato.',
+'Import {X}'=>'Import {X}',
+'Export {X}'=>'Export {X}',
+'{modelName} Attributes'=>'{modelName} Attributi',
 );

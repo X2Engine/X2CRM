@@ -146,4 +146,13 @@ return array (
 'Log Time'=>'יומן זמן',
 'Time started'=>'הזמן התחיל',
 'Time ended'=>'זמן הסתיים',
+'Action Timer'=>'הפעולה טיימר',
+'View Email'=>'צפו בדוא&quot;ל',
+'Import Actions'=>'פעולות יבוא',
+'Export Actions'=>'פעולות יצוא',
+'Action timers'=>'טיימרים פעולה',
+'Time Started'=>'זמן עבודה',
+'Time Ended'=>'זמן שהסתיימו ביום',
+'Association is required for actions of this type.'=>'האיגוד נדרש לפעולות מסוג זה.',
+'Time Spent'=>'זמן שהות',
 );

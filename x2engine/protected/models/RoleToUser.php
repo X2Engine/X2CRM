@@ -101,7 +101,8 @@ class RoleToUser extends CActiveRecord
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 * @return CActiveDataProvider the data provider that can return the models based on the 
+     *  search/filter conditions.
 	 */
 	public function search()
 	{
@@ -118,4 +119,29 @@ class RoleToUser extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+
+    public function afterSave () {
+        // roles have been updated, clear the cached roles for the corresponding user
+        Roles::clearCachedUserRoles ($this->userId);
+        parent::afterSave ();
+    }
+
+    public function afterDelete () {
+        // Roles have been updated, clear the cached roles for the corresponding
+        // user (or for all group members, if a group)
+        if($this->type == 'user') {
+            Roles::clearCachedUserRoles ($this->userId);
+        } elseif($this->type == 'group') {
+            // Clear the role cache for all users who were in the group
+            $group = Groups::model()->findByPk($this->userId);
+            if(!empty($group)) {
+                if(count($group->users)>0) {
+                    foreach($group->users as $user) {
+                        Roles::clearCachedUserRoles($user->id);
+                    }
+                }
+            }
+        }
+        parent::afterSave ();
+    }
 }

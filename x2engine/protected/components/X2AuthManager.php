@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -35,543 +36,181 @@
  *****************************************************************************************/
 
 /**
- * X2AuthManager class file.
+ * RBAC auth manager for X2Engine
+ *
+ * @package application.components
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 class X2AuthManager extends CDbAuthManager {
 
-	/**
-	 * Performs access check for the specified user.
-	 * @param string $itemName the name of the operation that need access check
-	 * @param mixed $userId the user ID. This should can be either an integer and a string representing
-	 * the unique identifier of a user. See {@link IWebUser::getId}.
-	 * @param array $params name-value pairs that would be passed to biz rules associated
-	 * with the tasks and roles assigned to the user.
-	 * @return boolean whether the operations can be performed by the user.
-	 */
-	public function checkAccess($itemName,$userId,$params=array()) {
-		$assignments=$this->getAuthAssignments($userId);
-		return $this->checkAccessRecursive($itemName,$params,$assignments);
-	}
 
-	/**
-	 * Performs access check for the specified user.
-	 * This method is internally called by {@link checkAccess}.
-	 * @param string $itemName the name of the operation that need access check
-	 * @param array $params name-value pairs that would be passed to biz rules associated
-	 * with the tasks and roles assigned to the user.
-	 * @param array $assignments the assignments to the specified user
-	 * @param boolean $accessLevel access level of this item's child (previous iteration, for recursive calls only)
-	 * @return boolean whether the operations can be performed by the user.
-	 */
-	protected function checkAccessRecursive($itemName,$params,$assignments,$accessLevel=null) {
-		
-		if(($item=$this->getAuthItem($itemName))===null)
-			return false;
-		Yii::trace('Checking permission "'.$item->getName().'"','system.web.auth.CDbAuthManager');
-		if($this->executeBizRule($item->getBizRule(),$params,$item->getData())) {
-			if(in_array($itemName,$this->defaultRoles))
-				return true;
-			if(isset($assignments[$itemName])) {
-				$assignment = $assignments[$itemName];
-				if($this->executeBizRule($assignment->getBizRule(),$params,$assignment->getData()))
-					return true;
-			}
-			
-			// this item isn't directly assigned to any of the specified roles,
-			// so check the parents (starting with the one granting the highest accessLevel) 
-			$parents = $this->db->createCommand()
-				->select('parent,accessLevel')
-				->from($this->itemChildTable)
-				->where('child=:name', array(':name'=>$itemName))
-				->order('accessLevel DESC')
-				->queryAll(false);
-				
-			
-			
-				
-			foreach($parents as $parent) {
-				
-				
-				$parentAccess = $this->checkAccessRecursive($parent['parent'],$params,$assignments,$parent['accessLevel']);
-				
-				if($parentAccess)
-					return $parentAccess;
-			}
-		}
-		return false;
-	}
+    public $caching = true;
 
-	/**
-	 * Adds an item as a child of another item.
-	 * @param string $itemName the parent item name
-	 * @param string $childName the child item name
-	 * @return boolean whether the item is added successfully
-	 * @throws CException if either parent or child doesn't exist or if a loop has been detected.
-	 */
-	public function addItemChild($itemName,$childName)
-	{
-		if($itemName===$childName)
-			throw new CException(Yii::t('yii','Cannot add "{name}" as a child of itself.',
-					array('{name}'=>$itemName)));
+    /**
+     * Stores auth data in the scope of the current request
+     *
+     * @var type
+     */
+    private $_access;
 
-		$rows=$this->db->createCommand()
-			->select()
-			->from($this->itemTable)
-			->where('name=:name1 OR name=:name2', array(
-				':name1'=>$itemName,
-				':name2'=>$childName
-			))
-			->queryAll();
+    /**
+     * Internal "cache" of user names
+     * @var type
+     */
+    private $_usernames = array();
 
-		if(count($rows)==2)
-		{
-			if($rows[0]['name']===$itemName)
-			{
-				$parentType=$rows[0]['type'];
-				$childType=$rows[1]['type'];
-			}
-			else
-			{
-				$childType=$rows[0]['type'];
-				$parentType=$rows[1]['type'];
-			}
-			$this->checkItemChildType($parentType,$childType);
-			if($this->detectLoop($itemName,$childName))
-				throw new CException(Yii::t('yii','Cannot add "{child}" as a child of "{name}". A loop has been detected.',
-					array('{child}'=>$childName,'{name}'=>$itemName)));
+    /**
+     * Access check function.
+     *
+     * Checks access and attempts to speed up all future access checks using
+     * caching and storage of the variable within {@link _access}.
+     * 
+     * Note, only if parameters are empty will permissions caching or storage
+     * in {@link _access} be effective, because parameters (i.e. the assignment
+     * of a record based on the value of its assignedTo field) are expected to
+     * vary. For example, in record-specific permission items checked for
+     * multiple records. That is why $params be empty for any shortcuts to be
+     * taken.
+     *
+     * @param string $itemName Name of the auth item for which access is being checked
+     * @param integer $userId ID of the user for which to check access
+     * @param array $params Parameters to pass to business rules
+     * @return boolean
+     */
+    public function checkAccess($itemName, $userId, $params = array()) {
+        if(!isset($this->_access))
+            $this->_access = array();
 
-			$this->db->createCommand()
-				->insert($this->itemChildTable, array(
-					'parent'=>$itemName,
-					'child'=>$childName,
-				));
+        if(isset($this->_access[$userId][$itemName])) {
+            // Shortcut 1: return data stored in the component's property
+            return $this->_access[$userId][$itemName];
+        } else if($this->caching && empty($params)) {
+            // Shortcut 2: load the auth cache data and return if a result was found
+            if(!isset($this->_access[$userId]))
+                $this->_access[$userId] = Yii::app()->authCache->loadAuthCache($userId);
+            if(isset($this->_access[$userId][$itemName]))
+                return $this->_access[$userId][$itemName];
+        } else {
+            // Merely prepare _access[$userId]
+            if(!isset($this->_access[$userId]))
+                $this->_access[$userId] = array();
+        }
 
-			return true;
-		}
-		else
-			throw new CException(Yii::t('yii','Either "{parent}" or "{child}" does not exist.',array('{child}'=>$childName,'{parent}'=>$itemName)));
-	}
+        // Get assignments via roles.
+        //
+        // In X2Engine's system, x2_auth_assignment doesn't refer to users, but
+        // to roles. Hence, the ID of each role is sent to 
+        // parent::getAuthAssignments rather than a user ID, which would be
+        // meaningless in light of how x2_auth_assignment stores roles.
+        $roles = Roles::getUserRoles($userId);
+        $assignments = array();
+        foreach($roles as $roleId) {
+            $assignments = array_merge($assignments, parent::getAuthAssignments($roleId));
+        }
 
-	/**
-	 * Removes a child from its parent.
-	 * Note, the child item is not deleted. Only the parent-child relationship is removed.
-	 * @param string $itemName the parent item name
-	 * @param string $childName the child item name
-	 * @return boolean whether the removal is successful
-	 */
-	public function removeItemChild($itemName,$childName)
-	{
-		return $this->db->createCommand()
-			->delete($this->itemChildTable, 'parent=:parent AND child=:child', array(
-				':parent'=>$itemName,
-				':child'=>$childName
-			)) > 0;
-	}
+        // Prepare the username for the session-agnostic permissions check:
+        if(!isset($this->_usernames[$userId])) {
+            if($userId == Yii::app()->getSuId())
+                $user = Yii::app()->getSuModel();
+            else
+                $user = User::model()->findByPk($userId);
+            if($user instanceof User)
+                $this->_usernames[$userId] = $user->username;
+            else
+                $this->_usernames[$userId] = 'Guest';
+        }
+        if(!isset($params['userId']))
+            $params['userId'] = $userId;
 
-	/**
-	 * Returns a value indicating whether a child exists within a parent.
-	 * @param string $itemName the parent item name
-	 * @param string $childName the child item name
-	 * @return boolean whether the child exists
-	 */
-	public function hasItemChild($itemName,$childName)
-	{
-		return $this->db->createCommand()
-			->select('parent')
-			->from($this->itemChildTable)
-			->where('parent=:parent AND child=:child', array(
-				':parent'=>$itemName,
-				':child'=>$childName))
-			->queryScalar() !== false;
-	}
+        // Get whether the user has access:
+        $hasAccess = parent::checkAccessRecursive($itemName, $userId, $params, $assignments);
 
-	/**
-	 * Returns the children of the specified item.
-	 * @param mixed $names the parent item name. This can be either a string or an array.
-	 * The latter represents a list of item names.
-	 * @return array all child items of the parent
-	 */
-	public function getItemChildren($names)
-	{
-		if(is_string($names))
-			$condition='parent='.$this->db->quoteValue($names);
-		else if(is_array($names) && $names!==array())
-		{
-			foreach($names as &$name)
-				$name=$this->db->quoteValue($name);
-			$condition='parent IN ('.implode(', ',$names).')';
+        if(empty($params)) {
+            // Store locally.
+			$this->_access[$userId][$itemName] = $hasAccess;
+            // Cache
+            if($this->caching)
+                Yii::app()->authCache->addResult($userId,$itemName,$hasAccess);
 		}
 
-		$rows=$this->db->createCommand()
-			->select('name, type, description, bizrule, data')
-			->from(array(
-				$this->itemTable,
-				$this->itemChildTable
-			))
-			->where($condition.' AND name=child')
-			->queryAll();
+        return $hasAccess;
+    }
 
-		$children=array();
-		foreach($rows as $row)
-		{
-			if(($data=@unserialize($row['data']))===false)
-				$data=null;
-			$children[$row['name']]=new CAuthItem($this,$row['name'],$row['type'],$row['description'],$row['bizrule'],$data);
-		}
-		return $children;
-	}
+    /**
+     * Checks for admin access on a specific named module.
+     *
+     * Originally written as a kludge to bypass checking for overall admin access when
+     * performing a generic admin action that is specific to a module. Specifically, it
+     * was written for exporting models as a fix for 4.1.6, wherein otherwise a user would
+     * need full admin rights and not just contact module admin rights to export contacts.
+     *
+     * Note, since this starts its own chain of recursive access checking, extreme caution
+     * should be used when using this method inside of a business rule, because infinite 
+     * loops could potentially occur.
+     *
+     * @param array $params An associative array that is presumed to contain a "userId"
+     *  element that refers to the user ID (as if $params is as within a business rule),
+     *  and also expects a model (or module) parameter.
+     */
+    public function checkAdminOn($params) {
+        if(!isset($params['userId']))
+            return false;
 
-	/**
-	 * Assigns an authorization item to a user.
-	 * @param string $itemName the item name
-	 * @param mixed $userId the user ID (see {@link IWebUser::getId})
-	 * @param string $bizRule the business rule to be executed when {@link checkAccess} is called
-	 * for this particular authorization item.
-	 * @param mixed $data additional data associated with this assignment
-	 * @return CAuthAssignment the authorization assignment information.
-	 * @throws CException if the item does not exist or if the item has already been assigned to the user
-	 */
-	public function assign($itemName,$userId,$bizRule=null,$data=null)
-	{
-		if($this->usingSqlite() && $this->getAuthItem($itemName)===null)
-			throw new CException(Yii::t('yii','The item "{name}" does not exist.',array('{name}'=>$itemName)));
+        // Look in the $_GET superglobal for 'model' if the 'model' parameter is not available
+        $modelName = isset($params['model'])
+            ? ($params['model'] instanceof X2Model ? get_class($params['model']) : $params['model'])
+            : (isset($_GET['model']) ? $_GET['model'] : null);
 
-		$this->db->createCommand()
-			->insert($this->assignmentTable, array(
-				'itemname'=>$itemName,
-				'userid'=>$userId,
-				'bizrule'=>$bizRule,
-				'data'=>serialize($data)
-			));
-		return new CAuthAssignment($this,$itemName,$userId,$bizRule,$data);
-	}
+        // Determine the module on which admin access will be checked, based on a model class:
+        if(empty($params['module']) && !empty($modelName)) {
+            if(($staticModel = X2Model::model($modelName)) instanceof X2Model) {
+                if(($lb = $staticModel->asa('X2LinkableBehavior')) instanceof X2LinkableBehavior) {
+                    $module = !empty($lb->module)?$lb->module:null;
+                }
+            }
+        }
+        if(!isset($module)) // Check if module parameter is specified and use it if so:
+            $module = isset($params['module']) ? $params['module'] : null;
 
-	/**
-	 * Revokes an authorization assignment from a user.
-	 * @param string $itemName the item name
-	 * @param mixed $userId the user ID (see {@link IWebUser::getId})
-	 * @return boolean whether removal is successful
-	 */
-	public function revoke($itemName,$userId)
-	{
-		return $this->db->createCommand()
-			->delete($this->assignmentTable, 'itemname=:itemname AND userid=:userid', array(
-				':itemname'=>$itemName,
-				':userid'=>$userId
-			)) > 0;
-	}
+        if(!empty($module)) {
+           // Perform a check for the existence of the item name (because, per the original 
+           // design of X2Engine's permissions, for backwards compatibility: if no auth 
+           // item exists, permission will be granted by default).
+           $itemName = ucfirst($module).'AdminAccess';
+            if(!(bool)$this->getAuthItem($itemName))
+                return false;
+        } else {
+            // Use the generic administrator auth item if there is no module specified:
+            $itemName = 'administrator';
+        }
+        AuxLib::debugLogR(compact('params','itemName','userId','module','modelName'));
+        return $this->checkAccess($itemName,$params['userId'],$params);
+    }
 
-	/**
-	 * Returns a value indicating whether the item has been assigned to the user.
-	 * @param string $itemName the item name
-	 * @param mixed $userId the user ID (see {@link IWebUser::getId})
-	 * @return boolean whether the item has been assigned to the user.
-	 */
-	public function isAssigned($itemName,$userId)
-	{
-		return $this->db->createCommand()
-			->select('itemname')
-			->from($this->assignmentTable)
-			->where('itemname=:itemname AND userid=:userid', array(
-				':itemname'=>$itemName,
-				':userid'=>$userId))
-			->queryScalar() !== false;
-	}
+    /**
+     * Assignment check function for business rules
+     *
+     * @param array $params
+     * @return boolean
+     */
+    public function checkAssignment($params){
+        return isset($params['X2Model'])
+                && $params['X2Model'] instanceof X2Model
+                && $params['X2Model']->isAssignedTo($this->_usernames[$params['userId']]);
+    }
 
-	/**
-	 * Returns the item assignment information.
-	 * @param string $itemName the item name
-	 * @param mixed $userId the user ID (see {@link IWebUser::getId})
-	 * @return CAuthAssignment the item assignment information. Null is returned if
-	 * the item is not assigned to the user.
-	 */
-	public function getAuthAssignment($itemName,$userId)
-	{
-		$row=$this->db->createCommand()
-			->select()
-			->from($this->assignmentTable)
-			->where('itemname=:itemname AND userid=:userid', array(
-				':itemname'=>$itemName,
-				':userid'=>$userId))
-			->queryRow();
-		if($row!==false)
-		{
-			if(($data=@unserialize($row['data']))===false)
-				$data=null;
-			return new CAuthAssignment($this,$row['itemname'],$row['userid'],$row['bizrule'],$data);
-		}
-		else
-			return null;
-	}
+    /**
+     * Visibility check function for business rules
+     * 
+     * @param array $params
+     * @return boolean
+     */
+    public function checkVisibility($params) {
+        return isset($params['X2Model'])
+                && $params['X2Model'] instanceof X2Model
+                && $params['X2Model']->isVisibleTo($this->_usernames[$params['userId']]);
+    }
 
-	/**
-	 * Returns the item assignments for the specified user.
-	 * @param mixed $userId the user ID (see {@link IWebUser::getId})
-	 * @return array the item assignment information for the user. An empty array will be
-	 * returned if there is no item assigned to the user.
-	 */
-	public function getAuthAssignments($userId)
-	{
-		$rows=$this->db->createCommand()
-			->select()
-			->from($this->assignmentTable)
-			->where('userid=:userid', array(':userid'=>$userId))
-			->queryAll();
-		$assignments=array();
-		foreach($rows as $row)
-		{
-			if(($data=@unserialize($row['data']))===false)
-				$data=null;
-			$assignments[$row['itemname']]=new CAuthAssignment($this,$row['itemname'],$row['userid'],$row['bizrule'],$data);
-		}
-		return $assignments;
-	}
-
-	/**
-	 * Saves the changes to an authorization assignment.
-	 * @param CAuthAssignment $assignment the assignment that has been changed.
-	 */
-	public function saveAuthAssignment($assignment)
-	{
-		$this->db->createCommand()
-			->update($this->assignmentTable, array(
-				'bizrule'=>$assignment->getBizRule(),
-				'data'=>serialize($assignment->getData()),
-			), 'itemname=:itemname AND userid=:userid', array(
-				'itemname'=>$assignment->getItemName(),
-				'userid'=>$assignment->getUserId()
-			));
-	}
-
-	/**
-	 * Returns the authorization items of the specific type and user.
-	 * @param integer $type the item type (0: operation, 1: task, 2: role). Defaults to null,
-	 * meaning returning all items regardless of their type.
-	 * @param mixed $userId the user ID. Defaults to null, meaning returning all items even if
-	 * they are not assigned to a user.
-	 * @return array the authorization items of the specific type.
-	 */
-	public function getAuthItems($type=null,$userId=null)
-	{
-		if($type===null && $userId===null)
-		{
-			$command=$this->db->createCommand()
-				->select()
-				->from($this->itemTable);
-		}
-		else if($userId===null)
-		{
-			$command=$this->db->createCommand()
-				->select()
-				->from($this->itemTable)
-				->where('type=:type', array(':type'=>$type));
-		}
-		else if($type===null)
-		{
-			$command=$this->db->createCommand()
-				->select('name,type,description,t1.bizrule,t1.data')
-				->from(array(
-					$this->itemTable.' t1',
-					$this->assignmentTable.' t2'
-				))
-				->where('name=itemname AND userid=:userid', array(':userid'=>$userId));
-		}
-		else
-		{
-			$command=$this->db->createCommand()
-				->select('name,type,description,t1.bizrule,t1.data')
-				->from(array(
-					$this->itemTable.' t1',
-					$this->assignmentTable.' t2'
-				))
-				->where('name=itemname AND type=:type AND userid=:userid', array(
-					':type'=>$type,
-					':userid'=>$userId
-				));
-		}
-		$items=array();
-		foreach($command->queryAll() as $row)
-		{
-			if(($data=@unserialize($row['data']))===false)
-				$data=null;
-			$items[$row['name']]=new CAuthItem($this,$row['name'],$row['type'],$row['description'],$row['bizrule'],$data);
-		}
-		return $items;
-	}
-
-	/**
-	 * Creates an authorization item.
-	 * An authorization item represents an action permission (e.g. creating a post).
-	 * It has three types: operation, task and role.
-	 * Authorization items form a hierarchy. Higher level items inheirt permissions representing
-	 * by lower level items.
-	 * @param string $name the item name. This must be a unique identifier.
-	 * @param integer $type the item type (0: operation, 1: task, 2: role).
-	 * @param string $description description of the item
-	 * @param string $bizRule business rule associated with the item. This is a piece of
-	 * PHP code that will be executed when {@link checkAccess} is called for the item.
-	 * @param mixed $data additional data associated with the item.
-	 * @return CAuthItem the authorization item
-	 * @throws CException if an item with the same name already exists
-	 */
-	public function createAuthItem($name,$type,$description='',$bizRule=null,$data=null)
-	{
-		$this->db->createCommand()
-			->insert($this->itemTable, array(
-				'name'=>$name,
-				'type'=>$type,
-				'description'=>$description,
-				'bizrule'=>$bizRule,
-				'data'=>serialize($data)
-			));
-		return new CAuthItem($this,$name,$type,$description,$bizRule,$data);
-	}
-
-	/**
-	 * Removes the specified authorization item.
-	 * @param string $name the name of the item to be removed
-	 * @return boolean whether the item exists in the storage and has been removed
-	 */
-	public function removeAuthItem($name)
-	{
-		if($this->usingSqlite())
-		{
-			$this->db->createCommand()
-				->delete($this->itemChildTable, 'parent=:name1 OR child=:name2', array(
-					':name1'=>$name,
-					':name2'=>$name
-			));
-			$this->db->createCommand()
-				->delete($this->assignmentTable, 'itemname=:name', array(
-					':name'=>$name,
-			));
-		}
-
-		return $this->db->createCommand()
-			->delete($this->itemTable, 'name=:name', array(
-				':name'=>$name
-			)) > 0;
-	}
-
-	/**
-	 * Returns the authorization item with the specified name.
-	 * @param string $name the name of the item
-	 * @return CAuthItem the authorization item. Null if the item cannot be found.
-	 */
-	public function getAuthItem($name)
-	{
-		$row=$this->db->createCommand()
-			->select()
-			->from($this->itemTable)
-			->where('name=:name', array(':name'=>$name))
-			->queryRow();
-
-		if($row!==false)
-		{
-			if(($data=@unserialize($row['data']))===false)
-				$data=null;
-			return new CAuthItem($this,$row['name'],$row['type'],$row['description'],$row['bizrule'],$data);
-		}
-		else
-			return null;
-	}
-
-	/**
-	 * Saves an authorization item to persistent storage.
-	 * @param CAuthItem $item the item to be saved.
-	 * @param string $oldName the old item name. If null, it means the item name is not changed.
-	 */
-	public function saveAuthItem($item,$oldName=null)
-	{
-		if($this->usingSqlite() && $oldName!==null && $item->getName()!==$oldName)
-		{
-			$this->db->createCommand()
-				->update($this->itemChildTable, array(
-					'parent'=>$item->getName(),
-				), 'parent=:whereName', array(
-					':whereName'=>$oldName,
-				));
-			$this->db->createCommand()
-				->update($this->itemChildTable, array(
-					'child'=>$item->getName(),
-				), 'child=:whereName', array(
-					':whereName'=>$oldName,
-				));
-			$this->db->createCommand()
-				->update($this->assignmentTable, array(
-					'itemname'=>$item->getName(),
-				), 'itemname=:whereName', array(
-					':whereName'=>$oldName,
-				));
-		}
-
-		$this->db->createCommand()
-			->update($this->itemTable, array(
-				'name'=>$item->getName(),
-				'type'=>$item->getType(),
-				'description'=>$item->getDescription(),
-				'bizrule'=>$item->getBizRule(),
-				'data'=>serialize($item->getData()),
-			), 'name=:whereName', array(
-				':whereName'=>$oldName===null?$item->getName():$oldName,
-			));
-	}
-
-	/**
-	 * Saves the authorization data to persistent storage.
-	 */
-	public function save()
-	{
-	}
-
-	/**
-	 * Removes all authorization data.
-	 */
-	public function clearAll()
-	{
-		$this->clearAuthAssignments();
-		$this->db->createCommand()->delete($this->itemChildTable);
-		$this->db->createCommand()->delete($this->itemTable);
-	}
-
-	/**
-	 * Removes all authorization assignments.
-	 */
-	public function clearAuthAssignments()
-	{
-		$this->db->createCommand()->delete($this->assignmentTable);
-	}
-
-	/**
-	 * Checks whether there is a loop in the authorization item hierarchy.
-	 * @param string $itemName parent item name
-	 * @param string $childName the name of the child item that is to be added to the hierarchy
-	 * @return boolean whether a loop exists
-	 */
-	protected function detectLoop($itemName,$childName)
-	{
-		if($childName===$itemName)
-			return true;
-		foreach($this->getItemChildren($childName) as $child)
-		{
-			if($this->detectLoop($itemName,$child->getName()))
-				return true;
-		}
-		return false;
-	}
-
-	/**
-	 * @return CDbConnection the DB connection instance
-	 * @throws CException if {@link connectionID} does not point to a valid application component.
-	 */
-	protected function getDbConnection()
-	{
-		if($this->db!==null)
-			return $this->db;
-		else if(($this->db=Yii::app()->getComponent($this->connectionID)) instanceof CDbConnection)
-			return $this->db;
-		else
-			throw new CException(Yii::t('yii','CDbAuthManager.connectionID "{id}" is invalid. Please make sure it refers to the ID of a CDbConnection application component.',
-				array('{id}'=>$this->connectionID)));
-	}
 }
+
+?>

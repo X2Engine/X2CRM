@@ -50,20 +50,30 @@ x2.fieldEditor.load = function(type,reload,save,override) {
         ajaxConfig.type = 'POST';
         ajaxConfig.data = that.formArea.find('form').serialize();
     }
-    $.ajax(ajaxConfig).done(function(data){
+    that.loading.css({
+        "height":Math.floor(that.formArea.outerHeight())+'px',
+        "width":Math.floor(that.formArea.outerWidth())+'px',
+        "top":that.formArea.offset().top,
+        "left":that.formArea.offset().left,
+        "display":"block"
+    });
+    jQuery.ajax(ajaxConfig).done(function(data){
         that.formArea.html(data);
+    }).always(function() {
+        that.loading.hide();
     });
 }
 
 jQuery(document).ready(function() {
     x2.fieldEditor.formArea = $('#createUpdateField');
     x2.fieldEditor.form = x2.fieldEditor.formArea.find('form');
+    x2.fieldEditor.loading = $("#createUpdateField-loading");
 
     x2.fieldEditor.formArea.on('change','#modelName-existing,#fieldName-existing',function(){
         // Refetch the page, in "customize" mode
         x2.fieldEditor.load('update',1);
     });
-    x2.fieldEditor.formArea.on('change','#fieldType,#dropdown-type', function() {
+    x2.fieldEditor.formArea.on('change','#fieldType,#dropdown-type,#assignment-multiplicity', function() {
         // Refetch the page, either to customize or to create new, based on class
         var mode = $(this).hasClass('new') ? 'create' : 'update';
         x2.fieldEditor.load(mode,1,0,1);

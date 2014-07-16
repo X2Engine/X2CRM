@@ -91,8 +91,8 @@ $form = $this->beginWidget('CActiveForm', array(
             echo $form->textField($model,$key,array(
                 'class'=> 'x2-mobile-narrow-input',
                 'tabindex'=>100 + $i,
-                'onfocus'=>'toggleText(this);',
-                'onblur'=>'toggleText(this);',
+                'onfocus'=>'x2.forms.toggleText(this);',
+                'onblur'=>'x2.forms.toggleText(this);',
                 'title'=>$model->getAttributeLabel($key)
             )); 
             echo $form->error($model,$key);
@@ -116,19 +116,3 @@ echo CHtml::submitButton(
 );
 $this->endWidget();
 ?>
-
-<script>
-
-    function toggleText(field) {
-        if (field.defaultValue==field.value) {
-            field.value = ''
-            field.style.color = 'black'
-        } else if (field.value=='') {
-            field.value = field.defaultValue
-            field.style.color = '#aaa'
-        }
-    }
-    
-</script>
-    
-

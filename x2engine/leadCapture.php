@@ -36,7 +36,7 @@
 ?>
 
 <?php
-include('webLeadConfig.php');
+include('webConfig.php');
 $authData=array('user'=>$user,'userKey'=>$userKey);
 
 if($url==""){

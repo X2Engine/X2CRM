@@ -34,6 +34,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss('workflowFormCss',"
+
+.color-picker-row {
+    margin: 9px 0;
+}
+
+");
 
 if(empty($model->stages))
 	$model->stages = array(new WorkflowStage);	// start with at least 1 blank row
@@ -73,8 +80,19 @@ function addStage() {
 		." \
 		</div> \
 		<div class=\"cell\">\
-			".addslashes(CHtml::label($model->stages[0]->getAttributeLabel('requirePrevious'),null)
-			.' '.preg_replace('/[\r\n]+/u','',CHtml::dropdownList('WorkflowStages[][requirePrevious]',0,array('0'=>Yii::t('app','None'),'1'=>Yii::t('app','All')),array('class'=>'workflow_requirePrevious','style'=>'width:100px;'))))
+			".addslashes(
+                CHtml::label(
+                    $model->stages[0]->getAttributeLabel('requirePrevious'),null)
+			.' '.
+            preg_replace(
+                '/[\r\n]+/u','',
+                CHtml::dropdownList(
+                    'WorkflowStages[][requirePrevious]',
+                    0,
+                    array('0'=>Yii::t('app','None'), '1'=>Yii::t('app','All Previous')),
+                    array('class'=>'workflow_requirePrevious','style'=>'width:100px;')
+                )
+            ))
 		."</div>\
 		<div class=\"cell\">\
 			".addslashes(CHtml::label($model->stages[0]->getAttributeLabel('roles'),null)
@@ -134,7 +152,7 @@ $(function() {
 	<div class="row">
 		<div class="cell">
 			<?php echo $form->labelEx($model,'name'); ?>
-			<?php echo $form->textField($model,'name',array('size'=>60,'maxlength'=>250)); ?>
+			<?php echo $form->textField($model,'name',array('maxlength'=>250, 'class'=>'x2-wide-input')); ?>
 			<?php echo $form->error($model,'name'); ?>
 		</div>
 		<div class="cell">
@@ -147,7 +165,7 @@ $(function() {
 
 	$stageRequirements = array(
 		'0'=>Yii::t('workflow','None'),
-		'1'=>Yii::t('workflow','All')
+		'1'=>Yii::t('workflow','All Previous')
 	);
 	for($i=1;$i<=count($model->stages);$i++)
 		$stageRequirements['-'.$i] = Yii::t('workflow','Stage').' '.$i;
@@ -190,6 +208,16 @@ $(function() {
 	</ol>
 	</div>
 	<a href="javascript:void(0)" onclick="addStage()" class="x2-sortlist-add">[<?php echo Yii::t('workflow','Add'); ?>]</a>
+
+    <div class='row color-picker-row'>
+        <label for='colors[first]'><?php echo Yii::t('workflow', 'First Stage Color:'); ?></label>
+        <input name='colors[first]' class='x2-color-picker' 
+         value='<?php echo $model->colors['first']; ?>'> 
+        <label for='colors[last]'><?php echo Yii::t('workflow', 'Last Stage Color:'); ?></label>
+        <input name='colors[last]' class='x2-color-picker' 
+         value='<?php echo $model->colors['last']; ?>'> 
+    </div>
+
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button')); ?>
 	</div>

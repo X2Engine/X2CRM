@@ -36,7 +36,7 @@
 ?>
 
 <?php
-$widgetSettings = ProfileChild::getWidgetSettings();
+$widgetSettings = Profile::getWidgetSettings();
 $mediaSettings = $widgetSettings->MediaBox;
 $mediaBoxHeight = $mediaSettings->mediaBoxHeight;
 $hideUsers = $mediaSettings->hideUsers;

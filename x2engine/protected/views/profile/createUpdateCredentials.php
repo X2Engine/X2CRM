@@ -34,21 +34,21 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-$this->actionMenu = array(
-	array('label'=>Yii::t('profile','View Profile'), 'url'=>array('view','id'=>$profile->id)),
-	array('label'=>Yii::t('profile','Edit Profile'),'url'=>array('update','id'=>$profile->id)),
-	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$profile->id),'visible'=>($profile->id==Yii::app()->user->id)),
-	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$profile->id),'visible'=>($profile->id==Yii::app()->user->id)),
-	array('label'=>Yii::t('profile','Manage Apps'),'url'=>array('manageCredentials','id'=>$profile->id))
-);
 
+$this->actionMenu = array(
+    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $profile->id)),
+    array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $profile->id)),
+    array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
+    array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
+    array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials', 'id' => $profile->id)),
+    
+);
 ?>
 
 <div class="page-title"><h2><?php echo $model->pageTitle; ?></h2></div>
 <div style="padding:10px; display:inline-block;">
 <?php
-
-$this->renderPartial('_credentialsForm', array('model' => $model, 'includeTitle' => false,'user'=>$profile->user));
+$this->renderPartial('_credentialsForm', array('model' => $model, 'includeTitle' => false, 'user' => $profile->user));
 
 echo "<span>$message</span>";
 ?>

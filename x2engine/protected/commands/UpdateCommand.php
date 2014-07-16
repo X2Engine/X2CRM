@@ -50,12 +50,10 @@ class UpdateCommand extends CConsoleCommand {
             'UpdaterBehavior' => array(
                 'class' => 'application.components.UpdaterBehavior',
                 'isConsole' => true,
-                'scenario' => 'update'
+                'scenario' => 'update',
             )
         ));
         $this->requireDependencies();
-        set_exception_handler('ResponseBehavior::respondWithException');
-        set_error_handler('ResponseBehavior::respondWithError');
         return parent::beforeAction($action, $params);
     }
 
@@ -86,7 +84,7 @@ class UpdateCommand extends CConsoleCommand {
     public function actionUpgrade($key,$firstName,$lastName,$email,$force=0,$backup=1) {
         $this->uniqueId = $key;
         // Check for curl:
-        if(!$this->requirements['extensions']['curl'])
+        if(!$this->requirements['requirements']['extensions']['curl'])
             $this->output(Yii::t('admin','Cannot proceed; cURL extension is required for registration.'),1,1);
         // Let's see if we're clear to proceed first:
         $ch = curl_init($this->updateServer.'/installs/registry/register');
@@ -97,10 +95,10 @@ class UpdateCommand extends CConsoleCommand {
                 'firstName' => $firstName,
                 'lastName' => $lastName,
                 'email' => $email,
-                'unique_id' => $uid
+                'unique_id' => $key
             ),
         ));
-        $cr = json_curl_exec($ch);
+        $cr = json_decode(curl_exec($ch));
 
 
         // Now proceed:
@@ -148,6 +146,7 @@ class UpdateCommand extends CConsoleCommand {
             if(array_key_exists('errors', $data)){
                 // The update server doesn't like us.
                 $this->output($data['errors'], 1,1);
+                Yii::app()->end();
             }
             $this->manifest = $data;
         }
@@ -213,10 +212,17 @@ class UpdateCommand extends CConsoleCommand {
         $status = 0;
         $latestUpdaterVersion = $this->getLatestUpdaterVersion();
         if($latestUpdaterVersion){
-            if(version_compare($updaterVersion,$latestUpdaterVersion) < 0){
+            $backCompat = $this->backCompatHooks($latestUpdaterVersion);
+            $refreshCriteria = version_compare($updaterVersion,$latestUpdaterVersion) < 0
+                    || $backCompat;
+            if($refreshCriteria){
                 $classes = $this->updateUpdater($latestUpdaterVersion);
                 if(empty($classes)){
-                    $this->output(Yii::t('admin', 'The updater is now up-to-date and compliant with the updates server. Re-run the command to proceed.'));
+                    if($backCompat) {
+                        $this->output(Yii::t('admin', 'Re-run the command to proceed.'));
+                    } else {
+                        $this->output(Yii::t('admin', 'The updater is now up-to-date and compliant with the updates server. Re-run the command to proceed.'));
+                    }
                 } else {
                     $this->output(Yii::t('admin', 'One or more dependencies of AdminController are missing and could not be automatically retrieved. They are {classes}', array('{classes}' => implode(', ', $classes))),1,1);
                 }

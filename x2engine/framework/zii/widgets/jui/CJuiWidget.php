@@ -5,7 +5,7 @@
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -51,7 +51,25 @@ abstract class CJuiWidget extends CWidget
 	 * This property can also be set as false, which means the widget will not include any script file,
 	 * and it is your responsibility to explicitly include it somewhere else.
 	 */
-	public $scriptFile='jquery-ui.min.js';
+	//public $scriptFile='jquery-ui.min.js';
+     /* x2modstart */ 
+	protected $_scriptFile;
+
+    public function setScriptFile ($scriptFile) {
+        $this->_scriptFile = $scriptFile;
+    }
+
+    public function getScriptFile ($scriptFile=null) {
+        if (!isset ($this->_scriptFile)) {
+            if (!$scriptFile) {
+                $this->_scriptFile = YII_DEBUG ? 'jquery-ui.js' : 'jquery-ui.min.js';
+            }
+            $this->_scriptFile = $scriptFile;
+        }
+        return $this->_scriptFile;
+    }
+    /* x2modend */ 
+
 	/**
 	 * @var mixed the theme CSS file name. Defaults to 'jquery-ui.css'.
 	 * Note the file must exist under the URL specified by {@link themeUrl}/{@link theme}.

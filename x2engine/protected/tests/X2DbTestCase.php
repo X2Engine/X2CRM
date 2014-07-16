@@ -38,10 +38,11 @@ Yii::import('application.models.*');
 Yii::import('application.components.*');
 Yii::import('application.components.permissions.*');
 Yii::import('application.components.util.*');
+Yii::import('application.modules.users.models.*');
 Yii::import('application.modules.bugReports.models.*');
 
 /**
- * Class for database unit testing that performs additional preparation
+ * Base class for database unit testing that performs additional preparation
  * 
  * @package application.tests
  * @author Demitri Morgan <demitri@x2engine.com>
@@ -62,14 +63,23 @@ abstract class X2DbTestCase extends CDbTestCase {
         return array();
     }
 
+    protected static $skipAllTests = false;
+
     private static $_referenceFixtureRecords = array();
 
     private static $_referenceFixtureRows = array();
 
+    public function setUp () {
+        if (self::$skipAllTests) {
+            $this->markTestSkipped ();
+        }
+        parent::setUp ();
+    }
+
     /**
      * Performs environmental set-up similar to that in {@link ApplicationConfigBehavior}
      */
-    public static function setUpAppEnvironment() {
+    public static function setUpAppEnvironment($full=false) {
         // uses a specific key/iv for unit testing
         foreach(array('iv','key') as $ext) {
             $file = Yii::app()->basePath."/config/encryption.$ext";
@@ -80,10 +90,17 @@ abstract class X2DbTestCase extends CDbTestCase {
                 copy($testFile, $file);
             }
         }
-
         EncryptedFieldsBehavior::setup(self::$key,self::$iv);
+        if ($full) self::setUpAppEnvironment2 ();
+    }
 
+    /**
+     * For environment setup actions which can't be performed until after the reference fixtures
+     * have been set up.
+     */
+    public static function setUpAppEnvironment2 () {
         Yii::app()->beginRequest();
+        Yii::app()->suModel = User::model()->findByPk(1);
     }
 
     public static function tearDownAppEnvironment() {
@@ -97,12 +114,14 @@ abstract class X2DbTestCase extends CDbTestCase {
      * sets up some special environment variables before proceeding.
      */
     public static function setUpBeforeClass(){
-        self::setUpAppEnvironment();
+        self::setUpAppEnvironment(); 
         // Load "reference fixtures", needed for reference, which do not need
         // to be reloaded after every single test method:
         $testClass = get_called_class();
         $refFix = call_user_func("$testClass::referenceFixtures");
         $fm = Yii::app()->getComponent('fixture');
+        self::$_referenceFixtureRows = array();
+        self::$_referenceFixtureRecords = array();
         if(is_array($refFix)){
             $fm->load($refFix);
             foreach($refFix as $alias => $table){
@@ -123,6 +142,7 @@ abstract class X2DbTestCase extends CDbTestCase {
                 }
             }
         }
+        self::setUpAppEnvironment2(); 
         parent::setUpBeforeClass();
     }
 
@@ -132,6 +152,19 @@ abstract class X2DbTestCase extends CDbTestCase {
     public static function tearDownAfterClass(){
         parent::tearDownAfterClass();
         self::tearDownAppEnvironment();
+    }
+
+    /**
+     * Assert thet the model can be saved without error and, if errors are present, print
+     * out the corresponding error messages.
+     * @param CActiveRecord $model
+     */
+    public function assertSaves (CActiveRecord $model) {
+        $saved = $model->save ();
+        if ($model->hasErrors ()) {
+            VERBOSE_MODE && print_r ($model->getErrors ());
+        }
+        $this->assertTrue ($saved);
     }
 
     public function __get($name) {

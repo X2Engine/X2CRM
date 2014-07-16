@@ -33,6 +33,23 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+label[for='generateLead'] {
+    font-size: 16px !important;
+    color: #555;
+}
+label[for='generateLead'] + input {
+    margin-top: 11px !important;
+    margin-bottom: -11px !important;
+}
+label[for='generateLead'] + input + span {
+    position: relative;
+    top: -3px;
+}
+
+#generate-lead-form {
+    margin-top: 10px;
+}
+
 
 /* override spectrum color picker css */
 div#web-form .sp-replacer {
@@ -75,7 +92,11 @@ div#web-form .sp-preview {
     height: 1.5em;
     line-height: 1.2em;
 }
+div.web-form-fields.fields-container {
+    margin-bottom: 8px;
+}
 div.web-form-fields {
+    margin-bottom: 5px;
     background: #F0F0F0;
     border: 1px solid;
     width: 150px;
@@ -135,10 +156,6 @@ input.half {
 /*	margin: px; */
 /*	background-color: red; */
 }
-#custom-css {
-	height: 75px;
-}
-
 
 #save {
     margin-top: 1px;
@@ -178,4 +195,20 @@ input.half {
     line-height: 30px;
     margin-left: 5px;
     display: inline;
+}
+
+#custom-css {
+    width: 440px;
+	height: 75px;
+}
+
+
+@media (max-width: 657px) {
+    #web-form .row {
+        overflow-x: hidden;
+    }
+    #custom-css {
+        width: 250px;
+    }
+
 }

@@ -34,13 +34,23 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss('recordViewCss',"
+
+#content {
+    background: none !important;
+    border: none !important;
+}
+");
+Yii::app()->clientScript->registerResponsiveCssFile(
+    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
+
 Yii::app()->clientScript->registerCss ('servicesView', "
-	#contact-info-container {
+	/*#contact-info-container {
 		margin: -6px 5px 5px 5px !important;
-	}
+	}*/
 ");
 
-$authParams['assignedTo']=$model->assignedTo;
+$authParams['X2Model'] = $model;
 $menuItems = array(
 	array('label'=>Yii::t('services','All Cases'), 'url'=>array('index')),
 	array('label'=>Yii::t('services','Create Case'), 'url'=>array('create')),
@@ -64,7 +74,7 @@ $menuItems[] = array(
 			))."');"
 	)
 );
-$modelType = json_encode("Services");
+$modelType = json_encode("Servces");
 $modelId = json_encode($model->id);
 Yii::app()->clientScript->registerScript('widgetShowData', "
 $(function() {
@@ -74,6 +84,9 @@ $(function() {
 $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
+<div class="page-title-placeholder"></div>
+<div class="page-title-fixed-outer">
+    <div class="page-title-fixed-inner">
 <div class="page-title icon services">
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
@@ -89,11 +102,12 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
             'class' => 'x2-button icon right email',
             'title' => Yii::t('app', 'Open email form'),
             'onclick' => 'toggleEmailForm(); return false;',
-            'style' => (empty($model->contactId) ? "display:none" : '')
         )
     );
     ?>
 	<?php //} ?>
+</div>
+</div>
 </div>
 <div id="main-column" class="half-width">
 <?php $form=$this->beginWidget('CActiveForm', array(
@@ -135,11 +149,10 @@ $this->renderPartial(
 $this->endWidget();
 
 if($model->contactId) { // every service case should have a contact associated with it
-	$contact = Contacts::model()->findByPk($model->contactId);
+	$contact = $model->contactIdModel;
 	if($contact) { // if associated contact exists, display mini contact view
 		?>
 		<div id='contact-info-container'>
-		<h2> <?php echo Yii::t('actions','Contact Info'); ?> </h2>
 		<?php
 		$this->renderPartial(
             'application.modules.contacts.views.contacts._detailViewMini',

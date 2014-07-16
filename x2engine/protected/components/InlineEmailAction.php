@@ -50,9 +50,7 @@ class InlineEmailAction extends CAction {
 		return array(
 			'responds' => array(
 				'class' => 'application.components.ResponseBehavior',
-				'isConsole' => false,
-				'exitNonFatal' => false,
-				'longErrorTrace' => false,
+                'errorCode' => 200
 			),
 		);
 	}
@@ -60,8 +58,6 @@ class InlineEmailAction extends CAction {
 	public function run(){
 		$this->attachBehaviors($this->behaviors);
 		// Safety net of handlers - they ensure that errors can be caught and seen easily:
-		set_error_handler('ResponseBehavior::respondWithError');
-		set_exception_handler('ResponseBehavior::respondWithException');
 
 		$scenario = 'custom';
 		if(empty($this->model))
@@ -74,7 +70,7 @@ class InlineEmailAction extends CAction {
         $makeEvent = isset($_GET['skipEvent']) ? !((bool) $_GET['skipEvent']) : 1;
 		// Check to see if the user is requesting a new template
 		if(isset($_GET['template'])){
-			$scenario = 'template';;
+			$scenario = 'template';
 		}
 		$model->setScenario($scenario);
 
@@ -120,7 +116,7 @@ class InlineEmailAction extends CAction {
 					// specified credentials:
 					if($model->credId != Credentials::LEGACY_ID)
 						if(!Yii::app()->user->checkAccess('CredentialsSelect',array('model'=>$model->credentials)))
-							self::respond(Yii::t('app','Did not send email because you do not have permission to use the specified credentials.'),1);
+							$this->respond(Yii::t('app','Did not send email because you do not have permission to use the specified credentials.'),1);
 					$sendStatus = $model->send($makeEvent);
 					// $sendStatus = array('code'=>'200','message'=>'sent (testing)');
 
@@ -150,7 +146,9 @@ class InlineEmailAction extends CAction {
 				// quote mode, in which case we need to include templates and
 				// insertable attributes for setting it all up properly:
 				$response['insertableAttributes'] = $model->insertableAttributes;
-				$templates = array(0=>Yii::t('docs','Custom Message')) + Docs::getEmailTemplates($model->modelName=='Quote'?'quote':'email');
+				$templates = array(0=>Yii::t('docs','Custom Message')) + 
+                    Docs::getEmailTemplates($model->modelName=='Quote'?'quote':'email',
+                    $_POST['associationType']);
 				$response['templateList'] = array();
 				foreach($templates as $id=>$templateName) {
 					$response['templateList'][] = array('id'=>$id,'name'=>$templateName);
@@ -158,9 +156,9 @@ class InlineEmailAction extends CAction {
 			}
 			$this->mergeResponse($response);
 
-			self::respond($message,$failed);
+			$this->respond($message,$failed);
 		}else{
-			self::respond(Yii::t('app', 'Inline email model missing from the request to the server.'), 1);
+			$this->respond(Yii::t('app', 'Inline email model missing from the request to the server.'), true);
 		}
 	}
 

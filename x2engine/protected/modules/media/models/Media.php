@@ -48,6 +48,8 @@
  */
 class Media extends X2Model {
 
+    public $supportsWorkflow = false;
+
     public $_path;
     public $_url;
 
@@ -72,6 +74,13 @@ class Media extends X2Model {
         $this->_path = null; 
         if (file_exists($this->getPath())) {
             unlink($this->getPath());
+        }
+
+        // if theme is deleted which is default, unset default theme setting
+        if ($this->id === Yii::app()->settings->defaultTheme) {
+            Yii::app()->settings->defaultTheme = null;
+            Yii::app()->settings->enforceDefaultTheme = false;
+            Yii::app()->settings->save ();
         }
     }
     
@@ -183,24 +192,28 @@ class Media extends X2Model {
      */
     public function getPath(){
         if(!isset($this->_path)){
-            $pathFmt = array(
-                implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', 'media', '{uploadedBy}', '{fileName}')),
-                implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', '{fileName}'))
-            );
-            $basePath = realpath(Yii::app()->basePath.DIRECTORY_SEPARATOR.'..');
-            $params = array(
-                '{bp}' => $basePath,
-                '{uploadedBy}' => $this->uploadedBy,
-                '{fileName}' => $this->fileName
-            );
-            foreach($pathFmt as $pfmt){
-                $path = realpath(strtr($pfmt, $params));
-                if((bool) $path){
-                    $this->_path = $path;
-                    break;
-                }else{
-                    // The file does not exist.
-                    $this->_path = null;
+            if ($this->associationType === 'logo') { // an exception for logos, fileName equals path name
+                $this->_path = $this->fileName;    
+            } else {
+                $pathFmt = array(
+                    implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', 'media', '{uploadedBy}', '{fileName}')),
+                    implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', '{fileName}')),
+                );
+                $basePath = realpath(Yii::app()->basePath.DIRECTORY_SEPARATOR.'..');
+                $params = array(
+                    '{bp}' => $basePath,
+                    '{uploadedBy}' => $this->uploadedBy,
+                    '{fileName}' => $this->fileName
+                );
+                foreach($pathFmt as $pfmt){
+                    $path = realpath(strtr($pfmt, $params));
+                    if((bool) $path){
+                        $this->_path = $path;
+                        break;
+                    }else{
+                        // The file does not exist.
+                        $this->_path = null;
+                    }
                 }
             }
         }
@@ -238,7 +251,7 @@ class Media extends X2Model {
      */
     public function resolveDimensions(){
         if(!$this->drive && $this->isImage()){
-            if(empty($this->dimensions) && extension_loaded('gd')){
+            if(empty($this->dimensions) && extension_loaded('gd') && !empty($this->path)){
                 $sizeArr = getimagesize($this->path);
                 $this->dimensions = CJSON::encode(array(
                             'width' => $sizeArr[0],
@@ -263,7 +276,10 @@ class Media extends X2Model {
     public function getFmtDimensions(){
         if($this->isImage()){
             $dim = CJSON::decode($this->resolveDimensions());
-            return "{$dim['width']} x {$dim['height']}";
+            if (isset($dim['width'], $dim['height']))
+                return "{$dim['width']} x {$dim['height']}";
+            else
+                return null;
         } else
             return null;
     }
@@ -294,11 +310,11 @@ class Media extends X2Model {
 
     public static function getFilePath($uploadedBy, $fileName){
         $path = "uploads/media/{$uploadedBy}/{$fileName}"; // try new format
-        if(file_exists($path))
+        if(file_exists(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", $path))))
             return $path;
         else{
             $path = "uploads/{$fileName}"; // try old format
-            if(file_exists($path))
+            if(file_exists(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", $path))))
                 return $path;
         }
 
@@ -312,7 +328,7 @@ class Media extends X2Model {
     public function getUrl(){
         if(!isset($this->_url)){
             $relPath = self::getFilePath($this->uploadedBy, $this->fileName);
-            if(file_exists($relPath)) // ensure file exists
+            if(file_exists(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", $relPath)))) // ensure file exists
                 $this->_url = Yii::app()->request->baseUrl."/$relPath";
             else
                 $this->_url = null;
@@ -353,9 +369,9 @@ class Media extends X2Model {
 
     //
     public function fileExists(){
-        if(file_exists("uploads/media/{$this->uploadedBy}/{$this->fileName}")) // try new format
+        if(file_exists(implode (DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", "uploads", "media", $this->uploadedBy, $this->fileName)))) // try new format
             return true;
-        else if(file_exists("uploads/{$this->fileName}")) // try old format
+        else if(file_exists(implode (DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", "uploads", $this->fileName)))) // try old format
             return true;
         else if($this->drive)
             return true;
@@ -365,6 +381,14 @@ class Media extends X2Model {
 
     // convert a string (eg '10MB') to bytes
     private static function toBytes($size){
+        if (!ctype_alpha(substr($size, -1))) {
+            // No suffix, size must already be in bytes
+            return $size;
+        }
+        if (strtolower(substr($size, -1)) === 'b') {
+            // Remove a trailing 'b'
+            $size = substr($size, 0, -1);
+        }
         $type = strtolower(substr($size, -1)); // last char
         $num = substr($size, 0, -1); // number
         switch($type){
@@ -396,7 +420,7 @@ class Media extends X2Model {
     }
 
     public static function forbiddenFileTypes(){
-        return "exe, bat, dmg, js, jar, swf, php, pl, cgi, htaccess, py";
+        return "exe, bat, dmg, js, jar, swf, php, pl, cgi, htaccess, py, rb";
     }
 
     private static function getImageText ($str, $makeLink, $makeImage, $media) {

@@ -36,8 +36,11 @@
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
 Yii::app()->clientScript->registerCssFile(
-    Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
-Yii::app()->clientScript->registerCss('multiselectCss',"
+    Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css');
+Yii::app()->clientScript->registerCss('manageRolesCss',"
+#content {
+    border: none; background: none; 
+}
 .multiselect {
 	width: 460px;
 	height: 200px;
@@ -45,7 +48,22 @@ Yii::app()->clientScript->registerCss('multiselectCss',"
 #switcher {
 	margin-top: 20px;
 }
-",'screen, projection');
+
+#roles-grid-container {
+    padding-bottom: 5px;
+}
+
+#set-session-timeout-row {
+    margin: 5px 0;
+}
+
+
+");
+
+?>
+<div id='roles-grid-container' class='x2-layout-island'>
+<?php
+
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'roles-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.
@@ -63,32 +81,34 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'header'=>Yii::t('admin', 'Session Timeout')
         ),
 	),
-)); ?>
+)); 
+X2Html::getFlashes(); ?>
 <br>
-<a href="#" onclick="$('#addRole').toggle();$('#deleteRole').hide();$('#editRole').hide();$('#exception').hide();" class="x2-button">Add Role</a>
+<a style='margin-left: 5px;' href="#" onclick="$('#addRole').toggle();$('#deleteRole').hide();$('#editRole').hide();$('#exception').hide();" class="x2-button">Add Role</a>
 <a href="#" onclick="$('#deleteRole').toggle();$('#addRole').hide();$('#editRole').hide();$('#exception').hide();" class="x2-button">Delete Role</a>
 <a href="#" onclick="$('#editRole').toggle();$('#addRole').hide();$('#deleteRole').hide();$('#exception').hide();" class="x2-button">Edit Role</a>
 <a href="#" onclick="$('#exception').toggle();$('#addRole').hide();$('#deleteRole').hide();$('#editRole').hide();" class="x2-button">Add Exception</a>
 <br>
+</div>
 <br>
-<div id="addRole"<?php if(!$model->hasErrors()) echo ' style="display:none;"';?>>
+<div id="addRole"<?php if(!$model->hasErrors()) echo ' style="display:none;"';?> class='x2-layout-island'>
 <?php $this->renderPartial('roleEditor',array(
     'model'=>$model,
 )); ?>
 </div>
 
-<div id="deleteRole" style="display:none;">
+<div id="deleteRole" style="display:none;" class='x2-layout-island'>
 <?php $this->renderPartial('deleteRole',array(
     'roles'=>$roles,
 )); ?>
 </div>
 
-<div id="editRole" style="display:none;">
+<div id="editRole" style="display:none;" class='x2-layout-island'>
 <?php $this->renderPartial('editRole',array(
     'model'=>$model,
 )); ?>
 </div>
-<div id="exception" style="display:none;">
+<div id="exception" style="display:none;" class='x2-layout-island'>
 <?php $this->renderPartial('roleException',array(
     'model'=>$model,
     'workflows'=>$workflows,

@@ -64,4 +64,6 @@ return array (
 'Are you sure you want to delete this quote?'=>'',
 'This quote is locked. Are you sure you want to update this quote?'=>'',
 'This quote is locked.'=>'',
+'Import Quotes'=>'',
+'Export Quotes'=>'',
 );

@@ -36,7 +36,7 @@
 
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('opportunities','Opportunities List'),'url'=>array('index')),
-	array('label'=>Yii::t('opportunities','Create')),
+	array('label'=>Yii::t('opportunities','Create Opportunity')),
 ));
 ?>
 <div class="page-title icon opportunities"><h2><?php echo Yii::t('opportunities','Create Opportunity'); ?></h2></div>

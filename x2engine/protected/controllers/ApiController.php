@@ -67,6 +67,11 @@ class ApiController extends x2base {
 				'exitNonFatal' => false,
 				'longErrorTrace' => false,
 			),
+            'CommonControllerBehavior' => array(
+                'class' => 'application.components.CommonControllerBehavior',
+                'redirectOnNullModel' => false,
+                'throwOnNullModel' => false
+            ),
 		));
 	}
 
@@ -126,16 +131,7 @@ class ApiController extends x2base {
 			}
 
 			if ($userId != null && !$access) { // Skip this if we already have access
-				$this->log("Verifying that user with id=$userId can perform action $action...");
-				$access = $access || $userId == 1;
-				if (!$access) {
-					// Check role-based permissions:
-					$this->log('Checking for role-based privileges...');
-					$roles = RoleToUser::model()->findAllByAttributes(array('userId' => $userId));
-					foreach ($roles as $role) {
-						$access = $access || $auth->checkAccess($action, $role->roleId);
-					}
-				}
+                $access = $access || $auth->checkAccess($action,$userId);
 			}
 		} elseif($this->action->id != 'checkPermissions')
 			$this->log(sprintf("Auth item %s not found. Permitting action %s.",$action,$this->action->id));
@@ -168,8 +164,9 @@ class ApiController extends x2base {
         $model = $this->getModel(true);
         $model->setX2Fields($_POST);
 
-        if($this->modelClass === 'Contacts' && isset($_POST['x2_key'])){
-            $model->trackingKey = $_POST['x2_key']; // key is read-only, won't be set by setX2Fields
+        if($this->modelClass === 'Contacts' && isset($_POST['trackingKey'])){
+            // key is read-only, won't be set by setX2Fields
+            $model->trackingKey = $_POST['trackingKey']; 
         }
 
         $setUserFields = false;
@@ -186,7 +183,7 @@ class ApiController extends x2base {
             $setUserFields = true;
             // $scenario .= ' Model nor its behaviors have a property "editingUsername".';
         }
-        // $this->addResponseProperty('scenario',$scenario);
+        // $this->response['scenario'] = $scenario;
         if($setUserFields)
             $this->modelSetUsernameFields($model);
         // Attempt to save the model, and perform special post-save (or error)
@@ -200,7 +197,7 @@ class ApiController extends x2base {
                     $model->{$fieldModel->fieldName} = $fieldModel->parseValue($model->{$fieldModel->fieldName});
             $valid = $valid && $model->save();
         }
-        $this->addResponseProperty('model', $model->attributes);
+        $this->response['model'] = $model->attributes;
 
         if($valid){ // New record successfully created
             $message = "A {$this->modelClass} type record was created"; //sprintf(' <b>%s</b> was created',$this->modelClass);
@@ -221,7 +218,7 @@ class ApiController extends x2base {
             }
             $this->_sendResponse(200, $message);
         }else{ // API model creation failure
-            $this->addResponseProperty('modelErrors', $model->errors);
+            $this->response['modelErrors'] = $model->errors;
             switch($this->modelClass){
                 case 'Contacts':
                     $this->log(sprintf('Failed to save record of type %s due to errors: %s', $this->modelClass, CJSON::encode($model->errors)));
@@ -364,8 +361,15 @@ class ApiController extends x2base {
 		$attrs = $_POST;
 		unset($attrs['user']);
 		unset($attrs['userKey']);
-        $tempModel = new $this->modelClass;
+        // Use the "search" scenario to avoid default values
+        $tempModel = new $this->modelClass('search');
+
         $tempModel->setX2Fields($attrs);
+        // Some users might want to include ID in the lookup, and since it's
+        // read-only, it needs to be set manually.
+        if(isset($attrs['id']))
+            $tempModel->id = $attrs['id'];
+        // Only use non-null attributes
         $attrs = array_filter($tempModel->getAttributes());
 		$model = X2Model::model($this->modelClass)->findByAttributes($attrs);
 
@@ -405,7 +409,7 @@ class ApiController extends x2base {
 						$this->_sendResponse(500,Yii::t('api','Failed to save relationship record for unknown reason.'));
 					}
 				} else {
-					$this->addResponseProperty('modelErrors',$relationship->errors);
+					$this->response['modelErrors'] = $relationship->errors;
 					$this->_sendResponse(400,$this->validationMsg('create', $relationship));
 				}
 				break;
@@ -500,11 +504,11 @@ class ApiController extends x2base {
 				default:
 					$this->_sendResponse(200, $model->attributes,true);
 			}
-			$this->addResponseProperty('model',$model->attributes);
+			$this->response['model'] = $model->attributes;
 			$this->_sendResponse(200, 'Model created successfully');
 		} else {
 			// Errors occurred
-			$this->addResponseProperty('modelErrors',$model->errors);
+			$this->response['modelErrors'] = $model->errors;
 			$msg = $this->validationMsg('update', $model);
 			$this->_sendResponse(500,$msg);
 		}
@@ -562,6 +566,7 @@ class ApiController extends x2base {
 					$contact = X2Model::model('Contacts')->findByPk($phoneNumber->modelId);
 					if(isset($contact)){
 
+                        $contact->disableBehavior('changelog');
 						$contact->updateLastActivity();
 
 						$assignees = array($contact->assignedTo);
@@ -624,10 +629,10 @@ class ApiController extends x2base {
 						if($failure) {
 							$message = 'Saving notifications failed.';
 						} else {
-							X2Flow::trigger('RecordVoipInboundTrigger', array(
+							/*X2Flow::trigger('RecordVoipInboundTrigger', array(
 								'model' => $contact,
 								'number' => $matches[0]
-							));
+							));*/
 							$message = 'Notifications created for user(s): '.implode(',',$usersSuccess);
 							if($partialFailure) {
 								$message .= '; saving notifications failed for users(s): '.implode(',',$usersFailure);
@@ -745,6 +750,7 @@ class ApiController extends x2base {
         if(is_int(Yii::app()->locked)) {
             $this->_sendResponse(503,"X2Engine is currently undergoing maintenance. Please try again later.");
         }
+        
         $filterChain->run();
     }
 
@@ -838,7 +844,7 @@ class ApiController extends x2base {
 	 */
 	public function validationMsg($action, $model){
 		$msg = "<h1>".Yii::t('api', 'Error')."</h1>";
-		$msg .= Yii::t("Couldn't perform {a} on model {m}", array('{a}' => $action, '{m}' => "<b>".get_class($model)."</b>"));
+		$msg .= Yii::t('api',"Couldn't perform {a} on model {m}", array('{a}' => $action, '{m}' => "<b>".get_class($model)."</b>"));
 		$msg .= "<ul>";
 		foreach($model->errors as $attribute => $attr_errors){
 			$msg .= "<li>$attribute</li>";
@@ -867,14 +873,15 @@ class ApiController extends x2base {
 	 */
 	protected function _sendResponse($status = 200, $body = '',$direct = false) {
 		// set the status
-		header("HTTP/1.1 $status " . $this->_getStatusCodeMessage($status));
-		if($direct) {
-			header('Content-type: application/json');
-			echo CJSON::encode($body);
-			Yii::app()->end();
-		}
 
-		// we need to create the body if none is passed
+		if($direct) {
+            // Send the body without an envelope, i.e. the "message" or "error"
+            // properties that are standard to ResponseBehavior.
+            $this->response->body = json_encode($body);
+            $this->response->sendHttp($status);
+		}
+        
+		// Create the body if none is passed
 		if ($body == '') {
 			// create some body messages
 			$message = '';
@@ -910,8 +917,7 @@ class ApiController extends x2base {
 		<hr />
 		<address>' . $signature . '</address>';
 		}
-		// data.message is $body, data.error is true if the return status isn't 200 for success
-		self::respond($body, $status != 200);
+		$this->response->sendHttp($status,$body);
 	}
 
 	/**

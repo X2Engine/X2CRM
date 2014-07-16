@@ -67,6 +67,14 @@ class FileUtilTest extends FileOperTestCase {
         $this->removeTestDirs();
     }
 
+    public function testRrmDirWithPatFtp(){
+        $this->useFtp('testRrmDirWithPat');
+    }
+
+    public function testRrmDirWithoutPatFtp(){
+        $this->useFtp('testRrmDirWithoutPat');
+    }
+
     /**
      * Make sure ccopy can properly create subdirectories and follows all
      * expected behavior.
@@ -162,6 +170,10 @@ class FileUtilTest extends FileOperTestCase {
         $this->removeTestDirs();
     }
 
+    public function testCcopyFtp(){
+        $this->useFtp("testCcopy");
+    }
+
     public function testFailPathRmDir(){
         $this->setupTestDirs();
         FileUtil::rrmdir(FileUtil::rpath($this->baseDir.'/subdir1/.'));
@@ -169,8 +181,23 @@ class FileUtilTest extends FileOperTestCase {
         $this->removeTestDirs();
     }
 
+    public function testFailPathRmDirFtp(){
+        $this->useFtp("testFailPathRmDir");
+    }
+
     public function testFormatSize(){
-        $this->assertEquals('10 KB', FileUtil::formatSize(1024 * 10));
+        $sizes = array(
+            '0 B' => 0,
+            '200 B' => 200,
+            '10 KB' => 1024 * 10,
+            '6 MB' => 6 * 1024*1024,
+            '2 GB' => 2 * pow(1024, 3),
+            '3 TB' => 3 * pow(1024, 4),
+            //'99 PB' => 99 * pow(1024, 5),
+        );
+        foreach ($sizes as $readable => $size) {
+            $this->assertEquals($readable, FileUtil::formatSize($size));
+        }
     }
 
     public function testGetContents(){
@@ -240,6 +267,34 @@ class FileUtilTest extends FileOperTestCase {
         $endPoint = '/home/joeschmoe/public_html/backup/protected/controllers/FatController.php';
         $relpath = FileUtil::relpath($endPoint, $startPoint);
         $this->assertEquals(FileUtil::rpath('../../backup/protected/controllers/FatController.php'), $relpath);
+    }
+
+    public function testFtpStripChroot() {
+        $absolute = "/home/users/testuser/some/directory";
+        $chrootDir = "/home/users/testuser";
+        $chrootDirTrailingSlash = "/home/users/testuser/";
+        $absoluteWin = 'C:\Inetpub\Ftproot\LocalUser\testuser\some\test\file.txt';
+        $winChroot = "C:\\Inetpub\\Ftproot\\LocalUser\\testuser";
+        $relative = "../test/dir";
+
+        FileUtil::$ftpChroot = $chrootDir;
+        $this->assertEquals("/some/directory", FileUtil::ftpStripChroot($absolute));
+        $this->assertEquals($relative, FileUtil::ftpStripChroot($relative));
+        FileUtil::$ftpChroot = $chrootDirTrailingSlash;
+        $this->assertEquals("/some/directory", FileUtil::ftpStripChroot($absolute));
+        FileUtil::$ftpChroot = $winChroot;
+        $this->assertEquals("\\some\\test\\file.txt", FileUtil::ftpStripChroot($absoluteWin));
+    }
+
+    public function testFtpInit() {
+        if (X2_FTP_FILEOPER) {
+            $this->assertEquals('php', FileUtil::$fileOper);
+            FileUtil::ftpInit(X2_FTP_HOST, X2_FTP_USER, X2_FTP_PASS);
+            $this->assertEquals('ftp', FileUtil::$fileOper);
+            FileUtil::ftpClose();
+            $this->assertEquals('php', FileUtil::$fileOper);
+        } else
+            $this->markTestSkipped('Skipping: X2_FTP_FILEOPER is disabled.');
     }
 
 }

@@ -88,12 +88,10 @@ $('#save-button')
 
 <?php
 
-$users = User::model()->findAll(array(
-	'select'=>'id, username, firstName, lastName, CONCAT(firstName," ",lastName) AS fullname', 
-	'index'=>'id',
-	'order'=>'fullname ASC',
-
-));
+$users = User::model()->findAllByAttributes(array('status'=>User::STATUS_ACTIVE));
+$thisUser = null;
+$users = array_combine(array_map(function($u){return $u->fullName;},$users),$users);
+ksort($users);
 
 if(isset($id)) {
 
@@ -121,18 +119,24 @@ if(isset($id)) {
 		});
 	});
 	",CClientScript::POS_HEAD);
-	
 	$names = array();
-	foreach($users as $user)
-		if($user->username != 'admin' && $user->id != $id)
-			$names[$user->id] = $user->firstName . ' ' . $user->lastName;
-			
-	$viewPermission = X2CalendarPermissions::getUserIdsWithViewPermission($id);
+	foreach($users as $name => $user){
+        if($user->id != $id){
+            if(!Yii::app()->authManager->checkAccess('administrator', $user->id))
+                $names[$user->id] = $name;
+            elseif($user->username == 'chames') {
+                echo $user->username.' '.$user->id;
+                die();
+            }
+        } else{
+            $thisUser = $user;
+        }
+    }
+    
+    $viewPermission = X2CalendarPermissions::getUserIdsWithViewPermission($id);
 	$editPermission = X2CalendarPermissions::getUserIdsWithEditPermission($id);
 	
-	$first = $users[$id]->firstName;
-	$last = $users[$id]->lastName;
-	$fullname = $first . ' ' . $last;
+	$fullname = $thisUser->fullName;
 	
 	echo CHtml::hiddenField('user-id', $id); // save user id for POST
 	?>
@@ -176,7 +180,7 @@ $this->endWidget();
 	<div style="padding: 8px">
 	<?php
 	foreach($users as $user) {
-			echo CHtml::link($user->firstName . ' ' . $user->lastName, $this->createUrl('', array('id'=>$user->id)));
+			echo CHtml::link($user->fullName, $this->createUrl('', array('id'=>$user->id)));
 			echo "<br>\n";
 	}
 	?>

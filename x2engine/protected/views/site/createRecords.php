@@ -41,13 +41,13 @@ $form=$this->beginWidget('CActiveForm', array(
    'enableAjaxValidation'=>false,
 )); ?>
 <div class="page-title"><h2><?php echo Yii::t('contacts','Contact'); ?></h2></div>
-<?php $this->renderPartial('application.components.views._form', array('model'=>$contact, 'users'=>$users,'modelName'=>'contacts', 'form'=>$form, 'isQuickCreate'=>true, 'hideAccount'=>true)); ?>
+<?php $this->renderPartial('application.components.views._form', array('model'=>$contact, 'users'=>$users,'modelName'=>'contacts', 'form'=>$form, 'suppressForm'=>true, 'hideAccount'=>true)); ?>
 
 <div class="page-title rounded-top"><h2><?php echo Yii::t('quotes','Account'); ?></h2></div>
-<?php $this->renderPartial('application.components.views._form', array('model'=>$account, 'users'=>$users,'modelName'=>'accounts', 'form'=>$form, 'isQuickCreate'=>true)); ?>
+<?php $this->renderPartial('application.components.views._form', array('model'=>$account, 'users'=>$users,'modelName'=>'accounts', 'form'=>$form, 'suppressForm'=>true)); ?>
 
 <div class="page-title rounded-top"><h2><?php echo Yii::t('opportunities','Opportunity'); ?></h2></div>
-<?php $this->renderPartial('application.components.views._form', array('model'=>$opportunity, 'users'=>$users,'modelName'=>'Opportunity', 'form'=>$form, 'isQuickCreate'=>true, 'hideAccount'=>true)); ?>
+<?php $this->renderPartial('application.components.views._form', array('model'=>$opportunity, 'users'=>$users,'modelName'=>'Opportunity', 'form'=>$form, 'suppressForm'=>true, 'hideAccount'=>true)); ?>
 
 <div class="row buttons">
 	<?php echo CHtml::submitButton(Yii::t('app','Create'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n"; ?>

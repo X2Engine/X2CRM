@@ -41,11 +41,11 @@ $this->actionMenu = array(
     array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $model->id), 'visible' => $canEdit),
     array('label' => Yii::t('profile', 'Change Settings')),
     array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $model->id), 'visible' => ($model->id == Yii::app()->user->id)),
-	array('label'=>Yii::t('profile','Manage Apps'),'url'=>array('manageCredentials'))
+    array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials')),
+    
 );
 ?>
 <div class="page-title icon profile"><h2><?php echo Yii::t('profile', 'Change Personal Settings'); ?></h2></div>
-
 
 <?php
 echo $this->renderPartial('_settings', array(
@@ -57,6 +57,7 @@ echo $this->renderPartial('_settings', array(
     'myLoginSounds' => $myLoginSounds,
     'myNotificationSounds' => $myNotificationSounds,
     'menuItems' => $menuItems,
-    'allTags' => $allTags
+    'allTags' => $allTags,
+    
 ));
 ?>

@@ -14,11 +14,13 @@
 $iniModules = array(
 	'accounts',
 	'actions',
+    'x2Activity',
 	'calendar',
 	'contacts',
 	'users',
 	'docs',
 	'groups',
+	'x2Leads',
 	'marketing',
 	'media',
 	'opportunities',
@@ -34,7 +36,9 @@ $iniModules = array(
 // Search for module availability; criteria = existence of register.php
 $modules = array();
 foreach($iniModules as $module) {
-	if(file_exists(dirname(__FILE__)."/../modules/$module/register.php")) {
+	if($module === 'x2Activity' || 
+       file_exists(dirname(__FILE__)."/../modules/$module/register.php")) {
+
 		$modules[] = $module;
 	}
 }

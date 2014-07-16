@@ -67,7 +67,7 @@ class EmailDropboxSettings extends JSONEmbeddedModel {
         return array(
             array('alias','email','allowEmpty'=>true),
             array('createContact,zapLineBreaks,emptyContact,logging,ignoreEmptyName','boolean'),
-            array('alias,createContact,zapLineBreaks,emptyContact,logging,ignoreEmptyName','safe'),
+            array('alias,caseFlag,createContact,zapLineBreaks,emptyContact,logging,ignoreEmptyName','safe'),
         );
     }
 
@@ -90,60 +90,39 @@ class EmailDropboxSettings extends JSONEmbeddedModel {
     }
 
     public function modelLabel() {
-        return Yii::t('admin','Email Dropbox Settings');
+        return Yii::t('admin','Email Capture Settings');
     }
 
     public function renderInputs() {
         $htmlOptions = array('style'=>'display:inline-block;margin-right: 10px;');
         echo CHtml::activeCheckBox($this,'createContact',$this->htmlOptions('createContact',$htmlOptions));
         echo CHtml::activeLabel($this,'createContact',$this->labelOptions('createContact',$htmlOptions));
-        echo CHtml::tag('span', array(
-            'class' => 'x2-hint',
-            'style'=>$htmlOptions['style'],
-            'title' => Yii::t('admin', 'If disabled, the email dropbox will ignore any emails that are to or from addresses not matching any contacts in X2CRM. If enabled, new contacts will be created automatically using name info contained in the email.')
-        ), '[?]',$htmlOptions);
+        echo X2Html::hint(Yii::t('admin', 'If disabled, the email dropbox will ignore any emails that are to or from addresses not matching any contacts in X2Engine. If enabled, new contacts will be created automatically using name info contained in the email.'));
         echo '<br />';
         echo '<div style="margin-left:20px;'.((bool) $this->createContact ? '' : 'display:none').'" id="empty-contact">';
         echo CHtml::activeCheckBox($this,'emptyContact',$this->htmlOptions('emptyContact',$htmlOptions));
         echo CHtml::activeLabel($this,'emptyContact',$this->labelOptions('emptyContact',$htmlOptions));
-        echo CHtml::tag('span', array(
-            'class' => 'x2-hint',
-            'style'=>$htmlOptions['style'],
-            'title' => Yii::t('admin', "If enabled, the email dropbox will create a new contact record associated with a new unique email address even if the first and last name cannot be found in the email. If disabled, it ignores all email that does not contain contacts' first and last names. This setting has no effect if {ccfe} is disabled.", array('{ccfe}' => '"' . Yii::t('admin', 'Create contacts from emails') . '"'))
-        ), '[?]',$htmlOptions);
+        echo X2Html::hint(Yii::t('admin', "If enabled, the email dropbox will create a new contact record associated with a new unique email address even if the first and last name cannot be found in the email. If disabled, it ignores all email that does not contain contacts' first and last names. This setting has no effect if {ccfe} is disabled.", array('{ccfe}' => '"' . Yii::t('admin', 'Create contacts from emails') . '"')));
         echo '</div>';
         echo CHtml::activeCheckBox($this,'zapLineBreaks',$this->htmlOptions('zapLineBreaks',$htmlOptions));
         echo CHtml::activeLabel($this,'zapLineBreaks',$this->labelOptions('zapLineBreaks',$htmlOptions));
-        echo CHtml::tag('span', array(
-            'class' => 'x2-hint',
-            'style'=>$htmlOptions['style'],
-            'title' => Yii::t('admin', 'If enabled, the mail parser will (when extracting the body of an email) attempt to clear the text of artificial line breaks induced by RFC email format specifications (which limit lines to 78 characters). If disabled, the email parser will not do this.')
-        ), '[?]',$htmlOptions);
+        echo X2Html::hint(Yii::t('admin', 'If enabled, the mail parser will (when extracting the body of an email) attempt to clear the text of artificial line breaks induced by RFC email format specifications (which limit lines to 78 characters). If disabled, the email parser will not do this.'));
         echo '<br />';
         echo CHtml::activeCheckBox($this,'logging',$this->htmlOptions('logging',$htmlOptions));
         echo CHtml::activeLabel($this,'logging',$this->labelOptions('logging',$htmlOptions));
-        echo CHtml::tag('span', array('class' => 'x2-hint','style'=>$htmlOptions['style'], 'title' => Yii::t('admin', 'If enabled, the email dropbox will record email capture events in a log file in protected/runtime. This option is useful for troubleshooting but will take up some extra disk space on a system that captures a high volume of emails.')), '[?]',$htmlOptions);
+        echo X2Html::hint(Yii::t('admin', 'If enabled, the email dropbox will record email capture events in a log file in protected/runtime. This option is useful for troubleshooting but will take up some extra disk space on a system that captures a high volume of emails.'));
         echo '<br />';
         echo CHtml::activeCheckBox($this,'ignoreEmptyName',$this->htmlOptions('ignoreEmptyName',$htmlOptions));
         echo CHtml::activeLabel($this,'ignoreEmptyName',$this->labelOptions('ignoreEmptyName',$htmlOptions));
-        echo CHtml::tag('span', array('class' => 'x2-hint','style'=>$htmlOptions['style'], 'title' => Yii::t('admin', "If disabled, the import will exit and send an error message email if the forwarded message header does not contain the sender's full name.")), '[?]',$htmlOptions);
+        echo X2Html::hint(Yii::t('admin', "If disabled, the import will exit and send an error message email if the forwarded message header does not contain the sender's full name."));
         echo '<br />';
         echo CHtml::activeLabel($this, 'caseFlag', $this->labelOptions('caseFlag', $htmlOptions));
         echo CHtml::activeTextField($this, 'caseFlag', $this->htmlOptions('caseFlag', $htmlOptions));
-        echo CHtml::tag('span', array(
-            'class' => 'x2-hint',
-            'style' => $htmlOptions['style'],
-            'title' => Yii::t('admin', 'When sending an email, you can specify a case to attach the email to by putting this code, followed immediately by the case ID, into the email body before the forwarded message, or without any case ID to create a new case from the email.')
-                       .' '.Yii::t('admin','Note, content entered into this field is used verbatim and is not stripped of leading or trailing spaces, if any.')
-                ), '[?]', $htmlOptions);
+        echo X2Html::hint(Yii::t('admin', 'When sending an email, you can specify a case to attach the email to by putting this code, followed immediately by the case ID, into the email body before the forwarded message, or without any case ID to create a new case from the email.'));
         echo '<br />';
         echo CHtml::activeLabel($this,'alias',$this->labelOptions('alias',$htmlOptions));
         echo CHtml::activeTextField($this,'alias',$this->htmlOptions('alias',$htmlOptions));
-        echo CHtml::tag('span', array(
-            'class' => 'x2-hint',
-            'style' => $htmlOptions['style'],
-            'title' => Yii::t('admin', 'The address to use as the sender when sending error notification emails, if no default is set for system notifications. By default, if left blank, the email dropbox will use the first addresses in the {tohf} or {cchf} field that contains {dbat}.', array('{tohf}' => 'To:', '{cchf}' => 'CC:', '{dbat}' => '"dropbox@"'))
-        ),'[?]', $htmlOptions);
+        echo X2Html::hint(Yii::t('admin', 'The address to use as the sender when sending error notification emails, if no default is set for system notifications. By default, if left blank, the email dropbox will use the first addresses in the {tohf} or {cchf} field that contains {dbat}.', array('{tohf}' => 'To:', '{cchf}' => 'CC:', '{dbat}' => '"dropbox@"')));
         echo '<br />';
         echo "<script type=\"text/javascript\">
                 (function($) {

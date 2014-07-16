@@ -1,108 +1,165 @@
 <?php
 
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+
 Yii::import('application.components.util.ResponseUtil');
 
 /**
  * Behavior class providing utilities for responding in a uniform yet also
- * context-sensitive manner.
+ * context-sensitive manner. Utilizes the standalone class {@link ResponseUtil}.
  *
- * @property boolean $exitNonFatal If true, exit on non-fatal errors.
- * @property boolean $isConsole If true, run methods as though there's no HTTP request happening.
- * @property string $logCategory Output logging will occur; this specifies the log category.
- * @property boolean $longErrorTrace Whether to print extended error traces with errors, for debugging
- * @property array $response The response, if returning a JSON
+ * @property boolean $exitNonFatal (write-only) Sets the value of
+ *  {@link ResponseUtil::$exitNonFatal}.
+ * @property boolean $isConsole If true, run methods as though there's no HTTP
+ *  request happening.
+ * @property string $logCategory The log category to which informational output
+ *  should be sent.
+ * @property boolean $longErrorTrace (write-only) Sets the value of
+ *  {@link ResponseUtil::$longErrorTrace}
+ * @property ResponseUtil $response The response utility singleton
+ * @property boolean $shutdown (write-only) Sets the value of
+ *  {@link ResponseUtil::$shutdown}
  * @package application.components
  */
 class ResponseBehavior extends CBehavior {
 
-	public static $_exitNonFatal = true;
-	public static $_isConsole = true;
-	public static $_longErrorTrace = false;
-	public static $_response = array();
-    public static $_logCategory = 'application';
+    /**
+     * If true: the error handling methods of {@link ResponseUtil} should be
+     * used.
+     */
+    public $handleErrors = false;
+    
+    /**
+     * If true: the exception handling method
+     * {@link ResponseUtil::respondWithException} should be used
+     * @var type
+     */
+    public $handleExceptions = false;
+
+	private $_isConsole;
+
+    /**
+     * These properties will be automatically "mirrored" in instances of this
+     * class. In other words, the setter method for this class will map the
+     * property to the similarly-named property in {@link ResponseUtil}.
+     * @var array
+     */
+    private static $_ruProperties = array(
+        'errorCode',
+        'exitNonFatal',
+        'longErrorTrace',
+        'shutdown'
+    );
+
+    private $_logCategory = 'application';
+
+    public function __construct(){
+        // Establish a graceful shutdown method by default:
+        $this->ruProperty('shutdown',"Yii::app()->end();");
+    }
+
+    /**
+     * 
+     * @param type $owner
+     */
+    public function attach($owner){
+        parent::attach($owner);
+        $this->ruProperty('includeExtraneousOutput',YII_DEBUG);
+        if($this->handleErrors) {
+            if(method_exists('ResponseUtil','respondWithError'))
+                set_error_handler('ResponseUtil::respondWithError');
+            if(method_exists('ResponseUtil','respondFatalErrorMessage'))
+                register_shutdown_function('ResponseUtil::respondFatalErrorMessage');
+        }
+        if($this->handleExceptions
+                && method_exists('ResponseUtil','respondWithException')) {
+    		set_exception_handler('ResponseUtil::respondWithException');
+        }
+
+    }
+
+    ////////////////////
+    // Getter Methods //
+    ////////////////////
 
 	/**
-	 * Tells whether a response is already in progress; for triggering special
-	 * actions in the shutdown function respondFatalErrorMessage, if any.
-	 * @var type
-	 */
-	private static $_responding = false;
-
-	/**
-	 * Magic getter for {@link exitNonFatal}
-	 * @return bool
-	 */
-	public function getExitNonFatal(){
-		return self::$_exitNonFatal;
-	}
-
-	/**
-	 * Magic setter for {@link exitNonFatal}
-	 */
-	public function setExitNonFatal($value){
-		self::$_exitNonFatal = $value;
-	}
-
-	/**
-	 * Magic getter for {@link isConsole}
+	 * {@link isConsole}
 	 * @return bool
 	 */
 	public function getIsConsole(){
-		return self::$_isConsole;
+        if(!isset($this->_isConsole)) {
+            $this->_isConsole = ResponseUtil::isCli();
+        }
+		return $this->_isConsole;
 	}
-
-	/**
-	 * Magic setter for {@link isConsole}
-	 */
-	public function setIsConsole($value){
-		self::$_isConsole = $value;
-	}
-
-    public function getLogCategory() {
-        return self::$_logCategory;
-    }
 
     /**
-     *
+     * {@link logCategory}
+     * @return type
      */
-    public function setLogCategory($value) {
-        self::$_logCategory = $value;
-
+    public function getLogCategory() {
+        return $this->_logCategory;
     }
 
 	/**
-	 * Magic getter for {@link longErrorTrace}
-	 * @return type
-	 */
-	public function getLongErrorTrace(){
-		return self::$_longErrorTrace;
-	}
-
-	/**
-	 * Magic setter for {@link longErrorTrace}
-	 * @param type $long
-	 */
-	public function setLongErrorTrace($long){
-		self::$_longErrorTrace = $long;
-	}
-
-	/**
-	 * Magic getter for {@link response} 
+	 * Returns the response utility object in use.
 	 */
 	public function getResponse(){
-		return self::$_response;
+        if(!ResponseUtil::getObject()) {
+            // Instantiate a new object
+            new ResponseUtil();
+        }
+		return ResponseUtil::getObject();
 	}
 
 	/**
-	 * Magic setter for {@link response}
+	 * Incorporate more properties into the response.
+     * 
+	 * @param array $properties
 	 */
-	public function setResponse(array $response){
-		self::$_response = $response;
+	public function mergeResponse(array $properties) {
+        foreach($properties as $name => $value) {
+            $this->response[$name] = $value;
+        }
 	}
-
+    
     /**
-     * A web-safe wrapper for {@link UpdaterBehavior::respond()} for use when
-     * logging is necessary (and output, if using in a console command) but
+     * A web-safe wrapper for {@link respond()}
+     *
+     * For use when logging (and in console commands, output) are needed, but
      * halting is not.
      *
      * @param string $msg Message to log/respond with
@@ -111,116 +168,83 @@ class ResponseBehavior extends CBehavior {
      *  the application will halt after printing the error message; otherwise it
      *  will continue.
      */
-    public function output($msg,$error=false,$fatal=false) {
+    public function output($msg,$error=false) {
+        Yii::log($msg,$error ? 'error' : 'trace',$this->_logCategory);
         if($this->isConsole) {
             // Perform both logging and response:
-            self::respond($msg,$error,$fatal);
-        } else {
-            // Perform logging only:
-            Yii::log($msg,$error ? 'error' : 'trace',self::$_logCategory);
+            $this->respond($msg,$error);
         }
+    }
 
+    /**
+     * Wrapper method for
+     * @param type $msg
+     * @param type $error
+     */
+    public function respond($msg,$error=false) {
+        ResponseUtil::respond($msg,$error);
+    }
+
+    ////////////////////
+    // Setter Methods //
+    ////////////////////
+
+    /**
+     * Sets a named static property of {@link ResponseUtil}, if it exists.
+     *
+     * This is a means of hedging the behavior against backwards compatibility
+     * glitches of versions 3.5 - 3.7.5 wherein ResponseUtil was not declared
+     * as a dependency (despite how it was later) and thus not updated during
+     * self-refreshes.
+     *
+     * @param type $name
+     * @param type $value
+     */
+    public function ruProperty($name,$value) {
+        if(property_exists('ResponseUtil',$name))
+            ResponseUtil::${$name} = $value;
+    }
+
+    /**
+     * Set the default error code in {@link ResponseUtil}
+     * @param integer $value
+     */
+    public function setErrorCode($value) {
+        $this->ruProperty('errorCode',(integer) $value);
     }
 
 	/**
-	 * Universal, web-agnostic response function.
-	 *
-	 * Responds with a JSON if used in a web request; merely echoes the response
-	 * message otherwise.
-	 *
-	 * @param type $message The message to respond with.
-	 * @param type $error Indicates that an error has occurred
-	 * @param type $fatal Shut down PHP thread after printing the message
+	 * Sets {@link ResponseUtil::$exitNonFatal}
+	 * @return bool
 	 */
-	public static function respond($message, $error = false, $fatal = false){
-		self::$_responding = true;
-        Yii::log($message,$error ? 'error' : 'trace', self::$_logCategory);
-		if(self::$_isConsole){
-			echo "$message\n";
-			if($error && $fatal)
-				Yii::app()->end();
-		} else{
-			$response = self::$_response;
-			$response['message'] = $message;
-			$response['error'] = $error;
-			header("Content-type: application/json");
-			echo CJSON::encode($response);
-			Yii::app()->end();
-		}
+	public function setExitNonFatal($value){
+		$this->ruProperty('exitNonFatal',(bool) $value);
 	}
 
 	/**
-	 * Error handler method that uses the web-agnostic response method.
-	 *
-	 * @param type $no
-	 * @param type $st
-	 * @param type $fi
-	 * @param type $ln
+	 * {@link isConsole}
 	 */
-	public static function respondWithError($no, $st, $fi = Null, $ln = Null){
-		$fatal = $no === E_ERROR;
-		if($fatal || self::$_exitNonFatal){
-			$message = "Error [$no]: $st $fi L$ln";
-			if(self::$_longErrorTrace){
-				ob_start();
-				debug_print_backtrace();
-				$message .= ob_get_contents();
-				ob_end_clean();
-			}
-			self::respond($message, true);
-		}
+	public function setIsConsole($value){
+		$this->_isConsole = $value;
 	}
 
-	/**
-	 * Shutdown function for handling fatal errors
-	 */
-	public static function respondFatalErrorMessage(){
-		$error = error_get_last();
-		if($error != null && !self::$_responding){
-			$errno = $error["type"];
-			$errfile = $error["file"];
-			$errline = $error["line"];
-			$errstr = $error["message"];
-			self::respond("PHP ".($errno == E_PARSE ? 'parse' : 'fatal')." error [$errno]: $errstr in $errfile L$errline",true);
-		}
-	}
+    /**
+     * {@link logCategory}
+     */
+    public function setLogCategory($value) {
+        $this->_logCategory = $value;
+    }
 
-	/**
-	 * @param Exception $e The uncaught exception
+    /**
+	 * {@link longErrorTrace}
 	 */
-	public static function respondWithException($e){
-		$message = 'Exception: "'.$e->getMessage().'" in '.$e->getFile().' L'.$e->getLine()."\n";
-		if(self::$_longErrorTrace){
-			foreach($e->getTrace() as $stackLevel){
-				$message .= $stackLevel['file'].' L'.$stackLevel['line'].' ';
-				if($stackLevel['class'] != ''){
-					$message .= $stackLevel['class'];
-					$message .= '->';
-				}
-				$message .= $stackLevel['function'];
-				$message .= "();\n";
-			}
-		}
-		self::respond($message, true);
-	}
+	public function setLongErrorTrace($value){
+		$this->ruProperty('longErrorTrace',(bool) $value);
+    }
 
-	/**
-	 * Add a new property to the response object.
-	 * @param type $key
-	 * @param type $object
-	 */
-	public function addResponseProperty($key,$object) {
-		$this->mergeResponse(array($key=>$object));
-	}
-
-	/**
-	 * Incorporate more properties into the response.
-	 * @param array $properties
-	 */
-	public function mergeResponse($properties) {
-		$this->response = array_merge($this->response,$properties);
-	}
-
+    public function setShutdown($value) {
+        $this->ruProperty('shutdown',(bool) $value);
+    }
 }
 
 ?>

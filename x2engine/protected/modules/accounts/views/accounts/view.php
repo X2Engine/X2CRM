@@ -33,7 +33,21 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-$authParams['assignedTo']=$model->assignedTo;
+
+Yii::app()->clientScript->registerCss('recordViewCss',"
+#content {
+    background: none !important;
+    border: none !important;
+}
+");
+Yii::app()->clientScript->registerResponsiveCssFile(
+    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
+
+
+
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relationships.js');
+
+$authParams['X2Model']=$model;
 $menuItems = array(
 	array('label'=>Yii::t('accounts','All Accounts'), 'url'=>array('index')),
 	array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
@@ -41,6 +55,9 @@ $menuItems = array(
 	array('label'=>Yii::t('accounts','Edit Account'), 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Share Account'),'url'=>array('shareAccount','id'=>$model->id)),
 	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
+    array(
+        'label' => Yii::t('app', 'Send Email'), 'url' => '#',
+        'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
     array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
 //	array('label'=>Yii::t('quotes','Quotes/Invoices'),'url'=>'javascript:void(0)','linkOptions'=>array('onclick'=>'x2.inlineQuotes.toggle(); return false;')),
@@ -74,6 +91,10 @@ $menuItems[] = array(
 $this->actionMenu = $this->formatMenu($menuItems, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
+
+<div class="page-title-placeholder"></div>
+<div class="page-title-fixed-outer">
+    <div class="page-title-fixed-inner">
 <div class="page-title icon accounts">
 	<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 	<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
@@ -95,6 +116,8 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
     );
     ?>
 </div>
+</div>
+</div>
 <div id="main-column" class="half-width">
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'accounts-form',
@@ -112,7 +135,7 @@ $this->widget('InlineEmailForm',
 			'modelName'=>'Accounts',
 			'modelId'=>$model->id,
 		),
-		'templateType' => 'accountEmail',
+		'templateType' => 'email',
 		'insertableAttributes' => 
             array(Yii::t('accounts','Account Attributes')=>$model->getEmailInsertableAttrs ()),
 		'startHidden'=>true,
@@ -146,19 +169,6 @@ $website = json_encode($model->website);
 $opportunityTooltip = json_encode(Yii::t('accounts', 'Create a new Opportunity associated with this Account.'));
 $contactTooltip = json_encode(Yii::t('accounts', 'Create a new Contact associated with this Account.'));
 $accountsTooltip = json_encode(Yii::t('accounts', 'Create a new Account associated with this Account.'));
-
-Yii::app()->clientScript->registerScript('create-model', "
-	$(function() {
-		// init create opportunity button
-		$('#create-opportunity').initCreateOpportunityDialog('$createOpportunityUrl', 'Accounts', '{$model->id}', $accountName, $assignedTo, $opportunityTooltip);
-
-		// init create contact button
-		$('#create-contact').initCreateContactDialog('$createContactUrl', 'Accounts', '{$model->id}', $accountName, $assignedTo, $phone, $website, $contactTooltip, '', '', '');
-
-        // init create account button
-		$('#create-account').initCreateAccountDialog2('$createAccountUrl', 'Accounts', '{$model->id}', $accountName, $assignedTo, '', '', $accountsTooltip);
-    });
-");
 ?>
 </div>
 <div class="history half-width">
@@ -176,6 +186,6 @@ $this->widget('History',array('associationType'=>'accounts','associationId'=>$mo
 ?>
 </div>
 
-<?php $this->widget('CStarRating',array('name'=>'rating-js-fix', 'htmlOptions'=>array('style'=>'display:none;'))); ?>
+<?php //$this->widget('CStarRating',array('name'=>'rating-js-fix', 'htmlOptions'=>array('style'=>'display:none;'))); ?>
 
 

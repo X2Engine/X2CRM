@@ -104,6 +104,7 @@ x2.emailProgressControl.init = function() {
             that.pause();
         }
     });
+    this.controls.find('.refresh').click(this.refresh);
 }
 
 /**
@@ -111,18 +112,31 @@ x2.emailProgressControl.init = function() {
  */
 x2.emailProgressControl.start = function () {
     this.paused = false;
+    this.showThrobber();
     this.toggleButton.text(this.text['Pause']);
     this.send();
 }
 
 x2.emailProgressControl.pause = function () {
     this.paused = true;
+    this.hideThrobber();
     this.toggleButton.text(this.text['Resume']);
 }
 
 x2.emailProgressControl.errorMessage = function(message) {
     this.getElement('#emailProgressControl-errorContainer').show();
     this.errorBox.append(message+'<br />');
+}
+
+x2.emailProgressControl.refresh = function () {
+    if(typeof x2.campaignChart != "undefined")
+        x2.campaignChart.chart.getEventsBetweenDates();
+    $.fn.yiiGridView.update("campaign-grid", {
+        data: {
+            "id_page": 1
+        }
+    })
+
 }
 
 /**
@@ -141,10 +155,10 @@ x2.emailProgressControl.send = function () {
     }
     this.currentlySending = true;
     var listItem = this.listItems.shift();
-    this.showThrobber();
     $.ajax({
         url: that.sendUrl+'?campaignId='+that.campaignId+'&itemId='+listItem,
-        dataType:'json'
+        dataType:'json',
+        beforeSend: function () {that.showThrobber();}
     }).done(function(response){
         that.currentlySending = false;
         // Update text status
@@ -158,8 +172,6 @@ x2.emailProgressControl.send = function () {
             }
             if(!that.paused) { // Send the next one!
                 that.send();
-            } else {
-                that.hideThrobber();
             }
         } else { // full stop
             that.pause();
@@ -172,6 +184,7 @@ x2.emailProgressControl.send = function () {
         that.listItems.push(listItem); // Add the item back in at the end
         that.errorMessage('<span class="emailFail">'+that.text['Could not send email due to an error in the request to the server.']+' ('+textStatus+' '+jqXHR.errorCode+' '+message+')</span>');
     }).always(function() {
+        that.hideThrobber();
         that.afterSend();
     });
 }

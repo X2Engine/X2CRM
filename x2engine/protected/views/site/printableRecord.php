@@ -67,7 +67,7 @@
 		// replace stars with textual representation
 		$('span[id^="<?php echo $modelClass; ?>-<?php echo $id; ?>-rating"]').each (function () {
 			var stars = $(this).find ('[checked="checked"]').val ();
-			//console.log ('stars = ' + stars);
+            stars = stars ? stars : 0;
 			$(this).children ().remove ();
 			$(this).html (stars + '/5 <?php echo addslashes (Yii::t('app', 'Stars')); ?>');
 		});

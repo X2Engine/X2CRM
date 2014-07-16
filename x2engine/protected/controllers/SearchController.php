@@ -373,7 +373,7 @@ class SearchController extends x2base {
             $dataProvider = new CArrayDataProvider($records, array(
                         'id' => 'id',
                         'pagination' => array(
-                            'pageSize' => ProfileChild::getResultsPerPage(),
+                            'pageSize' => Profile::getResultsPerPage(),
                         ),
                     ));
 
@@ -391,7 +391,7 @@ class SearchController extends x2base {
             $results = new CActiveDataProvider('Tags', array(
                         'criteria' => $criteria,
                         'pagination' => array(
-                            'pageSize' => ProfileChild::getResultsPerPage(),
+                            'pageSize' => Profile::getResultsPerPage(),
                         ),
                         'sort' => array(
                             'defaultOrder' => 'timestamp DESC',

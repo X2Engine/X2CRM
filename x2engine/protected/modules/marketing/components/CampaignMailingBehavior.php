@@ -189,7 +189,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
     public static function prepareEmail(Campaign $campaign, Contacts $contact){
         $email = $contact->email;
         $now = time();
-        $uniqueId = md5(uniqid(rand(), true));
+        $uniqueId = md5(uniqid(mt_rand(), true));
         // Add some newlines to prevent hitting 998 line length limit in
         // phpmailer and rfc2821
         $emailBody = preg_replace('/<br>/', "<br>\n", $campaign->content);
@@ -238,7 +238,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         //
         // The rationale for disabling this (magic redirect tracking links) is
         // that it caused email to get caught in spam filters.
-        // 
+        //
         /*
         $url = $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'click'));
         $emailBody = preg_replace(
@@ -246,8 +246,13 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         */
 
         // Insert unsubscribe link(s):
+        $unsubUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
+            'uid' => $uniqueId,
+            'type' => 'unsub',
+            'email' => $email
+                ));
         $emailBody = preg_replace(
-                '/\{_unsub\}/', '<a href="'.Yii::app()->createExternalUrl('/marketing/marketing/click', array('uid' => $uniqueId, 'type' => 'unsub', 'email' => $email)).'">'.Yii::t('marketing', 'unsubscribe').'</a>', $emailBody);
+                '/\{_unsub\}/', '<a href="'.$unsubUrl.'">'.Yii::t('marketing', 'unsubscribe').'</a>', $emailBody);
 
         // Replace attribute variables:
         $replacementParams = array(
@@ -320,10 +325,17 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * @return array An array containing the "id", "sent" and "uniqueId" columns.
      */
     public static function deliverableItems($listId,$unsent = false) {
-        $where = ' WHERE i.listId=:listId AND i.unsubscribed=0 AND c.doNotEmail=0 AND NOT ((c.email IS NULL OR c.email="") AND (i.emailAddress IS NULL OR i.emailAddress=""))';
+        $where = ' WHERE 
+            i.listId=:listId
+            AND i.unsubscribed=0
+            AND (c.doNotEmail!=1 OR c.doNotEmail IS NULL)
+            AND NOT ((c.email IS NULL OR c.email="") AND (i.emailAddress IS NULL OR i.emailAddress=""))';
         if($unsent)
             $where .= ' AND i.sent=0';
-        return Yii::app()->db->createCommand('SELECT i.id,i.sent,i.uniqueId FROM x2_list_items AS i LEFT JOIN x2_contacts AS c ON c.id=i.contactId '.$where)
+        return Yii::app()->db->createCommand('SELECT
+            i.id,i.sent,i.uniqueId
+            FROM x2_list_items AS i
+            LEFT JOIN x2_contacts AS c ON c.id=i.contactId '.$where)
                     ->queryAll(true,array(':listId'=>$listId));
     }
 

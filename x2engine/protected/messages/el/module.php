@@ -31,4 +31,7 @@ return array (
 'Unable to create custom module directory.'=>'Δεν είναι δυνατή η δημιουργία προσαρμοσμένων κατάλογο ενότητα.',
 'Unable to create config file for custom module.'=>'Δεν είναι δυνατή η δημιουργία αρχείου διαμόρφωσης για το custom module.',
 'Unable to create table for custom module.'=>'Δεν είναι δυνατή η δημιουργία πίνακα για την προσαρμοσμένη μονάδα.',
+'Import {X}'=>'Εισαγωγή {X}',
+'Export {X}'=>'Εξαγωγή {X}',
+'{modelName} Attributes'=>'{modelName} Χαρακτηριστικά',
 );

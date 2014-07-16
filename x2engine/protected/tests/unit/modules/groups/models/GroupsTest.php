@@ -48,8 +48,6 @@ Yii::import('application.components.util.*');
  */
 class GroupTest extends CDbTestCase {
 
-    const VERBOSE = 0;
-
     public $fixtures = array (
         'users' => 'User',
         'groups' => array ('Groups', '_1'),
@@ -65,7 +63,7 @@ class GroupTest extends CDbTestCase {
             $groupModel = Groups::model ()->findByAttributes ($val);
             $userIds = array_map (function ($a) { return $a['id']; }, $groupModel->users);
 
-            if(self::VERBOSE) {
+            if(VERBOSE_MODE) {
                 print ($groupModel->id."\n");
                 print_r ($userIds);
             }
@@ -91,6 +89,25 @@ class GroupTest extends CDbTestCase {
 
         // Group 1 should have online users.
         $this->assertTrue ($this->groups('group1')->hasOnlineUsers ());
+
+    }
+
+    public function testAfterDelete () {
+        $group = Groups::model ()->findByPk ('1');
+        if (VERBOSE_MODE) {
+            print ('id of group to delete: ');
+            print ($group->id);
+        }
+        
+        // assert that group to user records exist for this group
+        $this->assertTrue (
+            sizeof (GroupToUser::model ()->findByAttributes (array ('groupId' => $group->id))) > 0);
+        $group->delete ();
+
+        // assert that group to user records were deleted
+        $this->assertTrue (
+            sizeof (
+                GroupToUser::model ()->findByAttributes (array ('groupId' => $group->id))) === 0);
 
     }
 

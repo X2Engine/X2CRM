@@ -180,4 +180,5 @@ return array (
 'Saved Searches'=>'保存された検索',
 'Clicking this button will pull any relevant '=>'このボタンをクリックすると、関連するすべてを引っ張ってくる',
 'Drag tags here from the tag cloud widget or click to '=>'タグクラウドウィジェットからここにドラッグタグやクリックで',
+'Export {model}'=>'輸出{model}',
 );

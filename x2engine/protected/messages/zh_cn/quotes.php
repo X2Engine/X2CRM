@@ -68,4 +68,6 @@ return array (
 'Are you sure you want to delete this quote?'=>'您确定要删除这句话？',
 'This quote is locked. Are you sure you want to update this quote?'=>'本帖被锁定。您确定要更新这句话？',
 'This quote is locked.'=>'本帖被锁定。',
+'Import Quotes'=>'进口行情',
+'Export Quotes'=>'出口行情',
 );

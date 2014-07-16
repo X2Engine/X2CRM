@@ -11,4 +11,5 @@ return array (
 'Error'=>'Ошибка',
 'Cannot delete; no parameters specified for finding a relationship record to delete.'=>'Не удается удалить; никакие параметры не указаны для нахождения запись связи удалить.',
 'No relationships deleted; none were found matching specfied parameters.'=>'Не отношения исключить; не было найдено ни specfied соответствующие параметры.',
+'Couldn\'t perform {a} on model {m}'=>'Не мог \ &#39;т выполнить {a} от модели {m}',
 );

@@ -34,4 +34,7 @@ return array (
 'Campaign Form'=>'キャンペーンフォーム',
 'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'このフォームでは、以下のレポートに表示されるアカウントの関連先を郵送するためのキャンペーンを生成することができます。アカウントの主担当者として設定されている唯一の電子メール連絡先への &quot;第一次接触&quot;を選択します。各アカウントに関連するすべての連絡先を電子メールで送信するために &quot;すべて&quot;を選択します。',
 'Primary Contact'=>'一次的接触',
+'Import Accounts'=>'インポートのアカウント',
+'Export Accounts'=>'輸出アカウント',
+'Bug Report Attributes'=>'バグレポートの属性',
 );

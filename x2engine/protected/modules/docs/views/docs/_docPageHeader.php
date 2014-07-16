@@ -51,13 +51,12 @@ if(!$model->isNewRecord) {
 
 if(!$model->isNewRecord){
     // Menu items that apply only to existing docs
-    if(array_search($user, $pieces) !== false || $user == $model->editPermissions || Yii::app()->user->checkAccess('DocsDelete', array('createdBy' => $model->createdBy)))
+    if(array_search($user, $pieces) !== false || $user == $model->editPermissions)
         $actionMenu[] = array('label' => Yii::t('docs', 'Edit Doc'), 'url' => array('/docs/update', 'id' => $model->id));
     if(Yii::app()->user->checkAccess('DocsDelete', array('createdBy' => $model->createdBy)))
-        $actionMenu[] = array('label' => Yii::t('docs', 'Delete Doc'), 'url' => 'javascript:void(0);', 'linkOptions' => array('submit' => array('delete', 'id' => $model->id), 'confirm' => Yii::t('docs', 'Are you sure you want to delete this item?')));
-    if(Yii::app()->user->checkAccess('DocsChangePermissions', array('createdBy' => $model->createdBy)))
-        $actionMenu[] = array('label' => Yii::t('docs', 'Edit Doc Permissions'), 'url' => array('changePermissions', 'id' => $model->id));
-    $actionMenu[] = array('label' => Yii::t('docs', 'Export Doc'), 'url' => array('exportToHtml', 'id' => $model->id));
+        $actionMenu[] = array('label' => Yii::t('docs', 'Delete Doc'), 'url' => 'javascript:void(0);', 'linkOptions' => array('submit' => array('/docs/delete', 'id' => $model->id), 'confirm' => Yii::t('docs', 'Are you sure you want to delete this item?')));
+    $actionMenu[] = array('label' => Yii::t('docs', 'Edit Doc Permissions'), 'url' => array('/docs/changePermissions', 'id' => $model->id));
+    $actionMenu[] = array('label' => Yii::t('docs', 'Export Doc'), 'url' => array('/docs/exportToHtml', 'id' => $model->id));
 }
 
 $action = $this->action->id;
@@ -69,10 +68,10 @@ foreach(array_keys($actionMenu) as $ind) {
     }
 }
 
-$this->actionMenu = $this->formatMenu($actionMenu);
+$this->actionMenu = $this->formatMenu($actionMenu,array('X2Model'=>$model));
 
 ?>
-<div class="page-title icon docs"><h2><span class="no-bold"><?php CHtml::encode($title); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
+<div class="page-title icon docs"><h2><span class="no-bold"><?php echo CHtml::encode($title); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 <?php
 if(!$model->isNewRecord){
     if($model->checkEditPermission() && $action != 'update'){

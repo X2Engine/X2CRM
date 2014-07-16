@@ -160,7 +160,7 @@ $this->renderPartial('application.components.views._form', array(
 	'modelName'=>'Campaign',
 	'specialFields'=>array(
 		'template'=>CHtml::activeDropDownList(
-			$model,'template',array('0'=>Yii::t('docs','Custom Message')) + Docs::getEmailTemplates(),
+			$model,'template',array('0'=>Yii::t('docs','Custom Message')) + Docs::getEmailTemplates('email', 'Contacts'),
 			array(
 				'title'=>$model->getAttributeLabel('template'),
 				'id'=>'Campaign_templateDropdown'

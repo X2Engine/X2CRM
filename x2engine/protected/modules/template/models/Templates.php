@@ -41,6 +41,7 @@ Yii::import('application.models.X2Model');
  * @package application.modules.template.models
  */
 class Templates extends X2Model {
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Template the static model class

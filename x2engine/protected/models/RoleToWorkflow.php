@@ -35,7 +35,6 @@
  *****************************************************************************************/
 
 /**
- * This is the model class for table "x2_role_to_workflow".
  *
  * @package application.models
  * @property integer $id

@@ -1,0 +1,85 @@
+<!--
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+-->
+<html>
+<head>
+</head>
+<body>
+<form id="weblead" action="TEST_WEBROOT_URL_ALIAS_1x2WebTrackingTestPages/customWebLeadCaptureScriptTest.php" method="post">            
+  <div class="row">
+    <b>
+    <label for="Contacts_firstName" class="required">First Name <span class="required">*</span>
+    </label>
+    </b>
+    <br />
+    <input title="First Name" name="Contacts[firstName]" id="Contacts_firstName" type="text" /> 
+  </div>
+  <div class="row">
+    <b>
+    <label for="Contacts_lastName" class="required">Last Name <span class="required">*</span>
+    </label>
+    </b>
+    <br />
+    <input title="Last Name" name="Contacts[lastName]" id="Contacts_lastName" type="text" /> 
+  </div>
+  <div class="row">
+    <b>
+    <label for="Contacts_email">Email</label><span class="asterisk"> *</span>                </b>
+    <br />
+    <input title="Email" name="Contacts[email]" id="Contacts_email" type="text" />
+  </div>
+  <div class="row">
+    <b>
+    <label for="Contacts_phone">Phone</label>                </b>
+    <br />
+    <input title="Phone" name="Contacts[phone]" id="Contacts_phone" type="text" />            
+  </div>
+  <div class="row">
+    <b>
+    <label for="Contacts_backgroundInfo">Background Info</label>                
+    </b>
+    <br />
+    <textarea title="Background Info" name="Contacts[backgroundInfo]" id="Contacts_backgroundInfo">
+    </textarea>            
+  </div>
+  <div class="submit-button-row row">
+    <input id="submit" type="submit" name="yt0" value="Submit" />
+  </div>
+  <input type='hidden' name='x2_key'>
+</form>
+<script src="TEST_WEBROOT_URL_ALIAS_1x2WebTrackingTestPages/webTrackerTest.php"></script>
+</body>
+</html>

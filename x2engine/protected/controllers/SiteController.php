@@ -48,10 +48,16 @@ class SiteController extends x2base {
     public $portlets = array();
 
     public function filters(){
-        return array(
+        return array_merge(parent::filters(),array(
             'setPortlets',
             'accessControl',
-        );
+        ));
+    }
+
+    public function behaviors() {
+        return array_merge (parent::behaviors (), array(
+            'CommonSiteControllerBehavior' => array('class' => 'application.components.CommonSiteControllerBehavior'),
+        ));
     }
 
     protected function beforeAction($action = null){
@@ -68,20 +74,28 @@ class SiteController extends x2base {
     public function accessRules(){
         return array(
             array('allow',
-                'actions' => array('login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin', 'error', 'storeToken', 'sendErrorReport'),
+                'actions' => array(
+                    'login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin',
+                    'error', 'storeToken', 'sendErrorReport','resetPassword','anonHelp'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('groupChat', 'newMessage', 'getMessages', 'checkNotifications', 'updateNotes', 'addPersonalNote',
-                    'getNotes', 'getURLs', 'addSite', 'deleteMessage', 'fullscreen', 'widgetState', 'widgetOrder', 'saveGridviewSettings', 'saveFormSettings',
-                    'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload', 'uploadProfilePicture', 'index', 'contact',
-                    'viewNotifications', 'inlineEmail', 'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'printRecord', 'createRecords',
-                    'toggleVisibility', 'page', 'showWidget', 'hideWidget', 'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
+                'actions' => array(
+                    'groupChat', 'newMessage', 'getMessages', 'checkNotifications', 'updateNotes',
+                    'addPersonalNote', 'getNotes', 'getURLs', 'addSite', 'deleteMessage',
+                    'fullscreen', 'widgetState', 'widgetOrder', 'saveGridviewSettings',
+                    'saveFormSettings', 'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload',
+                    'uploadProfilePicture', 'index', 'contact', 'viewNotifications', 'inlineEmail',
+                    'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'printRecord',
+                    'createRecords', 'toggleVisibility', 'page', 'showWidget', 'hideWidget',
+                    'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
                     'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'minimizePosts',
-                    'bugReport', 'deleteRelationship', 'minMaxLeftWidget', 'toggleFeedControls', 'toggleFeedFilters',
-                    'getTip', 'share', 'activityFeedOrder', 'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory',
-                    'dynamicDropdown', 'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
-                    'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL', 'removeTmpUpload'),
+                    'bugReport', 'deleteRelationship', 'minMaxLeftWidget', 'toggleFeedControls',
+                    'toggleFeedFilters', 'getTip', 'share', 'activityFeedOrder',
+                    'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory', 'dynamicDropdown',
+                    'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
+                    'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL',
+                    'removeTmpUpload'),
                 'users' => array('@'),
             ),
             array('allow',
@@ -124,12 +138,12 @@ class SiteController extends x2base {
 //    public function filterSetPortletsq($filterChain){
 //        if(!Yii::app()->user->isGuest){
 //            $this->portlets=array();
-//            $this->portlets = ProfileChild::getWidgets();
+//            $this->portlets = Profile::getWidgets();
 //            // $this->portlets=array();
-//            // $arr=ProfileChild::getWidgets(Yii::app()->user->getId());
+//            // $arr=Profile::getWidgets(Yii::app()->user->getId());
 //
 //            // foreach($arr as $key=>$value){
-//                // $config=ProfileChild::parseWidget($value,$key);
+//                // $config=Profile::parseWidget($value,$key);
 //                // $this->portlets[$key]=$config;
 //            // }
 //        }
@@ -139,16 +153,15 @@ class SiteController extends x2base {
     public function actionSendErrorReport(){
         if(isset($_POST['report'])){
             $errorReport = $_POST['report'];
+            $errorReport = unserialize(base64_decode($errorReport));
             if(isset($_POST['email'])){
-                $errorReport = unserialize(base64_decode($errorReport));
                 $errorReport['email'] = $_POST['email'];
-                $errorReport = base64_encode(serialize($errorReport));
             }
             if(isset($_POST['bugDescription'])){
-                $errorReport = unserialize(base64_decode($errorReport));
                 $errorReport['bugDescription'] = $_POST['bugDescription'];
-                $errorReport = base64_encode(serialize($errorReport));
             }
+            $errorReport['edition'] = Yii::app()->edition;
+            $errorReport = base64_encode(serialize($errorReport));
             $ccUrl = "http://www.x2software.com/receiveErrorReport.php";
             $ccSession = curl_init($ccUrl);
             curl_setopt($ccSession, CURLOPT_POST, 1);
@@ -229,30 +242,13 @@ class SiteController extends x2base {
         }
     }
 
+    /**
+     * Gets a new tip for the "helpful tips" widget
+     */
     public function actionGetTip(){
-        //opensource or pro
-        $edition = Yii::app()->settings->edition;
-        //True or False
-        $admin = Yii::app()->params->isAdmin;
-        //Check user type and editon to deliever an appropriate tip
-        if($edition == 'pro'){
-            if($admin){
-                $where = 'edition = "pro" OR edition = "opensource"';
-            }else{
-                $where = 'admin = 0';
-            }
-        }else if($admin){
-            $where = 'edition = "opensource"';
-        }else{
-            $where = 'admin = 0 AND edition = "opensource"';
-        }
-        $tip = Yii::app()->db->createCommand()
-                ->select('*')
-                ->from('x2_tips')
-                ->where($where)
-                ->order('rand()')
-                ->queryRow();
-        echo json_encode($tip);
+        $tipWidget = new HelpfulTips;
+        header('Content-type: application/json');
+        echo json_encode($tipWidget->getNewTip());
     }
 
     public function actionDynamicDropdown($val, $dropdownId, $field = false, $module = null){
@@ -399,7 +395,9 @@ class SiteController extends x2base {
      * Adds a new URL
      */
     public function actionAddSite(){
-        if((isset($_POST['url-title']) && isset($_POST['url-url'])) && ($_POST['url-title'] != '' && $_POST['url-url'] != '')){
+        if((isset($_POST['url-title']) && isset($_POST['url-url'])) && ($_POST['url-title'] != '' 
+            && $_POST['url-url'] != '')){
+
             $site = new URL;
             $site->title = $_POST['url-title'];
             $site->url = $_POST['url-url'];
@@ -624,7 +622,7 @@ class SiteController extends x2base {
 
         if(isset ($gvSettings) && isset($_GET['viewName'])){
             if(isset($gvSettings))
-                $result = ProfileChild::setGridviewSettings($gvSettings, $_GET['viewName']);
+                $result = Profile::setGridviewSettings($gvSettings, $_GET['viewName']);
         }
         if($result)
             echo '200 Success';
@@ -643,7 +641,7 @@ class SiteController extends x2base {
             $formSettings = json_decode($_GET['formSettings'], true);
 
             if(isset($formSettings))
-                $result = ProfileChild::setFormSettings($formSettings, $_GET['formName']);
+                $result = Profile::setFormSettings($formSettings, $_GET['formName']);
         }
         if($result)
             echo 'success';
@@ -658,7 +656,7 @@ class SiteController extends x2base {
         if(isset($_POST['Widget']) && isset($_POST['Height'])){
             $heights = $_POST['Height'];
             $widget = $_POST['Widget'];
-            $widgetSettings = ProfileChild::getWidgetSettings();
+            $widgetSettings = Profile::getWidgetSettings();
 
             foreach($heights as $key => $height){
                 $widgetSettings->$widget->$key = intval($height);
@@ -911,7 +909,8 @@ class SiteController extends x2base {
             }else{ // non-google drive upload
                 $model = new Media;
                 $temp = CUploadedFile::getInstanceByName('upload'); // file uploaded through form
-                if(isset($temp)){
+                $tempName = $temp->getTempName();
+                if(isset($temp) && !empty($tempName)){
                     $name = $temp->getName();
                     $name = str_replace(' ', '_', $name);
                     $check = Media::model()->findAllByAttributes(array('fileName' => $name));
@@ -933,7 +932,7 @@ class SiteController extends x2base {
                     $username = Yii::app()->user->name;
 
                     // copy file to user's media uploads directory
-                    if(FileUtil::ccopy($temp->getTempName(), "uploads/media/$username/$name")){
+                    if(FileUtil::ccopy($tempName, "uploads/media/$username/$name")){
                         if(isset($_POST['associationId']))
                             $model->associationId = $_POST['associationId'];
                         if(isset($_POST['associationType']))
@@ -963,7 +962,12 @@ class SiteController extends x2base {
                             case 'bg':
                             case 'bg-private':
                                 $this->redirect(
-                                    array('/profile/settings', 'id' => Yii::app()->user->getId()));
+                                    array(
+                                        '/profile/settings',
+                                        'id' => Yii::app()->user->getId(),
+                                        'bgId' => $model->id
+                                    )
+                                );
                                 break;
                             default:
                                 $this->handleDefaultUpload ($model, $name);
@@ -1330,15 +1334,20 @@ class SiteController extends x2base {
      * View all notifications for the current web user.
      */
     public function actionViewNotifications(){
+        $pageSize = Profile::getResultsPerPage();
+
         $dataProvider = new CActiveDataProvider('Notification', array(
-                    'criteria' => array(
-                        // 'order'=>'viewed ASC',
-                        'condition' => 'user="'.Yii::app()->user->name.'"'
-                    ),
-                    'sort' => array(
-                        'defaultOrder' => 'createDate DESC'
-                    ),
-                ));
+            'criteria' => array(
+                // 'order'=>'viewed ASC',
+                'condition' => 'user="'.Yii::app()->user->name.'"'
+            ),
+            'pagination' => array (
+                'pageSize' => $pageSize,
+            ),
+            'sort' => array(
+                'defaultOrder' => 'createDate DESC'
+            ),
+        ));
         $this->render('viewNotifications', array(
             'dataProvider' => $dataProvider,
         ));
@@ -1380,96 +1389,7 @@ class SiteController extends x2base {
         $model->useCaptcha = false;
 
         if(isset($_POST['LoginForm'])){
-            $model->attributes = $_POST['LoginForm']; // get user input data
-            if($model->rememberMe){
-                foreach(array('username','rememberMe') as $attr) {
-                    // Expires in 30 days
-                    AuxLib::setCookie (CHtml::resolveName ($model, $attr), $model->$attr,
-                        2592000);
-                }
-            }else{
-                foreach(array('username','rememberMe') as $attr) {
-                    // Remove the cookie if they unchecked the box
-                    AuxLib::clearCookie(CHtml::resolveName($model, $attr));
-                }
-            }
-
-            Session::cleanUpSessions();
-
-            $ip = $this->getRealIp();
-
-            // increment count on every session with this user/IP, to prevent brute force attacks using session_id spoofing or whatever
-            Yii::app()->db->createCommand('UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
-                    ->bindValues(array(':time' => time(), ':name' => $model->username, ':ip' => $ip))
-                    ->execute();
-
-            $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
-                    ->select('username')
-                    ->from('x2_users')
-                    ->where('username=:name AND status=1', array(':name' => $model->username))
-                    ->limit(1)
-                    ->queryScalar(); // get the correctly capitalized username
-
-            if($activeUser === false){
-                $model->verifyCode = ''; // clear captcha code
-                $model->addError('username', Yii::t('app', 'Incorrect username or password.'));
-                $model->addError('password', Yii::t('app', 'Incorrect username or password.'));
-            }else{
-                $model->username = $activeUser;
-
-                if(isset($_SESSION['sessionId']))
-                    $sessionId = $_SESSION['sessionId'];
-                else
-                    $sessionId = $_SESSION['sessionId'] = session_id();
-
-                $session = X2Model::model('Session')->findByPk($sessionId);
-
-                // if this client has already tried to log in, increment their attempt count
-                if($session === null){
-                    $session = new Session;
-                    $session->id = $sessionId;
-                    $session->user = $model->username;
-                    $session->lastUpdated = time();
-                    $session->status = 0;
-                    $session->IP = $ip;
-                }else{
-                    $session->lastUpdated = time();
-                    if($session->status < -1)
-                        $model->useCaptcha = true;
-                    if($session->status < -2)
-                        $model->setScenario('loginWithCaptcha');
-                }
-
-                if($model->validate() && $model->login()){  // user successfully logged in
-                    // We're not using the isAdmin parameter of the application
-                    // here because isAdmin in this context hasn't been set yet.
-                    $isAdmin = Yii::app()->user->checkAccess('AdminIndex');
-                    if($isAdmin) {
-                        $this->attachBehavior('updaterBehavior', array(
-                            'class' => 'application.components.UpdaterBehavior',
-                            'isConsole' => false
-                        ));
-                        $this->checkUpdates();   // check for updates if admin
-                    } else
-                        Yii::app()->session['versionCheck'] = true; // ...or don't
-
-                    $session->status = 1;
-                    $session->save();
-                    SessionLog::logSession($model->username, $sessionId, 'login');
-                    $_SESSION['playLoginSound'] = true;
-                    if(Yii::app()->user->returnUrl == '/site/index')
-                        $this->redirect(array('/site/index'));
-                    else
-                        $this->redirect(Yii::app()->user->returnUrl); // after login, redirect to wherever
-                } else{ // login failed
-                    $model->verifyCode = ''; // clear captcha code
-                    if($model->hasErrors()){
-                        $model->addError('username', Yii::t('app', 'Incorrect username or password.'));
-                        $model->addError('password', Yii::t('app', 'Incorrect username or password.'));
-                    }
-                    $session->save();
-                }
-            }
+            $this->login ($model);
         }
 
         header('REQUIRES_AUTH: 1'); // tell windows making AJAX requests to redirect
@@ -1530,7 +1450,7 @@ class SiteController extends x2base {
                         if($session === null){
                             $session = new Session;
                             $session->id = $sessionId;
-                            $session->user = $model->username;
+                            $session->user = $model->getSessionUsername();
                             $session->lastUpdated = time();
                             $session->status = 1;
                             $session->IP = $ip;
@@ -1561,8 +1481,6 @@ class SiteController extends x2base {
                             $this->redirect(array('/site/index'));
                         else
                             $this->redirect(Yii::app()->user->returnUrl);
-                    } else{
-                        print_r($model->getErrors());
                     }
                 }else{
                     $this->render('googleLogin', array(
@@ -1686,7 +1604,8 @@ class SiteController extends x2base {
      */
     public function actionAddRelationship(){
         //check if relationship already exits
-        if(isset($_POST['ModelName']) && isset($_POST['ModelId']) && isset($_POST['RelationshipModelName']) && isset($_POST['RelationshipModelId'])){
+        if(isset($_POST['ModelName']) && isset($_POST['ModelId']) && 
+           isset($_POST['RelationshipModelName']) && isset($_POST['RelationshipModelId'])){
 
             $modelName = $_POST['ModelName'];
             $modelId = $_POST['ModelId'];
@@ -1732,6 +1651,8 @@ class SiteController extends x2base {
 //            }
             echo "success";
             Yii::app()->end();
+        } else {
+            throw new CHttpException (400, Yii::t('app', 'Bad Request'));
         }
     }
 
@@ -2031,20 +1952,38 @@ class SiteController extends x2base {
         if(isset($_POST['x2widget']) && isset($_POST['x2widget'])){
             $widgets = $_POST['x2widget']; // list of widgets
             $block = $_POST['block']; // left, right, or center
-
             $layout = Yii::app()->params->profile->getLayout();
 
-            $newOrder = array();
+            if ($block === 'left') {
 
-            foreach($widgets as $name){
-                foreach($layout[$block] as $key => $widget){
-                    if($key == $name){
-                        $newOrder[$key] = $widget;
+                $newOrder = array();
+
+                // remove ordered left widgets from the layout and prepend them to the list
+                // of left widgets in the new order
+                foreach($widgets as $name){
+                    foreach($layout[$block] as $key => $widget){
+                        if($key == $name){
+                            $newOrder[$key] = $widget;
+                            unset ($layout[$block][$key]);
+                        }
                     }
                 }
-            }
+                $layout[$block] = $newOrder + $layout[$block];
 
-            $layout[$block] = $newOrder;
+            } else {
+                $newOrder = array();
+
+                foreach($widgets as $name){
+                    foreach($layout[$block] as $key => $widget){
+                        if($key == $name){
+                            $newOrder[$key] = $widget;
+                        }
+                    }
+                }
+
+                $layout[$block] = $newOrder;
+                Yii::app()->params->profile->saveLayout($layout);
+            }
             Yii::app()->params->profile->saveLayout($layout);
         }
     }
@@ -2069,38 +2008,133 @@ class SiteController extends x2base {
     }
 
     /**
-     * Connects to the X2 update servers and sets Yii::app()->session['versionCheck']
-     * to true (up to date) or false (not up to date). Also sets Yii::app()->session['newVersion']
-     * to the latest version if not up to date.
-     *//*
-      protected function checkUpdates(){
-      if(!file_exists($secImage = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','images',base64_decode(Yii::app()->params->updaterSecurityImage)))))
-      return;
-      $i = Yii::app()->settings->unique_id;
-      $v = Yii::app()->params->version;
-      $e = Yii::app()->settings->edition;
-      $context = stream_context_create(array(
-      'http' => array('timeout' => 4)  // set request timeout in seconds
-      ));
+     * Reset a user's password via a really basic email verification process
+     *
+     * @param type $id ID/key of the password recovery record
+     */
+    public function actionResetPassword($id=null) {
+        if(!Yii::app()->user->isGuest) {
+            $this->redirect(array('/profile/changePassword','id'=>Yii::app()->user->id));
+        }
+        $this->layout = '//layouts/login';
+        $scenario = 'new';
+        $title = Yii::t('app','Reset Password');
+        $this->pageTitle = $title;
+        $message = Yii::t('app','Enter the email address associated with your user account to request a new password and username reminder.');
+        $request = new PasswordReset;
+        $resetForm = null;
+        
+        if(isset($_POST['PasswordReset'])) {
+            // Submitting a password reset request
+            $request->setAttributes($_POST['PasswordReset']);
+            if($request->save()) {
+                $request->setScenario('afterSave');
+                if(!$request->validate(array('email'))){
+                    // Create a new model. It is done this way (adding the
+                    // validation error to a new model) so that there is a trail
+                    // of reset request attempts that can be counted to determine
+                    // if the user has made too many.
+                    $oldRequest = $request;
+                    $request = new $request;
+                    $request->setAttributes($oldRequest->getAttributes(array('email')), false);
+                    $request->addErrors($oldRequest->getErrors());
+                }else{
+                    // A user with the corresponding email was found. Attempt to
+                    // send the email and whatever happens, don't display the
+                    // form again.
+                    $scenario = 'message';
+                    $mail = new EmailDeliveryBehavior();
+                    $mail->credId = Credentials::model()->getDefaultUserAccount(
+                            Credentials::$sysUseId['systemNotificationEmail'], 'email');
 
-      $updateCheckUrl = 'https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v'));
-      $securityKey = FileUtil::getContents($updateCheckUrl, 0, $context);
-      if($securityKey === false)
-      return;
-      $h = hash('sha512',base64_encode(file_get_contents($secImage)).$securityKey);
-      $n = null;
-      if(!($e == 'opensource' || empty($e)))
-      $n = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_users')->queryScalar();
+                    // Compose the message & headers
+                    $message = Yii::t('users', "You have requested to reset the password for user {user} in {appName}.", array(
+                                '{user}' => $request->user->alias,
+                                '{appName}' => Yii::app()->settings->appName
+                    ));
+                    $message .= ' '.Yii::t('users', "To finish resetting your password, please open the following link: ");
+                    $message .= "<br /><br />".$this->createAbsoluteUrl('/site/resetPassword').'?'.http_build_query(array('id' => $request->id));
+                    $message .= "<br /><br />".Yii::t('users', "If you did not make this request, please disregard this email.");
+                    $recipients = array(
+                        'to' => array(
+                            array('',$request->email)
+                        )
+                    );
 
-      $newVersion = FileUtil::getContents('https://x2planet.com/installs/updates/check?'.http_build_query(compact('i','v','h','n')),0,$context);
-      if(empty($newVersion))
-      return;
+                    // Send the email
+                    $status = $mail->deliverEmail($recipients, Yii::app()->settings->appName." password reset",$message);
 
-      if(version_compare($newVersion, $v) > 0 && !in_array($i, array('none', Null))){ // if the latest version is newer than our version and updates are enabled
-      Yii::app()->session['versionCheck'] = false;
-      Yii::app()->session['newVersion'] = $newVersion;
-      } else
-      Yii::app()->session['versionCheck'] = true;
-      } */
+                    // Set the response message accordingly.
+                    if($status['code'] == 200){
+                        $title = Yii::t('users', 'Almost Done!');
+                        $message = Yii::t('users', 'Check your email at {email} for '
+                                        .'further instructions to finish resetting your password.', array('{email}' => $request->email));
+                    }else{
+                        $title = Yii::t('users', 'Could not send email.');
+                        $message = Yii::t('users', 'Sending of the password reset verification email failed with message: {message}', array(
+                                    '{message}' => $status['message']
+                        ));
+                    }
+                }
+            } else if($request->limitReached) {
+                $scenario = 'message';
+                $message = Yii::t('app','You have made too many requests to reset passwords. '
+                        . 'Please wait one hour before trying again.');
+            }
+        } else if ($id !== null) {
+            // User might have arrived here through the link in a reset email.
+            $scenario = 'apply';
+            $request = PasswordReset::model()->findByPk($id);
+            if($request instanceof PasswordReset && !$request->isExpired) {
+                // Reset request record exists.
+                $user = $request->user;
+                if($user instanceof User) {
+                    // ...and is valid (points to an existing user)
+                    //
+                    // Default message: the password entry form (initial request)
+                    $message = Yii::t('users', 'Enter a new password for user "{user}" ({name}):', array(
+                                '{user}' => $user->alias,
+                                '{name}' => CHtml::encode($user->firstName.' '.$user->lastName)
+                    ));
+                    $resetForm = new PasswordResetForm($user);
+                    if(isset($_POST['PasswordResetForm'])) {
+                        // Handle the form submission:
+                        $resetForm->setAttributes($_POST['PasswordResetForm']);
+                        if($resetForm->save()) {
+                            // Done, success.
+                            $scenario = 'message';
+                            $title = Yii::t('users', 'Password Has Been Reset');
+                            $message = Yii::t('users', 'You should now have access '
+                                            .'as "{user}" with the new password specified.', array('{user}' => $user->alias));
+                        }
+                    }
+                } else {
+                    // Invalid request record; it does not correspond to an
+                    // existing user, i.e. it's an "attempt" (entering an email
+                    // address to see if that sticks).
+                    $scenario = 'message';
+                    $title = Yii::t('users','Access Denied');
+                    $message = Yii::t('users','Invalid reset key.');
+                }
+            } else {
+                $scenario = 'message';
+                $title = Yii::t('users', 'Access Denied');
+                if($request->isExpired){
+                    $message = Yii::t('users', 'The password reset link has expired.');
+                }else{
+                    $message = Yii::t('users', 'Invalid reset link.');
+                }
+            }
+        }
+        $this->render('resetPassword',compact('scenario','title','message','request','resetForm'));
+    }
+
+    /**
+     * Prints a very brief help page
+     */
+    public function actionAnonHelp() {
+        $this->layout = '//layouts/login';
+        $this->render('anonHelp');
+    }
 }
 

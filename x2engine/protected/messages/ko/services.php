@@ -56,4 +56,7 @@ return array (
 'Hello'=>'안녕하세요',
 'Web Form Case'=>'웹 폼 케이스',
 'Thank you for contacting our Technical Support '=>'우리의 기술 지원에 문의 해 주셔서 감사합니다',
+'Import Services'=>'가져 오기 서비스',
+'Export Services'=>'수출 서비스',
+'Case Name'=>'케이스 이름',
 );

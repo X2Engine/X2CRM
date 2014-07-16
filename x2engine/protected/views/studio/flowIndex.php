@@ -34,36 +34,58 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss('flowIndexCss',"
+
+#flow-grid {
+    border-bottom: 1px solid rgb(219, 219, 219);
+}
+
+#create-flow-button {
+    margin-left: 3px;
+    margin-bottom: 3px;
+}
+
+");
+
 $this->actionMenu = array(
 	array('label'=>Yii::t('studio','Manage Flows')),
 	array(
         'label'=>Yii::t('studio','Create Flow'),
         'url'=>array('flowDesigner'),
-        'visible'=>(Yii::app()->params->edition==='pro')),
+        'visible'=>Yii::app()->contEd('pro'),
+    ),
     array (
         'label' => Yii::t('studio', 'All Trigger Logs'),
         'url' => array ('triggerLogs'),
-        'visible' => (Yii::app()->params->edition === 'pro')
-    )
+        'visible' => Yii::app()->contEd('pro')
+    ),
+     
 );
 
 ?>
 <div class="flush-grid-view">
 <?php
 
-$this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'changelog-grid',
+$this->widget('X2GridViewGeneric', array(
+	'id'=>'flow-grid',
+	'buttons'=>array('clearFilters','autoResize'),
 	'baseScriptUrl'=>
         Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-        'template'=>
-            '<div class="page-title icon x2flow">'.
-            '<h2>'.Yii::t('studio','X2Flow Automation Rules').'</h2>'
-		// .CHtml::link(Yii::t('app','Clear Filters'),array('viewChangelog','clearFilters'=>1))
-		    .'{summary}</div>{items}{pager}',
-	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
+    'template'=>
+        '<div class="page-title icon x2flow">'.
+        '<h2>'.Yii::t('studio','X2Flow Automation Rules').'</h2>{buttons}'.
+        '{summary}</div>{items}{pager}',
     'dataProvider'=>CActiveRecord::model('X2Flow')->search(),
-    // 'filter'=>$model,
-    // 'afterAjaxUpdate'=>'refreshQtipHistory',
+    'defaultGvSettings' => array (
+        'name' => 90,
+        'active' => 90,
+        'triggerType' => 90,
+        'modelClass' => 90,
+        'createDate' => 60,
+        'lastUpdated' => 60,
+    ),
+    'gvSettingsName' => 'flow-grid',
+    'viewName' => 'flowIndex',
 	'columns'=>array(
 		array(
 			'name'=>'name',
@@ -110,6 +132,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 </div>
 <br>
 <?php
-if(Yii::app()->params->edition==='pro')
-	echo CHtml::link(Yii::t('studio','Create New Flow'),array('/studio/flowDesigner'),array('class'=>'x2-button'));
+if(Yii::app()->contEd('pro')) {
+	echo CHtml::link(
+        Yii::t('studio','Create New Flow'),
+        array('/studio/flowDesigner'),
+        array(
+            'class'=>'x2-button',
+            'id'=>'create-flow-button'
+        ));
+}
 ?>

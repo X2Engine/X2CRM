@@ -31,4 +31,7 @@ return array (
 'Unable to create custom module directory.'=>'Niet in staat om aangepaste module map aan te maken.',
 'Unable to create config file for custom module.'=>'Niet in staat om configuratiebestand voor aangepaste module te maken.',
 'Unable to create table for custom module.'=>'Niet in staat om tabel te maken voor aangepaste module.',
+'Import {X}'=>'Import {X}',
+'Export {X}'=>'Export {X}',
+'{modelName} Attributes'=>'{modelName} attributen',
 );

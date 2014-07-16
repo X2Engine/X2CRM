@@ -52,7 +52,8 @@ class X2FlowRecordUpdate extends X2FlowAction {
             // 'modelClass' => 'modelClass',
             'options' => array(
                 array('name' => 'attributes'),
-                ));
+            )
+        );
     }
 
     public function execute(&$params){
@@ -63,7 +64,15 @@ class X2FlowRecordUpdate extends X2FlowAction {
         }
         $model = $params['model'];
 
-        $this->setModelAttributes($model, $this->config['attributes'], $params);
+        if(!$this->setModelAttributes($model, $this->config['attributes'], $params)) {            
+            return array(
+                false,
+                Yii::t('app', '{method} called on model of class {model} encountered an error. Perhaps a formula was not properly written?', array(
+                    '{method}' => get_class($this).'.setModelAttributes',
+                    '{model}' => get_class($model))
+                )
+            );
+        }
         if ($model->save ()) {
         //if ($model->updateByPk($model->id, $model->attributes)) {
 		    if(is_subclass_of($model,'X2Model')) {

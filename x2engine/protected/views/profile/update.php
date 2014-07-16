@@ -34,17 +34,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
-$authParams['assignedTo'] = $model->username;
 $this->actionMenu = array(
-	array('label'=>Yii::t('profile','View Profile'), 'url'=>array('view','id'=>$model->id)),
-	array('label'=>Yii::t('profile','Edit Profile')),
-	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->id)),
-	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->id)),
-	array('label'=>Yii::t('profile','Manage Apps'),'url'=>array('manageCredentials'))
+    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $model->id)),
+    array('label' => Yii::t('profile', 'Edit Profile')),
+    array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $model->id), 'visible' => ($model->id == Yii::app()->user->id)),
+    array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $model->id), 'visible' => ($model->id == Yii::app()->user->id)),
+    array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials')),
+    
 );
 ?>
-<div class="page-title icon profile"><h2><?php echo Yii::t('profile','Update Your Profile'); ?></h2></div>
+<div class="page-title icon profile"><h2><?php echo Yii::t('profile', 'Update Your Profile'); ?></h2></div>
 
 
-<?php echo $this->renderPartial('_form', array('model'=>$model)); ?>
+<?php echo $this->renderPartial('_form', array('model' => $model)); ?>

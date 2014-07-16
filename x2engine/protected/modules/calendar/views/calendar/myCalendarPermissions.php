@@ -59,7 +59,9 @@ $this->actionMenu = $this->formatMenu($menuItems);
 
 <?php
 
-$users = User::model()->findAll(array('select'=>'id, username, firstName, lastName', 'index'=>'id'));
+$users = User::model()->findAllByAttributes(array('status'=>User::STATUS_ACTIVE));
+$users = array_combine(array_map(function($u){return $u->fullName;},$users),$users);
+ksort($users);
 
 $this->beginWidget('CActiveForm', array(
     'id'=>'user-permission-form',
@@ -84,10 +86,14 @@ $(function() {
 ",CClientScript::POS_HEAD);
 
 $names = array();
-foreach($users as $user)
-    if($user->username != 'admin' && $user->id != Yii::app()->user->id)
-    	$names[$user->id] = $user->firstName . ' ' . $user->lastName;
-    	
+foreach($users as $name=>$user) {
+    if(!Yii::app()->authManager->checkAccess('administrator', $user->id)
+            && $user->id != Yii::app()->getSuId()){
+        $names[$user->id] = $name;
+    }
+
+}
+
 $viewPermission = X2CalendarPermissions::getUserIdsWithViewPermission(Yii::app()->user->id);
 $editPermission = X2CalendarPermissions::getUserIdsWithEditPermission(Yii::app()->user->id);
 ?>

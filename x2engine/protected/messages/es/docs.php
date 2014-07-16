@@ -39,4 +39,8 @@ return array (
 'copy'=>'copiar',
 'Saved at'=>'Guardado en',
 'Document'=>'Documento',
+'Leaving this field blank will preserve its default behavior.'=>'Dejar este campo en blanco preservará su comportamiento predeterminado.',
+'Create Quote Template'=>'Crear plantilla Cita',
+'Import Docs'=>'Importar Docs',
+'Export Docs'=>'Documentos de exportación',
 );

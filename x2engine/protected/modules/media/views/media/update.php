@@ -42,7 +42,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('media', 'Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('media','Are you sure you want to delete this item?'))),
 ));
 ?>
-<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','Update File: '); ?></span> <?php echo $model->drive?$model->name:$model->fileName; ?></h2></div>
+<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','Update File: '); ?></span> <?php echo $model->renderAttribute (($model->drive || !empty($model->name))? "name" : "fileName"); ?></h2></div>
 
 <?php $form=$this->beginWidget('CActiveForm', array(
    'id'=>'media-form',
@@ -85,6 +85,31 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 
 
 			<div class="x2-layout form-view" style="margin-bottom: 0;">
+
+				<?php if (! $model->drive) { ?>
+				<div class="formSection showSection">
+					<div class="formSectionHeader">
+						<span class="sectionTitle"><?php echo Yii::t('media', 'Title'); ?></span>
+					</div>
+					<div class="tableWrapper">
+						<table>
+							<tbody>
+								<tr class="formSectionRow">
+									<td style="width: 300px">
+										<div class="formItem leftLabel">
+											<label><?php echo Yii::t('media', 'Title'); ?></label>
+											<div class="formInputBox" style="width: 200px; height: auto;">
+												<?php echo $form->textField($model, 'name'); ?>
+											</div>
+										</div>
+
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<?php } ?>
 
 				<div class="formSection showSection">
 					<div class="formSectionHeader">

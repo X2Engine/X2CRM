@@ -54,8 +54,41 @@ Private static methods
 Public instance methods
 */
 
+WebleadFormDesigner.prototype._setUpGenerateLeadMenu = function () {
+
+    $('#generate-lead-checkbox').change (function () {
+        if ($(this).is (':checked')) {
+            $('#generate-lead-form').slideDown ();
+        } else {
+            $('#generate-lead-form').slideUp ();
+        }
+    });
+};
+
 /*
 Private instance methods
 */
+
+WebleadFormDesigner.prototype._updateExtraFields = function (form) {
+
+    if(typeof form.generateLead !== 'undefined') {
+        if (parseInt (form.generateLead, 10) === 1) {
+            $('#generate-lead-checkbox').prop ('checked', true);
+        } else {
+            $('#generate-lead-checkbox').prop ('checked', false);
+        }
+        $('#generate-lead-checkbox').change ();
+    }
+
+    if(typeof form.leadSource !== 'undefined') {
+        $('#leadSource').val (form.leadSource);
+    }
+
+};
+
+WebleadFormDesigner.prototype._init = function () {
+    this._setUpGenerateLeadMenu ();
+    WebFormDesigner.prototype._init.call (this);
+}
 
 

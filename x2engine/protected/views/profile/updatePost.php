@@ -69,7 +69,9 @@ window.newPostEditor = createCKEditor (
 ');
 ?>
 
+<div class='page-title'>
 <h2>Edit Social Post</h2>
+</div>
 <div class="form">
 
 <?php $form=$this->beginWidget('CActiveForm', array(
@@ -101,6 +103,9 @@ window.newPostEditor = createCKEditor (
 
     $this->widget('zii.widgets.CListView', array(
                 'dataProvider'=>$commentDataProvider,
+                'viewData' => array (
+                    'profileId' => $profileId
+                ),
                 'itemView'=>'../social/_view',
                 'template'=>'<h2>Comments</h2>{pager}{items}',
                 'id'=>$model->id.'-comments',

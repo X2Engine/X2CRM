@@ -432,7 +432,7 @@
       }
 
       // set widths
-      this.button.outerWidth(width);
+      /* x2modstart *///this.button.outerWidth(width);/* x2modend */ 
     },
 
     // set menu width

@@ -35,8 +35,10 @@
  *****************************************************************************************/
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin','Import Data from Template'); ?></h2></div>
+<div class='admin-form-container'>
 <div class="form">
-<?php echo Yii::t('admin','To import your data a CSV file, please  upload the file here using the form below.'); ?>
+<?php echo Yii::t('admin','To import your data a CSV file, please upload the file here using the form below.').
+        ' '.Yii::t('admin','Please note, this installation of X2Engine must have all the same fields as the source data.'); ?>
 <br><br>
 <?php echo Yii::t('admin','This import has a very specific style of data formatting required to be used. To get a better example of the formatting, export a set of data and look at how it is formatted.  A brief description is also provided here.'); ?>
 <br><br>
@@ -47,8 +49,10 @@
 <h3><?php echo Yii::t('contacts','Upload File'); ?></h3>
 <?php echo CHtml::form('import','post',array('enctype'=>'multipart/form-data','id'=>'file-form')); ?>
 <?php echo CHtml::fileField('data', '', array('id'=>'data')); ?> <br><br>
-<?php echo Yii::t('admin','Overwrite old data?');?><br>
+<?php echo Yii::t('admin','Overwrite old data');?>
+<?php echo X2Html::hint("Overwriting is disabled on Fields as this would remove all currently existing data in that field."); ?><br>
 <?php echo CHtml::dropDownList('overwrite', '', array('0'=>Yii::t('app','No'),'1'=>Yii::t('app','Yes')),array('id'=>'overwrite-selector')); ?> <br><br>
 <?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button','id'=>'import-button')); ?>
 <?php echo CHtml::endForm(); ?>
+</div>
 </div>

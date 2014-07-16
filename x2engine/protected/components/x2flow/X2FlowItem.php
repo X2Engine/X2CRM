@@ -45,173 +45,176 @@ abstract class X2FlowItem extends CComponent {
     protected static $_instances;
 
     /**
-	 * $var string the text label for this action
-	 */
-	public $label = '';
-	/**
-	 * $var string the description of this action
-	 */
-	public $info = '';
-	/**
-	 * $var array the config parameters for this action
-	 */
-	public $config = '';
+     * $var string the text label for this action
+     */
+    public $label = '';
+    /**
+     * $var string the description of this action
+     */
+    public $info = '';
+    /**
+     * $var array the config parameters for this action
+     */
+    public $config = '';
     /**
      * $var bool Distinguishes whether cron is required for running the action properly.
      */
     public $requiresCron = false;
-	/**
-	 * @return array the param rules.
-	 */
-	abstract public function paramRules();
-	/**
-	 * Checks if all all the params are ship-shape
-	 */
-	abstract public function validate(&$params=array(), $flowId);
+    /**
+     * @return array the param rules.
+     */
+    abstract public function paramRules();
+    /**
+     * Checks if all all the params are ship-shape
+     */
+    abstract public function validate(&$params=array(), $flowId);
 
-	/**
-	 * Checks if all the config variables and runtime params are ship-shape
-	 * Ignores param requirements if $params isn't provided
-	 */
-	public function validateOptions(&$paramRules,&$params=null) {
-		$configOptions = &$this->config['options'];
-		// die(var_dump($configOptions));
-		foreach($paramRules['options'] as &$optRule) {	// loop through options defined in paramRules() and make sure they're all set in $config
-			if(!isset($optRule['name']))		// don't worry about unnamed params
-				continue;
-			$optName = &$optRule['name'];
+    /**
+     * Checks if all the config variables and runtime params are ship-shape
+     * Ignores param requirements if $params isn't provided
+     */
+    public function validateOptions(&$paramRules,&$params=null) {
+        $configOptions = &$this->config['options'];
+        // die(var_dump($configOptions));
 
-			if(!isset($configOptions[$optName]))	// each option must be present in $this->config and $params
-				continue;							// but just ignore them for future proofing
+        // loop through options defined in paramRules() and make sure they're all set in $config
+        foreach($paramRules['options'] as &$optRule) {    
+            if(!isset($optRule['name']))        // don't worry about unnamed params
+                continue;
+            $optName = &$optRule['name'];
 
-			// if($params !== null && !isset($params[$optName]))	// if params are provided, check them for this option name
-				// return false;
-			// this is disabled because it doesn't work if every option in $options doesn't correspond to a $param.
-			// the ultimate solution is to separate params and options completely. if a trigger/action is going to
-			// require params, it should define this separately. the reason for the way it is now is that you can
-			// set up an action with very little code. by assuming $params corresponds to $options, check() can
-			// treat each option like a condition and compare it to the param.
+            // each option must be present in $this->config and $params
+            if(!isset($configOptions[$optName])) {  
+                continue;                            // but just ignore them for future proofing
+            }
+            // if params are provided, check them for this option name
+            // if($params !== null && !isset($params[$optName]))    
+                // return false;
+            // this is disabled because it doesn't work if every option in $options doesn't 
+            // correspond to a $param. the ultimate solution is to separate params and options 
+            // completely. if a trigger/action is going to require params, it should define this 
+            // separately. the reason for the way it is now is that you can set up an action with 
+            // very little code. by assuming $params corresponds to $options, check() can
+            // treat each option like a condition and compare it to the param.
 
+            $option = &$configOptions[$optName];
+            // set optional flag
+            $option['optional'] = isset($optRule['optional']) && $optRule['optional'];
+            // operator defaults to "=" if not set
+            $option['operator'] = isset($option['operator'])? $option['operator'] : '=';
+            // if there's a type setting, set that in the config data
+            if(isset($optRule['type']))
+                $option['type'] = $optRule['type'];
+            // if there's an operator setting, it must be valid
+            if(isset($optRule['operator']) && 
+               !in_array($optRule['operators'],$configOptions['operator'])) {
 
-			$option = &$configOptions[$optName];
-			// set optional flag
-			$option['optional'] = isset($optRule['optional']) && $optRule['optional'];
-			// operator defaults to "=" if not set
-			$option['operator'] = isset($option['operator'])? $option['operator'] : '=';
-			// if there's a type setting, set that in the config data
-			if(isset($optRule['type']))
-				$option['type'] = $optRule['type'];
-			// if there's an operator setting, it must be valid
-			if(isset($optRule['operator']) && !in_array($optRule['operators'],$configOptions['operator']))
-				return array (
+                return array (
                     false,
                     Yii::t('studio', 'Flow item validation error'));
+            }
 
-			// value must not be empty, unless it's an optional setting
-			if(!isset($option['value']) || $option['value'] === null || $option['value'] === '') {
-				if(isset($optRule['defaultVal'])) {		// try to use the default value
-					$option[$optName] = $optRule['defaultVal'];
-				} elseif(!$option['optional']) {
-					// if not, fail if it was required
-				    return array (
-                        false,
-                        Yii::t('studio', 'Required flow item input missing'));
+            // value must not be empty, unless it's an optional setting
+            if(!isset($option['value']) || $option['value'] === null || $option['value'] === '') {
+                if(isset($optRule['defaultVal'])) {        // try to use the default value
+                    $option[$optName] = $optRule['defaultVal'];
+                } elseif(!$option['optional']) {
+                    // if not, fail if it was required
+                    if (YII_DEBUG)
+                        return array ( false,
+                            Yii::t('studio', 
+                                'Required flow item input missing: {optName} was left blank.',
+                                array ('{optName}' => $optName)));
+                    else
+                        return array (
+                            false,
+                            Yii::t('studio', 'Required flow item input missing'));
                 }
-			}
-		}
-		return array (true, '');
-	}
+            }
+        }
+        return array (true, '');
+    }
 
-	/**
-	 * Gets the param rules for the specified flow item
-	 * @param string $type name of action class
-	 * @return mixed an array of param rules, or false if the action doesn't exist
-	 */
-	public static function getParamRules($type) {
-		$item = self::create(array('type'=>$type));
-		if($item !== null) {
-			$paramRules = $item->paramRules();
+    /**
+     * Gets the param rules for the specified flow item
+     * @param string $type name of action class
+     * @return mixed an array of param rules, or false if the action doesn't exist
+     */
+    public static function getParamRules($type) {
+        $item = self::create(array('type'=>$type));
+        if($item !== null) {
+            $paramRules = $item->paramRules();
             $paramRules['class'] = get_class ($item);
             return $paramRules;
         }
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Gets the title property of the specified flow item
-	 * @param string $type name of action class
-	 * @return string the title property, or '' if the type is invalid of if the class
+    /**
+     * Gets the title property of the specified flow item
+     * @param string $type name of action class
+     * @return string the title property, or '' if the type is invalid of if the class
      *  associated with the type doesn't have a title property
      */
     public static function getTitle ($type) {
-		$item = self::create(array('type'=>$type));
+        $item = self::create(array('type'=>$type));
         $title = '';
-		if ($item !== null && property_exists ($item, 'title')) {
+        if ($item !== null && property_exists ($item, 'title')) {
             $title = $item->title;
         }
         return $title;
     }
 
-	/**
-	 * Creates a flow item with the provided config data
-	 * @return mixed a class extending X2FlowAction with the specified name
-	 */
-	public static function create($config) {
-		if(isset($config['type']) && class_exists($config['type'])) {
-			$item = new $config['type'];
-			$item->config = $config;
-			return $item;
-		}
-		return null;
-	}
+    /**
+     * Creates a flow item with the provided config data
+     * @return mixed a class extending X2FlowAction with the specified name
+     */
+    public static function create($config) {
+        if(isset($config['type']) && class_exists($config['type'])) {
+            $item = new $config['type'];
+            $item->config = $config;
+            return $item;
+        }
+        return null;
+    }
 
-	/**
-	 * Reformats and translates dropdown arrays to preserve sorting in {@link CJSON::encode()}
-	 * @param array an associative array of dropdown options ($value => $label)
-	 * @return array a 2-D array of values and labels
-	 */
-	public static function dropdownForJson($options) {
-		$dropdownData = array();
-		foreach($options as $value => &$label)
-			$dropdownData[] = array($value,$label);
-		return $dropdownData;
-	}
-
-	/**
-	 * Calculates a time offset from a number and a unit
-	 * @param int $time the number of time units to add
-	 * @param string $unit the unit of time
-	 * @return mixed the calculated timestamp, or false if the $unit is invalid
-	 */
-	public static function calculateTimeOffset($time,$unit) {
-		switch($unit) {
+    /**
+     * Calculates a time offset from a number and a unit
+     * @param int $time the number of time units to add
+     * @param string $unit the unit of time
+     * @return mixed the calculated timestamp, or false if the $unit is invalid
+     */
+    public static function calculateTimeOffset($time,$unit) {
+        switch($unit) {
             case 'secs':
                 return $time;
-			case 'mins':
-				return $time * 60;
-			case 'hours':
-				return $time * 3600;
-			case 'days':
-				return $time * 86400;
-			case 'months':
-				return $time * 2629743;	// average seconds in a month
-			default:
-				return false;
-		}
-	}
+            case 'mins':
+                return $time * 60;
+            case 'hours':
+                return $time * 3600;
+            case 'days':
+                return $time * 86400;
+            case 'months':
+                return $time * 2629743;    // average seconds in a month
+            default:
+                return false;
+        }
+    }
 
-	/*
-	 *
-	 */
-	public function parseOption($name,&$params) {
-		$options = &$this->config['options'];
-		if(!isset($options[$name]['value']))
-			return null;
+    /**
+     * @param string $name the name of the option
+     * @param array $params the parameters passed to trigger ()
+     * @return mixed null if the option was not set by the user, the parsed value otherwise
+     */
+    public function parseOption($name,&$params) {
+        $options = &$this->config['options'];
+        if(!isset($options[$name]['value']))
+            return null;
 
-		$type = isset($options[$name]['type'])? $options[$name]['type'] : '';
+        $type = isset($options[$name]['type'])? $options[$name]['type'] : '';
         
-		return X2Flow::parseValue($options[$name]['value'],$type,$params);
-	}
+        return X2Flow::parseValue($options[$name]['value'],$type,$params);
+    }
 
     /**
      * Generalized mass-instantiation method.

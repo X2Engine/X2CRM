@@ -88,7 +88,6 @@ class ContactsController extends x2base {
                     'addToList',
                     'removeFromList',
                     'deleteList',
-                    'exportList',
                     'inlineEmail',
                     'quickUpdateHistory',
                     'subscribe',
@@ -111,7 +110,8 @@ class ContactsController extends x2base {
 
     /**
      * Return a list of external actions which need to be included.
-     * @return array A merge of the parent class's imported actions in addition to the ones that are specific to the Contacts controller
+     * @return array A merge of the parent class's imported actions in addition to the ones that 
+     *  are specific to the Contacts controller
      */
     public function actions(){
         return array_merge(parent::actions(), array(
@@ -126,17 +126,30 @@ class ContactsController extends x2base {
 
     /**
      * Return a list of external behaviors which are necessary.
-     * @return array A merge of the parent class's behaviors with the ContactsController specific ones
+     * @return array A merge of the parent class's behaviors with the ContactsController specific 
+     *  ones
      */
     public function behaviors(){
         return array_merge(parent::behaviors(), array(
-                    'LeadRoutingBehavior' => array(
-                        'class' => 'LeadRoutingBehavior'
+            'LeadRoutingBehavior' => array(
+                'class' => 'LeadRoutingBehavior'
+            ),
+            'ImportExportBehavior' => array(
+                'class' => 'ImportExportBehavior'
+            ),
+            'QuickCreateRelationshipBehavior' => array(
+                'class' => 'QuickCreateRelationshipBehavior',
+                'attributesOfNewRecordToUpdate' => array (
+                    'Accounts' => array (
+                        'website' => 'website',
+                        'phone' => 'phone',
                     ),
-                    'ImportExportBehavior' => array(
-                        'class' => 'ImportExportBehavior'
+                    'Opportunity' => array (
+                        'accountName' => 'company',
                     )
-                ));
+                )
+            ),
+        ));
     }
 
     /**
@@ -145,16 +158,18 @@ class ContactsController extends x2base {
      */
     public function actionView($id){
         $contact = $this->loadModel($id);
-        // Modify the time zone widget to display Contact time
-        if(isset($this->portlets['TimeZone'])){
-            $this->portlets['TimeZone']['params']['localTime'] = false;
-            $this->portlets['TimeZone']['params']['model'] = &$contact;
-        }
-        // Only load the Google Maps widget if we're on a Contact with an address
-        if(isset($this->portlets['GoogleMaps']))
-            $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
-
         if($this->checkPermissions($contact, 'view')){
+
+            // Modify the time zone widget to display Contact time
+            if(isset($this->portlets['TimeZone'])){
+                $this->portlets['TimeZone']['params']['localTime'] = false;
+                $this->portlets['TimeZone']['params']['model'] = &$contact;
+            }
+            // Only load the Google Maps widget if we're on a Contact with an address
+            if(isset($this->portlets['GoogleMaps']))
+                $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
+
+
             // Update the VCR list information to preserve what list we came from
             if(isset($_COOKIE['vcr-list'])){
                 Yii::app()->user->setState('vcr-list', $_COOKIE['vcr-list']);
@@ -322,11 +337,22 @@ class ContactsController extends x2base {
     public function actionGetItems(){
         $model = new Contacts('search');
         $visCriteria = $model->getAccessCriteria();
-        $sql = 'SELECT id, city, state, country, email, IF(assignedTo > 0, (SELECT name FROM x2_groups WHERE id=assignedTo), (SELECT fullname from x2_profile WHERE username=assignedTo) ) as assignedTo, CONCAT(firstName," ",lastName) as value FROM x2_contacts t WHERE (firstName LIKE :qterm OR lastName LIKE :qterm OR CONCAT(firstName," ",lastName) LIKE :qterm) AND ('.$visCriteria->condition.') ORDER BY firstName ASC';
+        list($fullNameCol,$fullNameParam) = Formatter::fullNameSelect('firstName', 'lastName', 'value');
+        // This is necessary because the query won't work if one simply compares
+        // the ad-hoc column "value" as "value LIKE :qterm".
+        list($fullNameCol2,$fullNameParam2) = Formatter::fullNameSelect('firstName', 'lastName');
+        $sql = 
+            'SELECT id, city, state, country, email, assignedTo, '.$fullNameCol.'
+            FROM x2_contacts t 
+            WHERE (firstName LIKE :qterm OR lastName LIKE :qterm OR 
+                '.$fullNameCol2.' LIKE :qterm) AND ('.$visCriteria->condition.')
+            ORDER BY firstName ASC';
         $command = Yii::app()->db->createCommand($sql);
-        $qterm = $_GET['term'].'%';
-        $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
-        $result = $command->queryAll();
+        $params = array(':qterm'=>$_GET['term'].'%') + $fullNameParam + $fullNameParam2 + $visCriteria->params;
+        $result = $command->queryAll(true,$params);
+        foreach(array_keys($result) as $key) {
+            $result[$key]['assignedTo'] = implode(', ',$model->getAssigneeNames($result[$key]['assignedTo']));
+        }
         echo CJSON::encode($result);
         exit;
     }
@@ -343,8 +369,8 @@ class ContactsController extends x2base {
                 $condition .= ' OR assignedTo IN ('.implode(',', $groupLinks).')';
 
             $condition .= ' OR (visibility=2 AND assignedTo IN
-				(SELECT username FROM x2_group_to_user WHERE groupId IN
-				(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().'))))';
+                (SELECT username FROM x2_group_to_user WHERE groupId IN
+                (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().'))))';
         } else{
             $condition = '';
         }
@@ -545,12 +571,6 @@ class ContactsController extends x2base {
         }
     }
 
-    /* public function actionSavedSearches (){
-      $this->render('savedSearches',array(
-      'dataProvider'=>$dataProvider,
-      ));
-      } */
-
     /**
      * Display an index of saved maps.
      */
@@ -667,28 +687,6 @@ class ContactsController extends x2base {
         ));
     }
 
-    /* 	// Creates contact record
-      public function create($model, $oldAttributes, $api) {
-      $model->createDate = time();
-      $model->lastUpdated = time();
-      if(empty($model->visibility) && $model->visibility!=0)
-      $model->visibility=1;
-      if($api == 0) {
-      parent::create($model, $oldAttributes, $api);
-      } else {
-      $lookupFields = Fields::model()->findAllByAttributes(array('modelName' => 'Contacts', 'type' => 'link'));
-      foreach($lookupFields as $field) {
-      $fieldName = $field->fieldName;
-      if(isset($model->$fieldName)) {
-      $lookup = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $model->$fieldName));
-      if(isset($lookup))
-      $model->$fieldName = $lookup->id;
-      }
-      }
-      return parent::create($model, $oldAttributes, $api);
-      }
-      } */
-
     /**
      * Called by the duplicate checker to keep the current record
      */
@@ -733,8 +731,8 @@ class ContactsController extends x2base {
                         $condition .= ' OR assignedTo IN ('.implode(',', $groupLinks).')';
 
                     $condition .= 'OR (visibility=2 AND assignedTo IN
-						(SELECT username FROM x2_group_to_user WHERE groupId IN
-							(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                        (SELECT username FROM x2_group_to_user WHERE groupId IN
+                            (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
                     $criteria->addCondition($condition);
                 }
                 // If the action was hide all, hide all the other records.
@@ -869,78 +867,41 @@ class ContactsController extends x2base {
 
             $criteria = new CDbCriteria();
             if(!empty($model->firstName) && !empty($model->lastName)){
-                $criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName." ".$model->lastName, false, "OR");
+                $criteria->compare(
+                    'CONCAT(firstName," ",lastName)', $model->firstName." ".$model->lastName, 
+                    false, "OR");
             }
             if(!empty($model->email)){
                 $criteria->compare('email', $model->email, false, "OR");
             }
             if(isset($_POST['x2ajax'])){
-                // if($this->create($model,$oldAttributes, '1')) { // success creating account?
-                if($model->save()){ // success creating Contact?
-                    $primaryAccountLink = '';
-                    $newPhone = '';
-                    $newWebsite = '';
-                    if(isset($_POST['ModelName']) && !empty($_POST['ModelId'])){
-                        Relationships::create($_POST['ModelName'], $_POST['ModelId'], 'Contacts', $model->id);
-
-                        if($_POST['ModelName'] == 'Accounts'){
-                            $account = Accounts::model()->findByPk($_POST['ModelId']);
-                            if($account){
-                                $changed = false;
-                                if(isset($model->website) && (!isset($account->website) || $account->website == "")){
-                                    $account->website = $model->website;
-                                    $newWebsite = $account->website;
-                                    $changed = true;
-                                }
-                                if(isset($model->phone) && (!isset($account->phone) || $account->phone == "")){
-                                    $account->phone = $model->phone;
-                                    $newPhone = $account->phone;
-                                    $changed = true;
-                                }
-
-                                if($changed)
-                                    $account->update();
-                            }
-                        } else if($_POST['ModelName'] == 'Opportunity'){
-                            $opportunity = Opportunity::model()->findByPk($_POST['ModelId']);
-                            if($opportunity){
-                                if(isset($model->company) && $model->company != '' && (!isset($opportunity->accountName) || $opportunity->accountName == '')){
-                                    $opportunity->accountName = $model->company;
-                                    $opportunity->update();
-                                    $primaryAccountLink = $model->createLink();
-                                }
-                            }
-                        }
-                    }
-
-                    echo json_encode(
-                            array(
-                                'status' => 'success',
-                                'name' => $model->name,
-                                'id' => $model->id,
-                                'primaryAccountLink' => $primaryAccountLink,
-                                'newWebsite' => $newWebsite,
-                                'newPhone' => $newPhone,
-                            )
-                    );
-                    Yii::app()->end();
-                }else{
-                    $x2ajaxCreateError = true;
-                }
+                $ajaxErrors = $this->quickCreate ($model);
             }else{
                 if(!empty($criteria->condition)){
                     if(!Yii::app()->user->checkAccess('ContactsAdminAccess')){
-                        $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+                        $condition = 
+                            'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")
+                                OR assignedTo="'.Yii::app()->user->getName().'"';
                         /* x2temp */
-                        $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+                        $groupLinks = Yii::app()->db->createCommand()
+                            ->select('groupId')
+                            ->from('x2_group_to_user')
+                            ->where('userId='.Yii::app()->user->getId())->queryColumn();
                         if(!empty($groupLinks))
                             $condition .= ' OR assignedTo IN ('.implode(',', $groupLinks).')';
 
-                        $condition .= 'OR (visibility=2 AND assignedTo IN
-							(SELECT username FROM x2_group_to_user WHERE groupId IN
-								(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                        $condition .= 
+                            'OR (visibility=2 AND assignedTo IN (
+                                SELECT username 
+                                FROM x2_group_to_user 
+                                WHERE groupId IN (
+                                    SELECT groupId 
+                                    FROM x2_group_to_user 
+                                    WHERE userId='.Yii::app()->user->getId().')))';
+
                         $criteria->addCondition($condition);
                     }
+
                     $count = X2Model::model('Contacts')->count($criteria);
                     if(!isset($_GET['viewAll']) || $_GET['viewAll'] != 'true')
                         $criteria->limit = 5;
@@ -954,12 +915,10 @@ class ContactsController extends x2base {
                         ));
                         $renderFlag = false;
                     }else{
-                        // $this->create($model, $oldAttributes, '0');
                         if($model->save())
                             $this->redirect(array('view', 'id' => $model->id));
                     }
                 } else{
-                    // $this->create($model, $oldAttributes, '0');
                     if($model->save())
                         $this->redirect(array('view', 'id' => $model->id));
                 }
@@ -967,20 +926,9 @@ class ContactsController extends x2base {
         }
 
         if($renderFlag){
-
             if(isset($_POST['x2ajax'])){
-                if(isset($x2ajaxCreateError) && $x2ajaxCreateError == true){
-                    $page = $this->renderPartial('application.components.views._form', array('model' => $model, 'users' => $users, 'modelName' => 'contacts'), true, true);
-                    echo json_encode(
-                            array(
-                                'status' => 'userError',
-                                'page' => $page,
-                            )
-                    );
-                }else{
-                    $this->renderPartial('application.components.views._form', array('model' => $model, 'users' => $users, 'modelName' => 'contacts'), false, true);
-                }
-            }else{
+                $this->renderInlineCreateForm ($model, isset ($ajaxErrors) ? $ajaxErrors : false);
+            } else {
                 $this->render('create', array(
                     'model' => $model,
                     'users' => $users,
@@ -1022,93 +970,6 @@ class ContactsController extends x2base {
             'model' => $model
         ));
     }
-    /*
-    public function actionTest(){
-        $this->render('test');
-    }
-     *
-     */
-
-    /*
-    public function actionTrigger(){
-        die();
-        $item = new X2FlowItem;
-        $item->type = 'workflow_complete';
-
-        var_dump($item->getParamRules());
-        die();
-        // $t0 = microtime(true);
-        // for($i=0;$i<10000;$i++)
-        // time();
-        // echo (microtime(true) - $t0);
-        // die();
-
-
-
-        set_time_limit(1);
-
-        $str = '{a+b} a c,  {a+5}%10 c/ab2 * {8.333/ 0.3}-{apples.sauce}';
-        // $str = '{}a{b} {apple}{sauce} + {a} and {apple.sauce}! ';
-
-
-        $str2 = '{a+b} a c e, {a+5}%10 c/ab2 * {8.333/ 0.3}-{apples.sauce}';
-        var_dump($str);
-        var_dump($str2);
-        $diff = FineDiff::getDiffOpcodes($str, $str2, FineDiff::$wordGranularity);
-        var_dump($diff);
-        // $diff = new FineDiff($str,$str2,FineDiff::$wordGranularity);
-        // var_dump($diff->edits);
-
-        var_dump(FineDiff::renderToTextFromOpcodes($str, $diff));
-
-        // die();
-
-
-        var_dump($str);
-
-        // $tokens = self::tokenize($str);
-        $tokens = X2FlowParam::parseExpressionTree($str);
-
-
-        var_dump($tokens);
-
-        die();
-
-
-
-        // $data = array('{account.createDate} +5 days');
-        $attr = array('lastUpdated' => time(), 'account' => 23);
-
-        // $test = json_encode($data);
-        // echo $test;
-        // var_dump( json_decode($test));
-
-        $value = '{lastUpdated} 2 days ago';
-        $matches = array();
-        preg_match('/{(\w+|\w+.\w+)}/', $value, $matches); // format can be either "{field}" or "{linkField.field}"
-        // if($type === 'timestamp') {
-        if(count($matches) > 1){
-            $value = preg_replace('/{.+}/', '', $value); // remove variables (for date/time fields)
-
-
-            if(isset($attr[$matches[1]])){
-
-                // $timestamp = getAttribute($matches[1]); //$attr[$matches[1]];
-                $timestamp = $attr[$matches[1]];
-
-                if(trim($value) === '')
-                    $date = $timestamp;
-                else
-                    $date = strtotime($value, $timestamp);
-            } else
-                $date = false;
-        } else
-            $date = strtotime($value);
-        var_dump($value);
-        var_dump($date);
-        var_dump(date('Y-m-d h:i:s', $date));
-        // }
-    }*/
 
     // Controller/action wrapper for update()
     public function actionUpdate($id){
@@ -1119,6 +980,7 @@ class ContactsController extends x2base {
         if(isset($_POST['Contacts'])){
             $oldAttributes = $model->attributes;
 
+            //AuxLib::debugLogR ($_POST);
             $model->setX2Fields($_POST['Contacts']);
             if($model->dupeCheck != '1'){
                 $model->dupeCheck = 1;
@@ -1141,8 +1003,8 @@ class ContactsController extends x2base {
                         $condition .= ' OR assignedTo IN ('.implode(',', $groupLinks).')';
 
                     $condition .= 'OR (visibility=2 AND assignedTo IN
-						(SELECT username FROM x2_group_to_user WHERE groupId IN
-							(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                        (SELECT username FROM x2_group_to_user WHERE groupId IN
+                            (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
                     $criteria->addCondition($condition);
                 }
                 $count = X2Model::model('Contacts')->count($criteria);
@@ -1209,12 +1071,12 @@ class ContactsController extends x2base {
                 $condition .= ' OR assignedTo IN ('.implode(',', $groupLinks).')';
 
             $condition .= 'OR (visibility=2 AND assignedTo IN
-				(SELECT username FROM x2_group_to_user WHERE groupId IN
-					(SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                (SELECT username FROM x2_group_to_user WHERE groupId IN
+                    (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
             $criteria->addCondition($condition);
         }
 
-        $perPage = ProfileChild::getResultsPerPage();
+        $perPage = Profile::getResultsPerPage();
 
         //$criteria->offset = isset($_GET['page']) ? $_GET['page'] * $perPage - 3 : -3;
         //$criteria->limit = $perPage;
@@ -1304,7 +1166,8 @@ class ContactsController extends x2base {
         $list = X2List::load($id);
 
         if(!isset($list)){
-            Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
+            Yii::app()->user->setFlash(
+                'error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('lists'));
         }
 
@@ -1312,7 +1175,9 @@ class ContactsController extends x2base {
         Yii::app()->user->setState('vcr-list', $id);
         $dataProvider = $model->searchList($id);
         $list->count = $dataProvider->totalItemCount;
-        $list->save();
+        $list->runWithoutBehavior ('X2FlowTriggerBehavior', function () use ($list) {
+            $list->save();
+        });
 
         X2Flow::trigger('RecordViewTrigger',array('model'=>$list));
         $this->render('list', array(
@@ -1330,28 +1195,13 @@ class ContactsController extends x2base {
         $list->visibility = 1;
 
         $contactModel = new Contacts;
-        $comparisonList = array(
-            '=' => Yii::t('contacts', 'equals'),
-            '>' => Yii::t('contacts', 'greater than'),
-            '<' => Yii::t('contacts', 'less than'),
-            '<>' => Yii::t('contacts', 'not equal to'),
-            'contains' => Yii::t('contacts', 'contains'),
-            'noContains' => Yii::t('contacts', 'does not contain'),
-            'empty' => Yii::t('contacts', 'empty'),
-            'notEmpty' => Yii::t('contacts', 'not empty'),
-            'list' => Yii::t('contacts', 'in list'),
-            'notList' => Yii::t('contacts', 'not in list'),
-        );
-
+        $comparisonList = X2List::getComparisonList();
         if(isset($_POST['X2List'])){
 
             $list->attributes = $_POST['X2List'];
             $list->modelName = 'Contacts';
             $list->createDate = time();
             $list->lastUpdated = time();
-
-            if($list->type == 'dynamic')
-                $criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId' => $list->id), new CDbCriteria(array('order' => 'id ASC')));
 
             if(isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])){
 
@@ -1367,27 +1217,6 @@ class ContactsController extends x2base {
                     $list->lastUpdated = time();
 
                     if($list->save()){
-
-                        X2ListCriterion::model()->deleteAllByAttributes(array('listId' => $list->id)); // delete old criteria
-
-                        for($i = 0; $i < count($attributes); $i++){ // create new criteria
-                            if((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags')
-                                    && array_key_exists($comparisons[$i], $comparisonList)){  //&& $values[$i] != ''
-                                $fieldRef = Fields::model()->findByAttributes(array('modelName' => 'Contacts', 'fieldName' => $attributes[$i]));
-                                if(isset($fieldRef) && $fieldRef->type == 'link'){
-                                    $lookup = X2Model::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name' => $values[$i]));
-                                    if(isset($lookup))
-                                        $values[$i] = $lookup->id;
-                                }
-                                $criterion = new X2ListCriterion;
-                                $criterion->listId = $list->id;
-                                $criterion->type = 'attribute';
-                                $criterion->attribute = $attributes[$i];
-                                $criterion->comparison = $comparisons[$i];
-                                $criterion->value = $values[$i];
-                                $criterion->save();
-                            }
-                        }
                         $this->redirect(array('/contacts/contacts/list','id'=>$list->id));
                     }
                 }
@@ -1426,18 +1255,8 @@ class ContactsController extends x2base {
             throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
 
         $contactModel = new Contacts;
-        $comparisonList = array(
-            '=' => Yii::t('contacts', 'equals'),
-            '>' => Yii::t('contacts', 'greater than'),
-            '<' => Yii::t('contacts', 'less than'),
-            '<>' => Yii::t('contacts', 'not equal to'),
-            'contains' => Yii::t('contacts', 'contains'),
-            'noContains' => Yii::t('contacts', 'does not contain'),
-            'empty' => Yii::t('contacts', 'empty'),
-            'notEmpty' => Yii::t('contacts', 'not empty'),
-            'list' => Yii::t('contacts', 'in list'),
-            'notList' => Yii::t('contacts', 'not in list'),
-        );
+        $comparisonList = X2List::getComparisonList();
+        $fields = $contactModel->getFields(true);
 
         if($list->type == 'dynamic'){
             $criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId' => $list->id), new CDbCriteria(array('order' => 'id ASC')));
@@ -1455,27 +1274,6 @@ class ContactsController extends x2base {
                     $list->lastUpdated = time();
 
                     if($list->save()){
-
-                        X2ListCriterion::model()->deleteAllByAttributes(array('listId' => $list->id)); // delete old criteria
-
-                        for($i = 0; $i < count($attributes); $i++){ // create new criteria
-                            if((array_key_exists($attributes[$i], $contactModel->attributeLabels()) || $attributes[$i] == 'tags')
-                                    && array_key_exists($comparisons[$i], $comparisonList)){  //&& $values[$i] != ''
-                                $fieldRef = Fields::model()->findByAttributes(array('modelName' => 'Contacts', 'fieldName' => $attributes[$i]));
-                                if(isset($fieldRef) && $fieldRef->type == 'link'){
-                                    $lookup = X2Model::model(ucfirst($fieldRef->linkType))->findByAttributes(array('name' => $values[$i]));
-                                    if(isset($lookup))
-                                        $values[$i] = $lookup->id;
-                                }
-                                $criterion = new X2ListCriterion;
-                                $criterion->listId = $list->id;
-                                $criterion->type = 'attribute';
-                                $criterion->attribute = $attributes[$i];
-                                $criterion->comparison = $comparisons[$i];
-                                $criterion->value = $values[$i];
-                                $criterion->save();
-                            }
-                        }
                         $this->redirect(array('/contacts/contacts/list','id'=>$list->id));
                     }
                 }
@@ -1496,6 +1294,19 @@ class ContactsController extends x2base {
             $default->attribute = '';
             $default->comparison = 'contains';
             $criteriaModels[] = $default;
+        } else {
+            if($list->type = 'dynamic'){
+                foreach($criteriaModels as $criM){
+                    if($fields[$criM->attribute]->type == 'link'){
+                        $criM->value = implode(',', array_map(function($c){
+                                    list($name,$id) = Fields::nameAndId($c);
+                                    return $name;
+                                }, explode(',', $criM->value)
+                                )
+                        );
+                    }
+                }
+            }
         }
 
         $this->render('updateList', array(
@@ -1549,786 +1360,6 @@ class ContactsController extends x2base {
     }
 
     /**
-     * This function now just redirects to the "exportContacts" action which has
-     * this functionality included in it now.
-     * @param int $id ID of the list
-     * @deprecated
-     */
-    public function actionExportList($id){
-        $this->redirect('exportContacts?listId='.$id);
-        /* $list = X2Model::model('X2List')->findByPk($id);
-          if(isset($list)) {
-          if(!$this->checkPermissions($list, 'view')) // check permissions
-          throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
-          } else
-          throw new CHttpException(404, Yii::t('app', 'The requested list does not exist.'));
-
-
-
-          $dataProvider = X2Model::model('Contacts')->searchList($id); // get the list
-
-          $totalItemCount = $dataProvider->getTotalItemCount();
-          $dataProvider->pagination->itemCount = $totalItemCount;
-          $dataProvider->pagination->pageSize = 1000;  // process list in blocks of 1000
-
-          $allFields = X2Model::model('Contacts')->getFields(true); // get associative array of fields
-
-          $gvSettings = ProfileChild::getGridviewSettings('contacts_list' . $id);
-
-          $selectedColumns = array();
-          $columns = array();
-
-          if($gvSettings === null) {
-          $selectedColumns = array(// default columns
-          'firstName',
-          'lastName',
-          'phone',
-          'email',
-          'leadSource',
-          'createDate',
-          'lastUpdated',
-          );
-          } else {
-          $selectedColumns = array_keys($gvSettings);
-          }
-
-          foreach($selectedColumns as &$colName) {
-
-          if($colName == 'tags') {
-          $columns[$colName]['label'] = Yii::t('app', 'Tags');
-          $columns[$colName]['type'] = 'tags';
-          } elseif ($colName == 'name') {
-          $columns[$colName]['label'] = Yii::t('contacts', 'Name');
-          $columns[$colName]['type'] = 'name';
-          } else {
-          if(array_key_exists($colName, $allFields)) {
-
-          $columns[$colName]['label'] = $allFields[$colName]['attributeLabel'];
-
-          if(in_array($colName, array('annualRevenue', 'quoteAmount')))
-          $columns[$colName]['type'] = 'currency';
-          else
-          $columns[$colName]['type'] = $allFields[$colName]['type'];
-
-          $columns[$colName]['linkType'] = $allFields[$colName]['linkType'];
-          }
-          }
-          }
-          unset($colName);
-
-          $fileName = 'list' . $id . '.csv';
-          $fp = fopen($fileName, 'w+');
-
-          // output column labels for the first line
-          $columnLabels = array();
-          foreach($columns as $colName => &$field)
-          $columnLabels[] = $field['label'];
-          unset($field);
-
-          fputcsv($fp, $columnLabels);
-
-          for ($i = 0; $i < $dataProvider->pagination->pageCount; ++$i) {
-          $dataProvider->pagination->currentPage = $i;
-
-          $dataSet = $dataProvider->getData(true);
-          foreach($dataSet as &$model) {
-
-          $row = array();
-
-          foreach($columns as $fieldName => &$field) {
-
-          if($field['type'] == 'tags') {
-          $row[] = Tags::getTags('Contacts', $model->id, 10);
-          } elseif ($field['type'] == 'date') {
-          $row[] = date('c', $model->$fieldName);
-          } elseif ($field['type'] == 'visibility') {
-          switch ($model->$fieldName) {
-          case '1':
-          $row[] = Yii::t('app', 'Public');
-          break;
-          case '0':
-          $row[] = Yii::t('app', 'Private');
-          break;
-          case '2':
-          $row[] = Yii::t('app', 'User\'s Groups');
-          break;
-          }
-          } elseif ($field['type'] == 'link') {
-          if(is_numeric($model->$fieldName)) {
-          $className = ucfirst($field['linkType']);
-          if(class_exists($className)) {
-          $lookupModel = X2Model::model($className)->findByPk($model->$fieldName);
-          if(isset($lookupModel))
-          $row[] = $lookupModel->name;
-          }
-          } else {
-          $row[] = $model->$fieldName;
-          }
-          } elseif ($field['type'] == 'currency') {
-          if($model instanceof Product) // products have their own currency
-          $row[] = Yii::app()->locale->numberFormatter->formatCurrency($model->$fieldName, $model->currency);
-          elseif (!empty($model->$fieldName))
-          $row[] = Yii::app()->locale->numberFormatter->formatCurrency($model->$fieldName, Yii::app()->params['currency']);
-          else
-          $row[] = '';
-          } elseif ($field['type'] == 'dropdown') {
-          $row[] = Yii::t(strtolower(Yii::app()->controller->id), $model->$fieldName);
-          } else {
-          $row[] = $model->$fieldName;
-
-          }
-          }
-          fputcsv($fp, $row);
-          }
-          unset($model);
-          }
-          fclose($fp);
-
-          $file = Yii::app()->file->set($fileName);
-          $file->download(); */
-    }
-
-//	public function actionImportContacts() {
-//		if(isset($_FILES['contacts'])) {
-//
-//			$temp = CUploadedFile::getInstanceByName('contacts');
-//			$temp->saveAs('contacts.csv');
-//			$this->import('contacts.csv');
-//		}
-//		$this->render('importContacts');
-//	}
-//	private function import($file) {
-//		$arr = file($file);
-//
-//		for ($i = 1; $i < count($arr) - 1; $i++) {
-//
-//			$str = $arr[$i] . $arr[$i + 1];
-//			$i++;
-//			$pieces = explode(',', $str);
-//
-//			$model = new Contacts;
-//
-//			$model->visibility = 1;
-//			$model->createDate = time();
-//			$model->lastUpdated = time();
-//			$model->updatedBy = 'admin';
-//			$model->backgroundInfo = $this->stripquotes($pieces[77]);
-//			$model->firstName = $this->stripquotes($pieces[1]);
-//			$model->lastName = $this->stripquotes($pieces[3]);
-//			$model->assignedTo = Yii::app()->user->getName();
-//			$model->company = $this->stripquotes($pieces[5]);
-//			$model->title = $this->stripquotes($pieces[7]);
-//			$model->email = $this->stripquotes($pieces[57]);
-//			$model->phone = $this->stripquotes($pieces[31]);
-//			$model->address = $this->stripquotes($pieces[8]) . ' ' . $this->stripquotes($pieces[9]) . ' ' . $this->stripquotes($pieces[10]);
-//			$model->city = $this->stripquotes($pieces[11]);
-//			$model->state = $this->stripquotes($pieces[12]);
-//			$model->zipcode = $this->stripquotes($pieces[13]);
-//			$model->country = $this->stripquotes($pieces[14]);
-//
-//			if($model->save()) {
-//
-//			}
-//		}
-//		unlink($file);
-//		$this->redirect('index');
-//	}
-
-
-
-    /**
-     * The Contacts import page. See inline documentation for a thorough explanation
-     * of what is going on.
-     */
-    public function actionImportExcel(){
-
-        /**
-         * Internal method... could probably be refactored out but I wanted to
-         * keep this compartmentalized and easy to keep track of in the event it
-         * needed to be called more often. The goal of this function is to attempt
-         * to map meta into a series of Contact attributes, which it will do via
-         * string comparison on the Contact attribute names, the Contact attribute
-         * labels and a pattern match.
-         * @param array $attributes Contact model's attributes
-         * @param array $meta Provided metadata in the CSV
-         */
-        function createImportMap($attributes, $meta){
-            // We need to do data processing on attributes, first copy & preserve
-            $originalAttributes = $attributes;
-            // Easier to just do both strtolower than worry about case insensitive comparison
-            $attributes = array_map('strtolower', $attributes);
-            $processedMeta = array_map('strtolower', $meta);
-            // Remove any non word characters or underscores
-            $processedMeta = preg_replace('/[\W|_]/', '', $processedMeta);
-            // Now do the same with Contact attribute labels
-            $labels = Contacts::model()->attributeLabels();
-            $labels = array_map('strtolower', $labels);
-            $labels = preg_replace('/[\W|_]/', '', $labels);
-            /*
-             * At the end of this loop, any fields we are able to suggest a mapping
-             * for are automatically populated into an array in $_SESSION with
-             * the format:
-             *
-             * $_SESSION['importMap'][<x2_attribute>] = <metadata_attribute>
-             */
-            foreach($meta as $metaVal){
-                // Same reason as $originalAttributes
-                $originalMetaVal = $metaVal;
-                $metaVal = strtolower(preg_replace('/[\W|_]/', '', $metaVal));
-                /*
-                 * First check if we're lucky and maybe the processed metadata value
-                 * matches a contact attribute directly. Things like first_name
-                 * would be converted to firstname and so match perfectly. If we
-                 * find a match here, assume it is the most correct possibility
-                 * and add it to our session import map
-                 */
-                if(in_array($metaVal, $attributes)){
-                    $attrKey = array_search($metaVal, $attributes);
-                    $_SESSION['importMap'][$originalAttributes[$attrKey]] = $originalMetaVal;
-                /*
-                 * The next possibility is that the metadata value matches an attribute
-                 * label perfectly. This is more common for a field like company
-                 * where the label is "Account" but it's our second best bet for
-                 * figuring out the metadata.
-                 */
-                }elseif(in_array($metaVal, $labels)){
-                    $attrKey = array_search($metaVal, $labels);
-                    $_SESSION['importMap'][$attrKey] = $originalMetaVal;
-                /*
-                 * The third best option is that there is a partial word match
-                 * on the metadata value. However, we don't want to do a simple
-                 * preg search as that may give weird results, we want to limit
-                 * with a word boundary to see if the first part matches. This isn't
-                 * ideal but it fixes some edge cases.
-                 */
-                }elseif(count(preg_grep("/\b$metaVal/i", $attributes)) > 0){
-                    $keys = array_keys(preg_grep("/\b$metaVal/i", $attributes));
-                    $attrKey = $keys[0];
-                    if(!isset($_SESSION['importMap'][$originalMetaVal]))
-                        $_SESSION['importMap'][$originalAttributes[$attrKey]] = $originalMetaVal;
-                /*
-                 * Finally, check if there is a partial word match on the attribute
-                 * label as opposed to the field name
-                 */
-                }elseif(count(preg_grep("/\b$metaVal/i", $labels)) > 0){
-                    $keys = array_keys(preg_grep("/\b$metaVal/i", $labels));
-                    $attrKey = $keys[0];
-                    if(!isset($_SESSION['importMap'][$originalMetaVal]))
-                        $_SESSION['importMap'][$attrKey] = $originalMetaVal;
-                }
-            }
-            /*
-             * Finally, we want to do a quick reverse operation in case there
-             * were any fields that weren't mapped correctly based on the directionality
-             * of the word boundary. For example, if we were checking "zipcode"
-             * against "zip" this would not be a match because the pattern "zipcode"
-             * is longer and will fail. However, "zip" will match into "zipcode"
-             * and should be accounted for. This loop goes through the x2 attributes
-             * instead of the metadata to ensure bidirectionality.
-             */
-            foreach($originalAttributes as $attribute){
-                if(in_array($attribute, $processedMeta)){
-                    $metaKey = array_search($attribute, $processedMeta);
-                    $_SESSION['importMap'][$attribute] = $meta[$metaKey];
-                }elseif(count(preg_grep("/\b$attribute/i", $processedMeta)) > 0){
-                    $matches = preg_grep("/\b$attribute/i", $processedMeta);
-                    $metaKeys = array_keys($matches);
-                    $metaValue = $meta[$metaKeys[0]];
-                    if(!isset($_SESSION['importMap'][$attribute]))
-                        $_SESSION['importMap'][$attribute] = $metaValue;
-                }
-            }
-        }
-
-        if(isset($_FILES['contacts'])){
-            $temp = CUploadedFile::getInstanceByName('contacts');
-            $temp->saveAs($filePath = $this->safePath('contacts.csv'));
-            ini_set('auto_detect_line_endings', 1); // Account for Mac based CSVs if possible
-            if(file_exists($filePath))
-                $fp = fopen($filePath, 'r+');
-            else
-                throw new Exception('There was an error saving the contacts file.');
-            $meta = fgetcsv($fp);
-            if($meta === false)
-                throw new Exception('There was an error parsing the contents of the CSV.');
-            while("" === end($meta)){
-                array_pop($meta); // Remove empty data from the end of the metadata
-            }
-            if(count($meta) == 1){ // This was from a global export CSV, the first row is the version
-                $version = $meta[0]; // Remove it and repeat the above process
-                $meta = fgetcsv($fp);
-                if($meta === false)
-                    throw new Exception('There was an error parsing the contents of the CSV.');
-                while("" === end($meta)){
-                    array_pop($meta);
-                }
-            }
-            if(empty($meta)){
-                $_SESSION['errors'] = "Empty CSV or no metadata specified";
-                $this->redirect('importExcel');
-            }
-            // Set our file offset for importing Contacts
-            $_SESSION['offset'] = ftell($fp);
-            $_SESSION['metaData'] = $meta;
-            $failedContacts = fopen($this->safePath('failedContacts.csv'), 'w+');
-            fputcsv($failedContacts, $meta);
-            fclose($failedContacts);
-            $x2attributes = array_keys(X2Model::model('Contacts')->attributes);
-            while("" === end($x2attributes)){
-                array_pop($x2attributes);
-            }
-            // Initialize session data
-            $_SESSION['importMap'] = array();
-            $_SESSION['imported'] = 0;
-            $_SESSION['failed'] = 0;
-            $_SESSION['created'] = 0;
-            $_SESSION['fields'] = X2Model::model('Contacts')->getFields(true);
-            $_SESSION['x2attributes'] = $x2attributes;
-            // Set up import map via the internal function
-            createImportMap($x2attributes, $meta);
-
-            $importMap = $_SESSION['importMap'];
-            // We need the flipped version to display to users more easily which
-            // of their fields maps to what X2 field
-            $importMap = array_flip($importMap);
-            // This grabs 5 sample records from the CSV to get an example of what
-            // the data looks like.
-            $sampleRecords = array();
-            for($i = 0; $i < 5; $i++){
-                if($sampleRecord = fgetcsv($fp)){
-                    if(count($sampleRecord) > count($meta)){
-                        $sampleRecord = array_slice($sampleRecord, 0, count($meta));
-                    }
-                    if(count($sampleRecord) < count($meta)){
-                        $sampleRecord = array_pad($sampleRecord, count($meta), null);
-                    }
-                    if(!empty($meta)){
-                        $sampleRecord = array_combine($meta, $sampleRecord);
-                        $sampleRecords[] = $sampleRecord;
-                    }
-                }
-            }
-            fclose($fp);
-
-            $this->render('processContacts', array(
-                'attributes' => $x2attributes,
-                'meta' => $meta,
-                'fields' => $_SESSION['fields'],
-                'sampleRecords' => $sampleRecords,
-                'importMap' => $importMap,
-            ));
-        }else{
-            if(isset($_SESSION['errors'])){
-                $errors = $_SESSION['errors'];
-            }else{
-                $errors = "";
-            }
-            $this->render('importExcel', array(
-                'errors' => $errors,
-            ));
-        }
-    }
-
-    /**
-     * Helper function called via AJAX to prepare the import process.
-     */
-    public function actionPrepareImport(){
-        // Keys & attributes are our finalized import map
-        if(isset($_POST['attributes']) && isset($_POST['keys'])){
-            $keys = $_POST['keys'];
-            $attributes = $_POST['attributes'];
-            $_SESSION['tags'] = array();
-            // Grab any tags that need to be added to each record
-            if(isset($_POST['tags']) && !empty($_POST['tags'])){
-                $tags = explode(',', $_POST['tags']);
-                foreach($tags as $tag){
-                    if(substr($tag, 0, 1) != "#")
-                        $tag = "#".$tag;
-                    $_SESSION['tags'][] = $tag;
-                }
-            }
-            // The override allows the user to specify fixed values for certain fields
-            $_SESSION['override'] = array();
-            if(isset($_POST['forcedAttributes']) && isset($_POST['forcedValues'])){
-                $override = array_combine($_POST['forcedAttributes'], $_POST['forcedValues']);
-                $_SESSION['override'] = $override;
-            }
-            // Comments will log a comment on the record
-            $_SESSION['comment'] = "";
-            if(isset($_POST['comment']) && !empty($_POST['comment'])){
-                $_SESSION['comment'] = $_POST['comment'];
-            }
-            // Whether to use lead routing
-            $_SESSION['leadRouting'] = 0;
-            if(isset($_POST['routing']) && $_POST['routing'] == 1){
-                $_SESSION['leadRouting'] = 1;
-            }
-            $criteria = new CDbCriteria;
-            $criteria->order = "importId DESC";
-            $criteria->limit = 1;
-            $import = Imports::model()->find($criteria);
-            // Figure out which import this is so we can set up the Imports models
-            // for this import.
-            if(isset($import)){
-                $_SESSION['importId'] = $import->importId + 1;
-            }else{
-                $_SESSION['importId'] = 1;
-            }
-            $_SESSION['createRecords'] = $_POST['createRecords'] == "checked" ? "1" : "0";
-            $_SESSION['imported'] = 0;
-            $_SESSION['failed'] = 0;
-            $_SESSION['created'] = array();
-            if(!empty($keys) && !empty($attributes)){
-                // New import map is the provided data
-                $importMap = array_combine($keys, $attributes);
-                foreach($importMap as $key => &$value){
-                    // Loop through and figure out if we need to create new fields
-                    $key = Formatter::deCamelCase($key);
-                    $key = preg_replace('/\[W|_]/', ' ', $key);
-                    $key = mb_convert_case($key, MB_CASE_TITLE, "UTF-8");
-                    $key = preg_replace('/\W/', '', $key);
-                    if($value == 'createNew'){
-                        $fieldLookup = Fields::model()->findByAttributes(array('modelName' => 'Contacts', 'fieldName' => $key));
-                        if(isset($fieldLookup)){
-                            echo "2 ".$key;
-                            break;
-                        }else{
-                            $columnName = strtolower($key);
-                            $field = new Fields;
-                            $field->modelName = "Contacts";
-                            $field->type = "varchar";
-                            $field->fieldName = $columnName;
-                            $field->required = 0;
-                            $field->searchable = 1;
-                            $field->relevance = "Medium";
-                            $field->custom = 1;
-                            $field->modified = 1;
-                            $field->attributeLabel = $field->generateAttributeLabel($key);
-                            if($field->save()){
-                                try{
-                                    $fieldType = "VARCHAR(250)";
-                                    $sql = "ALTER TABLE x2_contacts ADD COLUMN `$columnName` $fieldType";
-                                    $command = Yii::app()->db->createCommand($sql);
-                                    $result = $command->query();
-                                    $value = $columnName;
-                                }catch(CDbException $e){
-                                    $field->delete();
-                                    throw $e;
-                                }
-                            }
-                        }
-                    }
-                }
-                $_SESSION['importMap'] = $importMap;
-            }else{
-                $_SESSION['importMap'] = array();
-            }
-            $cache = Yii::app()->cache;
-            if(isset($cache)){
-                $cache->flush();
-            }
-        }
-    }
-
-    /**
-     * Post-processing for the import process to clean out the SESSION vars.
-     */
-    public function actionCleanUpImport(){
-        unset($_SESSION['tags']);
-        unset($_SESSION['override']);
-        unset($_SESSION['comment']);
-        unset($_SESSION['leadRouting']);
-        unset($_SESSION['createRecords']);
-        unset($_SESSION['imported']);
-        unset($_SESSION['failed']);
-        unset($_SESSION['created']);
-        unset($_SESSION['importMap']);
-        unset($_SESSION['offset']);
-        unset($_SESSION['metaData']);
-        unset($_SESSION['fields']);
-        unset($_SESSION['x2attributes']);
-        if(file_exists($path = $this->safePath('contacts.csv'))){
-            unlink($path);
-        }
-    }
-
-    /**
-     * The actual meat of the import process happens here, this is called
-     * recursively via AJAX to import sets of records.
-     */
-    public function actionImportRecords(){
-        if(isset($_POST['count']) && file_exists($path = $this->safePath('contacts.csv'))){
-            $count = $_POST['count']; // Number of records to import
-            $metaData = $_SESSION['metaData'];
-            $importMap = $_SESSION['importMap'];
-            $fp = fopen($path, 'r+');
-            fseek($fp, $_SESSION['offset']); // Seek to the right file offset
-            for($i = 0; $i < $count; $i++){
-                $arr = fgetcsv($fp); // Loop through and start importing
-                if($arr !== false && !is_null($arr)){
-                    if(count($arr) > count($metaData)){
-                        $arr = array_slice($arr, 0, count($metaData));
-                    }
-                    if(count($arr) < count($metaData)){
-                        $arr = array_pad($arr, count($metaData), null);
-                    }
-                    unset($_POST);
-                    $relationships = array();
-                    if(!empty($metaData) && !empty($arr)){
-                        $importAttributes = array_combine($metaData, $arr);
-                    }else{
-                        continue;
-                    }
-                    $model = new Contacts;
-                    /*
-                     * This import assumes we have human readable data in the CSV
-                     * and will thus need to convert. The loop below converts link,
-                     * date, and dateTime fields to the appropriate machine friendly
-                     * data.
-                     */
-                    foreach($metaData as $attribute){
-                        if($model->hasAttribute($importMap[$attribute])){
-                            $fieldRecord = Fields::model()->findByAttributes(array('modelName' => 'Contacts', 'fieldName' => $importMap[$attribute]));
-                            switch($fieldRecord->type){
-                                case "link":
-                                    $className = ucfirst($fieldRecord->linkType);
-                                    if(is_numeric($importAttributes[$attribute])){
-                                        $model->$importMap[$attribute] = $importAttributes[$attribute];
-                                        $relationship = new Relationships;
-                                        $relationship->firstType = 'Contacts';
-                                        $relationship->secondType = $className;
-                                        $relationship->secondId = $importAttributes[$attribute];
-                                        $relationships[] = $relationship;
-                                    }else{
-                                        $lookup = X2Model::model(ucfirst($fieldRecord->linkType))->findByAttributes(array('name' => $importAttributes[$attribute]));
-                                        if(isset($lookup)){
-                                            $model->$importMap[$attribute] = $lookup->id;
-                                            $relationship = new Relationships;
-                                            $relationship->firstType = 'Contacts';
-                                            $relationship->secondType = $className;
-                                            $relationship->secondId = $lookup->id;
-                                            $relationships[] = $relationship;
-                                        }elseif(isset($_SESSION['createRecords']) && $_SESSION['createRecords'] == 1){
-                                            $className = ucfirst($fieldRecord->linkType);
-                                            if(class_exists($className)){
-                                                $lookup = new $className;
-                                                $lookup->name = $importAttributes[$attribute];
-                                                if($lookup->hasAttribute('visibility')){
-                                                    $lookup->visibility = 1;
-                                                }
-                                                if($lookup->hasAttribute('description')){
-                                                    $lookup->description = "Generated by Contacts import.";
-                                                }
-                                                if($lookup->hasAttribute('createDate')){
-                                                    $lookup->createDate = time();
-                                                }
-                                                if($lookup->save()){
-                                                    if(isset($_SESSION['created'][$className])){
-                                                        $_SESSION['created'][$className]++;
-                                                    }else{
-                                                        $_SESSION['created'][$className] = 1;
-                                                    }
-                                                    $model->$importMap[$attribute] = $lookup->nameId;
-                                                    $relationship = new Relationships;
-                                                    $relationship->firstType = 'Contacts';
-                                                    $relationship->secondType = $className;
-                                                    $relationship->secondId = $lookup->id;
-                                                    $relationships[] = $relationship;
-                                                }
-                                            }
-                                        }else{
-                                            $model->$importMap[$attribute] = $importAttributes[$attribute];
-                                        }
-                                    }
-                                    break;
-                                case "dateTime":
-                                case "date":
-                                    if(strtotime($importAttributes[$attribute]) !== false){
-                                        $model->$importMap[$attribute] = strtotime($importAttributes[$attribute]);
-                                    }elseif(is_numeric($importAttributes[$attribute])){
-                                        $model->$importMap[$attribute] = $importAttributes[$attribute];
-                                    }else{
-
-                                    }
-                                    break;
-                                default:
-                                    $model->$importMap[$attribute] = $importAttributes[$attribute];
-                            }
-
-                            $_POST[$importMap[$attribute]] = $model->$importMap[$attribute];
-                        }
-                    }
-                    // Nobody every remembers to set visibility... set it for them
-                    if(empty($model->visibility) && ($model->visibility !== 0 || $model->visibility !== "0") || $model->visibility == 'Public'){
-                        $model->visibility = 1;
-                    }elseif($model->visibility == 'Private'){
-                        $model->visibility = 0;
-                    }
-                    // If date fields were provided, do not create new values for them
-                    if(!empty($model->createDate) || !empty($model->lastUpdated) || !empty($model->lastActivity)){
-                        $model->disableBehavior('X2TimestampBehavior');
-                        if(empty($model->createDate)){
-                            $model->createDate = time();
-                        }
-                        if(empty($model->lastUpdated)){
-                            $model->lastUpdated = time();
-                        }
-                        if(empty($model->lastActivity)){
-                            $model->lastActivity = time();
-                        }
-                    }
-                    if($_SESSION['leadRouting'] == 1){
-                        $assignee = $this->getNextAssignee();
-                        if($assignee == "Anyone")
-                            $assignee = "";
-                        $model->assignedTo = $assignee;
-                    }
-                    // Loop through our override and set the manual data
-                    foreach($_SESSION['override'] as $attr => $val){
-                        $model->$attr = $val;
-                    }
-                    if($model->validate()){
-                        if(!empty($model->id)){
-                            $lookup = Contacts::model()->findByPk($model->id);
-                            if(isset($lookup)){
-                                Relationships::model()->deleteAllByAttributes(array('firstType' => 'Contacts', 'firstId' => $lookup->id));
-                                Relationships::model()->deleteAllByAttributes(array('secondType' => 'Contacts', 'secondId' => $lookup->id));
-                                $lookup->delete();
-                                unset($lookup);
-                            }
-                        }
-                        // Save our model & create the import records and relationships
-                        if($model->save()){
-                            $importLink = new Imports;
-                            $importLink->modelType = "Contacts";
-                            $importLink->modelId = $model->id;
-                            $importLink->importId = $_SESSION['importId'];
-                            $importLink->timestamp = time();
-                            $importLink->save();
-                            $_SESSION['imported']++;
-                            foreach($relationships as $relationship){
-                                $relationship->firstId = $model->id;
-                                if($relationship->save()){
-                                    $importLink = new Imports;
-                                    $importLink->modelType = $relationship->secondType;
-                                    $importLink->modelId = $relationship->secondId;
-                                    $importLink->importId = $_SESSION['importId'];
-                                    $importLink->timestamp = time();
-                                    $importLink->save();
-                                }
-                            }
-                            // Add all listed tags
-                            foreach($_SESSION['tags'] as $tag){
-                                $tagModel = new Tags;
-                                $tagModel->taggedBy = 'Import';
-                                $tagModel->timestamp = time();
-                                $tagModel->type = 'Contacts';
-                                $tagModel->itemId = $model->id;
-                                $tagModel->tag = $tag;
-                                $tagModel->itemName = $model->name;
-                                $tagModel->save();
-                            }
-                            // Log a comment if one was requested
-                            if(!empty($_SESSION['comment'])){
-                                $action = new Actions;
-                                $action->associationType = "contacts";
-                                $action->associationId = $model->id;
-                                $action->actionDescription = $_SESSION['comment'];
-                                $action->createDate = time();
-                                $action->updatedBy = Yii::app()->user->getName();
-                                $action->lastUpdated = time();
-                                $action->complete = "Yes";
-                                $action->completeDate = time();
-                                $action->completedBy = Yii::app()->user->getName();
-                                $action->type = "note";
-                                $action->visibility = 1;
-                                $action->reminder = "No";
-                                $action->priority = "Low";
-                                if($action->save()){
-                                    $importLink = new Imports;
-                                    $importLink->modelType = "Actions";
-                                    $importLink->modelId = $action->id;
-                                    $importLink->importId = $_SESSION['importId'];
-                                    $importLink->timestamp = time();
-                                    $importLink->save();
-                                }
-                            }
-                        }
-                    }else{
-                        // If the import failed, then put the data into the failedContacts CSV for easy recovery.
-                        $failedContacts = fopen($this->safePath('failedContacts.csv'), 'a+');
-                        fputcsv($failedContacts, $arr);
-                        fclose($failedContacts);
-                        $_SESSION['failed']++;
-                    }
-                }else{
-                    echo json_encode(array(
-                        '1',
-                        $_SESSION['imported'],
-                        $_SESSION['failed'],
-                        json_encode($_SESSION['created']),
-                    ));
-                    return;
-                }
-            }
-            // Change the offset to wherever we got to and continue.
-            $_SESSION['offset'] = ftell($fp);
-            echo json_encode(array(
-                '0',
-                $_SESSION['imported'],
-                $_SESSION['failed'],
-                json_encode($_SESSION['created']),
-            ));
-        }
-    }
-
-    /**
-     * Deprecated function which now just points to "exportContacts" for posterity
-     * @deprecated
-     */
-    public function actionExport(){
-        $this->redirect('exportContacts');
-        /* $this->exportToTemplate();
-          $this->render('export', array(
-          )); */
-    }
-
-    /*
-      protected function exportToTemplate() {
-      ini_set('memory_limit', -1);
-      $contacts = X2Model::model('Contacts')->findAll();
-      $file = 'contact_export.csv';
-      $fp = fopen($file, 'w+');
-      if(!empty($contacts) && !empty($contacts[0]) && is_array($contacts[0]->attributes)){
-      fputcsv($fp,array_keys($contacts[0]->attributes));
-      $fields=X2Model::model('Contacts')->getFields();
-      foreach($contacts as $contact) {
-      foreach($fields as $field){
-      $fieldName=$field->fieldName;
-      if($field->type=='date' || $field->type=='dateTime'){
-      if(is_numeric($contact->$fieldName))
-      $contact->$fieldName=date("c",$contact->$fieldName);
-      }elseif($field->type=='link'){
-      try{
-      $linkModel=X2Model::model($field->linkType)->findByPk($contact->$fieldName);
-      if(isset($linkModel) && $linkModel->hasAttribute('name')){
-      $contact->$fieldName=$linkModel->name;
-      }
-      }catch(Exception $e){
-
-      }
-      }elseif($fieldName=='visibility'){
-      $contact->$fieldName=$contact->$fieldName==1?'Public':'Private';
-      }
-      }
-      fputcsv($fp, $contact->attributes);
-      }
-      }
-      fclose($fp);
-      }
-     */
-
-    /**
      * Contacts export function which generates human friendly data and also
      * works for exporting particular lists of Contacts
      * @param int $listId The ID of the list to be exported, if null it will be all Contacts
@@ -2370,69 +1401,12 @@ class ContactsController extends x2base {
         ));
     }
 
-    /**
-     * An AJAX called function which exports Contact data to a CSV via pagination
-     * @param int $page The page of the data provider to export
-     */
-    public function actionExportSet($page){
-        Contacts::$autoPopulateFields = false;
-        $file = $this->safePath($_SESSION['contactExportFile']);
-        $fields = X2Model::model('Contacts')->getFields();
-        $fp = fopen($file, 'a+');
-        // Load data provider based on export criteria
-        $dp = new CActiveDataProvider('Contacts', array(
-                    'criteria' => isset($_SESSION['exportContactCriteria']) ? $_SESSION['exportContactCriteria'] : array(),
-                    'pagination' => array(
-                        'pageSize' => 100,
-                    ),
-                ));
-        // Flip through to the right page.
-        $pg = $dp->getPagination();
-        $pg->setCurrentPage($page);
-        $dp->setPagination($pg);
-        $records = $dp->getData();
-        $pageCount = $dp->getPagination()->getPageCount();
-        // We need to set our data to be human friendly, so loop through all the
-        // records and format any date / link / visibility fields.
-        foreach($records as $record){
-            foreach($fields as $field){
-                $fieldName = $field->fieldName;
-                if($field->type == 'date' || $field->type == 'dateTime'){
-                    if(is_numeric($record->$fieldName))
-                        $record->$fieldName = Formatter::formatLongDateTime($record->$fieldName);
-                }elseif($field->type == 'link'){
-                    $name = $record->$fieldName;
-                    if(!empty($field->linkType)){
-                        list($name, $id) = Fields::nameAndId($name);
-                    }
-                    if(!empty($name))
-                        $record->$fieldName = $name;
-                }elseif($fieldName == 'visibility'){
-                    $record->$fieldName = $record->$fieldName == 1 ? 'Public' : 'Private';
-                }
-            }
-            // Enforce metadata to ensure accuracy of column order, then export.
-            $combinedMeta = array_combine($_SESSION['contactExportMeta'], $_SESSION['contactExportMeta']);
-            $tempAttributes = array_intersect_key($record->attributes, $combinedMeta);
-            $tempAttributes = array_merge($combinedMeta, $tempAttributes);
-            fputcsv($fp, $tempAttributes);
-        }
-
-        unset($dp);
-
-        fclose($fp);
-        if($page + 1 < $pageCount){
-            echo $page + 1;
-        }
-    }
-
+    
     public function actionDelete($id){
         if(Yii::app()->request->isPostRequest){
             $model = $this->loadModel($id);
             $model->clearTags();
             $model->delete();
-
-            Actions::model()->deleteAllByAttributes(array('associationType' => 'contacts', 'associationId' => $id));
         } else {
             throw new CHttpException(400, Yii::t('app', 'Invalid request. Please do not repeat this request again.'));
         }

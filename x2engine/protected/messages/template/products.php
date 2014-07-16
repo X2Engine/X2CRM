@@ -20,4 +20,7 @@ return array (
 'Unit Price'=>'',
 
 // Misc Text
+'Import Products'=>'',
+'Export Products'=>'',
+'NameId'=>'',
 );

@@ -50,7 +50,7 @@ class AccountsController extends x2base {
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array('index', 'view', 'create', 'update', 'search', 'addUser', 'removeUser', 
-                    'addNote', 'deleteNote', 'saveChanges', 'delete', 'shareAccount', 'inlineEmail'),
+                    'addNote', 'deleteNote', 'saveChanges', 'delete', 'shareAccount', 'inlineEmail', 'qtip'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -61,6 +61,24 @@ class AccountsController extends x2base {
                 'users' => array('*'),
             ),
         );
+    }
+
+    public function behaviors(){
+        return array_merge(parent::behaviors(), array(
+            'QuickCreateRelationshipBehavior' => array(
+                'class' => 'QuickCreateRelationshipBehavior',
+                'attributesOfNewRecordToUpdate' => array (
+                    'Contacts' => array (
+                        'nameId' => 'company',
+                        'website' => 'website',
+                        'phone' => 'phone',
+                    ),
+                    'Opportunity' => array (
+                        'accountName' => 'id',
+                    )
+                )
+            ),
+        ));
     }
 
     public function actions(){
@@ -96,15 +114,13 @@ class AccountsController extends x2base {
      */
     public function actionView($id){
         $model = $this->loadModel($id);
-        if($this->checkPermissions($model, 'view')){
+        if(!parent::checkPermissions($model, 'view'))
+            $this->denied();
+        
+        // add account to user's recent item list
+        User::addRecentItem('a', $id, Yii::app()->user->getId());
 
-            // add account to user's recent item list
-            User::addRecentItem('a', $id, Yii::app()->user->getId());
-
-            parent::view($model, 'accounts');
-        }else{
-            $this->redirect('index');
-        }
+        parent::view($model, 'accounts');
     }
 
     public function actionShareAccount($id){
@@ -155,21 +171,6 @@ class AccountsController extends x2base {
         ));
     }
 
-// this nonsense is now done in Accounts::beforeValidate()
-    /**
-     * Creates a new model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     */
-    /* 	public function create($model,$oldAttributes, $api){
-
-      $model->annualRevenue = Formatter::parseCurrency($model->annualRevenue,false);
-      // $model->createDate=time();
-      if($api==0)
-      parent::create($model,$oldAttributes,$api);
-      else
-      return parent::create($model,$oldAttributes,$api);
-      } */
-
     public function actionCreate(){
         $model = new Accounts;
         $users = User::getNames();
@@ -187,69 +188,8 @@ class AccountsController extends x2base {
             }
             $model->setX2Fields($_POST['Accounts']);
 
-
             if(isset($_POST['x2ajax'])){
-                // if($this->create($model,$temp, '1')) { // success creating account?
-                if($model->save()){ // success creating account?
-                    $primaryAccountLink = '';
-                    $newPhone = '';
-                    $newWebsite = '';
-                    if(isset($_POST['ModelName']) && isset($_POST['ModelId'])){
-                        $rel = new Relationships;
-                        $rel->firstType = $_POST['ModelName'];
-                        $rel->firstId = $_POST['ModelId'];
-                        $rel->secondType = 'Accounts';
-                        $rel->secondId = $model->id;
-                        $rel->save();
-                        if($_POST['ModelName'] == 'Contacts'){
-                            $contact = Contacts::model()->findByPk($_POST['ModelId']);
-                            if($contact){
-                                $changed = false;
-                                if($contact->company == ''){ // if no primary account on this contact
-                                    $contact->company = $model->id; // make this primary account
-                                    $changed = true;
-                                    $primaryAccountLink = $model->createLink();
-                                }
-                                if(isset($model->website) && (!isset($contact->website) || $contact->website == "")){
-                                    $contact->website = $model->website;
-                                    $newWebsite = $contact->website;
-                                    $changed = true;
-                                }
-                                if(isset($model->phone) && (!isset($contact->phone) || $contact->phone == "")){
-                                    $contact->phone = $model->phone;
-                                    $newPhone = $contact->phone;
-                                    $changed = true;
-                                }
-
-                                if($changed)
-                                    $contact->update();
-                            }
-                        } elseif($_POST['ModelName'] == 'Opportunity'){
-                            $opportunity = Opportunity::model()->findByPk($_POST['ModelId']);
-                            if($opportunity){
-                                if(!isset($opportunity->accountName) || $opportunity->accountName == ''){
-                                    $opportunity->accountName = $model->id;
-                                    $opportunity->update();
-                                    $primaryAccountLink = $model->createLink();
-                                }
-                            }
-                        }
-                    }
-
-                    echo json_encode(
-                            array(
-                                'status' => 'success',
-                                'name' => $model->name,
-                                'id' => $model->id,
-                                'primaryAccountLink' => $primaryAccountLink,
-                                'newWebsite' => $newWebsite,
-                                'newPhone' => $newPhone,
-                            )
-                    );
-                    Yii::app()->end();
-                }else{
-                    $x2ajaxCreateError = true;
-                }
+                $ajaxErrors = $this->quickCreate ($model);
             }else{
                 if($model->save())
                     $this->redirect(array('view', 'id' => $model->id));
@@ -257,20 +197,8 @@ class AccountsController extends x2base {
         }
 
         if(isset($_POST['x2ajax'])){
-            Yii::app()->clientScript->scriptMap['*.js'] = false;
-            Yii::app()->clientScript->scriptMap['*.css'] = false;
-            if(isset($x2ajaxCreateError) && $x2ajaxCreateError == true){
-                $page = $this->renderPartial('application.components.views._form', array('model' => $model, 'users' => $users, 'modelName' => 'accounts'), true, true);
-                echo json_encode(
-                        array(
-                            'status' => 'userError',
-                            'page' => $page,
-                        )
-                );
-            }else{
-                $this->renderPartial('application.components.views._form', array('model' => $model, 'users' => $users, 'modelName' => 'accounts'), false, true);
-            }
-        }else{
+            $this->renderInlineCreateForm ($model, isset ($ajaxErrors) ? $ajaxErrors : false);
+        } else {
             $this->render('create', array(
                 'model' => $model,
                 'users' => $users,
@@ -296,7 +224,6 @@ class AccountsController extends x2base {
      */
     public function actionUpdate($id){
         $model = $this->loadModel($id);
-        $model->assignedTo = explode(', ',$model->assignedTo);
         if(isset($_POST['Accounts'])){
             $model->setX2Fields($_POST['Accounts']);
             if($model->save())
@@ -426,15 +353,8 @@ class AccountsController extends x2base {
      * @param integer $id the ID of the model to be deleted
      */
     public function actionDelete($id){
-        $model = $this->loadModel($id);
         if(Yii::app()->request->isPostRequest){
-            $event = new Events;
-            $event->type = 'record_deleted';
-            $event->associationType = $this->modelClass;
-            $event->associationId = $model->id;
-            $event->text = $model->name;
-            $event->user = Yii::app()->user->getName();
-            $event->save();
+            $model = $this->loadModel($id);
             Actions::model()->deleteAll('associationId='.$id.' AND associationType=\'account\'');
             $this->cleanUpTags($model);
             $model->delete();
@@ -452,6 +372,11 @@ class AccountsController extends x2base {
 
         $model = new Accounts('search');
         $this->render('index', array('model' => $model));
+    }
+
+    public function actionQtip($id){
+        $model = $this->loadModel($id);
+        $this->renderPartial('qtip', array('model' => $model));
     }
      
 }

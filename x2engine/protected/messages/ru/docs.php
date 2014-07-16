@@ -87,4 +87,9 @@ return array (
 'copy'=>'скопировать',
 'Document'=>'Документ',
 'Body'=>'Тело',
+'Leaving this field blank will preserve its default behavior.'=>'Оставив это поле пустым сохранит свое поведение по умолчанию.',
+'Create Quote Template'=>'Создание Цитировать шаблона',
+'Import Docs'=>'Импорт Docs',
+'Export Docs'=>'Экспорт Docs',
+'To:'=>'Кому:',
 );

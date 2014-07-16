@@ -36,7 +36,7 @@
 
 $heading = $listModel->name; //Yii::t('contacts','All Contacts');
 
-$authParams['assignedTo'] = $listModel->assignedTo;
+$authParams['X2Model'] = $listModel;
 $menuItems = array(
     array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
     array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
@@ -138,7 +138,7 @@ if ($listModel->type === 'static') {
     $massActions[] = 'removeFromList';
 }
 
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
     'id'=>'contacts-grid',
     'enableQtips' => true,
     'qtipManager' => array (
@@ -153,10 +153,10 @@ $this->widget('application.components.X2GridView', array(
         '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
         '<div id="x2-gridview-page-title" '.
          'class="page-title x2-gridview-fixed-title">{title}{buttons}{massActionButtons}'
-            .(Yii::app()->user->checkAccess('ContactsExportContacts') ? 
+            .(Yii::app()->user->checkAccess('AdminExportModels',array('module'=>'contacts')) ? 
                 CHtml::link(
                     Yii::t('app','Export'),
-                    array('/contacts/contacts/exportContacts','listId'=>$listModel->id),
+                    array('/admin/exportModels','model'=>'Contacts', 'listId'=>$listModel->id),
                     array('class'=>'x2-button')
                 ) : null)
             .CHtml::link(

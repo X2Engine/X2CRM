@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->pageTitle = Yii::app()->name . ' - People';
+$this->pageTitle = Yii::app()->settings->appName . ' - People';
 ?>
 <div>
     <?php

@@ -42,7 +42,17 @@
 ));
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
 Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
-Yii::app()->clientScript->registerCss('multiselectCss',"
+Yii::app()->clientScript->registerCss('createUserCss',"
+
+.input-warning {
+    display: inline-block;
+    color: red;
+    margin-bottom: 8px;
+}
+.input-warning + input {
+    float: left;
+}
+
 .multiselect {
 	width: 460px;
 	height: 200px;
@@ -77,12 +87,12 @@ $(document).ready(function() {
 	</div>
 
 	<div class="row">
-        <span style="color: red"><?php echo Yii::t('users','Changing the username is NOT advised.'); ?></span><br />
-		<?php echo $form->labelEx($model,'username'); ?>
-		<?php echo $model->username=='admin'?
-				$form->textField($model,'username',array('size'=>20,'maxlength'=>20,'disabled'=>'disabled')):
-				$form->textField($model,'username',array('size'=>20,'maxlength'=>20)); ?>
-		<?php echo $form->error($model,'username'); ?>
+		<?php
+        $unameAttr = $update?'userAlias':'username';
+        echo $form->labelEx($model,$unameAttr);
+		echo $form->textField($model,$unameAttr,array('size'=>20,'maxlength'=>20));
+		echo $form->error($model,$unameAttr);
+        ?>
 	</div>
 
 	<div class="row">
@@ -108,7 +118,7 @@ $(document).ready(function() {
 	<?php if((isset($flag) && !$flag) || !isset($flag)){ ?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'department'); ?>
-		<?php echo $form->textField($model,'department',array('size'=>40,'maxlength'=>40)); ?>
+		<?php echo $form->textField($model,'department',array('class'=>'x2-wide-input')); ?>
 		<?php echo $form->error($model,'department'); ?>
 	</div>
 	<?php } ?>
@@ -140,7 +150,7 @@ $(document).ready(function() {
 	<?php if((isset($flag) && !$flag) || !isset($flag)){ ?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'backgroundInfo'); ?>
-		<?php echo $form->textArea($model,'backgroundInfo',array('rows'=>6, 'cols'=>50)); ?>
+		<?php echo $form->textArea($model,'backgroundInfo',array('class'=>'x2-wide-input')); ?>
 		<?php echo $form->error($model,'backgroundInfo'); ?>
 	</div>
 	<?php } ?>

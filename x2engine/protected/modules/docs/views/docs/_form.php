@@ -39,7 +39,32 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckedi
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
 
+Yii::app()->clientScript->registerCss('docFormCss',"
 
+#doc-name,
+#email-to-field,
+#doc-subject {
+    width: 260px;
+}
+
+#create-button-container {
+    width: auto !important;
+    margin-top: 6px;
+}
+
+");
+
+Yii::app()->clientScript->registerResponsiveCss('responsiveDocFormCss',"
+
+@media (max-width: 657px) {
+    #doc-name,
+    #email-to-field,
+    #doc-subject {
+        width:160px;
+    }
+}
+
+");
 
 $autosaveUrl = $this->createUrl('autosave').'?id='.$model->id;
 
@@ -75,6 +100,46 @@ if($model->type==='email' || $model->type ==='quote') {
 	}
 }
 
+if($model->type === 'email'){ 
+
+// allowable association types
+$associationTypeOptions = Docs::modelsWhichSupportEmailTemplates ();
+
+// insertable attributes by model type
+$insertableAttributes = array ();
+foreach ($associationTypeOptions as $modelName=>$label) {
+    $insertableAttributes[$modelName] = array ();
+    foreach(X2Model::model($modelName)->attributeLabels() as $fieldName => $label) {
+        $insertableAttributes[$modelName][$label] = '{'.$fieldName.'}';
+    }
+}
+
+
+Yii::app()->clientScript->registerScript('createEmailTemplateJS',"
+
+(function () {
+
+var insertableAttributes = ".CJSON::encode ($insertableAttributes).";
+
+// reinitialize ckeditor instance with new set of insertable attributes whenever the record type
+// selector is changed
+$('#email-association-type').change (function () {
+    
+    var data = window.docEditor.getData ();
+    window.docEditor.destroy (true);
+    $('#input').val (data);
+    var recordInsertableAttributes = {};
+    recordInsertableAttributes[$(this).val () + ' Attributes'] = 
+        insertableAttributes[$(this).val ()];
+    instantiateDocEditor (recordInsertableAttributes);
+});
+
+}) ();
+
+");
+
+}
+
 $js .='
 var typingTimer;
 
@@ -88,12 +153,23 @@ function autosave() {
 
 if(window.docEditor)
 	window.docEditor.destroy(true);
-window.docEditor = createCKEditor("input",{
-	'.($model->type==='email' || $model->type == 'quote' ? 'insertableAttributes:x2.insertableAttributes,':'').'
-	// toolbar:"Full",
-	fullPage:true,
-	height:600
-}'.($model->isNewRecord? '' : ',setupAutosave').');
+
+function instantiateDocEditor (insertableAttributes) {
+    var insertableAttributes = typeof insertableAttributes === "undefined" ? 
+        x2.insertableAttributes : insertableAttributes; 
+
+    window.docEditor = createCKEditor("input",{
+            '.($model->type==='email' || $model->type == 'quote' ? 
+                'insertableAttributes:insertableAttributes,':'').'
+        // toolbar:"Full",
+        fullPage:true,
+        height:600
+    }'.($model->isNewRecord? '' : ',setupAutosave').');
+}
+
+instantiateDocEditor ();
+
+
 function setupAutosave() {
 	if($.browser.msie)
 		return;
@@ -119,26 +195,62 @@ $form = $this->beginWidget('CActiveForm', array(
 <div class="form no-border">
 	<div class="row">
 		<div class="cell">
-			<?php echo $form->errorSummary($model); ?>
-			<?php echo $form->label($model,'name'); ?>
-			<?php echo $form->textField($model,'name',array('size'=>60,'maxlength'=>100)); ?>
-			<?php echo $form->error($model,'name'); ?>
+			<?php 
+            echo $form->errorSummary($model); 
+			echo $form->label($model,'name'); 
+			echo $form->textField(
+                $model,'name',
+                array('maxlength'=>100,'id'=>'doc-name')); 
+			echo $form->error($model,'name'); 
+            ?>
 		</div>
 		<div class="cell">
 			<?php echo $form->label($model,'visibility'); ?>
 			<?php echo $form->dropDownList($model,'visibility',array(1=>Yii::t('app','Public'),0=>Yii::t('app','Private'))); ?>
 			<?php echo $form->error($model,'visibility'); ?>
 		</div>
-		<div class="cell right">
+		<div class="cell right" id='create-button-container'>
 			<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float')); ?>
 		</div>
 	</div>
+     
+    <?php
+    if($model->type === 'email'){ 
+    ?>
 	<div class="row">
-        <?php if(in_array($model->type,array('email','quote'))){ ?>
-            <?php echo $form->label($model,'subject'); ?>
-            <?php echo $form->textField($model,'subject',array('size'=>60,'maxlength'=>255)); ?>
-            <?php echo $form->error($model,'subject'); ?>
-        <?php } ?>
+    <?php
+        echo $form->label($model,'associationType'); 
+        echo $form->dropdownList($model,'associationType', $associationTypeOptions, array (
+            'id' => 'email-association-type'
+        ));
+        echo $form->error($model,'associationType'); 
+    ?>
+	</div>
+	<div class="row">
+    <?php
+        echo $form->label($model,'emailTo'); 
+        echo $form->textField($model,'emailTo', array (
+            'id' => 'email-to-field'
+        ));
+        echo $form->error($model,'emailTo'); 
+        echo X2Html::hint (
+            Yii::t('docs', 
+            'Leaving this field blank will preserve its default behavior.'), false);
+    ?>
+	</div>
+    <?php
+    }
+    ?>
+	<div class="row">
+        <?php 
+        if(in_array($model->type,array('email','quote'))){ 
+            echo $form->label($model,'subject'); 
+            echo $form->textField(
+                $model,'subject',
+                array('maxlength'=>255,'id'=>'doc-subject')); 
+            echo $form->error($model,'subject'); 
+        } 
+        ?>
 		<span id="savetime">
 			<?php if(isset($_GET['saved'])){
 				$date=date("g:i:s A",$_GET['time']);
@@ -156,7 +268,7 @@ $form = $this->beginWidget('CActiveForm', array(
 		if($model->type == 'email'){
 ?>
 		<div class="row">
-	<?php echo Yii::t('docs', '<b>Note:</b> You can use dynamic variables such as {firstName}, {lastName} or {phone} in your template. When you email a contact, these will be replaced by the appropriate value.'); ?>
+	<?php echo Yii::t('docs', '<b>Note:</b> You can use dynamic variables such as {firstName}, {lastName} or {phone} in your template. When you email a record of the specified type, these will be replaced by the appropriate value.'); ?>
 		</div><?php }elseif($model->type == 'quote'){ ?>
 		<div class="row">
 	<?php echo Yii::t('docs', '<strong>Note:</strong> You can use dynamic variables such as {Contact.firstName}, {Quote.dateCreated}, {Account.name} etc. in your template. When you email or print the quote, these will be replaced with the appropriate values from the quote or its associated contact/account.'); ?>

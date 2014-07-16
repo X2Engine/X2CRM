@@ -39,8 +39,6 @@ Yii::app()->clientScript->registerScriptFile(
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/EnlargeableImage.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(
-    Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
-Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/jquery-expander/jquery.expander.js', CClientScript::POS_END);
 
 // used for rich editing in new post text field
@@ -68,64 +66,59 @@ $userList = array_keys(User::getNames());
 $tempUserList = array_diff($userList,$tempUserList);
 $usersGroups = implode(",",$tempUserList);
 
+Yii::app()->clientScript->registerScript('setUpActivityFeedManager', "
 
-$passVarsToClientScript = "
-    x2.activityFeed = {};
-    x2.activityFeed.DEBUG = false;//".(YII_DEBUG ? 'true' : 'false').";
-    x2.activityFeed.usersGroups = '".$usersGroups."';
-    x2.activityFeed.minimizeFeed = ".(Yii::app()->params->profile->minimizeFeed==1?'true':'false').";
-    x2.activityFeed.commentFlag = false;
-    x2.activityFeed.lastEventId = ".(!empty($lastEventId)?$lastEventId:0).";
-    x2.activityFeed.lastTimestamp = ".(!empty($lastTimestamp)?$lastTimestamp:0).";
-    x2.activityFeed.profileId = ".$profileId.";
-    x2.activityFeed.myProfileId = ".Yii::app()->params->profile->id.";
-    x2.activityFeed.deletePostUrl = '".$this->createUrl('/profile/deletePost')."';
-    x2.activityFeed.translations = {};
-";
+x2.activityFeed = new x2.ActivityFeed ({
+    translations: ".CJSON::encode (array (
+        'Unselect All' => Yii::t('app','Unselect All'),
+        'Select All' => Yii::t('app','Select All'),
+        'Uncheck All' => Yii::t('app','Uncheck All'),
+        'Check All' => Yii::t('app','Check All'),
+        'Enter text here...' => Yii::t('app','Enter text here...'),
+        'Broadcast Event' => Yii::t('app','Broadcast Event'),
+        'Make Important' => Yii::t('app','Make Important'),
+        'Broadcast' => Yii::t('app','Broadcast'),
+        'broadcast error message 1' => Yii::t('app','Select at least one user to broadcast to'),
+        'broadcast error message 2' => Yii::t('app','Select at least one broadcast method'),
+        'Okay' => Yii::t('app','Okay'),
+        'Nevermind' => Yii::t('app','Nevermind'),
+        'Create' => Yii::t('app','Create'),
+        'Cancel' => Yii::t('app','Cancel'),
+        'Read more' => Yii::t('app','Read') . '&nbsp;' . Yii::t('app', 'More'),
+        'Read less' => Yii::t('app','Read') . '&nbsp;' . Yii::t('app', 'Less'),
+    )).",
+    usersGroups: '".$usersGroups."',
+    minimizeFeed: ".(Yii::app()->params->profile->minimizeFeed==1?'true':'false').",
+    commentFlag: false,
+    lastEventId: ".(!empty($lastEventId)?$lastEventId:0).",
+    lastTimestamp: ".(!empty($lastTimestamp)?$lastTimestamp:0).",
+    profileId: ".$profileId.",
+    myProfileId: ".Yii::app()->params->profile->id.",
+    deletePostUrl: '".$this->createUrl('/profile/deletePost')."'
+});
 
-$translations = array (
-    'Uncheck Filters' => Yii::t('app','Uncheck Filters'),
-    'Check Filters' => Yii::t('app','Check Filters'),
-    'Enter text here...' => Yii::t('app','Enter text here...'),
-    'Broadcast Event' => Yii::t('app','Broadcast Event'),
-    'Make Important' => Yii::t('app','Make Important'),
-    'Broadcast' => Yii::t('app','Broadcast'),
-    'broadcast error message 1' => Yii::t('app','Select at least one user to broadcast to'),
-    'broadcast error message 2' => Yii::t('app','Select at least one broadcast method'),
-    'Okay' => Yii::t('app','Okay'),
-    'Nevermind' => Yii::t('app','Nevermind'),
-    'Create' => Yii::t('app','Create'),
-    'Cancel' => Yii::t('app','Cancel'),
-    'Read more' => Yii::t('app','Read') . '&nbsp;' . Yii::t('app', 'More'),
-    'Read less' => Yii::t('app','Read') . '&nbsp;' . Yii::t('app', 'Less'),
-);
-
-// pass array of predefined theme uploadedBy attributes to client
-foreach ($translations as $key=>$val) {
-    $passVarsToClientScript .= "x2.activityFeed.translations['".
-        $key. "'] = '" . addslashes ($val) . "';\n";
-}
-
-Yii::app()->clientScript->registerScript(
-    'passVarsToClientScript', $passVarsToClientScript,
-    CClientScript::POS_HEAD);
+", CClientScript::POS_END);
 ?>
 
-<div id='activity-feed-container'>
+<div id='activity-feed-container' class='x2-layout-island'>
 <div id='page-title-container'>
     <div class="page-title icon rounded-top activity-feed">
         <h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
-        <div id="menu-links" class="title-bar">
+        <span title='<?php echo Yii::t('app', 'Feed Settings'); ?>'>
+        <?php
+        echo X2Html::settingsButton (Yii::t('app', 'Feed Settings'), 
+            array ('id' => 'activity-feed-settings-button'));
+        ?>
+        </span>
+        <a href='#' id='feed-filters-button' 
+         class='filter-button right'>
+            <span></span>
+        </a>
+        <div id="menu-links" class="title-bar" style='display: none;'>
             <?php
             echo CHtml::link(
                 Yii::t('app','Toggle Comments'),'#',
                 array('id'=>'toggle-all-comments','class'=>'x2-button x2-minimal-button right'));
-            echo CHtml::link(
-                Yii::t('app','My Groups'),'#',
-                array('id'=>'my-groups-filter','class'=>'x2-button x2-minimal-button right'));
-            echo CHtml::link(
-                Yii::t('app','Just Me'),'#',
-                array('id'=>'just-me-filter','class'=>'x2-button x2-minimal-button right'));
             echo CHtml::link(
                 Yii::t('app','Restore Posts'),'#',
                 array('id'=>'restore-posts','style'=>'display:none;',
@@ -137,6 +130,10 @@ Yii::app()->clientScript->registerScript(
         </div>
     </div>
 </div>
+
+<?php
+$this->renderPartial ('_feedFilters');
+?>
 
 <div id='activity-feed-chart-container' style='display: none;'>
 
@@ -240,11 +237,22 @@ Yii::app()->clientScript->registerScript(
             array_map(
                 'translateOptions',json_decode(Dropdowns::model()->findByPk(113)->options,true)),
             array ('class' => 'x2-select'));
-        echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
-        if ($isMyProfile) 
-            echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"$('#attachments').slideToggle();", 'id'=>"toggle-attachment-menu-button"));
-
-        echo "</div>";
+        ?>
+        <div id='second-row-buttons-container'>
+            <?php
+            echo CHtml::submitButton(
+                Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
+            if ($isMyProfile) {
+                echo CHtml::button(
+                    Yii::t('app','Attach A File/Photo'),
+                    array(
+                        'class'=>'x2-button','onclick'=>"$('#attachments').slideToggle();",
+                        'id'=>"toggle-attachment-menu-button"));
+            }
+            ?>
+        </div>
+        </div>
+        <?php
         ?>
     </div>
     <?php $this->endWidget(); ?>
@@ -280,9 +288,9 @@ $this->widget('zii.widgets.CListView', array(
                     'header' => '',
                     'options'=>array(
                         'onRenderComplete'=>'js:function(){
-                            makePostsExpandable ();
+                            x2.activityFeed.makePostsExpandable ();
                             if(x2.activityFeed.minimizeFeed){
-                                minimizePosts();
+                                x2.activityFeed.minimizePosts();
                             }
                             if(x2.activityFeed.commentFlag){
                                 $(".comment-link").click();
@@ -308,9 +316,9 @@ $this->widget('zii.widgets.CListView', array(
                     'header' => '',
                     'options'=>array(
                         'onRenderComplete'=>'js:function(){
-                            makePostsExpandable ();
+                            x2.activityFeed.makePostsExpandable ();
                             if(x2.activityFeed.minimizeFeed){
-                                minimizePosts();
+                                x2.activityFeed.minimizePosts();
                             }
                             if(x2.activityFeed.commentFlag){
                                 $(".comment-link").click();

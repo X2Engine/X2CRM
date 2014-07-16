@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/PopupDropdownMenu.js');
+$model->fullName = $model->user->getFullName();
 
 Yii::app()->clientScript->registerCss("viewProfile", "
 
@@ -263,15 +263,19 @@ if ($isMyProfile) {
     $fullProfileInfo = $miscLayoutSettings['fullProfileInfo'];
 }
 ?>
-<div id='profile-info-container'>
+<div id='profile-info-container' class='x2-layout-island'>
 
-<div class="page-title icon profile">
+<div class="responsive-page-title page-title icon profile">
     <h2>
         <span class="no-bold"><?php echo Yii::t('profile','Profile:'); ?></span>
         <?php echo $model->fullName; ?>
     </h2>
 <?php
     if ($isMyProfile) {
+        echo ResponsiveHtml::gripButton ();
+        ?>
+        <div class='responsive-menu-items'>
+        <?php
         echo CHtml::link(
             Yii::t('profile', 'Minimize'), '#',
             array(
@@ -309,7 +313,6 @@ if ($isMyProfile) {
                 'id' => 'add-profile-widget-button',
             )
         );
-        echo $model->getHiddenProfileWidgetMenu ();
         echo CHtml::link(
             '<span></span>', $this->createUrl('update', array('id' => $model->id)),
             array(
@@ -318,7 +321,9 @@ if ($isMyProfile) {
             )
         );
         ?>
+        </div>
         <?php
+        echo $model->getHiddenProfileWidgetMenu ();
     }
 ?>
 </div>
@@ -378,7 +383,7 @@ if ($isMyProfile) {
     </tr>
     <tr>
         <td class="label"><?php echo $attributeLabels['username']; ?></td>
-        <td><b><?php echo CHtml::encode($model->username); ?></b></td>
+        <td><b><?php echo CHtml::encode($model->user->alias); ?></b></td>
     </tr>
     <tr>
         <td class="label"><?php echo $attributeLabels['officePhone']; ?></td>

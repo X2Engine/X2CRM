@@ -42,6 +42,16 @@ class MediaController extends x2base {
 
     public $modelClass = "Media";
 
+    public function behaviors(){
+        return array_merge(parent::behaviors(), array(
+            /*
+            uncomment when media module supports custom forms
+            'QuickCreateRelationshipBehavior' => array(
+                'class' => 'QuickCreateRelationshipBehavior',
+            ),*/
+        ));
+    }
+
     /**
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
@@ -78,6 +88,45 @@ class MediaController extends x2base {
     }
 
     /**
+     * Alias for actionUpload
+     */
+    public function actionCreate () {
+        $this->actionUpload ();
+    }
+
+    private function createAttachmentAction ($model) {
+        if(!empty($model->associationType) && !empty($model->associationId) && 
+            is_numeric($model->associationId)){
+
+            $note = new Actions;
+            $note->createDate = time();
+            $note->dueDate = time();
+            $note->completeDate = time();
+            $note->complete = 'Yes';
+            $note->visibility = '1';
+            $note->completedBy = Yii::app()->user->getName();
+            if($model->private){
+                $note->assignedTo = Yii::app()->user->getName();
+                $note->visibility = '0';
+            }else{
+                $note->assignedTo = 'Anyone';
+            }
+            $note->type = 'attachment';
+            $note->associationId = $model->associationId;
+            $note->associationType = $model->associationType;
+            if($modelName = X2Model::getModelName($model->associationType)){
+                $association = X2Model::model($modelName)->findByPk($model->associationId);
+                if($association != null){
+                    $note->associationName = $association->name;
+                }
+            }
+            $note->actionDescription = $model->fileName.':'.$model->id;
+            return $note->save();
+        }
+        return false;
+    }
+
+    /**
      * Creates a new model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
@@ -110,43 +159,36 @@ class MediaController extends x2base {
             $model->associationId = $_POST['Media']['associationId'];
             $model->private = $_POST['Media']['private'];
             $model->path; // File type setter is embedded in the magic getter for path
+            $model->name = $_POST['Media']['name'];
+            if (empty($model->name))
+                $model->name = $model->fileName;
             if($_POST['Media']['description'])
                 $model->description = $_POST['Media']['description'];
 
-            if($model->save()){
-                if(!empty($model->associationType) && !empty($model->associationId) && is_numeric($model->associationId)){
-                    $note = new Actions;
-                    $note->createDate = time();
-                    $note->dueDate = time();
-                    $note->completeDate = time();
-                    $note->complete = 'Yes';
-                    $note->visibility = '1';
-                    $note->completedBy = Yii::app()->user->getName();
-                    if($model->private){
-                        $note->assignedTo = Yii::app()->user->getName();
-                        $note->visibility = '0';
-                    }else{
-                        $note->assignedTo = 'Anyone';
-                    }
-                    $note->type = 'attachment';
-                    $note->associationId = $model->associationId;
-                    $note->associationType = $model->associationType;
-                    if($modelName = X2Model::getModelName($model->associationType)){
-                        $association = X2Model::model($modelName)->findByPk($model->associationId);
-                        if($association != null){
-                            $note->associationName = $association->name;
-                        }
-                    }
-                    $note->actionDescription = $model->fileName.':'.$model->id;
-                    $note->save();
+            /*     
+            uncomment when media module supports custom forms
+            if(isset($_POST['x2ajax'])){
+                $ajaxErrors = $this->quickCreate ($model);
+                if (!$ajaxErrors) {
+                    $this->createAttachmentAction ($model);
                 }
-                $this->redirect(array('view', 'id' => $model->id));
-            }
+            }else{*/
+                if($model->save()){
+                    $this->createAttachmentAction ($model);
+                    $this->redirect(array('view', 'id' => $model->id));
+                }
+            //}
         }
 
-        $this->render('upload', array(
-            'model' => $model,
-        ));
+        /*
+        uncomment when media module supports custom forms
+        if(isset($_POST['x2ajax'])){
+            $this->renderInlineCreateForm ($model, isset ($ajaxErrors) ? $ajaxErrors : false);
+        } else {*/
+            $this->render('upload', array(
+                'model' => $model,
+            ));
+        //}
     }
 
     public function actionQtip($id){
@@ -238,6 +280,12 @@ class MediaController extends x2base {
             $model->private = $_POST['Media']['private'];
             if($_POST['Media']['description'])
                 $model->description = $_POST['Media']['description'];
+            if (! $model->drive) {
+                // Handle setting the name if the Media isn't stored on Drive
+                $model->name = $_POST['Media']['name'];
+                if (empty($model->name))
+                    $model->name = $model->fileName;
+            }
             if($model->save())
                 $this->redirect(array('view', 'id' => $model->id));
         }
@@ -429,5 +477,24 @@ class MediaController extends x2base {
 
         echo $ret;
     }
+
+    public function actionGetItems(){
+        $model = X2Model::model ($this->modelClass);
+        if (isset ($model)) {
+            $tableName = $model->tableName ();
+            $sql = 
+                'SELECT id, fileName as value
+                 FROM '.$tableName.' 
+                 WHERE associationType!="theme" and fileName LIKE :qterm 
+                 ORDER BY fileName ASC';
+            $command = Yii::app()->db->createCommand($sql);
+            $qterm = $_GET['term'].'%';
+            $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
+            $result = $command->queryAll();
+            echo CJSON::encode($result);
+        }
+        Yii::app()->end();
+    }
+
 
 }

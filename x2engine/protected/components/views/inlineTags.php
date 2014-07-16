@@ -42,8 +42,6 @@ if($filter) {
         Yii::app()->getBaseUrl().'/js/X2Tags/TagContainer.js', CClientScript::POS_BEGIN);
     Yii::app()->clientScript->registerScriptFile (
         Yii::app()->getBaseUrl().'/js/X2Tags/MapTagsContainer.js', CClientScript::POS_BEGIN);
-    Yii::app()->clientScript->registerCssFile (
-        Yii::app()->getTheme()->getBaseUrl().'/css/x2tags.css');
 ?>
 <b><?php echo Yii::t('app', 'Tags'); ?></b>
 <div id="x2-tags-container" class="form">

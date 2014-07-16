@@ -52,6 +52,19 @@ class Contacts extends X2Model {
     public static function model($className=__CLASS__) { return parent::model($className); }
 
     /**
+     * @return array relational rules.
+     */
+    public function relations() {
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array_merge (parent::relations (), 
+            array (
+                 
+            )
+        );
+    }
+
+    /**
      * @return string the associated database table name
      */
     public function tableName() { return 'x2_contacts'; }
@@ -62,6 +75,7 @@ class Contacts extends X2Model {
                 'class'=>'X2LinkableBehavior',
                 'module'=>'contacts',
             ),
+             
             'ERememberFiltersBehavior' => array(
                 'class'=>'application.components.ERememberFiltersBehavior',
                 'defaults'=>array(),
@@ -126,6 +140,9 @@ class Contacts extends X2Model {
             $this->trackingKey = self::getNewTrackingKey();
         }
 
+        // invalidate cached timezone
+        if (isset($this->timezone))
+            $this->timezone = null;
 
         return parent::beforeSave();
     }
@@ -139,7 +156,8 @@ class Contacts extends X2Model {
      * when checking for duplicates in {@link ContactsController}
      */
     public function afterUpdate() {
-        if (!Yii::app()->params->noSession && $this->scenario != 'noChangelog') {
+        if (!Yii::app()->params->noSession && $this->asa ('changelog') && 
+            $this->asa ('changelog')->enabled) {//$this->scenario != 'noChangelog') {
             // send subscribe emails if anyone has subscribed to this contact
             $result = Yii::app()->db->createCommand()
                     ->select('user_id')
@@ -320,10 +338,11 @@ class Contacts extends X2Model {
         $conditions=$this->getAccessConditions($accessLevel);
         foreach($conditions as $arr){
             $criteria->addCondition($arr['condition'],$arr['operator']);
+            $criteria->params = array_merge($criteria->params,$arr['params']);
         }
 
         // $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
-        // $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+        // $parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
 
         // $parameters['condition']=$condition;
         // $criteria->scopes=array('findAll'=>array($parameters));
@@ -339,9 +358,10 @@ class Contacts extends X2Model {
         $conditions=$this->getAccessConditions($accessLevel);
         foreach($conditions as $arr){
             $criteria->addCondition($arr['condition'],$arr['operator']);
+            $criteria->params = array_merge($criteria->params,$arr['params']);
         }
 
-        $parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
+        $parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
 
         $parameters['condition']=$condition;
         $criteria->scopes=array('findAll'=>array($parameters));
@@ -386,7 +406,7 @@ class Contacts extends X2Model {
                     'defaultOrder'=>'t.lastUpdated DESC'    // true = ASC
                 ),
                 'pagination'=>array(
-                    'pageSize'=>isset($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
+                    'pageSize'=>isset($pageSize)? $pageSize : Profile::getResultsPerPage(),
                 ),
             ));
 
@@ -409,13 +429,17 @@ class Contacts extends X2Model {
             for($j=0; $j<32; $j++)    // generate a random 32 char alphanumeric string
                 $key .= substr($chars,rand(0,strlen($chars)-1), 1);
 
-            if(X2Model::model('Contacts')->exists('trackingKey="'.$key.'"'))    // check if this key is already used
+            // check if this key is already used
+            if(X2Model::model('Contacts')->exists('trackingKey="'.$key.'"'))    
                 continue;
             else
                 return $key;
         }
         return null;
     }
+
+    
+
 
     function ucwords_specific ($string, $delimiters = '', $encoding = NULL)
     {

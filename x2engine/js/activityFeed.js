@@ -34,23 +34,48 @@
  *****************************************************************************************/
 
 
-// Globals
 
-// used to clear timeout when editor resize animation is called
-x2.activityFeed.timeout = null; 
+x2.ActivityFeed = (function () {
 
-// used to prevent editor resize animation on manual resize
-x2.activityFeed.editorManualResize = false; 
+function ActivityFeed (argsDict) {
+    var that = this;
+    argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
 
-// used to prevent text field expansion if already expanded
-x2.activityFeed.editorIsExpanded = false; 
+    var defaultArgs = {
+        DEBUG: false && x2.DEBUG,
+        usersGroups: null,
+        minimizeFeed: null,
+        commentFlag: null,
+        lastEventId: null,
+        lastTimestamp: null,
+        profileId: null,
+        myProfileId: null,
+        deletePostUrl: null,
+        translations: {}
+    };
+
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+
+    // used to clear timeout when editor resize animation is called
+    this.timeout = null; 
+
+    // used to prevent editor resize animation on manual resize
+    this.editorManualResize = false; 
+
+    // used to prevent text field expansion if already expanded
+    that.editorIsExpanded = false; 
+
+    this._init ();
+}
+
 
 /*
 Removes an error div created by createErrorBox ().  
 Parameters:
     parentElem - a jQuery element which contains the error div
 */
-function destroyErrorBox (parentElem) {
+ActivityFeed.prototype.destroyErrorBox = function  (parentElem) {
+    var that = this;
     var $errorBox = $(parentElem).find ('.error-summary-container');
     if ($errorBox.length !== 0) {
         $errorBox.remove ();
@@ -65,7 +90,8 @@ Parameters:
     errorHeader - a string
     errorMessages - an array of strings
 */
-function createErrorBox (errorHeader, errorMessages) {
+ActivityFeed.prototype.createErrorBox = function  (errorHeader, errorMessages) {
+    var that = this;
     var errorBox = $('<div>', {'class': 'error-summary-container'}).append (
         $("<div>", { 'class': "error-summary"}).append (
             $("<p>", { text: errorHeader }),
@@ -82,7 +108,8 @@ function createErrorBox (errorHeader, errorMessages) {
 /*
 Send post text to server via Ajax 
 */
-function publishPostAndroid () {
+ActivityFeed.prototype.publishPostAndroid = function  () {
+    var that = this;
     $.ajax({
         url:"publishPost",
         type:"POST",
@@ -96,7 +123,7 @@ function publishPostAndroid () {
             $("#save-button").removeClass("highlight");
             $("#Events_text").val("");
             var textarea=document.getElementById("Events_text");
-            toggleText(textarea);
+            x2.forms.toggleText(textarea);
             $(textarea).css("height","25px");
             $(textarea).next().slideUp(400);
             $('#feed-form textarea').blur ();
@@ -110,7 +137,8 @@ function publishPostAndroid () {
 /*
 Send post text to server via Ajax and minimize editor.
 */
-function publishPost () {
+ActivityFeed.prototype.publishPost = function  () {
+    var that = this;
     if (typeof x2.attachments !== 'undefined' && x2.attachments.fileIsUploaded ()) { 
         // publisher text gets submitted with file, don't submit it twice
         return;
@@ -135,7 +163,7 @@ function publishPost () {
         of: $("#post-form")
     });
 
-    initMinimizeEditor ();
+    that.initMinimizeEditor ();
 
     $.ajax({
         url:"publishPost",
@@ -148,7 +176,7 @@ function publishPost () {
             "subtype":$("#Events_subtype").val()
         },
         success:function(){
-            finishMinimizeEditor ();
+            that.finishMinimizeEditor ();
         },
         failure:function(){
             window.newPostEditor.focusManager.unlock ();
@@ -163,9 +191,10 @@ function publishPost () {
 /*
 Animate resize of the new post ckeditor window.
 */
-function animateEditorVerticalResize (initialHeight, newHeight,
+ActivityFeed.prototype.animateEditorVerticalResize = function  (initialHeight, newHeight,
                                       animationTime /* in milliseconds */) {
-    if (x2.activityFeed.editorManualResize) { // user is currently resizing text field manually
+    var that = this;
+    if (that.editorManualResize) { // user is currently resizing text field manually
         return;
     }
 
@@ -187,10 +216,10 @@ function animateEditorVerticalResize (initialHeight, newHeight,
     if (!increaseHeight) delta *= -1;
     var currentHeight = initialHeight;
 
-    if (x2.activityFeed.timeout !== null) {
-        window.clearTimeout (x2.activityFeed.timeout); // clear an existing animation timeout
+    if (that.timeout !== null) {
+        window.clearTimeout (that.timeout); // clear an existing animation timeout
     }
-    x2.activityFeed.timeout = window.setTimeout (function resizeTimeout () {
+    that.timeout = window.setTimeout (function resizeTimeout () {
         if (--steps === 0) {
             delta = lastStepSize;
             if (!increaseHeight) delta *= -1;
@@ -198,9 +227,9 @@ function animateEditorVerticalResize (initialHeight, newHeight,
         window.newPostEditor.resize ("100%", currentHeight + delta, true);
         currentHeight += delta;
         if (increaseHeight && currentHeight < newHeight) {
-            x2.activityFeed.timeout = setTimeout (resizeTimeout, delay);
+            that.timeout = setTimeout (resizeTimeout, delay);
         } else if (!increaseHeight && currentHeight > newHeight) {
-            x2.activityFeed.timeout = setTimeout (resizeTimeout, delay);
+            that.timeout = setTimeout (resizeTimeout, delay);
         }
     }, delay);
 }
@@ -208,7 +237,8 @@ function animateEditorVerticalResize (initialHeight, newHeight,
 /*
 Remove cursor from editor by focusing on a temporary dummy input element.
 */
-function removeCursorFromEditor () {
+ActivityFeed.prototype.removeCursorFromEditor = function  () {
+    var that = this;
     $("#post-form").append ($("<input>", {"id": "dummy-input"}));
     var x = window.scrollX;
     var y = window.scrollY;
@@ -218,9 +248,10 @@ function removeCursorFromEditor () {
 }
 
 /*
-Called after initMinimizeEditor (), minimizes the editor.
+Called after that.initMinimizeEditor (), minimizes the editor.
 */
-function finishMinimizeEditor () {
+ActivityFeed.prototype.finishMinimizeEditor = function  () {
+    var that = this;
 
     if ($("[title='Collapse Toolbar']").length !== 0) {
         window.newPostEditor.execCommand ("toolbarCollapse");
@@ -229,7 +260,7 @@ function finishMinimizeEditor () {
         window.newPostEditor.ui.space (
         "contents").getStyle("height").replace (/px/, ""), 10);
     var editorMinHeight = window.newPostEditor.config.height;
-    animateEditorVerticalResize (editorCurrentHeight, editorMinHeight, 300);
+    that.animateEditorVerticalResize (editorCurrentHeight, editorMinHeight, 300);
     if (window.newPostEditor.getData () !== "") {
         window.newPostEditor.setData ("", function () {
             window.newPostEditor.fire ("blur");
@@ -237,10 +268,10 @@ function finishMinimizeEditor () {
     }
     $("#save-button").removeClass("highlight");
     $("#post-buttons").slideUp (400);
-    x2.activityFeed.editorIsExpanded = false;
+    that.editorIsExpanded = false;
 
     // focus on dummy input field to negate forced toolbar collapse refocusing on editor
-    removeCursorFromEditor ();
+    that.removeCursorFromEditor ();
 
     window.newPostEditor.focusManager.unlock ();
 
@@ -248,17 +279,19 @@ function finishMinimizeEditor () {
 }
 
 /*
-Called before finishMinimizeEditor (), prevents forced toolbar collapse from refocusing
+Called before that.finishMinimizeEditor (), prevents forced toolbar collapse from refocusing
 on editor.
 */
-function initMinimizeEditor () {
+ActivityFeed.prototype.initMinimizeEditor = function  () {
+    var that = this;
     window.newPostEditor.focusManager.blur (true);
     window.newPostEditor.focusManager.lock ();
 }
 
 
 // this is a hack to temporarily improve behavior of file attachment menu
-function attachmentMenuBehavior () {
+ActivityFeed.prototype.attachmentMenuBehavior = function  () {
+    var that = this;
 
     $("#submitAttach").hide ();
 
@@ -279,16 +312,18 @@ function attachmentMenuBehavior () {
     });
 }
 
-function setupAndroidPublisher () {
+ActivityFeed.prototype.setupAndroidPublisher = function  () {
+    var that = this;
     $(document).on('focus','#feed-form textarea',function(){
         $(this).animate({"height":"50px"});
         $(this).next().slideDown(400);
     });
-    $('#submit-button').click (publishPostAndroid);
-    $('#save-button').click (publishPostAndroid);
+    $('#submit-button').click (function () { that.publishPostAndroid (); });
+    $('#save-button').click (function () { that.publishPostAndroid (); });
 }
 
-function minimizePosts(){
+ActivityFeed.prototype.minimizePosts = function (){
+    var that = this;
     $('.items').find ('.event-text').each (function (index, element) {
         if($(element).html().length>200){
             var text=element;
@@ -310,7 +345,8 @@ function minimizePosts(){
 }
 
 //var minimize = x2.activityFeed.minimizeFeed;
-function restorePosts(){
+ActivityFeed.prototype.restorePosts = function (){
+    var that = this;
     $('.items').find ('.event-text').each (function (index, element) {
         var text = element;
         $.ajax({
@@ -328,23 +364,24 @@ function restorePosts(){
 
 
 // setup ckeditor publisher behavior
-function setupEditorBehavior () {
+ActivityFeed.prototype.setupEditorBehavior = function  () {
+    var that = this;
 
     /*var userAgentStr = navigator.userAgent.toLowerCase ();
     var isAndroid = userAgentStr.match (/android/);*/
     if (x2.isAndroid) {
-        setupAndroidPublisher ();
+        that.setupAndroidPublisher ();
         return;
     }
 
     window.newPostEditor = createCKEditor (
-        "Events_text", { height:70, toolbarStartupExpanded: false, placeholder: x2.activityFeed.translations['Enter text here...']}, editorCallback);
+        "Events_text", { height:70, toolbarStartupExpanded: false, placeholder: that.translations['Enter text here...']}, editorCallback);
 
     function editorCallback () {
 
         // expand post buttons if user manually resizes
         CKEDITOR.instances.Events_text.on ("resize", function () {
-            if (x2.activityFeed.editorManualResize && !x2.activityFeed.editorIsExpanded) {
+            if (that.editorManualResize && !that.editorIsExpanded) {
                 CKEDITOR.instances.Events_text.focus ();
             }
         });
@@ -352,50 +389,53 @@ function setupEditorBehavior () {
         // prevent editor resize animation when user is manually resizing
         $(".cke_resizer_ltr").mousedown (function () {
             $(document).one ("mouseup", function () {
-                x2.activityFeed.editorManualResize = false;
+                that.editorManualResize = false;
             });
-            x2.activityFeed.editorManualResize = true;
+            that.editorManualResize = true;
         });
 
     }
 
     // custom event triggered by ckeditor confighelper plugin
     $(document).on ("myFocus", function () {
-        if (!x2.activityFeed.editorIsExpanded) {
-            x2.activityFeed.editorIsExpanded = true;
+        if (!that.editorIsExpanded) {
+            that.editorIsExpanded = true;
             $("#save-button").addClass ("highlight");
             var editorMinHeight = window.newPostEditor.config.height;
             var newHeight = 140;
-            animateEditorVerticalResize (editorMinHeight, newHeight, 300);
+            that.animateEditorVerticalResize (editorMinHeight, newHeight, 300);
             $("#post-buttons").slideDown (400);
+            //x2.Select.reinitWidths ($('#post-buttons'));
         }
     });
 
     // minimize editor on click outside
-    $("html").click (function () {
+    //$("html").click (function () {
+    auxlib.onClickOutside ($('#post-form'), function () {
         var editorText = window.newPostEditor.getData();
 
-        if (x2.activityFeed.editorIsExpanded && editorText === "" &&
+        if (that.editorIsExpanded && editorText === "" &&
             $('#upload').val () === "") {
 
-            initMinimizeEditor ();
-            finishMinimizeEditor ();
+            that.initMinimizeEditor ();
+            that.finishMinimizeEditor ();
         }
     });
 
     // enables detection of a click outside the publisher div
-    $("#post-form, #attachment-form").click (function (event) {
+    /*$("#post-form, #attachment-form").click (function (event) {
         event.stopPropagation ();
-    });
+    });*/
 
-    $('#submit-button').click (publishPost);
-    $('#save-button').click (publishPost);
+    $('#submit-button').click (function () { that.publishPost (); });
+    $('#save-button').click (function () { that.publishPost (); });
 
 }
 
 
-function setupActivityFeed () {
-    x2.activityFeed.DEBUG && console.log ('setupActivityFeed');
+ActivityFeed.prototype.setupActivityFeed = function  () {
+    var that = this;
+    that.DEBUG && console.log ('that.setupActivityFeed');
 
     function updateComments(id){
         $.ajax({
@@ -425,29 +465,9 @@ function setupActivityFeed () {
             });
     }
 
-    var checkedFlag;
-    if($(":checkbox:checked").length > ($(":checkbox").length)/2){
-        checkedFlag = true;
-    } else {
-        checkedFlag = false;
-        $("#toggle-filters-link").html("Check Filters");
-    }
-
-    $(document).on("click","#toggle-filters-link",function(e){
-        e.preventDefault();
-        checkedFlag =! checkedFlag;
-        if(checkedFlag){
-            $(this).html(x2.activityFeed.translations['Uncheck Filters']);
-            $(".filter-checkbox").attr("checked","checked");
-        }else{
-            $(this).html(x2.activityFeed.translations['Check Filters']);
-            $(".filter-checkbox").attr("checked",null);
-        }
-    });
-
     $(document).on("click","#min-posts",function(e){
         e.preventDefault();
-        minimizePosts();
+        that.minimizePosts();
         x2.activityFeed.minimizeFeed = true;
         $(this).toggle();
         $(this).prev().show();
@@ -455,7 +475,7 @@ function setupActivityFeed () {
 
     $(document).on("click","#restore-posts",function(e){
         e.preventDefault();
-        restorePosts();
+        that.restorePosts();
         x2.activityFeed.minimizeFeed = false;
         $(this).toggle();
         $(this).next().show();
@@ -475,33 +495,6 @@ function setupActivityFeed () {
     }
     $(".date-break.first").after("<div class='list-view'><div id='new-events' class='items' style='display:none;border-bottom:solid #BABABA;'></div></div>");
 
-    var username = yii.profile.username;
-    $(document).on("click","#just-me-filter",function(e){
-        e.preventDefault();
-        var users = new Array();
-        $.each($(".users.filter-checkbox"),function(){
-            if($(this).attr("name") != username){
-                users.push($(this).attr("name"));
-            }
-        });
-
-        var str = window.location+"";
-        pieces = str.split("?");
-        var str2 = pieces[0];
-        pieces2 = str2.split("#");
-        window.location = pieces2[0]+"?filters=true&visibility=&users="+users+"&types=&subtypes=&default=false";
-    });
-
-    $(document).on("click","#my-groups-filter",function(e){
-        e.preventDefault();
-        var str = window.location + "";
-        pieces = str.split("?");
-        var str2 = pieces[0];
-        pieces2 = str2.split("#");
-        window.location = pieces2[0] + "?filters=true&visibility=&users=" + x2.activityFeed.usersGroups + 
-            "&types=&subtypes=&default=false";
-    });
-
     $(document).on("click","#toggle-all-comments",function(e){
         e.preventDefault();
         x2.activityFeed.commentFlag = !x2.activityFeed.commentFlag;
@@ -512,13 +505,13 @@ function setupActivityFeed () {
         }
     });
 
-    $('#submit-button').click (publishPost);
+    $('#submit-button').click (function () { that.publishPost (); });
 
     if ($("#sticky-feed .empty").length !== 0) {
         $("#sticky-feed").hide ();
     }
     
-    $('#activity-feed').on('submit','.comment-box form',function() {
+    $('#activity-feed, #sticky-feed').on('submit','.comment-box form',function() {
         commentSubmit($(this).attr('id').slice(9));
         return false;
     });
@@ -538,20 +531,21 @@ function setupActivityFeed () {
         }
     });
     
-    makePostsExpandable ();
+    that.makePostsExpandable ();
 
 }
 
-function makePostExpandable (element) {
+ActivityFeed.prototype.makePostExpandable = function  (element) {
+    var that = this;
     if ($(element).hasClass ('is-expandable')) return;
-    x2.activityFeed.DEBUG && console.log ('makePostExpandable');
+    that.DEBUG && console.log ('that.makePostExpandable');
     $(element).addClass ('is-expandable');
-    x2.activityFeed.DEBUG && console.log (element);
+    that.DEBUG && console.log (element);
     $(element).expander ({
         slicePoint: 80,
         expandPrefix: '',
-        expandText: ' [' + x2.activityFeed.translations['Read more'] + ']',
-        userCollapseText: '[' + x2.activityFeed.translations['Read less'] + ']',
+        expandText: ' [' + that.translations['Read more'] + ']',
+        userCollapseText: '[' + that.translations['Read less'] + ']',
         expandEffect: 'show',
         collapseEffect: 'slideUp',
         summaryClass: 'jquery-expandable-summary',
@@ -568,19 +562,21 @@ function makePostExpandable (element) {
         }
     });
     if (x2.activityFeed.minimizeFeed === false) {
-        x2.activityFeed.DEBUG && console.log ('clicking read more');
+        that.DEBUG && console.log ('clicking read more');
         $(element).find ('.read-more').find ('a').click ();
     }
 }
 
 
-function makePostsExpandable () {
+ActivityFeed.prototype.makePostsExpandable = function  () {
+    var that = this;
     $('.items').find ('.event-text').each (function (index, element) {
-        makePostExpandable (element);
+        that.makePostExpandable (element);
     });
 }
 
-function setupBroadcastDialog () {
+ActivityFeed.prototype.setupBroadcastDialog = function  () {
+    var that = this;
     var link, pieces, id;
 
     $('#broadcast-dialog-user-select').multiselect ();
@@ -589,20 +585,20 @@ function setupBroadcastDialog () {
     function clickBroadcastButton () {
 
         // display error messages
-        destroyErrorBox ($('#broadcast-dialog'));
+        that.destroyErrorBox ($('#broadcast-dialog'));
 
         var userIdList = $('#broadcast-dialog-user-select').val ();
         var errorMsgs = [];
         if (userIdList === null) {
-            x2.activityFeed.DEBUG && console.log ('clickBroadcastButton if');
-            errorMsgs.push (x2.activityFeed.translations['broadcast error message 1']);
+            that.DEBUG && console.log ('clickBroadcastButton if');
+            errorMsgs.push (that.translations['broadcast error message 1']);
         }
         if ($('#email-users').attr ('checked') === undefined &&
             $('#notify-users').attr ('checked') === undefined) {
-            errorMsgs.push (x2.activityFeed.translations['broadcast error message 2']);
+            errorMsgs.push (that.translations['broadcast error message 2']);
         }
         if (errorMsgs.length !== 0) {
-            var errorBox = createErrorBox (
+            var errorBox = that.createErrorBox (
                 '', errorMsgs);
             $('#notify-users-checkbox-container').after ($(errorBox));
             return;
@@ -631,23 +627,23 @@ function setupBroadcastDialog () {
         pieces = $(this).attr("id").split("-");
         id = pieces[0];
         $("#broadcast-dialog").dialog({
-            title: x2.activityFeed.translations['Broadcast Event'],
+            title: that.translations['Broadcast Event'],
             autoOpen: true,
             height: "auto",
-            width: 850,
+            width: 657,
             resizable: false,
             show: 'fade',
             hide: 'fade',
             buttons: [
                 { 
-                    text: x2.activityFeed.translations['Broadcast'],
+                    text: that.translations['Broadcast'],
                     click: clickBroadcastButton
                 },
                 { 
-                    text: x2.activityFeed.translations['Nevermind'],
+                    text: that.translations['Nevermind'],
                     click: function () {
                         $('#broadcast-dialog').dialog("close");
-                        destroyErrorBox ($('#broadcast-dialog'));
+                        that.destroyErrorBox ($('#broadcast-dialog'));
                     }
                 }
             ],
@@ -659,7 +655,8 @@ function setupBroadcastDialog () {
 }
 
 
-function setupMakeImportantDialog () {
+ActivityFeed.prototype.setupMakeImportantDialog = function  () {
+    var that = this;
     var link, pieces, id;
 
     function clickMakeImportantButton () {
@@ -693,9 +690,9 @@ function setupMakeImportantDialog () {
                 $("#broadcastColor").val("");
                 $("#fontColor").val("");
                 $("#linkColor").val("");
-                addCheckerImage ($("#broadcastColor"));
-                addCheckerImage ($("#fontColor"));
-                addCheckerImage ($("#linkColor"));
+                x2.colorPicker.addCheckerImage ($("#broadcastColor"));
+                x2.colorPicker.addCheckerImage ($("#fontColor"));
+                x2.colorPicker.addCheckerImage ($("#linkColor"));
                 $('#make-important-dialog').dialog("close");
             }
         });
@@ -707,22 +704,22 @@ function setupMakeImportantDialog () {
         pieces = $(this).attr("id").split("-");
         id = pieces[0];
         $("#make-important-dialog").dialog({
-            //title: x2.activityFeed.translations['MakeImportant Event'],
-            title: x2.activityFeed.translations['Make Important'],
+            //title: that.translations['MakeImportant Event'],
+            title: that.translations['Make Important'],
             autoOpen: true,
             height: "auto",
-            width: 850,
+            width: 657,
             resizable: false,
             show: 'fade',
             hide: 'fade',
             buttons: [
                 { 
-                    //text: x2.activityFeed.translations['MakeImportant'],
-                    text: x2.activityFeed.translations['Okay'],
+                    //text: that.translations['MakeImportant'],
+                    text: that.translations['Okay'],
                     click: clickMakeImportantButton
                 },
                 { 
-                    text: x2.activityFeed.translations['Nevermind'],
+                    text: that.translations['Nevermind'],
                     click: function () {
                         $('#make-important-dialog').dialog("close");
                     }
@@ -736,7 +733,8 @@ function setupMakeImportantDialog () {
 }
 
 
-function updateEventList () {
+ActivityFeed.prototype.updateEventList = function  () {
+    var that = this;
 
     $(document).on("click",".comment-link",function(e){
         e.preventDefault();
@@ -1162,8 +1160,8 @@ function updateEventList () {
         });
     });
 
-    var lastEventId=x2.activityFeed.lastEventId;
-    var lastTimestamp=x2.activityFeed.lastTimestamp;
+    var lastEventId=that.lastEventId;
+    var lastTimestamp=that.lastTimestamp;
     function updateFeed(){
         $.ajax({
             url:"getEvents",
@@ -1192,9 +1190,9 @@ function updateEventList () {
                            "undefined")
                             $(this).yiiListView();
                         });
-                    x2.activityFeed.DEBUG && console.log ('hiding ' + text);
+                    that.DEBUG && console.log ('hiding ' + text);
                     $newElem = $(text).hide().prependTo("#new-events");
-                    makePostExpandable ($newElem.find ('.event-text-box').children ('.event-text'));
+                    that.makePostExpandable ($newElem.find ('.event-text-box').children ('.event-text'));
                     $newElem.fadeIn(1000);
                 }
                 if(data[2]){
@@ -1227,7 +1225,7 @@ function updateEventList () {
 
     $(document).on("submit","#attachment-form-form",function(){
         if(window.newPostEditor.getData()!="" && 
-           window.newPostEditor.getData()!=x2.activityFeed.translations['Enter text here...']){
+           window.newPostEditor.getData()!=that.translations['Enter text here...']){
 
             $("#attachmentText").val(window.newPostEditor.getData ());
         }
@@ -1235,37 +1233,177 @@ function updateEventList () {
 
 }
 
-function setupFeedColorPickers () {
+ActivityFeed.prototype.setupFeedColorPickers = function  () {
+    var that = this;
 
     /*
     Convert relevent input fields to color pickers.
     */
-    setupSpectrum ($('#broadcastColor'));
-    setupSpectrum ($('#fontColor'));
-    setupSpectrum ($('#linkColor'));
-    setupSpectrum ($('#broadcastColor'));
+    x2.colorPicker.setUp ($('#broadcastColor'));
+    x2.colorPicker.setUp ($('#fontColor'));
+    x2.colorPicker.setUp ($('#linkColor'));
+    x2.colorPicker.setUp ($('#broadcastColor'));
 
 }
 
 /*
 Make all attached images enlargeable
 */
-function setUpImageAttachmentBehavior () {
+ActivityFeed.prototype.setUpImageAttachmentBehavior = function  () {
+    var that = this;
     $('.attachment-img').each (function () {
         new x2.EnlargeableImage ({
             elem: $(this)
         });                                       
     });
+
+    $('#feed-filters-button').click (function () {
+        $('#feed-filters').slideToggle ();
+        return false;
+    });
 }
 
+ActivityFeed.prototype._setUpTitleBar = function () {
+    var that = this;
 
-$(document).on ('ready', function profileMain () {
-    setupEditorBehavior ();
-    setupActivityFeed ();
-    setupMakeImportantDialog ();
-    setupBroadcastDialog ();
-    updateEventList ();
-    setupFeedColorPickers ();
-    attachmentMenuBehavior ();
-    setUpImageAttachmentBehavior ();
-});
+    this.popupDropdownMenu = new PopupDropdownMenu ({
+        containerElemSelector: '#menu-links',
+        openButtonSelector: '#activity-feed-settings-button',
+        defaultOrientation: 'left',
+        css: {
+            height: '30px',
+            'padding-left': '3px'
+        }
+    });
+};
+
+ActivityFeed.prototype._setUpFilters = function () {
+    var that = this;
+    $("#apply-feed-filters").click(function(e){
+        e.preventDefault();
+        var visibility=auxlib.getUnselected ($("#visibilityFilters"));
+        var users=auxlib.getUnselected($("#relevantUsers"));
+        var eventTypes=auxlib.getUnselected($("#eventTypes"));
+        var subtypes=auxlib.getUnselected($("#socialSubtypes"));
+        var defaultFilters=$("#filter-default").is (":checked");
+
+        var str=window.location+"";
+        var pieces=str.split("?");
+        var str2=pieces[0];
+        var pieces2=str2.split("#");
+        window.location= pieces2[0] + "?filters=true&visibility=" + visibility + 
+            "&users=" + users+"&types=" + eventTypes +"&subtypes=" + subtypes + 
+            "&default=" + defaultFilters;
+        return false;
+    });
+    
+    $(".full-filters").click(function(e){
+        e.preventDefault();
+        $("#simple-controls").hide();
+        $("#full-controls").show();
+        $("#sidebar-simple-controls").hide();
+        $("#sidebar-full-controls").show();
+        $.ajax({
+            url:"toggleFeedControls"
+        });
+        $('.full-filters').addClass("disabled-link");
+        $('.full-filters').prev().removeClass("disabled-link");
+    });
+    $(".simple-filters").click(function(e){
+        e.preventDefault();
+        $("#full-controls").hide();
+        $("#simple-controls").show();
+        $("#sidebar-full-controls").hide();
+        $("#sidebar-simple-controls").show();
+        $.ajax({
+            url:"toggleFeedControls"
+        });
+        $('.simple-filters').addClass("disabled-link");
+        $('.simple-filters').next().removeClass("disabled-link");
+    });
+    $("#execute-feed-filters-button").click (function (evt) {
+        var link=this;
+        var visibility=[];
+        var users=[];
+
+        var userOption = $('#simpleUserFilter').val ();
+
+        if (userOption === 'justMe') {
+            $.each($(".users.filter-checkbox"),function(){
+                if($(this).attr("name") !== yii.profile.username){
+                    users.push($(this).attr("name"));
+                }
+            });
+        } else if (userOption === 'myGroups') {
+            users = that.usersGroups;
+        }
+
+        var eventTypes=auxlib.filter (function (a) {
+            return a !== '';
+        }, auxlib.getUnselected ($('#simpleEventTypes')));
+        var subtypes=[];
+        var defaultFilters=[];
+        var linkId=$(link).attr("id");
+        var str=window.location+"";
+        pieces=str.split("?");
+        var str2=pieces[0];
+        pieces2=str2.split("#");
+        window.location = pieces2[0] + "?filters=true&visibility=" + visibility + 
+            "&users=" + users + "&types=" + eventTypes + "&subtypes=" + subtypes + 
+            "&default=" + defaultFilters;
+        return false;
+    });
+    (function () {
+        var checkedFlag;
+        if($(":checkbox:checked").length > ($(":checkbox").length)/2){
+            checkedFlag = true;
+        } else {
+            checkedFlag = false;
+            $("#toggle-filters-link").html(that.translations["Select All"]);
+            $("#sidebar-toggle-filters-link").html(that.translations["Uncheck All"]);
+        }
+
+        $(document).on("click",".toggle-filters-link",function(e){
+            e.preventDefault();
+            checkedFlag =! checkedFlag;
+            if(checkedFlag){
+                $('#full-controls-button-container .toggle-filters-link').
+                    html(that.translations['Unselect All']);
+                $('#full-controls .x2-multiselect-dropdown').multiselect2 ('checkAll');
+                $('#sidebar-full-controls-button-container .toggle-filters-link').
+                    html(that.translations['Uncheck Filters']);
+                $(".filter-checkbox").attr("checked","checked");
+            }else{
+                $('#full-controls-button-container .toggle-filters-link').
+                    html(that.translations['Select All']);
+                $('#full-controls .x2-multiselect-dropdown').val ('').multiselect2 ('refresh');
+                $('#sidebar-full-controls-button-container .toggle-filters-link').
+                    html(that.translations['Check Filters']);
+                $(".filter-checkbox").attr("checked",null);
+            }
+        });
+    }) ();
+
+};
+
+ActivityFeed.prototype._init = function () {
+
+    var that = this;
+    $(document).on ('ready', function profileMain () {
+        that.setupEditorBehavior ();
+        that.setupActivityFeed ();
+        that.setupMakeImportantDialog ();
+        that.setupBroadcastDialog ();
+        that.updateEventList ();
+        that.setupFeedColorPickers ();
+        that.attachmentMenuBehavior ();
+        that.setUpImageAttachmentBehavior ();
+        that._setUpTitleBar ();
+        that._setUpFilters ();
+    });
+};
+
+return ActivityFeed;
+
+}) ();
+

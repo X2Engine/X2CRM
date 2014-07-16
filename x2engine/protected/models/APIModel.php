@@ -131,7 +131,7 @@ class APIModel {
 	 */
 	public function setResponseObject($response) {
 		if(is_string($response)) {
-			$this->_responseObject = json_decode($response,true);
+			$this->_responseObject = json_decode($response,1);
 			if(is_null($this->_responseObject)) // Set it equal to the error returned
 				$this->_responseObject = $response;
 			else if (is_array($this->_responseObject)) {
@@ -144,8 +144,9 @@ class APIModel {
 				$this->_modelErrors = array();
 			}
 
-		} else if(is_array($response))
+		} else if(is_array($response)) {
 			$this->_responseObject = $response;
+        }
 	}
 
 	/**
@@ -276,7 +277,10 @@ class APIModel {
                 unset($this->attributes[$key]);
             }
         }
-		$this->responseObject = $this->_send("api/lookup/model/$modelName",$this->attributes);
+        $action = empty($this->attributes['id']) || count($this->attributes) > 1
+            ? "api/lookup/model/$modelName"
+            : "api/view/model/$modelName";
+		$this->responseObject = $this->_send($action,$this->attributes);
 		return $this->processResponse(true);
 	}
 

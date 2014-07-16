@@ -64,10 +64,13 @@ $cs->registerScript('setFormName',"
 window.formName = '$modelName';
 ",CClientScript::POS_HEAD);
 
-$layoutData = Yii::app()->cache->get('form_'.$modelName);    // check the app cache for the data
+$scenario = isset($scenario) ? $scenario : 'Default';
+$nameLink = isset($nameLink) ? $nameLink : false;
+
+// check the app cache for the data
+$layoutData = Yii::app()->cache->get('form_'.$modelName.'_'.$scenario);    
 $fields = array();
 
-$scenario = isset($scenario) ? $scenario : 'Default';
 
 // remove this later, once all models extend X2Models
 if(method_exists($model,'getFields')) {
@@ -86,7 +89,7 @@ if($layoutData === false) {
 
     if(isset($layout)) {
         $layoutData = json_decode($layout->layout,true);
-        Yii::app()->cache->set('form_'.$modelName,$layoutData,0);    // cache the data
+        Yii::app()->cache->set('form_'.$modelName.'_'.$scenario,$layoutData,0);    // cache the data
     }
 }
 
@@ -94,7 +97,7 @@ if($layoutData !== false && isset($layoutData['sections']) && count($layoutData[
 ?>
     <div class="x2-layout<?php if(isset($halfWidth) && $halfWidth) echo ' half-width'; ?>">
     <?php
-    $formSettings = ProfileChild::getFormSettings($modelName);
+    $formSettings = Profile::getFormSettings($modelName);
     
     $fieldPermissions = array();
     
@@ -143,8 +146,14 @@ if($layoutData !== false && isset($layoutData['sections']) && count($layoutData[
     
         $htmlString .= '<div class="formSectionHeader">';
         if($section['collapsible']) {
-            $htmlString .= '<a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>';
-            $htmlString .= '<a href="javascript:void(0)" class="formSectionShow">[+]</a>';
+            $htmlString .= 
+                '<a href="javascript:void(0)" class="formSectionHide">
+                    <img src="'.Yii::app()->getBaseUrl().'/themes/x2engine/images/icons/Collapse_Widget.png" alt="-">
+                </a>';
+            $htmlString .= 
+                '<a href="javascript:void(0)" class="formSectionShow">
+                    <img src="'.Yii::app()->getBaseUrl().'/themes/x2engine/images/icons/Expand_Inverted.png" alt="+">
+                </a>';
         }
         if(!empty($section['title'])) {
             $htmlString .= '<span class="sectionTitle" title="'.addslashes($section['title']).'">'.
@@ -216,10 +225,14 @@ if($layoutData !== false && isset($layoutData['sections']) && count($layoutData[
                                         if(isset($specialFields[$fieldName])) {
                                             $fieldHtml = $specialFields[$fieldName];
                                         } else {
-                                            $fieldHtml = $model->renderAttribute(
-                                                $field->fieldName,true,false);
+                                            if($field->fieldName == 'name' && $nameLink && $model->asa('X2LinkableBehavior')){
+                                                $fieldHtml = $model->link;
+                                            }else{
+                                                $fieldHtml = $model->renderAttribute(
+                                                        $field->fieldName, true, false);
+                                            }
                                         }
-                                        if(empty($fieldHtml)) {
+                                        if($fieldHtml === '') {
                                             $htmlString .= '&nbsp;';
                                         } else {
                                             $htmlString .= $fieldHtml;

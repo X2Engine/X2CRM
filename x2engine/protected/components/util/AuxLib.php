@@ -39,12 +39,10 @@
  */
 class AuxLib {
 
-
     /**
      * @param int $errCode php file upload error code 
      */
     public static function getFileUploadErrorMessage ($errCode) {
-        $errMsg = 'Failed to upload file.';
         switch ($errCode) {
             case UPLOAD_ERR_OK:
                 break;
@@ -53,8 +51,10 @@ class AuxLib {
                 $errMsg = Yii::t('app', 'File exceeds the maximum upload size.');
                 break;
             case UPLOAD_ERR_PARTIAL:
+                $errMsg = Yii::t('app', 'File upload was not completed.');
                 break;
             case UPLOAD_ERR_NO_FILE:
+                $errMsg = Yii::t('app', 'Zero-length file uploaded.');
                 break;
             case UPLOAD_ERR_NO_TMP_DIR:
                 break;
@@ -62,8 +62,20 @@ class AuxLib {
                 break;
             case UPLOAD_ERR_EXTENSION:
                 break;
+            default: 
+                $errMsg = Yii::t('app', 'Failed to upload file.');
         }
         return $errMsg;
+    }
+
+    /**
+     * @return bool True if the file upload failed with errors, false otherwise
+     */
+    public static function checkFileUploadError ($name) {
+        if (!isset ($_FILES[$name])) return false;
+        if(empty($_FILES[$name]['tmp_name'])) 
+            return true;
+        return false;
     }
 
     /**
@@ -170,18 +182,43 @@ class AuxLib {
      */
     public static function debugLog ($message) {
         if (!YII_DEBUG) return;
-        Yii::log ($message, '', 'application.debug');
+        Yii::log ($message, 'error', 'application.debug');
     }
 
     public static function debugLogR ($arr) {
         if (!YII_DEBUG) return;
         $logMessage = print_r ($arr, true);
-        Yii::log ($logMessage, '', 'application.debug');
+        Yii::log ($logMessage, 'error', 'application.debug');
+    }
+
+    public static function debugLogExport ($arr) {
+        if (!YII_DEBUG) return;
+        $logMessage = var_export ($arr, true);
+        Yii::log ($logMessage, 'error', 'application.debug');
     }
 
     public static function isIE8 () {
         $userAgentStr = strtolower(Yii::app()->request->userAgent);
-        return preg_match('/msie 8/', $userAgentStr);
+        return preg_match('/msie 8/i', $userAgentStr);
+    }
+
+    public static function isIE () {
+        $userAgentStr = strtolower(Yii::app()->request->userAgent);
+        return preg_match('/msie/i', $userAgentStr);
+    }
+
+    /**
+     * @return mixed The IE version if available, otherwise infinity 
+     */
+    public static function getIEVer () {
+        $userAgentStr = strtolower(Yii::app()->request->userAgent);
+        preg_match('/msie ([0-9]+)/', $userAgentStr, $matches);
+        if (sizeof ($matches) === 2) {
+            $ver = (int) $matches[1];
+        } else {
+            $ver = INF;
+        }
+        return $ver;
     }
 
     /**
@@ -230,6 +267,46 @@ class AuxLib {
             return array ();
         } 
         return array_combine ($placeholders, $arr);
+    }
+
+    public static function arrToStrList ($arr) {
+        return '('.implode (',', $arr).')';
+    }
+
+    public static function coerceToArray (&$arr) {
+        if (is_string ($arr)) {
+            $arr = array ($arr);
+        } else if (is_array ($arr)) {
+        } else {
+            throw new CException ('Invalid argument type');
+        }
+    }
+
+    /**
+     * Prints stack trace 
+     * @param int $limit If set, only the top $limit items on the call stack will get printed. 
+     *  debug_backtrace does have an optional limit argument, but it wasn't introduced until php
+     *  5.4.0.
+     */
+    public static function printStackTrace ($limit=null) {
+        if ($limit !== null) {
+            AuxLib::debugLogR (
+                array_slice (debug_backtrace (DEBUG_BACKTRACE_IGNORE_ARGS), 0, $limit));
+        } else {
+            AuxLib::debugLogR (debug_backtrace (DEBUG_BACKTRACE_IGNORE_ARGS));
+        }
+    }
+
+    /**
+     * Reformats and translates dropdown arrays to preserve sorting in {@link CJSON::encode()}
+     * @param array an associative array of dropdown options ($value => $label)
+     * @return array a 2-D array of values and labels
+     */
+    public static function dropdownForJson($options) {
+        $dropdownData = array();
+        foreach($options as $value => &$label)
+            $dropdownData[] = array($value,$label);
+        return $dropdownData;
     }
 
 

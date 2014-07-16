@@ -76,11 +76,15 @@ Public instance methods
  * Hide iframe to prevent lag 
  */
 DocViewerProfileWidget.prototype.onDragStart = function () {
+    // prevent default text from shifting when iframe is hidden
+    this.contentContainer.height (this.contentContainer.height ());
+
     this._iframeElem.hide ();
     SortableWidget.prototype.onDragStart.call (this);
 };
 
 DocViewerProfileWidget.prototype.onDragStop = function () {
+    this.contentContainer.height ('');
     this._iframeElem.show ();
     SortableWidget.prototype.onDragStop.call (this);
 };
@@ -321,6 +325,7 @@ DocViewerProfileWidget.prototype._init = function () {
     this._iframeElem = this.contentContainer.find ('iframe');
     this._iframeSrc = '';
     this._setUpSelectADocBehavior ();
+    this.element.find ('.default-text-container').show ();
 
     if (this.docId === '') {
         this._setUpDefaultTextBehavior ();

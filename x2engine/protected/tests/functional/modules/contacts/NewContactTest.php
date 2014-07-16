@@ -2,6 +2,7 @@
 
 Yii::import('application.modules.contacts.models.Contacts');
 Yii::import('application.modules.actions.models.Actions');
+Yii::import('application.modules.accounts.models.Accounts');
 
 /**
  * 
@@ -15,6 +16,9 @@ class NewContactTest extends X2WebTestCase {
 	);
 	
 	public function testNewContactAndAccount() {
+        $this->markTestSkipped ();
+        return;
+
 		$this->openX2('/contacts/create');
 		$this->localSelenese('NewContactAndAccount.html');
 	}

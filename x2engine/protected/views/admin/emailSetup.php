@@ -73,13 +73,13 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
 
 ", CClientScript::POS_READY);
 ?>
-<div class="span-16">
-    <div class="page-title"><h2><?php echo Yii::t('admin', 'Email Server Configuration'); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'Email Server Configuration'); ?></h2></div>
+<div class="admin-form-container">
     <div class="form">
         <p><?php echo Yii::t('admin','For more information, see {config} on the X2Engine wiki.',array('{config}'=>CHtml::link(Yii::t('admin','Email Configuration'),'http://wiki.x2engine.com/wiki/E-Mail_Configuration'))); ?></p>
         <hr />
         <?php
-        $form = $this->beginWidget('CActiveForm', array(
+        $form = $this->beginWidget('X2ActiveForm', array(
             'id' => 'email-setup',
             'enableAjaxValidation' => false,
                 ));
@@ -98,7 +98,6 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
                 'qmail' => @is_executable('/var/qmail/bin/sendmail')
             );
             $mailMethods = array();
-            $mailMethods[null] = '--------';
             if((bool) @ini_get('sendmail_path'))
                 if(@is_executable(@ini_get('sendmail_path')))
                     $mailMethods['mail'] = Yii::t('admin', 'PHP Mail');
@@ -107,6 +106,11 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
             if($can['qmail'])
                 $mailMethods['qmail'] = Yii::t('admin', 'Qmail');
             $mailMethods['smtp'] = Yii::t('admin', 'SMTP');
+            // if currently set mail type isn't an option, default to the first available mail type
+            if (!in_array ($model->emailType, array_keys ($mailMethods))) {
+                $methodKeys = array_keys ($mailMethods);
+                $model->emailType = array_shift ($methodKeys);
+            }
             ?>
             <div class="cell" style="width:310px;">
                 <?php echo $form->labelEx($model, 'emailType'); ?>
@@ -223,47 +227,77 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
         </div>
     </div>
 
-        <br /><hr />
-        <h4><?php echo Yii::t('admin', 'Service Case Email Settings'); ?></h4>
-        <p><?php echo Yii::t('admin', 'Configure how X2Engine sends email when responding to new service case requests.'); ?></p>
-        <div class="row">
-            <div class="cell">
-                <?php echo $form->labelEx($model, 'serviceCaseEmailAccount'); ?>
-                <?php
-                echo Credentials::selectorField($model, 'serviceCaseEmailAccount', 'email', Credentials::$sysUseId['serviceCaseEmail'], array('class' => 'email-selector', 'id' => 'email-selector-servicecase'));
-                ?>
-            </div>
+    <br /><hr />
+    <h4><?php echo Yii::t('admin', 'Service Case Email Settings'); ?></h4>
+    <p><?php echo Yii::t('admin', 'Configure how X2Engine sends email when responding to new service case requests.'); ?></p>
+    <div class="row">
+        <div class="cell">
+            <?php echo $form->labelEx($model, 'serviceCaseEmailAccount'); ?>
+            <?php
+            echo Credentials::selectorField($model, 'serviceCaseEmailAccount', 'email', Credentials::$sysUseId['serviceCaseEmail'], array('class' => 'email-selector', 'id' => 'email-selector-servicecase'));
+            ?>
         </div>
-        <div class="row email-selector-servicecase-legacy">
-            <div class="cell">
-                <?php echo $form->labelEx($model, 'serviceCaseFromEmailName'); ?>
-                <?php echo $form->textField($model, 'serviceCaseFromEmailName', array('size' => 30)); ?>
-            </div>
-            <div class="cell">
-                <?php echo $form->labelEx($model, 'serviceCaseFromEmailAddress'); ?>
-                <?php echo $form->textField($model, 'serviceCaseFromEmailAddress', array('size' => 40)); ?>
-            </div>
+    </div>
+    <div class="row email-selector-servicecase-legacy">
+        <div class="cell">
+            <?php echo $form->labelEx($model, 'serviceCaseFromEmailName'); ?>
+            <?php echo $form->textField($model, 'serviceCaseFromEmailName', array('size' => 30)); ?>
         </div>
-        <div class="row">
-            <div class="cell">
-                <?php echo $form->labelEx($model, 'serviceCaseEmailSubject'); ?>
-                <?php echo $form->textField($model, 'serviceCaseEmailSubject', array('size' => 30)); ?>
-            </div>
+        <div class="cell">
+            <?php echo $form->labelEx($model, 'serviceCaseFromEmailAddress'); ?>
+            <?php echo $form->textField($model, 'serviceCaseFromEmailAddress', array('size' => 40)); ?>
         </div>
-        <div class="row">
-            <div class="cell">
-                <?php echo $form->labelEx($model, 'serviceCaseEmailMessage'); ?>
-                <?php echo $form->textArea($model, 'serviceCaseEmailMessage', array('style' => 'width:490px;height:80px;')); ?>
-                <br>
-                <?php echo Yii::t('admin', 'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.'); ?>
-            </div>
+    </div>
+    <div class="row">
+        <div class="cell">
+            <?php echo $form->labelEx($model, 'serviceCaseEmailSubject'); ?>
+            <?php echo $form->textField($model, 'serviceCaseEmailSubject', array('size' => 30)); ?>
         </div>
+    </div>
+    <div class="row">
+        <div class="cell">
+            <?php echo $form->labelEx($model, 'serviceCaseEmailMessage'); ?>
+            <?php echo $form->textArea($model, 'serviceCaseEmailMessage', array('class'=>'x2-xxwide-input', 'style' => 'height:80px;')); ?>
+            <br>
+            <?php echo Yii::t('admin', 'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.'); ?>
+        </div>
+    </div>
     <?php
     if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'views','admin','webLeadResponseEmailSettings.php')))){
         $this->renderPartial('webLeadResponseEmailSettings',compact('form','model'));
     }
 
     ?>
+        <br/>
+        <hr/>
+        <?php  
+         
+        ?>
+        <h4><?php echo Yii::t('admin', '"Do Not Email" Link Configuration'); ?></h4>
+        <br/>
+        <div class="row">
+            <div class="cell">
+                <?php
+                echo $form->labelEx(
+                    $model, 'doNotEmailLinkText', array ('class' => 'left')); 
+                echo '<br/>';
+                echo $form->textField ($model, 'doNotEmailLinkText'); 
+                ?>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <div class="cell">
+                <?php
+                echo $form->labelEx(
+                    $model, 'doNotEmailPage', array ('class' => 'left')); 
+                echo X2Html::hint (
+                    Yii::t('admin', 'This is the page that will be displayed to contacts after '.
+                        'they have clicked the "Do Not Email" link contained in an email.'), 
+                        false, null, true);
+                echo $form->richTextarea ($model, 'doNotEmailPage'); 
+                ?>
+            </div>
         </div>
         <br>
 

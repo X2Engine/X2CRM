@@ -191,7 +191,7 @@ class CrontabUtil {
      * @param string $crontab The cron table.
      * @return array
      */
-    public static function crontabToArray($crontab){
+    public static function crontabToArray(&$crontab){
         try{
             self::addCronMarker($crontab,true);
         }catch(Exception $e){
@@ -299,15 +299,21 @@ class CrontabUtil {
     /**
      * Generate form inputs for creating a cron task.
      *
+     * Note, the JavaScript in this cron form is namespace-protected to allow
+     * multiple cron forms within the same page. The "name" argument should be
+     * used to control the name.
+     *
      * @param array $data Previous form data submitted, if any.
      * @param string $name The name of the nested array in the form data containing
-     *     information about the cron job.
+     *     information about the cron job. Must be usable as a JavaScript object
+     *     name.
      * @param string $desc Optional description of cron job to save in crontab as a desc
      * @param string $cmd The command to run at the scheuled dates. If unspecified,
      * @param string $tag A "tag" in the comments uniquely identifying the cron job
      * @return string
      */
-    public static function schedForm($data = array(), $name = 'cron', $cmd = null, $tag = 'default', $desc = null){
+    public static function schedForm($data = array(), $name = 'cron',
+            $cmd = null, $tag = 'default', $desc = null){
         $jsName = self::jsName($name,$tag);
         // JavaScript namespace for scripts pertaining to this form:
         $jsns = "cronForm.$jsName";
@@ -331,26 +337,31 @@ class CrontabUtil {
         // Use a local function named similar to the message function in the
         // installer so that the codebase parser (when auto-translating) will
         // pick up on it:
-        $installer_t = function_exists('installer_t') ? function($m){return call_user_func('installer_t',$m);} : (class_exists('Yii') ? function($m){return Yii::t('install',$m);} : function($m){return $m;});
+        $installer_t = function_exists('installer_t')
+                ? function($m){return call_user_func('installer_t',$m);}
+                : (class_exists('Yii')
+                        ? function($m){return Yii::t('install',$m);}
+                        : function($m){return $m;}
+                );
         // Inline styles:
         $inlineStyles = array(
-            '{cron-form-top}' => 'display: block;',
-            '{top-form}' => 'padding-bottom: 10px;',
-            '{cron-text-value}' => 'margin-left: 125px;',
-            '{cron-form-textarea}' => 'max-width: 420px;',
-            '{cron-form-value}' => 'padding-left: 125px;',
-            '{cron-cmd-value}' => 'display: table-cell; padding-left: 26px;',
-            '{cron-form-pair}' => 'display: table;',
-            '{cron-form-label}' => 'float: left; display: table-cell;',
-            '{cron-form-value}' => 'display: table-cell; position: relative; padding-left: 20px;',
-            '{schedFormTitle}' => 'width: 100%;',
-            '{simpleTitle}' => 'padding-bottom: 15px;',
-            '{mainTitle}' => 'display: table; margin-top: -10px;',
-            '{schedInputs}' => 'width: 120px;display: table-cell;margin-top: -50px;padding-bottom: 15px;',
-            '{cron-ui-submit}' => 'position: relative; top: 7px; left: 450px; color: buttontext;',
-            '{ui-radio}' => 'margin-left: -50px;',
-            '{cron-bot}' => 'padding-bottom: 10px;',
-            '{startCron}' => 'margin-top: 20px;'
+            '#cron-form-top' => 'display: block;',
+            '#top-form' => 'padding-bottom: 10px;',
+            '#cron-text-value' => 'margin-left: 125px;',
+            '#cron-form-textarea' => 'max-width: 420px;',
+            '#cron-form-value' => 'padding-left: 125px;',
+            '#cron-cmd-value' => 'display: table-cell; padding-left: 26px;',
+            '#cron-form-pair' => 'display: table;',
+            '#cron-form-label' => 'float: left; display: table-cell;',
+            '#cron-form-value' => 'display: table-cell; position: relative; padding-left: 20px;',
+            '#schedFormTitle' => 'width: 100%;',
+            '#simpleTitle' => 'padding-bottom: 15px;',
+            '#mainTitle' => 'display: table; margin-top: -10px;',
+            '#schedInputs' => 'width: 120px;display: table-cell;margin-top: -50px;padding-bottom: 15px;',
+            '#cron-ui-submit' => 'position: relative; top: 7px; left: 450px; color: buttontext;',
+            '#ui-radio' => 'margin-left: -50px;',
+            '#cron-bot' => 'padding-bottom: 10px;',
+            '#startCron' => 'margin-top: 20px;'
         );
         $checked = function($n,$tf) use($data) {
             if((bool)(int)$data[$n] == (bool)(int)$tf)
@@ -359,20 +370,20 @@ class CrontabUtil {
 
         ob_start();
         ?>
-        <div style="{cron-form-top}">
+        <div style="#cron-form-top">
             <?php if(empty($cmd)): ?>
-                <div style="{cron-form-pair}">
-                    <div style="{cron-form-label}"><?php echo $installer_t('Command'); ?></div>
-                    <div style="{cron-cmd-value}">
-                        <input style="{cron-textbox}" name="<?php echo self::inputName($name,$tag,'cmd'); ?>" size="60" value="<?php echo $cmd; ?>" />
+                <div style="#cron-form-pair">
+                    <div style="#cron-form-label"><?php echo $installer_t('Command'); ?></div>
+                    <div style="#cron-cmd-value">
+                        <input style="#cron-textbox" name="<?php echo self::inputName($name,$tag,'cmd'); ?>" size="60" value="<?php echo $cmd; ?>" />
                         <input type="hidden" value="<?php echo $tag; ?>" name="<?php echo self::inputName($name,$tag,'tag'); ?>" />
                     </div>
                 </div>
-                <div style="{cron-form-pair}">
-                    <div style="{cron-form-label}"><?php echo $installer_t('Description'); ?></div>
-                    <div style="{cron-form-value}">
-                        <input style="{cron-textbox}" name="<?php echo self::inputName($name,$tag,'desc'); ?>" size="60" value="<?php echo $desc; ?>" />
-                        <span style="{cron-error}"><?php echo $desc; ?></span>
+                <div style="#cron-form-pair">
+                    <div style="#cron-form-label"><?php echo $installer_t('Description'); ?></div>
+                    <div style="#cron-form-value">
+                        <input style="#cron-textbox" name="<?php echo self::inputName($name,$tag,'desc'); ?>" size="60" value="<?php echo $desc; ?>" />
+                        <span style="#cron-error"><?php echo $desc; ?></span>
                         <input type="hidden" name="<?php echo self::inputName($name,$tag,'desc'); ?>" value="" />
                     </div>
                 </div>
@@ -407,9 +418,9 @@ class CrontabUtil {
             <input type="radio" name="<?php echo self::inputName($name,$tag,'use_schedule'); ?>"  value="0" <?php $checked('use_schedule',0); ?> onchange="<?php $ns(); ?>.scheduleMode(form,0);" />
             <?php echo $installer_t('Times and Dates Selected'); ?>
             <?php echo '<p>'.(self::$printHint ? $installer_t('Note: hold down the control key (or command key, on Macintosh) to select or deselect multiple values.'):'').'</p>'; ?>
-            <div style="{schedFormTitle}">
-                <div style="{mainTitle}">
-                    <div style="{schedInputs}">
+            <div style="#schedFormTitle">
+                <div style="#mainTitle">
+                    <div style="#schedInputs">
                         <strong><?php echo $installer_t('Minutes'); ?></strong><br />
                         <div>
                             <input type="radio" name="<?php echo self::inputName($name,$tag,'all_min'); ?>" value="1" <?php $checked('all_min',1); ?> onclick="<?php $ns(); ?>.enableField(form,'<?php echo self::inputName($name,$tag,'min',1); ?>',0);" />
@@ -429,7 +440,7 @@ class CrontabUtil {
                             ?>
                         </select>
                     </div>
-                    <div style="{schedInputs}">
+                    <div style="#schedInputs">
                         <strong><?php echo $installer_t('Hours'); ?></strong><br />
                         <div>
                             <input type="radio" name="<?php echo self::inputName($name,$tag,'all_hour'); ?>" value="1" <?php $checked('all_hour',1); ?> onclick="<?php $ns(); ?>.enableField(form,'<?php echo self::inputName($name,$tag,'hour',1); ?>',0);" />
@@ -449,7 +460,7 @@ class CrontabUtil {
                             ?>
                         </select>
                     </div>
-                    <div style="{schedInputs}">
+                    <div style="#schedInputs">
                         <strong><?php echo $installer_t('Days'); ?></strong><br />
                         <div>
                             <input type="radio" name="<?php echo self::inputName($name,$tag,'all_dayOfMonth'); ?>" value="1" <?php $checked('all_dayOfMonth',1); ?> onclick="<?php $ns(); ?>.enableField(form,'<?php echo self::inputName($name,$tag,'dayOfMonth',1); ?>',0);" />
@@ -469,7 +480,7 @@ class CrontabUtil {
                             ?>
                         </select>
                     </div>
-                    <div style="{schedInputs}">
+                    <div style="#schedInputs">
                         <strong><?php echo $installer_t('Months'); ?></strong><br />
                         <input type="radio" name="<?php echo self::inputName($name,$tag,'all_month'); ?>" value="1" <?php $checked('all_month',1); ?> onclick="<?php $ns(); ?>.enableField(form,'<?php echo self::inputName($name,$tag,'month',1); ?>',0);" />
                         <?php echo $installer_t('All'); ?>
@@ -501,7 +512,7 @@ class CrontabUtil {
                             ?>
                         </select>
                     </div>
-                    <div style="{schedInputs}">
+                    <div style="#schedInputs">
                         <strong><?php echo $installer_t('Weekdays'); ?></strong><br />
                         <input type="radio" name="<?php echo self::inputName($name,$tag,'all_dayOfWeek'); ?>" value="1" <?php $checked('all_dayOfWeek',1); ?> onclick="<?php $ns(); ?>.enableField(form,'<?php echo self::inputName($name,$tag,'dayOfWeek',1); ?>',0);" />
                         <?php echo $installer_t('All'); ?>

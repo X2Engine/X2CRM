@@ -7,7 +7,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -28,7 +28,10 @@ return array(
 		'depends'=>array('jquery'),
 	),
 	'jquery.ui'=>array(
-		'js'=>array('jui/js/jquery-ui.min.js'),
+        /* x2modstart */ 
+		'js'=>array(YII_DEBUG ? 'jui/js/jquery-ui.js' : 'jui/js/jquery-ui.min.js'),
+		//'js'=>array('jui/js/jquery-ui.min.js'),
+        /* x2modend */ 
 		'depends'=>array('jquery'),
 	),
 	'bgiframe'=>array(

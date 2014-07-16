@@ -21,4 +21,7 @@ return array (
 'Unit Price'=>'Preço Unitário',
 
 // Misc Text
+'Import Products'=>'Importar produtos',
+'Export Products'=>'Produtos de exportação',
+'NameId'=>'NameID',
 );

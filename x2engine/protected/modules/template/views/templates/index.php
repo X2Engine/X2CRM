@@ -36,8 +36,10 @@
 include("protected/modules/templates/templatesConfig.php");
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName']))),
-	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
+    array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName']))),
+    array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
+    array('label'=>Yii::t('module', 'Import {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('admin/importModels', 'model'=>ucfirst($moduleConfig['moduleName']))),
+    array('label'=>Yii::t('module', 'Export {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('admin/exportModels', 'model'=>ucfirst($moduleConfig['moduleName'])))
 ));
 
 Yii::app()->clientScript->registerScript('search', "
@@ -61,13 +63,19 @@ $('.search-form form').submit(function(){
 </div><!-- search-form -->
 <?php
 
-$this->widget('application.components.X2GridView', array(
+$this->widget('X2GridView', array(
 	'id'=>'templates-grid',
 	'title'=>$moduleConfig['title'],
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> '<div class="page-title">{title}{buttons}{filterHint}'.
-            
-            '{summary}</div>{items}{pager}',
+	'template'=> 
+        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
+        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
+        '<div id="x2-gridview-page-title" '.
+         'class="page-title x2-gridview-fixed-title">'.
+        '{title}{buttons}{filterHint}'.
+        
+        '{summary}{topPager}{items}{pager}',
+    'fixedHeader'=>true,
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,

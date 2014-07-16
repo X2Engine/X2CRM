@@ -33,6 +33,17 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+Yii::app()->clientScript->registerCss('recordViewCss',"
+
+#content {
+    background: none !important;
+    border: none !important;
+}
+");
+
+Yii::app()->clientScript->registerResponsiveCssFile(
+    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
+
 
 Yii::app()->clientScript->registerCss('campaignContentCss', '
 #attachments-title {
@@ -58,18 +69,9 @@ if($model->launchDate){
 	");
 }
 
-if($model->active) // Periodically refresh the campaign chart and grid view
-    Yii::app()->clientScript->registerScript('mailer-status-update', '
-        setInterval(function() {
-            if(typeof x2.campaignChart != "undefined")
-                x2.campaignChart.chart.getEventsBetweenDates();
-            $.fn.yiiGridView.update("campaign-grid", {data: {"id_page": 1}})
-        },5000);
-    ', CClientScript::POS_READY);
-
 $this->pageTitle = $model->name;
 $themeUrl = Yii::app()->theme->getBaseUrl();
-$authParams['assignedTo'] = $model->createdBy;
+$authParams['X2Model'] = $model;
 $this->actionMenu = $this->formatMenu(array(
     array('label' => Yii::t('marketing', 'All Campaigns'), 'url' => array('index')),
     array('label' => Yii::t('module', 'Create'), 'url' => array('create')),
@@ -80,17 +82,23 @@ $this->actionMenu = $this->formatMenu(array(
 	array(
         'label'=>Yii::t('marketing','Newsletters'), 
         'url'=>array('/marketing/weblist/index'),
-        'visible'=>(Yii::app()->params->edition==='pro')
+        'visible'=>(Yii::app()->contEd('pro'))
     ),
     array('label' => Yii::t('marketing', 'Web Lead Form'), 'url' => array('webleadForm')),
-    array('label' => Yii::t('app', 'X2Flow'), 'url' => array('/studio/flowIndex'), 'visible' => (Yii::app()->params->edition === 'pro')),
+    array('label' => Yii::t('app', 'X2Flow'), 'url' => array('/studio/flowIndex'), 'visible' => (Yii::app()->contEd('pro'))),
         ), $authParams);
 ?>
+
+<div class="page-title-placeholder"></div>
+<div class="page-title-fixed-outer">
+    <div class="page-title-fixed-inner">
 <div class="page-title icon marketing">
     <h2><?php echo CHtml::encode($model->name); ?></h2>
     <?php if(Yii::app()->user->checkAccess('MarketingUpdate', $authParams)){ ?>
         <a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id)); ?>"><span></span></a>
     <?php } ?>
+</div>
+</div>
 </div>
 <div id="main-column" class="half-width">
     <?php
@@ -122,8 +130,7 @@ $this->actionMenu = $this->formatMenu(array(
     ?>
     <div style="overflow: auto;">
         <?php
-        if(!$model->complete && in_array($model->type, array('Email', 'Call List')) &&
-                Yii::app()->user->checkAccess('MarketingLaunch')){
+        if(!$model->complete && Yii::app()->user->checkAccess('MarketingLaunch')){
 
             if($model->launchDate == 0){
                 echo CHtml::beginForm(array('launch', 'id' => $model->id));
@@ -156,13 +163,14 @@ $this->actionMenu = $this->formatMenu(array(
                 echo CHtml::submitButton(
                         Yii::t('marketing', 'Complete'), array('class' => 'x2-button left', 'style' => 'margin-left:0;'));
                 echo CHtml::endForm();
-                echo CHtml::Button(
-                        Yii::t('marketing', 'Send Test Email'), array(
-                    'id' => 'test-email-button',
-                    'class' => 'x2-button left',
-                    'onclick' => 'toggleEmailForm(); return false;'
-                        )
-                );
+                if($model->type == 'Email')
+                    echo CHtml::Button(
+                            Yii::t('marketing', 'Send Test Email'), array(
+                        'id' => 'test-email-button',
+                        'class' => 'x2-button left',
+                        'onclick' => 'toggleEmailForm(); return false;'
+                            )
+                    );
             }
         }
         ?>
@@ -198,7 +206,7 @@ $this->actionMenu = $this->formatMenu(array(
                 }',
                 'create' => 'js:function(event, ui) {
                     $(this).data( "uiAutocomplete" )._renderItem = function(ul,item) {
-                        return $("<li>").data("item.autocomplete",item).append(renderContactLookup(item)).appendTo(ul);
+                        return $("<li>").data("item.autocomplete",item).append(x2.forms.renderContactLookup(item)).appendTo(ul);
                     };
                 }',
             ),

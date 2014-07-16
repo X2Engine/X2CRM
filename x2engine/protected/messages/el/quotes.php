@@ -68,4 +68,6 @@ return array (
 'Are you sure you want to delete this quote?'=>'Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το απόσπασμα;',
 'This quote is locked. Are you sure you want to update this quote?'=>'Αυτό το απόσπασμα είναι κλειδωμένο. Είστε σίγουροι ότι θέλετε να ενημερώσετε αυτό το απόσπασμα;',
 'This quote is locked.'=>'Αυτό το απόσπασμα είναι κλειδωμένο.',
+'Import Quotes'=>'Τιμές εισαγωγής',
+'Export Quotes'=>'Αποσπάσματα των εξαγωγών',
 );

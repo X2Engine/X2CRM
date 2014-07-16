@@ -21,4 +21,7 @@ return array (
 'Unit Price'=>'מחיר היחידה',
 
 // Misc Text
+'Import Products'=>'מוצרי יבוא',
+'Export Products'=>'מוצרי יצוא',
+'NameId'=>'NameId',
 );

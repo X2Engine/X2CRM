@@ -466,6 +466,31 @@ class InlineEmail extends CFormModel {
     }
 
     /**
+     * @return bool false if any one of the recipient contacts has their doNotEmail field set to 
+     *  true, true otherwise
+     */
+    public function checkDoNotEmailFields () {
+        $allRecipientContacts = array();
+        foreach($this->recipients as $target){
+            foreach (Contacts::model()->findAllByAttributes(
+                array('email' => $target[1])) as $contact) {
+
+                $allRecipientContacts[] = $contact;
+            }
+        }
+        if (array_reduce (
+            $allRecipientContacts,
+            function ($carry, $item) {
+                return $carry || $item->doNotEmail;
+            }, false)) {
+        
+            return false; 
+        }
+        return true;
+    }
+
+
+    /**
      * Magic getter for {@link signature}
      *
      * Retrieves the email signature from the preexisting body, or from the
@@ -538,6 +563,7 @@ class InlineEmail extends CFormModel {
 		// This might be a console application! In that case, there's
 		// no controller application component available.
                 $url = rtrim(Yii::app()->absoluteBaseUrl,'/');
+
                 if(!empty($url))
                     $trackUrl = "$url/index.php/actions/emailOpened?uid={$this->uniqueId}&type=open";
                 else
@@ -621,7 +647,7 @@ class InlineEmail extends CFormModel {
      * the email is ambiguous and practically unknowable, and thus impractical
      * to create an email tracking record.
      *
-     * @param bool $replace Reset the image markup and unique ID, and replace
+     * @param bool $replace reset the image markup and unique ID, and replace
      * 	the existing tracking image.
      */
     public function insertTrackingImage($replace = false){
@@ -699,6 +725,10 @@ class InlineEmail extends CFormModel {
             // Get the template and associated model
 
             if(!empty($this->templateModel)){
+                if ($this->templateModel->emailTo !== null) {
+                    $this->to = Docs::replaceVariables(
+                        $this->templateModel->emailTo, $this->targetModel, array (), false, false);
+                }
                 // Replace variables in the subject and body of the email
                 $this->subject = Docs::replaceVariables($this->templateModel->subject, $this->targetModel);
                 // if(!empty($this->targetModel)) {
@@ -790,7 +820,7 @@ class InlineEmail extends CFormModel {
 
             // These attributes are context-sensitive and subject to change:
             $action->associationId = $model->id;
-            $action->associationType = lcfirst(get_class($model));
+            $action->associationType = $model->module;
             $action->type = 'email';
             $action->visibility = isset($model->visibility) ? $model->visibility : 1;
             $action->assignedTo = $this->userProfile->username;
@@ -849,7 +879,7 @@ class InlineEmail extends CFormModel {
                 }else if($this->modelName == 'Quote'){
                     // An event has already been made for issuing the quote and
                     // so another event would be redundant.
-                    $skipEvent = $this->targetModel->contact->id == $contact->id;
+                    $skipEvent = $this->targetModel->associatedContacts == $contact->nameId;
                 }
                 if($skip)
                 // Only save the action history item/event if this hasn't
@@ -879,7 +909,6 @@ class InlineEmail extends CFormModel {
                 $action->disableBehavior('changelog');
 
                 if($action->save()){
-                    $this->trackEmail($action->id);
                     // Now create an event for it:
                     if($makeEvent && !$skipEvent){
                         $event = new Events;
@@ -904,5 +933,44 @@ class InlineEmail extends CFormModel {
     public function deliver() {
         return $this->asa('emailDelivery')->deliverEmail($this->mailingList,$this->subject,$this->message,$this->attachments);
     }
+
+    /**
+     * Insert a "Do Not Email" link into the body of the email message. The link contains the 
+     * contact's trackingKey in it's get parameters. When clicked, the contact's doNotEmail field
+     * will be set to 1.
+     * @param Contacts $contact
+     */
+    public function appendDoNotEmailLink (Contacts $contact) {
+        // Insert unsubscribe link placeholder in the email body if there is
+        // none already:
+        if(!preg_match('/\{doNotEmailLink\}/', $this->message)){
+            $doNotEmailLinkText = "<br/>\n-----------------------<br/>\n"
+                    .Yii::t('app', 
+                        'To stop receiving emails from this sender, click here').
+                    ": {doNotEmailLink}";
+            // Insert
+            if(strpos($this->message,'</body>')!==false) {
+                $this->message = str_replace(
+                    '</body>',$doNotEmailLinkText.'</body>',$this->message);
+            } else {
+                $this->message .= $doNotEmailLinkText;
+            }
+        }
+
+        // Insert do not email link(s):
+        $doNotEmailUrl = Yii::app()->createExternalUrl(
+            '/marketing/marketing/doNotEmailLinkClick', array(
+                'x2_key' => $contact->trackingKey,
+            ));
+        if (Yii::app()->settings->doNotEmailLinkText !== null) {
+            $linkText = Yii::app()->settings->doNotEmailLinkText;
+        } else {
+            $linkText = Admin::getDoNotEmailLinkDefaultText ();
+        }
+        $this->message = preg_replace(
+            '/\{doNotEmailLink\}/', '<a href="'.$doNotEmailUrl.'">'.
+            $linkText.'</a>', $this->message);
+    }
+
 
 }

@@ -36,4 +36,8 @@ return array (
 'copy'=>'복사',
 'Saved at'=>'에 저장',
 'Document'=>'문서',
+'Leaving this field blank will preserve its default behavior.'=>'이 필드를 비워두면 기본 동작을 유지합니다.',
+'Create Quote Template'=>'견적 템플릿 만들기',
+'Import Docs'=>'가져 오기 문서',
+'Export Docs'=>'수출 문서',
 );
