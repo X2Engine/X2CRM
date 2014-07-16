@@ -1,3 +1,14 @@
+# 4.1.7 #
+7/15/2014
+
+* General changelog/developer notes
+  * Fixed issues in the importer which prevented fields from being set when a default field value was given
+  * Fixed error in Form Editor which prevented scenario from being saved
+  * Fixed bug in the Campaign Bulk Mailer which caused an incorrect error to be reported
+  * Fixed bug in legacy API which incorrectly restricted search results
+  * Fixed bug in process pipeline/funnel views which prevented contact records from displaying even if the current user had permission to view them
+  * Fixed bug in process funnel view which prevented per-stage grid views from updating when a different process was selected
+
 # 4.1.6 #
 7/10/2014
 

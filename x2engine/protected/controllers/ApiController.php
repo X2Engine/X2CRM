@@ -361,16 +361,10 @@ class ApiController extends x2base {
 		$attrs = $_POST;
 		unset($attrs['user']);
 		unset($attrs['userKey']);
-        // Use the "search" scenario to avoid default values
         $tempModel = new $this->modelClass('search');
 
-        $tempModel->setX2Fields($attrs);
-        // Some users might want to include ID in the lookup, and since it's
-        // read-only, it needs to be set manually.
-        if(isset($attrs['id']))
-            $tempModel->id = $attrs['id'];
-        // Only use non-null attributes
-        $attrs = array_filter($tempModel->getAttributes());
+        // Use only attributes that the model has
+        $attrs = array_intersect_key($attrs,$tempModel->attributes);
 		$model = X2Model::model($this->modelClass)->findByAttributes($attrs);
 
 		// Did we find the requested model? If not, raise an error

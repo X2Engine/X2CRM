@@ -57,7 +57,7 @@ VALUES
 ("Actions", "subject",           "Subject",          0, 0, "varchar",    1, 0, NULL, 1, 0, "High", 0, 1, NULL),
 ("Actions", "actionDescription", "Description",      0, 0, "text",       0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "visibility",        "Visibility",       0, 0, "visibility", 0, 0, NULL, 0, 0, "",     0, 1, NULL),
-("Actions", "associationId",     "Contact",          0, 0, "varchar",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "associationId",     "Association ID",   0, 0, "varchar",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "associationType",   "Association Type", 0, 0, "varchar",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "associationName",   "Association",      0, 0, "varchar",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "dueDate",           "Due Date",         0, 0, "dateTime",   0, 0, NULL, 0, 0, "",     0, 1, NULL),

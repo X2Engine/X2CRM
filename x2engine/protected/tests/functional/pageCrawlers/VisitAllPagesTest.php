@@ -81,8 +81,9 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         }
     }
 
-	public function testContactPages () {
+	public function testPages () {
         $this->visitPages (array (
+            // contacts
             'contacts/index',
             'contacts/id/1195',
             'contacts/update/id/1195',
@@ -93,22 +94,14 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
             'contacts/createList',
             'contacts/googleMaps',
             'contacts/savedMaps',
-        ));
-	}
-
-	public function testAccountPages () {
-        $this->visitPages (array (
+            // accounts
             'accounts/index',
             'accounts/update/id/1',
             'accounts/1',
             'accounts/create',
             'accounts/shareAccount/id/1',
-            'accounts/accountsReport',
-        ));
-	}
-
-	public function testMarketingPages () {
-        $this->visitPages (array (
+             
+            // marketing
             'marketing/index',
             'marketing/create',
             'marketing/5',
@@ -118,42 +111,25 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
             'weblist/update?id=18',
             'marketing/webleadForm',
              
-        ));
-	}
-
-	public function testLeadsPages () {
-        $this->visitPages (array (
+            // leads
             'x2Leads/index',
             'x2Leads/create',
             'x2Leads/1',
             'x2Leads/update/id/1',
             'x2Leads/delete/id/1',
-        ));
-	}
-
-	public function testOpportunitiesPages () {
-        $this->visitPages (array (
+            // opportunities
             'opportunities/index',
             'opportunities/51',
             'opportunities/create',
             'opportunities/51',
             'opportunities/update/id/51',
-        ));
-	}
-
-	public function testServicesPages () {
-        $this->visitPages (array (
+            // services
             'services/index',
             'services/3',
             'services/create',
             'services/update/id/3',
-            'services/servicesReport',
             'services/createWebForm',
-        ));
-	}
-
-	public function testActionsPages () {
-        $this->visitPages (array (
+            // actions
             'actions/index',
             'actions/create',
             'actions/1',
@@ -161,20 +137,12 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
             'actions/shareAction/id/1',
             'actions/viewGroup',
             'actions/viewAll',
-        ));
-	}
-
-	public function testCalendarPages () {
-        $this->visitPages (array (
+            // calendar
             'calendar/index',
             'calendar/myCalendarPermissions',
             'calendar/userCalendarPermissions',
             'calendar/userCalendarPermissions/id/1',
-        ));
-	}
-
-	public function testDocsPages () {
-        $this->visitPages (array (
+            // docs
             'docs/index',
             'docs/create',
             'docs/createEmail',
@@ -183,87 +151,50 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
             'docs/update/id/1',
             'docs/changePermissions/id/1',
             'docs/exportToHtml/id/1',
-        ));
-	}
-
-	public function testWorkflowPages () {
-        $this->visitPages (array (
+            // workflow
             'workflow/index',
             'workflow/create',
             'workflow/1?perStageWorkflowView=true',
             'workflow/1?perStageWorkflowView=false',
             'workflow/update/id/1',
-        ));
-	}
-
-	public function testProductsPages () {
-        $this->visitPages (array (
+            // products
             'products/index',
             'products/1',
             'products/create',
             'products/update/id/1',
             //'site/printRecord/1?modelClass=Product&pageTitle=Product%3A+Semiconductor',
-        ));
-	}
-
-	public function testQuotesPages () {
-        $this->visitPages (array (
+            // quotes
             'quotes/index',
             'quotes/indexInvoice',
             'quotes/1',
             'quotes/convertToInvoice/id/1',
             'quotes/create',
             'quotes/update/id/1',
-        ));
-	}
-
-     
-
-	public function testChartsPages () {
-        $this->visitPages (array (
+             
+            // charts
             'charts/leadVolume',
             'charts/marketing',
             'charts/pipeline',
             'charts/sales',
-        ));
-	}
-
-	public function testMediaPages () {
-        $this->visitPages (array (
+            // media
             'media/index',
             'media/1',
             'media/upload',
             'media/update/id/1',
-        ));
-	}
-
-	public function testGroupsPages () {
-        $this->visitPages (array (
+            // groups
             'groups/index',
             'groups/1',
             'groups/update/id/1',
             'groups/create',
-        ));
-	}
-
-	public function testBugReportsPages () {
-        $this->visitPages (array (
-            'groups/bugReports',
-            'groups/create',
-        ));
-	}
-
-	public function testSitePages () {
-        $this->visitPages (array (
+            // bug reports
+            'bugReports/index',
+            'bugReports/create',
+            // site
             'site/viewNotifications',
             'site/page?view=iconreference',
             'site/page?view=about',
             'site/bugReport',
-        ));
-    }
-
-	public function testProfilePages () {
-        $this->visitPages (array (
+            // profile
             'profile/profiles',
             'profile/activity',
             'profile/1',

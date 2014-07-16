@@ -980,11 +980,16 @@ class Workflow extends CActiveRecord {
 
         $stageCounts = array ();
         $models = self::getModelsFromTypesArr ($modelType);
+
         for ($i = 1; $i <= $stageCount; $i++) {
             
             $recordsAtStage = 0;
-            foreach($models as $modelName => $model){
+            foreach($models as $type => $model){
                 $tableName = $model->tableName();
+                $modelName = X2Model::getModelName ($type);
+                list ($accessCondition, $accessConditionParams) = 
+                    $modelName::model ()->getAccessSQLCondition ($tableName);
+                $countParams = array_merge ($params, $accessConditionParams);
                 $recordsAtStage += Yii::app()->db->createCommand()
                     ->select("COUNT(*)")
                     ->from($tableName)
@@ -996,11 +1001,12 @@ class Workflow extends CActiveRecord {
                         (x2_actions.completeDate IS NULL OR x2_actions.completeDate = 0) AND 
                         x2_actions.createDate BETWEEN :start AND :end AND
                         x2_actions.type='workflow' AND workflowId=:workflowId AND 
-                        stageNumber=".$i." AND associationType='".$modelName."'".
+                        stageNumber=".$i." AND associationType='".$type."'".
+                        ' AND '.$accessCondition.
                         ($expectedCloseDateDateRange['range'] !== 'all' ? 
                         (' AND '.$tableName . '.expectedCloseDate 
                             BETWEEN :expectedCloseDateStart AND :expectedCloseDateEnd') : ''),
-                        $params)
+                        $countParams)
                     ->queryScalar();
             }
             $stageCounts[] = $recordsAtStage;
@@ -1560,7 +1566,6 @@ class Workflow extends CActiveRecord {
                 break;
             default:
                 if (YII_DEBUG) {
-                    AuxLib::printStackTrace ();
                     throw new CException ('projectedValue: default on switch with '.$recordType); 
                 }
         }

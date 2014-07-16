@@ -3211,6 +3211,7 @@ class AdminController extends Controller {
                     $model = new $modelName;
                     if ($_SESSION['skipActivityFeed'] === 1)
                         $model->createEvent = false;
+                    $mappedValues = array();
                     /*
                      * This import assumes we have human readable data in the CSV
                      * and will thus need to convert. The loop below converts link,
@@ -3219,7 +3220,8 @@ class AdminController extends Controller {
                      */
                     foreach($metaData as $attribute){
                         if (isset($importMap[$attribute]) && $model->hasAttribute ($importMap[$attribute])) {
-                            if (!empty($model->$importMap[$attribute]) || empty($importAttributes[$attribute])) {
+                            if ((empty($importAttributes[$attribute]) && ($importAttributes[$attribute] !== 0 && $importAttributes[$attribute] !== '0'))
+                                    || in_array($importAttributes[$attribute], $mappedValues)) {
                                 /**
                                  * Skip setting the attribute if it has already been set or if the entry from
                                  * the CSV is empty. This allows multiple fields in the CSV to be mapped to the
@@ -3314,8 +3316,9 @@ class AdminController extends Controller {
                                 default:
                                     $model->$importMap[$attribute] = $importAttributes[$attribute];
                             }
-
                             $_POST[$importMap[$attribute]] = $model->$importMap[$attribute];
+                            // Keep track of processed attributes
+                            $mappedValues[] = $importAttributes[$attribute];
                         }
                     }
                     if ($modelName === 'Contacts') {
@@ -3330,7 +3333,7 @@ class AdminController extends Controller {
                     }
                     if ($model->hasAttribute('visibility')) {
                         // Nobody every remembers to set visibility... set it for them
-                        if(empty($model->visibility) && ($model->visibility !== 0 || $model->visibility !== "0") || $model->visibility == 'Public'){
+                        if(empty($model->visibility) && ($model->visibility !== 0 && $model->visibility !== "0") || $model->visibility == 'Public'){
                             $model->visibility = 1;
                         }elseif($model->visibility == 'Private'){
                             $model->visibility = 0;
@@ -3359,7 +3362,7 @@ class AdminController extends Controller {
                     foreach($_SESSION['override'] as $attr => $val){
                         $model->$attr = $val;
                     }
-                    if($model->validate()){
+                    if(! $model->hasErrors() && $model->validate()){
                         if(!empty($model->id)){
                             $lookup = X2Model::model(str_replace(' ', '', $modelName))->findByPk($model->id);
                             if(isset($lookup)){
@@ -3632,7 +3635,7 @@ class AdminController extends Controller {
                 $layoutModel->layout = urldecode($_POST['layout']);
                 $layoutModel->defaultView = isset($_POST['defaultView']) && $_POST['defaultView'] == 1;
                 $layoutModel->defaultForm = isset($_POST['defaultForm']) && $_POST['defaultForm'] == 1;
-
+                $layoutModel->scenario = isset($_POST['scenario']) ? $_POST['scenario'] : 'Default';
 
                 // if this is the default view, unset defaultView for all other forms
                 if($layoutModel->defaultView){

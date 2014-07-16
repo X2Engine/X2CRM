@@ -710,7 +710,8 @@ class WorkflowController extends x2base {
         $type, $workflowId, $dateRange, $expectedCloseDateDateRange, $stage, $user, 
         $perStageWorkflowView=true) {
 
-        $model = X2Model::model (X2Model::getModelName ($type));
+        $modelName = X2Model::getModelName ($type);
+        $model = X2Model::model ($modelName);
         $tableName = $model->tableName ();
 
         $params = array (
@@ -734,6 +735,9 @@ class WorkflowController extends x2base {
             $userString="";
         }
 
+        list ($accessCondition, $accessConditionParams) = 
+            $modelName::model ()->getAccessSQLCondition ($tableName);
+        $params = array_merge ($params, $accessConditionParams);
         $stageMemberSql = Yii::app()->db->createCommand()
             ->select("$tableName.*, x2_actions.lastUpdated as actionLastUpdated")
             ->from($tableName)
@@ -745,16 +749,9 @@ class WorkflowController extends x2base {
                 "x2_actions.workflowId=:workflowId AND x2_actions.stageNumber=:stage AND
                 x2_actions.associationType=:type AND complete!='Yes' AND 
                 (completeDate IS NULL OR completeDate=0) AND 
-                x2_actions.createDate BETWEEN :start AND :end ".$userString.
-                    ($type === 'contacts' ? 
-                        (" AND (x2_contacts.visibility=1 OR ".
-                         "x2_contacts.assignedTo=:username)") : '')
+                x2_actions.createDate BETWEEN :start AND :end ".$userString." AND ".$accessCondition
                 )
             ->getText();
-
-        if ($type === 'contacts') {
-            $params[':username'] = Yii::app()->user->getName ();
-        }
 
         $memberCount = Yii::app()->db->createCommand()
             ->select("COUNT(*)")
@@ -767,10 +764,8 @@ class WorkflowController extends x2base {
                 "x2_actions.workflowId=:workflowId AND x2_actions.stageNumber=:stage AND
                 x2_actions.associationType=:type AND complete!='Yes' AND 
                 (completeDate IS NULL OR completeDate=0) AND 
-                x2_actions.createDate BETWEEN :start AND :end ".$userString.
-                    ($type === 'contacts' ? 
-                        (" AND (x2_contacts.visibility=1 OR ".
-                         "x2_contacts.assignedTo=:username)") : ''), $params
+                x2_actions.createDate BETWEEN :start AND :end ".$userString.' AND '.$accessCondition,
+                $params
                 )
             ->queryScalar();
 

@@ -155,6 +155,16 @@ New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
       * [1340](http://x2software.com/index.php/bugReports/1340): User Report  
       * [1345](http://x2software.com/index.php/bugReports/1345): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens  
       * https://github.com/X2Engine/X2Engine/issues/28
+* Changes in 4.1.7 (7/15/2014): 
+    * General changelog/developer notes
+      * Fixed issues in the importer which prevented fields from being set when a default field value was given
+      * Fixed error in Form Editor which prevented scenario from being saved
+      * Fixed bug in the Campaign Bulk Mailer which caused an incorrect error to be reported
+      * Fixed bug in legacy API which incorrectly restricted search results
+      * Fixed bug in process pipeline/funnel views which prevented contact records from displaying even if the current user had permission to view them
+      * Fixed bug in process funnel view which prevented per-stage grid views from updating when a different process was selected
+
+
 
 
 

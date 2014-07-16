@@ -46,7 +46,7 @@ class MarketingController extends x2base {
     public function behaviors(){
         return array_merge(parent::behaviors(), array(
                     'CampaignMailingBehavior' => array('class' => 'application.modules.marketing.components.CampaignMailingBehavior'),
-                    'ResponseBehavior' => array('class' => 'application.components.ResponseBehavior', 'isConsole' => false),
+                    'ResponseBehavior' => array('class' => 'application.components.ResponseBehavior', 'isConsole' => false,'errorCode'=>200),
                 ));
     }
 

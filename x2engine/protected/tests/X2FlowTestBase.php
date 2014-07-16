@@ -39,6 +39,7 @@ Yii::import ('application.modules.contacts.models.*');
 Yii::import ('application.modules.workflow.models.*');
 Yii::import ('application.components.*');
 Yii::import ('application.components.x2flow.*');
+Yii::import ('application.components.x2flow.actions.*');
 Yii::import ('application.components.x2flow.triggers.*');
 Yii::import ('application.components.permissions.*');
 
