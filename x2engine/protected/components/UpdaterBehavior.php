@@ -2228,8 +2228,17 @@ class UpdaterBehavior extends ResponseBehavior {
 
         // Retrieve the update package contents' files' digests:
         $md5sums_content = FileUtil::getContents($this->updateServer.'/'.$this->getUpdateDataRoute($this->configVars['updaterVersion']).'/contents.md5');
+        // If there's an error on the server end the response will be a JSON
+        $tryJson = json_decode($md5sums_content,1);
         if(!(bool) $md5sums_content) {
             throw new CException(Yii::t('admin','Unknown update server error.'),self::ERR_UPSERVER);
+        } else if(is_array($tryJson)) {
+            // License key error
+            if(isset($tryJson['errors'])) {
+                throw new CException($tryJson['errors']);
+            } else {
+                throw new CException(Yii::t('admin','Unknown update server error.').' '.$md5sums_content);
+            }
         }
         preg_match_all(':^(?<md5sum>[a-f0-9]{32})\s+source/protected/(?<filename>\S.*)$:m',$md5sums_content,$md5s);
         $md5sums = array();

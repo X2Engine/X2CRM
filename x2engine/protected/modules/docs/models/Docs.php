@@ -161,7 +161,7 @@ class Docs extends X2Model {
         if ($dateRange !== false)
             $criteria->addCondition('lastUpdated BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
 
-        return new SmartDataProvider('Docs', array(
+        return new SmartActiveDataProvider('Docs', array(
                     'pagination' => array(
                         'pageSize' => Profile::getResultsPerPage(),
                     ),

@@ -59,7 +59,21 @@ $menuItems = array(
         'label' => Yii::t('app', 'Send Email'), 'url' => '#',
         'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
 	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
-    array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
+    array(
+        'label' => Yii::t('quotes', 'Quotes/Invoices'),
+        'url' => 'javascript:void(0)',
+        'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
+    array(
+        'label' => Yii::t('accounts', 'Google Map'),
+        'url' => 'javascript:void(0)',
+        'linkOptions' => array (
+            'onClick'=>"window.open(
+                'https://www.google.com/maps/place/".urlencode ($model->getCityAddress ())."');"
+            /*'onClick'=>"window.open(
+                'https://www.google.com/maps/place/".urlencode ($model->getCityAddress ())."',
+                'Google Map', 'height=200,width=200');"*/
+        )
+    ),
 //	array('label'=>Yii::t('quotes','Quotes/Invoices'),'url'=>'javascript:void(0)','linkOptions'=>array('onclick'=>'x2.inlineQuotes.toggle(); return false;')),
 );
 $modelType = json_encode("Accounts");

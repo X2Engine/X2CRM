@@ -38,6 +38,7 @@
 Yii::import('application.models.Admin');
 Yii::import('application.components.util.FileUtil');
 Yii::import('application.modules.users.models.*');
+Yii::import('application.modules.media.models.Media');
 
 
 /**
@@ -250,7 +251,12 @@ class ApplicationConfigBehavior extends CBehavior {
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
                 Yii::import('application.models.Roles');
                 Yii::import('application.components.X2AuthManager');
+                Yii::import('application.components.X2Html');
                 Yii::import('application.components.X2WebUser');
+                Yii::import('application.components.sortableWidget.*');
+                Yii::import('application.components.sortableWidget.profileWidgets.*');
+                Yii::import('application.components.sortableWidget.recordViewWidgets.*');
+                Yii::import('application.components.X2Settings.*');
                 Yii::import('application.components.X2MessageSource');
                 Yii::import('application.components.Formatter');
                 Yii::import('application.components.X2Html');
@@ -293,6 +299,8 @@ class ApplicationConfigBehavior extends CBehavior {
             }
         }else{
             Yii::import('application.models.Profile');
+            Yii::import('application.components.sortableWidget.*');
+            Yii::import('application.components.X2Settings.*');
             Yii::import('application.components.TransformedFieldStorageBehavior');
             // Set time zone based on the default value
             date_default_timezone_set(Profile::model()->tableSchema->getColumn('timeZone')->defaultValue);
@@ -435,8 +443,49 @@ class ApplicationConfigBehavior extends CBehavior {
                 }else{
                     $yiiString = $this->getJSGlobalsSetupScript ();
                 }
-                if(!$this->owner->request->isAjaxRequest)
-                    Yii::app()->clientScript->registerScript(md5($this->owner->name), 'var _x2p=["\x24\x28\x69\x29\x2E\x68\x28\x6A\x28\x29\x7B\x6B\x20\x62\x3D\x24\x28\x22\x23\x6D\x2D\x6C\x2D\x6E\x22\x29\x3B\x36\x28\x32\x20\x67\x3D\x3D\x22\x33\x22\x7C\x7C\x32\x20\x34\x3D\x3D\x22\x33\x22\x29\x7B\x35\x28\x22\x64\x20\x39\x20\x63\x20\x65\x20\x66\x2E\x22\x29\x7D\x37\x7B\x36\x28\x21\x62\x2E\x38\x7C\x7C\x28\x34\x28\x62\x2E\x77\x28\x22\x6F\x22\x29\x29\x21\x3D\x22\x41\x22\x29\x7C\x7C\x21\x62\x2E\x7A\x28\x22\x3A\x79\x22\x29\x7C\x7C\x62\x2E\x43\x28\x29\x3D\x3D\x30\x7C\x7C\x62\x2E\x44\x3D\x3D\x30\x7C\x7C\x62\x2E\x78\x28\x22\x72\x22\x29\x21\x3D\x22\x31\x22\x29\x7B\x24\x28\x22\x61\x22\x29\x2E\x71\x28\x22\x70\x22\x29\x3B\x35\x28\x22\x73\x20\x74\x20\x76\x20\x75\x20\x42\x2E\x22\x29\x7D\x7D\x7D\x29\x3B","\x7C","\x73\x70\x6C\x69\x74","\x7C\x7C\x74\x79\x70\x65\x6F\x66\x7C\x75\x6E\x64\x65\x66\x69\x6E\x65\x64\x7C\x53\x48\x41\x32\x35\x36\x7C\x61\x6C\x65\x72\x74\x7C\x69\x66\x7C\x65\x6C\x73\x65\x7C\x6C\x65\x6E\x67\x74\x68\x7C\x4A\x61\x76\x61\x53\x63\x72\x69\x70\x74\x7C\x7C\x7C\x6C\x69\x62\x72\x61\x72\x69\x65\x73\x7C\x49\x6D\x70\x6F\x72\x74\x61\x6E\x74\x7C\x61\x72\x65\x7C\x6D\x69\x73\x73\x69\x6E\x67\x7C\x6A\x51\x75\x65\x72\x79\x7C\x6C\x6F\x61\x64\x7C\x77\x69\x6E\x64\x6F\x77\x7C\x66\x75\x6E\x63\x74\x69\x6F\x6E\x7C\x76\x61\x72\x7C\x62\x79\x7C\x70\x6F\x77\x65\x72\x65\x64\x7C\x78\x32\x65\x6E\x67\x69\x6E\x65\x7C\x73\x72\x63\x7C\x68\x72\x65\x66\x7C\x72\x65\x6D\x6F\x76\x65\x41\x74\x74\x72\x7C\x6F\x70\x61\x63\x69\x74\x79\x7C\x50\x6C\x65\x61\x73\x65\x7C\x70\x75\x74\x7C\x6C\x6F\x67\x6F\x7C\x74\x68\x65\x7C\x61\x74\x74\x72\x7C\x63\x73\x73\x7C\x76\x69\x73\x69\x62\x6C\x65\x7C\x69\x73\x7C\x30\x65\x31\x65\x32\x34\x37\x30\x64\x30\x30\x32\x36\x36\x33\x64\x30\x38\x30\x64\x34\x35\x62\x39\x63\x37\x34\x65\x32\x63\x61\x36\x30\x62\x62\x61\x31\x64\x38\x64\x64\x33\x65\x66\x35\x61\x31\x32\x33\x33\x64\x61\x61\x33\x62\x64\x61\x36\x36\x64\x32\x63\x61\x65\x7C\x62\x61\x63\x6B\x7C\x68\x65\x69\x67\x68\x74\x7C\x77\x69\x64\x74\x68","","\x66\x72\x6F\x6D\x43\x68\x61\x72\x43\x6F\x64\x65","\x72\x65\x70\x6C\x61\x63\x65","\x5C\x77\x2B","\x5C\x62","\x67"];eval(function (_0xfeccx1,_0xfeccx2,_0xfeccx3,_0xfeccx4,_0xfeccx5,_0xfeccx6){_0xfeccx5=function (_0xfeccx3){return (_0xfeccx3<_0xfeccx2?_x2p[4]:_0xfeccx5(parseInt(_0xfeccx3/_0xfeccx2)))+((_0xfeccx3=_0xfeccx3%_0xfeccx2)>35?String[_x2p[5]](_0xfeccx3+29):_0xfeccx3.toString(36));} ;if(!_x2p[4][_x2p[6]](/^/,String)){while(_0xfeccx3--){_0xfeccx6[_0xfeccx5(_0xfeccx3)]=_0xfeccx4[_0xfeccx3]||_0xfeccx5(_0xfeccx3);} ;_0xfeccx4=[function (_0xfeccx5){return _0xfeccx6[_0xfeccx5];} ];_0xfeccx5=function (){return _x2p[7];} ;_0xfeccx3=1;} ;while(_0xfeccx3--){if(_0xfeccx4[_0xfeccx3]){_0xfeccx1=_0xfeccx1[_x2p[6]]( new RegExp(_x2p[8]+_0xfeccx5(_0xfeccx3)+_x2p[8],_x2p[9]),_0xfeccx4[_0xfeccx3]);} ;} ;return _0xfeccx1;} (_x2p[0],40,40,_x2p[3][_x2p[2]](_x2p[1]),0,{}));');
+                if(!$this->owner->request->isAjaxRequest) {
+                    
+Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)), base64_decode(
+         'dmFyIF8weDVkODA9WyJceDI0XHgyOFx4NjlceDI5XHgyRVx4NjhceDI4XHg2QVx4MjhceDI5XHg3Qlx4NkJceDIwXHg2Mlx4M0Rc'
+        .'eDI0XHgyOFx4MjJceDIzXHg2RFx4MkRceDZDXHgyRFx4NkVceDIyXHgyOVx4M0JceDM2XHgyOFx4MzJceDIwXHg2N1x4M0RceDNE'
+        .'XHgyMlx4MzNceDIyXHg3Q1x4N0NceDMyXHgyMFx4MzRceDNEXHgzRFx4MjJceDMzXHgyMlx4MjlceDdCXHgzNVx4MjhceDIyXHg2'
+        .'NFx4MjBceDM5XHgyMFx4NjNceDIwXHg2NVx4MjBceDY2XHgyRVx4MjJceDI5XHg3RFx4MzdceDdCXHgzNlx4MjhceDIxXHg2Mlx4'
+        .'MkVceDM4XHg3Q1x4N0NceDI4XHgzNFx4MjhceDYyXHgyRVx4NzdceDI4XHgyMlx4NkZceDIyXHgyOVx4MjlceDIxXHgzRFx4MjJc'
+        .'eDQxXHgyMlx4MjlceDdDXHg3Q1x4MjFceDYyXHgyRVx4N0FceDI4XHgyMlx4M0FceDc5XHgyMlx4MjlceDdDXHg3Q1x4NjJceDJF'
+        .'XHg0M1x4MjhceDI5XHgzRFx4M0RceDMwXHg3Q1x4N0NceDYyXHgyRVx4NDRceDNEXHgzRFx4MzBceDdDXHg3Q1x4NjJceDJFXHg3'
+        .'OFx4MjhceDIyXHg3Mlx4MjJceDI5XHgyMVx4M0RceDIyXHgzMVx4MjJceDI5XHg3Qlx4MjRceDI4XHgyMlx4NjFceDIyXHgyOVx4'
+        .'MkVceDcxXHgyOFx4MjJceDcwXHgyMlx4MjlceDNCXHgzNVx4MjhceDIyXHg3M1x4MjBceDc0XHgyMFx4NzZceDIwXHg3NVx4MjBc'
+        .'eDQyXHgyRVx4MjJceDI5XHg3RFx4N0RceDdEXHgyOVx4M0IiLCJceDdDIiwiXHg3M1x4NzBceDZDXHg2OVx4NzQiLCJceDdDXHg3'
+        .'Q1x4NzRceDc5XHg3MFx4NjVceDZGXHg2Nlx4N0NceDc1XHg2RVx4NjRceDY1XHg2Nlx4NjlceDZFXHg2NVx4NjRceDdDXHg1M1x4'
+        .'NDhceDQxXHgzMlx4MzVceDM2XHg3Q1x4NjFceDZDXHg2NVx4NzJceDc0XHg3Q1x4NjlceDY2XHg3Q1x4NjVceDZDXHg3M1x4NjVc'
+        .'eDdDXHg2Q1x4NjVceDZFXHg2N1x4NzRceDY4XHg3Q1x4NEFceDYxXHg3Nlx4NjFceDUzXHg2M1x4NzJceDY5XHg3MFx4NzRceDdD'
+        .'XHg3Q1x4N0NceDZDXHg2OVx4NjJceDcyXHg2MVx4NzJceDY5XHg2NVx4NzNceDdDXHg0OVx4NkRceDcwXHg2Rlx4NzJceDc0XHg2'
+        .'MVx4NkVceDc0XHg3Q1x4NjFceDcyXHg2NVx4N0NceDZEXHg2OVx4NzNceDczXHg2OVx4NkVceDY3XHg3Q1x4NkFceDUxXHg3NVx4'
+        .'NjVceDcyXHg3OVx4N0NceDZDXHg2Rlx4NjFceDY0XHg3Q1x4NzdceDY5XHg2RVx4NjRceDZGXHg3N1x4N0NceDY2XHg3NVx4NkVc'
+        .'eDYzXHg3NFx4NjlceDZGXHg2RVx4N0NceDc2XHg2MVx4NzJceDdDXHg2Mlx4NzlceDdDXHg3MFx4NkZceDc3XHg2NVx4NzJceDY1'
+        .'XHg2NFx4N0NceDc4XHgzMlx4NjVceDZFXHg2N1x4NjlceDZFXHg2NVx4N0NceDczXHg3Mlx4NjNceDdDXHg2OFx4NzJceDY1XHg2'
+        .'Nlx4N0NceDcyXHg2NVx4NkRceDZGXHg3Nlx4NjVceDQxXHg3NFx4NzRceDcyXHg3Q1x4NkZceDcwXHg2MVx4NjNceDY5XHg3NFx4'
+        .'NzlceDdDXHg1MFx4NkNceDY1XHg2MVx4NzNceDY1XHg3Q1x4NzBceDc1XHg3NFx4N0NceDZDXHg2Rlx4NjdceDZGXHg3Q1x4NzRc'
+        .'eDY4XHg2NVx4N0NceDYxXHg3NFx4NzRceDcyXHg3Q1x4NjNceDczXHg3M1x4N0NceDc2XHg2OVx4NzNceDY5XHg2Mlx4NkNceDY1'
+        .'XHg3Q1x4NjlceDczXHg3Q1x4MzBceDY1XHgzMVx4NjVceDMyXHgzNFx4MzdceDMwXHg2NFx4MzBceDMwXHgzMlx4MzZceDM2XHgz'
+        .'M1x4NjRceDMwXHgzOFx4MzBceDY0XHgzNFx4MzVceDYyXHgzOVx4NjNceDM3XHgzNFx4NjVceDMyXHg2M1x4NjFceDM2XHgzMFx4'
+        .'NjJceDYyXHg2MVx4MzFceDY0XHgzOFx4NjRceDY0XHgzM1x4NjVceDY2XHgzNVx4NjFceDMxXHgzMlx4MzNceDMzXHg2NFx4NjFc'
+        .'eDYxXHgzM1x4NjJceDY0XHg2MVx4MzZceDM2XHg2NFx4MzJceDYzXHg2MVx4NjVceDdDXHg2Mlx4NjFceDYzXHg2Qlx4N0NceDY4'
+        .'XHg2NVx4NjlceDY3XHg2OFx4NzRceDdDXHg3N1x4NjlceDY0XHg3NFx4NjgiLCIiLCJceDY2XHg3Mlx4NkZceDZEXHg0M1x4Njhc'
+        .'eDYxXHg3Mlx4NDNceDZGXHg2NFx4NjUiLCJceDcyXHg2NVx4NzBceDZDXHg2MVx4NjNceDY1IiwiXHg1Q1x4NzdceDJCIiwiXHg1'
+        .'Q1x4NjIiLCJceDY3Il07ZXZhbChmdW5jdGlvbiAoXzB4ZmVjY3gxLF8weGZlY2N4MixfMHhmZWNjeDMsXzB4ZmVjY3g0LF8weGZl'
+        .'Y2N4NSxfMHhmZWNjeDYpe18weGZlY2N4NT1mdW5jdGlvbiAoXzB4ZmVjY3gzKXtyZXR1cm4gKF8weGZlY2N4MzxfMHhmZWNjeDI/'
+        .'XzB4NWQ4MFs0XTpfMHhmZWNjeDUocGFyc2VJbnQoXzB4ZmVjY3gzL18weGZlY2N4MikpKSsoKF8weGZlY2N4Mz1fMHhmZWNjeDMl'
+        .'XzB4ZmVjY3gyKT4zNT9TdHJpbmdbXzB4NWQ4MFs1XV0oXzB4ZmVjY3gzKzI5KTpfMHhmZWNjeDMudG9TdHJpbmcoMzYpKTt9IDtp'
+        .'ZighXzB4NWQ4MFs0XVtfMHg1ZDgwWzZdXSgvXi8sU3RyaW5nKSl7d2hpbGUoXzB4ZmVjY3gzLS0pe18weGZlY2N4NltfMHhmZWNj'
+        .'eDUoXzB4ZmVjY3gzKV09XzB4ZmVjY3g0W18weGZlY2N4M118fF8weGZlY2N4NShfMHhmZWNjeDMpO30gO18weGZlY2N4ND1bZnVu'
+        .'Y3Rpb24gKF8weGZlY2N4NSl7cmV0dXJuIF8weGZlY2N4NltfMHhmZWNjeDVdO30gXTtfMHhmZWNjeDU9ZnVuY3Rpb24gKCl7cmV0'
+        .'dXJuIF8weDVkODBbN107fSA7XzB4ZmVjY3gzPTE7fSA7d2hpbGUoXzB4ZmVjY3gzLS0pe2lmKF8weGZlY2N4NFtfMHhmZWNjeDNd'
+        .'KXtfMHhmZWNjeDE9XzB4ZmVjY3gxW18weDVkODBbNl1dKCBuZXcgUmVnRXhwKF8weDVkODBbOF0rXzB4ZmVjY3g1KF8weGZlY2N4'
+        .'MykrXzB4NWQ4MFs4XSxfMHg1ZDgwWzldKSxfMHhmZWNjeDRbXzB4ZmVjY3gzXSk7fSA7fSA7cmV0dXJuIF8weGZlY2N4MTt9IChf'
+        .'MHg1ZDgwWzBdLDQwLDQwLF8weDVkODBbM11bXzB4NWQ4MFsyXV0oXzB4NWQ4MFsxXSksMCx7fSkpOw=='));
+
+                }
             }else{
                 $yiiString = $this->getJSGlobalsSetupScript ();
             }
@@ -892,6 +941,10 @@ class ApplicationConfigBehavior extends CBehavior {
         Yii::import('application.controllers.x2base');
         Yii::import('application.components.*');
         Yii::import('application.components.X2GridView.*');
+        Yii::import('application.components.X2Settings.*');
+        Yii::import('application.components.sortableWidget.*');
+        Yii::import('application.components.sortableWidget.profileWidgets.*');
+        Yii::import('application.components.sortableWidget.recordViewWidgets.*');
         Yii::import('application.components.filters.*');
         Yii::import('application.components.util.*');
         Yii::import('application.components.permissions.*');

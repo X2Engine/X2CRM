@@ -84,7 +84,8 @@ class EmailProgressControl extends X2Widget {
         Yii::app()->clientScript->registerCssFile($this->module->assetsUrl.'/css/emailProgressControl.css');
         Yii::app()->clientScript->registerScriptFile($this->module->assetsUrl.'/js/emailProgressControl.js');
         Yii::app()->clientScript->registerScript('emailProgressControl-vars','
-            x2.emailProgressControl.sentCount = '.$this->sentCount.';
+            //x2.emailProgressControl.sentCount = '.$this->sentCount.';
+            x2.emailProgressControl.sentCount = 100;
             x2.emailProgressControl.totalEmails = '.$totalEmails.';
             x2.emailProgressControl.listItems = '.json_encode($this->listItems).';
             x2.emailProgressControl.sendUrl = '.json_encode(Yii::app()->controller->createUrl('/marketing/marketing/mailIndividual')).';

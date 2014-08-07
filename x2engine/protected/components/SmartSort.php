@@ -44,6 +44,24 @@
  */
 class SmartSort extends CSort {
 
+    public $uniqueId;
+
+    /**
+     * Overrides parent __construct ().
+     * @param string $uniqueId (optional) If set, will be used to uniquely identify this sort
+     *  instance.
+	 *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+     */
+    public function __construct($modelClass=null, $uniqueId=null)
+    {
+        $this->modelClass=$modelClass;
+        /* x2modstart */ 
+        if ($uniqueId !== null) $this->uniqueId = $uniqueId;
+        /* x2modend */ 
+    }
+
     /**
      * Added filtering of GET params so that only those related to the current sort get used to
      * generate the url.
@@ -56,10 +74,13 @@ class SmartSort extends CSort {
         $params=$this->params===null ? $_GET : $this->params;
         $params[$this->sortVar]=implode($this->separators[0],$sorts);
         foreach ($params as $key => $val) {
-             if (!preg_match ("/(^id$)|(^".$this->modelClass."_)/", $key)) {
+             if (!preg_match ("/(^id$)|(^".
+                (isset ($this->uniqueId) ? $this->uniqueId : $this->modelClass)."_)/", $key)) {
+
                 unset ($params[$key]);
              }
         }
+
         return $controller->createUrl($this->route,$params);
     }
 }

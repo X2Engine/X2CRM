@@ -41,6 +41,8 @@ Yii::import('application.models.X2Model');
  * @package application.modules.actions.models
  */
 class Actions extends X2Model {
+
+    const COLORS_DROPDOWN_ID = 123;
     
     public $skipActionTimers = false;
 
@@ -53,7 +55,12 @@ class Actions extends X2Model {
     public static $emailTypes = array('email', 'emailFrom','emailOpened','email_invoice', 'email_quote');
 
     public $verifyCode; // CAPTCHA for guests using the publisher
-    public $actionDescriptionTemp = ""; // Easy way to get around action text records
+    public $actionDescriptionTemp = ''; // Easy way to get around action text records
+
+    private $metaDataTemp = array (
+        'eventSubtype' => null,
+        'eventStatus' => null
+    );
 
     private static $_priorityLabels;
 
@@ -100,7 +107,7 @@ class Actions extends X2Model {
             array('createDate, completeDate, lastUpdated', 'numerical', 'integerOnly' => true),
             array('id,assignedTo,actionDescription,visibility,associationId,associationType,'.
                 'associationName,dueDate,priority,type,createDate,complete,reminder,completedBy,'.
-                'completeDate,lastUpdated,updatedBy,color', 'safe'),
+                'completeDate,lastUpdated,updatedBy,color,subject', 'safe'),
             array('verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(), 'on' => 'guestCreate'),
         );
     }
@@ -111,9 +118,7 @@ class Actions extends X2Model {
     public function relations(){
         return array_merge(parent::relations(), array(
             'workflow' => array(self::BELONGS_TO, 'Workflow', 'workflowId'),
-            'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
-            'timers' => array(self::HAS_MANY,'ActionTimer','actionId'),
-            //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
+            'actionMetaData' => array(self::HAS_ONE, 'ActionMetaData', 'actionId'),
             'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
             //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
         ));
@@ -164,6 +169,10 @@ class Actions extends X2Model {
             }
         } else if ($attribute === 'actionDescription') {
             $label = Yii::t('actions', 'Action Description');
+        } else if ($attribute === 'eventSubtype') {
+            $label = Yii::t('actions', 'Type');
+        } else if ($attribute === 'eventStatus') {
+            $label = Yii::t('actions', 'Status');
         } else {
             $label = parent::getAttributeLabel ($attribute);
         }
@@ -233,7 +242,7 @@ class Actions extends X2Model {
         return parent::beforeDelete();
     }
 
-    public function afterSave(){
+    private function saveMetaData () {
         // No action text exists for this yet
         if(!($this->actionText instanceof ActionText)){
             $actionText = new ActionText; // Create new oen
@@ -247,14 +256,38 @@ class Actions extends X2Model {
             }
         }
 
+
+        if (!$this->actionMetaData instanceof ActionMetaData) {
+            $metaData = new ActionMetaData;
+            $metaData->actionId = $this->id;
+        } else {
+            $metaData = $this->actionMetaData;
+        }
+        foreach ($this->metaDataTemp as $name => $value) {
+            $metaData->$name = $value;
+        }
+
+        if (!$metaData->save ()) {
+            //AuxLib::debugLogR ($metaData->getErrors ());
+        }
+    }
+
+    public function afterSave(){
+        $this->saveMetaData ();
+
         
         return parent::afterSave();
     }
 
     public function requiredAssoc($attribute, $params = array()){
-        if(!empty($this->type) && $this->type != 'event'){
+        // all action types but events require this attribute
+        if(!empty($this->type) && 
+           (gettype ($this->type) !== 'string' || !preg_match ('/^event/', $this->type))) {
+
             if(empty($this->$attribute) || strtolower($this->$attribute) == 'none')
-                $this->addError($attribute, Yii::t('actions', 'Association is required for actions of this type.'));
+                $this->addError(
+                    $attribute, 
+                    Yii::t('actions', 'Association is required for actions of this type.'));
         }
         return !$this->hasErrors();
     }
@@ -262,6 +295,11 @@ class Actions extends X2Model {
     public function afterFind(){
         if($this->actionText instanceof ActionText){
             $this->actionDescriptionTemp = $this->actionText->text;
+        }
+        if ($this->actionMetaData instanceof ActionMetaData) {
+            foreach ($this->metaDataTemp as $name => $value) {
+                $this->metaDataTemp[$name] = $this->actionMetaData->$name;
+            }
         }
     }
 
@@ -358,27 +396,33 @@ class Actions extends X2Model {
         parent::afterDelete();
     }
 
+    /**
+     * Sets action subtype for actions of type event 
+     */
+    public function setEventSubtype ($value) {
+        $this->metaDataTemp['eventSubtype'] = $value;
+    }
+
+    public function setEventStatus ($value) {
+        $this->metaDataTemp['eventStatus'] = $value;
+    }
+
     public function setActionDescription($value){
         // Magic setter stores value in actionDescriptionTemp until saved
         $this->actionDescriptionTemp = $value;
     }
 
+    public function getEventSubtype () {
+        return $this->metaDataTemp['eventSubtype'];
+    }
+
+    public function getEventStatus () {
+        return $this->metaDataTemp['eventStatus'];
+    }
+
     public function getActionDescription(){
         // Magic getter only ever refers to actionDescriptionTemp
         return $this->actionDescriptionTemp;
-    }
-
-    /**
-     * return an array of possible colors for an action
-     */
-    public static function getColors(){
-        return array(
-            'Green' => Yii::t('actions', 'Green'),
-            '#3366CC' => Yii::t('actions', 'Blue'),
-            'Red' => Yii::t('actions', 'Red'),
-            'Orange' => Yii::t('actions', 'Orange'),
-            'Black' => Yii::t('actions', 'Black'),
-        );
     }
 
     /**
@@ -446,7 +490,12 @@ class Actions extends X2Model {
             ));
 
             // delete the action reminder event
-            X2Model::model('Events')->deleteAllByAttributes(array('associationType' => 'Actions', 'associationId' => $this->id, 'type' => 'action_reminder'), 'timestamp > NOW()');
+            X2Model::model('Events')->deleteAllByAttributes(
+                array(
+                    'associationType' => 'Actions',
+                    'associationId' => $this->id,
+                    'type' => 'action_reminder'
+                ), 'timestamp > NOW()');
 
             $event = new Events;
             $event->type = 'action_complete';
@@ -719,14 +768,22 @@ class Actions extends X2Model {
         return $this->searchBase($criteria);
     }
 
+    /**
+     * Today's Actions 
+     */
     public function searchIndex($pageSize=null, $uniqueId=null){
         $criteria = new CDbCriteria;
         $groupIds = User::getMe()->getGroupIds ();
         list ($assignedToCondition, $params) = $this->getAssignedToCondition (); 
+        if (Yii::app()->params->profile->showActions === 'overdue') {
+            $dueDate = time ();
+        } else {
+            $dueDate = mktime (24, 0, 0);
+        }
         $parameters = array(
             'condition' => 
                 $assignedToCondition.
-                 " AND dueDate <= '".mktime(23, 59, 59)."' AND 
+                 " AND dueDate < '".$dueDate."' AND 
                     (type=\"\" OR type IS NULL)", 
                 'limit' => ceil(Profile::getResultsPerPage() / 2), 
             'params' => $params);
@@ -734,47 +791,39 @@ class Actions extends X2Model {
         return $this->searchBase($criteria, $pageSize, $uniqueId);
     }
 
-    public function searchComplete(){
-        $criteria = new CDbCriteria;
-        if(!Yii::app()->user->checkAccess('ActionsAdmin')){
-            $parameters = array(
-                "condition" => 
-                    "completedBy='".Yii::app()->user->getName()."' AND complete='Yes'", 
-                "limit" => ceil(Profile::getResultsPerPage() / 2));
-            $criteria->scopes = array('findAll' => array($parameters));
-        }
-        return $this->searchBase($criteria);
-    }
-
+    /**
+     * All My Actions
+     */
     public function searchAll(){
         $criteria = new CDbCriteria;
         list ($assignedToCondition, $params) = $this->getAssignedToCondition (); 
+        $condition = $assignedToCondition;
+        if (Yii::app()->params->profile->showActions === 'overdue') {
+            $condition = $assignedToCondition.' AND dueDate < '.time ();
+        }
         $parameters = array(
-            "condition" => 
-                $assignedToCondition,
+            "condition" => $condition.' AND (type=\'\' OR type IS NULL)',
             'limit' => ceil(Profile::getResultsPerPage() / 2),
             'params' => $params);
         $criteria->scopes = array('findAll' => array($parameters));
         return $this->searchBase($criteria);
     }
 
+    /**
+     * Everyone's Actions 
+     */
     public function searchAllGroup(){
         $criteria = new CDbCriteria;
         if(!Yii::app()->user->checkAccess('ActionsAdmin')){
             list ($assignedToCondition, $params) = $this->getAssignedToCondition (); 
-            $parameters = array(
-                "condition" => 
-                    "(visibility='1' OR ".$assignedToCondition.")",
-                'limit' => ceil(Profile::getResultsPerPage() / 2),
-                'params' => $params);
-            $criteria->scopes = array('findAll' => array($parameters));
+            $criteria->addCondition(
+                "(visibility='1' OR ".$assignedToCondition.")");
+            $criteria->params = array_merge($criteria->params,$params);
         }
-        return $this->searchBase($criteria);
-    }
-
-    public function searchAdmin(){
-        $criteria = new CDbCriteria;
-
+        if (Yii::app()->params->profile->showActions === 'overdue') {
+            $criteria->addCondition('dueDate < '.time ());
+        }
+        $criteria->addCondition('(type=\'\' OR type IS NULL)');
         return $this->searchBase($criteria);
     }
 
@@ -794,7 +843,7 @@ class Actions extends X2Model {
                     complete="No", IFNULL(dueDate, IFNULL(createDate,0)), 
                     GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC';
         }
-        $dataProvider = new SmartDataProvider('Actions', 
+        $dataProvider = new SmartActiveDataProvider('Actions', 
             array(
                 'sort' => array(
                     'defaultOrder' => $order,
@@ -803,7 +852,7 @@ class Actions extends X2Model {
                     'pageSize' => $pageSize
                 ),
                 'criteria' => $criteria,
-            ), $uniqueId);
+            ), $uniqueId, $this->persistentGridSettings);
         return $dataProvider;
     }
 
@@ -958,16 +1007,31 @@ class Actions extends X2Model {
     }
 
     /**
-     * Special override for priority
-     * 
      * @param type $fieldName
      * @param type $htmlOptions
      */
     public function renderInput($fieldName, $htmlOptions = array()){
-        if($fieldName == 'priority') {
+        if($fieldName === 'color') {
+            $field = $this->getField ($fieldName);
+            $options = Dropdowns::getItems($field->linkType, null, false); 
+            $enableDropdownLegend = Yii::app()->settings->enableColorDropdownLegend;
+            if ($enableDropdownLegend) {
+                $htmlOptions['options'] = array ();
+                foreach ($options as $value => $label) {
+                    $brightness = X2Color::getColorBrightness ($value);
+                    $fontColor = $brightness > 127.5 ? 'black' : 'white';
+                    $htmlOptions['options'][$value] = array (
+                        'style' => 
+                            'background-color: '.$value.';
+                             color: '.$fontColor,
+                    );
+                }
+            }
+            return CHtml::activeDropDownList($this, $field->fieldName, $options, $htmlOptions);
+        }elseif($fieldName == 'priority') {
             return CHtml::activeDropdownList($this,'priority',self::getPriorityLabels());
-        } else
-            return parent::renderInput($fieldName, $htmlOptions);
+        } 
+        return parent::renderInput($fieldName, $htmlOptions);
     }
 
 }

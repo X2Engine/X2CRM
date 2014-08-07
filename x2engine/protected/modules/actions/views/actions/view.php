@@ -85,11 +85,8 @@ if(isset($associationModel) && $model->associationType=='contacts') {
 );
 }
 
+$this->widget('X2WidgetList', array ('model' => $model));
 ?>
-<div class="form">
-	<b><?php echo Yii::t('app', 'Tags'); ?></b>
-	<?php $this->widget('InlineTags',array('model'=>$model)); ?>
-</div>
 
 <div class="form" id="action-form">
 	<form id="complete-action" name="complete-action" action="complete/<?php echo $model->id; ?>" method="POST">

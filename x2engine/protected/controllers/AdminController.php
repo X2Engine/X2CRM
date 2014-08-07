@@ -54,7 +54,9 @@ class AdminController extends Controller {
      * Behavior classes used by AdminController
      * @var array
      */
-    public static $behaviorClasses = array('LeadRoutingBehavior', 'UpdaterBehavior', 'CommonControllerBehavior','ImportExportBehavior');
+    public static $behaviorClasses = array(
+        'LeadRoutingBehavior', 'UpdaterBehavior', 'CommonControllerBehavior',
+        'ImportExportBehavior');
 
     /**
      * Extraneous properties for individual behaviors
@@ -67,7 +69,9 @@ class AdminController extends Controller {
      * depend on, but that aren't directly used by it as behaviors.
      * @var type
      */
-    public static $dependencies = array('util/FileUtil', 'util/EncryptUtil', 'ResponseBehavior', 'views/requirements');
+    public static $dependencies = array(
+        'util/FileUtil', 'util/EncryptUtil', 'util/ResponseUtil', 'ResponseBehavior',
+        'views/requirements');
 
     /**
      * Stores value of {@link $noRemoteAccess}
@@ -126,6 +130,14 @@ class AdminController extends Controller {
             }
         }
         /**/printR($untranslated);
+    }
+
+    /**
+     * Scans the locale files to retrieve available locale id options 
+     */
+    private function getLocaleIdOptions () {
+        $localeIds = CLocale::getLocaleIDs ();
+        return array_combine ($localeIds, $localeIds);
     }
 
     /**
@@ -1526,8 +1538,14 @@ class AdminController extends Controller {
                     $admin->currency = $_POST['currency2'];
                     if(empty($admin->currency))
                         $admin->addError('currency', Yii::t('admin', 'Please enter a valid currency type.'));
-                } else
+                } else {
                     $admin->currency = $_POST['currency'];
+                }
+                if ($_POST['localeId'] !== 'default') {
+                    $admin->currencyLocale = $_POST['localeId'];
+                } else {
+                    $admin->currencyLocale = null;
+                }
             }
             if($oldFormat != $admin->contactNameFormat){
                 if($admin->contactNameFormat == 'lastName, firstName'){
@@ -1544,8 +1562,12 @@ class AdminController extends Controller {
             }
         }
         $admin->timeout = ceil($admin->timeout / 60);
+
+        $localeIds = $this->getLocaleIdOptions ();
+
         $this->render('appSettings', array(
             'model' => $admin,
+            'localeIds' => $localeIds,
         ));
     }
 
@@ -1770,10 +1792,24 @@ class AdminController extends Controller {
      * This method allows for the deletion of custom fields.  Default fields cannot
      * be deleted in this way.
      */
-    public function actionRemoveField(){
+    public function actionRemoveField($getCount = false){
+
         if(isset($_POST['field']) && $_POST['field'] != ""){
             $id = $_POST['field'];
             $field = Fields::model()->findByPk($id);
+            if($getCount) {
+                $nonNull =  $field->countNonNull();
+                if($nonNull) {
+                    echo Yii::t('admin','This field contains data; it is non-empty in {n} records.',
+                        array(
+                            '{n}'=>'<span style="color:red;font-weight:bold">'.$nonNull.'</span>'
+                        )
+                    );
+                } else {
+                    echo Yii::t('admin','The field appears to be empty. Deleting it will not result in any data loss.');
+                }
+                Yii::app()->end();
+            }
             $field->delete();
         }
         $this->redirect('manageFields');
@@ -1786,12 +1822,28 @@ class AdminController extends Controller {
      * actions within the software.
      */
     public function actionManageFields(){
+        // New model for the form:
         $model = new Fields;
-        $dataProvider = new CActiveDataProvider('Fields', array(
-                    'criteria' => array(
-                        'condition' => 'modified=1'
-                    )
+
+        // Set up grid view:
+        $searchModel = new Fields('search');
+        $criteria = new CDbCriteria;
+        $criteria->addCondition('modified=1');
+        $searchModel->setAttributes(
+            isset($_GET['Fields'])?$_GET['Fields']:array(),
+            false);
+        foreach($searchModel->attributes as $name => $value) {
+            $criteria->compare($name,$value);
+        }
+        $pageSize = Profile::getResultsPerPage();
+        $dataProvider = new SmartActiveDataProvider('Fields', array(
+                    'criteria' => $criteria,
+                    'pagination' => array(
+                        'pageSize' => Profile::getResultsPerPage(),
+                    ),
                 ));
+
+        // Set up fields list
         $fields = Fields::model()->findAllByAttributes(array('custom' => '1'));
         $arr = array();
         foreach($fields as $field){
@@ -1801,6 +1853,7 @@ class AdminController extends Controller {
         $this->render('manageFields', array(
             'dataProvider' => $dataProvider,
             'model' => $model,
+            'searchModel' => $searchModel,
             'fields' => $arr,
         ));
     }
@@ -1813,7 +1866,8 @@ class AdminController extends Controller {
      * of type "Document."
      */
     public function actionCreatePage(){
-
+        $existingDocs = X2Model::model('Docs')->findAll();
+        $existingDocs = CHtml::listData($existingDocs, 'id', 'name');
         $model = new Docs;
         $users = User::getNames();
         if(isset($_POST['Docs'])){
@@ -1843,11 +1897,33 @@ class AdminController extends Controller {
                     $this->redirect(array('/docs/docs/view', 'id'=>$model->id,'static'=>'true'));
                 }
             }
+        } else if (isset($_POST['existingDoc'])) {
+            $existingDoc = urldecode($_POST['existingDoc']);
+            $docRecord = X2Model::model('Docs')->findByAttributes(array('name' => $existingDoc));
+            if (!is_null($docRecord)) {
+                $module = new Modules;
+                $module->adminOnly = 0;
+                $module->toggleable = 1;
+                $module->custom = 1;
+                $module->visible = 1;
+                $module->editable = 0;
+                $module->searchable = 0;
+                $module->menuPosition = Modules::model()->count();
+                $module->name = 'document';
+                $module->title = $docRecord->name;
+                if ($module->save()){
+                    echo $docRecord->id;
+                    Yii::app()->end();
+                } else {
+                    $this->refresh();
+                }
+            }
         }
 
         $this->render('createPage', array(
             'model' => $model,
             'users' => $users,
+            'existingDocs' => $existingDocs,
         ));
     }
 
@@ -2730,12 +2806,15 @@ class AdminController extends Controller {
      */
     public function actionExportMapping() {
         $model = $_POST['model'];
+        $name = (isset($_POST['name']) && !empty($_POST['name']))? $_POST['name'] : "Unknown";
+        $name .= " to X2Engine ".Yii::app()->params->version;
         $keys = $_POST['keys'];
         $attributes = $_POST['attributes'];
         $this->verifyImportMap($model, $keys, $attributes, true);
         if (!empty($_SESSION['importMap'])) {
+            $map = array('name' => $name, 'mapping' => $_SESSION['importMap']);
             $mapFile = fopen($this->safePath('importMapping.json'), 'w');
-            fwrite($mapFile, json_encode($_SESSION['importMap']));
+            fwrite($mapFile, json_encode($map));
             fclose($mapFile);
         }
     }
@@ -2768,6 +2847,10 @@ class AdminController extends Controller {
             $filePath = $this->safePath($file);
             $_SESSION['modelExportFile'] = $file;
             $attributes = X2Model::model($modelName)->attributes;
+            if ($modelName === 'Actions') {
+                // Make sure the ActionText is exported too
+                $attributes = array_merge($attributes, array('actionDescription' => null));
+            }
             $meta = array_keys($attributes);
             if(isset($list)){
                 // Figure out gridview settings to export those columns
@@ -2849,7 +2932,14 @@ class AdminController extends Controller {
             }
             // Enforce metadata to ensure accuracy of column order, then export.
             $combinedMeta = array_combine($_SESSION['modelExportMeta'], $_SESSION['modelExportMeta']);
-            $tempAttributes = array_intersect_key($record->attributes, $combinedMeta);
+            $recordAttributes = $record->attributes;
+            if ($model === 'Actions') {
+                // Export descriptions with Actions
+                $recordAttributes = array_merge($recordAttributes, array(
+                    'actionDescription'=>$record->actionDescription
+                ));
+            }
+            $tempAttributes = array_intersect_key($recordAttributes, $combinedMeta);
             $tempAttributes = array_merge($combinedMeta, $tempAttributes);
             fputcsv($fp, $tempAttributes);
         }
@@ -3097,9 +3187,24 @@ class AdminController extends Controller {
             $_SESSION['created'] = 0;
             $_SESSION['fields'] = X2Model::model(str_replace(' ', '', $_SESSION['model']))->getFields(true);
             $_SESSION['x2attributes'] = $x2attributes;
+            $_SESSION['mapName'] = "";
 
             $preselectedMap = false;
-            if (CUploadedFile::getInstanceByName('mapping') instanceof CUploadedFile && CUploadedFile::getInstanceByName('mapping')->size > 0) {
+            if (isset($_POST['x2maps'])) {
+                // Use an existing import map from the app
+                $importMap = $this->loadImportMap($_POST['x2maps']);
+                if (empty($importMap)) {
+                    $_SESSION['errors'] = Yii::t('admin', 'Unable to load import map');
+                    $this->redirect('importModels');
+                }
+                $_SESSION['importMap'] = $importMap['mapping'];
+                $_SESSION['mapName'] = $importMap['name'];
+                // Make sure $importMap is consistent with and without an uploaded import map
+                $importMap = $importMap['mapping'];
+                $preselectedMap = true;
+            } else if (CUploadedFile::getInstanceByName('mapping') instanceof CUploadedFile
+                    && CUploadedFile::getInstanceByName('mapping')->size > 0) {
+                // Handle an uploaded mapping
                 $temp = CUploadedFile::getInstanceByName('mapping');
                 $temp->saveAs($mapPath = $this->safePath('mapping.json'));
                 $mappingFile = fopen($mapPath, 'r');
@@ -3109,7 +3214,18 @@ class AdminController extends Controller {
                     $_SESSION['errors'] = Yii::t('admin', 'Invalid JSON string specified');
                     $this->redirect('importModels');
                 }
-                $_SESSION['importMap'] = $importMap;
+                if (array_key_exists('mapping', $importMap)) {
+                    $_SESSION['importMap'] = $importMap['mapping'];
+                    $importMap = $importMap['mapping'];
+                    // Make sure $importMap is consistent with legacy import map format
+                    if (isset($importMap['name']))
+                        $_SESSION['mapName'] = $imporMap['name'];
+                    else
+                        $_SESSION['mapName'] = Yii::t('admin', "Untitled Mapping");
+                } else {
+                    $_SESSION['importMap'] = $importMap;
+                    $_SESSION['mapName'] = Yii::t('admin', "Untitled Mapping");
+                }
                 $preselectedMap = true;
 
                 fclose($mappingFile);
@@ -3330,6 +3446,32 @@ class AdminController extends Controller {
                             $model->lastName = $names[1];
                         } else if (empty($model->name) && (!empty($model->firstName) || !empty($model->lastName)))
                             $model->name = $model->firstName ." ". $model->lastName;
+                    }
+                    if ($modelName === 'Actions') {
+                        if (empty($model->actionDescription) && !empty($model->subject))
+                            $model->actionDescription = $model->subject;
+                        if (isset($model->associationType)) {
+                            // Handle reconstructing Action associations
+                            $exportableModules = array_merge(array_keys(Modules::getExportableModules()), array('None'));
+                            $exportableModules = array_map('lcfirst', $exportableModules);
+                            $model->associationType = lcfirst($model->associationType);
+                            if (!in_array($model->associationType, $exportableModules)) {
+                                // Invalid association type
+                                $model->addError ('associationType', Yii::t('admin', 'Unknown associationType.'));
+                            } else if (!isset($model->associationId) && isset($model->associationName)) {
+                                // Retrieve associationId
+                                $staticAssociationModel = X2Model::model($model->associationType);
+                                if ($staticAssociationModel->hasAttribute('name') && !ctype_digit($model->associationName))
+                                    $associationModelParams = array('name'=>$model->associationName);
+                                else
+                                    $associationModelParams = array('id' => $model->associationName);
+                                $lookup = $staticAssociationModel->findByAttributes($associationModelParams);
+                                if (isset($lookup)) {
+                                    $model->associationId = $lookup->id;
+                                    $model->associationName = $lookup->hasAttribute('name')? $lookup->name : $lookup->id;
+                                }
+                            }
+                        }
                     }
                     if ($model->hasAttribute('visibility')) {
                         // Nobody every remembers to set visibility... set it for them
@@ -3638,23 +3780,11 @@ class AdminController extends Controller {
                 $layoutModel->scenario = isset($_POST['scenario']) ? $_POST['scenario'] : 'Default';
 
                 // if this is the default view, unset defaultView for all other forms
-                if($layoutModel->defaultView){
-                    $layouts = FormLayout::model()->findAllByAttributes(array('model' => $modelName, 'defaultView' => 1, 'scenario' => $layoutModel->scenario));
-                    foreach($layouts as &$layout){
-                        $layout->defaultView = false;
-                        $layout->save();
-                    }
-                    unset($layout);
-                }
+                if($layoutModel->defaultView)
+                    FormLayout::clearDefaultViews ($modelName, $layoutModel->scenario);
                 // if this is the default form, unset defaultForm for all other forms
-                if($layoutModel->defaultForm){
-                    $layouts = FormLayout::model()->findAllByAttributes(array('model' => $modelName, 'defaultForm' => 1, 'scenario' => $layoutModel->scenario));
-                    foreach($layouts as &$layout){
-                        $layout->defaultForm = false;
-                        $layout->save();
-                    }
-                    unset($layout);
-                }
+                if($layoutModel->defaultForm)
+                    FormLayout::clearDefaultForms ($modelName, $layoutModel->scenario);
 
                 $layoutModel->save();
                 $this->redirect(array('editor', 'id' => $id));
@@ -3809,23 +3939,22 @@ class AdminController extends Controller {
         if(isset($_POST['Dropdowns'])){
             $model->attributes = $_POST['Dropdowns'];
             $temp = array();
-            foreach($model->options as $option){
-                if($option != "")
-                    $temp[$option] = $option;
+            if (isset ($model->options)) {
+                foreach($model->options as $option){
+                    if($option != "") {
+                        $temp[$option] = $option;
+                    }
+                }
             }
             if(count($temp) > 0){
                 $model->options = json_encode($temp);
                 if($model->save()){
-                    $this->redirect('manageDropDowns');
                 }
-            }else{
-                $this->redirect('manageDropDowns');
             }
+            $this->redirect(
+                'manageDropDowns'
+            );
         }
-
-        $this->render('dropDownEditor', array(
-            'model' => $model,
-        ));
     }
 
     /**
@@ -3835,10 +3964,11 @@ class AdminController extends Controller {
         $dropdowns = Dropdowns::model()->findAll();
 
         if(isset($_POST['dropdown'])){
-            $model = Dropdowns::model()->findByPk($_POST['dropdown']);
-
-            $model->delete();
-            $this->redirect('manageDropDowns');
+            if ($_POST['dropdown'] != Actions::COLORS_DROPDOWN_ID) {
+                $model = Dropdowns::model()->findByPk($_POST['dropdown']);
+                $model->delete();
+                $this->redirect('manageDropDowns');
+            }
         }
 
         $this->render('deleteDropdowns', array(
@@ -3853,21 +3983,50 @@ class AdminController extends Controller {
         $model = new Dropdowns;
 
         if(isset($_POST['Dropdowns'])){
-            $model = Dropdowns::model()->findByAttributes(array('name' => $_POST['Dropdowns']['name']));
-            $model->attributes = $_POST['Dropdowns'];
-            $temp = array();
-            if(is_array($model->options) && count($model->options) > 0) {
-                foreach($model->options as $option){
-                    if($option != "")
-                        $temp[$option] = $option;
+            $model = Dropdowns::model()->findByPk(
+                $_POST['Dropdowns']['id']);
+            if ($model->id == Actions::COLORS_DROPDOWN_ID) {
+                if (AuxLib::issetIsArray ($_POST['Dropdowns']['values']) &&
+                    AuxLib::issetIsArray ($_POST['Dropdowns']['labels']) &&
+                    count ($_POST['Dropdowns']['values']) ===
+                    count ($_POST['Dropdowns']['labels'])) {
+
+                    if (AuxLib::issetIsArray ($_POST['Admin']) && 
+                        isset ($_POST['Admin']['enableColorDropdownLegend'])) {
+
+                        Yii::app()->settings->enableColorDropdownLegend = 
+                            $_POST['Admin']['enableColorDropdownLegend'];
+                        Yii::app()->settings->save ();
+                    }
+
+                    $options = array_combine (
+                        $_POST['Dropdowns']['values'],
+                        $_POST['Dropdowns']['labels']);
+                    $temp = array();
+                    foreach ($options as $value => $label) {
+                        if($value != "")
+                            $temp[$value] = $label;
+                    }
+                    $model->options = json_encode ($temp);
+                    $model->save ();
                 }
-                $model->options = json_encode($temp);
-                if($model->save()){
-                    $this->redirect('manageDropDowns');
+            } else {
+                $model->attributes = $_POST['Dropdowns'];
+                $temp = array();
+                if(is_array($model->options) && count($model->options) > 0) {
+                    foreach($model->options as $option){
+                        if($option != "")
+                            $temp[$option] = $option;
+                    }
+                    $model->options = json_encode($temp);
+                    if($model->save()){
+                    }
                 }
             }
         }
-        $this->redirect('manageDropDowns');
+        $this->redirect(
+            'manageDropDowns'
+        );
     }
 
     /**
@@ -3877,25 +4036,44 @@ class AdminController extends Controller {
      * options of the dropdown for the edit dropdown page.
      */
     public function actionGetDropdown(){
-        if(isset($_POST['Dropdowns']['name'])){
-            $name = $_POST['Dropdowns']['name'];
-            $model = Dropdowns::model()->findByAttributes(array('name' => $name));
+        if(isset($_POST['Dropdowns']['id'])){
+            $id = $_POST['Dropdowns']['id'];
+            $model = Dropdowns::model()->findByPk($id);
             $str = "";
+            if ($model === null) {
+                return;
+            }
 
-            if ($model != null) {
-                $options = json_decode($model->options);
+            $options = json_decode($model->options);
+            if ($id == Actions::COLORS_DROPDOWN_ID) {
+                $this->renderPartial (
+                    'application.modules.actions.views.actions._colorDropdownForm', array (
+                        'model' => $model,
+                        'options' => $options,
+                    ), false, true);
+            } else {
                 foreach($options as $option){
-                    $str.="<li>
-                                                    <input type=\"text\" size=\"30\"  name=\"Dropdowns[options][]\" value='$option' />
-                                                    <div class=\"\">
-                                                            <a href=\"javascript:void(0)\" onclick=\"moveStageUp(this);\">[".Yii::t('workflow', 'Up')."]</a>
-                                                            <a href=\"javascript:void(0)\" onclick=\"moveStageDown(this);\">[".Yii::t('workflow', 'Down')."]</a>
-                                                            <a href=\"javascript:void(0)\" onclick=\"deleteStage(this);\">[".Yii::t('workflow', 'Del')."]</a>
-                                                    </div>
-                                                    <br />
-                                            </li>";
+                    $str.=
+                        "<li>
+                            <input type=\"text\" size=\"30\"  name=\"Dropdowns[options][]\" 
+                             value='$option' />
+                                <div class=\"\">
+                                    <a href=\"javascript:void(0)\" 
+                                     onclick=\"x2.dropdownManager.moveOptionUp(this);\">
+                                        [".Yii::t('admin', 'Up')."]</a>
+                                    <a href=\"javascript:void(0)\" 
+                                     onclick=\"x2.dropdownManager.moveOptionDown(this);\">
+                                        [".Yii::t('admin', 'Down')."]</a>
+                                    <a href=\"javascript:void(0)\" 
+                                     onclick=\"x2.dropdownManager.deleteOption(this);\">
+                                        [".Yii::t('admin', 'Del')."]</a>
+                                </div>
+                                <br />
+                        </li>";
                 }
-                echo $str.CHtml::activeLabel($model, 'multi').'&nbsp;'.CHtml::activeCheckBox($model, 'multi');
+                echo $str.CHtml::activeLabel($model, 'multi', array (
+                    'class' => 'multi-checkbox-label',
+                )).'&nbsp;'.CHtml::activeCheckBox($model, 'multi');
             }
         }
     }
@@ -3950,7 +4128,7 @@ class AdminController extends Controller {
                 }
             }
         }
-        $extraModels = array('Fields', 'Dropdowns');
+        $extraModels = array('Fields', 'Dropdowns', 'FormLayout');
         foreach ($extraModels as $model) {
             if (class_exists($model)) {
                 $fieldCount = X2Model::model($model)->count();
@@ -4298,7 +4476,8 @@ class AdminController extends Controller {
 
     /**
      * Parse the given keys and attributes to ensure required fields are
-     * mapped and new fields are to be created.
+     * mapped and new fields are to be created. The verified map will be
+     * stored in the 'importMap' key for the $_SESSION super global.
      * @param string $model name of the model
      * @param array $keys
      * @param array $attributes
@@ -4393,6 +4572,46 @@ class AdminController extends Controller {
             echo CJSON::encode(array("0"));
             $_SESSION['importMap'] = array();
         }
+    }
+
+    /**
+     * List available import maps from a directory,
+     * optionally of type $model
+     * @param string $model Name of the model to load import maps
+     * @return array Available import maps, with the filenames as
+     * keys, and import mapping names (product/version) as values
+     */
+    protected function availableImportMaps($model = null) {
+        $maps = array();
+        if ($model === "X2Leads")
+                $model = "Leads";
+        $modelName = (isset($model))? lcfirst($model) : '.*';
+        $importMapDir = "importMaps";
+        $files = scandir ($this->safePath($importMapDir));
+        foreach ($files as $file) {
+            $filename = basename($file);
+            // Filenames are in the form "app-model.json"
+            if (!preg_match('/^.*-'.$modelName.'\.json$/', $filename))
+                continue;
+            $mapping = file_get_contents($this->safePath($importMapDir.DIRECTORY_SEPARATOR.$file));
+            $mapping = json_decode($mapping, true);
+            $maps[$file] = $mapping['name'];
+        }
+        return $maps;
+    }
+
+    /**
+     * Load an import map from the map directory
+     * @param string $filename of the import map
+     * @return array Import map
+     */
+    protected function loadImportMap($filename) {
+        if (empty($filename))
+            return null;
+        $importMapDir = "importMaps";
+        $map = file_get_contents($this->safePath($importMapDir.DIRECTORY_SEPARATOR.$filename));
+        $map = json_decode($map, true);
+        return $map;
     }
 
     /**
@@ -4562,6 +4781,22 @@ class AdminController extends Controller {
                                     // If we're creating a field, we must also recreate the respective table index
                                     if (isset($model->keyType))
                                         $model->createIndex($model->keyType === "UNI");
+                                } else if ($modelType === "FormLayout") {
+                                    /**
+                                     * Ensure default form settings are maintained. If overwrite is set, the most
+                                     * recently imported layout will be set to default, otherwise the default flags
+                                     * for the newly imported layout will be cleared.
+                                     */
+                                    if ($_SESSION['overwrite']) {
+                                        if ($model->defaultView)
+                                            FormLayout::clearDefaultViews ($modelName);
+                                        if ($model->defaultForm)
+                                            FormLayout::clearDefaultForms ($modelName);
+                                    } else {
+                                        $model->defaultView = false;
+                                        $model->defaultForm = false;
+                                        $model->save();
+                                    }
                                 }
                                 // Relic of when action description wasn't a field, not sure if necessary.
                                 if($modelType == 'Actions' && isset($attributes['actionDescription'])){
@@ -4681,9 +4916,12 @@ class AdminController extends Controller {
                 if(isset($_POST['unique_id']))
                     $admin->$var = $_POST[$var];
             if($admin->save()){
-                if(isset($_POST['crontab_submit'])){
+                if(isset($_POST['cron'])){
                     // Save new updater cron settings in crontab
                     $cf->save($_POST);
+                } else {
+                    // Delete remaining jobs
+                    $cf->save(array());
                 }
                 $this->redirect('updaterSettings');
             }
@@ -4691,7 +4929,7 @@ class AdminController extends Controller {
         foreach($cf->jobs as $tag => $attributes){
             $commands[$tag] = $attributes['cmd'];
         }
-        if(isset($_POST['crontab_submit'])){
+        if(isset($_POST['cron'])){
             // Save new updater cron settings in crontab
             $cf->save($_POST);
         }

@@ -221,6 +221,13 @@ div.form label {
 	font-size:11px;
 	font-weight:bold;
 }
+div.form .left-checkbox {
+    float: left;
+    margin-right: 2px;
+}
+div.form .left-checkbox + label {
+    margin-top: 3px; 
+}
 div.form .left-label {
     float: left;
     margin-top: 7px;

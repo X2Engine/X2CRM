@@ -59,8 +59,13 @@ if(is_numeric($listId)){
 }
 
 //try to get the saved sort and filters from the session if applicable
-//the strings in this code are tied to values specified in ERememberColumnFilters and SmartDataProvider
+//the strings in this code are tied to values specified in ERememberColumnFilters and SmartDataProviderBehavior
+/* x2tempstart */
+// Violates abstraction by depending on implementation details of SmartDataProviderBehavior. 
+/*$order = GridViewDbSettingsBehavior::getSetting (
+    'contacts/contacts/'. $path . 'Contacts_sort', 'sort');*/
 $order = Yii::app()->user->getState('contacts/contacts/'. $path . 'Contacts_sort');
+/* x2tempend */
 $searchModel->setRememberScenario('contacts/contacts/'. $path);
 
 //convert session var to sql
@@ -81,17 +86,21 @@ if(is_numeric($listId)) {
         $vcrDataProvider = $searchModel->searchAll();
     }
 } elseif($listId=='myContacts') {
-	$listLink = CHtml::link(Yii::t('contacts','My Contacts'),array('/contacts/contacts/myContacts'));
+	$listLink = CHtml::link(
+        Yii::t('contacts','My Contacts'),array('/contacts/contacts/myContacts'));
 	$vcrDataProvider = $searchModel->searchMyContacts();
 } elseif($listId=='newContacts') {
-	$listLink = CHtml::link(Yii::t('contacts','New Contacts'),array('/contacts/contacts/newContacts'));
+	$listLink = CHtml::link(
+        Yii::t('contacts','New Contacts'),array('/contacts/contacts/newContacts'));
 	$vcrDataProvider = $searchModel->searchNewContacts();
 } elseif($tagFlag){
-    $listLink = CHtml::link(Yii::t('contacts','Tag Search'),array('/search/search','term'=>$listId));
+    $listLink = CHtml::link(
+        Yii::t('contacts','Tag Search'),array('/search/search','term'=>$listId));
     $_GET['tagField']=$listId;
     $vcrDataProvider = $searchModel->searchAll();
 } else {
-	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/contacts/index'));	// default to All Contacts
+    // default to All Contacts
+	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/contacts/index'));	
 	$vcrDataProvider = $searchModel->searchAll();
 }
 if(empty($order) && !$tagFlag)
@@ -124,8 +133,12 @@ if(is_array($vcrData) && count($vcrData)) {
 ?>
 <div class="vcrPager">
 	<div class="summary">
-		<?php if(isset($listLink)) echo $listLink; ?>
-		<?php echo Yii::t('contacts','<b>{m}</b> of <b>{n}</b>',array('{m}'=>$vcrData['index'],'{n}'=>$vcrData['count'])); ?>
+		<?php 
+        if(isset($listLink)) echo $listLink; 
+		echo Yii::t(
+            'contacts','<b>{m}</b> of <b>{n}</b>',
+            array('{m}'=>$vcrData['index'],'{n}'=>$vcrData['count'])
+        ); ?>
 	</div>
     <div class='x2-button-group'>
 	<?php

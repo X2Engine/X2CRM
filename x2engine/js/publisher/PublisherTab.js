@@ -143,7 +143,8 @@ PublisherTab.prototype.validate = function () {
     x2.forms.clearErrorMessages (this._element);
     var actionDescription$ = this._element.find ('.action-description');
 
-    if (actionDescription$.val () === '') {
+    if (actionDescription$.hasClass ('x2-required') && actionDescription$.val () === '') {
+
         actionDescription$.parent ().addClass ('error');
         x2.forms.errorSummaryAppend (this._element, this.translations['beforeSubmit']);
         return false;

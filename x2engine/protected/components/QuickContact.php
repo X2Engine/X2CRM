@@ -46,6 +46,49 @@ class QuickContact extends X2Widget {
 		parent::init();
 	}
 
+    public function renderContactFields($model) {
+        $defaultFields = X2Model::model('Fields')->findAllByAttributes(
+            array('modelName' => 'Contacts'),
+            array(
+                'condition' => "fieldName IN ('firstName', 'lastName', 'email', 'phone')",
+            )
+        );
+        $requiredFields = X2Model::model('Fields')->findAllByAttributes(
+            array(
+                'modelName' => 'Contacts',
+                'required' => 1,
+            ), array(
+                'condition' => "fieldName NOT IN ('firstName', 'lastName', 'phone', 'email', 'visibility')"
+            ));
+        $i = 0;
+        $fields = array_merge($requiredFields, $defaultFields);
+        foreach ($fields as $field) {
+            if ($field->type === 'boolean') {
+                $class = "";
+                echo "<div>";
+            } else {
+                $class = (($field->fieldName === 'firstName' || $field->fieldName === 'lastName') ?
+                    'quick-contact-narrow' : 'quick-contact-wide');
+            }
+
+            $htmlAttr = array(
+                'class' => $class,
+                'tabindex'=>100 + $i,
+                'title'=>$field->attributeLabel,
+                'id'=>'quick_create_'.$field->modelName.'_'.$field->fieldName,
+            );
+
+            if ($field->type === 'boolean') {
+                echo CHtml::label($field->attributeLabel, $htmlAttr['id']);
+            }
+            echo X2Model::renderModelInput ($model, $field, $htmlAttr);
+            if ($field->type === 'boolean')
+                echo "</div>";
+
+            ++$i;
+        }
+    }
+
 	public function run() {
         $model = new Contacts;
 		$this->render('quickContact', array (

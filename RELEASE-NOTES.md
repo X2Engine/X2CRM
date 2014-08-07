@@ -1,3 +1,9 @@
+# 4.2b #
+7/3/2014
+
+* Structural changes to the record view widget code breaks compatibility with 
+  old custom record view widgets.
+
 # 4.1.6b #
 7/3/2014
 
@@ -13,7 +19,8 @@ To update to this and all future beta releases, you must enable beta releases,
 as follows:
 
 1. Create a file "constants-custom.php" in the root level of X2Engine. You can 
-   easily do this by renaming "constants-custom.example.php" to that name (remove ".custom").
+   easily do this by renaming "constants-custom.example.php" to that name 
+   (remove ".custom").
 2. Look for the following line, and in it, change "false" to "true":
   <pre>defined('X2\_UPDATE\_BETA') or define('X2\_UPDATE\_BETA',false);</pre>
 

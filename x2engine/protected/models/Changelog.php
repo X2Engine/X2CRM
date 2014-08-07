@@ -140,7 +140,7 @@ class Changelog extends CActiveRecord {
 		$criteria->compare('diff',$this->diff,true);
 		$criteria->compare('timestamp',$this->timestamp);
 
-		return new SmartDataProvider(get_class($this), array(
+		return new SmartActiveDataProvider(get_class($this), array(
 			'sort'=>array(
 				'defaultOrder'=>'timestamp DESC',
 			),

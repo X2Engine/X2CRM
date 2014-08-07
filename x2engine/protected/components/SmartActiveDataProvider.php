@@ -46,15 +46,55 @@ class SmartActiveDataProvider extends CActiveDataProvider {
 
 	private $_pagination;
 
-	public function __construct($modelClass,$config=array(), $uniqueId=null) {
+    private $_countCriteria;
+
+    /**
+     * Overrides parent __construct ().
+     * @param string $uniqueId (optional) If set, will be used to uniquely identify this data
+     *  provider. This overrides the default behavior of using the model name as the uid.
+	 *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+     */
+    public function __construct($modelClass,$config=array(),
+        /* x2modstart */$uniqueId=null, $persistentGridSettings=false/* x2modend */) {
+        /* x2modstart */  
         $this->attachBehaviors (array (
-                'SmartDataProviderBehavior' => array ('class' => 'SmartDataProviderBehavior')
+                'SmartDataProviderBehavior' => array (
+                    'class' => 'SmartDataProviderBehavior',
+                    'settingsBehavior' => ($persistentGridSettings ? 
+                        'GridViewDbSettingsBehavior' : 'GridViewSessionSettingsBehavior'),
+                )
         ));
+        /* x2modend */ 
+    
+        if(is_string($modelClass))
+        {
+            $this->modelClass=$modelClass;
+            $this->model=$this->getModel($this->modelClass);
+        }
+        elseif($modelClass instanceof CActiveRecord)
+        {
+            $this->modelClass=get_class($modelClass);
+            $this->model=$modelClass;
+        }
 
-		parent::__construct($modelClass, $config);
+        /* x2modstart */     
+        if ($uniqueId !== null) {
+            $this->setId($uniqueId);
+        } else {
+        /* x2modend */ 
+            $this->setId(CHtml::modelName($this->model));
+        /* x2modstart */ 
+        }
+        /* x2modend */ 
+        foreach($config as $key=>$value)
+            $this->$key=$value;
 
+        /* x2modstart */ 
         $this->storeSettings ();
-	}
+        /* x2modend */ 
+    }
 
 	/**
 	 * Returns the pagination object.
@@ -80,6 +120,9 @@ class SmartActiveDataProvider extends CActiveDataProvider {
 	 */
 	protected function fetchData() {
 		$criteria=clone $this->getCriteria();
+        /* x2modstart */ 
+        $criteria->with = array();
+        /* x2modend */ 
 
 		if(($pagination=$this->getPagination())!==false) {
 			$pagination->setItemCount($this->getTotalItemCount());
@@ -114,4 +157,21 @@ class SmartActiveDataProvider extends CActiveDataProvider {
 		$this->model->setDbCriteria($baseCriteria);  // restore original criteria
 		return $data;
 	}
+
+    /**
+     * Generates the item count without eager loading, to improve performance.
+     * @return type
+     */
+    public function calculateTotalItemCount(){
+        if($this->model instanceof X2Model) {
+            if(!isset($this->_countCriteria)) {
+                $this->_countCriteria = clone $this->getCriteria();
+                $this->_countCriteria->with = array();
+            }
+            return X2Model::model($this->modelClass)->count($this->_countCriteria);
+        }else{
+            return parent::calculateTotalItemCount();
+        }
+    }
+
 }

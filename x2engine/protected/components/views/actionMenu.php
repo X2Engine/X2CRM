@@ -33,10 +33,53 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+Yii::app()->clientScript->registerCss('actionMenu',"
+
+#action-menu-right-widget a {
+    text-decoration: none;
+    color: black;
+}
+
+");
 ?>
-<ul>
-	<li><?php echo "<strong>$total</strong> ".Yii::t('app','Total Action|Total Actions',$total); ?></li>
-	<li><?php echo "<strong>$unfinished</strong> ".Yii::t('app','Unfinished Action|Unfinished Actions',$unfinished);; ?></li>
-	<li><?php echo "<strong>$overdue</strong> ".Yii::t('app','Overdue Action|Overdue Actions',$overdue);; ?></li>
-	<li><?php echo "<strong>$complete</strong> ".Yii::t('app','Completed Action|Completed Actions',$complete);; ?></li>
+<ul id='action-menu-right-widget'>
+	<li>
+        <strong>
+            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll'); ?>'><?php 
+                echo $total; 
+            ?></a>
+        </strong><?php 
+        echo Yii::t('app','Total Action|Total Actions',$total); 
+    ?></li>
+	<li>
+        <strong>
+            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll', array (
+                'showActions' => 'incomplete',
+            )); ?>'><?php 
+                echo $unfinished; 
+            ?></a>
+        </strong><?php 
+        echo Yii::t('app','Incomplete Action|Incomplete Actions',$total); 
+    ?></li>
+	<li>
+        <strong>
+            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll', array (
+                'showActions' => 'overdue',
+            )); ?>'><?php 
+                echo $overdue; 
+            ?></a>
+        </strong><?php 
+        echo Yii::t('app','Overdue Action|Overdue Actions',$total); 
+    ?></li>
+	<li>
+        <strong>
+            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll', array (
+                'showActions' => 'complete',
+            )); ?>'><?php 
+                echo $complete; 
+            ?></a>
+        </strong><?php 
+        echo Yii::t('app','Completed Action|Completed Actions',$total); 
+    ?></li>
 </ul>
+

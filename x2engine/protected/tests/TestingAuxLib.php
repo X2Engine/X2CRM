@@ -76,6 +76,13 @@ class TestingAuxLib  {
         };
     }
 
+    public static function setPrivateProperty ($className, $propertyName, $value) {
+        $relectionClass = new ReflectionClass ($className);
+        $reflectionProperty = $relectionClass->getProperty ($propertyName);
+        $reflectionProperty->setAccessible (true);
+        $reflectionProperty->setValue ($propertyName, $value);
+    }
+
     /**
      * Log in with the specified credentials .
      *

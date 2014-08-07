@@ -44,7 +44,10 @@ $(document).ready(function(){
 				return false;
 			}
 		}
-        if($("#'.CHtml::activeId($actionModel, 'actionDescription').'").val()=="" && $("#'.CHtml::activeId($actionModel, 'subject').'").val()==""){
+        var actionDescription$ = $("#'.CHtml::activeId($actionModel, 'actionDescription').'");
+        if(actionDescription$.hasClass ("x2-required") && 
+           actionDescription$.val()=="" && 
+           $("#'.CHtml::activeId($actionModel, 'subject').'").val()==""){
             alert("'.Yii::t('actions', "Please enter a description or subject").'");
             return false;
         }
@@ -79,8 +82,10 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
             <?php //echo $form->label($actionModel,'actionDescription'); ?>
             <div>
                 <?php 
-                echo $form->textArea(
-                    $actionModel, 'actionDescription', array('class' => 'x2-xxwide-input', 'rows' => (6))); 
+                echo $actionModel->renderInput ('actionDescription',
+                    array(
+                        'class' => 'x2-xxwide-input', 'rows' => 6
+                    )); 
                 //echo $form->error($actionModel,'actionDescription'); 
                 ?>
             </div>
@@ -210,7 +215,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
                         echo $form->label($actionModel, 'color');
                         ?>
                         <?php
-                        echo $form->dropDownList($actionModel, 'color', Actions::getColors());
+                        echo $actionModel->renderInput('color');
                     }
                     ?>
                 </div>

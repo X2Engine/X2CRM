@@ -1,5 +1,4 @@
 <?php
-
 /**
  * ERememberFiltersBehavior class.
  * The ERememberFiltersBehavior extension adds up some functionality to the default
@@ -70,6 +69,22 @@
  */
 class ERememberFiltersBehavior extends CActiveRecordBehavior {
 
+    /* x2modstart */ 
+    public $x2SettingsBehavior = 'GridViewSessionSettingsBehavior';
+
+    public function attach($owner) {
+        parent::attach ($owner);
+        $this->attachBehaviors (array (
+            'settingsBehavior' => array ('class' => 
+                (!isset ($this->owner->persistentGridSettings) || 
+                 $this->owner->persistentGridSettings ? 
+                    'GridViewDbSettingsBehavior' :
+                    'GridViewSessionSettingsBehavior')
+            )
+        ));
+    }
+    /* x2modend */ 
+
 	/**
 	 * Array that holds any default filter value like array('active'=>'1')
 	 *
@@ -92,6 +107,12 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 	private $_rememberScenario = null;
 
 	private function getStatePrefix() {
+        /* x2modstart */ 
+        // modified to allow state to be remembered for models of the same type
+        if (isset ($this->owner->uid)) {
+            return $this->owner->uid;
+        }
+        /* x2modend */ 
 		$modelName = get_class($this->owner);
 		if($this->_rememberScenario != null) {
 			return $modelName . $this->_rememberScenario;
@@ -103,13 +124,18 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 	public function setRememberScenario($value) {
 		$this->_rememberScenario = $value;
 		$this->doReadSave();
-		//if block added by John M, do this instead of calling EBUttonColumnWithClearFilters::clearFilters
+		//if block added by John M, do this instead of calling 
+        //EBUttonColumnWithClearFilters::clearFilters
 		if(intval(Yii::app()->request->getParam('clearFilters')) == 1) {
 			$this->unsetFilters();
-			if(isset($_GET['id']))
-				Yii::app()->controller->redirect(array(Yii::app()->controller->action->ID, 'id' => Yii::app()->request->getParam('id')));
-			else
+			if(isset($_GET['id'])) {
+				Yii::app()->controller->redirect(
+                    array(
+                        Yii::app()->controller->action->ID,
+                        'id' => Yii::app()->request->getParam('id')));
+			} else {
 				Yii::app()->controller->redirect(array(Yii::app()->controller->action->ID));
+            }
 		}
 		return $this->owner;
 	}
@@ -123,37 +149,48 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 		$attributes = $this->owner->getSafeAttributeNames();
 
 		// set any default value
-		if(is_array($this->defaults) && (null == Yii::app()->user->getState($modelName . __CLASS__ . 'defaultsSet', null))) {
+		if(is_array($this->defaults) && 
+           (null == Yii::app()->user->getState($modelName . __CLASS__ . 'defaultsSet', null))) {
+
 			foreach($this->defaults as $attribute => $value) {
-				if(null == (Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
+				if(null == 
+                    (Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
+
 					Yii::app()->user->setState($this->getStatePrefix() . $attribute, $value);
 				}
 			}
 			Yii::app()->user->setState($modelName . __CLASS__ . 'defaultsSet', 1);
 		}
 
-		// set values from session
-		foreach($attributes as $attribute) {
-			if(null != ($value = Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
-				try {
-					$this->owner->$attribute = $value;
-				} catch (Exception $e) {
-					
-				}
-			}
-		}
+        /* x2modstart */ 
+        // modified so that filters are retrieved from the db
+        $filters = $this->getSetting ($this->getStatePrefix(), 'filters');
+
+        if (is_array ($filters)) {
+		    foreach($attributes as $attribute) {
+                if (isset ($filters[$attribute])) {
+                    try {
+                        $this->owner->$attribute = $filters[$attribute];
+                    } catch (Exception $e) {
+                    }
+                }
+            }
+        }
+        /* x2modend */ 
 	}
 
 	private function saveSearchValues() {
 		$modelName = get_class($this->owner);
 		$attributes = $this->owner->getSafeAttributeNames();
+        /* x2modstart */ 
+        $filters = array ();
 		foreach($attributes as $attribute) {
 			if(isset($this->owner->$attribute)) {
-			//echo var_export($attributes,true);
-			//exit;
-			Yii::app()->user->setState($this->getStatePrefix() . $attribute, $this->owner->$attribute);
-			}
+                $filters[$attribute] = $this->owner->$attribute;
+            }
 		}
+        $this->saveSetting ($this->getStatePrefix (), 'filters', $filters);
+        /* x2modend */ 
 	}
 
 	private function doReadSave() {
@@ -172,7 +209,9 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 		//always start with a unique remember scenario
 		//based on the controller/action names, and id if specified
 		if (!Yii::app()->params->noSession)
-			$this->setRememberScenario(Yii::app()->controller->uniqueid . '/' . Yii::app()->controller->action->id . (isset($_GET['id']) ? '/' . $_GET['id'] : ''));
+			$this->setRememberScenario(
+                Yii::app()->controller->uniqueid . '/' . Yii::app()->controller->action->id . 
+                    (isset($_GET['id']) ? '/' . $_GET['id'] : ''));
 
 		//$this->doReadSave(); //original functionality, overidden by John M
 	}
@@ -186,11 +225,16 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 		$modelName = get_class($this->owner);
 		$attributes = $this->owner->getSafeAttributeNames();
 
-		foreach ($attributes as $attribute) {
-			if (null != ($value = Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
-				Yii::app()->user->setState($this->getStatePrefix() . $attribute, 1, 1);
-			}
-		}
+        /* x2modstart */ 
+        // modified to use settings from DB instead 
+        $filters = $this->getSetting ($this->getStatePrefix(), 'filters');
+        if (is_array ($filters)) {
+		    foreach($attributes as $attribute) {
+                unset ($filters[$attribute]);
+            }
+        }
+        $this->saveSetting ($this->getStatePrefix (), 'filters', $filters);
+        /* x2modend */ 
 		if ($this->defaultStickOnClear) {
 			Yii::app()->user->setState($modelName . __CLASS__ . 'defaultsSet', 1, 1);
 		}
@@ -198,5 +242,4 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 	}
 
 }
-
 ?>

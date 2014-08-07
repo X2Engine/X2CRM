@@ -41,27 +41,39 @@
  */
 class SmartDataProviderBehavior extends CBehavior {
 
+    public $settingsBehavior;
+
+    /**
+     * @var string {'database', 'session'} Determines how the settings will be stored and retrieved
+     */
+    private $_storageType;
+
 	private $_pagination;
+
+    public function attach ($owner) {
+        parent::attach ($owner);
+        $this->attachBehaviors (array (
+            'settingsBehavior' => array ('class' => $this->settingsBehavior)
+        ));
+    }
 
     public function storeSettings () {
 
 		//Sort and page saving code modified from:
 		//http://www.stupidannoyingproblems.com/2012/04/yii-grid-view-remembering-filters-pagination-and-sort-settings/
 
-        if (isset ($uniqueId)) {
-            $statePrefix = $uniqueId . (isset ($_GET['id']) ? '/'.$_GET['id'] : '');
-        } else {
-		    //a string unique to each controller/action (and optionally id) combination
-		    $statePrefix = Yii::app()->controller->uniqueid .'/'. 
-                Yii::app()->controller->action->id . (isset($_GET['id']) ? '/'.$_GET['id'] : '');
-        }
+        //a string unique to each controller/action (and optionally id) combination
+        $statePrefix = Yii::app()->controller->uniqueid .'/'.
+            Yii::app()->controller->action->id . (isset($_GET['id']) ? '/'.$_GET['id'] : '');
 
 		// store also sorting order
 		$key = $this->owner->getId()!='' ? $this->owner->getId().'_sort' : 'sort';
 		if(!empty($_GET[$key])){
-			Yii::app()->user->setState($statePrefix . $key, $_GET[$key]);
+			//Yii::app()->user->setState($statePrefix . $key, $_GET[$key]);
+			$val = $this->saveSetting ($statePrefix . $key, 'sort', $_GET[$key]);
 		} else {
-			$val = Yii::app()->user->getState($statePrefix . $key);
+			//$val = Yii::app()->user->getState($statePrefix . $key);
+			$val = $this->getSetting ($statePrefix . $key, 'sort');
 			if(!empty($val))
 				$_GET[$key] = $val;
 		}
@@ -69,10 +81,12 @@ class SmartDataProviderBehavior extends CBehavior {
 		// store active page in page
 		$key = $this->owner->getId()!='' ? $this->owner->getId().'_page' : 'page';
 		if(!empty($_GET[$key])){
+            //$this->saveSetting ($statePrefix.$key, 'page', $_GET[$key]);
 			Yii::app()->user->setState($statePrefix . $key, $_GET[$key]);
 		} elseif(!empty($_GET["ajax"])){
 			// page 1 passes no page number, just an ajax flag
 			Yii::app()->user->setState($statePrefix . $key, 1);
+            //$this->saveSetting ($statePrefix.$key, 'page', 1);
 		} else {
 			$val = Yii::app()->user->getState($statePrefix . $key);
 			if(!empty($val))

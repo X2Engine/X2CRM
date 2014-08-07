@@ -99,6 +99,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
         'current_time' => 'Current Time',
         'user_active' => 'User Logged In',
         'on_list' => 'On List',
+        'has_tags' => 'Has Tags',
         // 'workflow_status'    => 'Workflow Status',
         // 'current_local_time' => ''),
     );
@@ -179,6 +180,11 @@ abstract class X2FlowTrigger extends X2FlowItem {
                     'linkType'=>'X2List',
                     'linkSource'=>Yii::app()->controller->createUrl(
                         CActiveRecord::model('X2List')->autoCompleteSource)
+                );
+            case 'has_tags':
+                return array(
+                    'label' => Yii::t('studio','Has Tags'),
+                    'type' => 'tags',
                 );
             default:
                 return false;
@@ -453,6 +459,11 @@ abstract class X2FlowTrigger extends X2FlowItem {
                 }
 
                 return ($list !== null && $list->hasRecord ($model));
+            case 'has_tags':
+                if(!isset($model,$value))
+                    return false;
+                $tags = X2Flow::parseValue ($value, 'tags');
+                return $model->hasTags ($tags, 'AND');
             case 'workflow_status':
                 if(!isset($model,$condition['workflowId'],$condition['stageNumber']))
                     return false;

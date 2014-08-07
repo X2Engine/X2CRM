@@ -290,7 +290,9 @@ abstract class x2base extends X2Controller {
 		$currentWorkflow = Yii::app()->db->createCommand()
 			->select('workflowId,completeDate,createDate')
 			->from('x2_actions')
-			->where('type="workflow" AND associationType=:type AND associationId=:id',array(':type'=>$type,':id'=>$id))
+			->where(
+                'type="workflow" AND associationType=:type AND associationId=:id',
+                array(':type'=>$type,':id'=>$id))
 			->order('IF(completeDate = 0 OR completeDate IS NULL,1,0) DESC, createDate DESC')
 			->limit(1)
 			->queryRow(false);
@@ -1356,5 +1358,33 @@ abstract class x2base extends X2Controller {
     /*public function getModuleModel () {
         return Modules::model()->findByAttributes (array ('name' => ucfirst ($this->modelClass)));
     }*/
+
+    /**
+     * Overridden to add $run param
+     * 
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+     */
+    public function widget($className,$properties=array(),$captureOutput=false,$run=true)
+    {
+        if($captureOutput)
+        {
+            ob_start();
+            ob_implicit_flush(false);
+            $widget=$this->createWidget($className,$properties);
+            /* x2modstart */ 
+            if ($run) $widget->run();
+            /* x2modend */ 
+            return ob_get_clean();
+        }
+        else
+        {
+            $widget=$this->createWidget($className,$properties);
+            /* x2modstart */ 
+            if ($run) $widget->run();
+            /* x2modend */ 
+            return $widget;
+        }
+    }
 
 }

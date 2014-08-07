@@ -917,22 +917,28 @@ class Workflow extends CActiveRecord {
             $endingRgb[2] - $startingRgb[2],
         );
         
-        $rgbSteps = array(
-            $rgbDifference[0] / $stageCount,
-            $rgbDifference[1] / $stageCount,
-            $rgbDifference[2] / $stageCount,
-        );
+        if ($stageCount === 1) {
+            $rgbSteps = array (0, 0, 0);
+        } else {
+            $steps = $stageCount - 1;
+            // 1 step for each stage other than the first
+            $rgbSteps = array(
+                $rgbDifference[0] / $steps,
+                $rgbDifference[1] / $steps,
+                $rgbDifference[2] / $steps,
+            );
+        }
 
         $colors = array ();
-        for($i=1; $i<=$stageCount;$i++) {
+        for($i=0; $i<$stageCount;$i++) {
             $colors[] = X2Color::rgb2hex2(
                  $startingRgb[0] + ($rgbSteps[0]*$i),
                  $startingRgb[1] + ($rgbSteps[1]*$i),
                  $startingRgb[2] + ($rgbSteps[2]*$i)
             );
             if ($getShaded) {
-                $colors[$i - 1] = array ($colors[$i - 1]);
-                $colors[$i - 1][] = X2Color::rgb2hex2 (array_map (function ($a) {
+                $colors[$i] = array ($colors[$i]);
+                $colors[$i][] = X2Color::rgb2hex2 (array_map (function ($a) {
                     return $a > 255 ? 255 : $a;
                 }, array (
                      0.93 * ($startingRgb[0] + ($rgbSteps[0]*$i)),

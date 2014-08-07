@@ -33,6 +33,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
+.right-widget-title {
+    display: inline-block;
+}
+
 /*
 prevent menu items from moving to the next line (would prevent items from being added to more
 menu with JS
@@ -759,7 +764,6 @@ span.x2-hidden-widgets-menu-item.ui-draggable {
  * ------------------------ Body --------------------------
  */
 #page-body {
-	/* min-width:940px; */
 	/* clear:both; */
 	/* background:#efeee8; */
 	/* overflow:auto; */
@@ -892,7 +896,12 @@ Remove border radius from left widget title bars which are preceded by a collaps
 	overflow:auto;
 	background:#fff;
     clear:both;
-
+}
+#sidebar-right .portlet-content {
+	border-radius:			0 0 4px 4px;
+	-moz-border-radius:		0 0 4px 4px;
+	-webkit-border-radius:	0 0 4px 4px;
+	-o-border-radius:		0 0 4px 4px;
 }
 
 .sidebar-left > div:last-child  > .portlet-content {
@@ -1190,7 +1199,7 @@ body.no-widgets #sidebar-right {
     padding-right:5px;
 }
 
-@media (max-width: 940px) {
+@media (max-width: 1040px) {
     div.page-title-fixed-outer div.page-title {
         margin-right: 0px;
     }
@@ -1248,7 +1257,7 @@ table.fc-header td.fc-header-right {
     padding-right:5px;
 }
 table.fc-header .fc-button {
-    margin: 4px 0 0 0;
+    margin: 3px 0 0 0;
     height: 24px;
     line-height: 25px;
 }

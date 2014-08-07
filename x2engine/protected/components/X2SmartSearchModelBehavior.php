@@ -73,7 +73,7 @@ class X2SmartSearchModelBehavior extends CBehavior {
                         'pageSize' => $pageSize,
                     ),
                     'criteria' => $criteria,
-                ), $uniqueId);
+                ), $uniqueId, $this->owner->persistentGridSettings);
         $sort->applyOrder($criteria);
         return $dataProvider;
     }

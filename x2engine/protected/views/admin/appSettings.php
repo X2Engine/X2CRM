@@ -49,12 +49,15 @@ $('#timeout').change(function() {
 $('#batchTimeout').change(function(){
     $('#batchTimeoutSlider').slider('value',$(this).val());
 });
+$('#massActionsBatchSize').change(function(){
+    $('#massActionsBatchSizeSlider').slider('value',$(this).val());
+});
 
 $('#currency').change(function() {
 	if($('#currency').val() == 'other')
-		$('#currency2').fadeIn(300);
+		$('#other-currency-options').fadeIn(300);
 	else
-		$('#currency2').fadeOut(300);
+		$('#other-currency-options').fadeOut(300);
 });
 ", CClientScript::POS_READY);
 ?>
@@ -161,6 +164,34 @@ $('#currency').change(function() {
         ?>
     </div>
     <div class="form">
+        <?php
+        echo $form->labelEx($model,'massActionsBatchSize');
+        $this->widget('zii.widgets.jui.CJuiSlider', array(
+            'value' => $model->massActionsBatchSize,
+            // additional javascript options for the slider plugin
+            'options' => array(
+                'min' => 5,
+                'max' => 100,
+                'step' => 5,
+                'change' => "js:function(event,ui) {
+					$('#massActionsBatchSize').val(ui.value);
+					$('#save-button').addClass('highlight');
+				}",
+                'slide' => "js:function(event,ui) {
+					$('#massActionsBatchSize').val(ui.value);
+				}",
+            ),
+            'htmlOptions' => array(
+                'style' => 'margin:10px 0;',
+                'id' => 'massActionsBatchSizeSlider',
+                'style' => 'margin:10px 0;',
+                'class'=>'x2-wide-slider',
+            ),
+        ));
+        echo $form->textField($model,'massActionsBatchSize',array('style'=>'width:50px;','id'=>'massActionsBatchSize'));
+        ?>
+    </div>
+    <div class="form">
         <label for="Admin_quoteStrictLock"><?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?> <span class="x2-hint" title="<?php echo Yii::t('admin', 'Enabling strict lock completely disables locked quotes from being edited. While this setting is off, there will be a confirm dialog before editing a locked quote.'); ?>">[?]</span></label>
         <?php echo $form->checkBox($model, 'quoteStrictLock'); ?>
         <br><br>
@@ -213,7 +244,23 @@ $('#currency').change(function() {
             echo ' selected="true"';
         } ?>><?php echo Yii::t('admin', 'Other'); ?></option>
         </select>
-        <input type="text" name="currency2" id="currency2" style="width:120px;<?php if($curFound) echo 'display:none;'; ?>" value="<?php echo $curFound ? '' : $model->currency; ?>" />
+        <div id='other-currency-options' style="<?php if($curFound) echo 'display:none;'; ?>">
+        <input type="text" name="currency2" id="currency2" 
+         style="width:120px;" 
+         value="<?php echo $curFound ? '' : $model->currency; ?>" />
+        </div>
+        <?php
+        echo CHtml::label (Yii::t('admin', 'Currency Locale').'&nbsp;'.
+            X2Html::hint (Yii::t('admin', 'If set, the currency locale will be used to format '.
+                'currency fields across the app. Otherwise, currency fields will be formatted '.
+                'using the locale corresponding to the current user\'s language preference.'), 
+                false, null, true), 'localeId');
+        echo CHtml::dropDownList (
+            'localeId',
+            Yii::app()->settings->currencyLocale === null ? 
+                'default' : Yii::app()->settings->currencyLocale, 
+            array ('default' => '-Use Default-') +  $localeIds);
+        ?>
     </div>
 
     <div class="error">

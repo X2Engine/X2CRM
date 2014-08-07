@@ -80,6 +80,9 @@ class Api2Controller extends CController {
     const ENABLED = true;
     const MAX_PAGE_SIZE = 1000;
 
+    const FIND_DELIM = ';';
+    const FIND_EQUAL = '=';
+
     /**
      * Stores {@link post}
      * @var array
@@ -240,7 +243,7 @@ class Api2Controller extends CController {
      * @param integer $id
      * @param array $modelInput Model parameters, i.e. if doing a lookup
      */
-    public function actionModel($_class,$_id=null) {
+    public function actionModel($_class,$_id=null,$_findBy=null) {
         $method = Yii::app()->request->getRequestType();
 
         // Run extra special stuff for the Actions class
@@ -248,8 +251,10 @@ class Api2Controller extends CController {
 
         switch($method) {
             case 'GET':
-                if(!empty($_id) && ctype_digit((string) $_id)) {
-                    // Use case: directly access the model by ID
+                if((!empty($_id) && ctype_digit((string) $_id)) ||
+                        !empty($_findBy)) {
+                    // Use case: directly access the model by ID or uniquely
+                    // identifying attributes
                     $this->responseBody = $this->model;
                 } else {
                     // Use case: if no model was directly accessed by ID,
@@ -262,7 +267,7 @@ class Api2Controller extends CController {
             case 'PUT':
                 // Additional check for request validity
                 if($method == 'POST') {
-                    if(!empty($_id)) // POST on an existing record
+                    if(!(empty($_id) && empty($_findBy))) // POST on an existing record
                         $this->send(400,'POST should be used for creating new '
                                 . 'records and cannot be used to update an '
                                 . 'existing model. PUT or PATCH should be used '
@@ -960,6 +965,41 @@ class Api2Controller extends CController {
         );
     }
 
+    /**
+     * Generates attributes from a query parameter
+     * 
+     * Takes a special format of query parameter and returns an array of
+     * attributes. The parameter should be formatted as:
+     * name1**value1,,name2**value2[...]
+     * 
+     * @param string $condition The condition parameter
+     * @return array Associative array of key=>value pairs.
+     */
+    public function findConditions($condition,$validAttributes = array()) {
+        $conditions = explode(self::FIND_DELIM,$condition);
+
+        $attributeConditions = array();
+        foreach($conditions as $condition) {
+            $attrVal = explode(self::FIND_EQUAL,$condition);
+            if(count($attrVal) < 2) {
+                continue;
+            }
+            $attribute = array_shift($attrVal);
+            
+            $attributeConditions[$attribute] = implode(
+                self::FIND_EQUAL,$attrVal);
+        }
+        
+        if(!empty($validAttributes)) {
+            // Filter out attributes not present among those that are allowable
+            $attributeConditions = array_intersect_key(
+                $attributeConditions,
+                $validAttributes
+            );
+        }
+        return $attributeConditions;
+    }
+
     //////////////////////
     // PROPERTY GETTERS //
     //////////////////////
@@ -1172,13 +1212,65 @@ class Api2Controller extends CController {
      */
     public function getModel() {
         if(!isset($this->_model)) {
-            if(!isset($_GET['_id'])){
+            if(!(isset($_GET['_id']) || isset($_GET['_findBy']))){
                 $method = Yii::app()->request->requestType;
                 $this->send(400, "Cannot use method $method in action "
                         ."\"{$this->action->id}\" without specifying a valid "
-                        ."record ID.");
+                        ."record ID or finding condition.");
             }
-            $this->_model = $this->getStaticModel()->findByPk($_GET['_id']);
+            if(isset($_GET['_id'])) {
+                $this->_model = $this->getStaticModel()->findByPk($_GET['_id']);
+            } else {
+                // Find model by attributes.
+                // 
+                // First transform the _findBy parameter into conditions
+                $staticModel = $this->getStaticModel();
+                $attributeConditions = $this->findConditions(
+                    $_GET['_findBy'],
+                    $staticModel->attributes
+                );
+                
+                // No conditions present
+                if(count($attributeConditions) == 0) {
+                    $this->send(400,"Invalid/improperly formatted attribute".
+                        " conditions: \"{$_GET['_findBy']}\"");
+                }
+
+                // Find:
+                $models = $staticModel->findAllByAttributes($attributeConditions);
+                $count = count($models);
+                switch($count) {
+                    case 0:
+                        $this->send(404,"No matching record of class ".
+                            "{$_GET['_class']} found");
+                    default:
+                        $this->_model = reset($models);
+
+                        // Return with status 300 (multiple choices) and point 
+                        // the client to the query URL if more than one result
+                        // was found, and the
+                        if($count > 1) {
+                            $queryUri = $this->createUrl('/api2/model',array_merge(
+                                array('_class' => $_GET['_class']),
+                                $attributeConditions
+                            ));
+                            $directUris = array();
+                            foreach($models as $model) {
+                                $directUris[] = $this->createUrl(
+                                    '/api2/model',
+                                    array(
+                                        '_class' => $_GET['_class'],
+                                        '_id' => $model->id
+                                    )
+                                );
+                            }
+                            $this->response->httpHeader['Location'] = $queryUri;
+                            $this->response['queryUri'] = $queryUri;
+                            $this->response['directUris'] = $directUris;
+                            $this->send(300,"Multiple records match.");
+                        }
+                }
+            }
             if(!(($this->_model) instanceof X2Model))
                 $this->send(404, "Record {$_GET['_id']} of class \""
                         .get_class($this->getStaticModel())."\" not found.");

@@ -1,0 +1,31 @@
+{
+    "name": "Sugar 6.5.16 to X2Engine 4.2",
+    "mapping":
+    {
+        "Name":"name",
+        "Website":"website",
+        "Description":"description",
+        "Annual Revenue":"annualRevenue",
+        "Employees":"employees",
+        "Ticker Symbol":"tickerSymbol",
+        "Parent Account ID":"parentAccount",
+        "Rating":"rating",
+        "Email Address":"createNew",
+        "Non Primary E-mails":"createNew",
+        "Office Phone":"phone",
+        "Billing Street":"createNew",
+        "Billing City":"createNew",
+        "Billing State":"createNew",
+        "Billing Postal Code":"createNew",
+        "Billing Country":"createNew",
+        "Shipping Street":"address",
+        "Shipping City":"city",
+        "Shipping State":"state",
+        "Shipping Postal Code":"zipcode",
+        "Shipping Country":"country",
+        "Industry":"type",
+        "Assigned User Name":"assignedTo",
+        "Date Created":"createDate",
+        "Date Modified":"lastUpdated"
+    }
+}

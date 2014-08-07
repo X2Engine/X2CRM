@@ -43,6 +43,8 @@ abstract class GridViewWidget extends SortableWidget {
 
     public $viewFile = '_gridViewProfileWidget';
 
+    public $sortableWidgetJSClass = 'GridViewWidget';
+
     private static $_JSONPropertiesStructure;
 
     /**
@@ -66,6 +68,29 @@ abstract class GridViewWidget extends SortableWidget {
     abstract protected function getModel ();
 
     /**
+     * Should be called after model is instantiated in getModel 
+     */
+    protected function afterGetModel () {
+        $this->_model->persistentGridSettings = 
+            $this->getWidgetProperty ('persistentGridSettings');
+    }
+
+    public function getPackages () {
+        if (!isset ($this->_packages)) {
+            $this->_packages = array_merge (parent::getPackages (), array (
+                'GridViewWidgetJS' => array(
+                    'baseUrl' => Yii::app()->request->baseUrl,
+                    'js' => array(
+                        'js/sortableWidgets/GridViewWidget.js',
+                    ),
+                    'depends' => array ('SortableWidgetJS')
+                ),
+            ));
+        }
+        return $this->_packages;
+    }
+
+    /**
      * overrides parent method
      */
     public static function getJSONPropertiesStructure () {
@@ -74,6 +99,7 @@ abstract class GridViewWidget extends SortableWidget {
                 parent::getJSONPropertiesStructure (),
                 array (
                     'resultsPerPage' => 10, 
+                    'persistentGridSettings' => false, 
                 )
             );
         }
@@ -85,9 +111,10 @@ abstract class GridViewWidget extends SortableWidget {
      */
     public function getDataProvider () {
         if (!isset ($this->_dataProvider)) {
-            $resultsPerPage = self::getJSONProperty (
-                $this->profile, 'resultsPerPage', $this->widgetType);
-            $this->_dataProvider = $this->model->search ($resultsPerPage, get_called_class ());
+            $resultsPerPage = $this->getWidgetProperty (
+                'resultsPerPage');
+            $this->_dataProvider = $this->model->search (
+                $resultsPerPage, get_called_class ().$this->widgetUID);
         }
         return $this->_dataProvider;
     }
@@ -97,9 +124,11 @@ abstract class GridViewWidget extends SortableWidget {
      */
     public function getGridViewConfig () {
         if (!isset ($this->_gridViewConfig)) {
+            list ($updateRoute, $updateParams) = $this->getAjaxUpdateRouteAndParams ();
             $this->_gridViewConfig = array (
+                'ajaxUrl' => Yii::app()->controller->createUrl ($updateRoute, $updateParams),
                 'sortableWidget' => $this,
-                'id'=>get_called_class (),
+                'id'=>get_called_class ().'_'.$this->widgetUID,
                 'enableScrollOnPageChange' => false,
                 'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
                 'template'=>
@@ -113,9 +142,10 @@ abstract class GridViewWidget extends SortableWidget {
                 'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
                 'modelName'=> get_class ($this->model),
                 'viewName'=>'profile',
-                'gvSettingsName'=> get_called_class (),
+                'gvSettingsName'=> get_called_class ().$this->widgetUID,
                 'enableControls'=>true,
                 'fullscreen'=>false,
+                'enableSelectAllOnAllPages' => false,
             );
         }
         return $this->_gridViewConfig;
@@ -214,17 +244,66 @@ abstract class GridViewWidget extends SortableWidget {
         return $this->_viewFileParams;
     }
 
-    public function init () {
-        parent::init ();
+    public function getAjaxUpdateRouteAndParams () {
         $updateRoute = '/profile/view';
         $updateParams =  array (
             'widgetClass' => get_called_class (),        
             'widgetType' => $this->widgetType,
             'id' => $this->profile->id,
         );
+        return array ($updateRoute, $updateParams);
+    }
 
-        $this->dataProvider->pagination->route = $updateRoute;
-        $this->dataProvider->pagination->params = $updateParams;
+    public function init ($skipGridViewInit = false) {
+        parent::init ();
+        if (!$skipGridViewInit) {
+            list ($updateRoute, $updateParams) = $this->getAjaxUpdateRouteAndParams ();
+            $this->dataProvider->pagination->route = $updateRoute;
+            $this->dataProvider->pagination->params = $updateParams;
+            $this->dataProvider->sort->route = $updateRoute;
+            $this->dataProvider->sort->params = $updateParams;
+        }
+    }
+
+    protected function getSettingsMenuContentEntries () {
+        return 
+            '<li class="grid-settings-button">'.
+                Yii::t('profile', 'Widget Grid Settings').'
+            </li>'.parent::getSettingsMenuContentEntries ();
+    }
+
+    protected function getSettingsMenuContentDialogs () {
+        return
+            '<div id="grid-settings-dialog-'.$this->widgetUID.'" 
+              style="display: none;">'.
+                '<div>'.Yii::t('profile', 'Use persistent filter and sort settings?').'</div>'.
+                CHtml::checkbox (
+                    'persistentGridSettings', 
+                    self::getJSONProperty (
+                        $this->profile, 'persistentGridSettings', $this->widgetType,
+                        $this->widgetUID)).
+                X2Html::hint (
+                    Yii::t(
+                        'profile', 'Leaving this box checked will prevent your grid filter and '.
+                        'sort settings from being reset when you log out of the app.'), 
+                    false, null, true, true).
+            '</div>'.parent::getSettingsMenuContentDialogs ();
+    }
+
+    /**
+     * @return array translations to pass to JS objects 
+     */
+    protected function getTranslations () {
+        if (!isset ($this->_translations )) {
+            $this->_translations = array_merge (
+                parent::getTranslations (), 
+                array (
+                    'Grid Settings' => Yii::t('profile', 'Widget Grid Settings'),
+                    'Cancel' => Yii::t('profile', 'Cancel'),
+                    'Save' => Yii::t('profile', 'Save'),
+                ));
+        }
+        return $this->_translations;
     }
 
 }

@@ -44,6 +44,7 @@ Yii::import('application.modules.accounts.models.Accounts');
  */
 abstract class VisitAllPagesTest extends X2WebTestCase {
 
+    public $autoLoginOnlyOnce = true;
 
     public static function setUpBeforeClass () {
         /* x2tempstart */ 

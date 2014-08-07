@@ -68,6 +68,7 @@ class Dropdowns extends CActiveRecord {
         return array(
             array('name', 'length', 'max' => 250),
             array('options', 'safe'),
+            array('options,name', 'required'),
             array('multi', 'boolean'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
@@ -120,10 +121,12 @@ class Dropdowns extends CActiveRecord {
      * Retrieves items for the dropdown of given id, and whether multiple selection is allowed.
      * @param integer $id
      * @param string $translationPack The translation module to use, if applicable
-     * @param bool $multi wheter or not to include the "multi" column for distinguishing multiple selection from single selection
+     * @param bool $multi wheter or not to include the "multi" column for distinguishing multiple 
+     *  selection from single selection
+     * @return array (<options>) or array ('options' => <options>, 'multi' => <multi>)
      */
     public static function getItems($id, $translationPack = null, $multi = false){
-        $data = Yii::app()->db->createCommand()
+        $data = Yii::app()->db->cache (1000, null)->createCommand()
                 ->select('options,multi')
                 ->from('x2_dropdowns')
                 ->where('id=:id', array(':id' => $id))
@@ -141,6 +144,9 @@ class Dropdowns extends CActiveRecord {
         return $multi ? $data : $data['options'];
     }
 
+    /**
+     * @return dropdown label or the value, if no corresponding label can be found
+     */
     public function getDropdownValue($id, $index){
         $arr = Dropdowns::getItems($id, null, true);
         if($arr['multi']){

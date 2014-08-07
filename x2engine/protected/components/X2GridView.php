@@ -60,6 +60,12 @@ class X2GridView extends X2GridViewBase {
     public $allFields = array ();
     public $specialColumns;
 
+    /**
+     * @var bool If true, the users will be able to select & perform mass action on all records 
+     *  all records in the dataprovider.
+     */
+    public $enableSelectAllOnAllPages = true;
+
     protected $_fieldModels;
     protected $_isAdmin;
     protected $_moduleName;
@@ -343,9 +349,11 @@ class X2GridView extends X2GridViewBase {
         $this->_moduleName = $value;
     }
 
-    /***********************************************************************
-    * Protected instance methods
-    ***********************************************************************/
+    protected function renderContentBeforeHeader () {
+        if ($this->enableSelectAllOnAllPages) {
+            $this->renderSelectAllRecordsOnAllPagesStrip ();
+        }
+    }
 
     /**
      * Creates column objects and initializes them. Overrides CGridView's method, swapping
@@ -389,6 +397,39 @@ class X2GridView extends X2GridViewBase {
         foreach($this->columns as $column) {
             $column->init();
         }
+    }
+
+
+
+    private function renderSelectAllRecordsOnAllPagesStrip () {
+        echo 
+            '<div class="select-all-records-on-all-pages-strip-container" style="display: none;">
+                <div class="select-all-notice">
+                '.Yii::t('app', 'All {count} {recordType} on this page have been selected. '.
+                '{clickHereLink} to select all {recordType} on all pages.', array (
+                    '{count}' => '<b>'.$this->dataProvider->itemCount.'</b>',
+                    '{clickHereLink}' => 
+                        '<a class="select-all-records-on-all-pages" href="#">'.
+                            Yii::t('app', 'Click here').
+                        '</a>',
+                    '{recordType}' => X2Model::getRecordName ($this->modelName, true),
+                )).'
+                </div>
+                <div class="all-selected-notice" style="display: none;">
+                '.Yii::t(
+                    'app', 
+                    'All {recordType} on all pages have been selected ({count} in total). '.
+                        '{clickHereLink} to clear your selection.', 
+                    array (
+                        '{count}' => '<b>'.$this->dataProvider->totalItemCount.'</b>',
+                        '{clickHereLink}' => 
+                            '<a class="unselect-all-records-on-all-pages" href="#">'.
+                                Yii::t('app', 'Click here').
+                            '</a>',
+                        '{recordType}' => X2Model::getRecordName ($this->modelName, true),
+                    )).'
+                </div>
+            </div>';
     }
 
 }

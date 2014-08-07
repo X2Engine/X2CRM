@@ -57,6 +57,7 @@ CREATE TABLE x2_web_forms(
     webleadEmailTemplate INT,
     leadSource           VARCHAR(100),
     generateLead         TINYINT DEFAULT 0,
+    generateAccount      TINYINT DEFAULT 0,
     PRIMARY KEY (id)
 ) COLLATE = utf8_general_ci;
 /*&*/

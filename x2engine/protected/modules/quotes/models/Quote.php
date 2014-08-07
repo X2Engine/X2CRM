@@ -462,7 +462,8 @@ class Quote extends X2Model {
 			// Subtotal:
 			$row = array($span[$pad]);
 			$row[] = str_replace('{c}','<strong>'.Yii::t('quotes','Subtotal').'</strong>',$tdDef);
-			$row[] = str_replace('{c}','<strong>'.Yii::app()->locale->numberFormatter->formatCurrency($this->subtotal,$this->currency).'</strong>',$tdDef);
+			$row[] = str_replace('{c}','<strong>'.
+                Formatter::formatCurrency($this->subtotal,$this->currency).'</strong>',$tdDef);
 			$markup[] = str_replace('{c}',implode('',$row),$tr);
 			$markup[] = '</tbody>';
 			// Adjustments:
@@ -483,7 +484,9 @@ class Quote extends X2Model {
 		// Total:
 		$row = array($span[$pad]);
 		$row[] = str_replace('{c}','<strong>'.Yii::t('quotes','Total').'</strong>',$tdDef);
-		$row[] = str_replace('{c}','<strong>'.Yii::app()->locale->numberFormatter->formatCurrency($this->total,$this->currency).'</strong>',$tdBox);
+		$row[] = str_replace(
+            '{c}','<strong>'.Formatter::formatCurrency($this->total,$this->currency).
+            '</strong>',$tdBox);
 		$markup[] = str_replace('{c}',implode('',$row),$tr);
 		$markup[] = '</tbody>';
 

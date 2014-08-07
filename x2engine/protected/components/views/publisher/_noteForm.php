@@ -43,12 +43,12 @@
 <div class="row">
     <div class="text-area-wrapper">
         <?php 
-        echo $form->textArea(
-            $model, 'actionDescription', 
+        echo $model->renderInput ('actionDescription',
             array(
-                'rows' => 3, 'cols' => 40,
-                'id'=>'note-action-description',
-                'class'=>'action-description'
+                'rows' => 3,
+                'cols' => 40,
+                'class'=>'action-description',
+                'id'=>'event-action-description',
             ));
         ?>
     </div>

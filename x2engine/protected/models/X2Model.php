@@ -70,6 +70,18 @@ abstract class X2Model extends CActiveRecord {
      */
     public $supportsRelationships = true;
 
+    /**
+     * @var string Used in the search scenario to uniquely identify this model. Allows filters
+     *  to be saved for each grid view.
+     */
+    public $uid;
+
+    /**
+     * @var bool If true, grid views displaying models of this type will have their filter and
+     *  sort settings saved in the database instead of in the session
+     */
+    public $persistentGridSettings = false;
+
     protected $_oldAttributes = array();
 
     /**
@@ -182,6 +194,8 @@ abstract class X2Model extends CActiveRecord {
     // cache for models loaded for link field attributes (used by automation system)
     protected static $_linkedModels; 
 
+    protected $_runAfterCreate;   // run afterCreate before afterSave, but only for new records
+
     private static $_modelNames;
 
     /**
@@ -201,7 +215,6 @@ abstract class X2Model extends CActiveRecord {
         'X2List' => 'list item',
     );
 
-    protected $_runAfterCreate;   // run afterCreate before afterSave, but only for new records
     private $_relatedX2Models;   // Relationship models stored in here
 
     /**
@@ -210,7 +223,10 @@ abstract class X2Model extends CActiveRecord {
      * Calls {@link queryFields()} before CActiveRecord::__constructo() is
      * called, and populates the model with default values, if any.
      */
-    public function __construct($scenario = 'insert'){
+    public function __construct($scenario = 'insert', $uid = null){
+        if ($scenario === 'search' && $uid !== null) {
+            $this->uid = $uid;
+        }
         $this->queryFields();
         parent::__construct($scenario);
         if($this->getIsNewRecord() && $scenario == 'insert') {
@@ -258,7 +274,7 @@ abstract class X2Model extends CActiveRecord {
                     $recordName .= 's';
                 }
             }
-            return self::$recordNames[$type];
+            return $recordName;
         } else {
             return $type;
         }
@@ -277,10 +293,10 @@ abstract class X2Model extends CActiveRecord {
         }
     }
 
-    public static function getModelName($typeOrModuleName){
+    public static function getModelName($typeOrModuleName, $strict=false){
         if(array_key_exists(strtolower($typeOrModuleName), X2Model::$associationModels)){
             return X2Model::$associationModels[strtolower($typeOrModuleName)];
-        }else{
+        }else if (!$strict) {
             if(class_exists(ucfirst($typeOrModuleName))){
                 return ucfirst($typeOrModuleName);
             }elseif(class_exists($typeOrModuleName)){
@@ -288,7 +304,7 @@ abstract class X2Model extends CActiveRecord {
             }else{
                 return false;
             }
-        }
+        } 
     }
 
     /**
@@ -1447,6 +1463,27 @@ abstract class X2Model extends CActiveRecord {
             case 'int':
                 if($fieldName != 'id')
                     return Yii::app()->locale->numberFormatter->formatDecimal ($this->$fieldName);
+            case 'custom':
+                if($field->linkType == 'display') {
+                    // Interpret as HTML. Restore curly braces in href
+                    // attributes that HTMLPurifier has replaced:
+                    $fieldText = preg_replace(
+                        '/%7B([\w\.]+)%7D/',
+                        '{$1}',
+                        $field->data);
+                    return Formatter::replaceVariables($fieldText,$this,'',false);
+                } elseif($field->linkType == 'formula') {
+                    $evald = Formatter::parseFormula($field->data,array(
+                        'model' => $this
+                    ));
+                    if($evald[0]) {
+                        return $render($evald[1]);
+                    } else {
+                        return Yii::t('app','Error parsing formula.').' '.$evald[1];
+                    }
+                } else {
+                    return $render($this->$fieldName);
+                }
             default:
                 return $render($this->$fieldName);
         }
@@ -1481,7 +1518,9 @@ abstract class X2Model extends CActiveRecord {
         }
         if (isset ($fmtNumber) && $makeLink && !Yii::app()->params->profile->disablePhoneLinks) {
             $fmtNumber = $encode ? CHtml::encode ($fmtNumber) : $fmtNumber;
-            return '<a href="tel:+1'.$number.'">'.$fmtNumber.'</a>';
+            if (!preg_match('/^\+\d/', $number))
+                $number = "+1".$number;
+            return '<a href="tel:'.$number.'">'.$fmtNumber.'</a>';
         }
         return isset($fmtNumber)? $fmtNumber : '';
     }
@@ -1939,17 +1978,19 @@ abstract class X2Model extends CActiveRecord {
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function searchBase($criteria, $pageSize=null, $uniqueId=null){
+        $uniqueId = $uniqueId === null ? get_class ($this) : $uniqueId; 
+
         if($criteria === null)
             $criteria = $this->getAccessCriteria();
         else
             $criteria->mergeWith($this->getAccessCriteria());
         $this->compareAttributes($criteria);
         $criteria->with = array(); // No joins necessary!
-        $sort = new SmartSort (get_class($this));
+        $sort = new SmartSort (get_class($this), $uniqueId);
         $sort->multiSort = false;
         $sort->attributes = $this->getSort();
         $sort->defaultOrder = 't.lastUpdated DESC, t.id DESC';
-        $sort->sortVar = get_class($this)."_sort";
+        $sort->sortVar = $uniqueId."_sort";
 
         if (!$pageSize) {
             if (!Yii::app()->user->isGuest) {
@@ -1965,7 +2006,7 @@ abstract class X2Model extends CActiveRecord {
                         'pageSize' => $pageSize,
                     ),
                     'criteria' => $criteria,
-                ), $uniqueId);
+                ), $uniqueId, $this->persistentGridSettings);
         $sort->applyOrder($criteria);
         return $dataProvider;
     }
@@ -2468,13 +2509,23 @@ abstract class X2Model extends CActiveRecord {
 
     /**
      * Retrieves model of a specified type with a specified id 
+     * @param bool $isAssocType If true, $type will be treated as an association type. Otherwise,
+     *  $type will be treated as a model class name.
      * @return mixed object or null
      */
-    public static function getModelOfTypeWithId ($type, $id) {
-        if(!(empty($type) || empty($id)) && 
-           X2Model::getModelName($type)){ // both ID and type must be set
+    public static function getModelOfTypeWithId ($type, $id, $isAssocType=false) {
+        if ($isAssocType) {
+            if(!(empty($type) || empty($id)) && 
+               X2Model::getModelName($type)){ // both ID and type must be set
 
-            return X2Model::model(X2Model::getModelName($type))->findByPk($id);
+                return X2Model::model(X2Model::getModelName($type))->findByPk($id);
+            }
+        } else {
+            if(!(empty($type) || empty($id)) && 
+                is_subclass_of ($type, 'X2Model')) { // both ID and type must be set
+
+                return X2Model::model($type)->findByPk($id);
+            }
         }
         return null; // invalid type or invalid id 
     }

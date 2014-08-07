@@ -35,156 +35,96 @@
  *****************************************************************************************/
 
 /**
- * Class for displaying tags on a record.
+ * Class for displaying center widgets
  *
  * @package application.components
  */
 class X2WidgetList extends X2Widget {
 
     public $model;
-    public $modelType;
-    public $block; // left, right, or center
-    public $layout; // associative array with 3 lists of widgets: left, right, and center
-    public $associationType;
-    public $associationId;
+
+    private $_profile;
+
+    public function getProfile () {
+        if (!isset ($this->_profile)) {
+            $this->_profile = (Yii::app()->user->isGuest ? 
+                new Profile : Yii::app()->params->profile);
+        }
+        return $this->_profile;
+    }
 
     /**
      * @var array (<widget name> => <array of parameters to pass to widget) 
      */
     public $widgetParamsByWidgetName = array ();
 
-    // widget specific javascript packages
-    public static function packages () {
-        $packages = array (
-            'GalleryWidgetJS' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'js' => array(
-                    'js/galleryManagerDialogSetup.js',
-                    'js/gallerymanager/bootstrap/js/bootstrap.js',
-                ),
-            ),
-            'ChartWidgetExtJS' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'js' => array(
-                    'js/jqplot/jquery.jqplot.js',
-                    'js/jqplot/plugins/jqplot.pieRenderer.js',
-                    'js/jqplot/plugins/jqplot.categoryAxisRenderer.js',
-                    'js/jqplot/plugins/jqplot.pointLabels.js',
-                    'js/jqplot/plugins/jqplot.dateAxisRenderer.js',
-                    'js/jqplot/plugins/jqplot.highlighter.js',
-                    'js/jqplot/plugins/jqplot.enhancedLegendRenderer.js',
-                ),
-            ),
-            'ChartWidgetExtCss' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'css' => array(
-                    'js/jqplot/jquery.jqplot.css',
-                ),
-            ),
-            'ChartWidgetJS' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'js' => array(
-                    'js/auxlib.js',
-                    'js/X2Chart.js',
-                    'js/X2ActionHistoryChart.js',
-                ),
-            ),
-            'ProfileChartWidgetJS' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'js' => array(
-                    'js/auxlib.js',
-                    'js/X2Chart.js',
-                    'js/X2UsersChart.js',
-                    'js/X2EventsChart.js',
-                ),
-            ),
-            'ChartWidgetCss' => array(
-                'baseUrl' => Yii::app()->getTheme ()->getBaseUrl (),
-                'css' => array(
-                    'css/x2chart.css'
-                )
-            ),
-            'InlineRelationshipsJS' => array(
-                'baseUrl' => Yii::app()->getTheme ()->getBaseUrl ().'/css/gridview/',
-                'js' => array (
-                    'jquery.yiigridview.js',
-                )
-            ),
-            'InlineTagsJS' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'js' => array(
-                    'js/auxlib.js',
-                    'js/X2Tags/TagContainer.js',
-                    'js/X2Tags/TagCreationContainer.js',
-                    'js/X2Tags/InlineTagsContainer.js',
-                ),
-            ),
-        );
-        if (AuxLib::isIE8 ()) {
-            $packages['ChartWidgetExtJS']['js'][] = 'js/jqplot/excanvas.js';
-        }
-        return $packages;
-    }
-
-
-    public function init(){
-        // widget layout
-        if(!Yii::app()->user->isGuest){
-            $this->layout = Yii::app()->params->profile->getLayout ();
-        }else{
-            $profile = new Profile();
-            $this->layout = $profile->initLayout ();
-        }
-
-        parent::init();
-    }
-
     /**
      * Renders widgets in layout 
-     * @param string $layoutPos <'center' | 'hidden'>
      */
-    private function renderWidget ($layoutPos) {
-        $layout = $this->layout[$layoutPos];
-        foreach($layout as $name => $widget){ // list of widgets
-            $widgetParams = array ();
-            if (isset ($this->widgetParamsByWidgetName[$name])) 
-                $widgetParams = $this->widgetParamsByWidgetName[$name];
-
-            $viewParams = array(
-                'widget' => $widget,
-                'name' => $name,
+    private function renderWidget () {
+        $layout = $this->profile->recordViewWidgetLayout;
+        foreach($layout as $widgetClass => $settings){ // list of widgets
+            $widgetParams = array(
                 'model' => $this->model,
-                'modelType' => $this->modelType,
-                'packagesOnly' => $layoutPos === 'hidden',
-                'widgetParams' => $widgetParams
+                'profile' => $this->profile,
+                'widgetType' => 'recordView',
             );
 
+            if (isset ($this->widgetParamsByWidgetName[$widgetClass])) {
+                foreach ($this->widgetParamsByWidgetName[$widgetClass] as $paramName => $value) {
+                    $widgetParams[$paramName] = $value;
+                }
+            }
 
-            if(!$this->isExcluded ($name)){
-                $this->render(
-                    'centerWidget',
-                    $viewParams
-                );
+            if(!$this->isExcluded ($widgetClass)){
+                Yii::app()->controller->widget(
+                    'application.components.sortableWidget.recordViewWidget.'.$widgetClass, 
+                    $widgetParams);
             }
         }
     }
 
     public function run(){
+        echo '<div id="content-widgets">';
+        echo '<div id="recordView-widgets-container-inner">';
+        $this->renderWidget ();
+        echo '</div>';
+        echo '</div>';
 
-        if($this->block == 'center'){
-            echo '<div id="content-widgets">';
-            $this->renderWidget ('center');
-            $this->renderWidget ('hidden');
-            echo '</div>';
-        }
+
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/sortableWidgets/SortableWidgetManager.js', 
+            CClientScript::POS_END);
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/sortableWidgets/RecordViewWidgetManager.js', 
+            CClientScript::POS_END);
+        Yii::app()->clientScript->registerScript ('profilePageWidgetInitScript', "
+            x2.recordViewWidgetManager = new RecordViewWidgetManager ({
+                setSortOrderUrl: '".
+                    Yii::app()->controller->createUrl ('/profile/setWidgetOrder')."',
+                showWidgetContentsUrl: '".Yii::app()->controller->createUrl (
+                    '/profile/view', array ('id' => 1))."',
+                translations: ".CJSON::encode (array (
+                    'Create' => Yii::t('app',  'Create'),
+                    'Cancel' => Yii::t('app',  'Cancel'),
+                )).",
+                modelId: {$this->model->id},
+                modelType: '".get_class ($this->model)."'
+            });
+        ", CClientScript::POS_READY);
+
     }
 
     private function isExcluded ($name) {
-        if (($this->modelType == 'BugReports' && $name!='WorkflowStageDetails') ||
-            ($this->modelType == 'Quote' && $name == 'WorkflowStageDetails') ||
-            ($this->modelType == 'Marketing' &&
-             ($name == 'WorkflowStageDetails' || $name === 'InlineRelationships')) ||
-            ($this->modelType === 'products' && $name === 'WorkflowStageDetails')) {
+        $modelType = get_class ($this->model);
+
+        if ($modelType === 'Actions' && $name !== 'InlineTagsWidget' ||
+            $modelType !== 'Marketing' && $name === 'CampaignChartWidget' ||
+            ($modelType == 'BugReports' && $name!='WorkflowStageDetailsWidget') ||
+            ($modelType == 'Quote' && $name == 'WorkflowStageDetailsWidget') ||
+            ($modelType == 'Marketing' &&
+             ($name == 'WorkflowStageDetailsWidget' || $name === 'InlineRelationshipsWidget')) ||
+            ($modelType === 'products' && $name === 'WorkflowStageDetailsWidget')) {
 
             return true;
         } else {
@@ -192,4 +132,11 @@ class X2WidgetList extends X2Widget {
         }
     }
 
+    /***********************************************************************
+    * Legacy properties
+    * Preserved for backwards compatibility with custom modules
+    ***********************************************************************/
+    
+    public $block; 
+    public $modelType;
 }

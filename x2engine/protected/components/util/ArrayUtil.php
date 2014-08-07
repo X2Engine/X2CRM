@@ -57,7 +57,8 @@ class ArrayUtil {
 		$expKeys = array_keys($expectedFields);
 		// Current keys: in the array to compare against
 		$curKeys = array_keys($currentFields);
-		// Keys to save: both already present in the current fields and defined in the expected fields
+		// Keys to save: both already present in the current fields and defined in the expected 
+        // fields
 		$savKeys = array_intersect($expKeys, $curKeys);
 		// New keys: that are not present in the current fields but defined in the expected fields
 		$newKeys = array_diff($expKeys, $curKeys);
@@ -75,7 +76,8 @@ class ArrayUtil {
 	}
 
     /**
-     * A recursive version of normalizeToArray () which maintains order of current fields. 
+     * A recursive version of normalizeToArray () which optionally maintains order of current 
+     * fields. 
      *
 	 * @param array $expectedFields The array with key => default value pairs
 	 * @param array $currentFields The array to copy values from

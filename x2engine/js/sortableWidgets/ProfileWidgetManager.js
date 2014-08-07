@@ -48,6 +48,7 @@ function ProfileWidgetManager (argsDict) {
         cssSelectorPrefix: 'profile', 
         widgetType: 'profile',
         connectedContainerSelector: '', // class shared by all columns containing sortable widgets
+        createProfileWidgetUrl: ''
     };
 
 	SortableWidgetManager.call (this, argsDict);	
@@ -126,14 +127,15 @@ ProfileWidgetManager.prototype._padEmptyWidgetBox = function (widgetBoxSelector)
  * @return array widgetOrder An array of strings where each string corresponds to a widget class
  */
 ProfileWidgetManager.prototype._getWidgetOrder = function () {
+    var that = this;
     var widgetOrder = [];
     var widgetClass;
     $(this._widgetsBoxSelector).children (this._widgetContainerSelector).each (function () {
-        widgetClass = $(this).attr ('id').replace (/-widget-container/, ''); 
+        widgetClass = that.getWidgetKey (this);
         widgetOrder.push (widgetClass);
     });
     $(this._widgetsBoxSelector2).children (this._widgetContainerSelector).each (function () {
-        widgetClass = $(this).attr ('id').replace (/-widget-container/, ''); 
+        widgetClass = that.getWidgetKey (this);
         widgetOrder.push (widgetClass);
     });
     return widgetOrder;
@@ -224,8 +226,62 @@ ProfileWidgetManager.prototype._afterShowWidgetContents = function () {
     x2.profile.checkAddWidgetsColumn (); 
 };
 
+ProfileWidgetManager.prototype._createProfileWidget = function (widgetType, callback) {
+    var that = this;
+    $.ajax ({
+        url: this.createProfileWidgetUrl,
+        data: {
+            'widgetType': widgetType,
+            'widgetLayoutName': 'profile'
+        },
+        type: 'POST',
+        dataType: 'json',
+        success: function (data) {
+            if (data !== 'failure') {
+                $(that._widgetsBoxSelector).append (data.widget);
+                hideShowHiddenWidgetSubmenuDividers ();
+                that._afterShowWidgetContents ();
+                callback ();
+            }
+        }
+    });
+};
+
+
+ProfileWidgetManager.prototype._setUpCreateWidgetDialog = function () {
+    var that = this;
+    var dialog$ = $('#create-profile-widget-dialog').dialog ({
+        title: this.translations['createProfileWidgetDialogTitle'],
+        autoOpen: false,
+        width: 500,
+        buttons: [
+            {
+                text: that.translations['Cancel'],
+                click: function () {
+                    $(this).dialog ('close');
+                }
+            },
+            {
+                text: that.translations['Create'],
+                'class': 'highlight',
+                click: function () {
+                    that._createProfileWidget ($(this).find ('select').val (), function () {
+                        dialog$.dialog ('close');                                           
+                    });
+                }
+            }
+        ]
+    });
+
+    $('#create-profile-widget-button').parent ().click (function () {
+        dialog$.dialog ('open');
+    });
+};
+
+
 ProfileWidgetManager.prototype._init = function () {
     this._widgetsBoxSelector2 = '#' + this.cssSelectorPrefix + '-widgets-container-2';
     this._setUpAddProfileWidgetMenu ();
+    this._setUpCreateWidgetDialog ();
     SortableWidgetManager.prototype._init.call (this);
 };

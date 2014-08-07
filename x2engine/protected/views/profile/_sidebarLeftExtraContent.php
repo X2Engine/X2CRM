@@ -310,7 +310,7 @@ foreach($socialSubtypes as $key=>$value) {
         )
     );
     $filterDisplayName = $value; // capitalize filter name for label
-    echo "<label for=\"$key\" title=\"$title\">".Yii::t('app',$value)."</label>";
+    echo "<label for=\"sidebar-filter-default\" title=\"$title\">".Yii::t('app',$value)."</label>";
     echo "</li>\n";
 }
 echo "</ul>\n";

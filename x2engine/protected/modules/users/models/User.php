@@ -59,6 +59,12 @@ class User extends CActiveRecord {
     private $_fullName;
 
     /**
+     * @var bool If true, grid views displaying models of this type will have their filter and
+     *  sort settings saved in the database instead of in the session
+     */
+    public $persistentGridSettings = false;
+
+    /**
      * Returns the static model of the specified AR class.
      * @return User the static model class
      */
@@ -276,6 +282,26 @@ class User extends CActiveRecord {
                     )
                 ));
         return $usersDataProvider;
+    }
+
+    /**
+     * @return array (<username> => <full name>)
+     */
+    public static function getUserOptions () {
+        $userOptions = Yii::app()->db->createCommand ("
+            select username, concat(firstName, ' ', lastName) as fullName
+            from x2_users
+            where status=1
+            order by lastName asc
+        ")->queryAll ();
+        return array_combine (
+            array_map (function ($row) {
+                return $row['username'];
+            }, $userOptions),
+            array_map (function ($row) {
+                return $row['fullName'];
+            }, $userOptions)
+        );
     }
 
 
@@ -589,7 +615,7 @@ class User extends CActiveRecord {
         $criteria->compare('login', $this->login);
         $criteria->addCondition('(temporary=0 OR temporary IS NULL)');
 
-        return new SmartDataProvider(get_class($this), array(
+        return new SmartActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
                     'pagination'=>array(
                         'pageSize'=>Profile::getResultsPerPage(),

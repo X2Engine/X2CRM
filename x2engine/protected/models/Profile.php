@@ -48,6 +48,12 @@ class Profile extends CActiveRecord {
 
     private $_isActive;
 
+    /**
+     * @var bool If true, grid views displaying models of this type will have their filter and
+     *  sort settings saved in the database instead of in the session
+     */
+    public $persistentGridSettings = false;
+
     public function setIsActive ($isActive) {
         if ($isActive === '0' || $isActive === 'false') {
             $this->_isActive = 0;
@@ -120,19 +126,8 @@ class Profile extends CActiveRecord {
             'WidgetLayoutJSONFieldsBehavior' => array(
                 'class' => 'application.components.WidgetLayoutJSONFieldsBehavior',
                 'transformAttributes' => array (
-                    'profileWidgetLayout' => array (
-                        'EventsChartProfileWidget',
-                        'UsersChartProfileWidget',
-                        'ProfilesGridViewProfileWidget',
-                        'ContactsGridViewProfileWidget',
-                        'AccountsGridViewProfileWidget',
-                        'ActionsGridViewProfileWidget',
-                        'OpportunitiesGridViewProfileWidget',
-                        'MarketingGridViewProfileWidget',
-                        'ServicesGridViewProfileWidget',
-                        'QuotesGridViewProfileWidget',
-                        'DocViewerProfileWidget',
-                    )
+                    'profileWidgetLayout' => SortableWidget::PROFILE_WIDGET_PATH_ALIAS,
+                    'recordViewWidgetLayout' => SortableWidget::RECORD_VIEW_WIDGET_PATH_ALIAS,
                 )
             ),
             'X2SmartSearchModelBehavior' => array (
@@ -431,13 +426,14 @@ class Profile extends CActiveRecord {
     }
 
     // lookup user's settings for a gridview (visible columns, column widths)
-    public static function getGridviewSettings($viewName = null){
+    public static function getGridviewSettings($gvSettingsName = null){
         if(!Yii::app()->user->isGuest)
-            $gvSettings = json_decode(Yii::app()->params->profile->gridviewSettings, true); // converts JSON string to assoc. array
-        if(isset($viewName)){
-            $viewName = strtolower($viewName);
-            if(isset($gvSettings[$viewName]))
-                return $gvSettings[$viewName];
+            // converts JSON string to assoc. array
+            $gvSettings = json_decode(Yii::app()->params->profile->gridviewSettings, true); 
+        if(isset($gvSettingsName)){
+            $gvSettingsName = strtolower($gvSettingsName);
+            if(isset($gvSettings[$gvSettingsName]))
+                return $gvSettings[$gvSettingsName];
             else
                 return null;
         } elseif(isset($gvSettings)){
@@ -448,14 +444,16 @@ class Profile extends CActiveRecord {
     }
 
     // add/update settings for a specific gridview, or save all at once
-    public static function setGridviewSettings($gvSettings, $viewName = null){
+    public static function setGridviewSettings($gvSettings, $gvSettingsName = null){
         if(!Yii::app()->user->isGuest){
-            if(isset($viewName)){
+            if(isset($gvSettingsName)){
                 $fullGvSettings = Profile::getGridviewSettings();
-                $fullGvSettings[strtolower($viewName)] = $gvSettings;
-                Yii::app()->params->profile->gridviewSettings = json_encode($fullGvSettings); // encode array in JSON
+                $fullGvSettings[strtolower($gvSettingsName)] = $gvSettings;
+                // encode array in JSON
+                Yii::app()->params->profile->gridviewSettings = json_encode($fullGvSettings); 
             }else{
-                Yii::app()->params->profile->gridviewSettings = json_encode($gvSettings); // encode array in JSON
+                // encode array in JSON
+                Yii::app()->params->profile->gridviewSettings = json_encode($gvSettings); 
             }
             return Yii::app()->params->profile->update(array('gridviewSettings'));
         }else{
@@ -881,10 +879,6 @@ class Profile extends CActiveRecord {
                     'title' => 'Activity Feed',
                     'minimize' => false,
                 ),
-                'GoogleMaps' => array(
-                    'title' => 'Google Map',
-                    'minimize' => false,
-                ),
                 'OnlineUsers' => array(
                     'title' => 'Active Users',
                     'minimize' => false,
@@ -894,7 +888,7 @@ class Profile extends CActiveRecord {
                     'minimize' => false,
                 ),
                 'TimeZone' => array(
-                    'title' => 'Time Zone',
+                    'title' => 'Clock',
                     'minimize' => false,
                 ),
                 'MessageBox' => array(
@@ -977,6 +971,7 @@ class Profile extends CActiveRecord {
             }
         }
 
+
         // ensure that widget properties are the same as those in the default layout
         foreach($layout[$position] as $name=>$arr){
             if (in_array ($name, array_keys ($initLayout[$position])) &&
@@ -1034,9 +1029,14 @@ class Profile extends CActiveRecord {
         $hiddenProfile = false;
         foreach($profileWidgetLayout as $name => $widgetSettings){
             $hidden = $widgetSettings['hidden'];
-            if ($hidden) {
-                $hiddenProfileWidgetsMenu .= '<li><span class="x2-hidden-widgets-menu-item profile-widget" id="'.$name.'">'.
-                    $widgetSettings['label'].'</span></li>';
+            $softDeleted = $widgetSettings['softDeleted'];
+            if ($hidden && !$softDeleted) {
+                $hiddenProfileWidgetsMenu .= 
+                    '<li>
+                        <span class="x2-hidden-widgets-menu-item profile-widget" id="'.$name.'">'.
+                            CHtml::encode ($widgetSettings['label']).
+                        '</span>
+                    </li>';
                 $hiddenProfile = true;
             }
         }
@@ -1057,34 +1057,36 @@ class Profile extends CActiveRecord {
      */
     public function getWidgetMenu(){
         $layout = $this->getLayout();
+        $recordViewWidgetLayout = $this->recordViewWidgetLayout;
 
-        /*$menu = '<ul id="widget-menu">';
-        foreach($layout['hidden'] as $name => $widget){
-            $menu .= '<li><span class="x2-widget-menu-item" id="'.$name.'">'.$widget['title'].'</span></li>';
+        $hiddenRecordViewWidgetMenu = '';
+        foreach ($recordViewWidgetLayout as $widgetClass => $settings) {
+            if ($settings['hidden']) {
+                $hiddenRecordViewWidgetMenu .=
+                    '<li>
+                        <span class="x2-hidden-widgets-menu-item recordView-widget" 
+                          id="'.$widgetClass.'">'.
+                            CHtml::encode ($settings['label']).
+                        '</span>
+                    </li>';
+            }
         }
-        if(!empty($layout['hidden']) && !empty($layout['hiddenRight'])){
-            $menu .= '<li class="x2widget-menu-divider"></li>';
-        }
-        foreach($layout['hiddenRight'] as $name => $widget){
-            $menu .= '<li><span class="x2-widget-menu-item widget-right" id="'.$name.'">'.$widget['title'].'</span></li>';
-        }
-        $menu .= '</ul>';*/
 
         // used to determine where section dividers should be placed
-        $hiddenCenter = !empty ($layout['hidden']);
+        $hiddenCenter = $hiddenRecordViewWidgetMenu !== '';
         $hiddenRight = !empty ($layout['hiddenRight']);
 
         $menu = '<div id="x2-hidden-widgets-menu">';
-        $menu .= '<ul id="x2-hidden-center-widgets-menu" class="x2-hidden-widgets-menu-section">';
-        foreach($layout['hidden'] as $name => $widget){
-            $menu .= '<li><span class="x2-hidden-widgets-menu-item widget-center" id="'.$name.'">'.$widget['title'].'</span></li>';
-        }
+        $menu .= '<ul id="x2-hidden-recordView-widgets-menu" 
+            class="x2-hidden-widgets-menu-section">';
+        $menu .= $hiddenRecordViewWidgetMenu;
         $menu .= '</ul>';
         $menu .= '<ul id="x2-hidden-right-widgets-menu" class="x2-hidden-widgets-menu-section">';
         $menu .= '<li '.(($hiddenCenter && $hiddenRight) ? '' : 'style="display: none;"').
             'class="x2-hidden-widgets-menu-divider"></li>';
         foreach($layout['hiddenRight'] as $name => $widget){
-            $menu .= '<li><span class="x2-hidden-widgets-menu-item widget-right" id="'.$name.'">'.$widget['title'].'</span></li>';
+            $menu .= '<li><span class="x2-hidden-widgets-menu-item widget-right" id="'.$name.'">'.
+                $widget['title'].'</span></li>';
         }
         $menu .= '</ul>';
         $menu .= '</div>';

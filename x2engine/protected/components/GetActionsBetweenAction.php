@@ -41,7 +41,7 @@ class GetActionsBetweenAction extends CAction {
 		$startTimestamp, $endTimestamp, $associationId, $associationType,
 		$showRelationships) {
 
-		echo CJSON::encode(X2Chart::getActionsData (
+		echo CJSON::encode(ActionHistoryChartWidget::getChartData (
 			$startTimestamp, $endTimestamp, $associationId, $associationType,
 			$showRelationships));
 	}

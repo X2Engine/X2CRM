@@ -764,22 +764,9 @@ class ActionsController extends x2base {
      */
     public function actionUncomplete($id){
         $model = $this->loadModel($id);
-        switch($model->priority){
-            case 3:
-                $box = "Red";
-                break;
-            case 2:
-                $box = "Orange";
-                break;
-            default:
-                $box = "Yellow";
-        }
         if($model->uncomplete()){
             if(Yii::app()->request->isAjaxRequest) {
-                echo json_encode(array(
-                    "<span style='color:grey'>".Yii::t('actions', 'Due: ')."</span>".Actions::parseStatus($model->dueDate).'</b>',
-                    "background:url(".Yii::app()->theme->baseUrl."/images/icons/{$box}_box.png) 0 0px no-repeat transparent"
-                ));
+                echo 'success';
             }else{
                 $this->redirect(array('/actions/'.$id));
             }
@@ -940,9 +927,15 @@ class ActionsController extends x2base {
     }
 
     // List all public actions
-    public function actionViewAll(){
+    public function actionViewAll($showActions=null){
         $model = new Actions('search');
-        $this->render('oldIndex', array('model' => $model));
+        $this->render(
+            'oldIndex',
+            array(
+                'model' => $model,
+                'showActions' => $showActions,
+            )
+        );
     }
 
     public function actionViewGroup(){
@@ -1016,8 +1009,6 @@ class ActionsController extends x2base {
         }
         Yii::app()->end();
     }
-
-
 
     /***********************************************************************
     * protected static methods

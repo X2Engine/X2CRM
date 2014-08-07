@@ -180,11 +180,15 @@ class X2ClientScript extends NLSClientScript {
 
     public function getCurrencyConfigScript () {
         // Declare currency format(s) from Yii for the jQuery maskMoney plugin
-        $locale = Yii::app()->locale;
+        if (Yii::app()->settings->currencyLocale !== null) {
+            $locale = Yii::app()->getLocale (Yii::app()->settings->currencyLocale);
+        } else {
+            $locale = Yii::app()->locale;
+        }
 
         $decSym = $locale->getNumberSymbol('decimal');
         $grpSym = $locale->getNumberSymbol('group');
-        $curSym = Yii::app()->getLocale()->getCurrencySymbol(Yii::app()->params['currency']); 
+        $curSym = $locale->getCurrencySymbol(Yii::app()->params['currency']); 
 
         // Declare:
         $cldScript = 

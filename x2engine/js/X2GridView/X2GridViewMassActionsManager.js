@@ -37,7 +37,9 @@
  * Manages x2 gridview mass action actions and ui element behavior  
  */
 
-function X2GridViewMassActionsManager (argsDict) {
+x2.GridViewMassActionsManager = (function () {
+
+function GridViewMassActionsManager (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
@@ -46,23 +48,32 @@ function X2GridViewMassActionsManager (argsDict) {
         namespacePrefix: '', // used to access other x2gridview javascript objects
         gridSelector: '', // can be used to select associated grid view element
         fixedHeader: false, // whether or not grid view has a fixed header
-        executeUrls: [], // urls to make ajax requests
+        massActionUrl: '',
          
         modelName: '', // name of model associated with grid
         translations: [], 
         expandWidgetSrc: '', // image src
         collapseWidgetSrc: '', // image src
         closeWidgetSrc: '', // image src
+        progressBarDialogSelector: null,
+        enableSelectAllOnAllPages: true
     };
 
     this._previouslySelectedRecords = null; // records selected before grid update
-    this._topPagerNamespace = this.namespacePrefix + 'TopPagerManager'; 
     this._stickyHeaderNamespace = this.namespacePrefix + 'stickyHeader';
-    this.tagContainer = null;
     this._successFlashFadeTimeout = null;
 
     auxlib.applyArgs (this, defaultArgs, argsDict);
+
+    this._topPagerNamespace = this.namespacePrefix + 'TopPagerManager'; 
     this._elementSelector = '#' + this.gridId + '-mass-action-buttons';
+
+    /**
+     * @var bool If true, user has selected all records on all pages
+     */
+    this._allRecordsOnAllPagesSelected = false;
+
+    this.massActionInProgress = false;
 
     this._init ();
 }
@@ -82,7 +93,7 @@ Public instance methods
 /**
  * @return bool true if the gridview header is fixed, false otherwise
  */
-X2GridViewMassActionsManager.prototype.headerIsFixed = function () {
+GridViewMassActionsManager.prototype.headerIsFixed = function () {
 
     // header can only be unfixed if sticky header is enabled
     if (typeof x2.gridViewStickyHeader !== 'undefined') {
@@ -91,14 +102,14 @@ X2GridViewMassActionsManager.prototype.headerIsFixed = function () {
     return true;
 };
 
-X2GridViewMassActionsManager.prototype.saveSelectedRecords = function () {
+GridViewMassActionsManager.prototype.saveSelectedRecords = function () {
     this._previouslySelectedRecords = this._getSelectedRecords ();
 };
 
 /**
  * Public function for condensing interface
  */
-X2GridViewMassActionsManager.prototype.moveButtonIntoMoreMenu = function () {
+GridViewMassActionsManager.prototype.moveButtonIntoMoreMenu = function () {
     var that = this; 
     var moreButton = $('#' + that.gridId + '-mass-action-buttons .mass-action-more-button');
     var buttonSet = $('#' + that.gridId + '-mass-action-buttons .mass-action-button-set');
@@ -132,7 +143,7 @@ X2GridViewMassActionsManager.prototype.moveButtonIntoMoreMenu = function () {
 /**
  * Public function for expanding interface
  */
-X2GridViewMassActionsManager.prototype.moveMoreButtonMenuItemIntoButtons = function () {
+GridViewMassActionsManager.prototype.moveMoreButtonMenuItemIntoButtons = function () {
     var that = this; 
     var buttonSet = $('#' + that.gridId + '-mass-action-buttons .mass-action-button-set');
     var buttons = $(buttonSet).children ();
@@ -143,7 +154,7 @@ X2GridViewMassActionsManager.prototype.moveMoreButtonMenuItemIntoButtons = funct
 
     var buttonActions = auxlib.map (function (a) {
         return $(a).attr ('class').match (/mass-action-button-([^ ]+)/)[1];
-    }, buttons);
+    }, $.makeArray (buttons));
 
     // get first non hidden element in button list 
     $(listItems).each (function () {
@@ -161,7 +172,7 @@ X2GridViewMassActionsManager.prototype.moveMoreButtonMenuItemIntoButtons = funct
 
     if ($.inArray (lastButtonAction, buttonActions) === -1) return false;
 
-    // hiden button list item and show button set button
+    // hide button list item and show button set button
     $(firstItem).hide ();
     $('#' + that.gridId + '-mass-action-buttons .mass-action-button-' + lastButtonAction).show ();
 
@@ -177,7 +188,7 @@ X2GridViewMassActionsManager.prototype.moveMoreButtonMenuItemIntoButtons = funct
     return true;
 };
 
-X2GridViewMassActionsManager.prototype.reinit = function () {
+GridViewMassActionsManager.prototype.reinit = function () {
     this._init ();
 };
 
@@ -194,7 +205,7 @@ Private instance methods
  * @param string key the type of flash ('notice' | 'error' | 'success')
  * @param array of strings flashes flash messages which will be displayed
  */
-X2GridViewMassActionsManager.prototype._displayKeyFlashes = function (key, flashes) {
+GridViewMassActionsManager.prototype._displayKeyFlashes = function (key, flashes) {
     var that = this;
     that.DEBUG && console.log ('x2.massActions._displayKeyFlashes');
     var flashNum = flashes.length;
@@ -267,7 +278,7 @@ X2GridViewMassActionsManager.prototype._displayKeyFlashes = function (key, flash
  * @param string key the type of flash
  * @param object parent the jQuery object for the flashes container associated with key
  */
-X2GridViewMassActionsManager.prototype._appendFlashSectionContainer = function (key, parent) {
+GridViewMassActionsManager.prototype._appendFlashSectionContainer = function (key, parent) {
     var that = this; 
     $(parent).append (
         $('<div>', {
@@ -300,7 +311,7 @@ X2GridViewMassActionsManager.prototype._appendFlashSectionContainer = function (
  * @param dictionary flashes keys are the type of flash ('success', 'notice', 'error'), values
  *  are arrays of messages
  */
-X2GridViewMassActionsManager.prototype._displayFlashes = function (flashes) {
+GridViewMassActionsManager.prototype._displayFlashes = function (flashes) {
     var that = this; 
     that.DEBUG && console.log ('x2.massActions._displayFlashes: flashes = ');
     that.DEBUG && console.log (flashes);
@@ -357,7 +368,7 @@ X2GridViewMassActionsManager.prototype._displayFlashes = function (flashes) {
 /**
  * Checks if flashes container should be made sticky and if so, makes it sticky
  */
-X2GridViewMassActionsManager.prototype._checkFlashesSticky = function () {
+GridViewMassActionsManager.prototype._checkFlashesSticky = function () {
     var that = this; 
     var flashesContainer = $('#x2-gridview-flashes-container');
 
@@ -372,7 +383,7 @@ X2GridViewMassActionsManager.prototype._checkFlashesSticky = function () {
 /**
  * Checks if flashes container should be made unsticky and if so, unsticks it
  */
-X2GridViewMassActionsManager.prototype._checkFlashesUnsticky = function () {
+GridViewMassActionsManager.prototype._checkFlashesUnsticky = function () {
     var that = this; 
     var flashesContainer = $('#x2-gridview-flashes-container');
 
@@ -388,260 +399,28 @@ X2GridViewMassActionsManager.prototype._checkFlashesUnsticky = function () {
 };
 
 
-/***********************************************************************
-* Execute mass actions functions 
-***********************************************************************/
-
-X2GridViewMassActionsManager.prototype._executeCompleteSelected = function () {
-    var that = this;
-    var selectedRecords = that._getSelectedRecords () 
-    $.ajax({
-        url: that.executeUrls['completeAction'],
-        type:'post',
-        data:{
-            massAction: 'completeAction',
-            gvSelection: selectedRecords
-        },
-        success: function (data) { 
-            that.DEBUG && console.log ('_executeCompleteSelected: ajax ret: ' + data);
-            var response = JSON.parse (data);
-            var returnStatus = response[0];
-            if (response['success']) {
-                that._updateGrid ();
-            } 
-            that._displayFlashes (response);
-        }
-    });
-};
-
-X2GridViewMassActionsManager.prototype._executeUncompleteSelected = function () {
-    var that = this;
-    var selectedRecords = that._getSelectedRecords () 
-    $.ajax({
-        url: that.executeUrls['uncompleteAction'],
-        type:'post',
-        data:{
-            massAction: 'uncompleteAction',
-            gvSelection: selectedRecords
-        },
-        success: function (data) { 
-            that.DEBUG && console.log ('_executeUncompleteSelected: ajax ret: ' + data);
-            var response = JSON.parse (data);
-            var returnStatus = response[0];
-            if (response['success']) {
-                that._updateGrid ();
-            } 
-            that._displayFlashes (response);
-        }
-    });
-};
-
-
-
-/**
- * Execute add to list mass action
- * @param object dialog a jquery dialog object
- */
-X2GridViewMassActionsManager.prototype._executeRemoveFromList = function (dialog) {
-    var that = this; 
-    var listId = window.location.href.replace (/.*contacts\/list\/id\/([0-9]+)#?$/, '$1');
-    var selectedRecords = that._getSelectedRecords () 
-    $.ajax({
-        url: that.executeUrls['removeFromList'],
-        type:'post',
-        data:{
-            massAction: 'removeFromList',
-            listId: listId,
-            gvSelection: selectedRecords
-        },
-        success: function (data) { 
-            that.DEBUG && console.log ('_executeRemoveFromList: ajax ret: ' + data);
-            var response = JSON.parse (data);
-            $(dialog).dialog ('close');
-            that._displayFlashes (response);
-            if (response['success']) {
-                that._updateGrid ();
-            }
-        }
-    });
-};
-
-/**
- * Execute add to list mass action
- * @param object dialog a jquery dialog object
- */
-X2GridViewMassActionsManager.prototype._executeAddToList = function (dialog) {
-    var that = this; 
-	var targetList = $('#addToListTarget').val();
-
-    $.ajax({
-        url: that.executeUrls['addToList'],
-        type:'post',
-        data:{
-            massAction: 'addToList',
-            listId: targetList,
-            gvSelection: that._getSelectedRecords () 
-        },
-        success: function (data) { 
-            that.DEBUG && console.log ('executeDeleteSelected: ajax ret: ' + data);
-            var response = JSON.parse (data);
-            $(dialog).dialog ('close');
-            that._displayFlashes (response);
-        }
-    });
-};
-
-/**
- * Execute create new list mass action
- * @param object dialog a jquery dialog object
- */
-X2GridViewMassActionsManager.prototype._executeCreateNewList = function (dialog) {
-    var that = this; 
-    var newListName = $('#' + that.gridId + '-new-list-dialog').find ('.new-list-name');
-    auxlib.destroyErrorFeedbackBox ($(newListName));
-    var listName = $(newListName).val ();
-    if(listName !== '' && listName !== null) {
-        $.ajax({
-            url: that.executeUrls['createNewList'],
-            type:'post',
-            data: {
-                massAction: 'createList',
-                listName: listName,
-                gvSelection: that._getSelectedRecords () 
-            },
-            success: function (data) { 
-                that.DEBUG && console.log ('executeDeleteSelected: ajax ret: ' + data);
-                var response = JSON.parse (data);
-                $(newListName).val ('');
-                $(dialog).dialog ('close');
-                that._displayFlashes (response);
-            }
-        });
-    } else {
-        auxlib.createErrorFeedbackBox ({
-            prevElem: $(newListName),
-            message: that.translations['blankListNameError']
-        });
-        $('#mass-action-dialog-loading-anim').remove ();
-        $(dialog).dialog ('widget').find ('.x2-dialog-go-button').show ();
-    }
-};
-
-/**
- * Open dialog for mass action form
- * @param dictionary argsList
- *  object dialogElem A jQuery object corresponding to the html element which will be converted 
- *      into a dialog.
- *  string title the dialog title
- *  string goButtonLabel the label for the go button
- *  function goFunction the function which will get executed when the go button is pressed
- */
-X2GridViewMassActionsManager.prototype._massActionDialog = function (argsList) {
-    var that = this; 
-    var dialog = argsList['dialogElem'];
-    $('#' + that.gridId + '-mass-action-buttons .mass-action-button').
-        attr ('disabled', 'disabled');
-
-    $(dialog).show ();
-    if ($(dialog).closest ('.ui-dialog').length) {
-        $(dialog).dialog ('open');
-        return;
-    }
-
-    var title = argsList['title'];
-    var goButtonLabel = argsList['goButtonLabel'];
-    var goFunction = argsList['goFunction'];
-
-    $(dialog).dialog ({
-        title: title,
-        autoOpen: true,
-        width: 500,
-        buttons: [
-            {
-                text: goButtonLabel,
-                'class': 'x2-dialog-go-button',
-                click: function () { 
-                    $(dialog).dialog ('widget').find ('.x2-dialog-go-button').hide ();
-                    $(dialog).dialog('widget').find ('.x2-dialog-go-button').before ($('<div>', {
-                        'class': 'x2-loading-icon left', 
-                        id: 'mass-action-dialog-loading-anim'
-                    }));
-                    goFunction (dialog);
-                }
-            },
-            {
-                text: that.translations['cancel'],
-                click: function () { $(dialog).dialog ('close'); }
-            }
-        ],
-        close: function () {
-            $(dialog).hide ();
-            $('#mass-action-dialog-loading-anim').remove ();
-            $(dialog).dialog ('widget').find ('.x2-dialog-go-button').show ();
-            $('#' + that.gridId + '-mass-action-buttons .mass-action-button').
-                removeAttr ('disabled', 'disabled');
-        }
-    });
-
-};
-
 /**
  * Call function which opens dialog for specified mass action
  * @param string massAction The name of the mass action
  */
-X2GridViewMassActionsManager.prototype._executeMassAction = function (massAction) {
+GridViewMassActionsManager.prototype._executeMassAction = function (massAction) {
     var that = this; 
     that.DEBUG && console.log ('executeMassAction: massAction = ' + massAction);
     var selectedRecords = that._getSelectedRecords ();
 
-    if(selectedRecords.length === 0) {
+    if(selectedRecords !== null && selectedRecords.length === 0) {
         return;
     }
-
-    switch (massAction) {
-        case 'completeAction':
-            that._executeCompleteSelected ();
-            break;
-        case 'uncompleteAction':
-            that._executeUncompleteSelected ();
-            break;
-        case 'newList':
-            that._massActionDialog ({
-                dialogElem: $('#' + that.gridId + '-new-list-dialog'),
-                title: that.translations['newList'],
-                goButtonLabel: that.translations['create'],
-                goFunction: function (params) { that._executeCreateNewList (params); }
-            });
-            break;
-        case 'addToList':
-            that._massActionDialog ({
-                dialogElem: $('#' + that.gridId + '-add-to-list-dialog'),
-                title: that.translations['addToList'],
-                goButtonLabel: that.translations['add'],
-                goFunction: function (params) { that._executeAddToList (params); }
-            });
-            break;
-        case 'removeFromList':
-            that._massActionDialog ({
-                dialogElem: $('#' + that.gridId + '-remove-from-list-dialog'),
-                title: that.translations['removeFromList'],
-                goButtonLabel: that.translations['remove'],
-                goFunction: function (params) { that._executeRemoveFromList (params); }
-            });
-            break;
-
-        default:
-            auxlib.error ('executeMassAction: ' + massAction + ' defaults on switch');
-            break;
+    if (!this.massActionInProgress) {
+        this.massActionInProgress = true;
+        that.massActionObjects[massAction].openDialog ();
     }
 };
-
-
 
 /**
  * Recheck records whose checkboxes were cleared by ajax update
  */
-X2GridViewMassActionsManager.prototype._checkX2GridViewRows = function () {
+GridViewMassActionsManager.prototype._checkX2GridViewRows = function () {
     var that = this; 
     var idsOfchecked = that._previouslySelectedRecords;
 
@@ -663,7 +442,7 @@ X2GridViewMassActionsManager.prototype._checkX2GridViewRows = function () {
 /**
  * Sets up open/close behavior of more actions list
  */
-X2GridViewMassActionsManager.prototype._setUpMoreButtonBehavior = function () {
+GridViewMassActionsManager.prototype._setUpMoreButtonBehavior = function () {
     var that = this; 
 
     var moreDropDownList = $('#' + that.gridId + '-mass-action-buttons .more-drop-down-list');
@@ -682,7 +461,8 @@ X2GridViewMassActionsManager.prototype._setUpMoreButtonBehavior = function () {
         that.DEBUG && console.log ('massActionMoreButtonBehavior');
         if (that.headerIsFixed () && !$('body').hasClass ('x2-mobile-layout')) {
             $(moreDropDownList).css ({
-                left: $(this).offset ().left + 'px',
+                left: $(this).position ().left + 'px',
+                top: '24px',
                 width: '175px'
             });
         } else if ($('body').hasClass ('x2-mobile-layout')) {
@@ -710,7 +490,7 @@ X2GridViewMassActionsManager.prototype._setUpMoreButtonBehavior = function () {
             /*var yPos = $(that.gridSelector).find ('.x2grid-resizable').eq(0).parent().
                 position().top - 1;*/
             $(moreDropDownList).css ({
-                left: ($(this).position ().left) + 'px',
+                left: $(this).position ().left + 'px',
                 top: '24px',
                 width: '175px'
             });
@@ -731,10 +511,60 @@ X2GridViewMassActionsManager.prototype._setUpMoreButtonBehavior = function () {
 /**
  * Set up mass action button behavior and initialize content within dialogs
  */
-X2GridViewMassActionsManager.prototype._setUpMassActions = function () {
+GridViewMassActionsManager.prototype._setUpMassActions = function () {
     var that = this; 
 
+    // instantiate mass action objects 
+    this.massActionObjects = {};
+    for (var i = 0; i < this.massActions.length; i++) {
+        var massActionName = this.massActions[i];
+        switch (massActionName) {
+            case 'completeAction':
+                this.massActionObjects[massActionName] = 
+                    new GridViewMassActionsManager.MassCompleteAction ({
+                        massActionsManager: this,
+                    });
+                break;
+            case 'uncompleteAction':
+                this.massActionObjects[massActionName] = 
+                    new GridViewMassActionsManager.MassUncompleteAction ({
+                        massActionsManager: this,
+                    });
+                break;
+            case 'newList':
+                this.massActionObjects[massActionName] = 
+                    new GridViewMassActionsManager.NewListFromSelected ({
+                        massActionsManager: this,
+                        dialogElem$: $('#' + that.gridId + '-new-list-dialog'),
+                        dialogTitle: that.translations['newList'],
+                        goButtonLabel: that.translations['create'],
+                    });
+                break;
+            case 'addToList':
+                this.massActionObjects[massActionName] = 
+                    new GridViewMassActionsManager.MassAddToList ({
+                        massActionsManager: this,
+                        dialogElem$: $('#' + that.gridId + '-add-to-list-dialog'),
+                        dialogTitle: that.translations['addToList'],
+                        goButtonLabel: that.translations['add']
+                    });
+                break;
+            case 'removeFromList':
+                this.massActionObjects[massActionName] = 
+                    new GridViewMassActionsManager.MassRemoveFromList ({
+                        massActionsManager: this,
+                        dialogElem$: $('#' + that.gridId + '-remove-from-list-dialog'),
+                        dialogTitle: that.translations['removeFromList'],
+                        goButtonLabel: that.translations['remove']
+                    });
+                break;
+            
+            default:
+                throw new Error ('Invalid mass action name: ' + massActionName);
+        }
+    }
 
+    
 
     if ($('#' + that.gridId + ' .mass-action-more-button').length) {
         var moreDropDownList = $('#' + that.gridId + '-mass-action-buttons .more-drop-down-list');
@@ -748,14 +578,14 @@ X2GridViewMassActionsManager.prototype._setUpMassActions = function () {
     }
 };
 
-X2GridViewMassActionsManager.prototype._showButtons = function () {
+GridViewMassActionsManager.prototype._showButtons = function () {
     var that = this;
     var massActionButtons = $('#' + that.gridId + '-mass-action-buttons');
     $('#' + that.gridId).addClass ('show-mass-action-buttons');
     $(massActionButtons).show ().css ({ display: 'inline-block' });
 };
 
-X2GridViewMassActionsManager.prototype._hideButtons = function () {
+GridViewMassActionsManager.prototype._hideButtons = function () {
     var that = this;
     var massActionButtons = $('#' + that.gridId + '-mass-action-buttons');
     $('#' + that.gridId).removeClass ('show-mass-action-buttons');
@@ -769,12 +599,23 @@ X2GridViewMassActionsManager.prototype._hideButtons = function () {
  * @param object checkBox A jQuery object which is passed to this function by the change event
  *  handler. This will only be set when justChanged is also set.
  */
-X2GridViewMassActionsManager.prototype._checkUIShow = function (justChanged, checkBox) {
+GridViewMassActionsManager.prototype._checkUIShow = function (justChanged, checkBox) {
     var that = this; 
     that.DEBUG && console.log ('checkUIShow');
     justChanged = typeof justChanged === 'undefined' ? true : justChanged;
     var massActionButtons = $('#' + that.gridId + '-mass-action-buttons');
     if (justChanged) { 
+
+        if (this.enableSelectAllOnAllPages && 
+            $(checkBox).parents ('.x2grid-header-container').length) {
+
+            // hide/show the check all records bar
+            if ($(checkBox).is (':checked')) {
+                this.superCheckAllManager.showInterface ();
+            } else {
+                this.superCheckAllManager.hideInterface ();
+            }
+        }
 
         // do nothing if additional checkbox is checked/unchecked
         if ($(checkBox).is (':checked') && $(massActionButtons).is (':visible') ||
@@ -784,8 +625,7 @@ X2GridViewMassActionsManager.prototype._checkUIShow = function (justChanged, che
 
         // hide ui when uncheck all box is unchecked
         if ($(checkBox).parents ('.x2grid-header-container').length &&
-            !$(checkBox).is (':checked') &&
-            $(massActionButtons).is (':visible')) {
+            !$(checkBox).is (':checked') && $(massActionButtons).is (':visible')) {
 
             that._hideButtons ();
             return;
@@ -815,7 +655,7 @@ X2GridViewMassActionsManager.prototype._checkUIShow = function (justChanged, che
 /**
  * Allows mass action buttons to be shown only when records are selected
  */
-X2GridViewMassActionsManager.prototype._setUpUIHideShowBehavior = function () {
+GridViewMassActionsManager.prototype._setUpUIHideShowBehavior = function () {
     var that = this; 
     that.DEBUG && console.log ('setUpUIHideShowBehavior');
     $(that.gridSelector).on ('change', '[type=\"checkbox\"]', 
@@ -825,123 +665,72 @@ X2GridViewMassActionsManager.prototype._setUpUIHideShowBehavior = function () {
 /**
  * @return array ids of currently selected records 
  */
-X2GridViewMassActionsManager.prototype._getSelectedRecords = function () {
+GridViewMassActionsManager.prototype._getSelectedRecords = function () {
     var that = this; 
-    return $.fn.yiiGridView.getChecked(that.gridId, that.namespacePrefix + 'C_gvCheckbox');
+    if (!this._allRecordsOnAllPagesSelected)
+        return $.fn.yiiGridView.getChecked(that.gridId, that.namespacePrefix + 'C_gvCheckbox');
+    else 
+        return null;
 };
 
 /**
  * Removes objects which will get reconstructed after the grid updates and then updates the grid
  */
-X2GridViewMassActionsManager.prototype._updateGrid = function () {
+GridViewMassActionsManager.prototype._updateGrid = function (afterUpdate) {
+    var afterUpdate = typeof afterUpdate === 'undefined' ? function () {} : afterUpdate; 
     var that = this; 
     $('#' + that.gridId).yiiGridView ('update', {
         complete: function () {
+            afterUpdate ();
+            that.superCheckAllManager.hideInterface ();
             that.DEBUG && console.log ('x2.massActions._updateGrid complete');
         }
     });
 };
 
+GridViewMassActionsManager.prototype.condenseExpandTitleBar = function (condense) {
+    var that = this;
+    var condense = typeof condense === 'undefined' ? false : condense; 
+    if (typeof x2[that._topPagerNamespace] === 'undefined') return;
 
-/**
- * The public method. Holds the result of _condenseExpandTitleBar.
- */
-X2GridViewMassActionsManager.prototype.condenseExpandTitleBar = function () {}; 
+    if (condense) {
+        that.moveButtonIntoMoreMenu ();
+        that.moveButtonIntoMoreMenu ();
+    } else {
+        that.moveMoreButtonMenuItemIntoButtons ();
+        that.moveMoreButtonMenuItemIntoButtons ();
+    }
+};
+
 
 /*
 Private instance methods
 */
 
 /**
- * The private method
- * Creates a closure to keep track of state information about the title bar.
- */
-X2GridViewMassActionsManager.prototype._condenseExpandTitleBar = function () {
-    if (typeof x2[this._topPagerNamespace] === 'undefined') return;
-    var that = this;
-    var hiddenButtons = 0;
-    var topPosRightElems = 
-        $(this._elementSelector).parent ().nextAll (':visible').last ().offset ().top;
-    var moveMoreButtonMenuItemIntoButtons;
-
-    /*
-    Checks whether the top bar UI should be expanded or condensed and performs the appropriate
-    action.
-    Parameters:
-        newTopPosRightElems - if set, the top offset of the top bar pagination buttons will 
-            be checked. This check has the function of determining whether the pagination buttons
-            have been moved down due to a lack of space. Having the optional variable eliminates
-            the need for calling offset ().top every execution (a costly operation).
-    */
-    return function (newTopPosRightElems) {
-        var newTopPosRightElems = 
-            typeof newTopPosRightElems === 'undefined' ? topPosRightElems : 
-                newTopPosRightElems; 
-
-        var moreButton = $('#' + that.gridId + ' .mass-action-more-button');
-    
-        rightmostPosLeftElems = $(moreButton).offset ().left + $(moreButton).width ();
-        var leftmostPosRightElems = 
-            $(that._elementSelector).parent ().nextAll (':visible').last ().offset ().left;
-        that.DEBUG && console.log ("$(that._elementSelector).parent ().nextAll (':visible').first () = ");
-        that.DEBUG && console.log ($(that._elementSelector).parent ().nextAll (':visible').last ());
-
-        that.DEBUG && console.log ('leftmostPosRightElems = ');
-        that.DEBUG && console.log (leftmostPosRightElems);
-
-        that.DEBUG && console.log ('rightmostPosLeftElems = ');
-        that.DEBUG && console.log (rightmostPosLeftElems);
-
-
-        var titleBarEmptySpace = leftmostPosRightElems - rightmostPosLeftElems;
-
-        that.DEBUG && console.log (titleBarEmptySpace);
-
-        /*that.DEBUG && console.log ('newTopPosRightElems = ');
-        that.DEBUG && console.log (newTopPosRightElems);
-
-        that.DEBUG && console.log ('topPosRightElems = ');
-        that.DEBUG && console.log (topPosRightElems);*/
-
-        if (newTopPosRightElems &&
-            newTopPosRightElems > topPosRightElems) {
-
-            that.moveButtonIntoMoreMenu ();
-        } else {
-            if (titleBarEmptySpace < 110) {
-                that.moveButtonIntoMoreMenu ();
-            } else {
-                that.moveMoreButtonMenuItemIntoButtons ();
-            }
-        }
-    }
-}
-
-/**
  * Sets up behavior which will hide/show mass action buttons when there isn't space for them
  */
-X2GridViewMassActionsManager.prototype._setUpTitleBarResponsiveness = function () {
+GridViewMassActionsManager.prototype._setUpTitleBarResponsiveness = function () {
     var that = this;
 
-    that.condenseExpandTitleBar = that._condenseExpandTitleBar ();
-
-    $(window).unbind ('resize.' + this.namespacePrefix  + 'massActions').bind (
-        'resize.' + this.namespacePrefix + 'massActions', that.condenseExpandTitleBar);
-
-    $(document).on ('showWidgets', function () {
-        if ($('body').hasClass ('no-widgets')) return;
-        that.DEBUG && console.log ('showWidgets');
-        var posTop = $(that._elementSelector).parent ().next ().position ().top;
-        if (typeof that.condenseExpandTitleBar === 'function')
-             that.condenseExpandTitleBar (posTop);
-    });
+    if (!$('#' + this.gridId).hasClass ('fullscreen')) {
+        that.condenseExpandTitleBar (true);
+    } else {
+        x2.layoutManager.addFnToResizeQueue (function (windowWidth) {
+            if (windowWidth < 1115) {
+                that.condenseExpandTitleBar (true);
+            } else {
+                that.condenseExpandTitleBar (false);
+            }
+        });
+        $(window).resize ();
+    }
 };
-
 
 /**
  * set up mass action ui behavior, this gets run on every grid update
  */
-X2GridViewMassActionsManager.prototype._init = function () {
+GridViewMassActionsManager.prototype._init = function () {
     var that = this; 
     that.DEBUG && console.log ('main');
 
@@ -952,4 +741,670 @@ X2GridViewMassActionsManager.prototype._init = function () {
     that._setUpMassActions ();
     that._setUpUIHideShowBehavior ();
     that._setUpTitleBarResponsiveness ();
+    this.superCheckAllManager = 
+        new GridViewMassActionsManager.SuperCheckAllManager ({
+            massActionsManager: this 
+        });
+};  
+
+
+GridViewMassActionsManager.MassAction = (function () {
+
+/**
+ * Abstract base for mass action classes 
+ */
+function MassAction (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false,
+        dialogElem$: null,
+        dialogTitle: '',
+        goButtonLabel: '',
+        progressBarLabel: '',
+        massActionsManager: null,
+        updateAfterExecute: true
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    this.translations = this.massActionsManager.translations;
+    this.progressBarDialogTitle = this.translations['progressBarDialogTitle'];
+    this.massActionStarted
+}
+
+MassAction.prototype.validateMassActionDialogForm = function () {
+    return true;
 };
+
+MassAction.prototype.afterExecute = function () {
+    var that = this;
+    this.dialogElem$.dialog ('close');
+    this.massActionsManager._updateGrid ();
+};
+
+MassAction.prototype.afterSuperExecute = function () {
+    this.massActionsManager.massActionInProgress = false;
+};
+
+/**
+ * Open dialog for mass action form
+ */
+MassAction.prototype.openDialog = function () {
+    var that = this; 
+    var dialog = this.dialogElem$;
+    $('#' + that.massActionsManager.gridId + '-mass-action-buttons .mass-action-button').
+        attr ('disabled', 'disabled');
+
+    $(dialog).show ();
+    if ($(dialog).closest ('.ui-dialog').length) {
+        $(dialog).dialog ('open');
+        return;
+    }
+
+    var superExecute = false;
+    $(dialog).dialog ({
+        title: this.dialogTitle,
+        autoOpen: true,
+        width: 500,
+        buttons: [
+            {
+                text: this.goButtonLabel,
+                'class': 'x2-dialog-go-button',
+                click: function () { 
+                    if (that.validateMassActionDialogForm ()) {
+                        $(dialog).dialog ('widget').find ('.x2-dialog-go-button').hide ();
+                        $(dialog).dialog('widget').find ('.x2-dialog-go-button').before (
+                            $('<div>', {
+                                'class': 'x2-loading-icon left', 
+                                id: 'mass-action-dialog-loading-anim'
+                            }));
+                        if (that.massActionsManager._allRecordsOnAllPagesSelected) {
+                            superExecute = true;
+                            that.superExecute ();
+                        } else {
+                            that.execute ();
+                        }
+                    }
+                }
+            },
+            {
+                text: that.translations['cancel'],
+                click: function () { 
+                    $(dialog).dialog ('close'); 
+                }
+            }
+        ],
+        close: function () {
+            $(dialog).hide ();
+            $('#mass-action-dialog-loading-anim').remove ();
+            $(dialog).dialog ('widget').find ('.x2-dialog-go-button').show ();
+            $('#' + that.massActionsManager.gridId + '-mass-action-buttons .mass-action-button').
+                removeAttr ('disabled', 'disabled');
+            if (!superExecute) that.massActionsManager.massActionInProgress = false;
+        }
+    });
+
+};
+
+/**
+ * Execute mass action on checked records
+ */
+MassAction.prototype.execute = function () {
+    var that = this;
+    var selectedRecords = that.massActionsManager._getSelectedRecords () 
+    $.ajax({
+        url: that.massActionsManager.massActionUrl,
+        type:'POST',
+        data:this.getExecuteParams (),
+        success: function (data) { 
+            var response = JSON.parse (data);
+            var returnStatus = response[0];
+            if (response['success']) {
+                that.afterExecute ();
+            } 
+            that.massActionsManager._displayFlashes (response);
+        }
+    });
+};
+
+MassAction.prototype._nextBatch = function (dialog, dialogState) {
+    var that = this;
+    dialogState.batchOperInProgress = true;
+    $.ajax({
+        url: that.massActionsManager.massActionUrl,
+        type:'POST',
+        data: $.extend (dialogState.superExecuteParams, {
+            uid: dialogState.uid
+        }),
+        dataType: 'json',
+        success: function (data) { 
+            dialogState.batchOperInProgress = false;
+            var response = data;
+            that.massActionsManager._displayFlashes (response);
+            if (response['complete']) {
+                $(dialog).dialog ('close');
+            } else if (response['batchComplete']) {
+                that.progressBar.incrementCount (response['successes']);
+                dialogState.uid = response['uid'];
+                if (!dialogState.stop && !dialogState.pause) { 
+                    that._nextBatch (dialog, dialogState);
+                } else {
+                    dialogState.loadingAnim$.hide ();
+                    if (dialogState.stop) {
+                        that.massActionsManager._updateGrid (function () {
+                            that.afterSuperExecute ();
+                        });
+                        return;
+                    }
+
+                    var interval = setInterval (function () { 
+                        if (dialogState.stop || !dialogState.pause) {
+                            clearInterval (interval);
+                        } 
+                        if (!dialogState.stop && !dialogState.pause) {
+                            dialogState.loadingAnim$.show ();
+                            that._nextBatch (dialog, dialogState);
+                        }
+                    }, 500)
+                }
+            }
+        }
+    });
+};
+
+/**
+ * Execute mass action on all records on all pages
+ */
+MassAction.prototype.superExecute = function (uid) {
+    var that = this;
+    var uid = typeof uid === 'undefined' ? null : uid; 
+    if (that.dialogElem$ !== null) that.dialogElem$.dialog ('close');
+    this.progressBarDialog$ = $(this.massActionsManager.progressBarDialogSelector);
+    this.progressBar = this.progressBarDialog$.find ('.x2-progress-bar-container').
+        data ('progressBar');
+    this.progressBar.updateLabel (this.progressBarLabel);
+    var dialogState = {
+        pause: false,
+        stop: false,
+        uid: uid,
+        loadingAnim$: null,
+        batchOperInProgress: false,
+        superExecuteParams: this.getSuperExecuteParams ()
+    };
+    //console.log ('superExecute');
+    this.progressBarDialog$.dialog ({
+        title: this.progressBarDialogTitle, 
+        autoOpen: true,
+        width: 500,
+        buttons: [
+            { 
+                text: this.translations['pause'],
+                'class': 'pause-button',
+                click: function () {
+                    $(this).dialog ('widget').find ('.pause-button').hide ();
+                    $(this).dialog ('widget').find ('.resume-button').show ();
+                    dialogState.pause = true;
+                }
+            },
+            { 
+                text: this.translations['resume'],
+                'class': 'resume-button',
+                'style': 'display: none;',
+                click: function () {
+                    $(this).dialog ('widget').find ('.resume-button').hide ();
+                    $(this).dialog ('widget').find ('.pause-button').show ();
+                    dialogState.pause = false;
+                }
+            },
+            { 
+                text: this.translations['stop'],
+                'class': 'stop-button',
+                click: function () {
+                    $(this).dialog ('close');
+                }
+            },
+        ],
+        /*
+        Opens the dialog and starts making requests to perform mass updates on batches. Updates
+        progress bar as records are updated.
+        */
+        open: function () {
+            var dialog = this;
+            that._nextBatch (dialog, dialogState);
+        },
+        close: function () {
+            $(this).dialog ('destroy');
+            dialogState.stop = true;
+            if (dialogState.uid !== null) {
+                $.ajax({
+                    url: that.massActionsManager.massActionUrl,
+                    type:'POST',
+                    data: $.extend (dialogState.superExecuteParams, {
+                        uid: dialogState.uid,
+                        clearSavedIds: true
+                    }),
+                });
+            }
+            if (!dialogState.batchOperInProgress) that.massActionsManager._updateGrid (
+                function () {
+                    that.afterSuperExecute ();
+                });
+        }
+    });
+    dialogState.loadingAnim$ = $('<div>', {
+        'class': 'x2-loading-icon updating-field-input-anim',
+        style: 'float: left; margin-right: 14px',
+    });
+    this.progressBarDialog$.dialog ('widget').find ('.pause-button').before (
+        dialogState.loadingAnim$);
+
+};
+
+MassAction.prototype.getExecuteParams = function () {
+    var params = {};
+    params['massAction'] = this.massActionName;
+    params['gvSelection'] = this.massActionsManager._getSelectedRecords ();
+    return params;
+};
+
+MassAction.prototype.getSuperExecuteParams = function () {
+    var params = this.getExecuteParams ();
+    params['superCheckAll'] = true;
+    updateParams = $('#' + this.massActionsManager.gridId).gvSettings ('getUpdateParams');
+
+    params = $.extend (params, updateParams);
+    return params;
+};
+
+MassAction.prototype._init = function () {};
+
+return MassAction;
+
+}) ();
+
+GridViewMassActionsManager.MassCompleteAction = (function () {
+
+function MassCompleteAction (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false,
+        massActionName: 'completeAction'
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    GridViewMassActionsManager.MassAction.call (this, argsDict);
+}
+
+MassCompleteAction.prototype = auxlib.create (GridViewMassActionsManager.MassAction.prototype);
+
+MassCompleteAction.prototype.openDialog = function () {
+    if (this.massActionsManager._allRecordsOnAllPagesSelected) {
+        this.superExecute ();
+    } else {
+        this.execute ();
+    }
+};
+
+MassCompleteAction.prototype.afterExecute = function () {
+    var that = this;
+    this.massActionsManager.massActionInProgress = false;
+    this.massActionsManager._updateGrid ();
+};
+
+return MassCompleteAction;
+
+}) ();
+
+GridViewMassActionsManager.MassUncompleteAction = (function () {
+
+function MassUncompleteAction (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false,
+        massActionName: 'uncompleteAction'
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    GridViewMassActionsManager.MassAction.call (this, argsDict);
+}
+
+MassUncompleteAction.prototype = auxlib.create (GridViewMassActionsManager.MassAction.prototype);
+
+MassUncompleteAction.prototype.afterExecute = function () {
+    var that = this;
+    this.massActionsManager.massActionInProgress = false;
+    this.massActionsManager._updateGrid ();
+};
+
+MassUncompleteAction.prototype.openDialog = function () {
+    if (this.massActionsManager._allRecordsOnAllPagesSelected) {
+        this.superExecute ();
+    } else {
+        this.execute ();
+    }
+};
+
+return MassUncompleteAction;
+
+}) ();
+
+GridViewMassActionsManager.NewListFromSelected = (function () {
+
+function NewListFromSelected (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false,
+        massActionName: 'createList'
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    GridViewMassActionsManager.MassAction.call (this, argsDict);
+}
+
+NewListFromSelected.prototype = auxlib.create (GridViewMassActionsManager.MassAction.prototype);
+
+NewListFromSelected.prototype.validateMassActionDialogForm = function () {
+    var that = this;
+    var newListName = $('#' + that.massActionsManager.gridId + '-new-list-dialog').find (
+        '.new-list-name');
+    auxlib.destroyErrorFeedbackBox ($(newListName));
+    var listName = $(newListName).val ();
+    if(listName === '' || listName === null) {
+        auxlib.createErrorFeedbackBox ({
+            prevElem: $(newListName),
+            message: that.translations['blankListNameError']
+        });
+        $('#mass-action-dialog-loading-anim').remove ();
+        this.dialogElem$.dialog ('widget').find ('.x2-dialog-go-button').show ();
+        return false;
+    }
+    return true;
+};
+
+NewListFromSelected.prototype.afterExecute = function () {
+    var that = this;
+    var newListName = $('#' + that.massActionsManager.gridId + '-new-list-dialog').find (
+        '.new-list-name');
+    $(newListName).val ('');
+    this.dialogElem$.dialog ('close');
+    this.massActionsManager.massActionInProgress = false;
+};
+
+NewListFromSelected.prototype.getExecuteParams = function () {
+    var that = this;
+    var params = GridViewMassActionsManager.MassAction.prototype.getExecuteParams.call (this);
+    var newListName = $('#' + that.massActionsManager.gridId + '-new-list-dialog').find (
+        '.new-list-name');
+    var listName = $(newListName).val ();
+    params['listName'] = listName;
+    return params;
+};
+
+/**
+ * This complicated method is used to switch mass actions (from new list to add to list) after
+ * the first batch is completed.
+ * @return MassAddToList
+ */
+NewListFromSelected.prototype.convertToAddToList = function (listId, dialogState) {
+    var that = this;
+    var addToList = this.massActionsManager.massActionObjects['addToList'];
+    var newListName = $('#' + that.massActionsManager.gridId + '-new-list-dialog').find (
+        '.new-list-name');
+    var listName = $(newListName).val ();
+    addToList.addListOption (listId, listName);
+    addToList.setListId (listId);
+    addToList.progressBar = this.progressBar;
+    dialogState.superExecuteParams.listId = listId;
+    dialogState.superExecuteParams.massAction = addToList.massActionName;
+
+    return addToList;
+};
+
+/**
+ * Overrides parent method so that after the first batch is completed, requests are made to add to
+ * that list. This is accomplished by swapping out the mass action objects after the first 
+ * response. This method also handles the case where the list could not be created successfully.
+ */
+NewListFromSelected.prototype._nextBatch = function (dialog, dialogState) {
+    var that = this;
+    dialogState.batchOperInProgress = true;
+    $.ajax({
+        url: that.massActionsManager.massActionUrl,
+        type:'POST',
+        data: $.extend (dialogState.superExecuteParams, {
+            uid: dialogState.uid
+        }),
+        dataType: 'json',
+        success: function (data) { 
+            dialogState.batchOperInProgress = false;
+            var response = data;
+            that.massActionsManager._displayFlashes (response);
+
+            if (response['successes'] === -1) { // list could not be created
+                dialog.dialog ('close');
+                return;
+            }
+
+            if (response['complete']) {
+                $(dialog).dialog ('close');
+            } else if (response['batchComplete']) {
+                that.progressBar.incrementCount (response['successes']);
+                dialogState.uid = response['uid'];
+                listId = response['listId'];
+
+                if (!dialogState.stop && !dialogState.pause) { 
+                    that.convertToAddToList (listId, dialogState)._nextBatch (dialog, dialogState);
+                } else {
+                    dialogState.loadingAnim$.hide ();
+                    if (dialogState.stop) {
+                        that.massActionsManager._updateGrid (function () {
+                            that.afterSuperExecute ();
+                        });
+                        return;
+                    }
+
+                    var interval = setInterval (function () { 
+                        if (dialogState.stop || !dialogState.pause) {
+                            clearInterval (interval);
+                        } 
+                        if (!dialogState.stop && !dialogState.pause) {
+                            dialogState.loadingAnim$.show ();
+                            that.convertToAddToList (listId, dialogState)._nextBatch (
+                                dialog, dialogState);
+                        }
+                    }, 500)
+                }
+            }
+        }
+    });
+};
+
+
+return NewListFromSelected;
+
+}) ();
+
+GridViewMassActionsManager.MassAddToList = (function () {
+
+function MassAddToList (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    GridViewMassActionsManager.MassAction.call (this, argsDict);
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false,
+        massActionName: 'addToList',
+        progressBarLabel: this.translations['added']
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+}
+
+MassAddToList.prototype = auxlib.create (GridViewMassActionsManager.MassAction.prototype);
+
+MassAddToList.prototype.addListOption = function (listId, listName) {
+    $('#addToListTarget').append ($('<option>', {
+        val: listId,
+        text: listName
+    }));
+};
+
+MassAddToList.prototype.setListId = function (listId) {
+    $('#addToListTarget').val(listId);
+};
+
+MassAddToList.prototype.getExecuteParams = function () {
+    var params = GridViewMassActionsManager.MassAction.prototype.getExecuteParams.call (this);
+    params['listId'] = $('#addToListTarget').val();
+    return params;
+};
+
+MassAddToList.prototype.afterExecute = function () {
+    this.dialogElem$.dialog ('close');
+    this.massActionsManager.massActionInProgress = false;
+};
+
+return MassAddToList;
+
+}) ();
+
+GridViewMassActionsManager.MassRemoveFromList = (function () {
+
+function MassRemoveFromList (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    GridViewMassActionsManager.MassAction.call (this, argsDict);
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false,
+        massActionName: 'removeFromList',
+        progressBarLabel: this.translations['removed']
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+}
+
+MassRemoveFromList.prototype = auxlib.create (GridViewMassActionsManager.MassAction.prototype);
+
+MassRemoveFromList.prototype.getExecuteParams = function () {
+    var params = GridViewMassActionsManager.MassAction.prototype.getExecuteParams.call (this);
+    params['listId'] = window.location.href.replace (/.*contacts\/list\/id\/([0-9]+)#?$/, '$1');
+    return params;
+};
+
+return MassRemoveFromList;
+
+}) ();
+
+
+
+
+
+
+
+GridViewMassActionsManager.SuperCheckAllManager = (function () {
+
+/**
+ * Manages behavior of super check all feature
+ */
+function SuperCheckAllManager (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false,
+        massActionsManager: null
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    this._superCheckAllStripContainer$ = $(this.massActionsManager.gridSelector).
+        find ('.select-all-records-on-all-pages-strip-container').first ();
+    this.selectAllLink$ = 
+        this._superCheckAllStripContainer$.find (
+        '.select-all-records-on-all-pages').first ();
+    this.unselectAllLink$ = 
+        this._superCheckAllStripContainer$.find (
+        '.unselect-all-records-on-all-pages').first ();
+    this.selectAllNotice$ = 
+        this._superCheckAllStripContainer$.find ('.select-all-notice').first ();
+    this.allSelectedNotice$ = 
+        this._superCheckAllStripContainer$.find (
+        '.all-selected-notice').first ();
+    this.checkAllCheckbox$ = 
+        $('#' + this.massActionsManager.namespacePrefix + 'C_gvCheckbox input');
+
+
+
+    this._init ();
+}
+
+SuperCheckAllManager.prototype.addContainerClone = function () {
+    if (!$('#x2-gridview-top-bar-outer').length ||
+        !$('#x2-gridview-top-bar-outer').hasClass ('.x2-gridview-fiex-top-bar-outer')) {
+
+        return;
+    }
+
+    // place clone above grid items so that grid items automatically get pushed down to accomodate
+    // notice container
+    this.containerClone$ = this._superCheckAllStripContainer$.first ().clone ()
+    this.containerClone$.addClass ('container-clone');
+    if (!$('#' + this.massActionsManager.gridId).find ('.x2grid-body-container .items').first ().
+        siblings ('.container-clone').length) {
+
+        $('#' + this.massActionsManager.gridId).find ('.x2grid-body-container .items').first ().
+            before (this.containerClone$);
+    }
+
+};
+
+SuperCheckAllManager.prototype.removeContainerClone = function () {
+    $('#' + this.massActionsManager.gridId).find ('.container-clone').remove ();
+};
+
+/**
+ * hide and reset the check all interface
+ */
+SuperCheckAllManager.prototype.hideInterface = function () {
+    var that = this;
+    //console.log ('hideInterface');
+    this.removeContainerClone ();
+    that.selectAllNotice$.show ();
+    that.allSelectedNotice$.hide (); 
+    that.massActionsManager._allRecordsOnAllPagesSelected = false;
+    this._superCheckAllStripContainer$.hide ();
+};
+
+/**
+ * show the check all interface
+ */
+SuperCheckAllManager.prototype.showInterface = function () {
+    this._superCheckAllStripContainer$.show ();
+    this.addContainerClone ();
+};
+
+SuperCheckAllManager.prototype._init = function () {
+    var that = this;
+
+    // select all
+    this.selectAllLink$.unbind ('click._setUpSelectAllRecordsOnAllPagesBehavior').
+        bind ('click._setUpSelectAllRecordsOnAllPagesBehavior', function () {
+
+        that.selectAllNotice$.hide ();
+        that.allSelectedNotice$.show (); 
+        //console.log ('setting to true');
+        that.massActionsManager._allRecordsOnAllPagesSelected = true;
+        return false;
+    });
+
+    // clear selection
+    this.unselectAllLink$.unbind ('click._setUpSelectAllRecordsOnAllPagesBehavior').
+        bind ('click._setUpSelectAllRecordsOnAllPagesBehavior', function () {
+
+        // uncheck check-all checkbox
+        that.checkAllCheckbox$.prop ('checked', false);
+        // uncheck all other check boxes
+        $('input[name="' + that.massActionsManager.namespacePrefix + 'C_gvCheckbox[]"]').each (
+            function () {
+                this.checked = false; 
+            });
+        that.hideInterface ();
+        that.massActionsManager._checkUIShow (true);
+        return false;
+    });
+};
+
+return SuperCheckAllManager;
+
+}) ();
+
+return GridViewMassActionsManager;
+
+}) ();
+

@@ -70,12 +70,32 @@ class WebLeadFormTest extends WebTrackingTestBase {
         return $lead;
     }
 
+    protected function assertAccountCreated () {
+        $lead = Accounts::model()->findByAttributes (array (
+            'name' => 'testAccount',
+        ));
+        $this->assertTrue ($lead !== null);
+        VERBOSE_MODE && println (
+            'account created');
+        return $lead;
+    }
+
     protected function clearLead () {
         Yii::app()->db->createCommand ('delete from x2_x2leads where name="test test"')
             ->execute ();
         $count = Yii::app()->db->createCommand (
-            'select count(*) from x2_contacts
+            'select count(*) from x2_x2leads
              where name="test test"')
+             ->queryScalar ();
+        $this->assertTrue ($count === '0');
+    }
+
+    protected function clearAccount () {
+        Yii::app()->db->createCommand ('delete from x2_accounts where name="testAccount"')
+            ->execute ();
+        $count = Yii::app()->db->createCommand (
+            'select count(*) from x2_accounts
+             where name="testAccount"')
              ->queryScalar ();
         $this->assertTrue ($count === '0');
     }
@@ -146,6 +166,28 @@ class WebLeadFormTest extends WebTrackingTestBase {
 
         $this->assertContactCreated ();
         $this->assertLeadCreated ();
+    }
+
+    public function testGenerateAccount () {
+        $this->clearContact ();
+        $this->clearAccount ();
+
+        $this->openPublic('x2WebTrackingTestPages/webFormTestGenerateAccount.html');
+        if ($this->isOpera ()) $this->pause (5000);
+
+        $this->type("name=Contacts[firstName]", 'test');
+        $this->type("name=Contacts[lastName]", 'test');
+        $this->type("name=Contacts[email]", 'test@test.com');
+        $this->type("name=Contacts[company]", 'testAccount');
+        $this->click("css=#submit");
+        // wait for iframe to load new page
+        $this->waitForCondition (
+            "selenium.browserbot.getCurrentWindow(document.getElementsByName ('web-form-iframe').length && document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null)",
+            4000);
+        $this->pause (5000); // wait for database changes to enact
+
+        $this->assertContactCreated ();
+        $this->assertAccountCreated ();
     }
 
     /**

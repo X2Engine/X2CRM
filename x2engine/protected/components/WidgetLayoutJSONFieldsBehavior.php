@@ -43,8 +43,8 @@ Yii::import('application.components.sortableWidget.*');
  * transformAttributes field of the behavior configuration array should looks as follows:
  *
  *  'transformAttributes' => array (
- *     <widget name> => array (
- *          'widgetClass' => <widget class name>
+ *     <widget layout name> => array (
+ *          <widget class name>
  *      )
  *  )
  * 
@@ -57,6 +57,40 @@ class WidgetLayoutJSONFieldsBehavior extends JSONFieldsBehavior {
 
 	protected $_fields;
 
+    /**
+     * Ensures that each subarray in $currentFields corresponds to a JSON properties structure
+     * definition defined in some SortableWidget subclass. 
+     *
+	 * @param array $expectedFields The array with key => default value pairs
+	 * @param array $currentFields The array to copy values from
+	 * @return array
+     */
+    private function normalizeToWidgetJSONPropertiesStructures ($expectedFields, $currentFields) {
+        $fields = array ();
+
+        foreach ($currentFields as $key => $val) {
+            // widget class name can optionally be followed by a sequence of digits. This is
+            // used for widget cloning
+            $widgetClassName = preg_replace ("/_\w+$/", '', $key);
+            if (is_array ($val) && isset ($currentFields[$key]) && 
+                is_array ($expectedFields[$widgetClassName])) {
+
+                // JSON property structure definitions can be nested 
+                $fields[$key] = ArrayUtil::normalizeToArrayR (
+                    $expectedFields[$widgetClassName], $currentFields[$key]);
+            } 
+        }
+
+        foreach ($expectedFields as $key => $val) {
+            if (!isset ($fields[$key])) {
+                $fields[$key] = $expectedFields[$key];
+            }
+        }
+
+        return $fields;
+    }
+        
+
 	/**
 	 * Returns an array defining the expected structure of the JSON-bearing
 	 * attribute specified by $name.
@@ -67,12 +101,18 @@ class WidgetLayoutJSONFieldsBehavior extends JSONFieldsBehavior {
 	public function fields($name) {
 		if(!isset($this->_fields)) {
 			$this->_fields = array();
-			foreach($this->transformAttributes as $attr => $fields) {
+			foreach($this->transformAttributes as $attr => $alias) {
                 $this->_fields[$attr] = array ();
-                if (!is_array ($fields)) continue;
+
+                // get expected fields form contents of widget directory
+                $widgetClasses = array_map (function ($file) {
+                    return preg_replace ('/\.php$/', '', $file);
+                }, array_filter (scandir(Yii::getPathOfAlias($alias)), function ($file) {
+                    return preg_match ('/\.php$/', $file);
+                }));
 
                 // get JSON structure from widget class property
-			    foreach($fields as $widgetName) {
+			    foreach($widgetClasses as $widgetName) {
                     if (method_exists ($widgetName, 'getJSONPropertiesStructure')) {
     				    $this->_fields[$attr][$widgetName] = 
                             $widgetName::getJSONPropertiesStructure ();
@@ -82,6 +122,17 @@ class WidgetLayoutJSONFieldsBehavior extends JSONFieldsBehavior {
 		}
 		return $this->_fields[$name];
 	}
+
+    /**
+     * Removes fields which have JSON properties structures (for the purposes of array 
+     * normalization) but which should not be saved
+     */
+    private function removeExcludedFields (&$attribute) {
+        // Templates Summary can be in saved json object but should not be added by default.
+        // This is because templates summaries can be created but don't exist by default 
+        $excludeList = array ('TemplatesGridViewProfileWidget');
+        $attribute = array_diff_key ($attribute, array_flip ($excludeList));
+    }
 
 	/**
 	 * Normalizes the attribute array to the structure defined in {@link fields}
@@ -94,8 +145,9 @@ class WidgetLayoutJSONFieldsBehavior extends JSONFieldsBehavior {
 	public function packAttribute($name){
 		$fields = $this->fields($name);
 		$attribute = $this->getOwner()->$name;
-        $attribute = is_array($attribute) ? 
-            ArrayUtil::normalizeToArrayR ($fields,$attribute) : $fields;
+        $attribute = is_array ($attribute) ? 
+		    $this->normalizeToWidgetJSONPropertiesStructures ($fields, $attribute) : $fields; 
+        $this->removeExcludedFields ($attribute);
 		return CJSON::encode ($attribute);
 	}
 
@@ -111,8 +163,9 @@ class WidgetLayoutJSONFieldsBehavior extends JSONFieldsBehavior {
 	public function unpackAttribute($name){
 		$fields = $this->fields($name);
 		$attribute = CJSON::decode ($this->getOwner()->$name);
-		$attribute = is_array($attribute) ? 
-            ArrayUtil::normalizeToArrayR ($fields,$attribute) : $fields;
+        $attribute = is_array ($attribute) ? 
+		    $this->normalizeToWidgetJSONPropertiesStructures ($fields, $attribute) : $fields; 
+        $this->removeExcludedFields ($attribute);
 		return $attribute;
 	}
 }

@@ -73,7 +73,6 @@ class ActionText extends CActiveRecord
 		return array(
 			'actionId' => Yii::t('actions','Action ID'),
 			'text' => Yii::t('actions','Action Text'),
-
 		);
 	}
 

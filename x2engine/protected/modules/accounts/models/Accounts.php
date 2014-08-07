@@ -71,7 +71,10 @@ class Accounts extends X2Model {
 			),
 			'InlineEmailModelBehavior' => array(
 				'class'=>'application.components.InlineEmailModelBehavior',
-			)
+			),
+            'X2AddressBehavior' => array(
+                'class'=>'application.components.X2AddressBehavior',
+            ),
 		));
 	}
 
@@ -228,7 +231,7 @@ class Accounts extends X2Model {
 
 			$this->compareAttributes($search);
 
-			return new SmartDataProvider('Accounts',array(
+			return new SmartActiveDataProvider('Accounts',array(
 				'criteria'=>$search,
 				'sort'=>array(
 					'defaultOrder'=>'t.lastUpdated DESC'	// true = ASC

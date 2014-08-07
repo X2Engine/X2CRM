@@ -81,6 +81,9 @@ class Contacts extends X2Model {
                 'defaults'=>array(),
                 'defaultStickOnClear'=>false
             ),
+            'X2AddressBehavior' => array(
+                'class'=>'application.components.X2AddressBehavior',
+            ),
         ));
     }
 
@@ -140,10 +143,6 @@ class Contacts extends X2Model {
             $this->trackingKey = self::getNewTrackingKey();
         }
 
-        // invalidate cached timezone
-        if (isset($this->timezone))
-            $this->timezone = null;
-
         return parent::beforeSave();
     }
 
@@ -198,29 +197,6 @@ class Contacts extends X2Model {
 
 
         parent::afterUpdate();
-    }
-
-    /**
-     * Returns full human-readable address, using all available address fields
-     */
-    public function getCityAddress() {
-        $address = '';
-        if(!empty($this->address)){
-            $address.=$this->address." ";
-        }
-        if(!empty($this->city))
-            $address .= $this->city . ', ';
-
-        if(!empty($this->state))
-            $address .= $this->state . ' ';
-
-        if(!empty($this->zipcode))
-            $address .= $this->zipcode . ' ';
-
-        if(!empty($this->country))
-            $address .= $this->country;
-
-        return $address;
     }
 
     public static function getNames() {
@@ -400,7 +376,7 @@ class Contacts extends X2Model {
 
             $this->compareAttributes($search);
 
-            return new SmartDataProvider('Contacts',array(
+            return new SmartActiveDataProvider('Contacts',array(
                 'criteria'=>$search,
                 'sort'=>array(
                     'defaultOrder'=>'t.lastUpdated DESC'    // true = ASC

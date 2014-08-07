@@ -1,0 +1,21 @@
+{
+    "name":"Outlook Format to X2Engine 4.2",
+    "mapping":
+    {
+        "First Name":"firstName",
+        "Last Name":"lastName",
+        "Title":"title",
+        "E-mail Address":"email",
+        "Company":"company",
+        "Priority":"priority",
+        "Web Page":"website",
+        "Notes":"backgroundInfo",
+        "Primary Phone":"phone",
+        "Home Phone":"phone2",
+        "Home Address":"address",
+        "Home City":"city",
+        "Home State":"state",
+        "Home Postal Code":"zipcode",
+        "Home Country":"country"
+    }
+}

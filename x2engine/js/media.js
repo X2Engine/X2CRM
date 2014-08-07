@@ -162,6 +162,7 @@ function mediaCheckName(el) {
     	return true;
     }
     else {
+        var filenameError = "{X} is not an allowed filetype.";
         alert(filenameError.replace('{X}',ar_ext));
         return false;
     }

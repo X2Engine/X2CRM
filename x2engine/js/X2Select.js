@@ -44,7 +44,7 @@ function Select (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         elem: null,
-        DEBUG: x2.DEBUG && false,
+        DEBUG: x2.DEBUG && false
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 

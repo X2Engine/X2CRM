@@ -37,9 +37,12 @@
  Yii::import ('application.components.sortableWidget.SortableWidget');
 
 /**
- * @package application.components
+ * @package application.components.sortableWidget
  */
 abstract class ChartWidget extends SortableWidget {
+
+	const SECPERDAY = 86400;
+	const SECPERWEEK = 604800;
 
     public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{chartSubtypeSelector}{closeButton}{minimizeButton}{settingsMenu}</div>{widgetContents}';
 
@@ -48,17 +51,43 @@ abstract class ChartWidget extends SortableWidget {
      */
     public $chartType;
 
+    public $viewFile = '_chartWidget';
+
     protected $containerClass = 'sortable-widget-container x2-layout-island sortable-chart-widget';
 
+    protected $_translations;
+
     private static $_JSONPropertiesStructure;
+
+    private $_chartSettings;
+
+    public function getChartSettings () {
+        if (!isset ($this->_chartSettings)) {
+            $this->_chartSettings = array_merge (
+                array_filter (self::getJSONProperty (
+                    $this->profile, 'chartSettings', $this->widgetType, $this->widgetUID),
+                    function ($setting) {
+                        return $setting !== null;
+                    }),
+                array (
+                    'chartIsShown' => self::getJSONProperty (
+                        $this->profile, 'minimized', $this->widgetType, 
+                        $this->widgetUID),
+                )
+            );
+        }
+        return $this->_chartSettings;
+    }
 
     public function getViewFileParams () {
         if (!isset ($this->_viewFileParams)) {
             $this->_viewFileParams = array_merge (
                 parent::getViewFileParams (),
                 array (
+                    'suppressDateRangeSelector' => false,
                     'chartSubtype' => self::getJSONProperty (
-                        $this->profile, 'chartSubtype', $this->widgetType)
+                        $this->profile, 'chartSubtype', $this->widgetType, $this->widgetUID),
+                    'widgetUID' => $this->widgetUID,
                 )
             );
         }
@@ -74,10 +103,25 @@ abstract class ChartWidget extends SortableWidget {
                 parent::getJSONPropertiesStructure (),
                 array (
                     'chartSubtype' => 'line', 
+                    'chartSettings' => array (),
                 )
             );
         }
         return self::$_JSONPropertiesStructure;
+    }
+
+    /**
+     * @param string $settingName
+     */
+    public function getChartSetting ($settingName) {
+        $chartSettings = self::getJSONProperty (
+            $this->profile, 'chartSettings', $this->widgetType, $this->widgetUID);
+
+        if (in_array ($settingName, array_keys ($chartSettings))) {
+            return $chartSettings[$settingName];
+        } else {
+            throw new CException (Yii::t('app', 'Invalid chart setting name.'));
+        }
     }
 
     /**
@@ -88,14 +132,9 @@ abstract class ChartWidget extends SortableWidget {
             $widgetClass = get_called_class ();
             $this->_setupScript = "
                 $(function () {
-                    x2.".$widgetClass." = new ChartWidget ({
-                        'widgetClass': '".$widgetClass."',
-                        'setPropertyUrl': '".Yii::app()->controller->createUrl (
-                            '/profile/setWidgetSetting')."',
-                        'cssSelectorPrefix': '".$this->widgetType."',
-                        'chartType': '".$this->chartType."',
-                        'widgetType': '".$this->widgetType."'
-                    });
+                    x2.".$widgetClass.$this->widgetUID." = new ChartWidget (".
+                        CJSON::encode ($this->getJSSortableWidgetParams ()).
+                    ");
                 });
             ";
         }
@@ -113,12 +152,35 @@ abstract class ChartWidget extends SortableWidget {
                     'ChartWidgetJS' => array(
                         'baseUrl' => Yii::app()->request->baseUrl,
                         'js' => array(
+                            'js/jqplot/jquery.jqplot.js',
+                            'js/jqplot/plugins/jqplot.pieRenderer.js',
+                            'js/jqplot/plugins/jqplot.categoryAxisRenderer.js',
+                            'js/jqplot/plugins/jqplot.pointLabels.js',
+                            'js/jqplot/plugins/jqplot.dateAxisRenderer.js',
+                            'js/jqplot/plugins/jqplot.highlighter.js',
+                            'js/jqplot/plugins/jqplot.enhancedLegendRenderer.js',
                             'js/sortableWidgets/ChartWidget.js',
+                            'js/X2Chart/X2Chart.js',
                         ),
                         'depends' => array ('SortableWidgetJS')
                     ),
+                    'ChartWidgetCss' => array(
+                        'baseUrl' => Yii::app()->getTheme ()->getBaseUrl (),
+                        'css' => array(
+                            'css/x2chart.css',
+                        )
+                    ),
+                    'ChartWidgetCssExt' => array(
+                        'baseUrl' => Yii::app()->request->baseUrl,
+                        'css' => array(
+                            'js/jqplot/jquery.jqplot.css',
+                        ),
+                    ),
                 )
             );
+            if (AuxLib::isIE8 ()) {
+                $this->_packages['ChartWidgetExtJS']['js'][] = 'js/jqplot/excanvas.js';
+            }
         }
         return $this->_packages;
     }
@@ -128,7 +190,7 @@ abstract class ChartWidget extends SortableWidget {
      */
     public function renderChartSubtypeSelector () {
         $subtype = self::getJSONProperty (
-            $this->profile, 'chartSubtype', $this->widgetType);
+            $this->profile, 'chartSubtype', $this->widgetType, $this->widgetUID);
 
         echo 
             "<select class='x2-minimal-select chart-subtype-selector'>
@@ -139,6 +201,58 @@ abstract class ChartWidget extends SortableWidget {
                     Yii::t('app', 'Pie Chart').
                 "</option>
             </select>";
+    }
+
+    /**
+     * Magic getter.
+     */
+    protected function getJSSortableWidgetParams () {
+        if (!isset ($this->_JSSortableWidgetParams)) {
+            $this->_JSSortableWidgetParams = array_merge (
+                parent::getJSSortableWidgetParams (), array (
+                    'chartType' => $this->chartType,
+                ));
+        }
+        return $this->_JSSortableWidgetParams;
+    }
+
+    /**
+     * @return array translations to pass to JS objects 
+     */
+    protected function getTranslations () {
+        if (!isset ($this->_translations )) {
+            $longMonthNames = Yii::app()->getLocale ()->getMonthNames ();
+            $shortMonthNames = Yii::app()->getLocale ()->getMonthNames ('abbreviated');
+
+            $translations = array (
+                'Create' => Yii::t('app','Create'),
+                'Cancel' => Yii::t('app','Cancel'),
+                'Create Chart Setting' => Yii::t('app','Create Chart Setting'),
+                'Check all' => Yii::t('app','Check all'),
+                'Uncheck all' => Yii::t('app','Uncheck all'),
+                'metric(s) selected' => Yii::t('app','metric(s) selected')
+            );
+
+            $englishMonthNames =
+                array ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
+                'September', 'October', 'November', 'December');
+            $englishMonthAbbrs =
+                array ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov',
+                'Dec');
+
+            foreach ($longMonthNames as $key=>$val) {
+                $translations[$englishMonthNames[$key - 1]] = $val;
+            }
+            foreach ($shortMonthNames as $key=>$val) {
+                $translations[$englishMonthAbbrs[$key - 1]] = $val;
+            }
+
+            $this->_translations = array_merge (
+                parent::getTranslations (),
+                $translations
+            );
+        }
+        return $this->_translations;
     }
 
     /**
@@ -165,6 +279,10 @@ abstract class ChartWidget extends SortableWidget {
                     .sortable-chart-widget .chart-controls-container {
                         width: 604px;
                         padding: 3px;
+                    }
+
+                    .sortable-chart-widget .chart-widget-button-container .relabel-widget-button {
+                        margin-right: 5px;
                     }
 
                     @media (max-width: 684px) {
@@ -202,5 +320,78 @@ abstract class ChartWidget extends SortableWidget {
         }
         return $this->_css;
     }
+
+    
+    /**
+     * Returns an array containing a start and end timestamp.
+     * If a date range cookie is set, the timestamps get generated. Otherwise start and
+     * end timestamp cookies are used. Specified default timestamps will be used when
+     * cookies are not set.
+     */
+	protected function getStartEndTimestamp ($defaultStartTs, $defaultEndTs) {
+		$startDate;
+		$endDate;
+		if ($this->getChartSetting ('dateRange') !== null &&
+			$this->getChartSetting ('dateRange') !== 'Custom') {
+
+			$dateRange = $this->getChartSetting ('dateRange');
+			switch ($dateRange) {
+				case 'Today':
+					$startDate = time ();
+					$endDate = time ();
+					break;
+				case 'Yesterday':
+					$startDate = strtotime ('Yesterday');
+					$endDate = strtotime ('Yesterday');
+					break;
+				case 'This Week':
+					$startDate = strtotime ('Sunday this week');
+					$endDate = time ();
+					break;
+				case 'Last Week':
+					$startDate = strtotime ('-2 Sunday');
+					$endDate = strtotime ('-1 Saturday');
+					break;
+				case 'This Month':
+					$startDate = mktime (0, 0, 0, date ('m'), 1, date('o'));
+					$endDate = time ();
+					break;
+				case 'Last Six Months':
+					$startDate = mktime (0, 0, 0, date ('m') - 6, 1, date('o'));
+					$endDate = time ();
+					break;
+				case 'This Year':
+					$startDate = mktime (0, 0, 0, 1, 1, date('o'));
+					$endDate = time ();
+					break;
+				case 'Last Year':
+					$startDate = mktime (0, 0, 0, 1, 1, date('o') - 1);
+					$endDate = mktime (0, 0, 0, 11, 31, date('o') - 1);
+					break;
+				case 'Last Month':
+				default:
+					$startDate = mktime (0, 0, 0, date ('m') - 1, 1, date('o'));
+					$endDate = mktime (0, 0, 0, date ('m'), 1, date('o')) - self::SECPERDAY;
+					break;
+				/*case 'Data Domain':
+					break;*/
+			}
+		} else {
+			if ($this->getChartSetting ('startDate') !== null) {
+				$startDate = $this->getChartSetting ('startDate') / 1000;
+			} else {
+				$startDate = $defaultStartTs;
+			}
+			if ($this->getChartSetting ('endDate')) { 
+				$endDate = $this->getChartSetting ('endDate') / 1000;
+			} else {
+				$endDate = $defaultEndTs;
+			}
+		}
+		$endDate += self::SECPERDAY - 1;
+		return array ($startDate, $endDate);
+	}
+
+
 }
 ?>

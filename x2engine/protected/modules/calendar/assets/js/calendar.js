@@ -75,3 +75,46 @@ x2.LayoutManager.prototype.setUpCalendarTitleBarResponsiveness = function () {
 
 }) ();
 
+x2.calendarManager = (function () {
+
+function CalendarManager (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    this._init ();
+}
+
+/*
+Public static methods
+*/
+
+/*
+Private static methods
+*/
+
+/*
+Public instance methods
+*/
+
+/*
+Private instance methods
+*/
+
+CalendarManager.prototype.dayNumberClick = function (target) {
+    var date = $(target).closest ('td').attr ('data-date').split ('-');
+
+    $('#calendar').fullCalendar ('gotoDate', date[0], date[1] - 1, date[2]);
+    $('#calendar').fullCalendar ('changeView', 'agendaDay');
+    return false;
+};
+
+CalendarManager.prototype._init = function () {
+    $('.day-number-link').click (function () { return false; });
+};
+
+return new CalendarManager ();
+
+}) ();
+

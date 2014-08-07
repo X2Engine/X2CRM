@@ -119,6 +119,7 @@ class Formatter {
         $fieldTypes = array_map(function($f){return $f['phpType'];},Fields::getFieldTypes());
         $fields = $model->getFields(true);
         preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
+
         if(!empty($matches[0])){
             foreach($matches[0] as $match){
                 $match = substr($match, 1, -1); // Remove the "{" and "}" characters
@@ -132,12 +133,14 @@ class Formatter {
                         $newModel = $tmpModel; // If we got a model from our short code, use that
                         $attr = implode('.',$pieces); // Also, set the attribute to have the first item removed.
                     }
+
                     $codes['{'.$match.'}'] = $newModel->getAttribute(
                         $attr, $renderFlag, $makeLinks);
-                        $codeTypes[$match] = isset($fields[$attr])
-                                && isset($fieldTypes[$fields[$attr]->type])
-                                ? $fieldTypes[$fields[$match]->type]
-                                : 'string';
+                    $codeTypes[$match] = isset($fields[$attr])
+                            && isset($fieldTypes[$fields[$attr]->type])
+                            ? $fieldTypes[$fields[$attr]->type]
+                            : 'string';
+
                 }else{ // Standard attribute
                     if(isset($params[$match])){ // First check if we provided a value for this attribute
                         $codes['{'.$match.'}'] = $params[$match];
@@ -795,11 +798,15 @@ class Formatter {
 
     /**
      * @param float|int $value 
-     * @return string value formatted as currency using app-wide currency setting
+     * @param string $currency (optional)
+     * @return string value formatted as currency using specified currency or app-wide currency 
+     *  settings if no currency is specified
      */
-    public static function formatCurrency ($value) {
-        return Yii::app()->locale->numberFormatter->formatCurrency (
-            $value, Yii::app()->params->currency);
+    public static function formatCurrency ($value, $currency=null) {
+        $locale = Yii::app()->settings->currencyLocale;
+        $locale = $locale === null ? Yii::app()->locale : Yii::app()->getLocale ($locale);
+        $currency = $currency === null ? Yii::app()->params->currency : $currency;
+        return $locale->numberFormatter->formatCurrency ($value, $currency);
     }
 
 }

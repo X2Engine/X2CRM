@@ -74,8 +74,8 @@ $recordName = $recordNames[$modelName];
 <span class='stage-member-value'>
 <?php
 if (!$dummyPartial) {
-echo Yii::app()->locale->numberFormatter->formatCurrency (
-    Workflow::getProjectedValue ($data['recordType'], $data),Yii::app()->params->currency);
+echo Formatter::formatCurrency (
+    Workflow::getProjectedValue ($data['recordType'], $data));
 }
 ?>
 </span>

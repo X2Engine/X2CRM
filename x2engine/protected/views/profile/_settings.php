@@ -333,7 +333,8 @@ $form = $this->beginWidget('X2ActiveForm', array(
             <?php echo $form->labelEx($model, 'language'); ?>
             <?php
             echo $form->dropDownList(
-                    $model, 'language', $languages, array('onchange' => 'js:x2.profileSettings.highlightSave();'));
+                $model, 'language', $languages, array(
+                    'onchange' => 'js:x2.profileSettings.highlightSave();'));
             ?>
         </div>
         <div class="cell">

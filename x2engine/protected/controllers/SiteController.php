@@ -153,7 +153,7 @@ class SiteController extends x2base {
     public function actionSendErrorReport(){
         if(isset($_POST['report'])){
             $errorReport = $_POST['report'];
-            $errorReport = unserialize(base64_decode($errorReport));
+            $errorReport = CJSON::decode(base64_decode($errorReport));
             if(isset($_POST['email'])){
                 $errorReport['email'] = $_POST['email'];
             }
@@ -161,7 +161,7 @@ class SiteController extends x2base {
                 $errorReport['bugDescription'] = $_POST['bugDescription'];
             }
             $errorReport['edition'] = Yii::app()->edition;
-            $errorReport = base64_encode(serialize($errorReport));
+            $errorReport = base64_encode(CJSON::encode($errorReport));
             $ccUrl = "http://www.x2software.com/receiveErrorReport.php";
             $ccSession = curl_init($ccUrl);
             curl_setopt($ccSession, CURLOPT_POST, 1);
@@ -1207,7 +1207,7 @@ class SiteController extends x2base {
                 $x2version = Yii::app()->params->version;
                 unset($error['traces']);
                 $error['trace'] = CHtml::encode($error['trace']);
-                $phpInfoErrorReport = base64_encode(serialize(array_merge($error, array(
+                $phpInfoErrorReport = base64_encode(CJSON::encode(array_merge($error, array(
                                     'request' => $request,
                                     'phpinfo' => $info,
                                     'referer' => $referer,
@@ -1221,7 +1221,7 @@ class SiteController extends x2base {
                                     'userAgent' => $userAgent,
                                 ))));
 
-                $errorReport = base64_encode(serialize(array_merge($error, array(
+                $errorReport = base64_encode(CJSON::encode(array_merge($error, array(
                                     'request' => $request,
                                     'referer' => $referer,
                                     'get' => $get,
@@ -1259,7 +1259,7 @@ class SiteController extends x2base {
         $phpversion = phpversion();
         $x2version = Yii::app()->params->version;
         $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-        $phpInfoErrorReport = base64_encode(serialize(array(
+        $phpInfoErrorReport = base64_encode(CJSON::encode(array(
                     'phpinfo' => $info,
                     'phpversion' => $phpversion,
                     'x2version' => $x2version,
@@ -1269,7 +1269,7 @@ class SiteController extends x2base {
                     'userAgent' => $userAgent,
                 )));
 
-        $errorReport = base64_encode(serialize(array(
+        $errorReport = base64_encode(CJSON::encode(array(
                     'phpversion' => $phpversion,
                     'x2version' => $x2version,
                     'adminEmail' => $email,

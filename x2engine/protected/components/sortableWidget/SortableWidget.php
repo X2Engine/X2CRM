@@ -39,9 +39,14 @@
 /**
  * Base widget class for all of the profile widgets
  * 
- * @package application.components
+ * @package application.components.sortableWidget
  */
 abstract class SortableWidget extends X2Widget {
+
+    const PROFILE_WIDGET_PATH_ALIAS = 'application.components.sortableWidget.profileWidgets';
+    const RECORD_VIEW_WIDGET_PATH_ALIAS = 
+        'application.components.sortableWidget.recordViewWidgets';
+
 
     /**
      * @var string The type of widget that this is (profile). This value is used to detect the view 
@@ -55,6 +60,19 @@ abstract class SortableWidget extends X2Widget {
      *      <widget type>WidgetLayout
      */
     public $widgetType;
+
+    /**
+     * @var string JS class which is used to manage the front-end behavior of this widget. This is 
+     *  the class which gets instantiated by the setup script.
+     */
+    public $sortableWidgetJSClass = 'SortableWidget';
+
+    public $defaultTitle;
+
+    /**
+     * @var string Used to distinguish widget clones from eachother
+     */
+    public $widgetUID = '';
 
     /**
      * @var string A description of the widget
@@ -77,12 +95,34 @@ abstract class SortableWidget extends X2Widget {
     public $viewFile = '';
 
     /**
+     * @var bool If true, the widget can be relabeled by the user from the widget settings menu 
+     */
+    public $relabelingEnabled = false;
+
+    /**
+     * @var bool If true, the widget can be deleted by the user from the widget settings menu 
+     */
+    public $canBeDeleted = false;
+
+    /**
      * A mixture of html and attributes inside curly braces. This gets used by renderWidget to 
      * render widget elements specified in child classes. As with X2GridView, each attribute inside
      * curly braces should have a corresponding method called render<attribute_name>. 
      * @var string Specifies the widget layout.
      */
     public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{closeButton}{minimizeButton}</div>{widgetContents}';
+
+    /**
+     * @var array properties which will get passed to the constructor of the JS SortableWidget
+     *  class or subclass which corresponds with this widget. 
+     */
+    protected $_JSSortableWidgetParams;
+
+    /**
+     * @var array translations to be passed along with $_JSSortableWidgetParams to the JS Sortable
+     *  Widget class constructor
+     */
+    protected $_translations;
 
     /**
      * @var string CSS class to be added to the container element
@@ -134,27 +174,123 @@ abstract class SortableWidget extends X2Widget {
     private static $_JSONPropertiesStructure;
 
 
+    private $_widgetLabel;
+
     /***********************************************************************
     * Public Static Methods
     ***********************************************************************/
 
     /**
+     * Returns path alias of directory that contains widgets of the specified type
+     * @param string $widgetType
+     */
+    public static function getPathAlias ($widgetType) {
+        switch ($widgetType) {
+            case 'profile':
+                $pathAlias = self::PROFILE_WIDGET_PATH_ALIAS;
+                break;
+            case 'recordView':
+                $pathAlias = self::RECORD_VIEW_WIDGET_PATH_ALIAS;
+                break;
+            default:
+                throw new CException ('invalid widget type');
+        }
+        return $pathAlias;
+    }
+
+    /**
+     * @var string $widgetType
+     * @return string array of instantiatable widget class names
+     * @throws CException
+     */
+    public static function getWidgetSubtypes ($widgetType) {
+        static $cache = array ();
+
+        if (!in_array ($widgetType, array ('profile', 'recordView'))) {
+            throw new CException ('invalid widget type');
+        }
+
+        if (!isset ($cache[$widgetType])) {
+            $excludeList = array ('TemplatesGridViewProfileWidget.php');
+            $cache[$widgetType] = array_map (function ($file) {
+                    return preg_replace ("/\.php$/", '', $file);
+                },
+                array_filter (
+                    scandir(Yii::getPathOfAlias(self::getPathAlias ($widgetType))),
+                    function ($file) use ($excludeList) {
+                        return !in_array ($file, $excludeList) && preg_match ("/\.php$/", $file);
+                    }
+                ));
+        }
+        return $cache[$widgetType];
+    }
+
+    public static function subtypeIsValid ($widgetType, $widgetSubtype) {
+        if ($widgetType === 'profile' && $widgetSubtype === 'TemplatesGridViewProfileWidget' ||
+            in_array ($widgetSubtype, SortableWidget::getWidgetSubtypes ($widgetType))) {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @var string $widgetType
+     * @return array associative array with widget class names as keys and widget labels as values
+     */
+    public static function getWidgetSubtypeOptions ($widgetType) {
+        static $cache = array ();
+        if (!isset ($cache[$widgetType])) {
+            $cache[$widgetType] = array_combine (
+                self::getWidgetSubtypes ($widgetType),
+                array_map (function ($widgetType) {
+                    $jsonPropertiesStruct = $widgetType::getJSONPropertiesStructure ();
+                    return $jsonPropertiesStruct['label'];
+                }, self::getWidgetSubtypes ($widgetType))
+            );
+
+            // add custom module summary pseudo-subtypes
+            if ($widgetType === 'profile') {
+                $customModules = Modules::model ()->getCustomModules (true);
+
+                foreach ($customModules as $module) {
+                    $modelName = ucfirst ($module->name);
+                    if (class_exists ($modelName)) {
+                        // prefix widget class name with custom module model name and a delimiter
+                        $cache[$widgetType][$modelName.'::TemplatesGridViewProfileWidget'] =
+                            Yii::t(
+                                'app', '{modelName} Summary', array ('{modelName}' => $modelName));
+                    }
+                }
+            }
+        }
+        return $cache[$widgetType];
+    }
+
+    /**
      * Used to render a widget and its associated scripts during an AJAX request 
-     * @param object $controller The instance of the controller that called this method. This allows
-     *  us to call renderPartial, which is necessary if we want registered scripts to be included
-     *  in the AJAX response.
+     * @param object $controller The instance of the controller that called this method. This 
+     *  allows us to call renderPartial, which is necessary if we want registered scripts to be 
+     *  included in the AJAX response.
      * @param object $profile The profile model of the user for which this widget will be rendered
      * @param string $widgetType The type of widget that this is (profile)
+     * @param array $extraWidgetParams Extra params to pass to the widget (optional)
      */
-    public static function getWidgetContents ($controller, $profile, $widgetType) {
+    public static function getWidgetContents (
+        $controller, $profile, $widgetType, $widgetUID, $extraWidgetParams=array ()) {
 
-        $controller->renderPartial (
-            'application.components.sortableWidget.views._ajaxWidgetContents',
-            array (
-                'widgetClass' => get_called_class (), 
-                'widgetType' => $widgetType,
-                'profile' => $profile
-            ), false, true);
+        return CJSON::encode (array (
+            'uid' => $widgetUID,
+            'widget' => $controller->renderPartial (
+                'application.components.sortableWidget.views._ajaxWidgetContents',
+                array (
+                    'widgetClass' => get_called_class (), 
+                    'widgetType' => $widgetType,
+                    'profile' => $profile,
+                    'widgetUID' => $widgetUID,
+                    'extraWidgetParams' => $extraWidgetParams,
+                ), true, true)));
     }
 
     /**
@@ -164,12 +300,146 @@ abstract class SortableWidget extends X2Widget {
         if (!isset (self::$_JSONPropertiesStructure)) {
             self::$_JSONPropertiesStructure = array (
                 'label' => '', // required
+                'uid' => '', // required
                 'hidden' => false, // required
                 'minimized' => false, // required
-                'containerNumber' => 1
+                'containerNumber' => 1,
+                'softDeleted' => false,
+
             );
         }
         return self::$_JSONPropertiesStructure;
+    }
+
+    /**
+     * Instantiates the widget
+     * @param string $widgetLayoutKey Key in widget layout associative array. Contains the widget
+     *  class name as well as the uid
+     * @param object profile
+     */
+    public static function instantiateWidget ($widgetLayoutKey, $profile) {
+        list($widgetClass, $widgetUID) = SortableWidget::parseWidgetLayoutKey ($widgetLayoutKey);
+
+        if ($widgetClass::getJSONProperty (
+            $profile, 'softDeleted', 'profile', $widgetUID)) {
+
+            return;
+        }
+
+        Yii::app()->controller->widget(
+            'application.components.sortableWidget.'.$widgetClass, array (
+
+            'widgetUID' => $widgetUID,
+            'profile' => $profile,
+            'widgetType' => 'profile',
+        ));
+    }
+
+    /**
+     * @param $layoutKey The key in the widget layout associated with the widgets json properties.
+     *  The key contains both the widget class name and the widget's unique id
+     * @return array (<widget class name>, <widget uid>)
+     */
+    public static function parseWidgetLayoutKey ($widgetLayoutKey) {
+        if (preg_match ("/_(\w*)$/", $widgetLayoutKey, $matches)) {
+            $widgetUID = $matches[1];
+        } else {
+            $widgetUID = '';
+        }
+
+        $widgetClass = preg_replace ("/_\w*/", '', $widgetLayoutKey);
+        return array ($widgetClass, $widgetUID);
+    }
+
+    /**
+     * @param object $profile The profile model
+     * @param string $widgetType The type of the widget 
+     * @param string $widgetLayoutName The name of the layout that the widget belongs to
+     * @param array $widgetSettings (optional) Widget setting values indexed by setting names. 
+     *  Used to set initial values of widget settings
+     * @return array (<success>, <uid>)
+     */
+    public static function createSortableWidget (
+        $profile, $widgetType, $widgetLayoutName, $widgetSettings=array ()) {
+
+        if (!self::subtypeIsValid ('profile', $widgetType)) {
+            return array (false, null);
+        }
+
+        $widgetLayoutPropertyName = $widgetLayoutName . 'WidgetLayout';
+        $layout = $profile->$widgetLayoutPropertyName;
+
+        // first look for a widget which has been soft deleted
+        if (isset ($layout[$widgetType]) && $layout[$widgetType]['softDeleted']) {
+            $layout[$widgetType]['softDeleted'] = false;
+
+            $profile->$widgetLayoutPropertyName = $layout;
+            if ($profile->save ()) {
+                return array (true, '');
+            } else {
+                return array (false, null);
+            }
+        }
+
+        $widgetUniqueName = $widgetType;
+        $uniqueId = '';
+        while (true) {
+            if (!isset ($layout[$widgetUniqueName])) {
+                break;
+            }
+            $uniqueId = uniqid ();
+            $widgetUniqueName = $widgetType.'_'.$uniqueId;
+        }
+
+        $layout[$widgetUniqueName] = array_merge (
+            array (
+                'hidden' => false,
+                'minimized' => false,
+            ), $widgetSettings);
+        $profile->$widgetLayoutPropertyName = $layout;
+
+        if ($profile->save ()) {
+            return array (true, $uniqueId);
+        } else {
+            return array (false, null);
+        }
+    }
+
+    /**
+     * @param object $profile The profile model
+     * @param string $widgetClass 
+     * @param string $widgetUID 
+     * @param string $widgetLayoutName 
+     * @return bool true for success, false otherwise
+     */
+    public static function deleteSortableWidget (
+        $profile, $widgetClass, $widgetUID, $widgetLayoutName) {
+
+        $widgetLayoutPropertyName = $widgetLayoutName . 'WidgetLayout';
+        $layout = $profile->$widgetLayoutPropertyName;
+        if ($widgetUID !== '')
+            $widgetKey = $widgetClass.'_'.$widgetUID;
+        else 
+            $widgetKey = $widgetClass;
+
+        if (!isset ($layout[$widgetKey])) {
+            return false;
+        }
+
+        if ($widgetUID === '') {
+            // default widgets don't actually get removed form the layout
+            $layout[$widgetKey]['softDeleted'] = true;
+        } else {
+            unset ($layout[$widgetKey]);
+        }
+
+        $profile->$widgetLayoutPropertyName = $layout;
+
+        if ($profile->save ()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -187,15 +457,15 @@ abstract class SortableWidget extends X2Widget {
         $newLayout = array ();
 
         // remove entries from old layout in the specified order, pushing them onto the new layout
-        foreach ($widgetOrder as $widgetClass) {
-            if (in_array ($widgetClass, array_keys ($layout))) {
-                $newLayout[$widgetClass] = $layout[$widgetClass];
-                unset ($layout[$widgetClass]);
+        foreach ($widgetOrder as $widgetKey) {
+            if (in_array ($widgetKey, array_keys ($layout))) {
+                $newLayout[$widgetKey] = $layout[$widgetKey];
+                unset ($layout[$widgetKey]);
             }
         }
 
         // push any remaining widgets not specified in the widget order
-        foreach ($layout as $widgetClass) {
+        foreach ($layout as $widgetClass => $settings) {
             $newLayout[$widgetClass] = $layout[$widgetClass];
         }
 
@@ -215,14 +485,22 @@ abstract class SortableWidget extends X2Widget {
      * @param string $widgetType The type of widget that this is (profile)
      * @returns boolean True for update success, false otherwise
      */
-    public static function setJSONProperty ($profile, $key, $value, $widgetType) {
+    public static function setJSONProperty ($profile, $key, $value, $widgetType, $widgetUID) {
         $widgetLayoutName = $widgetType . 'WidgetLayout';
         $widgetClass = get_called_class ();
+
+        if ($widgetUID !== '')
+            $widgetKey = $widgetClass.'_'.$widgetUID;
+        else 
+            $widgetKey = $widgetClass;
+
         $layout = $profile->$widgetLayoutName;
-        if (isset ($layout[$widgetClass])) {
-            if (in_array ($key, array_keys ($layout[$widgetClass]))) {
-                $layout[$widgetClass][$key] = $value;
+
+        if (isset ($layout[$widgetKey])) {
+            if (in_array ($key, array_keys ($layout[$widgetKey]))) {
+                $layout[$widgetKey][$key] = $value;
                 $profile->$widgetLayoutName = $layout;
+
                 if ($profile->save ()) {
                     return true;
                 }
@@ -239,13 +517,19 @@ abstract class SortableWidget extends X2Widget {
      * @param string $widgetType The type of widget that this is (profile)
      * @returns mixed null if the property cannot be retrieved, other the value of the property
      */
-    public static function getJSONProperty ($profile, $key, $widgetType) {
+    public static function getJSONProperty ($profile, $key, $widgetType, $widgetUID) {
         $widgetClass = get_called_class ();
         $widgetLayoutName = $widgetType . 'WidgetLayout';
+
+        if ($widgetUID !== '')
+            $widgetKey = $widgetClass.'_'.$widgetUID;
+        else 
+            $widgetKey = $widgetClass;
+
         $layout = $profile->$widgetLayoutName;
-        if (isset ($layout[$widgetClass])) {
-            if (in_array ($key, array_keys ($layout[$widgetClass]))) {
-                return $layout[$widgetClass][$key];
+        if (isset ($layout[$widgetKey])) {
+            if (in_array ($key, array_keys ($layout[$widgetKey]))) {
+                return $layout[$widgetKey][$key];
             }
         }
         return null;
@@ -267,6 +551,25 @@ abstract class SortableWidget extends X2Widget {
     /***********************************************************************
     * Public Instance Methods 
     ***********************************************************************/
+
+    /**
+     * Non-static wrapper around getJSONProperty
+     * @param string $key The name of the JSON property
+     */
+    public function getWidgetProperty ($key) {
+        return self::getJSONProperty ($this->profile, $key, $this->widgetType, $this->widgetUID);
+    }
+
+    /**
+     * @return string widget label 
+     */
+    public function getWidgetLabel () {
+        if (!isset ($this->_widgetLabel)) {
+            $this->_widgetLabel = self::getJSONProperty (
+                $this->profile, 'label', $this->widgetType, $this->widgetUID); 
+        }
+        return $this->_widgetLabel;
+    }
 
     public function getSharedViewFile () {
         if (!isset ($this->_sharedViewFile)) {
@@ -324,13 +627,9 @@ abstract class SortableWidget extends X2Widget {
             $widgetClass = get_called_class ();
             $this->_setupScript = "
                 $(function () {
-                    x2.".$widgetClass." = new SortableWidget ({
-                        'widgetClass': '".$widgetClass."',
-                        'setPropertyUrl': '".Yii::app()->controller->createUrl (
-                            '/profile/setWidgetSetting')."',
-                        'cssSelectorPrefix': '".$this->widgetType."',
-                        'widgetType': '".$this->widgetType."'
-                    });
+                    x2.".$widgetClass.$this->widgetUID." = new $this->sortableWidgetJSClass (".
+                        CJSON::encode ($this->getJSSortableWidgetParams ()).
+                    ");
                 });
             ";
         }
@@ -379,7 +678,8 @@ abstract class SortableWidget extends X2Widget {
     public function renderWidget () {
 
         // don't render hidden widgets to prevent page load slow down
-        $hidden = self::getJSONProperty ($this->profile, 'hidden', $this->widgetType);
+        $hidden = self::getJSONProperty (
+            $this->profile, 'hidden', $this->widgetType, $this->widgetUID);
         if ($hidden !== null && $hidden) return;
 
         $this->registerCss ();
@@ -446,13 +746,16 @@ abstract class SortableWidget extends X2Widget {
         inserted afterwards.
         */
         Yii::app()->clientScript->registerScript (
-            get_called_class ().'Script', $this->setupScript, 
+            get_called_class ().$this->widgetUID.'Script', $this->setupScript, 
             ($this->isAjaxRequest ? CClientScript::POS_END: CClientScript::POS_BEGIN));
 
-        $minimized = self::getJSONProperty ($this->profile, 'minimized', $this->widgetType);
-        echo "<div id='".get_called_class ()."-widget-content-container'".
+        $minimized = self::getJSONProperty (
+            $this->profile, 'minimized', $this->widgetType, $this->widgetUID);
+        echo "<div id='".get_called_class ()."-widget-content-container-".$this->widgetUID."'".
             ($minimized ? " style='display: none;'" : '').">";
-        $this->render ($this->viewFile, $this->getViewFileParams ());
+        $this->render (
+            'application.components.sortableWidget.views.'.$this->viewFile,
+            $this->getViewFileParams ());
         echo "</div>";
     }
 
@@ -461,16 +764,8 @@ abstract class SortableWidget extends X2Widget {
      * This gets called if {widgetLabel} is contained in the template string.
      */
     public function renderWidgetLabel () {
-        $label = self::getJSONProperty ($this->profile, 'label', $this->widgetType);
+        $label = $this->getWidgetLabel ();
         echo "<div class='widget-title'>".htmlspecialchars($label)."</div>";
-    }
-
-    /**
-     * Override in child class. This content will be turned into a popup dropdown menu with the
-     * PopupDropdownMenu JS prototype.
-     */
-    public function getSettingsMenuContent () {
-        return '<div class="widget-settings-menu-content" style="display:none;"></div>';
     }
 
     /**
@@ -498,7 +793,8 @@ abstract class SortableWidget extends X2Widget {
         $themeUrl = Yii::app()->theme->getBaseUrl();
         $htmlStr = 
             "<a href='#' class='widget-minimize-button x2-icon-button' style='display:none;'>";
-        $minimized = self::getJSONProperty ($this->profile, 'minimized', $this->widgetType);
+        $minimized = self::getJSONProperty (
+            $this->profile, 'minimized', $this->widgetType, $this->widgetUID);
         $htmlStr .= CHtml::image(
             $themeUrl.'/images/icons/Expand_Widget.png', Yii::t('app', 'Maximize Widget'),
             array (
@@ -533,14 +829,16 @@ abstract class SortableWidget extends X2Widget {
      */
     public function run () {
 
-        $hidden = self::getJSONProperty ($this->profile, 'hidden', $this->widgetType);
+        $hidden = self::getJSONProperty (
+            $this->profile, 'hidden', $this->widgetType, $this->widgetUID);
         if ($hidden === null) $hidden = false;
 
         $this->registerSharedCss ();
-        $this->render ($this->sharedViewFile, array (
+        $this->render ('application.components.sortableWidget.views.'.$this->sharedViewFile, array (
             'widgetClass' => get_called_class (),
             'profile' => $this->profile,
             'hidden' => $hidden,
+            'widgetUID' => $this->widgetUID,
         ));
     }
 
@@ -548,6 +846,60 @@ abstract class SortableWidget extends X2Widget {
     /***********************************************************************
     * Non-public instance methods 
     ***********************************************************************/
+
+    /**
+     * Override in child class. This content will be turned into a popup dropdown menu with the
+     * PopupDropdownMenu JS prototype.
+     */
+    protected function getSettingsMenuContent () {
+        $htmlStr = 
+            '<div class="widget-settings-menu-content" style="display:none;">
+                <ul>'. 
+                    $this->getSettingsMenuContentEntries ().
+                '</ul>
+            </div>';
+        $htmlStr .= $this->getSettingsMenuContentDialogs ();
+        return $htmlStr;
+    }
+
+
+    /**
+     * @return string HTML string containing settings menu options
+     */
+    protected function getSettingsMenuContentEntries () {
+        return ($this->relabelingEnabled ? 
+            '<li class="relabel-widget-button">'.
+                Yii::t('app', 'Rename Widget').
+            '</li>' : '').
+        ($this->canBeDeleted ? 
+            '<li class="delete-widget-button">'.
+                Yii::t('app', 'Delete Widget').
+            '</li>' : '');
+    }
+
+    /**
+     * @return string HTML string containing dialog containers used by settings menu options
+     */
+    protected function getSettingsMenuContentDialogs () {
+        $htmlStr = '';
+        if ($this->relabelingEnabled) {
+            $htmlStr .= 
+                '<div id="relabel-widget-dialog-'.$this->widgetUID.'" style="display: none;">
+                    <div>'.Yii::t('app', 'Enter a new name:').'</div>  
+                    <input class="new-widget-name">
+                </div>';
+        }
+        if ($this->canBeDeleted) {
+            $htmlStr .= 
+                '<div id="delete-widget-dialog-'.$this->widgetUID.'" style="display: none;">
+                    <div>'.
+                        Yii::t('app', 'Performing this action will cause this widget\'s settings '.
+                            'to be lost. This action cannot be undone.').
+                    '</div>  
+                </div>';
+        }
+        return $htmlStr;
+    }
 
     /**
      * Magic getter. Returns this widget's shared css
@@ -558,6 +910,13 @@ abstract class SortableWidget extends X2Widget {
         if (!isset ($this->_sharedCss)) {
             $this->_sharedCss = array (
                 'sortableWidgetSharedCss' => "
+                    .widget-settings-button.x2-icon-button {
+                        opacity: 0.45;
+                    }
+                    .widget-settings-button.x2-icon-button:hover {
+                        opacity: 0.75;
+                    }
+
                     .sortable-widget-container {
                         border: 1px solid #c5c5c5;
                         border-radius:            4px 4px 4px 4px;
@@ -628,5 +987,51 @@ abstract class SortableWidget extends X2Widget {
         }
         return $this->_css;
     }
+
+    /**
+     * @return array translations to pass to JS objects 
+     */
+    protected function getTranslations () {
+        if (!isset ($this->_translations )) {
+            $this->_translations = array ();
+            if ($this->relabelingEnabled) {
+                $this->_translations = array_merge ($this->_translations, array (
+                    'Rename Widget' => Yii::t('app', 'Rename Widget'),
+                    'Cancel' => Yii::t('app', 'Cancel'),
+                    'Rename' => Yii::t('app', 'Rename'),
+                ));
+            }
+            if ($this->canBeDeleted) {
+                $this->_translations = array_merge ($this->_translations, array (
+                    'Cancel' => Yii::t('app', 'Cancel'),
+                    'Delete' => Yii::t('app', 'Delete'),
+                    'Are you sure you want to delete this widget?' => 
+                        Yii::t('app', 'Are you sure you want to delete this widget?'),
+                ));
+            }
+        }
+        return $this->_translations;
+    }
+
+    /**
+     * Magic getter.
+     */
+    protected function getJSSortableWidgetParams () {
+        if (!isset ($this->_JSSortableWidgetParams)) {
+            $this->_JSSortableWidgetParams = array (
+                'widgetClass'  => get_called_class (),
+                'setPropertyUrl' => Yii::app()->controller->createUrl (
+                    '/profile/setWidgetSetting'),
+                'cssSelectorPrefix' => $this->widgetType,
+                'widgetType' => $this->widgetType,
+                'widgetUID' => $this->widgetUID,
+                'translations' => $this->getTranslations (),
+                'deleteWidgetUrl' =>  Yii::app()->controller->createUrl (
+                    '/profile/deleteSortableWidget'),
+            );
+        }
+        return $this->_JSSortableWidgetParams;
+    }
+
 }
 ?>

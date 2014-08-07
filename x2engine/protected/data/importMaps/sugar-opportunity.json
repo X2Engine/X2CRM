@@ -1,0 +1,16 @@
+{
+    "name": "Sugar 6.5.16 to X2Engine 4.2",
+    "mapping":
+    {
+        "Name":"name",
+        "Expected Close Date":"expectedCloseDate",
+        "Sales Stage":"salesStage",
+        "Probability (%)":"probability",
+        "Account Name":"accountName",
+        "Description":"description",
+        "Lead Source":"leadSource",
+        "Opportunity Amount":"quoteAmount",
+        "Date Created":"createDate",
+        "Date Modified":"lastUpdated"
+    }
+}

@@ -142,7 +142,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      */
     public function getAccessSQLCondition ($tableAlias='t') {
         $criteria = $this->getAccessCriteria ($tableAlias);
-        return array ($criteria->condition, $criteria->params);
+        return array ('('.$criteria->condition.')', $criteria->params);
     }
 
     /**
@@ -394,12 +394,12 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 || !(bool) $this->visibilityAttr
                 || ( // Visibility setting in the model permits viewing
                     // Visible if marked "public"
-                    $this->owner->getAttribute($this->visibilityAttr) == 1 
+                    $this->owner->getAttribute($this->visibilityAttr) == self::VISIBILITY_PUBLIC 
                     || (
                         // Visible if marked with visibility "Users' Groups"
                         // and the current user has groups in common with
                         // assignees of the current user:
-                        $this->owner->getAttribute($this->visibilityAttr) == 2
+                        $this->owner->getAttribute($this->visibilityAttr) == self::VISIBILITY_GROUPS
                         && (bool) $this->assignmentAttr // Assignment attribute must exist
                         && (bool) ($groupmatesRegex = self::getGroupmatesRegex())
                         && preg_match('/'.$groupmatesRegex.'/',

@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/profile/index')),
+	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/profile/activity')),
 	array('label'=>Yii::t('users','Manage Users'), 'url'=>array('admin')),
 	array('label'=>Yii::t('users','Create User')),
 	array('label'=>Yii::t('users','Invite Users'), 'url'=>array('inviteUsers')),

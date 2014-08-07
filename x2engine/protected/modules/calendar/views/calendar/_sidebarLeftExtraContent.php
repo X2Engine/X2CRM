@@ -192,3 +192,4 @@ if(isset($this->groupCalendars) && $this->groupCalendars !== null) {
                 });",CClientScript::POS_HEAD);
         }
 }
+

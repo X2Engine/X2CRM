@@ -34,16 +34,21 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$profile = Profile::model()->findByPk(Yii::app()->user->id);
-$this->showActions = $profile->showActions;
+if (isset ($showActions)) {
+    $this->showActions = $showActions;
+    Yii::app()->params->profile->showActions = $this->showActions;
+    Yii::app()->params->profile->save ();
+} else {
+    $this->showActions = Yii::app()->params->profile->showActions;
+}
 
 // if user hasn't saved a type of action to show, show uncomple actions by default
 if(!$this->showActions) 
     $this->showActions = 'uncomplete';
-if($this->showActions == 'uncomplete')
-	$model->complete = 'NO';
+if($this->showActions == 'uncomplete' || $this->showActions == 'overdue')
+	$model->complete = 'No';
 else if ($this->showActions == 'complete')
-	$model->complete = 'YES';
+	$model->complete = 'Yes';
 else
 	$model->complete = '';
 
@@ -147,9 +152,10 @@ $this->widget('X2GridView', array(
 			'name'=>'actionDescription',
 			'value'=>
                 'CHtml::link(
-                    ($data->type=="attachment") ? 
-                        Media::attachmentActionText($data->actionDescription) : 
-                        CHtml::encode(Formatter::trimText($data->actionDescription)),
+                    ($data->actionDescription === "" ? Yii::t("actions", "View Action") :
+                        (($data->type=="attachment") ? 
+                            Media::attachmentActionText($data->actionDescription) : 
+                            CHtml::encode(Formatter::trimText($data->actionDescription)))),
                     array("view","id"=>$data->id))',
 			'type'=>'raw',
             'filter' => false,
@@ -172,4 +178,5 @@ $this->widget('X2GridView', array(
 	),
 	'enableControls'=>true,
 	'fullscreen'=>true,
+    'enableSelectAllOnAllPages' => false,
 ));

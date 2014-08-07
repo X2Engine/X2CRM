@@ -78,10 +78,45 @@ jQuery(document).ready(function() {
         var mode = $(this).hasClass('new') ? 'create' : 'update';
         x2.fieldEditor.load(mode,1,0,1);
     });
-    x2.fieldEditor.formArea.on('click','#createUpdateField-savebutton',function(event) {
-        event.preventDefault();
+    x2.fieldEditor.formArea.on('click','#createUpdateField-savebutton',function(e) {
+        e.preventDefault();
         var mode = $(this).hasClass('new') ? 'create' : 'update';
         x2.fieldEditor.load(mode,1,1);
         $.fn.yiiGridView.update("fields-grid");
     });
+
+    // Event handler for using the insertable attributes dropdown:
+    $('#createUpdateField').on('change',"#insertAttrToken",function(e) {
+        // insert this.data.value at current cursor position
+        var insertToken = $(e.target).val();
+        $("#custom-field-template").each(function(e){
+            var obj;
+            if( typeof this[0] != 'undefined' && typeof this[0].name !='undefined' ) {
+                obj = this[0];
+            } else {
+                obj = this;
+            }
+
+            if ($.browser.msie) {
+                obj.focus();
+                sel = document.selection.createRange();
+                sel.text = insertToken;
+                obj.focus();
+            } else if ($.browser.mozilla || $.browser.webkit) {
+                var startPos = obj.selectionStart;
+                var endPos = obj.selectionEnd;
+                var scrollTop = obj.scrollTop;
+                obj.value = obj.value.substring(0, startPos)+insertToken+obj.value.substring(endPos,obj.value.length);
+                obj.focus();
+                obj.selectionStart = startPos + insertToken.length;
+                obj.selectionEnd = startPos + insertToken.length;
+                obj.scrollTop = scrollTop;
+            } else {
+                obj.value += insertToken;
+                obj.focus();
+            }
+        });
+               
+    });
+
 });

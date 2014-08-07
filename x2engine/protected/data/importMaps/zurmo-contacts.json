@@ -1,0 +1,35 @@
+{
+    "name":"Zurmo 2.6.5 to X2Engine 4.2",
+    "mapping":
+    {
+        "Id":"id",
+        "First Name":"firstName",
+        "Last Name":"lastName",
+        "Company Name":"company",
+        "Website":"website",
+        "Created Date Time":"createDate",
+        "Modified Date Time":"lastUpdated",
+        "Job Title":"title",
+        "Mobile Phone":"phone2",
+        "Office Phone":"phone",
+        "Primary Address - City":"city",
+        "Primary Address - Country":"country",
+        "Primary Address - Postal Code":"zipcode",
+        "Primary Address - Street 1":"address",
+        "Primary Address - Street 2":"address2",
+        "Primary Address - State":"state",
+        "Primary Email - Email Address":"email",
+        "Primary Email - Opt Out":"doNotEmail",
+        "Description":"backgroundInfo",
+        "Latest Activity Date Time":"lastActivity",
+        "Account - Name":"company",
+        "Secondary Address - City":"createNew",
+        "Secondary Address - Country":"createNew",
+        "Secondary Address - Postal Code":"createNew",
+        "Secondary Address - Street 1":"createNew",
+        "Secondary Address - Street 2":"createNew",
+        "Secondary Address - State":"createNew",
+        "Secondary Email - Email Address":"createNew",
+        "Secondary Email - Opt Out":"createNew"
+    }
+}

@@ -82,7 +82,7 @@ $form=$this->beginWidget('CActiveForm', array(
 <br><br>
 <b><?php echo Yii::t('admin','Online Only');?></b><br>
 <?php echo Yii::t('admin','This option will filter your routing rule so that leads only go to a subset of the users who are logged in.');?>
-<?php echo Yii::t('admin','i.e. if you set custom rules to go to 4 different users, but 2 are logged in, only those 2 will get the leads');?>
+<?php echo Yii::t('admin',' i.e. if you set custom rules to go to 4 different users, but 2 are logged in, only those 2 will get the leads.');?>
 </div>
 </div>
 <script>

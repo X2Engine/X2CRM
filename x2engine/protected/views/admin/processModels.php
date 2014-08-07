@@ -53,19 +53,22 @@ var record=0;
 <div style="width:600px">
 <?php
 if ($preselectedMap) {
-    echo Yii::t('admin', 'You have selected to upload and use the following import mapping: ')."<br><br>";
-    echo "<table>";
-    echo "<tr>";
-    echo "<td><strong>".Yii::t('admin','Your Field')."</strong></td>";
-    echo "<td><strong>".Yii::t('admin','Our Field')."</strong></td>";
-    echo "</tr>";
-    foreach ($importMap as $key => $val) {
-        echo "<tr>";
-        echo "<td style='width: 50%'>".$key."</td>";
-        echo "<td style='width: 50%'>".$val."</td>";
-        echo "</tr>";
+    echo Yii::t('admin', 'You have selected to upload and use the following import mapping: ').$_SESSION['mapName']."<br><br>";
+    ?>
+    <table id="importMapSummary">
+    <tr>
+        <td><strong><?php echo Yii::t('admin','Your Field'); ?></strong></td>
+        <td><strong><?php echo Yii::t('admin','Our Field'); ?></strong></td>
+    </tr>
+    <?php foreach ($importMap as $key => $val) { ?>
+        <tr>
+            <td style='width: 50%'><?php echo $key; ?></td>
+            <td style='width: 50%'><?php echo $val; ?></td>
+        </tr>
+    <?php
     }
     echo "</table>";
+    echo CHtml::link(Yii::t('admin', 'Edit'), '#', array('id' => 'editPresetMap', 'class' => 'x2-button'));
 } else {
     echo Yii::t('admin',"First, we'll need to make sure your fields have mapped properly for import. ");
     echo Yii::t('admin','Select the fields you wish to map. Fields that have been detected as matching an existing field have been selected. ').'<br /><br />';
@@ -95,7 +98,10 @@ if ($preselectedMap) {
     foreach($meta as $attribute) {
         if (isset($importMap[$attribute])) {
             // Automatically detected fields
-            $fields[$attribute] = $importMap[$attribute];
+            if ($preselectedMap && $importMap[$attribute] !== 'createNew')
+                $fields[$attribute] = $importMap[$attribute];
+            else
+                $fields[$attribute] = $attribute;
             $selected[] = $attribute;
         } else {
             // New fields
@@ -114,6 +120,9 @@ if ($preselectedMap) {
 
 <br />
 <?php
+    echo X2Html::hint(Yii::t('admin', "A meaningful description of the data source will be helpful to identify the import mapping. The mapping name will "
+                ." be generated in the form '{source} to X2Engine {version}' to identify the data sources for which the import map was intended."), false);
+    echo CHtml::textField("mapping-name", "", array('id'=>'mapping-name', 'placeholder'=>Yii::t('admin', 'Import Source')))."&nbsp;";
     echo CHtml::link(Yii::t('admin', 'Export Mapping'), '#', array('id'=>'export-map', 'class'=>'x2-button'));
     echo CHtml::link(Yii::t('acmin', 'Download Mapping'), '#', array('id'=>'download-map', 'class'=>'x2-button', 'style'=>'display:none'));
 ?>
@@ -239,6 +248,7 @@ if ($preselectedMap) {
     });
     
     var attributeLabels = <?php echo json_encode(X2Model::model($model)->attributeLabels(), false);?>;
+    var modifiedPresetMap = false;
     $('#process-link').click(function(){
        prepareImport();
     });
@@ -248,8 +258,6 @@ if ($preselectedMap) {
     $('#log-comment-box').change(function(){
        $('#comment-form').toggle();
     });
-
-
 
     function prepareImport(){
         $('#import-container').hide();
@@ -306,7 +314,7 @@ if ($preselectedMap) {
                 routing:routing,
                 skipActivityFeed:skipActivityFeed,
                 model:"<?php echo $model; ?>",
-                preselectedMap:<?php echo ($preselectedMap)? 'true' : 'false'; ?>
+                preselectedMap: (<?php echo ($preselectedMap)? 'true' : 'false'; ?> && !modifiedPresetMap)
             },
             success:function(data){
                 data=JSON.parse(data);
@@ -318,14 +326,17 @@ if ($preselectedMap) {
                 } else if(data[0]==1) {
                     var str="<?php echo Yii::t('admin', "Import preparation failed.  Failed to create the following fields: "); ?>";
                     str = str + data[1] + "<br /><br />";
+                    $('#super-import-map-box').show();
                     $('#import-container').show();
                     $('#form-error-box').html(str);
                 } else if (data[0]==2) {
                     var str="<?php echo Yii::t('admin', "Import preparation failed.  The following fields already exist: "); ?>";
                     str = str + data[1] + "<br /><br />";
+                    $('#super-import-map-box').show();
                     $('#import-container').show();
                     $('#form-error-box').html(str);
                 } else if(data[0]==3) {
+                    $('#super-import-map-box').show();
                     $('#import-status').show();
                     $('#import-container').show();
                     var str="<?php echo Yii::t('admin', "Import Preparation failed. The following required fields were not mapped: "); ?>";
@@ -485,6 +496,7 @@ if ($preselectedMap) {
             type: 'POST',
             data: {
                 model: "<?php echo $model; ?>",
+                name: $('#mapping-name').val(),
                 attributes: attributes,
                 keys: keys
             },
@@ -498,8 +510,18 @@ if ($preselectedMap) {
             }
         });
     });
+
     $('#download-map').click(function(e) {
         e.preventDefault();
         window.location.href = '<?php echo $this->createUrl('admin/downloadData', array('file'=>'importMapping.json')) ?>';
     });
+
+    $('#editPresetMap').click(function(e) {
+        e.preventDefault();
+        $(this).hide();
+        $('#importMapSummary').hide();
+        $('#super-import-map-box').slideDown(500);
+        modifiedPresetMap = true;
+    });
+
 </script>

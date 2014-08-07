@@ -123,6 +123,7 @@ abstract class X2DbTestCase extends CDbTestCase {
         self::$_referenceFixtureRows = array();
         self::$_referenceFixtureRecords = array();
         if(is_array($refFix)){
+            Yii::import('application.components.X2Settings.*');
             $fm->load($refFix);
             foreach($refFix as $alias => $table){
                 $tableName = is_array($table) ? $table[0] : $table;

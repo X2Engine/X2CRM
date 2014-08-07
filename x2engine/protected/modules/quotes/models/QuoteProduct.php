@@ -88,7 +88,7 @@ class QuoteProduct extends CActiveRecord {
 		if($attr == 'adjustment' && $percentage) {
 			return $value.'%';
 		} else if($attr == 'price' || $attr == 'adjustment' || $attr == 'total') {
-			return Yii::app()->locale->numberFormatter->formatCurrency($value,$this->currency);
+			return Formatter::formatCurrency($value, $this->currency);
 		} else {
 			return $value;
 		}

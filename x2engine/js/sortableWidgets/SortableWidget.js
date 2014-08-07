@@ -46,21 +46,25 @@ SortableWidget.sortableWidgets = []; // instances of SortableWidget
  */
 function SortableWidget (argsDict) {
     var defaultArgs = {
+        deleteWidgetUrl: '',
         widgetClass: '', // the name of the associated widget class
         setPropertyUrl: '', // the url used to call the set profile widget property action
         profileId: null, // the id of the profile associated with this widget
         widgetType: '', // (profile)
+        widgetUID: null, 
         DEBUG: x2.DEBUG && false,
-        enableResizing: false
+        enableResizing: false,
+        translations: {},
+        urls: {}
     };
 
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
-    this.elementSelector = '#' + this.widgetClass + '-widget-container';
+    this.elementSelector = '#' + this.widgetClass + '-widget-container-' + this.widgetUID;
     this.element = $(this.elementSelector); // the widget container
 
     // the widget content container (excludes the top bar)
-    this.contentContainer = $('#' + this.widgetClass + '-widget-content-container');
+    this.contentContainer = $('#' + this.widgetClass + '-widget-content-container-'+this.widgetUID);
 
     this._settingsMenuContentSelector = this.elementSelector  + ' .widget-settings-menu-content';
 
@@ -111,18 +115,22 @@ SortableWidget.turnOffSortingMode = function (excludedWidget) {
  * @return mixed return value of getWidgetByClass ()
  */
 SortableWidget.getWidgetFromWidgetContainer = function (elem) {
-    var widgetClass = $(elem).attr ('id').replace (/-widget-container/, '');
-    var widget = SortableWidget.getWidgetByClass (widgetClass);
+    var widgetKey = $(elem).attr ('id').replace (/-widget-container-(\w+)?$/, '_$1');
+
+    var widget = SortableWidget.getWidgetByKey (widgetKey);
     return widget;
 };
 
 /**
- * @param string widgetClass
+ * @param string widgetKey
  * @return mixed sortable widget instance if instance with specified class is found, null otherwise 
  */
-SortableWidget.getWidgetByClass = function (widgetClass) {
+SortableWidget.getWidgetByKey = function (widgetKey) {
     for (var i in SortableWidget.sortableWidgets) {
-        if (SortableWidget.sortableWidgets[i].widgetClass === widgetClass)
+        if (SortableWidget.sortableWidgets[i].widgetClass + '_' +
+            SortableWidget.sortableWidgets[i].widgetUID === 
+            widgetKey)
+
             return SortableWidget.sortableWidgets[i];
     }
     return null;
@@ -160,6 +168,7 @@ SortableWidget.prototype.setProperty = function (key, value, callback) {
             widgetClass: this.widgetClass,
             key: key,
             value: value,
+            widgetUID: this.widgetUID,
             widgetType: this.widgetType
         },
         success: function (data) {
@@ -260,6 +269,10 @@ SortableWidget.prototype._setUpCloseBehavior = function () {
             $(that.element).hide ();
             that._tearDownWidget ();
             that.contentContainer.children ().remove ();
+            // remove sort item class to prevent sort jitter
+            $(that.element).removeClass (
+                x2[that.widgetType + 'WidgetManager'].getWidgetContainerSelector ().
+                replace (/\./, ''));
             x2[that.widgetType + 'WidgetManager'].addWidgetToHiddenWidgetsMenu (that.element);
         });
     });
@@ -291,6 +304,100 @@ SortableWidget.prototype._setUpTitleBarBehavior = function () {
             }
         });
     }
+
+    if (this.element.find ('.relabel-widget-button').length) {
+        this._setUpWidgetRelabelling ();
+    }
+    if (this.element.find ('.delete-widget-button').length) {
+        this._setUpWidgetDeletion ();
+    }
+};
+
+/**
+ * Sets up behavior of widget deletion settings menu button
+ */
+SortableWidget.prototype._setUpWidgetDeletion = function () {
+    var that = this;
+    var deletionDialog$ = $('#delete-widget-dialog-' + this.widgetUID);          
+    deletionDialog$.dialog ({
+        title: this.translations['Are you sure you want to delete this widget?'],
+        autoOpen: false,
+        width: 500,
+        buttons: [
+            {
+                text: this.translations['Cancel'],
+                click: function () {
+                    $(this).dialog ('close');
+                }
+            },
+            {
+                text: this.translations['Delete'],
+                'class': 'urgent',
+                click: function () {
+                    $.ajax ({
+                        url: that.deleteWidgetUrl,
+                        data: {
+                            widgetLayoutName: that.widgetType,
+                            widgetKey: that.widgetClass + '_' + that.widgetUID
+                        },
+                        type: 'POST',
+                        success: function (data) {
+                            if (data === 'success') {
+                                $(that.element).remove ();
+                                delete that;
+                                deletionDialog$.dialog ('close');
+                            }
+                        }
+                    });
+                }
+            }
+        ]
+    });
+    this.element.find ('.delete-widget-button').click (function () {
+        deletionDialog$.dialog ('open');
+    });
+};
+
+/**
+ * Sets up behavior of widget rename settings menu button
+ */
+SortableWidget.prototype._setUpWidgetRelabelling = function () {
+    var that = this;
+    var relabellingDialog$ = $('#relabel-widget-dialog-' + this.widgetUID);          
+    relabellingDialog$.dialog ({
+        title: this.translations['Rename Widget'],
+        autoOpen: false,
+        width: 500,
+        buttons: [
+            {
+                text: this.translations['Cancel'],
+                click: function () {
+                    $(this).dialog ('close');
+                }
+            },
+            {
+                text: this.translations['Rename'],
+                'class': 'widget-rename-submit-button',
+                click: function () {
+                    that.setProperty (
+                        'label', relabellingDialog$.find ('.new-widget-name').val (), function () {
+
+                        that.element.find ('.widget-title').html (
+                            relabellingDialog$.find ('.new-widget-name').val ()
+                        );
+                        relabellingDialog$.dialog ('close');
+                    });
+                }
+            }
+        ]
+    });
+    relabellingDialog$.find ('.new-widget-name').keydown (function () {
+        relabellingDialog$.closest ('.ui-dialog').find ('.widget-rename-submit-button').
+            addClass ('highlight'); 
+    });
+    this.element.find ('.relabel-widget-button').click (function () {
+        relabellingDialog$.dialog ('open');
+    });
 };
 
 /**

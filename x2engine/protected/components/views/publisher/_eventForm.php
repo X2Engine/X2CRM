@@ -47,7 +47,7 @@ if ($associationType === 'calendar') {
     $associationTypeOptions = X2Model::getAssociationTypeOptions ();
     unset ($associationTypeOptions['calendar']);
     $associationTypeOptions = 
-        array ('calendar' => '-------------------') + $associationTypeOptions;
+        array ('calendar' => Yii::t('app', 'Select an option')) + $associationTypeOptions;
     $associationModels = array (); 
     // get the association type => model name mapping for available options
     foreach ($associationTypeOptions as $typ => $title) {
@@ -102,20 +102,18 @@ $('#Actions_associationType').change (function () {
     <div class="row">
         <div class="text-area-wrapper">
             <?php 
-            echo $form->textArea(
-                $model, 'actionDescription', 
+            echo $model->renderInput ('actionDescription',
                 array(
                     'rows' => 3,
                     'cols' => 40,
                     'class'=>'action-description',
-                    'id'=>'event-action-description'
+                    'id'=>'event-action-description',
                 ));
             ?>
         </div>
     </div><!-- .row -->
 
     <div class="action-event-panel" class="row">
-
         <div class="cell action-duration">
             <div class="action-duration-input">
                 <label for="timetrack-hours"><?php echo Yii::t('actions','Hours'); ?></label>
@@ -180,7 +178,7 @@ $('#Actions_associationType').change (function () {
             ));
             ?>
         </div>
-        
+
         <div class="cell">
             <?php 
             echo CHtml::activeLabel(
@@ -194,8 +192,7 @@ $('#Actions_associationType').change (function () {
                 array('class'=>'action-priority')
             );
             echo $form->label($model, 'color',array('id'=>'action-color-label')); 
-            echo $form->dropDownList(
-                $model, 'color', Actions::getColors(),array('id'=>'action-color-dropdown')); 
+            echo $model->renderInput ('color', array('id'=>'action-color-dropdown')); 
             ?>
         </div><!-- .cell -->
            
@@ -210,6 +207,12 @@ $('#Actions_associationType').change (function () {
         </div><!-- .cell -->
         <div class='cell'>
             <?php
+            echo $form->labelEx ($model, 'eventSubtype');
+            echo $model->renderInput ('eventSubtype');
+
+            echo $form->labelEx ($model, 'eventStatus');
+            echo $model->renderInput ('eventStatus');
+        
             echo $form->label($model, 'visibility',array('class'=>'action-visibility-label')); 
             echo $form->dropDownList(
                 $model, 'visibility', 

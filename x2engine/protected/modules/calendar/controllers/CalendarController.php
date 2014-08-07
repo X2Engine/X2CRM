@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.Ical');
+
 /**
  *  Calendar lets you create calendar events, view actions from other modules, and sync to google calendar.
  *
@@ -131,6 +133,8 @@ class CalendarController extends x2base {
             parent::view($model, 'calendar');
         }
     }
+
+    
 
     /**
      * Set who can view/edit current user's calendar
@@ -467,6 +471,9 @@ class CalendarController extends x2base {
                 }
                 $description = trim(strip_tags($description));
                 $title = mb_substr($description, 0, 30, 'UTF-8');
+                if (strlen ($description) > 30) {
+                    $title .= '...';
+                }
                 if($action->type == 'event'){
                     $events[] = array(
                         'title' => $title,
@@ -691,7 +698,12 @@ class CalendarController extends x2base {
 
             Yii::app()->clientScript->scriptMap['*.js'] = false;
             Yii::app()->clientScript->scriptMap['*.css'] = false;
-            $this->renderPartial('viewAction', array('model' => $model, 'isEvent' => $isEvent), false, true);
+            $this->renderPartial(
+                'viewAction',
+                array(
+                    'model' => $model,
+                    'isEvent' => $isEvent
+                ), false, true);
         }
     }
 
@@ -1044,7 +1056,7 @@ class CalendarController extends x2base {
                 if(($key = array_search($calendar, $showCalendars[$calendarType])) !== false) // find calendar in list of shown calendars
                     unset($showCalendars[$calendarType][$key]);
 
-            print_r($showCalendars);
+            /**/print_r($showCalendars);
             $user->showCalendars = CJSON::encode($showCalendars);
             $user->update();
         }

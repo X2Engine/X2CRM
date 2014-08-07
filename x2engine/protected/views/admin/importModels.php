@@ -64,8 +64,20 @@
     echo CHtml::fileField('data', '', array('id'=>'data'))."<br>";
     echo CHtml::hiddenField('model', $model);
     echo "<i>".Yii::t('app','Allowed filetypes: .csv')."</i><br><br>";
-    echo "<h3>".Yii::t('admin', 'Upload Import Map')." <a href='#' id='toggle-map-upload'>[+]</a></h3>";
+    echo "<h3>".Yii::t('admin', 'Import Map')." <a href='#' id='toggle-map-upload'>[+]</a></h3>";
     echo "<div id='upload-map' style='display:none;'>";
+    echo Yii::t('admin', "You may select a predefined map here, or upload your own.")."<br />";
+    $availImportMaps = $this->availableImportMaps($model);
+    if (empty($availImportMaps)) {
+        echo "<div style='color:red'>";
+        echo Yii::t('app', "No related import maps were found.");
+        echo "</div>";
+    } else {
+        echo CHtml::radioButtonList('x2maps', null, $availImportMaps, array(
+            'labelOptions'=>array('style'=>'display:inline')
+        ));
+    }
+    echo "<br /><br />";
     echo CHtml::fileField('mapping', '', array('id'=>'mapping'))."<br>";
     echo "<i>".Yii::t('app','Allowed filetypes: .json')."</i>";
     echo "</div><br><br>";
@@ -87,6 +99,14 @@
     });
     $('#toggle-map-upload').click(function() {
         $('#upload-map').toggle();
+    });
+    $('#x2maps').change(function() {
+        // Reset the file upload if a radio button is selected
+        $('#mapping').val("");
+    });
+    $('#mapping').change(function() {
+        // Deselect the radio buttons when a file is selected instead
+        $('#x2maps').find('input:radio:checked').prop('checked', false);
     });
     $(document).on('submit','#importModels',function(){
         var fileName=$("#data").val();

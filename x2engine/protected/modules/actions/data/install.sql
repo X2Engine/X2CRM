@@ -1,8 +1,10 @@
 DROP TABLE IF EXISTS x2_action_text;
 /*&*/
+DROP TABLE IF EXISTS x2_action_meta_data;
+/*&*/
 DROP TABLE IF EXISTS x2_actions;
 /*&*/
-CREATE TABLE x2_actions    (
+CREATE TABLE x2_actions (
     id                        INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     assignedTo                VARCHAR(255),
     calendarId                INT,
@@ -36,7 +38,16 @@ CREATE TABLE x2_actions    (
     INDEX (associationType,associationId)
 ) COLLATE = utf8_general_ci, ENGINE = INNODB;
 /*&*/
-CREATE TABLE x2_action_text    (
+CREATE TABLE x2_action_meta_data (
+    id                        INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    actionId                  INT UNSIGNED NOT NULL,
+    eventSubtype              VARCHAR(100),
+    eventStatus               VARCHAR(100),
+    INDEX (actionId),
+    FOREIGN KEY (actionId) REFERENCES x2_actions(id) ON UPDATE CASCADE ON DELETE CASCADE
+) COLLATE = utf8_general_ci, ENGINE = INNODB;
+/*&*/
+CREATE TABLE x2_action_text (
     id       INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     text     LONGTEXT,
     actionId INT UNSIGNED,
@@ -55,7 +66,9 @@ VALUES
 ("Actions", "id",                "ID",               0, 0, "varchar",    0, 1, NULL, 0, 0, "",     1, 1, 'PRI'),
 ("Actions", "assignedTo",        "Assigned To",      0, 0, "assignment", 0, 0, 'multiple', 0, 0, "",     0, 1, NULL),
 ("Actions", "subject",           "Subject",          0, 0, "varchar",    1, 0, NULL, 1, 0, "High", 0, 1, NULL),
-("Actions", "actionDescription", "Description",      0, 0, "text",       0, 0, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "actionDescription", "Description",      0, 0, "text",       1, 0, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "eventSubtype",      "Subtype",          0, 0, "dropdown",   0, 0, 121, 0, 0, "",     0, 1, NULL),
+("Actions", "eventStatus",       "Status",           0, 0, "dropdown",   0, 0, 122, 0, 0, "",     0, 1, NULL),
 ("Actions", "visibility",        "Visibility",       0, 0, "visibility", 0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "associationId",     "Association ID",   0, 0, "varchar",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "associationType",   "Association Type", 0, 0, "varchar",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
@@ -71,5 +84,5 @@ VALUES
 ("Actions", "lastUpdated",       "Last Updated",     0, 0, "dateTime",   0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "updatedBy",         "Updated By",       0, 0, "varchar",    0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "allDay",            "All Day",          0, 0, "boolean",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
-("Actions", "color",             "Color",            0, 0, "varchar",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "color",             "Color",            0, 0, "dropdown",    0, 0, 123, 0, 0, "",     0, 1, NULL),
 ("Actions", "timeSpent",         "Time Spent",       0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL);

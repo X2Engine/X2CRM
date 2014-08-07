@@ -525,6 +525,7 @@ $.widget("x2.gvSettings", {
         fixedHeader: false,
 		columnSelectorId:'column-selector',
 		columnSelectorHtml:'',
+        modelName: '',
 		ajaxUpdate:false,
 		saveSettings:true,
 		saveTimeout:1000,
@@ -573,12 +574,13 @@ $.widget("x2.gvSettings", {
 			/* this.element.closest('div.grid-view').find('.column-selector-link').bind(
                    'click',function() { self._toggleColumnSelector(this); }); */
 		}
-			/* $('#'+o.columnSelectorId).find('input').bind(
-                   'change',function() { self._saveColumnSelection(this); }); */
-			this.element.find('.column-selector-link').unbind('mousedown');
-			this.element.find('.column-selector-link').bind('mousedown',function() { 
-                self._toggleColumnSelector(this,self); 
-            });
+
+        /* $('#'+o.columnSelectorId).find('input').bind(
+               'change',function() { self._saveColumnSelection(this); }); */
+        this.element.find('.column-selector-link').unbind('mousedown');
+        this.element.find('.column-selector-link').bind('mousedown',function() { 
+            self._toggleColumnSelector(this,self); 
+        });
 		// }
 
 		this.tables = this.element.find('table.items');
@@ -621,6 +623,25 @@ $.widget("x2.gvSettings", {
 			self.tables.eq(0).parent().scrollLeft(self.tables.eq(1).parent().scrollLeft());
 		});
 	},
+    /**
+     * Returns object containing sort and filter parameters in format used by X2GridView when 
+     * making ajax update requests
+     * @return object
+     */
+    getUpdateParams: function () {
+        var params = {};
+        // stringify filters
+        params = auxlib.formToJSON (this.element.find ('.filters input'));
+        var sortLink = this.element.find ('thead th .sort-link.asc') ||
+            this.element.find ('thead th .sort-link.desc');
+        // check for sort order
+        if ($(sortLink).length === 1) {
+            var sortKeyRegex = new RegExp ('.*' + this.options.modelName + '_sort=([^&]*).*');
+            sortOrder = sortLink.attr ('href').replace (sortKeyRegex, '$1');
+            params[this.options.modelName + '_sort'] = sortOrder;
+        }
+        return params;
+    },
     /*
     Clear column filters via ajax and update the grid
     */

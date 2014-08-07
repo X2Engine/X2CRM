@@ -45,10 +45,10 @@ Yii::import('application.modules.bugReports.models.*');
 class X2TestCase extends CTestCase {
 
     public static function setUpBeforeClass(){
+        Yii::app()->beginRequest();
         Yii::app()->fixture->load(array(
             'profile'=>'Profile',
             'user' => 'User'));
-        Yii::app()->beginRequest();
         parent::setUpBeforeClass();
     }
 

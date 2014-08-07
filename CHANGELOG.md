@@ -1,3 +1,47 @@
+# 4.2b (beta) #
+8/5/2014
+
+* Highlights
+  * Improvement to role access editor (Professional Edition):
+    * New user interface enables more fine-grained control over role-based permissions
+  * Profile widget improvements:
+    * New website viewer widget
+    * Leads module grid widget
+    * Can now create grid widgets for custom modules
+    * Can now clone, rename, and delete profile widgets
+    * Persistent grid widget filters
+    * Quick Contact widget now provides appropriate input fields for all required fields
+  * Grid view improvements:
+    * Can now select all records on all pages
+    * Perform updates on thousands of records at a time
+  * X2Flow improvements (Professional Edition):
+    * Improved X2Flow Remote API Call Action supports custom request headers 
+    * New "Has Tags" flow condition
+  * Calendar improvements:
+    * New weekly agenda view
+    * New customizable event subtype and status dropdowns
+    * Can now customize event color dropdown
+    * _(Platinum Edition)_ New share/export URL feature for read-only integration with calendar clients that support the iCalendar format
+  * Importer improvements:
+    * Added preset import maps to transfer records from other systems
+    * Action descriptions can now be imported/exported
+    * Actions associations will now be verified to ensure the type is known to X2 and that the associated record exists
+  * Static pages can now be created from existing Docs instead of only a new Doc
+  * New [access-model-by-attribute-conditions](http://wiki.x2engine.com/wiki/REST_API_Reference#Direct_Manipulation_by_Attributes) method in the REST API
+  * Fields Manager Improvements
+    * Sorting and filtering in the fields grid
+    * New "custom" field type allows creating unique field view widgets in HTML
+    * Custom and modified fields highlighted with different colors
+* General changelog/developer notes
+  * Patched file upload filter bypass vulnerability
+  * Fixed missing link to modify Doc permissions when logged in as admin
+  * Fixed issue that caused phone number links to be prepended international dialing codes unconditionally
+  * Updated the web lead form to search for duplicate contacts on all custom Contact email fields
+  * Fixed issue preventing Automatic Updates settings form from being saved
+  * Fixed issue which caused process funnel record counts to be incorrect
+* Tracked Bug Fixes:
+  * [1401](http://x2software.com/index.php/bugReports/1401): Undefined index: tags 
+
 # 4.1.7 #
 7/15/2014
 

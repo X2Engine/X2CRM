@@ -99,6 +99,17 @@ $menuItems = array(
             'title' => Yii::t('contacts', 'Receive email updates every time information for {name} changes',
                     array('{name}' => CHTML::encode($model->firstName.' '.$model->lastName)))
         )),
+    array(
+        'label' => Yii::t('contacts', 'Google Map'),
+        'url' => 'javascript:void(0)',
+        'linkOptions' => array (
+            'onClick'=>"window.open(
+                'https://www.google.com/maps/place/".urlencode ($model->getCityAddress ())."');"
+            /*'onClick'=>"window.open(
+                'https://www.google.com/maps/place/".urlencode ($model->getCityAddress ())."',
+                'Google Map', 'height=200,width=200');"*/
+        )
+    ),
 );
 $opportunityModule = Modules::model()->findByAttributes(array('name' => 'opportunities'));
 $accountModule = Modules::model()->findByAttributes(array('name' => 'accounts'));
@@ -169,8 +180,8 @@ if(true) {//!IS_ANDROID && !IS_IPAD){
 ?>
 <div class="page-title icon contacts">
     <h2><?php echo CHtml::encode($model->name); ?></h2>
-    <?php $this->renderPartial('_vcrControls', array('model' => $model)); ?>
-    <?php
+    <?php 
+    $this->renderPartial('_vcrControls', array('model' => $model)); 
     if(Yii::app()->user->checkAccess('ContactsUpdate', $authParams)){
         if(!empty($model->company) && is_numeric($model->company)) {
             echo CHtml::link(
@@ -266,11 +277,9 @@ if(true){ //!IS_ANDROID && !IS_IPAD){
 //*** End Create Related models ***/
 
     $this->widget('X2WidgetList', array(
-        'block' => 'center',
         'model' => $model,
-        'modelType' => 'contacts',
         'widgetParamsByWidgetName' => array (
-            'InlineRelationships' => array (
+            'InlineRelationshipsWidget' => array (
                 'defaultsByRelatedModelType' => array (
                     'Accounts' => array (
                         'name' => $accountName,
@@ -298,7 +307,11 @@ if(true){ //!IS_ANDROID && !IS_IPAD){
         )
     ));
 
-    $this->widget('Attachments', array('associationType' => 'contacts', 'associationId' => $model->id, 'startHidden' => true)); ?>
+    $this->widget(
+        'Attachments', array(
+            'associationType' => 'contacts',
+            'associationId' => $model->id,
+            'startHidden' => true)); ?>
     <div id="quote-form-wrapper">
         <?php
         $this->widget('InlineQuotes', array(

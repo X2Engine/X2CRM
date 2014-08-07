@@ -52,8 +52,8 @@ function PopupDropdownMenu (argsDict) {
         css: {} // css to be applied to the popup dropdown menu on open
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
-    if (typeof this.onClickOutsideSelector === 'undefined') {
-        this.onClickOutsideSelector = that.containerElemSelector + ', ' + that.openButtonSelector;
+    if (this.onClickOutsideSelector === null) {
+        this.onClickOutsideSelector = this.containerElemSelector + ', ' + this.openButtonSelector;
     }
     this._init ();
 }
@@ -85,32 +85,59 @@ PopupDropdownMenu.prototype.close = function () {
 Private instance methods
 */
 
+PopupDropdownMenu.prototype._positionMenuLeft = function () {
+    var that = this;
+    that._containerElem.position ({
+        my: 'right top', 
+        at: 'left+22 bottom',
+        of: that._openButton,
+        using: function (css) {
+            that._containerElem.css ($.extend (css, that.css));
+        }
+    });
+    that._containerElem.addClass ('flipped');
+};
+
+PopupDropdownMenu.prototype._positionMenuRight = function () {
+    var that = this;
+    that._containerElem.css ($.extend ({
+        top: that._openButton.offset ().top + 26,
+        left: that._openButton.offset ().left - 3
+    }, that.css));
+    that._containerElem.removeClass ('flipped');
+};
+
 /**
  * position menu below button 
  */
 PopupDropdownMenu.prototype._positionMenu = function () {
     var that = this; 
 
-    // flip menu if it would go past the right edge of the window
-    if (that.defaultOrientation === 'left' || 
-        that._openButton.offset ().left + that._containerElem.width () > $(window).width ()) {
+    if (that.defaultOrientation === 'left') {
+        if (that._openButton.offset ().left - that._containerElem.width () > 0) {
 
-        that._containerElem.position ({
-            my: 'right top', 
-            at: 'left+22 bottom',
-            of: that._openButton,
-            using: function (css) {
-                that._containerElem.css ($.extend (css, that.css));
-            }
-        });
-        that._containerElem.addClass ('flipped');
+            that._positionMenuLeft ();
+            return;
+        } else if (
+            that._openButton.offset ().left + that._containerElem.width () > $(window).width ()) {
+
+            that._positionMenuRight ();
+            return;
+        }
+
     } else {
-        that._containerElem.css ($.extend ({
-            top: that._openButton.offset ().top + 30,
-            left: that._openButton.offset ().left 
-        }, that.css));
-        that._containerElem.removeClass ('flipped');
+        if (
+            that._openButton.offset ().left + that._containerElem.width () > $(window).width ()) {
+
+            that._positionMenuLeft ();
+            return;
+        } else if (that._openButton.offset ().left - that._containerElem.width () > 0) {
+
+            that._positionMenuRight ();
+            return;
+        }
     }
+    that._positionMenuLeft ();
 };
 
 /**
@@ -135,6 +162,7 @@ PopupDropdownMenu.prototype._setUpOpenButtonBehavior = function () {
             }
         } else {
             that.close ();
+            return true;
         }
         return false;
     });

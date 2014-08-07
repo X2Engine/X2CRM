@@ -89,6 +89,40 @@ class Fields extends CActiveRecord {
     );
 
     /**
+     * Constructor override.
+     */
+    public function __construct($scenario = 'insert') {
+        parent::__construct($scenario);
+        if($scenario == 'search') {
+            $this->setAttributes(
+                array_fill_keys(
+                    $this->attributeNames(),
+                    null
+                ),
+                false);
+        }   
+    }
+
+    /**
+     * Counts the number of records such that the field is not null.
+     *
+     * @return integer
+     */
+    public function countNonNull() {
+        return Yii::app()->db->createCommand()->
+            select('COUNT(*)')->
+            from(X2Model::model($this->modelName)->tableName())->
+            where(
+                 "{$this->fieldName} IS NOT NULL AND 
+                {$this->fieldName} != :default AND
+                {$this->fieldName} != ''",
+                array(
+                    ':default' => $this->defaultValue
+                )
+            )->queryScalar();
+    }
+
+    /**
      * Legacy function kept for backwards compatibility.
      *
      * Moved from {@link Admin} and renamed from getModelList because it doesn't
@@ -238,6 +272,12 @@ class Fields extends CActiveRecord {
                 'title'=>Yii::t('admin','Phone Number'),
                 'validator'=>'safe',
                 'columnDefinition'=>'VARCHAR(40)',
+                'phpType' => 'string'
+            ),
+            'custom'=>array(
+                'title' => Yii::t('admin','Custom'),
+                'validator' => 'safe',
+                'columnDefinition' => 'VARCHAR(255)',
                 'phpType' => 'string'
             ),
         );
@@ -564,6 +604,7 @@ class Fields extends CActiveRecord {
             'uniqueConstraint' => Yii::t('admin', 'Unique'),
             'defaultValue' => Yii::t('admin', 'Default Value'),
             'keyType' => Yii::t('admin','Key Type'),
+            'data' => Yii::t('admin','Template'),
         );
     }
 
@@ -778,6 +819,7 @@ class Fields extends CActiveRecord {
             array('type','length','max'=>20),
             array('keyType','in','range' => array('MUL','UNI','PRI','FIX'), 'allowEmpty'=>true),
             array('keyType','requiredUnique'),
+            array('data','validCustom'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, modelName, fieldName, attributeLabel, custom, modified, readOnly, keyType', 'safe', 'on' => 'search'),
@@ -872,6 +914,26 @@ class Fields extends CActiveRecord {
         if($dummyModel->hasErrors('customized_field')) {
             foreach($dummyModel->errors['customized_field'] as $error) {
                 $this->addError($attribute, str_replace($dummyField->attributeLabel, $dummyField->getAttributeLabel($attribute), $error));
+            }
+        }
+    }
+
+
+    /**
+     * Alter/purify the input for the custom data field.
+     *
+     * @param string $attribute
+     * @param array $params
+     */
+    public function validCustom($attribute,$params = array()) {
+        if($this->type == 'custom') {
+            if($this->linkType == 'formula') {
+                $this->$attribute = trim($this->$attribute);
+                if(strpos($this->$attribute,'=')!==0) {
+                    $this->$attribute = '='.$this->$attribute;
+                }
+            } else if($this->linkType == 'display') {
+               $this->$attribute = self::getPurifier()->purify($this->$attribute);
             }
         }
     }

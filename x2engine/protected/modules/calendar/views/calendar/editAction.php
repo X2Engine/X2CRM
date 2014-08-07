@@ -128,7 +128,10 @@ $form = $this->beginWidget('CActiveForm', array(
         echo $form->dropDownList($model, 'priority', Actions::getPriorityLabels(), array('onChange' => 'giveSaveButtonFocus();'));
         ?>
         <?php echo $form->label($model, 'color', array('class' => 'dialog-label')); ?>
-        <?php echo $form->dropDownList($model, 'color', Actions::getColors(), array('onChange' => 'giveSaveButtonFocus();')); ?>
+        <?php 
+        echo $model->renderInput('color', array('onChange' => 'giveSaveButtonFocus();')); 
+        ?>
+
     </div>
 
     <div class="cell dialog-cell">
@@ -137,11 +140,6 @@ $form = $this->beginWidget('CActiveForm', array(
             $model->assignedTo = $model->calendarId;
         }
         echo $form->label($model, 'assignedTo', array('class' => 'dialog-label')); 
-        if(is_numeric($model->assignedTo)){ // action assigned to group
-            $assignedToValues = Groups::getNames(); 
-        }else{ 
-            $assignedToValues = $users; 
-        } 
         echo $model->renderInput (
             'assignedTo', 
             array(
@@ -152,44 +150,29 @@ $form = $this->beginWidget('CActiveForm', array(
     </div>
 
     <div class="cell dialog-cell">
-        <?php echo $form->label($model, 'visibility', array('class' => 'dialog-label')); ?>
-        <?php
+        <?php 
+        if ($model->type === 'event') {
+            echo $form->label ($model, 'eventSubtype', array ('class' => 'dialog-label'));
+            echo $model->renderInput ('eventSubtype');
+            echo $form->label ($model, 'eventStatus', array ('class' => 'dialog-label'));
+            echo $model->renderInput ('eventStatus');
+        }
+
+        echo $form->label($model, 'visibility', array('class' => 'dialog-label')); 
         $visibility = array(1 => Yii::t('actions', 'Public'), 0 => Yii::t('actions', 'Private'));
-        ?>
-        <?php echo $form->dropDownList($model, 'visibility', $visibility, array('id' => 'dialog_Actions_visibility', 'onChange' => 'giveSaveButtonFocus();')); ?>
+        echo $form->dropDownList(
+            $model, 'visibility', $visibility, 
+            array(
+                'id' => 'dialog_Actions_visibility',
+                'onChange' => 'giveSaveButtonFocus();'
+            )); ?>
     </div>
 
     <div class="cell dialog-cell">
         <?php echo $form->label($model, 'reminder', array('class' => 'dialog-label')); ?>
         <?php echo $form->dropDownList($model, 'reminder', array('No' => Yii::t('actions', 'No'), 'Yes' => Yii::t('actions', 'Yes')), array('onChange' => 'giveSaveButtonFocus();')); ?>
     </div>
-
-    <input type="hidden" name="isEvent" value="<?php echo $isEvent ?>">
+<input type="hidden" name="isEvent" value="<?php echo $isEvent ?>">
 </div>
 
 <?php $this->endWidget(); ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -137,7 +137,7 @@ $this->widget('InlineEmailForm',
 
 $this->widget('Attachments', array('associationType' => 'templates', 'associationId' => $model->id, 'startHidden' => true)); 
 
-$this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'Templates'));
+$this->widget('X2WidgetList', array('model'=>$model));
 ?>
 <div id="quote-form-wrapper">
     <?php
