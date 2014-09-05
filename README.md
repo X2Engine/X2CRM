@@ -1,170 +1,65 @@
-# X2Engine 4.1 #
-Follow-up point release 4.1.6
-7/3/2014
+# X2Engine 4.2 #
 
-New in 4.1 (see [CHANGELOG](CHANGELOG.md) for full history):
+New in 4.2 (see [CHANGELOG](CHANGELOG.md) for full history):
 
-* **Highlights**:
-  * _Process_ module:
-    * Powerful new "pipeline" view with drag and drop functionality, showing the combined deal value in each stage
-    * Sales process stage colors can be customized by the end user
-    * _(Professional Edition)_ New X2Flow triggers and actions for extending _Process_ with powerful automation capabilities
-  * _(Platinum Edition)_ X2Identity 2.0:
-    * View anonymous website visitors and their browser fingerprint parameters
-    * See when anonymous visitors return to your website
-  * 2nd-generation REST API (new):
-    * _(Coming Soon)_ X2Engine will be on [Zapier](https://zapier.com/)!
-    * _(Platinum Edition):_ Advanced API access settings
-  * _Leads_ module (new)
-    * Record basic contact information before it becomes a legitimate potential sale
-    * Convert to an opportunity with a button press when ready
-  *  Activity Feed:
-    * _(Professional Edition) Digest emails:_ get periodic emails notifying you of what's happening in your CRM
-    * New dedicated activity feed page
-  * CSV importer:
-    * New feature enabling users to save and re-use import field mappings
-    * Performance improvements and bug fixes
-  * User management:
-    * New password reset feature
-    * New username change feature
-    * Full support for multiple assignment in the permissions system
-  * Email Templates:
-    * Support added for many modules (including custom modules), where previously only contacts and quotes were supported
-    * Template variable replacement added for the "To" field
-    * User setting for default email template to use for each module
-* General Changelog / Developer Notes:
-  * Fixed layout issue: unauthenticated users can see "Top Contacts" and "Recent Items" portlets, in addition to broken links in the top bar
-  * Fixed security loophole: if session expires, the client with the cookie would still be able to make one last successful request to the server
-  * The permissions system has been revamped to properly handle muliple assignment and group-wide visibility settings
-  * Fixed bug: rollback deletes preexisting linked records
-  * Fixed bug (Professional Edition): recurring VoIP notification popups
-  * Fixed bug: empty contact list when using "primary contact" campaign generator from Accounts
-  * Fixed bug: Upon deletion, a user's actions and contacts were not all getting properly reassigned.
-  * Fixed bug: import fails silently when "DO NOT MAP" specified for an attribute
-  * Performance improvements to the model importer (previously was taking as long as ~2s/record on systems with very large datasets)
-  * Fixed bug: deleting a dropdown without updating fields that reference it breaks grid views
-  * Contacts with empty names now get "#{id}" name link in grid view
-  * Fixed bug causing role exceptions to be applied to incorrect stages.
-  * Fixed bug preventing deal reports from being filtered by Account.
-  * Fixed a bug preventing filters from working in the Actions list view.
-  * Fixed issue with phone numbers not being rendered from the grid view.
-  * Fixed phone number field formatting issue
-  * Fixed updater bug: unnecessary catching of suppressed errors in requirements check script
-* Tracked Bug Fixes:
-  * [582](http://x2software.com/index.php/bugReports/582): Duplicate info going into web leads  
-  * [960](http://x2software.com/index.php/bugReports/960): No es posible resolver la solicitud "product/product/view"  
-  * [1051](http://x2software.com/index.php/bugReports/1051): links with # in them get converted to tag search links  
-  * [1183](http://x2software.com/index.php/bugReports/1183): Contacts and its behaviors do not have a method or closure named "getChanges".  
-  * [1201](http://x2software.com/index.php/bugReports/1201): Unable to resolve the request "product/product/view".  
-  * [1204](http://x2software.com/index.php/bugReports/1204): Cannot modify header information - headers already sent 
-  * [1223](http://x2software.com/index.php/bugReports/1223): Cannot modify header information - headers already sent
-* Changes in 4.1.1 (5/23/2014):
-  * Activity feed JS bug fixes
-  * Backwards compatibility fixes for ResponseBehavior and X2LinkableBehavior
-  * Bug fixes in roles
-  * Improvements to webhooks: better payload composition logic + safeguards for systems w/o cURL libraries
-  * Lead conversion bug fix
-  * (Platinum Edition) "Raw Input" API settings option not saving properly
-  * "Linkable Behavior" + custom modules backwards incompatibility
-  * Web lead form not respecting when "Create Lead" option is disabled
-* Changes in 4.1.2 (6/6/2014):
-  * General Changelog / Developer Notes:
-    * (Platinum Edition): Fixes to X2Identity and browser fingerprinting
-      * Scalability issues in X2Identity, specifically the browser fingerprint match query
-      * Automatic removal of orphaned fingerprint records
-    * Fixes/improvements to user management:
-      * Validation rules; both username and user aliasing
-      * User alias auto-populates with username
-      * User update page
-    * Small bug fixes in process funnel, record import
-    * Action reminder notifications now available in the publisher
-    * (Professional Edition) Fixed "Email Contact" X2Flow action for non-contact/non-action record types
-    * Fixed calendar bug: multiply-assigned events show up multiple times (for each user calendar)
-  * Tracked Bug Fixes:
-    * [1246](http://x2software.com/index.php/bugReports/1246): array\_merge() [<a href='function.array-merge'>function.array-merge</a>]: Argument #2 is not an array  
-    * [1247](http://x2software.com/index.php/bugReports/1247): Class:  not found.  
-    * [1264](http://x2software.com/index.php/bugReports/1264): CDbCommand failed to execute the SQL statement: SQLSTATE[42S02]: Base table or view not found
-    * [1268](http://x2software.com/index.php/bugReports/1268): Trying to get property of non-object  
-    * [1280](http://x2software.com/index.php/bugReports/1280): Emailed quotes not tracked properly  
-    * [1295](http://x2software.com/index.php/bugReports/1295): Validation errors not shown when updating an opportunity 
-* Changes in 4.1.3 (6/6/2014):
-  * Tracked Bug Fixes:  
-    * [1304](http://x2software.com/index.php/bugReports/1304): JS broken on "full edit page" for actions  
-    * [1307](http://x2software.com/index.php/bugReports/1307): Class: AnonContact not found.  
-    * [1309](http://x2software.com/index.php/bugReports/1309): Class: Reports not found.
-* Changes in 4.1.4 (6/24/2014):
-  * General changelog / developer notes:
-    * Recognition for memory limit in requirements check script
-    * Fixed action timers bug (duplicate timer records created via publisher)
-    * Proper handling of completion/uncompletion of actions in X2Flow
-    * Proper initial ordering of left widgets
-    * Fixed bug in tagBehavior: added safeguard for no web session (i.e. in scope of web lead form submission)
-    * Inline email form in the Quotes module has been expanded to work without an associated Contact
-  * Tracked Bug Fixes:  
-    * [1320](http://x2software.com/index.php/bugReports/1320): Importer broken  
-    * [1343](http://x2software.com/index.php/bugReports/1343): User Report (XSS vulnerability)
-    * [1340](http://x2software.com/index.php/bugReports/1340): User Report
-* Changes in 4.1.5 (6/26/2014):
-  * General changelog/developer notes:
-    * Included several commits from internal tree that were missed in the previous release
-    * Fixed MoneyMask bug: when unsupported currencies are in use, validation was failing
-* Changes in 4.1.6 (7/3/2014): 
-    * Highlights
-      * New "available" lead routing option:
-        * Users can set online/offline availability, i.e. when they go on vacation
-        * Lead routing can be configured to respect this option, i.e. avoid assigning records to unavailable users
-      * "Loading" status/visual overlay when adding fields
-      * Global import/export tool now supports custom fields
-      * Custom short-codes feature for templates and X2Flow: create an analogue of protected/components/x2flow/shortcodes.php in custom/ to define your own custom codes
-      * Can rename media files
-      * Process UI improvement: Quickly switch between processes from the funnel and pipeline views
-      * (Professional Edition) Improved activity feed reports with a page to manage reports and the ability to send a test report
-      * (Professional Edition) X2Flow emails can be configured to include a customizable "Do Not Email" link
-      * (Platinum Edition) Reverse IP lookup in X2Identity
-    * General changelog/developer notes
-      * X2Flow improvements (Professional Edition):
-        * Update trigger no longer fired during creation of contact lists (this was a bug)
-        * Triggers in general will fire less during times when not apropos
-        * Flow configuration storage field is now LONGTEXT as opposed to TEXT, allowing it to store far greater and more sophisticated flows
-        * Fix to "on_list" condition 
-      * Contact added as default field in Opportunities, and inline emailer can be used on opportunity views
-      * Miscellaneous bug fixes in:
-        * Contacts can be properly moved between time zones 
-        * Activity feed events report generation
-        * Actions module
-        * X2Identity (Platinum Edition)
-          * The first Action created for a new anonymous contact is now correctly associated with it
-          * Fingerprint attributes associated with a new anonymous contact are now being saved properly from the newsletter form
-          * Fingerprint record is now handled properly on conversion from an anonymous contact to a contact, previously it would be unnecessarily deleted
-        * X2GridView: header not hiding properly when scrolling over the bottom of the grid
-        * Publisher: Event form not properly validating when clearing the association type field
-        * Inline Emailer: switching templates while viewing quotes now works as intended 
-        * Updater: post-completion redirect to the wrong page
-        * Permissions: users who have "admin" access to a given module can export records of that module
-        * X2GridView: Grid view no longer breaks from HTML tag truncation in text-type fields
-        * Calendar: group-assigned events could not be edited by group members
-        * X2Studio: critical internal-use-only fields are not available for the user to accidentally enter data into
-        * Importer: will not fail when CSV contains multibyte characters but no byte order mark, or invalid multibyte sequences
-      * Global validation bug fix: "required" rule now respected both on update and save 
-      * (Professional Edition only) License key now viewable by administrators on the app info and updater settings pages
-      * User-friendly error & feedback messages on the Edit Roles page
-      * Added day of week to activity feed date headers 
-      * Fixed regex matching on imported ids
-      * Added missing phone type in Field Manager
-    * Tracked Bug Fixes:  
-      * [1340](http://x2software.com/index.php/bugReports/1340): User Report  
-      * [1345](http://x2software.com/index.php/bugReports/1345): CDbCommand failed to execute the SQL statement: SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens  
-      * https://github.com/X2Engine/X2Engine/issues/28
-* Changes in 4.1.7 (7/15/2014): 
-    * General changelog/developer notes
-      * Fixed issues in the importer which prevented fields from being set when a default field value was given
-      * Fixed error in Form Editor which prevented scenario from being saved
-      * Fixed bug in the Campaign Bulk Mailer which caused an incorrect error to be reported
-      * Fixed bug in legacy API which incorrectly restricted search results
-      * Fixed bug in process pipeline/funnel views which prevented contact records from displaying even if the current user had permission to view them
-      * Fixed bug in process funnel view which prevented per-stage grid views from updating when a different process was selected
-
-
+* **Highlights**
+  * Improvement to role access editor _(Professional Edition)_:
+    * New user interface enables more fine-grained control over role-based permissions
+  * Profile widget improvements:
+    * New website viewer widget
+    * Leads module grid widget
+    * Can now create grid widgets for custom modules
+    * Can now clone, rename, and delete profile widgets
+    * Persistent grid widget filters
+    * Quick Contact widget now provides appropriate input fields for all required fields
+  * Grid view improvements (Contacts module only):
+    * Can now select all records on all pages
+    * Perform updates on thousands of records at a time
+  * X2Flow improvements _(Professional Edition)_:
+    * Improved X2Flow Remote API Call Action supports custom request headers 
+    * New "Has Tags" flow condition
+  * Calendar improvements:
+    * New weekly agenda view
+    * New customizable event subtype and status dropdowns
+    * Can now customize event color dropdown
+  * Importer improvements:
+    * Added preset import maps to transfer records from other systems
+    * Action descriptions can now be imported/exported
+    * Actions associations will now be verified to ensure the type is known to X2 and that the associated record exists
+    * Added a loading throbber to indicate activity
+    * Added a timeout warning when max_execution_time is set to 30 seconds or less
+  * Static pages can now be created from existing Docs instead of only a new Doc
+  * New feature to validate email credentials from the 'Manage Apps' page
+  * Improved contact lists grid view
+* General changlog/developer notes
+  * Patched file upload filter bypass vulnerability
+  * Fixed missing link to modify Doc permissions when logged in as admin
+  * Fixed issue that caused phone number links to be prepended international dialing codes unconditionally
+  * Updated the web lead form to search for duplicate contacts on all custom Contact email fields
+  * Fixed issue preventing Automatic Updates settings form from being saved
+  * Fixed issue which caused process funnel record counts to be incorrect
+  * Fixed bug in importer preventing action descriptions from being imported
+  * Improved error reporting and handling on media upload tool
+  * Improved currency validation and fixed consistency issues when changing a products currency
+  * Fixed error reporting when attempting to upgrade without a key
+  * _(Platinum Edition)_ Updated Fingerprint index to display a human-readable timezone string
+  * Default permissions will now be created when importing a module
+  * Fixed Account link type fields for Contacts and Opportunities created on the Quick Create page
+  * Fixed links in 'My Actions' widget
+  * Fixed bug in Google Calendar Sync which prevented calendar and action history from updating
+    after publishing events or actions
+* Tracked Bug Fixes:  
+  * [1401](http://x2software.com/index.php/bugReports/1401): Undefined index: tags 
+  * [1492](http://x2software.com/index.php/bugReports/1492): User Report  
+  * [1553](http://x2software.com/index.php/bugReports/1553): "Do Not Email Page" does not save  
+  * [1554](http://x2software.com/index.php/bugReports/1554): explode() expects parameter 2 to be string, array given  
+  * [1555](http://x2software.com/index.php/bugReports/1555): Invalid argument supplied for foreach()  
+  * [1562](http://x2software.com/index.php/bugReports/1562): The system is unable to find the requested action "www.google.com".  
+  * [1565](http://x2software.com/index.php/bugReports/1565): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '{"contacts\  
+  * [1567](http://x2software.com/index.php/bugReports/1567): Class: AnonContact not found.  
+  * [1572](http://x2software.com/index.php/bugReports/1572): Unable to resolve the request "actions/viewAll/showActions/incomplete".  
+  * [1574](http://x2software.com/index.php/bugReports/1574): Trying to get property of non-object  
+  * [1578](http://x2software.com/index.php/bugReports/1578): Undefined variable: users  
 
 
 
