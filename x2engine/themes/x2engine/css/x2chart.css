@@ -217,6 +217,7 @@ Chart settings
 }
 
 .chart-container .create-setting-button {
+    margin-bottom: 0;
     margin-top: 2px;
 }
 

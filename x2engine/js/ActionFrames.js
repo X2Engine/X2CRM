@@ -62,7 +62,7 @@ function ActionFrames (argsDict) {
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
-    this._lastClass = '';
+    this._lastClass = ''; // id of last clicked action index list item 
     this._frame;
 
     this._init ();
@@ -249,8 +249,7 @@ ActionFrames.prototype._uncompleteAction = function (id, publisher){
             'id':id
         },
         success:function(data){
-            if(data){
-                data=JSON.parse(data);
+            if(data === 'success'){
                 if(!publisher){
                     if(that._lastClass==''){
                         that._lastClass='history-'+id;
@@ -258,12 +257,6 @@ ActionFrames.prototype._uncompleteAction = function (id, publisher){
                     }
                     $('#'+that._lastClass).find('.header').html('');
                     $('#'+that._lastClass).find('.description').css('text-decoration','');
-                    $('#'+that._lastClass).find('.uncomplete-box').replaceWith(
-                        '<div class="icon action-index complete-box" style="'+
-                          data[1]+'" data-action-id="'+
-                          $('#'+that._lastClass).find('.uncomplete-box').
-                            attr('data-action-id')+'">'+
-                        '</div>');
                     if(resetFlag){
                         that._lastClass='';
                     }
@@ -377,12 +370,6 @@ ActionFrames.prototype._init = function () {
         e.stopPropagation();
         var publisher=($('#publisher-form').html()!=null);
         that._completeAction($(this).attr('data-action-id'), publisher);
-    });
-    $(document).on('click', '.uncomplete-box', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        var publisher=($('#publisher-form').html()!=null);
-        that._uncompleteAction($(this).attr('data-action-id'), publisher);
     });
 };
 

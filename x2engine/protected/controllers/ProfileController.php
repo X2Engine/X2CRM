@@ -65,10 +65,11 @@ class ProfileController extends x2base {
                     'setWidgetOrder', 'profiles', 'settings', 'deleteSound', 'deleteBackground',
                     'changePassword', 'setResultsPerPage', 'hideTag', 'unhideTag', 'resetWidgets',
                     'updatePost', 'loadTheme', 'createTheme', 'saveTheme', 'saveMiscLayoutSetting',
-                    'createUpdateCredentials', 'manageCredentials', 'deleteCredentials',
+                    'createUpdateCredentials', 'manageCredentials', 'deleteCredentials', 'verifyCredentials',
                     'setDefaultCredentials', 'activity', 'ajaxSaveDefaultEmailTemplate',
                     'deleteActivityReport', 'createActivityReport', 'manageEmailReports',
-                    'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport'),
+                    'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport',
+                    'createProfileWidget','deleteSortableWidget'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -410,6 +411,21 @@ class ProfileController extends x2base {
             }
         }
         $this->render('createUpdateCredentials', array('model' => $model, 'profile' => $profile, 'message' => $message));
+    }
+
+    /**
+     * Action to be called via ajax to verify authentication to the SMTP server
+     */
+    public function actionVerifyCredentials() {
+        $attributes = array('email', 'password', 'server', 'port', 'security');
+        foreach ($attributes as $attr)
+            ${$attr} = isset($_POST[$attr])? $_POST[$attr] : "";
+        $this->attachBehavior('EmailDeliveryBehavior', new EmailDeliveryBehavior);
+        $valid = $this->testUserCredentials(
+            $email, $password, $server, $port, $security
+        );
+        if (!$valid)
+            echo "Failed";
     }
 
     /**
@@ -833,9 +849,54 @@ class ProfileController extends x2base {
         $this->redirect(array('view', 'id' => $id));
     }
 
-    /*     * *********************************************************************
+    /***********************************************************************
      * Profile Page Methods
-     * ********************************************************************* */
+     ***********************************************************************/
+
+    public function actionCreateProfileWidget () {
+        if (!isset ($_POST['widgetLayoutName']) || !isset ($_POST['widgetType'])) {
+            throw new CHttpException (400, 'Bad Request');
+        }
+        $widgetClass = $_POST['widgetType'];
+        $widgetSettings = array ();
+        if (preg_match ('/::/', $widgetClass)) {
+            // Custom module summary widget. extract model name
+            $widgetSettings['modelType'] = preg_replace ('/::.*$/', '', $widgetClass);
+            $widgetSettings['label'] = $widgetSettings['modelType'] . ' Summary';
+            $widgetClass = preg_replace ('/^.*::/', '', $widgetClass);
+            if (!class_exists ($widgetSettings['modelType'])) {
+                echo 'false';
+            }
+        }
+
+        $widgetLayoutName = $_POST['widgetLayoutName'];
+        list ($success, $uid) = SortableWidget::createSortableWidget (
+            Yii::app()->params->profile, $widgetClass, $widgetLayoutName, $widgetSettings);
+        if ($success) {
+            echo $widgetClass::getWidgetContents(
+                $this, Yii::app()->params->profile, $widgetLayoutName, $uid);
+        } else {
+            echo 'false';
+        }
+    }
+
+    public function actionDeleteSortableWidget () {
+        if (!isset ($_POST['widgetLayoutName']) || !isset ($_POST['widgetKey'])) {
+            throw new CHttpException (400, 'Bad Request');
+        }
+        $widgetKey = $_POST['widgetKey'];
+        list($widgetClass, $widgetUID) = SortableWidget::parseWidgetLayoutKey ($widgetKey);
+        if (SortableWidget::subtypeIsValid ('profile', $widgetClass)) {
+            $widgetLayoutName = $_POST['widgetLayoutName'];
+            if (SortableWidget::deleteSortableWidget (
+                Yii::app()->params->profile, $widgetClass, $widgetUID, $widgetLayoutName)) {
+
+                echo 'success';
+                return;
+            }
+        }
+        echo 'failure';
+    }
 
     /**
      * Called to save profile widget sort order
@@ -871,18 +932,38 @@ class ProfileController extends x2base {
      *      otherwise
      */
     public function actionShowWidgetContents() {
-        if (!isset($_POST['widgetClass']) ||
-                !isset($_POST['widgetType'])) {
+        if (!isset($_POST['widgetClass']) || !isset($_POST['widgetType'])) {
 
             echo 'failure';
             return;
         }
+        if (isset($_POST['widgetType']) === 'recordView' && (!isset ($_POST['modelId']) ||
+            !isset ($_POST['modelType']))) {
+
+            echo 'failure';
+            return;
+        }
+
         $profile = Yii::app()->params->profile;
-        $widgetClass = $_POST['widgetClass'];
+        $widgetKey = $_POST['widgetClass'];
         $widgetType = $_POST['widgetType'];
+        list($widgetClass, $widgetUID) = SortableWidget::parseWidgetLayoutKey ($widgetKey);
+
         if ($profile && class_exists($widgetClass)) {
-            if ($widgetClass::setJSONProperty($profile, 'hidden', 0, $widgetType)) {
-                $widgetClass::getWidgetContents($this, $profile, $widgetType);
+            if ($widgetClass::setJSONProperty($profile, 'hidden', 0, $widgetType, $widgetUID)) {
+                if ($widgetType === 'recordView') {
+                    $model = X2Model::getModelOfTypeWithId (
+                        $_POST['modelType'], $_POST['modelId']);
+                    if ($model !== null) {
+                        echo $widgetClass::getWidgetContents(
+                            $this, $profile, $widgetType, $widgetUID, 
+                            array (
+                                'model' => $model, 
+                            ));
+                    }
+                } else {
+                    echo $widgetClass::getWidgetContents($this, $profile, $widgetType, $widgetUID);
+                }
                 return;
             }
         }
@@ -917,12 +998,10 @@ class ProfileController extends x2base {
      *  'failure' if the request action fails, 'success' otherwise
      */
     public function actionSetWidgetSetting() {
-        if (!isset($_POST['widgetClass']) ||
-                !isset($_POST['key']) || !isset($_POST['value']) ||
-                !isset($_POST['widgetType'])) {
+        if (!isset($_POST['widgetClass']) || !isset($_POST['key']) || !isset($_POST['value']) ||
+            !isset($_POST['widgetType']) || !isset($_POST['widgetUID'])) {
 
-            echo 'failure';
-            return;
+            throw new CHttpException (404, 'Bad Request');
         }
         $profile = Yii::app()->params->profile;
 
@@ -930,10 +1009,11 @@ class ProfileController extends x2base {
         $key = $_POST['key'];
         $value = $_POST['value'];
         $widgetType = $_POST['widgetType'];
+        $widgetUID = $_POST['widgetUID'];
         if (class_exists($widgetClass) &&
-                method_exists($widgetClass, 'setJSONProperty')) {
+            method_exists($widgetClass, 'setJSONProperty')) {
 
-            if ($widgetClass::setJSONProperty($profile, $key, $value, $widgetType)) {
+            if ($widgetClass::setJSONProperty($profile, $key, $value, $widgetType, $widgetUID)) {
                 echo 'success';
                 return;
             }
@@ -1032,8 +1112,21 @@ class ProfileController extends x2base {
             $this->actionShowWidgetContents();
             return;
         }
+        if (isset($_GET['widgetClass']) && // record view widget update request
+            isset($_GET['widgetType']) &&
+            $_GET['widgetType'] === 'recordView' &&
+            isset ($_GET['modelId']) &&
+            isset ($_GET['modelType'])) {
+
+            $_POST['widgetClass'] = $_GET['widgetClass'];
+            $_POST['widgetType'] = $_GET['widgetType'];
+            $_POST['modelId'] = $_GET['modelId'];
+            $_POST['modelType'] = $_GET['modelType'];
+            $this->actionShowWidgetContents();
+            return;
+        }
         if (isset($_GET['widgetClass']) && // widget update request
-                isset($_GET['widgetType'])) {
+            isset($_GET['widgetType'])) {
 
             $_POST['widgetClass'] = $_GET['widgetClass'];
             $_POST['widgetType'] = $_GET['widgetType'];
@@ -1111,8 +1204,12 @@ class ProfileController extends x2base {
         ));
     }
 
-    function actionGetEventsBetween($startTimestamp, $endTimestamp) {
-        echo CJSON::encode(X2Chart::getEventsData($startTimestamp, $endTimestamp));
+    public function actionGetEventsBetween ($startTimestamp, $endTimestamp, $widgetType) {
+        if (class_exists ($widgetType) && is_subclass_of ($widgetType, 'SortableWidget')) {
+            echo CJSON::encode($widgetType::getChartData($startTimestamp, $endTimestamp));
+        } else {
+            throw new CHttpException (404, 'Bad Request.');
+        }
     }
 
     public function actionLoadComments($id, $profileId) {
@@ -1291,6 +1388,7 @@ class ProfileController extends x2base {
                     array_key_exists('settings', $chartSettingAttributes) &&
                     array_key_exists('chartType', $chartSettingAttributes) &&
                     array_key_exists('name', $chartSettingAttributes)) {
+
                 $chartSetting->settings = $chartSettingAttributes['settings'];
                 $chartSetting->name = $chartSettingAttributes['name'];
                 $chartSetting->chartType = $chartSettingAttributes['chartType'];

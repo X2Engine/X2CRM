@@ -55,29 +55,15 @@ class VisitAllPagesAsAdminTest extends VisitAllPagesTest {
         'password' => 'admin',
     );
 
-    public function testX2FlowPages () {
+    public function testAdminOnlyPages () {
         $this->visitPages (array (
-            'studio/flowIndex',
-            'studio/flowDesigner',
-            'studio/triggerLogs',
-            'studio/importFlow',
-            'studio/exportFlow?flowId=1',
-            'studio/flowDesigner/1',
-        ));
-    }
-
-	public function testUsersPages () {
-        $this->visitPages (array (
+             
             'users/admin',
             'users/1',
             'users/update/id/1',
             'users/inviteUsers',
             'users/create',
-        ));
-	}
-
-    public function testAdminPages () {
-        $this->visitPages (array (
+            // admin
             'admin/index',
             'admin/editRoleAccess',
             'admin/manageRoles',

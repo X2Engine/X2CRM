@@ -59,6 +59,12 @@ class User extends CActiveRecord {
     private $_fullName;
 
     /**
+     * @var bool If true, grid views displaying models of this type will have their filter and
+     *  sort settings saved in the database instead of in the session
+     */
+    public $dbPersistentGridSettings = false;
+
+    /**
      * Returns the static model of the specified AR class.
      * @return User the static model class
      */
@@ -75,17 +81,17 @@ class User extends CActiveRecord {
 
     public function behaviors(){
         return array_merge(parent::behaviors(), array(
-                    'X2LinkableBehavior' => array(
-                        'class' => 'X2LinkableBehavior',
-                        'module' => 'users',
-                        'viewRoute' => '/profile',
-                    ),
-                    'ERememberFiltersBehavior' => array(
-                        'class' => 'application.components.ERememberFiltersBehavior',
-                        'defaults' => array(),
-                        'defaultStickOnClear' => false
-                    )
-                ));
+            'X2LinkableBehavior' => array(
+                'class' => 'X2LinkableBehavior',
+                'module' => 'users',
+                'viewRoute' => '/profile',
+            ),
+            'ERememberFiltersBehavior' => array(
+                'class' => 'application.components.ERememberFiltersBehavior',
+                'defaults' => array(),
+                'defaultStickOnClear' => false
+            )
+        ));
     }
 
     /**
@@ -117,7 +123,7 @@ class User extends CActiveRecord {
             array('lastUpdated', 'length', 'max' => 30),
             array('userKey', 'length', 'max' => 32, 'min' => 3),
             array('backgroundInfo', 'safe'),
-            array('username','in','not'=>true,'range'=>array('Guest','Anyone'),'message'=>Yii::t('users','The specified username is reserved for system usage.')),
+            array('username','in','not'=>true,'range'=>array('Guest','Anyone',Profile::GUEST_PROFILE_USERNAME),'message'=>Yii::t('users','The specified username is reserved for system usage.')),
             array('username', 'unique', 'allowEmpty' => false),
             array('userAlias', 'unique', 'allowEmpty' => false),
             array('userAlias', 'match', 'pattern' => '/^\s+$/', 'not' => true),
@@ -211,10 +217,13 @@ class User extends CActiveRecord {
             $socialItem->delete();
         }
 
+        X2CalendarPermissions::model()->deleteAllByAttributes (
+            array(), 'user_id=:userId OR other_user_id=:userId', array (':userId' => $this->id)
+        );
+
         // delete profile
         $prof=Profile::model()->findByAttributes(array('username'=>$this->username));
-        if ($prof)
-            $prof->delete();
+        if ($prof) $prof->delete();
 
         // delete associated events
         Yii::app()->db->createCommand()
@@ -276,6 +285,26 @@ class User extends CActiveRecord {
                     )
                 ));
         return $usersDataProvider;
+    }
+
+    /**
+     * @return array (<username> => <full name>)
+     */
+    public static function getUserOptions () {
+        $userOptions = Yii::app()->db->createCommand ("
+            select username, concat(firstName, ' ', lastName) as fullName
+            from x2_users
+            where status=1
+            order by lastName asc
+        ")->queryAll ();
+        return array_combine (
+            array_map (function ($row) {
+                return $row['username'];
+            }, $userOptions),
+            array_map (function ($row) {
+                return $row['fullName'];
+            }, $userOptions)
+        );
     }
 
 
@@ -441,7 +470,7 @@ class User extends CActiveRecord {
                 array_pop($recentItems);  //remove the oldest ones
             }
             $userRecord->setAttribute('recentItems', implode(',', $recentItems));
-            $userRecord->save();
+            $userRecord->update();
         }
     }
 
@@ -589,7 +618,7 @@ class User extends CActiveRecord {
         $criteria->compare('login', $this->login);
         $criteria->addCondition('(temporary=0 OR temporary IS NULL)');
 
-        return new SmartDataProvider(get_class($this), array(
+        return new SmartActiveDataProvider(get_class($this), array(
                     'criteria' => $criteria,
                     'pagination'=>array(
                         'pageSize'=>Profile::getResultsPerPage(),

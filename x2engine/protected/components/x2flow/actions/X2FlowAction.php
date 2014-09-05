@@ -35,7 +35,6 @@
  *****************************************************************************************/
 
 /**
- * Color utilities (unused)
  *
  * @package application.components.x2flow
  */

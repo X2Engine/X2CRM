@@ -103,6 +103,11 @@ class CreateWebFormAction extends CAction {
             } else {
                 $model->generateLead = 0;
             }
+            if (isset ($_POST['generateAccount'])) {
+                $model->generateAccount = 1;
+            } else {
+                $model->generateAccount = 0;
+            }
 
             
 

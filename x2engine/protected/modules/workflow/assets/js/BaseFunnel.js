@@ -88,6 +88,11 @@ Private static methods
 Public instance methods
 */
 
+BaseFunnel.prototype.reinit = function () {
+    $(this.containerSelector).children ().remove ();
+    this._init ();
+};
+
 /*
 Private instance methods
 */
@@ -306,7 +311,6 @@ BaseFunnel.prototype._calculatePreliminaryData = function () {
     this._getBaseFunnelCoordinates (); 
     this._getStageCentroids ();
 };
-
 
 BaseFunnel.prototype._init = function () {
     var that = this;

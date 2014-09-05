@@ -272,7 +272,10 @@ class CDateTimeParser
 	/*
 	 * @param string $pattern the pattern that the date string is following
 	 */
-	private static function tokenize($pattern)
+    /* x2modstart */  
+    // changed from private to public
+	public static function tokenize($pattern)
+    /* x2modend */ 
 	{
 		if(!($n=self::$_mbstringAvailable ? mb_strlen($pattern,Yii::app()->charset) : strlen($pattern)))
 			return array();

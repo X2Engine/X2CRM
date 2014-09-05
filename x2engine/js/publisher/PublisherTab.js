@@ -81,8 +81,14 @@ PublisherTab.prototype.submit = function (publisher, form) {
         url: publisher.publisherCreateUrl,
         type: 'POST',
         data: form.serialize (),
+        dataType: 'json',
         success: function (data) {
-            if (data !== '') {
+            if (typeof data['redirect'] !== 'undefined') {
+
+                window.location = data['redirect']
+                return;
+            }
+            if (typeof data['error'] !== 'undefined') {
                 $(form).find ('.form').append (x2.forms.errorSummary ('', data));
                 $(that._elemSelector).find ('[name="Actions\\[associationName\\]"]').
                     addClass ('error');
@@ -143,7 +149,8 @@ PublisherTab.prototype.validate = function () {
     x2.forms.clearErrorMessages (this._element);
     var actionDescription$ = this._element.find ('.action-description');
 
-    if (actionDescription$.val () === '') {
+    if (actionDescription$.hasClass ('x2-required') && actionDescription$.val () === '') {
+
         actionDescription$.parent ().addClass ('error');
         x2.forms.errorSummaryAppend (this._element, this.translations['beforeSubmit']);
         return false;

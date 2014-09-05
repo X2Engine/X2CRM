@@ -53,7 +53,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
             'header'=>Yii::t('groups','Name'),
 			'name'=>'name',
-			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
+			'value'=>'CHtml::link($data->renderAttribute("name"),array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
 		array(

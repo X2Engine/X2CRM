@@ -197,8 +197,9 @@ if($n_flash = count($adminFlashes)) {
     }
 }
 
+$themeCss .= $theme2Css;
 $cs->registerCss('applyTheme', $themeCss, 'screen', CClientScript::POS_HEAD);
-$cs->registerCss('applyTheme2', $theme2Css, 'screen', CClientScript::POS_HEAD);
+//$cs->registerCss('applyTheme2', $theme2Css, 'screen', CClientScript::POS_HEAD);
 
 mb_internal_encoding('UTF-8');
 mb_regex_encoding('UTF-8');
@@ -216,7 +217,7 @@ $modules = Modules::model()->findAll(
 $standardMenuItems = array();
 foreach($modules as $moduleItem){
     if(($isAdmin || $moduleItem->adminOnly == 0) && $moduleItem->name != 'users'){
-        if($moduleItem->name != 'document')
+        if($moduleItem->name !== 'document')
             $standardMenuItems[$moduleItem->name] = $moduleItem->title;
         else
             $standardMenuItems[$moduleItem->title] = $moduleItem->title;

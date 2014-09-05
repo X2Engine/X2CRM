@@ -34,40 +34,69 @@
  *****************************************************************************************/
 
 if (typeof x2 === 'undefined') x2 = {};
-if (typeof x2.profile === 'undefined') x2.profile = {};
 
-x2.profile._widgetLayoutMode = null; // current layout mode
-x2.profile._widgetLayoutSwitchThreshold = 1050; 
-x2.profile._widgetLayoutModes = {'narrow': 0, 'wide': 1}; // types of layout modes
+x2.profile = (function () {
+
+function Profile (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict; 
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+
+    this._widgetLayoutMode = null; // current layout mode
+    this._widgetLayoutSwitchThreshold = 950; 
+    this._widgetLayoutModes = {'narrow': 0, 'wide': 1}; // types of layout modes
+
+    var that = this;
+    $(function () { that._main (); });
+}
+
+/*
+Public static methods
+*/
+
+/*
+Private static methods
+*/
+
+/*
+Public instance methods
+*/
 
 /**
  * When a widget is shown, this can be called to check if the widget column should be shown
  */
-x2.profile.checkAddWidgetsColumn = function () {
-    if (x2.layoutManager.contentWidth >= x2.profile._widgetLayoutSwitchThreshold) {
-        x2.profile._addWidgetsColumn ();
+Profile.prototype.checkAddWidgetsColumn = function () {
+    if (x2.layoutManager.contentWidth >= this._widgetLayoutSwitchThreshold) {
+        this._addWidgetsColumn ();
     }
 };
 
 /**
  * When a widget is closed, this can be called to check if the widget column should be removed
  */
-x2.profile.checkRemoveWidgetsColumn = function () {
-    if (x2.layoutManager.contentWidth >= x2.profile._widgetLayoutSwitchThreshold &&
+Profile.prototype.checkRemoveWidgetsColumn = function () {
+    if (x2.layoutManager.contentWidth >= this._widgetLayoutSwitchThreshold &&
         SortableWidget.allWidgetsHidden ()) {
 
-        x2.profile._removeWidgetsColumn ();
+        this._removeWidgetsColumn ();
     }
 };
+
+
+/*
+Private instance methods
+*/
 
 /**
  * Switch to wide layout 
  */
-x2.profile._addWidgetsColumn = function () {
+Profile.prototype._addWidgetsColumn = function () {
 
     // only add widget column if there are widgets shown
     if (!SortableWidget.allWidgetsHidden ()) {
-        x2.profile._widgetLayoutMode = x2.profile._widgetLayoutModes['wide'];
+        this._widgetLayoutMode = this._widgetLayoutModes['wide'];
         $('#content').addClass('wide-profile-widget-layout');
     }
 };
@@ -75,40 +104,40 @@ x2.profile._addWidgetsColumn = function () {
 /**
  * Switch to narrow layout 
  */
-x2.profile._removeWidgetsColumn = function () {
+Profile.prototype._removeWidgetsColumn = function () {
     $('#content').removeClass('wide-profile-widget-layout');
-    x2.profile._widgetLayoutMode = x2.profile._widgetLayoutModes['narrow'];
+    this._widgetLayoutMode = this._widgetLayoutModes['narrow'];
 };
 
-x2.profile._setUpProfileWidgetResponsiveness = function () {
+Profile.prototype._setUpProfileWidgetResponsiveness = function () {
     x2.layoutManager.addFnToResizeQueue (function (windowWidth, contentWidth) {
 
         // determine which layout to use
-        if(contentWidth < x2.profile._widgetLayoutSwitchThreshold)
-            var newWidgetLayoutMode = x2.profile._widgetLayoutModes['narrow'];
+        if(contentWidth < this._widgetLayoutSwitchThreshold)
+            var newWidgetLayoutMode = this._widgetLayoutModes['narrow'];
         else
-            var newWidgetLayoutMode = x2.profile._widgetLayoutModes['wide'];
+            var newWidgetLayoutMode = this._widgetLayoutModes['wide'];
             
         // switch layout if necessary
-        if(x2.profile._widgetLayoutMode !== newWidgetLayoutMode) {
-            if(newWidgetLayoutMode === x2.profile._widgetLayoutModes['wide']) {
-                x2.profile._addWidgetsColumn ();
+        if(this._widgetLayoutMode !== newWidgetLayoutMode) {
+            if(newWidgetLayoutMode === this._widgetLayoutModes['wide']) {
+                this._addWidgetsColumn ();
             } else {
-                x2.profile._removeWidgetsColumn ();
+                this._removeWidgetsColumn ();
             }
         }
     });
     $(window).resize ();
 };
 
-x2.profile._main = function () {
-    if (x2.profile.isMyProfile) {
-        x2.profile._setUpProfileWidgetResponsiveness ();
+Profile.prototype._main = function () {
+    if (this.isMyProfile) {
+        this._setUpProfileWidgetResponsiveness ();
     }
 };
 
-$(function () {
-    x2.profile._main ();
-});
 
 
+return new Profile;
+
+}) ();

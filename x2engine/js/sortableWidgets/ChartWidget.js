@@ -67,7 +67,8 @@ Public instance methods
 */
 
 ChartWidget.prototype.refresh = function () {
-    x2[this.chartType].chart.replot ();
+    var that = this;
+    x2[this.chartType + that.widgetUID].chart.replot ();
 };
 
 /*
@@ -78,14 +79,16 @@ Private instance methods
  * Overrides parent method. Chart must be replotted after widget is maximized.
  */
 ChartWidget.prototype._afterMaximize = function () {
-    if (typeof x2[this.chartType].chart !== 'undefined')
-        x2[this.chartType].chart.replot ();
+    var that = this;
+    if (typeof x2[this.chartType + that.widgetUID].chart !== 'undefined')
+        x2[this.chartType + that.widgetUID].chart.replot ();
 };
 
 ChartWidget.prototype._tearDownWidget = function () {
-    if (typeof x2[this.chartType].chart !== 'undefined')
-        x2[this.chartType].chart.tearDown ();
-    delete x2[this.chartType].chart;
+    var that = this;
+    if (typeof x2[this.chartType + that.widgetUID].chart !== 'undefined')
+        x2[this.chartType + that.widgetUID].chart.tearDown ();
+    delete x2[this.chartType + that.widgetUID].chart;
 };
 
 /**
@@ -95,7 +98,7 @@ ChartWidget.prototype._setUpSubtypeSelection = function () {
     var that = this; 
     this.element.find ('.chart-subtype-selector').on ('change', function (evt) {
         var selectedSubType = $(this).val ();
-        x2[that.chartType].chart.setChartSubtype (
+        x2[that.chartType + that.widgetUID].chart.setChartSubtype (
             selectedSubType, true, false, true);    
         that.setProperty ('chartSubtype', selectedSubType);
     });

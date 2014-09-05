@@ -55,9 +55,7 @@ Yii::import ('application.components.modules.users.models.*');
 abstract class X2WebTestCase extends CWebTestCase {
 
     public $fixtures = array(); // forces all fixtures without suffixes to be loaded
-
     public $autoLogin = true;
-
     public $localSeleneseDir;
 
     /**
@@ -69,9 +67,12 @@ abstract class X2WebTestCase extends CWebTestCase {
         'password' => 'admin',
     );
     
+    protected static $loadFixtures = LOAD_FIXTURES;
     protected $captureScreenshotOnFailure = true;
     protected $screenshotPath = null;
     protected $screenshotUrl = null;
+    protected static $skipAllTests = false;
+
     public $firstLogin = true;
 
     public function waitForPageToLoad () {
@@ -196,6 +197,13 @@ abstract class X2WebTestCase extends CWebTestCase {
      * Selenese path to make it easier to locate/use Selenese HTML scripts.
      */
     protected function setUp() {
+        if (self::$skipAllTests) {
+            $this->markTestSkipped ();
+        }
+        if (!self::$loadFixtures) {
+            $this->fixtures = is_array ($this->fixtures) ? $this->fixtures : array ();
+        }
+
         // print out test name
         VERBOSE_MODE && println ("\n".$this->getName ());
 

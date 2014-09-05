@@ -89,24 +89,24 @@ $this->widget('X2GridView', array(
 	'specialColumns'=>array(
 		'name'=>array(
 			'name'=>'name',
-			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
+			'value'=>'CHtml::link($data->renderAttribute("name"),array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
         'subject'=>array(
 			'name'=>'subject',
-			'value'=>'CHtml::link($data->subject,array("view","id"=>$data->id))',
+			'value'=>'CHtml::link($data->renderAttribute("subject"),array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
 		'description'=>array(
 			'name'=>'description',
 			'header'=>Yii::t('app','Description'),
-			'value'=>'Formatter::trimText($data->description)',
+			'value'=>'Formatter::trimText($data->renderAttribute("description"))',
 			'type'=>'raw',
 		),
         'severity'=>array(
             'name'=>'severity',
             'header'=>Yii::t('app','Severity'),
-            'value'=>'X2Model::model("Dropdowns")->getDropdownValue(116,$data->severity)',
+            'value'=>'X2Model::model("Dropdowns")->getDropdownValue(116,$data->renderAttribute("severity"))',
             'type'=>'raw',
         )
 	),

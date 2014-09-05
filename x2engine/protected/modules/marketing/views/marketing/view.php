@@ -179,40 +179,58 @@ $this->actionMenu = $this->formatMenu(array(
     $staticLinkModel = Contacts::model();
     $this->widget('InlineEmailForm', array(
         'attributes' => array(
-            //'to'=>'"'.$model->name.'" <'.$model->email.'>, ',
             'subject' => $model->subject,
             'message' => $model->content,
-            // 'template'=>'campaign',
-            // 'redirect'=>'contacts/'.$model->id,
             'modelName' => 'Campaign',
             'modelId' => $model->id,
             'credId' => $model->sendAs
         ),
         'postReplace' => 1,
         'skipEvent' => 1,
+        'template' => Fields::id ($model->template),
         'insertableAttributes' => array(),
         'startHidden' => true,
-        'specialFields' => '<div class="row">'.CHtml::label(Yii::t('contacts','Contact'),'Contacts[name]',array('class'=>'x2-email-label')).$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-            'model' => Contacts::model(), // dummy
-            'attribute' => 'name', // dummy
-            'source' => $linkSource = Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource),
-            'options' => array(
-                'minLength' => '1',
-                'select' => 'js:function( event, ui ) {
-                    $("#InlineEmail_modelId").val(ui.item.id);
-                    $(this).val(ui.item.value);
-                    $("#InlineEmail_modelName").val("Contacts");
-                    return false;
-                }',
-                'create' => 'js:function(event, ui) {
-                    $(this).data( "uiAutocomplete" )._renderItem = function(ul,item) {
-                        return $("<li>").data("item.autocomplete",item).append(x2.forms.renderContactLookup(item)).appendTo(ul);
-                    };
-                }',
-            ),
-            'htmlOptions' => array('style'=>'max-width:200px;')
-
-        ), true).CHtml::tag('span', array('class' => 'x2-hint', 'style'=>'display:inline-block; margin-left:5px;', 'title' => Yii::t('marketing', 'The contact you enter here will be used for variable replacement, i.e. for "John Doe" the token {firstName} will get replaced with "John"')),'[?]').'</div>',
+        'associationType' => 'Contacts',
+        'specialFields' => 
+            '<div class="row">'.
+                CHtml::label(
+                    Yii::t('contacts','Contact'),
+                    'Contacts[name]',
+                    array('class'=>'x2-email-label')
+                ).$this->widget('zii.widgets.jui.CJuiAutoComplete', 
+                    array(
+                        'model' => Contacts::model(), // dummy
+                        'attribute' => 'name', // dummy
+                        'source' => $linkSource = Yii::app()->controller->createUrl(
+                            $staticLinkModel->autoCompleteSource),
+                        'options' => array(
+                            'minLength' => '1',
+                            'select' => 'js:function( event, ui ) {
+                                $("#InlineEmail_modelId").val(ui.item.id);
+                                $(this).val(ui.item.value);
+                                $("#InlineEmail_modelName").val("Contacts");
+                                return false;
+                            }',
+                            'create' => 'js:function(event, ui) {
+                                $(this).data( "uiAutocomplete" )._renderItem = function(ul,item) {
+                                    return $("<li>").data("item.autocomplete",item).append(
+                                        x2.forms.renderContactLookup(item)).appendTo(ul);
+                                };
+                            }',
+                        ),
+                        'htmlOptions' => array('style'=>'max-width:200px;')
+                    ), true).
+                CHtml::tag(
+                    'span', 
+                    array(
+                        'class' => 'x2-hint',
+                        'style'=>'display:inline-block; margin-left:5px;',
+                        'title' => Yii::t(
+                            'marketing',
+                            'The contact you enter here will be used for variable replacement, ' .
+                            'i.e. for "John Doe" the token {firstName} will get replaced with ' .
+                            '"John"')
+                    ),'[?]').'</div>',
     ));
 
 

@@ -288,7 +288,7 @@ public static function clearFilters($controller,$model) {
     $model->unsetAttributes();
     if (EButtonColumnWithClearFilters::modelUsesBehavior($model,'ERememberFiltersBehavior')) {
         try {
-            $model->unsetFilters();
+            $model->unsetAllFilters();
         }
         catch (Exception $e) {
 

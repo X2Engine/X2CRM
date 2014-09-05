@@ -261,6 +261,9 @@ class Quote extends X2Model {
             Yii::app()->settings->currency:$this->currency;
 
 		$curSym = Yii::app()->locale->getCurrencySymbol($defaultCurrency);
+        if (is_null($curSym))
+            $curSym = $defaultCurrency;
+
 		foreach($this->_lineItems as $lineItem) {
 			$lineItem->quoteId = $this->id;
                         $product = X2Model::model('Products')->findByAttributes(array('name'=>$lineItem->name));
@@ -610,7 +613,7 @@ class Quote extends X2Model {
 		$criteria->scopes = array('findAll' => array($parameters));
 		$criteria->addCondition("(t.type!='invoice' and type!='dummyQuote') OR t.type IS NULL");
 
-		return $this->searchBase($criteria, $pageSize, $uniqueId);
+		return $this->searchBase($criteria, $pageSize);
 	}
 
 	public function searchInvoice() {
@@ -628,21 +631,21 @@ class Quote extends X2Model {
 		return $this->searchBase($criteria);
 	}
 
-	public function searchBase($criteria, $pageSize=null, $uniqueId=null) {
+	public function searchBase($criteria, $pageSize=null) {
 
-		$dateRange = Yii::app()->controller->partialDateRange($this->expectedCloseDate);
+		$dateRange = X2DateUtil::partialDateRange($this->expectedCloseDate);
 		if ($dateRange !== false)
 			$criteria->addCondition('expectedCloseDate BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
 
-		$dateRange = Yii::app()->controller->partialDateRange($this->createDate);
+		$dateRange = X2DateUtil::partialDateRange($this->createDate);
 		if ($dateRange !== false)
 			$criteria->addCondition('createDate BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
 
-		$dateRange = Yii::app()->controller->partialDateRange($this->lastUpdated);
+		$dateRange = X2DateUtil::partialDateRange($this->lastUpdated);
 		if ($dateRange !== false)
 			$criteria->addCondition('lastUpdated BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
 
-		return parent::searchBase($criteria, $pageSize, $uniqueId);
+		return parent::searchBase($criteria, $pageSize);
 	}
 
 	/**

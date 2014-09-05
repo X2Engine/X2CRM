@@ -328,7 +328,8 @@ class ActionsController extends x2base {
                 if ($associatedModel) {
                     $_POST['Actions']['associationId'] = $associatedModel->id;
                 } else {
-                    echo Yii::t('actions', 'Invalid association name');
+                    echo CJSON::encode (
+                        array ('error' => Yii::t('actions', 'Invalid association name')));
                     Yii::app()->end ();
                 }
             }
@@ -440,12 +441,16 @@ class ActionsController extends x2base {
                     $event->associationId = $model->id;
                     $event->save();
                 }
-                $model->syncGoogleCalendar('create');
+                $model->syncGoogleCalendar('create', true);
             }else{
                 if($model->hasErrors('verifyCode')){
-                    echo $model->getError('verifyCode');
+                    echo CJSON::encode (array ('error' => $model->getError('verifyCode')));
+                    Yii::app()->end ();
                 }
             }
+            echo CJSON::encode (array ('success'));
+        } else {
+            throw new CHttpException (400, Yii::t('app', 'Bad request'));
         }
     }
 
@@ -764,22 +769,9 @@ class ActionsController extends x2base {
      */
     public function actionUncomplete($id){
         $model = $this->loadModel($id);
-        switch($model->priority){
-            case 3:
-                $box = "Red";
-                break;
-            case 2:
-                $box = "Orange";
-                break;
-            default:
-                $box = "Yellow";
-        }
         if($model->uncomplete()){
             if(Yii::app()->request->isAjaxRequest) {
-                echo json_encode(array(
-                    "<span style='color:grey'>".Yii::t('actions', 'Due: ')."</span>".Actions::parseStatus($model->dueDate).'</b>',
-                    "background:url(".Yii::app()->theme->baseUrl."/images/icons/{$box}_box.png) 0 0px no-repeat transparent"
-                ));
+                echo 'success';
             }else{
                 $this->redirect(array('/actions/'.$id));
             }
@@ -942,7 +934,15 @@ class ActionsController extends x2base {
     // List all public actions
     public function actionViewAll(){
         $model = new Actions('search');
-        $this->render('oldIndex', array('model' => $model));
+        $profile = Profile::model()->findByPk(Yii::app()->user->id);
+
+        $this->render(
+            'oldIndex',
+            array(
+                'model' => $model,
+                'showActions' => $profile->showActions,
+            )
+        );
     }
 
     public function actionViewGroup(){
@@ -1016,8 +1016,6 @@ class ActionsController extends x2base {
         }
         Yii::app()->end();
     }
-
-
 
     /***********************************************************************
     * protected static methods

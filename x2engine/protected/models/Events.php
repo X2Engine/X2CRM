@@ -645,7 +645,7 @@ class Events extends CActiveRecord {
      *  'lastId' => <integer>
      */
     public static function getFilteredEventsDataProvider(
-    $profile, $isMyProfile, $filters, $filtersOn) {
+        $profile, $isMyProfile, $filters, $filtersOn) {
 
         $params = array();
         $params[':username'] = Yii::app()->user->getName();
@@ -686,70 +686,6 @@ class Events extends CActiveRecord {
                 }, $filters);
                 $filters['default'] = false;
             }
-// Refactored below code to a helper method.
-            /*
-              unset($filters['filters']);
-              $visibility = $filters['visibility'];
-              $visibility = str_replace('Public', '1', $visibility);
-              $visibility = str_replace('Private', '0', $visibility);
-              $visibilityFilter = explode(",", $visibility);
-              if ($visibility != "") {
-              $visibilityParams = AuxLib::bindArray($visibilityFilter, 'visibility');
-              $params = array_merge($params, $visibilityParams);
-              $visibilityCondition = " AND visibility NOT IN (" . implode(',', array_keys($visibilityParams)) . ")";
-              } else {
-              $visibilityFilter = array();
-              }
-
-              $users = $filters['users'];
-              if ($users != "") {
-              $users = explode(",", $users);
-              $users[] = '';
-              $users[] = 'api';
-              $userFilter = $users;
-              if (sizeof($users)) {
-              $usersParams = AuxLib::bindArray($users, 'users');
-              $params = array_merge($params, $usersParams);
-              $userCondition = " AND (user NOT IN (" . implode(',', array_keys($usersParams)) . ")";
-              } else {
-              $userCondition = "(";
-              }
-              if (!in_array('Anyone', $users)) {
-              $userCondition.=" OR user IS NULL)";
-              } else {
-              $userCondition.=")";
-              }
-              } else {
-              $userCondition = "";
-              $userFilter = array();
-              }
-
-              $types = $filters['types'];
-              if ($types != "") {
-              $types = explode(",", $types);
-              $typeFilter = $types;
-              $typesParams = AuxLib::bindArray($types, 'types');
-              $params = array_merge($params, $typesParams);
-              $typeCondition = " AND (type NOT IN (" . implode(',', array_keys($typesParams)) . ") OR important=1)";
-              } else {
-              $typeCondition = "";
-              $typeFilter = array();
-              }
-              $subtypes = $filters['subtypes'];
-              if (is_array($types) && !in_array('feed', $types) && $subtypes != "") {
-              $subtypes = explode(",", $subtypes);
-              $subtypeFilter = $subtypes;
-              if (sizeof($subtypes)) {
-              $subtypeParams = AuxLib::bindArray($subtypes, 'subtypes');
-              $params = array_merge($params, $subtypeParams);
-              $subtypeCondition = " AND (type!='feed' OR subtype NOT IN (" . implode(',', array_keys($subtypeParams)) . ") OR important=1)";
-              } else {
-              $subtypeCondition = "";
-              }
-              } else {
-              $subtypeCondition = "";
-              $subtypeFilter = array();
-              } */
             $parsedFilters = Events::parseFilters($filters, $params);
 
             $visibilityFilter = $parsedFilters['filters']['visibility'];
@@ -768,7 +704,7 @@ class Events extends CActiveRecord {
                 Yii::app()->params->profile->defaultFeedFilters = json_encode($_SESSION['filters']);
                 Yii::app()->params->profile->save();
             }
-            $visibilityCondition = empty($parsedFilters['conditions']['visibility']) ? $visibilityCondition : $parsedFilters['conditions']['visibility'];
+            $visibilityCondition .= $parsedFilters['conditions']['visibility'];
             $userCondition = $parsedFilters['conditions']['users'];
             $typeCondition = $parsedFilters['conditions']['types'];
             $subtypeCondition = $parsedFilters['conditions']['subtypes'];
@@ -813,6 +749,7 @@ class Events extends CActiveRecord {
             $condition.=" AND id <= :lastEventId AND sticky = 0";
             $params[':lastEventId'] = $_SESSION['lastEventId'];
         }
+
         $dataProvider = new CActiveDataProvider('Events', array(
             'criteria' => array(
                 'condition' => $condition,
@@ -840,7 +777,8 @@ class Events extends CActiveRecord {
         if ($visibility != "") {
             $visibilityParams = AuxLib::bindArray($visibilityFilter, 'visibility');
             $params = array_merge($params, $visibilityParams);
-            $visibilityCondition = " AND visibility NOT IN (" . implode(',', array_keys($visibilityParams)) . ")";
+            $visibilityCondition = " AND visibility NOT IN (" . 
+                implode(',', array_keys($visibilityParams)) . ")";
         } else {
             $visibilityCondition = "";
             $visibilityFilter = array();
@@ -855,7 +793,8 @@ class Events extends CActiveRecord {
             if (sizeof($users)) {
                 $usersParams = AuxLib::bindArray($users, 'users');
                 $params = array_merge($params, $usersParams);
-                $userCondition = " AND (user NOT IN (" . implode(',', array_keys($usersParams)) . ")";
+                $userCondition = " AND (user NOT IN (" . 
+                    implode(',', array_keys($usersParams)) . ")";
             } else {
                 $userCondition = "(";
             }
@@ -875,19 +814,22 @@ class Events extends CActiveRecord {
             $typeFilter = $types;
             $typesParams = AuxLib::bindArray($types, 'types');
             $params = array_merge($params, $typesParams);
-            $typeCondition = " AND (type NOT IN (" . implode(',', array_keys($typesParams)) . ") OR important=1)";
+            $typeCondition = " AND (type NOT IN (" . 
+                implode(',', array_keys($typesParams)) . ") OR important=1)";
         } else {
             $typeCondition = "";
             $typeFilter = array();
         }
         $subtypes = $filters['subtypes'];
-        if (is_array($types) && !in_array('feed', $types) && $subtypes != "") {
+        if (is_array($types) && $subtypes != "") {
             $subtypes = explode(",", $subtypes);
             $subtypeFilter = $subtypes;
             if (sizeof($subtypes)) {
                 $subtypeParams = AuxLib::bindArray($subtypes, 'subtypes');
                 $params = array_merge($params, $subtypeParams);
-                $subtypeCondition = " AND (type!='feed' OR subtype NOT IN (" . implode(',', array_keys($subtypeParams)) . ") OR important=1)";
+                $subtypeCondition = " AND (
+                    type!='feed' OR subtype NOT IN (" . 
+                        implode(',', array_keys($subtypeParams)) . ") OR important=1)";
             } else {
                 $subtypeCondition = "";
             }
@@ -918,7 +860,8 @@ class Events extends CActiveRecord {
      * @param object $profileId The profile model for which events are being requested.
      */
     public static function getEvents(
-    $id, $timestamp, $user = null, $maxTimestamp = null, $limit = null, $myProfile = null, $profile = null) {
+        $id, $timestamp, $user = null, $maxTimestamp = null, $limit = null, $myProfile = null,
+        $profile = null) {
 
         if (isset($myProfile)) {
             $isMyProfile = $myProfile->id === $profile->id;

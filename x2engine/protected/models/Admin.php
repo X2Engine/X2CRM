@@ -108,7 +108,14 @@ class Admin extends CActiveRecord {
             array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max' => 20),
             array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
-            array('batchTimeout','numerical','integerOnly' => true),
+            array('batchTimeout', 'numerical', 'integerOnly' => true),
+            array(
+                'massActionsBatchSize',
+                'numerical',
+                'integerOnly' => true,
+                'min' => 5,
+                'max' => 100,
+            ),
             array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
             
             array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail'),
@@ -122,7 +129,7 @@ class Admin extends CActiveRecord {
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array ('appDescription', 'length', 'max' => 255),
             array (
-                'appName,x2FlowRespectsDoNotEmail,doNotEmailLinkPage,doNotEmailLinkText',
+                'appName,x2FlowRespectsDoNotEmail,doNotEmailPage,doNotEmailLinkText',
                 'safe'
             ),
                 // The following rule is used by search().
@@ -163,6 +170,7 @@ class Admin extends CActiveRecord {
             'emailUser' => Yii::t('admin', 'Username'),
             'emailPass' => Yii::t('admin', 'Password'),
             'emailSecurity' => Yii::t('admin', 'Security'),
+            'enableColorDropdownLegend' => Yii::t('admin', 'Colorize Dropdown Options?'),
             'installDate' => Yii::t('admin', 'Installed'),
             'updateDate' => Yii::t('admin', 'Last Update'),
             'updateInterval' => Yii::t('admin', 'Version Check Interval'),
@@ -191,6 +199,7 @@ class Admin extends CActiveRecord {
             'webLeadEmailAccount' => Yii::t('admin','Send As (to web leads)'),
             'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
             'batchTimeout' => Yii::t('app','Time limit on batch actions'),
+            'massActionsBatchSize' => Yii::t('app','Batch size for grid view mass actions'),
             'externalBaseUrl' => Yii::t('app','External / Public Base URL'),
             'externalBaseUri' => Yii::t('app','External / Public Base URI'),
             'appName' => Yii::t('app','Application Name'),

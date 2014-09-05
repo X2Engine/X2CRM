@@ -100,6 +100,7 @@ GridViewStickyHeader.prototype.makeSticky = function () {
             removeClass ('x2-gridview-fixed-top-bar-outer')
     $(bodyContainer).find ('table').
         removeClass ('x2-gridview-body-with-fixed-header');
+    $(bodyContainer).find ('table').addClass ('x2-gridview-body-without-fixed-header');
 
     $('.column-selector').addClass ('stuck');
     $('#' + this.gridId + '-mass-action-buttons .more-drop-down-list').
@@ -112,6 +113,7 @@ GridViewStickyHeader.prototype.makeUnsticky = function () {
     var $titleBar =
         $('#x2-gridview-top-bar-outer').addClass ('x2-gridview-fixed-top-bar-outer')
     $(bodyContainer).find ('table').addClass ('x2-gridview-body-with-fixed-header');
+    $(bodyContainer).find ('table').removeClass ('x2-gridview-body-without-fixed-header');
 
     $('.column-selector').removeClass ('stuck');
     $('#' + this.gridId + '-mass-action-buttons .more-drop-down-list').

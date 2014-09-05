@@ -83,6 +83,24 @@ class FormatterTest extends X2DbTestCase {
         $this->assertEquals(1115.73,$evald[0]);
 
     }
+
+    /**
+     * Ensure that yiiDateFormatToJQueryDateFormat correctly translates between format languages
+     */
+    public function testYiiDateFormatToJQueryDateFormat () {
+        $formats = array (
+            'd MMM y' => 'd M yy',
+            'd/MMM/y' => 'd/M/yy',
+            'd/MM/y' => 'd/mm/yy',
+            'd/MM M/y' => 'd/mm m/yy',
+            'd/MM M/y MMM' => 'd/mm m/yy M'
+        );
+        foreach ($formats as $fmt => $expected) {
+            $newFormat = Formatter::yiiDateFormatToJQueryDateFormat ($fmt);
+            $this->assertEquals ($expected, $newFormat);
+        }
+    }
+
 }
 
 ?>

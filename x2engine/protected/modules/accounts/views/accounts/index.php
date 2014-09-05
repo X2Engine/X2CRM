@@ -63,17 +63,12 @@ $('.search-form form').submit(function(){
 });
 ");
 ?>
-<div class="search-form" style="display:none">
-<?php $this->renderPartial('_search',array(
-	'model'=>$model,
-)); ?>
-</div><!-- search-form -->
 <?php
 $this->widget('X2GridView', array(
-	'id'=>'accounts-grid',
-	'title'=>Yii::t('accounts','Accounts'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=>
+    'id'=>'accounts-grid',
+    'title'=>Yii::t('accounts','Accounts'),
+    'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
+    'template'=>
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
         '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
         '<div id="x2-gridview-page-title" '.
@@ -82,33 +77,33 @@ $this->widget('X2GridView', array(
         
         '{summary}{topPager}{items}{pager}',
     'fixedHeader'=>true,
-	'dataProvider'=>$model->search(),
-	// 'enableSorting'=>false,
-	// 'model'=>$model,
-	'filter'=>$model,
-	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
-	// 'columns'=>$columns,
-	'modelName'=>'Accounts',
-	'viewName'=>'accounts',
-	// 'columnSelectorId'=>'contacts-column-selector',
-	'defaultGvSettings'=>array(
-		'gvCheckbox' => 30,
-		'name' => 184,
-		'type' => 153,
-		'annualRevenue' => 108,
-		'phone' => 115,
-		'lastUpdated' => 77,
-		'assignedTo' => 99,
-	),
-	'specialColumns'=>array(
-		'name'=>array(
-			'name'=>'name',
-			'header'=>Yii::t('accounts','Name'),
-			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
-			'type'=>'raw',
-		),
-	),
-	'enableControls'=>true,
-	'fullscreen'=>true,
+    'dataProvider'=>$model->search(),
+    // 'enableSorting'=>false,
+    // 'model'=>$model,
+    'filter'=>$model,
+    'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
+    // 'columns'=>$columns,
+    'modelName'=>'Accounts',
+    'viewName'=>'accounts',
+    // 'columnSelectorId'=>'contacts-column-selector',
+    'defaultGvSettings'=>array(
+        'gvCheckbox' => 30,
+        'name' => 184,
+        'type' => 153,
+        'annualRevenue' => 108,
+        'phone' => 115,
+        'lastUpdated' => 77,
+        'assignedTo' => 99,
+    ),
+    'specialColumns'=>array(
+        'name'=>array(
+            'name'=>'name',
+            'header'=>Yii::t('accounts','Name'),
+            'value'=>'CHtml::link($data->renderAttribute("name"), array("view", "id"=>$data->id))',
+            'type'=>'raw',
+        ),
+    ),
+    'enableControls'=>true,
+    'fullscreen'=>true,
 ));
 ?>

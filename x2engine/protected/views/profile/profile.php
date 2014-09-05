@@ -74,7 +74,14 @@ if ($isMyProfile) {
             setSortOrderUrl: '".Yii::app()->controller->createUrl ('/profile/setWidgetOrder')."',
             showWidgetContentsUrl: '".Yii::app()->controller->createUrl (
                 '/profile/view', array ('id' => 1))."',
-            connectedContainerSelector: '.connected-sortable-profile-container'
+            connectedContainerSelector: '.connected-sortable-profile-container',
+            translations: ".CJSON::encode (array (
+                'createProfileWidgetDialogTitle' => Yii::t('profile', 'Create Profile Widget'),
+                'Create' => Yii::t('app',  'Create'),
+                'Cancel' => Yii::t('app',  'Cancel'),
+            )).",
+            createProfileWidgetUrl: '".Yii::app()->controller->createUrl (
+                '/profile/createProfileWidget')."'
         });
     ", CClientScript::POS_READY);
      
@@ -88,10 +95,7 @@ if ($isMyProfile) {
         // display profile widgets in order
         foreach ($layout as $widgetClass => $settings) {
             if ($settings['containerNumber'] == $containerNumber) {
-                $controller->widget('application.components.sortableWidget.'.$widgetClass, array (
-                    'profile' => $model,
-                    'widgetType' => 'profile',
-                ));
+                SortableWidget::instantiateWidget ($widgetClass, $model);
             }
         }
     }

@@ -43,6 +43,7 @@ if ($this->showActions !== null) {
     echo CHtml::dropDownList('show-actions', $this->showActions,
         array(
             'uncomplete'=>Yii::t('actions', 'Incomplete'),
+            'overdue'=>Yii::t('actions', 'Overdue'),
             'complete'=>Yii::t('actions', 'Complete'),
             'all'=>Yii::t('actions', 'All'),
         ),

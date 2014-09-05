@@ -72,7 +72,7 @@ class LeadRoutingBehavior extends CBehavior {
             $username = $user->username;
 
             if (($admin->onlineOnly && !in_array ($username, Session::getOnlineUsers())) ||
-                !in_array ($username, Profile::getUsernamesOfAvailableUsers ())) {
+                !in_array ($username, Profile::model ()->getUsernamesOfAvailableUsers ())) {
 
                 return 'Anyone';
             } else {
@@ -142,7 +142,7 @@ class LeadRoutingBehavior extends CBehavior {
 			$users = $usernames;
 		}
 
-        $users = array_values (array_intersect (Profile::getUsernamesOfAvailableUsers (), $users));
+        $users = array_values (array_intersect (Profile::model ()->getUsernamesOfAvailableUsers (), $users));
 
 		$numbers = array();
 		foreach ($users as $user) {
@@ -191,7 +191,7 @@ class LeadRoutingBehavior extends CBehavior {
 		}
 
         $userList = array_values (
-            array_intersect (Profile::getUsernamesOfAvailableUsers (), $userList));
+            array_intersect (Profile::model()->getUsernamesOfAvailableUsers (), $userList));
 
 		$rrId = $this->getRoundRobin();
         if(count($userList)>0){

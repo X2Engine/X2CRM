@@ -1,0 +1,23 @@
+{
+    "name":"Sugar 6.5.16 to X2Engine 4.2",
+    "mapping":
+    {
+        "Last Name":"name",
+        "Account Name":"accountName",
+        "Lead Source":"leadSource",
+        "Description":"description",
+        "Date Created":"createDate",
+        "Date Modified":"lastUpdated",
+        "First Name":"createNew",
+        "Title":"createNew",
+        "Email Address":"createNew",
+        "Mobile Phone":"createNew",
+        "Office Phone":"createNew",
+        "Home Phone":"createNew",
+        "Primary Address Street":"createNew",
+        "Primary Address City":"createNew",
+        "Primary Address State":"createNew",
+        "Primary Address Postalcode":"createNew",
+        "Primary Address Country":"createNew"
+    }
+}

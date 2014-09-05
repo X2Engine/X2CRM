@@ -123,7 +123,7 @@ echo CHtml::hiddenField('layout', '', array('id' => 'layoutHiddenField'));
                 ?>
                 <?php echo CHtml::label(Yii::t('admin', 'Scenario'), 'scenario'); ?>
                 <?php
-                echo CHtml::dropDownList('id', empty($layoutModel) ? 'Default' : $layoutModel->scenario, $scenarios, array(
+                echo CHtml::dropDownList('scenario', empty($layoutModel) ? 'Default' : $layoutModel->scenario, $scenarios, array(
                     'id' => 'scenario'
                 ));
                 ?>

@@ -76,7 +76,7 @@ class Api2InputTest extends Api2TestBase {
         $this->action = 'model';
         // Create
         $contact = array(
-            'firstName' => 'Walter',
+            'firstName' => 'Walt',
             'lastName' => 'White',
             'email' => 'walter.white@sandia.gov',
             'visibility' => 1
@@ -87,17 +87,31 @@ class Api2InputTest extends Api2TestBase {
         $this->assertResponseCodeIs(201, $ch);
         $this->assertTrue((bool) ($newContact = Contacts::model()->findBySql(
                 'SELECT * FROM x2_contacts '
-                . 'WHERE firstName="Walter" '
+                . 'WHERE firstName="Walt" '
                 . 'AND lastName="White" '
                 . 'AND email="walter.white@sandia.gov"')));
 
         // Update
-        $contact['firstName'] = 'Walter "Heisenberg"';
+        $contact['firstName'] = 'Walter';
         $ch = $this->getCurlHandle('PUT',array('{modelAction}'=>"Contacts/$id.json"),'admin',$contact);
         $response = json_decode(curl_exec($ch),1);
         $this->assertResponseCodeIs(200, $ch);
         $newContact->refresh();
         $this->assertEquals($contact['firstName'],$newContact['firstName']);
+
+        // Update by attributes:
+        $contact['firstName'] = 'Walter "Heisenberg"';
+        $ch = $this->getCurlHandle('PUT',
+                array(
+                    '{modelAction}'=>"Contacts/by:email={$contact['email']}.json"
+                ),
+                'admin',
+                $contact);
+        $response = json_decode(curl_exec($ch),1);
+        $this->assertResponseCodeIs(200, $ch);
+        $newContact->refresh();
+        $this->assertEquals($contact['firstName'],$newContact['firstName']);
+
 
         // Delete
         $ch = $this->getCurlHandle('DELETE',array('{modelAction}'=>"Contacts/$id.json"),'admin');

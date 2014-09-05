@@ -250,7 +250,7 @@ $(function() {
     // set up add profile widgets dropdown
     new PopupDropdownMenu ({
         containerElemSelector: '#x2-hidden-profile-widgets-menu-container',
-        openButtonSelector: '#add-profile-widget-button'
+        openButtonSelector: '#add-profile-widget-button-list-item'
     });
 });
 
@@ -277,9 +277,10 @@ if ($isMyProfile) {
         <div class='responsive-menu-items'>
         <?php
         echo CHtml::link(
-            Yii::t('profile', 'Minimize'), '#',
+            "<img src='".Yii::app()->theme->getBaseUrl ()."/images/icons/".
+                "Collapse_Widget.png' />", '#',
             array(
-                'class' => 'x2-minimal-button x2-button icon right',
+                'class' => 'icon right',
                 'id' => 'profile-info-minimize-button',
                 'title' => Yii::t('app', 'Minimize Profile Info'),
                 'style' => ($profileInfoMinimized ? 'display: none;' : ''), 
@@ -292,9 +293,10 @@ if ($isMyProfile) {
             )
         );
         echo CHtml::link(
-            Yii::t('profile', 'Maximize'), '#',
+            "<img src='".Yii::app()->theme->getBaseUrl ()."/images/icons/".
+                "Expand_Widget.png' />", '#',
             array(
-                'class' => 'x2-minimal-button x2-button icon right',
+                'class' => 'icon right',
                 'id' => 'profile-info-maximize-button',
                 'title' => Yii::t('app', 'Maximize Profile Info'),
                 'style' => (!$profileInfoMinimized ? 'display: none;' : ''), 
@@ -306,17 +308,28 @@ if ($isMyProfile) {
                     return false;'
             )
         );
+        echo X2Html::settingsButton (Yii::t('app', 'Profile Settings'), 
+            array (
+                'id' => 'profile-settings-button',
+                'class' => 'right x2-popup-dropdown-button',
+            ));
+        ?> 
+        <ul id='profile-info-settings-menu' class='x2-popup-dropdown-menu' style='display: none;'>
+            <li id='add-profile-widget-button-list-item'>
+                <span id='add-profile-widget-button'><?php 
+                    echo Yii::t('app', 'Show Profile Widget'); ?></span>
+            </li>
+            <li>
+                <span id='create-profile-widget-button'><?php 
+                    echo Yii::t('app', 'Create Profile Widget'); ?></span>
+            </li>
+        </ul>
+        <?php
         echo CHtml::link(
-            Yii::t('profile', 'Add Profile Widget'), '#',
+            '<img src="'.Yii::app()->theme->getBaseUrl ().'/images/icons/Edit.png'.'" />', 
+            $this->createUrl('update', array('id' => $model->id)),
             array(
-                'class' => 'x2-minimal-button x2-button icon right',
-                'id' => 'add-profile-widget-button',
-            )
-        );
-        echo CHtml::link(
-            '<span></span>', $this->createUrl('update', array('id' => $model->id)),
-            array(
-                'class' => 'x2-minimal-button x2-button icon edit right',
+                'class' => 'edit right',
                 'title' => Yii::t('app', 'Edit Profile'),
             )
         );
@@ -326,6 +339,16 @@ if ($isMyProfile) {
         echo $model->getHiddenProfileWidgetMenu ();
     }
 ?>
+</div>
+
+<div id='create-profile-widget-dialog' class='form' style='display: none;'>
+    <label for='' class='left-label'><?php echo Yii::t('app', 'Widget Type: '); ?></label>
+    <?php
+    $widgetSubtypeOptions = SortableWidget::getWidgetSubtypeOptions ('profile');
+    asort ($widgetSubtypeOptions);
+    echo CHtml::dropDownList (
+        'widgetType', '', $widgetSubtypeOptions);
+    ?>
 </div>
 
 <div id='profile-info-contents-container'
@@ -338,8 +361,7 @@ if ($isMyProfile) {
             <span class="file-wrapper<?php 
              echo (!$isMyProfile || $fullProfileInfo ? ' full-profile-info' : ''); ?>">
             <div id='profile-image-container'>
-            <?php Profile::renderFullSizeAvatar ($model->id); ?>
-            <?php 
+            <?php Profile::renderFullSizeAvatar ($model->id); 
             if($isMyProfile) {
                 ?>
                 <div id='photo-upload-overlay' style='display:none;'>

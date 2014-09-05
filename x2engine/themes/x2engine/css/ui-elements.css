@@ -994,7 +994,7 @@ button.ui-button.ui-dialog-titlebar-close {
     background: #b1b1b1 !important;
 }
 
-.ui-draggable .ui-widget-header {
+.ui-dialog .ui-widget-header {
     margin: -4px -4px 0 -4px;
     border-radius:             4px 4px 0 0!important;
     -moz-border-radius:         4px 4px 0 0!important;
@@ -1010,13 +1010,28 @@ button.ui-button.ui-dialog-titlebar-close {
 .ui-dialog {
     border: 1px solid #9b9b9b !important;
     z-index: 900000;
-}
-
-.ui-dialog {
     -moz-box-shadow:         0px 3px 15px 1px rgba(0,0,0,0.75);
     -webkit-box-shadow:     0px 3px 15px 1px rgba(0,0,0,0.75);
     box-shadow:             0px 3px 15px 1px rgba(0,0,0,0.75);
     border-width: 0;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+    background: none !important;
+    border: none !important;
+    padding: 1px !important;
+    margin: -9px 2px 0 0 !important;
+}
+
+.ui-dialog .ui-widget-header .ui-icon {
+    background-image:url('../images/icons/Close_Widget.png') !important;
+    background-position: -2px -1px;
+    opacity: 1;
+}
+
+.ui-dialog .ui-widget-header .ui-icon:hover {
+    background-position: -2px -1px;
+    opacity: 0.8;
 }
 
 .ui-draggable .ui-dialog-titlebar {
@@ -1025,6 +1040,10 @@ button.ui-button.ui-dialog-titlebar-close {
 
 .lt-ie9 .ui-dialog {
     border-width: 1px;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+    border: none !important;
 }
 
 /*
@@ -1261,7 +1280,7 @@ Ckeditor
     top:-6px;
     left: 6px;
 	border-right:6px solid transparent;
-	border-bottom:6px solid rgb(233,233,233);
+    border-bottom: 6px solid rgb(247, 247, 247);
 	border-left:6px solid transparent;
 	content:'';
 }
@@ -1276,7 +1295,7 @@ Ckeditor
 	-moz-box-shadow:		0 3px 15px 2px rgba(0,0,0,0.5 );
 	-webkit-box-shadow:		0 3px 15px 2px rgba(0,0,0,0.5);
 	box-shadow:				0 3px 15px 2px rgba(0,0,0,0.5);
-    background: rgb(233, 233, 233);
+    background: rgb(247, 247, 247);
     position: absolute;
 	border-radius:			4px;
 	-moz-border-radius:		4px;
@@ -1286,7 +1305,7 @@ Ckeditor
 
 .popup-dropdown-menu ul,
 ul.popup-dropdown-menu {
-    background: rgb(233, 233, 233);
+    background: rgb(247, 247, 247);
     list-style: none;
     padding: 5px 0 5px 0;
     margin: 0;

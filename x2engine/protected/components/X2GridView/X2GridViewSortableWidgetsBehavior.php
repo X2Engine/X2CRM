@@ -55,7 +55,7 @@ class X2GridViewSortableWidgetsBehavior extends CBehavior {
         $widgetClass = get_class ($this->owner->sortableWidget);
         $resultsPerPage = $widgetClass::getJSONProperty (
             $this->owner->sortableWidget->profile, 'resultsPerPage', 
-            $this->owner->sortableWidget->widgetType);
+            $this->owner->sortableWidget->widgetType, $this->owner->sortableWidget->widgetUID);
 
         // add a dropdown to the summary text that let's user set how many rows to show on each page
         $this->owner->summaryText = Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>').
@@ -71,7 +71,8 @@ class X2GridViewSortableWidgetsBehavior extends CBehavior {
                             'key: "resultsPerPage",'.
                             'value: $(this).val(),'.
                             'widgetClass: "'.get_class ($this->owner->sortableWidget).'",'.
-                            'widgetType: "'.$this->owner->sortableWidget->widgetType.'"'.
+                            'widgetType: "'.$this->owner->sortableWidget->widgetType.'",'.
+                            'widgetUID: "'.$this->owner->sortableWidget->widgetUID.'"'.
                         '},'.
                         'type: "POST",'.
                         'url: "'.Yii::app()->controller

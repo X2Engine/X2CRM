@@ -55,10 +55,19 @@ $massActionLabels = array (
     'newList' => Yii::t ('app', 'New list from selection'),
     'addToList' => Yii::t ('app', 'Add selected to list'),
     'removeFromList' => Yii::t ('app', 'Remove selected from list'),
-
+    
 );
 
 AuxLib::registerTranslationsScript ('massActions', array (
+    'deleteprogressBarDialogTitle' => 'Mass Deletion in Progress',
+    'updateFieldprogressBarDialogTitle' => 'Mass Update in Progress',
+    'progressBarDialogTitle' => 'Mass Action in Progress',
+    'deleted' => 'deleted',
+    'tagged' => 'tagged',
+    'added' => 'added',
+    'updated' => 'updated',
+    'removed' => 'removed',
+    'doubleConfirmDialogTitle' => 'Confirm Deletion',
     'addedItems' => 'Added items to list',
     'addToList' => 'Add selected to list',
     'removeFromList' => 'Remove selected from list',
@@ -71,9 +80,14 @@ AuxLib::registerTranslationsScript ('massActions', array (
     'errorItemName' => 'errors',
     'successItemName' => 'Close',
     'blankListNameError' => 'Cannot be left blank',
+    'passwordError' => 'Password cannot be left blank',
     'close' => 'Close',
     'cancel' => 'Cancel',
     'create' => 'Create',
+    'pause' => 'Pause',
+    'stop' => 'Stop',
+    'resume' => 'Resume',
+    'complete' => 'Complete',
     'tag' => 'Tag',
     'update' => 'Update',
     'tagSelected' => 'Tag selected',
@@ -89,9 +103,85 @@ Yii::app()->clientScript->registerCss ('massActionsCss', "
     position: relative;
 }
 
+@media (max-width: 820px) and (min-width: 658px) {
+    .grid-view.fullscreen .x2-gridview-top-pager {
+        display: none;
+    }
+}
+
+
+/*
+Check all records in data provider feature
+*/
+.grid-view .select-all-records-on-all-pages-strip-container {
+    margin-right: -1px;
+}
+.grid-view .x2-gridview-fixed-top-bar-outer .select-all-records-on-all-pages-strip-container {
+    margin-right: 6px;
+    margin-left: 6px;
+}
+
+.grid-view .select-all-records-on-all-pages-strip-container {
+    text-align: center;
+    border-right: 1px solid rgb(207, 207, 207);
+    border-bottom: 1px solid rgb(199, 199, 199);
+    position: relative;
+    z-index: 1;
+}
+
+.grid-view .select-all-records-on-all-pages-strip-container .select-all-notice,
+.grid-view .select-all-records-on-all-pages-strip-container .all-selected-notice {
+    padding: 4px;
+}
+
+.grid-view .select-all-records-on-all-pages-strip-container .select-all-notice {
+    background: rgb(255, 255, 185);
+}
+
+.grid-view .select-all-records-on-all-pages-strip-container .all-selected-notice {
+    background: rgb(203, 255, 201);
+}
+
+body.no-widgets .grid-view .x2-gridview-fixed-top-bar-outer .select-all-records-on-all-pages-strip-container {
+    margin-right: 0;
+}
+
+.x2-mobile-layout .select-all-records-on-all-pages-strip-container {
+    margin-left: 0;
+    margin-right: -1px;
+}
+
+.grid-view .container-clone {
+    visibility: hidden;
+}
+
+.x2-mobile-layout .x2grid-body-container .container-clone,
+.x2grid-body-container.x2-gridview-body-without-fixed-header .container-clone {
+    display: none !important;
+}
+
 /*
 Flashes container
 */
+
+.super-mass-action-feedback-box {
+    margin: 5px 0;
+    border: 1px solid rgb(176, 176, 176);
+    background: rgb(250, 250, 250);
+    box-shadow: inset 1px 1px rgb(219, 219, 219);
+    padding: 4px;
+    height: 76px;
+    overflow-y: scroll;
+}
+
+.super-mass-action-feedback-box .success-flash {
+    color: green;
+}
+.super-mass-action-feedback-box .error-flash {
+    color: red;
+}
+
+
 
 #x2-gridview-flashes-container.fixed-flashes-container {
     position: fixed;
@@ -106,6 +196,7 @@ Flashes container
 
 #x2-gridview-flashes-container > div {
     margin-top: 5px;
+    margin-left: 4px;
 }
 
 #x2-gridview-flashes-container .flash-list-header {
@@ -224,12 +315,13 @@ Yii::app()->clientScript->registerResponsiveCss ('massActionsCssResponsive', "
 
 @media (min-width: 658px) {
     .x2-gridview-mass-action-buttons .more-drop-down-list.fixed-header {
-        position: fixed;
+        /*position: fixed;*/
     }
 }
 
 ");
 
+// destroy mass action dialogs, save checks so that can be preserved through grid update
 $beforeUpdateJSString = "
     x2.DEBUG && console.log ('beforeUpdateJSString');
     
@@ -246,12 +338,13 @@ $beforeUpdateJSString = "
     // save to preserve checks
     x2.".$namespacePrefix."MassActionsManager.saveSelectedRecords ();
 
+    // show loading overlay to prevent grid view user interaction
     $('#".$gridId." .x2-gridview-updating-anim').show ();
-    $('#".$gridId."-mass-action-buttons').find ('.mass-action-button').unbind ('click');
 ";
 
 $gridObj->addToBeforeAjaxUpdate ($beforeUpdateJSString);
 
+// reapply event handlers and checks
 $afterUpdateJSString = "
     x2.DEBUG && console.log ('afterUpdateJSSTring');
     if (typeof x2.".$namespacePrefix."MassActionsManager !== 'undefined') 
@@ -264,25 +357,14 @@ $gridObj->addToAfterAjaxUpdate ($afterUpdateJSString);
 Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript',"
     if (typeof x2.".$namespacePrefix."MassActionsManager === 'undefined') {
         x2.DEBUG && console.log ('new X2GridViewMassActionsManager');
-        x2.".$namespacePrefix."MassActionsManager = new X2GridViewMassActionsManager ({
+        x2.".$namespacePrefix."MassActionsManager = new x2.GridViewMassActionsManager ({
             massActions: ".CJSON::encode ($massActions).",
             gridId: '".$gridId."',
             namespacePrefix: '".$namespacePrefix."',
             gridSelector: '#".$gridId."',
             fixedHeader: ".($fixedHeader ? 'true' : 'false').",
-            executeUrls: {
-                completeAction: '".Yii::app()->request->getScriptUrl () . '/' . 
-                    lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
-                uncompleteAction: '".Yii::app()->request->getScriptUrl () . '/' . 
-                    lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
-                 
-                removeFromList: '".Yii::app()->request->getScriptUrl () . 
-                    '/' . lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
-                addToList: '".Yii::app()->request->getScriptUrl () . '/' . 
-                    lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
-                createNewList: '".Yii::app()->request->getScriptUrl () . '/' . 
-                    lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
-            },
+            massActionUrl: '".Yii::app()->request->getScriptUrl () . '/' . 
+                lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
              
             modelName: '".$modelName."',
             translations: x2.massActions.translations,
@@ -291,8 +373,19 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
             collapseWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
                 '/images/icons/Collapse_Widget.png'."',
             closeWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
-                '/images/icons/Close_Widget.png'."'
+                '/images/icons/Close_Widget.png'."',
+            progressBarDialogSelector: '#$namespacePrefix-progress-dialog',
+            enableSelectAllOnAllPages: ".
+                ($gridObj->enableSelectAllOnAllPages ? 'true' : 'false').",
+            totalItemCount: {$gridObj->dataProvider->totalItemCount},
+            idChecksum: '$idChecksum',
         });
+    } else {
+        // grid was refreshed, total item count may have changed
+        x2.{$namespacePrefix}MassActionsManager.totalItemCount = 
+            {$gridObj->dataProvider->totalItemCount};
+        x2.{$namespacePrefix}MassActionsManager.idChecksum = 
+            '$idChecksum';
     }
 ", CClientScript::POS_READY);
 
@@ -385,3 +478,39 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
 </div>
 
 </span>
+
+<div class='mass-action-dialog double-confirmation-dialog' style='display: none;'>
+    <span><?php 
+        echo Yii::t(
+            'app', 'You are about to delete {count} {recordType}.', 
+            array (
+                '{recordType}' => X2Model::getRecordName ($gridObj->modelName, true),
+                '{count}' => '<b>'.$gridObj->dataProvider->totalItemCount.'</b>',
+            ));
+        echo Yii::t('app', 'This action cannot be undone.'); 
+        ?>
+        </br>
+        </br>
+        <?php
+        echo Yii::t('app', 'Please enter your password to confirm that you want to '.
+            'delete the selected records.'); 
+    ?></span>
+    </br>
+    </br>
+    <?php
+    echo CHtml::label (Yii::t('app', 'Password:'), 'LoginForm[password]');
+    ?>
+    <input name="password" type='password'>
+</div>
+<div id='<?php echo $namespacePrefix; ?>-progress-dialog' class='progress-dialog mass-action-dialog'
+ style='display: none;'>
+<?php
+    $this->widget ('X2ProgressBar', array (
+        'uid' => $gridObj->namespacePrefix,
+        'max' => $gridObj->dataProvider->totalItemCount,
+        'label' => '',
+    ));
+?>
+<div class='super-mass-action-feedback-box'>
+</div>
+</div>

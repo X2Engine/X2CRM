@@ -33,7 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
 Yii::import('application.components.util.ArrayUtil');
+
 /**
  * Enables transparent serialization and storage of array objects in database
  * fields as JSON strings.

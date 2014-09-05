@@ -40,8 +40,11 @@
  * echoes registered scripts, unlike CWidget's render method.
  */
 
-$this->widget ($widgetClass, array (
-    'widgetType' => $widgetType,
-    'isAjaxRequest' => true,
-    'profile' => $profile
+$this->widget ($widgetClass, array_merge (
+    array (
+        'widgetType' => $widgetType,
+        'isAjaxRequest' => true,
+        'profile' => $profile,
+        'widgetUID' => $widgetUID,
+    ), $extraWidgetParams
 ));

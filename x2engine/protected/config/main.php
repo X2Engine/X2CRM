@@ -175,10 +175,14 @@ $config = array(
                 'api2/<_class:[A-Z]\w+>/hooks/:<_id:\d+>' => 'api2/hooks',
                 'api2/<_class:[A-Z]\w+>/hooks' => 'api2/hooks',
                 'api2/hooks/:<_id:\d+>' => 'api2/hooks',
-                // Directly access an X2Model instance by ID
+                // Directly access an X2Model instance
+                // ...By attributes
+                // Example: api2/Contacts/by:firstName=John;lastName=Doe.json
+                'api2/<_class:[A-Z]\w+>/by:<_findBy:.+>.json'=>'api2/model',
+                // ...By ID
                 // Example: api2/Contacts/1121.json = Contact #1121
                 'api2/<_class:[A-Z]\w+>/<_id:\d+>.json'=>'api2/model',
-                // Run the "model" action, with class parameter (required); the
+               // Run the "model" action, with class parameter (required); the
                 // base URI for the "model" function
                 'api2/<_class:[A-Z]\w+>'=>'api2/model',
                 // Run an action "on" a class with a record ID for that class
@@ -199,6 +203,8 @@ $config = array(
                 // Everything else:
                 'api2/<action:[a-z]\w+>' => 'api2/<action>',
                 // End REST API URL rules
+
+                '<module:calendar>/<action:ical>/<user:\w+>:<key:[^\/]+>.ics' => '<module>/<module>/<action>',
 
                 'weblist/<action:\w+>' => 'marketing/weblist/<action>',
                 '<module:\w+>' => '<module>/<module>/index',
@@ -291,8 +297,7 @@ $config = array(
         'trueWebRoot' => substr(__DIR__, 0, -17),
         'registeredWidgets' => array(
             'OnlineUsers' => 'Active Users',
-            'TimeZone' => 'Time Zone',
-            'GoogleMaps' => 'Google Map',
+            'TimeZone' => 'Clock',
             'ChatBox' => 'Activity Feed',
             'TagCloud' => 'Tag Cloud',
             'ActionMenu' => 'My Actions',
@@ -315,6 +320,12 @@ $config = array(
         'supportedCurrencySymbols' => array(),
     ),
 );
+
+if (YII_DEBUG && YII_UNIT_TESTING)
+    $config['components']['urlManager']['rules'] = array_merge (
+        array ('profileTest/<action:\w+>' => 'profileTest/<action>'),
+        $config['components']['urlManager']['rules']);
+
 if(file_exists('protected/config/proConfig.php')){
     $proConfig = include('protected/config/proConfig.php');
     foreach($proConfig as $attr => $proConfigData){

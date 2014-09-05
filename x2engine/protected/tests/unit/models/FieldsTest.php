@@ -47,6 +47,16 @@ class FieldsTest extends X2TestCase {
     private $_testColumnName;
     private $_testTableName;
 
+
+    public function testCountNonNull() {
+        $f = new Fields;
+        $f->modelName = 'Accounts';
+        $f->fieldName = 'annualRevenue';
+        $f->defaultValue = 66;
+        Yii::app()->fixture->load(array('accounts'=>array('Accounts','.fieldsTest')));
+        $this->assertEquals(2,(int) $f->countNonNull());
+    }
+
     /**
      * This defines the model to which columns will be added.
      * @return string 

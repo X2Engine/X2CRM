@@ -1,0 +1,13 @@
+{
+    "name":"Zurmo 2.6.5 to X2Engine 4.2",
+    "mapping":
+    {
+        "Id":"id",
+        "Name":"name",
+        "Description":"description",
+        "Created Date Time":"createDate",
+        "Modified Date Time":"lastUpdated",
+        "Sell Price":"price",
+        "Sell Price Currency":"currency"
+    }
+}

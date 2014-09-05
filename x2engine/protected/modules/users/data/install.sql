@@ -29,7 +29,8 @@ CREATE TABLE x2_users (
     calendarFilter         TEXT,
     setCalendarPermissions TINYINT,
     inviteKey              VARCHAR(16),
-    userKey                VARCHAR(32),
+    userKey                VARCHAR(64),
+    calendarKey            VARCHAR(64),
     UNIQUE(username, emailAddress),
     INDEX (username)
 ) COLLATE = utf8_general_ci;

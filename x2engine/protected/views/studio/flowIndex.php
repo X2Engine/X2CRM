@@ -90,7 +90,7 @@ $this->widget('X2GridViewGeneric', array(
 		array(
 			'name'=>'name',
 			'headerHtmlOptions'=>array('style'=>'width:40%'),
-			'value'=>'CHtml::link($data->name,array("/studio/flowDesigner","id"=>$data->id))',
+			'value'=>'CHtml::link(CHtml::encode($data->name),array("/studio/flowDesigner","id"=>$data->id))',
 			'type'=>'raw',
 		),
 		array(

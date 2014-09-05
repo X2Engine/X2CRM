@@ -43,8 +43,12 @@
 $config = require("main.php");
 
 unset($config['theme']);
-$config['components']['fixture'] = array(
+/*$config['components']['fixture'] = array(
 	'class' => 'system.test.CDbFixtureManager',
+);*/
+$config['components']['fixture'] = array(
+	'class' => 'application.components.X2FixtureManager',
+	'initScriptSuffix' => '.init.php'
 );
 
 unset($config['components']['urlManager']);

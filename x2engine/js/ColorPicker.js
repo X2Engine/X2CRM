@@ -60,20 +60,22 @@ Public instance methods
 
 ColorPicker.prototype.setUp = function (element, replaceHash /* optional */) {
     var that = this;
-    replaceHash = typeof replaceHash === 'undefined' ? false : true;
+    if ($(element).next ('.sp-replacer').length) return; // already set up
+    replaceHash = typeof replaceHash === 'undefined' ? false : replaceHash;
 
     $(element).spectrum ({
         move: function (color) {
             $(element).data ('ignoreChange', true);
         },
         hide: function (color) {
+
             that.removeCheckerImage ($(element));
             $(element).data ('ignoreChange', false);
 
             if (replaceHash) {
-                var text = color.toHexString ().replace (/#/, '');
+                var text = color.toHexString ().toUpperCase ().replace (/#/, '');
             } else {
-                var text = color.toHexString ();
+                var text = color.toHexString ().toUpperCase ();
             }
 
             $(element).val (text);
@@ -99,8 +101,12 @@ ColorPicker.prototype.setUp = function (element, replaceHash /* optional */) {
                 var text = color;
             }
 
-            $(this).next ('div.sp-replacer').find ('.sp-preview-inner').css (
-                'background', '#' + text);
+            // set the color of the color picker element
+            $(element).spectrum ('set', text);
+            // now hide and show it, triggering the hide event handler defined above, converting 
+            // inputted color value to a hex value
+            $(element).spectrum ('show');
+            $(element).spectrum ('hide');
         }
     });
 
@@ -130,7 +136,7 @@ Private instance methods
 ColorPicker.prototype._initializeX2ColorPicker = function () {
     var that = this;
     $('.x2-color-picker').each (function () {
-        that.setUp ($(this), true);
+        that.setUp ($(this), !$(this).hasClass ('x2-color-picker-hash'));
     });
 };
 

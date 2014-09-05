@@ -66,6 +66,7 @@ CREATE TABLE x2_admin(
 	emailUser				VARCHAR(255),
 	emailPass				VARCHAR(255),
 	emailSecurity			VARCHAR(10),
+	enableColorDropdownLegend   TINYINT         DEFAULT 0,
     enforceDefaultTheme     TINYINT         DEFAULT 0,
 	installDate				BIGINT			NOT NULL,
 	updateDate				BIGINT			NOT NULL,
@@ -101,6 +102,7 @@ CREATE TABLE x2_admin(
     userActionBackdating        TINYINT         DEFAULT 0, 
     historyPrivacy              VARCHAR(20) DEFAULT "default",
     batchTimeout                INT DEFAULT 300,
+    massActionsBatchSize        INT DEFAULT 10,
     externalBaseUrl             VARCHAR(255) DEFAULT NULL,
     externalBaseUri             VARCHAR(255) DEFAULT NULL,
     appName                     VARCHAR(255) DEFAULT NULL,
@@ -211,6 +213,7 @@ CREATE TABLE x2_fields (
 	isVirtual				TINYINT			DEFAULT 0,
     defaultValue            TEXT,
     keyType                 CHAR(3) DEFAULT NULL,
+    data                    TEXT,
 	INDEX (modelName),
 	UNIQUE (modelName, fieldName)
 ) COLLATE = utf8_general_ci;
@@ -346,6 +349,7 @@ CREATE TABLE x2_profile(
     theme                   TEXT,
     showActions				VARCHAR(20),
     profileWidgetLayout     TEXT,
+    recordViewWidgetLayout  TEXT,
     miscLayoutSettings      TEXT,
     notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",
     loginSound              VARCHAR(100)    NULL DEFAULT "",
@@ -353,6 +357,7 @@ CREATE TABLE x2_profile(
 	showSocialMedia			TINYINT			NOT NULL DEFAULT 0,
 	showDetailView			TINYINT			NOT NULL DEFAULT 1,
 	gridviewSettings		TEXT,
+	generalGridViewSettings	TEXT,
 	formSettings			TEXT,
 	emailUseSignature		VARCHAR(5)		DEFAULT "user",
 	emailSignature			LONGTEXT,
@@ -590,14 +595,14 @@ DROP TABLE IF EXISTS x2_trigger_logs;
 DROP TABLE IF EXISTS x2_flows;
 /*&*/
 CREATE TABLE x2_flows(
-	id						INT				AUTO_INCREMENT PRIMARY KEY,
-	active					TINYINT			NOT NULL DEFAULT 1,
-	name					VARCHAR(100)	NOT NULL,
-	triggerType				VARCHAR(40)		NOT NULL,
-	modelClass				VARCHAR(40),
-	flow					LONGTEXT,
-	createDate				BIGINT			NOT NULL,
-	lastUpdated				BIGINT			NOT NULL
+    id                        INT                AUTO_INCREMENT PRIMARY KEY,
+    active                    TINYINT            NOT NULL DEFAULT 1,
+    name                    VARCHAR(100)    NOT NULL,
+    triggerType                VARCHAR(40)        NOT NULL,
+    modelClass                VARCHAR(40),
+    flow                    LONGTEXT,
+    createDate                BIGINT            NOT NULL,
+    lastUpdated                BIGINT            NOT NULL
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 CREATE TABLE `x2_trigger_logs` (

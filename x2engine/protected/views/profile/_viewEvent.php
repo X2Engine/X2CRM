@@ -34,6 +34,25 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+if (class_exists($data->associationType)) {
+    if (count(X2Model::model($data->associationType)->findAllByPk($data->associationId)) > 0) {
+        $associatedModel = X2Model::model($data->associationType)->findByPk($data->associationId);
+        if (!$this->checkPermissions($associatedModel, 'view')) {
+            return;
+        }
+        if ($associatedModel instanceof Actions) {
+            $modelName = X2Model::getModelName ($associatedModel->associationType, true);
+            if ($modelName) {
+                if (count(X2Model::model($modelName)->findAllByPk($associatedModel->associationId)) > 0) {
+                    $actionModel = X2Model::model($modelName)->findByPk($associatedModel->associationId);
+                    if (!$this->checkPermissions($actionModel, 'view')) {
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 Yii::app()->params->isAdmin = Yii::app()->user->checkAccess('AdminIndex');
 
 $avatar = Yii::app()->db->createCommand()
@@ -41,21 +60,21 @@ $avatar = Yii::app()->db->createCommand()
         ->from('x2_profile')
         ->where('username=:user', array(':user' => $data->user))
         ->queryScalar();
-if(!empty($avatar) && file_exists($avatar)){
+if (!empty($avatar) && file_exists($avatar)) {
     $avatar = $avatar;
-}else{
+} else {
     $avatar = 'uploads/default.png';
 }
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $typeFile = $data->type;
-if(in_array($data->type, array('email_sent', 'email_opened'))){
+if (in_array($data->type, array('email_sent', 'email_opened'))) {
     // The above types have special icons for sub-types
-    if(in_array($data->subtype, array('quote', 'invoice')))
+    if (in_array($data->subtype, array('quote', 'invoice')))
         $typeFile .= "_{$data->subtype}";
 }
 // Distinct call logging icon:
-if($data->type == 'record_create'){
-    switch($data->subtype){
+if ($data->type == 'record_create') {
+    switch ($data->subtype) {
         case 'call':
             $typeFile = 'voip_call';
             break;
@@ -66,13 +85,13 @@ if($data->type == 'record_create'){
 }
 
 $authorRecord = X2Model::model('User')->findByAttributes(array('username' => $data->user));
-if(isset($authorRecord)){
-    if(Yii::app()->user->getName() == $data->user){
+if (isset($authorRecord)) {
+    if (Yii::app()->user->getName() == $data->user) {
         $author = Yii::t('app', 'You');
-    }else{
+    } else {
         $author = $authorRecord->name;
     }
-}else{
+} else {
     $author = '';
 }
 $commentCount = X2Model::model('Events')->countByAttributes(array(
@@ -94,8 +113,8 @@ $likedPost = Yii::app()->db->createCommand()
 
 
 <?php
-if($data->sticky){
-    if(!isset($_SESSION['stickyFlag']) || !$_SESSION['stickyFlag']){
+if ($data->sticky) {
+    if (!isset($_SESSION['stickyFlag']) || !$_SESSION['stickyFlag']) {
         $_SESSION['stickyFlag'] = true;
         echo "<div class='view top-level date-break sticky-section-header'>- Sticky -</div>";
     }
@@ -114,59 +133,59 @@ if($data->sticky){
                 </div>";
             $_SESSION['lastDate'] = date("M j", $data->timestamp);
             $_SESSION['firstFlag'] = false;
-        }else{
+        } else {
             $_SESSION['lastDate'] = date("M j", $data->timestamp);
         }
     }
 }
 $style = "";
-if($data->important && isset($data->color)){
+if ($data->important && isset($data->color)) {
     $data->color = str_replace('%23', '#', $data->color);
     $style = "background-color:{$data->color};";
-}elseif($data->important && empty($data->color)){
+} elseif ($data->important && empty($data->color)) {
     $style = "background-color:#FFFFC2;";
 }
-if($data->important && isset($data->fontColor)){
+if ($data->important && isset($data->fontColor)) {
     $data->fontColor = str_replace('%23', '#', $data->fontColor);
     $style.="color:{$data->fontColor};";
 }
 ?>
 
 <div class="view top-level activity-feed" style="<?php echo $style; ?>" id="<?php echo $data->id; ?>-feed-box">
-    <div class="img-box <?php echo $typeFile." ".(($data->type == 'record_create') ? $data->associationType.'-create' : ""); ?>" title="<?php echo $data->parseType($data->type); ?>" style="width:45px;float:left;margin-right:5px;">
+    <div class="img-box <?php echo $typeFile . " " . (($data->type == 'record_create') ? $data->associationType . '-create' : ""); ?>" title="<?php echo $data->parseType($data->type); ?>" style="width:45px;float:left;margin-right:5px;">
         <?php
-        if($data->type == 'record_create'){
+        if ($data->type == 'record_create') {
             $fileName = strtolower($data->associationType);
-            if($fileName == 'opportunity')
+            if ($fileName == 'opportunity')
                 $fileName = 'opportunities';
-            if($fileName == 'product')
+            if ($fileName == 'product')
                 $fileName = 'products';
-            if($fileName == 'quote')
+            if ($fileName == 'quote')
                 $fileName = 'quotes';
-            if(file_exists('themes/'.Yii::app()->theme->name.'/images/'.$fileName.'.png')){
+            if (file_exists('themes/' . Yii::app()->theme->name . '/images/' . $fileName . '.png')) {
                 echo "<div class='img-box plus-sign'></div>";
             }
         }
-        if($data->type == 'calendar_event'){
+        if ($data->type == 'calendar_event') {
             echo X2DateUtil::actionDate($data->timestamp, 1);
         }
         ?>
         <?php //  echo ($data->type!='feed')?CHtml::image($imgUrl,'',array('title'=>$data->parseType($data->type))):""; ?>
         <?php
-        if(!empty($avatar) && $data->type == 'feed'){ // add css class to uploaded avatar images to round corners
+        if (!empty($avatar) && $data->type == 'feed') { // add css class to uploaded avatar images to round corners
             $CSSClass = $avatar == 'uploads/default.png' ? 'default-avatar-image' : 'avatar-image';
-            echo CHtml::image(Yii::app()->request->baseUrl."/".$avatar, '', array('class' => $CSSClass, 'height' => 45, 'width' => 45));
+            echo CHtml::image(Yii::app()->request->baseUrl . "/" . $avatar, '', array('class' => $CSSClass, 'height' => 45, 'width' => 45));
         }
         ?>
     </div>
     <div class="event-text-box">
         <div class="deleteButton">
             <?php
-            if(($data->type == 'feed') && ($data->user == Yii::app()->user->getName() || Yii::app()->params->isAdmin)){
-                echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Edit.png'), array('/profile/updatePost', 'id' => $data->id, 'profileId' => $profileId))." ";
+            if (($data->type == 'feed') && ($data->user == Yii::app()->user->getName() || Yii::app()->params->isAdmin)) {
+                echo CHtml::link(CHtml::image($themeUrl . '/images/icons/Edit.png'), array('/profile/updatePost', 'id' => $data->id, 'profileId' => $profileId)) . " ";
             }
-            if((($data->user == Yii::app()->user->getName() || $data->associationId == Yii::app()->user->getId()) && ($data->type == 'feed')) || Yii::app()->params->isAdmin)
-                echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'), '#', array('class' => 'delete-link', 'id' => $data->id.'-delete'));
+            if ((($data->user == Yii::app()->user->getName() || $data->associationId == Yii::app()->user->getId()) && ($data->type == 'feed')) || Yii::app()->params->isAdmin)
+                echo CHtml::link(CHtml::image($themeUrl . '/images/icons/Delete_Activity.png'), '#', array('class' => 'delete-link', 'id' => $data->id . '-delete'));
             ?>
         </div>
         <span class="event-text">
@@ -174,226 +193,185 @@ if($data->important && isset($data->fontColor)){
             echo Formatter::convertLineBreaks(x2base::convertUrls($data->getText()));
             ?>
         </span>
-    <div class='event-bottom-row'>
-        <span class="comment-age" id="<?php echo $data->id."-".$data->timestamp; ?>" 
-         style="<?php echo $style; ?>">
-            <?php echo Formatter::formatFeedTimestamp($data->timestamp); ?>
-        </span> 
-        <span>
-            | 
-        </span>
-        <span class='event-icon-button-container'>
-            <?php 
-            echo CHtml::link(
-                CHtml::image (
-                    $themeUrl.'/images/icons/comment_icon.png', 
-                    Yii::t('profile', 'Comment'),
-                    array (
-                        'class' => 'feed-comment-icon',
-                        'title' => Yii::t('profile', 'Comment on this post')
-                    )).
-                ' (<span title="'.CHtml::encode (Yii::t('profile', 'View comments')).'"
-                   id="'.$data->id.'-comment-count" class="comment-count" val="'.
-                $commentCount.'">'.($commentCount > 0 ? "<b>".$commentCount."</b>" : $commentCount).
-                '</span>)', '#', array('class' => 'comment-link', 'id' => $data->id.'-link')); ?>
-            <?php echo CHtml::link(
-                CHtml::image (
-                    $themeUrl.'/images/icons/comment_icon.png', 
-                    Yii::t('profile', 'Hide comments'),
-                    array (
-                        'class' => 'feed-comment-icon',
-                        'title' => Yii::t('profile', 'Hide comments')
-                    )), '#',
-                array(
-                    'class' => 'comment-hide-link', 'id' => $data->id.'-hide-link',
+        <div class='event-bottom-row'>
+            <span class="comment-age" id="<?php echo $data->id . "-" . $data->timestamp; ?>" 
+                  style="<?php echo $style; ?>">
+                      <?php echo Formatter::formatFeedTimestamp($data->timestamp); ?>
+            </span> 
+            <span>
+                | 
+            </span>
+            <span class='event-icon-button-container'>
+                <?php
+                echo CHtml::link(
+                        CHtml::image(
+                                $themeUrl . '/images/icons/comment_icon.png', Yii::t('profile', 'Comment'), array(
+                            'class' => 'feed-comment-icon',
+                            'title' => Yii::t('profile', 'Comment on this post')
+                        )) .
+                        ' (<span title="' . CHtml::encode(Yii::t('profile', 'View comments')) . '"
+                   id="' . $data->id . '-comment-count" class="comment-count" val="' .
+                        $commentCount . '">' . ($commentCount > 0 ? "<b>" . $commentCount . "</b>" : $commentCount) .
+                        '</span>)', '#', array('class' => 'comment-link', 'id' => $data->id . '-link'));
+                ?>
+                <?php
+                echo CHtml::link(
+                        CHtml::image(
+                                $themeUrl . '/images/icons/comment_icon.png', Yii::t('profile', 'Hide comments'), array(
+                            'class' => 'feed-comment-icon',
+                            'title' => Yii::t('profile', 'Hide comments')
+                        )), '#', array(
+                    'class' => 'comment-hide-link', 'id' => $data->id . '-hide-link',
                     'style' => 'display:none;'
-                )
-            ); ?>
-            |
-            <?php
-            $important = ($data->important == 1);
-            //echo CHtml::link(Yii::t('app','Broadcast Event'),'#',array('class'=>'important-link x2-hint','id'=>$data->id.'-important-link','style'=>($important?'display:none;':''),'title'=>Yii::t('app','Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.')));
-            echo CHtml::link(
-                CHtml::image (
-                    $themeUrl.'/images/icons/make_important_icon_gray.png', 
-                    Yii::t('profile', 'Make Important'),
-                    array (
-                        'class' => 'feed-make-important-icon',
-                    )),
-                '#',
-                array(
-                    'class' => 'important-link x2-hint', 'id' => $data->id.'-important-link',
-                    'style' => ($important ? 'display:none;' : ''), 'title' => Yii::t('app',
-                    'Designating an event as important will make it visible to any user viewing '.
-                    'your events on the activity feed--regardless of type filters.')
-                )
-            );
-            echo CHtml::link(
-                CHtml::image (
-                    $themeUrl.'/images/icons/make_important_icon.png', 
-                    Yii::t('profile', 'Make Unimportant'),
-                    array (
-                        'class' => 'feed-make-unimportant-icon',
-                        'title' => CHtml::encode (Yii::t('profile', 'Make unimportant'))
-                    )),
-                '#',
-                array(
-                    'class' => 'unimportant-link', 'id' => $data->id.'-unimportant-link',
+                        )
+                );
+                ?>
+                |
+                <?php
+                $important = ($data->important == 1);
+                //echo CHtml::link(Yii::t('app','Broadcast Event'),'#',array('class'=>'important-link x2-hint','id'=>$data->id.'-important-link','style'=>($important?'display:none;':''),'title'=>Yii::t('app','Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.')));
+                echo CHtml::link(
+                        CHtml::image(
+                                $themeUrl . '/images/icons/make_important_icon_gray.png', Yii::t('profile', 'Make Important'), array(
+                            'class' => 'feed-make-important-icon',
+                        )), '#', array(
+                    'class' => 'important-link x2-hint', 'id' => $data->id . '-important-link',
+                    'style' => ($important ? 'display:none;' : ''), 'title' => Yii::t('app', 'Designating an event as important will make it visible to any user viewing ' .
+                            'your events on the activity feed--regardless of type filters.')
+                        )
+                );
+                echo CHtml::link(
+                        CHtml::image(
+                                $themeUrl . '/images/icons/make_important_icon.png', Yii::t('profile', 'Make Unimportant'), array(
+                            'class' => 'feed-make-unimportant-icon',
+                            'title' => CHtml::encode(Yii::t('profile', 'Make unimportant'))
+                        )), '#', array(
+                    'class' => 'unimportant-link', 'id' => $data->id . '-unimportant-link',
                     'style' => ($important ? '' : 'display:none;')
-                )
-            );
-            ?>
-        
-            <?php
-            if(Yii::app()->params->isAdmin){
-                echo " | ";
-                $sticky = ($data->sticky == 1);
-                echo CHtml::link(
-                    CHtml::image (
-                        $themeUrl.'/images/icons/sticky_icon_gray.png', 
-                        Yii::t('profile', 'Make Sticky'),
-                        array (
-                            'class' => 'sticky-icon',
-                        )),
-                    '#',
-                    array(
-                        'class' => 'sticky-link x2-hint', 'id' => $data->id.'-sticky-link',
-                        'style' => ($sticky ? 'display:none;' : ''), 
-                        'title' => Yii::t('app', 'Making an event sticky will cause it to always '.
-                            'show up at the top of the feed.')
-                    )
+                        )
                 );
-                echo CHtml::link(
-                    CHtml::image (
-                        $themeUrl.'/images/icons/sticky_icon.png', 
-                        Yii::t('profile', 'Undo Sticky'),
-                        array (
-                            'class' => 'unsticky-icon',
-                            'title' => Yii::t('profile', 'Undo Sticky')
-                        )),
-                    '#',
-                    array(
-                        'class' => 'unsticky-link', 'id' => $data->id.'-unsticky-link',
+                ?>
+
+                <?php
+                if (Yii::app()->params->isAdmin) {
+                    echo " | ";
+                    $sticky = ($data->sticky == 1);
+                    echo CHtml::link(
+                            CHtml::image(
+                                    $themeUrl . '/images/icons/sticky_icon_gray.png', Yii::t('profile', 'Make Sticky'), array(
+                                'class' => 'sticky-icon',
+                            )), '#', array(
+                        'class' => 'sticky-link x2-hint', 'id' => $data->id . '-sticky-link',
+                        'style' => ($sticky ? 'display:none;' : ''),
+                        'title' => Yii::t('app', 'Making an event sticky will cause it to always ' .
+                                'show up at the top of the feed.')
+                            )
+                    );
+                    echo CHtml::link(
+                            CHtml::image(
+                                    $themeUrl . '/images/icons/sticky_icon.png', Yii::t('profile', 'Undo Sticky'), array(
+                                'class' => 'unsticky-icon',
+                                'title' => Yii::t('profile', 'Undo Sticky')
+                            )), '#', array(
+                        'class' => 'unsticky-link', 'id' => $data->id . '-unsticky-link',
                         'style' => ($sticky ? '' : 'display:none;')
-                    )
-                );
-            }
-            ?>
-            <?php
-            echo " | ";
-            if($likedPost){
-                echo CHtml::link(
-                    CHtml::image (
-                        $themeUrl.'/images/icons/like_icon.png', 
-                        Yii::t('profile', 'Like Post'),
-                        array (
-                            'class' => 'like-icon',
-                            'title' => CHtml::encode (Yii::t('app', 'Like this post')),
-                        )),
-                    '#',
-                    array(
-                        'id' => $data->id.'-like-button',
+                            )
+                    );
+                }
+                ?>
+                <?php
+                echo " | ";
+                if ($likedPost) {
+                    echo CHtml::link(
+                            CHtml::image(
+                                    $themeUrl . '/images/icons/like_icon.png', Yii::t('profile', 'Like Post'), array(
+                                'class' => 'like-icon',
+                                'title' => CHtml::encode(Yii::t('app', 'Like this post')),
+                            )), '#', array(
+                        'id' => $data->id . '-like-button',
                         'class' => 'like-button',
                         'style' => 'display:none;'
-                    )
-                );
-                echo CHtml::link(
-                    CHtml::image (
-                        $themeUrl.'/images/icons/dislike_icon.png', 
-                        Yii::t('profile', 'Unlike Post'),
-                        array (
-                            'class' => 'unlike-icon',
-                            'title' => CHtml::encode (Yii::t('app', 'Unlike this post')),
-                        )),
-                    '#',
-                    array(
-                        'id' => $data->id.'-unlike-button',
+                            )
+                    );
+                    echo CHtml::link(
+                            CHtml::image(
+                                    $themeUrl . '/images/icons/dislike_icon.png', Yii::t('profile', 'Unlike Post'), array(
+                                'class' => 'unlike-icon',
+                                'title' => CHtml::encode(Yii::t('app', 'Unlike this post')),
+                            )), '#', array(
+                        'id' => $data->id . '-unlike-button',
                         'class' => 'unlike-button'
-                    )
-                );
-            }else{
-                echo CHtml::link(
-                    CHtml::image (
-                        $themeUrl.'/images/icons/like_icon.png', 
-                        Yii::t('profile', 'Like Post'),
-                        array (
-                            'class' => 'like-icon',
-                        )),
-                    '#',
-                    array(
-                        'id' => $data->id.'-like-button',
+                            )
+                    );
+                } else {
+                    echo CHtml::link(
+                            CHtml::image(
+                                    $themeUrl . '/images/icons/like_icon.png', Yii::t('profile', 'Like Post'), array(
+                                'class' => 'like-icon',
+                            )), '#', array(
+                        'id' => $data->id . '-like-button',
                         'class' => 'like-button'
-                    )
-                );
-                echo CHtml::link(
-                    CHtml::image (
-                        $themeUrl.'/images/icons/dislike_icon.png', 
-                        Yii::t('profile', 'Unlike Post'),
-                        array (
-                            'class' => 'unlike-icon',
-                        )),
-                    '#',
-                    array(
-                        'id' => $data->id.'-unlike-button',
+                            )
+                    );
+                    echo CHtml::link(
+                            CHtml::image(
+                                    $themeUrl . '/images/icons/dislike_icon.png', Yii::t('profile', 'Unlike Post'), array(
+                                'class' => 'unlike-icon',
+                            )), '#', array(
+                        'id' => $data->id . '-unlike-button',
                         'class' => 'unlike-button', 'style' => 'display:none;'
-                    )
-                );
-            }
-            echo ' '.CHtml::link(
-                '('.$likeCount.')', '#',
-                array(
-                    'id' => $data->id.'-like-count',
+                            )
+                    );
+                }
+                echo ' ' . CHtml::link(
+                        '(' . $likeCount . ')', '#', array(
+                    'id' => $data->id . '-like-count',
                     'class' => 'like-count'
-                )
-            );
-            ?>
-            <?php
-            echo " | ";
-            echo CHtml::link(
-                CHtml::image (
-                    $themeUrl.'/images/icons/broadcast_icon.png', 
-                    Yii::t('profile', 'Broadcase Event'),
-                    array (
-                        'class' => 'broadcast-icon',
-                        'title' => CHtml::encode (Yii::t('app', 'Broadcast this post')),
-                    )),
-                '#',
-                array(
-                    'id' => $data->id.'-broadcast-button',
+                        )
+                );
+                ?>
+                <?php
+                echo " | ";
+                echo CHtml::link(
+                        CHtml::image(
+                                $themeUrl . '/images/icons/broadcast_icon.png', Yii::t('profile', 'Broadcase Event'), array(
+                            'class' => 'broadcast-icon',
+                            'title' => CHtml::encode(Yii::t('app', 'Broadcast this post')),
+                        )), '#', array(
+                    'id' => $data->id . '-broadcast-button',
                     'class' => 'broadcast-button',
-                )
-            );
-            ?>
+                        )
+                );
+                ?>
             </span>
-    </div>
+        </div>
         <?php ?>
     </div>
     <div id="<?php echo $data->id ?>-like-history-box" class="like-history-box" 
-     style="display:none;clear:both;">
+         style="display:none;clear:both;">
         <div id="<?php echo $data->id ?>-likes" ></div>
     </div>
     <div id="<?php echo $data->id ?>-comment-box" class="comment-box" 
-     style="display:none;clear:both;">
+         style="display:none;clear:both;">
         <div id="<?php echo $data->id ?>-comments" ></div>
         <?php
-        echo "<div style='margin-left:10px;margin-top:5px;'>".
-            CHtml::link(
-                CHtml::image(Yii::app()->theme->baseUrl.'/images/plus.gif')." ".
-                Yii::t('app', "Add Comment"), '#', 
-                array(
-                    'onclick' => '$(this).toggle();$("#'.$data->id.
-                        '-comment-form").show();return false;'
+        echo "<div style='margin-left:10px;margin-top:5px;'>" .
+        CHtml::link(
+                CHtml::image(Yii::app()->theme->baseUrl . '/images/plus.gif') . " " .
+                Yii::t('app', "Add Comment"), '#', array(
+            'onclick' => '$(this).toggle();$("#' . $data->id .
+            '-comment-form").show();return false;'
                 )
-            )."</div>";
-        echo "<div style='margin-left:10px;display:none;' id='".$data->id."-comment-form'>";
+        ) . "</div>";
+        echo "<div style='margin-left:10px;display:none;' id='" . $data->id . "-comment-form'>";
         echo CHtml::beginForm(
                 '', 'get', array(
-            'id' => 'addReply-'.$data->id,
+            'id' => 'addReply-' . $data->id,
                 // 'onsubmit'=>'commentSubmit('.$data->id.');return false;'
         ));
-        echo CHtml::textArea($data->id.'-comment', '', array('class' => 'comment-textbox'));
+        echo CHtml::textArea($data->id . '-comment', '', array('class' => 'comment-textbox'));
         echo CHtml::submitButton(
-            Yii::t('app', 'Submit'), array('class' => 'x2-button comment-submit'));
+                Yii::t('app', 'Submit'), array('class' => 'x2-button comment-submit'));
         echo CHtml::endForm();
 
         echo "</div>";
@@ -401,9 +379,9 @@ if($data->important && isset($data->fontColor)){
     </div>
 </div>
 <?php
-if($data->important && !empty($data->linkColor)){
-    Yii::app()->clientScript->registerScript($data->id.'-link-colors', "
-    $('#{$data->id}-feed-box a').css('color','".str_replace('%23', '#', $data->linkColor)."');
+if ($data->important && !empty($data->linkColor)) {
+    Yii::app()->clientScript->registerScript($data->id . '-link-colors', "
+    $('#{$data->id}-feed-box a').css('color','" . str_replace('%23', '#', $data->linkColor) . "');
 ");
 }
 /*

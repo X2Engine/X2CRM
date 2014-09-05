@@ -191,7 +191,7 @@ class CommonControllerBehavior extends CBehavior {
 		if (!empty($propertyId))
 			$this->owner->renderPartial('application.components.views.gaTrackingScript', array('propertyId' => $propertyId));
 	}
-    
+
 
 }
 

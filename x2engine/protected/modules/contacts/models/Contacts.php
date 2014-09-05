@@ -81,6 +81,9 @@ class Contacts extends X2Model {
                 'defaults'=>array(),
                 'defaultStickOnClear'=>false
             ),
+            'X2AddressBehavior' => array(
+                'class'=>'application.components.X2AddressBehavior',
+            ),
         ));
     }
 
@@ -140,10 +143,6 @@ class Contacts extends X2Model {
             $this->trackingKey = self::getNewTrackingKey();
         }
 
-        // invalidate cached timezone
-        if (isset($this->timezone))
-            $this->timezone = null;
-
         return parent::beforeSave();
     }
 
@@ -198,29 +197,6 @@ class Contacts extends X2Model {
 
 
         parent::afterUpdate();
-    }
-
-    /**
-     * Returns full human-readable address, using all available address fields
-     */
-    public function getCityAddress() {
-        $address = '';
-        if(!empty($this->address)){
-            $address.=$this->address." ";
-        }
-        if(!empty($this->city))
-            $address .= $this->city . ', ';
-
-        if(!empty($this->state))
-            $address .= $this->state . ' ';
-
-        if(!empty($this->zipcode))
-            $address .= $this->zipcode . ' ';
-
-        if(!empty($this->country))
-            $address .= $this->country;
-
-        return $address;
     }
 
     public static function getNames() {
@@ -295,40 +271,11 @@ class Contacts extends X2Model {
         return $mailingList;
     }
 
-	public function searchAll($pageSize=null, $uniqueId=null) {
-		$criteria = new CDbCriteria;
-		if(isset($_GET['tagField']) && !empty($_GET['tagField'])) {	// process the tags filter
-            
-            //remove any spaces around commas, then explode to array
-            $tags = explode(',',preg_replace('/\s?,\s?/',',',trim($_GET['tagField'])));    
-            $inQuery = array ();
-            $params = array ();
-            for($i=0; $i<count($tags); $i++) {
-                if(empty($tags[$i])) {
-                    unset($tags[$i]);
-                    $i--;
-                    continue;
-                } else {
-                    if($tags[$i][0] != '#') {
-                        $tags[$i] = '#'.$tags[$i];
-                    }
-                    $inQuery[] = 'b.tag = :'.$i;
-                    $params[':'.$i] = $tags[$i];
-                    //$tags[$i] = 'b.tag = "'.$tags[$i].'"';
-                }
-            }
-            // die($str);
-            //$tagConditions = implode(' OR ',$tags);
-            $tagConditions = implode(' OR ',$inQuery);
-
-            $criteria->distinct = true;
-            $criteria->join .= ' RIGHT JOIN x2_tags b ON (b.itemId=t.id AND b.type="Contacts" '.
-                'AND ('.$tagConditions.'))';
-            $criteria->condition='t.id IS NOT NULL';
-            $criteria->order='b.timestamp DESC';
-            $criteria->params = $params;
-        }
-        return $this->searchBase($criteria, $pageSize, $uniqueId);
+    /**
+     * An alias for search ()
+     */
+	public function searchAll($pageSize=null) {
+        return $this->search ($pageSize);
     }
 
     public function searchMyContacts() {
@@ -369,10 +316,41 @@ class Contacts extends X2Model {
         return $this->searchBase($criteria);
     }
 
-
-    public function search() {
+    /**
+     * Adds tag filtering to search base 
+     */
+    public function search($pageSize=null) {
         $criteria = new CDbCriteria;
-        return $this->searchBase($criteria);
+		if(isset($_GET['tagField']) && !empty($_GET['tagField'])) {	// process the tags filter
+            
+            //remove any spaces around commas, then explode to array
+            $tags = explode(',',preg_replace('/\s?,\s?/',',',trim($_GET['tagField'])));    
+            $inQuery = array ();
+            $params = array ();
+            for($i=0; $i<count($tags); $i++) {
+                if(empty($tags[$i])) {
+                    unset($tags[$i]);
+                    $i--;
+                    continue;
+                } else {
+                    if($tags[$i][0] != '#') {
+                        $tags[$i] = '#'.$tags[$i];
+                    }
+                    $inQuery[] = 'b.tag LIKE BINARY :'.$i;
+                    $params[':'.$i] = $tags[$i];
+                    //$tags[$i] = 'b.tag = "'.$tags[$i].'"';
+                }
+            }
+            // die($str);
+            //$tagConditions = implode(' OR ',$tags);
+            $tagConditions = implode(' OR ',$inQuery);
+
+            $criteria->distinct = true;
+            $criteria->join .= ' JOIN x2_tags b ON (b.itemId=t.id AND b.type="Contacts" '.
+                'AND ('.$tagConditions.'))';
+            $criteria->params = $params;
+        }
+        return $this->searchBase($criteria, $pageSize);
     }
 
     public function searchAdmin() {
@@ -397,10 +375,9 @@ class Contacts extends X2Model {
         if(isset($list)) {
             $search = $list->queryCriteria();
 
-
             $this->compareAttributes($search);
 
-            return new SmartDataProvider('Contacts',array(
+            return new SmartActiveDataProvider('Contacts',array(
                 'criteria'=>$search,
                 'sort'=>array(
                     'defaultOrder'=>'t.lastUpdated DESC'    // true = ASC

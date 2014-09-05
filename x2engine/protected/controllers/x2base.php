@@ -290,7 +290,9 @@ abstract class x2base extends X2Controller {
 		$currentWorkflow = Yii::app()->db->createCommand()
 			->select('workflowId,completeDate,createDate')
 			->from('x2_actions')
-			->where('type="workflow" AND associationType=:type AND associationId=:id',array(':type'=>$type,':id'=>$id))
+			->where(
+                'type="workflow" AND associationType=:type AND associationId=:id',
+                array(':type'=>$type,':id'=>$id))
 			->order('IF(completeDate = 0 OR completeDate IS NULL,1,0) DESC, createDate DESC')
 			->limit(1)
 			->queryRow(false);
@@ -958,44 +960,6 @@ abstract class x2base extends X2Controller {
 		return $changes;
 	} */
 
-    public function partialDateRange($input) {
-        $datePatterns = array(
-            array('/^(0-9)$/', '000-01-01', '999-12-31'),
-            array('/^([0-9]{2})$/', '00-01-01', '99-12-31'),
-            array('/^([0-9]{3})$/', '0-01-01', '9-12-31'),
-            array('/^([0-9]{4})$/', '-01-01', '-12-31'),
-            array('/^([0-9]{4})-$/', '01-01', '12-31'),
-            array('/^([0-9]{4})-([0-1])$/', '0-01', '9-31'),
-            array('/^([0-9]{4})-([0-1][0-9])$/', '-01', '-31'),
-            array('/^([0-9]{4})-([0-1][0-9])-$/', '01', '31'),
-            array('/^([0-9]{4})-([0-1][0-9])-([0-3])$/', '0', '9'),
-            array('/^([0-9]{4})-([0-1][0-9])-([0-3][0-9])$/', '', ''),
-        );
-
-        $inputLength = strlen($input);
-
-        $minDateParts = array();
-        $maxDateParts = array();
-
-        if ($inputLength > 0 && preg_match($datePatterns[$inputLength - 1][0], $input)) {
-
-            $minDateParts = explode('-', $input . $datePatterns[$inputLength - 1][1]);
-            $maxDateParts = explode('-', $input . $datePatterns[$inputLength - 1][2]);
-
-            $minDateParts[1] = max(1, min(12, $minDateParts[1]));
-            $minDateParts[2] = max(1, min(cal_days_in_month(CAL_GREGORIAN, $minDateParts[1], $minDateParts[0]), $minDateParts[2]));
-
-            $maxDateParts[1] = max(1, min(12, $maxDateParts[1]));
-            $maxDateParts[2] = max(1, min(cal_days_in_month(CAL_GREGORIAN, $maxDateParts[1], $maxDateParts[0]), $maxDateParts[2]));
-
-            $minTimestamp = mktime(0, 0, 0, $minDateParts[1], $minDateParts[2], $minDateParts[0]);
-            $maxTimestamp = mktime(23, 59, 59, $maxDateParts[1], $maxDateParts[2], $maxDateParts[0]);
-
-            return array($minTimestamp, $maxTimestamp);
-        } else
-            return false;
-    }
-
     public function decodeQuotes($str) {
         return preg_replace('/&quot;/u', '"', $str);
     }
@@ -1356,5 +1320,33 @@ abstract class x2base extends X2Controller {
     /*public function getModuleModel () {
         return Modules::model()->findByAttributes (array ('name' => ucfirst ($this->modelClass)));
     }*/
+
+    /**
+     * Overridden to add $run param
+     * 
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+     */
+    public function widget($className,$properties=array(),$captureOutput=false,$run=true)
+    {
+        if($captureOutput)
+        {
+            ob_start();
+            ob_implicit_flush(false);
+            $widget=$this->createWidget($className,$properties);
+            /* x2modstart */ 
+            if ($run) $widget->run();
+            /* x2modend */ 
+            return ob_get_clean();
+        }
+        else
+        {
+            $widget=$this->createWidget($className,$properties);
+            /* x2modstart */ 
+            if ($run) $widget->run();
+            /* x2modend */ 
+            return $widget;
+        }
+    }
 
 }

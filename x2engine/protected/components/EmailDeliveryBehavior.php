@@ -428,6 +428,27 @@ class EmailDeliveryBehavior extends CBehavior {
         $this->_userProfile = $profile;
     }
 
+    public function testUserCredentials($email, $password, $server, $port, $security) {
+        require_once(realpath(Yii::app()->basePath.'/components/phpMailer/class.phpmailer.php'));
+        require_once(realpath(Yii::app()->basePath.'/components/phpMailer/class.smtp.php'));
+        $phpMail = new PHPMailer(true);
+
+        $phpMail->isSMTP();
+        $phpMail->SMTPAuth = true;
+        $phpMail->Username = $email;
+        $phpMail->Password = $password;
+        $phpMail->Host = $server;
+        $phpMail->Port = $port;
+        $phpMail->SMTPSecure = $security;
+
+        try {
+            $validCredentials = $phpMail->SmtpConnect();
+        } catch(phpmailerException $error) {
+            $validCredentials = false;
+        }
+        return $validCredentials;
+    }
+
 }
 
 ?>

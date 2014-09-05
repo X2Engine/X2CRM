@@ -290,10 +290,10 @@ class AuxLib {
      */
     public static function printStackTrace ($limit=null) {
         if ($limit !== null) {
-            AuxLib::debugLogR (
+            /**/AuxLib::debugLogR (
                 array_slice (debug_backtrace (DEBUG_BACKTRACE_IGNORE_ARGS), 0, $limit));
         } else {
-            AuxLib::debugLogR (debug_backtrace (DEBUG_BACKTRACE_IGNORE_ARGS));
+            /**/AuxLib::debugLogR (debug_backtrace (DEBUG_BACKTRACE_IGNORE_ARGS));
         }
     }
 
@@ -309,5 +309,19 @@ class AuxLib {
         return $dropdownData;
     }
 
+    public static function println ($message) {
+        /**/print ($message."\n");
+    }
+
+    public static function issetIsArray ($param) {
+        return (isset ($param) && is_array ($param));
+    }
+
+    public static function captureOutput ($fn) {
+        ob_start();
+        ob_implicit_flush(false);
+        $fn ();
+        return ob_get_clean();
+    }
 
 }

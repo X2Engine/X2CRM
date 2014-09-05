@@ -41,6 +41,36 @@
  */
 class X2Color {
 
+    /**
+     * Converts HEX color to YIQ color 
+     */
+    public static function rgb2yiq ($color) {
+        // RGB -> YIQ transformation matrix
+        $matrixA = array (
+            array (0.299, 0.587, 0.144),
+            array (0.595716, -0.274453, -0.321263),
+            array (0.211456, -0.522591, 0.31135),
+        );
+        $product = array ();
+        $matrixB = $color;
+        foreach ($matrixA as $row) {
+            $product[] = $row[0] * $matrixB[0] + $row[1] * $matrixB[1] + $row[2] * $matrixB[2]; 
+        }
+        return $product;
+    }
+
+    /**
+     * @return int
+     */
+    public static function getColorBrightness ($hexColor) {
+        $rgb = self::hex2rgb ($hexColor);
+        if (!is_array ($rgb)) {
+            return false;
+        }
+        $yiq = self::rgb2yiq ($rgb);
+        return $yiq;
+    }
+
 	// convert HEX color to RGB values
 	public static function hex2rgb($color) {
 		if($color[0] == '#')

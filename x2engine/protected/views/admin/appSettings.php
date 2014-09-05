@@ -49,6 +49,9 @@ $('#timeout').change(function() {
 $('#batchTimeout').change(function(){
     $('#batchTimeoutSlider').slider('value',$(this).val());
 });
+$('#massActionsBatchSize').change(function(){
+    $('#massActionsBatchSizeSlider').slider('value',$(this).val());
+});
 
 $('#currency').change(function() {
 	if($('#currency').val() == 'other')
@@ -158,6 +161,34 @@ $('#currency').change(function() {
         ));
         echo $form->textField($model,'batchTimeout',array('style'=>'width:50px;','id'=>'batchTimeout'));
         echo '<p>'.Yii::t('admin','When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.').'</p>';
+        ?>
+    </div>
+    <div class="form">
+        <?php
+        echo $form->labelEx($model,'massActionsBatchSize');
+        $this->widget('zii.widgets.jui.CJuiSlider', array(
+            'value' => $model->massActionsBatchSize,
+            // additional javascript options for the slider plugin
+            'options' => array(
+                'min' => 5,
+                'max' => 100,
+                'step' => 5,
+                'change' => "js:function(event,ui) {
+					$('#massActionsBatchSize').val(ui.value);
+					$('#save-button').addClass('highlight');
+				}",
+                'slide' => "js:function(event,ui) {
+					$('#massActionsBatchSize').val(ui.value);
+				}",
+            ),
+            'htmlOptions' => array(
+                'style' => 'margin:10px 0;',
+                'id' => 'massActionsBatchSizeSlider',
+                'style' => 'margin:10px 0;',
+                'class'=>'x2-wide-slider',
+            ),
+        ));
+        echo $form->textField($model,'massActionsBatchSize',array('style'=>'width:50px;','id'=>'massActionsBatchSize'));
         ?>
     </div>
     <div class="form">

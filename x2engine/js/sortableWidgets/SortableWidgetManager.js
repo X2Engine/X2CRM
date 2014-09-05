@@ -49,7 +49,8 @@ function SortableWidgetManager (argsDict) {
         showWidgetContentsUrl: '', // the url used to call the get widget contents action
         cssSelectorPrefix: '', // used to prefix id and class attributes of html elements
         widgetType: '', // (profileWidgetLayout)
-        DEBUG: x2.DEBUG && false
+        DEBUG: x2.DEBUG && false,
+        translations: []
     };
 
     auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -71,18 +72,39 @@ SortableWidgetManager.prototype.rebindEventFns = function () {
     this._setUpSortability ();
 };
 
+SortableWidgetManager.prototype.getWidgetClass = function (widgetSelector) {
+    return $(widgetSelector).attr ('id').replace (/-widget-container-(\w+)?$/, '');
+};
+
+SortableWidgetManager.prototype.getWidgetKey = function (widgetSelector) {
+    var uid = this.getWidgetUID (widgetSelector);
+    if (uid !== '') {
+        return this.getWidgetClass (widgetSelector) + '_' + uid;
+    } else {
+        return this.getWidgetClass (widgetSelector);
+    }
+};
+
+SortableWidgetManager.prototype.getWidgetUID = function (widgetSelector) {
+    return $(widgetSelector).attr ('id').replace (/^[^-]+-widget-container-/, '');
+};
+
+SortableWidgetManager.prototype.getWidgetContainerSelector = function () {
+    return this._widgetContainerSelector;
+};
+
 /**
  * Add an entry corresponding to the specified widget to the hidden widgets menu
  * @param object widgetSelector a jQuery selector for the widget container
  */
 SortableWidgetManager.prototype.addWidgetToHiddenWidgetsMenu = function (widgetSelector) {
-    var widgetClass = $(widgetSelector).attr ('id').replace (/-widget-container$/, '');
+    var widgetClass = this.getWidgetClass (widgetSelector);
     var widgetLabel = $(widgetSelector).find (this._widgetTitleSelector).text ();
 
     $(this._hiddenWidgetsMenuSelector).append (
         $('<li>').append (
             $('<span>', {
-                'id': widgetClass + '-hidden-widgets-menu-item',
+                'id': this.getWidgetKey (widgetSelector),
                 'class': 'x2-hidden-widgets-menu-item ' + this.cssSelectorPrefix + '-widget',
                 text: widgetLabel
             })
@@ -107,10 +129,11 @@ Private instance methods
  * @return array widgetOrder An array of strings where each string corresponds to a widget class
  */
 SortableWidgetManager.prototype._getWidgetOrder = function () {
+    var that = this;
     var widgetOrder = [];
     var widgetClass;
     $(this._widgetsBoxSelector).children (this._widgetContainerSelector).each (function () {
-        widgetClass = $(this).attr ('id').replace (/-widget-container/, ''); 
+        widgetClass = that.getWidgetClass (this);
         widgetOrder.push (widgetClass);
     });
     return widgetOrder;
@@ -148,10 +171,22 @@ SortableWidgetManager.prototype._afterShowWidgetContents = function () {};
 SortableWidgetManager.prototype._afterCloseWidget = function () {};
 
 /**
+ * @param string widgetClass
+ * @return object GET parameters to pass with request to the show widget contents URL
+ */
+SortableWidgetManager.prototype._getShowWidgetContentsData = function (widgetClass) {
+    var that = this;
+    return {
+        widgetClass: widgetClass, 
+        widgetType: that.widgetType
+    };
+};
+
+/**
  * Request widget HTML and display it 
  * @param string widgetClass The name of the widget class
  */
-SortableWidgetManager.prototype._showWidgetContents = function (widgetClass) {
+SortableWidgetManager.prototype._showWidgetContents = function (widgetKey) {
     var that = this;
     that.DEBUG && console.log ('SortableWidgetManager: _showWidgetContents');
     var url = this.showWidgetContentsUrl;
@@ -161,12 +196,14 @@ SortableWidgetManager.prototype._showWidgetContents = function (widgetClass) {
        url += '?'; 
     }
     $.ajax ({
-        url: url + 'widgetClass=' + widgetClass + '&widgetType=' + 
-            that.widgetType,
+        url: url,
         type: "GET",
+        data: that._getShowWidgetContentsData (widgetKey),
+        dataType: 'json',
         success: function (data) {
             if (data !== 'failure') {
-                $('#' + widgetClass + '-widget-container').replaceWith (data);
+                $('#' + widgetKey.replace (/_.*$/, '') + '-widget-container-' + data.uid).
+                    replaceWith (data.widget);
                 hideShowHiddenWidgetSubmenuDividers ();
                 that._afterShowWidgetContents ();
             }
@@ -187,10 +224,10 @@ SortableWidgetManager.prototype._setUpHiddenWidgetsMenuBehavior = function () {
     $(this._hiddenWidgetsMenuSelector).find ('li').bind (
         'click.showSortableWidget', function () {
 
-        var widgetClass = $(this).find (that._hiddenWidgetsMenuItemSelector).
-            attr ('id').replace (/-hidden-widgets-menu-item/, '');
+        var widgetKey = $(this).find (that._hiddenWidgetsMenuItemSelector).
+            attr ('id');
         $(this).remove ();
-        that._showWidgetContents (widgetClass);
+        that._showWidgetContents (widgetKey);
     });
 };
 

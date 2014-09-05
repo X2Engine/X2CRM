@@ -70,6 +70,24 @@ abstract class X2Model extends CActiveRecord {
      */
     public $supportsRelationships = true;
 
+    /**
+     * @var (optional) string Used in the search scenario to uniquely identify this model. Allows 
+     *  filters to be saved separately for each grid view.
+     */
+    public $uid = null;
+
+    /**
+     * @var bool If true, grid views displaying models of this type will have their filter and
+     *  sort settings saved in the database instead of in the session
+     */
+    public $dbPersistentGridSettings = false;
+
+    /**
+     * @var bool $disablePersistentGridSettings If true, grid settings will not be saved to or 
+     *  retrieved from the session/db
+     */
+    public $disablePersistentGridSettings = false; 
+
     protected $_oldAttributes = array();
 
     /**
@@ -182,6 +200,8 @@ abstract class X2Model extends CActiveRecord {
     // cache for models loaded for link field attributes (used by automation system)
     protected static $_linkedModels; 
 
+    protected $_runAfterCreate;   // run afterCreate before afterSave, but only for new records
+
     private static $_modelNames;
 
     /**
@@ -201,7 +221,6 @@ abstract class X2Model extends CActiveRecord {
         'X2List' => 'list item',
     );
 
-    protected $_runAfterCreate;   // run afterCreate before afterSave, but only for new records
     private $_relatedX2Models;   // Relationship models stored in here
 
     /**
@@ -210,7 +229,13 @@ abstract class X2Model extends CActiveRecord {
      * Calls {@link queryFields()} before CActiveRecord::__constructo() is
      * called, and populates the model with default values, if any.
      */
-    public function __construct($scenario = 'insert'){
+    public function __construct(
+        $scenario = 'insert', $uid = null, $dbPersistentGridSettings = false,
+        $disablePersistentGridSettings = false){
+
+        $this->uid = $uid;
+        $this->dbPersistentGridSettings = $dbPersistentGridSettings;
+        $this->disablePersistentGridSettings = $disablePersistentGridSettings;
         $this->queryFields();
         parent::__construct($scenario);
         if($this->getIsNewRecord() && $scenario == 'insert') {
@@ -258,7 +283,7 @@ abstract class X2Model extends CActiveRecord {
                     $recordName .= 's';
                 }
             }
-            return self::$recordNames[$type];
+            return $recordName;
         } else {
             return $type;
         }
@@ -277,10 +302,10 @@ abstract class X2Model extends CActiveRecord {
         }
     }
 
-    public static function getModelName($typeOrModuleName){
+    public static function getModelName($typeOrModuleName, $strict=false){
         if(array_key_exists(strtolower($typeOrModuleName), X2Model::$associationModels)){
             return X2Model::$associationModels[strtolower($typeOrModuleName)];
-        }else{
+        }else if (!$strict) {
             if(class_exists(ucfirst($typeOrModuleName))){
                 return ucfirst($typeOrModuleName);
             }elseif(class_exists($typeOrModuleName)){
@@ -288,7 +313,7 @@ abstract class X2Model extends CActiveRecord {
             }else{
                 return false;
             }
-        }
+        } 
     }
 
     /**
@@ -1280,16 +1305,19 @@ abstract class X2Model extends CActiveRecord {
                     return $render($this->$fieldName);
                 }else{
                     return Yii::app()->controller->widget('CStarRating', array(
-                                'model' => $this,
-                                'name' => str_replace(' ', '-', get_class($this).'-'.$this->id.'-rating-'.$field->fieldName),
-                                'attribute' => $field->fieldName,
-                                'readOnly' => true,
-                                'allowEmpty' => !$field->required, // If not required, render the "cancel" button to clear the rating
-                                'minRating' => 1, //minimal valuez
-                                'maxRating' => 5, //max value
-                                'starCount' => 5, //number of stars
-                                'cssFile' => Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css',
-                                    ), true);
+                        'model' => $this,
+                        'name' => str_replace(
+                            ' ', '-', get_class($this).'-'.$this->id.'-rating-'.$field->fieldName),
+                        'attribute' => $field->fieldName,
+                        'readOnly' => true,
+                        // If not required, render the "cancel" button to clear the rating
+                        'allowEmpty' => !$field->required, 
+                        'minRating' => 1, //minimal valuez
+                        'maxRating' => 5, //max value
+                        'starCount' => 5, //number of stars
+                        'cssFile' => Yii::app()->theme->getBaseUrl().
+                            '/css/rating/jquery.rating.css',
+                    ), true);
                 }
 
             case 'assignment':
@@ -1405,13 +1433,10 @@ abstract class X2Model extends CActiveRecord {
                 return $textOnly ? $render($this->$fieldName) : CHtml::checkbox('', $this->$fieldName, array('onclick' => 'return false;', 'onkeydown' => 'return false;'));
 
             case 'currency':
-                if($this instanceof Product) { // products have their own currency
-                    return Formatter::formatCurrency ($this->$fieldName, $this->currency);
-                } else {
-                    return empty($this->$fieldName) ? 
-                        "&nbsp;" : 
-                        Formatter::formatCurrency ($this->$fieldName);
-                }
+                if($this instanceof Product) // products have their own currency
+                    return Yii::app()->locale->numberFormatter->formatCurrency($this->$fieldName, $this->currency);
+                else
+                    return empty($this->$fieldName) ? "&nbsp;" : Yii::app()->locale->numberFormatter->formatCurrency($this->$fieldName, Yii::app()->params['currency']);
 
             case 'percentage':
                 return $this->$fieldName !== null && $this->$fieldName !== '' ? (string) ($render($this->$fieldName))."%" : null;
@@ -1447,6 +1472,27 @@ abstract class X2Model extends CActiveRecord {
             case 'int':
                 if($fieldName != 'id')
                     return Yii::app()->locale->numberFormatter->formatDecimal ($this->$fieldName);
+            case 'custom':
+                if($field->linkType == 'display') {
+                    // Interpret as HTML. Restore curly braces in href
+                    // attributes that HTMLPurifier has replaced:
+                    $fieldText = preg_replace(
+                        '/%7B([\w\.]+)%7D/',
+                        '{$1}',
+                        $field->data);
+                    return Formatter::replaceVariables($fieldText,$this,'',false);
+                } elseif($field->linkType == 'formula') {
+                    $evald = Formatter::parseFormula($field->data,array(
+                        'model' => $this
+                    ));
+                    if($evald[0]) {
+                        return $render($evald[1]);
+                    } else {
+                        return Yii::t('app','Error parsing formula.').' '.$evald[1];
+                    }
+                } else {
+                    return $render($this->$fieldName);
+                }
             default:
                 return $render($this->$fieldName);
         }
@@ -1471,7 +1517,7 @@ abstract class X2Model extends CActiveRecord {
             $fmtNumber = "(".substr($number, 0, 3).") ".substr($number, 3, 3)."-".substr($number, 6, 4);
         }elseif($default != null){
             $number = (string) $default;
-            $fmtNumber = $encode?CHtml::encode($default):$default;
+            $fmtNumber = $default;
         }else{
             $record = X2Model::model($class)->findByPk($id);
             if(isset($record) && $record->hasAttribute($field)) {
@@ -1479,9 +1525,14 @@ abstract class X2Model extends CActiveRecord {
                 $fmtNumber = $number;
             }
         }
+        if ($encode) {
+            $fmtNumber = CHtml::encode($fmtNumber);
+        }
         if (isset ($fmtNumber) && $makeLink && !Yii::app()->params->profile->disablePhoneLinks) {
             $fmtNumber = $encode ? CHtml::encode ($fmtNumber) : $fmtNumber;
-            return '<a href="tel:+1'.$number.'">'.$fmtNumber.'</a>';
+            if (!preg_match('/^\+\d/', $number))
+                $number = "+1".$number;
+            return '<a href="tel:'.$number.'">'.$fmtNumber.'</a>';
         }
         return isset($fmtNumber)? $fmtNumber : '';
     }
@@ -1885,6 +1936,14 @@ abstract class X2Model extends CActiveRecord {
                 $data[$fieldName] = null;
             }
 
+            if ($field->type === 'currency') {
+		        $defaultCurrency = Yii::app()->settings->currency;
+		        $curSym = Yii::app()->locale->getCurrencySymbol($defaultCurrency);
+                if (is_null($curSym))
+                    $curSym = $defaultCurrency;
+                $data[$fieldName] = Fields::strToNumeric($data[$fieldName], 'currency', $curSym);
+            }
+
             if($field->type === 'link'){
                 // Do a preliminary lookup for linkId in case there are
                 // duplicates (similar name) and the user selects one of them,
@@ -1933,25 +1992,27 @@ abstract class X2Model extends CActiveRecord {
     }
 
     /**
-     * Base search function, includes Retrieves a list of models based on the current search/filter conditions.
+     * Base search function, includes Retrieves a list of models based on the current 
+     *  search/filter conditions.
      * @param CDbCriteria $criteria the attribute name
      * @param integer $pageSize If set, will override property of profile model
-     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     * @return CActiveDataProvider the data provider that can return the models based on the 
+     *  search/filter conditions.
      */
-    public function searchBase($criteria, $pageSize=null, $uniqueId=null){
+    public function searchBase($criteria, $pageSize=null){
         if($criteria === null)
             $criteria = $this->getAccessCriteria();
         else
             $criteria->mergeWith($this->getAccessCriteria());
         $this->compareAttributes($criteria);
         $criteria->with = array(); // No joins necessary!
-        $sort = new SmartSort (get_class($this));
+        $sort = new SmartSort (
+            get_class($this), isset ($this->uid) ? $this->uid : get_class ($this));
         $sort->multiSort = false;
         $sort->attributes = $this->getSort();
         $sort->defaultOrder = 't.lastUpdated DESC, t.id DESC';
-        $sort->sortVar = get_class($this)."_sort";
 
-        if (!$pageSize) {
+        if ($pageSize === null) {
             if (!Yii::app()->user->isGuest) {
                 $pageSize = Profile::getResultsPerPage();
             } else {
@@ -1960,12 +2021,15 @@ abstract class X2Model extends CActiveRecord {
         }
 
         $dataProvider = new SmartActiveDataProvider(get_class($this), array(
-                    'sort' => $sort,
-                    'pagination' => array(
-                        'pageSize' => $pageSize,
-                    ),
-                    'criteria' => $criteria,
-                ), $uniqueId);
+            'sort' => $sort,
+            'pagination' => array(
+                'pageSize' => $pageSize,
+            ),
+            'criteria' => $criteria,
+            'uid' => $this->uid,
+            'dbPersistentGridSettings' => $this->dbPersistentGridSettings,
+            'disablePersistentGridSettings' => $this->disablePersistentGridSettings,
+        ));
         $sort->applyOrder($criteria);
         return $dataProvider;
     }
@@ -2024,13 +2088,16 @@ abstract class X2Model extends CActiveRecord {
             case 'date':
             case 'dateTime':
                 if (!empty($this->$fieldName)) {
-
-                    // grap operator and convert date string to timestamp
+                    // get operator and convert date string to timestamp
                     $retArr = $this->unshiftOperator ($this->$fieldName);
                     $operator = $retArr[0];
-                    $timestamp = strtotime ($retArr[1]);
-
-                    if ($operator === '=' || $operator === '') { 
+                    $timestamp = Formatter::parseDate ($retArr[1]);
+                    if (!$timestamp) { 
+                        // if date string couldn't be parsed, it's better to display no results
+                        // than non-empty incorrect results (which could result in bad mass updates
+                        // or deletes)
+                        $criteria->addCondition ('FALSE');
+                    } else if ($operator === '=' || $operator === '') { 
                         $criteria->addBetweenCondition(
                             't.'.$fieldName, $timestamp,
                             $timestamp + 60 * 60 * 24);
@@ -2468,13 +2535,23 @@ abstract class X2Model extends CActiveRecord {
 
     /**
      * Retrieves model of a specified type with a specified id 
+     * @param bool $isAssocType If true, $type will be treated as an association type. Otherwise,
+     *  $type will be treated as a model class name.
      * @return mixed object or null
      */
-    public static function getModelOfTypeWithId ($type, $id) {
-        if(!(empty($type) || empty($id)) && 
-           X2Model::getModelName($type)){ // both ID and type must be set
+    public static function getModelOfTypeWithId ($type, $id, $isAssocType=false) {
+        if ($isAssocType) {
+            if(!(empty($type) || empty($id)) && 
+               X2Model::getModelName($type)){ // both ID and type must be set
 
-            return X2Model::model(X2Model::getModelName($type))->findByPk($id);
+                return X2Model::model(X2Model::getModelName($type))->findByPk($id);
+            }
+        } else {
+            if(!(empty($type) || empty($id)) && 
+                is_subclass_of ($type, 'X2Model')) { // both ID and type must be set
+
+                return X2Model::model($type)->findByPk($id);
+            }
         }
         return null; // invalid type or invalid id 
     }
@@ -2686,4 +2763,64 @@ abstract class X2Model extends CActiveRecord {
         return $tokens;
     }
 
+	/**
+	 * Finds all active records satisfying the specified condition.
+	 * See {@link find()} for detailed explanation about $condition and $params.
+	 * @param mixed $condition query condition or criteria.
+	 * @param array $params parameters to be bound to an SQL statement.
+     * @param bool $getCommand If true, command is returned instead of populating records
+	 * @return CActiveRecord[] list of active records satisfying the specified condition. An 
+     *  empty array is returned if none is found.
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+	 */
+	public function findAll($condition='',$params=array()/* x2modstart */,
+        $getCommand=false/* x2modend */)
+	{
+		Yii::trace(get_class($this).'.findAll()','system.db.ar.CActiveRecord');
+		$criteria=$this->getCommandBuilder()->createCriteria($condition,$params);
+		return $this->query($criteria,true/* x2modstart */,$getCommand/* x2modend */);
+	}
+
+	/**
+	 * Performs the actual DB query and populates the AR objects with the query result.
+	 * This method is mainly internally used by other AR query methods.
+	 * @param CDbCriteria $criteria the query criteria
+	 * @param boolean $all whether to return all data
+     * @param bool $getCommand If true, command is returned instead of populating records
+	 * @return mixed the AR objects populated with the query result
+	 * @since 1.1.7
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+	 */
+	protected function query($criteria,$all=false/* x2modstart */, $getCommand=false/* x2modend */)
+	{
+		$this->beforeFind();
+		$this->applyScopes($criteria);
+
+		if(empty($criteria->with))
+		{
+			if(!$all)
+				$criteria->limit=1;
+			$command=$this->getCommandBuilder()
+                ->createFindCommand($this->getTableSchema(),$criteria,$this->getTableAlias());
+            /* x2modstart */ 
+            if ($getCommand) return $command;
+            /* x2modend */ 
+			return $all ? $this->populateRecords($command->queryAll(), true, $criteria->index) : 
+                $this->populateRecord($command->queryRow());
+		}
+		else
+		{
+            /* x2modstart */ 
+            if ($getCommand) {
+                return null;
+            }
+            /* x2modend */ 
+			$finder=$this->getActiveFinder($criteria->with);
+			return $finder->query($criteria,$all);
+		}
+	}
 }

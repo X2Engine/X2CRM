@@ -1,5 +1,4 @@
 <?php
-
 /**
  * ERememberFiltersBehavior class.
  * The ERememberFiltersBehavior extension adds up some functionality to the default
@@ -70,12 +69,18 @@
  */
 class ERememberFiltersBehavior extends CActiveRecordBehavior {
 
+    /* x2modstart */ 
 	/**
-	 * Array that holds any default filter value like array('active'=>'1')
-	 *
+     * Feature disabled for simplicity's sake. Property kept around to support legacy code.
 	 * @var array
 	 */
 	public $defaults = array();
+    /* x2modend */ 
+
+    /**
+     * @var $disablePersistentGridSettings
+     */
+    private $_disablePersistentGridSettings; 
 
 	/**
 	 * When this flag is true, the default values will be used also when the user clears the filters
@@ -84,97 +89,55 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 	 */
 	public $defaultStickOnClear = false;
 
-	/**
-	 * Holds a custom stateId key 
-	 *
-	 * @var string
-	 */
-	private $_rememberScenario = null;
+    public function attach($owner) {
+        parent::attach ($owner);
+        $this->_disablePersistentGridSettings = 
+            isset ($this->owner->disablePersistentGridSettings) ? 
+            $this->owner->disablePersistentGridSettings : false;
+        $this->attachBehaviors (array (
+            'settingsBehavior' => array ('class' => 
+                (!isset ($this->owner->dbPersistentGridSettings) || 
+                 $this->owner->dbPersistentGridSettings ? 
+                    'GridViewDbSettingsBehavior' :
+                    'GridViewSessionSettingsBehavior'),
+                'uid' => property_exists ($this->owner, 'uid') ? $this->owner->uid : null,
+                'modelClass' => get_class ($this->owner),
+            )
+        ));
+    }
 
-	private function getStatePrefix() {
-		$modelName = get_class($this->owner);
-		if($this->_rememberScenario != null) {
-			return $modelName . $this->_rememberScenario;
-		} else {
-			return $modelName;
-		}
-	}
+    /**
+     * @return array filters set for this model 
+     */
+    public function getGridFilters () {
+        if (!$this->_disablePersistentGridSettings) return $this->getSetting ('filters');
+    }
 
-	public function setRememberScenario($value) {
-		$this->_rememberScenario = $value;
-		$this->doReadSave();
-		//if block added by John M, do this instead of calling EBUttonColumnWithClearFilters::clearFilters
-		if(intval(Yii::app()->request->getParam('clearFilters')) == 1) {
-			$this->unsetFilters();
-			if(isset($_GET['id']))
-				Yii::app()->controller->redirect(array(Yii::app()->controller->action->ID, 'id' => Yii::app()->request->getParam('id')));
-			else
-				Yii::app()->controller->redirect(array(Yii::app()->controller->action->ID));
-		}
-		return $this->owner;
-	}
+    /**
+     * Saves grid filters to session/db 
+     * @param array $filters attr values indexed by attr name
+     */
+    public function setGridFilters ($filters) {
+        if (!$this->_disablePersistentGridSettings) $this->saveSetting ('filters', $filters);
+    }
 
-	public function getRememberScenario() {
-		return $this->_rememberScenario;
-	}
-
-	private function readSearchValues() {
-		$modelName = get_class($this->owner);
-		$attributes = $this->owner->getSafeAttributeNames();
-
-		// set any default value
-		if(is_array($this->defaults) && (null == Yii::app()->user->getState($modelName . __CLASS__ . 'defaultsSet', null))) {
-			foreach($this->defaults as $attribute => $value) {
-				if(null == (Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
-					Yii::app()->user->setState($this->getStatePrefix() . $attribute, $value);
-				}
-			}
-			Yii::app()->user->setState($modelName . __CLASS__ . 'defaultsSet', 1);
-		}
-
-		// set values from session
-		foreach($attributes as $attribute) {
-			if(null != ($value = Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
-				try {
-					$this->owner->$attribute = $value;
-				} catch (Exception $e) {
-					
-				}
-			}
-		}
-	}
-
-	private function saveSearchValues() {
-		$modelName = get_class($this->owner);
-		$attributes = $this->owner->getSafeAttributeNames();
-		foreach($attributes as $attribute) {
-			if(isset($this->owner->$attribute)) {
-			//echo var_export($attributes,true);
-			//exit;
-			Yii::app()->user->setState($this->getStatePrefix() . $attribute, $this->owner->$attribute);
-			}
-		}
-	}
-
-	private function doReadSave() {
-		if($this->owner->scenario == 'search') {
-			$this->owner->unsetAttributes();
-			if(isset($_GET[get_class($this->owner)])) {
-				$this->owner->attributes = $_GET[get_class($this->owner)];
-				$this->saveSearchValues();
-			} else {
-				$this->readSearchValues();
-			}
-		}
-	}
-
+    /**
+     * Set model attributes (if scenario is 'search') and clear filters 
+     * (if clearFilters param is set).
+     */
 	public function afterConstruct($event) {
-		//always start with a unique remember scenario
-		//based on the controller/action names, and id if specified
-		if (!Yii::app()->params->noSession)
-			$this->setRememberScenario(Yii::app()->controller->uniqueid . '/' . Yii::app()->controller->action->id . (isset($_GET['id']) ? '/' . $_GET['id'] : ''));
-
-		//$this->doReadSave(); //original functionality, overidden by John M
+		if(intval(Yii::app()->request->getParam('clearFilters')) == 1) {
+			$this->unsetAllFilters();
+			if(isset($_GET['id'])) {
+				Yii::app()->controller->redirect(
+                    array(
+                        Yii::app()->controller->action->ID,
+                        'id' => Yii::app()->request->getParam('id')));
+			} else {
+				Yii::app()->controller->redirect(array(Yii::app()->controller->action->ID));
+            }
+		}
+        $this->doReadSave();
 	}
 
 	/**
@@ -182,21 +145,90 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
 	 *
 	 * @return owner
 	 */
-	public function unsetFilters() {
+	public function unsetAllFilters() {
 		$modelName = get_class($this->owner);
 		$attributes = $this->owner->getSafeAttributeNames();
 
-		foreach ($attributes as $attribute) {
-			if (null != ($value = Yii::app()->user->getState($this->getStatePrefix() . $attribute, null))) {
-				Yii::app()->user->setState($this->getStatePrefix() . $attribute, 1, 1);
-			}
-		}
-		if ($this->defaultStickOnClear) {
-			Yii::app()->user->setState($modelName . __CLASS__ . 'defaultsSet', 1, 1);
-		}
+        $filters = $this->getGridFilters ();
+        if (is_array ($filters)) {
+		    foreach($attributes as $attribute) {
+                unset ($filters[$attribute]);
+            }
+        }
+        $this->setGridFilters ($filters);
 		return $this->owner;
 	}
 
-}
+    public function getId () {
+        if (isset ($this->owner->uid)) return $this->owner->uid;
+        return get_class ($this->owner);
+    }
 
+    /**
+     * Save models attributes as filters
+     */
+	private function saveSearchValues() {
+		$modelName = get_class($this->owner);
+		$attributes = $this->owner->getSafeAttributeNames();
+        $filters = array ();
+		foreach($attributes as $attribute) {
+			if(isset($this->owner->$attribute)) {
+                $filters[$attribute] = $this->owner->$attribute;
+            }
+		}
+        $this->setGridFilters ($filters);
+	}
+
+    /**
+     * Set owner attributes either with GET params or saved filters
+     */
+	private function doReadSave() {
+		if($this->owner->scenario === 'search') {
+			$this->owner->unsetAttributes();
+
+            /* x2tempstart */ 
+            // violates abstraction by referring to internals of SmartDataProviderBehavior
+            // also doesn't belong here since it has to do with sorting, not filtering
+            //
+            // if sort order is explicitly set to empty string, remove it
+            $sortKey = $this->getId () . '_sort';
+            if (in_array ($sortKey, array_keys ($_GET)) && 
+                $_GET[$sortKey] === '') {
+
+                unset ($_GET[$sortKey]);
+                if (!$this->owner->disablePersistentGridSettings) $this->saveSetting ('sort', '');
+            }
+            /* x2tempend */ 
+
+			if(isset($_GET[get_class($this->owner)])) { 
+                // grid refresh, set attributes with GET params
+
+				$this->owner->attributes = $_GET[get_class($this->owner)];
+				$this->saveSearchValues();
+			} else { // initial page load, set attributes with saved filters
+				$this->readSearchValues();
+			}
+		}
+	}
+
+    /**
+     * Set owner attributes with saved filters
+     */
+	private function readSearchValues() {
+		$modelName = get_class($this->owner);
+		$attributes = $this->owner->getSafeAttributeNames();
+
+        $filters = $this->getGridFilters ();
+        if (is_array ($filters)) {
+		    foreach($attributes as $attribute) {
+                if (isset ($filters[$attribute])) {
+                    try {
+                        $this->owner->$attribute = $filters[$attribute];
+                    } catch (Exception $e) {
+                    }
+                }
+            }
+        }
+	}
+}
 ?>

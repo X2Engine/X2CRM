@@ -90,11 +90,72 @@ class X2Flow extends CActiveRecord {
             array('createDate, lastUpdated', 'numerical', 'integerOnly' => true),
             array('active', 'boolean'),
             array('name', 'length', 'max' => 100),
+            array ('flow', 'validateFlow'),
             array('triggerType, modelClass', 'length', 'max' => 40),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, active, name, createDate, lastUpdated', 'safe', 'on' => 'search'),
         );
+    }
+
+    /**
+     * Helper method for validateFlow. Used to recursively traverse flow while performing
+     * validation on each item.
+     * @param array $items 
+     */
+    private function validateFlowPrime ($items) {
+        $valid = true;
+
+        foreach ($items as $item) {
+            if(!isset($item['type']) || !class_exists($item['type'])) {
+                continue;
+            }
+            if ($item['type'] === 'X2FlowSwitch') {
+                if (isset ($item['type']['falseBranch'])) {
+                    if (!$this->validateFlowPrime ($item['falseBranch'])) {
+                        $valid = false;
+                        break;
+                    }
+                }
+                if (isset ($item['type']['trueBranch'])) {
+                    if (!$this->validateFlowPrime ($item['trueBranch'])) {
+                        $valid = false;
+                        break;
+                    }
+                }
+            } else {
+
+                $flowAction = X2FlowAction::create($item);
+                $paramRules = $flowAction->paramRules ();
+                list ($success, $message) = $flowAction->validateOptions ($paramRules, null, true);
+                if ($success === false) {
+                    $valid = false;
+                    $this->addError ('flow', $flowAction->title.': '.$message);
+                    break;
+                } else if ($success === X2FlowItem::VALIDATION_WARNING) {
+                    Yii::app()->user->setFlash (
+                        'notice', Yii::t('studio', $message));
+                }
+            }
+        }
+        return $valid;
+    }
+
+    /**
+     * Ensure validity of specified config options
+     */
+    public function validateFlow ($attribute) {
+        $flow = CJSON::decode ($this->$attribute);
+
+        if (isset ($flow['items'])) {
+            $items = $flow['items'];
+            if ($this->validateFlowPrime ($items)) {
+                return true;
+            } 
+        } else {
+            $this->addError ($attribute, Yii::t('studio', 'Invalid flow'));
+            return false;
+        }
     }
 
     /**
@@ -250,7 +311,10 @@ class X2Flow extends CActiveRecord {
             $flowRetVal = (isset ($flowRetArr['retVal'])) ? $flowRetArr['retVal'] : null;
             //AuxLib::debugLog ($flowRetArr);
             //AuxLib::debugLogR ($flowRetArr);
-            //$flowRetVal = self::extractRetValFromTrace ($flowTrace[0]);
+            $flowRetVal = self::extractRetValFromTrace ($flowTrace);
+            //AuxLib::debugLogR ('$flowRetVal = ');
+            //AuxLib::debugLogR ($flowRetVal);
+
             $flowTraces[] = $flowTrace;
 
             // save log for triggered flow
@@ -278,6 +342,7 @@ class X2Flow extends CActiveRecord {
     private static function extractRetValFromTrace ($flowTrace) {
         //AuxLib::debugLog ('extractRetValFromTrace');
         // trigger itself has return val
+
         if (sizeof ($flowTrace) === 3 && $flowTrace[0] && !is_array ($flowTrace[1])) {
             return $flowTrace[2];
         }
@@ -351,15 +416,15 @@ class X2Flow extends CActiveRecord {
         if($flowData !== false &&
            isset($flowData['trigger']['type'], $flowData['items'][0]['type'])){
 
-            $error;
-
             if($flowPath === null){
+                //AuxLib::debugLogR ('creating trigger');
                 $trigger = X2FlowTrigger::create($flowData['trigger']);
                 assert ($trigger !== null);
                 if($trigger === null) {
                     $error = array (
                         'trace' => array (false, 'failed to load trigger class'));
                 }
+                //AuxLib::debugLogR ('validating');
                 $validateRetArr = $trigger->validate($params, $flow->id);
                 if (!$validateRetArr[0]) {
                     $error = $validateRetArr;
@@ -370,13 +435,16 @@ class X2Flow extends CActiveRecord {
                         'retVal' => $validateRetArr[2]
                     );
                 }
+                //AuxLib::debugLogR ('checking');
                 $checkRetArr = $trigger->check($params);
                 if (!$checkRetArr[0]) {
                     $error = $checkRetArr;
                 } 
+                //AuxLib::debugLogR ('done checking');
 
                 if(empty($error)){
                     try{
+                        //AuxLib::debugLogR ('executeBranch');
                         $flowTrace = array (true, $flow->executeBranch (
                             array(0), $flowData['items'], $params, 0, $triggerLogId));
                         //AuxLib::debugLog ('executing branch complete');
@@ -586,6 +654,8 @@ class X2Flow extends CActiveRecord {
                 if(count($pieces) > 1)
                     return $pieces[0];
                 return $value;
+            case 'tags':
+                return Tags::parseTags ($value);
             default:
                 return $value;
         }

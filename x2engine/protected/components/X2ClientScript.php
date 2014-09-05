@@ -190,7 +190,7 @@ class X2ClientScript extends NLSClientScript {
         $cldScript = 
             '(function($) {
                 x2.currencyInfo = '.CJSON::encode(array(
-                    'prefix' => isset($curSym)? $curSym : "",
+                    'prefix' => isset($curSym)? $curSym : Yii::app()->params['currency'],
                     'decimal' => $decSym,
                     'thousands' => $grpSym,
                 )).";
@@ -551,7 +551,7 @@ class X2ClientScript extends NLSClientScript {
 
         $cs->registerScriptFile($baseUrl.'/js/backgroundFade.js');
         $cs->registerScript('datepickerLanguage', "
-            $.datepicker.setDefaults( $.datepicker.regional[ '' ] );
+            $.datepicker.setDefaults($.datepicker.regional['']);
         ");
         $mmPath = Yii::getPathOfAlias('application.extensions.moneymask.assets');
         $aMmPath = Yii::app()->getAssetManager()->publish($mmPath);

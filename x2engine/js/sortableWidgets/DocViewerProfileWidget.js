@@ -44,7 +44,6 @@
  */
 function DocViewerProfileWidget (argsDict) {
     var defaultArgs = {
-        translations: [],
         getItemsUrl: '', // used to populate autocomplete
         getDocUrl: '', // url to request a doc
         docId: '', // the id of the doc currently being viewed
@@ -57,7 +56,7 @@ function DocViewerProfileWidget (argsDict) {
 	SortableWidget.call (this, argsDict);	
 }
 
-DocViewerProfileWidget.prototype = auxlib.create (SortableWidget.prototype);
+DocViewerProfileWidget.prototype = auxlib.create (IframeWidget.prototype);
 
 
 /*
@@ -71,23 +70,6 @@ Private static methods
 /*
 Public instance methods
 */
-
-/**
- * Hide iframe to prevent lag 
- */
-DocViewerProfileWidget.prototype.onDragStart = function () {
-    // prevent default text from shifting when iframe is hidden
-    this.contentContainer.height (this.contentContainer.height ());
-
-    this._iframeElem.hide ();
-    SortableWidget.prototype.onDragStart.call (this);
-};
-
-DocViewerProfileWidget.prototype.onDragStop = function () {
-    this.contentContainer.height ('');
-    this._iframeElem.show ();
-    SortableWidget.prototype.onDragStop.call (this);
-};
 
 /*
 Private instance methods
@@ -194,49 +176,6 @@ DocViewerProfileWidget.prototype._setUpSelectADocBehavior = function () {
     });
 };
 
-/**
- * Update iframe height on widget resize 
- */
-DocViewerProfileWidget.prototype._resizeEvent = function () {
-    var that = this; 
-    that._iframeElem.attr ('height', that.contentContainer.height ());
-};
-
-/**
- * Save iframe height on resize stop 
- */
-DocViewerProfileWidget.prototype._afterStop = function () {
-    var that = this; 
-    that.setProperty ('height', that._iframeElem.attr ('height'));
-};
-
-/**
- * Places a div over the iframe so that it doesn't interfere with mouse dragging 
- */
-DocViewerProfileWidget.prototype._turnOnSortingMode = function () {
-    this._iframeOverlay = $('<div>', {
-        width: this.contentContainer.width (),
-        height: this.contentContainer.height (),
-        css: {
-            position: 'absolute',
-            'z-index': 100
-        }
-    });
-    this.contentContainer.append (this._iframeOverlay);
-    this._iframeOverlay.position ({
-        my: 'left top',
-        at: 'left top',
-        of: this.contentContainer
-    });
-};
-
-/**
- * removes iframe overlay created by _turnOnSortingMode ()
- */
-DocViewerProfileWidget.prototype._turnOffSortingMode = function () {
-    this._iframeOverlay.remove ();
-};
-
 DocViewerProfileWidget.prototype._setUpEditBehavior = function () {
     var that = this; 
     $(this.element).find ('.widget-edit-button').unbind ('click.widgetEdit');
@@ -288,6 +227,9 @@ DocViewerProfileWidget.prototype._setUpTitleBarBehavior = function () {
             }
         });
     }
+    if (this.element.find ('.delete-widget-button').length) {
+        this._setUpWidgetDeletion ();
+    }
 };
 
 DocViewerProfileWidget.prototype._hideShowEditButton = function () {
@@ -320,7 +262,7 @@ DocViewerProfileWidget.prototype._init = function () {
     SortableWidget.prototype._init.call (this);
     this._selectADocButtonSelector = this.elementSelector + ' .select-a-document-button';
     this._selectADocButton = $(this._selectADocButtonSelector);
-    this._selectADocDialog = $('#select-a-document-dialog');
+    this._selectADocDialog = $('#select-a-document-dialog-' + this.widgetUID);
     this._editButton = $(this.element).find ('.widget-edit-button');
     this._iframeElem = this.contentContainer.find ('iframe');
     this._iframeSrc = '';
@@ -331,4 +273,3 @@ DocViewerProfileWidget.prototype._init = function () {
         this._setUpDefaultTextBehavior ();
     }
 };
-

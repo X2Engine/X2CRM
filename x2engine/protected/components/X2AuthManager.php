@@ -183,7 +183,7 @@ class X2AuthManager extends CDbAuthManager {
             // Use the generic administrator auth item if there is no module specified:
             $itemName = 'administrator';
         }
-        AuxLib::debugLogR(compact('params','itemName','userId','module','modelName'));
+        //AuxLib::debugLogR(compact('params','itemName','userId','module','modelName'));
         return $this->checkAccess($itemName,$params['userId'],$params);
     }
 

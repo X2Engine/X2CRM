@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/profile/index')),
+	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/profile/activity')),
     array('label' => Yii::t('users', 'Manage Users')),
     array('label' => Yii::t('users', 'Create User'), 'url' => array('create')),
     array('label' => Yii::t('users', 'Invite Users'), 'url' => array('inviteUsers')),
@@ -101,7 +101,7 @@ $this->widget('X2GridViewGeneric', array(
     'columns' => array(
         array(
             'name' => 'username',
-            'value' => 'CHtml::link($data->alias,array("/users/users/view","id"=>$data->id))',
+            'value' => 'CHtml::link(CHtml::encode($data->alias),array("/users/users/view","id"=>$data->id))',
             'type' => 'raw',
         ),
         array (

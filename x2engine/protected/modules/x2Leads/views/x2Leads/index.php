@@ -96,7 +96,7 @@ $this->widget('X2GridView', array(
 		'name'=>array(
 			'name'=>'name',
 			'header'=>Yii::t('x2Leads','Name'),
-			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
+			'value'=>'CHtml::link($data->renderAttribute("name"),array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
         'id'=>array(

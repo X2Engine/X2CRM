@@ -454,8 +454,8 @@ class CrontabUtil {
                             $hourList = range(0,23);
                             $hourSel = self::timeList(isset($data['hour']) ? $data['hour'] : array(),$hourList);
                             foreach($hourList as $hour){
-                                $sel = in_array($min,$hourSel) ? ' selected' : '';
-                                echo "<option value=\"$hour\">$hour</option>";
+                                $sel = in_array($hour,$hourSel) ? ' selected' : '';
+                                echo "<option value=\"$hour\"$sel>$hour</option>";
                             }
                             ?>
                         </select>

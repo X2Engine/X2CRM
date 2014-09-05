@@ -46,7 +46,9 @@ function InlineEmailEditorManager (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         translations: [],
-        saveDefaultTemplateUrl: '' // points to action which saves default email template
+        saveDefaultTemplateUrl: '', // points to action which saves default email template
+        tmpUploadUrl: '',
+        rmTmpUploadUrl: '',
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
@@ -137,9 +139,23 @@ InlineEmailEditorManager.prototype._setUpSettingsDialog = function () {
     });
 };
 
+/**
+ * Set up iframe-based attachment file upload 
+ */
+InlineEmailEditorManager.prototype._setUpFileUpload = function () {
+    var that = this;
+    $(document).on ('change', '.x2-file-input', function () {
+        x2.attachments.checkName(event); 
+        if($('#submitAttach').attr('disabled') !== 'disabled') {
+            x2.forms.fileUpload ($(this), that.tmpUploadUrl, that.rmTmpUploadUrl); 
+        }
+    });
+};
+
 InlineEmailEditorManager.prototype._init = function () {
     this._setUpSettingsDialog ();
     this._setUpEmailSettingsMenuBehavior ();
+    this._setUpFileUpload ();
 };
 
 return InlineEmailEditorManager;

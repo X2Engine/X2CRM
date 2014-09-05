@@ -39,6 +39,7 @@ Yii::import ('application.modules.contacts.models.*');
 Yii::import ('application.modules.workflow.models.*');
 Yii::import ('application.components.*');
 Yii::import ('application.components.x2flow.*');
+Yii::import ('application.components.x2flow.actions.*');
 Yii::import ('application.components.x2flow.triggers.*');
 Yii::import ('application.components.permissions.*');
 
@@ -120,7 +121,7 @@ class X2FlowTestBase extends X2DbTestCase {
      */
     public function flattenTrace ($trace) {
         if (!$trace[0]) return false;
-        $flattenedTrace = array (array ('action' => 'start', 'error' => $trace[0]));
+        $flattenedTrace = array (array ('action' => 'start', 'error' => !$trace[0]));
         $trace = $trace[1];
         while (true) {
             $complete = true;
@@ -136,7 +137,7 @@ class X2FlowTestBase extends X2DbTestCase {
                 } else {
                     array_push ($flattenedTrace, array (
                         'action' => $action[0],
-                        'error' => $action[1][0],
+                        'error' => !$action[1][0],
                         'message' => $action[1][1],
                     ));
                 }

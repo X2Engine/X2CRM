@@ -225,7 +225,7 @@ foreach($eventTypes as $type=>$name) {
         )
     );
     $filterDisplayName = $name; // capitalize filter name for label
-    echo "<label for=\"$type\" title=\"$title\">".$name."</label>";
+    echo "<label for=\"$type\" title=\"$title\">".CHtml::encode($name)."</label>";
     echo "</li>\n";
 }
 echo "</ul>\n";
@@ -310,7 +310,7 @@ foreach($socialSubtypes as $key=>$value) {
         )
     );
     $filterDisplayName = $value; // capitalize filter name for label
-    echo "<label for=\"$key\" title=\"$title\">".Yii::t('app',$value)."</label>";
+    echo "<label for=\"sidebar-filter-default\" title=\"$title\">".Yii::t('app',$value)."</label>";
     echo "</li>\n";
 }
 echo "</ul>\n";
@@ -349,7 +349,7 @@ echo CHtml::link(
 )."<br>";
 foreach($eventTypes as $type=>$name) {
     echo CHtml::link(
-        $name,'#',
+        CHtml::encode($name),'#',
         array(
             'class'=>'x2-minimal-button filter-control-button',
             'id'=>$type.'-button','style'=>'width:107px;'

@@ -39,6 +39,8 @@
  */
 abstract class X2FlowItem extends CComponent {
 
+    const VALIDATION_WARNING = 2;
+
     /**
      * "Cache" of instantiated triggers, for reference purposes
      */
@@ -72,8 +74,9 @@ abstract class X2FlowItem extends CComponent {
     /**
      * Checks if all the config variables and runtime params are ship-shape
      * Ignores param requirements if $params isn't provided
+     * @param bool $showWarnings If true, validation will include checks for warnings
      */
-    public function validateOptions(&$paramRules,&$params=null) {
+    public function validateOptions(&$paramRules,$params=null,$showWarnings=false) {
         $configOptions = &$this->config['options'];
         // die(var_dump($configOptions));
 
@@ -100,6 +103,7 @@ abstract class X2FlowItem extends CComponent {
             $option = &$configOptions[$optName];
             // set optional flag
             $option['optional'] = isset($optRule['optional']) && $optRule['optional'];
+            $option['comparison'] = isset($optRule['comparison']) ? $optRule['comparison'] : true;
             // operator defaults to "=" if not set
             $option['operator'] = isset($option['operator'])? $option['operator'] : '=';
             // if there's a type setting, set that in the config data

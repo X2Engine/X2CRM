@@ -198,4 +198,5 @@ $this->widget('X2GridView', array(
     'enableControls'=>true,
     'enableTags'=>true,
     'fullscreen'=>true,
+    'enableSelectAllOnAllPages' => false,
 ));

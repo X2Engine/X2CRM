@@ -53,7 +53,7 @@ class FileUploadsFilter extends CFilter {
      * 
      * https://www.owasp.org/index.php/Unrestricted_File_Upload#Using_Black-List_for_Files.E2.80.99_Extensions
      */
-    const EXT_BLACKLIST = '/\.\s*(?P<ext>html|htm|js|jsb|mhtml|mht|xhtml|xht|php|phtml|php3|php4|php5|phps|shtml|jhtml|pl|py|cgi|exe|scr|dll|msi|vbs|bat|com|pif|cmd|vxd|cpl|ini|conf|cnf|key|iv|htaccess)\b/';
+    const EXT_BLACKLIST = '/\.\s*(?P<ext>html|htm|js|jsb|mhtml|mht|xhtml|xht|php|phtml|php3|php4|php5|phps|shtml|jhtml|pl|py|cgi|exe|scr|dll|msi|vbs|bat|com|pif|cmd|vxd|cpl|ini|conf|cnf|key|iv|htaccess)\b/i';
 
     /**
      * List of mime-types that uploaded files should never have

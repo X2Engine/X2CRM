@@ -33,15 +33,18 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-label[for='generateLead'] {
-    font-size: 16px !important;
+label[for='generateLead'],
+label[for='generateAccount'] {
+    font-size: 15px !important;
     color: #555;
 }
-label[for='generateLead'] + input {
+label[for='generateLead'] + input,
+label[for='generateAccount'] + input {
     margin-top: 11px !important;
     margin-bottom: -11px !important;
 }
-label[for='generateLead'] + input + span {
+label[for='generateLead'] + input + span,
+label[for='generateAccount'] + input + span {
     position: relative;
     top: -3px;
 }

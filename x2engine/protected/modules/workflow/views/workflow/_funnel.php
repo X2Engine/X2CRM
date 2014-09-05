@@ -46,7 +46,6 @@ Yii::app()->clientScript->registerScriptFile(
 Yii::app()->clientScript->registerScriptFile(
     $this->module->assetsUrl.'/js/Funnel.js', CClientScript::POS_END);
 
-
 Yii::app()->clientScript->registerScript('_funnelJS',"
 
 x2.funnel = new x2.Funnel ({
@@ -69,6 +68,3 @@ x2.funnel = new x2.Funnel ({
 ?>
 <div id='funnel-container'></div>
 <?php
-
-
-

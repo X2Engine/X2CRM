@@ -82,7 +82,8 @@ class Groups extends X2Model {
 	public static function getNames() {
 
 		$groupNames = array();
-		$data = Yii::app()->db->createCommand()->select('id,name')->from('x2_groups')->order('name ASC')->queryAll(false);
+		$data = Yii::app()->db->createCommand()
+            ->select('id,name')->from('x2_groups')->order('name ASC')->queryAll(false);
         foreach($data as $row){
 			$groupNames[$row[0]] = $row[1];
         }

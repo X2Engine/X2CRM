@@ -113,9 +113,9 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 <div id="main-column" class="half-width">
 <?php
 $this->beginWidget('CActiveForm', array(
-	'id'=>'contacts-form',
-	'enableAjaxValidation'=>false,
-	'action'=>array('saveChanges','id'=>$model->id),
+    'id'=>'contacts-form',
+    'enableAjaxValidation'=>false,
+    'action'=>array('saveChanges','id'=>$model->id),
 ));
 
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Opportunity'));
@@ -143,15 +143,16 @@ $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelTy
 <?php 
 if((bool) $model->contactName){ // if associated contact exists, setup inline email form
     $contact = $model->getLinkedModel('contactName');
-	$this->widget('InlineEmailForm', array(
-		'attributes' => array(
-			'to' => '"'.$contact->name.'" <'.$contact->email.'>, ',
-			'modelName' => 'Opportunity',
-			'modelId' => $model->id,
-		),
-		'startHidden' => true,
-	)
-	);
+    if ($contact) {
+        $this->widget('InlineEmailForm', array(
+            'attributes' => array(
+                'to' => '"'.$contact->name.'" <'.$contact->email.'>, ',
+                'modelName' => 'Opportunity',
+                'modelId' => $model->id,
+            ),
+            'startHidden' => true,
+        ));
+    }
 }
 
 $this->widget(

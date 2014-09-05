@@ -2384,7 +2384,11 @@ function BasicView(element, calendar, viewName) {
 				        ">" + 
 				        "<div>";
 				if (showNumbers) {
-					html += "<div class='fc-day-number'>" + cellDate.getDate() + "</div>";
+                    /* x2modstart */ 
+                    // converted day numbers into links
+					html += "<div class='fc-day-number'><a href='#' class='day-number-link'>" + 
+                        cellDate.getDate() + "</a></div>";
+                    /* x2modend */ 
 				}
 				html += "<div class='fc-day-content'>" +
 				        "<div style='position:relative'>&nbsp;</div>" +

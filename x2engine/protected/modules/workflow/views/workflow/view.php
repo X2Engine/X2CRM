@@ -76,7 +76,8 @@ function WorkflowViewManager (argsDict) {
  */
 WorkflowViewManager._getQueryString = function (modelId, ajax) {
     var ajax = typeof ajax === 'undefined' ? true : ajax; 
-    var modelId = typeof modelId === 'undefined' ? $model->id : modelId; 
+    var modelId = typeof modelId === 'undefined' ? x2.workflowViewManager.workflowId : modelId; 
+
     return (
         (ajax ? 'workflowAjax=true&' : '') + 'id=' + modelId +
         '&start=".Formatter::formatDate($dateRange['start'])."' +

@@ -49,14 +49,50 @@ class ExportFixtureCommand extends CConsoleCommand {
 	 * @var array Specification for the command line arguments.
 	 * 
 	 * Each entry takes this form:
-	 * array([local var name],[command line description],[default value],[validation expression],[validation error message])
+	 * array(
+     *  [local var name],
+     *  [command line description],
+     *  [default value],
+     *  [validation expression],
+     *  [validation error message]
+     * )
 	 */
 	public $args = array(
-		0 => array('tableName', 'table name', null, '$pass = array_key_exists($arg_in,Yii::app()->db->schema->tables);', "Table doesn't exist"),
-		1 => array('type', 'fixture (f) or init script (i)', 'f', '$pass = in_array($arg_in,array("i","f"));', 'Must be "i" or "f"'),
-		2 => array('range', '"WHERE" clause', '1', '$pass=($arg_in != null);', 'cannot be null'),
-		3 => array('columns', 'table columns to include', '*', '$pass=($arg_in != null);', 'cannot be null'),
-		4 => array('writeCond', 'overwrite (o), rename existing (r)', 'r', '$pass=in_array($arg_in,array("o","r"));', 'Must be "o" or "r"'),
+		0 => array(
+            'tableName',
+            'table name',
+            null,
+            '$pass = array_key_exists($arg_in, Yii::app()->db->schema->tables);',
+            "Table doesn't exist"
+        ),
+		1 => array(
+            'type',
+            'fixture (f) or init script (i)',
+            'f',
+            '$pass = in_array($arg_in, array("i", "f"));',
+            'Must be "i" or "f"'
+        ),
+		2 => array(
+            'range',
+            '"WHERE" clause',
+            '1',
+            '$pass=($arg_in != null);',
+            'cannot be null'
+        ),
+		3 => array(
+            'columns',
+            'table columns to include',
+            '*',
+            '$pass=($arg_in != null);',
+            'cannot be null'
+        ),
+		4 => array(
+            'writeCond', 
+            'overwrite (o), rename existing (r), output to stdout (s)',
+            'r',
+            '$pass=in_array($arg_in, array("o","r","s"));',
+            'Must be "o", "r", or "s"'
+        ),
 	);
 	public $fixtureDir;
 
@@ -111,17 +147,28 @@ class ExportFixtureCommand extends CConsoleCommand {
 		$filePath = $this->fixtureDir . '/' . $tableName . ($type == 'i' ? '.init' : '') . '.php';
 
 		if (file_exists(FileUtil::rpath($filePath))) {
-			if ($writeCond == 'r') {
-				$i = 0;
-				$backup = $filePath;
-				while (file_exists(FileUtil::rpath($backup))) {
-					$backup = "$filePath.$i";
-					$i++;
-				}
-				$this->copyFiles(array("backup of existing: $fileName" => array('source' => $filePath, 'target' => $backup)));
-			} else {
-				echo "\nOverwriting existing file $fileName\n";
-			}
+            switch ($writeCond) {
+                case 'r': 
+                    $i = 0;
+                    $backup = $filePath;
+                    while (file_exists(FileUtil::rpath($backup))) {
+                        $backup = "$filePath.$i";
+                        $i++;
+                    }
+                    $this->copyFiles(
+                        array(
+                            "backup of existing: $fileName" => array(
+                                'source' => $filePath, 
+                                'target' => $backup
+                            )
+                        ));
+                    break;
+                case 'o': 
+				    echo "\nOverwriting existing file $fileName\n";
+                    break;
+                case 's': 
+                    break;
+            }
 		}
 
 		$aliasPrompt = false;
@@ -161,12 +208,15 @@ class ExportFixtureCommand extends CConsoleCommand {
 		}
 		$fileCont .= ");\n?>";
 
-		file_put_contents($filePath, $fileCont);
+        if ($writeCond !== 's') 
+		    file_put_contents($filePath, $fileCont);
+        else
+            print ($fileCont);
 		echo "\nExport complete.\n";
 	}
 
 	public function getHelp() {
-		return "\n***Usage:***\n\tyiic exportfixture [tableName] [type (f|i)] [range] [columns] [writeCond (o|r)]\n\n";
+		return "\n***Usage:***\n\tyiic exportfixture [tableName] [type (f|i)] [range] [columns] [writeCond (o|r|s)]\n\n";
 	}
 
 }

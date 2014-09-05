@@ -82,6 +82,7 @@ X2Attachments.prototype.checkName = function (evt) {
 		$(this._submitButtonSelector).attr('disabled','disabled');
 
 		var filenameError = ".json_encode(Yii::t('app', '"{X}" is not an allowed filetype.')).";
+		var ar_ext = this.getFileExt (evt);
 		alert(filenameError.replace('{X}',ar_ext));
 	}
 };
@@ -107,6 +108,14 @@ X2Attachments.prototype.checkFileName = function (evt) {
 
     return re === 1;
 };
+
+X2Attachments.prototype.getFileExt = function (evt) {
+    var name = evt.target.value;
+	var ar_name = name.split('.');
+	var ar_ext = ar_name[ar_name.length - 1].toLowerCase();
+    return ar_ext;
+};
+
 
 return new X2Attachments ();
 

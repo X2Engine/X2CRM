@@ -36,6 +36,11 @@
 
 $halfWidthThreshold = 1200; // content width past which publisher moves to the right of calendar
 Yii::app()->clientScript->registerCss('calendarResponsiveCss',"
+
+#calendar .fc-day-number > a {
+    text-decoration: none;
+}
+
 #calendar,
 #publisher-form {
     max-width: ".$halfWidthThreshold."px;
@@ -280,7 +285,7 @@ $(function() {
         header: {
             left: 'title',
             center: '',
-            right: 'month basicWeek agendaDay prev,next'
+            right: 'month agendaWeek agendaDay prev,next'
         },
         eventRender: function(event, element, view) {
             // prevent rendering of duplicate events on same view
@@ -309,13 +314,16 @@ $(function() {
             $(element).attr ('data-action-calendarAssignment', event.calendarAssignment);
 
             $(element).css('font-size', '0.8em');
-            if(view.name == 'month' || view.name == 'basicWeek')
-                $(element).find('.fc-event-time').remove();
+            /*if(view.name == 'month' || view.name == 'basicWeek')
+                $(element).find('.fc-event-time').remove();*/
             if(event.associationType == 'contacts')
                 element.attr('title', event.associationName);
         },
         // Day Clicked!! Scroll to Publisher and set date to the day that was clicked
         dayClick: function(date, allDay, jsEvent, view) { 
+            if ($(jsEvent.target).hasClass ('day-number-link')) {
+                return x2.calendarManager.dayNumberClick ($(jsEvent.target));
+            }
 
             // value of window's scrollbar to make publisher visible
             var scrollPublisher = x2.publisher.getForm ().offset().top + 
@@ -749,10 +757,10 @@ $(function() {
         editable: true,
         // translate (if local not set to english)
         buttonText: { // translate buttons
-            today: '<?php echo CHtml::encode(Yii::t('calendar', 'today')); ?>',
-            month: '<?php echo CHtml::encode(Yii::t('calendar', 'month')); ?>',
-            week: '<?php echo CHtml::encode(Yii::t('calendar', 'week')); ?>',
-            day: '<?php echo CHtml::encode(Yii::t('calendar', 'day')); ?>',
+            today: '<?php echo CHtml::encode(Yii::t('calendar', 'Today')); ?>',
+            month: '<?php echo CHtml::encode(Yii::t('calendar', 'Month')); ?>',
+            agendaWeek: '<?php echo CHtml::encode(Yii::t('calendar', 'Week')); ?>',
+            day: '<?php echo CHtml::encode(Yii::t('calendar', 'Day')); ?>',
         },
         monthNames: [ // translate month names
             '<?php echo CHtml::encode(Yii::t('calendar', 'January')); ?>',
@@ -809,6 +817,8 @@ $(function() {
 
     });
 
+    
+
     // view/hide actions associated with a user
     function toggleUserCalendarSource(user, on, isEditable) {
         if(user == '')
@@ -824,6 +834,9 @@ $(function() {
                 editable: isEditable
             });
         }
+        // Update the calendar share/export URL:
+        
+
         $.post('<?php echo $urls['saveCheckedCalendar']; ?>', {
             Calendar: user, Checked: on, Type: 'user'
         });
@@ -841,6 +854,7 @@ $(function() {
                 editable: true
             });
         }
+        
         $.post('<?php echo $urls['saveCheckedCalendar']; ?>', {
             Calendar: groupId, 
             Checked: on, 
@@ -881,6 +895,7 @@ $(function () {
     x2.layoutManager.setUpCalendarTitleBarResponsiveness ();
     x2.layoutManager.setHalfWidthSelector ('#calendar, #publisher-form');
     x2.layoutManager.setHalfWidthThreshold (<?php echo $halfWidthThreshold; ?>);
+    $('#calendar .day-number-link').attr ('title', '<?php echo Yii::t('app', 'Show Day View'); ?>');
     $(window).resize ();
 });
 

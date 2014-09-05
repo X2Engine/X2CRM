@@ -99,7 +99,9 @@ abstract class TransformedFieldStorageBehavior extends CActiveRecordBehavior {
 	 */
 	public function unpackAll(){
 		$owner = $this->getOwner();
-		foreach($this->hasOptions ? array_keys($this->transformAttributes) : $this->transformAttributes as $name){
+		foreach($this->hasOptions ? 
+            array_keys($this->transformAttributes) : $this->transformAttributes as $name){
+
 			 $owner->$name = $this->unpackAttribute($name);
 		}
 	}

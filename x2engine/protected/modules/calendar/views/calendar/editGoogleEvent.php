@@ -122,8 +122,10 @@ $form=$this->beginWidget('CActiveForm', array(
 	</div>
 
 	<div class="cell dialog-cell">
-		<?php echo $form->label($model, 'color', array('class'=>'dialog-label')); ?>
-		<?php echo $form->dropDownList($model, 'color', Actions::getColors(), array('onChange'=>'giveSaveButtonFocus();')); ?>
+		<?php 
+        echo $form->label($model, 'color', array('class'=>'dialog-label')); 
+        echo $model->renderInput('color', array('onChange' => 'giveSaveButtonFocus();')); 
+        ?>
 	</div>
 </div>
 

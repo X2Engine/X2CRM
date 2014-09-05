@@ -78,7 +78,7 @@ room for user menu links
 .responsive-page-title > .mobile-dropdown-button,
 .fc-header.responsive-page-title .mobile-dropdown-button {
     display: none;
-    margin-top: 8px;
+    margin-top: 11px;
 }
 
 .responsive-page-title > .mobile-dropdown-button > .x2-bar,
@@ -370,7 +370,7 @@ show left menu
 /*
 hide right widget bar 
 */
-@media (max-width: 940px) {
+@media (max-width: 1040px) {
     #sidebar-right {
         display: none;
     }

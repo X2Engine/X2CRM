@@ -52,6 +52,108 @@ Yii::app()->clientScript->registerCss('manageDropDownsCSS',"
 
 ");
 
+Yii::app()->clientScript->registerScript('manageDropdownsJS', "
+
+
+x2.dropdownManager = (function () {
+
+function DropdownManager (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    this._init ();
+}
+
+DropdownManager.prototype.deleteOption = function (elem) {
+    $(elem).closest('li').remove();
+};
+
+DropdownManager.prototype.moveOptionUp = function (elem) {
+    var prev = $(elem).closest('li').prev('li').detach ();
+    if(prev.length>0) {
+        $(elem).closest('li').after (prev);
+    }
+};
+
+DropdownManager.prototype.moveOptionDown = function (elem) {
+    var next = $(elem).closest('li').next('li').detach ();
+    if(next.length>0) {
+        $(elem).closest('li').before (next);
+    }
+};
+
+/**
+ * Color options allow separate values and labels and have color picker inputs
+ */
+DropdownManager.prototype._addColorOption = function () {
+    var newOption = $('#color-dropdown-option-template').clone ();
+    $(newOption).find ('[disabled=\"disabled\"]').each (function () {
+        $(this).removeAttr ('disabled');
+    });
+    $('#dropdown-options [name=\"Admin[enableColorDropdownLegend]\"]').first ().before (newOption);
+    newOption.removeAttr ('id');
+    newOption.show ();
+    x2.colorPicker.setUp (newOption.find ('input').first (), false);
+};
+
+DropdownManager.prototype.addOption = function () {
+    if ($('#color-dropdown-option-template').length) {
+        this._addColorOption ();
+    } else {
+        $('#dropdown-options .multi-checkbox-label').before (' \
+        <li>\
+            <input type=\"text\" size=\"30\" name=\"Dropdowns[options][]\" />\
+            <div>\
+                <a href=\"javascript:void(0)\" onclick=\"x2.dropdownManager.moveOptionUp(this);\">[".
+                    Yii::t('admin','Up')."]</a>\
+                <a href=\"javascript:void(0)\" onclick=\"x2.dropdownManager.moveOptionDown(this);\">[".
+                    Yii::t('admin','Down')."]</a>\
+                <a href=\"javascript:void(0)\" onclick=\"x2.dropdownManager.deleteOption(this);\">[".
+                    Yii::t('admin','Del')."]</a>\
+            </div><br />\
+        </li>');
+    }
+};
+
+/*
+Public static methods
+*/
+
+/*
+Private static methods
+*/
+
+/*
+Public instance methods
+*/
+
+/*
+Private instance methods
+*/
+
+DropdownManager.prototype._setUpEditPageBehavior = function () {
+    $('#edit-dropdown-dropdown-selector').change (function () {
+        if ($(this).val () !== '') {
+            $('#edit-dropdown-form .dropdown-config').show ();
+        } else {
+            $('#edit-dropdown-form .dropdown-config').hide ();
+        }
+    });
+};
+
+DropdownManager.prototype._init = function () {
+    this._setUpEditPageBehavior ();
+};
+
+return new DropdownManager ();
+ 
+}) ();
+
+",CClientScript::POS_READY);
+
+
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Dropdown List'); ?></h2></div>
 <div class="form">
@@ -63,39 +165,34 @@ Yii::app()->clientScript->registerCss('manageDropDownsCSS',"
 <?php
 $this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'fields-grid',
-    'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-    'template' => '<div id="dropdowns-grid-page-title" class="page-title"><h2>'.CHtml::encode (Yii::t('admin', 'Dropdowns')).'</h2>'
-    .'{summary}</div>{items}{pager}',
+    'baseScriptUrl' => Yii::app()->request->baseUrl.
+        '/themes/'.Yii::app()->theme->name.'/css/gridview',
+    'template' => '<div id="dropdowns-grid-page-title" class="page-title"><h2>'.
+        CHtml::encode (Yii::t('admin', 'Dropdowns')).'</h2>'.'{summary}</div>{items}{pager}',
     'dataProvider' => $dataProvider,
     'columns' => array(
         'name',
         'options',
-    /*
-      'tickerSymbol',
-      'employees',
-      'associatedContacts',
-      'notes',
-     */
     ),
 ));
 ?>
 <br>
-<a href="#" onclick="$('#createDropdown').toggle();$('#deleteDropdown').hide();$('#editDropdown').hide();" class="x2-button"><?php echo Yii::t('admin', 'Create Dropdown'); ?></a>
-<a href="#" onclick="$('#deleteDropdown').toggle();$('#createDropdown').hide();$('#editDropdown').hide();" class="x2-button"><?php echo Yii::t('admin', 'Delete Dropdown'); ?></a>
-<a href="#" onclick="$('#editDropdown').toggle();$('#createDropdown').hide();$('#deleteDropdown').hide();" class="x2-button"><?php echo Yii::t('admin', 'Edit Dropdown'); ?></a>
+<a href="#" onclick="$('#createDropdown').toggle();$('#deleteDropdown').hide();$('#editDropdown').hide();return false;" class="x2-button"><?php echo Yii::t('admin', 'Create Dropdown'); ?></a>
+<a href="#" onclick="$('#deleteDropdown').toggle();$('#createDropdown').hide();$('#editDropdown').hide();return false;" class="x2-button"><?php echo Yii::t('admin', 'Delete Dropdown'); ?></a>
+<a href="#" onclick="$('#editDropdown').toggle();$('#createDropdown').hide();$('#deleteDropdown').hide();return false;" class="x2-button"><?php echo Yii::t('admin', 'Edit Dropdown'); ?></a>
 <br>
 <br>
 </div>
 <div id="createDropdown" style="display:none;">
     <?php
-    $this->renderPartial('dropDownEditor', array(
+    $this->renderPartial('createDropdown', array(
         'model' => $model,
     ));
     ?>
 </div>
 <div id="deleteDropdown" style="display:none;">
 <?php
-$this->renderPartial('deleteDropdowns', array(
+$this->renderPartial('deleteDropdown', array(
     'dropdowns' => $dropdowns,
 ));
 ?>

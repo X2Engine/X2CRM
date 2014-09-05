@@ -42,8 +42,6 @@ $menuItems = array(
     array('label'=>Yii::t('contacts','View List')),
     array('label'=>Yii::t('contacts','Import Contacts'), 'url'=>array('admin/importModels', 'model'=>'Contacts')),
     array('label'=>Yii::t('contacts', 'Export Contacts'),'url'=>array('admin/exportModels', 'model'=>'Contacts')),
-    array('label'=>Yii::t('contacts','Contact Map'),'url'=>array('googleMaps')),
-    array('label'=>Yii::t('contacts','Saved Maps'),'url'=>array('savedMaps')),
     //array('label'=>Yii::t('contacts','Saved Searches'),'url'=>array('savedSearches'))
 );
 
@@ -52,9 +50,8 @@ $heading = '';
 if($this->route=='contacts/contacts/index') {
 	$heading = Yii::t('contacts','All Contacts');
 	$dataProvider = $model->searchAll();
-	unset($menuItems[0]['url']);
-	unset($menuItems[3]);
-	unset($menuItems[4]);
+	unset($menuItems[0]['url']); 
+	unset($menuItems[4]); // View List
 } elseif($this->route=='contacts/contacts/myContacts') {
 	$heading = Yii::t('contacts','My Contacts');
 	$dataProvider = $model->searchMyContacts();
@@ -109,6 +106,7 @@ $this->widget('X2GridView', array(
         'qtipSelector' => ".contact-name"
     ),
 	'title'=>$heading,
+    'enableSelectAllOnAllPages' => true,
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> 
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.

@@ -48,7 +48,7 @@ if (YII_DEBUG &&
      $webFormType !== 'service' &&
      $webFormType !== 'weblead')) {
 
-    AuxLib::debugLog ('Error: _createWebForm.php: invalid $webFormType type '.$webFormType);
+    /**/AuxLib::debugLog ('Error: _createWebForm.php: invalid $webFormType type '.$webFormType);
 }
 
 
@@ -242,9 +242,9 @@ if ($webFormType === 'weblead') {
         <input id='generate-lead-checkbox' type='checkbox'  name='generateLead'>
         <?php
         echo X2Html::hint (
-            Yii::t('app', 'If you have this box checked, a new lead record will associated with '.
-                'the new contact when the web lead form is submitted. The web lead form must be '.
-                'saved for this feature to take effect.'), false, null, true);
+            Yii::t('app', 'If you have this box checked, a new lead record will be associated '.
+                'with the new contact when the web lead form is submitted. The web lead form '.
+                'must be saved for this feature to take effect.'), false, null, true);
         ?>
         <div id='generate-lead-form' style='display: none;'>
         <?php
@@ -253,6 +253,19 @@ if ($webFormType === 'weblead') {
             'leadSource', array ('class' => 'left-label', 'name' => 'leadSource'));
         ?>
         </div>
+    </div>
+</div>
+<div class='row'>
+    <div class="cell">
+        <label class='left-label' 
+         for='generateAccount'><?php echo Yii::t('app', 'Generate Account: '); ?></label>
+        <input id='generate-account-checkbox' type='checkbox'  name='generateAccount'>
+        <?php
+        echo X2Html::hint (
+            Yii::t('app', 'If you have this box checked, a new account record will be generated '.
+                'using the new contact\'s company field when the web lead form is submitted. The '.
+                'web lead form must be saved for this feature to take effect.'), false, null, true);
+        ?>
     </div>
 </div>
 <?php

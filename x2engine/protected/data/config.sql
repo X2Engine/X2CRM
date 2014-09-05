@@ -51,7 +51,10 @@ INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
 (115,	'Bug Status',       '{"Unconfirmed":"Unconfirmed","Confirmed":"Confirmed","In Progress":"In Progress","Closed (Resolved Internally)":"Closed (Resolved Internally)","Closed (Unable to Reproduce)":"Closed (Unable to Reproduce)","Closed (Duplicate)":"Closed (Duplicate)","Merged Into Base Code":"Merged Into Base Code"}'),
 (116,	'Bug Severity',     '{"5":"Blocker","4":"Critical","3":"Major","2":"Normal","1":"Minor","0":"Feature Request"}'),
 (117,	'Quick Note',       '{"Contacted":"Contacted","Not Contacted":"Not Contacted"}'),
-(120,   'Action Timers',    '{\"Research\":\"Research\",\"Meeting\":\"Meeting\",\"Email\":\"Email\"}');
+(120,   'Action Timers',    '{\"Research\":\"Research\",\"Meeting\":\"Meeting\",\"Email\":\"Email\"}'),
+(121,   'Event Subtypes',    '{\"Meeting\":\"Meeting\",\"Appointment\":\"Appointment\",\"Call\":\"Call\"}'),
+(122,   'Event Statuses',    '{\"Confirmed\":\"Confirmed\",\"Cancelled\":\"Cancelled\"}'),
+(123,   'Event Colors',    '{"#008000":"Green","#3366CC":"Blue","#FF0000":"Red","#FFA500":"Orange","#000000":"Black"}');
 /*&*/
 INSERT INTO x2_dropdowns (`id`, `name`, `options`, `parent`, `parentVal`) VALUES
 (118,	'Contacted Quick Note','{"Not interested.":"Not interested.","Requested follow up call.":"Requested follow up call.","Contact made.":"Contact made."}', 117, 'Contacted'),
@@ -72,6 +75,9 @@ INSERT INTO x2_profile (fullName, username, emailAddress, status)
 /*&*/
 INSERT INTO x2_profile (fullName, username, emailAddress, status)
 		VALUES ('API User', 'api', '{adminEmail}','0');
+/*&*/
+INSERT INTO x2_profile (username, status)
+		VALUES ('__x2_guest_profile__', '0');
 /*&*/
 INSERT INTO x2_social (`type`, `data`) VALUES ('motd', 'Please enter a message of the day!');
 /*&*/

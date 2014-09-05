@@ -174,4 +174,38 @@ class FormLayout extends CActiveRecord {
         return $editableFieldsInLayout;
     }
 
+    /**
+     * Helper method to unset all defaultForm flags
+     * @param string Model type to unset flags
+     */
+    public static function clearDefaultForms($model = null, $scenario = null) {
+        $layouts = FormLayout::model()
+            ->findAllByAttributes(array(
+                'model' => $model,
+                'defaultForm' => 1,
+                'scenario' => $scenario
+            ));
+        foreach($layouts as &$layout){
+            $layout->defaultForm = false;
+            $layout->save();
+        }
+    }
+
+    /**
+     * Helper method to unset all defaultView flags
+     * @param string Model type to unset flags
+     */
+    public static function clearDefaultViews($model = null, $scenario = null) {
+        $layouts = FormLayout::model()
+            ->findAllByAttributes(array(
+                'model' => $model,
+                'defaultView' => 1,
+                'scenario' => $scenario
+            ));
+        foreach($layouts as &$layout){
+            $layout->defaultView = false;
+            $layout->save();
+        }
+    }
+
 }

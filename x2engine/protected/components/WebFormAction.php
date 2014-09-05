@@ -120,6 +120,13 @@ class WebFormAction extends CAction {
                     //find any existing contacts with the same contact info
                     $criteria = new CDbCriteria();
                     $criteria->compare('email', $model->email, false, "OR");
+                    $emailFields = Yii::app()->db->createCommand()
+                        ->select('fieldName')
+                        ->from('x2_fields')
+                        ->where('modelName = "Contacts" AND type = "email"')
+                        ->queryColumn();
+                    foreach ($emailFields as $field)
+                        $criteria->compare($field, $model->email, false, "OR");
                     $duplicates = $model->findAll($criteria);
                 }
 
@@ -155,9 +162,10 @@ class WebFormAction extends CAction {
                 }
                 
                 if($success){
-
                     if ($extractedParams['generateLead'])
                         self::generateLead ($model, $extractedParams['leadSource']);
+                    if ($extractedParams['generateAccount'])
+                        self::generateAccount ($model);
 
                     self::addTags ($model);
                     $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ? 
@@ -530,11 +538,14 @@ class WebFormAction extends CAction {
         } 
         $extractedParams['leadSource'] = null;
         $extractedParams['generateLead'] = false;
+        $extractedParams['generateAccount'] = false;
         if (isset ($webForm)) { // new method
             if (!empty ($webForm->leadSource)) 
                 $extractedParams['leadSource'] = $webForm->leadSource;
             if (!empty ($webForm->generateLead)) 
                 $extractedParams['generateLead'] = $webForm->generateLead;
+            if (!empty ($webForm->generateAccount)) 
+                $extractedParams['generateAccount'] = $webForm->generateAccount;
         }
 
         
@@ -562,6 +573,21 @@ class WebFormAction extends CAction {
             Relationships::create ('X2Leads', $lead->id, 'Contacts', $contact->id);
         }
 
+    }
+
+    /**
+     * Generates an account from the contact's company field, if that field has a value 
+     */
+    private static function generateAccount (Contacts $contact) {
+        if (isset ($contact->company)) {
+            $account = new Accounts ();
+            $account->name = $contact->company;
+            if ($account->save ()) {
+                $account->refresh ();
+                $contact->company = $account->nameId;
+                $contact->update ();
+            }
+        }
     }
 
 }

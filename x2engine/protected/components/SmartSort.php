@@ -35,18 +35,39 @@
  *****************************************************************************************/
 
 /**
- * Sort Class
- *
- * A child of CSort made for the purposes of getting sorting to work when multiple instances of 
- * X2GridView exist on the same page.
+ * Filters GET parameters by unique id to prevent issues that arise when multiple instances of X2GridView  * are on the same page.
  *
  * @package application.components
  */
 class SmartSort extends CSort {
 
+    public $uniqueId;
+
+    /**
+     * Overrides parent __construct ().
+     * @param string $uniqueId (optional) If set, will be used to uniquely identify this sort
+     *  instance.
+	 *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+     */
+    public function __construct($modelClass=null, $uniqueId=null)
+    {
+        $this->modelClass=$modelClass;
+        /* x2modstart */ 
+        if ($uniqueId !== null) {
+            $this->uniqueId = $uniqueId;
+            $this->sortVar = $uniqueId."_sort";
+        }
+        /* x2modend */ 
+    }
+
     /**
      * Added filtering of GET params so that only those related to the current sort get used to
      * generate the url.
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
      */
     public function createUrl($controller,$directions)
     {
@@ -55,11 +76,16 @@ class SmartSort extends CSort {
             $sorts[]=$descending ? $attribute.$this->separators[1].$this->descTag : $attribute;
         $params=$this->params===null ? $_GET : $this->params;
         $params[$this->sortVar]=implode($this->separators[0],$sorts);
+        /* x2modstart */ 
         foreach ($params as $key => $val) {
-             if (!preg_match ("/(^id$)|(^".$this->modelClass."_)/", $key)) {
+             if (!preg_match ("/(^id$)|(^".
+                (isset ($this->uniqueId) ? $this->uniqueId : $this->modelClass)."_)/", $key)) {
+
                 unset ($params[$key]);
              }
         }
+        /* x2modend */ 
+
         return $controller->createUrl($this->route,$params);
     }
 }

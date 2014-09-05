@@ -42,6 +42,7 @@ Yii::import('application.components.JSONFieldsBehavior');
  * @package application.models
  */
 class ChartSetting extends CActiveRecord {
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Imports the static model class
@@ -73,12 +74,10 @@ class ChartSetting extends CActiveRecord {
 	 * @return array validation rules for model attributes.
 	 */
 	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('name', 'required'),
 			array('chartType', 'required'),
-            array('name', 'UniqueAttributesValidator', 'with'=>'userId,chartType'),
+            array('name', 'UniqueAttributesValidator', 'with'=>'userId,name'),
             array('name', 'length', 'max' => 25)
         );
 	}

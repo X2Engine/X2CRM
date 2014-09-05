@@ -68,8 +68,8 @@ x2.LayoutManager = function (argsDict) {
 
     this._halfWidthSelector = '#main-column, .history'; 
     this._hideSideBarLeftThreshold = 657;
-    //this._hideWidgetsThreshold = 1040;
-    this._hideWidgetsThreshold = 940;
+    this._hideWidgetsThreshold = 1040;
+    //this._hideWidgetsThreshold = 940;
     this._fullSearchBarThreshold = x2.logoWidth ? x2.logoWidth + 915 : 915;
     this._publisherHalfWidthThreshold = 940;
     this._titleBarThresholds;
@@ -570,7 +570,7 @@ x2.LayoutManager.prototype._showLeftBar = function (contentWidth) {
         searchBarHasFocus = false;
     });
 
-    $(window).one ('resize', function () { 
+    $(window).one ('resize._showLeftBar', function () { 
         if (!searchBarHasFocus) that._hideLeftBar (); 
     });
 
@@ -629,11 +629,12 @@ x2.LayoutManager.prototype._setUpTitleBarResponsiveness = function () {
             auxlib.onClickOutside ($('.responsive-page-title'), function () {
                 that._minimizeResponsiveTitleBar (titleBar);
             }, true);
+
             $(window).one ('resize._setUpTitleBarResponsiveness', function () {
                 if ($(titleBar).children ('.responsive-menu-items').is (':visible')) {
                     that._minimizeResponsiveTitleBar (titleBar);
                 }
-            }, '_setUpTitleBarResponsiveness');
+            });
             that._expandResponsiveTitleBar (titleBar);
         }
         delay = true;

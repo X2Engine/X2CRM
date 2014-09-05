@@ -46,12 +46,9 @@ $actionMenu = array(
 );
 if(!$model->isNewRecord) {
     $actionMenu[] = array('label'=>Yii::t('docs','View'), 'url'=>array('/docs/view','id'=>$model->id));
-    
-}
 
-if(!$model->isNewRecord){
     // Menu items that apply only to existing docs
-    if(array_search($user, $pieces) !== false || $user == $model->editPermissions)
+    if(array_search($user, $pieces) !== false || $user == $model->editPermissions || Yii::app()->params->isAdmin)
         $actionMenu[] = array('label' => Yii::t('docs', 'Edit Doc'), 'url' => array('/docs/update', 'id' => $model->id));
     if(Yii::app()->user->checkAccess('DocsDelete', array('createdBy' => $model->createdBy)))
         $actionMenu[] = array('label' => Yii::t('docs', 'Delete Doc'), 'url' => 'javascript:void(0);', 'linkOptions' => array('submit' => array('/docs/delete', 'id' => $model->id), 'confirm' => Yii::t('docs', 'Are you sure you want to delete this item?')));

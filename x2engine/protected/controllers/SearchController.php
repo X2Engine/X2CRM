@@ -220,130 +220,139 @@ class SearchController extends x2base {
      */
     public function actionSearch(){
         ini_set('memory_limit', -1);
-        $term = $_GET['term'];
 
-        if(substr($term, 0, 1) != "#"){
+        $term = isset($_GET['term']) ? $_GET['term'] : "";
+        if (empty($term)) {
+            $dataProvider = new CArrayDataProvider(array());
+            Yii::app()->user->setFlash ('error', Yii::t('search', "Search term cannot be empty."));
+            $this->render('search', array(
+                'dataProvider' => $dataProvider,
+            ));
+        } else {
 
-            $modules = Modules::model()->findAllByAttributes(array('searchable' => 1));
-            $comparisons = array();
-            $other = array();
-            foreach($modules as $module){
-                $module->name == 'products' ? $type = ucfirst('Product') : $type = ucfirst($module->name);
-                $module->name == 'quotes' ? $type = ucfirst('Quote') : $type = $type;
-                $module->name == 'opportunities' ? $type = ucfirst('Opportunity') : $type = $type;
-                $criteria = new CDbCriteria();
-                $fields = Fields::model()->findAllByAttributes(array('modelName' => $type, 'searchable' => 1));
-                $temp = array();
-                $fieldNames = array();
-                if(count($fields) < 1){
-                    $criteria->compare('id', '<0', true, 'AND');
-                }
-                foreach($fields as $field){
-                    $temp[] = $field->id;
-                    $fieldNames[] = $field->fieldName;
-                    $criteria->compare($field->fieldName, $term, true, "OR");
-                    if($field->type == 'phone'){
-                        $tempPhone = preg_replace('/\D/', '', $term);
-                        $phoneLookup = PhoneNumber::model()->findByAttributes(array('modelType' => $field->modelName, 'number' => $tempPhone, 'fieldName' => $field->fieldName));
-                        if(isset($phoneLookup)){
-                            $criteria->compare('id', $phoneLookup->modelId, true, "OR");
+            if(substr($term, 0, 1) != "#"){
+    
+                $modules = Modules::model()->findAllByAttributes(array('searchable' => 1));
+                $comparisons = array();
+                $other = array();
+                foreach($modules as $module){
+                    $module->name == 'products' ? $type = ucfirst('Product') : $type = ucfirst($module->name);
+                    $module->name == 'quotes' ? $type = ucfirst('Quote') : $type = $type;
+                    $module->name == 'opportunities' ? $type = ucfirst('Opportunity') : $type = $type;
+                    $criteria = new CDbCriteria();
+                    $fields = Fields::model()->findAllByAttributes(array('modelName' => $type, 'searchable' => 1));
+                    $temp = array();
+                    $fieldNames = array();
+                    if(count($fields) < 1){
+                        $criteria->compare('id', '<0', true, 'AND');
+                    }
+                    foreach($fields as $field){
+                        $temp[] = $field->id;
+                        $fieldNames[] = $field->fieldName;
+                        $criteria->compare($field->fieldName, $term, true, "OR");
+                        if($field->type == 'phone'){
+                            $tempPhone = preg_replace('/\D/', '', $term);
+                            $phoneLookup = PhoneNumber::model()->findByAttributes(array('modelType' => $field->modelName, 'number' => $tempPhone, 'fieldName' => $field->fieldName));
+                            if(isset($phoneLookup)){
+                                $criteria->compare('id', $phoneLookup->modelId, true, "OR");
+                            }
                         }
                     }
+                    if(Yii::app()->user->getName() != 'admin' && X2Model::model($type)->hasAttribute('visibility') && X2Model::model($type)->hasAttribute('assignedTo')){
+                        $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
+                        /* x2temp */
+                        $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+                        if(!empty($groupLinks))
+                            $condition .= ' OR assignedTo IN ('.implode(',', $groupLinks).')';
+    
+                        $condition .= 'OR (visibility=2 AND assignedTo IN
+                            (SELECT username FROM x2_group_to_user WHERE groupId IN
+                                (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+                        $criteria->addCondition($condition);
+                    }
+                    if($module->name == 'actions'){
+                        $criteria->with = array('actionText');
+                        $criteria->compare('actionText.text', $term, true, "OR");
+                    }
+                    if(class_exists($type)){
+                        $arr = X2Model::model($type)->findAll($criteria);
+                        $comparisons[$type] = $temp;
+                        $other[$type] = $arr;
+                    }
                 }
-                if(Yii::app()->user->getName() != 'admin' && X2Model::model($type)->hasAttribute('visibility') && X2Model::model($type)->hasAttribute('assignedTo')){
-                    $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="'.Yii::app()->user->getName().'"';
-                    /* x2temp */
-                    $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-                    if(!empty($groupLinks))
-                        $condition .= ' OR assignedTo IN ('.implode(',', $groupLinks).')';
-
-                    $condition .= 'OR (visibility=2 AND assignedTo IN
-                        (SELECT username FROM x2_group_to_user WHERE groupId IN
-                            (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-                    $criteria->addCondition($condition);
-                }
-                if($module->name == 'actions'){
-                    $criteria->with = array('actionText');
-                    $criteria->compare('actionText.text', $term, true, "OR");
-                }
-                if(class_exists($type)){
-                    $arr = X2Model::model($type)->findAll($criteria);
-                    $comparisons[$type] = $temp;
-                    $other[$type] = $arr;
-                }
-            }
-            $high = array();
-            $medium = array();
-            $low = array();
-
-            $userHigh = array();
-            $userMedium = array();
-            $userLow = array();
-
-            $records = array();
-            $userRecords = array();
-
-            $regEx = "/".preg_quote($term, '/')."/i";
-
-            foreach($other as $key => $recordType){
-                $fieldList = $comparisons[$key];
-                foreach($recordType as $otherRecord){
-                    if($key == 'Actions'){
-                        if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
-                            $userHigh[] = $otherRecord;
-                        else
-                            $high[] = $otherRecord;
-                    }else{
-                        foreach($fieldList as $field){
-                            $fieldRecord = Fields::model()->findByPk($field);
-                            $fieldName = $fieldRecord->fieldName;
-                            if(preg_match($regEx, $otherRecord->$fieldName) > 0){
-                                switch($fieldRecord->relevance){
-                                    case "High":
-                                        if(!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
-                                                !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)){
-                                            if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
-                                                $userHigh[] = $otherRecord;
-                                            else
-                                                $high[] = $otherRecord;
-                                        }
-                                        break;
-                                    case "Medium":
-                                        if(!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
-                                                !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)){
-                                            if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
-                                                $userMedium[] = $otherRecord;
-                                            else
-                                                $medium[] = $otherRecord;
-                                        }
-                                        break;
-                                    case "Low":
-                                        if(!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
-                                                !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)){
+                $high = array();
+                $medium = array();
+                $low = array();
+    
+                $userHigh = array();
+                $userMedium = array();
+                $userLow = array();
+    
+                $records = array();
+                $userRecords = array();
+    
+                $regEx = "/".preg_quote($term, '/')."/i";
+    
+                foreach($other as $key => $recordType){
+                    $fieldList = $comparisons[$key];
+                    foreach($recordType as $otherRecord){
+                        if($key == 'Actions'){
+                            if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
+                                $userHigh[] = $otherRecord;
+                            else
+                                $high[] = $otherRecord;
+                        }else{
+                            foreach($fieldList as $field){
+                                $fieldRecord = Fields::model()->findByPk($field);
+                                $fieldName = $fieldRecord->fieldName;
+                                if(preg_match($regEx, $otherRecord->$fieldName) > 0){
+                                    switch($fieldRecord->relevance){
+                                        case "High":
+                                            if(!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
+                                                    !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)){
+                                                if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
+                                                    $userHigh[] = $otherRecord;
+                                                else
+                                                    $high[] = $otherRecord;
+                                            }
+                                            break;
+                                        case "Medium":
+                                            if(!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
+                                                    !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)){
+                                                if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
+                                                    $userMedium[] = $otherRecord;
+                                                else
+                                                    $medium[] = $otherRecord;
+                                            }
+                                            break;
+                                        case "Low":
+                                            if(!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
+                                                    !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)){
+                                                if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
+                                                    $userLow[] = $otherRecord;
+                                                else
+                                                    $low[] = $otherRecord;
+                                            }
+                                            break;
+                                        default:
                                             if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
                                                 $userLow[] = $otherRecord;
                                             else
                                                 $low[] = $otherRecord;
-                                        }
-                                        break;
-                                    default:
-                                        if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
-                                            $userLow[] = $otherRecord;
-                                        else
-                                            $low[] = $otherRecord;
-                                }
-                            }elseif($fieldRecord->type == 'phone'){
-                                $tempPhone = preg_replace('/\D/', '', $term);
-
-                                if(strlen($tempPhone) == 10){
-                                    $phoneLookup = PhoneNumber::model()->findByAttributes(array('modelType' => $fieldRecord->modelName, 'number' => $tempPhone, 'fieldName' => $fieldName));
-                                    if(!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
-                                            !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)){
-                                        if(isset($phoneLookup) && $otherRecord->id == $phoneLookup->modelId){
-                                            if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
-                                                $userHigh[] = $otherRecord;
-                                            else
-                                                $high[] = $otherRecord;
+                                    }
+                                }elseif($fieldRecord->type == 'phone'){
+                                    $tempPhone = preg_replace('/\D/', '', $term);
+    
+                                    if(strlen($tempPhone) == 10){
+                                        $phoneLookup = PhoneNumber::model()->findByAttributes(array('modelType' => $fieldRecord->modelName, 'number' => $tempPhone, 'fieldName' => $fieldName));
+                                        if(!in_array($otherRecord, $high, true) && !in_array($otherRecord, $medium, true) && !in_array($otherRecord, $low, true) &&
+                                                !in_array($otherRecord, $userHigh, true) && !in_array($otherRecord, $userMedium, true) && !in_array($otherRecord, $userLow, true)){
+                                            if(isset($phoneLookup) && $otherRecord->id == $phoneLookup->modelId){
+                                                if($otherRecord->hasAttribute('assignedTo') && $otherRecord->assignedTo == Yii::app()->user->getName())
+                                                    $userHigh[] = $otherRecord;
+                                                else
+                                                    $high[] = $otherRecord;
+                                            }
                                         }
                                     }
                                 }
@@ -351,56 +360,56 @@ class SearchController extends x2base {
                         }
                     }
                 }
-            }
-            $records = array_merge($high, $medium);
-            $records = array_merge($records, $low);
-
-            $userRecords = array_merge($userHigh, $userMedium);
-            $userRecords = array_merge($userRecords, $userLow);
-
-            $records = array_merge($userRecords, $records);
-
-            $records = Record::convert($records, false);
-            if(count($records) == 1){
-                // Only one match, so go straight to it.
-                // 
-                // The record's corresponding model class must have
-                // X2LinkableBehavior for this to be possible.
-                if(!empty($records[0]['#recordUrl'])) {
-                    $this->redirect($records[0]['#recordUrl']);
+                $records = array_merge($high, $medium);
+                $records = array_merge($records, $low);
+    
+                $userRecords = array_merge($userHigh, $userMedium);
+                $userRecords = array_merge($userRecords, $userLow);
+    
+                $records = array_merge($userRecords, $records);
+    
+                $records = Record::convert($records, false);
+                if(count($records) == 1){
+                    // Only one match, so go straight to it.
+                    // 
+                    // The record's corresponding model class must have
+                    // X2LinkableBehavior for this to be possible.
+                    if(!empty($records[0]['#recordUrl'])) {
+                        $this->redirect($records[0]['#recordUrl']);
+                    }
                 }
+                $dataProvider = new CArrayDataProvider($records, array(
+                            'id' => 'id',
+                            'pagination' => array(
+                                'pageSize' => Profile::getResultsPerPage(),
+                            ),
+                        ));
+    
+                $this->render('search', array(
+                    'records' => $records,
+                    'dataProvider' => $dataProvider,
+                    'term' => $term,
+                ));
+            }else{
+                Yii::app()->user->setState('vcr-list', $term);
+                $_COOKIE['vcr-list'] = $term;
+                $criteria = new CDbCriteria();
+                $criteria->addCondition ('tag=:tag');
+                $criteria->params = array (':tag' => $term);
+                $results = new CActiveDataProvider('Tags', array(
+                            'criteria' => $criteria,
+                            'pagination' => array(
+                                'pageSize' => Profile::getResultsPerPage(),
+                            ),
+                            'sort' => array(
+                                'defaultOrder' => 'timestamp DESC',
+                            )
+                        ));
+                $this->render('searchTags', array(
+                    'tags' => $results,
+                    'term' => $term,
+                ));
             }
-            $dataProvider = new CArrayDataProvider($records, array(
-                        'id' => 'id',
-                        'pagination' => array(
-                            'pageSize' => Profile::getResultsPerPage(),
-                        ),
-                    ));
-
-            $this->render('search', array(
-                'records' => $records,
-                'dataProvider' => $dataProvider,
-                'term' => $term,
-            ));
-        }else{
-            Yii::app()->user->setState('vcr-list', $term);
-            $_COOKIE['vcr-list'] = $term;
-            $criteria = new CDbCriteria();
-            $criteria->addCondition ('tag=:tag');
-            $criteria->params = array (':tag' => $term);
-            $results = new CActiveDataProvider('Tags', array(
-                        'criteria' => $criteria,
-                        'pagination' => array(
-                            'pageSize' => Profile::getResultsPerPage(),
-                        ),
-                        'sort' => array(
-                            'defaultOrder' => 'timestamp DESC',
-                        )
-                    ));
-            $this->render('searchTags', array(
-                'tags' => $results,
-                'term' => $term,
-            ));
         }
     }
 

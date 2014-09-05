@@ -36,6 +36,12 @@
 
 Yii::app()->clientScript->registerCss('manageFieldsCSS',"
 
+#fields-grid {
+    border: 1px solid rgb(200, 200, 200);
+    margin: 0 12px;
+    border-radius: 4px;
+}
+
 #fields-grid-page-title {
     margin-bottom: -5px;
     border-bottom: none !important;
@@ -50,10 +56,6 @@ Yii::app()->clientScript->registerCss('manageFieldsCSS',"
     padding-right: 0;
 }
 
-#fields-grid {
-    padding: 0 9px;
-}
-
 #remove-field-button {
     margin-left: 9px;
 }
@@ -66,6 +68,14 @@ Yii::app()->clientScript->registerCss('manageFieldsCSS',"
     background: white url(".Yii::app()->theme->baseUrl."/images/loading.gif) no-repeat center scroll;
 }
 
+
+.field-option.field-modified {
+    background-color: #B3CFF5;
+}
+
+.field-option.field-custom {
+    background-color: #C4F59D; 
+}
 ");
 
 Yii::app()->clientScript->registerMain();
@@ -73,23 +83,52 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/fieldEdito
 $loadUrl = Yii::app()->createUrl('/admin/createUpdateField');
 Yii::app()->clientScript->registerScript('fieldEditor-config', 'x2.fieldEditor.loadUrl = '.json_encode($loadUrl).';', CClientScript::POS_READY);
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin', 'Modified Fields'); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'Manage Fields'); ?></h2></div>
 <div class="form">
     <?php echo Yii::t('admin', 'This page has a list of all fields that have been modified, and allows you to add or remove your own fields, as well as customizing the pre-set fields.'); ?>
 </div>
 <div class="form" id="fields-form">
     <?php
+    // $searchModel = new Fields('search');
+    /*$searchModel->setAttributes(
+                array_fill_keys(
+                    $searchModel->attributeNames(),
+                    null
+                ),
+                false);*/
 
-    $this->widget('zii.widgets.grid.CGridView', array(
+    $this->widget('X2GridViewGeneric', array(
         'id' => 'fields-grid',
+        'title'=>Yii::t('accounts','Modified Fields'),
+        'buttons'=>array('clearFilters','columnSelector','autoResize'),
         'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-        'template' => '<div class="page-title" id="fields-grid-page-title"><h2>'.
-            Yii::t('admin', 'Fields').'</h2>{summary}</div>{items}{pager}',
+        'template' => '<div class="page-title">{title}{summary}</div>{items}{pager}',
+        'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
+        'filter' => $searchModel,
         'dataProvider' => $dataProvider,
+        'gvSettingsName' => 'manageFields',
+        'defaultGvSettings' => array (
+            'modelName' => 100,
+            'fieldName' => 100,
+            'attributeLabel' => 100,
+            'required' => 60,
+            'type' => 80,
+            'uniqueConstraint' => 50,
+            'defaultValue' => 90,
+        ),
         'columns' => array(
-            'modelName',
-            'fieldName',
-            'attributeLabel',
+            array (
+                'name' => 'modelName',
+                'type' => 'raw',
+            ),
+            array (
+                'name' => 'fieldName',
+                'type' => 'raw',
+            ),
+            array (
+                'name' => 'attributeLabel',
+                'type' => 'raw',
+            ),
             // array(
             // 'name'=>'visible',
             // 'header'=>'Visibility',
@@ -101,16 +140,25 @@ Yii::app()->clientScript->registerScript('fieldEditor-config', 'x2.fieldEditor.l
                 'value' => '$data->required==1?Yii::t("app","Yes"):Yii::t("app","No")',
                 'type' => 'raw',
             ),
-        /*
-          'tickerSymbol',
-          'employees',
-          'associatedContacts',
-          'notes',
-         */
+            array(
+                'name' => 'type',
+                'value' => 'Yii::t("app",$data->type)',
+                'type' => 'raw'
+            ),
+            array(
+                'name' => 'uniqueConstraint',
+                'type' => 'raw',
+                'value' => '$data->uniqueConstraint==1?Yii::t("app","Yes"):Yii::t("app","No")'
+            ),
+            array (
+                'name' => 'defaultValue',
+                'type' => 'raw',
+            )
         ),
     ));
 
     ?>
+
     <br>
     <a href="javascript:void(0);" onclick="$('#createUpdateField').show();$('#removeField').hide();x2.fieldEditor.load('create')" class="x2-button" id="remove-field-button"><?php echo Yii::t('admin','Add Field');?></a>
     <a href="javascript:void(0);" onclick="$('#removeField').show();$('#createUpdateField').hide();" class="x2-button"><?php echo Yii::t('admin','Remove Field');?></a>

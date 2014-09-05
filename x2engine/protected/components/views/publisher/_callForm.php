@@ -73,12 +73,12 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
     <div class="row">
         <div class="text-area-wrapper">
             <?php 
-            echo $form->textArea(
-                $model, 'actionDescription', 
+            echo $model->renderInput ('actionDescription',
                 array(
-                    'rows' => 3, 'cols' => 40,
+                    'rows' => 3,
+                    'cols' => 40,
                     'class'=>'action-description',
-                    'id'=>'call-action-description'
+                    'id'=>'call-action-description',
                 ));
             ?>
         </div>

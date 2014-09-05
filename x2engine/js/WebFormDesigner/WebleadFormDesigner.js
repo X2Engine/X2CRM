@@ -54,7 +54,7 @@ Private static methods
 Public instance methods
 */
 
-WebleadFormDesigner.prototype._setUpGenerateLeadMenu = function () {
+WebleadFormDesigner.prototype._setUpGenerateAssociatedRecordMenu = function () {
 
     $('#generate-lead-checkbox').change (function () {
         if ($(this).is (':checked')) {
@@ -79,6 +79,14 @@ WebleadFormDesigner.prototype._updateExtraFields = function (form) {
         }
         $('#generate-lead-checkbox').change ();
     }
+    if(typeof form.generateAccount !== 'undefined') {
+        if (parseInt (form.generateAccount, 10) === 1) {
+            $('#generate-account-checkbox').prop ('checked', true);
+        } else {
+            $('#generate-account-checkbox').prop ('checked', false);
+        }
+        $('#generate-account-checkbox').change ();
+    }
 
     if(typeof form.leadSource !== 'undefined') {
         $('#leadSource').val (form.leadSource);
@@ -87,7 +95,7 @@ WebleadFormDesigner.prototype._updateExtraFields = function (form) {
 };
 
 WebleadFormDesigner.prototype._init = function () {
-    this._setUpGenerateLeadMenu ();
+    this._setUpGenerateAssociatedRecordMenu ();
     WebFormDesigner.prototype._init.call (this);
 }
 

@@ -96,6 +96,11 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      */
     const VISIBILITY_GROUPS = 2;
 
+    /**
+     * Used to prefix sql parameters to prevent parameter name conflicts
+     */
+    const SQL_PARAMS_PREFIX = 'X2PermissionsBehavior'; 
+
     private $_assignmentAttr;
     private $_visibilityAttr;
     
@@ -118,10 +123,11 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * Returns a CDbCriteria containing record-level access conditions.
      * @return CDbCriteria
      */
-    public function getAccessCriteria(){
+    public function getAccessCriteria($tableAlias='t'){
         $criteria = new CDbCriteria;
+        $criteria->alias = $tableAlias;
         $accessLevel = $this->getAccessLevel();
-        $conditions=$this->getAccessConditions($accessLevel);
+        $conditions=$this->getAccessConditions($accessLevel, $tableAlias);
         foreach($conditions as $arr){
             $criteria->addCondition($arr['condition'],$arr['operator']);
             if(!empty($arr['params']))
@@ -129,6 +135,14 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
         }
         
         return $criteria;
+    }
+
+    /**
+     * @return array access condition and parameters 
+     */
+    public function getAccessSQLCondition ($tableAlias='t') {
+        $criteria = $this->getAccessCriteria ($tableAlias);
+        return array ('('.$criteria->condition.')', $criteria->params);
     }
 
     /**
@@ -140,7 +154,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * @return integer The access level. 0=no access, 1=own records, 2=public records, 3=full access
      */
     public function getAccessLevel(){
-        $module = ucfirst($this->owner->module);
+        $module =  ucfirst($this->owner->module);
 
         if(Yii::app()->isInSession){ // Web request
             $uid = Yii::app()->user->id;
@@ -230,14 +244,14 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      *  records, 2=public records, 3=full access
      * @return String The SQL conditions
      */
-    public function getAccessConditions($accessLevel){
+    public function getAccessConditions($accessLevel, $tableAlias='t'){
         $user = Yii::app()->getSuModel()->username;
         $userId = Yii::app()->getSuModel()->id;
         $assignmentAttr = $this->getAssignmentAttr();
         $visibilityAttr = $this->getVisibilityAttr();
         
         if($assignmentAttr)
-            list($assignedToCondition,$params) = $this->getAssignedToCondition(false,'t');
+            list($assignedToCondition,$params) = $this->getAssignedToCondition(false,$tableAlias);
 
         if($accessLevel === self::QUERY_PUBLIC && $visibilityAttr === false) // level 2 access only works if we consider visibility,
             $accessLevel = self::QUERY_ALL;  // so upgrade to full access
@@ -251,7 +265,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 // User can view any public (shared) record
                 if($visibilityAttr != false){
                     $ret[] = array(
-                        'condition' => "t.$visibilityAttr=".self::VISIBILITY_PUBLIC,
+                        'condition' => $tableAlias.".$visibilityAttr=".self::VISIBILITY_PUBLIC,
                         'operator' => 'OR',
                         'params' => array()
                     );
@@ -261,11 +275,12 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 $groupmatesRegex = self::getGroupmatesRegex();
                 if(!empty($groupmatesRegex)){
                     $ret[] = array(
-                        'condition' => "(t.$visibilityAttr=".self::VISIBILITY_GROUPS.' '
-                        ."AND t.$assignmentAttr REGEXP BINARY :groupmatesRegex)",
+                        'condition' => "(".$tableAlias.".$visibilityAttr=".self::VISIBILITY_GROUPS.' '
+                        ."AND ".$tableAlias.".$assignmentAttr 
+                            REGEXP BINARY :".self::SQL_PARAMS_PREFIX."groupmatesRegex)",
                         'operator' => 'OR',
                         'params' => array(
-                            ':groupmatesRegex' => $groupmatesRegex
+                            ':'.self::SQL_PARAMS_PREFIX.'groupmatesRegex' => $groupmatesRegex
                         ),
                     );
                 }
@@ -284,10 +299,11 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 $groupRegex = self::getGroupIdRegex();
                 if(!empty($groupRegex)){
                     $ret[] = array(
-                        'condition' => "(t.$assignmentAttr REGEXP BINARY :visibilityGroupIdRegex)",
+                        'condition' => "(".$tableAlias.".$assignmentAttr REGEXP BINARY 
+                            :".self::SQL_PARAMS_PREFIX."visibilityGroupIdRegex)",
                         'operator' => 'OR',
                         'params' => array(
-                            ':visibilityGroupIdRegex' => $groupRegex
+                            ':'.self::SQL_PARAMS_PREFIX.'visibilityGroupIdRegex' => $groupRegex
                         )
                     );
                 }
@@ -378,12 +394,12 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 || !(bool) $this->visibilityAttr
                 || ( // Visibility setting in the model permits viewing
                     // Visible if marked "public"
-                    $this->owner->getAttribute($this->visibilityAttr) == 1 
+                    $this->owner->getAttribute($this->visibilityAttr) == self::VISIBILITY_PUBLIC 
                     || (
                         // Visible if marked with visibility "Users' Groups"
                         // and the current user has groups in common with
                         // assignees of the current user:
-                        $this->owner->getAttribute($this->visibilityAttr) == 2
+                        $this->owner->getAttribute($this->visibilityAttr) == self::VISIBILITY_GROUPS
                         && (bool) $this->assignmentAttr // Assignment attribute must exist
                         && (bool) ($groupmatesRegex = self::getGroupmatesRegex())
                         && preg_match('/'.$groupmatesRegex.'/',
@@ -401,18 +417,22 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      *  to anyone or no one.
      * @return array array (<SQL condition string>, <array of parameters>)
      */
-    public function getAssignedToCondition ($includeAnyone=true,$alias=null) {
+    public function getAssignedToCondition ($includeAnyone=true,$alias=null,$username=null) {
+        $username = $username === null ? Yii::app()->getSuName () : $username;
         $prefix = empty($alias)?'':"$alias.";
-        $groupIdsRegex = self::getGroupIdRegex();
+        $groupIdsRegex = self::getGroupIdRegex($username);
         $condition =
-            "(". ($includeAnyone ? ($prefix.$this->assignmentAttr."='Anyone' OR assignedTo='' OR ") : '').
-             $prefix.$this->assignmentAttr." REGEXP BINARY :userNameRegex";
+            "(". ($includeAnyone ? 
+                ($prefix.$this->assignmentAttr."='Anyone' OR assignedTo='' OR ") : '').
+             $prefix.$this->assignmentAttr.
+            " REGEXP BINARY :".self::SQL_PARAMS_PREFIX."userNameRegex";
         $params = array (
-            ':userNameRegex' => self::getUserNameRegex (),
+            ':'.self::SQL_PARAMS_PREFIX.'userNameRegex' => self::getUserNameRegex ($username),
         );
         if ($groupIdsRegex !== '') {
-            $condition .= " OR $prefix".$this->assignmentAttr." REGEXP BINARY :groupIdsRegex";
-            $params[':groupIdsRegex'] = $groupIdsRegex;
+            $condition .= " OR $prefix".$this->assignmentAttr.
+                " REGEXP BINARY :".self::SQL_PARAMS_PREFIX."groupIdsRegex";
+            $params[':'.self::SQL_PARAMS_PREFIX.'groupIdsRegex'] = $groupIdsRegex;
         }
         $condition .= ')';
         return array ($condition, $params);
@@ -439,13 +459,15 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 ? array_map(function($u){
                     return Formatter::fullName($u['firstName'], $u['lastName']);
                 }, Yii::app()->db->createCommand()->select('firstName,lastName')
-                                ->from(User::model()->tableName())
-                                ->where('username IN '.AuxLib::arrToStrList(array_keys($userNameParam)), $userNameParam)
-                                ->queryAll())
+                    ->from(User::model()->tableName())
+                    ->where('username IN '.AuxLib::arrToStrList(
+                        array_keys($userNameParam)), $userNameParam)
+                    ->queryAll())
                 : array();
         $groupIdParam = AuxLib::bindArray($groupIds);
         $groupNames = !empty($groupIds)
-                ? Yii::app()->db->createCommand()->select('name')->from(Groups::model()->tableName())
+                ? Yii::app()->db->createCommand()
+                    ->select('name')->from(Groups::model()->tableName())
                     ->where('id IN '.AuxLib::arrToStrList(array_keys($groupIdParam)), $groupIdParam)
                     ->queryColumn()
                 : array();
@@ -476,7 +498,8 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 $groupUsers = Yii::app()->db->createCommand()
                         ->select('username')
                         ->from('x2_group_to_user')
-                        ->where('groupId IN '.AuxLib::arrToStrList(array_keys($groupIdParam)),$groupIdParam)
+                        ->where('groupId IN '.
+                            AuxLib::arrToStrList(array_keys($groupIdParam)),$groupIdParam)
                         ->queryColumn();
                 foreach($groupUsers as $username)
                     $assigneesNames[] = $username;
@@ -502,8 +525,15 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * @return string This can be inserted (with parameter binding) into SQL queries to
      *  determine if an action is assigned to a given group.
      */
-    public static function getGroupIdRegex () {
-        $groupIds = Groups::getUserGroups(Yii::app()->getSuId());
+    public static function getGroupIdRegex ($username=null) {
+        if ($username !== null) {
+            $user = User::model()->findByAttributes (array ('username' => $username));
+            if (!$user) throw new CException ('invalid username: '.$username);
+            $userId = $user->id;
+        } else {
+            $userId = Yii::app()->getSuId ();
+        }
+        $groupIds = Groups::getUserGroups($userId);
         $groupIdRegex = '';
         $i = 0;
         foreach ($groupIds as $id) {

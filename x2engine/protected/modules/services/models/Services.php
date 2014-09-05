@@ -145,7 +145,7 @@ class Services extends X2Model {
 			}
 		}
 		$criteria->together = true;
-		return $this->searchBase($criteria, $pageSize, $uniqueId);
+		return $this->searchBase($criteria, $pageSize);
 	}
 
 

@@ -61,6 +61,7 @@ class UserTest extends X2DbTestCase {
         'events' => array ('Events', '.UserTest'),
         'social' => array ('Social', '.UserTest'),
         'profile' => array ('Profile', '.UserTest'),
+        'calendarPermissions' => 'X2Calendar',
     );
 
     public function testAfterDelete () {
@@ -69,6 +70,15 @@ class UserTest extends X2DbTestCase {
             /**/print ('id of user to delete: ');
             /**/print ($user->id);
         }
+
+        // test calendar permissions deletion
+        $this->assertNotEquals (0,
+            sizeof (X2CalendarPermissions::model()->findAllByAttributes (
+                array ('user_id' => $user->id))));
+        $this->assertNotEquals (0,
+            sizeof (
+                X2CalendarPermissions::model()->findAllByAttributes (
+                    array ('other_user_id' => $user->id))));
         
         // assert that group to user records exist for this user
         $this->assertTrue (
@@ -103,6 +113,15 @@ class UserTest extends X2DbTestCase {
             sizeof (Events::model()->findAll (
                 "user=:username OR (type='feed' AND associationId=".$user->id.")", 
                 array (':username' => $user->username))) === 0);
+
+        // test calendar permissions deletion
+        $this->assertEquals (0,
+            sizeof (X2CalendarPermissions::model()->findAllByAttributes (
+                array ('user_id' => $user->id))));
+        $this->assertEquals (0,
+            sizeof (
+                X2CalendarPermissions::model()->findAllByAttributes (
+                    array ('other_user_id' => $user->id))));
     }
 
     public function testBeforeDelete () {

@@ -33,21 +33,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-//                     **** tags.js **** //
-//
-// This file includes functions to drag tags from the tag cloud to the inline tag widget,
-// create new tags inside the inline tag widget, and remove tags.
-//
-// note: whatever file includes tags.js (probably inlineTags.php) needs to define the following
-//         $('#x2-inline-tags').data('appendTagUrl');
-//         $('#x2-inline-tags').data('removeTagUrl');
-//         $('#x2-inline-tags').data('searchUrl');
-//         $('#x2-inline-tags').data('type'); // model type
-//         $('#x2-inline-tags').data('id'); // model id
-//
+/*
+Used primarily to manage the right and left widgets. It's also used to manage the record view 
+widgets section in the hidden widgets menu.
+*/
 
-
-// init inline tags widget javascript
 $(function() {
     $('#content-widgets').droppable({ // allow widgets to be dropped into content widgets list
         accept: '.x2-widget-menu-item',
@@ -95,10 +85,6 @@ $(function() {
         iframeFix:true
     });
     
-    $('.x2-hidden-widgets-menu-item.widget-center').click(function() {
-        return handleWidgetMenuItemClick($(this));
-    });
-    
     $('.x2-hidden-widgets-menu-item.widget-right').click(function() {
         return handleWidgetRightMenuItemClick($(this));
     });
@@ -109,7 +95,7 @@ $(function() {
  */
 function hideShowHiddenWidgetSubmenuDividers () {
     var hiddenCenter = 
-        $('#x2-hidden-center-widgets-menu').find ('.x2-hidden-widgets-menu-item').length;
+        $('#x2-hidden-recordView-widgets-menu').find ('.x2-hidden-widgets-menu-item').length;
     var hiddenRight = 
         $('#x2-hidden-right-widgets-menu').find ('.x2-hidden-widgets-menu-item').length;
     var hiddenProfile =
@@ -126,7 +112,6 @@ function hideShowHiddenWidgetSubmenuDividers () {
         $('#x2-hidden-profile-widgets-menu').find ('.x2-hidden-widgets-menu-divider').hide ();
     }
 }
-
 
 function handleWidgetMenuItemClick(menuItem) {
     $.post(yii.scriptUrl+'/site/showWidget', {

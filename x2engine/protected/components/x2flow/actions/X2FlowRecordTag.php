@@ -54,13 +54,18 @@ class X2FlowRecordTag extends X2FlowAction {
 			'info' => Yii::t('studio',$this->info),
 			'modelRequired' => 1,
 			'options' => array(
-				array('name'=>'tags','label'=>Yii::t('studio','Tags'),'type'=>'tags'),
+				array(
+                    'name'=>'tags',
+                    'label'=>Yii::t('studio','Tags'),
+                    'type'=>'tags',
+                    'optional'=>true
+                ),
 				array('name'=>'action','label'=>Yii::t('studio','Action'),'type'=>'dropdown','options'=>$tagActions),
 			));
 	}
 
 	public function execute(&$params) {
-		$tags = Tags::parseTags($this->parseOption('tags',$params));
+		$tags = $this->parseOption('tags',$params);
 
         $retVal;
         $model = $params['model'];

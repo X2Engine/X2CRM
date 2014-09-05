@@ -62,7 +62,13 @@ $(function() {
 ');
 ?>
 <div class='flush-grid-view'>
-<?php $this->widget('zii.widgets.grid.CGridView', array(
+<?php
+if (Yii::app()->user->hasFlash('error')) {
+    X2Html::getFlashes();
+    echo "<br />";
+}
+
+$this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider' => $dataProvider,
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=>'<div class="page-title"><h2>'.Yii::t('app','Search Results').'</h2><div class="title-bar">{summary}</div></div>{items}{pager}',

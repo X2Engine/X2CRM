@@ -150,7 +150,7 @@ class X2DataColumn extends CDataColumn {
                             'attribute' => $that->name, //attribute name
                             'mode' => 'date', //use "time","date" or "datetime" (default)
                             'options' => array(// jquery options
-                                'dateFormat' => Formatter::formatDatePicker ('medium')
+                                'dateFormat' => Formatter::formatDatePicker ('medium'),
                             ),
                             'htmlOptions' => array(
                                 'id' => 'datePicker'.$that->name,

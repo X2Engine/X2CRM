@@ -206,7 +206,7 @@ echo CHtml::checkBox('setDefault', false,
         'id'=>'filter-default'
     )
 );
-echo "<label for='setDefault'>".Yii::t('app','Set Default')."</label>";
+echo "<label for='filter-default'>".Yii::t('app','Set Default')."</label>";
 
 echo "</div>";
 echo "</div>";

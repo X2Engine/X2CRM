@@ -1,0 +1,17 @@
+{
+    "name":"Zurmo 2.6.5 to X2Engine 4.2",
+    "mapping":
+    {
+        "Id":"id",
+        "Description":"description",
+        "Name":"name",
+        "Probability":"probability",
+        "Account - Name":"accountName",
+        "Created Date Time":"createDate",
+        "Modified Date Time":"lastUpdated",
+        "Close Date":"expectedCloseDate",
+        "Amount":"quoteAmount",
+        "Stage":"salesStage",
+        "Source":"leadSource"
+    }
+}

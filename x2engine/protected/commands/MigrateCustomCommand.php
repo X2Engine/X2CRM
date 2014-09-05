@@ -216,10 +216,7 @@ class MigrateCustomCommand extends X2ConsoleCommand {
      */
     public function copyBack() {
         $this->headerMsg('-- Copying merged files from the Git repository back into the source --');
-        foreach($this->fileList as $file) {
-            copy(implode(DIRECTORY_SEPARATOR,array($this->gitdir,'x2engine',$file)),$this->source.DIRECTORY_SEPARATOR.$file);
-            echo $this->formatter("copied: ")->color('green')->format()."$file\n";
-        }
+        $this->sys("{$this->rsync} --existing {$this->gitdir}/x2engine/ {$this->source}/");
     }
 
     public function copyForth(){

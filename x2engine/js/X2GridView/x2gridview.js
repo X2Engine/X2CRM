@@ -525,9 +525,14 @@ $.widget("x2.gvSettings", {
         fixedHeader: false,
 		columnSelectorId:'column-selector',
 		columnSelectorHtml:'',
+        modelName: '',
 		ajaxUpdate:false,
 		saveSettings:true,
 		saveTimeout:1000,
+        /**
+         * @var string sortStateKey Used by X2Settings to retrieve the user's current sort order.
+         */
+        sortStateKey: null,
         enableScrollOnPageChange: true,
         DEBUG: x2.DEBUG && false
 	},
@@ -573,12 +578,13 @@ $.widget("x2.gvSettings", {
 			/* this.element.closest('div.grid-view').find('.column-selector-link').bind(
                    'click',function() { self._toggleColumnSelector(this); }); */
 		}
-			/* $('#'+o.columnSelectorId).find('input').bind(
-                   'change',function() { self._saveColumnSelection(this); }); */
-			this.element.find('.column-selector-link').unbind('mousedown');
-			this.element.find('.column-selector-link').bind('mousedown',function() { 
-                self._toggleColumnSelector(this,self); 
-            });
+
+        /* $('#'+o.columnSelectorId).find('input').bind(
+               'change',function() { self._saveColumnSelection(this); }); */
+        this.element.find('.column-selector-link').unbind('mousedown');
+        this.element.find('.column-selector-link').bind('mousedown',function() { 
+            self._toggleColumnSelector(this,self); 
+        });
 		// }
 
 		this.tables = this.element.find('table.items');
@@ -621,6 +627,41 @@ $.widget("x2.gvSettings", {
 			self.tables.eq(0).parent().scrollLeft(self.tables.eq(1).parent().scrollLeft());
 		});
 	},
+    /**
+     * Returns object containing sort and filter parameters in format used by X2GridView when 
+     * making ajax update requests
+     * @return object
+     */
+    getUpdateParams: function () {
+        var params = {};
+        // stringify filters
+        params = this.getFilters ();
+        var sortOrder = this.getSortOrder ();
+        params = $.extend (params, sortOrder);
+        return params;
+    },
+    getSortOrder: function () {
+        var sortLink = this.element.find ('thead th .sort-link.asc,thead th .sort-link.desc');
+
+        // check for sort order
+        sortOrderParam = {};
+        if ($(sortLink).length === 1) {
+            var sortKeyRegex = new RegExp ('.*' + this.options.sortStateKey + '=([^&]*).*');
+
+            sortOrder = sortLink.attr ('href').replace (sortKeyRegex, '$1');
+            // (\.desc)? in GET parameter specifies the sort order to use if the user clicks the
+            // header, not the current sort order. Remove it
+            sortOrder = sortOrder.replace (/\.desc$/, '');
+
+            // add the actual sort order
+            sortOrder += sortLink.hasClass ('asc') ? '' : '.desc';
+            sortOrderParam[this.options.sortStateKey] = sortOrder;
+        }
+        return sortOrderParam;
+    },
+    getFilters: function () {
+        return auxlib.formToJSON (this.element.find ('.filters :input'));
+    },
     /*
     Clear column filters via ajax and update the grid
     */
@@ -672,8 +713,8 @@ $.widget("x2.gvSettings", {
             //x2.DEBUG && console.log ('_setupGridviewChecking: checkboxId = ' + checkboxId);
             var checked = $(this).is (':checked');
             //x2.DEBUG && console.log ('_setupGridviewChecking: checked = ' + checked);
-            self.options.DEBUG && console.log ('_setupGridviewChecking: checkbox changed: _shiftPressed = ' +
-                self._shiftPressed);
+            self.options.DEBUG && console.log (
+                '_setupGridviewChecking: checkbox changed: _shiftPressed = ' + self._shiftPressed);
             if (self._shiftPressed && 
                 ((checked && checkboxId !== self._lastCheckedCheckboxId) || 
                 (!checked && checkboxId !== self._lastUncheckedCheckboxId))) {
@@ -840,7 +881,9 @@ $.widget("x2.gvSettings", {
 
             // enable close on click outside
             $(document).unbind('click.' + self.options.namespacePrefix + 'columnSelector');
-            $(document).bind('click.' + self.options.namespacePrefix + 'columnSelector',function(e) {
+            $(document).bind(
+                'click.' + self.options.namespacePrefix + 'columnSelector',function(e) {
+
                 // e.stopPropagation();
                 // console.debug($(e.target).parent().parent());
                 var clicked = $(e.target).add($(e.target).parents());
@@ -853,12 +896,41 @@ $.widget("x2.gvSettings", {
 
 	},
 
-	_saveColumnSelection: function(object,self) {
-        self.options.DEBUG && console.log ('_saveColumnSelection');
-       self.options.DEBUG && console.log ('self.options.viewName = ');
-        self.options.DEBUG && console.log (self.options.viewName);
+    _getSelectedColumns: function () {
+        return $('#' + this.options.columnSelectorId).find ('input:checked').
+            map (function (i, elem) {
+                return $(elem).val ();
+            });
+    },
 
-		var data = $(object).closest('form').serialize()+'&viewName='+self.options.viewName;
+	_saveColumnSelection: function(object,self) {
+        var updateParams = this.getUpdateParams ();
+        var filters = this.getFilters ()
+        var sort = this.getSortOrder ();
+        var columns = this._getSelectedColumns ();
+
+        // remove sort order from update params if sort attribute isn't in selected columns
+        for (var paramName in sort) {
+            var sortOrder = sort[paramName].replace (/\.desc$/, '');
+            if ($.inArray (sortOrder, columns) === -1) {
+                updateParams[paramName] = '';
+            }
+        }
+
+        // remove filter attributes from update params if they aren't in selected columns
+        for (var paramName in filters) {
+            // extract attribute name from GET param key
+            var matches = paramName.match (/.*\[([^\]]+)\]$/, paramName);
+            if (matches !== null) {
+                var attrName = matches[1];
+                if ($.inArray (attrName, columns) === -1) {
+                    delete updateParams[paramName];
+                }
+            }
+        }
+
+		var data = $(object).closest('form').serialize() + '&viewName=' + self.options.viewName +  
+            $.param (updateParams);
 
 		if(data !== null && data != '') {
 			$.fn.yiiGridView.update(this.element.attr('id'), {

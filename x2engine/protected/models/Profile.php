@@ -39,6 +39,7 @@ Yii::import('application.modules.users.models.*');
 Yii::import('application.components.JSONFieldsBehavior');
 Yii::import('application.components.WidgetLayoutJSONFieldsBehavior');
 Yii::import('application.components.X2SmartSearchModelBehavior');
+Yii::import('application.components.sortableWidget.SortableWidget');
 
 /**
  * This is the model class for table "x2_profile".
@@ -46,14 +47,37 @@ Yii::import('application.components.X2SmartSearchModelBehavior');
  */
 class Profile extends CActiveRecord {
 
+    /**
+     * username of guest profile record 
+     */
+    const GUEST_PROFILE_USERNAME = '__x2_guest_profile__';
+
     private $_isActive;
 
-    public function setIsActive ($isActive) {
-        if ($isActive === '0' || $isActive === 'false') {
-            $this->_isActive = 0;
-        } else if ($isActive === '1' || $isActive === 'true') {
-            $this->_isActive = 1;
+    /**
+     * @var string Used in the search scenario to uniquely identify this model. Allows filters
+     *  to be saved for each grid view.
+     */
+    public $uid;
+
+    /**
+     * @var bool If true, grid views displaying models of this type will have their filter and
+     *  sort settings saved in the database instead of in the session
+     */
+    public $dbPersistentGridSettings = false;
+
+    public function __construct(
+        $scenario = 'insert', $uid = null, $dbPersistentGridSettings = false){
+
+        if ($uid !== null) {
+            $this->uid = $uid;
         }
+        $this->dbPersistentGridSettings = $dbPersistentGridSettings;
+        parent::__construct ($scenario);
+    }
+
+    public function setIsActive ($isActive) {
+        $this->_isActive = $isActive;
     }
 
     public function getIsActive () {
@@ -120,19 +144,8 @@ class Profile extends CActiveRecord {
             'WidgetLayoutJSONFieldsBehavior' => array(
                 'class' => 'application.components.WidgetLayoutJSONFieldsBehavior',
                 'transformAttributes' => array (
-                    'profileWidgetLayout' => array (
-                        'EventsChartProfileWidget',
-                        'UsersChartProfileWidget',
-                        'ProfilesGridViewProfileWidget',
-                        'ContactsGridViewProfileWidget',
-                        'AccountsGridViewProfileWidget',
-                        'ActionsGridViewProfileWidget',
-                        'OpportunitiesGridViewProfileWidget',
-                        'MarketingGridViewProfileWidget',
-                        'ServicesGridViewProfileWidget',
-                        'QuotesGridViewProfileWidget',
-                        'DocViewerProfileWidget',
-                    )
+                    'profileWidgetLayout' => SortableWidget::PROFILE_WIDGET_PATH_ALIAS,
+                    'recordViewWidgetLayout' => SortableWidget::RECORD_VIEW_WIDGET_PATH_ALIAS,
                 )
             ),
             'X2SmartSearchModelBehavior' => array (
@@ -154,6 +167,7 @@ class Profile extends CActiveRecord {
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
             array('googleId', 'unique'),
+            array('isActive', 'numerical'),
             array('fullName', 'length', 'max' => 60),
             array('username, updatedBy', 'length', 'max' => 20),
             array('officePhone, extension, cellPhone, language', 'length', 'max' => 40),
@@ -279,32 +293,25 @@ class Profile extends CActiveRecord {
         $criteria->compare('id', $this->id);
         $criteria->compare('fullName', $this->fullName, true);
         $criteria->compare('username', $this->username, true);
+        $criteria->compare('username', '<>'.self::GUEST_PROFILE_USERNAME, true);
         $criteria->compare('officePhone', $this->officePhone, true);
         $criteria->compare('cellPhone', $this->cellPhone, true);
         $criteria->compare('emailAddress', $this->emailAddress, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('tagLine',$this->tagLine,true);
 
-
-        /*
-        Filter on is active model property
-        */
-        if (isset ($_GET['Profile']) && is_array ($_GET['Profile']) &&
-            in_array ('isActive', array_keys ($_GET['Profile']))) {
-
-            $this->isActive = $_GET['Profile']['isActive'];
-            if (!isset ($this->isActive)) { // invalid isActive value
-            } else if ($this->isActive) { // select all users with new session records
-                $criteria->join = 
-                    'JOIN x2_sessions ON x2_sessions.user=username and '.
-                    'x2_sessions.lastUpdated > "'.(time () - 900).'"';
-            } else { // select all users with old session records or no session records
-                $criteria->join = 
-                    'JOIN x2_sessions ON (x2_sessions.user=username and '.
-                    'x2_sessions.lastUpdated <= "'.(time () - 900).'") OR '.
-                    'username not in (select x2_sessions.user from x2_sessions as x2_sessions)';
-            }
-        } 
+        // Filter on is active model property
+        if (!isset ($this->isActive)) { // invalid isActive value
+        } else if ($this->isActive) { // select all users with new session records
+            $criteria->join = 
+                'JOIN x2_sessions ON x2_sessions.user=username and '.
+                'x2_sessions.lastUpdated > "'.(time () - 900).'"';
+        } else { // select all users with old session records or no session records
+            $criteria->join = 
+                'JOIN x2_sessions ON (x2_sessions.user=username and '.
+                'x2_sessions.lastUpdated <= "'.(time () - 900).'") OR '.
+                'username not in (select x2_sessions.user from x2_sessions as x2_sessions)';
+        }
 
         if ($excludeAPI) {
             if ($criteria->condition !== '') {
@@ -314,7 +321,7 @@ class Profile extends CActiveRecord {
             }
         }
 
-        return $this->smartSearch ($criteria, $resultsPerPage, $uniqueId);
+        return $this->smartSearch ($criteria, $resultsPerPage);
     }
 
     /**
@@ -431,13 +438,14 @@ class Profile extends CActiveRecord {
     }
 
     // lookup user's settings for a gridview (visible columns, column widths)
-    public static function getGridviewSettings($viewName = null){
+    public static function getGridviewSettings($gvSettingsName = null){
         if(!Yii::app()->user->isGuest)
-            $gvSettings = json_decode(Yii::app()->params->profile->gridviewSettings, true); // converts JSON string to assoc. array
-        if(isset($viewName)){
-            $viewName = strtolower($viewName);
-            if(isset($gvSettings[$viewName]))
-                return $gvSettings[$viewName];
+            // converts JSON string to assoc. array
+            $gvSettings = json_decode(Yii::app()->params->profile->gridviewSettings, true); 
+        if(isset($gvSettingsName)){
+            $gvSettingsName = strtolower($gvSettingsName);
+            if(isset($gvSettings[$gvSettingsName]))
+                return $gvSettings[$gvSettingsName];
             else
                 return null;
         } elseif(isset($gvSettings)){
@@ -448,14 +456,16 @@ class Profile extends CActiveRecord {
     }
 
     // add/update settings for a specific gridview, or save all at once
-    public static function setGridviewSettings($gvSettings, $viewName = null){
+    public static function setGridviewSettings($gvSettings, $gvSettingsName = null){
         if(!Yii::app()->user->isGuest){
-            if(isset($viewName)){
+            if(isset($gvSettingsName)){
                 $fullGvSettings = Profile::getGridviewSettings();
-                $fullGvSettings[strtolower($viewName)] = $gvSettings;
-                Yii::app()->params->profile->gridviewSettings = json_encode($fullGvSettings); // encode array in JSON
+                $fullGvSettings[strtolower($gvSettingsName)] = $gvSettings;
+                // encode array in JSON
+                Yii::app()->params->profile->gridviewSettings = json_encode($fullGvSettings); 
             }else{
-                Yii::app()->params->profile->gridviewSettings = json_encode($gvSettings); // encode array in JSON
+                // encode array in JSON
+                Yii::app()->params->profile->gridviewSettings = json_encode($gvSettings); 
             }
             return Yii::app()->params->profile->update(array('gridviewSettings'));
         }else{
@@ -598,7 +608,7 @@ class Profile extends CActiveRecord {
         }
     }
 
-    public function syncActionToGoogleCalendar($action){
+    public function syncActionToGoogleCalendar($action, $ajax=false){
         try{ // catch google exceptions so the whole app doesn't crash if google has a problem syncing
             $admin = Yii::app()->settings;
             if($admin->googleIntegration){
@@ -621,11 +631,17 @@ class Profile extends CActiveRecord {
                     // check if the access token needs to be refreshed
                     // note that the google library automatically refreshes the access token if 
                     // we need a new one,
-                    // we just need to check if this happend by calling a google api function that 
+                    // we just need to check if this happened by calling a google api function that 
                     // requires authorization,
                     // and, if the access token has changed, save this new access token
                     if(!$googleCalendar){
-                        Yii::app()->controller->redirect($auth->getAuthorizationUrl('calendar'));
+                        $redirectUrl = $auth->getAuthorizationUrl('calendar');
+                        if ($ajax) {
+                            echo CJSON::encode (array ('redirect' => $redirectUrl));
+                            Yii::app()->end ();
+                        } else {
+                            Yii::app()->controller->redirect($redirectUrl);
+                        }
                     }
 //                    if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()){
 //                        $this->syncGoogleCalendarAccessToken = $client->getAccessToken();
@@ -881,10 +897,6 @@ class Profile extends CActiveRecord {
                     'title' => 'Activity Feed',
                     'minimize' => false,
                 ),
-                'GoogleMaps' => array(
-                    'title' => 'Google Map',
-                    'minimize' => false,
-                ),
                 'OnlineUsers' => array(
                     'title' => 'Active Users',
                     'minimize' => false,
@@ -894,7 +906,7 @@ class Profile extends CActiveRecord {
                     'minimize' => false,
                 ),
                 'TimeZone' => array(
-                    'title' => 'Time Zone',
+                    'title' => 'Clock',
                     'minimize' => false,
                 ),
                 'MessageBox' => array(
@@ -977,6 +989,7 @@ class Profile extends CActiveRecord {
             }
         }
 
+
         // ensure that widget properties are the same as those in the default layout
         foreach($layout[$position] as $name=>$arr){
             if (in_array ($name, array_keys ($initLayout[$position])) &&
@@ -1034,9 +1047,14 @@ class Profile extends CActiveRecord {
         $hiddenProfile = false;
         foreach($profileWidgetLayout as $name => $widgetSettings){
             $hidden = $widgetSettings['hidden'];
-            if ($hidden) {
-                $hiddenProfileWidgetsMenu .= '<li><span class="x2-hidden-widgets-menu-item profile-widget" id="'.$name.'">'.
-                    $widgetSettings['label'].'</span></li>';
+            $softDeleted = $widgetSettings['softDeleted'];
+            if ($hidden && !$softDeleted) {
+                $hiddenProfileWidgetsMenu .= 
+                    '<li>
+                        <span class="x2-hidden-widgets-menu-item profile-widget" id="'.$name.'">'.
+                            CHtml::encode ($widgetSettings['label']).
+                        '</span>
+                    </li>';
                 $hiddenProfile = true;
             }
         }
@@ -1057,34 +1075,36 @@ class Profile extends CActiveRecord {
      */
     public function getWidgetMenu(){
         $layout = $this->getLayout();
+        $recordViewWidgetLayout = $this->recordViewWidgetLayout;
 
-        /*$menu = '<ul id="widget-menu">';
-        foreach($layout['hidden'] as $name => $widget){
-            $menu .= '<li><span class="x2-widget-menu-item" id="'.$name.'">'.$widget['title'].'</span></li>';
+        $hiddenRecordViewWidgetMenu = '';
+        foreach ($recordViewWidgetLayout as $widgetClass => $settings) {
+            if ($settings['hidden']) {
+                $hiddenRecordViewWidgetMenu .=
+                    '<li>
+                        <span class="x2-hidden-widgets-menu-item recordView-widget" 
+                          id="'.$widgetClass.'">'.
+                            CHtml::encode ($settings['label']).
+                        '</span>
+                    </li>';
+            }
         }
-        if(!empty($layout['hidden']) && !empty($layout['hiddenRight'])){
-            $menu .= '<li class="x2widget-menu-divider"></li>';
-        }
-        foreach($layout['hiddenRight'] as $name => $widget){
-            $menu .= '<li><span class="x2-widget-menu-item widget-right" id="'.$name.'">'.$widget['title'].'</span></li>';
-        }
-        $menu .= '</ul>';*/
 
         // used to determine where section dividers should be placed
-        $hiddenCenter = !empty ($layout['hidden']);
+        $hiddenCenter = $hiddenRecordViewWidgetMenu !== '';
         $hiddenRight = !empty ($layout['hiddenRight']);
 
         $menu = '<div id="x2-hidden-widgets-menu">';
-        $menu .= '<ul id="x2-hidden-center-widgets-menu" class="x2-hidden-widgets-menu-section">';
-        foreach($layout['hidden'] as $name => $widget){
-            $menu .= '<li><span class="x2-hidden-widgets-menu-item widget-center" id="'.$name.'">'.$widget['title'].'</span></li>';
-        }
+        $menu .= '<ul id="x2-hidden-recordView-widgets-menu" 
+            class="x2-hidden-widgets-menu-section">';
+        $menu .= $hiddenRecordViewWidgetMenu;
         $menu .= '</ul>';
         $menu .= '<ul id="x2-hidden-right-widgets-menu" class="x2-hidden-widgets-menu-section">';
         $menu .= '<li '.(($hiddenCenter && $hiddenRight) ? '' : 'style="display: none;"').
             'class="x2-hidden-widgets-menu-divider"></li>';
         foreach($layout['hiddenRight'] as $name => $widget){
-            $menu .= '<li><span class="x2-hidden-widgets-menu-item widget-right" id="'.$name.'">'.$widget['title'].'</span></li>';
+            $menu .= '<li><span class="x2-hidden-widgets-menu-item widget-right" id="'.$name.'">'.
+                $widget['title'].'</span></li>';
         }
         $menu .= '</ul>';
         $menu .= '</div>';
@@ -1170,6 +1190,13 @@ class Profile extends CActiveRecord {
             select username from x2_profile 
             where leadRoutingAvailability=1
         ")->queryAll ());
+    }
+
+    /**
+     * @return Profile 
+     */
+    public function getGuestProfile () {
+        return $this->findByAttributes (array ('username' => self::GUEST_PROFILE_USERNAME)); 
     }
 
 

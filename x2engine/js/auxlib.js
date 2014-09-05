@@ -169,11 +169,14 @@ Parameters:
 	selector - a jquery selector for the select element
 	setting - the value of the option to be selected
 */
-auxlib.selectOptionFromSelector = function (selector, setting) {
+auxlib.selectOptionFromSelector = function (selector, setting, suppressChangeEvent) {
+    var suppressChangeEvent = typeof suppressChangeEvent === 'undefined' ? 
+        false : suppressChangeEvent; 
     if (!$(selector).children ('[value="' + setting + '"]').length) return;
 	$(selector).children (':selected').removeAttr ('selected');
 	$(selector).children ('[value="' + setting + '"]').attr ('selected', 'selected');
-    $(selector).val (setting).change ();
+    if (!suppressChangeEvent)
+        $(selector).val (setting).change ();
 }
 
 
@@ -265,13 +268,13 @@ auxlib.keys = function (obj) {
     return keys;
 };
 
-/*
-Used to replace Object.create which is not available in ie8
-*/
+/**
+ * Used to replace Object.create which is not available in ie8
+ */
 auxlib.create = function (prototype) {
-    function dummyFn () {};
-    dummyFn.prototype = prototype;
-    return new dummyFn ();
+    function dummyConstructor () {};
+    dummyConstructor.prototype = prototype;
+    return new dummyConstructor ();
 };
 
 /*

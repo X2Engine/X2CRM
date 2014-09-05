@@ -78,6 +78,29 @@ class ArrayUtilTest extends X2TestCase {
 			$this->assertEquals($this->arrayOld[$key],$normalized[$key],"Array value changed when it shouldn't have!");
 	}
 
+    public function testArraySearchPreg () {
+        $arr = array (
+            'a' => 'one',
+            'b' => 'two',
+        );
+        $matches = ArrayUtil::arraySearchPreg ('o|t', $arr);
+        VERBOSE_MODE && print_r ($matches);
+        $this->assertContains ('one', $matches);
+        $this->assertContains ('two', $matches);
+        $arr = array (
+            'a' => 'one',
+            'b' => 'two',
+            array (
+                'c' =>'three',
+            )
+        );
+        $matches = ArrayUtil::arraySearchPreg ('o|t', $arr);
+        VERBOSE_MODE && print_r ($matches);
+        $this->assertContains ('a', $matches);
+        $this->assertContains ('b', $matches);
+        $this->assertContains ('c', $matches);
+    }
+
 }
 
 ?>

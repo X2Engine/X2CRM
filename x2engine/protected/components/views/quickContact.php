@@ -49,6 +49,12 @@ Yii::app()->clientScript->registerCss ('quickCreateCss', "
     .quick-create-feedback {
         margin-top: 17px;
     }
+    #quick-contact-form label {
+        color: #aaa;
+        float: left;
+        margin-top: 3px;
+        margin-right: 3px;
+    }
 ");
 
 // default fields
@@ -82,23 +88,14 @@ $form = $this->beginWidget('CActiveForm', array(
 
 <div class="form thin">
 	<div id='quick-contact-form-contents-container' class="row inlineLabel">
-        <?php
-        $i = 0;
-        foreach ($formFields as $key=>$val) {
-            echo $form->textField($model,$key,array(
-                'class'=> (($key === 'firstName' || $key === 'lastName') ?
-                    'quick-contact-narrow' : 'quick-contact-wide'),
-                'tabindex'=>100 + $i,
-                'title'=>$model->getAttributeLabel($key),
-                'id'=>'quick_create_'.get_class($model).'_'.$key,
-            ));
-            ++$i;
-        }
-        ?>
-
+        <?php $this->renderContactFields ($model); ?>
 	</div>
 </div>
 <?php
+Yii::app()->clientScript->registerScript('blur-datepickers', '
+    $("#quick-contact-form").find("input.hasDatepicker").val("").blur();
+');
+
 echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Create'),
 	array('/contacts/contacts/quickContact'),
@@ -108,6 +105,7 @@ echo CHtml::ajaxSubmitButton(
             var quickContactForm = $('#quick-contact-form');
             $(quickContactForm).find ('input').removeClass ('error');
             $(quickContactForm).find ('input').next ('.error-msg').remove ();
+            $(quickContactForm).find ('.star-rating-control').parent('span').next ('.error-msg').remove ();
 
 			if(response === '') { // success
                 auxlib.createReqFeedbackBox ({
@@ -117,12 +115,17 @@ echo CHtml::ajaxSubmitButton(
                     classes: ['quick-create-feedback']
                 });
 
+                var textFields = $(quickContactForm).find ('input[type=\"text\"]');
+                var textFieldsWithoutDatepicker = textFields.not('.hasDatepicker');
+
                 // reset form inputs
-                $(quickContactForm).find ('input[type=\"text\"]').val ('');
+                textFields.val ('');
+                $(quickContactForm).find ('.star-rating-control').rating('select');
+                $(quickContactForm).find ('input[type=\"checkbox\"]').removeAttr('checked');
 
                 // reset placeholder text
-                $(quickContactForm).find ('input[type=\"text\"]').focus ();
-                $(quickContactForm).find ('input[type=\"text\"]').blur ();
+                $(textFieldsWithoutDatepicker).focus ();
+                $(textFields).blur ();
 			} else { // failure, display errors
                 var errors = JSON.parse (response);
                 var selector;
