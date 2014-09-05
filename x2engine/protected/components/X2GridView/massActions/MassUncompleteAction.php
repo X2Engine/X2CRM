@@ -36,7 +36,7 @@
 
 class MassUncompleteAction extends MassAction {
 
-    public function execute ($gvSelection) {
+    public function execute (array $gvSelection) {
         $updatedRecordsNum = Actions::changeCompleteState ('uncomplete', $gvSelection);
         if ($updatedRecordsNum > 0) {
             self::$successFlashes[] = Yii::t(

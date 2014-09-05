@@ -101,7 +101,7 @@ $this->widget('X2GridViewGeneric', array(
     'columns' => array(
         array(
             'name' => 'username',
-            'value' => 'CHtml::link($data->alias,array("/users/users/view","id"=>$data->id))',
+            'value' => 'CHtml::link(CHtml::encode($data->alias),array("/users/users/view","id"=>$data->id))',
             'type' => 'raw',
         ),
         array (

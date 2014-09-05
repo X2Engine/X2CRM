@@ -149,19 +149,20 @@ class ArrayUtil {
 
 
     /**
-     * Improved version of array_search that allows for regex searching
+     * Similar to array_search but recursive, doesn't return needle of there's only one match, and
+     * allows for regex searching.
      *
-     * @param string $find Regex to search on
-     * @param array $in_array An array to search in
-     * @param array $keys_found An array of keys which meet the regex
-     * @return type Returns the an array of keys if $in_array is valid, or false if not.
+     * @param string $find regex to search on
+     * @param array $in_array an array to search in
+     * @param array $keys_found keys whose corresponding values match the regex
+     * @return type an array of keys if $in_array is valid, or false if not.
      */
-    public static function arraySearchPreg($find, $in_array, $keys_found = Array()) {
+    public static function arraySearchPreg($find, $in_array, $keys_found = array()) {
         if (is_array($in_array)) {
             foreach ($in_array as $key => $val) {
-                if (is_array($val))
-                    self::arraySearchPreg($find, $val, $keys_found);
-                else {
+                if (is_array($val)) {
+                    $keys_found = self::arraySearchPreg($find, $val, $keys_found);
+                } else {
                     if (preg_match('/' . $find . '/', $val))
                         $keys_found[] = $key;
                 }
@@ -180,6 +181,22 @@ class ArrayUtil {
         return array ($keys[0] => array_shift ($array));
     }
 
+    /**
+     * @param array $array the array to sort
+     * @param bool $sideEffects If true, this function sorts the array reference. Otherwise, 
+     *  the array is copied before sorting
+     * @return the sorted array
+     */
+    public function sort (array &$array, $sideEffects=false) {
+        if ($sideEffects) {
+            sort ($array);
+            return $array;
+        } else {
+            $newArray = $array;
+            sort ($newArray);
+            return $newArray;
+        }
+    }
 
 }
 

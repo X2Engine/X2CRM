@@ -74,12 +74,12 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 <?php
 $attributeLabels = CActiveRecord::model('X2List')->attributeLabels();
 
-$this->widget('zii.widgets.grid.CGridView', array(
+$this->widget('X2GridViewGeneric', array(
 	'id'=>'lists-grid',
-	'enableSorting'=>false,
-	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
-	'htmlOptions'=>array('class'=>'grid-view contact-lists fullscreen'),
-	'template'=> '<div class="page-title icon contacts"><h2>'.$heading.'</h2><div class="title-bar">{summary}</div></div>{items}{pager}',
+	//'enableSorting'=>tru,
+	//'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
+	//'htmlOptions'=>array('class'=>'grid-view contact-lists fullscreen'),
+	'template'=> '<div class="page-title icon contacts"><h2>'.$heading.'</h2>{summary}</div>{items}{pager}',
 	'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>')
 		. '<div class="form no-border" style="display:inline;"> '
 		. CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(),Profile::getPossibleResultsPerPage(),array(
@@ -92,23 +92,29 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			))
 		. ' </div>',
 	'dataProvider'=>$contactLists,
+    'gvSettingsName' => 'listsGrid',
 	// 'filter'=>$model,
-	'rowCssClassExpression'=>'$data["id"]==="all"?"bold":""',
+	//'rowCssClassExpression'=>'$data["id"]==="all"?"bold":"$this->rowCssClass[$row%"',
+	'rowCssClassExpression'=>'$this->rowCssClass[$row%2].($data["id"]==="all"?" bold":"")',
+    'defaultGvSettings' => array (
+        'name' => 180,
+        'type' => 180,
+        'assignedTo' => 180,
+        'count' => 180,
+        'gvControls' => 75,
+    ),
 	'columns'=>array(
-		//'id',
 		array(
 			'name'=>'name',
 			'header'=>$attributeLabels['name'],
 			'type'=>'raw',
 			'value'=>'CHtml::link($data["name"],X2List::getRoute($data["id"]))',
-			'headerHtmlOptions'=>array('style'=>'width:40%;'),
 		),
 		array(
 			'name'=>'type',
 			'header'=>$attributeLabels['type'],
 			'type'=>'raw',
 			'value'=>'$data["type"]=="static"? Yii::t("contacts","Static") : Yii::t("contacts","Dynamic")',
-			'headerHtmlOptions'=>array('style'=>'width:15%;'),
 		),
 		array(
 			'name'=>'assignedTo',
@@ -122,10 +128,22 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'headerHtmlOptions'=>array('class'=>'contact-count'),
 			'htmlOptions'=>array('class'=>'contact-count'),
 			'value'=>'Yii::app()->locale->numberFormatter->formatDecimal($data["count"])',
-			'headerHtmlOptions'=>array('style'=>'width:20%;'),
 		),
+        array (
+            'id' => 'C_gvControls',
+            'class' => 'X2ButtonColumn',
+            'header' => Yii::t('app','Tools'),
+            'updateButtonUrl' => 
+                "Yii::app()->createUrl ('/contacts/updateList', array ('id' => \$data['id']))",
+            'cssClassExpression' =>
+                "!is_numeric (\$data['id']) ? 'hide-edit-delete-buttons' : ''",
+            'viewButtonUrl' => 
+                "X2List::getRoute (\$data['id'])",
+            'deleteButtonUrl' => 
+                "Yii::app()->createUrl ('/contacts/deleteList', array ('id' => \$data['id']))",
+        ),
 	),
 )); ?>
 <div class="form">
-<?php echo CHtml::link('<span class="add-button">'.Yii::t('app','New List').'</span>',array('/contacts/contacts/createList'),array('class'=>'x2-button')); ?>
+<?php echo CHtml::link('<span>'.Yii::t('app','New List').'</span>',array('/contacts/contacts/createList'),array('class'=>'x2-button')); ?>
 </div>

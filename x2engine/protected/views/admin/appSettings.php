@@ -55,9 +55,9 @@ $('#massActionsBatchSize').change(function(){
 
 $('#currency').change(function() {
 	if($('#currency').val() == 'other')
-		$('#other-currency-options').fadeIn(300);
+		$('#currency2').fadeIn(300);
 	else
-		$('#other-currency-options').fadeOut(300);
+		$('#currency2').fadeOut(300);
 });
 ", CClientScript::POS_READY);
 ?>
@@ -244,23 +244,7 @@ $('#currency').change(function() {
             echo ' selected="true"';
         } ?>><?php echo Yii::t('admin', 'Other'); ?></option>
         </select>
-        <div id='other-currency-options' style="<?php if($curFound) echo 'display:none;'; ?>">
-        <input type="text" name="currency2" id="currency2" 
-         style="width:120px;" 
-         value="<?php echo $curFound ? '' : $model->currency; ?>" />
-        </div>
-        <?php
-        echo CHtml::label (Yii::t('admin', 'Currency Locale').'&nbsp;'.
-            X2Html::hint (Yii::t('admin', 'If set, the currency locale will be used to format '.
-                'currency fields across the app. Otherwise, currency fields will be formatted '.
-                'using the locale corresponding to the current user\'s language preference.'), 
-                false, null, true), 'localeId');
-        echo CHtml::dropDownList (
-            'localeId',
-            Yii::app()->settings->currencyLocale === null ? 
-                'default' : Yii::app()->settings->currencyLocale, 
-            array ('default' => '-Use Default-') +  $localeIds);
-        ?>
+        <input type="text" name="currency2" id="currency2" style="width:120px;<?php if($curFound) echo 'display:none;'; ?>" value="<?php echo $curFound ? '' : $model->currency; ?>" />
     </div>
 
     <div class="error">

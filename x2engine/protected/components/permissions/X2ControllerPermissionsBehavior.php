@@ -63,6 +63,7 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
         }
 
         $actionId = $action->getId();
+
         // These actions all have a model provided with them but its assignment
         // should not be checked for an exception. They either have permission
         // for this action or they do not.
@@ -78,7 +79,9 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
             $staticModel = X2Model::model($this->owner->modelClass);
         }
 
-        if (isset($_GET['id']) && !in_array($actionId, $exceptions) && !Yii::app()->user->isGuest && isset($staticModel)) {
+        if (isset($_GET['id']) && !in_array($actionId, $exceptions) && !Yii::app()->user->isGuest &&
+            isset($staticModel)) {
+
             // Check assignment fields in the current model
             $retrieved = true;
             $model = $staticModel->findByPk($_GET['id']);
@@ -91,8 +94,11 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
         $actionAccess = ucfirst($this->owner->getId()) . ucfirst($actionId);
         $authItem = $auth->getAuthItem($actionAccess);
 
-        // Return true if the user is explicitly allowed to do it, or if there is no permission item, or if they are an admin
-        if (!($authItem instanceof CAuthItem) || Yii::app()->user->checkAccess($actionAccess, $params) || Yii::app()->params->isAdmin) {
+        // Return true if the user is explicitly allowed to do it, or if there is no permission 
+        // item, or if they are an admin
+        if (!($authItem instanceof CAuthItem) || 
+            Yii::app()->user->checkAccess($actionAccess, $params) || Yii::app()->params->isAdmin) {
+
             return true;
         } elseif (Yii::app()->user->isGuest) {
             Yii::app()->user->returnUrl = Yii::app()->request->url;
@@ -113,7 +119,8 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
         $view = false;
         $edit = false;
-        $module = $model instanceof X2Model ? Yii::app()->getModule($model->module) : Yii::app()->controller->module;
+        $module = $model instanceof X2Model ? 
+            Yii::app()->getModule($model->module) : Yii::app()->controller->module;
 
         if (isset($module)) {
             $moduleAdmin = Yii::app()->user->checkAccess(ucfirst($module->name) . 'Admin');
@@ -121,12 +128,19 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
             $moduleAdmin = false;
         }
 
-        if ($model instanceof X2Model && $model->asa('permissions') != null && $module instanceof CModule) {
+        if ($model instanceof X2Model && $model->asa('permissions') != null && 
+            $module instanceof CModule) {
 
             // Check assignment and visibility using X2PermissionsBehavior
-            $view = (Yii::app()->params->isAdmin || $moduleAdmin) || $model->isVisibleTo(Yii::app()->getSuName());
+            $view = (Yii::app()->params->isAdmin || $moduleAdmin) || 
+                $model->isVisibleTo(Yii::app()->getSuName());
             if ($view) { // Only check edit permissions if they're allowed to view
-                $edit = (Yii::app()->params->isAdmin || $moduleAdmin) || Yii::app()->authManager->checkAccess(ucfirst($module->name) . 'Update', Yii::app()->getSuID(), array('X2Model' => $model));
+                $edit = (Yii::app()->params->isAdmin || $moduleAdmin) || 
+                    Yii::app()->authManager->checkAccess(
+                        ucfirst($module->name) . 'Update',
+                        Yii::app()->getSuID(),
+                        array('X2Model' => $model)
+                    );
             }
         } else {
             // No special permissions checks are available

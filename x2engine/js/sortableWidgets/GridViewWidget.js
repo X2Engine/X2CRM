@@ -74,7 +74,7 @@ Private instance methods
  */
 SortableWidget.prototype._setUpGridSettings = function () {
     var that = this;
-    var settingsDialog$ = $('#grid-settings-dialog-' + this.widgetUID);          
+    var settingsDialog$ = $('#grid-settings-dialog-' + this.getWidgetKey ());          
     settingsDialog$.dialog ({
         title: this.translations['Grid Settings'],
         autoOpen: false,
@@ -91,8 +91,8 @@ SortableWidget.prototype._setUpGridSettings = function () {
                 click: function () {
                     var elem$ = $(this);
                     that.setProperty (
-                        'persistentGridSettings',
-                        $(this).find ('[name="persistentGridSettings"]').val (),
+                        'dbPersistentGridSettings',
+                        $(this).find ('[name="dbPersistentGridSettings"]').is (':checked') ? 1 : 0,
                         function () { elem$.dialog ('close'); });
                 }
             }

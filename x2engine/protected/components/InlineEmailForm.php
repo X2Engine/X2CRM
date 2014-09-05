@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -79,7 +78,7 @@ class InlineEmailForm extends X2Widget {
     /**
      * @var string the association type of the email templates
      */
-    private $associationType = null;
+    public $associationType = null;
 
     public function init(){
 
@@ -88,7 +87,10 @@ class InlineEmailForm extends X2Widget {
         if(isset($this->targetModel)) {
             $this->model->targetModel = $this->targetModel;
         }
-        $this->associationType = X2Model::getModelName (Yii::app()->controller->module->name);
+
+        if (!$this->associationType) {
+            $this->associationType = X2Model::getModelName (Yii::app()->controller->module->name);
+        }
 
         // Bring in attributes set in the configuration:
         $this->model->attributes = $this->attributes;
@@ -140,7 +142,9 @@ class InlineEmailForm extends X2Widget {
                 )).",
                 saveDefaultTemplateUrl: '".
                     Yii::app()->controller->createUrl (
-                        '/profile/profile/ajaxSaveDefaultEmailTemplate')."'
+                        '/profile/profile/ajaxSaveDefaultEmailTemplate')."',
+                tmpUploadUrl: '".Yii::app()->createUrl('/site/tmpUpload')."', 
+                rmTmpUploadUrl: '".Yii::app()->createUrl('/site/removeTmpUpload')."'
             });
         });
         ", CClientScript::POS_END);

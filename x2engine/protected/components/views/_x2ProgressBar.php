@@ -133,6 +133,14 @@ ProgressBar.prototype.updateCount = function (count) {
     this._value$.css ({ width: count / this.max * 100 + '%' });
 };
 
+ProgressBar.prototype.getCount = function () {
+    return this.count;
+};
+
+ProgressBar.prototype.getMax = function () {
+    return this.max;
+};
+
 /**
  * Increment count, moving progress bar to the right
  * @param int count 

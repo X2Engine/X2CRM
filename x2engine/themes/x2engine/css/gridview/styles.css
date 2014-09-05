@@ -446,3 +446,23 @@ Remove extra border when pager isn't shown
     border: none !important;
     padding: 0 !important;
 }
+
+
+
+
+.x2-gridview .x2grid-header-container .items {
+    margin-top: -1px;
+    margin-left: -1px;
+    margin-bottom: 0;
+    border-bottom: none;
+}
+.x2-gridview .x2grid-body-container .items {
+    margin: 0;
+    margin-top: -1px;
+    margin-left: -1px;
+}
+
+.x2-gridview table.items > tbody > tr > td.button-column.hide-edit-delete-buttons .update,
+.x2-gridview table.items > tbody > tr > td.button-column.hide-edit-delete-buttons .delete {
+    visibility: hidden;
+}

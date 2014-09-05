@@ -127,12 +127,12 @@ $this->widget('X2GridView', array(
         'status'=>array(
 			'name'=>'status',
 			'type'=>'raw',
-			'value'=>'Yii::t("services",$data->status)',
+			'value'=>'Yii::t("services",$data->renderAttribute("status"))',
 		),
         'impact'=>array(
 			'name'=>'impact',
 			'type'=>'raw',
-			'value'=>'Yii::t("services",$data->impact)',
+			'value'=>'Yii::t("services",$data->renderAttribute("impact"))',
 		),
 /*		'name'=>array(
 			'name'=>'name',

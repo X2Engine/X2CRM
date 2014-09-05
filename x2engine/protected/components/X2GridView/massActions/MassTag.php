@@ -36,7 +36,7 @@
 
 class MassTag extends MassAction {
 
-    public function execute ($gvSelection) {
+    public function execute (array $gvSelection) {
         if (!isset ($_POST['tags']) || !is_array ($_POST['tags']) ||
             !isset ($_POST['modelType'])) {
 

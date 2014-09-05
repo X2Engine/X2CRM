@@ -430,6 +430,7 @@ VALUES
 ('MarketingBasicPrivate',1,'Control their own records','return $this->checkAssignment($params);','N;'),
 /*('MarketingAjaxDeleteWebForm',0,'',NULL,'N;'),*/
 ('MarketingClick',0,'',NULL,'N;'),
+('MarketingDoNotEmailLinkClick',0,'',NULL,'N;'),
 ('MarketingComplete',0,'',NULL,'N;'),
 ('MarketingCreate',0,'',NULL,'N;'),
 ('MarketingCreateFromTag',0,'',NULL,'N;'),
@@ -1172,6 +1173,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('MarketingUpdateAccess','MarketingMinimumRequirements'),
 ('MarketingPrivateBasicAccess','MarketingBasicPrivate'),
 ('GuestSiteFunctionsTask','MarketingClick'),
+('GuestSiteFunctionsTask','MarketingDoNotEmailLinkClick'),
 ('MarketingUpdateAccess','MarketingComplete'),
 ('MarketingUpdateAccess','MarketingGetX2ModelInput'),
 ('MarketingUpdatePrivate','MarketingComplete'),

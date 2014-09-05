@@ -41,14 +41,15 @@
  *
  * @package application.components.X2Settings
  */
-class GridViewDbSettingsBehavior extends CBehavior implements X2Settings {
+class GridViewDbSettingsBehavior extends X2Settings {
     
+// commented out since they might become useful
     /**
      * @param string $uid The UID of the grid view
      * @param array (<setting name> => <setting val>) $settings The settings to save
      * @return bool true for success, false otherwise
      */
-//    public static function saveSettings ($uid, array $settings) {
+//    public function saveSettings ($uid, array $settings) {
 //        $profile = Yii::app()->params->profile;
 //        $gvSettings = CJSON::decode ($profile->generalGridViewSettings); 
 //        if (!is_array ($gvSettings))
@@ -61,7 +62,7 @@ class GridViewDbSettingsBehavior extends CBehavior implements X2Settings {
 //    /**
 //     * @param string $uid The UID of the grid view
 //     */
-//    public static function getSettings ($uid) {
+//    public function getSettings ($uid) {
 //        $profile = Yii::app()->params->profile;
 //        $gvSettings = CJSON::decode ($profile->generalGridViewSettings); 
 //        return CJSON::decode ($gvSettings[$uid]);
@@ -73,7 +74,8 @@ class GridViewDbSettingsBehavior extends CBehavior implements X2Settings {
      * @param string key the setting value
      * @return bool true for success, false otherwise
      */
-    public static function saveSetting ($uid, $key, $val) {
+    public function saveSetting ($key, $val) {
+        $uid = $this->getStatePrefix ();
         $profile = Yii::app()->params->profile;
         $gvSettings = CJSON::decode ($profile->generalGridViewSettings); 
         if (!is_array ($gvSettings))
@@ -90,7 +92,8 @@ class GridViewDbSettingsBehavior extends CBehavior implements X2Settings {
      * @param string key the setting name
      * @return mixed The value of the gv setting
      */
-    public static function getSetting ($uid, $key) {
+    public function getSetting ($key) {
+        $uid = $this->getStatePrefix ();
         $profile = Yii::app()->params->profile;
         $gvSettings = CJSON::decode ($profile->generalGridViewSettings); 
         if (is_array ($gvSettings) && isset ($gvSettings[$uid]) && is_array ($gvSettings[$uid]) &&

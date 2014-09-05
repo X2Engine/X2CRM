@@ -2231,7 +2231,13 @@ class UpdaterBehavior extends ResponseBehavior {
         // If there's an error on the server end the response will be a JSON
         $tryJson = json_decode($md5sums_content,1);
         if(!(bool) $md5sums_content) {
-            throw new CException(Yii::t('admin','Unknown update server error.'),self::ERR_UPSERVER);
+            $admin = CActiveRecord::model('Admin')->findByPk(1);
+            if ($this->scenario === 'upgrade' && isset($admin) && empty($admin->unique_key)) {
+                $updaterSettingsLink = CHtml::link(Yii::t('admin', 'Updater Settings page'), array('admin/updaterSettings'));
+                throw new CException(Yii::t('admin','You must first set a product key on the '.$updaterSettingsLink));
+            } else {
+                throw new CException(Yii::t('admin','Unknown update server error.'),self::ERR_UPSERVER);
+            }
         } else if(is_array($tryJson)) {
             // License key error
             if(isset($tryJson['errors'])) {

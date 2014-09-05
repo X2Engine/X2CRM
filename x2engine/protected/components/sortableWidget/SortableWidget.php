@@ -553,6 +553,13 @@ abstract class SortableWidget extends X2Widget {
     ***********************************************************************/
 
     /**
+     * @return string key which uniquely identifies this widget 
+     */
+    public function getWidgetKey () {
+        return get_called_class () . '_' . $this->widgetUID;
+    }
+
+    /**
      * Non-static wrapper around getJSONProperty
      * @param string $key The name of the JSON property
      */

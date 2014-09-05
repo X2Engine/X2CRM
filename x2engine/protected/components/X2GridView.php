@@ -54,7 +54,13 @@ Yii::import('X2GridViewBase');
 class X2GridView extends X2GridViewBase {
     public $modelName;
     public $viewName;
+
+    /**
+     * @var bool $enableTags if true, tags column can be added/removed by user. Don't enable this
+     *  without adding support for tag filtering.
+     */
     public $enableTags = false;
+
     public $massActions = array ();
     public $fields;
     public $allFields = array ();
@@ -64,7 +70,7 @@ class X2GridView extends X2GridViewBase {
      * @var bool If true, the users will be able to select & perform mass action on all records 
      *  all records in the dataprovider.
      */
-    public $enableSelectAllOnAllPages = true;
+    public $enableSelectAllOnAllPages = false;
 
     protected $_fieldModels;
     protected $_isAdmin;
@@ -231,7 +237,7 @@ class X2GridView extends X2GridViewBase {
             }elseif($this->allFields[$columnName]->type=='phone'){
                 $newColumn['type'] = 'raw';
                 $newColumn['value'] = 'X2Model::getPhoneNumber("'.$columnName.'","'.
-                    $this->modelName.'",$data["id"], false, true)';
+                    $this->modelName.'",$data["id"], true, true)';
             }
         } else if($columnName == 'tags') {
             $newColumn['id'] = $this->namespacePrefix.'C_'.'tags';
@@ -271,6 +277,7 @@ class X2GridView extends X2GridViewBase {
 
     public function init () {
         $this->handleFields ();
+        if ($this->enableSelectAllOnAllPages) $this->dataProvider->calculateChecksum = true;
         parent::init ();
     }
 
@@ -332,6 +339,18 @@ class X2GridView extends X2GridViewBase {
                 unset($this->massActions[array_search('delete',$this->massActions)]);
         }
 
+//        $gridFilters = $this->dataProvider->model->getGridFilters ();
+//        if (is_array ($gridFilters)) {
+//            $fmtGridFilters = array ();
+//            foreach ($gridFilters as $attr => $val) {
+//                $fmtGridFilters[$this->modelName.'['.$attr.']'] = $val;
+//            }
+//        }
+
+        if ($this->enableSelectAllOnAllPages) {
+            $idChecksum = $this->dataProvider->getIdChecksum ();
+        }
+
         $this->controller->renderPartial (
             'application.components.views._x2GridViewMassActionButtons', array (
                 'UIType' => 'buttons',
@@ -341,7 +360,8 @@ class X2GridView extends X2GridViewBase {
                 'modelName' => $this->modelName,
                 'gridObj' => $this,
                 'fixedHeader' => $this->fixedHeader,
-            ), false, ($this->ajax ? true : false)
+                'idChecksum' => $this->enableSelectAllOnAllPages ? $idChecksum : null,
+            )//, false, ($this->ajax ? true : false)
         );
     }
 

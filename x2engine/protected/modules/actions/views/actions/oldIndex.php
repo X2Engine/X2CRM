@@ -88,10 +88,15 @@ x2.actionFrames.afterActionUpdate = (function () {
     };
 }) ();
 function toggleShowActions() {
-	var show = $('#dropdown-show-actions').val(); // value of dropdown (which actions to show)
-	$.post(".json_encode(Yii::app()->controller->createUrl('/actions/actions/saveShowActions')).", {ShowActions: show}, function() {
-		$.fn.yiiGridView.update('actions-grid', {data: $.param($('#actions-grid input[name=\"Actions[complete]\"]'))});
-	});
+    var show = $('#dropdown-show-actions').val(); // value of dropdown (which actions to show)
+    $.post(
+        ".json_encode(Yii::app()->controller->createUrl('/actions/actions/saveShowActions')).",
+        {ShowActions: show}, function() {
+            $.fn.yiiGridView.update('actions-grid', {
+                data: $.param($('#actions-grid input[name=\"Actions[complete]\"]'))
+            });
+        }
+    );
 }
 ",CClientScript::POS_END);
 

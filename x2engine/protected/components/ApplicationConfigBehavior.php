@@ -319,11 +319,14 @@ class ApplicationConfigBehavior extends CBehavior {
         $this->owner->params->adminProfile = $adminProf;
         if(!$noSession){ // Typical web session:
             $notGuest = !$this->owner->user->getIsGuest();
+
             if($notGuest) {
                 $this->owner->params->profile = X2Model::model('Profile')->findByAttributes(array(
                     'username' => $this->owner->user->getName()
                         ));
                 $this->setSuModel($this->owner->params->profile->user);
+            } else {
+                $this->owner->params->profile = Profile::model ()->getGuestProfile ();
             }
         } else {
             // Use the admin profile as the user profile.

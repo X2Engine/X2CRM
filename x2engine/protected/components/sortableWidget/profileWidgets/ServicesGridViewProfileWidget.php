@@ -60,7 +60,10 @@ class ServicesGridViewProfileWidget extends GridViewWidget {
 
     protected function getModel () {
         if (!isset ($this->_model)) {
-            $this->_model = new Services ('search');
+            $this->_model = new Services ('search',
+                $this->widgetKey,
+                $this->getWidgetProperty ('dbPersistentGridSettings'));
+
             $this->afterGetModel ();
         }
         return $this->_model;
@@ -84,7 +87,7 @@ class ServicesGridViewProfileWidget extends GridViewWidget {
             $resultsPerPage = self::getJSONProperty (
                 $this->profile, 'resultsPerPage', $this->widgetType, $this->widgetUID);
             $this->_dataProvider = $this->model->searchWithStatusFilter (
-                $resultsPerPage, get_called_class ());
+                $resultsPerPage, $this->widgetKey);
         }
         return $this->_dataProvider;
 

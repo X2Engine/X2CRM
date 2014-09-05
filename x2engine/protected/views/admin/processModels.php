@@ -68,67 +68,33 @@ if ($preselectedMap) {
     <?php
     }
     echo "</table>";
-    echo CHtml::link(Yii::t('admin', 'Edit'), '#', array('id' => 'editPresetMap', 'class' => 'x2-button'));
+    echo CHtml::link(Yii::t('admin', 'Edit'), '#', array('id' => 'editPresetMap', 'class' => 'x2-button')).'<br /><br />';
 } else {
     echo Yii::t('admin',"First, we'll need to make sure your fields have mapped properly for import. ");
-    echo Yii::t('admin','Select the fields you wish to map. Fields that have been detected as matching an existing field have been selected. ').'<br /><br />';
-    echo Yii::t('admin','If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID.  Do not map the ID field if you don\'t want this to happen.').'<br /><br />';
-    echo Yii::t('admin','Fields that are not selected will not be mapped. To override a mapping, select the appropriate field from the corresponding drop down. If you believe a field was detected incorrectly, deselect it below, then manually override the mapping.');
+    echo Yii::t('admin','Below is a list of our fields, the fields you provided, and a few sample records that you are importing.')."<br /><br />";
+    echo Yii::t('admin','If the ID field is selected to be imported, the import tool will attempt to overwrite pre-existing records with that ID. Do not map the ID field if you don\'t want this to happen.');
+    echo Yii::t('admin', 'Select the fields you wish to map. Fields that have been detected as matching an existing field have been selected.').'<br /><br />';
+    echo Yii::t('admin', 'Fields that are not selected will not be mapped. To override a mapping, select the appropriate field from the corresponding drop down.').'<br /><br />';
+    echo Yii::t('admin','Selecting "DO NOT MAP" will ignore the field from your CSV, and selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it.').'<br /><br />';
+}
+$maxExecTime = ini_get('max_execution_time');
+if ($maxExecTime <= 30) {
+    echo '<div class="flash-notice">'.Yii::t('admin', 'Warning: This server is configured with a short maximum execution time. This can result in the import being terminated before completion. You may wish to increase'
+        .' this value. The current maximum execution time is {exec_time} seconds.', array('{exec_time}' => $maxExecTime)).'</div>';
 }
 ?>
 
-</div></<div><br /></div>
+</div><br /></div>
 <div id="import-container" class='form'>
 <div id="super-import-map-box">
-<h2> <span class="import-hide">Import Map</span></h2>
+<h2><a href='#' class='clean-link' onclick="$('#import-map-box').toggle();">[-] </a><span class="import-hide"><?php echo Yii::t('admin', 'Import Map'); ?></span></h2>
 <div id="import-map-box" class="import-hide form" style="width:600px">
     <div id="form-error-box" style="color:red">
 
     </div>
+</br />
 
-<?php
-    Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
-    Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
-    Yii::app()->clientScript->registerScript('renderMultiSelect',"
-        $('.multiselect').multiselect();
-    ",CClientScript::POS_READY);
-    $fields = array();
-    $selected = array();
-    $newFields = array();
-    foreach($meta as $attribute) {
-        if (isset($importMap[$attribute])) {
-            // Automatically detected fields
-            if ($preselectedMap && $importMap[$attribute] !== 'createNew')
-                $fields[$attribute] = $importMap[$attribute];
-            else
-                $fields[$attribute] = $attribute;
-            $selected[] = $attribute;
-        } else {
-            // New fields
-            $fields[$attribute] = $attribute;
-            $newFields[] = $attribute;
-        }
-    }
-    echo CHtml::dropDownList('attributes', $selected, $fields, array(
-        'id' => 'importMapping',
-        'class' => 'multiselect',
-        'multiple' => 'multiple',
-        'size' => 8,
-        'style'=> 'width: 460px; height: 200px;',
-    ));
-?>
-
-<br />
-<?php
-    echo X2Html::hint(Yii::t('admin', "A meaningful description of the data source will be helpful to identify the import mapping. The mapping name will "
-                ." be generated in the form '{source} to X2Engine {version}' to identify the data sources for which the import map was intended."), false);
-    echo CHtml::textField("mapping-name", "", array('id'=>'mapping-name', 'placeholder'=>Yii::t('admin', 'Import Source')))."&nbsp;";
-    echo CHtml::link(Yii::t('admin', 'Export Mapping'), '#', array('id'=>'export-map', 'class'=>'x2-button'));
-    echo CHtml::link(Yii::t('acmin', 'Download Mapping'), '#', array('id'=>'download-map', 'class'=>'x2-button', 'style'=>'display:none'));
-?>
-
-<h2><a href='#' class='clean-link' onclick="$('#mapping-overrides').toggle();">[-] </a><?php echo Yii::t('admin', 'Override Mappings'); ?></h2>
-<div id='mapping-overrides' style='display: none'>
+<div id='mapping-overrides'>
 <?php echo Yii::t('admin','Below is a list of our fields, the fields you provided, and a few sample records that you are importing. ');?>
 <?php echo Yii::t('admin','Selecting "DO NOT MAP" will ignore the field and use the settings chosen above. Selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it. ') ?>
 <?php echo Yii::t('admin','This override takes precedence over the selector above.') ?>
@@ -149,11 +115,11 @@ if ($preselectedMap) {
                 array('class'=>'import-attribute')
                 )."</td>";
         echo "<td style='width:33%'>";
-        for($i=0;$i<5;$i++){
-            if(isset($sampleRecords[$i])){
-                if($i>0){
+        for ($i=0; $i < count($sampleRecords); $i++) {
+            if (isset($sampleRecords[$i])) {
+                if ($i>0) {
                     echo "<span class='record-$i' id='record-$i-$attribute' style='display:none;'>".$sampleRecords[$i][$attribute]."</span>";
-                }else{
+                } else {
                     echo "<span class='record-$i' id='record-$i-$attribute'>".$sampleRecords[$i][$attribute]."</span>";
                 }
             }
@@ -161,30 +127,36 @@ if ($preselectedMap) {
         echo "</td>";
         echo "</tr>";
     }
-
-
 ?>
 </table>
 </div>
 <br />
+<?php
+    echo X2Html::hint(Yii::t('admin', "A meaningful description of the data source will be helpful to identify the import mapping. The mapping name will "
+                ." be generated in the form '{source} to X2Engine {version}' to identify the data sources for which the import map was intended."), false);
+    echo CHtml::textField("mapping-name", "", array('id'=>'mapping-name', 'placeholder'=>Yii::t('admin', 'Import Source')))."&nbsp;";
+    echo CHtml::link(Yii::t('admin', 'Export Mapping'), '#', array('id'=>'export-map', 'class'=>'x2-button'));
+    echo CHtml::link(Yii::t('acmin', 'Download Mapping'), '#', array('id'=>'download-map', 'class'=>'x2-button', 'style'=>'display:none'));
+
+?>
 </div>
 </div>
 <br /><br />
 <h2><?php echo Yii::t('admin','Process Import Data'); ?></h2>
 <div class="form" style="width:600px">
     <div class="row">
-        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"This will attempt to create a record for any field that links to another record type (e.g. Account)"),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('admin','Create records for link fields?'); ?></strong></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"This will attempt to create a record for any field that links to another record type (e.g. Account)"),false); ?></div>
         <div class="cell"><?php echo CHtml::checkBox('create-records-box','checked');?></div>
     </div>
     <div class="row">
-        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"These tags will be applied to any record created by the import. Example: web,newlead,urgent."),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('marketing','Tags'); ?></strong></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"These tags will be applied to any record created by the import. Example: web,newlead,urgent."),false); ?></div>
         <div class="cell"><?php echo CHtml::textField('tags'); ?></div>
     </div>
     <div class="row">
-        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"These fields will be applied to all imported records and override their respective mapped fields from the import."),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('admin','Automatically fill certain fields?'); ?></strong></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"These fields will be applied to all imported records and override their respective mapped fields from the import."),false); ?></div>
         <div class="cell"><?php echo CHtml::checkBox('fill-fields-box');?></div>
 
         <div id="fields" class="row" style="display:none;">
@@ -197,8 +169,8 @@ if ($preselectedMap) {
         </div>
     </div>
     <div class="row">
-        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"Anything entered here will be created as a comment and logged as an Action in the imported record's history."),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('admin','Automatically log a comment on these records?'); ?></strong></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"Anything entered here will be created as a comment and logged as an Action in the imported record's history."),false); ?></div>
         <div class="cell"><?php echo CHtml::checkBox('log-comment-box');?></div>
         <div class="row">
             <div id="comment-form" style="display:none;">
@@ -209,19 +181,19 @@ if ($preselectedMap) {
         </div>
     </div>
     <div class="row">
-        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"If this box is checked, all records will be assigned to users based on your lead routing settings."),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('admin','Assign records via lead-routing?'); ?></strong></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"If this box is checked, all records will be assigned to users based on your lead routing settings."),false); ?></div>
         <div class="cell"><?php echo CHtml::checkBox('lead-routing-box');?></div>
     </div>
     <div class="row">
-        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"If this box is checked, the activity feed will not be populated with the new records."),false); ?></div>
         <div class="cell"><strong><?php echo Yii::t('admin','Skip posting new records to activity feed?'); ?></strong></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"If this box is checked, the activity feed will not be populated with the new records."),false); ?></div>
         <div class="cell"><?php echo CHtml::checkBox('activity-feed-box');?></div>
     </div>
     <div class="row">
+        <div class="cell"><strong><?php echo Yii::t('admin','Performance mode'); ?></strong></div>
         <div class="cell"><?php echo X2Html::hint(Yii::t('admin','If checked, certain shortcuts will be taken to increase the speed of the import, which includes skipping the "record created" X2Flow trigger.'
                 . ' Leaving this option enabled is highly recommended, especially for large data sets.'),false); ?></div>
-        <div class="cell"><strong><?php echo Yii::t('admin','Performance mode'); ?></strong></div>
         <div class="cell"><?php echo CHtml::checkBox('performance-mode','checked');?></div>
     </div>
 </div>
@@ -269,19 +241,9 @@ if ($preselectedMap) {
         var routing=0;
         var skipActivityFeed=0;
         var newFields = <?php echo CJSON::encode($newFields); ?>;
-        $('#importMapping').find(":checked").each(function(){
-            keys.push($(this).val());
-            if (jQuery.inArray($(this).text(), newFields) != -1)
-                attributes.push('createNew');
-            else
-                attributes.push($(this).text());
-        });
         $('.import-attribute').each(function(){
-            if ($(this).val() != '') {
-                // Add mapping overrides that are not marked 'DO NOT MAP'
-                attributes.push($(this).val());
-                keys.push($(this).attr('name'));
-            }
+            attributes.push ($(this).val());
+            keys.push ($(this).attr('name'));
         });
         if($('#fill-fields-box').attr('checked')=='checked'){
             $('.forced-attribute').each(function(){
@@ -300,6 +262,20 @@ if ($preselectedMap) {
         if($('#activity-feed-box').attr('checked')=='checked'){
             skipActivityFeed=1;
         }
+
+        function showPreparationResult (success, msg) {
+            if (success) {
+                $('#import-status').show();
+                startLoadingIcon ('#import-status');
+                importData (25);
+                $('#prep-status-box').html (msg);
+            } else {
+                $('#super-import-map-box').show();
+                $('#import-container').show();
+                $('#form-error-box').html (msg);
+            }
+        }
+
         $.ajax({
             url:'prepareModelImport',
             type:"POST",
@@ -318,43 +294,39 @@ if ($preselectedMap) {
             },
             success:function(data){
                 data=JSON.parse(data);
-                if (data[0]==0) {
-                    $('#import-status').show();
-                    var str="<?php echo Yii::t('admin', "Import setup completed successfully...<br />Beginning import."); ?>";
-                    importData(25);
-                    $('#prep-status-box').html(str);
-                } else if(data[0]==1) {
-                    var str="<?php echo Yii::t('admin', "Import preparation failed.  Failed to create the following fields: "); ?>";
-                    str = str + data[1] + "<br /><br />";
-                    $('#super-import-map-box').show();
-                    $('#import-container').show();
-                    $('#form-error-box').html(str);
-                } else if (data[0]==2) {
-                    var str="<?php echo Yii::t('admin', "Import preparation failed.  The following fields already exist: "); ?>";
-                    str = str + data[1] + "<br /><br />";
-                    $('#super-import-map-box').show();
-                    $('#import-container').show();
-                    $('#form-error-box').html(str);
-                } else if(data[0]==3) {
-                    $('#super-import-map-box').show();
-                    $('#import-status').show();
-                    $('#import-container').show();
-                    var str="<?php echo Yii::t('admin', "Import Preparation failed. The following required fields were not mapped: "); ?>";
-                    str = str + data[1] + "<br /><br />";
-                    $('#form-error-box').html(str);
-                } else if (data[0]==4) {
-                    $('#import-status').show();
-                    var fields = data[1];
-                    var confirmMsg = '<?php echo Yii::t('admin', "You have mapped multiple columns to the same field, are you sure ".
-                                        "you would like to proceed? The following fields were mapped more than once: "); ?>' + fields;
-                    if (window.confirm(confirmMsg)) {
+                var resp = data[0];
+                switch (resp) {
+                    case '0':
                         var str="<?php echo Yii::t('admin', "Import setup completed successfully...<br />Beginning import."); ?>";
-                        importData(25);
-                        $('#prep-status-box').html(str);
-                    } else {
-                        var str="<?php echo Yii::t('admin', "Import cancelled."); ?>";
-                        $('#failures-box').html(str);
-                    }
+                        showPreparationResult (true, str);
+                        break;
+                    case '1':
+                        var str="<?php echo Yii::t('admin', "Import preparation failed.  Failed to create the following fields: "); ?>";
+                        str = str + data[1] + "<br /><br />";
+                        showPreparationResult (false, str);
+                        break;
+                    case '2':
+                        var str="<?php echo Yii::t('admin', "Import preparation failed.  The following fields already exist: "); ?>";
+                        str = str + data[1] + "<br /><br />";
+                        showPreparationResult (false, str);
+                        break;
+                    case '3':
+                        var str="<?php echo Yii::t('admin', "Import Preparation failed. The following required fields were not mapped: "); ?>";
+                        str = str + data[1] + "<br /><br />";
+                        showPreparationResult (false, str);
+                        break;
+                    case '4':
+                        var fields = data[1];
+                        var confirmMsg = '<?php echo Yii::t('admin', "You have mapped multiple columns to the same field, are you sure ".
+                                        "you would like to proceed? The following fields were mapped more than once: "); ?>' + fields;
+                        if (window.confirm(confirmMsg)) {
+                            var str="<?php echo Yii::t('admin', "Import setup completed successfully...<br />Beginning import."); ?>";
+                            showPreparationResult (true, str);
+                        } else {
+                            var str="<?php echo Yii::t('admin', "Import cancelled."); ?>";
+                            showPreparationResult (false, str);
+                        }
+                        break;
                 }
             },
             error:function(){
@@ -418,6 +390,7 @@ if ($preselectedMap) {
                             var str="<strong><?php echo Yii::t('admin', "Import Complete."); ?></strong>";
                             $('#prep-status-box').html(str);
                             alert('<?php echo Yii::t('admin', 'Import Complete!'); ?>');
+                            $('#import-loading-icon').remove();
                         }
                     });
                 }
@@ -426,9 +399,9 @@ if ($preselectedMap) {
     }
     function prevRecord(){
         $('.record-'+record).hide();
-        if(record==0){
-            record=4;
-        }else{
+        if (record==0) {
+            record = <?php echo count($sampleRecords) - 1; ?>;
+        } else {
             record--;
         }
         $('.record-'+record).show();
@@ -436,12 +409,25 @@ if ($preselectedMap) {
 
     function nextRecord(){
         $('.record-'+record).hide();
-        if(record==4){
+        if (record == <?php echo count($sampleRecords) - 1; ?>) {
             record=0;
-        }else{
+        } else {
             record++;
         }
         $('.record-'+record).show();
+    }
+
+    function startLoadingIcon(elem) {
+        $(elem).after ($('<span>', {
+            'class': 'x2-loading-icon',
+            style: 'position: absolute; height: 27px; background-size: 27px;',
+            id: 'import-loading-icon'
+        }));
+        $('#import-loading-icon').position ({
+            my: 'center',
+            at: 'center',
+            of: $(elem)
+        });
     }
 
     function createDropdown(list, ignore) {

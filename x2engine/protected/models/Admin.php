@@ -108,7 +108,14 @@ class Admin extends CActiveRecord {
             array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max' => 20),
             array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
-            array('batchTimeout, massActionsBatchSize','numerical','integerOnly' => true),
+            array('batchTimeout', 'numerical', 'integerOnly' => true),
+            array(
+                'massActionsBatchSize',
+                'numerical',
+                'integerOnly' => true,
+                'min' => 5,
+                'max' => 100,
+            ),
             array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
             
             array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail'),
@@ -122,7 +129,7 @@ class Admin extends CActiveRecord {
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array ('appDescription', 'length', 'max' => 255),
             array (
-                'appName,x2FlowRespectsDoNotEmail,doNotEmailLinkPage,doNotEmailLinkText',
+                'appName,x2FlowRespectsDoNotEmail,doNotEmailPage,doNotEmailLinkText',
                 'safe'
             ),
                 // The following rule is used by search().

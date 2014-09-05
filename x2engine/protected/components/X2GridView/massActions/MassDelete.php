@@ -38,7 +38,7 @@ class MassDelete extends MassAction {
 
     protected $requiresPasswordConfirmation = true;
 
-    public function execute ($gvSelection) {
+    public function execute (array $gvSelection) {
         if (!isset ($_POST['modelType'])) {
 
             throw new CHttpException (400, Yii::t('app', 'Bad request.'));
@@ -58,10 +58,13 @@ class MassDelete extends MassAction {
                 if(!ctype_digit((string) $recordId))
                     throw new CHttpException(400, Yii::t('app', 'Invalid selection.'));
                 try{
+                    //$_GET['id'] = $recordId; // only users who can delete all records can
+                    // call this action, so we don't need to check the assignedTo field
                     if(Yii::app()->controller->beforeAction('delete'))
                         Yii::app()->controller->actionDelete ($recordId);
+                    //unset ($_GET['id']);
                 }catch(CHttpException $e){
-                    if($e->statusCode==403)
+                    if($e->statusCode === 403)
                         $unauthorized++;
                     else
                         throw $e;

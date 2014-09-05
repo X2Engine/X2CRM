@@ -774,13 +774,15 @@ class SiteController extends x2base {
             $id = $_POST['id'];
             if(is_numeric($id)){
                 $tempFile = TempFile::model()->findByPk($id);
-                $folder = $tempFile->folder;
-                $name = $tempFile->name;
-                if(file_exists('uploads/media/temp/'.$folder.'/'.$name))
-                    unlink('uploads/media/temp/'.$folder.'/'.$name); // delete file
-                if(file_exists('uploads/media/temp/'.$folder))
-                    rmdir('uploads/media/temp/'.$folder); // delete folder
-                $tempFile->delete(); // delete database entry tracking temp file
+                if ($tempFile) {
+                    $folder = $tempFile->folder;
+                    $name = $tempFile->name;
+                    if(file_exists('uploads/media/temp/'.$folder.'/'.$name))
+                        unlink('uploads/media/temp/'.$folder.'/'.$name); // delete file
+                    if(file_exists('uploads/media/temp/'.$folder))
+                        rmdir('uploads/media/temp/'.$folder); // delete folder
+                    $tempFile->delete(); // delete database entry tracking temp file
+                }
             }
         }
     }
@@ -1681,49 +1683,92 @@ class SiteController extends x2base {
         $users = User::getNames();
 
         if(isset($_POST['Contacts']) && isset($_POST['Accounts']) && isset($_POST['Opportunity'])){
-            //        var_dump($_POST);
-            //        exit();
             $contact->setX2Fields($_POST['Contacts']);
             $account->setX2Fields($_POST['Accounts']);
             $opportunity->setX2Fields($_POST['Opportunity']);
 
-            $allValid = true;
+            $validAccount = true;
 
-            if($contact->validate() == false)
-                $allValid = false;
+            if($account->validate() == false) {
+                $validAccount = false;
+                // validate other models so that the user gets feedback
+                $contact->validate();
+                $opportunity->validate();
+            }
 
-            if($account->validate() == false)
-                $allValid = false;
-
-            if($opportunity->validate() == false)
-                $allValid = false;
-
-            if($allValid){
-                $c = $this->createContact($contact, $contact->attributes, '1');
+            if($validAccount){
+                $allValid = true;
                 $a = $this->createAccount($account, $account->attributes, '1');
+
+                // Contact and Opportunity require Account id for lookup field
+                $contact->company = Fields::nameId($account->name, $account->id);
+                if($contact->validate() == false)
+                    $allValid = false;
+                $c = $this->createContact($contact, $contact->attributes, '1');
+
+                $opportunity->accountName = Fields::nameId($account->name, $account->id);
+                $opportunity->contactName = Fields::nameId($contact->name, $contact->id);
+                if($opportunity->validate() == false)
+                    $allValid = false;
                 $o = $this->createOpportunity($opportunity, $opportunity->attributes, '1');
 
+                if ($allValid && $c && $a && $o) { // all records created?
+                    Relationships::create(
+                        'Contacts', $contact->id,
+                        'Accounts', $account->id
+                    );
+                    Relationships::create(
+                        'Opportunity', $opportunity->id,
+                        'Contacts', $contact->id
+                    );
+                    Relationships::create(
+                        'Opportunity', $opportunity->id,
+                        'Accounts', $account->id
+                    );
 
-
-                if($c && $a && $o){ // all records created?
-                    $contact->company = $account->id;
-                    $contact->update();
-                    $opportunity->accountName = $account->id;
-                    $opportunity->update();
-
-                    Relationships::create('Contacts', $contact->id, 'Accounts', $account->id);
-                    Relationships::create('Opportunity', $opportunity->id, 'Contacts', $contact->id);
-                    Relationships::create('Opportunity', $opportunity->id, 'Accounts', $account->id);
-
-                    if(isset($_GET['ret'])){
-                        if($_GET['ret'] == 'contacts')
-                            $this->redirect(array("/contacts/contacts/view",'id'=>$contact->id));
-                        else if($_GET['ret'] == 'accounts')
-                            $this->redirect(array("/accounts/accounts/view",'id'=>$account->id));
-                        else if($_GET['ret'] == 'opportunities')
-                            $this->redirect(array("/opportunities/opportunities/view",'id'=>$opportunity->id));
+                    if (isset($_GET['ret'])) {
+                        if ($_GET['ret'] == 'contacts') {
+                            $this->redirect(array(
+                                "/contacts/contacts/view",
+                                'id' => $contact->id
+                            ));
+                        } else if ($_GET['ret'] == 'accounts') {
+                            $this->redirect(array(
+                                "/accounts/accounts/view",
+                                'id' => $account->id
+                            ));
+                        } else if ($_GET['ret'] == 'opportunities') {
+                            $this->redirect(array(
+                                "/opportunities/opportunities/view",
+                                'id' => $opportunity->id
+                            ));
+                        }
                     } else{
-                        $this->redirect(array("/contacts/contacts/view",$contact->id));
+                        $this->redirect(array(
+                            "/contacts/contacts/view",
+                            $contact->id
+                        ));
+                    }
+                } else {
+                    // otherwise clean up
+                    $types = array(
+                        'account' => 'Accounts',
+                        'contact' => 'Contacts',
+                        'opportunity' => 'Opportunity',
+                    );
+                    foreach ($types as $model => $type) {
+                        if (${$model} && isset(${$model}->id)) {
+                            $modelId = ${$model}->id;
+                            ${$model}->delete();
+
+                            // delete all new actions and events from creating/deleting records
+                            foreach (array('Actions', 'Events') as $meta) {
+                                X2Model::model($meta)->deleteAllByAttributes(array(
+                                    'associationId' => $modelId,
+                                    'associationType' => $type,
+                                ));
+                            }
+                        }
                     }
                 }
             }

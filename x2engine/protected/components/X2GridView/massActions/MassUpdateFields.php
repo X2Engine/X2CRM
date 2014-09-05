@@ -36,7 +36,7 @@
 
 class MassUpdateFields extends MassAction {
 
-    public function execute ($gvSelection) {
+    public function execute (array $gvSelection) {
         if (!isset ($_POST['fields'])) {
             throw new CHttpException (400, Yii::t('app', 'Bad Request'));
         }
@@ -68,7 +68,6 @@ class MassUpdateFields extends MassAction {
             }
 
             $model->setX2Fields($fields);
-
             if (!$model->save()) {
                 $errors = $model->getAllErrorMessages();
                 foreach ($errors as $err) {

@@ -63,16 +63,21 @@ class TestingAuxLib  {
 
     /**
      * Used to invoke methods which are protected or private.
-     * @param string $className 
+     * @param string|object $classNameOrInstance
      * @param string $methodName 
      * @return function Takes an array of arguments as a parameter and calls
      *  the specified method with those arguments.
      */
-    public static function setPublic ($className, $methodName) {
-        $method = new ReflectionMethod ($className, $methodName);
+    public static function setPublic ($classNameOrInstance, $methodName) {
+        if (is_string ($classNameOrInstance)) {
+            $class = new $classNameOrInstance ();
+        } else {
+            $class = $classNameOrInstance;
+        }
+        $method = new ReflectionMethod (get_class ($class), $methodName);
         $method->setAccessible (TRUE);
-        return function ($arguments) use ($method, $className) {
-            return $method->invokeArgs (new $className (), $arguments);
+        return function ($arguments=array ()) use ($method, $class) {
+            return $method->invokeArgs ($class, $arguments);
         };
     }
 
@@ -123,9 +128,53 @@ class TestingAuxLib  {
         $user = User::model()->findByAlias($username);
         if(!($user instanceof User))
             return false;
+        $profile = $user->profile;
         Yii::app()->setSuModel($user);
+        Yii::app()->params->profile = $profile;
         return true;
     }
+
+    /**
+     * Login with curl and return the PHP session id (which can be used to make curl requests to 
+     * pages that require authentication)
+     * @return string PHP session id
+     */
+    public function curlLogin ($username, $password) {
+        // login and extract session id from response header
+        $data = array (
+            'LoginForm[username]' => $username,
+            'LoginForm[password]' => $password,
+            'LoginForm[rememberMe]' => 0,
+        );
+        $curlHandle = curl_init (TEST_BASE_URL.'site/login');
+        curl_setopt ($curlHandle, CURLOPT_POST, true);
+        curl_setopt ($curlHandle, CURLOPT_HEADER, true);
+        curl_setopt ($curlHandle, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt ($curlHandle, CURLOPT_POSTFIELDS, http_build_query ($data));
+        ob_start ();
+        $result = curl_exec ($curlHandle);
+        $matches = array ();
+        preg_match_all ('/PHPSESSID=([^;]+);/', $result, $matches);
+        //print_r ($matches);
+        $sessionId = array_pop (array_pop ($matches)); // get the last match
+        ob_clean ();
+        return $sessionId;
+    }
+
+// not tested yet, might eventually be useful
+//    public function curlLogout ($sessionId) {
+//        $cookies = "PHPSESSID=$sessionId; path=/;";
+//        $curlHandle = curl_init ('localhost/index.php/site/logout');
+//        curl_setopt ($curlHandle, CURLOPT_HEADER, true);
+//        curl_setopt ($curlHandle, CURLOPT_RETURNTRANSFER, true);
+//        curl_setopt ($curlHandle, CURLOPT_COOKIE, $cookies);
+//        ob_start ();
+//        $result = curl_exec ($curlHandle);
+//        ob_clean ();
+//        //AuxLib::debugLogR ($result);
+//        return $sessionId;
+//
+//    }
 
 }
 

@@ -179,7 +179,7 @@ abstract class ChartWidget extends SortableWidget {
                 )
             );
             if (AuxLib::isIE8 ()) {
-                $this->_packages['ChartWidgetExtJS']['js'][] = 'js/jqplot/excanvas.js';
+                $this->_packages['ChartWidgetJS']['js'][] = 'js/jqplot/excanvas.js';
             }
         }
         return $this->_packages;

@@ -122,6 +122,13 @@ SortableWidget.getWidgetFromWidgetContainer = function (elem) {
 };
 
 /**
+ * @return string key which uniquely identifies widget
+ */
+SortableWidget.prototype.getWidgetKey = function () {
+    return this.widgetClass + '_' + this.widgetUID;
+};
+
+/**
  * @param string widgetKey
  * @return mixed sortable widget instance if instance with specified class is found, null otherwise 
  */

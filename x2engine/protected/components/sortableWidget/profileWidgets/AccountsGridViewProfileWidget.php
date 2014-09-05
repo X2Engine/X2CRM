@@ -59,7 +59,10 @@ class AccountsGridViewProfileWidget extends GridViewWidget {
 
     protected function getModel () {
         if (!isset ($this->_model)) {
-            $this->_model = new Accounts ('search');
+            $this->_model = new Accounts ('search', 
+                $this->widgetKey,
+                $this->getWidgetProperty ('dbPersistentGridSettings'));
+
             $this->afterGetModel ();
         }
         return $this->_model;

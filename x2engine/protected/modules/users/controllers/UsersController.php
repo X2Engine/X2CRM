@@ -421,18 +421,17 @@ Please click on the link below to create an account at X2Engine!
     public function actionAddTopContact() {
         if(isset($_GET['contactId']) && is_numeric($_GET['contactId'])) {
 
-            //$viewId = (isset($_GET['viewId']) && is_numeric($_GET['viewId'])) ? $_GET['viewId'] : null;
-
             $id = Yii::app()->user->getId();
             $model=$this->loadModel($id);
 
-            $topContacts = empty($model->topContacts)? array() : explode(',',$model->topContacts);
+            $topContacts = empty($model->topContacts) ? array() : explode(',',$model->topContacts);
 
-            if(!in_array($_GET['contactId'],$topContacts)) {        // only add to list if it isn't already in there
+            // only add to list if it isn't already in there
+            if(!in_array($_GET['contactId'],$topContacts)) {        
                 array_unshift($topContacts,$_GET['contactId']);
                 $model->topContacts = implode(',',$topContacts);
             }
-            if ($model->save())
+            if ($model->update())
                 $this->renderTopContacts();
             // else
                 // echo print_r($model->getErrors());
@@ -442,8 +441,6 @@ Please click on the link below to create an account at X2Engine!
 
     public function actionRemoveTopContact() {
         if(isset($_GET['contactId']) && is_numeric($_GET['contactId'])) {
-
-            //$viewId = (isset($_GET['viewId']) && is_numeric($_GET['viewId'])) ? $_GET['viewId'] : null;
 
             $id = Yii::app()->user->getId();
             $model=$this->loadModel($id);
@@ -456,8 +453,11 @@ Please click on the link below to create an account at X2Engine!
 
             $model->topContacts = implode(',',$topContacts);
 
-            if ($model->save())
+            if ($model->update()) {
                 $this->renderTopContacts();
+            } else {
+                //AuxLib::debugLogR ($model->getErrors ());
+            }
         }
     }
 

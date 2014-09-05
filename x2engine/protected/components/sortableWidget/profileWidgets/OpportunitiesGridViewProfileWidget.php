@@ -61,7 +61,10 @@ class OpportunitiesGridViewProfileWidget extends GridViewWidget {
 
     protected function getModel () {
         if (!isset ($this->_model)) {
-            $this->_model = new Opportunity ('search');
+            $this->_model = new Opportunity ('search',
+                $this->widgetKey,
+                $this->getWidgetProperty ('dbPersistentGridSettings'));
+
             $this->afterGetModel ();
         }
         return $this->_model;

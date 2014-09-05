@@ -181,16 +181,29 @@ class Tags extends CActiveRecord {
         $tags = array();
         
         foreach(explode(self::DELIM,$str) as $tag) {    // split the string
-            $tag = trim($tag);                        // eliminate whitespace
+            $tag = trim($tag); 
             if(strlen($tag) > 0) {                    // eliminate empty tags
-                if(substr($tag,0,1) !== '#' && !$suppressHash) // make sure they have the hash
-                    $tag = '#'.$tag;
-                if (substr ($tag, 0, 1) === '#' && $suppressHash) {
-                    $tag = preg_replace ('/^#/', '', $tag);
-                }
-                $tags[] = $tag;
+                $tags[] = self::normalizeTag ($tag, $suppressHash);
             }
         }
         return $tags;
     }
+
+    public static function normalizeTag ($tag, $suppressHash=false) {
+        $tag = trim($tag);      
+        if(substr($tag,0,1) !== '#' && !$suppressHash) // make sure they have the hash
+            $tag = '#'.$tag;
+        if (substr ($tag, 0, 1) === '#' && $suppressHash) {
+            $tag = preg_replace ('/^#/', '', $tag);
+        }
+        return $tag;
+    }
+
+    public function normalizeTags (array $tags, $suppressHash=false) {
+        foreach ($tags as &$tag) {
+            $tag = Tags::normalizeTag ($tag, $suppressHash);
+        }
+        return $tags;
+    }
+
 }

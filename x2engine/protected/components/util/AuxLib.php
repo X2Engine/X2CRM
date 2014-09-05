@@ -323,5 +323,5 @@ class AuxLib {
         $fn ();
         return ob_get_clean();
     }
-    
+
 }

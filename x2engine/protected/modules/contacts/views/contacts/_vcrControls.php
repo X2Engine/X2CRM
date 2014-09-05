@@ -45,7 +45,6 @@ if(empty($listId))
 ",CClientScript::POS_READY);*/
 
 $vcrControls = array();
-$searchModel = new Contacts('search');
 $tagFlag=false;
 //listId should be either a number (for a list), 'index', or 'admin'
 //convert numbers to list/# for uniform url path
@@ -58,22 +57,26 @@ if(is_numeric($listId)){
     $path = $listId;
 }
 
+
 //try to get the saved sort and filters from the session if applicable
-//the strings in this code are tied to values specified in ERememberColumnFilters and SmartDataProviderBehavior
 /* x2tempstart */
-// Violates abstraction by depending on implementation details of SmartDataProviderBehavior. 
-/*$order = GridViewDbSettingsBehavior::getSetting (
-    'contacts/contacts/'. $path . 'Contacts_sort', 'sort');*/
-$order = Yii::app()->user->getState('contacts/contacts/'. $path . 'Contacts_sort');
+// Violates abstraction by depending on implementation details of SmartDataProviderBehavior and
+// ERememberFiltersBehavior. 
+$searchModel = new Contacts('search', 'contacts/contacts/'.$path.'Contacts');
+$order = $searchModel->asa ('ERememberFiltersBehavior')->getSetting ('sort');
 /* x2tempend */
-$searchModel->setRememberScenario('contacts/contacts/'. $path);
 
 //convert session var to sql
 $order = preg_replace('/\.desc$/', ' DESC', $order);
 
+// ensure that order attribute is valid
+$orderAttr = preg_replace ('/ DESC$/', '', $order);
+if (!Contacts::model ()->hasAttribute (trim ($orderAttr))) {
+    $order = '';
+}
+
 //look up all ids of the list we are currently viewing
 //find position of model in the list
-
 
 // decide which data provider to use
 if(is_numeric($listId)) {
@@ -82,7 +85,8 @@ if(is_numeric($listId)) {
         $listLink = CHtml::link($list->name,array('/contacts/contacts/list','id'=>$listId));
         $vcrDataProvider = $searchModel->searchList($listId);
     }else{
-        $listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contact/contacts/index'));	// default to All Contacts
+        // default to All Contacts
+        $listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contact/contacts/index'));
         $vcrDataProvider = $searchModel->searchAll();
     }
 } elseif($listId=='myContacts') {
@@ -103,10 +107,13 @@ if(is_numeric($listId)) {
 	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/contacts/index'));	
 	$vcrDataProvider = $searchModel->searchAll();
 }
+
+
 if(empty($order) && !$tagFlag)
 	$order = $vcrDataProvider->sort->getOrderBy();
 elseif(empty($order) && $tagFlag)
 	$order = $vcrDataProvider->criteria->order;
+
 if(!empty($order))
 	$vcrDataProvider->criteria->order = $order;
 

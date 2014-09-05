@@ -74,7 +74,7 @@ class X2GridViewMassActionAction extends CAction {
     private function getInstanceFor ($massAction) {
         $instance = $this->getMassActionInstances ();
         if (!in_array ($massAction, array_keys ($instance))) {
-            AuxLib::debugLogR ('invalid mass action');
+            /**/AuxLib::debugLogR ('invalid mass action');
             throw new CHttpException (400, Yii::t('app', 'Bad Request'));
         }
         return $instance[$massAction];
@@ -84,18 +84,15 @@ class X2GridViewMassActionAction extends CAction {
      * Execute specified mass action on specified records
      */
     public function run(){
-        AuxLib::debugLogR ($_POST);
         if (isset ($_POST['passConfirm']) && $_POST['passConfirm']) {
             MassAction::superMassActionPasswordConfirmation ();
             return;
         }
-
-        //AuxLib::debugLogR (gettype ($_POST['superCheckAll']));
         if (!isset ($_POST['massAction']) || 
             ((!isset ($_POST['superCheckAll']) || !$_POST['superCheckAll']) &&
              (!isset ($_POST['gvSelection']) || !is_array ($_POST['gvSelection'])))) {
 
-            AuxLib::debugLogR ('run error');
+            /**/AuxLib::debugLogR ('run error');
             throw new CHttpException (400, Yii::t('app', 'Bad Request'));
         }
         $massAction = $_POST['massAction'];
@@ -103,8 +100,9 @@ class X2GridViewMassActionAction extends CAction {
 
         if (isset ($_POST['superCheckAll']) && $_POST['superCheckAll']) {
             $uid = $_POST['uid'];
-            AuxLib::debugLogR ('superCheckAll');
-            $massActionInstance->superExecute ($massAction, $uid);
+            $idChecksum = $_POST['idChecksum'];
+            $totalItemCount = intval ($_POST['totalItemCount']);
+            $massActionInstance->superExecute ($uid, $totalItemCount, $idChecksum);
         } else {
             $gvSelection = $_POST['gvSelection'];
             $massActionInstance->execute ($gvSelection);

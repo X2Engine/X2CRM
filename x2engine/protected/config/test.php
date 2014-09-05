@@ -40,6 +40,7 @@
 // This is the testing application configuration. Any writable
 // CWebApplication properties can be configured here.
 $config = require(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'main.php');
+
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'X2Config-test.php');
 
 $config['components']['db'] = array(

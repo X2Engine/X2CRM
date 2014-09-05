@@ -1,12 +1,15 @@
 <phpunit bootstrap="bootstrap.php"
-		colors="false"
-		convertErrorsToExceptions="true"
-		convertNoticesToExceptions="true"
-		convertWarningsToExceptions="true"
-		stopOnFailure="false">
+        colors="false"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        stopOnFailure="false">
 
-	<selenium>
-		<browser name="Firefox" browser="*firefox" host="127.0.0.1" port="4444" timeout="30000" />
-	</selenium>
+    <selenium>
+        <!--<browser name="Firefox" browser="*firefox" host="127.0.0.1" port="4444" timeout="30000" />-->
+        <browser name="Chrome" browser="*googlechrome" host="127.0.0.1" port="4444" timeout="30000    " />
+        <!--<browser name="Internet Explorer" browser="*iexplore" host="127.0.0.1" port="4444" timeout="30000" />-->
+        <!--<browser name="Opera" browser="*opera" host="127.0.0.1" port="4444" timeout="30000" />    -->
+    </selenium>
 
 </phpunit>

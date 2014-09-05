@@ -397,8 +397,7 @@ div.portlet-minimize .expand-widget {
     border-width: 1px;
     border-color: rgb(202, 202, 202);
     margin: 2px 2px;
-    display: block;
-    float: left;
+    display: inline-block;
     padding: 2px;
     background-color: #f0f0f0;
 }
@@ -1210,19 +1209,19 @@ div.search-form div.wide.form textarea {
     width: 420px;
 }
 
-div.contact-lists th {
+/*div.contact-lists th {
     padding-left: 8px !important;
     text-align: left !important;
 }
 div.contact-lists th.contact-count {
     width: 100px;
-}
+}*/
 
 div.contact-lists td.contact-count {
-    background: url(../images/contact-icon.png) 5px center no-repeat;
-    padding-left: 24px;
+    /*background: url(../images/contact-icon.png) 5px center no-repeat;*/
+    /*padding-left: 24px;*/
 }
-div.contact-lists tr.bold td {
+#lists-grid tr.bold td {
     font-weight: bold;
 }
 
@@ -1396,6 +1395,12 @@ input.error
 {
     background: #FEE;
     border-color: #C00 !important;
+}
+
+span.error-message,
+div.error-message
+{
+    color: red;
 }
 
 /*

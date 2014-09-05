@@ -38,6 +38,9 @@ abstract class MassAction extends CComponent {
 
     const SESSION_KEY_PREFIX = 'superMassAction';
     const SESSION_KEY_PREFIX_PASS_CONFIRM = 'superMassActionPassConfirm';
+    const BAD_CHECKSUM = 1;
+    const BAD_ITEM_COUNT = 2;
+    const BAD_COUNT_AND_CHECKSUM = 3;
 
     /**
      * If true, user must enter their password before super mass action can proceed 
@@ -64,12 +67,15 @@ abstract class MassAction extends CComponent {
         echo CJSON::encode (self::getFlashes ());
     }
 
-    abstract public function execute ($gvSelection);
+    /**
+     * @param array $gvSelection array of ids of records to perform mass action on
+     */
+    abstract public function execute (array $gvSelection);
 
     /**
      * Helper method for superExecute. Returns array of ids of records in search results.
      * @param string $modelClass
-     * @return array
+     * @return array array of ids and their checksum
      */
     protected function getIdsFromSearchResults ($modelClass) {
         // copy sort & filter parameters from POST data to GET superglobal so
@@ -77,41 +83,67 @@ abstract class MassAction extends CComponent {
         // properly
         if (isset ($_POST[$modelClass])) {
             $_GET[$modelClass] = $_POST[$modelClass];
+
+            // ensure that specified filter attributes are valid
+            foreach ($_GET[$modelClass] as $attr => $val) {
+
+                if (!X2Model::model ($modelClass)->hasAttribute ($attr)) {
+                    throw new CHttpException (400, Yii::t('app', 'Bad Request'));
+                }
+            }
         }
+
+        // the tag filter is a special case since tags don't have a Fields record
+        if (isset ($_POST['tagField'])) {
+            $_GET['tagField'] = $_POST['tagField'];
+        }
+
         if (isset ($_POST[$modelClass.'_sort'])) {
             $_GET[$modelClass.'_sort'] = $_POST[$modelClass.'_sort'];
+
+            // ensure that specified sort order attribute is valid
+            $sortAttr = preg_replace ('/\.desc$/', '', $_GET[$modelClass.'_sort']);
+
+            if (!X2Model::model ($modelClass)->hasAttribute ($sortAttr)) {
+                throw new CHttpException (400, Yii::t('app', 'Bad Request'));
+            }
         }
 
-        // here data provider is retrieved for the sole purpose of using it's criteria object
-        $model = new $modelClass ('search');
-        $dataProvider = $model->search (null, 0); // page size set to 0 to improve performance
-        $dataCriteria = $dataProvider->getCriteria ();
-        $table = $model->tableName ();
-        $orderByClause = isset ($dataCriteria->order) ? 
-            ('order by ' . $dataCriteria->order) : '';
-        $whereClause = isset ($dataCriteria->condition) ? 
-            ('where ' . $dataCriteria->condition) : '';
-        $command = Yii::app()->db->createCommand ("
-            select id
-            from $table as $dataCriteria->alias
-            $whereClause
-            $orderByClause
-        ");
-        //AuxLib::debugLogR ($command->getText ());
-        $ids = $command->queryAll (true, $dataCriteria->params);
-        foreach ($ids as $i => $row) {
-            $ids[$i] = $row['id'];
-        }
+        // data provider is retrieved for the sole purpose of using it's criteria object
+        $model = new $modelClass ('search', null, false, true);
+        $dataProvider = $model->search (0); // page size set to 0 to improve performance
+        $dataProvider->calculateChecksum = true;
+        $dataProvider->getData (); // force checksum to be calculated
+        $ids = $dataProvider->getRecordIds ();
+        //AuxLib::debugLogR ($ids);
+        $idChecksum = $dataProvider->getidChecksum ();
 
-        return $ids;
+        // reverse sort order so that we can pop from id list instead of pushing
+        $ids = array_reverse ($ids);
+
+        return array ($ids, $idChecksum);
     }
 
     /**
      * Execute mass action on next batch of records
-     * @param string $massAction
-     * @param string $uid
+     * @param string $uid unique id
+     * @param int $totalItemCount total number of records to operate on
+     * @param string $expectedIdChecksum checksum of ids of records in data provider used to 
+     *  generate the grid view
      */
-    public function superExecute ($massAction, $uid) {
+    public function superExecute ($uid, $totalItemCount, $expectedIdChecksum) {
+        //$timer = new TimerUtil;
+        //$timer->start ();
+        // clear saved ids if user clicked the stop button
+        if (isset ($_POST['clearSavedIds']) && $_POST['clearSavedIds']) {
+            if (!empty ($uid)) {
+                unset ($_SESSION[self::SESSION_KEY_PREFIX.$uid]);
+                unset ($_SESSION[self::SESSION_KEY_PREFIX_PASS_CONFIRM.$uid]);
+            }
+            echo 'success';
+            return;
+        }
+
         // ensure that for super mass deletion, user confirmed deletion with password
         if ($this->requiresPasswordConfirmation && (empty ($uid) || 
             !isset ($_SESSION[self::SESSION_KEY_PREFIX_PASS_CONFIRM.$uid]) ||
@@ -127,25 +159,49 @@ abstract class MassAction extends CComponent {
             throw new CHttpException (400, Yii::t('app', 'Bad Request'));
         }
 
-        // clear saved ids if user clicked the stop button
-        if (isset ($_POST['clearSavedIds']) && $_POST['clearSavedIds']) {
-            if (!empty ($uid)) {
-                unset ($_SESSION[self::SESSION_KEY_PREFIX.$uid]);
-            }
-            echo 'success';
-            return;
-        }
-
         $modelClass = Yii::app()->controller->modelClass;
+
+        //$timer->stop ()->read ('first')->reset ()->start ();
 
         // if super mass operation hasn't started, initialize id list from which batches will
         // be retrieved
-        if ($this->requiresPasswordConfirmation || empty ($uid)) {
-            if (!$this->requiresPasswordConfirmation)
-                $uid = uniqid (false, true);
-            $ids = $this->getIdsFromSearchResults ($modelClass);
+        if (empty ($uid) ||
+            (!isset ($_SESSION[self::SESSION_KEY_PREFIX.$uid]) &&
+             $this->requiresPasswordConfirmation)) {
+
+            if (!$this->requiresPasswordConfirmation) {
+                // removes the even the remote possibility of a key collision
+                do {
+                    $uid = uniqid (false, true);
+                } while (isset ($_SESSION[self::SESSION_KEY_PREFIX.$uid]));
+            }
+            list ($ids, $idChecksum) = $this->getIdsFromSearchResults ($modelClass);
+
+            // This important check ensures that the number of records displayed in the grid view
+            // is equal to the number of records filtered by the specified filters. This check
+            // greatly reduces that chance of an incorrect update/deletion.
+            if (count ($ids) !== $totalItemCount || $idChecksum !== $expectedIdChecksum) {
+                if (count ($ids) !== $totalItemCount && $idChecksum !== $expectedIdChecksum) {
+                    $errorCode = self::BAD_COUNT_AND_CHECKSUM;
+                } else if (count ($ids) !== $totalItemCount) {
+                    $errorCode = self::BAD_ITEM_COUNT;
+                } else {
+                    $errorCode = self::BAD_CHECKSUM;
+                }
+                echo CJSON::encode (array (
+                    'failure' => true, 
+                    'errorMessage' => Yii::t('app', 
+                        'The data being displayed in this grid view is out of date. Close '.
+                        'this dialog and allow the grid to refresh before attempting this '.
+                        'mass action again.'),
+                    'errorCode' => $errorCode,
+                ));
+                return;
+            }
             $_SESSION[self::SESSION_KEY_PREFIX.$uid] = $ids;
         }
+
+        //$timer->stop ()->read ('second')->reset ()->start ();
 
         // grab next batch of ids from session
         $selectedRecords = $_SESSION[self::SESSION_KEY_PREFIX.$uid];
@@ -154,14 +210,25 @@ abstract class MassAction extends CComponent {
         $batchSize = $selectedRecordsCount < $batchSize ? $selectedRecordsCount : $batchSize;
         $batch = array ();
         for ($i = 0; $i < $batchSize; $i++) {
-            $batch[] = array_shift ($selectedRecords);
+            // for efficiency reasons, record ids are stored in reverse order and popped.
+            // array_shift = O(n), array_pop = O(1)
+            $batch[] = array_pop ($selectedRecords);
         }
         $_SESSION[self::SESSION_KEY_PREFIX.$uid] = $selectedRecords;
 
         // execute mass action on batch
         $successes = $this->execute ($batch);
 
+        // clear session once all batches have been completed
+        if (count ($selectedRecords) === 0) {
+            unset ($_SESSION[self::SESSION_KEY_PREFIX.$uid]);
+            unset ($_SESSION[self::SESSION_KEY_PREFIX_PASS_CONFIRM.$uid]);
+        }
+
         $response = $this->generateSuperMassActionResponse ($successes, $selectedRecords, $uid);
+
+        //$timer->stop ()->read ('third')->reset ()->start ();
+
         echo CJSON::encode ($response);
     }
 
@@ -183,6 +250,10 @@ abstract class MassAction extends CComponent {
         return $response;
     }
 
+    /**
+     * Check user password and echo either an error message or a unique id which gets used on
+     * subsequent requests to ensure that the user confirmed the action with their password
+     */
     public static function superMassActionPasswordConfirmation () {
         if (!isset ($_POST['password'])) 
             throw new CHttpException (400, Yii::t('app', 'Bad Request'));
@@ -190,7 +261,9 @@ abstract class MassAction extends CComponent {
         $loginForm->username = Yii::app()->params->profile->username;
         $loginForm->password = $_POST['password'];
         if ($loginForm->validate ()) {
-            $uid = EncryptUtil::secureUniqueIdHash64 ();
+            do {
+                $uid = EncryptUtil::secureUniqueIdHash64 ();
+            } while (isset ($_SESSION[self::SESSION_KEY_PREFIX_PASS_CONFIRM.$uid]));
             $_SESSION[self::SESSION_KEY_PREFIX_PASS_CONFIRM.$uid] = true;
             echo CJSON::encode (array (true, $uid));
         } else {

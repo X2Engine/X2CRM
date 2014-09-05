@@ -41,6 +41,9 @@ Yii::import('application.modules.groups.models.*');
 Yii::import('application.modules.users.models.*');
 Yii::import('application.components.*');
 Yii::import('application.components.permissions.*');
+Yii::import('application.components.X2Settings.*');
+Yii::import('application.components.sortableWidget.profileWidgets.*');
+Yii::import('application.components.sortableWidget.recordViewWidgets.*');
 
 /**
  * Test for the Actions class

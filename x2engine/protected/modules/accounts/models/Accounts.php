@@ -220,7 +220,7 @@ class Accounts extends X2Model {
 
 	public function search($pageSize=null, $uniqueId=null) {
 		$criteria = new CDbCriteria;
-		return $this->searchBase($criteria, $pageSize, $uniqueId);
+		return $this->searchBase($criteria, $pageSize);
 	}
 
     public function searchList($id, $pageSize=null) {

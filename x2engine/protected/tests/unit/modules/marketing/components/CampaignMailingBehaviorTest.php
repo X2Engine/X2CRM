@@ -126,9 +126,9 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         );
         $this->assertRegExp('/'.preg_quote(strtr($this->campaign('testUser')->content,$replaceVars),'/').'/',$message,'Variable replacement didn\'t take place');
         // Find the tracking image:
-        $this->assertRegExp('/'.preg_quote('<img src="'.$admin->externalBaseUrl.$admin->externalBaseUri.'/index.php/marketing/marketing/click?uid='.$uniqueId,'/').'/',$message,'Tracking image not inserted');
+        $this->assertRegExp('/'.preg_quote('<img src="'.$admin->externalBaseUrl.$admin->externalBaseUri.'/index-test.php/marketing/marketing/click?uid='.$uniqueId,'/').'/',$message,'Tracking image not inserted');
         // Find the unsubscribe link:
-        $this->assertRegExp('/'.preg_quote('To stop receiving these messages, click here: <a href="http://examplecrm.com/X2Engine/index.php/marketing/marketing/click?uid='.$uniqueId.'&type=unsub&email='.rawurlencode($recipientAddress).'">unsubscribe</a>','/').'/',$message,'Unsubscribe link not inserted');
+        $this->assertRegExp('/'.preg_quote('To stop receiving these messages, click here: <a href="http://examplecrm.com/X2Engine/index-test.php/marketing/marketing/click?uid='.$uniqueId.'&type=unsub&email='.rawurlencode($recipientAddress).'">unsubscribe</a>','/').'/',$message,'Unsubscribe link not inserted');
         // Find the tracking key:
         $this->assertRegExp('/'.preg_quote('visit http://example.com/?x2_key=','/').$uniqueId.'/',$message,'Tracking key not inserted!');
     }

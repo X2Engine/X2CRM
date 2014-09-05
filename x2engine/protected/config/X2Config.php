@@ -5,8 +5,8 @@ $host = 'localhost';
 $user = 'root';
 $pass = '';
 $dbname = 'x2engine';
-$version = '4.2b';
-$buildDate = '1407439985';
+$version = '4.2';
+$buildDate = '1409874340';
 $updaterVersion = '4.2';
 $language='en';
 ?>

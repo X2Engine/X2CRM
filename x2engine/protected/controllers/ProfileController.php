@@ -65,7 +65,7 @@ class ProfileController extends x2base {
                     'setWidgetOrder', 'profiles', 'settings', 'deleteSound', 'deleteBackground',
                     'changePassword', 'setResultsPerPage', 'hideTag', 'unhideTag', 'resetWidgets',
                     'updatePost', 'loadTheme', 'createTheme', 'saveTheme', 'saveMiscLayoutSetting',
-                    'createUpdateCredentials', 'manageCredentials', 'deleteCredentials',
+                    'createUpdateCredentials', 'manageCredentials', 'deleteCredentials', 'verifyCredentials',
                     'setDefaultCredentials', 'activity', 'ajaxSaveDefaultEmailTemplate',
                     'deleteActivityReport', 'createActivityReport', 'manageEmailReports',
                     'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport',
@@ -411,6 +411,21 @@ class ProfileController extends x2base {
             }
         }
         $this->render('createUpdateCredentials', array('model' => $model, 'profile' => $profile, 'message' => $message));
+    }
+
+    /**
+     * Action to be called via ajax to verify authentication to the SMTP server
+     */
+    public function actionVerifyCredentials() {
+        $attributes = array('email', 'password', 'server', 'port', 'security');
+        foreach ($attributes as $attr)
+            ${$attr} = isset($_POST[$attr])? $_POST[$attr] : "";
+        $this->attachBehavior('EmailDeliveryBehavior', new EmailDeliveryBehavior);
+        $valid = $this->testUserCredentials(
+            $email, $password, $server, $port, $security
+        );
+        if (!$valid)
+            echo "Failed";
     }
 
     /**

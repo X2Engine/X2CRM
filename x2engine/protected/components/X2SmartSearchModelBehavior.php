@@ -52,12 +52,12 @@ class X2SmartSearchModelBehavior extends CBehavior {
         return $attributes;
     }
 
-    public function smartSearch ($criteria, $pageSize=null, $uniqueId=null) {
-        $sort = new SmartSort (get_class($this->owner));
+    public function smartSearch ($criteria, $pageSize=null) {
+        $sort = new SmartSort (get_class($this->owner), isset ($this->owner->uid) ? 
+            $this->owner->uid : get_class ($this->owner));
         $sort->multiSort = false;
         $sort->attributes = $this->owner->getSort();
         $sort->defaultOrder = 't.lastUpdated DESC, t.id DESC';
-        $sort->sortVar = get_class($this->owner)."_sort";
 
         if (!$pageSize) {
             if (!Yii::app()->user->isGuest) {
@@ -68,12 +68,13 @@ class X2SmartSearchModelBehavior extends CBehavior {
         }
 
         $dataProvider = new SmartActiveDataProvider(get_class($this->owner), array(
-                    'sort' => $sort,
-                    'pagination' => array(
-                        'pageSize' => $pageSize,
-                    ),
-                    'criteria' => $criteria,
-                ), $uniqueId, $this->owner->persistentGridSettings);
+            'sort' => $sort,
+            'pagination' => array(
+                'pageSize' => $pageSize,
+            ),
+            'criteria' => $criteria,
+            'uid' => $this->owner->uid,
+            'dbPersistentGridSettings' => $this->owner->dbPersistentGridSettings));
         $sort->applyOrder($criteria);
         return $dataProvider;
     }

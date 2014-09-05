@@ -295,16 +295,18 @@ abstract class X2GridViewBase extends CGridView {
         // update columns if user has submitted data
         // has the user changed column visibility?
         if(isset($_GET[$this->namespacePrefix.'columns']) && isset ($this->gvSettingsName)) {
+            $columnsSelected = $_GET[$this->namespacePrefix.'columns'];
+
             foreach(array_keys($this->gvSettings) as $key) {
                 // search $_GET['columns'] for the column
-                $index = array_search($key,$_GET[$this->namespacePrefix.'columns']);
+                $index = array_search($key,$columnsSelected);
 
                 if($index === false) { // if it's not in there,
                     unset($this->gvSettings[$key]); // delete that junk
                 } else { // othwerise, remove it from $_GET['columns']
 
                     // so the next part doesn't add it a second time
-                    unset($_GET[$this->namespacePrefix.'columns'][$index]);
+                    unset($columnsSelected[$index]);
                 }
             }
 
@@ -312,12 +314,30 @@ abstract class X2GridViewBase extends CGridView {
                are present in $_GET['columns'] but not already in the list */
             foreach(array_keys($this->allFieldNames) as $key) {
                 if(!isset($this->gvSettings[$key]) && 
-                   in_array($key,$_GET[$this->namespacePrefix.'columns'])) {
+                   in_array($key,$columnsSelected)) {
 
                     $this->gvSettings[$key] = 80; // default width of 80
                 }
             }
         }
+
+//        // unset filters for hidden columns
+//        AuxLib::debugLogR ('unsetting filters/sort order');
+//        AuxLib::debugLogR ('$columnsSelected = ');
+//        AuxLib::debugLogR ($this->gvSettings);
+//
+//       AuxLib::debugLogR ('$_SESSION = ');
+//        AuxLib::debugLogR ($_SESSION);
+//
+//        $changed = $this->dataProvider->model->unsetFiltersNotIn (
+//            array_keys ($this->gvSettings));
+//        $changed |= $this->dataProvider->unsetSortOrderIfNotIn (
+//            array_keys ($this->gvSettings));
+//        if ($changed) 
+//            Yii::app()->controller->redirect(array(Yii::app()->controller->action->ID));
+//
+//        AuxLib::debugLogR ('$_SESSION = ');
+//        AuxLib::debugLogR ($_SESSION);
         
         // prevents columns data from ending up in sort/pagination links
         unset($_GET[$this->namespacePrefix.'columns']); 
@@ -416,7 +436,10 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                 fixedHeader: ".($this->fixedHeader ? 'true' : 'false').",
                 modelName: '".(isset ($this->modelName) ? $this->modelName : '')."',
                 enableScrollOnPageChange: ".
-                    ($this->enableScrollOnPageChange ? 'true' : 'false')."
+                    ($this->enableScrollOnPageChange ? 'true' : 'false').",
+                sortStateKey: '".
+                    ($this->dataProvider->asa ('SmartDataProviderBehavior') ? 
+                        $this->dataProvider->getSortKey () : '')."'
             });");
 
         if ($this->enableQtips) $this->setUpQtipManager ();

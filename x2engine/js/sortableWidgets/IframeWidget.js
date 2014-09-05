@@ -126,11 +126,12 @@ IframeWidget.prototype._setUpChangeUrlBehavior = function () {
                     Validate input and save/display error
                     */
                     click: function () {
-                        var url = $(that._changeUrlDialog).find ('.iframe-url').val ();
+                        var url = $.trim ($(that._changeUrlDialog).find ('.iframe-url').val ());
                         auxlib.destroyErrorFeedbackBox (
                             $(that._changeUrlDialog).find ('.iframe-url'));
 
                         if (url !== '') {
+                            if (!url.match (/^http:\//)) url = 'http://' + url;
                             that.element.find ('iframe').attr ('src', url);
                             that.setProperty ('url', url);
                             $(this).dialog ('close');

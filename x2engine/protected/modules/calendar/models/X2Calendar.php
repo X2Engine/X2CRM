@@ -250,7 +250,7 @@ class X2Calendar extends CActiveRecord
 		return $this->searchBase($criteria);
 	}
 	
-	private function searchBase($criteria, $pageSize=null, $uniqueId=null) {
+	private function searchBase($criteria, $pageSize=null) {
 		$criteria->compare('name',$this->name,true);
 		
 		return new SmartActiveDataProvider(get_class($this), array(

@@ -94,6 +94,7 @@ class Actions extends X2Model {
                 'defaultStickOnClear' => false
             ),
             'permissions' => array('class' => 'X2PermissionsBehavior'),
+            //'changelog' => array('class' => 'X2ChangeLogBehavior'),
         );
     }
 
@@ -788,7 +789,7 @@ class Actions extends X2Model {
                 'limit' => ceil(Profile::getResultsPerPage() / 2), 
             'params' => $params);
         $criteria->scopes = array('findAll' => array($parameters));
-        return $this->searchBase($criteria, $pageSize, $uniqueId);
+        return $this->searchBase($criteria, $pageSize);
     }
 
     /**
@@ -852,7 +853,8 @@ class Actions extends X2Model {
                     'pageSize' => $pageSize
                 ),
                 'criteria' => $criteria,
-            ), $uniqueId, $this->persistentGridSettings);
+                'uid' => $uniqueId,
+                'dbPersistentGridSettings' => $this->dbPersistentGridSettings));
         return $dataProvider;
     }
 
@@ -870,17 +872,21 @@ class Actions extends X2Model {
     /**
      * TODO: unit test 
      */
-    public function syncGoogleCalendar($operation){
+    public function syncGoogleCalendar($operation, $ajax=false){
         $profiles = $this->getProfilesOfAssignees ();
 
         foreach($profiles as &$profile){
             if($profile !== null){
-                if($operation === 'create')
-                    $profile->syncActionToGoogleCalendar($this); // create action to Google Calendar
-                elseif($operation === 'update')
-                    $profile->updateGoogleCalendarEvent($this); // update action to Google Calendar
-                elseif($operation === 'delete')
-                    $profile->deleteGoogleCalendarEvent($this); // delete action in Google Calendar
+                if($operation === 'create') {
+                    // create action to Google Calendar
+                    $profile->syncActionToGoogleCalendar($this, $ajax); 
+                } elseif($operation === 'update') {
+                    // update action to Google Calendar
+                    $profile->updateGoogleCalendarEvent($this, $ajax); 
+                } elseif($operation === 'delete') {
+                    // delete action in Google Calendar
+                    $profile->deleteGoogleCalendarEvent($this, $ajax); 
+                }
             }
         }
     }

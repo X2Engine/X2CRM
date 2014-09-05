@@ -41,21 +41,20 @@
  *
  * @package application.components.X2Settings
  */
-class GridViewSessionSettingsBehavior extends CBehavior implements X2Settings {
+class GridViewSessionSettingsBehavior extends X2Settings {
     
     /**
      * @param string $uid The UID of the grid view
      * @param string key the setting name
-     * @param string key the setting value
+     * @param string val the setting value
      * @return bool true for success, false otherwise
      */
-    public static function saveSetting ($uid, $key, $val) {
-        $gvSettings = CJSON::decode (Yii::app()->user->getState($uid, null));
+    public function saveSetting ($key, $val) {
+        $uid = $this->getStatePrefix ();
+        $gvSettings = CJSON::decode (Yii::app()->user->getState($uid));
         if (!is_array ($gvSettings))
             $gvSettings = array ();
-        if (!isset ($gvSettings[$uid]) || !is_array ($gvSettings[$uid]))
-            $gvSettings[$uid] = array ();
-        $gvSettings[$uid][$key] = $val;
+        $gvSettings[$key] = $val;
         Yii::app()->user->setState($uid, CJSON::encode ($gvSettings));
         return true;
     }
@@ -63,14 +62,13 @@ class GridViewSessionSettingsBehavior extends CBehavior implements X2Settings {
     /**
      * @param string $uid The UID of the grid view
      * @param string key the setting name
-     * @return mixed The value of the gv setting
+     * @return null|mixed The value of the gv setting
      */
-    public static function getSetting ($uid, $key) {
-        $gvSettings = CJSON::decode (Yii::app()->user->getState($uid, null));
-        if (is_array ($gvSettings) && isset ($gvSettings[$uid]) && is_array ($gvSettings[$uid]) &&
-            isset ($gvSettings[$uid][$key])) {
-
-            return $gvSettings[$uid][$key];
+    public function getSetting ($key) {
+        $uid = $this->getStatePrefix ();
+        $gvSettings = CJSON::decode (Yii::app()->user->getState($uid));
+        if (is_array ($gvSettings) && isset ($gvSettings[$key])) {
+            return $gvSettings[$key];
         }
     }
 

@@ -42,7 +42,6 @@ CREATE TABLE x2_admin(
 	webTrackerCooldown		INT				DEFAULT 60,
 	enableWebTracker		TINYINT			DEFAULT 1,
 	currency				VARCHAR(3)		NULL,
-	currencyLocale			VARCHAR(20)		NULL,
 	chatPollTime			INT				DEFAULT 2000,
     defaultTheme            INT             NULL,
 	ignoreUpdates			TINYINT			DEFAULT 0,
@@ -103,7 +102,7 @@ CREATE TABLE x2_admin(
     userActionBackdating        TINYINT         DEFAULT 0, 
     historyPrivacy              VARCHAR(20) DEFAULT "default",
     batchTimeout                INT DEFAULT 300,
-    massActionsBatchSize         INT DEFAULT 10,
+    massActionsBatchSize        INT DEFAULT 10,
     externalBaseUrl             VARCHAR(255) DEFAULT NULL,
     externalBaseUri             VARCHAR(255) DEFAULT NULL,
     appName                     VARCHAR(255) DEFAULT NULL,
@@ -596,14 +595,14 @@ DROP TABLE IF EXISTS x2_trigger_logs;
 DROP TABLE IF EXISTS x2_flows;
 /*&*/
 CREATE TABLE x2_flows(
-	id						INT				AUTO_INCREMENT PRIMARY KEY,
-	active					TINYINT			NOT NULL DEFAULT 1,
-	name					VARCHAR(100)	NOT NULL,
-	triggerType				VARCHAR(40)		NOT NULL,
-	modelClass				VARCHAR(40),
-	flow					LONGTEXT,
-	createDate				BIGINT			NOT NULL,
-	lastUpdated				BIGINT			NOT NULL
+    id                        INT                AUTO_INCREMENT PRIMARY KEY,
+    active                    TINYINT            NOT NULL DEFAULT 1,
+    name                    VARCHAR(100)    NOT NULL,
+    triggerType                VARCHAR(40)        NOT NULL,
+    modelClass                VARCHAR(40),
+    flow                    LONGTEXT,
+    createDate                BIGINT            NOT NULL,
+    lastUpdated                BIGINT            NOT NULL
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 CREATE TABLE `x2_trigger_logs` (

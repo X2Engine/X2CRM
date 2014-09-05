@@ -909,6 +909,8 @@ class ContactsController extends x2base {
 
         $dataProvider = new CArrayDataProvider(array_merge($contactListData, $contactLists), array(
                     'pagination' => array('pageSize' => $perPage),
+	                'sort' => array(
+                        'attributes'=>array('name','type','count','assignedTo')),
                     'totalItemCount' => count($contactLists) + 3,
                 ));
 
@@ -1144,42 +1146,43 @@ class ContactsController extends x2base {
      * works for exporting particular lists of Contacts
      * @param int $listId The ID of the list to be exported, if null it will be all Contacts
      */
-    public function actionExportContacts($listId = null){
-        unset($_SESSION['contactExportFile'], $_SESSION['exportContactCriteria'], $_SESSION['contactExportMeta']);
-        if(is_null($listId)){
-            $file = "contact_export.csv";
-            $listName = CHtml::link(Yii::t('contacts', 'All Contacts'), array('/contacts/contacts/index'), array('style' => 'text-decoration:none;'));
-            $_SESSION['exportContactCriteria'] = array('with' => array()); // Forcefully disable eager loading so it doesn't go super-slow)
-        }else{
-            $list = X2List::load($listId);
-            $criteria = $list->queryCriteria();
-            $criteria->with = array();
-            $_SESSION['exportContactCriteria'] = $criteria;
-            $file = "list".$listId.".csv";
-            $listName = CHtml::link(Yii::t('contacts', 'List')." $listId: ".$list->name, array('/contacts/contacts/list','id'=>$listId), array('style' => 'text-decoration:none;'));
-        }
-        $filePath = $this->safePath($file);
-        $_SESSION['contactExportFile'] = $file;
-        $attributes = X2Model::model('Contacts')->attributes;
-        $meta = array_keys($attributes);
-        if(isset($list)){
-            // Figure out gridview settings to export those columns
-            $gridviewSettings = json_decode(Yii::app()->params->profile->gridviewSettings, true);
-            if(isset($gridviewSettings['contacts_list'.$listId])){
-                $tempMeta = array_keys($gridviewSettings['contacts_list'.$listId]);
-                $meta = array_intersect($tempMeta, $meta);
-            }
-        }
-        // Set up metadata
-        $_SESSION['contactExportMeta'] = $meta;
-        $fp = fopen($filePath, 'w+');
-        fputcsv($fp, $meta);
-        fclose($fp);
-        $this->render('exportContacts', array(
-            'listId' => $listId,
-            'listName' => $listName,
-        ));
-    }
+// deprecated
+//    public function actionExportContacts($listId = null){
+//        unset($_SESSION['contactExportFile'], $_SESSION['exportContactCriteria'], $_SESSION['contactExportMeta']);
+//        if(is_null($listId)){
+//            $file = "contact_export.csv";
+//            $listName = CHtml::link(Yii::t('contacts', 'All Contacts'), array('/contacts/contacts/index'), array('style' => 'text-decoration:none;'));
+//            $_SESSION['exportContactCriteria'] = array('with' => array()); // Forcefully disable eager loading so it doesn't go super-slow)
+//        }else{
+//            $list = X2List::load($listId);
+//            $criteria = $list->queryCriteria();
+//            $criteria->with = array();
+//            $_SESSION['exportContactCriteria'] = $criteria;
+//            $file = "list".$listId.".csv";
+//            $listName = CHtml::link(Yii::t('contacts', 'List')." $listId: ".$list->name, array('/contacts/contacts/list','id'=>$listId), array('style' => 'text-decoration:none;'));
+//        }
+//        $filePath = $this->safePath($file);
+//        $_SESSION['contactExportFile'] = $file;
+//        $attributes = X2Model::model('Contacts')->attributes;
+//        $meta = array_keys($attributes);
+//        if(isset($list)){
+//            // Figure out gridview settings to export those columns
+//            $gridviewSettings = json_decode(Yii::app()->params->profile->gridviewSettings, true);
+//            if(isset($gridviewSettings['contacts_list'.$listId])){
+//                $tempMeta = array_keys($gridviewSettings['contacts_list'.$listId]);
+//                $meta = array_intersect($tempMeta, $meta);
+//            }
+//        }
+//        // Set up metadata
+//        $_SESSION['contactExportMeta'] = $meta;
+//        $fp = fopen($filePath, 'w+');
+//        fputcsv($fp, $meta);
+//        fclose($fp);
+//        $this->render('exportContacts', array(
+//            'listId' => $listId,
+//            'listName' => $listName,
+//        ));
+//    }
 
     
     public function actionDelete($id){

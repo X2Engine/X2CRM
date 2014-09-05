@@ -817,51 +817,7 @@ $(function() {
 
     });
 
-    /* Begin: calendar export code (generates URL for third-party ical format reader) */
-    x2CalendarExporter = {'users':<?php echo json_encode(array_merge($userCalendars,$groupCalendars)); ?>};
-    // Adds or removes a user from the calendar export URL
-    x2CalendarExporter.toggleUser = function(user,add) {
-        // New list of user/group calendars
-        var newList = [];
-        var found = false;
-        if(add) {
-            for (var i=0;i<this.users.length;i++) {
-                newList.push(this.users[i]);
-                if (this.users[i] == user)
-                    found = true;
-            }
-            if(!found)
-                newList.push(user);
-        } else {
-            for (var i=0;i<this.users.length;i++) {
-                if (this.users[i] != user)
-                    newList.push(this.users[i]);
-            }
-        }
-        this.users = newList;
-        this.updateUrl();
-    };
     
-    x2CalendarExporter.updateUrl = function() {
-        <?php
-        $userModel = Yii::app()->suModel;
-        if($userModel->calendarKey == '') {
-            // Set a calendar key if one hasn't already been set
-            $userModel->calendarKey = EncryptUtil::secureUniqueIdHash64();
-            $userModel->update(array('calendarKey'));
-        }
-        ?>
-        var url = <?php echo json_encode($this->createAbsoluteUrl('/calendar/calendar/ical',array(
-            'user'=>Yii::app()->user->name,
-            'key' => $userModel->calendarKey
-        ))); ?>+'?calendars='+this.users.join(',');
-        var container = $('#ical-export-url');
-        container.find('a#ical-export-url-link').attr('href',url);
-        container.find('input#ical-export-url-field').val(url);
-    };
-
-    x2CalendarExporter.updateUrl();
-    /* End calendar export code */ /* x2plaend */
 
     // view/hide actions associated with a user
     function toggleUserCalendarSource(user, on, isEditable) {

@@ -135,31 +135,43 @@ class WorkflowStageDetailsWidget extends SortableWidget {
         return self::$_JSONPropertiesStructure;
     }
 
+
     public function getPackages () {
         if (!isset ($this->_packages)) {
-            $this->_packages = array (
-                'WorkflowStageDetailsWorkflowJS' => array(
-                    'baseUrl' => $this->module->assetsUrl,
-                    'js' => array(
-                        'js/WorkflowManagerBase.js',
-                        'js/WorkflowManager.js',
+            $this->_packages = array_merge (
+                parent::getPackages (),
+                array (
+                    'WorkflowStageDetailsWorkflowJS' => array(
+                        'baseUrl' => $this->module->assetsUrl,
+                        'js' => array(
+                            'js/WorkflowManagerBase.js',
+                            'js/WorkflowManager.js',
+                        ),
+                        'depends' => array ('auxlib')
                     ),
-                    'depends' => array ('auxlib')
-                ),
-                'WorkflowStageDetailsWidgetJS' => array(
+                    'WorkflowStageDetailsWidgetJS' => array(
+                        'baseUrl' => Yii::app()->request->baseUrl,
+                        'js' => array(
+                            'js/sortableWidgets/WorkflowStageDetailsWidget.js',
+                        ),
+                        'depends' => array ('SortableWidgetJS')
+                    ),
+                    'WorkflowStageDetailsWidgetCSS' => array(
+                        'baseUrl' => Yii::app()->getTheme ()->getBaseUrl (),
+                        'css' => array(
+                            'css/workflowFunnel.css',
+                        )
+                    ),
+                )
+            );
+            if (AuxLib::isIE8 ()) {
+                $this->_packages['WorkflowExcanvas'] = array (
                     'baseUrl' => Yii::app()->request->baseUrl,
                     'js' => array(
-                        'js/sortableWidgets/WorkflowStageDetailsWidget.js',
+                        'js/jqplot/excanvas.js',
                     ),
-                    'depends' => array ('SortableWidgetJS')
-                ),
-                'WorkflowStageDetailsWidgetCSS' => array(
-                    'baseUrl' => Yii::app()->getTheme ()->getBaseUrl (),
-                    'css' => array(
-                        'css/workflowFunnel.css',
-                    )
-                ),
-            );
+                );
+            }
         }
         return $this->_packages;
     }

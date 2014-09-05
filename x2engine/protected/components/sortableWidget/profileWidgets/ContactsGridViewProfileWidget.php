@@ -60,7 +60,10 @@ class ContactsGridViewProfileWidget extends GridViewWidget {
 
     protected function getModel () {
         if (!isset ($this->_model)) {
-            $this->_model = new Contacts ('search');
+            $this->_model = new Contacts ('search',
+                $this->widgetKey,
+                $this->getWidgetProperty ('dbPersistentGridSettings'));
+
             $this->afterGetModel ();
         }
         return $this->_model;
@@ -81,7 +84,7 @@ class ContactsGridViewProfileWidget extends GridViewWidget {
             $resultsPerPage = self::getJSONProperty (
                 $this->profile, 'resultsPerPage', $this->widgetType, $this->widgetUID);
             $this->_dataProvider = $this->model->searchAll (
-                $resultsPerPage, get_called_class ().$this->widgetUID);
+                $resultsPerPage);
         }
         return $this->_dataProvider;
     }

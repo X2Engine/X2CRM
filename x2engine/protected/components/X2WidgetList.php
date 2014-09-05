@@ -63,6 +63,7 @@ class X2WidgetList extends X2Widget {
      */
     private function renderWidget () {
         $layout = $this->profile->recordViewWidgetLayout;
+
         foreach($layout as $widgetClass => $settings){ // list of widgets
             $widgetParams = array(
                 'model' => $this->model,
@@ -119,12 +120,12 @@ class X2WidgetList extends X2Widget {
         $modelType = get_class ($this->model);
 
         if ($modelType === 'Actions' && $name !== 'InlineTagsWidget' ||
-            $modelType !== 'Marketing' && $name === 'CampaignChartWidget' ||
+            $modelType !== 'Campaign' && $name === 'CampaignChartWidget' ||
             ($modelType == 'BugReports' && $name!='WorkflowStageDetailsWidget') ||
             ($modelType == 'Quote' && $name == 'WorkflowStageDetailsWidget') ||
-            ($modelType == 'Marketing' &&
+            ($modelType == 'Campaign' &&
              ($name == 'WorkflowStageDetailsWidget' || $name === 'InlineRelationshipsWidget')) ||
-            ($modelType === 'products' && $name === 'WorkflowStageDetailsWidget')) {
+            ($modelType === 'Product' && $name === 'WorkflowStageDetailsWidget')) {
 
             return true;
         } else {

@@ -180,6 +180,14 @@ $('#Actions_associationType').change (function () {
         </div>
 
         <div class="cell">
+            <?php /* All Day */
+            echo $form->label($model, 'allDay', array('class' => 'action-allday-label'));
+            echo $model->renderInput (
+                'allDay', array('class'=>'action-allday'));
+            ?>
+        </div>
+
+        <div class="cell">
             <?php 
             echo CHtml::activeLabel(
                 $model,'priority',

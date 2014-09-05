@@ -64,6 +64,8 @@ abstract class X2DbTestCase extends CDbTestCase {
     }
 
     protected static $skipAllTests = false;
+    
+    protected static $loadFixtures = LOAD_FIXTURES;
 
     private static $_referenceFixtureRecords = array();
 
@@ -72,6 +74,10 @@ abstract class X2DbTestCase extends CDbTestCase {
     public function setUp () {
         if (self::$skipAllTests) {
             $this->markTestSkipped ();
+        }
+        if (!self::$loadFixtures) {
+            $fixtures = is_array ($this->fixtures) ? $this->fixtures : array ();
+            $this->fixtures = array_merge ($fixtures, self::referenceFixtures ());
         }
         parent::setUp ();
     }
@@ -115,6 +121,7 @@ abstract class X2DbTestCase extends CDbTestCase {
      */
     public static function setUpBeforeClass(){
         self::setUpAppEnvironment(); 
+
         // Load "reference fixtures", needed for reference, which do not need
         // to be reloaded after every single test method:
         $testClass = get_called_class();
@@ -122,7 +129,7 @@ abstract class X2DbTestCase extends CDbTestCase {
         $fm = Yii::app()->getComponent('fixture');
         self::$_referenceFixtureRows = array();
         self::$_referenceFixtureRecords = array();
-        if(is_array($refFix)){
+        if(self::$loadFixtures && is_array($refFix)){
             Yii::import('application.components.X2Settings.*');
             $fm->load($refFix);
             foreach($refFix as $alias => $table){
@@ -143,6 +150,7 @@ abstract class X2DbTestCase extends CDbTestCase {
                 }
             }
         }
+
         self::setUpAppEnvironment2(); 
         parent::setUpBeforeClass();
     }
@@ -184,8 +192,9 @@ abstract class X2DbTestCase extends CDbTestCase {
                 }
             }
             throw new Exception('Record alias invalid/not specified.');
-        } else
+        } else {
             return parent::__call($name, $params);
+        }
     }
 }
 

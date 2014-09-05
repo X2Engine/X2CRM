@@ -70,10 +70,7 @@ abstract class GridViewWidget extends SortableWidget {
     /**
      * Should be called after model is instantiated in getModel 
      */
-    protected function afterGetModel () {
-        $this->_model->persistentGridSettings = 
-            $this->getWidgetProperty ('persistentGridSettings');
-    }
+    protected function afterGetModel () {}
 
     public function getPackages () {
         if (!isset ($this->_packages)) {
@@ -99,7 +96,7 @@ abstract class GridViewWidget extends SortableWidget {
                 parent::getJSONPropertiesStructure (),
                 array (
                     'resultsPerPage' => 10, 
-                    'persistentGridSettings' => false, 
+                    'dbPersistentGridSettings' => false, 
                 )
             );
         }
@@ -274,14 +271,18 @@ abstract class GridViewWidget extends SortableWidget {
 
     protected function getSettingsMenuContentDialogs () {
         return
-            '<div id="grid-settings-dialog-'.$this->widgetUID.'" 
+            '<div id="grid-settings-dialog-'.$this->widgetKey.'" 
               style="display: none;">'.
                 '<div>'.Yii::t('profile', 'Use persistent filter and sort settings?').'</div>'.
                 CHtml::checkbox (
-                    'persistentGridSettings', 
+                    'dbPersistentGridSettings', 
                     self::getJSONProperty (
-                        $this->profile, 'persistentGridSettings', $this->widgetType,
-                        $this->widgetUID)).
+                        $this->profile, 'dbPersistentGridSettings', $this->widgetType,
+                        $this->widgetUID), 
+                    array (
+                        'id' => 'dbPersistentGridSettings-'.$this->widgetKey,
+                    )
+                ).
                 X2Html::hint (
                     Yii::t(
                         'profile', 'Leaving this box checked will prevent your grid filter and '.

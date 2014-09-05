@@ -56,7 +56,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'columns'=>array(
 		array(
 			'name'=>'name',
-			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
+			'value'=>'CHtml::link(CHtml::encode($data->name),array("view","id"=>$data->id))',
 			'type'=>'raw',
 			'headerHtmlOptions'=>array('style'=>'width:65%;'),
 		),

@@ -183,6 +183,7 @@ class MarketingController extends x2base {
 
         if(isset($_POST['Campaign'])){
             $model->setX2Fields($_POST['Campaign']);
+            $model->content = Fields::getPurifier()->purify($model->content);
             $model->createdBy = Yii::app()->user->getName();
             if($model->save()){
                 if(isset($_POST['AttachmentFiles'])){
@@ -305,6 +306,7 @@ class MarketingController extends x2base {
         if(isset($_POST['Campaign'])){
             $oldAttributes = $model->attributes;
             $model->setX2Fields($_POST['Campaign']);
+            $model->content = Fields::getPurifier()->purify($model->content);
 
             if($model->save()){
                 CampaignAttachment::model()->deleteAllByAttributes(array('campaign' => $model->id));

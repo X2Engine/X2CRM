@@ -180,21 +180,17 @@ class X2ClientScript extends NLSClientScript {
 
     public function getCurrencyConfigScript () {
         // Declare currency format(s) from Yii for the jQuery maskMoney plugin
-        if (Yii::app()->settings->currencyLocale !== null) {
-            $locale = Yii::app()->getLocale (Yii::app()->settings->currencyLocale);
-        } else {
-            $locale = Yii::app()->locale;
-        }
+        $locale = Yii::app()->locale;
 
         $decSym = $locale->getNumberSymbol('decimal');
         $grpSym = $locale->getNumberSymbol('group');
-        $curSym = $locale->getCurrencySymbol(Yii::app()->params['currency']); 
+        $curSym = Yii::app()->getLocale()->getCurrencySymbol(Yii::app()->params['currency']); 
 
         // Declare:
         $cldScript = 
             '(function($) {
                 x2.currencyInfo = '.CJSON::encode(array(
-                    'prefix' => isset($curSym)? $curSym : "",
+                    'prefix' => isset($curSym)? $curSym : Yii::app()->params['currency'],
                     'decimal' => $decSym,
                     'thousands' => $grpSym,
                 )).";
@@ -555,7 +551,7 @@ class X2ClientScript extends NLSClientScript {
 
         $cs->registerScriptFile($baseUrl.'/js/backgroundFade.js');
         $cs->registerScript('datepickerLanguage', "
-            $.datepicker.setDefaults( $.datepicker.regional[ '' ] );
+            $.datepicker.setDefaults($.datepicker.regional['']);
         ");
         $mmPath = Yii::getPathOfAlias('application.extensions.moneymask.assets');
         $aMmPath = Yii::app()->getAssetManager()->publish($mmPath);

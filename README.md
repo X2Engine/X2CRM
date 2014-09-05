@@ -12,7 +12,7 @@ New in 4.2 (see [CHANGELOG](CHANGELOG.md) for full history):
     * Can now clone, rename, and delete profile widgets
     * Persistent grid widget filters
     * Quick Contact widget now provides appropriate input fields for all required fields
-  * Grid view improvements:
+  * Grid view improvements (Contacts module only):
     * Can now select all records on all pages
     * Perform updates on thousands of records at a time
   * X2Flow improvements _(Professional Edition)_:
@@ -26,7 +26,11 @@ New in 4.2 (see [CHANGELOG](CHANGELOG.md) for full history):
     * Added preset import maps to transfer records from other systems
     * Action descriptions can now be imported/exported
     * Actions associations will now be verified to ensure the type is known to X2 and that the associated record exists
+    * Added a loading throbber to indicate activity
+    * Added a timeout warning when max_execution_time is set to 30 seconds or less
   * Static pages can now be created from existing Docs instead of only a new Doc
+  * New feature to validate email credentials from the 'Manage Apps' page
+  * Improved contact lists grid view
 * General changlog/developer notes
   * Patched file upload filter bypass vulnerability
   * Fixed missing link to modify Doc permissions when logged in as admin
@@ -34,9 +38,28 @@ New in 4.2 (see [CHANGELOG](CHANGELOG.md) for full history):
   * Updated the web lead form to search for duplicate contacts on all custom Contact email fields
   * Fixed issue preventing Automatic Updates settings form from being saved
   * Fixed issue which caused process funnel record counts to be incorrect
+  * Fixed bug in importer preventing action descriptions from being imported
+  * Improved error reporting and handling on media upload tool
+  * Improved currency validation and fixed consistency issues when changing a products currency
+  * Fixed error reporting when attempting to upgrade without a key
+  * _(Platinum Edition)_ Updated Fingerprint index to display a human-readable timezone string
+  * Default permissions will now be created when importing a module
+  * Fixed Account link type fields for Contacts and Opportunities created on the Quick Create page
+  * Fixed links in 'My Actions' widget
+  * Fixed bug in Google Calendar Sync which prevented calendar and action history from updating
+    after publishing events or actions
 * Tracked Bug Fixes:  
   * [1401](http://x2software.com/index.php/bugReports/1401): Undefined index: tags 
-
+  * [1492](http://x2software.com/index.php/bugReports/1492): User Report  
+  * [1553](http://x2software.com/index.php/bugReports/1553): "Do Not Email Page" does not save  
+  * [1554](http://x2software.com/index.php/bugReports/1554): explode() expects parameter 2 to be string, array given  
+  * [1555](http://x2software.com/index.php/bugReports/1555): Invalid argument supplied for foreach()  
+  * [1562](http://x2software.com/index.php/bugReports/1562): The system is unable to find the requested action "www.google.com".  
+  * [1565](http://x2software.com/index.php/bugReports/1565): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '{"contacts\  
+  * [1567](http://x2software.com/index.php/bugReports/1567): Class: AnonContact not found.  
+  * [1572](http://x2software.com/index.php/bugReports/1572): Unable to resolve the request "actions/viewAll/showActions/incomplete".  
+  * [1574](http://x2software.com/index.php/bugReports/1574): Trying to get property of non-object  
+  * [1578](http://x2software.com/index.php/bugReports/1578): Undefined variable: users  
 
 
 

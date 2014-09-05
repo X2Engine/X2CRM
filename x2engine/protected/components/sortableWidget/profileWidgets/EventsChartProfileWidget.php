@@ -279,7 +279,7 @@ class EventsChartProfileWidget extends ChartWidget {
 		if (self::getJSONProperty (
             $this->profile, 'minimized', $this->widgetType, $this->widgetUID)) {
 
-			$tsDict = $this->getStartEndTimestampFromCookies (time () - self::SECPERWEEK, time ());
+			$tsDict = $this->getStartEndTimestamp (time () - self::SECPERWEEK, time ());
 			$startDate = $tsDict[0];
 			$endDate = $tsDict[1];
 			$events = self::getChartData ($startDate, $endDate);

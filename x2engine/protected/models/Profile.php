@@ -39,6 +39,7 @@ Yii::import('application.modules.users.models.*');
 Yii::import('application.components.JSONFieldsBehavior');
 Yii::import('application.components.WidgetLayoutJSONFieldsBehavior');
 Yii::import('application.components.X2SmartSearchModelBehavior');
+Yii::import('application.components.sortableWidget.SortableWidget');
 
 /**
  * This is the model class for table "x2_profile".
@@ -46,20 +47,37 @@ Yii::import('application.components.X2SmartSearchModelBehavior');
  */
 class Profile extends CActiveRecord {
 
+    /**
+     * username of guest profile record 
+     */
+    const GUEST_PROFILE_USERNAME = '__x2_guest_profile__';
+
     private $_isActive;
+
+    /**
+     * @var string Used in the search scenario to uniquely identify this model. Allows filters
+     *  to be saved for each grid view.
+     */
+    public $uid;
 
     /**
      * @var bool If true, grid views displaying models of this type will have their filter and
      *  sort settings saved in the database instead of in the session
      */
-    public $persistentGridSettings = false;
+    public $dbPersistentGridSettings = false;
+
+    public function __construct(
+        $scenario = 'insert', $uid = null, $dbPersistentGridSettings = false){
+
+        if ($uid !== null) {
+            $this->uid = $uid;
+        }
+        $this->dbPersistentGridSettings = $dbPersistentGridSettings;
+        parent::__construct ($scenario);
+    }
 
     public function setIsActive ($isActive) {
-        if ($isActive === '0' || $isActive === 'false') {
-            $this->_isActive = 0;
-        } else if ($isActive === '1' || $isActive === 'true') {
-            $this->_isActive = 1;
-        }
+        $this->_isActive = $isActive;
     }
 
     public function getIsActive () {
@@ -149,6 +167,7 @@ class Profile extends CActiveRecord {
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
             array('googleId', 'unique'),
+            array('isActive', 'numerical'),
             array('fullName', 'length', 'max' => 60),
             array('username, updatedBy', 'length', 'max' => 20),
             array('officePhone, extension, cellPhone, language', 'length', 'max' => 40),
@@ -274,32 +293,25 @@ class Profile extends CActiveRecord {
         $criteria->compare('id', $this->id);
         $criteria->compare('fullName', $this->fullName, true);
         $criteria->compare('username', $this->username, true);
+        $criteria->compare('username', '<>'.self::GUEST_PROFILE_USERNAME, true);
         $criteria->compare('officePhone', $this->officePhone, true);
         $criteria->compare('cellPhone', $this->cellPhone, true);
         $criteria->compare('emailAddress', $this->emailAddress, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('tagLine',$this->tagLine,true);
 
-
-        /*
-        Filter on is active model property
-        */
-        if (isset ($_GET['Profile']) && is_array ($_GET['Profile']) &&
-            in_array ('isActive', array_keys ($_GET['Profile']))) {
-
-            $this->isActive = $_GET['Profile']['isActive'];
-            if (!isset ($this->isActive)) { // invalid isActive value
-            } else if ($this->isActive) { // select all users with new session records
-                $criteria->join = 
-                    'JOIN x2_sessions ON x2_sessions.user=username and '.
-                    'x2_sessions.lastUpdated > "'.(time () - 900).'"';
-            } else { // select all users with old session records or no session records
-                $criteria->join = 
-                    'JOIN x2_sessions ON (x2_sessions.user=username and '.
-                    'x2_sessions.lastUpdated <= "'.(time () - 900).'") OR '.
-                    'username not in (select x2_sessions.user from x2_sessions as x2_sessions)';
-            }
-        } 
+        // Filter on is active model property
+        if (!isset ($this->isActive)) { // invalid isActive value
+        } else if ($this->isActive) { // select all users with new session records
+            $criteria->join = 
+                'JOIN x2_sessions ON x2_sessions.user=username and '.
+                'x2_sessions.lastUpdated > "'.(time () - 900).'"';
+        } else { // select all users with old session records or no session records
+            $criteria->join = 
+                'JOIN x2_sessions ON (x2_sessions.user=username and '.
+                'x2_sessions.lastUpdated <= "'.(time () - 900).'") OR '.
+                'username not in (select x2_sessions.user from x2_sessions as x2_sessions)';
+        }
 
         if ($excludeAPI) {
             if ($criteria->condition !== '') {
@@ -309,7 +321,7 @@ class Profile extends CActiveRecord {
             }
         }
 
-        return $this->smartSearch ($criteria, $resultsPerPage, $uniqueId);
+        return $this->smartSearch ($criteria, $resultsPerPage);
     }
 
     /**
@@ -596,7 +608,7 @@ class Profile extends CActiveRecord {
         }
     }
 
-    public function syncActionToGoogleCalendar($action){
+    public function syncActionToGoogleCalendar($action, $ajax=false){
         try{ // catch google exceptions so the whole app doesn't crash if google has a problem syncing
             $admin = Yii::app()->settings;
             if($admin->googleIntegration){
@@ -619,11 +631,17 @@ class Profile extends CActiveRecord {
                     // check if the access token needs to be refreshed
                     // note that the google library automatically refreshes the access token if 
                     // we need a new one,
-                    // we just need to check if this happend by calling a google api function that 
+                    // we just need to check if this happened by calling a google api function that 
                     // requires authorization,
                     // and, if the access token has changed, save this new access token
                     if(!$googleCalendar){
-                        Yii::app()->controller->redirect($auth->getAuthorizationUrl('calendar'));
+                        $redirectUrl = $auth->getAuthorizationUrl('calendar');
+                        if ($ajax) {
+                            echo CJSON::encode (array ('redirect' => $redirectUrl));
+                            Yii::app()->end ();
+                        } else {
+                            Yii::app()->controller->redirect($redirectUrl);
+                        }
                     }
 //                    if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()){
 //                        $this->syncGoogleCalendarAccessToken = $client->getAccessToken();
@@ -1172,6 +1190,13 @@ class Profile extends CActiveRecord {
             select username from x2_profile 
             where leadRoutingAvailability=1
         ")->queryAll ());
+    }
+
+    /**
+     * @return Profile 
+     */
+    public function getGuestProfile () {
+        return $this->findByAttributes (array ('username' => self::GUEST_PROFILE_USERNAME)); 
     }
 
 

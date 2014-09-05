@@ -151,6 +151,10 @@ body.no-widgets .grid-view .x2-gridview-fixed-top-bar-outer .select-all-records-
     margin-right: -1px;
 }
 
+.grid-view .container-clone {
+    visibility: hidden;
+}
+
 .x2-mobile-layout .x2grid-body-container .container-clone,
 .x2grid-body-container.x2-gridview-body-without-fixed-header .container-clone {
     display: none !important;
@@ -159,6 +163,25 @@ body.no-widgets .grid-view .x2-gridview-fixed-top-bar-outer .select-all-records-
 /*
 Flashes container
 */
+
+.super-mass-action-feedback-box {
+    margin: 5px 0;
+    border: 1px solid rgb(176, 176, 176);
+    background: rgb(250, 250, 250);
+    box-shadow: inset 1px 1px rgb(219, 219, 219);
+    padding: 4px;
+    height: 76px;
+    overflow-y: scroll;
+}
+
+.super-mass-action-feedback-box .success-flash {
+    color: green;
+}
+.super-mass-action-feedback-box .error-flash {
+    color: red;
+}
+
+
 
 #x2-gridview-flashes-container.fixed-flashes-container {
     position: fixed;
@@ -298,6 +321,7 @@ Yii::app()->clientScript->registerResponsiveCss ('massActionsCssResponsive', "
 
 ");
 
+// destroy mass action dialogs, save checks so that can be preserved through grid update
 $beforeUpdateJSString = "
     x2.DEBUG && console.log ('beforeUpdateJSString');
     
@@ -314,12 +338,13 @@ $beforeUpdateJSString = "
     // save to preserve checks
     x2.".$namespacePrefix."MassActionsManager.saveSelectedRecords ();
 
+    // show loading overlay to prevent grid view user interaction
     $('#".$gridId." .x2-gridview-updating-anim').show ();
-    $('#".$gridId."-mass-action-buttons').find ('.mass-action-button').unbind ('click');
 ";
 
 $gridObj->addToBeforeAjaxUpdate ($beforeUpdateJSString);
 
+// reapply event handlers and checks
 $afterUpdateJSString = "
     x2.DEBUG && console.log ('afterUpdateJSSTring');
     if (typeof x2.".$namespacePrefix."MassActionsManager !== 'undefined') 
@@ -351,8 +376,16 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
                 '/images/icons/Close_Widget.png'."',
             progressBarDialogSelector: '#$namespacePrefix-progress-dialog',
             enableSelectAllOnAllPages: ".
-                ($gridObj->enableSelectAllOnAllPages ? 'true' : 'false')." 
+                ($gridObj->enableSelectAllOnAllPages ? 'true' : 'false').",
+            totalItemCount: {$gridObj->dataProvider->totalItemCount},
+            idChecksum: '$idChecksum',
         });
+    } else {
+        // grid was refreshed, total item count may have changed
+        x2.{$namespacePrefix}MassActionsManager.totalItemCount = 
+            {$gridObj->dataProvider->totalItemCount};
+        x2.{$namespacePrefix}MassActionsManager.idChecksum = 
+            '$idChecksum';
     }
 ", CClientScript::POS_READY);
 
@@ -446,7 +479,7 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
 
 </span>
 
-<div class='double-confirmation-dialog' style='display: none;'>
+<div class='mass-action-dialog double-confirmation-dialog' style='display: none;'>
     <span><?php 
         echo Yii::t(
             'app', 'You are about to delete {count} {recordType}.', 
@@ -469,7 +502,7 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
     ?>
     <input name="password" type='password'>
 </div>
-<div id='<?php echo $namespacePrefix; ?>-progress-dialog' class='progress-dialog' 
+<div id='<?php echo $namespacePrefix; ?>-progress-dialog' class='progress-dialog mass-action-dialog'
  style='display: none;'>
 <?php
     $this->widget ('X2ProgressBar', array (
@@ -478,4 +511,6 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
         'label' => '',
     ));
 ?>
+<div class='super-mass-action-feedback-box'>
+</div>
 </div>

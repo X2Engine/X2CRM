@@ -41,43 +41,51 @@ Yii::app()->clientScript->registerCss('actionMenu',"
 }
 
 ");
+
+Yii::app()->clientScript->registerScript('setShowActions', '
+    if (typeof x2 == "undefined")
+        x2 = {};
+    x2.setShowActions = function(type) {
+        var saveShowActionsUrl = '.json_encode(Yii::app()->controller->createUrl('/actions/actions/saveShowActions')).';
+        var viewUrl = "'.Yii::app()->controller->createUrl('/actions/actions/viewAll').'";
+        $.post(
+            saveShowActionsUrl,
+            { ShowActions: type }
+        );
+    };
+');
+
 ?>
 <ul id='action-menu-right-widget'>
 	<li>
         <strong>
-            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll'); ?>'><?php 
-                echo $total; 
-            ?></a>
+            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll'); ?>'
+            onclick="x2.setShowActions('all')">
+            <?php echo $total; ?></a>
         </strong><?php 
         echo Yii::t('app','Total Action|Total Actions',$total); 
     ?></li>
 	<li>
         <strong>
-            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll', array (
-                'showActions' => 'incomplete',
-            )); ?>'><?php 
-                echo $unfinished; 
-            ?></a>
+            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll'); ?>'
+                onclick="x2.setShowActions('uncomplete')">
+            <?php echo $unfinished; ?></a>
         </strong><?php 
         echo Yii::t('app','Incomplete Action|Incomplete Actions',$total); 
     ?></li>
 	<li>
         <strong>
-            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll', array (
-                'showActions' => 'overdue',
-            )); ?>'><?php 
-                echo $overdue; 
-            ?></a>
+            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll'); ?>'
+                onclick="x2.setShowActions('overdue')">
+            <?php echo $overdue; ?></a>
         </strong><?php 
         echo Yii::t('app','Overdue Action|Overdue Actions',$total); 
     ?></li>
 	<li>
         <strong>
-            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll', array (
-                'showActions' => 'complete',
-            )); ?>'><?php 
-                echo $complete; 
-            ?></a>
+            <a href='<?php echo Yii::app()->controller->createUrl ('actions/viewAll'); ?>'
+                onclick="x2.setShowActions('complete')">
+            <?php echo $complete; ?></a>
         </strong><?php 
         echo Yii::t('app','Completed Action|Completed Actions',$total); 
     ?></li>

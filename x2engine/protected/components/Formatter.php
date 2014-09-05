@@ -219,6 +219,73 @@ class Formatter {
     }
 
     /**
+     * Converts a yii date format string to a jquery ui date format string
+     * For each of the format string specifications, see:
+     * http://www.yiiframework.com/doc/api/1.1/CDateTimeParser
+     * http://api.jqueryui.com/datepicker/
+     */
+    public static function yiiDateFormatToJQueryDateFormat ($format) {
+        $tokens = CDateTimeParser::tokenize ($format);
+        $jQueryFormat = '';
+		foreach($tokens as $token) {
+			switch($token) {
+				case 'yyyy':
+				case 'y':
+                    $jQueryFormat .= 'yy';
+					break;
+				case 'yy':
+                    $jQueryFormat .= 'y';
+					break;
+				case 'MMMM':
+                    $jQueryFormat .= $token;
+					break;
+				case 'MMM':
+                    $jQueryFormat .= 'M';
+					break;
+				case 'MM':
+                    $jQueryFormat .= 'mm';
+					break;
+				case 'M':
+                    $jQueryFormat .= 'm';
+					break;
+				case 'dd':
+                    $jQueryFormat .= $token;
+					break;
+				case 'd':
+                    $jQueryFormat .= $token;
+					break;
+				case 'h':
+				case 'H':
+                    $jQueryFormat .= $token;
+					break;
+				case 'hh':
+				case 'HH':
+                    $jQueryFormat .= $token;
+					break;
+				case 'm':
+                    $jQueryFormat .= $token;
+					break;
+				case 'mm':
+                    $jQueryFormat .= $token;
+					break;
+				case 's':
+                    $jQueryFormat .= $token;
+					break;
+				case 'ss':
+                    $jQueryFormat .= $token;
+					break;
+				case 'a':
+                    $jQueryFormat .= $token;
+					break;
+				default:
+                    $jQueryFormat .= $token;
+					break;
+			}
+		}
+        return $jQueryFormat;
+    }
+
+    /**
      * Format dates for the date picker.
      * @param string $width A length keyword, i.e. "medium"
      * @return string
@@ -230,11 +297,8 @@ class Formatter {
             else
                 return "MM d, yy";
         } else{
-            // translate Yii date format to jquery
-            $format = Yii::app()->locale->getDateFormat('medium'); 
-            $format = str_replace('yy', 'y', $format);
-            $format = str_replace('MM', 'mm', $format);
-            $format = str_replace('M', 'm', $format);
+            $format = self::yiiDateFormatToJQueryDateFormat (
+                Yii::app()->locale->getDateFormat('medium')); 
             return $format;
         }
     }
@@ -798,15 +862,11 @@ class Formatter {
 
     /**
      * @param float|int $value 
-     * @param string $currency (optional)
-     * @return string value formatted as currency using specified currency or app-wide currency 
-     *  settings if no currency is specified
+     * @return string value formatted as currency using app-wide currency setting
      */
-    public static function formatCurrency ($value, $currency=null) {
-        $locale = Yii::app()->settings->currencyLocale;
-        $locale = $locale === null ? Yii::app()->locale : Yii::app()->getLocale ($locale);
-        $currency = $currency === null ? Yii::app()->params->currency : $currency;
-        return $locale->numberFormatter->formatCurrency ($value, $currency);
+    public static function formatCurrency ($value) {
+        return Yii::app()->locale->numberFormatter->formatCurrency (
+            $value, Yii::app()->params->currency);
     }
 
 }

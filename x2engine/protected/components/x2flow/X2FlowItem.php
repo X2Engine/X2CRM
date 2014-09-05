@@ -103,6 +103,7 @@ abstract class X2FlowItem extends CComponent {
             $option = &$configOptions[$optName];
             // set optional flag
             $option['optional'] = isset($optRule['optional']) && $optRule['optional'];
+            $option['comparison'] = isset($optRule['comparison']) ? $optRule['comparison'] : true;
             // operator defaults to "=" if not set
             $option['operator'] = isset($option['operator'])? $option['operator'] : '=';
             // if there's a type setting, set that in the config data

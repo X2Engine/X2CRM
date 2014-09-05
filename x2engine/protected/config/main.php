@@ -320,6 +320,12 @@ $config = array(
         'supportedCurrencySymbols' => array(),
     ),
 );
+
+if (YII_DEBUG && YII_UNIT_TESTING)
+    $config['components']['urlManager']['rules'] = array_merge (
+        array ('profileTest/<action:\w+>' => 'profileTest/<action>'),
+        $config['components']['urlManager']['rules']);
+
 if(file_exists('protected/config/proConfig.php')){
     $proConfig = include('protected/config/proConfig.php');
     foreach($proConfig as $attr => $proConfigData){

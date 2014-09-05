@@ -106,6 +106,7 @@ $this->widget('X2GridView', array(
         'qtipSelector' => ".contact-name"
     ),
 	'title'=>$heading,
+    'enableSelectAllOnAllPages' => true,
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> 
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.

@@ -264,6 +264,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @return array (error status, message)
      */
     public function check(&$params) {
+        //AuxLib::debugLogR ('X2FlowTrigger: check');
         foreach($this->config['options'] as $name => &$option) {
             // modelClass is a special case, ignore it
             if($name === 'modelClass')    
@@ -277,7 +278,21 @@ abstract class X2FlowTrigger extends X2FlowItem {
             if(isset($option['type']))
                 $value = X2Flow::parseValue($value,$option['type'],$params);
 
+            //AuxLib::debugLogR ('evalComp');
+           //AuxLib::debugLogR ('$params = ');
+            //AuxLib::debugLogR ($params);
+           //AuxLib::debugLogR ('$name = ');
+            //AuxLib::debugLogR ($name);
+           //AuxLib::debugLogR ('$option = ');
+            //AuxLib::debugLogR ($option);
+
+
+            if (isset ($option['comparison']) && !$option['comparison']) {
+                continue;
+            }
+
             if(!self::evalComparison($params[$name], $option['operator'], $value)) {
+                //AuxLib::debugLogR ('done evalComp');
                 return array (
                     false, 
                     Yii::t('studio', 'the following condition did not pass: ' .
@@ -289,6 +304,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
                 );
             }
         }
+        //AuxLib::debugLogR ('return');
 
         return $this->checkConditions($params);
     }

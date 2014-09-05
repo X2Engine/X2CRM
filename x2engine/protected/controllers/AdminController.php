@@ -133,14 +133,6 @@ class AdminController extends Controller {
     }
 
     /**
-     * Scans the locale files to retrieve available locale id options 
-     */
-    private function getLocaleIdOptions () {
-        $localeIds = CLocale::getLocaleIDs ();
-        return array_combine ($localeIds, $localeIds);
-    }
-
-    /**
      * @deprecated
      * Another function for analyzing the translation files.
      *
@@ -1538,14 +1530,8 @@ class AdminController extends Controller {
                     $admin->currency = $_POST['currency2'];
                     if(empty($admin->currency))
                         $admin->addError('currency', Yii::t('admin', 'Please enter a valid currency type.'));
-                } else {
+                } else
                     $admin->currency = $_POST['currency'];
-                }
-                if ($_POST['localeId'] !== 'default') {
-                    $admin->currencyLocale = $_POST['localeId'];
-                } else {
-                    $admin->currencyLocale = null;
-                }
             }
             if($oldFormat != $admin->contactNameFormat){
                 if($admin->contactNameFormat == 'lastName, firstName'){
@@ -1562,12 +1548,8 @@ class AdminController extends Controller {
             }
         }
         $admin->timeout = ceil($admin->timeout / 60);
-
-        $localeIds = $this->getLocaleIdOptions ();
-
         $this->render('appSettings', array(
             'model' => $admin,
-            'localeIds' => $localeIds,
         ));
     }
 
@@ -1693,13 +1675,11 @@ class AdminController extends Controller {
      */
     public function actionEmailSetup(){
 
-        $admin = &Yii::app()->settings; //X2Model::model('Admin')->findByPk(1);
+        $admin = &Yii::app()->settings;
         Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/manageCredentials.js');
         if(isset($_POST['Admin'])){
             $admin->attributes = $_POST['Admin'];
 
-            // $admin->chatPollTime=$timeout;
-            // $admin->save();
             if($admin->save()){
                 $this->redirect('emailSetup');
             }
@@ -1956,23 +1936,31 @@ class AdminController extends Controller {
      */
     public function actionRenameModules(){
 
-        $order = Modules::model()->findAllByAttributes(array('visible' => 1));
+        $order = Modules::model()->findAllByAttributes(
+            array(
+                'visible' => 1,
+            )
+        );
         $menuItems = array();
         foreach($order as $module){
             $menuItems[$module->name] = Yii::t('app', $module->title);
         }
-        foreach($menuItems as $key => $value)
+        foreach($menuItems as $key => $value) {
             $menuItems[$key] = preg_replace('/&#58;/', ':', $value); // decode any colons
+        }
 
         if(isset($_POST['module']) && isset($_POST['name'])){
             $module = $_POST['module'];
             $name = $_POST['name'];
 
-            $moduleRecord = Modules::model()->findByAttributes(array('name' => $module, 'title' => $menuItems[$module]));
+            $moduleRecord = Modules::model()->findByAttributes(
+                array(
+                    'name' => $module,
+                    'title' => $menuItems[$module],
+                )
+            );
             if(isset($moduleRecord)){
-                $moduleRecord->title = $name;
-
-                if($moduleRecord->save()){
+                if ($moduleRecord->retitle ($name)) {
                     $this->redirect('index');
                 }
             }
@@ -2235,88 +2223,7 @@ class AdminController extends Controller {
                     $auth = Yii::app()->authManager;
                     $testItem = $auth->getAuthItem($ucName.'ReadOnlyAccess'); // Check for a common access item's existence
                     if(is_null($testItem)){ // It doesn't exist, we need to create permissions for this module.
-                        $authRule = "return Yii::app()->user->getName()==\$params['assignedTo'];";
-                        $guestSite = $auth->getAuthItem('GuestSiteFunctionsTask');
-                        $auth->removeAuthItem($ucName.'Index');
-                        $auth->removeAuthItem($ucName.'Admin');
-                        $auth->createOperation($ucName.'GetItems');  // Guest Access
-                        $auth->createOperation($ucName.'View');  // Read Only
-                        $auth->createOperation($ucName.'Create');  // Basic Access
-                        $auth->createOperation($ucName.'Update');  // Update Access
-                        $auth->createOperation($ucName.'Index');  // Minimum Requirements
-                        $auth->createOperation($ucName.'Admin');  // Admin Access
-                        $auth->createOperation($ucName.'Delete');  // Full Access
-                        $auth->createOperation($ucName.'GetTerms');  // Minimum Requirements
-                        $auth->createOperation($ucName.'DeleteNote');  // Full Access
-                        $auth->createOperation($ucName.'Search');  // Minimum Requirements
-
-                        // Access Group Definitions
-                        $roleAdminAccess = $auth->createTask($ucName.'AdminAccess');
-                        $roleFullAccess = $auth->createTask($ucName.'FullAccess');
-                        $rolePrivateFullAccess = $auth->createTask($ucName.'PrivateFullAccess');
-                        $roleUpdateAccess = $auth->createTask($ucName.'UpdateAccess');
-                        $rolePrivateUpdateAccess = $auth->createTask($ucName.'PrivateUpdateAccess');
-                        $roleBasicAccess = $auth->createTask($ucName.'BasicAccess');
-                        $roleReadOnlyAccess = $auth->createTask($ucName.'ReadOnlyAccess');
-                        $rolePrivateReadOnlyAccess = $auth->createTask($ucName.'PrivateReadOnlyAccess');
-                        $roleMinimumRequirements = $auth->createTask($ucName.'MinimumRequirements');
-
-                        // Private Task Definitions
-                        $rolePrivateDelete = $auth->createTask($ucName.'DeletePrivate', 'Delete their own records', $authRule);
-                        $rolePrivateDelete->addChild($ucName.'Delete');
-                        $rolePrivateDelete->addChild($ucName.'DeleteNote');
-                        $rolePrivateUpdate = $auth->createTask($ucName.'UpdatePrivate', 'Update their own records', $authRule);
-                        $rolePrivateUpdate->addChild($ucName.'Update');
-                        $rolePrivateView = $auth->createTask($ucName.'ViewPrivate', 'View their own record', $authRule);
-                        $rolePrivateView->addChild($ucName.'View');
-
-                        // Guest Requirements
-                        $guestSite->addChild($ucName.'GetItems');
-
-                        // Minimum Requirements
-                        $roleMinimumRequirements->addChild($ucName.'Index');
-                        $roleMinimumRequirements->addChild($ucName.'GetTerms');
-                        $roleMinimumRequirements->addChild($ucName.'Search');
-
-                        // Read Only
-                        $roleReadOnlyAccess->addChild($ucName.'MinimumRequirements');
-                        $roleReadOnlyAccess->addChild($ucName.'View');
-
-                        // Private Read Only
-                        $rolePrivateReadOnlyAccess->addChild($ucName.'MinimumRequirements');
-                        $rolePrivateReadOnlyAccess->addChild($ucName.'ViewPrivate');
-
-                        // Basic Access
-                        $roleBasicAccess->addChild($ucName.'ReadOnlyAccess');
-                        $roleBasicAccess->addChild($ucName.'Create');
-
-                        // Update Access
-                        $roleUpdateAccess->addChild($ucName.'BasicAccess');
-                        $roleUpdateAccess->addChild($ucName.'Update');
-
-                        // Private Update Access
-                        $rolePrivateUpdateAccess->addChild($ucName.'BasicAccess');
-                        $rolePrivateUpdateAccess->addChild($ucName.'UpdatePrivate');
-
-                        // Full Access
-                        $roleFullAccess->addChild($ucName.'UpdateAccess');
-                        $roleFullAccess->addChild($ucName.'Delete');
-                        $roleFullAccess->addChild($ucName.'DeleteNote');
-
-                        // Private Full Access
-                        $rolePrivateFullAccess->addChild($ucName.'PrivateUpdateAccess');
-                        $rolePrivateFullAccess->addChild($ucName.'DeletePrivate');
-
-                        // Admin Access
-                        $roleAdminAccess->addChild($ucName.'FullAccess');
-                        $roleAdminAccess->addChild($ucName.'Admin');
-
-                        $defaultRole = $auth->getAuthItem('DefaultRole');
-                        $defaultRole->removeChild($ucName.'Index');
-                        $defaultRole->addChild($ucName.'UpdateAccess');
-                        $adminRole = $auth->getAuthItem('administrator');
-                        $adminRole->removeChild($ucName.'Admin');
-                        $adminRole->addChild($ucName.'AdminAccess');
+                        $this->createDefaultModulePermissions ($ucName);
                         $status[$moduleName]['messages'][]=Yii::t('admin','Permissions configuration complete.');
                     }
                     if($updateFlag){
@@ -2486,87 +2393,109 @@ class AdminController extends Controller {
             $command = Yii::app()->db->createCommand($sql);
             $command->execute();
         }
-        $ucName = $moduleTitle;
+        $this->createDefaultModulePermissions ($moduleTitle);
+    }
+
+    /**
+     * Private helper method to create initial permissions structure when
+     * creating a new custom module or importing one
+     * @param string $moduleName Name of the module
+     */
+    private function createDefaultModulePermissions($moduleName) {
         $auth = Yii::app()->authManager;
         $authRule = 'return $this->checkAssignment($params);';
         $guestSite = $auth->getAuthItem('GuestSiteFunctionsTask');
-        $auth->createOperation($ucName.'GetItems');  // Guest Access
-        $auth->createOperation($ucName.'View');  // Read Only
-        $auth->createOperation($ucName.'Create');  // Basic Access
-        $auth->createOperation($ucName.'Update');  // Update Access
-        $auth->createOperation($ucName.'Index');  // Minimum Requirements
-        $auth->createOperation($ucName.'Admin');  // Admin Access
-        $auth->createOperation($ucName.'Delete');  // Full Access
-        $auth->createOperation($ucName.'GetTerms');  // Minimum Requirements
-        $auth->createOperation($ucName.'DeleteNote');  // Full Access
-        $auth->createOperation($ucName.'Search');  // Minimum Requirements
+        $auth->createOperation($moduleName.'GetItems');  // Guest Access
+        $auth->createOperation($moduleName.'View');  // Read Only
+        $auth->createOperation($moduleName.'Create');  // Basic Access
+        $auth->createOperation($moduleName.'Update');  // Update Access
+        $auth->createOperation($moduleName.'Index');  // Minimum Requirements
+        $auth->createOperation($moduleName.'Admin');  // Admin Access
+        $auth->createOperation($moduleName.'Delete');  // Full Access
+        $auth->createOperation($moduleName.'GetTerms');  // Minimum Requirements
+        $auth->createOperation($moduleName.'DeleteNote');  // Full Access
+        $auth->createOperation($moduleName.'Search');  // Minimum Requirements
+
         // Access Group Definitions
-        $roleAdminAccess = $auth->createTask($ucName.'AdminAccess');
-        $roleFullAccess = $auth->createTask($ucName.'FullAccess');
-        $rolePrivateFullAccess = $auth->createTask($ucName.'PrivateFullAccess');
-        $roleUpdateAccess = $auth->createTask($ucName.'UpdateAccess');
-        $rolePrivateUpdateAccess = $auth->createTask($ucName.'PrivateUpdateAccess');
-        $roleBasicAccess = $auth->createTask($ucName.'BasicAccess');
-        $roleReadOnlyAccess = $auth->createTask($ucName.'ReadOnlyAccess');
-        $rolePrivateReadOnlyAccess = $auth->createTask($ucName.'PrivateReadOnlyAccess');
-        $roleMinimumRequirements = $auth->createTask($ucName.'MinimumRequirements');
+        $roleAdminAccess = $auth->createTask($moduleName.'AdminAccess');
+        $roleFullAccess = $auth->createTask($moduleName.'FullAccess');
+        $rolePrivateFullAccess = $auth->createTask($moduleName.'PrivateFullAccess');
+        $roleUpdateAccess = $auth->createTask($moduleName.'UpdateAccess');
+        $rolePrivateUpdateAccess = $auth->createTask($moduleName.'PrivateUpdateAccess');
+        $roleBasicAccess = $auth->createTask($moduleName.'BasicAccess');
+        $roleReadOnlyAccess = $auth->createTask($moduleName.'ReadOnlyAccess');
+        $rolePrivateReadOnlyAccess = $auth->createTask($moduleName.'PrivateReadOnlyAccess');
+        $roleMinimumRequirements = $auth->createTask($moduleName.'MinimumRequirements');
 
         // Private Task Definitions
-        $rolePrivateDelete = $auth->createTask($ucName.'DeletePrivate', 'Delete their own records', $authRule);
-        $rolePrivateDelete->addChild($ucName.'Delete');
-        $rolePrivateDelete->addChild($ucName.'DeleteNote');
-        $rolePrivateUpdate = $auth->createTask($ucName.'UpdatePrivate', 'Update their own records', $authRule);
-        $rolePrivateUpdate->addChild($ucName.'Update');
-        $rolePrivateView = $auth->createTask($ucName.'ViewPrivate', 'View their own record', $authRule);
-        $rolePrivateView->addChild($ucName.'View');
+        $rolePrivateDelete = $auth->createTask($moduleName.'DeletePrivate',
+            'Delete their own records', $authRule);
+        $rolePrivateDelete->addChild($moduleName.'Delete');
+        $rolePrivateDelete->addChild($moduleName.'DeleteNote');
+        $rolePrivateUpdate = $auth->createTask($moduleName.'UpdatePrivate',
+            'Update their own records', $authRule);
+        $rolePrivateUpdate->addChild($moduleName.'Update');
+        $rolePrivateView = $auth->createTask($moduleName.'ViewPrivate',
+            'View their own record', $authRule);
+        $rolePrivateView->addChild($moduleName.'View');
 
         // Guest Requirements
-        $guestSite->addChild($ucName.'GetItems');
+        $guestSite->addChild($moduleName.'GetItems');
 
         // Minimum Requirements
-        $roleMinimumRequirements->addChild($ucName.'Index');
-        $roleMinimumRequirements->addChild($ucName.'GetTerms');
-        $roleMinimumRequirements->addChild($ucName.'Search');
+        $roleMinimumRequirements->addChild($moduleName.'Index');
+        $roleMinimumRequirements->addChild($moduleName.'GetTerms');
+        $roleMinimumRequirements->addChild($moduleName.'Search');
 
         // Read Only
-        $roleReadOnlyAccess->addChild($ucName.'MinimumRequirements');
-        $roleReadOnlyAccess->addChild($ucName.'View');
+        $roleReadOnlyAccess->addChild($moduleName.'MinimumRequirements');
+        $roleReadOnlyAccess->addChild($moduleName.'View');
 
         // Private Read Only
-        $rolePrivateReadOnlyAccess->addChild($ucName.'MinimumRequirements');
-        $rolePrivateReadOnlyAccess->addChild($ucName.'ViewPrivate');
+        $rolePrivateReadOnlyAccess->addChild($moduleName.'MinimumRequirements');
+        $rolePrivateReadOnlyAccess->addChild($moduleName.'ViewPrivate');
 
         // Basic Access
-        $roleBasicAccess->addChild($ucName.'ReadOnlyAccess');
-        $roleBasicAccess->addChild($ucName.'Create');
+        $roleBasicAccess->addChild($moduleName.'MinimumRequirements');
+        $roleBasicAccess->addChild($moduleName.'Create');
 
         // Update Access
-        $roleUpdateAccess->addChild($ucName.'BasicAccess');
-        $roleUpdateAccess->addChild($ucName.'Update');
+        $roleUpdateAccess->addChild($moduleName.'MinimumRequirements');
+        $roleUpdateAccess->addChild($moduleName.'Update');
 
         // Private Update Access
-        $rolePrivateUpdateAccess->addChild($ucName.'BasicAccess');
-        $rolePrivateUpdateAccess->addChild($ucName.'UpdatePrivate');
+        $rolePrivateUpdateAccess->addChild($moduleName.'MinimumRequirements');
+        $rolePrivateUpdateAccess->addChild($moduleName.'UpdatePrivate');
 
         // Full Access
-        $roleFullAccess->addChild($ucName.'UpdateAccess');
-        $roleFullAccess->addChild($ucName.'Delete');
-        $roleFullAccess->addChild($ucName.'DeleteNote');
+        $roleFullAccess->addChild($moduleName.'MinimumRequirements');
+        $roleFullAccess->addChild($moduleName.'Delete');
+        $roleFullAccess->addChild($moduleName.'DeleteNote');
 
         // Private Full Access
-        $rolePrivateFullAccess->addChild($ucName.'PrivateUpdateAccess');
-        $rolePrivateFullAccess->addChild($ucName.'DeletePrivate');
+        $rolePrivateFullAccess->addChild($moduleName.'MinimumRequirements');
+        $rolePrivateFullAccess->addChild($moduleName.'DeletePrivate');
 
         // Admin Access
-        $roleAdminAccess->addChild($ucName.'FullAccess');
-        $roleAdminAccess->addChild($ucName.'Admin');
+        $roleAdminAccess->addChild($moduleName.'MinimumRequirements');
+        $roleAdminAccess->addChild($moduleName.'Admin');
 
         $defaultRole = $auth->getAuthItem('DefaultRole');
-        $defaultRole->removeChild($ucName.'Index');
-        $defaultRole->addChild($ucName.'UpdateAccess');
+        $defaultRole->removeChild($moduleName.'Index');
+        $defaultRole->addChild($moduleName.'UpdateAccess');
+        $defaultRole->addChild($moduleName.'BasicAccess');
+        $defaultRole->addChild($moduleName.'ReadOnlyAccess');
+        $defaultRole->addChild($moduleName.'MinimumRequirements');
+
         $adminRole = $auth->getAuthItem('administrator');
-        $adminRole->removeChild($ucName.'Admin');
-        $adminRole->addChild($ucName.'AdminAccess');
+        $adminRole->removeChild($moduleName.'Admin');
+        $adminRole->addChild($moduleName.'AdminAccess');
+        $adminRole->addChild($moduleName.'FullAccess');
+        $adminRole->addChild($moduleName.'UpdateAccess');
+        $adminRole->addChild($moduleName.'PrivateUpdateAccess');
+        $adminRole->addChild($moduleName.'BasicAccess');
+        $adminRole->addChild($moduleName.'ReadOnlyAccess');
+        $adminRole->addChild($moduleName.'MinimumRequirements');
     }
 
     /**
@@ -3335,7 +3264,8 @@ class AdminController extends Controller {
                      * data.
                      */
                     foreach($metaData as $attribute){
-                        if (isset($importMap[$attribute]) && $model->hasAttribute ($importMap[$attribute])) {
+                        $isActionText = ($modelName === 'Actions' && $importMap[$attribute] === 'actionDescription');
+                        if (isset($importMap[$attribute]) && ($model->hasAttribute ($importMap[$attribute]) || $isActionText)) {
                             if ((empty($importAttributes[$attribute]) && ($importAttributes[$attribute] !== 0 && $importAttributes[$attribute] !== '0'))
                                     || in_array($importAttributes[$attribute], $mappedValues)) {
                                 /**
@@ -3674,6 +3604,8 @@ class AdminController extends Controller {
                 }
             }
             unlink($filename);
+
+            $this->createDefaultModulePermissions (ucfirst($moduleName));
 
             $this->redirect(array($moduleName.'/index'));
         }
@@ -4495,7 +4427,7 @@ class AdminController extends Controller {
             $multiMappings = array();
 
             foreach ($importMap as $key => &$value) {
-                if (in_array($value, $mappedValues) && !in_array($value, $multiMappings)) {
+                if (in_array($value, $mappedValues) && !empty($value) && !in_array($value, $multiMappings)) {
                     // This attribute is mapped to two different fields in X2
                     $multiMappings[] = $value;
                 } else if ($value !== 'createNew') {

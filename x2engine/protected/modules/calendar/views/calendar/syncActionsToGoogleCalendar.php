@@ -80,19 +80,29 @@ $(function() {
 <div class="form" style="border:1px solid #ccc; border-top: 0; padding: 0; margin-top:-1px; border-radius:0;-webkit-border-radius:0; background:#eee;">
     <table frame="border">
         <td>
-            <?php if($googleIntegration){ ?>
-                <?php if(empty($errors) && !$auth->getErrors() && $auth->getAccessToken()){ ?>
-                    <?php echo $form->labelEx($model, 'googleCalendarName'); ?>
-                    <?php echo $form->dropDownList($model, 'syncGoogleCalendarId', $googleCalendarList); ?>
+            <?php if($googleIntegration){ 
+                if(empty($errors) && !$auth->getErrors() && $auth->getAccessToken()){ 
+                    echo $form->labelEx($model, 'googleCalendarName');
+                    echo $form->dropDownList($model, 'syncGoogleCalendarId', $googleCalendarList); 
+                    ?>
                     <br />
-                    <?php if(isset($syncGoogleCalendarName) && $syncGoogleCalendarName){ ?>
-                        <?php echo Yii::t('calendar', 'Your actions are being synced to the Google Calendar "{calendarName}".', array('{calendarName}' => $syncGoogleCalendarName)); ?> <br />
-                    <?php } ?>
-                    <?php echo CHtml::link(Yii::t('calendar', "Don't Sync My Actions To Google Calendar"), $this->createUrl('').'?unlinkGoogleCalendar'); ?>
-                <?php }else{ ?>
-                    <?php echo CHtml::link(Yii::t('calendar', "Sync My Actions To Google Calendar"), $auth->getAuthorizationUrl(null)); ?>
-                <?php } ?>
-                <?php
+                    <?php 
+                    if(isset($syncGoogleCalendarName) && $syncGoogleCalendarName){ 
+                        echo Yii::t(
+                            'calendar',
+                            'Your actions are being synced to the Google Calendar '.
+                            '"{calendarName}".',
+                            array('{calendarName}' => $syncGoogleCalendarName)); 
+                    ?> <br />
+                    <?php } 
+                    echo CHtml::link(
+                        Yii::t('calendar', "Don't Sync My Actions To Google Calendar"),
+                        $this->createUrl('').'?unlinkGoogleCalendar'); 
+                }else{ 
+                    echo CHtml::link(
+                        Yii::t('calendar', "Sync My Actions To Google Calendar"),
+                        $auth->getAuthorizationUrl(null)); 
+                } 
             }else{
                 echo Yii::t('calendar', 'Google Integration is not configured on this server.');
             }
@@ -102,9 +112,11 @@ $(function() {
 </div>
 
 <?php
-if(empty($errors) && $googleIntegration && !$auth->getErrors()&& $auth->getAccessToken()){
+if(empty($errors) && $googleIntegration && !$auth->getErrors() && $auth->getAccessToken()){
     echo '	<div class="row buttons">'."\n";
-    echo '		'.CHtml::submitButton(Yii::t('app', 'Sync'), array('class' => 'x2-button', 'id' => 'save-button', 'tabindex' => 24))."\n";
+    echo '		'.CHtml::submitButton(
+        Yii::t('app', 'Sync'), 
+        array('class' => 'x2-button', 'id' => 'save-button', 'tabindex' => 24))."\n";
     echo "	</div>\n";
 }
 $this->endWidget();

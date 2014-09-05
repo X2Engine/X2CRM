@@ -148,7 +148,7 @@ class TagBehavior extends CActiveRecordBehavior {
 	 * @return boolean the test result
 	 */
 	public function hasTags($tags,$mode='OR') {
-		$matches = array_intersect($this->getTags(),(array)$tags);
+		$matches = array_intersect($this->getTags(),self::normalizeTags ((array) $tags));
 
 		if($mode === 'AND')
 			return count($matches) === count((array)$tags);		// all tags must be present
@@ -203,6 +203,7 @@ class TagBehavior extends CActiveRecordBehavior {
 	public function removeTags($tags) {
 		$result = false;
 		$removedTags = array();
+        $tags = Tags::normalizeTags ((array) $tags);
 
 		foreach((array)$tags as $tag) {
 			if(empty($tag))
@@ -242,4 +243,5 @@ class TagBehavior extends CActiveRecordBehavior {
 			'itemId'=>$this->getOwner()->id)
 		);
 	}
+
 }

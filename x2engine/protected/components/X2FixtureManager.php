@@ -41,6 +41,19 @@ Yii::import('system.test.CDbFixtureManager');
  */
 class X2FixtureManager extends CDbFixtureManager {
 
+    /**
+     * @var bool $loadFixture
+     */
+    public $loadFixtures; 
+
+    public function __construct () {
+        $this->loadFixtures = LOAD_FIXTURES;
+    }
+
+    public function prepare () {
+        if ($this->loadFixtures) parent::prepare ();
+    }
+
 	/**
 	 * Override of {@link CDbFixtureManager}'s resetTable 
 	 * 
@@ -50,6 +63,9 @@ class X2FixtureManager extends CDbFixtureManager {
      * http://www.yiiframework.com/license/
 	 */
 	public function resetTable($tableName) {
+        /* x2modstart */ 
+        if (!$this->loadFixtures) return;
+        /* x2modend */ 
 		$initFile = $this->basePath . DIRECTORY_SEPARATOR . $tableName . $this->initScriptSuffix;
 		if (is_file($initFile)) {
 			$tbl_data = require($initFile);
@@ -87,24 +103,30 @@ class X2FixtureManager extends CDbFixtureManager {
 
             foreach(require($fileName) as $alias=>$row)
             {
-                    $builder->createInsertCommand($table,$row)->execute();
-                    $primaryKey=$table->primaryKey;
-                    if($table->sequenceName!==null)
-                    {
-                            if(is_string($primaryKey) && !isset($row[$primaryKey]))
-                                    $row[$primaryKey]=$builder->getLastInsertID($table);
-                            elseif(is_array($primaryKey))
-                            {
-                                    foreach($primaryKey as $pk)
-                                    {
-                                            if(!isset($row[$pk]))
-                                            {
-                                                    $row[$pk]=$builder->getLastInsertID($table);
-                                                    break;
-                                            }
-                                    }
-                            }
+                    /* x2modstart */ 
+                    if ($this->loadFixtures) {
+                    /* x2modend */ 
+                        $builder->createInsertCommand($table,$row)->execute();
+                        $primaryKey=$table->primaryKey;
+                        if($table->sequenceName!==null)
+                        {
+                                if(is_string($primaryKey) && !isset($row[$primaryKey]))
+                                        $row[$primaryKey]=$builder->getLastInsertID($table);
+                                elseif(is_array($primaryKey))
+                                {
+                                        foreach($primaryKey as $pk)
+                                        {
+                                                if(!isset($row[$pk]))
+                                                {
+                                                        $row[$pk]=$builder->getLastInsertID($table);
+                                                        break;
+                                                }
+                                        }
+                                }
+                        }
+                    /* x2modstart */ 
                     }
+                    /* x2modend */ 
                     $rows[$alias]=$row;
             }
             return $rows;
@@ -150,7 +172,11 @@ class X2FixtureManager extends CDbFixtureManager {
                     }
                     if(($prefix=$this->getDbConnection()->tablePrefix)!==null)
                             $tableName=preg_replace('/{{(.*?)}}/',$prefix.'\1',$tableName);
-                    $this->resetTable($tableName);
+                    /* x2modstart */ 
+                    if ($this->loadFixtures) {
+                        $this->resetTable($tableName);
+                    }
+                    /* x2modend */ 
                     $rows=$this->loadFixture($tableName/* x2modstart */,$suffix/* x2modend */);
                     if(is_array($rows) && is_string($fixtureName))
                     {
@@ -165,6 +191,52 @@ class X2FixtureManager extends CDbFixtureManager {
 
             $schema->checkIntegrity(true);
     }
+
+	/**
+	 * Returns the specified ActiveRecord instance in the fixture data.
+	 * @param string $name the fixture name
+	 * @param string $alias the alias for the fixture data row
+	 * @return CActiveRecord the ActiveRecord instance. False is returned if there is no such fixture row.
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+	 */
+	public function getRecord($name,$alias)
+	{
+		if(isset($this->_records[$name][$alias]))
+		{
+			if(is_string($this->_records[$name][$alias]))
+			{
+				$row=$this->_rows[$name][$alias];
+
+                /* x2modstart */ 
+                if ($this->loadFixtures) {
+                /* x2modend */ 
+                    $model=CActiveRecord::model($this->_records[$name][$alias]);
+                    $key=$model->getTableSchema()->primaryKey;
+                    if(is_string($key))
+                        $pk=$row[$key];
+                    else
+                    {
+                        foreach($key as $k)
+                            $pk[$k]=$row[$k];
+                    }
+                    $this->_records[$name][$alias]=$model->findByPk($pk);
+                /* x2modstart */ 
+                } else {
+                    $model = CActiveRecord::model ($this->_records[$name][$alias]);
+                    if (isset ($row['id'])) {
+                        $this->_records[$name][$alias]=$model->findByPk($row['id']);
+                    } else {
+                        $this->_records[$name][$alias]=$model->findByAttributes($row);
+                    }
+                }
+                /* x2modend */ 
+			}
+			return $this->_records[$name][$alias];
+		}
+		else
+			return false;
+	}
 
 }
 

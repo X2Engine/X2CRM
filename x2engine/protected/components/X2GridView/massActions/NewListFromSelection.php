@@ -38,7 +38,7 @@ class NewListFromSelection extends MassAction {
 
     private $listId;
 
-    public function execute ($gvSelection) {
+    public function execute (array $gvSelection) {
         if (Yii::app()->controller->modelClass !== 'Contacts' ||
             !isset ($_POST['listName']) || $_POST['listName'] === '') {
             

@@ -224,6 +224,7 @@ class X2List extends X2Model {
         return self::model()->findByPk((int) $id, $condition);
     }
 
+
     /**
      * Returns a CDbCriteria to retrieve all models specified by the list
      * @return CDbCriteria Criteria to retrieve all models in the list
@@ -232,8 +233,10 @@ class X2List extends X2Model {
         $search = new CDbCriteria;
 
         if($this->type == 'dynamic'){
+            $tagJoinCount = 0;
             $logicMode = $this->logicType;
-            $criteria = X2Model::model('X2ListCriterion')->findAllByAttributes(array('listId' => $this->id, 'type' => 'attribute'));
+            $criteria = X2Model::model('X2ListCriterion')
+                ->findAllByAttributes(array('listId' => $this->id, 'type' => 'attribute'));
             foreach($criteria as $criterion){
                 //if this criterion is for a date field, we perform its comparisons differently
                 $dateType = false;
@@ -243,15 +246,20 @@ class X2List extends X2Model {
                         switch($field->type){
                             case 'date':
                             case 'dateTime':
-                                if(ctype_digit((string) $criterion->value) || (substr($criterion->value, 0, 1) == '-' && ctype_digit((string) substr($criterion->value, 1))))
+                                if(ctype_digit((string) $criterion->value) || 
+                                   (substr($criterion->value, 0, 1) == '-' && 
+                                    ctype_digit((string) substr($criterion->value, 1)))) {
                                     $criterion->value = (int) $criterion->value;
-                                else
+                                } else {
                                     $criterion->value = strtotime($criterion->value);
+                                }
                                 $dateType = true;
                                 break;
                             case 'boolean':
                             case 'visibility':
-                                $criterion->value = in_array(strtolower($criterion->value), array('1', 'yes', 'y', 't', 'true')) ? 1 : 0;
+                                $criterion->value = in_array(
+                                    strtolower($criterion->value), 
+                                    array('1', 'yes', 'y', 't', 'true')) ? 1 : 0;
                                 break;
                         }
                         break;
@@ -259,7 +267,8 @@ class X2List extends X2Model {
                 }
 
                 if($criterion->attribute == 'tags' && $criterion->value){
-                    $tags = explode(',', preg_replace('/\s?,\s?/', ',', trim($criterion->value))); //remove any spaces around commas, then explode to array
+                    //remove any spaces around commas, then explode to array
+                    $tags = explode(',', preg_replace('/\s?,\s?/', ',', trim($criterion->value))); 
                     for($i = 0; $i < count($tags); $i++){
                         if(empty($tags[$i])){
                             unset($tags[$i]);
@@ -271,10 +280,13 @@ class X2List extends X2Model {
                             $tags[$i] = 'x2_tags.tag = "'.$tags[$i].'"';
                         }
                     }
-                    $tagConditions = implode(' OR ', $tags);
-
-                    $search->distinct = true;
-                    $search->join = 'JOIN x2_tags ON (x2_tags.itemId=t.id AND x2_tags.type="'.$this->modelName.'" AND ('.$tagConditions.'))';
+                    $tagCondition = implode(' OR ', $tags);
+                    $search->addCondition (
+                        "EXISTS (
+                            SELECT * 
+                            FROM x2_tags 
+                            WHERE x2_tags.itemId=t.id AND x2_tags.type='$this->modelName' AND 
+                                ($tagCondition))", $logicMode);
                 } else if($dateType){
                     //assume for now that any dates in a criterion are at midnight of that day
                     $thisDay = $criterion->value;
@@ -386,7 +398,8 @@ class X2List extends X2Model {
     }
 
     /**
-     * Generates an array of links for the VCR controls based on the specified dataprovider and current ID
+     * Generates an array of links for the VCR controls based on the specified dataprovider and 
+     * current ID
      * @param CActiveDataProvider $dataProvider the data provider of the most recent gridview
      * @param Integer $id the ID of the current record
      * @return Array array of VCR links and stats
@@ -425,12 +438,14 @@ class X2List extends X2Model {
 
         // get search conditions (WHERE, JOIN, ORDER BY, etc) from the criteria
         $searchConditions = Yii::app()->db->getCommandBuilder()
-                        ->createFindCommand($tableSchema, $criteria)->getText();
+            ->createFindCommand($tableSchema, $criteria)->getText();
 
-        $rowNumberQuery = Yii::app()->db->createCommand(
-                'SELECT r-1 FROM (
+        $rowNumberQuery = Yii::app()->db->createCommand('
+            SELECT r-1 
+            FROM (
                 SELECT *,@rownum:=@rownum + 1 AS r 
-                FROM ('.$searchConditions.') t1, (SELECT @rownum:=0) r) t2 WHERE t2.id='.$modelId
+                FROM ('.$searchConditions.') t1, (SELECT @rownum:=0) r) t2 
+            WHERE t2.id='.$modelId
         );
         // attach params from $criteria to this query
         $rowNumberQuery->params = $criteria->params;
@@ -472,18 +487,20 @@ class X2List extends X2Model {
              */
             if($vcrIndex > 0 && isset($vcrModels[0])){ // there's a record before the current one
                 $vcrData['prev'] = CHtml::link(
-                                '<', array('view', 'id' => $vcrModels[0]['id']), array('title' => $vcrModels[0]['name'], 'class' => 'x2-button'));
+                    '<', array('view', 'id' => $vcrModels[0]['id']), 
+                    array('title' => $vcrModels[0]['name'], 'class' => 'x2-button'));
             }else{
                 $vcrData['prev'] = CHtml::link(
-                                '<', 'javascript:void(0);', array('class' => 'x2-button disabled'));
+                    '<', 'javascript:void(0);', array('class' => 'x2-button disabled'));
             }
 
             if(count($vcrModels) - 1 > $vcrIndex){ // there's a record after the current one
                 $vcrData['next'] = CHtml::link(
-                                '>', array('view', 'id' => $vcrModels[$vcrIndex + 1]['id']), array('title' => $vcrModels[$vcrIndex + 1]['name'], 'class' => 'x2-button'));
+                    '>', array('view', 'id' => $vcrModels[$vcrIndex + 1]['id']), 
+                    array('title' => $vcrModels[$vcrIndex + 1]['name'], 'class' => 'x2-button'));
             }else{
                 $vcrData['next'] = CHtml::link(
-                                '>', 'javascript:void(0);', array('class' => 'x2-button disabled'));
+                    '>', 'javascript:void(0);', array('class' => 'x2-button disabled'));
             }
 
             return $vcrData;

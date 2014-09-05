@@ -121,7 +121,7 @@ class X2FlowTestBase extends X2DbTestCase {
      */
     public function flattenTrace ($trace) {
         if (!$trace[0]) return false;
-        $flattenedTrace = array (array ('action' => 'start', 'error' => $trace[0]));
+        $flattenedTrace = array (array ('action' => 'start', 'error' => !$trace[0]));
         $trace = $trace[1];
         while (true) {
             $complete = true;
@@ -137,7 +137,7 @@ class X2FlowTestBase extends X2DbTestCase {
                 } else {
                     array_push ($flattenedTrace, array (
                         'action' => $action[0],
-                        'error' => $action[1][0],
+                        'error' => !$action[1][0],
                         'message' => $action[1][1],
                     ));
                 }

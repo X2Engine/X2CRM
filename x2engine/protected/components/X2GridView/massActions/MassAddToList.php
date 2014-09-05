@@ -36,7 +36,7 @@
 
 class MassAddToList extends MassAction {
 
-    public function execute ($gvSelection) {
+    public function execute (array $gvSelection) {
         if (Yii::app()->controller->modelClass !== 'Contacts' || !isset ($_POST['listId'])) {
             throw new CHttpException (400, Yii::t('app', 'Bad Request'));
         }

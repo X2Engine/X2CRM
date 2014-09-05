@@ -207,7 +207,7 @@ class Opportunity extends X2Model {
 		$parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
 		$criteria->scopes=array('findAll'=>array($parameters));
 
-		return $this->searchBase($criteria, $resultsPerPage, $uniqueId);
+		return $this->searchBase($criteria, $resultsPerPage);
 	}
 
 	public function searchAdmin() {

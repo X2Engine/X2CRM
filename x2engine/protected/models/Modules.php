@@ -32,6 +32,14 @@ class Modules extends CActiveRecord {
         return 'x2_modules';
     }
 
+    public function scopes () {
+        return array (
+            'titleSorted' => array (
+                'order' => 'title ASC'
+            ),
+        );
+    }
+
     /**
      * @return array validation rules for model attributes.
      */
@@ -163,5 +171,26 @@ class Modules extends CActiveRecord {
         if ($visible) $attributes['visible'] = 1;
         return $this->findAllByAttributes ($attributes);
     }
-}
 
+
+    /**
+     * Renames module
+     * @param string $newTitle 
+     * @return bool true for success, false for failure
+     */
+    public function retitle ($newTitle) {
+        $oldTitle = $this->title;
+        $this->title = $newTitle;
+        if($this->save()){
+            // if it's a static page, rename the doc too
+            if ($this->name === 'document') { 
+                $doc = Docs::model ()->findByAttributes (array ('name' => $oldTitle));
+                $doc->name = $this->title;
+                $doc->save ();
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+}

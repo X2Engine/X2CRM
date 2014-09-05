@@ -433,7 +433,7 @@ x2.Notifs.prototype._getUpdates = function (firstCall) {
         if (that._iwcMode) {
             // call checkMasterId, which will then call getUpdates
             that._notifTimeout = setTimeout(
-                function () { that._checkMasterId () }, x2.notifUpdateInterval);    
+                function () { that._checkMasterId (); }, x2.notifUpdateInterval);    
         } else {
             // there's no IWC, so call getUpdates directly
             that._notifTimeout = setTimeout(that._getUpdates, x2.notifUpdateInterval);        

@@ -39,34 +39,69 @@
  *
  * @package application.components.X2Settings
  */
-interface X2Settings {
+abstract class X2Settings extends CBehavior {
+
+    /**
+     * @var string|null $uid Allows state prefix to be explicitly set
+     */
+    public $uid = null; 
     
+    /**
+     * @var string $modelClass class of model for which settings are being saved/retrieved
+     */
+    public $modelClass; 
+
+    /**
+     * session/db JSON key
+     * @var string|null
+     */
+    private $_statePrefix; 
+    
+    // commented out since they might become useful
     /**
      * @param string $uid 
      * @param array (<setting name> => <setting val>) $settings The settings to save
      * @return bool true for success, false otherwise
      */
-    //public static function saveSettings ($uid, array $settings);
+    //public function saveSettings ($uid, array $settings);
 
     /**
      * @param string $uid 
      */
-    //public static function getSettings ($uid);
+    //public function getSettings ($uid);
 
     /**
-     * @param string $uid 
      * @param string key the setting name
      * @param string key the setting value
      * @return bool true for success, false otherwise
      */
-    public static function saveSetting ($uid, $key, $val);
+    abstract public function saveSetting ($key, $val);
 
     /**
-     * @param string $uid 
      * @param string key the setting name
      * @return mixed The value of the gv setting
      */
-    public static function getSetting ($uid, $key);
+    abstract public function getSetting ($key);
+
+    /**
+     * state prefix defaults to uid or uid constructed from path and model id. It might be
+     * better to call this getUID since the state prefix isn't actually a prefix, it is the key in
+     * its entirety.
+     * @return string 
+     */
+    public function getStatePrefix () {
+        if (!isset ($this->_statePrefix)) {
+            if (isset ($this->uid)) {
+                $this->_statePrefix = $this->uid;
+            } else {
+                $this->_statePrefix = ((!Yii::app()->params->noSession ?
+                    Yii::app()->controller->uniqueid . '/' . Yii::app()->controller->action->id . 
+                        (isset($_GET['id']) ? '/' . $_GET['id'] : '') : '').
+                    $this->modelClass);
+            }
+        }
+        return $this->_statePrefix;
+    }
 
 }
 ?>

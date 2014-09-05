@@ -96,6 +96,7 @@ function mediaFileUpload(form, fileField, action_url, remove_url) {
             	
  				$('#choose-file-saving-icon').animate({opacity: 0.0});
  				parent.find('.filename').html(response['name']).animate({opacity: 1.0});
+                parent.find('.error').html("");
  				
  				
     			form.removeAttribute("target");
@@ -111,8 +112,16 @@ function mediaFileUpload(form, fileField, action_url, remove_url) {
     			form.removeAttribute("encoding");
             	form.setAttribute("action", $(form).data('oldAction'));
             } else {
-            	fileField.parent().find('.error').html(response['message']);
-            	fileField.val("");
+                var parent = fileField.parent();
+                parent.find('.error').html(response['message']);
+                // clear old values
+                parent.find('.filename').html("");
+                parent.find('.temp-file-id').val("");
+                parent.val("");
+                parent.find('input[type="button"]').css({opacity: 1.0});
+                $('#choose-file-saving-icon').css({opacity: 0.0});
+                form.setAttribute("action", $(form).data('oldAction'));
+
             }
  			
             // Del the iframe...

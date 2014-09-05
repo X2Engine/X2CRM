@@ -76,6 +76,9 @@ INSERT INTO x2_profile (fullName, username, emailAddress, status)
 INSERT INTO x2_profile (fullName, username, emailAddress, status)
 		VALUES ('API User', 'api', '{adminEmail}','0');
 /*&*/
+INSERT INTO x2_profile (username, status)
+		VALUES ('__x2_guest_profile__', '0');
+/*&*/
 INSERT INTO x2_social (`type`, `data`) VALUES ('motd', 'Please enter a message of the day!');
 /*&*/
 INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,updateDate,quoteStrictLock,unique_id,edition,serviceCaseFromEmailAddress,serviceCaseFromEmailName,serviceCaseEmailSubject,serviceCaseEmailMessage,eventDeletionTime,eventDeletionTypes,appName,appDescription) VALUES (

@@ -135,79 +135,6 @@ x2.activityFeed = new x2.ActivityFeed ({
 $this->renderPartial ('_feedFilters');
 ?>
 
-<div id='activity-feed-chart-container' style='display: none;'>
-
-    <select id='chart-type-selector'>
-        <option value='eventsChart'>
-            <?php echo Yii::t('app', 'Events'); ?>
-        </option>
-        <option value='usersChart'>
-            <?php echo Yii::t('app', 'User Events'); ?>
-        </option>
-    </select>
-    <select id='chart-subtype-selector'>
-        <option value='line'>
-            <?php echo Yii::t('app', 'Line Chart'); ?>
-        </option>
-        <option value='pie'>
-            <?php echo Yii::t('app', 'Pie Chart'); ?>
-        </option>
-    </select>
-
-    <?php
-        /*$this->widget('X2Chart', array (
-            'getChartDataActionName' => 'getEventsBetween',
-            'suppressChartSettings' => false,
-            'actionParams' => array (),
-            'metricTypes' => array (
-                'any'=>Yii::t('app', 'All Events'),
-                'notif'=>Yii::t('app', 'Notifications'),
-                'feed'=>Yii::t('app', 'Feed Events'),
-                'comment'=>Yii::t('app', 'Comments'),
-                'record_create'=>Yii::t('app', 'Records Created'),
-                'record_deleted'=>Yii::t('app', 'Records Deleted'),
-                'weblead_create'=>Yii::t('app', 'Webleads Created'),
-                'workflow_start'=>Yii::t('app', 'Workflow Started'),
-                'workflow_complete'=>Yii::t('app', 'Workflow Complete'),
-                'workflow_revert'=>Yii::t('app', 'Workflow Reverted'),
-                'email_sent'=>Yii::t('app', 'Emails Sent'),
-                'email_opened'=>Yii::t('app', 'Emails Opened'),
-                'web_activity'=>Yii::t('app', 'Web Activity'),
-                'case_escalated'=>Yii::t('app', 'Cases Escalated'),
-                'calendar_event'=>Yii::t('app', 'Calendar Events'),
-                'action_reminder'=>Yii::t('app', 'Action Reminders'),
-                'action_complete'=>Yii::t('app', 'Actions Completed'),
-                'doc_update'=>Yii::t('app', 'Doc Updates'),
-                'email_from'=>Yii::t('app', 'Email Received'),
-                'voip_calls'=>Yii::t('app', 'VOIP Calls'),
-                'media'=>Yii::t('app', 'Media')
-            ),
-            'chartType' => 'eventsChart',
-            'getDataOnPageLoad' => true,
-            'hideByDefault' => true
-        ));*/
-    ?>
-
-    <?php
-        /*$usersArr = array ();
-        foreach ($usersDataProvider->data as $user) {
-            $usersArr[$user->username] = $user->firstName.' '.$user->lastName;
-        }
-
-        $this->widget('X2Chart', array (
-            'getChartDataActionName' => 'getEventsBetween',
-            'suppressChartSettings' => false,
-            'actionParams' => array (),
-            'metricTypes' => $usersArr,
-            'chartType' => 'usersChart',
-            'getDataOnPageLoad' => true,
-            'hideByDefault' => true
-        ));*/
-    ?>
-</div>
-
-
-
 <div class="form" id="post-form" style="clear:both">
     <?php $feed=new Events; ?>
     <?php $form = $this->beginWidget('CActiveForm', array(
@@ -281,24 +208,26 @@ $this->widget('zii.widgets.CListView', array(
         'profileId' => $profileId
     ),
     'id'=>'sticky-feed',
+    'htmlOptions' => array (
+        'style' => $stickyDataProvider->itemCount === 0 ? 'display: none;' : '',
+    ),
     'pager' => array(
-                    'class' => 'ext.infiniteScroll.IasPager',
-                    'rowSelector'=>'.view.top-level',
-                    'listViewId' => 'sticky-feed',
-                    'header' => '',
-                    'options'=>array(
-                        'onRenderComplete'=>'js:function(){
-                            x2.activityFeed.makePostsExpandable ();
-                            if(x2.activityFeed.minimizeFeed){
-                                x2.activityFeed.minimizePosts();
-                            }
-                            if(x2.activityFeed.commentFlag){
-                                $(".comment-link").click();
-                            }
-                        }'
-                    ),
-
-                ),
+        'class' => 'ext.infiniteScroll.IasPager',
+        'rowSelector'=>'.view.top-level',
+        'listViewId' => 'sticky-feed',
+        'header' => '',
+        'options'=>array(
+            'onRenderComplete'=>'js:function(){
+                x2.activityFeed.makePostsExpandable ();
+                if(x2.activityFeed.minimizeFeed){
+                    x2.activityFeed.minimizePosts();
+                }
+                if(x2.activityFeed.commentFlag){
+                    $(".comment-link").click();
+                }
+            }'
+        ),
+    ),
     'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/listview',
     'template'=>'{pager} {items}'
 ));
@@ -362,7 +291,7 @@ $this->widget('zii.widgets.CListView', array(
         </div>
     </div>
 </div>
-<div id="broadcast-dialog">
+<div id="broadcast-dialog" style='display: none;'>
     <div class='dialog-explanation'>
         <?php echo Yii::t('app', 'Select a group of users to send this event to via email or notification.'); ?>
     </div>

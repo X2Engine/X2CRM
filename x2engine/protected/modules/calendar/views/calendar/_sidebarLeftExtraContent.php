@@ -180,7 +180,7 @@ if(isset($this->groupCalendars) && $this->groupCalendars !== null) {
                     'onChange'=>"toggleGroupCalendarSource(this.name, this.checked);", 
                 )
             );
-            echo "<label for=\"$groupId\">$groupName</label>\n";
+            echo "<label for=\"$groupId\">".CHtml::encode($groupName)."</label>\n";
             echo "</li>";
         }
         echo "</ul>\n";

@@ -676,15 +676,19 @@ ActivityFeed.prototype.setupMakeImportantDialog = function  () {
                 }else{
                     var color=$("#broadcastColor").val();
                 }
+                var post$ = $(link).parents(".view.top-level");
+                var postLinks$ = post$.find ('div.event-text-box a');
+                var commentAge$ = post$.find ('div.event-text-box .comment-age');
+
                 if($("#fontColor").val()!=""){
-                    $(link).parents(".view.top-level").css("color",$("#fontColor").val());
-                    $(link).parents(".view.top-level div.event-text-box").children(".comment-age").css("color",$("#fontColor").val());
+                    post$.css("color",$("#fontColor").val());
+                    commentAge$.css("color",$("#fontColor").val());
                 }
                 if($("#linkColor").val()!=""){
-                    $(link).parents(".view.top-level div.event-text-box").find("a").css("color",$("#linkColor").val());
+                    postLinks$.css("color",$("#linkColor").val());
                 }
-                $(link).parents(".view.top-level").css("background-color",color);
-                $(link).parents(".view.top-level div.event-text-box").children(".comment-age").css("background-color",color);
+                post$.css("background-color",color);
+                commentAge$.css("background-color",color);
                 $(link).toggle();
                 $(link).next().toggle();
                 $("#broadcastColor").val("");
@@ -776,16 +780,23 @@ ActivityFeed.prototype.updateEventList = function  () {
             url:"flagPost",
             data:{id:id,attr:"unimportant"},
             success:function(data){
-                $(link).parents(".view.top-level").css("background-color","#fff");
-                $(link).parents(".view.top-level").css("color","#222");
-                $(link).parents(".view.top-level div.event-text-box").find("a").css("color","#06c");
-                $(link).parents(".view.top-level div.event-text-box").children(".comment-age").css("background-color","#fff");
-                $(link).parents(".view.top-level div.event-text-box").children(".comment-age").css("color","#666");
-
+                var post$ = $(link).parents(".view.top-level");
+                post$.css({
+                    "background-color": "#fff",
+                    "color": "#222"
+                });
+                var postLinks$ = post$.find ('div.event-text-box a');
+                postLinks$.css ("color","#06c");
+                var commentAge$ = post$.find ('div.event-text-box .comment-age');
+                commentAge$.css({
+                    "background-color": "#fff",
+                    "color": "#666"
+                });
             }
         });
-        $(link).toggle();
-        $(link).prev().toggle();
+        $(link).hide();
+        $(link).prev().show();
+        return false;
     });
 
     function incrementLikeCount (likeCountElem) {

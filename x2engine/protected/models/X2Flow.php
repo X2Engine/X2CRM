@@ -311,7 +311,10 @@ class X2Flow extends CActiveRecord {
             $flowRetVal = (isset ($flowRetArr['retVal'])) ? $flowRetArr['retVal'] : null;
             //AuxLib::debugLog ($flowRetArr);
             //AuxLib::debugLogR ($flowRetArr);
-            //$flowRetVal = self::extractRetValFromTrace ($flowTrace[0]);
+            $flowRetVal = self::extractRetValFromTrace ($flowTrace);
+            //AuxLib::debugLogR ('$flowRetVal = ');
+            //AuxLib::debugLogR ($flowRetVal);
+
             $flowTraces[] = $flowTrace;
 
             // save log for triggered flow
@@ -339,6 +342,7 @@ class X2Flow extends CActiveRecord {
     private static function extractRetValFromTrace ($flowTrace) {
         //AuxLib::debugLog ('extractRetValFromTrace');
         // trigger itself has return val
+
         if (sizeof ($flowTrace) === 3 && $flowTrace[0] && !is_array ($flowTrace[1])) {
             return $flowTrace[2];
         }
@@ -413,12 +417,14 @@ class X2Flow extends CActiveRecord {
            isset($flowData['trigger']['type'], $flowData['items'][0]['type'])){
 
             if($flowPath === null){
+                //AuxLib::debugLogR ('creating trigger');
                 $trigger = X2FlowTrigger::create($flowData['trigger']);
                 assert ($trigger !== null);
                 if($trigger === null) {
                     $error = array (
                         'trace' => array (false, 'failed to load trigger class'));
                 }
+                //AuxLib::debugLogR ('validating');
                 $validateRetArr = $trigger->validate($params, $flow->id);
                 if (!$validateRetArr[0]) {
                     $error = $validateRetArr;
@@ -429,13 +435,16 @@ class X2Flow extends CActiveRecord {
                         'retVal' => $validateRetArr[2]
                     );
                 }
+                //AuxLib::debugLogR ('checking');
                 $checkRetArr = $trigger->check($params);
                 if (!$checkRetArr[0]) {
                     $error = $checkRetArr;
                 } 
+                //AuxLib::debugLogR ('done checking');
 
                 if(empty($error)){
                     try{
+                        //AuxLib::debugLogR ('executeBranch');
                         $flowTrace = array (true, $flow->executeBranch (
                             array(0), $flowData['items'], $params, 0, $triggerLogId));
                         //AuxLib::debugLog ('executing branch complete');
@@ -646,7 +655,7 @@ class X2Flow extends CActiveRecord {
                     return $pieces[0];
                 return $value;
             case 'tags':
-                return array_map (function ($tag) { return trim ($tag); }, explode (',', $value));
+                return Tags::parseTags ($value);
             default:
                 return $value;
         }

@@ -64,7 +64,9 @@ class TemplatesGridViewProfileWidget extends GridViewWidget {
         if (!isset ($this->_model)) {
             $modelType = self::getJSONProperty (
                 $this->profile, 'modelType', $this->widgetType, $this->widgetUID);
-            $this->_model = new $modelType ('search');
+            $this->_model = new $modelType ('search',
+                $this->widgetKey,
+                $this->getWidgetProperty ('dbPersistentGridSettings'));
             $this->afterGetModel ();
         }
         return $this->_model;
@@ -102,7 +104,7 @@ class TemplatesGridViewProfileWidget extends GridViewWidget {
             $resultsPerPage = self::getJSONProperty (
                 $this->profile, 'resultsPerPage', $this->widgetType, $this->widgetUID);
             $this->_dataProvider = $this->model->search (
-                $resultsPerPage, get_called_class ().$this->widgetUID);
+                $resultsPerPage, $this->widgetKey);
         }
         return $this->_dataProvider;
 

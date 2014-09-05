@@ -39,6 +39,7 @@
 if ($url !== '') {
     echo $url;
 } else {
-    echo 'http://www.x2engine.com';
+    //echo 'http://www.x2engine.com';
+    echo '';
 }
-?>" frameBorder="0" height="<?php echo $height; ?>" width="100%" style="background:#fff;"></iframe>
+?>" frameBorder="0" height="<?php echo $height; ?>" width="100%" style="background:#fff;" sandbox='allow-forms allow-popups allow-scripts'></iframe>

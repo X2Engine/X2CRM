@@ -94,7 +94,92 @@ $this->widget('EmbeddedModelForm', array(
 <?php
 echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button credentials-save','style'=>'display:inline-block;margin-top:0;'));
 echo CHtml::link(Yii::t('app','Cancel'),array('/profile/manageCredentials'),array('class'=>'x2-button credentials-cancel'));
-?></div><?php
+echo CHtml::link(Yii::t('app', 'Verify Credentials'), "#", array('class' => 'x2-button credentials-verify', 'style' => 'margin-left: 5px;'));
+?><span id='verify-credentials-loading'></span></div><?php
 echo CHtml::endForm();
+
+
+$verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
 ?>
 
+<div id="verification-result">
+
+</div>
+<script type='text/javascript'>
+    $(function() {
+        if (typeof x2 == 'undefined')
+            x2 = {};
+        if (typeof x2.credManager == 'undefined')
+            x2.credManager = {};
+
+        /**
+         * Function to toggle an input between text and password type
+         * @param string passwordField Password field identifier
+         */
+        x2.credManager.swapPasswordVisibility = function(elem) {
+            var passwordField = $(elem);
+            var newObj = document.createElement('input');
+            newObj.setAttribute('value', passwordField.val() );
+            newObj.setAttribute('name', passwordField.attr('name'));
+            newObj.setAttribute('id', passwordField.attr('id'));
+
+            if ($('#password-visible').attr('checked') === 'checked')
+                newObj.setAttribute('type', 'text');
+            else
+                newObj.setAttribute('type', 'password');
+            passwordField.replaceWith(newObj);
+        }
+
+        $(".credentials-verify").click(function(evt) {
+            evt.preventDefault();
+            var email = $("#Credentials_auth_email").val();
+            if ($('#Credentials_auth_user').length) // Check if user name is different than email
+                email = $('#Credentials_auth_user').val();
+            var password = $("#Credentials_auth_password").val();
+
+            // server, port, and security are not specified in the form for GMail accounts
+            var server;
+            var port;
+            var security;
+            if ($('#Credentials_auth_server').length)
+                server = $('#Credentials_auth_server').val();
+            else
+                server = 'smtp.gmail.com';
+            if ($('#Credentials_auth_port').length)
+                port = $('#Credentials_auth_port').val();
+            else
+                port = 587;
+            if ($('#Credentials_auth_security').length)
+                security = $('#Credentials_auth_security').val();
+            else
+                security = 'tls';
+
+            var successMsg = "<?php echo Yii::t('app', 'Authentication successful.'); ?>";
+            var failureMsg = "<?php echo Yii::t('app', 'Failed to authenticate! Please check you credentials.'); ?>";
+            $('#verify-credentials-loading').addClass ('x2-loading-icon');
+            $.ajax({
+                url: "<?php echo $verifyCredsUrl; ?>",
+                type: 'post',
+                data: {
+                    email: email,
+                    password: password,
+                    server: server,
+                    port: port,
+                    security: security
+                },
+                complete: function(xhr) {
+                    $('#verify-credentials-loading').removeClass ('x2-loading-icon');
+                    if (xhr.responseText === '') {
+                        $("#verification-result").addClass('flash-success');
+                        $("#verification-result").removeClass('flash-error');
+                        $("#verification-result").html(successMsg);
+                    } else {
+                        $("#verification-result").addClass('flash-error');
+                        $("#verification-result").removeClass('flash-success');
+                        $("#verification-result").html(failureMsg);
+                    }
+                }
+            });
+        });
+    });
+</script>

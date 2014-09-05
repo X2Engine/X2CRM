@@ -87,5 +87,27 @@ return array(
     'createDate' => '1399919436',
     'lastUpdated' => '1399945825',
   ),
+  'flow18' => 
+  array (
+    'id' => '18',
+    'active' => '1',
+    'name' => 'test',
+    'triggerType' => 'RecordUpdateTrigger',
+    'modelClass' => 'Contacts',
+    'flow' => 
+'{"version":"3.0.1","trigger":{"type":"RecordUpdateTrigger","options":{"modelClass":{"value":"Contacts"}},"modelClass":"Contacts"},"items":[{"type":"X2FlowSwitch","options":[],"conditions":[{"type":"has_tags","value":"test, test2"},{"type":"has_tags","value":"#test"},{"type":"has_tags","value":"#test,#test2"}],"trueBranch":[{"type":"X2FlowCreateNotif","options":{"user":{"value":"{assignedTo}"},"text":{"value":"true"}}}],"falseBranch":[{"type":"X2FlowCreateNotif","options":{"user":{"value":"{assignedTo}"},"text":{"value":"false"}}},{"type":"X2FlowCreateNotif","options":{"user":{"value":"{assignedTo}"},"text":{"value":""}}}]}],"flowName":"test"}',
+    'createDate' => '1399919436',
+    'lastUpdated' => '1399945825',
+  ),
+  'flow19' => array (
+      'id' => '19',
+      'active' => '1',
+      'name' => 'test',
+      'triggerType' => 'RecordUpdateTrigger',
+      'modelClass' => 'Contacts',
+      'flow' => '{"version":"3.0.1","trigger":{"type":"RecordUpdateTrigger","options":{"modelClass":{"value":"Contacts"}},"modelClass":"Contacts"},"items":[{"type":"X2FlowRecordReassign","options":{"user":{"value":"auto"}}},{"type":"X2FlowSwitch","options":[],"conditions":[{"type":"has_tags","value":"test, "}],"trueBranch":[{"type":"X2FlowCreateNotif","options":{"user":{"value":"{assignedTo}"},"text":{"value":""}}}],"falseBranch":[{"type":"X2FlowCreateNotif","options":{"user":{"value":"{assignedTo}"},"text":{"value":""}}}]}],"flowName":"test"}',
+      'createDate' => '1408678168',
+      'lastUpdated' => '1408678168',
+  ),
 );
 ?>

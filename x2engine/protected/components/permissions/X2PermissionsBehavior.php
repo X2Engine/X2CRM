@@ -417,16 +417,17 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      *  to anyone or no one.
      * @return array array (<SQL condition string>, <array of parameters>)
      */
-    public function getAssignedToCondition ($includeAnyone=true,$alias=null) {
+    public function getAssignedToCondition ($includeAnyone=true,$alias=null,$username=null) {
+        $username = $username === null ? Yii::app()->getSuName () : $username;
         $prefix = empty($alias)?'':"$alias.";
-        $groupIdsRegex = self::getGroupIdRegex();
+        $groupIdsRegex = self::getGroupIdRegex($username);
         $condition =
             "(". ($includeAnyone ? 
                 ($prefix.$this->assignmentAttr."='Anyone' OR assignedTo='' OR ") : '').
              $prefix.$this->assignmentAttr.
             " REGEXP BINARY :".self::SQL_PARAMS_PREFIX."userNameRegex";
         $params = array (
-            ':'.self::SQL_PARAMS_PREFIX.'userNameRegex' => self::getUserNameRegex (),
+            ':'.self::SQL_PARAMS_PREFIX.'userNameRegex' => self::getUserNameRegex ($username),
         );
         if ($groupIdsRegex !== '') {
             $condition .= " OR $prefix".$this->assignmentAttr.
@@ -524,8 +525,15 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * @return string This can be inserted (with parameter binding) into SQL queries to
      *  determine if an action is assigned to a given group.
      */
-    public static function getGroupIdRegex () {
-        $groupIds = Groups::getUserGroups(Yii::app()->getSuId());
+    public static function getGroupIdRegex ($username=null) {
+        if ($username !== null) {
+            $user = User::model()->findByAttributes (array ('username' => $username));
+            if (!$user) throw new CException ('invalid username: '.$username);
+            $userId = $user->id;
+        } else {
+            $userId = Yii::app()->getSuId ();
+        }
+        $groupIds = Groups::getUserGroups($userId);
         $groupIdRegex = '';
         $i = 0;
         foreach ($groupIds as $id) {

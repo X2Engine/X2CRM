@@ -551,8 +551,9 @@ class WorkflowController extends x2base {
                     $workflowId, $stageNumber, $model, $workflowStatus);
             assert ($started);
         }
-        Formatter::formatCurrency (
-            Workflow::getProjectedValue ($type, $model->getAttributes ()));
+        $value = Yii::app()->locale->numberFormatter->formatCurrency (
+            Workflow::getProjectedValue ($type, $model->getAttributes ()),
+            Yii::app()->params->currency);
         echo CJSON::encode (array (
             'workflowStatus' => $workflowStatus,
             'dealValue' => $value,

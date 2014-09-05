@@ -43,18 +43,43 @@ class SmartDataProviderBehavior extends CBehavior {
 
     public $settingsBehavior;
 
-    /**
-     * @var string {'database', 'session'} Determines how the settings will be stored and retrieved
-     */
-    private $_storageType;
-
 	private $_pagination;
 
     public function attach ($owner) {
         parent::attach ($owner);
         $this->attachBehaviors (array (
-            'settingsBehavior' => array ('class' => $this->settingsBehavior)
+            'settingsBehavior' => array (
+                'class' => $this->settingsBehavior,
+                'uid' => $this->owner->uid,
+                'modelClass' => $this->owner->modelClass,
+            )
         ));
+    }
+
+    /**
+     * Unsets sort order if sort is on an attribute not in list of specified attributes
+     * @param array $attrs names of model attributes
+     * @return bool true if sort order was unset, false otherwise
+     */
+//    public function unsetSortOrderIfNotIn (array $attrs) {
+//        $sortOrder = $this->getSetting ('sort'); 
+//        $sortOrderUnset = false;
+//        if (!empty ($sortOrder) && !in_array (preg_replace ('/\.desc$/', '', $sortOrder), $attrs)) {
+//            $sortOrder = '';
+//            unset ($_GET[$this->owner->modelClass][$this->getSortKey ()]);
+//            $sortOrderUnset = true;
+//        }
+//        $this->saveSetting ('sort', $sortOrder); 
+//        return $sortOrderUnset;
+//
+//    }
+
+    public function getSortKey () {
+        return $this->owner->getId()!='' ? $this->owner->getId().'_sort' : 'sort';
+    }
+    
+    public function getPageKey () {
+        return $this->owner->getId()!='' ? $this->owner->getId().'_page' : 'page';
     }
 
     public function storeSettings () {
@@ -62,36 +87,32 @@ class SmartDataProviderBehavior extends CBehavior {
 		//Sort and page saving code modified from:
 		//http://www.stupidannoyingproblems.com/2012/04/yii-grid-view-remembering-filters-pagination-and-sort-settings/
 
-        //a string unique to each controller/action (and optionally id) combination
-        $statePrefix = Yii::app()->controller->uniqueid .'/'.
-            Yii::app()->controller->action->id . (isset($_GET['id']) ? '/'.$_GET['id'] : '');
-
-		// store also sorting order
-		$key = $this->owner->getId()!='' ? $this->owner->getId().'_sort' : 'sort';
+        // sort order gets saved in db or session depending on settingsBehavior
+		$key = $this->getSortKey ();
 		if(!empty($_GET[$key])){
-			//Yii::app()->user->setState($statePrefix . $key, $_GET[$key]);
-			$val = $this->saveSetting ($statePrefix . $key, 'sort', $_GET[$key]);
+            if (!$this->owner->disablePersistentGridSettings)
+			    $val = $this->saveSetting ('sort', $_GET[$key]);
 		} else {
-			//$val = Yii::app()->user->getState($statePrefix . $key);
-			$val = $this->getSetting ($statePrefix . $key, 'sort');
+            if (!$this->owner->disablePersistentGridSettings)
+			    $val = $this->getSetting ('sort');
 			if(!empty($val))
 				$_GET[$key] = $val;
 		}
 
-		// store active page in page
-		$key = $this->owner->getId()!='' ? $this->owner->getId().'_page' : 'page';
+        // active page always gets stored in session
+		$key = $this->getPageKey ();
+        $statePrefix = $this->getStatePrefix ();
 		if(!empty($_GET[$key])){
-            //$this->saveSetting ($statePrefix.$key, 'page', $_GET[$key]);
-			Yii::app()->user->setState($statePrefix . $key, $_GET[$key]);
+			Yii::app()->user->setState($statePrefix.$key, $_GET[$key]);
 		} elseif(!empty($_GET["ajax"])){
 			// page 1 passes no page number, just an ajax flag
-			Yii::app()->user->setState($statePrefix . $key, 1);
-            //$this->saveSetting ($statePrefix.$key, 'page', 1);
+			Yii::app()->user->setState($statePrefix.$key, 1);
 		} else {
-			$val = Yii::app()->user->getState($statePrefix . $key);
+			$val = Yii::app()->user->getState($statePrefix.$key);
 			if(!empty($val))
 				$_GET[$key] = $val;
 		}
+
 	}
 
 	/**
@@ -101,7 +122,6 @@ class SmartDataProviderBehavior extends CBehavior {
 	 */
 	public function getSmartPagination() {
 		if($this->_pagination===null) {
-			//$this->_pagination=new CPagination;
 			$this->_pagination=new RememberPagination;
 			if(($id=$this->owner->getId())!='')
 				$this->_pagination->pageVar=$id.'_page';

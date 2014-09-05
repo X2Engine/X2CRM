@@ -328,7 +328,8 @@ class ActionsController extends x2base {
                 if ($associatedModel) {
                     $_POST['Actions']['associationId'] = $associatedModel->id;
                 } else {
-                    echo Yii::t('actions', 'Invalid association name');
+                    echo CJSON::encode (
+                        array ('error' => Yii::t('actions', 'Invalid association name')));
                     Yii::app()->end ();
                 }
             }
@@ -440,12 +441,16 @@ class ActionsController extends x2base {
                     $event->associationId = $model->id;
                     $event->save();
                 }
-                $model->syncGoogleCalendar('create');
+                $model->syncGoogleCalendar('create', true);
             }else{
                 if($model->hasErrors('verifyCode')){
-                    echo $model->getError('verifyCode');
+                    echo CJSON::encode (array ('error' => $model->getError('verifyCode')));
+                    Yii::app()->end ();
                 }
             }
+            echo CJSON::encode (array ('success'));
+        } else {
+            throw new CHttpException (400, Yii::t('app', 'Bad request'));
         }
     }
 
@@ -927,13 +932,15 @@ class ActionsController extends x2base {
     }
 
     // List all public actions
-    public function actionViewAll($showActions=null){
+    public function actionViewAll(){
         $model = new Actions('search');
+        $profile = Profile::model()->findByPk(Yii::app()->user->id);
+
         $this->render(
             'oldIndex',
             array(
                 'model' => $model,
-                'showActions' => $showActions,
+                'showActions' => $profile->showActions,
             )
         );
     }

@@ -60,6 +60,41 @@ Public instance methods
 */
 
 /**
+ * Set up x2 helper tooltips
+ */
+X2Forms.prototype.setUpQTips = function () {
+    if (typeof $().qtip !== 'undefined') {
+        $('.x2-hint').qtip({
+            events: {
+                show: function (event, api) {
+                    var tooltip = api.elements.tooltip;
+                    var windowWidth = $(window).width ();
+                    var elemWidth = $(api.elements.target).width ();
+                    var elemLeft = $(api.elements.target).offset ().left;
+                    var tooltipWidth = $(api.elements.tooltip).width ();
+
+                    if (elemLeft + elemWidth + tooltipWidth > windowWidth) {
+
+                        // flip tooltip if it would go off screen
+                        api.set ({
+                            'position.my': 'top right',
+                            'position.at': 'bottom right'
+                        });
+                    } else {
+                        api.set ({
+                            'position.my': 'top left',
+                            'position.at': 'bottom right'
+                        });
+                    }
+                }
+            }
+
+        });
+        $('.x2-info').qtip(); // no format qtip (.x2-hint turns text blue)
+    }
+};
+
+/**
  * Initializes all elements with the class 'x2-multiselect-dropdown' as multiselect dropdown 
  * elements. The value of the element's 'data-selected-text' attribute will be used as the
  * text in the multiselect element indicating the number of options selected.
@@ -103,14 +138,14 @@ X2Forms.prototype.errorMessage = function (message) {
  */
 X2Forms.prototype.errorSummary = function (errorHeader, errorMessages, css) {
     var css = typeof css === 'undefined' ? [] : css; 
-	var errorBox = $('<div>', {'class': 'error-summary-container'}).append (
-		$("<div>", { 'class': "error-summary"}).append ($("<ul>")));
+    var errorBox = $('<div>', {'class': 'error-summary-container'}).append (
+        $("<div>", { 'class': "error-summary"}).append ($("<ul>")));
     if (errorHeader !== '') {
         errorBox.find ('.error-summary').prepend ($('<p>', { text: errorHeader }));
     }
     $(errorBox).css (css);
     this._appendErrorMessages (errorBox, errorMessages);
-	return errorBox;
+    return errorBox;
 };
 
 /**
@@ -412,106 +447,108 @@ X2Forms.prototype.renderContactLookup = function(item) {
     return label;
 };
 
-X2Forms.prototype.fileUpload = function(form, fileField, action_url, remove_url) {
-    // Create the iframe...
-    var iframe = document.createElement("iframe");
-    iframe.setAttribute("id", "upload_iframe");
-    iframe.setAttribute("name", "upload_iframe");
-    iframe.setAttribute("width", "0");
-    iframe.setAttribute("height", "0");
-    iframe.setAttribute("border", "0");
-    iframe.setAttribute("style", "width: 0; height: 0; border: none;");
+X2Forms.prototype.fileUpload = function(fileField, action_url, remove_url) {
+    var that = this;
 
-    // Add to document...
-    form.parentNode.appendChild(iframe);
+    // Create the iframe
+    var iframe = $("<iframe>");
+    $(iframe).attr("id", "upload_iframe");
+    $(iframe).attr("name", "upload_iframe");
+    $(iframe).attr("width", "0");
+    $(iframe).attr("height", "0");
+    $(iframe).attr("border", "0");
+    $(iframe).attr("style", "width: 0; height: 0; border: none;");
+
+    // Add to document
+    var form = $(fileField).closest ('form');
+
+    $(form).parent ().append (iframe);
     window.frames['upload_iframe'].name = "upload_iframe";
+    var iframeElem = $(iframe).eq (0);
 
-    iframeId = document.getElementById("upload_iframe");
-
-    // Add event...
+    // Add event
     var eventHandler = function () {
+        $(iframe).off ('load', eventHandler);
 
-            if(iframeId.detachEvent) iframeId.detachEvent("onload", eventHandler);
-            else iframeId.removeEventListener("load", eventHandler, false);
-
-            // Message from server...
-            if(iframeId.contentDocument) {
-                var content = iframeId.contentDocument.body.innerHTML;
-            } else if(iframeId.contentWindow) {
-                var content = iframeId.contentWindow.document.body.innerHTML;
-            } else if(iframeId.document) {
-                var content = iframeId.document.body.innerHTML;
-            }
-
-            var response = $.parseJSON(content)
-
-            if(response['status'] == 'success') {
-                // success uploading temp file
-                // save it's name in the form so it gets attached when the user clicks send
-                var file = $('<input>', {
-                    'type': 'hidden',
-                    'name': 'AttachmentFiles[id][]',
-                    'class': 'AttachmentFiles',
-                    'value': response['id'] // name of temp file
-                });
-
-                var temp = $('<input>', {
-                    'type': 'hidden',
-                    'name': 'AttachmentFiles[temp][]',
-                    'value': true
-                });
-
-                var parent = fileField.parent().parent().parent();
-
-                parent.parent().find('.error').html(''); // clear error messages
-                
-                // save copy of file upload span before we start making changes
-                var newFileChooser = parent.clone(); 
-
-                parent.removeClass('next-attachment');
-                parent.append(file);
-                parent.append(temp);
-
-                var remove = $("<a>", {
-                    'href': "#",
-                    'html': "[x]"
-                });
-
-                parent.find('.filename').html(response['name']);
-                parent.find('.remove').append(remove);
-
-                remove.click(function() {
-                    removeAttachmentFile(remove.parent().parent(), remove_url); return false;
-                });
-
-                fileField.parent().parent().remove();
-
-                parent.after(newFileChooser);
-                initX2FileInput();
-
-            } else {
-                fileField.parent().parent().parent().find('.error').html(response['message']);
-                fileField.val("");
-            }
-
-            // Del the iframe...
-            setTimeout('iframeId.parentNode.removeChild(iframeId)', 250);
+        // Message from server
+        var iframeElem = $(iframe)[0];
+        if(iframeElem.contentDocument) {
+            var content = iframeElem.contentDocument.body.innerHTML;
+        } else if(iframeElem.contentWindow) {
+            var content = iframeElem.contentWindow.document.body.innerHTML;
+        } else if(iframeElem.document) {
+            var content = iframeElem.document.body.innerHTML;
         }
 
-    if(iframeId.addEventListener)
-        iframeId.addEventListener("load", eventHandler, true);
-    if(iframeId.attachEvent)
-        iframeId.attachEvent("onload", eventHandler);
+        var response = $.parseJSON(content)
 
-    // Set properties of form...
-    form.setAttribute("target", "upload_iframe");
-    form.setAttribute("action", action_url);
-    form.setAttribute("method", "post");
-    form.setAttribute("enctype", "multipart/form-data");
-    form.setAttribute("encoding", "multipart/form-data");
+        if(response['status'] === 'success') {
 
-    // Submit the form...
-    form.submit();
+            // success uploading temp file
+            // save it's name in the form so it gets attached when the user clicks send
+            var file = $('<input>', {
+                'type': 'hidden',
+                'name': 'AttachmentFiles[id][]',
+                'class': 'AttachmentFiles',
+                'value': response['id'] // name of temp file
+            });
+
+            var temp = $('<input>', {
+                'type': 'hidden',
+                'name': 'AttachmentFiles[temp][]',
+                'value': true
+            });
+
+            var parent = fileField.parent().parent().parent();
+
+            parent.parent().find('.error').html(''); // clear error messages
+            
+            // save copy of file upload span before we start making changes
+            var newFileChooser = parent.clone(); 
+
+            parent.removeClass('next-attachment');
+            parent.append(file);
+            parent.append(temp);
+
+            var remove = $("<a>", {
+                'href': "#",
+                'html': "[x]"
+            });
+
+            parent.find('.filename').html(response['name']);
+            parent.find('.remove').append(remove);
+
+            remove.click(function() {
+                that.removeAttachmentFile (remove.parent().parent(), remove_url); 
+                return false;
+            });
+
+            fileField.parent().parent().remove();
+
+            parent.after(newFileChooser);
+            that.initX2FileInput();
+
+        } else {
+            fileField.parent().parent().parent().find('.error').html(response['message']);
+            fileField.val("");
+        }
+
+        // remove iframe
+        setTimeout(function () {
+            iframeElem.parentNode.removeChild(iframeElem);
+        }, 250);
+    };
+
+    $(iframeElem).on ('load', eventHandler);
+
+    // Set properties of form
+    $(form).attr ("target", "upload_iframe");
+    $(form).attr ("action", action_url);
+    $(form).attr ("method", "post");
+    $(form).attr ("enctype", "multipart/form-data");
+    $(form).attr ("encoding", "multipart/form-data");
+
+    $(form).submit();
 };
 
 // remove an attachment that is stored on the server as a temp file
@@ -609,6 +646,24 @@ X2Forms.prototype.initializeDefaultFields = function () {
     $('.x2-default-field').each (function () { that.enableDefaultText ($(this)); });
 };
 
+/**
+ * @param mixed headerCell selector or jQuery element for headerCell in column of table
+ * @param function fn function to apply to each cell in same column as headerCell in body of table
+ */
+X2Forms.prototype.forEachCellInColumn = function (headerCell, fn) {
+    var headerRow$ = $(headerCell).closest ('tr'); 
+    var table$ = $(headerCell).closest ('table');
+    var columnNumber = headerRow$.find ('th').index (headerCell);
+    var columns = headerRow$.find ('th').length;
+    var tableCells = $.makeArray (table$.find ('tbody td'));
+    if (columns < 1) return false;
+    var i = columnNumber;
+    while (i < tableCells.length) {
+        fn.apply (tableCells[i]);
+        i += columns;
+    }
+};
+
 /*
 Private instance methods
 */
@@ -640,38 +695,8 @@ X2Forms.prototype._setUpFormElementBehavior = function () {
         }).blur(function() { 
             that.formFieldBlur(this); 
         });
-
-    // set up x2 helper tooltips
-    if (typeof $().qtip !== 'undefined') {
-        $('.x2-hint').qtip({
-            events: {
-                show: function (event, api) {
-                    var tooltip = api.elements.tooltip;
-                    var windowWidth = $(window).width ();
-                    var elemWidth = $(api.elements.target).width ();
-                    var elemLeft = $(api.elements.target).offset ().left;
-                    var tooltipWidth = $(api.elements.tooltip).width ();
-
-                    if (elemLeft + elemWidth + tooltipWidth > windowWidth) {
-
-                        // flip tooltip if it would go off screen
-                        api.set ({
-                            'position.my': 'top right',
-                            'position.at': 'bottom right'
-                        });
-                    } else {
-                        api.set ({
-                            'position.my': 'top left',
-                            'position.at': 'bottom right'
-                        });
-                    }
-                }
-            }
-
-        });
-        $('.x2-info').qtip(); // no format qtip (.x2-hint turns text blue)
-    }
-
+    
+    this.setUpQTips ();
 };
 
 /**

@@ -158,7 +158,7 @@ class Api2Controller extends CController {
     }
 
     /**
-     * Returns an array of field
+     * Returns an array of role-specific field-level permissions
      */
     public function actionFieldPermissions($_class) {
         $this->responseBody = $this->staticModel->fieldPermissions;
@@ -203,7 +203,7 @@ class Api2Controller extends CController {
                 $this->send(403,'You cannot delete other API users\' hooks in X2Engine.');
             $hook->setScenario('delete.remote');
             if($hook->delete()) {
-                $this->sendEmpty(204,"Successfully unsubscribed from hook with "
+                $this->sendEmpty("Successfully unsubscribed from hook with "
                         . "return URL {$hook->target_url}.");
             }
         } else { // POST (will respond to all other methods with 405)
@@ -319,7 +319,7 @@ class Api2Controller extends CController {
                 break;
             case 'DELETE':
                 if($this->model->delete()) {
-                    $this->sendEmpty(204,"Model of class \"$_class\" with id=$_id "
+                    $this->sendEmpty("Model of class \"$_class\" with id=$_id "
                             . "deleted successfully.");
                 }
                 else
@@ -390,7 +390,7 @@ class Api2Controller extends CController {
                     '_id' => $relationship->firstId,
                     '_relatedId' => $relationship->id
                 ));
-                $this->sendEmpty(303,"Specified relationship does not correspond "
+                $this->send(303,"Specified relationship does not correspond "
                         . "to $_class record $_id.");
             }
         }
@@ -475,7 +475,7 @@ class Api2Controller extends CController {
                     $this->send(400,"Cannot delete relationships without specifying which one to delete.");
                 }
                 if($relationship->delete()) {
-                    $this->sendEmpty(204,"Relationship $_relatedId deleted successfully.");
+                    $this->sendEmpty("Relationship $_relatedId deleted successfully.");
                 } else {
                     $this->send(500,"Failed to delete relationship #$_relatedId. It may have been deleted already.");
                 }
@@ -545,7 +545,7 @@ class Api2Controller extends CController {
                     $this->send(400,"Tag name must be specified when deleting a tag.");
                 }
                 if($this->model->removeTags('#'.ltrim($_tagName,'#'))) {
-                    $this->sendEmpty(204,"Tag #$_tagName deleted from $_class id=$_id.");
+                    $this->sendEmpty("Tag #$_tagName deleted from $_class id=$_id.");
                 } else {
                     $this->send(500);
                 }
@@ -1249,7 +1249,7 @@ class Api2Controller extends CController {
                         // Return with status 300 (multiple choices) and point 
                         // the client to the query URL if more than one result
                         // was found, and the
-                        if($count > 1) {
+                        if($count > 1 && empty($_GET['_useFirst']) {
                             $queryUri = $this->createUrl('/api2/model',array_merge(
                                 array('_class' => $_GET['_class']),
                                 $attributeConditions
@@ -1381,7 +1381,7 @@ class Api2Controller extends CController {
                         $params['associationId'] = $this->model->associationId;
                     }
                     $this->response->httpHeader['Location'] = $this->createAbsoluteUrl('/api2/model',$params);
-                    $this->sendEmpty(303,'Action has a different association than '
+                    $this->send(303,'Action has a different association than '
                             . 'the one specified.');
                 }
             }
@@ -1515,9 +1515,9 @@ class Api2Controller extends CController {
      * 
      * @param type $message
      */
-    public function sendEmpty($code=204,$message = ''){
+    public function sendEmpty($message = ''){
         $this->responseBody = '';
-        $this->send($code, $message);
+        $this->send(204, $message);
     }
 
     /**

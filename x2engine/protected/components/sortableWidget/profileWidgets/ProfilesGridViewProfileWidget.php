@@ -62,7 +62,10 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
 
     protected function getModel () {
         if (!isset ($this->_model)) {
-            $this->_model = new Profile ('search');
+            $this->_model = new Profile ('search', 
+                $this->widgetKey,
+                $this->getWidgetProperty ('dbPersistentGridSettings'));
+
             $this->afterGetModel ();
         }
         return $this->_model;
@@ -83,7 +86,7 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
             $resultsPerPage = self::getJSONProperty (
                 $this->profile, 'resultsPerPage', $this->widgetType, $this->widgetUID);
             $this->_dataProvider = $this->model->search (
-                $resultsPerPage, get_called_class (), true);
+                $resultsPerPage, $this->widgetKey, true);
         }
         return $this->_dataProvider;
     }
@@ -116,7 +119,7 @@ class ProfilesGridViewProfileWidget extends GridViewWidget {
                         'fullName'=>array(
                             'name'=>'fullName',
                             'header'=>Yii::t('profile', 'Full Name'),
-                            'value'=>'CHtml::link($data->user->fullName,array("view","id"=>$data->id))',
+                            'value'=>'CHtml::link($data->fullName,array("view","id"=>$data->id))',
                             'type'=>'raw',
                         ),
                         'lastLogin'=>array(

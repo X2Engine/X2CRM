@@ -469,9 +469,9 @@ function removeLine(object) {
 	<?php echo Yii::t('app','Rights reserved.'); ?>
 	<?php
 	$baseUrl = Yii::app()->getBaseUrl();
-	echo Yii::t('app','The Program is provided AS IS, without warranty.<br>Licensed under {BSD}.',
+	echo Yii::t('app','The Program is provided AS IS, without warranty.<br>Licensed under {GPL}.',
 	array(
-		'{BSD}'=>CHtml::link('BSD License',$baseUrl.'/LICENSE.txt'),
+		'{GPL}'=>CHtml::link('GNU Affero GPL License',$baseUrl.'/LICENSE.txt'),
 		'{GPLv3long}'=>CHtml::link(Yii::t('app','GNU General Public License version 3'),$baseUrl.'/GPL-3.0 License.txt')
 	));?>
 	<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>round(Yii::getLogger()->getExecutionTime(),3))); ?>

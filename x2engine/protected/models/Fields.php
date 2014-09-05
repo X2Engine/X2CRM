@@ -83,7 +83,6 @@ class Fields extends CActiveRecord {
         'link' => 'string',
         'optionalAssignment' => 'string',
         'percentage' => 'double',
-        
         'rating' => 'integer',
         'varchar' => 'string',
     );
@@ -103,6 +102,41 @@ class Fields extends CActiveRecord {
         }   
     }
 
+    /**
+     * Rules for saving a field.
+     *
+     * See the following MySQL documentation pages for more info on length
+     * restrictions and naming requirements:
+     * http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
+     *
+     * @return array validation rules for model attributes.
+     */
+    public function rules(){
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('modelName, attributeLabel', 'length', 'max' => 250),
+            array('fieldName','length','max'=>64), // Max length for column identifiers in MySQL
+            array('fieldName','match','pattern'=>'/^[a-zA-Z]\w+$/','message'=>Yii::t('admin','Field name may only contain alphanumeric characters and underscores.')),
+            array('fieldName','nonReserved'),
+            array('modelName, fieldName, attributeLabel', 'required'),
+            array(
+                'modelName','in','range'=>array_keys(X2Model::getModelNames()),'allowEmpty'=>false),
+            array('defaultValue','validDefault'),
+            array('relevance','in','range'=>array_keys(self::searchRelevance())),
+            array('custom, modified, readOnly, searchable, required, uniqueConstraint', 'boolean'),
+            array('fieldName','uniqueFieldName'),
+            array('linkType','length','max'=>250),
+            array('type','length','max'=>20),
+            array('keyType','in','range' => array('MUL','UNI','PRI','FIX'), 'allowEmpty'=>true),
+            array('keyType','requiredUnique'),
+            array('data','validCustom'),
+            // The following rule is used by search().
+            // Please remove those attributes that should not be searched.
+            array('id, modelName, fieldName, attributeLabel, custom, modified, readOnly, keyType', 'safe', 'on' => 'search'),
+        );
+    }
+    
     /**
      * Counts the number of records such that the field is not null.
      *
@@ -423,6 +457,11 @@ class Fields extends CActiveRecord {
         }
     }
 
+    public static function id ($nameId) {
+        list ($name, $id) = self::nameAndId ($nameId);
+        return $id;
+    }
+
     /**
      * Generates a combination name and id field to uniquely identify the record.
      */
@@ -477,7 +516,7 @@ class Fields extends CActiveRecord {
      * @param string $currencySymbol Optional currency symbol to trim off the string before conversion
      * @param string $percentSymbol Optional percent symbol to trim off the string before conversion
      */
-    public static function strToNumeric($input, $type = 'float'){
+    public static function strToNumeric($input, $type = 'float', $curSym = null){
         $sign = 1;
         // Typecasting in the case that it's not a string
         $inType = gettype($input);
@@ -502,6 +541,9 @@ class Fields extends CActiveRecord {
         }
         $stripSymbols = array_filter(array_values(Yii::app()->params->supportedCurrencySymbols), 'stripSymbols');
 
+        // Strip specified currency symbol
+        if (!is_null($curSym))
+            $stripSymbols[] = $curSym;
         // Just in case "Other" currency used: include that currency's symbol
         $defaultSym = Yii::app()->getLocale()->getCurrencySymbol(Yii::app()->settings->currency);
         if($defaultSym)
@@ -791,41 +833,6 @@ class Fields extends CActiveRecord {
         return array();
     }
 
-    /**
-     * Rules for saving a field.
-     *
-     * See the following MySQL documentation pages for more info on length
-     * restrictions and naming requirements:
-     * http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
-     *
-     * @return array validation rules for model attributes.
-     */
-    public function rules(){
-        // NOTE: you should only define rules for those attributes that
-        // will receive user inputs.
-        return array(
-            array('modelName, attributeLabel', 'length', 'max' => 250),
-            array('fieldName','length','max'=>64), // Max length for column identifiers in MySQL
-            array('fieldName','match','pattern'=>'/^[a-zA-Z]\w+$/','message'=>Yii::t('admin','Field name may only contain alphanumeric characters and underscores.')),
-            array('fieldName','nonReserved'),
-            array('modelName, fieldName, attributeLabel', 'required'),
-            array(
-                'modelName','in','range'=>array_keys(X2Model::getModelNames()),'allowEmpty'=>false),
-            array('defaultValue','validDefault'),
-            array('relevance','in','range'=>array_keys(self::searchRelevance())),
-            array('custom, modified, readOnly, searchable, required, uniqueConstraint', 'boolean'),
-            array('fieldName','uniqueFieldName'),
-            array('linkType','length','max'=>250),
-            array('type','length','max'=>20),
-            array('keyType','in','range' => array('MUL','UNI','PRI','FIX'), 'allowEmpty'=>true),
-            array('keyType','requiredUnique'),
-            array('data','validCustom'),
-            // The following rule is used by search().
-            // Please remove those attributes that should not be searched.
-            array('id, modelName, fieldName, attributeLabel, custom, modified, readOnly, keyType', 'safe', 'on' => 'search'),
-        );
-    }
-    
     /**
      * Retrieves a list of models based on the current search/filter conditions.
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.

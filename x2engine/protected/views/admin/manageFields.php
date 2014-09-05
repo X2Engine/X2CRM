@@ -36,6 +36,12 @@
 
 Yii::app()->clientScript->registerCss('manageFieldsCSS',"
 
+#fields-grid {
+    border: 1px solid rgb(200, 200, 200);
+    margin: 0 12px;
+    border-radius: 4px;
+}
+
 #fields-grid-page-title {
     margin-bottom: -5px;
     border-bottom: none !important;
@@ -48,10 +54,6 @@ Yii::app()->clientScript->registerCss('manageFieldsCSS',"
 #fields-form {
     padding-left: 0;
     padding-right: 0;
-}
-
-#fields-grid {
-    padding: 0 9px;
 }
 
 #remove-field-button {
@@ -100,14 +102,33 @@ Yii::app()->clientScript->registerScript('fieldEditor-config', 'x2.fieldEditor.l
         'title'=>Yii::t('accounts','Modified Fields'),
         'buttons'=>array('clearFilters','columnSelector','autoResize'),
         'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-        'template' => '{title}{items}{pager}',
+        'template' => '<div class="page-title">{title}{summary}</div>{items}{pager}',
         'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
         'filter' => $searchModel,
         'dataProvider' => $dataProvider,
+        'gvSettingsName' => 'manageFields',
+        'defaultGvSettings' => array (
+            'modelName' => 100,
+            'fieldName' => 100,
+            'attributeLabel' => 100,
+            'required' => 60,
+            'type' => 80,
+            'uniqueConstraint' => 50,
+            'defaultValue' => 90,
+        ),
         'columns' => array(
-            'modelName',
-            'fieldName',
-            'attributeLabel',
+            array (
+                'name' => 'modelName',
+                'type' => 'raw',
+            ),
+            array (
+                'name' => 'fieldName',
+                'type' => 'raw',
+            ),
+            array (
+                'name' => 'attributeLabel',
+                'type' => 'raw',
+            ),
             // array(
             // 'name'=>'visible',
             // 'header'=>'Visibility',
@@ -129,7 +150,10 @@ Yii::app()->clientScript->registerScript('fieldEditor-config', 'x2.fieldEditor.l
                 'type' => 'raw',
                 'value' => '$data->uniqueConstraint==1?Yii::t("app","Yes"):Yii::t("app","No")'
             ),
-            'defaultValue'
+            array (
+                'name' => 'defaultValue',
+                'type' => 'raw',
+            )
         ),
     ));
 
