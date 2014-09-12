@@ -449,31 +449,26 @@ class CalendarController extends x2base {
                         $associationUrl = '';
                     }
                 }
-                $description = $action->actionDescription;
+                
+                // Retrieve a shortened summary of the action text
+                // Description may not be rendering anywhere
+                $description = $action->shortActionText;
+
+                $title = $description;
+                $title = preg_replace('/<b>/', '', $title);
+                $title = preg_replace('/<\/b>/', '', $title);
+                $title = preg_replace('/\n\n/', "\n", $title);
+                $title = preg_replace('/<!--EndSig-->/', '', $title);
+                $title = preg_replace('/<!--BeginOpenedEmail-->/', '', $title);
+                $title = preg_replace('/<!--BeginSignature-->/', '', $title);
+
                 if(in_array($action->type, 
                     array(
                         'email', 'emailFrom', 'email_quote', 'email_invoice', 'emailOpened',
                         'emailOpened_quote', 'emailOpened_invoice'))){
+                    $title = 'Email: '.$title;
+                }
 
-                    $actionHeaderPattern = InlineEmail::insertedPattern('ah', '(.*)', 1, 'mis');
-                    if(!preg_match($actionHeaderPattern, $description, $matches)){
-                        // Legacy action header
-                        $description = preg_replace('/<b>(.*?)<\/b>(.*)/mis', '', $description); 
-                    }else{
-                        // Current action header
-                        $description = preg_replace($actionHeaderPattern, '', $description); 
-                    }
-                    $description = preg_replace('/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail--\!>/s', '', $description);
-                    $description = preg_replace('/<\!--BeginSignature-->(.*?)<\!--EndSignature-->/mis', '', $description);
-                    $description = preg_replace('/\&nbsp;/', '', $description);
-                    $description = trim(strip_tags($description));
-                    $description = 'Email: '.$description;
-                }
-                $description = trim(strip_tags($description));
-                $title = mb_substr($description, 0, 30, 'UTF-8');
-                if (strlen ($description) > 30) {
-                    $title .= '...';
-                }
                 if($action->type == 'event'){
                     $events[] = array(
                         'title' => $title,
@@ -550,8 +545,8 @@ class CalendarController extends x2base {
             if($action->visibility >= 1 || // don't show private actions,
                     $action->assignedTo == Yii::app()->user->name || // unless they belong to current user
                     Yii::app()->params->isAdmin){ // admin sees all
-                $description = $action->actionText->text;
-                $title = mb_substr($description, 0, 30, 'UTF-8');
+                $title = $action->shortActionText;
+                $description = $title;
                 if($action->type == 'event'){
                     $events[] = array(
                         'title' => $title,
@@ -1281,7 +1276,7 @@ class CalendarController extends x2base {
             ':end1' => $end,
             ':end2' => $end
         ));
-        return Actions::model()->with('actionText')->findAll($criteria);
+        return Actions::model()->findAllWithoutActionText($criteria);
     }
 
     /**

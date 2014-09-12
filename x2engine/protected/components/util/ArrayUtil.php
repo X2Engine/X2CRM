@@ -187,7 +187,7 @@ class ArrayUtil {
      *  the array is copied before sorting
      * @return the sorted array
      */
-    public function sort (array &$array, $sideEffects=false) {
+    public static function sort (array &$array, $sideEffects=false) {
         if ($sideEffects) {
             sort ($array);
             return $array;

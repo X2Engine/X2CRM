@@ -1,3 +1,13 @@
+# 4.2.1 #
+9/11/2014
+
+* General changelog/developer notes
+  * Fixed bug in importer preventing equal valued fields from being set
+* Tracked Bug Fixes:
+  * [1584](http://x2software.com/index.php/bugReports/1584): Undefined variable: newFields
+  * [1589](http://x2software.com/index.php/bugReports/1589): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '3' for key 'PRIMARY'
+  * [1596](http://x2software.com/index.php/bugReports/1596): Undefined variable: fmtNumber
+
 # 4.2 #
 9/3/2014
 

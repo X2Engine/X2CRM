@@ -61,7 +61,8 @@ class MassActionTest extends X2DbTestCase {
         TestingAuxLib::suLogin ('admin');
         Yii::app()->user; // initializes $_SESSION superglobal
 
-        $modelName = array_shift (array_keys ($filters));
+        $filterKeys = array_keys ($filters);
+        $modelName = array_shift ($filterKeys);
         $controllerName = $modelName.'Controller'; 
         $moduleName = $modelName.'Module'; 
         Yii::app()->controller = new $controllerName (

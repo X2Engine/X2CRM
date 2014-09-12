@@ -1249,7 +1249,7 @@ class Api2Controller extends CController {
                         // Return with status 300 (multiple choices) and point 
                         // the client to the query URL if more than one result
                         // was found, and the
-                        if($count > 1 && empty($_GET['_useFirst']) {
+                        if($count > 1 && empty($_GET['_useFirst'])) {
                             $queryUri = $this->createUrl('/api2/model',array_merge(
                                 array('_class' => $_GET['_class']),
                                 $attributeConditions
