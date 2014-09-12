@@ -57,7 +57,7 @@ class MassTagTest extends X2DbTestCase {
         Yii::app()->controller = new ContactsController (
             'contacts', new ContactsModule ('contacts', null));
         $massTag = new MassTag;
-        $this->assertEquals (0, Yii::app()->db->createCommand ('
+        $this->assertEquals (19, Yii::app()->db->createCommand ('
             SELECT COUNT(DISTINCT(t.id))
             FROM x2_contacts AS t
             JOIN x2_tags ON itemId=t.id

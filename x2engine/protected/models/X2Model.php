@@ -1525,11 +1525,10 @@ abstract class X2Model extends CActiveRecord {
                 $fmtNumber = $number;
             }
         }
-        if ($encode) {
+        if ($encode && isset($fmtNumber)) {
             $fmtNumber = CHtml::encode($fmtNumber);
         }
         if (isset ($fmtNumber) && $makeLink && !Yii::app()->params->profile->disablePhoneLinks) {
-            $fmtNumber = $encode ? CHtml::encode ($fmtNumber) : $fmtNumber;
             if (!preg_match('/^\+\d/', $number))
                 $number = "+1".$number;
             return '<a href="tel:'.$number.'">'.$fmtNumber.'</a>';

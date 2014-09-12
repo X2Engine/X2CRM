@@ -64,6 +64,9 @@ class Actions extends X2Model {
 
     private static $_priorityLabels;
 
+    /* static variable to allow calling findAll without actionText */ 
+    private static $withActionText = true;
+
     /**
      * Returns the static model of the specified AR class.
      * @return Actions the static model class
@@ -273,6 +276,33 @@ class Actions extends X2Model {
         }
     }
 
+
+    /** 
+    * Modified findAll function that doesn't attach actionText. See {@link X2Model::findAll}.
+    * @param mixed $condition query condition or criteria
+    * @param array $params parameters to be bound to an SQL statement.
+    * @return CActiveRecord[] list of active records satisfying the specified condition. 
+    * An empty array is returned if none is found.
+    */
+    public function findAllWithoutActionText($condition = '', $params = array()){
+        self::$withActionText = false;
+        $models = $this->findAll($condition, $params);
+        self::$withActionText = true;
+        return $models;
+    }
+
+    public function afterFind(){
+        if(self::$withActionText && $this->actionText instanceof ActionText){
+            $this->actionDescriptionTemp = $this->actionText->text;
+        }
+        if ($this->actionMetaData instanceof ActionMetaData) {
+            foreach ($this->metaDataTemp as $name => $value) {
+                $this->metaDataTemp[$name] = $this->actionMetaData->$name;
+            }
+        }
+        parent::afterFind();
+    }
+
     public function afterSave(){
         $this->saveMetaData ();
 
@@ -293,16 +323,7 @@ class Actions extends X2Model {
         return !$this->hasErrors();
     }
 
-    public function afterFind(){
-        if($this->actionText instanceof ActionText){
-            $this->actionDescriptionTemp = $this->actionText->text;
-        }
-        if ($this->actionMetaData instanceof ActionMetaData) {
-            foreach ($this->metaDataTemp as $name => $value) {
-                $this->metaDataTemp[$name] = $this->actionMetaData->$name;
-            }
-        }
-    }
+
 
     /**
      * Creates an event for each assignee 
@@ -569,6 +590,25 @@ class Actions extends X2Model {
         }else{
             return CHtml::link($text, $this->getUrl());
         }
+    }
+
+    /**
+     * Queries the database for the first characters of an action description
+     * @param int $length length of string to retrieve
+     * @param string $overflow string to append to text if it overflows
+     * @return string
+     */
+    public function getShortActionText($length = 30, $overflow='...'){
+        $actionText = Yii::app()->db->createCommand()->
+            select('SUBSTR(text, 1,'.$length.') AS text, CHAR_LENGTH(text) AS length')->
+            from('x2_action_text')->
+            where('actionId='.$this->id)->queryRow();
+        
+        if($actionText['length'] > $length)
+            $actionText['text'] .= $overflow;
+
+        return $actionText['text'];
+
     }
 
     public function getAssociationLink(){
@@ -1039,5 +1079,6 @@ class Actions extends X2Model {
         } 
         return parent::renderInput($fieldName, $htmlOptions);
     }
+
 
 }

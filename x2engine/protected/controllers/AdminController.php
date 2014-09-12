@@ -3256,7 +3256,6 @@ class AdminController extends Controller {
                     $model = new $modelName;
                     if ($_SESSION['skipActivityFeed'] === 1)
                         $model->createEvent = false;
-                    $mappedValues = array();
                     /*
                      * This import assumes we have human readable data in the CSV
                      * and will thus need to convert. The loop below converts link,
@@ -3266,8 +3265,7 @@ class AdminController extends Controller {
                     foreach($metaData as $attribute){
                         $isActionText = ($modelName === 'Actions' && $importMap[$attribute] === 'actionDescription');
                         if (isset($importMap[$attribute]) && ($model->hasAttribute ($importMap[$attribute]) || $isActionText)) {
-                            if ((empty($importAttributes[$attribute]) && ($importAttributes[$attribute] !== 0 && $importAttributes[$attribute] !== '0'))
-                                    || in_array($importAttributes[$attribute], $mappedValues)) {
+                            if (empty($importAttributes[$attribute]) && ($importAttributes[$attribute] !== 0 && $importAttributes[$attribute] !== '0')) {
                                 /**
                                  * Skip setting the attribute if it has already been set or if the entry from
                                  * the CSV is empty. This allows multiple fields in the CSV to be mapped to the
@@ -3363,18 +3361,18 @@ class AdminController extends Controller {
                                     $model->$importMap[$attribute] = $importAttributes[$attribute];
                             }
                             $_POST[$importMap[$attribute]] = $model->$importMap[$attribute];
-                            // Keep track of processed attributes
-                            $mappedValues[] = $importAttributes[$attribute];
                         }
                     }
                     if ($modelName === 'Contacts') {
                         // Help out the user in the special case where a Contact's full name
                         // is set, but first and last name aren't, or vice versa.
-                        if (!empty($model->name) && (empty($model->firstName) || empty($model->lastName))) {
+                        if (!empty($model->name) && (empty($model->firstName) && empty($model->lastName))) {
                             $names = preg_split('/ /', $model->name);
-                            $model->firstName = $names[0];
-                            $model->lastName = $names[1];
-                        } else if (empty($model->name) && (!empty($model->firstName) || !empty($model->lastName)))
+                            if (count($names) === 2) {
+                                $model->firstName = $names[0];
+                                $model->lastName = $names[1];
+                            }
+                        } else if (empty($model->name) && (!empty($model->firstName) && !empty($model->lastName)))
                             $model->name = $model->firstName ." ". $model->lastName;
                     }
                     if ($modelName === 'Actions') {

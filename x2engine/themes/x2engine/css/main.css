@@ -429,6 +429,9 @@ div.portlet-minimize .expand-widget {
 #widget_TimeZone {
     text-align: center;
 }
+#widget_TimeZone .portlet-content {
+    overflow-y: hidden;
+}
 #widget_TimeZone #tzClock {
     position: relative;
     display: block;

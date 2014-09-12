@@ -144,7 +144,7 @@ InlineEmailEditorManager.prototype._setUpSettingsDialog = function () {
  */
 InlineEmailEditorManager.prototype._setUpFileUpload = function () {
     var that = this;
-    $(document).on ('change', '.x2-file-input', function () {
+    $(document).on ('change', '.x2-file-input', function (event) {
         x2.attachments.checkName(event); 
         if($('#submitAttach').attr('disabled') !== 'disabled') {
             x2.forms.fileUpload ($(this), that.tmpUploadUrl, that.rmTmpUploadUrl); 

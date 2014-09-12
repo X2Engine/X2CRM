@@ -48,6 +48,7 @@ New in 4.2 (see [CHANGELOG](CHANGELOG.md) for full history):
   * Fixed links in 'My Actions' widget
   * Fixed bug in Google Calendar Sync which prevented calendar and action history from updating
     after publishing events or actions
+  * Fixed bug in importer preventing equal valued fields from being set
 * Tracked Bug Fixes:  
   * [1401](http://x2software.com/index.php/bugReports/1401): Undefined index: tags 
   * [1492](http://x2software.com/index.php/bugReports/1492): User Report  
@@ -60,6 +61,9 @@ New in 4.2 (see [CHANGELOG](CHANGELOG.md) for full history):
   * [1572](http://x2software.com/index.php/bugReports/1572): Unable to resolve the request "actions/viewAll/showActions/incomplete".  
   * [1574](http://x2software.com/index.php/bugReports/1574): Trying to get property of non-object  
   * [1578](http://x2software.com/index.php/bugReports/1578): Undefined variable: users  
+  * [1584](http://x2software.com/index.php/bugReports/1584): Undefined variable: newFields
+  * [1589](http://x2software.com/index.php/bugReports/1589): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '3' for key 'PRIMARY'
+  * [1596](http://x2software.com/index.php/bugReports/1596): Undefined variable: fmtNumber
 
 
 

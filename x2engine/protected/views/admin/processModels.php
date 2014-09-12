@@ -240,7 +240,6 @@ if ($maxExecTime <= 30) {
         var comment="";
         var routing=0;
         var skipActivityFeed=0;
-        var newFields = <?php echo CJSON::encode($newFields); ?>;
         $('.import-attribute').each(function(){
             attributes.push ($(this).val());
             keys.push ($(this).attr('name'));
@@ -462,14 +461,6 @@ if ($maxExecTime <= 30) {
     $('#export-map').click(function() {
         var keys = new Array();
         var attributes = new Array();
-        var newFields = <?php echo CJSON::encode($newFields) ?>;
-        $('#importMapping').find(':checked').each(function(){
-            keys.push($(this).val());
-            if (jQuery.inArray($(this).text(), newFields) != -1)
-                attributes.push('createNew');
-            else
-                attributes.push($(this).text());
-        });
         $('.import-attribute').each(function(){
             if ($(this).val() != '') {
                 // Add mapping overrides that are not marked 'DO NOT MAP'
