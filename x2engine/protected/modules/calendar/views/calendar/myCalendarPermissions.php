@@ -36,22 +36,16 @@
 ?>
 
 <?php
-if(Yii::app()->settings->googleIntegration) { // menu if google integration is enables has additional options
-	$menuItems = array(
-		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
-		array('label'=>Yii::t('calendar', 'My Calendar Permissions')),
-//		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
-//		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
-		array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')),
-	);
-} else {
-	$menuItems = array(
-		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
-		array('label'=>Yii::t('calendar', 'My Calendar Permissions')),
-//		array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
-//		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
-	);
-}
+$menuItems = array( array('label'=>Yii::t('calendar', 'Calendar'), 				  'url'=>array('index')),
+					array('label'=>Yii::t('calendar', 'My Calendar Permissions')),
+			      );
+
+if(Yii::app()->params->isAdmin) 
+	array_push($menuItems, array('label'=>Yii::t('calendar', 'User Calendar Permissions'), 'url'=>array('userCalendarPermissions')));
+
+if(Yii::app()->settings->googleIntegration) // menu if google integration is enables has additional options
+	array_push($menuItems, array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')));
+
 $this->actionMenu = $this->formatMenu($menuItems);
 ?>
 

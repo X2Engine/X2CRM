@@ -34,47 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-?>
+class CalendarHelper{	
 
-<!-- dialog for completing a stage requiring a comment-->
-<div id='workflowCommentDialog'>
-    <form>
-        <div class="row">
-            <?php echo Yii::t('workflow','Please summarize how this stage was completed.'); ?></div>
-        <div class="row">
-            <?php
-            echo CHtml::textArea(
-                'workflowComment','',array('style'=>'width:260px;height:80px;'));
-            echo CHtml::hiddenField(
-                'workflowCommentWorkflowId','',array('id'=>'workflowCommentWorkflowId'));
-            echo CHtml::hiddenField(
-                'workflowCommentStageNumber','',array('id'=>'workflowCommentStageNumber'));
-            ?>
-        </div>
-    </form>
-</div>
 
-<!-- dialog to contain Workflow Stage Details-->
-<div id="workflowStageDetails"></div>
-
-<div class="row">
-    <div id="workflow-diagram">
-        <?php
-        // true = include dropdowns
-        $workflowStatus = Workflow::getWorkflowStatus(
-            $currentWorkflow,$model->id, X2Model::getAssociationType (get_class ($model)));
-        //echo Workflow::renderWorkflow($workflowStatus); 
-        if (sizeof ($workflowStatus['stages']) > 1) {
-            $workflow = Workflow::model()->findByPk ($workflowStatus['id']);
-            $colors = $workflow->getWorkflowStageColors (sizeof ($workflowStatus['stages']));
-
-            Yii::app()->controller->renderPartial (
-                'application.modules.workflow.views.workflow._inlineFunnel', array (
-                    'workflowStatus' => $workflowStatus,
-                    'stageCount' => sizeof ($workflowStatus['stages']),
-                    'colors' => $colors,
-            ));
-        }
-        ?>
-    </div>
-</div>
+}

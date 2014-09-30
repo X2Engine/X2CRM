@@ -176,6 +176,19 @@ class Formatter {
         return $codes;
     }
 
+    /**
+     * Restore any special characters necessary for insertableAttributes that
+     * may be mangled by HTMLPurifier
+     * @param string $text
+     */
+    public static function restoreInsertableAttributes($text) {
+        $characters = array(
+            '%7B' => '{',
+            '%7D' => '}',
+        );
+        return strtr ($text, $characters);
+    }
+
     /*     * * Date Format Functions ** */
 
     /**

@@ -63,7 +63,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
         <?php
         $myMediaItems = Yii::app()->db->createCommand()
                 ->select('id, uploadedBy, fileName, description, drive, name')
-                ->where('uploadedBy=:username AND drive=:drive AND associationType="none"', array(':username' => $username, ':drive' => $this->drive))
+                ->where('uploadedBy=:username AND drive=:drive AND associationType IN("none","docs")', array(':username' => $username, ':drive' => $this->drive))
                 ->from('x2_media')
                 ->queryAll();
         ?>

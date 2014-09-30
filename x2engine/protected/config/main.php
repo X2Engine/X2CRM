@@ -303,6 +303,7 @@ $config = array(
             'ActionMenu' => 'My Actions',
             'MessageBox' => 'Message Board',
             'QuickContact' => 'Quick Contact',
+            'SmallCalendar' => 'Calendar',
             //'TwitterFeed'=>'Twitter Feed',
             'NoteBox' => 'Note Pad',
             'MediaBox' => 'Files',

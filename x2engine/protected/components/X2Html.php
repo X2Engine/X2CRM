@@ -79,9 +79,10 @@
     public static function hint(
         $text, $superScript = true, $id = null, $brackets = false, $encode = true){
 
+        $text = Formatter::mbSanitize ($text);
         $htmlOptions = array(
             'class' => 'x2-hint x2-question-mark',
-            'title' => $encode ? htmlentities($text, ENT_QUOTES) : $text,
+            'title' => $encode ? htmlentities($text, ENT_QUOTES, Yii::app()->charset) : $text,
         );
         if($id !== null){
             $htmlOptions['id'] = $id;

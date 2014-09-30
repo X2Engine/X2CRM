@@ -3109,6 +3109,10 @@ class AdminController extends Controller {
             while("" === end($x2attributes)){
                 array_pop($x2attributes);
             }
+            if ($_SESSION['model'] === 'Actions') {
+                // add Action.description to attributes so that it is automatically mapped
+                $x2attributes[] = 'actionDescription';
+            }
             // Initialize session data
             $_SESSION['importMap'] = array();
             $_SESSION['imported'] = 0;
@@ -3145,12 +3149,12 @@ class AdminController extends Controller {
                 }
                 if (array_key_exists('mapping', $importMap)) {
                     $_SESSION['importMap'] = $importMap['mapping'];
-                    $importMap = $importMap['mapping'];
-                    // Make sure $importMap is consistent with legacy import map format
                     if (isset($importMap['name']))
-                        $_SESSION['mapName'] = $imporMap['name'];
+                        $_SESSION['mapName'] = $importMap['name'];
                     else
                         $_SESSION['mapName'] = Yii::t('admin', "Untitled Mapping");
+                    // Make sure $importMap is consistent with legacy import map format
+                    $importMap = $importMap['mapping'];
                 } else {
                     $_SESSION['importMap'] = $importMap;
                     $_SESSION['mapName'] = Yii::t('admin', "Untitled Mapping");
@@ -3236,6 +3240,10 @@ class AdminController extends Controller {
             for($i = 0; $i < $count; $i++){
                 $arr = fgetcsv($fp); // Loop through and start importing
                 if($arr !== false && !is_null($arr)){
+                    if ($arr === array(null)) {
+                        // Skip empty lines
+                        continue;
+                    }
                     if(count($arr) > count($metaData)){
                         $arr = array_slice($arr, 0, count($metaData));
                     }
@@ -3285,8 +3293,6 @@ class AdminController extends Controller {
                             $fieldRecord = Fields::model()->findByAttributes(array('modelName' => $modelName, 'fieldName' => $importMap[$attribute]));
                             switch($fieldRecord->type){
                                 case "link":
-                                    if ($modelName == 'BugReports') // Skip creating related bug reports; the created report wouldn't hold any useful info.
-                                        break;
                                     $className = ucfirst($fieldRecord->linkType);
                                     if(ctype_digit($importAttributes[$attribute])){
                                         $lookup = X2Model::model($className)->findByPk($importAttributes[$attribute]);
@@ -3311,7 +3317,10 @@ class AdminController extends Controller {
                                             $relationship->secondId = $lookup->id;
                                             $relationships[] = $relationship;
                                             $linkedRecordPreexist["{$relationship->secondType}-{$relationship->secondId}"] = true;
-                                        }elseif(isset($_SESSION['createRecords']) && $_SESSION['createRecords'] == 1){
+                                        }elseif(isset($_SESSION['createRecords']) && $_SESSION['createRecords'] == 1 &&
+                                                !($modelName === 'BugReports' && $fieldRecord->linkType === 'BugReports')){
+                                            // Skip creating related bug reports; the created report wouldn't hold any useful info.
+
                                             $className = ucfirst($fieldRecord->linkType);
                                             if(class_exists($className)){
                                                 $lookup = new $className;

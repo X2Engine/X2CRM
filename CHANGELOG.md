@@ -1,3 +1,24 @@
+# 4.3b #
+9/26/2014
+
+* Highlights
+  * New calendar profile widget
+  * The clock widget now allows you to choose from analog, digital, and digital 24-hour
+* General changelog/developer notes
+  * Fixed inline process widget in Opportunities module
+  * Custom assignment fields now produce links in grid views
+  * Importer Bugfixes
+    * Action.description will now be automatically mapped
+    * Fixed bug when uploading import maps
+    * Added better handling of empty rows
+  * Fixed purification issue with insertableAttributes
+* Tracked Bug Fixes:
+  * [1621](http://x2software.com/index.php/bugReports/1621): Non-static method Tags::normalizeTags() should not be called statically, assuming $this from incompatible context  
+  * [1648](http://x2software.com/index.php/bugReports/1648): Invalid address:  
+  * [1660](http://x2software.com/index.php/bugReports/1660): Undefined index: first  
+  * [1688](http://x2software.com/index.php/bugReports/1688): Undefined index: last  
+  * [1697](http://x2software.com/index.php/bugReports/1697): htmlspecialchars(): Invalid multibyte sequence in argument  
+
 # 4.2.1 #
 9/11/2014
 

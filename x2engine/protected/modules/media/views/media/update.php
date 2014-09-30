@@ -58,13 +58,16 @@ $file = Yii::app()->file->set('uploads/'.$model->fileName);
 $file_ext = strtolower($file->getExtension());	// extension is the last part
 
 $legal_extensions = array('jpg','gif','png','bmp','jpeg','jpe');
-
 $fileView = '';
+
+$file_assoc = $model->associationType;
+
 
 if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 	$file = Yii::app()->file->set("uploads/media/{$model->uploadedBy}/{$model->fileName}");
 	$file_ext = strtolower($file->getExtension());	// extension is the last part
 	$fileURL = Yii::app()->request->baseUrl.'/uploads/media/'. $model->uploadedBy . '/'.urlencode($model->fileName);
+
 	if(in_array($file_ext,$legal_extensions))
 		$fileView .= CHtml::link(CHtml::image($fileURL,'',array('class'=>'attachment-img', 'style'=>'height: 100%; display: block; margin-left: auto; margin-right: auto; padding: 5px')),$fileURL);
 
@@ -123,14 +126,30 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 										<div class="formItem leftLabel">
 											<label><?php echo Yii::t('media', 'Association Type'); ?></label>
 											<div class="formInputBox" style="width: 200px; height: auto;">
-												<?php echo $form->dropDownList($model,'associationType',
-													array(
+												<?php 
+
+													$display_array=array(
 														'none'=>Yii::t('actions','None'),
 														'contacts'=>Yii::t('actions','Contact'),
 														'opportunities'=>Yii::t('actions','Opportunity'),
 														'accounts'=>Yii::t('actions','Account'),
 														'bg'=>Yii::t('media', 'Background'),
-													), array('onChange'=>'showAssociationAutoComplete(this)')); ?>
+														// 'products'=>Yii::t('media', 'Product'),
+														'docs'=>Yii::t('media','Doc'));
+
+													if(!isset($display_array[$file_assoc])){
+														$selected = $display_array['none'];
+													}
+													else {
+														$selected = $display_array[$file_assoc];
+													}
+
+													echo $form->dropDownList($model,'associationType',
+														$display_array,
+													 array('onChange'=>'showAssociationAutoComplete(this)',
+															'options' => 
+														array($selected=>array('selected'=>true))
+													)); ?>
 											</div>
 										</div>
 

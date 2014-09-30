@@ -563,7 +563,30 @@ class Profile extends CActiveRecord {
 
         // if widget settings haven't been set, give them default values
         if(Yii::app()->params->profile->widgetSettings == null){
-            $widgetSettings = array(
+            $widgetSettings = self::getDefaultWidgetSettings();
+
+            Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+            Yii::app()->params->profile->update(array('widgetSettings'));
+        }
+
+        $widgetSettings = json_decode(Yii::app()->params->profile->widgetSettings);
+
+        if(!isset($widgetSettings->MediaBox)){
+            $widgetSettings->MediaBox = array('mediaBoxHeight' => 150, 'hideUsers' => array());
+            Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+            Yii::app()->params->profile->update(array('widgetSettings'));
+        }
+
+        return json_decode(Yii::app()->params->profile->widgetSettings);
+    }
+
+    /**
+    * get an array of default widget values
+    * @return Array of default values for widgets
+    *
+    **/
+    public static function getDefaultWidgetSettings(){
+        return  array(
                 'ChatBox' => array(
                     'chatboxHeight' => 300,
                     'chatmessageHeight' => 50,
@@ -579,20 +602,68 @@ class Profile extends CActiveRecord {
                     'topsitesHeight' => 200,
                     'urltitleHeight' => 10,
                 ),
+                'MediaBox' => array(
+                    'mediaBoxHeight' => 150,
+                    'hideUsers' => array(),
+                ),
+                'TimeZone' => array(
+                    'clockType' => 'analog'
+                )
             );
+    }
 
-            Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+    /**
+    * Method to change a specific value in a widgets settings
+    * @param string    $widget Name of widget
+    * @param string    $setting Name of setting within the widget
+    * @param variable  $value to insert into the setting  
+    * @return boolean  false if profile did not exist
+    */
+    public static function changeWidgetSetting($widget, $setting, $value){
+        $profile = Yii::app()->params->profile;
+        if(isset($profile)){
+            $widgetSettings = self::getWidgetSettings();
+
+            $widgetSettings->$widget->$setting = $value;
+            
+            Yii::app()->params->profile->widgetSettings = CJSON::encode($widgetSettings);
             Yii::app()->params->profile->update(array('widgetSettings'));
+            return true;
         }
 
-        $widgetSettings = json_decode(Yii::app()->params->profile->widgetSettings);
-        if(!isset($widgetSettings->MediaBox)){
-            $widgetSettings->MediaBox = array('mediaBoxHeight' => 150, 'hideUsers' => array());
+        return false;
+    }
+
+    /**
+    * Safely retrieves the settings of a widget, and pulls from the default if the setting does not exist
+    * @param string $widget The settings to return.
+    * @param string $setting Optional. 
+    * @return Object widget settings object
+    * @return String widget settings string (if $setting is set)
+    */
+    public static function getWidgetSetting($widget, $setting){
+        $widgetSettings = self::getWidgetSettings();
+
+        // Check if the widget setting exists
+        $defaultSettings = self::getDefaultWidgetSettings();
+        if(!isset($widgetSettings->$widget)){
+            $widgetSettings->$widget = $defaultSettings[$widget];
             Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
             Yii::app()->params->profile->update(array('widgetSettings'));
+            $widgetSettings = self::getWidgetSettings();
+
+        // Check if the setting exists
+        } else if( isset($setting) && !isset($widgetSettings->$widget->$setting)){
+            $widgetSettings->$widget->$setting = $defaultSettings[$widget][$setting];
+            Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+            Yii::app()->params->profile->update(array('widgetSettings'));
+            $widgetSettings = self::getWidgetSettings();
         }
 
-        return json_decode(Yii::app()->params->profile->widgetSettings);
+        if( !isset($setting) )
+            return $widgetSettings->$widget;
+        else
+            return $widgetSettings->$widget->$setting;
     }
 
     public function getLink(){

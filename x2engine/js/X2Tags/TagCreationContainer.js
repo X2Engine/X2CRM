@@ -131,7 +131,7 @@ TagCreationContainer.prototype._appendTagInput = function(linkContainer) {
     });
     
     // create tag if it loses focus and if input isn't empty
-    tagtext.blur(function() {
+    tagtext.blur(function(event) {
         that._tagInputEnd (event, parent, tagtext);
     });        
     

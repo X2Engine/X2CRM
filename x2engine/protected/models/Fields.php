@@ -783,7 +783,7 @@ class Fields extends CActiveRecord {
 
             case 'date':
             case 'dateTime':
-                if(ctype_digit((string) $value))  // must already be a timestamp
+                if(is_numeric ((string) $value))  // must already be a timestamp
                     return $value;
                 $value = $this->type === 'dateTime' ? Formatter::parseDateTime($value) : Formatter::parseDate($value);
                 return $value === false ? null : $value;

@@ -94,7 +94,7 @@ class SiteController extends x2base {
                     'toggleFeedFilters', 'getTip', 'share', 'activityFeedOrder',
                     'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory', 'dynamicDropdown',
                     'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
-                    'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL',
+                    'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL', 'widgetSetting',
                     'removeTmpUpload'),
                 'users' => array('@'),
             ),
@@ -200,6 +200,25 @@ class SiteController extends x2base {
             $profile->update(array('mediaWidgetDrive'));
         }
     }
+
+    /**
+    * Action to either retrieve or set a widget setting
+    * @param string $widget the widget name 
+    * @param string $setting the setting name
+    * @param string $value the value to save in the setting
+    **/
+    public function actionWidgetSetting($widget, $setting, $value){
+        if( isset($value) ){
+            Profile::changeWidgetSetting($widget, $setting, $value);
+        }
+        else if( isset($setting) ){
+            echo CJSON::encode( Profile::getWidgetSetting($widget)->$setting );
+        } 
+        else {
+            echo CJSON::encode( Profile::getWidgetSetting($widget) );
+        }
+    }
+
 
     // Outputs white or black depending on input color
     // @param $colorString a string representing a hex number

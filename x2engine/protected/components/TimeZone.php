@@ -115,10 +115,11 @@ class TimeZone extends X2Widget {
                 
                 echo Yii::t('app','Current time in').'<br><b>'.$address.'</b>';
             }
-            echo '<span id="tzClock2"></span>';
-            
-            Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/clockWidget.js');
-            
+            $clockType = Profile::getWidgetSetting('TimeZone','clockType');
+
+            $this->render('timeZone', array('widgetSettings' => $clockType));
+
+
         } else
             echo Yii::t('app','Timezone not available');
     }

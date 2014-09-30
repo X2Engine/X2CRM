@@ -341,7 +341,6 @@ class ActionsController extends x2base {
                 $model->verifyCode = $_POST['Actions']['verifyCode'];
             }
             $model->setX2Fields($_POST['Actions']);
-
             // format dates,
             if (isset ($_POST[get_class($model)]['dueDate'])) {
                 $model->dueDate = Formatter::parseDateTime($_POST[get_class($model)]['dueDate']);
@@ -1016,6 +1015,9 @@ class ActionsController extends x2base {
         }
         Yii::app()->end();
     }
+
+    
+
 
     /***********************************************************************
     * protected static methods

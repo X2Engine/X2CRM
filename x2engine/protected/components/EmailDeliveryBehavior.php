@@ -302,7 +302,8 @@ class EmailDeliveryBehavior extends CBehavior {
 					'address' => $this->credentials->auth->email
 				);
 			else {
-                if(empty($this->userProfile)){
+                if(empty($this->userProfile) ||
+                        $this->userProfile->username === Profile::GUEST_PROFILE_USERNAME) {
                     // The application:
                     $this->_from = array(
                         'name' => Yii::app()->settings->appName,

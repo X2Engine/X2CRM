@@ -148,7 +148,7 @@ class TagBehavior extends CActiveRecordBehavior {
 	 * @return boolean the test result
 	 */
 	public function hasTags($tags,$mode='OR') {
-		$matches = array_intersect($this->getTags(),self::normalizeTags ((array) $tags));
+		$matches = array_intersect($this->getTags(),Tags::normalizeTags ((array) $tags));
 
 		if($mode === 'AND')
 			return count($matches) === count((array)$tags);		// all tags must be present

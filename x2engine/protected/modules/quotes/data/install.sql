@@ -92,4 +92,6 @@ VALUES
 ('Quote',  'invoicePayedDate',  'Invoice Payed',       0, 0, 'date',       0, 0, NULL,       0, 0, '',     0, 1, NULL),
 ('Quote', 'template',           'Quote Template',      0, 0, 'link',       0, 0, 'Docs',     0, 0, '',     0, 1, 'MUL'),
 ('Quote', 'total',              'Total',               0, 0, 'currency',   0, 0, NULL,       0, 0, '',     0, 1, NULL),
-('Quote', 'subtotal',           'Subtotal',            0, 0, 'currency',   0, 0, NULL,       0, 0, '',     0, 1, NULL);
+('Quote', 'subtotal',           'Subtotal',            0, 0, 'currency',   0, 0, NULL,       0, 0, '',     0, 1, NULL),
+('Quote', 'type',               'Type',                0, 0, 'varchar',    0, 1, NULL,       0, 0, '',     0, 1, NULL),
+('Quote', 'currency',           'Currency',            0, 0, 'varchar',    0, 1, NULL,       0, 0, '',     0, 1, NULL);

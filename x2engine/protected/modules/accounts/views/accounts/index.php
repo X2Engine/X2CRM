@@ -37,7 +37,7 @@
 $menuItems = array(
     array('label'=>Yii::t('accounts','All Accounts')),
     array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
-    array('label'=>Yii::t('accounts','Accounts Report'), 'url'=>array('accountsReport')),
+    
     array('label'=>Yii::t('accounts',"Import Accounts"), 'url'=>array('admin/importModels', 'model'=>'Accounts')),
     array('label'=>Yii::t('accounts','Export Accounts'), 'url'=>array('admin/exportModels', 'model'=>'Accounts')),
 );

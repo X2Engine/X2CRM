@@ -199,7 +199,7 @@ class Tags extends CActiveRecord {
         return $tag;
     }
 
-    public function normalizeTags (array $tags, $suppressHash=false) {
+    public static function normalizeTags (array $tags, $suppressHash=false) {
         foreach ($tags as &$tag) {
             $tag = Tags::normalizeTag ($tag, $suppressHash);
         }

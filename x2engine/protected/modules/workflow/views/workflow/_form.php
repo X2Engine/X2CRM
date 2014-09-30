@@ -209,13 +209,17 @@ $(function() {
 	</div>
 	<a href="javascript:void(0)" onclick="addStage()" class="x2-sortlist-add">[<?php echo Yii::t('workflow','Add'); ?>]</a>
 
+    <?php
+    $firstColor = isset($model->colors['first']) ? $model->colors['first'] : '';
+    $lastColor = isset($model->colors['last']) ? $model->colors['last'] : '';
+    ?>
     <div class='row color-picker-row'>
         <label for='colors[first]'><?php echo Yii::t('workflow', 'First Stage Color:'); ?></label>
         <input name='colors[first]' class='x2-color-picker' 
-         value='<?php echo $model->colors['first']; ?>'> 
+         value='<?php echo $firstColor; ?>'>
         <label for='colors[last]'><?php echo Yii::t('workflow', 'Last Stage Color:'); ?></label>
         <input name='colors[last]' class='x2-color-picker' 
-         value='<?php echo $model->colors['last']; ?>'> 
+         value='<?php echo $lastColor; ?>'>
     </div>
 
 	<div class="row buttons">

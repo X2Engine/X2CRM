@@ -33,48 +33,41 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+Yii::import('application.modules.calendar.controllers.CalendarController');
+Yii::import('application.modules.calendar.models.X2Calendar');
+/**
+ * Widget class for the chat portlet.
+ * 
+ * @package application.components 
+ */
+class SmallCalendar extends X2Widget {
+	
+	public $visibility;
+	public function init() {
+		parent::init();
+	}
 
-?>
-
-<!-- dialog for completing a stage requiring a comment-->
-<div id='workflowCommentDialog'>
-    <form>
-        <div class="row">
-            <?php echo Yii::t('workflow','Please summarize how this stage was completed.'); ?></div>
-        <div class="row">
-            <?php
-            echo CHtml::textArea(
-                'workflowComment','',array('style'=>'width:260px;height:80px;'));
-            echo CHtml::hiddenField(
-                'workflowCommentWorkflowId','',array('id'=>'workflowCommentWorkflowId'));
-            echo CHtml::hiddenField(
-                'workflowCommentStageNumber','',array('id'=>'workflowCommentStageNumber'));
-            ?>
-        </div>
-    </form>
-</div>
-
-<!-- dialog to contain Workflow Stage Details-->
-<div id="workflowStageDetails"></div>
-
-<div class="row">
-    <div id="workflow-diagram">
-        <?php
-        // true = include dropdowns
-        $workflowStatus = Workflow::getWorkflowStatus(
-            $currentWorkflow,$model->id, X2Model::getAssociationType (get_class ($model)));
-        //echo Workflow::renderWorkflow($workflowStatus); 
-        if (sizeof ($workflowStatus['stages']) > 1) {
-            $workflow = Workflow::model()->findByPk ($workflowStatus['id']);
-            $colors = $workflow->getWorkflowStageColors (sizeof ($workflowStatus['stages']));
-
-            Yii::app()->controller->renderPartial (
-                'application.modules.workflow.views.workflow._inlineFunnel', array (
-                    'workflowStatus' => $workflowStatus,
-                    'stageCount' => sizeof ($workflowStatus['stages']),
-                    'colors' => $colors,
-            ));
+	public function run() {
+		// Prevent the small calendar from showing when using the larger calendar
+        if(Yii::app()->controller->modelClass == 'X2Calendar' &&
+           Yii::app()->controller->action->getId () == 'index'){
+        	return;
         }
-        ?>
-    </div>
-</div>
+
+		// Fetch the calendars to display
+		$user = User::model()->findByPk(Yii::app()->user->getId());
+		$showCalendars = $user->showCalendars;
+
+		// Possible urls for the calendar to call
+		$urls = X2Calendar::getCalendarUrls();
+
+		Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl() .'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.css');
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.js');
+		Yii::app()->clientScript->registerScriptFile(Yii::app()->getModule('calendar')->assetsUrl.'/js/calendar.js', CClientScript::POS_END);
+
+		$this->render('smallCalendar',array('showCalendars' => $showCalendars, 
+											'urls' => $urls));
+       
+	}
+}
+?>

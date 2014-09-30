@@ -221,6 +221,9 @@ class X2GridView extends X2GridViewBase {
             } elseif($this->allFields[$columnName]->type=='percentage') {
                 $newColumn['value'] = '$data["'.$columnName.'"]!==null&&$data["'.
                     $columnName.'"]!==""?((string)($data["'.$columnName.'"]))."%":null';
+            } elseif($this->allFields[$columnName]->type=='assignment') {
+                $newColumn['value'] = 'empty($data["'.$columnName.'"]) ? '.
+                    'Yii::t("app","Anyone"):User::getUserLinks($data["'.$columnName.'"])';
             } elseif($this->allFields[$columnName]->type=='dateTime') {
                 $newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : '.
                     'Yii::app()->dateFormatter->formatDateTime($data["'.

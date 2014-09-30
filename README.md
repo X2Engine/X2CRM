@@ -1,8 +1,10 @@
-# X2Engine 4.2 #
+# X2Engine 4.3b #
 
-New in 4.2 (see [CHANGELOG](CHANGELOG.md) for full history):
+New in 4.3b (see [CHANGELOG](CHANGELOG.md) for full history):
 
 * **Highlights**
+  * New calendar profile widget
+  * The clock widget now allows you to choose from analog, digital, and digital 24-hour
   * Improvement to role access editor _(Professional Edition)_:
     * New user interface enables more fine-grained control over role-based permissions
   * Profile widget improvements:
@@ -32,6 +34,13 @@ New in 4.2 (see [CHANGELOG](CHANGELOG.md) for full history):
   * New feature to validate email credentials from the 'Manage Apps' page
   * Improved contact lists grid view
 * General changlog/developer notes
+  * Fixed inline process widget in Opportunities module
+  * Custom assignment fields now produce links in grid views
+  * Importer Bugfixes
+    * Action.description will now be automatically mapped
+    * Fixed bug when uploading import maps
+    * Added better handling of empty rows
+  * Fixed purification issue with insertableAttributes
   * Patched file upload filter bypass vulnerability
   * Fixed missing link to modify Doc permissions when logged in as admin
   * Fixed issue that caused phone number links to be prepended international dialing codes unconditionally
@@ -64,6 +73,11 @@ New in 4.2 (see [CHANGELOG](CHANGELOG.md) for full history):
   * [1584](http://x2software.com/index.php/bugReports/1584): Undefined variable: newFields
   * [1589](http://x2software.com/index.php/bugReports/1589): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '3' for key 'PRIMARY'
   * [1596](http://x2software.com/index.php/bugReports/1596): Undefined variable: fmtNumber
+  * [1621](http://x2software.com/index.php/bugReports/1621): Non-static method Tags::normalizeTags() should not be called statically, assuming $this from incompatible context  
+  * [1648](http://x2software.com/index.php/bugReports/1648): Invalid address:  
+  * [1660](http://x2software.com/index.php/bugReports/1660): Undefined index: first  
+  * [1688](http://x2software.com/index.php/bugReports/1688): Undefined index: last  
+  * [1697](http://x2software.com/index.php/bugReports/1697): htmlspecialchars(): Invalid multibyte sequence in argument  
 
 
 
