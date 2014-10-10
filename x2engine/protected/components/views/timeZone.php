@@ -84,47 +84,33 @@ $digital24 = Yii::t('app', 'Digital 24h');
 ?>
 
 <script type='text/javascript'>
-// Options: analog, digital, digital24
 var setting = '<?php echo $widgetSettings ?>';
 
 $(function() { 
-	if ($('#clock-gear-img-container').length > 0)
-		return;
+// Options: analog, digital, digital24
+
+
+	function callback(li){
+		li = $(li.target);
+		li.siblings().removeClass('blue');
+		li.addClass('blue');
+		switchSetting(li.attr('value'));
+	}
+
 
 	// Add the gear icon menu
-		$('<span id="clock-gear-img-container"> <img src="<?php echo $imgUrl ?>" /></span>').
-		prependTo("#widget_TimeZone #widget-dropdown").
-		wrap('<a href="#"></a>');
+	// var imgUrl= '<?php echo $imgUrl ?>';
 
+	// Create the Confi menu
+	var dropdown = $("#widget_TimeZone").addConfigMenu({
+			analog: '<?php echo $analog ?>',
+			digital: '<?php echo $digital ?>',
+			digital24: '<?php echo $digital24 ?>'
+		}, callback);
 
-	// Add the dropdown list
-	// Options for the dropdown value='true' means it is selected
-	$('<ul class="closed" id="clock-widget-gear-menu"></ul>').appendTo("#widget_TimeZone #widget-dropdown").
-	append('<div class="option" value="false" id="analog"><?php echo $analog ?></div>').
-	append('<div class="option" value="false" id="digital"><?php echo $digital ?></div>').
-	append('<div class="option" value="false" id="digital24"><?php echo $digital24 ?></div>');
+	// // Set the currently blue option to true
+	dropdown.find("div[value='"+setting+"']").addClass('blue');
 
-	// Handle opening and closing of the menu
-	$('#widget_TimeZone #clock-gear-img-container').on('click', function(){
-		if( $('#clock-widget-gear-menu').hasClass('open') ){
-			$('#clock-widget-gear-menu').addClass('closed');
-			$('#clock-widget-gear-menu').removeClass('open');
-		} else {
-			$('#clock-widget-gear-menu').removeClass('closed');
-			$('#clock-widget-gear-menu').addClass('open');
-		}
-		
-	});
-
-	// Set the currently selected option to true
-	$('#clock-widget-gear-menu .option[id='+setting+']').attr('value','true');
-
-	// click handling setup
-	$('#clock-widget-gear-menu .option').bind('click',function(){
-		$('#clock-widget-gear-menu .option').attr('value','false');
-		$(this).attr('value','true');
-		switchSetting($(this).attr('id'));
-	});
 
 	// Make the ajax call to save the setting in the profile
 	function switchSetting(id){
@@ -139,11 +125,7 @@ $(function() {
 	}
 	
 
-
-
 });
-
-
 
 
 </script>

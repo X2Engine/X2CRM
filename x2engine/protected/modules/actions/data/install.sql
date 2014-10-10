@@ -86,8 +86,8 @@ VALUES
 ("Actions", "allDay",            "All Day",          0, 0, "boolean",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "color",             "Color",            0, 0, "dropdown",    0, 0, 123, 0, 0, "",     0, 1, NULL),
 ("Actions", "timeSpent",         "Time Spent",       0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
-("Actions", "stageNumber",       "Stage Number",     0, 0, "int",        0, 1, NULL, 0, 0, "",     1, 1, NULL),
-("Actions", "quoteId",           "Quote ID",         0, 0, "int",        0, 1, NULL, 0, 0, "",     1, 1, NULL),
-("Actions", "calendarId",        "Calendar ID",      0, 0, "int",        0, 1, NULL, 0, 0, "",     1, 1, NULL),
-("Actions", "workflowId",        "Workflow ID",      0, 0, "int",        0, 1, NULL, 0, 0, "",     1, 1, NULL),
-("Actions", "flowTriggered",     "Flow Triggered",   0, 0, "boolean",    0, 0, NULL, 0, 0, "",     0, 1, NULL);
+("Actions", "stageNumber",       "Stage Number",     0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "workflowId",        "Workflow ID",      0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "flowTriggered",     "Flow Triggered",   0, 0, "boolean",    0, 1, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "quoteId",           "Quote ID",         0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "calendarId",        "Calendar ID",      0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL);

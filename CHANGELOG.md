@@ -1,3 +1,13 @@
+# 4.3 #
+10/9/2014
+
+* General changelog/developer notes
+  * Updated calendar widget to be hidden and shown according to persistent settings
+  * Fixed bug preventing tags from being added to leads
+* Tracked Bug Fixes:
+  * [1659](http://x2software.com/index.php/bugReports/1659): User Report  
+  * [1706](http://x2software.com/index.php/bugReports/1706): Undefined variable: email  
+
 # 4.3b #
 9/26/2014
 

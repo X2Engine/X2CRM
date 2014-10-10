@@ -102,12 +102,14 @@ Public instance methods
 /*
 Private instance methods
 */
-CalendarManager.prototype.insertDate = function(date, view){
+CalendarManager.prototype.insertDate = function(date, view, publisherName){
+        if(typeof publisherName === 'undefined'){
+            publisherName = '';
+        }
+        
         if (typeof view === 'undefined'){
             view = $(this.calendar).fullCalendar('getView');
         }
-        
-
 
         // Preserve hours previously set in case the user is just switching
         // the day of the event:
@@ -116,8 +118,8 @@ CalendarManager.prototype.insertDate = function(date, view){
             end: new Date(date.getTime())
         };
         var oldDate = {
-            begin: auxlib.getElement('#event-form-action-due-date').datetimepicker('getDate'),
-            end: auxlib.getElement('#event-form-action-complete-date').datetimepicker('getDate')
+            begin: auxlib.getElement(publisherName+' #event-form-action-due-date').datetimepicker('getDate'),
+            end: auxlib.getElement(publisherName+' #event-form-action-complete-date').datetimepicker('getDate')
         };
         if(view.name == 'month' || view.name == 'basicWeek') {
             $(auxlib.keys(oldDate)).each(function(key, val){
@@ -128,9 +130,9 @@ CalendarManager.prototype.insertDate = function(date, view){
             });
         }
 
-        var dateformat = auxlib.getElement('#publisher-form').data('dateformat');
-        var timeformat = auxlib.getElement('#publisher-form').data('timeformat');
-        var ampmformat = auxlib.getElement('#publisher-form').data('ampmformat');
+        var dateformat = auxlib.getElement(publisherName+' #publisher-form').data('dateformat');
+        var timeformat = auxlib.getElement(publisherName+' #publisher-form').data('timeformat');
+        var ampmformat = auxlib.getElement(publisherName+' #publisher-form').data('ampmformat');
         var region = x2.publisher.getForm ().data('region');
 
         if(typeof(dateformat) == 'undefined') {
@@ -147,8 +149,8 @@ CalendarManager.prototype.insertDate = function(date, view){
         }
 
 
-        auxlib.getElement('#event-form-action-due-date').datetimepicker("destroy");
-        auxlib.getElement('#event-form-action-due-date').datetimepicker(
+        auxlib.getElement(publisherName+' #event-form-action-due-date').datetimepicker("destroy");
+        auxlib.getElement(publisherName+' #event-form-action-due-date').datetimepicker(
             jQuery.extend(
                 {
                     showMonthAfterYear:false
@@ -163,10 +165,10 @@ CalendarManager.prototype.insertDate = function(date, view){
                 }
             )
         );
-        auxlib.getElement('#event-form-action-due-date').datetimepicker('setDate', newDate.begin);
+        auxlib.getElement(publisherName+' #event-form-action-due-date').datetimepicker('setDate', newDate.begin);
 
-        auxlib.getElement('#event-form-action-complete-date').datetimepicker("destroy");
-        auxlib.getElement('#event-form-action-complete-date').datetimepicker(
+        auxlib.getElement(publisherName+' #event-form-action-complete-date').datetimepicker("destroy");
+        auxlib.getElement(publisherName+' #event-form-action-complete-date').datetimepicker(
             jQuery.extend(
                 {
                     showMonthAfterYear:false
@@ -181,13 +183,15 @@ CalendarManager.prototype.insertDate = function(date, view){
                 }
             )
         );
-        auxlib.getElement('#event-form-action-complete-date').datetimepicker('setDate', newDate.end);
+        auxlib.getElement(publisherName+' #event-form-action-complete-date').datetimepicker('setDate', newDate.end);
 
-        auxlib.getElement('#event-action-description').click ();
-        auxlib.getElement('#event-action-description').select();
+        auxlib.getElement(publisherName+' #event-action-description').click ();
+        auxlib.getElement(publisherName+' #event-action-description').select();
 
         return false;
+
 }
+
 
 // Called by the event editor 
 CalendarManager.prototype.giveSaveButtonFocus = function(){
@@ -212,6 +216,17 @@ CalendarManager.prototype.dayNumberClick = function (target) {
     $(this.calendar).fullCalendar ('changeView', 'agendaDay');
     return false;
 };
+
+CalendarManager.prototype.updateWidgetSetting = function(setting, value){
+    return $.ajax({
+        url: this.widgetSettingUrl,
+        data: {
+            widget: 'SmallCalendar',
+            setting: setting,
+            value: value
+        }
+    });
+}
 
 CalendarManager.prototype._init = function () {
     $(this.calendar).find('.day-number-link').click (function () { return false; });

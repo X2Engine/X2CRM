@@ -1587,7 +1587,8 @@ class SiteController extends x2base {
      * Echoes "true" if tag was created (and was not a duplicate), "false" otherwise.
      */
     public function actionAppendTag(){
-        if(isset($_POST['Type'], $_POST['Id'], $_POST['Tag']) && ctype_alpha($_POST['Type'])){
+        if(isset($_POST['Type'], $_POST['Id'], $_POST['Tag']) &&
+                (ctype_alpha($_POST['Type']) || $_POST['Type'] === 'X2Leads')){
             $model = X2Model::model($_POST['Type'])->findByPk($_POST['Id']);
             echo $model->addTags($_POST['Tag']);
             exit;
@@ -1605,7 +1606,8 @@ class SiteController extends x2base {
      * Echoes "true" if tag was removed, "false" otherwise.
      */
     public function actionRemoveTag(){
-        if(isset($_POST['Type'], $_POST['Id'], $_POST['Tag']) && ctype_alpha($_POST['Type'])){
+        if(isset($_POST['Type'], $_POST['Id'], $_POST['Tag']) &&
+            (ctype_alpha($_POST['Type']) || $_POST['Type'] === 'X2Leads')){
             $model = X2Model::model($_POST['Type'])->findByPk($_POST['Id']);
 
             if($model !== null && $model->removeTags($_POST['Tag'])){

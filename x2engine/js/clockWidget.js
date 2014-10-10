@@ -35,6 +35,7 @@
 
 $(function() {
 	function updateTzClock() {
+
 		if(setting === 'analog'){
 			$('#tzClockDigital').hide();
 			$('#tzClock').show();			

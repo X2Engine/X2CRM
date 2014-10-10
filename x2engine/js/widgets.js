@@ -245,3 +245,40 @@ $.fn.minimizeWidget = function() {
         });
     });
 };
+
+/**
+* Adds a config method to a right widget
+* @param jqueryObject target A jquery object that will be added to 
+*/
+$.fn.addConfigMenu = function(options, callback) {
+    var dropdown = $(this).find('#widget-dropdown');
+
+    var target = $('<div class="gear-img-container widget-icon"></div>')
+    .height(18).width(18);
+    target.appendTo(dropdown);
+    var ul = $('<ul class="closed widget-gear-menu"></ul>').appendTo(dropdown);
+
+    for (var key in options){
+        $('<div class="widget-gear-option" value="'+key+'">'+options[key]+'</div>').
+        appendTo(ul).
+        click( function(element) {
+            return callback(element);
+        });
+    }
+
+
+    // Handle opening and closing of the menu
+    target.on('click', function(){
+        if( ul.hasClass('open') ){
+            ul.addClass('closed');
+            ul.removeClass('open');
+        } else {
+            ul.removeClass('closed');
+            ul.addClass('open');
+        }
+        
+    });
+
+    return dropdown;
+
+};

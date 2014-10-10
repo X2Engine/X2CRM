@@ -925,6 +925,31 @@ Remove border radius from left widget title bars which are preceded by a collaps
 }
 .portlet-content li {margin:0 0 5px 0;}
 
+.gear-img-container {
+	float:left;
+	opacity: 0.3;
+	cursor: pointer;
+}
+
+.gear-img-container:hover {
+	opacity: 1.0;
+}
+
+.widget-gear-menu .widget-gear-option{
+	background-color: inherit;
+	border-radius: 2px;
+	padding: 1px;
+	cursor: pointer;
+}
+
+.widget-gear-menu .widget-gear-option:hover {
+	background-color: #DDDDDD;
+}
+
+.widget-gear-menu .widget-gear-option.blue {
+	background-color: #407BC9;
+	color: white;
+}
 
 #flexible-content {
 	/* margin-right:20px; */

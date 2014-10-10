@@ -1,6 +1,7 @@
-# X2Engine 4.3b #
+# X2Engine 4.3 #
+10/9/2014
 
-New in 4.3b (see [CHANGELOG](CHANGELOG.md) for full history):
+New in 4.3 (see [CHANGELOG](CHANGELOG.md) for full history):
 
 * **Highlights**
   * New calendar profile widget
@@ -34,6 +35,8 @@ New in 4.3b (see [CHANGELOG](CHANGELOG.md) for full history):
   * New feature to validate email credentials from the 'Manage Apps' page
   * Improved contact lists grid view
 * General changlog/developer notes
+  * Updated calendar widget to be hidden and shown according to persistent settings
+  * Fixed bug preventing tags from being added to leads
   * Fixed inline process widget in Opportunities module
   * Custom assignment fields now produce links in grid views
   * Importer Bugfixes
@@ -75,9 +78,11 @@ New in 4.3b (see [CHANGELOG](CHANGELOG.md) for full history):
   * [1596](http://x2software.com/index.php/bugReports/1596): Undefined variable: fmtNumber
   * [1621](http://x2software.com/index.php/bugReports/1621): Non-static method Tags::normalizeTags() should not be called statically, assuming $this from incompatible context  
   * [1648](http://x2software.com/index.php/bugReports/1648): Invalid address:  
+  * [1659](http://x2software.com/index.php/bugReports/1659): User Report  
   * [1660](http://x2software.com/index.php/bugReports/1660): Undefined index: first  
   * [1688](http://x2software.com/index.php/bugReports/1688): Undefined index: last  
   * [1697](http://x2software.com/index.php/bugReports/1697): htmlspecialchars(): Invalid multibyte sequence in argument  
+  * [1706](http://x2software.com/index.php/bugReports/1706): Undefined variable: email  
 
 
 

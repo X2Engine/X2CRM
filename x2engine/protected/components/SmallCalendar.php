@@ -61,12 +61,23 @@ class SmallCalendar extends X2Widget {
 		// Possible urls for the calendar to call
 		$urls = X2Calendar::getCalendarUrls();
 
+		$widgetSettingUrl = $this->controller->createUrl('/site/widgetSetting');;
+
+		$justMe = Profile::getWidgetSetting('SmallCalendar','justMe');
+
 		Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl() .'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.css');
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.js');
 		Yii::app()->clientScript->registerScriptFile(Yii::app()->getModule('calendar')->assetsUrl.'/js/calendar.js', CClientScript::POS_END);
 
+
+
+
 		$this->render('smallCalendar',array('showCalendars' => $showCalendars, 
-											'urls' => $urls));
+											'urls' => $urls,
+											'user' => $user->username,
+											'widgetSettingUrl' => $widgetSettingUrl,
+											'justMe' => $justMe
+											));
        
 	}
 }

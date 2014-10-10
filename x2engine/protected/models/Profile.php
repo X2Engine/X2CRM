@@ -608,6 +608,9 @@ class Profile extends CActiveRecord {
                 ),
                 'TimeZone' => array(
                     'clockType' => 'analog'
+                ),
+                'SmallCalendar' => array(
+                    'justMe' => 'false'
                 )
             );
     }
@@ -623,6 +626,10 @@ class Profile extends CActiveRecord {
         $profile = Yii::app()->params->profile;
         if(isset($profile)){
             $widgetSettings = self::getWidgetSettings();
+
+            if(!isset($widgetSettings->$widget))
+                self::getWidgetSetting($widget);
+
 
             $widgetSettings->$widget->$setting = $value;
             
@@ -960,6 +967,10 @@ class Profile extends CActiveRecord {
                 ),
             ),
             'right' => array(
+                'SmallCalendar' => array(
+                    'title' => 'Small Calendar',
+                    'minimize' => false,
+                ),
                 'ActionMenu' => array(
                     'title' => 'My Actions',
                     'minimize' => false,
@@ -978,6 +989,10 @@ class Profile extends CActiveRecord {
                 ),
                 'TimeZone' => array(
                     'title' => 'Clock',
+                    'minimize' => false,
+                ),
+                'SmallCalendar' => array(
+                    'title' => 'Calendar',
                     'minimize' => false,
                 ),
                 'MessageBox' => array(

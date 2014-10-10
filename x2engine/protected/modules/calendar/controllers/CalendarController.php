@@ -94,7 +94,7 @@ class CalendarController extends x2base {
                     'syncActionsToGoogleCalendar',
                     'toggleUserCalendarsVisible',
                     'togglePortletVisible',
-                    'uploadToGoogle'
+                    //'uploadToGoogle'
                 ),
                 'users' => array('@'),
             ),
@@ -426,9 +426,9 @@ class CalendarController extends x2base {
     * @return - array of JSON strings
     */
 
-    public function actionJsonFeedAll($start=null, $end=null){
+    /*public function actionJsonFeedAll($start=null, $end=null){
             echo CJSON::encode($this->feedAll($start, $end));
-    }
+    }*/
 
     /**
      * @param string $user username to fetch events for
@@ -604,9 +604,9 @@ class CalendarController extends x2base {
         return $this->feedUser($groupId, $start, $end);
     }
 
-    public function actionUpdateGoogleEvents(){
+    /*public function actionUpdateGoogleEvents(){
         Yii::app()->params->profile->fetchGoogleEvents();
-    }
+    }*/
 
 
     // Deprecated, dont use.
@@ -1074,9 +1074,9 @@ class CalendarController extends x2base {
         }
     }
 
-    public function actionUploadToGoogle(){
+    /*public function actionUploadToGoogle(){
         Yii::app()->params->profile->syncAllEvents();
-    }
+    }*/
 
     public function actionSyncActionsToGoogleCalendar(){
         $errors = array();
