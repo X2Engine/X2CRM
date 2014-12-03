@@ -34,23 +34,19 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$menuItems = array(
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
-	array('label'=>Yii::t('contacts','Create Contact')),
-);
-
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
-if($opportunityModule->visible && $accountModule->visible)
-	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
-
-$this->actionMenu = $this->formatMenu($menuItems);
+$menuOptions = array(
+    'all', 'lists', 'create',
+);
+if ($opportunityModule->visible && $accountModule->visible)
+    $menuOptions[] = 'quick';
+$this->insertMenu($menuOptions);
 
 ?>
 <div class="page-title icon contacts">
-	<h2><?php echo Yii::t('contacts','Create Contact'); ?></h2>
+	<h2><?php echo Yii::t('contacts','Create {module}', array('{module}'=>Modules::displayName(false))); ?></h2>
 </div>
 <?php 
 

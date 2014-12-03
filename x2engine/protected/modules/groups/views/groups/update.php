@@ -34,13 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('groups','Group List'), 'url'=>array('index')),
-	array('label'=>Yii::t('groups','Create Group'), 'url'=>array('create')),
-	array('label'=>Yii::t('groups','View'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('groups','Edit Group')),
-	array('label'=>Yii::t('groups','Delete Group'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
-));
+$menuOptions = array(
+    'index', 'create', 'view', 'edit', 'delete',
+);
+$this->insertMenu($menuOptions, $model);
+
 ?>
 <div class="page-title icon groups">
 	<h2><span class="no-bold"><?php echo Yii::t('groups','Update'); ?>:</span> <?php echo $model->name; ?></h2>

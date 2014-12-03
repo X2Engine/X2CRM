@@ -198,6 +198,25 @@ class ArrayUtil {
         }
     }
 
+    public static function transpose ($array) {
+        $newArray = array ();
+        $arraySize = count ($array);
+        for ($i = 0; $i < $arraySize; $i++) {
+            $val = $array[$i];
+            if (is_array ($val)) {
+                $valSize = count ($val);
+                $j = 0; 
+                foreach ($val as $key => $cellVal) {
+                    $newArray[$j][] = $cellVal;
+                    $j++;
+                }
+            } else {
+                $newArray[0][] = $val;
+            }
+        }
+        return $newArray;
+    }
+
 }
 
 ?>

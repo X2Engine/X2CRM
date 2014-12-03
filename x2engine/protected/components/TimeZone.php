@@ -110,12 +110,19 @@ class TimeZone extends X2Widget {
                 $tzString .= $offsetH;
                 if($offsetM > 0)
                     $tzString .= ':'.$offsetM;
-                    
+                
                 Yii::app()->clientScript->registerScript('timezoneClock','x2.tzOffset = '.($tzOffset*1000).'; x2.tzUtcOffset = " ('.addslashes($tzString).')";',CClientScript::POS_BEGIN);
+
+
+
                 
                 echo Yii::t('app','Current time in').'<br><b>'.$address.'</b>';
             }
             $clockType = Profile::getWidgetSetting('TimeZone','clockType');
+
+            Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/clockWidget.js');
+
+            Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/components/clockWidget.css');
 
             $this->render('timeZone', array('widgetSettings' => $clockType));
 

@@ -23,7 +23,6 @@ return array(
     'x2_profile' => array('lastUpdated'),
     'x2_quotes' => array('expectedCloseDate', 'createDate', 'lastUpdated', 'lastActivity', 'expirationDate'),
     'x2_quotes_products' => array('createDate', 'lastUpdated', 'lastActivity'),
-    'x2_reports' => array('createDate'),
     'x2_services' => array('createDate', 'lastUpdated', 'lastActivity'),
     'x2_tags' => array('timestamp'),
     'x2_urls' => array('timestamp'),

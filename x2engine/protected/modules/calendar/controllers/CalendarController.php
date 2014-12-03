@@ -1016,17 +1016,9 @@ class CalendarController extends x2base {
     // if not, create the list
     public function initCheckedCalendars(){
         $user = User::model()->findByPk(Yii::app()->user->getId());
-        if($user->showCalendars == null){ // calendar list not initialized?
-            $showCalendars = array(
-                'userCalendars' => array('Anyone', $user->username),
-                'groupCalendars' => array(),
-                'sharedCalendars' => array(),
-                'googleCalendars' => array()
-            );
-            $user->showCalendars = CJSON::encode($showCalendars);
-
-            $user->update();
-        }
+        // calendar list not initialized?
+        if($user->showCalendars == null)
+            $user->initCheckedCalendars();
     }
 
     // if a user checked/unchecked a calendar, remember for the next to the user visits the page
@@ -1295,5 +1287,55 @@ class CalendarController extends x2base {
         return $this->_currentUser;
     }
 
+    /**
+     * Create a menu for the Calendar
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
+     */
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Calendar = Modules::displayName();
+        $Actions = Modules::displayName(true, "Actions");
+        $User = Modules::displayName(false, "Users");
 
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'index', 'myPermissions', 'userPermissions', 'sync',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'index',
+                'label'=>Yii::t('calendar', '{calendar}', array('{calendar}'=>$Calendar)),
+                'url'=>array('index')
+            ),
+            array(
+                'name'=>'myPermissions',
+                'label'=>Yii::t('calendar', 'My {calendar} Permissions', array(
+                    '{calendar}'=>$Calendar,
+                )),
+                'url'=>array('myCalendarPermissions')
+            ),
+            array(
+                'name'=>'userPermissions',
+                'label'=>Yii::t('calendar', '{user} {calendar} Permissions', array(
+                    '{calendar}'=>$Calendar,
+                    '{user}'=>$User,
+                )),
+                'url'=>array('userCalendarPermissions'),
+            ),
+            array(
+                'name'=>'sync',
+                'label'=>Yii::t('calendar', 'Sync My {actions} To Google Calendar', array(
+                    '{actions}' => $Actions,
+                )),
+                'url'=>array('syncActionsToGoogleCalendar'),
+            ),
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
+    }
 }

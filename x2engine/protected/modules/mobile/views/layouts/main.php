@@ -50,7 +50,18 @@ $jsVersion = '?'.Yii::app()->params->buildDate;
 $cs->registerScriptFile(Yii::app()->getBaseUrl ().'/js/auxlib.js'.$jsVersion);
 $cs->registerScriptFile(Yii::app()->getBaseUrl ().'/js/jstorage.min.js'.$jsVersion)
    ->registerScriptFile(Yii::app()->getBaseUrl ().'/js/notifications.js'.$jsVersion, 
-     CClientScript::POS_BEGIN);
+     CClientScript::POS_BEGIN)
+   ->registerScriptFile(Yii::app()->getBaseUrl ().'/js/Attachments.js'.$jsVersion, 
+     CClientScript::POS_HEAD);
+$cs->registerScript ('X2ClientScript.registerAttachments',"
+    x2.attachments = new x2.Attachments ({
+        translations: ".CJSON::encode (array (
+            'filetypeError' => Yii::t('app', '"{X}" is not an allowed filetype.'),
+        ))."
+    });
+", CClientScript::POS_END);
+
+
 
 
 ?><!DOCTYPE html>
@@ -67,9 +78,9 @@ $cs->registerScriptFile(Yii::app()->getBaseUrl ().'/js/jstorage.min.js'.$jsVersi
 <body> 
 <div id="container"> 
 	<div id="<?php echo $this->pageId; ?>" data-role="page" data-url="<?php echo $this->dataUrl; ?>/" data-theme="a">
-		<div data-role="header" data-theme="a">
+		<!--div data-role="header" data-theme="a">
 			<div  class="figure"><a href="<?php echo $this->createUrl('/mobile/site/home');?>" rel="external"><img style="margin-left:20px;" src="<?php echo $this->module->getAssetsUrl() . '/css/images/x2touch-logo.png'; ?>" alt="x2engine" /></a></div>
-		</div>
+		</div-->
 		<div data-role="content">
 			<?php
 			echo $content;
@@ -78,7 +89,7 @@ $cs->registerScriptFile(Yii::app()->getBaseUrl ().'/js/jstorage.min.js'.$jsVersi
 		<div data-role="footer" data-theme="a">
 			<p>&nbsp;&nbsp;&copy; <?php echo date('Y') . ' ' . CHtml::link('X2Engine Inc.', 'http://www.x2engine.com')." ";
 				echo Yii::t('app', 'Rights Reserved.'); ?>
-				<?php echo CHtml::link(Yii::t('mobile', 'Go to Full Site'),Yii::app()->getBaseUrl().'/index.php/site/index?mobile=false',array('rel'=>'external', 'onClick'=>'setMobileBrowserFalse()')); ?>
+				<?php //echo CHtml::link(Yii::t('mobile', 'Go to Full Site'),Yii::app()->getBaseUrl().'/index.php/site/index?mobile=false',array('rel'=>'external', 'onClick'=>'setMobileBrowserFalse()')); ?>
 			</p>
             <div id='logo-container'>
             <?php

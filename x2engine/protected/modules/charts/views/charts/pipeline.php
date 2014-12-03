@@ -38,16 +38,12 @@ Yii::app()->clientScript->registerScriptFile($this->module->getAssetsUrl ().'/js
     CClientScript::POS_BEGIN);
 
 require_once("protected/modules/charts/chartsConfig.php");
-$this->actionMenu = $this->formatMenu(array(
-	array('label' => Yii::t('charts', 'Lead Volume'), 'url' => array('leadVolume')),
-	// array('label' => Yii::t('charts', 'Lead Activity'), 'url' => array('leadActivity')),
-	// array('label' => Yii::t('charts', 'Lead Performance'), 'url' => array('leadPerformance')),
-	// array('label' => Yii::t('charts', 'Lead Sources'), 'url' => array('leadSources')),
-	// array('label' => Yii::t('charts', 'Workflow'), 'url' => array('workflow')),
-	array('label' => Yii::t('charts', 'Marketing'), 'url' => array('marketing')),
-	array('label' => Yii::t('charts', 'Pipeline')),
-	array('label' => Yii::t('charts', 'Opportunities'), 'url' => array('sales')),
-));
+
+$menuOptions = array(
+    'leadVolume', 'marketing', 'pipeline', 'opportunities',
+);
+$this->insertMenu($menuOptions);
+
 ?>
 
 

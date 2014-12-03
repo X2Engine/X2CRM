@@ -75,6 +75,9 @@ Yii::app()->clientScript->registerCss('adminCss',"
 
 ");
 
+
+ThemeGenerator::removeBackdrop();
+
 $admin = &Yii::app()->settings;
 
 $editionStart = function($edition) {
@@ -184,14 +187,15 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create Static Page'),array('/admin/createPage')); ?><br><?php echo Yii::t('admin','Add a static page to the top bar');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Google Integration'),array('/admin/googleIntegration')); ?><br><?php echo Yii::t('admin','Enter your google app settings for Calendar/Google login');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Restore Default Logo'),array('/admin/toggleDefaultLogo')); ?><br><?php echo Yii::t('admin','Change logo back to the X2Engine default logo');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Twitter Integration'),array('/admin/twitterIntegration')); ?><br><?php echo Yii::t('admin','Enter your Twitter app settings for twitter widget');?></div>
     </div><br>
     <div class="row">
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Restore Default Logo'),array('/admin/toggleDefaultLogo')); ?><br><?php echo Yii::t('admin','Change logo back to the X2Engine default logo');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upload your logo'),array('/admin/uploadLogo')); ?><br><?php echo Yii::t('admin','Upload your own logo. 30px height image.');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Update X2Engine'),array('/admin/updater')); ?><br><?php echo Yii::t('admin','The X2Engine remote update utility.');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Activity Feed Settings'),array('/admin/activitySettings')); ?><br><?php echo Yii::t('admin','Configure global settings for the activity feed.');?></div>
     </div><!-- .row --><br />
     <div class="row">
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Activity Feed Settings'),array('/admin/activitySettings')); ?><br><?php echo Yii::t('admin','Configure global settings for the activity feed.');?></div>
         <div class="cell span-6">
             <?php echo CHtml::link(Yii::t('admin','Public Info Settings'),array('/admin/publicInfo')); ?><br><?php echo Yii::t('admin','Miscellaneous settings that control publicly-visible data.'); ?>
         </div>
@@ -200,13 +204,13 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
             <?php echo CHtml::link(Yii::t('admin','Lock or Unlock X2Engine'),array('/admin/lockApp')); ?><br><?php echo Yii::t('admin','Set X2Engine into maintenance mode, where only administrators can access it.');?>
         <?php $editionEnd('pro'); ?>
         </div><!-- .cell.span-6 -->
+    </div><!-- .row -->
+    <div class="row">
         <?php $editionStart('pro'); ?>
         <div class="cell span-6">
             <?php echo CHtml::link(Yii::t('admin','Manage Action Publisher Tabs'),array('/admin/manageActionPublisherTabs')); ?><br><?php echo Yii::t('admin','Enable or disable tabs in the action publisher.');?>
         </div><!-- .cell.span-6 -->
         <?php $editionEnd('pro'); ?>
-    </div><!-- .row -->
-    <div class="row">
         <?php $editionStart('pro'); ?>
         <div class="cell span-6">
             <?php echo CHtml::link(Yii::t('admin', 'Cron Table'), array('/admin/x2CronSettings')); ?><br><?php echo Yii::t('admin', 'Control the interval at which X2Engine will check for and run scheduled tasks.'); ?>
@@ -215,9 +219,6 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <?php if (Yii::app()->edition != 'pla') { ?>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upgrade X2Engine'),array('/admin/updater','scenario'=>'upgrade')); ?><br><?php echo Yii::t('admin','Upgrade X2Engine to get exclusive features and service. License key and registration info required.');?></div>
         <?php } ?>
-        <div class="cell span-6">
-            <?php echo CHtml::link(Yii::t('admin','Change the Application Name'),array('/admin/changeApplicationName')); ?><br><?php echo Yii::t('admin','Change the name of the application as displayed on the sign-in page and on page titles.');?>
-        </div>
     </div><!-- .row -->
     <div class="row">
         <?php $editionStart('pla'); ?>
@@ -265,6 +266,17 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Tag Manager'),array('/admin/manageTags')); ?><br><?php echo Yii::t('admin','View a list of all used tags with options for deletion.');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','User View History'),array('/admin/userViewLog')); ?><br><?php echo Yii::t('admin','See a history of what records users have viewed.');?></div>
     </div>
+
+    <br />
+    <div class="row">
+    <?php $editionStart('pla'); ?>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Advanced Security Settings'),array('/admin/securitySettings')); ?><br><?php echo Yii::t('admin','Configure IP access control and failed login penalties to help prevent unauthorized access to the system');?></div>
+    <?php $editionEnd('pla'); ?>
+    <?php $editionStart('pro'); ?>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Revert Merges'),array('/admin/undoMerge')); ?><br><?php echo Yii::t('admin','Revert record merges which users have performed in the app.'); ?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Packager'),array('/admin/packager')); ?><br><?php echo Yii::t('admin','Import and Export packages to easily share and use system customizations');?></div>
+    </div>
+    <?php $editionEnd('pro'); ?>
 </div>
 <div class="form x2-layout-island">
     <div class="row">

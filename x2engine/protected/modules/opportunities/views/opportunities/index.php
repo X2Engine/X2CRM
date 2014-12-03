@@ -34,20 +34,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$menuItems = array(
-	array('label'=>Yii::t('opportunities','Opportunities List')),
-	array('label'=>Yii::t('opportunities','Create Opportunity'), 'url'=>array('create')),
-        array('label'=>Yii::t('opportunities', 'Import Opportunities'), 'url'=>array('admin/importModels', 'model'=>'Opportunity'), 'visible'=>Yii::app()->params->isAdmin),
-        array('label'=>Yii::t('opportunities', 'Export Opportunities'), 'url'=>array('admin/exportModels', 'model'=>'Opportunity'), 'visible'=>Yii::app()->params->isAdmin),
-);
-
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 $contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
 
-if($accountModule->visible && $contactModule->visible)
-	$menuItems[] = array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'opportunities'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+$menuOptions = array(
+    'index', 'create', 'import', 'export',
+);
+if ($accountModule->visible && $contactModule->visible)
+    $menuOptions[] = 'quick';
+$this->insertMenu($menuOptions);
 
-$this->actionMenu = $this->formatMenu($menuItems);
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
@@ -71,7 +67,9 @@ $('.search-form form').submit(function(){
 <?php
 $this->widget('X2GridView', array(
 	'id'=>'opportunities-grid',
-	'title'=>Yii::t('opportunities','Opportunities'),
+    'title'=>Yii::t('opportunities','{opportunities}', array(
+        '{opportunities}'=>Modules::displayName(),
+    )),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=>
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.

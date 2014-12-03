@@ -247,7 +247,9 @@ class UsersChartProfileWidget extends ChartWidget {
                     'event subtype(s) selected' => Yii::t('app', 'event subtype(s) selected'),
                     'visibility setting(s) selected' => Yii::t(
                         'app', 'visibility setting(s) selected'),
-                    'metric1Label' => Yii::t('app', 'user(s) selected'),
+                    'metric1Label' => Yii::t('app', '{user}(s) selected', array(
+                        '{user}' => strtolower(Modules::displayName(false, 'Users')),
+                    )),
                     'event type(s) selected' => Yii::t('app', 'event type(s) selected'),
                 )
             );

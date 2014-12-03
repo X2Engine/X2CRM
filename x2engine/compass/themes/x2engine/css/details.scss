@@ -1,0 +1,297 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+
+div {
+  &.record {
+    div, .cell#social-media-toggle a {
+      border: 1px solid #ddd;
+      border-width: 0;
+    }
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-width: 1px;
+    clear: both;
+    margin: 0 0 5px 0;
+    padding: 5px 0;
+    width: auto;
+    overflow: auto;
+    &.no-border {
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+    a {
+      text-decoration: none;
+    }
+    .row {
+      width: auto;
+      clear: both;
+      overflow: auto;
+    }
+    .cell {
+      display: block;
+      float: left;
+      margin: 0 10px 5px 10px;
+    }
+    hr {
+      margin: 5px 0;
+      width: 100%;
+    }
+    .cell#social-media-toggle {
+      float: right;
+      a {
+        display: block;
+        margin: 0 10px 0 0;
+        min-width: 108px;
+        padding: 0 5px;
+        float: right;
+        line-height: 24px;
+        background: white;
+        border-width: 1px;
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+        -moz-border-radius: 4px 4px 0 0;
+        -webkit-border-radius: 4px 4px 0 0;
+        -o-border-radius: 4px 4px 0 0;
+      }
+    }
+    .row.social-media {
+      background: #fff;
+      border-top-width: 1px;
+      padding: 0 10px 5px 10px;
+      overflow: hidden;
+      div {
+        margin-top: 5px;
+      }
+    }
+  }
+  &.social-media img {
+    vertical-align: text-bottom;
+    height: 16px;
+    width: 16px;
+  }
+  &.details div.header {
+    border-radius: 4px 4px 0 0;
+    -moz-border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    -o-border-radius: 4px 4px 0 0;
+  }
+}
+
+span.required {
+  color: red;
+}
+
+table {
+  &.details {
+    td {
+      &#address input {
+        margin: 0 0 5px 0;
+      }
+      &#social-media img {
+        vertical-align: middle;
+        margin-bottom: 3px;
+        margin-right: 3px;
+      }
+    }
+    input, textarea {
+      margin: 3px 0 10px 0;
+      -webkit-appearance: none;
+      border: 1px solid #aaa;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    clear: both;
+    border: 1px solid #aaa;
+    width: 100%;
+    table-layout: auto;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -o-border-radius: 4px;
+    tr {
+      &:first-child td {
+        border-top: none;
+      }
+      td:first-child {
+        border-left: none;
+      }
+      &:first-child td {
+        &:first-child {
+          border-radius: 4px 0 0 0;
+          -moz-border-radius: 4px 0 0 0;
+          -webkit-border-radius: 4px 0 0 0;
+          -o-border-radius: 4px 0 0 0;
+        }
+        &:last-child {
+          border-radius: 0 4px 0 0;
+          -moz-border-radius: 0 4px 0 0;
+          -webkit-border-radius: 0 4px 0 0;
+          -o-border-radius: 0 4px 0 0;
+        }
+        &:only-child {
+          border-radius: 4px 4px 0 0;
+          -moz-border-radius: 4px 4px 0 0;
+          -webkit-border-radius: 4px 4px 0 0;
+          -o-border-radius: 4px 4px 0 0;
+        }
+      }
+      &:last-child td {
+        &:first-child {
+          border-radius: 0 0 0 4px;
+          -moz-border-radius: 0 0 0 4px;
+          -webkit-border-radius: 0 0 0 4px;
+          -o-border-radius: 0 0 0 4px;
+        }
+        &:last-child {
+          border-radius: 0 0 4px 0;
+          -moz-border-radius: 0 0 4px 0;
+          -webkit-border-radius: 0 0 4px 0;
+          -o-border-radius: 0 0 4px 0;
+        }
+        &:only-child {
+          border-radius: 0 0 4px 4px;
+          -moz-border-radius: 0 0 4px 4px;
+          -webkit-border-radius: 0 0 4px 4px;
+          -o-border-radius: 0 0 4px 4px;
+        }
+      }
+    }
+    th {
+      padding: 5px;
+      background: #fff;
+      border-top: 1px solid #dfdfdf;
+      border-left: 1px solid #dfdfdf;
+      vertical-align: top;
+      font-family: sans-serif;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: normal;
+    }
+    td {
+      padding: 5px;
+      background: #fff;
+      border-top: 1px solid #dfdfdf;
+      border-left: 1px solid #dfdfdf;
+      vertical-align: top;
+      font-family: sans-serif;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: normal;
+      &.label {
+        background: white;
+        text-align: right;
+      }
+    }
+    a {
+      text-decoration: none;
+    }
+    tr:first-child td.description {
+      border-radius: 4px 4px 0 0;
+      -moz-border-radius: 4px 4px 0 0;
+      -webkit-border-radius: 4px 4px 0 0;
+      -o-border-radius: 4px 4px 0 0;
+      border-left-width: 1px;
+    }
+    td.text-field {
+      height: auto;
+      div.spacer {
+        height: 40px;
+        width: 0px;
+        float: left;
+      }
+    }
+    input {
+      margin: 0;
+    }
+  }
+  margin: 0;
+}
+
+/* no top or left borders on the TD cells */
+
+/* make all the TD cell corner round too because browsers are stupid */
+
+/* rounded corners on description cell */
+
+.details textarea {
+  margin: 0;
+}
+
+table {
+  &.details {
+    &.hint {
+      color: #999;
+      margin: 0;
+      padding: 0;
+    }
+    &.note {
+      font-style: italic;
+    }
+  }
+  &.detailsspan.required {
+    color: red;
+  }
+  &.detailsdiv.error label, &.detailslabel.error, &.detailsspan.error {
+    color: #C00;
+  }
+  &.detailsdiv.error {
+    input, textarea, select {
+      background: #FEE;
+      border-color: #C00;
+    }
+  }
+  &.detailsinput.error, &.detailstextarea.error, &.detailsselect.error {
+    background: #FEE;
+    border-color: #C00;
+  }
+  &.detailsdiv.success {
+    input, textarea, select {
+      background: #E6EFC2;
+      border-color: #C6D880;
+    }
+  }
+  &.detailsinput.success, &.detailstextarea.success, &.detailsselect.success {
+    background: #E6EFC2;
+    border-color: #C6D880;
+  }
+  &.details.errorSummary {
+    background: #FEE;
+    border: 2px solid #C00;
+    font-size: 0.9em;
+    padding: 7px 7px 12px 7px;
+  }
+}

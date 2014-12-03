@@ -32,13 +32,11 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
+/* line 23, ../../../compass/themes/x2engine/css/androidLayout.scss */
 body.disable-mobile-layout #header {
-	position:static;
+  position: static;
 }
-
+/* line 26, ../../../compass/themes/x2engine/css/androidLayout.scss */
 body.disable-mobile-layout #page {
-    margin-top: 0 !important;
+  margin-top: 0 !important;
 }
-
-

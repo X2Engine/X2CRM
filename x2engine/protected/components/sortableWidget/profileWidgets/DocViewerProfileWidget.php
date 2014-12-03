@@ -102,18 +102,19 @@ class DocViewerProfileWidget extends SortableWidget {
     protected function getTranslations () {
         if (!isset ($this->_translations )) {
             $this->_translations = array_merge (parent::getTranslations (), array (
-                'dialogTitle'=> Yii::t('profile', 'Select a Doc'),
+                'dialogTitle'=> Yii::t('profile', 'Select a {Doc}', array(
+                    '{Doc}' => Modules::displayName(false, 'Docs')
+                )),
                 'closeButton'=> Yii::t('profile', 'Close'),
                 'selectButton'=> Yii::t('profile', 'Select'),
-                'docError'=> Yii::t('profile', 'Please select an existing Doc'),
+                'docError'=> Yii::t('profile', 'Please select an existing {Doc}', array(
+                    '{Doc}' => Modules::displayName(false, 'Docs')
+                )),
             ));
         }
         return $this->_translations;
     }
 
-    /**
-     * Magic getter.
-     */
     protected function getJSSortableWidgetParams () {
         if (!isset ($this->_JSSortableWidgetParams)) {
             $docId = self::getJSONProperty (
@@ -230,7 +231,9 @@ class DocViewerProfileWidget extends SortableWidget {
         return
             '<div id="select-a-document-dialog-'.$this->widgetUID.'" 
               style="display: none;">'.
-                '<div>'.Yii::t('profile', 'Enter the name of a Doc:').'</div>'.
+              '<div>'.Yii::t('profile', 'Enter the name of a {Doc}:', array(
+                '{Doc}' => Modules::displayName(false, 'Docs')
+              )).'</div>'.
                 '<input class="selected-doc">'.
             '</div>'.parent::getSettingsMenuContentDialogs ();
     }

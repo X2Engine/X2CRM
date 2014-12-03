@@ -204,4 +204,91 @@ class ProductsController extends x2base {
             Yii::app()->end();
         }
     }
+
+    /**
+     * Create a menu for Products
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
+     */
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Products = Modules::displayName();
+        $Product = Modules::displayName(false);
+        $modelId = isset($model) ? $model->id : 0;
+
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'index', 'create', 'view', 'edit', 'delete', 'print', 'import', 'export',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'index',
+                'label'=>Yii::t('products','{module} List', array(
+                    '{module}'=>$Product,
+                )),
+                'url'=>array('index')
+            ),
+            array(
+                'name'=>'create',
+                'label'=>Yii::t('products','Create'),
+                'url'=>array('create')
+            ),
+            array(
+                'name'=>'view',
+                'label'=>Yii::t('products','View'),
+                'url'=>array('view', 'id'=>$modelId),
+            ),
+            array(
+                'name'=>'edit',
+                'label'=>Yii::t('products','Update'),
+                'url'=>array('update', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'delete',
+                'label'=>Yii::t('products','Delete'),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'submit'=>array('delete','id'=>$modelId),
+                    'confirm'=>Yii::t('app','Are you sure you want to delete this item?')
+                )
+            ),
+            array(
+                'name' => 'print',
+                'label' => Yii::t('app', 'Print Record'),
+                'url' => '#',
+                'linkOptions' => array (
+                    'onClick'=>"window.open('".
+                        Yii::app()->createUrl('/site/printRecord', array (
+                            'modelClass' => 'Product',
+                            'id' => $modelId,
+                            'pageTitle' => Yii::t('app', '{module}', array(
+                                '{module}' => $Product,
+                            )).': '.(isset($model) ? $model->name : "")
+			        ))."');"
+	            ),
+            ),
+            array(
+                'name'=>'import',
+                'label'=>Yii::t('products', 'Import {module}', array(
+                    '{module}' => $Products,
+                )),
+                'url'=>array('admin/importModels', 'model'=>'Product'),
+            ),
+            array(
+                'name'=>'export',
+                'label'=>Yii::t('products', 'Export {module}',  array(
+                    '{module}' => $Products,
+                )),
+                 'url'=>array('admin/exportModels', 'model'=>'Product'),
+            ),
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
+    }
+
+
 }

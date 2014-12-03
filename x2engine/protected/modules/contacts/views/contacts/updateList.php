@@ -35,15 +35,10 @@
  *****************************************************************************************/
 
 $authParams['X2Model'] = $model;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
-    array('label'=>Yii::t('contacts','View List'),'url'=>array('list','id'=>$model->id)),
-	array('label'=>Yii::t('contacts','Edit List')),
-	array('label'=>Yii::t('contacts','Delete List'),'url'=>'#', 'linkOptions'=>array('submit'=>array('deleteList','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-),$authParams);
+$menuOptions = array(
+    'all', 'lists', 'create', 'createList', 'viewList', 'editList', 'deleteList',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
 
 ?>
 

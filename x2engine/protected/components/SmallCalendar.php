@@ -37,48 +37,64 @@ Yii::import('application.modules.calendar.controllers.CalendarController');
 Yii::import('application.modules.calendar.models.X2Calendar');
 /**
  * Widget class for the chat portlet.
- * 
- * @package application.components 
+ *
+ * @package application.components
  */
 class SmallCalendar extends X2Widget {
-	
-	public $visibility;
-	public function init() {
-		parent::init();
-	}
 
-	public function run() {
-		// Prevent the small calendar from showing when using the larger calendar
+    public $visibility;
+    public function init() {
+        parent::init();
+    }
+
+    public function run() {
+        // Prevent the small calendar from showing when using the larger calendar
         if(Yii::app()->controller->modelClass == 'X2Calendar' &&
            Yii::app()->controller->action->getId () == 'index'){
-        	return;
+            return;
         }
 
-		// Fetch the calendars to display
-		$user = User::model()->findByPk(Yii::app()->user->getId());
-		$showCalendars = $user->showCalendars;
+        // Fetch the calendars to display
+        $user = User::model()->findByPk(Yii::app()->user->getId());
+        if (is_null($user->showCalendars))
+            $user->initCheckedCalendars();
+        $showCalendars = $user->showCalendars;
 
-		// Possible urls for the calendar to call
-		$urls = X2Calendar::getCalendarUrls();
+        // Possible urls for the calendar to call
+        $urls = X2Calendar::getCalendarUrls();
 
-		$widgetSettingUrl = $this->controller->createUrl('/site/widgetSetting');;
+        $widgetSettingUrl = $this->controller->createUrl('/site/widgetSetting');;
 
-		$justMe = Profile::getWidgetSetting('SmallCalendar','justMe');
+        $justMe = Profile::getWidgetSetting('SmallCalendar','justMe');
 
-		Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl() .'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.css');
-		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.js');
-		Yii::app()->clientScript->registerScriptFile(Yii::app()->getModule('calendar')->assetsUrl.'/js/calendar.js', CClientScript::POS_END);
+        Yii::app()->clientScript->registerCssFile(
+            Yii::app()->baseUrl .'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.css');
+        
+        Yii::app()->clientScript->registerCssFile(
+            Yii::app()->theme->baseUrl .'/css/components/smallCalendar.css');
+        
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->baseUrl.'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.js');
+        
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getModule('calendar')->assetsUrl.'/js/calendar.js', CClientScript::POS_END);
 
-
-
-
-		$this->render('smallCalendar',array('showCalendars' => $showCalendars, 
-											'urls' => $urls,
-											'user' => $user->username,
-											'widgetSettingUrl' => $widgetSettingUrl,
-											'justMe' => $justMe
-											));
-       
-	}
+        $this->render(
+            'smallCalendar',
+            array(
+                'showCalendars' => $showCalendars,
+                'urls' => $urls,
+                'user' => $user->username,
+                'widgetSettingUrl' => $widgetSettingUrl,
+                'justMe' => $justMe
+            ));
+    }
 }
+
+// This tab needs a new name
+class PublisherSmallCalendarEventTab extends PublisherEventTab {
+    public $tabId ='new-small-calendar-event';
+}
+
+
 ?>

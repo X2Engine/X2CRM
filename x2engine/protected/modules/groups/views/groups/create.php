@@ -34,10 +34,15 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('groups','Group List'), 'url'=>array('index')),
-	array('label'=>Yii::t('groups','Create Group')),
-));
+$menuOptions = array(
+    'index', 'create',
+);
+$this->insertMenu($menuOptions);
+
 ?>
-<div class="page-title icon groups"><h2><?php echo Yii::t('groups','Create Group'); ?></h2></div>
+<div class="page-title icon groups"><h2>
+    <?php echo Yii::t('groups','Create {group}', array(
+        '{group}' => Modules::displayName(false),
+    )); ?>
+</h2></div>
 <?php echo $this->renderPartial('_form', array('model'=>$model, 'users'=>$users)); ?>

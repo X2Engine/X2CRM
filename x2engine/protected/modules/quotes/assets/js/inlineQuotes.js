@@ -95,8 +95,6 @@ jQuery(document).ready(function ($) {
         }
     }
 
-	x2.inlineQuotes.declare();
-
 	x2.inlineQuotes.moveWrapper = function(sel) {
 		x2.inlineQuotes.wrapper = $(sel);
 		x2.inlineQuotes.wrapperOriginalHtml = x2.inlineQuotes.wrapper.html();
@@ -360,5 +358,7 @@ jQuery(document).ready(function ($) {
             x2.inlineQuotes.openForm(id);
         }
     }
+
+	x2.inlineQuotes.declare();
 
 });

@@ -94,6 +94,10 @@ class X2DateUtil {
 
         switch ($dateRange['range']) {
 
+            case 'thisDay':
+                $dateRange['start'] = strtotime('today'); // first of this month
+                $dateRange['end'] = time(); // now
+                break;
             case 'thisWeek':
                 $dateRange['start'] = strtotime('mon this week'); // first of this month
                 $dateRange['end'] = time(); // now
@@ -102,6 +106,17 @@ class X2DateUtil {
                 $dateRange['start'] = mktime(0, 0, 0, date('n'), 1); // first of this month
                 $dateRange['end'] = time(); // now
                 break;
+            case 'thisQuarter':
+                $retVal = self::startOfQuarter();
+                $dateRange['start'] = $retVal[0];
+                $dateRange['end'] = time(); // now
+                break;
+            case 'thisYear':
+                $dateRange['start'] = mktime(0, 0, 0, 1, 1);  // first of the year
+                $dateRange['end'] = time(); // now
+                break;
+
+
             case 'lastWeek':
                 $dateRange['start'] = strtotime('mon last week'); // first of last month
                 $dateRange['end'] = strtotime('mon this week') - 1;  // first of this month
@@ -110,14 +125,33 @@ class X2DateUtil {
                 $dateRange['start'] = mktime(0, 0, 0, date('n') - 1, 1); // first of last month
                 $dateRange['end'] = mktime(0, 0, 0, date('n'), 1) - 1;  // first of this month
                 break;
-            case 'thisYear':
-                $dateRange['start'] = mktime(0, 0, 0, 1, 1);  // first of the year
-                $dateRange['end'] = time(); // now
-                break;
             case 'lastYear':
                 $dateRange['start'] = mktime(0, 0, 0, 1, 1, date('Y') - 1);  // first of last year
                 $dateRange['end'] = mktime(0, 0, 0, 1, 1, date('Y')) - 1;   // first of this year
                 break;
+
+            case 'trailingDay':
+                $dateRange['start'] = strtotime('- 24 hours');
+                $dateRange['end'] = time(); // now
+                break;
+            case 'trailingWeek':
+                $dateRange['start'] = strtotime('- 7 days');
+                $dateRange['end'] = time(); // now
+                break;
+            case 'trailingMonth':
+                $dateRange['start'] = strtotime('- 1 month');
+                $dateRange['end'] = time(); // now
+                break;
+            case 'trailingQuarter':
+                $dateRange['start'] = strtotime('- 3 months');
+                $dateRange['end'] = time(); // now
+                break;
+            case 'trailingYear':
+                $dateRange['start'] = strtotime('- 1 year');
+                $dateRange['end'] = time(); // now
+                break;
+
+
             case 'all':
                 $dateRange['start'] = 0;        // every record
                 $dateRange['end'] = time();
@@ -271,6 +305,27 @@ class X2DateUtil {
             return array($minTimestamp, $maxTimestamp);
         } else
             return false;
+    }
+
+    public static function startOfQuarter() {
+        $current_month = date('m');
+        $current_year = date('Y');
+
+        if($current_month>=1 && $current_month<=3) {
+            $start_date = strtotime('1-January-'.$current_year);
+            $end_date = strtotime('1-April-'.$current_year);
+        } else  if($current_month>=4 && $current_month<=6) {
+            $start_date = strtotime('1-April-'.$current_year);
+            $end_date = strtotime('1-July-'.$current_year); 
+        } else  if($current_month>=7 && $current_month<=9) {
+            $start_date = strtotime('1-July-'.$current_year);
+            $end_date = strtotime('1-October-'.$current_year);
+        } else  if($current_month>=10 && $current_month<=12) {
+            $start_date = strtotime('1-October-'.$current_year);
+            $end_date = strtotime('1-Janauary-'.($current_year+1));
+        }
+
+        return array($start_date, $end_date);
     }
 
 }

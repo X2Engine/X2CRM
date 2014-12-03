@@ -41,8 +41,9 @@ Yii::app()->clientScript->registerScriptFile(
 Yii::app()->clientScript->registerScriptFile(
     $this->module->assetsUrl.'/js/DragAndDropViewManager.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(
-    Yii::app()->request->baseUrl.'/js/X2QtipManager.js', CClientScript::POS_END);
-Yii::app()->clientScript->registerX2Flashes ();
+    Yii::app()->request->baseUrl.'/js/QTipManager.js', CClientScript::POS_END);
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->request->baseUrl.'/js/X2GridViewQtipManager.js', CClientScript::POS_END);
 
 $listItemColors = Workflow::getPipelineListItemColors ($colors, true);
 $listItemColorCss = '';
@@ -117,8 +118,10 @@ x2.dragAndDropViewManager = new x2.DragAndDropViewManager ({
     <form>
     <div class='dialog-description'>
         <?php echo Yii::t(
-            'workflow', 'Start the {workflowName} process for the following record:', 
-            array ('{workflowName}' => $model->name)); ?> 
+            'workflow', 'Start the {workflowName} {process} for the following record:', array (
+                '{workflowName}' => $model->name,
+                '{process}' => Modules::displayName(false),
+            )); ?> 
     </div>
     <div id='record-name-container'>
         <?php
@@ -130,9 +133,15 @@ x2.dragAndDropViewManager = new x2.DragAndDropViewManager ({
     <?php
     echo CHtml::label(Yii::t('app', 'Record Type'),'modelType');
     echo CHtml::dropDownList('modelType',$modelType,array(
-        'Contacts'=>Yii::t('workflow','Contacts'),
-        'Opportunity'=>Yii::t('workflow','Opportunities'),
-        'Accounts'=>Yii::t('workflow','Accounts'),
+        'Contacts'=>Yii::t('workflow','{contacts}', array(
+            '{contacts}'=>Modules::displayName(true, "Contacts")
+        )),
+        'Opportunity'=>Yii::t('workflow','{opportunities}', array(
+            '{opportunities}'=>Modules::displayName(true, "Opportunities")
+        )),
+        'Accounts'=>Yii::t('workflow','{accounts}', array(
+            '{accounts}'=>Modules::displayName(true, "Accounts")
+        )),
     ),array(
         'id'=>'new-deal-type'
     ));

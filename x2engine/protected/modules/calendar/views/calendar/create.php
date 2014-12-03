@@ -33,28 +33,36 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?>
 
-<?php
-if(Yii::app()->settings->googleIntegration) { // menu if google integration is enables has additional options
-	$menuItems = array(
-		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
-		array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
-		array('label'=>Yii::t('calendar','List'),'url'=>array('list')),
-		array('label'=>Yii::t('calendar','Create')),
-		array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')),
-	);
-} else {
-	$menuItems = array(
-		array('label'=>Yii::t('calendar','Calendar'), 'url'=>array('index')),
-		array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
-		array('label'=>Yii::t('calendar','List'),'url'=>array('list')),
-		array('label'=>Yii::t('calendar','Create')),
-	);
+$modTitle = Modules::displayName();
+
+$menuItems = array(
+    array('label'=>Yii::t('calendar','{module}', array('{module}'=>$modTitle)), 'url'=>array('index')),
+    array(
+        'label'=>Yii::t('calendar', 'My {module} Permissions',  array(
+            '{module}' => $modTitle,
+        )),
+        'url'=>array('myCalendarPermissions')
+    ),
+    array('label'=>Yii::t('calendar','List'),'url'=>array('list')),
+    array('label'=>Yii::t('calendar','Create')),
+);
+if (Yii::app()->settings->googleIntegration) {
+    $menuItems[] = array(
+        'label'=>Yii::t('calendar', 'Sync My {actions} To Google Calendar', array(
+            '{actions}' => Modules::displayName(true, "Actions"),
+        )),
+        'url'=>array('syncActionsToGoogleCalendar')
+    );
 }
+
 $this->actionMenu = $this->formatMenu($menuItems);
 ?>
-<h2><?php echo Yii::t('calendar','Create Shared Calendar'); ?></h2>
+<h2>
+    <?php echo Yii::t('calendar','Create Shared {module}', array(
+        '{module}' => $modTitle,
+    )); ?>
+</h2>
 
 
 <?php 

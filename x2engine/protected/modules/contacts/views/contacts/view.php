@@ -66,78 +66,26 @@ $result = Yii::app()->db->createCommand()
         ->queryAll();
 $subscribed = !empty($result); // if we got any results then user is subscribed
 
-$authParams['X2Model'] = $model;
-$menuItems = array(
-    array('label' => Yii::t('contacts', 'All Contacts'), 'url' => array('index')),
-    array('label' => Yii::t('contacts', 'Lists'), 'url' => array('lists')),
-    array('label' => Yii::t('contacts', 'Create Contact'), 'url' => array('create')),
-    array('label' => Yii::t('contacts', 'View')),
-    array(
-        'label' => Yii::t('contacts', 'Edit Contact'), 
-        'url' => array('update', 'id' => $model->id)),
-    array(
-        'label' => Yii::t('contacts', 'Share Contact'), 
-        'url' => array('shareContact', 'id' => $model->id)),
-//    array('label'=>Yii::t('contacts','View Relationships'),'url'=>'#', 'linkOptions'=>array('onclick'=>'toggleRelationshipsForm(); return false;')),
-    array(
-        'label' => Yii::t('contacts', 'Delete Contact'), 
-        'url' => '#', 'linkOptions' => array('submit' => array('delete', 'id' => $model->id),
-        'confirm' => 'Are you sure you want to delete this item?')),
-    array(
-        'label' => Yii::t('app', 'Send Email'), 'url' => '#',
-        'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
-    array(
-        'label' => Yii::t('app', 'Attach A File/Photo'), 'url' => '#',
-        'linkOptions' => array('onclick' => 'toggleAttachmentForm(); return false;')),
-    array(
-        'label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)',
-        'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
-    array(
-        'label' => Yii::t('quotes', ($subscribed ? 'Unsubscribe' : 'Subscribe')), 'url' => '#',
-        'linkOptions' => array(
-            'class' => 'x2-subscribe-button', 'onclick' => 'return subscribe($(this));',
-            'title' => Yii::t('contacts', 'Receive email updates every time information for {name} changes',
-                    array('{name}' => CHTML::encode($model->firstName.' '.$model->lastName)))
-        )),
-    array(
-        'label' => Yii::t('contacts', 'Google Map'),
-        'url' => 'javascript:void(0)',
-        'linkOptions' => array (
-            'onClick'=>"window.open(
-                'https://www.google.com/maps/place/".urlencode ($model->getCityAddress ())."');"
-            /*'onClick'=>"window.open(
-                'https://www.google.com/maps/place/".urlencode ($model->getCityAddress ())."',
-                'Google Map', 'height=200,width=200');"*/
-        )
-    ),
+$modTitles = array(
+    'contact' => Modules::displayName(false),
+    'account' => Modules::displayName(false, "Accounts"),
+    'opportunity' => Modules::displayName(false, "Opportunities"),
 );
+
+$authParams['X2Model'] = $model;
+
 $opportunityModule = Modules::model()->findByAttributes(array('name' => 'opportunities'));
 $accountModule = Modules::model()->findByAttributes(array('name' => 'accounts'));
 $serviceModule = Modules::model()->findByAttributes(array('name' => 'services'));
 
-if($opportunityModule->visible && $accountModule->visible) {
-    $menuItems[] = array(
-        'label' => Yii::t('app', 'Quick Create'), 
-        'url' => array('/site/createRecords', 'ret' => 'contacts'),
-        'linkOptions' => array(
-            'id' => 'x2-create-multiple-records-button', 'class' => 'x2-hint',
-            'title' => Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
-}
-
-$menuItems[] = array(
-    'label' => Yii::t('app', 'Print Record'),
-    'url' => '#',
-    'linkOptions' => array (
-        'onClick'=>"window.open('".
-            Yii::app()->createUrl('/site/printRecord', array (
-                'modelClass' => 'Contacts',
-                'id' => $model->id,
-                'pageTitle' => Yii::t('app', 'Contact').': '.$model->name
-            ))."');"
-    )
+$menuOptions = array(
+    'all', 'lists', 'create', 'view', 'edit', 'share', 'delete',
+    'email', 'attach', 'quotes', 'print',
 );
-
-$this->actionMenu = $this->formatMenu($menuItems, $authParams);
+$menuOptions[] = ($subscribed ? 'unsubscribe' : 'subscribe');
+if ($opportunityModule->visible && $accountModule->visible)
+    $menuOptions[] = 'quick';
+$this->insertMenu($menuOptions, $model, $authParams);
 
 $modelType = json_encode("Contacts");
 $modelId = json_encode($model->id);
@@ -178,9 +126,11 @@ if(true) {//!IS_ANDROID && !IS_IPAD){
     <div class="page-title-fixed-inner">';
 }
 ?>
-<div class="page-title icon contacts">
-    <h2><?php echo CHtml::encode($model->name); ?></h2>
+<div class="page-title">
     <?php 
+    $this->widget('RecordAliasesWidget', array(
+        'model' => $model
+    ));
     $this->renderPartial('_vcrControls', array('model' => $model)); 
     if(Yii::app()->user->checkAccess('ContactsUpdate', $authParams)){
         if(!empty($model->company) && is_numeric($model->company)) {
@@ -190,8 +140,11 @@ if(true) {//!IS_ANDROID && !IS_IPAD){
                     'class' => 'x2-button icon sync right hint',
                     'id' => $model->id.'-account-sync',
                     'title' => Yii::t('contacts', 'Clicking this button will pull any relevant '.
-                        'fields from the associated Account record and overwrite the Contact '.
-                        'data for those fields.  This operation cannot be reversed.'),
+                        'fields from the associated {account} record and overwrite the {contact} '.
+                        'data for those fields.  This operation cannot be reversed.',array(
+                            '{account}' => $modTitles['account'],
+                            '{contact}' => $modTitles['contact'],
+                        )),
                     'submit' => array(
                         'syncAccount',
                         'id' => $model->id
@@ -205,7 +158,9 @@ if(true) {//!IS_ANDROID && !IS_IPAD){
             '<span></span>', $this->createUrl('update', array('id' => $model->id)),
             array(
                 'class' => 'x2-button icon edit right',
-                'title' => Yii::t('app', 'Edit contact'),
+                'title' => Yii::t('app', 'Edit {module}', array(
+                    '{module}' => $modTitles['contact'],
+                )),
             )
         );
     }
@@ -218,6 +173,12 @@ if(true) {//!IS_ANDROID && !IS_IPAD){
             'onclick' => 'toggleEmailForm(); return false;'
         )
     );
+    echo CHtml::link('<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/OK.png'.
+            '" style="height:18px;position:relative;top:3px;right:1px;"></img>','#',
+            array('id'=>'inline-edit-save','class'=>'x2-button icon right inline-edit-button','style'=>'display:none;'));
+    echo CHtml::link('<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/NOT_OK.png'.
+            '" style="height:18px;position:relative;top:3px;right:1px;"></img>','#',
+            array('id'=>'inline-edit-cancel','class'=>'x2-button icon right inline-edit-button','style'=>'display:none;'));
     ?>
 </div>
 <?php
@@ -250,30 +211,47 @@ if(true){ //!IS_ANDROID && !IS_IPAD){
 
     /*     * * Begin Create Related models ** */
 
-    $linkModel = X2Model::model('Accounts')->findByPk($model->company);
+    $linkModel = X2Model::model('Accounts')->findByAttributes(array(
+        'nameId' => $model->company
+    ));
     if(isset($linkModel))
-        $accountName = ($linkModel->name);
+        $accountName = $linkModel->name;
     else
-        $accountName = ('');
+        $accountName = '';
     $createContactUrl = $this->createUrl('/contacts/contacts/create');
     $createAccountUrl = $this->createUrl('/accounts/accounts/create');
     $createOpportunityUrl = $this->createUrl('/opportunities/opportunities/create');
     $createCaseUrl = $this->createUrl('/services/services/create');
-    $assignedTo = ($model->assignedTo);
+    $assignedTo = $model->assignedTo;
     $tooltip = (
-        Yii::t('contacts', 'Create a new Opportunity associated with this Contact.'));
+        Yii::t('contacts', 'Create a new {opportunity} associated with this {contact}.', array(
+            '{contact}' => $modTitles['contact'],
+            '{opportunity}' => $modTitles['opportunity'],
+        ))
+    );
     $contactTooltip = (
-        Yii::t('contacts', 'Create a new Contact associated with this Contact.'));
+        Yii::t('contacts', 'Create a new {contact} associated with this {contact}.', array(
+            '{contact}' => $modTitles['contact'],
+        ))
+    );
     $accountsTooltip = (
-        Yii::t('contacts', 'Create a new Account associated with this Contact.'));
+        Yii::t('contacts', 'Create a new {account} associated with this {contact}.', array(
+            '{contact}' => $modTitles['contact'],
+            '{account}' => $modTitles['account'],
+        ))
+    );
     $caseTooltip = (
-        Yii::t('contacts', 'Create a new Service Case associated with this Contact.'));
-    $contactName = ($model->firstName.' '.$model->lastName);
-    $phone = ($model->phone);
-    $website = ($model->website);
-    $leadSource = ($model->leadSource);
-    $leadtype = ($model->leadtype);
-    $leadStatus = ($model->leadstatus);
+        Yii::t('contacts', 'Create a new {service} Case associated with this {contact}.', array(
+            '{contact}' => $modTitles['contact'],
+            '{service}' => Modules::displayName(false, "Services"),
+        ))
+    );
+    $contactName = $model->firstName.' '.$model->lastName;
+    $phone = $model->phone;
+    $website = $model->website;
+    $leadSource = $model->leadSource;
+    $leadtype = $model->leadtype;
+    $leadStatus = $model->leadstatus;
 //*** End Create Related models ***/
 
     $this->widget('X2WidgetList', array(

@@ -1,0 +1,452 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/* line 24, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 25, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+.line-items-write {
+  #quote-total-section {
+    tr td {
+      border-bottom: none;
+    }
+    .input-cell {
+      border-radius: 0 0 4px 0;
+      -moz-border-radius: 0 0 4px 0;
+      -webkit-border-radius: 0 0 4px 0;
+      -o-border-radius: 0 0 4px 0;
+    }
+    .first-cell {
+      border-radius: 0 0 0 4px;
+      -moz-border-radius: 0 0 0 4px;
+      -webkit-border-radius: 0 0 0 4px;
+      -o-border-radius: 0 0 0 4px;
+    }
+  }
+  #quote-template-dropdown {
+    margin-top: 5px;
+  }
+  .quote-table {
+    .input-cell {
+      padding-right: 8px;
+    }
+    input {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      margin: 0 0 0 0;
+    }
+  }
+}
+
+/* line 28, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 34, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 41, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 45, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 48, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 27, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 33, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 40, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 44, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 47, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 56, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 69, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+::-moz-placeholder {
+  text-overflow: ellipsis;
+}
+
+/* line 61, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 76, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+.line-items-write {
+  .quote-table .add-line-item-button {
+    float: left;
+  }
+  .add-line-item-button, .add-adjustment-button {
+    margin: 0 1em 0 1em;
+    width: 12em;
+  }
+  .add-line-item-button.x2-button, .add-adjustment-button.x2-button {
+    width: 150px;
+    display: inline-block;
+    clear: none;
+  }
+  &.line-items-table .product-menu {
+    position: absolute;
+    display: none;
+    max-height: 16em;
+    overflow-y: scroll;
+    z-index: 5;
+    font-size: 10px !important;
+  }
+  .quote-table {
+    margin-bottom: 5px;
+    width: 100%;
+    border-color: #CCCCCC;
+    border-width: 1px;
+    border-style: solid;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    input.error {
+      /*border: 2px solid rgb(170,170,170);*/
+      background: #FEE;
+      border-color: #C00 !important;
+      /*background: none repeat scroll 0% 0% rgb(255,238,238);*/
+      /*border-color: rgb(204,0,0);*/
+    }
+    .arrow-both-handle {
+      margin-left: 10px;
+      width: 1em;
+      height: 1em;
+      display: inline-block;
+    }
+    .item-delete-button {
+      display: inline-block;
+    }
+    td {
+      padding-right: 5px;
+      background-color: #FAFAFA;
+      input.line-item-field {
+        border: 1px solid #aaa;
+        font-size: 12px;
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 2px;
+        box-sizing: border-box;
+        -moz-border-radius: 3px;
+        -o-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        border-radius: 3px;
+      }
+    }
+    > {
+      thead:first-child > tr > th {
+        border-color: #CCCCCC;
+        border-width: 0 0 1px 0;
+        border-style: solid;
+        text-align: left;
+      }
+      tbody {
+        &.line-items > tr > td.x2-7th-child input, &.adjustments > tr > td.x2-7th-child input {
+          background: none;
+          border: none;
+          color: black;
+          padding: 0px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+    input {
+      &.total, &.subtotal {
+        background: none;
+        border: none;
+        color: black;
+        padding: 0px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+  .line-item > .first-cell, .adjustment > .first-cell {
+    width: 10%;
+    padding-right: 0;
+  }
+  .quote-table {
+    > {
+      tbody.line-items > tr > td.x2-2nd-child {
+        text-align: left;
+        width: 22%;
+        padding-right: 0;
+      }
+      thead > tr > th.line-item-name, tbody.line-items > tr > td.x2-2nd-child input {
+        margin: 0 0 0 0;
+        width: 85%;
+        float: left;
+        font-size: 12px;
+      }
+    }
+    tr.line-item td.input-cell button.product-select-button {
+      border-radius: 0px 4px 4px 0px;
+      -moz-border-radius: 0px 4px 4px 0px;
+      -webkit-border-radius: 0px 4px 4px 0px;
+      -o-border-radius: 0px 4px 4px 0px;
+      height: 20px;
+      width: 10%;
+      max-width: 20px;
+      padding: 0 0 0 0;
+      margin: 0 0 0 0;
+      border-left: none;
+    }
+  }
+  .product-name {
+    border-radius: 4px 0px 0px 4px !important;
+    -moz-border-radius: 4px 0px 0px 4px !important;
+    -webkit-border-radius: 4px 0px 0px 4px !important;
+    -o-border-radius: 4px 0px 0px 4px !important;
+  }
+  .quote-table {
+    .product-select-button img {
+      margin: 0 -3px 0 0;
+      width: 10px;
+      height: 10px;
+    }
+    > tbody {
+      &.line-items > tr > td {
+        &.x2-3rd-child {
+          text-align: left;
+          width: 16%;
+          input {
+            width: 100%;
+            text-align: right;
+            font-size: 12px;
+          }
+        }
+        &.x2-4th-child {
+          text-align: left;
+          width: 12%;
+        }
+      }
+      &.adjustments > tr > td.x2-4th-child {
+        text-align: left;
+        width: 12%;
+      }
+      &.line-items > tr > td.x2-4th-child input {
+        width: 100%;
+        text-align: right;
+        font-size: 12px;
+      }
+      &.adjustments > tr > td.x2-4th-child input {
+        width: 100%;
+        text-align: left;
+        font-size: 12px;
+      }
+      &.line-items > tr > td.x2-5th-child, &.adjustments > tr > td.x2-5th-child {
+        text-align: left;
+        width: 12%;
+      }
+      &.line-items > tr > td.x2-5th-child input, &.adjustments > tr > td.x2-5th-child input {
+        width: 100%;
+        font-size: 12px;
+        text-align: right;
+      }
+      &.line-items > tr > td.x2-6th-child, &.adjustments > tr > td.x2-6th-child {
+        text-align: left;
+        width: 12%;
+      }
+      &.line-items > tr > td.x2-6th-child input, &.adjustments > tr > td.x2-6th-child input {
+        width: 100%;
+        font-size: 12px;
+      }
+      &.line-items > tr > td.x2-7th-child, &.adjustments > tr > td.x2-7th-child {
+        text-align: left;
+        width: 24%;
+      }
+      &.line-items > tr > td.x2-7th-child input, &.adjustments > tr > td.x2-7th-child input {
+        width: 100%;
+        font-size: 12px;
+      }
+    }
+    .subtotal-container, .total-container {
+      width: 22%;
+      text-align: left;
+    }
+    input {
+      &.subtotal, &.total {
+        width: 100%;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+/* line 79, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 83, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 88, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 96, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 105, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 112, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 118, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 121, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 124, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 137, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 144, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 155, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 165, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 171, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 176, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 183, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 196, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 203, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 210, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 213, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 219, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 224, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 228, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 233, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 238, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 242, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 247, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 251, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 255, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 259, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 264, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 269, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 64, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 68, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 73, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 81, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 82, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 89, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 95, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 98, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 101, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 121, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 128, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 138, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 148, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 154, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 159, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 166, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 179, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 186, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 193, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 196, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 202, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 207, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 211, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 216, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 221, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 225, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 230, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 234, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 238, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 242, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 247, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 252, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/*
+set width of input fields in the quotes table
+*/
+/* line item name cell */
+/* line item name */
+/* unit price cell */
+/* unit price */
+/* quantity cell */
+/* quantity */
+/* adjustment name */
+/* adjustments cell */
+/* adjustments */
+/* description cell */
+/* description */
+/* line total cell */
+/* line total */
+/* subtotal and total cell */
+/* subtotal and total */
+/* line 294, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 361, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+.quotes-error-summary {
+  background: #FEE;
+  border: 2px solid #C00;
+  font-size: 0.9em;
+  padding: 5px;
+  margin-bottom: 1px;
+  margin-top: 5px;
+  p {
+    margin: 0;
+    padding: 5px;
+  }
+  ul {
+    margin: 0;
+    padding: 0 0 0 20px;
+  }
+}
+
+/* line 368, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 372, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+
+/* line 301, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 305, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+@media (max-width: 657px) {
+  /* line 313, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+  /* line 385, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+  .line-items-write .quote-table {
+    .input-cell {
+      padding-right: 0px;
+    }
+    .arrow-both-handle {
+      margin-left: 0px;
+    }
+  }
+  /* line 388, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+  /* line 316, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+}

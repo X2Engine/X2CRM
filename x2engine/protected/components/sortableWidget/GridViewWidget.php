@@ -176,8 +176,8 @@ abstract class GridViewWidget extends SortableWidget {
                         }
 
                         .sortable-widget-container div.page-title {
-                            background:#cfcfcf !important;
-                            border-bottom: 1px solid #cfcfcf !important;
+                            background:#cfcfcf;
+                            border-bottom: 1px solid #cfcfcf;
                         }
 
                         .sortable-widget-container div.page-title .x2-minimal-select {
@@ -186,14 +186,14 @@ abstract class GridViewWidget extends SortableWidget {
 
                         .sortable-widget-container div.page-title .x2-minimal-select:hover,
                         .sortable-widget-container div.page-title .x2-minimal-select:focus {
-                            border: 1px solid #A0A0A0 !important;
-                            background: rgb(221, 221, 221)!important;
+                            border: 1px solid #A0A0A0;
+                            background: rgb(221, 221, 221);
                         }
 
                         .sortable-widget-container div.page-title .x2-minimal-select:hover + .after-x2-minimal-select-outer > .after-x2-minimal-select,
                         .sortable-widget-container div.page-title .x2-minimal-select:focus + .after-x2-minimal-select-outer > .after-x2-minimal-select {
 
-                            background: rgb(221, 221, 221)!important;
+                            background: rgb(221, 221, 221);
                             background-image: url(".Yii::app()->theme->getBaseUrl ()."/images/icons/Collapse_Widget.png) !important;
                             background-repeat: no-repeat !important;
                             background-position: 7px !important;
@@ -201,6 +201,7 @@ abstract class GridViewWidget extends SortableWidget {
 
                         .grid-widget-title-bar-dummy-element {
                             height: 33px;
+                            display: none !important;
                         }
 
                         @media (max-width: 657px) {

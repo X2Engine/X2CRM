@@ -1,0 +1,78 @@
+
+.data-widget {
+	svg {
+		.domain {
+			stroke: "$text";
+		}
+
+		text { 
+			fill: "$text";
+		}
+
+		.tick {
+			line {
+				stroke: "$text";
+			}
+		}
+
+	}
+
+	.config-bar, .filter-menu {
+		li:hover,
+		.config-bar-item:hover,
+		.active {
+			color: "$link";
+		}
+	}
+}
+
+@mixin placeholder {
+  ::-webkit-input-placeholder {@content}
+  :-moz-placeholder           {@content}
+  ::-moz-placeholder          {@content}
+  :-ms-input-placeholder      {@content}  
+}
+
+#chart-creator {
+	.choice.active {
+		border-color: "$link";
+	}
+
+	@include placeholder {
+		color: "$text";
+	}
+
+	.axis-selector {
+		color: "$text";
+		border-color: "$highlight2";
+
+		&:hover {
+			background: "$opaque_highlight2";
+		}
+
+		&.confirmed {
+			background: "$highlight2";
+			color: "$smart_text2";
+		}
+	}
+
+	.error-summary-container {
+		color: "$text";
+	}
+}
+
+#generated-report {
+
+	.hover-selection {
+		color: "$smart_text2";
+		background: "$highlight2";
+	}
+
+	.even .hover-selection {
+		background: "$highlight2";
+	}
+	.odd .hover-selection {
+		background: "$light_highlight2";
+	}
+
+}

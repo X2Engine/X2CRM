@@ -77,7 +77,7 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                 array(
                     'rows' => 3,
                     'cols' => 40,
-                    'class'=>'action-description',
+                    'class'=>'action-description x2-textarea',
                     'id'=>'call-action-description',
                 ));
             ?>

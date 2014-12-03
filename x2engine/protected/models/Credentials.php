@@ -135,8 +135,12 @@ class Credentials extends CActiveRecord {
 	 * Model classes to include/list as valid for storing auth data
 	 * @var array
 	 */
-	protected $validModels = array('EmailAccount', 'GMailAccount');
+	protected $validModels = array('EmailAccount', 'GMailAccount', 'TwitterApp');
 
+    public function afterDelete () {
+        parent::afterDelete ();
+         
+    }
 
 	public function attributeLabels() {
 		return array(
@@ -161,6 +165,14 @@ class Credentials extends CActiveRecord {
 			),
 		);
 	}
+
+    public function afterSave () {
+        if ($this->modelClass === 'TwitterApp') {
+            Yii::app()->settings->twitterCredentialsId = $this->id;
+            Yii::app()->settings->save ();
+        }
+        parent::afterSave ();
+    }
 
 	public function beforeDelete(){
 		Yii::app()->db->createCommand()->delete('x2_credentials_default',"credId=:id", array(':id'=>$this->id));
@@ -265,6 +277,7 @@ class Credentials extends CActiveRecord {
 	public function getDefaultSubstitutes(){
 		return array(
 			'email' => array('EmailAccount', 'GMailAccount'),
+            'twitter' => array ('TwitterApp'),
 //			'google' => array('GMailAccount'),
 		);
 	}
@@ -275,7 +288,8 @@ class Credentials extends CActiveRecord {
 	public function getDefaultSubstitutesInv() {
 		return array(
 			'EmailAccount' => array('email'),
-			'GMailAccount' => array('email') // ,'google'),
+			'GMailAccount' => array('email'), // ,'google'),
+            'TwitterApp' => array ('twitter'),
 		);
 	}
 
@@ -339,6 +353,7 @@ class Credentials extends CActiveRecord {
 	public function getServiceLabels(){
 		return array(
 			'email' => Yii::t('app', 'Email Account'),
+			'twitter' => Yii::t('app', 'Twitter App'),
 			// 'google' => Yii::t('app','Google Account')
 		);
 	}
@@ -388,7 +403,7 @@ class Credentials extends CActiveRecord {
      *  attributes.
 	 */
 	public static function getCredentialOptions (
-        $model,$name,$type='email',$uid=null,$htmlOptions=array()){
+        $model,$name,$type='email',$uid=null,$htmlOptions=array(),$excludeLegacy=false){
 
 		// First get credentials available to the user:
 		$defaultUserId = in_array($uid,self::$sysUseId) ? 
@@ -439,7 +454,7 @@ class Credentials extends CActiveRecord {
                     ' : "'.$cred->auth->senderName.'" <'.$cred->auth->email.'>',50);
             }
 		}
-		if($type == 'email') {// Legacy email delivery method(s)
+		if($type == 'email' && !$excludeLegacy) {// Legacy email delivery method(s)
 			$credentials[self::LEGACY_ID] = Yii::t('app','System default (legacy)');
         }
 		$options = array();
@@ -476,8 +491,10 @@ class Credentials extends CActiveRecord {
 	 * @param array $htmlOptions HTML options to pass to {@link CHtml::activeDropDownList()}
 	 * @return string
 	 */
-	public static function selectorField($model,$name,$type='email',$uid=null,$htmlOptions=array()) {
-        $retDict = self::getCredentialOptions ($model,$name,$type,$uid,$htmlOptions);
+	public static function selectorField(
+        $model,$name,$type='email',$uid=null,$htmlOptions=array(),$excludeLegacy=false) {
+
+        $retDict = self::getCredentialOptions ($model,$name,$type,$uid,$htmlOptions,$excludeLegacy);
         $credentials = $retDict['credentials'];
         $htmlOptions = $retDict['htmlOptions'];
 		return CHtml::activeDropDownList($model,$name,$credentials,$htmlOptions);

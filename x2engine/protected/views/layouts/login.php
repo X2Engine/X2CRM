@@ -49,7 +49,6 @@ Yii::app()->clientScript->registerCssFile($themeURL.'/css/main.css'.$jsVersion,'
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/form.css'.$jsVersion,'screen, projection');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/ui-elements.css'.$jsVersion,'screen, projection');
 
-
 $backgroundImg = '';
 $defaultOpacity = 1;
 $themeCss = '';
@@ -104,6 +103,7 @@ Yii::app()->clientScript
         ->registerCss('applyTheme',$themeCss,'screen',CClientScript::POS_HEAD)
         ->registerCss('applyTheme2',$theme2Css,'screen',CClientScript::POS_HEAD)
         ->registerCssFile(Yii::app()->theme->getBaseUrl().'/css/login.css')
+        ->registerCssFile(Yii::app()->theme->getBaseUrl().'/css/fontAwesome/css/font-awesome.css')
         ->registerScriptFile(Yii::app()->getBaseUrl().'/js/auxlib.js')
         ->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Forms.js');
 
@@ -130,6 +130,17 @@ Yii::app()->clientScript
 <body id="body-tag"  class="login">
 <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
 <!--<div class="ie-shadow" style="display:none;"></div>-->
-<?php echo $content; ?>
+<?php echo $content; 
+?>
+<div class='background'>
+	<div class='stripe-container'>
+		<div class='stripe small' style="float:left"></div>
+		<div class='stripe' style="float:left"></div>
+		<div class='stripe small' style="float:right"></div>
+		<div class='stripe' style="float:right"></div>
+	</div>
+</div>
+
+<?php $this->renderPartial ('loginTheme'); ?>
 </body>
 </html>

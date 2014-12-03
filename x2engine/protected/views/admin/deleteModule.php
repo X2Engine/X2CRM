@@ -37,7 +37,10 @@
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Delete A Module'); ?></h2></div>
 <div class="form">
 
-    <?php echo Yii::t('admin', 'Please select a model to delete.  WARNING: This operation cannot be undone, be very careful.'); ?>
+    <?php
+        echo Yii::t('admin', 'Please select a model to delete.  WARNING: This operation cannot be '.
+        'undone, be very careful. Please note that all associated Events, Actions, and '.
+        'Relationships will be removed.'); ?>
 
     <form name="deleteModule" action="deleteModule" method="POST">
         <br />

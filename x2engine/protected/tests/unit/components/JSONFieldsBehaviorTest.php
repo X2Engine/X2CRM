@@ -39,12 +39,12 @@ Yii::import('application.components.*');
 Yii::import('application.components.util.*');
 
 /**
- * Test for JSONFieldsBehavior.
+ * Test for NormalizedJSONFieldsBehavior.
  *
  * @package application.tests.unit.components
  * @author Demitri Morgan <demitri@x2engine.com>, Derek Mueller <derek@x2engine.com>
  */
-class JSONFieldsBehaviorTest extends CActiveRecordBehaviorTestCase {
+class NormalizedJSONFieldsBehaviorTest extends CActiveRecordBehaviorTestCase {
 
 		public $arrayTemplate = array(
 			'this' => null,
@@ -61,7 +61,7 @@ class JSONFieldsBehaviorTest extends CActiveRecordBehaviorTestCase {
 	public function testPackAttribute() {
 		$model = new CActiveMock();
 		$model->foo = $this->arrayOld;
-		$jfb = new JSONFieldsBehavior();
+		$jfb = new NormalizedJSONFieldsBehavior();
 		$jfb->transformAttributes = array('foo' => array_keys($this->arrayTemplate));
 		$jfb->attach($model);
 		$template = array_fill_keys(array_keys($this->arrayTemplate),null);
@@ -73,7 +73,7 @@ class JSONFieldsBehaviorTest extends CActiveRecordBehaviorTestCase {
 	public function testUnpackAttribute() {
 		$model = new CActiveMock();
 		$model->foo = CJSON::encode($this->arrayOld);
-		$jfb = new JSONFieldsBehavior();
+		$jfb = new NormalizedJSONFieldsBehavior();
 		$jfb->transformAttributes = array('foo' => array_keys($this->arrayTemplate));
 		$jfb->attach($model);
 		$template = array_fill_keys(array_keys($this->arrayTemplate),null);

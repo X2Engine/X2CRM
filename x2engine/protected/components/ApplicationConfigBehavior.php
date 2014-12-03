@@ -36,6 +36,7 @@
 
 // Imports that are required by properties/methods of this behavior:
 Yii::import('application.models.Admin');
+Yii::import('application.models.Modules');
 Yii::import('application.components.util.FileUtil');
 Yii::import('application.modules.users.models.*');
 Yii::import('application.modules.media.models.Media');
@@ -75,6 +76,7 @@ class ApplicationConfigBehavior extends CBehavior {
      * @var type
      */
     private static $_editions;
+
     /**
      * Software edition detection based on logo presence.
      * @var type 
@@ -230,7 +232,7 @@ class ApplicationConfigBehavior extends CBehavior {
         
         // About the "noSession" property/variable:
         //
-        // This variable, if True, indicates that the application is running in
+        // This variable, if true, indicates that the application is running in
         // the context of either an API call or a console command, in which case
         // there would not be the typical authenticated user and session
         // variables one would need in a web request
@@ -256,6 +258,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 Yii::import('application.components.sortableWidget.*');
                 Yii::import('application.components.sortableWidget.profileWidgets.*');
                 Yii::import('application.components.sortableWidget.recordViewWidgets.*');
+                 
                 Yii::import('application.components.X2Settings.*');
                 Yii::import('application.components.X2MessageSource');
                 Yii::import('application.components.Formatter');
@@ -264,6 +267,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 Yii::import('application.components.TransformedFieldStorageBehavior');
                 Yii::import('application.components.EncryptedFieldsBehavior');
                 Yii::import('application.components.permissions.*');
+                Yii::import('application.models.Modules');
                 if(!$this->owner->user->getIsGuest())
                     $profData = $this->owner->db->createCommand()
                         ->select('timeZone, language')
@@ -309,6 +313,8 @@ class ApplicationConfigBehavior extends CBehavior {
         $this->importDirectories();
         
         $this->cryptInit();
+
+        if (YII_DEBUG) $this->owner->params->timer = new TimerUtil;
         
         $this->owner->messages->onMissingTranslation = array(new TranslationLogger, 'log');
 
@@ -501,18 +507,18 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             /**
              * To be restored when JavaScript minification is added to the build process:
              * $cs->scriptMap=array(
-              'backgroundImage.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'json2.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'layout.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'media.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'modernizr.custom.66175.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'publisher.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              //'relationships.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'tags.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'translator.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'widgets.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              'x2forms.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
-              ); */
+             * 'backgroundImage.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+             * 'json2.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+             * 'layout.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+             * 'media.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+             * 'modernizr.custom.66175.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+             * 'publisher.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+             * //'relationships.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+             * 'tags.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+             * 'translator.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+             * 'widgets.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+             * 'x2forms.js'=>$baseUrl.'/js/all.min.js'.$jsVersion,
+             * ); */
         }
     }
 
@@ -927,7 +933,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
      * Adds parameters that are used to determine user access
      * @param type $userId
      */
-    public function setUserAccessParameters($userId) {
+    private function setUserAccessParameters($userId) {
         $this->owner->params->groups = Groups::getUserGroups($userId);
         $this->owner->params->roles = Roles::getUserRoles($userId);
         $this->owner->params->isAdmin = $userId !== null
@@ -945,9 +951,12 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         Yii::import('application.components.*');
         Yii::import('application.components.X2GridView.*');
         Yii::import('application.components.X2Settings.*');
+        Yii::import('application.components.recordConversion.*');
+        Yii::import('application.components.validators.*');
         Yii::import('application.components.sortableWidget.*');
         Yii::import('application.components.sortableWidget.profileWidgets.*');
         Yii::import('application.components.sortableWidget.recordViewWidgets.*');
+         
         Yii::import('application.components.filters.*');
         Yii::import('application.components.util.*');
         Yii::import('application.components.permissions.*');

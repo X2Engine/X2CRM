@@ -1,5 +1,7 @@
 DROP TABLE IF EXISTS x2_action_text;
 /*&*/
+DROP TABLE IF EXISTS x2_action_to_record;
+/*&*/
 DROP TABLE IF EXISTS x2_action_meta_data;
 /*&*/
 DROP TABLE IF EXISTS x2_actions;
@@ -47,6 +49,16 @@ CREATE TABLE x2_action_meta_data (
     FOREIGN KEY (actionId) REFERENCES x2_actions(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE = utf8_general_ci, ENGINE = INNODB;
 /*&*/
+/* Used for many-to-many actions associations */
+CREATE TABLE x2_action_to_record (
+    id                        INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    actionId                  INT UNSIGNED NOT NULL,
+    recordId                  INT UNSIGNED NOT NULL,
+    recordType                VARCHAR(32) NOT NULL,
+    UNIQUE (actionId, recordId, recordType),
+    FOREIGN KEY (actionId) REFERENCES x2_actions(id) ON UPDATE CASCADE ON DELETE CASCADE
+) COLLATE = utf8_general_ci, ENGINE = INNODB;
+/*&*/
 CREATE TABLE x2_action_text (
     id       INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     text     LONGTEXT,
@@ -86,8 +98,8 @@ VALUES
 ("Actions", "allDay",            "All Day",          0, 0, "boolean",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "color",             "Color",            0, 0, "dropdown",    0, 0, 123, 0, 0, "",     0, 1, NULL),
 ("Actions", "timeSpent",         "Time Spent",       0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
-("Actions", "stageNumber",       "Stage Number",     0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
-("Actions", "workflowId",        "Workflow ID",      0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "workflowId",        "Process",      0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "stageNumber",       "Process Stage",     0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "flowTriggered",     "Flow Triggered",   0, 0, "boolean",    0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "quoteId",           "Quote ID",         0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "calendarId",        "Calendar ID",      0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL);

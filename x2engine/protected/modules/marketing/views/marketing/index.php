@@ -35,38 +35,13 @@
  *****************************************************************************************/
 
 $this->pageTitle = Yii::t('marketing','Campaigns');
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('marketing','All Campaigns')),
-	array('label'=>Yii::t('marketing','Create Campaign'), 'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/contacts/lists')),
-        array(
-            'label'=>Yii::t('marketing', 'Import Campaigns'),
-            'url'=>array('admin/importModels', 'model'=>'Campaign'),
-            'visible'=>Yii::app()->params->isAdmin
-        ),
-        array(
-            'label'=>Yii::t('marketing', 'Export Campaigns'),
-            'url'=>array('admin/exportModels', 'model'=>'Campaign'),
-            'visible'=>Yii::app()->params->isAdmin
-        ),
-        array(
-            'label' => Yii::t('marketing', 'Newsletters'),
-            'url' => array('/marketing/weblist/index'),
-            'visible' => (Yii::app()->contEd('pro'))
-        ),
-        array('label' => Yii::t('marketing', 'Web Lead Form'), 'url' => array('webleadForm')),
-        array(
-            'label' => Yii::t('marketing', 'Web Tracker'),
-            'url' => array('webTracker'),
-            'visible' => (Yii::app()->contEd('pro'))
-        ),
-    
-        array(
-            'label' => Yii::t('app', 'X2Flow'),
-            'url' => array('/studio/flowIndex'),
-            'visible' => (Yii::app()->contEd('pro'))
-        ),
-));
+$menuOptions = array(
+    'all', 'create', 'lists', 'import', 'export', 'newsletters', 'weblead',
+    'webtracker', 'x2flow',
+);
+
+$this->insertMenu($menuOptions);
+
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){

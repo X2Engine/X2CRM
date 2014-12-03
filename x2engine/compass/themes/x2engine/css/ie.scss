@@ -1,0 +1,134 @@
+/* -----------------------------------------------------------------------
+
+
+ Blueprint CSS Framework 1.0
+ http://blueprintcss.org
+
+   * Copyright (c) 2007-Present. See LICENSE for more info.
+   * See README for instructions on how to use Blueprint.
+   * For credits and origins, see AUTHORS.
+   * This is a compressed file. See the sources in the 'src' directory.
+
+----------------------------------------------------------------------- */
+
+/* ie.css */
+
+body {
+  text-align: center;
+}
+
+.container {
+  text-align: left;
+}
+
+* html {
+  .column, .span-1, .span-2, .span-3, .span-4, .span-5, .span-6, .span-7, .span-8, .span-9, .span-10, .span-11, .span-12, .span-13, .span-14, .span-15, .span-16, .span-17, .span-18, .span-19, .span-20, .span-21, .span-22, .span-23, .span-24 {
+    display: inline;
+    overflow-x: hidden;
+  }
+  legend {
+    margin: 0px -8px 16px 0;
+    padding: 0;
+  }
+}
+
+sup {
+  vertical-align: text-top;
+}
+
+sub {
+  vertical-align: text-bottom;
+}
+
+html > body p code {
+  *white-space: normal;
+}
+
+hr {
+  margin: -8px auto 11px;
+}
+
+img {
+  -ms-interpolation-mode: bicubic;
+}
+
+.clearfix, .container {
+  display: inline-block;
+}
+
+* html {
+  .clearfix, .container {
+    height: 1%;
+  }
+}
+
+fieldset {
+  padding-top: 0;
+}
+
+legend {
+  margin-top: -0.2em;
+  margin-bottom: 1em;
+  margin-left: -0.5em;
+}
+
+textarea {
+  overflow: auto;
+}
+
+label {
+  vertical-align: middle;
+  position: relative;
+  top: -0.25em;
+}
+
+input {
+  &.text, &.title {
+    background-color: #fff;
+    border: 1px solid #bbb;
+  }
+}
+
+textarea {
+  background-color: #fff;
+  border: 1px solid #bbb;
+}
+
+input {
+  &.text:focus, &.title:focus {
+    border-color: #666;
+  }
+  &.text, &.title {
+    margin: 0.5em 0;
+  }
+}
+
+textarea, select {
+  margin: 0.5em 0;
+}
+
+input {
+  &.checkbox, &.radio {
+    position: relative;
+    top: .25em;
+  }
+}
+
+form.inline {
+  div, p {
+    vertical-align: middle;
+  }
+  input {
+    &.checkbox, &.radio, &.button {
+      margin: 0.5em 0;
+    }
+  }
+  button {
+    margin: 0.5em 0;
+  }
+}
+
+button, input.button {
+  position: relative;
+  top: 0.25em;
+}

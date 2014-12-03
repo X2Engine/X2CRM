@@ -8,789 +8,1163 @@
 * http://jquery.org/license
 *
 */
-
-
 /* Swatches */
 /* A
 -----------------------------------------------------------------------------------------------------------*/
-.ui-bar-a {
-	border: 1px solid #456f9a /*{a-bar-border}*/;
-	background: #5e87b0 /*{a-bar-background-color}*/;
-	color: #000000 /*{a-bar-color}*/;
-	font-weight: bold;
-	text-shadow: 0 /*{a-bar-shadow-x}*/ 1px /*{a-bar-shadow-y}*/ 0 /*{a-bar-shadow-radius}*/ #3e6790 /*{a-bar-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #D6D6D6 /*{a-bar-background-start}*/), to( #C4C4C4 /*{a-bar-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #D6D6D6 /*{a-bar-background-start}*/, #C4C4C4 /*{a-bar-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #D6D6D6 /*{a-bar-background-start}*/, #C4C4C4 /*{a-bar-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #D6D6D6 /*{a-bar-background-start}*/, #C4C4C4 /*{a-bar-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #D6D6D6 /*{a-bar-background-start}*/, #C4C4C4 /*{a-bar-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #D6D6D6 /*{a-bar-background-start}*/, #C4C4C4 /*{a-bar-background-end}*/);
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***************************************
+* Mixin for border radius 
+***************************************/
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
+/* line 56, ../../../../../compass/css/lib/standards.scss */
+.pseudo-link {
+  cursor: pointer;
+  color: #004baf;
+  transition: color .1s;
 }
-.ui-bar-a .ui-link-inherit {
-	color: #000000 /*{a-bar-color}*/;
-}
-.ui-bar-a a.ui-link {
-	color: #7cc4e7 /*{a-bar-link-color}*/;
-	font-weight: bold;
-}
-.ui-bar-a a.ui-link:visited {
-    color: #2489ce /*{a-bar-link-visited}*/;
-}
-.ui-bar-a a.ui-link:hover {
-	color: #2489ce /*{a-bar-link-hover}*/;
-}
-.ui-bar-a a.ui-link:active {
-	color: #2489ce /*{a-bar-link-active}*/;
-}
-.ui-bar-a,
-.ui-bar-a input,
-.ui-bar-a select,
-.ui-bar-a textarea,
-.ui-bar-a button {
-	  font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
-}
-.ui-body-a,
-.ui-overlay-a {
-	border: 1px solid #8c8c8c /*{a-body-border}*/;
-	color: #000000 /*{a-body-color}*/;
-	text-shadow: 0 /*{a-body-shadow-x}*/ 1px /*{a-body-shadow-y}*/ 0 /*{a-body-shadow-radius}*/ #eeeeee /*{a-body-shadow-color}*/;
-	background: #ffffff /*{a-body-background-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #ffffff /*{a-body-background-start}*/), to( #ffffff /*{a-body-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #ffffff /*{a-body-background-start}*/, #ffffff /*{a-body-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #ffffff /*{a-body-background-start}*/, #ffffff /*{a-body-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #ffffff /*{a-body-background-start}*/, #ffffff /*{a-body-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #ffffff /*{a-body-background-start}*/, #ffffff /*{a-body-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #ffffff /*{a-body-background-start}*/, #ffffff /*{a-body-background-end}*/);
-}
-.ui-overlay-a {
-	background-image: none;
-	border-width: 0;
-}
-.ui-body-a,
-.ui-body-a input,
-.ui-body-a select,
-.ui-body-a textarea,
-.ui-body-a button {
-	  font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
-}
-.ui-body-a .ui-link-inherit {
-	color: #000000 /*{a-body-color}*/;
-}
-.ui-body-a .ui-link {
-	color: #2489ce /*{a-body-link-color}*/;
-	font-weight: bold;
-}
-.ui-body-a .ui-link:visited {
-    color: #2489ce /*{a-body-link-visited}*/;
-}
-.ui-body-a .ui-link:hover {
-	color: #2489ce /*{a-body-link-hover}*/;
-}
-.ui-body-a .ui-link:active {
-	color: #2489ce /*{a-body-link-active}*/;
-}
-.ui-btn-up-a {
-	border: 1px solid #145072 /*{a-bup-border}*/;
-	background: #2175ba /*{a-bup-background-color}*/;
-	font-weight: bold;
-	color: #ffffff /*{a-bup-color}*/;
-	text-shadow: 0 /*{a-bup-shadow-x}*/ -1px /*{a-bup-shadow-y}*/ 1px /*{a-bup-shadow-radius}*/ #145072 /*{a-bup-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #2481ce /*{a-bup-background-start}*/), to( #1d68a5 /*{a-bup-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #2481ce /*{a-bup-background-start}*/, #1d68a5 /*{a-bup-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #2481ce /*{a-bup-background-start}*/, #1d68a5 /*{a-bup-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #2481ce /*{a-bup-background-start}*/, #1d68a5 /*{a-bup-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #2481ce /*{a-bup-background-start}*/, #1d68a5 /*{a-bup-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #2481ce /*{a-bup-background-start}*/, #1d68a5 /*{a-bup-background-end}*/);
-}
-.ui-btn-up-a:visited,
-.ui-btn-up-a a.ui-link-inherit {
-	color: #ffffff /*{a-bup-color}*/;
-}
-.ui-btn-hover-a {
-	border: 1px solid #00415e /*{a-bhover-border}*/;
-	background: #64a1c9 /*{a-bhover-background-color}*/;
-	font-weight: bold;
-	color: #fff /*{a-bhover-color}*/;
-	text-shadow: 0 /*{a-bhover-shadow-x}*/ -1px /*{a-bhover-shadow-y}*/ 0 /*{a-bhover-shadow-radius}*/ #194b7e /*{a-bhover-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #65addc /*{a-bhover-background-start}*/), to( #1e71a9 /*{a-bhover-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #65addc /*{a-bhover-background-start}*/, #1e71a9 /*{a-bhover-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #65addc /*{a-bhover-background-start}*/, #1e71a9 /*{a-bhover-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #65addc /*{a-bhover-background-start}*/, #1e71a9 /*{a-bhover-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #65addc /*{a-bhover-background-start}*/, #1e71a9 /*{a-bhover-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #65addc /*{a-bhover-background-start}*/, #1e71a9 /*{a-bhover-background-end}*/);
-}
-.ui-btn-hover-a:visited,
-.ui-btn-hover-a:hover,
-.ui-btn-hover-a a.ui-link-inherit {
-	color: #fff /*{a-bhover-color}*/;
-}
-.ui-btn-down-a {
-	border: 1px solid #225377 /*{a-bdown-border}*/;
-	background: #4087ce /*{a-bdown-background-color}*/;
-	font-weight: bold;
-	color: #fff /*{a-bdown-color}*/;
-	text-shadow: 0 /*{a-bdown-shadow-x}*/ 1px /*{a-bdown-shadow-y}*/ 0 /*{a-bdown-shadow-radius}*/ #194b7e /*{a-bdown-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #35618d /*{a-bdown-background-start}*/), to( #3171af /*{a-bdown-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #35618d /*{a-bdown-background-start}*/, #3171af /*{a-bdown-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #35618d /*{a-bdown-background-start}*/, #3171af /*{a-bdown-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #35618d /*{a-bdown-background-start}*/, #3171af /*{a-bdown-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #35618d /*{a-bdown-background-start}*/, #3171af /*{a-bdown-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #35618d /*{a-bdown-background-start}*/, #3171af /*{a-bdown-background-end}*/);
-}
-.ui-btn-down-a:visited,
-.ui-btn-down-a:hover,
-.ui-btn-down-a a.ui-link-inherit {
-	color: #fff /*{a-bdown-color}*/;
-}
-.ui-btn-up-a,
-.ui-btn-hover-a,
-.ui-btn-down-a {
-	  font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
-	text-decoration: none;
-}
-/* B
------------------------------------------------------------------------------------------------------------*/
-.ui-bar-b {
-	border: 1px solid #b3b3b3 /*{b-bar-border}*/;
-	background: #eeeeee /*{b-bar-background-color}*/;
-	color: #3e3e3e /*{b-bar-color}*/;
-	font-weight: bold;
-	text-shadow: 0 /*{b-bar-shadow-x}*/ 1px /*{b-bar-shadow-y}*/ 0 /*{b-bar-shadow-radius}*/ #ffffff /*{b-bar-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #f0f0f0 /*{b-bar-background-start}*/), to( #dddddd /*{b-bar-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #f0f0f0 /*{b-bar-background-start}*/, #dddddd /*{b-bar-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #f0f0f0 /*{b-bar-background-start}*/, #dddddd /*{b-bar-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #f0f0f0 /*{b-bar-background-start}*/, #dddddd /*{b-bar-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #f0f0f0 /*{b-bar-background-start}*/, #dddddd /*{b-bar-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #f0f0f0 /*{b-bar-background-start}*/, #dddddd /*{b-bar-background-end}*/);
-}
-.ui-bar-b .ui-link-inherit {
-	color: #3e3e3e /*{b-bar-color}*/;
-}
-.ui-bar-b a.ui-link {
-	color: #7cc4e7 /*{b-bar-link-color}*/;
-	font-weight: bold;
-}
-.ui-bar-b a.ui-link:visited {
-    color: #2489ce /*{b-bar-link-visited}*/;
-}
-.ui-bar-b a.ui-link:hover {
-	color: #2489ce /*{b-bar-link-hover}*/;
-}
-.ui-bar-b a.ui-link:active {
-	color: #2489ce /*{b-bar-link-active}*/;
-}
-.ui-bar-b,
-.ui-bar-b input,
-.ui-bar-b select,
-.ui-bar-b textarea,
-.ui-bar-b button {
-	  font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
-}
-.ui-body-b,
-.ui-overlay-b {
-	border: 1px solid #aaaaaa /*{b-body-border}*/;
-	color: #333333 /*{b-body-color}*/;
-	text-shadow: 0 /*{b-body-shadow-x}*/ 1px /*{b-body-shadow-y}*/ 0 /*{b-body-shadow-radius}*/ #ffffff /*{b-body-shadow-color}*/;
-	background: #f9f9f9 /*{b-body-background-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #f9f9f9 /*{b-body-background-start}*/), to( #eeeeee /*{b-body-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #f9f9f9 /*{b-body-background-start}*/, #eeeeee /*{b-body-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #f9f9f9 /*{b-body-background-start}*/, #eeeeee /*{b-body-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #f9f9f9 /*{b-body-background-start}*/, #eeeeee /*{b-body-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #f9f9f9 /*{b-body-background-start}*/, #eeeeee /*{b-body-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #f9f9f9 /*{b-body-background-start}*/, #eeeeee /*{b-body-background-end}*/);
-}
-.ui-overlay-b {
-	background-image: none;
-	border-width: 0;
-}
-.ui-body-b,
-.ui-body-b input,
-.ui-body-b select,
-.ui-body-b textarea,
-.ui-body-b button {
-	  font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
-}
-.ui-body-b .ui-link-inherit {
-	color: #333333 /*{b-body-color}*/;
-}
-.ui-body-b .ui-link {
-	color: #2489ce /*{b-body-link-color}*/;
-	font-weight: bold;
-}
-.ui-body-b .ui-link:visited {
-    color: #2489ce /*{b-body-link-visited}*/;
-}
-.ui-body-b .ui-link:hover {
-	color: #2489ce /*{b-body-link-hover}*/;
-}
-.ui-body-b .ui-link:active {
-	color: #2489ce /*{b-body-link-active}*/;
-}
-.ui-btn-up-b {
-	border: 1px solid #cccccc /*{b-bup-border}*/;
-	background: #eeeeee /*{b-bup-background-color}*/;
-	font-weight: bold;
-	color: #2f3e46 /*{b-bup-color}*/;
-	text-shadow: 0 /*{b-bup-shadow-x}*/ 1px /*{b-bup-shadow-y}*/ 0 /*{b-bup-shadow-radius}*/ #ffffff /*{b-bup-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #ffffff /*{b-bup-background-start}*/), to( #f1f1f1 /*{b-bup-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #ffffff /*{b-bup-background-start}*/, #f1f1f1 /*{b-bup-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #ffffff /*{b-bup-background-start}*/, #f1f1f1 /*{b-bup-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #ffffff /*{b-bup-background-start}*/, #f1f1f1 /*{b-bup-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #ffffff /*{b-bup-background-start}*/, #f1f1f1 /*{b-bup-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #ffffff /*{b-bup-background-start}*/, #f1f1f1 /*{b-bup-background-end}*/);
-}
-.ui-btn-up-b:visited,
-.ui-btn-up-b a.ui-link-inherit {
-	color: #2f3e46 /*{b-bup-color}*/;
-}
-.ui-btn-hover-b {
-	border: 1px solid #bbbbbb /*{b-bhover-border}*/;
-	background: #dfdfdf /*{b-bhover-background-color}*/;
-	font-weight: bold;
-	color: #2f3e46 /*{b-bhover-color}*/;
-	text-shadow: 0 /*{b-bhover-shadow-x}*/ 1px /*{b-bhover-shadow-y}*/ 0 /*{b-bhover-shadow-radius}*/ #ffffff /*{b-bhover-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #f6f6f6 /*{b-bhover-background-start}*/), to( #e0e0e0 /*{b-bhover-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #f6f6f6 /*{b-bhover-background-start}*/, #e0e0e0 /*{b-bhover-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #f6f6f6 /*{b-bhover-background-start}*/, #e0e0e0 /*{b-bhover-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #f6f6f6 /*{b-bhover-background-start}*/, #e0e0e0 /*{b-bhover-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #f6f6f6 /*{b-bhover-background-start}*/, #e0e0e0 /*{b-bhover-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #f6f6f6 /*{b-bhover-background-start}*/, #e0e0e0 /*{b-bhover-background-end}*/);
-}
-.ui-btn-hover-b:visited,
-.ui-btn-hover-b:hover,
-.ui-btn-hover-b a.ui-link-inherit {
-	color: #2f3e46 /*{b-bhover-color}*/;
-}
-.ui-btn-down-b {
-	border: 1px solid #bbbbbb /*{b-bdown-border}*/;
-	background: #d6d6d6 /*{b-bdown-background-color}*/;
-	font-weight: bold;
-	color: #2f3e46 /*{b-bdown-color}*/;
-	text-shadow: 0 /*{b-bdown-shadow-x}*/ 1px /*{b-bdown-shadow-y}*/ 0 /*{b-bdown-shadow-radius}*/ #ffffff /*{b-bdown-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #d0d0d0 /*{b-bdown-background-start}*/), to( #dfdfdf /*{b-bdown-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #d0d0d0 /*{b-bdown-background-start}*/, #dfdfdf /*{b-bdown-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #d0d0d0 /*{b-bdown-background-start}*/, #dfdfdf /*{b-bdown-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #d0d0d0 /*{b-bdown-background-start}*/, #dfdfdf /*{b-bdown-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #d0d0d0 /*{b-bdown-background-start}*/, #dfdfdf /*{b-bdown-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #d0d0d0 /*{b-bdown-background-start}*/, #dfdfdf /*{b-bdown-background-end}*/);
-}
-.ui-btn-down-b:visited,
-.ui-btn-down-b:hover,
-.ui-btn-down-b a.ui-link-inherit {
-	color: #2f3e46 /*{b-bdown-color}*/;
-}
-.ui-btn-up-b,
-.ui-btn-hover-b,
-.ui-btn-down-b {
-	  font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
-	text-decoration: none;
+/* line 61, ../../../../../compass/css/lib/standards.scss */
+.pseudo-link:hover {
+  color: #006cfb;
 }
 
+/***************************************
+* CSS to extend when for elements that 
+* become opauqe on mouseover
+***************************************/
+/* line 70, ../../../../../compass/css/lib/standards.scss */
+.opacity-hover {
+  opacity: 0.3;
+}
+/* line 73, ../../../../../compass/css/lib/standards.scss */
+.opacity-hover:hover {
+  opacity: 1.0;
+}
+
+/* line 17, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-a {
+  border: 1px solid #456f9a;
+  background: #5e87b0;
+  color: black;
+  font-weight: bold;
+  text-shadow: 0 1px 0 #3e6790;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#d6d6d6), to(#c4c4c4));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#d6d6d6, #c4c4c4);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#d6d6d6, #c4c4c4);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#d6d6d6, #c4c4c4);
+  /* IE10 */
+  background-image: -o-linear-gradient(#d6d6d6, #c4c4c4);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#d6d6d6, #c4c4c4);
+  font-family: Helvetica, Arial, sans-serif;
+}
+/* line 35, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-a .ui-link-inherit {
+  color: black;
+}
+/* line 38, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-a a.ui-link {
+  color: #7cc4e7;
+  font-weight: bold;
+}
+/* line 41, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-a a.ui-link:visited, .ui-bar-a a.ui-link:hover, .ui-bar-a a.ui-link:active {
+  color: #2489ce;
+}
+/* line 45, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-a input, .ui-bar-a select, .ui-bar-a textarea, .ui-bar-a button {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+/* line 51, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-a {
+  border: 1px solid #8c8c8c;
+  color: black;
+  text-shadow: 0 1px 0 #eeeeee;
+  background: white;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(white), to(white));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(white, white);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(white, white);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(white, white);
+  /* IE10 */
+  background-image: -o-linear-gradient(white, white);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#ffffff, #ffffff);
+}
+
+/* line 70, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-overlay-a {
+  border: 1px solid #8c8c8c;
+  color: black;
+  text-shadow: 0 1px 0 #eeeeee;
+  background: white;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(white), to(white));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(white, white);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(white, white);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(white, white);
+  /* IE10 */
+  background-image: -o-linear-gradient(white, white);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#ffffff, #ffffff);
+  background-image: none;
+  border-width: 0;
+}
+
+/* line 91, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-a {
+  font-family: Helvetica, Arial, sans-serif;
+}
+/* line 93, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-a input, .ui-body-a select, .ui-body-a textarea, .ui-body-a button {
+  font-family: Helvetica, Arial, sans-serif;
+}
+/* line 96, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-a .ui-link-inherit {
+  color: black;
+}
+/* line 99, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-a .ui-link {
+  color: #2489ce;
+  font-weight: bold;
+}
+/* line 102, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-a .ui-link:visited, .ui-body-a .ui-link:hover, .ui-body-a .ui-link:active {
+  color: #2489ce;
+}
+
+/* line 110, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-up-a {
+  border: 1px solid #145072;
+  background: #384f6e;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 -1px 1px #145072;
+  /* Saf4 , Chrome */
+  /* Chrome 10 , Saf5.1  */
+  /* FF3.6 */
+  /* IE10 */
+  /* Opera 11.10  */
+}
+/* line 127, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-up-a:visited, .ui-btn-up-a a.ui-link-inherit {
+  color: white;
+}
+
+/* line 134, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-hover-a {
+  border: 1px solid #00415e;
+  background: #5273a1;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 -1px 0 #194b7e;
+  /* Saf4 , Chrome */
+  /* Chrome 10 , Saf5.1  */
+  /* FF3.6 */
+  /* IE10 */
+  /* Opera 11.10  */
+}
+/* line 151, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-hover-a:visited, .ui-btn-hover-a:hover, .ui-btn-hover-a a.ui-link-inherit {
+  color: white;
+}
+
+/* line 158, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-down-a {
+  border: 1px solid #225377;
+  background: #2b3d55;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 1px 0 #194b7e;
+  /* Saf4 , Chrome */
+  /* Chrome 10 , Saf5.1  */
+  /* FF3.6 */
+  /* IE10 */
+  /* Opera 11.10  */
+}
+/* line 175, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-down-a:visited, .ui-btn-down-a:hover, .ui-btn-down-a a.ui-link-inherit {
+  color: white;
+}
+
+/* line 182, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-up-a, .ui-btn-hover-a, .ui-btn-down-a {
+  font-family: Helvetica, Arial, sans-serif;
+  text-decoration: none;
+}
+
+/* B
+-----------------------------------------------------------------------------------------------------------*/
+/* line 190, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-b {
+  border: 1px solid #b3b3b3;
+  background: #eeeeee;
+  color: #3e3e3e;
+  font-weight: bold;
+  text-shadow: 0 1px 0 white;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#dddddd));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#f0f0f0, #dddddd);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#f0f0f0, #dddddd);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#f0f0f0, #dddddd);
+  /* IE10 */
+  background-image: -o-linear-gradient(#f0f0f0, #dddddd);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#f0f0f0, #dddddd);
+  font-family: Helvetica, Arial, sans-serif;
+}
+/* line 208, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-b .ui-link-inherit {
+  color: #3e3e3e;
+}
+/* line 211, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-b a.ui-link {
+  color: #7cc4e7;
+  font-weight: bold;
+}
+/* line 214, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-b a.ui-link:visited, .ui-bar-b a.ui-link:hover, .ui-bar-b a.ui-link:active {
+  color: #2489ce;
+}
+/* line 218, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-b input, .ui-bar-b select, .ui-bar-b textarea, .ui-bar-b button {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+/* line 228, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-b {
+  border: 1px solid #aaaaaa;
+  color: #333333;
+  text-shadow: 0 1px 0 white;
+  background: #f9f9f9;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f9f9f9), to(#eeeeee));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#f9f9f9, #eeeeee);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#f9f9f9, #eeeeee);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#f9f9f9, #eeeeee);
+  /* IE10 */
+  background-image: -o-linear-gradient(#f9f9f9, #eeeeee);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#f9f9f9, #eeeeee);
+}
+
+/* line 247, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-overlay-b {
+  border: 1px solid #aaaaaa;
+  color: #333333;
+  text-shadow: 0 1px 0 white;
+  background: #f9f9f9;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f9f9f9), to(#eeeeee));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#f9f9f9, #eeeeee);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#f9f9f9, #eeeeee);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#f9f9f9, #eeeeee);
+  /* IE10 */
+  background-image: -o-linear-gradient(#f9f9f9, #eeeeee);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#f9f9f9, #eeeeee);
+  background-image: none;
+  border-width: 0;
+}
+
+/* line 268, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-b {
+  font-family: Helvetica, Arial, sans-serif;
+}
+/* line 270, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-b input, .ui-body-b select, .ui-body-b textarea, .ui-body-b button {
+  font-family: Helvetica, Arial, sans-serif;
+}
+/* line 273, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-b .ui-link-inherit {
+  color: #333333;
+}
+/* line 276, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-b .ui-link {
+  color: #2489ce;
+  font-weight: bold;
+}
+/* line 279, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-b .ui-link:visited, .ui-body-b .ui-link:hover, .ui-body-b .ui-link:active {
+  color: #2489ce;
+}
+
+/* line 290, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-up-b {
+  border: 1px solid #cccccc;
+  background: #eeeeee;
+  font-weight: bold;
+  color: #2f3e46;
+  text-shadow: 0 1px 0 white;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(white), to(#f1f1f1));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(white, #f1f1f1);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(white, #f1f1f1);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(white, #f1f1f1);
+  /* IE10 */
+  background-image: -o-linear-gradient(white, #f1f1f1);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#ffffff, #f1f1f1);
+}
+/* line 307, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-up-b:visited, .ui-btn-up-b a.ui-link-inherit {
+  color: #2f3e46;
+}
+
+/* line 314, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-hover-b {
+  border: 1px solid #bbbbbb;
+  background: #dfdfdf;
+  font-weight: bold;
+  color: #2f3e46;
+  text-shadow: 0 1px 0 white;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f6f6f6), to(#e0e0e0));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#f6f6f6, #e0e0e0);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#f6f6f6, #e0e0e0);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#f6f6f6, #e0e0e0);
+  /* IE10 */
+  background-image: -o-linear-gradient(#f6f6f6, #e0e0e0);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#f6f6f6, #e0e0e0);
+}
+/* line 331, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-hover-b:visited, .ui-btn-hover-b:hover, .ui-btn-hover-b a.ui-link-inherit {
+  color: #2f3e46;
+}
+
+/* line 338, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-down-b {
+  border: 1px solid #bbbbbb;
+  background: #d6d6d6;
+  font-weight: bold;
+  color: #2f3e46;
+  text-shadow: 0 1px 0 white;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#d0d0d0), to(#dfdfdf));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#d0d0d0, #dfdfdf);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#d0d0d0, #dfdfdf);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#d0d0d0, #dfdfdf);
+  /* IE10 */
+  background-image: -o-linear-gradient(#d0d0d0, #dfdfdf);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#d0d0d0, #dfdfdf);
+}
+/* line 355, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-down-b:visited, .ui-btn-down-b:hover, .ui-btn-down-b a.ui-link-inherit {
+  color: #2f3e46;
+}
+
+/* line 362, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-up-b, .ui-btn-hover-b, .ui-btn-down-b {
+  font-family: Helvetica, Arial, sans-serif;
+  text-decoration: none;
+}
 
 /* C
 -----------------------------------------------------------------------------------------------------------*/
+/* line 370, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-bar-c {
-	border: 1px solid #b3b3b3 /*{c-bar-border}*/;
-	background: #eeeeee /*{c-bar-background-color}*/;
-	color: #3e3e3e /*{c-bar-color}*/;
-	font-weight: bold;
-	text-shadow: 0 /*{c-bar-shadow-x}*/ 1px /*{c-bar-shadow-y}*/ 0 /*{c-bar-shadow-radius}*/ #ffffff /*{c-bar-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #f0f0f0 /*{c-bar-background-start}*/), to( #dddddd /*{c-bar-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #f0f0f0 /*{c-bar-background-start}*/, #dddddd /*{c-bar-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #f0f0f0 /*{c-bar-background-start}*/, #dddddd /*{c-bar-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #f0f0f0 /*{c-bar-background-start}*/, #dddddd /*{c-bar-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #f0f0f0 /*{c-bar-background-start}*/, #dddddd /*{c-bar-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #f0f0f0 /*{c-bar-background-start}*/, #dddddd /*{c-bar-background-end}*/);
+  border: 1px solid #b3b3b3;
+  background: #eeeeee;
+  color: #3e3e3e;
+  font-weight: bold;
+  text-shadow: 0 1px 0 white;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#dddddd));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#f0f0f0, #dddddd);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#f0f0f0, #dddddd);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#f0f0f0, #dddddd);
+  /* IE10 */
+  background-image: -o-linear-gradient(#f0f0f0, #dddddd);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#f0f0f0, #dddddd);
+  font-family: Helvetica, Arial, sans-serif;
 }
+/* line 388, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-bar-c .ui-link-inherit {
-	color: #3e3e3e /*{c-bar-color}*/;
+  color: #3e3e3e;
 }
+/* line 391, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-bar-c a.ui-link {
-	color: #7cc4e7 /*{c-bar-link-color}*/;
-	font-weight: bold;
+  color: #7cc4e7;
+  font-weight: bold;
 }
-.ui-bar-c a.ui-link:visited {
-    color: #2489ce /*{c-bar-link-visited}*/;
+/* line 394, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-c a.ui-link:visited, .ui-bar-c a.ui-link:hover, .ui-bar-c a.ui-link:active {
+  color: #2489ce;
 }
-.ui-bar-c a.ui-link:hover {
-	color: #2489ce /*{c-bar-link-hover}*/;
-}
-.ui-bar-c a.ui-link:active {
-	color: #2489ce /*{c-bar-link-active}*/;
-}
-.ui-bar-c,
-.ui-bar-c input,
-.ui-bar-c select,
-.ui-bar-c textarea,
-.ui-bar-c button {
-	  font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
-}
-.ui-body-c,
-.ui-overlay-c {
-	border: 1px solid #aaaaaa /*{c-body-border}*/;
-	color: #333333 /*{c-body-color}*/;
-	text-shadow: 0 /*{c-body-shadow-x}*/ 1px /*{c-body-shadow-y}*/ 0 /*{c-body-shadow-radius}*/ #ffffff /*{c-body-shadow-color}*/;
-	background: #f9f9f9 /*{c-body-background-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #f9f9f9 /*{c-body-background-start}*/), to( #eeeeee /*{c-body-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #f9f9f9 /*{c-body-background-start}*/, #eeeeee /*{c-body-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #f9f9f9 /*{c-body-background-start}*/, #eeeeee /*{c-body-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #f9f9f9 /*{c-body-background-start}*/, #eeeeee /*{c-body-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #f9f9f9 /*{c-body-background-start}*/, #eeeeee /*{c-body-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #f9f9f9 /*{c-body-background-start}*/, #eeeeee /*{c-body-background-end}*/);
-}
-.ui-overlay-c {
-	background-image: none;
-	border-width: 0;
-}
-.ui-body-c,
-.ui-body-c input,
-.ui-body-c select,
-.ui-body-c textarea,
-.ui-body-c button {
-	  font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
-}
-.ui-body-c .ui-link-inherit {
-	color: #333333 /*{c-body-color}*/;
-}
-.ui-body-c .ui-link {
-	color: #2489ce /*{c-body-link-color}*/;
-	font-weight: bold;
-}
-.ui-body-c .ui-link:visited {
-    color: #2489ce /*{c-body-link-visited}*/;
-}
-.ui-body-c .ui-link:hover {
-	color: #2489ce /*{c-body-link-hover}*/;
-}
-.ui-body-c .ui-link:active {
-	color: #2489ce /*{c-body-link-active}*/;
-}
-.ui-btn-up-c {
-	border: 1px solid #cccccc /*{c-bup-border}*/;
-	background: #eeeeee /*{c-bup-background-color}*/;
-	font-weight: bold;
-	color: #2f3e46 /*{c-bup-color}*/;
-	text-shadow: 0 /*{c-bup-shadow-x}*/ 1px /*{c-bup-shadow-y}*/ 0 /*{c-bup-shadow-radius}*/ #ffffff /*{c-bup-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #ffffff /*{c-bup-background-start}*/), to( #f1f1f1 /*{c-bup-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #ffffff /*{c-bup-background-start}*/, #f1f1f1 /*{c-bup-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #ffffff /*{c-bup-background-start}*/, #f1f1f1 /*{c-bup-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #ffffff /*{c-bup-background-start}*/, #f1f1f1 /*{c-bup-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #ffffff /*{c-bup-background-start}*/, #f1f1f1 /*{c-bup-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #ffffff /*{c-bup-background-start}*/, #f1f1f1 /*{c-bup-background-end}*/);
-}
-.ui-btn-up-c:visited,
-.ui-btn-up-c a.ui-link-inherit {
-	color: #2f3e46 /*{c-bup-color}*/;
-}
-.ui-btn-hover-c {
-	border: 1px solid #bbbbbb /*{c-bhover-border}*/;
-	background: #dfdfdf /*{c-bhover-background-color}*/;
-	font-weight: bold;
-	color: #2f3e46 /*{c-bhover-color}*/;
-	text-shadow: 0 /*{c-bhover-shadow-x}*/ 1px /*{c-bhover-shadow-y}*/ 0 /*{c-bhover-shadow-radius}*/ #ffffff /*{c-bhover-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #f6f6f6 /*{c-bhover-background-start}*/), to( #e0e0e0 /*{c-bhover-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/);
-}
-.ui-btn-hover-c:visited,
-.ui-btn-hover-c:hover,
-.ui-btn-hover-c a.ui-link-inherit {
-	color: #2f3e46 /*{c-bhover-color}*/;
-}
-.ui-btn-down-c {
-	border: 1px solid #bbbbbb /*{c-bdown-border}*/;
-	background: #d6d6d6 /*{c-bdown-background-color}*/;
-	font-weight: bold;
-	color: #2f3e46 /*{c-bdown-color}*/;
-	text-shadow: 0 /*{c-bdown-shadow-x}*/ 1px /*{c-bdown-shadow-y}*/ 0 /*{c-bdown-shadow-radius}*/ #ffffff /*{c-bdown-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #d0d0d0 /*{c-bdown-background-start}*/), to( #dfdfdf /*{c-bdown-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #d0d0d0 /*{c-bdown-background-start}*/, #dfdfdf /*{c-bdown-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #d0d0d0 /*{c-bdown-background-start}*/, #dfdfdf /*{c-bdown-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #d0d0d0 /*{c-bdown-background-start}*/, #dfdfdf /*{c-bdown-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #d0d0d0 /*{c-bdown-background-start}*/, #dfdfdf /*{c-bdown-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #d0d0d0 /*{c-bdown-background-start}*/, #dfdfdf /*{c-bdown-background-end}*/);
-}
-.ui-btn-down-c:visited,
-.ui-btn-down-c:hover,
-.ui-btn-down-c a.ui-link-inherit {
-	color: #2f3e46 /*{c-bdown-color}*/;
-}
-.ui-btn-up-c,
-.ui-btn-hover-c,
-.ui-btn-down-c {
-	  font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
-	text-decoration: none;
+/* line 398, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-c input, .ui-bar-c select, .ui-bar-c textarea, .ui-bar-c button {
+  font-family: Helvetica, Arial, sans-serif;
 }
 
+/* line 408, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-c {
+  border: 1px solid #aaaaaa;
+  color: #333333;
+  text-shadow: 0 1px 0 white;
+  background: #f9f9f9;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f9f9f9), to(#eeeeee));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#f9f9f9, #eeeeee);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#f9f9f9, #eeeeee);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#f9f9f9, #eeeeee);
+  /* IE10 */
+  background-image: -o-linear-gradient(#f9f9f9, #eeeeee);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#f9f9f9, #eeeeee);
+}
+
+/* line 427, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-overlay-c {
+  border: 1px solid #aaaaaa;
+  color: #333333;
+  text-shadow: 0 1px 0 white;
+  background: #f9f9f9;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f9f9f9), to(#eeeeee));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#f9f9f9, #eeeeee);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#f9f9f9, #eeeeee);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#f9f9f9, #eeeeee);
+  /* IE10 */
+  background-image: -o-linear-gradient(#f9f9f9, #eeeeee);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#f9f9f9, #eeeeee);
+  background-image: none;
+  border-width: 0;
+}
+
+/* line 448, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-c {
+  font-family: Helvetica, Arial, sans-serif;
+}
+/* line 450, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-c input, .ui-body-c select, .ui-body-c textarea, .ui-body-c button {
+  font-family: Helvetica, Arial, sans-serif;
+}
+/* line 453, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-c .ui-link-inherit {
+  color: #333333;
+}
+/* line 456, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-c .ui-link {
+  color: #2489ce;
+  font-weight: bold;
+}
+/* line 459, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-body-c .ui-link:visited, .ui-body-c .ui-link:hover, .ui-body-c .ui-link:active {
+  color: #2489ce;
+}
+
+/* line 470, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-up-c {
+  border: 1px solid #cccccc;
+  background: #eeeeee;
+  font-weight: bold;
+  color: #2f3e46;
+  text-shadow: 0 1px 0 white;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(white), to(#f1f1f1));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(white, #f1f1f1);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(white, #f1f1f1);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(white, #f1f1f1);
+  /* IE10 */
+  background-image: -o-linear-gradient(white, #f1f1f1);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#ffffff, #f1f1f1);
+}
+/* line 487, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-up-c:visited, .ui-btn-up-c a.ui-link-inherit {
+  color: #2f3e46;
+}
+
+/* line 494, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-hover-c {
+  border: 1px solid #bbbbbb;
+  background: #dfdfdf;
+  font-weight: bold;
+  color: #2f3e46;
+  text-shadow: 0 1px 0 white;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f6f6f6), to(#e0e0e0));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#f6f6f6, #e0e0e0);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#f6f6f6, #e0e0e0);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#f6f6f6, #e0e0e0);
+  /* IE10 */
+  background-image: -o-linear-gradient(#f6f6f6, #e0e0e0);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#f6f6f6, #e0e0e0);
+}
+/* line 511, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-hover-c:visited, .ui-btn-hover-c:hover, .ui-btn-hover-c a.ui-link-inherit {
+  color: #2f3e46;
+}
+
+/* line 518, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-down-c {
+  border: 1px solid #bbbbbb;
+  background: #d6d6d6;
+  font-weight: bold;
+  color: #2f3e46;
+  text-shadow: 0 1px 0 white;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#d0d0d0), to(#dfdfdf));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#d0d0d0, #dfdfdf);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#d0d0d0, #dfdfdf);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#d0d0d0, #dfdfdf);
+  /* IE10 */
+  background-image: -o-linear-gradient(#d0d0d0, #dfdfdf);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#d0d0d0, #dfdfdf);
+}
+/* line 535, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-down-c:visited, .ui-btn-down-c:hover, .ui-btn-down-c a.ui-link-inherit {
+  color: #2f3e46;
+}
+
+/* line 542, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-up-c, .ui-btn-hover-c, .ui-btn-down-c {
+  font-family: Helvetica, Arial, sans-serif;
+  text-decoration: none;
+}
 
 /* Structure */
 /* links within "buttons" 
 -----------------------------------------------------------------------------------------------------------*/
+/* line 551, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 a.ui-link-inherit {
-	text-decoration: none !important;
+  text-decoration: none !important;
 }
+
 /* Active class used as the "on" state across all themes
 -----------------------------------------------------------------------------------------------------------*/
+/* line 558, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-btn-active {
-	border: 1px solid #2373a5 /*{global-active-border}*/;
-	background: #387bbe /*{global-active-background-color}*/;
-	font-weight: bold;
-	color: #ffffff /*{global-active-color}*/;
-	cursor: pointer;
-	text-shadow: 0 /*{global-active-shadow-x}*/ 1px /*{global-active-shadow-y}*/ 0 /*{global-active-shadow-radius}*/ #3373a5 /*{global-active-shadow-color}*/;
-	text-decoration: none;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #5393c5 /*{global-active-background-start}*/), to( #6facd5 /*{global-active-background-end}*/)); /* Saf4 , Chrome */
-	background-image: -webkit-linear-gradient( #5393c5 /*{global-active-background-start}*/, #6facd5 /*{global-active-background-end}*/); /* Chrome 10 , Saf5.1  */
-	background-image:    -moz-linear-gradient( #5393c5 /*{global-active-background-start}*/, #6facd5 /*{global-active-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #5393c5 /*{global-active-background-start}*/, #6facd5 /*{global-active-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #5393c5 /*{global-active-background-start}*/, #6facd5 /*{global-active-background-end}*/); /* Opera 11.10  */
-	background-image:         linear-gradient( #5393c5 /*{global-active-background-start}*/, #6facd5 /*{global-active-background-end}*/);
-	  font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
+  border: 1px solid #2373a5;
+  background: #387bbe;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  text-shadow: 0 1px 0 #3373a5;
+  text-decoration: none;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#5393c5), to(#6facd5));
+  /* Saf4 , Chrome */
+  background-image: -webkit-linear-gradient(#5393c5, #6facd5);
+  /* Chrome 10 , Saf5.1  */
+  background-image: -moz-linear-gradient(#5393c5, #6facd5);
+  /* FF3.6 */
+  background-image: -ms-linear-gradient(#5393c5, #6facd5);
+  /* IE10 */
+  background-image: -o-linear-gradient(#5393c5, #6facd5);
+  /* Opera 11.10  */
+  background-image: linear-gradient(#5393c5, #6facd5);
+  font-family: Helvetica, Arial, sans-serif;
 }
-.ui-btn-active:visited,
-.ui-btn-active:hover,
-.ui-btn-active a.ui-link-inherit {
-	color: #ffffff /*{global-active-color}*/;
+/* line 578, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-btn-active:visited, .ui-btn-active:hover, .ui-btn-active a.ui-link-inherit {
+  color: white;
 }
+
 /* button inner top highlight
 -----------------------------------------------------------------------------------------------------------*/
+/* line 587, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-btn-inner {
-	border-top: 1px solid 	#fff;
-	border-color: 			rgba(255,255,255,.3);
+  border-top: 1px solid   #fff;
+  border-color: rgba(255, 255, 255, 0.3);
 }
+
 /* corner rounding classes
 -----------------------------------------------------------------------------------------------------------*/
+/* line 595, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-corner-all {
-	-webkit-border-radius: .6em /*{global-radii-blocks}*/;
-	border-radius: .6em /*{global-radii-blocks}*/;
+  -webkit-border-radius: 0.2em;
+  border-radius: 0.2em;
 }
+
 /* Form field separator
 -----------------------------------------------------------------------------------------------------------*/
+/* line 603, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-br {
-	border-color: rgb(130,130,130);
-	border-color: rgba(130,130,130,.3);
-	border-style: solid;
+  border-color: #828282;
+  border-color: rgba(130, 130, 130, 0.3);
+  border-style: solid;
 }
+
 /* Interaction cues
 -----------------------------------------------------------------------------------------------------------*/
+/* line 612, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-disabled {
-	filter: Alpha(Opacity=30);
-	opacity: .3;
-	zoom: 1;
+  filter: Alpha(Opacity=30);
+  opacity: .3;
+  zoom: 1;
+  cursor: default !important;
+  pointer-events: none;
 }
-.ui-disabled,
+/* line 618, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-disabled a {
-	cursor: default !important;
-	pointer-events: none;
+  cursor: default !important;
+  pointer-events: none;
 }
+
 /* Icons
 -----------------------------------------------------------------------------------------------------------*/
-.ui-icon,
-.ui-icon-searchfield:after {
-	background: #666666 /*{global-icon-color}*/;
-	background: rgba(0,0,0,.4) /*{global-icon-disc}*/;
-	background-image: url(images/icons-18-white.png) /*{global-icon-set}*/;
-	background-repeat: no-repeat;
-	-webkit-border-radius: 				9px;
-	border-radius: 						9px;
+/* line 628, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-icon, .ui-icon-searchfield:after {
+  background: #666666;
+  background: rgba(0, 0, 0, 0.4);
+  background-image: url(images/icons-18-white.png);
+  background-repeat: no-repeat;
+  -webkit-border-radius: 9px;
+  border-radius: 9px;
 }
+
 /* Alt icon color
 -----------------------------------------------------------------------------------------------------------*/
-.ui-icon-alt .ui-icon,
-.ui-icon-alt .ui-icon-searchfield:after {
-	background-color: 						#fff;
-	background-color: 						rgba(255,255,255,.3);
-	background-image: url(images/icons-18-black.png);
-	background-repeat: no-repeat;
+/* line 641, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-icon-alt .ui-icon, .ui-icon-alt .ui-icon-searchfield:after {
+  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.3);
+  background-image: url(images/icons-18-black.png);
+  background-repeat: no-repeat;
 }
+
 /* No disc
 -----------------------------------------------------------------------------------------------------------*/
-.ui-icon-nodisc .ui-icon,
-.ui-icon-nodisc .ui-icon-searchfield:after,
-.ui-icon-nodisc .ui-icon-alt .ui-icon,
-.ui-icon-nodisc .ui-icon-alt .ui-icon-searchfield:after {
-	background-color: transparent;
+/* line 653, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-icon-nodisc .ui-icon, .ui-icon-nodisc .ui-icon-searchfield:after {
+  background-color: transparent;
 }
+/* line 657, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-icon-nodisc .ui-icon-alt .ui-icon, .ui-icon-nodisc .ui-icon-alt .ui-icon-searchfield:after {
+  background-color: transparent;
+}
+
 /* Icon sprite
 -----------------------------------------------------------------------------------------------------------*/
 /* plus minus */
+/* line 668, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-plus {
-	background-position: 	-1px -1px;
+  background-position: -1px -1px;
 }
+
+/* line 673, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-minus {
-	background-position: 	-37px -1px;
+  background-position: -37px -1px;
 }
+
 /* delete/close */
+/* line 679, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-delete {
-	background-position: 	-73px -1px;
+  background-position: -73px -1px;
 }
+
 /* arrows */
+/* line 685, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-arrow-r {
-	background-position: 	-108px -1px;
+  background-position: -108px -1px;
 }
+
+/* line 690, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-arrow-l {
-	background-position: 	-144px -1px;
+  background-position: -144px -1px;
 }
+
+/* line 695, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-arrow-u {
-	background-position: 	-180px -1px;
+  background-position: -180px -1px;
 }
+
+/* line 700, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-arrow-d {
-	background-position: 	-216px -1px;
+  background-position: -216px -1px;
 }
+
 /* misc */
+/* line 706, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-check {
-	background-position: 	-252px -1px;
+  background-position: -252px -1px;
 }
+
+/* line 711, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-gear {
-	background-position: 	-288px -1px;
+  background-position: -288px -1px;
 }
+
+/* line 716, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-refresh {
-	background-position: 	-323px -1px;
+  background-position: -323px -1px;
 }
+
+/* line 721, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-forward {
-	background-position: 	-360px -1px;
+  background-position: -360px -1px;
 }
+
+/* line 726, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-back {
-	background-position: 	-396px -1px;
+  background-position: -396px -1px;
 }
+
+/* line 731, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-grid {
-	background-position: 	-432px -1px;
+  background-position: -432px -1px;
 }
+
+/* line 736, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-star {
-	background-position: 	-467px -1px;
+  background-position: -467px -1px;
 }
+
+/* line 741, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-alert {
-	background-position: 	-503px -1px;
+  background-position: -503px -1px;
 }
+
+/* line 746, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-info {
-	background-position: 	-539px -1px;
+  background-position: -539px -1px;
 }
+
+/* line 751, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-home {
-	background-position: 	-575px -1px;
+  background-position: -575px -1px;
 }
+
 /* search */
-.ui-icon-search,
-.ui-icon-searchfield:after {
-	background-position: 	-611px -1px;
+/* line 757, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-icon-search, .ui-icon-searchfield:after {
+  background-position: -611px -1px;
 }
+
 /* checkbox radio */
+/* line 763, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-checkbox-on {
-	background-position: 	-647px -1px;
+  background-position: -647px -1px;
 }
+
+/* line 768, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-checkbox-off {
-	background-position: 	-683px -1px;
+  background-position: -683px -1px;
 }
+
+/* line 773, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-radio-on {
-	background-position: 	-718px -1px;
+  background-position: -718px -1px;
 }
+
+/* line 778, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-radio-off {
-	background-position: 	-754px -1px;
+  background-position: -754px -1px;
 }
+
 /* menu edit */
+/* line 784, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-bars {
-	background-position: 	-788px -1px;
+  background-position: -788px -1px;
 }
+
+/* line 789, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-edit {
-	background-position: 	-824px -1px;
+  background-position: -824px -1px;
 }
+
 /* HD/"retina" sprite
 -----------------------------------------------------------------------------------------------------------*/
-@media only screen and (-webkit-min-device-pixel-ratio: 1.3),
-       only screen and (min--moz-device-pixel-ratio: 1.3),
-       only screen and (min-resolution: 200dpi) {
-	
-	.ui-icon-plus, .ui-icon-minus, .ui-icon-delete, .ui-icon-arrow-r,
-	.ui-icon-arrow-l, .ui-icon-arrow-u, .ui-icon-arrow-d, .ui-icon-check,
-	.ui-icon-gear, .ui-icon-refresh, .ui-icon-forward, .ui-icon-back,
-	.ui-icon-grid, .ui-icon-star, .ui-icon-alert, .ui-icon-info, .ui-icon-home, .ui-icon-bars, .ui-icon-edit,
-	.ui-icon-search, .ui-icon-searchfield:after, 
-	.ui-icon-checkbox-off, .ui-icon-checkbox-on, .ui-icon-radio-off, .ui-icon-radio-on {
-		background-image: url(images/icons-36-white.png);
-		-moz-background-size: 864px 18px;
-		-o-background-size: 864px 18px;
-		-webkit-background-size: 864px 18px;
-		background-size: 864px 18px;
-	}
-	.ui-icon-alt .ui-icon {
-		background-image: url(images/icons-36-black.png);
-	}
-	.ui-icon-plus {
-		background-position: 	0 50%;
-	}
-	.ui-icon-minus {
-		background-position: 	-36px 50%;
-	}
-	.ui-icon-delete {
-		background-position: 	-72px 50%;
-	}
-	.ui-icon-arrow-r {
-		background-position: 	-108px 50%;
-	}
-	.ui-icon-arrow-l {
-		background-position: 	-144px 50%;
-	}
-	.ui-icon-arrow-u {
-		background-position: 	-179px 50%;
-	}
-	.ui-icon-arrow-d {
-		background-position: 	-215px 50%;
-	}
-	.ui-icon-check {
-		background-position: 	-252px 50%;
-	}
-	.ui-icon-gear {
-		background-position: 	-287px 50%;
-	}
-	.ui-icon-refresh {
-		background-position: 	-323px 50%;
-	}
-	.ui-icon-forward {
-		background-position: 	-360px 50%;
-	}
-	.ui-icon-back {
-		background-position: 	-395px 50%;
-	}
-	.ui-icon-grid {
-		background-position: 	-431px 50%;
-	}
-	.ui-icon-star {
-		background-position: 	-467px 50%;
-	}
-	.ui-icon-alert {
-		background-position: 	-503px 50%;
-	}
-	.ui-icon-info {
-		background-position: 	-538px 50%;
-	}
-	.ui-icon-home {
-		background-position: 	-575px 50%;
-	}
-	.ui-icon-search,
-	.ui-icon-searchfield:after {
-		background-position: 	-611px 50%;
-	}
-	.ui-icon-checkbox-on {
-		background-position: 	-647px 50%;
-	}
-	.ui-icon-checkbox-off {
-		background-position: 	-683px 50%;
-	}
-	.ui-icon-radio-on {
-		background-position: 	-718px 50%;
-	}
-	.ui-icon-radio-off {
-		background-position: 	-754px 50%;
-	}
-	.ui-icon-bars {
-		background-position: 	-788px 50%;
-	
-	}.ui-icon-edit {
-		background-position: 	-824px 50%;
-	}
+@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (min-resolution: 200dpi) {
+  /* line 796, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-plus, .ui-icon-minus, .ui-icon-delete, .ui-icon-arrow-r, .ui-icon-arrow-l, .ui-icon-arrow-u, .ui-icon-arrow-d, .ui-icon-check, .ui-icon-gear, .ui-icon-refresh, .ui-icon-forward, .ui-icon-back, .ui-icon-grid, .ui-icon-star, .ui-icon-alert, .ui-icon-info, .ui-icon-home, .ui-icon-bars, .ui-icon-edit, .ui-icon-search, .ui-icon-searchfield:after, .ui-icon-checkbox-off, .ui-icon-checkbox-on, .ui-icon-radio-off, .ui-icon-radio-on {
+    background-image: url(images/icons-36-white.png);
+    -moz-background-size: 864px 18px;
+    -o-background-size: 864px 18px;
+    -webkit-background-size: 864px 18px;
+    background-size: 864px 18px;
+  }
+
+  /* line 803, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-alt .ui-icon {
+    background-image: url(images/icons-36-black.png);
+  }
+
+  /* line 806, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-plus {
+    background-position: 0 50%;
+  }
+
+  /* line 809, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-minus {
+    background-position: -36px 50%;
+  }
+
+  /* line 812, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-delete {
+    background-position: -72px 50%;
+  }
+
+  /* line 815, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-arrow-r {
+    background-position: -108px 50%;
+  }
+
+  /* line 818, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-arrow-l {
+    background-position: -144px 50%;
+  }
+
+  /* line 821, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-arrow-u {
+    background-position: -179px 50%;
+  }
+
+  /* line 824, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-arrow-d {
+    background-position: -215px 50%;
+  }
+
+  /* line 827, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-check {
+    background-position: -252px 50%;
+  }
+
+  /* line 830, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-gear {
+    background-position: -287px 50%;
+  }
+
+  /* line 833, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-refresh {
+    background-position: -323px 50%;
+  }
+
+  /* line 836, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-forward {
+    background-position: -360px 50%;
+  }
+
+  /* line 839, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-back {
+    background-position: -395px 50%;
+  }
+
+  /* line 842, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-grid {
+    background-position: -431px 50%;
+  }
+
+  /* line 845, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-star {
+    background-position: -467px 50%;
+  }
+
+  /* line 848, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-alert {
+    background-position: -503px 50%;
+  }
+
+  /* line 851, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-info {
+    background-position: -538px 50%;
+  }
+
+  /* line 854, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-home {
+    background-position: -575px 50%;
+  }
+
+  /* line 857, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-search, .ui-icon-searchfield:after {
+    background-position: -611px 50%;
+  }
+
+  /* line 860, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-checkbox-on {
+    background-position: -647px 50%;
+  }
+
+  /* line 863, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-checkbox-off {
+    background-position: -683px 50%;
+  }
+
+  /* line 866, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-radio-on {
+    background-position: -718px 50%;
+  }
+
+  /* line 869, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-radio-off {
+    background-position: -754px 50%;
+  }
+
+  /* line 872, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-bars {
+    background-position: -788px 50%;
+  }
+
+  /* line 875, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+  .ui-icon-edit {
+    background-position: -824px 50%;
+  }
 }
 /* checks,radios */
-.ui-checkbox .ui-icon,
-.ui-selectmenu-list .ui-icon {
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+/* line 882, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-checkbox .ui-icon, .ui-selectmenu-list .ui-icon {
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
 }
-.ui-icon-checkbox-off,
-.ui-icon-radio-off {
-	background-color: transparent;	
+
+/* line 888, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-icon-checkbox-off, .ui-icon-radio-off {
+  background-color: transparent;
 }
-.ui-checkbox-on .ui-icon,
-.ui-radio-on .ui-icon {
-	background-color: #387bbe /*{global-active-background-color}*/; /* NOTE: this hex should match the active state color. It's repeated here for cascade */
+
+/* line 893, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-checkbox-on .ui-icon, .ui-radio-on .ui-icon {
+  background-color: #387bbe;
+  /* NOTE: this hex should match the active state color. It's repeated here for cascade */
 }
+
 /* loading icon */
+/* line 900, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-loading {
-	background: url(images/ajax-loader.gif);
-	background-size: 46px 46px;
+  background: url(images/ajax-loader.gif);
+  background-size: 46px 46px;
 }
+
 /* Button corner class
 -----------------------------------------------------------------------------------------------------------*/
+/* line 910, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-btn-corner-all {
-	-webkit-border-radius: 1em /*{global-radii-buttons}*/;
-	border-radius: 1em /*{global-radii-buttons}*/;
+  -webkit-border-radius: .2em;
+  border-radius: .2em;
 }
+
 /* radius clip workaround for cleaning up corner trapping */
-.ui-corner-all,
-.ui-btn-corner-all {
-	-webkit-background-clip: padding;
-	background-clip: padding-box;
+/* line 917, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-corner-all, .ui-btn-corner-all {
+  -webkit-background-clip: padding;
+  background-clip: padding-box;
 }
+
 /* Overlay / modal
 -----------------------------------------------------------------------------------------------------------*/
+/* line 925, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-overlay {
-	background: #666;
-	filter: Alpha(Opacity=50);
-	opacity: .5;
-	position: absolute;
-	width: 100%;
-	height: 100%;
+  background: #666;
+  filter: Alpha(Opacity=50);
+  opacity: .5;
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
+
+/* line 935, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-overlay-shadow {
-	-moz-box-shadow: 0 0 12px 			rgba(0,0,0,.6);
-	-webkit-box-shadow: 0 0 12px 		rgba(0,0,0,.6);
-	box-shadow: 0 0 12px 				rgba(0,0,0,.6);
+  -moz-box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+  -webkit-box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
 }
+
+/* line 942, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-shadow {
-	-moz-box-shadow: 0 1px 3px /*{global-box-shadow-size}*/ rgba(0,0,0,.2) /*{global-box-shadow-color}*/;
-	-webkit-box-shadow: 0 1px 3px /*{global-box-shadow-size}*/ rgba(0,0,0,.2) /*{global-box-shadow-color}*/;
-	box-shadow: 0 1px 3px /*{global-box-shadow-size}*/ rgba(0,0,0,.2) /*{global-box-shadow-color}*/
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
-.ui-bar-a .ui-shadow,
-.ui-bar-b .ui-shadow ,
-.ui-bar-c .ui-shadow  {
-	-moz-box-shadow: 0 1px 0 				rgba(255,255,255,.3);
-	-webkit-box-shadow: 0 1px 0 			rgba(255,255,255,.3);
-	box-shadow: 0 1px 0 					rgba(255,255,255,.3);
+
+/* line 949, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-bar-a .ui-shadow, .ui-bar-b .ui-shadow, .ui-bar-c .ui-shadow {
+  -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
 }
+
+/* line 956, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-shadow-inset {
-	-moz-box-shadow: inset 0 1px 4px 		rgba(0,0,0,.2);
-	-webkit-box-shadow: inset 0 1px 4px 	rgba(0,0,0,.2);
-	box-shadow: inset 0 1px 4px 			rgba(0,0,0,.2);
+  -moz-box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
 }
+
+/* line 963, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-icon-shadow {
-	-moz-box-shadow: 0 1px 0 rgba(255,255,255,.4) /*{global-icon-shadow}*/;
-	-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.4) /*{global-icon-shadow}*/;
-	box-shadow: 0 1px 0 rgba(255,255,255,.4) /*{global-icon-shadow}*/;
+  -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
 }
+
 /* Focus state - set here for specificity (note: these classes are added by JavaScript)
 -----------------------------------------------------------------------------------------------------------*/
+/* line 972, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-btn:focus, .ui-link-inherit:focus {
-	outline: 0;
+  outline: 0;
 }
+
+/* line 977, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-btn.ui-focus {
-	z-index: 1;
+  z-index: 1;
 }
-.ui-focus,
-.ui-btn:focus {
-	-moz-box-shadow: inset 0 0 3px #387bbe /*{global-active-background-color}*/, 0 0 9px #387bbe /*{global-active-background-color}*/;
-	-webkit-box-shadow: inset 0 0 3px #387bbe /*{global-active-background-color}*/, 0 0 9px #387bbe /*{global-active-background-color}*/;
-	box-shadow: inset 0 0 3px #387bbe /*{global-active-background-color}*/, 0 0 9px #387bbe /*{global-active-background-color}*/;
+
+/* line 982, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-focus, .ui-btn:focus {
+  -moz-box-shadow: inset 0 0 3px #387bbe, 0 0 9px #387bbe;
+  -webkit-box-shadow: inset 0 0 3px #387bbe, 0 0 9px #387bbe;
+  box-shadow: inset 0 0 3px #387bbe, 0 0 9px #387bbe;
 }
-.ui-input-text.ui-focus,
-.ui-input-search.ui-focus {
-	-moz-box-shadow: 0 0 12px #387bbe /*{global-active-background-color}*/;
-	-webkit-box-shadow: 0 0 12px #387bbe /*{global-active-background-color}*/;
-	box-shadow: 0 0 12px #387bbe /*{global-active-background-color}*/;	
+
+/* line 989, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-input-text.ui-focus, .ui-input-search.ui-focus {
+  -moz-box-shadow: 0 0 12px #387bbe;
+  -webkit-box-shadow: 0 0 12px #387bbe;
+  box-shadow: 0 0 12px #387bbe;
 }
+
 /* unset box shadow in browsers that don't do it right
 -----------------------------------------------------------------------------------------------------------*/
+/* line 999, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-mobile-nosupport-boxshadow * {
-	-moz-box-shadow: none !important;
-	-webkit-box-shadow: none !important;
-	box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
 }
+/* line 1004, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
+.ui-mobile-nosupport-boxshadow .ui-focus, .ui-mobile-nosupport-boxshadow .ui-btn:focus, .ui-mobile-nosupport-boxshadow .ui-link-inherit:focus {
+  outline-width: 1px;
+  outline-style: auto;
+}
+
 /* ...and bring back focus */
-.ui-mobile-nosupport-boxshadow .ui-focus,
-.ui-mobile-nosupport-boxshadow .ui-btn:focus,
-.ui-mobile-nosupport-boxshadow .ui-link-inherit:focus {
-	outline-width: 1px;
-	outline-style: auto;
-}
-			

@@ -33,462 +33,281 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
-Yii::app()->clientScript->registerCss('inlineRelationshipsCss',"
-
-#relationships-grid .title-bar {
-    display: none;
-}
-
-#relationship-model-name-container {
-    text-align: left;
-    overflow: hidden;
-}
-#relationship-model-name-container label {
-    display: inline !important;
-}
-
-#quick-create-record {
-    position: relative;
-    top: 7px;
-    right: 9px;
-}
-
-#InlineRelationshipsWidget-widget-container- .summary {
-    padding: 5px;
-}
-
-#inline-relationships-autocomplete-container {
-    height:22px;
-    width: 200px;
-}
-
-#new-relationship-form {
-    padding: 6px;
-}
-
-#new-relationship-form .record-name-autocomplete {
-    width: 200px !important;
-    float: left;
-}
-
-#relationships-grid .x2grid-header-container {
-    border: 1px solid rgb(197, 197, 197);
-    border-bottom: none;
-    border-left: none;
-    border-right: none;
-}
-
-#relationships-grid .x2grid-body-container {
-    border: none;
-    border-bottom: 1px solid rgb(197, 197, 197);
-}
-
-label[for=\"RelationshipModelName\"],
-#relationship-type {
-    float: left;
-}
-
-#relationship-type {
-    position:relative;
-    top:-4px;
-}
-
-label[for=\"RelationshipModelName\"] {
-    margin-top: 8px;
-    margin-right: 6px;
-    font-weight: bold;
-    font-size: 8pt;
-    color: rgb(69, 69, 69);
-}
-
-#quick-create-record {
-    margin-left: 11px;
-    margin-top: 2px;
-    position: relative;
-    top: 3px;
-}
-
-#add-relationship-button {
-    margin-left: 0;
-    clear: both;
-    margin-bottom: 0;
-    margin-top: 0;
-}
-
-");
+Yii::app()->clientScript->registerCssFile(
+    Yii::app()->theme->baseUrl.'/css/components/sortableWidget/views/inlineRelationshipsWidget.css'
+);
 
 // init qtip for contact names
 Yii::app()->clientScript->registerScript('contact-qtip', '
 function refreshQtip() {
-	$("#relationships-grid .contact-name").each(function (i) {
-		var contactId = $(this).attr("href").match(/\\d+$/);
+    $("#relationships-grid .contact-name").each(function (i) {
+        var contactId = $(this).attr("href").match(/\\d+$/);
 
-		if(contactId !== null && contactId.length) {
-			$(this).qtip({
-				content: {
-					text: "'.addslashes(Yii::t('app','loading...')).'",
-					ajax: {
-						url: yii.baseUrl+"/index.php/contacts/qtip",
-						data: { id: contactId[0] },
-						method: "get"
-					}
-				},
-				style: {
-				}
-			});
-		}
-	});
+        if(contactId !== null && contactId.length) {
+            $(this).qtip({
+                content: {
+                    text: "'.addslashes(Yii::t('app','loading...')).'",
+                    ajax: {
+                        url: yii.baseUrl+"/index.php/contacts/qtip",
+                        data: { id: contactId[0] },
+                        method: "get"
+                    }
+                },
+                style: {
+                }
+            });
+        }
+    });
 
-	if($("#Relationships_Contacts_autocomplete").length == 1 &&
+    if($("#Relationships_Contacts_autocomplete").length == 1 &&
         $("Relationships_Contacts_autocomplete").data ("uiAutocomplete")) {
-		$("#Relationships_Contacts_autocomplete").data( "uiAutocomplete" )._renderItem = 
+        $("#Relationships_Contacts_autocomplete").data( "uiAutocomplete" )._renderItem = 
             function( ul, item ) {
 
-			var label = "<a style=\"line-height: 1;\">" + item.label;
-			label += "<span style=\"font-size: 0.7em; font-weight: bold;\">";
-			if(item.city || item.state || item.country) {
-				label += "<br>";
+            var label = "<a style=\"line-height: 1;\">" + item.label;
+            label += "<span style=\"font-size: 0.7em; font-weight: bold;\">";
+            if(item.city || item.state || item.country) {
+                label += "<br>";
 
-				if(item.city) {
-					label += item.city;
-				}
+                if(item.city) {
+                    label += item.city;
+                }
 
-				if(item.state) {
-					if(item.city) {
-						label += ", ";
-					}
-					label += item.state;
-				}
+                if(item.state) {
+                    if(item.city) {
+                        label += ", ";
+                    }
+                    label += item.state;
+                }
 
-				if(item.country) {
-					if(item.city || item.state) {
-						label += ", ";
-					}
-					label += item.country;
-				}
-			}
+                if(item.country) {
+                    if(item.city || item.state) {
+                        label += ", ";
+                    }
+                    label += item.country;
+                }
+            }
             if(item.assignedTo){
                 label += "<br>" + item.assignedTo;
             }
-			label += "</span>";
-			label += "</a>";
+            label += "</span>";
+            label += "</a>";
 
             return $( "<li>" )
                 .data( "item.autocomplete", item )
                 .append( label )
                 .appendTo( ul );
         };
-	}
+    }
 }
 
 $(function() {
-	refreshQtip();
+    refreshQtip();
 });
 ');
 
-$relationshipsDataProvider = new CArrayDataProvider($model->relatedX2Models,array(
-	'id' => 'relationships-gridview',
-	'sort' => array('attributes'=>array('name','myModelName','createDate','assignedTo')),
-	'pagination' => array('pageSize'=>10)
+$filterModel = new RelationshipsGridModel ('search');
+$filterModel->myModel = $model;
+
+// convert related models into grid models
+$gridModels = array ();
+foreach ($model->visibleRelatedX2Models as $relatedModel) {
+    $gridModels[] = Yii::createComponent (array (
+        'class' => 'RelationshipsGridModel', 
+        'relatedModel' => $relatedModel,
+        'myModel' => $model,
+        'id' => $model->id,
+    ));
+}
+
+
+// use filter model to filter grid models based on GET params
+$gridModels = $filterModel->filterModels ($gridModels);
+
+$relationshipsDataProvider = new CArrayDataProvider($gridModels, array(
+    'id' => 'relationships-gridview',
+    'sort' => array(
+        'attributes'=>array('name','relatedModelName','label','createDate','assignedTo')),
+    'pagination' => array('pageSize'=>$this->getWidgetProperty ('pageSize'))
 ));
+
 
 ?>
 
-<div id="relationships-form" style="text-align: center;">
+<div id="relationships-form" 
+<?php  ?>
+ class="<?php echo ($this->getWidgetProperty ('mode') === 'simple' ? 
+    'simple-mode' : 'full-mode'); ?>">
 
 <?php
+
 $columns = array(
-	array(
-		'name' => 'name',
-		'header' => Yii::t("contacts", 'Name'),
-		'value' => '$data->link',
-		'type' => 'raw',
-	),
-	array(
-		'name' => 'myModelName',
-		'header' => Yii::t("contacts", 'Type'),
-        'value' => 'X2Model::getModelTitle ($data->myModelName)',
-		'type' => 'raw',
-	),
-	array(
-		'name' => 'assignedTo',
-		'header' => Yii::t("contacts", 'Assigned To'),
-		'value' => '$data->renderAttribute("assignedTo")',
-		'type' => 'raw',
-	),
-	array(
-		'name' => 'createDate',
-		'header' => Yii::t('contacts', 'Create Date'),
-		'value' => '$data->renderAttribute("createDate")',
-		'type' => 'raw'
-	),
+    array(
+        'name' => 'name',
+        'header' => Yii::t("contacts", 'Name'),
+        'value' => '$data->renderAttribute ("name")',
+        'type' => 'raw',
+    ),
+    array(
+        'name' => 'relatedModelName',
+        'header' => Yii::t("contacts", 'Type'),
+        'value' => '$data->renderAttribute ("relatedModelName")',
+        'filter' => array ('' => CHtml::encode (Yii::t('app', '-Select one-'))) + 
+            $linkableModelsOptions, 
+        'type' => 'raw',
+    ),
+    array(
+        'name' => 'assignedTo',
+        'header' => Yii::t("contacts", 'Assigned To'),
+        'value' => '$data->renderAttribute("assignedTo")',
+        'type' => 'raw',
+    ),
+    array(
+        'name' => 'label',
+        'header' => Yii::t("contacts", 'Label'),
+        'value' => '$data->renderAttribute("label")',
+        'type' => 'raw',
+    ),
+    array(
+        'name' => 'createDate',
+        'header' => Yii::t('contacts', 'Create Date'),
+        'value' => '$data->renderAttribute("createDate")',
+        'filterType' => 'dateTime',
+        'type' => 'raw'
+    ),
 );
 
 $columns[] = array(
-    'name' => 'deletion',
+    // trailing dot is a kludge to prevent CDataColumn from rendering filter cell
+    'name' => 'deletion.', 
     'header' => Yii::t("contacts", 'Delete'),
+    'htmlOptions' => array (
+        'class' =>'delete-button-cell'
+    ),
     'value' => 
-        "CHtml::link(
-            CHtml::image(
-                Yii::app()->theme->baseUrl.'/css/gridview/delete.png'),
-            'javascript:void(0);',
+        "CHtml::ajaxLink(
+            '<span class=\'fa fa-times x2-delete-icon\'></span>',
+            '".Yii::app()->controller->createUrl('/site/deleteRelationship').
+                "?firstId='.\$data->relatedModel->id.
+                '&firstType='.get_class(\$data->relatedModel).
+                '&secondId=".$model->id."&secondType=".get_class($model).
+                "&redirect=/".Yii::app()->controller->getId()."/".$model->id."',
+            array (
+                'success' => 'function () {
+                    $.fn.yiiGridView.update(\'relationships-grid\');
+                }',
+            ),
             array(
                 'class'=>'x2-hint',
                 'title'=>'Deleting this relationship will not delete the linked record.',
-                'submit'=>'".Yii::app()->controller->createUrl('/site/deleteRelationship').
-                    "?firstId='.\$data->id.'&firstType='.get_class(\$data).
-                    '&secondId=".$model->id."&secondType=".get_class($model).
-                    "&redirect=/".Yii::app()->controller->getId()."/".$model->id."',
                 'confirm'=>'Are you sure you want to delete this relationship?'))",
     'type' => 'raw',
 );
 
+
 $this->widget('X2GridViewGeneric', array(
-	'id' => "relationships-grid",
+    'id' => "relationships-grid",
+    'enableGridResizing' => false,
     'defaultGvSettings' => array (
-        'name' => 180,
-        'myModelName' => 180,
-        'assignedTo' => 180,
-        'createDate' => 180,
-        'deletion' => 60
+        'name' => '25%',
+        'relatedModelName' => '15%',
+        'assignedTo' => '20%',
+        'label' => '10%',
+        'createDate' => '23%',
+        'deletion.' => '7%',
     ),
+    'filter' => $filterModel,
+    'htmlOptions' => array (
+        'class' => 
+            ($relationshipsDataProvider->itemCount < $relationshipsDataProvider->totalItemCount ?
+            'grid-view has-pager' : 'grid-view'),
+    ),
+    'dataColumnClass' => 'X2DataColumnGeneric',
     'gvSettingsName' => 'inlineRelationshipsGrid',
-	'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.
+    'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.
         '/css/gridview',
-	'template' => '<div class="title-bar">{summary}</div>{items}{pager}',
-	'afterAjaxUpdate' => 'js: function(id, data) { refreshQtip(); }',
-	'dataProvider' => $relationshipsDataProvider,
-	'columns' => $columns,
+    'template' => '<div class="title-bar">{summary}</div>{items}{pager}',
+    'afterAjaxUpdate' => 'js: function(id, data) { refreshQtip(); }',
+    'dataProvider' => $relationshipsDataProvider,
+    'columns' => $columns,
 ));
-
 ?>
+</div>
 
-<?php 
+<!---->
 
+<?php
 if($hasUpdatePermissions) {
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relationships.js');
-
-Yii::app()->clientScript->registerScript('inlineRelationshipsScript',"
-
-x2.InlineRelationships = (function () {
-
-function InlineRelationships (argsDict) {
-    argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
-    var defaultArgs = {
-        defaultsByRelatedModelType: {}, // {<model type>: <dictionary of default attr values>}
-        createUrls: {}, // {<model type>: <string>}
-        modelType: null,
-        modelId: null,
-        dialogTitles: {}, // {<model type>: <string>}
-        tooltips: {}, // {<model type>: <string>}
-
-        // used to determine which models the quick create button is displayed for
-        modelsWhichSupportQuickCreate: [], 
-        createRelationshipUrl: '',
-        DEBUG: false && x2.DEBUG, 
-
-        // used to request to autocomplete widgets when related model type is changed
-        ajaxGetModelAutocompleteUrl: '' 
-    };
-    auxlib.applyArgs (this, defaultArgs, argsDict);
-
-    this._relationshipManager;
-
-    this._init ();
-}
-
-/*
-Public static methods
-*/
-
-/*
-Private static methods
-*/
-
-/*
-Public instance methods
-*/
-
-/**
- * Set up quick create button for given model class
- * @param string modelType 
- */
-InlineRelationships.prototype.initQuickCreateButton = function (modelType) {
-
-    if (this._relationshipManager && 
-        this._relationshipManager instanceof x2.RelationshipsManager) {
-
-        this._relationshipManager.destructor ();
-    }
-
-    if ($.inArray (modelType, this.modelsWhichSupportQuickCreate) !== -1) {
-        $('#quick-create-record').css ('visibility', 'visible');
-    } else {
-        $('#quick-create-record').css ('visibility', 'hidden');
-        return;
-    }
-
-    this._relationshipManager = new x2.RelationshipsManager ({
-        element: $('#quick-create-record'),
-        modelType: this.modelType,
-        modelId: this.modelId,
-        relatedModelType: modelType,
-        createRecordUrl: this.createUrls[modelType],
-        attributeDefaults: this.defaultsByRelatedModelType[modelType] || {},
-        dialogTitle: this.dialogTitles[modelType],
-        tooltip: this.tooltips[modelType]
-    });
-
-};
-
-/**
- * Requests a new autocomplete widget for the specified model class, replacing the current one
- * @param string modelType
- */
-InlineRelationships.prototype._changeAutoComplete = function (modelType) {
-    x2.forms.inputLoading ($('#inline-relationships-autocomplete-container'));
-    $.ajax ({
-        type: 'GET',
-        url: this.ajaxGetModelAutocompleteUrl,
-        data: {
-            modelType: modelType
-        },
-        success: function (data) {
-            // remove span element used by jQuery widget
-            $('#inline-relationships-autocomplete-container input').
-                first ().next ('span').remove ();
-            // replace old autocomplete with the new one
-            $('#inline-relationships-autocomplete-container input').first ().replaceWith (data); 
-            // remove the loading gif
-            x2.forms.inputLoadingStop ($('#inline-relationships-autocomplete-container'));
-        }
-    });
-};
-
-/**
- * submits relationship create form via AJAX, performs validation 
- */
-InlineRelationships.prototype._submitCreateRelationshipForm = function () {
-    var that = this; 
-    if ($('#RelationshipModelId').val() === '') {
-        that.DEBUG && console.log ('model id is not set');
-        return false;
-    } else if (isNaN(parseInt($('#RelationshipModelId').val()))) {
-        that.DEBUG && console.log ('model id is NaN');
-        return false;
-    } else if($('.record-name-autocomplete').val() === '') {
-        that.DEBUG && console.log ('second name autocomplete is not set');
-        return false;
-    }
-
-    $.ajax ({
-        url: this.createRelationshipUrl,
-        type: 'POST', 
-        data: $('#new-relationship-form').serializeArray (),
-        success: function (data) {
-			if(data === 'duplicate') {
-				alert('Relationship already exists.');
-			} else if(data === 'success') {
-				$.fn.yiiGridView.update('relationships-grid');
-                var count = parseInt ($('#relationship-count').html ().match (/\((\d+)\)/)[1], 10);
-                $('#relationship-count').html ('(' + (count + 1) + ')');
-
-				$('.record-name-autocomplete').val('');
-				$('#RelationshipModelId').val('');
-			}
-        }
-    });
-};
-
-/**
- * Sets up create form submission button behavior 
- */
-InlineRelationships.prototype._setUpCreateFormSubmission = function () {
-    var that = this;
-    $('#add-relationship-button').on ('click', function () {
-        that._submitCreateRelationshipForm ();
-        return false;
-    });
-};
-
-/*
-Private instance methods
-*/
-
-InlineRelationships.prototype._init = function () {
-    var that = this;
-    
-    this._setUpCreateFormSubmission ();
-
-    $('#relationship-type').change (function () {
-        that.initQuickCreateButton ($(this).val ()); 
-        that._changeAutoComplete ($(this).val ());
-    });
-};
-
-return InlineRelationships;
-
-}) ();
-
-x2.inlineRelationships = new x2.InlineRelationships ({
-    defaultsByRelatedModelType: ".CJSON::encode ($defaultsByRelatedModelType).",
-    createUrls: ".CJSON::encode ($createUrls).",
-    modelType: '".$modelName."',
-    modelId: ".$model->id.",
-    dialogTitles: ".CJSON::encode ($dialogTitles).",
-    tooltips: ".CJSON::encode ($tooltips).",
-    modelsWhichSupportQuickCreate: $.map (".CJSON::encode ($modelsWhichSupportQuickCreate).",
-        function (val) { return val; }),
-    ajaxGetModelAutocompleteUrl: '".
-        Yii::app()->controller->createUrl ('ajaxGetModelAutocomplete')."',
-    createRelationshipUrl: '".
-        Yii::app()->controller->createUrl ('/site/addRelationship')."'
-});
-
-x2.inlineRelationships.initQuickCreateButton ('Contacts');
-
-", CClientScript::POS_READY);
-
 ?>
 
-<form id='new-relationship-form' class="form">
+<div class='clearfix'></div>
+<form id='new-relationship-form' class="form" style='display: none;'>
     <input type="hidden" id='ModelId' name="ModelId" value="<?php echo $model->id; ?>">
     <input type="hidden" id='ModelName' name="ModelName" value="<?php echo $modelName; ?>">
 
-    <div id='inline-relationships-autocomplete-container'>
-    <?php
-    X2Model::renderModelAutocomplete ('Contacts');
-    ?>
-    <input type="hidden" id='RelationshipModelId' name="RelationshipModelId">
-    </div>
-    <div class='row' id='relationship-model-name-container'>
-        <label for='RelationshipModelName'>
-            <?php echo Yii::t('app', 'Link Type:'); ?>
-        </label>
-        <?php
+
+    <div class='row'>
+        <?php 
+        echo CHtml::label(Yii::t('apps','Link Type:'), 'RelationshipModelName');
         echo CHtml::dropDownList (
             'RelationshipModelName', 'Contacts', $linkableModelsOptions, 
             array (
                 'id' => 'relationship-type',
-                'class' => 'x2-select',
+                'class' => 'x2-select, field',
             ));
         echo CHtml::link(
-            CHtml::image(Yii::app()->theme->getBaseUrl ().'/images/Plus_sign.png'),'#',
+            '', '#',
             array(
                 'onclick'=>'return false;',
                 'id'=>'quick-create-record',
-                'style' => 'visibility: hidden;'
+                'class' => 'fa fa-plus fa-lg pseudo-link',
+                'style' => 'visibility: hidden; height:16px;',
+            ));
+        ?>
+    </div>
+
+    <div class='row'>
+        <?php
+        echo CHtml::label( Yii::t('apps','Name:'), 'RelationshipName');
+        echo "<div id='inline-relationships-autocomplete-container'>";
+        X2Model::renderModelAutocomplete ('Contacts');
+        echo CHtml::hiddenField ('RelationshipModelId');
+        echo("</div>");
+        echo CHtml::textField ('myName',$model->name, array('disabled'=>'disabled'));
+        ?>
+        <!-- <input type="hidden" id='RelationshipModelId' name="RelationshipModelId"> -->
+    </div>
+
+    <div class='row'>
+        <?php
+        echo X2Html::label (Yii::t('app', 'Label:'), 'RelationshipLabelButton');
+        echo X2Html::textField ('firstLabel');
+
+
+        echo X2Html::textField ('secondLabel', '' ,array(
+            'title' => Yii::t('apps','Create a different label for ').$model->name));
+        echo X2Html::hiddenField ('mutual','true');
+        echo X2Html::link (
+            '', '', 
+            array(
+                'id'=>'RelationshipLabelButton',
+                'class' => 'pseudo-link fa fa-long-arrow-right',
+                'title' => Yii::t('apps','Create a different label for ').$model->name
             ));
         ?>
     </div>
     
-    <button id='add-relationship-button' class='x2-button'>
-        <?php echo Yii::t('app', 'Create Relationship'); ?>
-    </button>
+    <?php 
+        echo CHtml::button (
+            Yii::t('app', 'Create Relationship'), 
+            array('id' => 'add-relationship-button', 'class'=>'x2-button'));
+    ?>
+
 </form>
 
-<?php } ?>
+<?php 
+} 
+?>
 
-</div>

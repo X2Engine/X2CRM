@@ -37,14 +37,11 @@
 $this->breadcrumbs=array(
 	'Docs',
 );
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('docs','List Docs')),
-	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
-	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
-	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
-        array('label'=>Yii::t('docs', 'Import Docs'), 'url'=>array('admin/importModels', 'model'=>'Docs'), 'visible'=>Yii::app()->params->isAdmin),
-        array('label'=>Yii::t('docs', 'Export Docs'), 'url'=>array('admin/exportModels', 'model'=>'Docs'), 'visible'=>Yii::app()->params->isAdmin),
-));
+
+$menuOptions = array(
+    'index', 'create', 'createEmail', 'createQuote', 'import', 'export',
+);
+$this->insertMenu($menuOptions);
 
 Yii::app()->clientScript->registerCss('docsIndexCss', "
     #attachments-grid {
@@ -125,7 +122,7 @@ $('.search-form form').submit(function(){
 
 $this->widget('X2GridView', array(
 	'id'=>'docs-grid',
-	'title'=>Yii::t('docs','Docs'),
+	'title'=>Yii::t('docs','{module}', array('{module}'=>Modules::displayName())),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> '<div class="page-title icon docs">{title}{buttons}{filterHint}'.
             
@@ -183,7 +180,7 @@ $this->widget('X2GridView', array(
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'attachments-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title rounded-top icon docs"><h2>'.Yii::t('docs','Uploaded Docs').'</h2>{summary}</div>{items}{pager}',
+	'template'=> '<div class="page-title rounded-top icon docs"><h2>'.Yii::t('docs','Uploaded {module}', array('{module}'=>Modules::displayName())).'</h2>{summary}</div>{items}{pager}',
 	'dataProvider'=>$attachments,
 	'columns'=>array(
 		array(

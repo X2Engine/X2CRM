@@ -48,7 +48,10 @@ LeftWidget::registerScript ();
     if(!Yii::app()->user->isGuest) {
         $layout = Yii::app()->params->profile->getLayout ();
         $leftWidgets = array_intersect_key (
-            $layout['left'], array_flip (array ('RecentItems', 'ActionMenu', 'TopContacts')));
+            $layout['left'], 
+            array_flip (
+                array ('RecentItems', 'ActionMenu', 'TopContacts')
+            ));
         $that = $this;
         $leftWidgetRenderingFns = array (
             'ActionMenu' => function () {
@@ -72,6 +75,7 @@ LeftWidget::registerScript ();
                 ));
                 echo "</div><!-- .sidebar-left -->";
             },
+            
         );
 
         // render the left widgets in order

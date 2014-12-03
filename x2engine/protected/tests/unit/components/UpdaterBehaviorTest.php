@@ -1387,6 +1387,78 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         unlink($testfile);
     }
 
+    /**
+     * This test ensures that the updater will recover from failed migrations if
+     * specified, and won't otherwise
+     */
+    public function testRecoveryFromFailedMigration() {
+        // Prepare for the test
+        $ube = $this->instantiateUBe();
+        $this->prereq($ube,'sourceDir');
+        $nodes = array('protected','tests','data','updatemigration');
+        $allNodes = '';
+        foreach($nodes as $node) {
+            if(!is_dir($absNode = $ube->sourceDir.$allNodes.DIRECTORY_SEPARATOR.$node))
+                mkdir($absNode);
+            $allNodes .= DIRECTORY_SEPARATOR.$node;
+        }
+        $migdir = implode(DIRECTORY_SEPARATOR,array_merge(array($ube->sourceDir),$nodes));
+
+        // Copy the migration scripts
+        $exceptionScript = 'protected/tests/data/updatemigration/failure-except.php';
+        $errorScript = 'protected/tests/data/updatemigration/failure-error.php';
+        copy($ube->webRoot.DIRECTORY_SEPARATOR.FileUtil::rpath($exceptionScript),$ube->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($exceptionScript));
+        copy($ube->webRoot.DIRECTORY_SEPARATOR.FileUtil::rpath($errorScript),$ube->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($errorScript));
+
+        // Ensure that backups can be restored when an exception is raised
+        Yii::app()->db->createCommand("DROP TABLE IF EXISTS some_new_table;")->execute();
+        $ube->makeDatabaseBackup();
+        $scripts = array($exceptionScript);
+        $ran = array();
+
+        ob_start();
+        try {
+            $ube->runMigrationScripts($scripts,&$ran, true);
+            ob_end_clean();
+        } catch(Exception $e) {
+            ob_end_clean();
+            $this->assertEquals (42000, $e->getCode(), 'Incorrect exception raised. This test '.
+                'expects a PDO syntax error');
+            $ube->restoreDatabaseBackup();
+        }
+        // Should have reverted
+        $this->assertTableNotExists ('some_new_table');
+
+        // Ensure that backups can be restored when an error is raised
+        $ran = array();
+        $scripts = array($errorScript);
+        ob_start();
+        $ube->runMigrationScripts($scripts,&$ran, true);
+        // Retrieve error code from output
+        $output = ob_get_clean();
+        preg_match ('/\[(\d+)\]/', $output, $matches);
+        $this->assertArrayHasKey (1, $matches);
+        $this->assertEquals (8, $matches[1], 'Incorrect error occured. This test '.
+            'expects an E_NOTICE: undefined variable.');
+        // Should have reverted
+        $this->assertTableNotExists ('some_new_table');
+
+        // Ensure that the database is in an 'unexpected' state when no recovery is performed
+        $ran = array();
+        $scripts = array($exceptionScript);
+        ob_start();
+        try {
+            $ube->runMigrationScripts($scripts,&$ran, false);
+            ob_end_clean();
+        } catch(Exception $e) {
+            ob_end_clean();
+            $this->assertEquals (42000, $e->getCode(), 'Incorrect exception raised. This test '.
+                'expects a PDO syntax error');
+        }
+        $this->assertTableExists ('some_new_table');
+        Yii::app()->db->createCommand("DROP TABLE IF EXISTS some_new_table;")->execute();
+    }
+
     // function restoreDatabaseBackup is covered by testEnactChanges.
     // function testRunMigrationScripts is covered by testEnactChanges (#TODO)
 

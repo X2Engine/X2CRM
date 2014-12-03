@@ -1,0 +1,3 @@
+id,name,nameId,type,price,inventory,description,createDate,lastUpdated,lastActivity,updatedBy,status,currency,adjustment
+1,One,One_1,,249.65,4105,"First testing product","September 16, 2014 11:46:15 PM","September 16, 2014 11:46:15 PM","September 16, 2014 11:46:15 PM",admin,Active,USD,
+2,Two,Two_2,,56049.97,0,"Second Testing Product","September 16, 2014 11:46:42 PM","September 16, 2014 11:46:42 PM","September 16, 2014 11:46:42 PM",admin,Inactive,JPY,

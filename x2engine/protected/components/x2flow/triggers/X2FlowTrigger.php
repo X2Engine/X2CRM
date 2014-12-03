@@ -53,23 +53,23 @@ abstract class X2FlowTrigger extends X2FlowItem {
     /**
      * @return array all standard comparison operators
      */
-    public static function getComparisonOptions() {
+    public static function getFieldComparisonOptions () {
         return array(
-            '=' => Yii::t('studio','equals'),
-            '>' => Yii::t('studio','greater than'),
-            '<' => Yii::t('studio','less than'),
-            '>=' => Yii::t('studio','greater than or equal to'),
-            '<=' => Yii::t('studio','less than or equal to'),
-            '<>' => Yii::t('studio','not equal to'),
-            'list' => Yii::t('studio','in list'),
-            'notList' => Yii::t('studio','not in list'),
-            'empty' => Yii::t('studio','empty'),
-            'notEmpty' => Yii::t('studio','not empty'),
-            'contains' => Yii::t('studio','contains'),
-            'noContains' => Yii::t('studio','does not contain'),
-            'changed' => Yii::t('studio','changed'),
-            'before' => Yii::t('studio','before'),
-            'after' => Yii::t('studio','after'),
+            '=' => Yii::t('app','equals'),
+            '>' => Yii::t('app','greater than'),
+            '<' => Yii::t('app','less than'),
+            '>=' => Yii::t('app','greater than or equal to'),
+            '<=' => Yii::t('app','less than or equal to'),
+            '<>' => Yii::t('app','not equal to'),
+            'list' => Yii::t('app','in list'),
+            'notList' => Yii::t('app','not in list'),
+            'empty' => Yii::t('app','empty'),
+            'notEmpty' => Yii::t('app','not empty'),
+            'contains' => Yii::t('app','contains'),
+            'noContains' => Yii::t('app','does not contain'),
+            'changed' => Yii::t('app','changed'),
+            'before' => Yii::t('app','before'),
+            'after' => Yii::t('app','after'),
         );
     }
 

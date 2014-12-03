@@ -49,7 +49,9 @@ function SortableWidgetManager (argsDict) {
         showWidgetContentsUrl: '', // the url used to call the get widget contents action
         cssSelectorPrefix: '', // used to prefix id and class attributes of html elements
         widgetType: '', // (profileWidgetLayout)
-        DEBUG: x2.DEBUG && false,
+        DEBUG: true,
+        modelName: null,
+        modelId: null,
         translations: []
     };
 
@@ -67,6 +69,8 @@ Private static methods
 /*
 Public instance methods
 */
+
+SortableWidgetManager.prototype.afterDelete = function () {};
 
 SortableWidgetManager.prototype.rebindEventFns = function () {
     this._setUpSortability ();
@@ -116,7 +120,8 @@ SortableWidgetManager.prototype.addWidgetToHiddenWidgetsMenu = function (widgetS
 };
 
 SortableWidgetManager.prototype.hiddenWidgetsMenuIsEmpty = function () {
-    return ($(this._hiddenWidgetsMenuSelector).find (this._hiddenWidgetsMenuItemSelector).length === 0);
+    return ($(this._hiddenWidgetsMenuSelector).find (
+        this._hiddenWidgetsMenuItemSelector).length === 0);
 };
 
 /*
@@ -153,7 +158,9 @@ SortableWidgetManager.prototype._setUpSortability = function () {
                 type: "POST",
                 data: {
                     widgetOrder: that._getWidgetOrder (),
-                    widgetType: that.widgetType
+                    widgetType: that.widgetType,
+                    modelName: that.modelName,
+                    modelId: that.modelId,
                 },
                 success: function (data) {
                 }
@@ -178,7 +185,9 @@ SortableWidgetManager.prototype._getShowWidgetContentsData = function (widgetCla
     var that = this;
     return {
         widgetClass: widgetClass, 
-        widgetType: that.widgetType
+        widgetType: that.widgetType,
+        modelName: that.modelName,
+        modelId: that.modelId
     };
 };
 
@@ -193,7 +202,7 @@ SortableWidgetManager.prototype._showWidgetContents = function (widgetKey) {
     if (this.showWidgetContentsUrl.match (/\?\w+$/)) {
        url += '&'; 
     } else {
-       url += '?'; 
+       // url += '?'; 
     }
     $.ajax ({
         url: url,

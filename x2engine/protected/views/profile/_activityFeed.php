@@ -112,7 +112,7 @@ x2.activityFeed = new x2.ActivityFeed ({
         </span>
         <a href='#' id='feed-filters-button' 
          class='filter-button right'>
-            <span></span>
+            <span class='fa fa-filter fa-lg'></span>
         </a>
         <div id="menu-links" class="title-bar" style='display: none;'>
             <?php

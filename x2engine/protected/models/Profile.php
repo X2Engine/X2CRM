@@ -36,7 +36,7 @@
 
 Yii::import('application.components.X2LinkableBehavior');
 Yii::import('application.modules.users.models.*');
-Yii::import('application.components.JSONFieldsBehavior');
+Yii::import('application.components.NormalizedJSONFieldsBehavior');
 Yii::import('application.components.WidgetLayoutJSONFieldsBehavior');
 Yii::import('application.components.X2SmartSearchModelBehavior');
 Yii::import('application.components.sortableWidget.SortableWidget');
@@ -104,6 +104,9 @@ class Profile extends CActiveRecord {
     }
 
     public function behaviors(){
+        // Skip loading theme settins if this request isn't associated with a session, eg API
+        $theme = (Yii::app()->params->noSession ? array() :
+            array_keys( ThemeGenerator::getSettings() ));
         return array(
             'X2LinkableBehavior' => array(
                 'class' => 'X2LinkableBehavior',
@@ -116,15 +119,15 @@ class Profile extends CActiveRecord {
                 'defaults' => array(),
                 'defaultStickOnClear' => false
             ),
-            'JSONFieldsBehavior' => array(
-                'class' => 'application.components.JSONFieldsBehavior',
+            'NormalizedJSONFieldsBehavior' => array(
+                'class' => 'application.components.NormalizedJSONFieldsBehavior',
                 'transformAttributes' => array(
-                    'theme' => array(
+                    'theme' => array_merge($theme, array(
                         'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor',
                         'pageHeaderTextColor', 'activityFeedWidgetBgColor',
                         'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling',
                         'pageOpacity', 'themeName', 'private', 'owner', 'loginSound',
-                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven'),
+                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven')),
                 ),
             ),
             'JSONFieldsDefaultValuesBehavior' => array(
@@ -146,6 +149,7 @@ class Profile extends CActiveRecord {
                 'transformAttributes' => array (
                     'profileWidgetLayout' => SortableWidget::PROFILE_WIDGET_PATH_ALIAS,
                     'recordViewWidgetLayout' => SortableWidget::RECORD_VIEW_WIDGET_PATH_ALIAS,
+                     
                 )
             ),
             'X2SmartSearchModelBehavior' => array (
@@ -153,6 +157,7 @@ class Profile extends CActiveRecord {
             )
         );
     }
+
 
     /**
      * @return array validation rules for model attributes.
@@ -923,6 +928,10 @@ class Profile extends CActiveRecord {
                     'title' => 'Recently Viewed',
                     'minimize' => false,
                 ),
+                'EmailInboxMenu' => array(
+                    'title' => 'Inbox Menu',
+                    'minimize' => false,
+                ),
                 'ActionTimer' => array(
                     'title' => 'Action Timer',
                     'minimize' => false,
@@ -1278,12 +1287,13 @@ class Profile extends CActiveRecord {
         ")->queryAll ());
     }
 
+    
+
     /**
      * @return Profile 
      */
     public function getGuestProfile () {
         return $this->findByAttributes (array ('username' => self::GUEST_PROFILE_USERNAME)); 
     }
-
 
 }

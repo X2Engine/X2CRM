@@ -66,7 +66,7 @@ $docContainerOuterHeight .= 'px';
         </div>
         <form id="docview-input">
             <label><?php echo Yii::t("app", "Enter Title"); ?></label>
-            <input id="docview-title" type="text">
+            <input class="x2-textfield" id="docview-title" type="text">
         </form>
     </div>
 </div>

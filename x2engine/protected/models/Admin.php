@@ -71,6 +71,12 @@ class Admin extends CActiveRecord {
 
     public function behaviors(){
         $behaviors = array(
+            'JSONFieldsBehavior' => array (
+                'class' => 'application.components.JSONFieldsBehavior',
+                'transformAttributes' => array (
+                    'twitterRateLimits',
+                ),
+            ),
             'JSONFieldsDefaultValuesBehavior' => array(
                 'class' => 'application.components.JSONFieldsDefaultValuesBehavior',
                 'transformAttributes' => array(
@@ -132,6 +138,8 @@ class Admin extends CActiveRecord {
                 'appName,x2FlowRespectsDoNotEmail,doNotEmailPage,doNotEmailLinkText',
                 'safe'
             ),
+            array('imapPollTimeout', 'numerical', 'max' => 30, 'min' => 5),
+            
                 // The following rule is used by search().
                 // Please remove those attributes that should not be searched.
                 // array('id, accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, chatPollTime, menuVisibility, currency', 'safe', 'on'=>'search'),
@@ -207,6 +215,7 @@ class Admin extends CActiveRecord {
                 'app','Respect contacts\' "Do not email" settings?'),
             'doNotEmailLinkText' => Yii::t('app','"Do not email" Link Text'),
             'doNotEmailLinkPage' => Yii::t('app','"Do not email" Page'),
+             
         );
     }
 
@@ -269,4 +278,5 @@ class Admin extends CActiveRecord {
         $this->save ();
     }
 
+    
 }

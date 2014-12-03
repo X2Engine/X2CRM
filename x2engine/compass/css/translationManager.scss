@@ -1,0 +1,524 @@
+/* line 1, ../compass/sass/css/translationManager.scss */
+
+body {
+  margin: 0;
+  padding: 10px 0 0 0;
+}
+
+/* line 6, ../compass/sass/css/translationManager.scss */
+
+* {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+/* line 11, ../compass/sass/css/translationManager.scss */
+
+div {
+  margin: 0;
+  padding: 0;
+  &.side-bar {
+    float: left;
+    width: 225px;
+    margin: 0 0 0 10px;
+  }
+  &.content-container {
+    display: block;
+    width: 100%;
+  }
+  &.content {
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0 10px 10px 245px;
+    table.rounded {
+      width: 100%;
+      overflow: hidden;
+    }
+  }
+  &#iframeBox {
+    overflow: hidden;
+    height: 0;
+    margin-bottom: 10px;
+    iframe {
+      clear: both;
+      margin: 0;
+      margin-top: -110px;
+      width: 100%;
+      height: 360px;
+      border: none;
+    }
+  }
+}
+
+/* line 14, ../compass/sass/css/translationManager.scss */
+
+/* line 19, ../compass/sass/css/translationManager.scss */
+
+/* line 23, ../compass/sass/css/translationManager.scss */
+
+/* line 28, ../compass/sass/css/translationManager.scss */
+
+/* line 33, ../compass/sass/css/translationManager.scss */
+
+/* line 37, ../compass/sass/css/translationManager.scss */
+
+/* line 48, ../compass/sass/css/translationManager.scss */
+
+td#translationPane {
+  /* height:260px; */
+  border-top: 1px solid #999;
+  padding: 0;
+  margin: 0;
+}
+
+/* line 55, ../compass/sass/css/translationManager.scss */
+
+form {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+/* line 61, ../compass/sass/css/translationManager.scss */
+
+.ok {
+  color: #00aa00;
+}
+
+/* line 65, ../compass/sass/css/translationManager.scss */
+
+.not-ok {
+  color: #aa0000;
+  font-weight: bold;
+}
+
+/* line 71, ../compass/sass/css/translationManager.scss */
+
+div {
+  &.rounded {
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -o-border-radius: 4px;
+    border: 1px solid #ddd;
+    padding: 5px;
+  }
+  &.scroll-box {
+    border: none;
+    clear: both;
+    margin: 0;
+    padding: 0;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+    width: auto;
+    * {
+      font-size: 12px;
+      line-height: 15px;
+    }
+  }
+  &.language, &.show-all {
+    width: 20px;
+    float: left;
+    clear: left;
+    margin-right: -100%;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+  }
+  &.language:hover {
+    color: #333;
+  }
+  &.translation, &.source {
+    width: auto;
+    margin: 0;
+    padding: 0 5px;
+  }
+  &.translation {
+    margin-left: 20px;
+    &.empty {
+      background: #ea9;
+    }
+  }
+  &.source input, &.translation input {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    color: #666;
+    background: none;
+    -webkit-appearance: none;
+  }
+}
+
+/* line 79, ../compass/sass/css/translationManager.scss */
+
+/* line 88, ../compass/sass/css/translationManager.scss */
+
+/* line 93, ../compass/sass/css/translationManager.scss */
+
+/* line 103, ../compass/sass/css/translationManager.scss */
+
+/* line 106, ../compass/sass/css/translationManager.scss */
+
+/* line 111, ../compass/sass/css/translationManager.scss */
+
+/* line 113, ../compass/sass/css/translationManager.scss */
+
+/* line 117, ../compass/sass/css/translationManager.scss */
+
+/* line 129, ../compass/sass/css/translationManager.scss */
+
+input {
+  &.comment {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    color: #666;
+    background: none;
+    -webkit-appearance: none;
+    width: 100%;
+    color: #aaa;
+  }
+  &.source:focus, &.translation:focus {
+    border: 0px solid #999;
+    margin: 0;
+  }
+}
+
+/* line 140, ../compass/sass/css/translationManager.scss */
+
+/* line 147, ../compass/sass/css/translationManager.scss */
+
+div {
+  &.source input.modified, &.translation input.modified {
+    font-weight: bold;
+    color: #000;
+  }
+}
+
+/* line 153, ../compass/sass/css/translationManager.scss */
+
+input.comment.modified {
+  font-weight: bold;
+  color: #000;
+}
+
+/* line 158, ../compass/sass/css/translationManager.scss */
+
+table {
+  border-collapse: separate;
+  border: none;
+  border-spacing: 0;
+  &.translation-list {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    * {
+      font-family: "Courier New", Courier, serif;
+    }
+    input {
+      outline: none;
+    }
+    tr {
+      td, th {
+        vertical-align: top;
+        border: 1px solid #fff !important;
+        padding: 0;
+      }
+      &:hover {
+        border-color: #99bbff;
+        background: #cceeff;
+      }
+    }
+    td.controls {
+      text-align: center;
+      a {
+        text-decoration: none;
+        color: #bbddee;
+      }
+    }
+    tr:hover td.controls a {
+      color: #06c;
+    }
+    input {
+      font-family: "Courier New", Courier, serif;
+      font-size: 12px;
+      white-space: pre;
+    }
+  }
+}
+
+/* line 162, ../compass/sass/css/translationManager.scss */
+
+/* line 167, ../compass/sass/css/translationManager.scss */
+
+/* line 170, ../compass/sass/css/translationManager.scss */
+
+/* line 174, ../compass/sass/css/translationManager.scss */
+
+/* line 179, ../compass/sass/css/translationManager.scss */
+
+/* line 184, ../compass/sass/css/translationManager.scss */
+
+/* line 186, ../compass/sass/css/translationManager.scss */
+
+/* line 192, ../compass/sass/css/translationManager.scss */
+
+/* line 197, ../compass/sass/css/translationManager.scss */
+
+/* line 205, ../compass/sass/css/translationManager.scss */
+
+td {
+  padding: 5px;
+  margin: 0;
+  border: 1px solid #999;
+  border-width: 1px 1px 0 0;
+  border-spacing: 0;
+}
+
+/* line 213, ../compass/sass/css/translationManager.scss */
+
+th {
+  padding: 5px;
+  margin: 0;
+  border: 1px solid #999;
+  border-width: 1px 1px 0 0;
+  border-spacing: 0;
+  background: #aaa;
+  color: #fff;
+}
+
+/* line 223, ../compass/sass/css/translationManager.scss */
+
+tr {
+  margin: 0;
+  padding: 0;
+}
+
+/* line 228, ../compass/sass/css/translationManager.scss */
+
+td {
+  padding: 5px;
+  margin: 0;
+  border: 1px solid #999;
+  border-width: 1px 1px 0 0;
+  border-spacing: 0;
+}
+
+/* line 236, ../compass/sass/css/translationManager.scss */
+
+th {
+  padding: 5px;
+  margin: 0;
+  border: 1px solid #999;
+  border-width: 1px 1px 0 0;
+  border-spacing: 0;
+  background: #aaa;
+  color: #fff;
+}
+
+/* line 246, ../compass/sass/css/translationManager.scss */
+
+tr {
+  margin: 0;
+  padding: 0;
+  &.entry td {
+    border-color: #ddd;
+    border-right: 1px solid #ddd;
+  }
+}
+
+/* line 249, ../compass/sass/css/translationManager.scss */
+
+/* tr.comment  td {
+	border-color:#ddd;
+	padding:0 5px;
+	color:#aaa;
+} */
+/* line 261, ../compass/sass/css/translationManager.scss */
+
+td a {
+  text-decoration: none;
+  color: #06c;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* line 264, ../compass/sass/css/translationManager.scss */
+
+/* line 269, ../compass/sass/css/translationManager.scss */
+
+table.rounded {
+  margin-bottom: 10px;
+  tr {
+    &.active {
+      background: #cceeff;
+    }
+    &:first-child th {
+      border-top: 1px solid #333;
+      &:first-child {
+        border-radius: 4px 0 0 0;
+        -moz-border-radius: 4px 0 0 0;
+        -webkit-border-radius: 4px 0 0 0;
+        -o-border-radius: 4px 0 0 0;
+        border-left: 1px solid #333;
+      }
+      &:last-child {
+        border-radius: 0 4px 0 0;
+        -moz-border-radius: 0 4px 0 0;
+        -webkit-border-radius: 0 4px 0 0;
+        -o-border-radius: 0 4px 0 0;
+        border-right: 1px solid #333;
+      }
+    }
+    td {
+      &:first-child {
+        border-left: 1px solid #333;
+      }
+      &:last-child {
+        border-right: 1px solid #333;
+      }
+      &:only-child {
+        border-left: 1px solid #333;
+        border-right: 1px solid #333;
+      }
+    }
+    &:last-child td {
+      border-bottom: 1px solid #333;
+      &:first-child {
+        border-radius: 0 0 0 4px;
+        -moz-border-radius: 0 0 0 4px;
+        -webkit-border-radius: 0 0 0 4px;
+        -o-border-radius: 0 0 0 4px;
+      }
+      &:last-child {
+        border-radius: 0 0 4px 0;
+        -moz-border-radius: 0 0 4px 0;
+        -webkit-border-radius: 0 0 4px 0;
+        -o-border-radius: 0 0 4px 0;
+      }
+      &:only-child {
+        border-radius: 0 0 4px 4px;
+        -moz-border-radius: 0 0 4px 4px;
+        -webkit-border-radius: 0 0 4px 4px;
+        -o-border-radius: 0 0 4px 4px;
+      }
+    }
+  }
+}
+
+/* line 272, ../compass/sass/css/translationManager.scss */
+
+/* line 275, ../compass/sass/css/translationManager.scss */
+
+/* line 277, ../compass/sass/css/translationManager.scss */
+
+/* line 284, ../compass/sass/css/translationManager.scss */
+
+/* line 293, ../compass/sass/css/translationManager.scss */
+
+/* line 296, ../compass/sass/css/translationManager.scss */
+
+/* line 299, ../compass/sass/css/translationManager.scss */
+
+/* line 304, ../compass/sass/css/translationManager.scss */
+
+/* line 306, ../compass/sass/css/translationManager.scss */
+
+/* line 312, ../compass/sass/css/translationManager.scss */
+
+/* line 318, ../compass/sass/css/translationManager.scss */
+
+/* rounded corner on top left TH cell */
+/* rounded corner on top left TH cell */
+/* left border on all left TD cells */
+/* bottom border on all bottom TD cells */
+/* rounded corner on bottom left TD cells */
+/* rounded corner on bottom right TD cells */
+/* rounded corner on bottom full-width TD cells */
+/* line 342, ../compass/sass/css/translationManager.scss */
+
+a.x2-button, input.x2-button, button.x2-button {
+  /* , a.search-button */
+  display: inline-block;
+  margin: 0 5px 5px 0;
+  padding: 0 8px;
+  border: 1px solid #999 !important;
+  background-color: #eee;
+  background: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#dddddd));
+  background: -moz-linear-gradient(top, #f0f0f0, #dddddd);
+  color: #333;
+  font-size: 11px !important;
+  line-height: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  -moz-box-shadow: inset 0 1px 0 0 #fff;
+  -webkit-box-shadow: inset 0 1px 0 0 #fff;
+  box-shadow: inset 0 1px 0 0 #fff;
+  -webkit-appearance: none;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -o-border-radius: 4px;
+}
+
+/* line 366, ../compass/sass/css/translationManager.scss */
+
+a.x2-button:hover, input.x2-button:hover, button.x2-button:hover {
+  color: black;
+  background-color: #fff;
+  background: -webkit-gradient(linear, left top, left bottom, from(white), to(#eeeeee));
+  background: -moz-linear-gradient(top, white, #eeeeee);
+}
+
+/* line 373, ../compass/sass/css/translationManager.scss */
+
+a.x2-button:active, input.x2-button:active, button.x2-button:active {
+  color: black;
+  background-color: #bbb;
+  background: -webkit-gradient(linear, left top, left bottom, from(#bbbbbb), to(#cccccc));
+  background: -moz-linear-gradient(top, #bbbbbb, #cccccc);
+  -moz-box-shadow: inset 0 1px 1px 0 #999;
+  -webkit-box-shadow: inset 0 1px 1px 0 #999;
+  box-shadow: inset 0 1px 1px 0 #999;
+}
+
+/* line 383, ../compass/sass/css/translationManager.scss */
+
+input.x2-button, button.x2-button {
+  display: inline-block;
+  margin: 5px 5px 5px 0;
+  padding: 5px 20px;
+  line-height: 15px;
+}
+
+/* line 390, ../compass/sass/css/translationManager.scss */
+
+#footer {
+  color: #999;
+  font-size: 10px;
+  text-align: center;
+  a {
+    color: #60a2e6;
+    &:hover {
+      color: #8dbff2;
+    }
+  }
+}
+
+/* line 394, ../compass/sass/css/translationManager.scss */
+
+/* line 396, ../compass/sass/css/translationManager.scss */
+
+/* line 402, ../compass/sass/css/translationManager.scss */
+
+#footer-logos {
+  display: block;
+  margin: 0 auto 0 auto;
+}

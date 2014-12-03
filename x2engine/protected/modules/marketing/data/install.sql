@@ -23,6 +23,7 @@ CREATE TABLE x2_campaigns (
     lastActivity BIGINT,
     updatedBy    VARCHAR(50),
     sendAs       INT DEFAULT NULL,
+    enableRedirectLinks TINYINT DEFAULT 0,
     PRIMARY KEY (id),
     UNIQUE (nameId),
     INDEX(listId),
@@ -79,6 +80,7 @@ VALUES
 ('Campaign', 'description',  'Description',        0, 0, 'text',        0, 0, NULL,              1, 0, 'Medium', 0, 1, NULL),
 ('Campaign', 'type',         'Type',               0, 0, 'dropdown',    0, 0, '107',             0, 0, '',       0, 1, NULL),
 ('Campaign', 'template',     'Template',           0, 0, 'link',        0, 0, 'Docs',            0, 0, '',       0, 1, 'MUL'),
+('Campaign', 'enableRedirectLinks',     'Enable redirect links?',           0, 0, 'boolean',        0, 0, NULL,            0, 0, '',       0, 1, NULL),
 ('Campaign', 'cost',         'Cost',               0, 0, 'varchar',     0, 0, NULL,              0, 0, '',       0, 1, NULL),
 ('Campaign', 'subject',      'Subject',            0, 0, 'varchar',     0, 0, NULL,              0, 0, '',       0, 1, NULL),
 ('Campaign', 'content',      'Content',            0, 0, 'text',        0, 0, NULL,              0, 0, '',       0, 1, NULL),
@@ -94,5 +96,189 @@ VALUES
 INSERT INTO `x2_form_layouts`
 (`id`, `model`, `version`, `scenario`, `layout`, `defaultView`, `defaultForm`, `createDate`, `lastUpdated`)
 VALUES
-(13,'Campaign','Form','Default','{\"version\":\"3.2\",\"sections\":[{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"483\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"},{\"name\":\"formItem_sendAs\",\"labelType\":\"left\",\"readOnly\":\"undefined\",\"height\":\"22\",\"width\":\"154\",\"tabindex\":\"undefined\"}]}]}]},{\"collapsible\":false,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"226\",\"tabindex\":\"0\"},{\"name\":\"formItem_template\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"133\",\"tabindex\":\"0\"},{\"name\":\"formItem_content\",\"labelType\":\"none\",\"readOnly\":\"0\",\"height\":\"229\",\"width\":\"563\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}',0,1,1373388579,1373388579);
+(13,'Campaign','Form','Default','
+{
+    "sections": [
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_name", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "230"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": ""
+        }, 
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "39", 
+                                    "labelType": "left", 
+                                    "name": "formItem_description", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "483"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": ""
+        }, 
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_listId", 
+                                    "readOnly": "0", 
+                                    "tabindex": "NaN", 
+                                    "width": "135"
+                                }, 
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_type", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "135"
+                                }, 
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_sendAs", 
+                                    "readOnly": "undefined", 
+                                    "tabindex": "undefined", 
+                                    "width": "154"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": ""
+        }, 
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_enableRedirectLinks", 
+                                    "readOnly": "undefined", 
+                                    "tabindex": "undefined", 
+                                    "width": "154"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": ""
+        }, 
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_subject", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "226"
+                                }, 
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_template", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "133"
+                                }, 
+                                {
+                                    "height": "229", 
+                                    "labelType": "none", 
+                                    "name": "formItem_content", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "563"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": "Email Template"
+        }, 
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "24", 
+                                    "labelType": "left", 
+                                    "name": "formItem_assignedTo", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "145"
+                                }, 
+                                {
+                                    "height": "24", 
+                                    "labelType": "left", 
+                                    "name": "formItem_visibility", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "145"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": ""
+        }
+    ], 
+    "version": "3.2"
+}
+',0,1,1373388579,1373388579);
 

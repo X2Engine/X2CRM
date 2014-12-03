@@ -33,49 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/clockWidget.js');
-Yii::app()->clientScript->registerCss('clockWidgetCss',"
 
-	#clock-widget-gear-menu .option {
-		background-color: inherit;
-		border-radius: 2px;
-		padding:1px;
-	}
-
-	#clock-widget-gear-menu .option:hover[value='false'] {
-		background-color: #DDDDDD;
-	}
-	
-	#clock-widget-gear-menu .option[value='true'] {
-		background-color: #407BC9;
-		color: white;
-	}
-
-	#tzClockDigital {
-		color: #555;
-		font-size: 50pt;
-		   font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; 
-		color: #2E2E2E;
-	}
-
-	#widget_TimeZone {
-		background-color: #FFF;
-	}
-
-	#widget_TimeZone #clock-ampm { 
-		font-size:30pt;
-	}
-
-	#clock-gear-img-container {
-		float: left;
-		opacity: 0.3;
-	}
-	
-	#clock-gear-img-container:hover {
-		opacity: 1.0;
-	}
-
-	");
 
 $imgUrl = Yii::app()->theme->baseUrl."/images/widgets.png";
 $analog = Yii::t('app', 'Analog');
@@ -92,8 +50,8 @@ $(function() {
 
 	function callback(li){
 		li = $(li.target);
-		li.siblings().removeClass('blue');
-		li.addClass('blue');
+		li.siblings().removeClass('option-active');
+		li.addClass('option-active');
 		switchSetting(li.attr('value'));
 	}
 
@@ -102,15 +60,16 @@ $(function() {
 	// var imgUrl= '<?php echo $imgUrl ?>';
 
 	// Create the Confi menu
-	var dropdown = $("#widget_TimeZone").addConfigMenu({
-			analog: '<?php echo $analog ?>',
-			digital: '<?php echo $digital ?>',
-			digital24: '<?php echo $digital24 ?>'
-		}, callback);
+	if( $("#widget_TimeZone").find('.gear-img-container').length == 0 ) {
+		var dropdown = $("#widget_TimeZone").addConfigMenu({
+				analog: '<?php echo $analog ?>',
+				digital: '<?php echo $digital ?>',
+				digital24: '<?php echo $digital24 ?>'
+			}, callback);
 
-	// // Set the currently blue option to true
-	dropdown.find("div[value='"+setting+"']").addClass('blue');
-
+		// // Set the currently blue option to true
+		dropdown.find("div[value='"+setting+"']").addClass('option-active');
+	}
 
 	// Make the ajax call to save the setting in the profile
 	function switchSetting(id){

@@ -128,7 +128,7 @@ class Publisher extends X2Widget {
         Yii::app()->clientScript->registerPackages($this->packages);
 
         Yii::app()->clientScript->registerScript('publisherScript',"
-        (function () {
+        ;(function () {
             // construct publisher object, passing tab objects to it
             x2.publisher = new x2.Publisher ({
                 translations: {},

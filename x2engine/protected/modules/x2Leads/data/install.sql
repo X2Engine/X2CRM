@@ -3,6 +3,8 @@ DROP TABLE IF EXISTS `x2_x2leads`;
 CREATE TABLE x2_x2leads(
     id                 INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name`             VARCHAR(255)    NOT NULL,
+    firstName          VARCHAR(255) NOT NULL,
+    lastName           VARCHAR(255) NOT NULL,
     nameId             VARCHAR(250) DEFAULT NULL,
     accountName        VARCHAR(100),
     quoteAmount        DECIMAL(18,2),
@@ -14,7 +16,6 @@ CREATE TABLE x2_x2leads(
     assignedTo         TEXT,
     createDate         BIGINT,
     visibility         TINYINT DEFAULT 1,
-    associatedContacts TEXT,
     lastUpdated        BIGINT,
     lastActivity       BIGINT,
     updatedBy          VARCHAR(50),
@@ -31,8 +32,10 @@ INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)
 VALUES
 ('X2Leads', 'id',                'ID',                  0, 0, 'varchar',    0, 0, NULL,       0, 0, '',       1, 1, 'PRI'),
-('X2Leads', 'name',              'Name',                0, 0, 'varchar',    1, 0, NULL,       1, 0, 'High',   0, 1, NULL),
+('X2Leads', 'name',              'Name',                0, 0, 'varchar',    0, 0, NULL,       1, 0, 'High',   0, 1, NULL),
 ('X2Leads', 'nameId',            'NameID',              0, 0, 'varchar',    0, 1, NULL,       1, 0, 'High',   0, 1, 'FIX'),
+('X2Leads', 'firstName',      'First Name',             0, 0, 'varchar',    1, 0, NULL,         1, 0, 'High',   0, 1, NULL),
+('X2Leads', 'lastName',       'Last Name',              0, 0, 'varchar',    1, 0, NULL,         1, 0, 'High',   0, 1, NULL),
 ('X2Leads', 'accountName',       'Account',             0, 0, 'link',       0, 0, 'Accounts', 0, 0, '',       0, 1, 'MUL'),
 ('X2Leads', 'quoteAmount',       'Quote Amount',        0, 0, 'currency',   0, 0, NULL,       0, 0, '',       0, 1, NULL),
 ('X2Leads', 'salesStage',        'Sales Stage',         0, 0, 'dropdown',   0, 0, '105',      0, 0, '',       0, 1, NULL),

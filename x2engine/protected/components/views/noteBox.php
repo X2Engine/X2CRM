@@ -118,7 +118,8 @@ $(function() {
 <?php echo CHtml::beginForm(); ?>
 
 <div id="note-message-container" style="height: <?php echo $notemessageContainerHeight; ?>px">
-	<?php echo CHtml::textArea('note-message', '', array('style'=>"height: ". $notemessageHeight . "px;")); ?>
+	<?php echo CHtml::textArea('note-message', '', array('class'=> 'x2-textarea', 
+						'style'=>"height: ". $notemessageHeight . "px;")); ?>
 </div>
 
 <?php

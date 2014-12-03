@@ -89,14 +89,6 @@ Yii::app()->clientScript->registerScript('fieldEditor-config', 'x2.fieldEditor.l
 </div>
 <div class="form" id="fields-form">
     <?php
-    // $searchModel = new Fields('search');
-    /*$searchModel->setAttributes(
-                array_fill_keys(
-                    $searchModel->attributeNames(),
-                    null
-                ),
-                false);*/
-
     $this->widget('X2GridViewGeneric', array(
         'id' => 'fields-grid',
         'title'=>Yii::t('accounts','Modified Fields'),

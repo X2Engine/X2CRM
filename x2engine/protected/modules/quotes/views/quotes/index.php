@@ -34,13 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-    array('label'=>Yii::t('quotes','Quotes List')),
-    array('label'=>Yii::t('quotes','Invoice List'), 'url'=>array('indexInvoice')),
-    array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
-    array('label'=>Yii::t('quotes', 'Import Quotes'), 'url'=>array('admin/importModels', 'model'=>'Quote'), 'visible'=>Yii::app()->params->isAdmin),
-    array('label'=>Yii::t('quotes', 'Export Quotes'), 'url'=>array('admin/exportModels', 'model'=>'Quote'), 'visible'=>Yii::app()->params->isAdmin),
-));
+$menuOptions = array(
+    'index', 'invoices', 'create', 'import', 'export',
+);
+$this->insertMenu($menuOptions);
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
@@ -64,7 +61,7 @@ $('.search-form form').submit(function(){
 <?php
 $this->widget('X2GridView', array(
 	'id'=>'quotes-grid',
-	'title'=>Yii::t('quotes','Quotes'),
+	'title'=>Yii::t('quotes','{module}',  array('{module}'=>Modules::displayName())),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> 
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.

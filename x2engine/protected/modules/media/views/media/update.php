@@ -34,13 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('media', 'All Media'), 'url'=>array('index')),
-	array('label'=>Yii::t('media', 'Upload'), 'url'=>array('upload')),
-	array('label'=>Yii::t('media', 'View'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('media', 'Update')),
-	array('label'=>Yii::t('media', 'Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('media','Are you sure you want to delete this item?'))),
-));
+$menuOptions = array(
+    'index', 'upload', 'view', 'edit', 'delete',
+);
+$this->insertMenu($menuOptions, $model);
+
 ?>
 <div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','Update File: '); ?></span> <?php echo $model->renderAttribute (($model->drive || !empty($model->name))? "name" : "fileName"); ?></h2></div>
 
@@ -135,7 +133,8 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 														'accounts'=>Yii::t('actions','Account'),
 														'bg'=>Yii::t('media', 'Background'),
 														// 'products'=>Yii::t('media', 'Product'),
-														'docs'=>Yii::t('media','Doc'));
+														'docs'=>Yii::t('media','Doc'),
+														'theme'=>Yii::t('media','Theme'));
 
 													if(!isset($display_array[$file_assoc])){
 														$selected = $display_array['none'];

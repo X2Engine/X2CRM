@@ -160,11 +160,13 @@ class SiteController extends MobileController {
         foreach($sessions as $session) {
             $usernames[] = $session->user;
         }
+        $usernames = array_unique ($usernames);
         foreach($usernames as $username){
             $user = User::model()->findByAttributes(array('username'=>$username));
             $users[] = $user->firstName." ".$user->lastName;
         }
-        
+
+        sort ($users);
         $this->render('online',array(
             'users'=>$users,
         ));

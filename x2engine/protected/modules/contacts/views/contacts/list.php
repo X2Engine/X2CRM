@@ -37,23 +37,17 @@
 $heading = $listModel->name; //Yii::t('contacts','All Contacts');
 
 $authParams['X2Model'] = $listModel;
-$menuItems = array(
-    array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-    array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
-    array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-    array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
-    array('label'=>Yii::t('contacts','View List')),
-    array('label'=>Yii::t('contacts','Edit List'),'url'=>array('updateList','id'=>$listModel->id)),
-    array('label'=>Yii::t('contacts','Delete List'),'url'=>'#', 'linkOptions'=>array('submit'=>array('deleteList','id'=>$listModel->id),'confirm'=>'Are you sure you want to delete this item?')),
-);
 
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
-if($opportunityModule->visible && $accountModule->visible)
-    $menuItems[] =     array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+$menuOptions = array(
+    'all', 'lists', 'create', 'createList', 'viewList', 'editList', 'deleteList',
+);
+if ($opportunityModule->visible && $accountModule->visible)
+    $menuOptions[] = 'quick';
+$this->insertMenu($menuOptions, $listModel, $authParams);
 
-$this->actionMenu = $this->formatMenu($menuItems, $authParams);
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').unbind('click').click(function(){
@@ -131,18 +125,19 @@ $('#removeFromList').unbind('click').click(function() {
 <?php
 
 $massActions = array(
-    'addToList', 'newList'
+    'MassAddToList', 
+    'NewListFromSelection'
 );
 
 if ($listModel->type === 'static') {
-    $massActions[] = 'removeFromList';
+    $massActions[] = 'MassRemoveFromList';
 }
 
 $this->widget('X2GridView', array(
     'id'=>'contacts-grid',
     'enableQtips' => true,
     'qtipManager' => array (
-        'X2QtipManager',
+        'X2GridViewQtipManager',
         'loadingText'=> addslashes(Yii::t('app','loading...')),
         'qtipSelector' => ".contact-name"
     ),

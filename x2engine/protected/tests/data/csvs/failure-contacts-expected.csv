@@ -1,0 +1,3 @@
+ID,"First Name","Last Name",Account,Phone,Email,X2_Import_Failures
+1,Test,Contact2,"Test Account",831-123-5555,testcontact2@example.com,"ID '1' has already been taken."
+2321,Test,Contact3,,831-123-5554,some.invalid.email.com,"Email is not a valid email address."

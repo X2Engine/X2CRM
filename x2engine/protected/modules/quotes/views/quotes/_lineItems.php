@@ -62,7 +62,9 @@ Send a dictionary containing translations for the types of each input field.
 Used for html title attributes.
 */
 $titleTranslations = array( // keys correspond to CSS classes of each input field
-    'product-name'=>Yii::t('quotes', 'Product Name'),
+    'product-name'=>Yii::t('quotes', '{product} Name',array(
+        '{product}'=>Modules::displayName(false, "Products")
+    )),
     'adjustment-name'=>Yii::t('quotes', 'Adjustment Name'),
     'price'=>Yii::t('quotes', 'Price'),
     'quantity'=>Yii::t('quotes', 'Quantity'),
@@ -167,29 +169,20 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
 }) ();
 
 </script>
+
 <?php
-
-$debug = 0;
-if (YII_DEBUG && $debug) {
-    Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl.'/js/qunit/qunit-1.11.0.js',
-        CClientScript::POS_HEAD);
-    Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl.'/js/qunit/qunit-1.11.0.css',
-        CClientScript::POS_HEAD);
+if (YII_DEBUG && YII_UNIT_TESTING) {
     Yii::app()->clientScript->registerScriptFile($module->assetsUrl . '/js/quotesUnitTests.js',
-        CClientScript::POS_HEAD);
+        CClientScript::POS_END);
 }
-
 ?>
 
 <div id="<?php echo $namespacePrefix ?>-line-items-table" class='line-items-table<?php echo $actionsTab ? ' line-items-mini' : ''; echo $readOnly ? ' line-items-read' : ' line-items-write'; ?>'>
 
 <?php
-/*
-commented until namespace protection added
-if (YII_DEBUG && $debug) {
-    echo "<div id='qunit'></div>";
+if (YII_DEBUG && YII_UNIT_TESTING) {
     echo "<div id='qunit-fixture'></div>";
-}*/
+}
 ?>
 
 <?php

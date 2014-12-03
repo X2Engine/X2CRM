@@ -209,9 +209,9 @@ ProfileWidgetManager.prototype._setUpAddProfileWidgetMenu = function () {
  */
 ProfileWidgetManager.prototype._hideShowHiddenProfileWidgetsText = function () {
     if (this.hiddenWidgetsMenuIsEmpty ())
-        $(this._hiddenWidgetsMenuSelector).find ('.no-hidden-profile-widgets-text').show ();
+        $(this._hiddenWidgetsMenuSelector).find ('.no-hidden-'+this.cssSelectorPrefix+'-widgets-text').show ();
     else
-        $(this._hiddenWidgetsMenuSelector).find ('.no-hidden-profile-widgets-text').hide ();
+        $(this._hiddenWidgetsMenuSelector).find ('.no-hidden-'+this.cssSelectorPrefix+'-widgets-text').hide ();
 };
 
 ProfileWidgetManager.prototype._afterCloseWidget = function () {
@@ -232,7 +232,7 @@ ProfileWidgetManager.prototype._createProfileWidget = function (widgetType, call
         url: this.createProfileWidgetUrl,
         data: {
             'widgetType': widgetType,
-            'widgetLayoutName': 'profile'
+            'widgetLayoutName': this.cssSelectorPrefix
         },
         type: 'POST',
         dataType: 'json',
@@ -250,7 +250,7 @@ ProfileWidgetManager.prototype._createProfileWidget = function (widgetType, call
 
 ProfileWidgetManager.prototype._setUpCreateWidgetDialog = function () {
     var that = this;
-    var dialog$ = $('#create-profile-widget-dialog').dialog ({
+    var dialog$ = $('#create-'+this.cssSelectorPrefix+'-widget-dialog').dialog ({
         title: this.translations['createProfileWidgetDialogTitle'],
         autoOpen: false,
         width: 500,
@@ -273,7 +273,7 @@ ProfileWidgetManager.prototype._setUpCreateWidgetDialog = function () {
         ]
     });
 
-    $('#create-profile-widget-button').parent ().click (function () {
+    $('#create-'+this.cssSelectorPrefix+'-widget-button').parent ().click (function () {
         dialog$.dialog ('open');
     });
 };

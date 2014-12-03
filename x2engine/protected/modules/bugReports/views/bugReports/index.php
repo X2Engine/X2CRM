@@ -36,11 +36,11 @@
 include("protected/modules/bugReports/bugReportsConfig.php");
 
 $this->actionMenu = $this->formatMenu(array(
-    array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName']))),
-    array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
-    array('label'=>Yii::t('module','Import {X}', array('{X}'=>$moduleConfig['recordName'])),
+    array('label'=>Yii::t('module','{X} List',array('{X}'=>Modules::itemDisplayName()))),
+    array('label'=>Yii::t('module','Create {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('create')),
+    array('label'=>Yii::t('module','Import {X}', array('{X}'=>Modules::itemDisplayName())),
         'url'=>array('admin/importModels', 'model'=>ucfirst($moduleConfig['moduleName'])), 'visibility'=>Yii::app()->params->isAdmin),
-    array('label'=>Yii::t('module','Export {X}', array('{X}'=>$moduleConfig['recordName'])),
+    array('label'=>Yii::t('module','Export {X}', array('{X}'=>Modules::itemDisplayName())),
         'url'=>array('admin/exportModels', 'model'=>ucfirst($moduleConfig['moduleName'])), 'visibility'=>Yii::app()->params->isAdmin),
 ));
 

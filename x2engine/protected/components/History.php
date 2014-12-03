@@ -57,9 +57,15 @@ class History extends X2Widget {
             // Filter tabs allowed
             $historyTabs = array(
                 'all' => Yii::t('app', 'All'),
-                'actions' => Yii::t('app', 'Actions'),
-                'overdueActions' => Yii::t('app', 'Overdue Actions'),
-                'incompleteActions' => Yii::t('app', 'Incomplete Actions'),
+                'actions' => Yii::t('app', '{actions}', array(
+                    '{actions}' => Modules::displayName(true, 'Actions'),
+                )),
+                'overdueActions' => Yii::t('app', 'Overdue {actions}', array(
+                    '{actions}' => Modules::displayName(true, 'Actions'),
+                )),
+                'incompleteActions' => Yii::t('app', 'Incomplete {actions}', array(
+                    '{actions}' => Modules::displayName(true, 'Actions'),
+                )),
                 'attachments' => Yii::t('app', 'Attachments'),
                 'calls' => Yii::t('app', 'Calls'),
                 'comments' => Yii::t('app', 'Comments'),
@@ -67,10 +73,12 @@ class History extends X2Widget {
                 'event' => Yii::t('app', 'Events'),
                 'marketing' => Yii::t('app', 'Marketing'),
                 'time' => Yii::t('app', 'Logged Time'),
-                 
+                
                 'quotes' => Yii::t('app', 'Quotes'),
                 'webactivity' => Yii::t('app', 'Web Activity'),
-                'workflow' => Yii::t('app', 'Process'),
+                'workflow' => Yii::t('app', '{process}', array(
+                    '{process}' => Modules::displayName(true, 'Workflow'),
+                )),
             );
             $profile = Yii::app()->params->profile;
             if(isset($profile)){ // Load their saved preferences from the profile
@@ -246,6 +254,7 @@ class History extends X2Widget {
             'webactivity' => 'AND type IN ("weblead","webactivity")',
             'workflow' => ' AND type="workflow"',
         );
+        $multiAssociationIds = array ($this->associationId);
         if($this->relationships){
             // Add association conditions for our relationships
             $type = $this->associationType;
@@ -257,6 +266,7 @@ class History extends X2Widget {
                 // Loop through related models and add an association type OR for each
                 foreach($model->relatedX2Models as $relatedModel){
                     if($relatedModel instanceof X2Model){
+                        $multiAssociationIds[] = $relatedModel->id;
                         $associationCondition .=
 							" OR (associationId={$relatedModel->id} AND ".
 							"associationType='{$relatedModel->myModelName}')";
@@ -299,18 +309,31 @@ class History extends X2Widget {
                     ' AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")';
             }
         }
+
+        $multiAssociationIdParams = AuxLib::bindArray ($multiAssociationIds);
+        $associationCondition = 
+            '(('.$associationCondition.') OR '.
+            'x2_action_to_record.recordId in '.AuxLib::arrToStrList (
+                array_keys ($multiAssociationIdParams)).')';
+
         return new CActiveDataProvider('Actions', array(
-                    'criteria' => array(
-                        'order' => 'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), '.
-						               'IFNULL(lastUpdated,0)), GREATEST(createDate, '.
-						 			   'IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC',
-                        'condition' => $associationCondition.
-                        $visibilityCondition.$historyCriteria[$this->historyType]
-                    ),
-                    'pagination' => array(
-                        'pageSize' => $this->pageSize,
-                    )
-                ));
+            'criteria' => array(
+                'order' => 'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), '.
+                               'IFNULL(lastUpdated,0)), GREATEST(createDate, '.
+                               'IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC',
+                'condition' => $associationCondition.
+                    $visibilityCondition.$historyCriteria[$this->historyType],
+                'join' => 'LEFT JOIN x2_action_to_record ON actionId=t.id AND 
+                    x2_action_to_record.recordType=:recordType',
+                'params' => array_merge (array (
+                    ':recordType' => X2Model::getModelName ($this->associationType)
+                ), $multiAssociationIdParams),
+                'distinct' => true
+            ),
+            'pagination' => array(
+                'pageSize' => $this->pageSize,
+            )
+        ));
     }
 
 }

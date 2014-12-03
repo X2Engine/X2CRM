@@ -34,12 +34,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('products','Product List'), 'url'=>array('index')),
-	array('label'=>Yii::t('products','Create')),
-));
+$menuOptions = array(
+    'index', 'create',
+);
+$this->insertMenu($menuOptions);
 ?>
-<div class="page-title icon products"><h2><?php echo Yii::t('products','Create New Product'); ?></h2></div>
+<div class="page-title icon products"><h2>
+    <?php echo Yii::t('products','Create New {module}', array(
+        '{module}' => Modules::displayName(false),
+    )); ?>
+</h2></div>
 <?php
 if(!isset($model->status) || $model->status == '') {
 	$model->status = 'Active';

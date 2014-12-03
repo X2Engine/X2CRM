@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -35,14 +34,15 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$install = implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','install.sql'));
+$installPro = implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','install-pro.sql'));
+$uninstall = implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','uninstall.sql'));
+$uninstallPro = implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','uninstall-pro.sql'));
+
 return array(
 	'name' => 'Dashboard',
-	'install' => array(
-		implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','install.sql')),
-	),
-	'uninstall' => array(
-		implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','uninstall.sql')),
-	),
+	'install' => file_exists($installPro)? array($install, $installPro, $formLayouts) : array($install, $formLayouts),
+	'uninstall' => file_exists($uninstallPro)? array($uninstall, $uninstallPro) : array($uninstall),
 	'editable' => false,
 	'searchable' => false,
 	'adminOnly' => false,

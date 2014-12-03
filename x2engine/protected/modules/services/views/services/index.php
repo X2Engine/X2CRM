@@ -34,17 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$menuItems = array(
-    array('label'=>Yii::t('services','All Cases')),
-    array('label'=>Yii::t('services','Create Case'), 'url'=>array('create')),
-    array('label'=>Yii::t('services','Create Web Form'), 'url'=>array('createWebForm')),
-    array('label'=>Yii::t('services','Case Report'), 'url'=>array('servicesReport')),
-    array('label'=>Yii::t('services', 'Import Services'), 'url'=>array('admin/importModels', 'model'=>'Services'), 'visibility'=>Yii::app()->params->isAdmin),
-    array('label'=>Yii::t('services', 'Export Services'), 'url'=>array('admin/exportModels', 'model'=>'Services'), 'visibility'=>Yii::app()->params->isAdmin),
-
+$menuOptions = array(
+    'index', 'create', 'createWebForm', 'import', 'export',
 );
-
-$this->actionMenu = $this->formatMenu($menuItems);
+$this->insertMenu($menuOptions);
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){

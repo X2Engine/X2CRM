@@ -54,7 +54,8 @@ INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
 (120,   'Action Timers',    '{\"Research\":\"Research\",\"Meeting\":\"Meeting\",\"Email\":\"Email\"}'),
 (121,   'Event Subtypes',    '{\"Meeting\":\"Meeting\",\"Appointment\":\"Appointment\",\"Call\":\"Call\"}'),
 (122,   'Event Statuses',    '{\"Confirmed\":\"Confirmed\",\"Cancelled\":\"Cancelled\"}'),
-(123,   'Event Colors',    '{"#008000":"Green","#3366CC":"Blue","#FF0000":"Red","#FFA500":"Orange","#000000":"Black"}');
+(123,   'Event Colors',    '{"#008000":"Green","#3366CC":"Blue","#FF0000":"Red","#FFA500":"Orange","#000000":"Black"}'),
+(124,   'Priority',    '{"1":"Low","2":"Medium","3":"High"}');
 /*&*/
 INSERT INTO x2_dropdowns (`id`, `name`, `options`, `parent`, `parentVal`) VALUES
 (118,	'Contacted Quick Note','{"Not interested.":"Not interested.","Requested follow up call.":"Requested follow up call.","Contact made.":"Contact made."}', 117, 'Contacted'),
@@ -113,6 +114,8 @@ UPDATE `x2_modules` SET `visible`=0;
 /*&*/
 UPDATE `x2_modules` SET `visible`=1 WHERE `name` IN {visibleModules};
 /*&*/
+UPDATE `x2_modules` SET `itemName`= "Bug Report" WHERE `name` = "bugReports";
+/*&*/
 INSERT INTO `x2_tips` (`tip`, `edition`, `admin`, `module`) VALUES
 ("You can click on the icon with 4 outward arrows in the top right to hide the widget sidebar.",'opensource',0,'Layout'),
 ("An action's priority determines its color in the list. Gray actions have already been completed.",'opensource',0,'Actions'),
@@ -121,3 +124,10 @@ INSERT INTO `x2_tips` (`tip`, `edition`, `admin`, `module`) VALUES
 ("You can drag and drop widgets on the right sidebar to re-arrange their order.",'opensource',0,'Layout'),
 ("The options in the \"Quick Note\" menu on the publisher can be changed in the Dropdown Editor.",'opensource',1,'Admin'),
 ("You can see the history of related records by clicking \"Relationships\" on the History widget. Accounts do this by default.",'opensource',0,'Relationships');
+/*&*/
+INSERT INTO `x2_media` (`id`, `associationType`, `uploadedBy`, `fileName`, `description`, `private`) VALUES
+('-1', "theme",'admin','Default','{"themeName":"Default","background":"","content":"","text":"","link":"","highlight1":"","highlight2":"","backgroundTiling":"stretch","backgroundImg":"","owner":"admin","private":"0"}',0),
+('-2', "theme",'admin','Terminal','{"themeName":"Terminal","background":"221E1E","content":"2E2E2E","text":"F7F7F7","link":"F2921D","highlight1":"1B1B1B","highlight2":"074E8C","backgroundTiling":"stretch","backgroundImg":"","owner":"admin"}',0),
+('-3', "theme",'admin','Twilight','{"themeName":"Twilight","background":"0C1021","content":"0C1021","text":"F7F7F7","link":"FBDE2D","highlight1":"303E49","highlight2":"FF6400","backgroundTiling":"stretch","backgroundImg":"","owner":"admin"}',0),
+('-4', "theme",'admin','Guava','{"themeName":"Guava","background":"F0AA81","content":"D6CCAD","text":"42282F","link":"2D4035","highlight1":"74A588","highlight2":"D6655A","backgroundTiling":"stretch","backgroundImg":"","owner":"admin"}',0),
+('-5', "theme",'admin','Archaic','{"themeName":"Archaic","background":"1E1E20","content":"2A2C2B","text":"FFFFFF","link":"D9CB9E","highlight1":"1E1E20","highlight2":"A5382B","backgroundTiling":"stretch","backgroundImg":"","owner":"admin"}',0);

@@ -1,3 +1,6 @@
+@import url("responsiveLayout.css");
+@import url("responsiveUIElements.css");
+@import url("responsiveX2Forms.css");
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -32,12 +35,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
 /*
 file used to fix IE8 max 31 css file references issue
 */
-
-@import url("responsiveLayout.css");
-@import url("responsiveUIElements.css");
-@import url("responsiveX2Forms.css");
-

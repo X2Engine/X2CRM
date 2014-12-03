@@ -485,7 +485,14 @@ function setupThemeSaving () {
     
     $('#prefs-save-theme-button').click (function () {
         saveTheme ();
+        $('#settings-form').submit();
     });
+
+    $('#save-changes').click (function () {
+        saveTheme();
+        $('#settings-form').submit();
+    });
+
 
 }
 
@@ -507,6 +514,7 @@ function setupThemeCreation () {
         } else {
             $(this).attr ('disabled', 'disabled');
             createTheme (themeName); 
+            $('#settings-form').submit();
         }
     });
 
@@ -650,7 +658,7 @@ function showHideThemeSaveButton () {
     x2.profileSettings.debug && console.log (x2.profileSettings.uploadedByAttrs[currentPredefTheme]);
     x2.profileSettings.debug && console.log (yii.profile.username);
     if (currentPredefTheme === 'Custom') {
-        $('#prefs-save-theme-button').hide (); 
+        // $('#prefs-save-theme-button').hide (); 
          
     } else if (checkPredefThemeEditPermissions ()) {
         $('#prefs-save-theme-button').show (); 
@@ -658,8 +666,8 @@ function showHideThemeSaveButton () {
          
     } else {
          
-        $('#prefs-save-theme-button').hide (); 
-        $('#prefs-save-theme-hint').hide (); 
+        // $('#prefs-save-theme-button').hide (); 
+        // $('#prefs-save-theme-hint').hide (); 
     }
 }
 
@@ -720,12 +728,36 @@ function setupThemeSelection () {
 
 
 
+function setupDeleteThemeButton(){
+    $('#prefs-delete-theme-button').click(function() { 
+
+        var activeTheme = $('.scheme-container.active');
+
+        $.ajax( {
+            url: yii.scriptUrl+'/profile/deleteTheme',
+            data: {
+                themeName: activeTheme.attr('name')
+            },
+            success: function(data) {
+                console.log(data);
+                if(data == 'error') {
+                    return;
+                }
+
+                activeTheme.remove();
+            }
+        });
+
+    });
+}
+
 // main function
 $(document).ready(function profileSettingsMain () {
     setupPrefsEventListeners ();
     setupThemeSelection ();
     setupThemeCreation ();
     setupThemeSaving ();
+    setupDeleteThemeButton();
      
 
     showHideThemeSaveButton ();

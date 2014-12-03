@@ -34,21 +34,35 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss('actionsFormCss',"
+    #Actions_actionDescription {
+        box-sizing: border-box;
+    }
+");
 
 Yii::app()->clientScript->registerScript('validate', '
 $(document).ready(function(){
 	$("#actions-newCreate-form").submit(function(){
-		if($("#'.CHtml::activeId($actionModel, 'associationType').'").val()!="none"){
-			if($("#'.CHtml::activeId($actionModel, 'associationId').'").val()==""){
-				alert("'.Yii::t('actions', "Please enter a valid association").'");
+        x2.forms.clearErrorMessages ($("#action-form"));
+		if($("#action-form #'.CHtml::activeId($actionModel, 'associationType').'").val()!="none"){
+			if($("#action-form #'.CHtml::activeId($actionModel, 'associationId').'").val()==""){
+                $("#auto_select").addClass ("error");
+                x2.forms.errorSummaryAppend ($("#action-form"), [
+				    "'.Yii::t('actions', "Please enter a valid association").'"
+                ]);
 				return false;
 			}
 		}
-        var actionDescription$ = $("#'.CHtml::activeId($actionModel, 'actionDescription').'");
+        var actionDescription$ = $("#action-form #'.CHtml::activeId($actionModel, 'actionDescription').'");
         if(actionDescription$.hasClass ("x2-required") && 
            actionDescription$.val()=="" && 
            $("#'.CHtml::activeId($actionModel, 'subject').'").val()==""){
-            alert("'.Yii::t('actions', "Please enter a description or subject").'");
+
+            actionDescription$.addClass ("error");
+            $("#'.CHtml::activeId($actionModel, 'subject').'").addClass ("error");
+            x2.forms.errorSummaryAppend ($("#action-form"), [
+                "'.Yii::t('actions', "Please enter a description or subject").'"
+            ]);
             return false;
         }
 	}
@@ -59,8 +73,7 @@ Yii::app()->clientScript->registerScript('highlightSaveAction', "
 $(function(){
 	$('#action-form input, #action-form select, #action-form textarea').change(function(){
 		$('#save-button, #save-button1, #save-button2').addClass('highlight'); //css('background','yellow');
-	}
-	);
+	});
 }
 );");
 $themeUrl = Yii::app()->theme->getBaseUrl();
@@ -137,10 +150,10 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
                         'options' => array(
                             'minLength' => '2',
                             'select' => 'js:function( event, ui ) {
-                            $("#'.CHtml::activeId($actionModel, 'associationId').'").val(ui.item.id);
-                            $(this).val(ui.item.value);
-                            return false;
-                        }',
+                                $("#'.CHtml::activeId($actionModel, 'associationId').'").val(ui.item.id);
+                                $(this).val(ui.item.value);
+                                return false;
+                            }',
                         ),
                     ));
                     ?>
@@ -243,12 +256,12 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
         </div>
     </div>
     <div class="form">
-        <span><?php echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Collapse_Widget.png', '', array('style' => 'float:left;'))."<label style='cursor:pointer'>&nbsp;".Yii::t('actions', 'Action Reminders')."</label>", '#', array('id' => 'reminder-link', 'style' => 'color:black;text-decoration:none;')); ?></span>
+        <span><?php echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Collapse_Widget.png', '', array('style' => 'float:left;'))."<label style='cursor:pointer'>&nbsp;".Yii::t('actions', '{action} Reminders', array('{action}'=>Modules::displayName(false)))."</label>", '#', array('id' => 'reminder-link', 'style' => 'color:black;text-decoration:none;')); ?></span>
         <div id="action-reminders">
             <br>
             <?php echo $form->checkBox($actionModel, 'reminder'); ?>
             <?php
-            echo Yii::t('actions', 'Create a notification reminder for {user} {time} before this action is due', array(
+            echo Yii::t('actions', 'Create a notification reminder for {user} {time} before this {action} is due', array(
                 '{user}' => CHtml::dropDownList('notificationUsers', !empty($notifType) ? $notifType : 'assigned', array(
                     'me' => Yii::t('actions', 'me'),
                     'assigned' => Yii::t('actions', 'the assigned user'),
@@ -260,14 +273,28 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->set
                     10 => Yii::t('actions','10 minutes'),
                     15 => Yii::t('actions','15 minutes'),
                     30 => Yii::t('actions','30 minutes'),
-                    60 => Yii::t('actions','1 hour')
+                    60 => Yii::t('actions','1 hour'),
+                    1440 => Yii::t('actions','1 day'),
+                    10080 => Yii::t('actions','1 week')
                 )),
+                '{action}' => lcfirst(Modules::displayName(false)),
             ));
             ?>
         </div>
     </div>
     <div class="form">
-        <span><?php echo CHtml::link(CHtml::image($themeUrl.'/images/icons/Expand_Inverted.png', '', array('style' => 'float:left;'))."<label style='cursor:pointer;'>&nbsp;".Yii::t('actions','Action Backdating')."</label>", '#', array('id' => 'backdating-link', 'style' => 'color:black;text-decoration:none;')); ?></span>
+        <span>
+            <?php
+            $linkContent = CHtml::image($themeUrl.'/images/icons/Expand_Inverted.png', '', array(
+                'style' => 'float:left;'
+            ))."<label style='cursor:pointer;'>&nbsp;".Yii::t('actions','{action} Backdating', array(
+                '{action}' => Modules::displayName(false),
+            ))."</label>";
+            echo CHtml::link($linkContent, '#', array(
+                'id' => 'backdating-link',
+                'style' => 'color:black;text-decoration:none;'
+            )); ?>
+        </span>
         <div id="action-backdating" style="display:none;" class="row">
             <br>
             <div class="cell">

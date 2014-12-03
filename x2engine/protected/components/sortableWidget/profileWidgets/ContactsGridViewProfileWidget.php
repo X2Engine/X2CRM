@@ -99,7 +99,7 @@ class ContactsGridViewProfileWidget extends GridViewWidget {
                 array (
                     'enableQtips' => true,
                     'qtipManager' => array (
-                        'X2QtipManager',
+                        'X2GridViewQtipManager',
                         'loadingText'=> addslashes(Yii::t('app','loading...')),
                         'qtipSelector' => ".contact-name"
                     ),
@@ -121,8 +121,7 @@ class ContactsGridViewProfileWidget extends GridViewWidget {
                         ),
                     ),
                     'massActions'=>array(
-                        'addToList', 
-                        'newList'
+                        'MassAddToList', 'NewListFromSelection',
                     ),
                     'enableTags'=>true,
                 )

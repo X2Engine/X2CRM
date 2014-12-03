@@ -42,7 +42,7 @@ $users=explode(", ",$users);
 foreach($users as $user){
     if($user=="Anyone" || $user=="")
         $user="None";
-    echo "<span class='user'>".$user."</span> ";
+    echo "<span class='x2-pillbox user'>".$user."</span> ";
 }
 
 ?>

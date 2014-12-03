@@ -196,6 +196,7 @@ class StudioController extends x2base {
         echo CJSON::encode($paramRules);
     }
 
+    // reports TODO
     public function actionGetFields($model) {
         if(!class_exists($model)) {
             echo 'false';

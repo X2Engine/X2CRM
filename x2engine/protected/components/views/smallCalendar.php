@@ -41,187 +41,6 @@
 **/
 
 
-Yii::app()->clientScript->registerCss('calendarFormatting','
-    #small-calendar .fc-view-month .fc-event{
-        display: none;
-    }
-
-
-    #small-calendar{
-        border: none;
-    }
-
-    #small-calendar .fc-header-title h2{
-        background-image: none;
-        padding-left: 15px;
-    }
-
-    #widget_SmallCalendar .portlet-content{
-        padding: 0px;
-    }
-
-    #widget_SmallCalendar #header-title{
-        display: inline;
-    }
-
-    #small-calendar .fc-header{
-        border-radius: 0px;
-    }
-
-    #small-calendar .fc-header-title {
-        display:none;
-    }   
-
-    #small-calendar .fc-button{
-        float: left;
-    }
-
-    #small-calendar .fc-header-left{
-        padding-left:3px;
-        padding-top:2px;
-        width: 100%;
-    }
-
-    #small-calendar .fc-day{
-        height: 0px !important;
-        background-color: white; 
-        cursor: pointer; cursor: hand; 
-    }
-
-    #small-calendar .fc-day:hover{
-        background: #CACACA;
-    }
-
-    #small-calendar .day-number-link{
-        font-size: 14pt;
-        text-decoration: none;
-    }
-
-    #small-calendar .fc-day-number{
-        float: none;
-        text-align: center;
-        padding-top: 10px;
-        // margin-top:18px;
-    }
-
-
-    #small-calendar .fc-view-month .fc-today{
-        /*border: 1px solid #4078C3;*/
-        border: none;
-        background: #82A4D1;
-    }
-
-    #small-calendar .day-number-link:hover{
-        /* color: #666666; */
-    }
-
-    #small-calendar .fc-today .day-number-link{
-        color: #FFFFFF;
-    }
-
-    #small-calendar .ui-widget-content {
-        border-bottom: none;
-    }
-
-    #small-calendar .ui-widget-header {
-        border-left: none;
-    }
-
-    #small-calendar .fc-first {
-        border-left: none;
-    }
-
-    #small-calendar .fc-last {
-        border-right: none;
-    }
-
-    #small-calendar .fc-week.fc-last .fc-day{
-        border-bottom: none;
-    }
-
-    #small-calendar .fc-agenda-axis{
-        border-left: none;
-        border-bottom: none;
-    }
-
-    #small-calendar .fc-day-content .spacer{
-        display:none;
-    }
-
-    #small-calendar .fc-event-indicator{
-        width:8px;
-        height:8px;
-        background: #4078C3;
-        margin: auto;
-        border-radius: 5px;
-        // float:left;
-        display:inline-block;
-    }
-
-    #small-calendar .fc-indicator-container{
-        height:10px !important;
-        display: block !important;
-        text-align: center;
-        padding: 2px;
-        padding-top: 0px;
-        overflow: hidden;
-    }
-
-    #small-calendar .x2-button-group{
-        float:left;
-    }
-
-    #small-calendar .x2-button-group .x2-button {
-        padding-left: 7px;
-        padding-right: 7px;
-        display: inline;
-    }
-
-    #small-calendar #add-button,
-    #small-calendar #me-button{
-        margin: 3px;
-        float: right;
-        margin-left: 0px;
-
-    }
-
-
-    #small-calendar .fc-header-space {
-        display: none;
-    }
-
-    #small-publisher {
-        padding: 0px;
-    }
-
-    #small-publisher #publisher-tabs-row-1{
-        display: none !important;
-    } 
-
-    #small-publisher .form {
-        border: none !important;
-    }
-
-    #me-button.pressed {
-        background: #4078C3;
-        color: white;
-        box-shadow: rgb(0, 0, 139) 0px 1px 3px inset;
-    }
-
-
-    .ui-datepicker {
-        z-index: 1200 !important;
-    }
-
-    #small-publisher .cell:last-child {
-        display:none;
-    }
-
-
-    ');
-
-
-
 Yii::app()->clientScript->registerScript("smallCalendarJS", "
 
 
@@ -460,7 +279,7 @@ $(function(){
             return;
         }
 
-        var boxButtons =  [ // buttons on bottom of dialog
+        var boxButtons = [ // buttons on bottom of dialog
             {
                 text: '".CHtml::encode (Yii::t('app', 'Close'))."',
                 click: function() {
@@ -530,7 +349,7 @@ $(function(){
             autoOpen: false,
             resizable: true,
             height: 'auto',
-            width: 300,
+            width: 500,
             position: {my: 'right-12', at: 'left bottom', of: '#small-calendar'}, 
             show: 'fade',
             hide: 'fade',
@@ -549,7 +368,8 @@ $(function(){
                 $(viewAction).css('font-size', '0.75em');
             },
             close: function () {
-                  $('[id=\"dialog-content_' + event.id + '\"]').remove ();
+                $(this).dialog ('destroy');
+                  //$('[id=\"dialog-content_' + event.id + '\"]').remove ();
                 // cleanUpDialog ();
             },
             resizeStart: function () {
@@ -591,10 +411,11 @@ $(function(){
 
             },
             close: function () {
-                // x2.publisher.reset();
                 // if(typeof savedTab !== 'undefined')
                 x2.publisher._form = savedForm;
                 x2.publisher.switchToTab(savedTab);
+
+                $('#small-publisher').find('textarea, input[type=\"text\"]').val('');
             },
             resizeStart: function () {
             },
@@ -643,6 +464,8 @@ $(function(){
         $('#small-calendar-container #add-button').click(function(evt){
             $('#small-publisher').dialog('open');
         });
+
+        $('#small-calendar .page-title').removeClass('page-title');
 
     }
 
@@ -713,9 +536,6 @@ $(function(){
 
 ", CClientScript::POS_HEAD);
 
-class PublisherSmallCalendarEventTab extends PublisherEventTab {
-    public $tabId ='new-small-calendar-event';
-}
 
 ?>
 
@@ -733,6 +553,7 @@ class PublisherSmallCalendarEventTab extends PublisherEventTab {
         <?php
         // if echoTabRow is already present, there are two publishers
         $doublePublisher = function_exists('echoTabRow');
+
 
         $this->widget('Publisher', array(
             'associationType' => 'calendar',

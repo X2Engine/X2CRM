@@ -34,75 +34,23 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.util.ArrayUtil');
-
 /**
- * Enables transparent serialization and storage of array objects in database
- * fields as JSON strings.
- * @package application.components
- * @author Demitri Morgan <demitri@x2engine.com>, Derek Mueller <derek@x2engine.com>
+ * Enables automatic decoding/encoding of field values 
  */
+
+
 class JSONFieldsBehavior extends TransformedFieldStorageBehavior {
 
-	protected $_fields;
-
-	protected $hasOptions = true;
-
-    /**
-     * If true, when setting the JSON field, the order of the current field values will be 
-     *  maintained.
-     * @param bool 
-     */
-    public $maintainCurrentFieldsOrder = false; 
-
-	/**
-	 * Returns an array defining the expected structure of the JSON-bearing
-	 * attribute specified by $name.
-	 *
-	 * Child classes can override this method to specify default values for
-	 * fields in the embedded JSON object other than null (in this class, all
-	 * embedded fields within all attributes are null by default).
-	 *
-	 * @param
-	 * @return type
-	 */
-	public function fields($name) {
-		if(!isset($this->_fields)) {
-			$this->_fields = array();
-			// Assume all are null by default:
-			foreach($this->transformAttributes as $attr => $fields)
-				$this->_fields[$attr] = array_fill_keys($fields,null);
-		}
-		return $this->_fields[$name];
-	}
-
-	/**
-	 * Normalizes the attribute array to the structure defined in {@link fields}
-	 * and then JSON-encodes it to prepare it for saving.
-	 * @param type $name
-	 * @return type
-	 */
-	public function packAttribute($name){
-		$fields = $this->fields($name);
+    public function packAttribute ($name) {
 		$attribute = $this->getOwner()->$name;
-        $attribute = is_array($attribute) ? 
-            ArrayUtil::normalizeToArrayR($fields,$attribute,$this->maintainCurrentFieldsOrder) : $fields;
-		return CJSON::encode ($attribute);
-	}
+        return CJSON::encode ($attribute);
+    }
 
-	/**
-	 * JSON-decodes the value stored in the database column for the attribute,
-	 * and then normalizes it to the structure defined in {@link fields}
-	 * @param string $name The attribute to be unpacked
-	 * @return type
-	 */
-	public function unpackAttribute($name){
-		$fields = $this->fields($name);
+    public function unpackAttribute ($name) {
 		$attribute = CJSON::decode ($this->getOwner()->$name);
-		$attribute = is_array($attribute) ? 
-            ArrayUtil::normalizeToArrayR($fields,$attribute,$this->maintainCurrentFieldsOrder) : $fields;
-		return $attribute;
-	}
+        return $attribute;
+    }
+
 }
 
 ?>

@@ -204,20 +204,34 @@ class EventsChartProfileWidget extends ChartWidget {
                         'record_create'=>Yii::t('app', 'Records Created'),
                         'record_deleted'=>Yii::t('app', 'Records Deleted'),
                         'weblead_create'=>Yii::t('app', 'Webleads Created'),
-                        'workflow_start'=>Yii::t('app', 'Process Started'),
-                        'workflow_complete'=>Yii::t('app', 'Process Complete'),
-                        'workflow_revert'=>Yii::t('app', 'Process Reverted'),
+                        'workflow_start'=>Yii::t('app', '{Process} Started', array(
+                            '{Process}' => Modules::displayName(false, 'Workflow')
+                        )),
+                        'workflow_complete'=>Yii::t('app', '{Process} Complete', array(
+                            '{Process}' => Modules::displayName(false, 'Workflow')
+                        )),
+                        'workflow_revert'=>Yii::t('app', '{Process} Reverted', array(
+                            '{Process}' => Modules::displayName(false, 'Workflow')
+                        )),
                         'email_sent'=>Yii::t('app', 'Emails Sent'),
                         'email_opened'=>Yii::t('app', 'Emails Opened'),
                         'web_activity'=>Yii::t('app', 'Web Activity'),
                         'case_escalated'=>Yii::t('app', 'Cases Escalated'),
-                        'calendar_event'=>Yii::t('app', 'Calendar Events'),
-                        'action_reminder'=>Yii::t('app', 'Action Reminders'),
-                        'action_complete'=>Yii::t('app', 'Actions Completed'),
+                        'calendar_event'=>Yii::t('app', '{Calendar} Events', array(
+                            '{Calendar}' => Modules::displayName(false, 'Calendar')
+                        )),
+                        'action_reminder'=>Yii::t('app', '{Action} Reminders', array(
+                            '{Action}' => Modules::displayName(false, 'Actions')
+                        )),
+                        'action_complete'=>Yii::t('app', '{Actions} Completed', array(
+                            '{Actions}' => Modules::displayName(true, 'Actions')
+                        )),
                         'doc_update'=>Yii::t('app', 'Doc Updates'),
                         'email_from'=>Yii::t('app', 'Email Received'),
                         'voip_calls'=>Yii::t('app', 'VOIP Calls'),
-                        'media'=>Yii::t('app', 'Media')
+                        'media'=>Yii::t('app', '{Media}', array(
+                            '{Media}' => Modules::displayName(true, 'Media')
+                        ))
                     ),
                     'chartType' => 'eventsChart',
                     'widgetUID' => $this->widgetUID,

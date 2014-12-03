@@ -36,6 +36,11 @@ $.widget("ui.multiselect", {
 		show: 'slideDown',
 		hide: 'slideUp',
 		dividerLocation: 0.6,
+        /* x2modstart */ 
+		irremovableOptions: [],
+		disableMassActions: false,
+        'class': '',
+        /* x2modend */ 
 		nodeComparator: function(node1,node2) {
 			var text1 = node1.text(),
 			    text2 = node2.text();
@@ -45,12 +50,24 @@ $.widget("ui.multiselect", {
 	_create: function() {
 		this.element.hide();
 		this.id = this.element.attr("id");
-		this.container = $('<div class="ui-multiselect ui-helper-clearfix ui-widget"></div>').insertAfter(this.element);
+        /* x2modstart */ 
+        var classes = "ui-multiselect ui-helper-clearfix ui-widget"
+        if (this.options['class']) classes += ' ' + this.options['class'];
+		this.container = $('<div class="' + classes + '"></div>').insertAfter(this.element);
+        /* x2modend */ 
 		this.count = 0; // number of currently selected options
 		this.selectedContainer = $('<div class="selected"></div>').appendTo(this.container);
 		this.availableContainer = $('<div class="available"></div>').appendTo(this.container);
-		this.selectedActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><span class="count">0 '+$.ui.multiselect.locale.itemsCount+'</span><a href="#" class="remove-all">'+$.ui.multiselect.locale.removeAll+'</a></div>').appendTo(this.selectedContainer);
-		this.availableActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><input type="text" class="search empty ui-widget-content ui-corner-all"/><a href="#" class="add-all">'+$.ui.multiselect.locale.addAll+'</a></div>').appendTo(this.availableContainer);
+
+        this.selectedActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><span class="count">0 '+$.ui.multiselect.locale.itemsCount+'</span><a href="#" class="remove-all">'+$.ui.multiselect.locale.removeAll+'</a></div>').appendTo(this.selectedContainer);
+        this.availableActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><input type="text" class="search empty ui-widget-content ui-corner-all"/><a href="#" class="add-all">'+$.ui.multiselect.locale.addAll+'</a></div>').appendTo(this.availableContainer);
+        /* x2modstart */    
+        if (this.options.disableMassActions) {
+            this.container.find(".remove-all").css ({'visibility': 'hidden'});
+            this.container.find(".add-all").css ({'visibility': 'hidden'});
+        }
+        /* x2modend */ 
+
 		this.selectedList = $('<ul class="selected connected-list"><li class="ui-helper-hidden-accessible"></li></ul>').bind('selectstart', function(){return false;}).appendTo(this.selectedContainer);
 		this.availableList = $('<ul class="available connected-list"><li class="ui-helper-hidden-accessible"></li></ul>').bind('selectstart', function(){return false;}).appendTo(this.availableContainer);
 		
@@ -161,7 +178,18 @@ $.widget("ui.multiselect", {
 	},
 	_getOptionNode: function(option) {
 		option = $(option);
-		var node = $('<li class="ui-state-default ui-element" title="'+option.text()+'"><span class="ui-icon"/>'+option.text()+'<a href="#" class="action"><span class="ui-corner-all ui-icon"/></a></li>').hide();
+        /* x2modstart */ 
+        // prevent options designated as irremovable from being removed
+
+        var classes = 'ui-state-default';
+        if ($.inArray (parseInt (option.val (), 10), this.options.irremovableOptions) === -1) {
+            classes += ' ui-element';
+        } else {
+            classes += ' irremovable-option';
+        }
+
+		var node = $('<li class="' + classes + '" title="'+option.text()+'"><span class="ui-icon"/>'+option.text()+'<a href="#" class="action"><span class="ui-corner-all ui-icon"/></a></li>').hide();
+        /* x2modend */ 
 		node.data('optionLink', option);
 		return node;
 	},
@@ -299,6 +327,8 @@ $.widget("ui.multiselect", {
 	_registerRemoveEvents: function(elements) {
 		var that = this;
 		elements.click(function() {
+            if ($(this).closest ('.irremovable-option').length) return false;
+
 			that._setSelected($(this).parent(), false);
 			that.count -= 1;
 			that._updateCount();

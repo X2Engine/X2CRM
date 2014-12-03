@@ -253,7 +253,7 @@ $.fn.minimizeWidget = function() {
 $.fn.addConfigMenu = function(options, callback) {
     var dropdown = $(this).find('#widget-dropdown');
 
-    var target = $('<div class="gear-img-container widget-icon"></div>')
+    var target = $('<span class="gear-img-container fa fa-cog fa-lg"></span>')
     .height(18).width(18);
     target.appendTo(dropdown);
     var ul = $('<ul class="closed widget-gear-menu"></ul>').appendTo(dropdown);

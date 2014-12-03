@@ -119,7 +119,7 @@ if ($model->associationType!="none") {
 		<td colspan="3">
 			<?php
                             if ($model->associationType=="calendar")
-                                echo CHtml::link(Yii::t('calendar', "Calendar"), array('/'.$model->associationType.'/'));
+                                echo CHtml::link(Yii::t('calendar', "{calendar}", array('{calendar}' => Modules::displayName(false, "Calendar"))), array('/'.$model->associationType.'/'));
                             else
                                 echo CHtml::link(CHtml::encode($model->associationName),array('/'.$model->associationType.'/'.$model->associationId));
                         ?>

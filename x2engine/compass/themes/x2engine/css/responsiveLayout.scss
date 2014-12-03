@@ -1,0 +1,347 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+
+/*
+Step between full title bar and mobile title bar. Search bar minimizes and expands to make
+room for user menu links
+*/
+/*@media (max-width: 915px) {
+    body.enable-search-bar-modes #search-bar-box {
+        display: none;
+        width: 180px;
+    }
+    body.enable-search-bar-modes #search-bar button.x2-button {
+        border-radius: 3px 3px 3px 3px;
+        -moz-border-radius: 3px 3px 3px 3px;
+        -webkit-border-radius: 3px 3px 3px 3px;
+        -o-border-radius: 3px 3px 3px 3px;
+    }
+}
+
+@media (min-width: 915px) {
+    body.enable-search-bar-modes #user-menu > li {
+        display: block !important;
+    }
+    body.enable-search-bar-modes #search-bar-box {
+        display: block !important;
+    }
+}*/
+
+/***********************************************************************
+* responsive page title
+***********************************************************************/
+
+.responsive-menu-items {
+  display: inline-block;
+  float: right;
+}
+
+.fc-header .responsive-menu-items {
+  display: table-cell;
+}
+
+.responsive-page-title > .mobile-dropdown-button, .fc-header.responsive-page-title .mobile-dropdown-button {
+  display: none;
+  margin-top: 11px;
+}
+
+.responsive-page-title > .mobile-dropdown-button > .x2-bar, .fc-header.responsive-page-title .mobile-dropdown-button > .x2-bar {
+  width: 20px;
+  background-color: rgb(228, 228, 228);
+}
+
+@media (max-width: 451px) {
+  .icon {
+    &.services > .icon.edit, &.opportunities > .icon.edit {
+      display: none !important;
+    }
+  }
+}
+
+/* used for hiding/showing responsive page title menu items */
+@media (min-width: 658px) {
+  div.responsive-page-title > h2 {
+    display: inline-block !important;
+  }
+}
+
+@media (max-width: 657px) {
+  #page {
+    min-width: 0px !important;
+  }
+  .fc-header {
+    &.responsive-page-title .mobile-dropdown-button {
+      display: table-cell;
+      float: right !important;
+      margin-right: 7px;
+    }
+    .responsive-menu-items {
+      display: none;
+      float: right !important;
+      position: relative;
+      top: 33px;
+      right: 163px;
+      width: 0px;
+    }
+  }
+  .responsive-page-title > .mobile-dropdown-button {
+    display: block;
+    float: right;
+    margin-top: -25px;
+  }
+  div.responsive-page-title > .responsive-menu-items {
+    display: none;
+  }
+  #search-bar button.x2-button {
+    border-radius: 0px 3px 3px 0px;
+    -moz-border-radius: 0px 3px 3px 0px;
+    -webkit-border-radius: 0px 3px 3px 0px;
+    -o-border-radius: 0px 3px 3px 0px;
+  }
+  #fullscreen-button {
+    display: none !important;
+  }
+  #main-menu-notif {
+    margin-right: -5px;
+  }
+  /***********************************************************************
+  * dialogs
+  ***********************************************************************/
+  .ui-dialog {
+    max-width: 95% !important;
+  }
+  /***********************************************************************
+  * Move top bar to left slide out menu 
+  ***********************************************************************/
+  /* used to hide scroll bar on left menu */
+  #top-menus-container-inner {
+    overflow-y: scroll;
+    height: 100vh;
+    width: 172px;
+    overflow-x: hidden;
+  }
+  #top-menus-container {
+    width: 150px;
+    margin-left: -150px;
+    overflow: hidden;
+    position: absolute;
+    background-color: gray;
+    float: left;
+    opacity: 1;
+    height: 100vh;
+    clear: both;
+  }
+  #main-menu {
+    padding-left: 0;
+    margin-top: 130px;
+    li {
+      &.top-bar-module-link {
+        width: 142px;
+        display: block !important;
+      }
+      float: none;
+    }
+  }
+  #user-menu li {
+    float: none;
+  }
+  #search-bar-box {
+    display: block !important;
+    width: 100px !important;
+    margin-left: 3px;
+  }
+  #search-bar {
+    position: absolute;
+    top: 5px;
+    margin: 0;
+  }
+  /*#user-menu li.x2-first {
+      margin-top: 41px;
+  }*/
+  #user-menu {
+    position: absolute;
+    z-index: 5000;
+    background-color: gray;
+    border-bottom: 1px solid rgb(111, 111, 111);
+    width: 150px;
+    height: 125px;
+    right: 0;
+    top: 0;
+    .user-menu-link {
+      position: absolute;
+    }
+    .x2-first {
+      top: 36px;
+      + .user-menu-link {
+        top: 64px;
+        + .user-menu-link {
+          top: 92px;
+          + .user-menu-link {
+            top: 92px;
+          }
+        }
+      }
+    }
+  }
+    /*#user-menu.three-user-menu-links {
+        height: 125px;
+    }
+
+    #user-menu.two-user-menu-links {
+        height: 100px;
+    }*/
+  /* change background of menu items to match side bar */
+  #header.defaultBg {
+    #main-menu > li {
+      &:hover, &.active {
+        background: #8F8F8F;
+      }
+    }
+    #user-menu > li {
+      &:hover, &.active {
+        background: #8F8F8F;
+      }
+    }
+  }
+  #more-menu {
+    display: none !important;
+  }
+  #user-menu-2 {
+    position: fixed;
+    right: 2px;
+    top: 0;
+  }
+  /***********************************************************************
+  * Slide out right widgets
+  ***********************************************************************/
+  body {
+    &.show-right-bar {
+      #sidebar-right {
+        display: block !important;
+        position: absolute;
+        top: 31px;
+        right: 0;
+        width: 288px;
+        max-width: 288px;
+      }
+      #content-container {
+        position: relative;
+        right: 294px;
+      }
+      #sidebar-left-widget-box {
+        position: relative;
+        right: 306px;
+      }
+    }
+    &.show-left-bar {
+      #page {
+        overflow-x: hidden;
+      }
+      #header {
+        margin-left: 150px;
+      }
+      overflow-x: hidden;
+      #top-menus-container {
+        display: block;
+      }
+      .page-title-fixed-inner {
+        padding-left: 161px;
+      }
+      #sidebar-left-widget-box {
+        padding-left: 150px;
+      }
+      #content-container, #footer {
+        margin-left: 151px;
+      }
+      overflow-y: hidden;
+    }
+  }
+  /***********************************************************************
+  * Slide out left menu
+  ***********************************************************************/
+  /***********************************************************************
+  * move left widgets over title bar
+  ***********************************************************************/
+  .page-title-placeholder {
+    display: none;
+  }
+  #sidebar-left-widget-box {
+    padding-right: 12px;
+  }
+  .sidebar-left {
+    float: none;
+    width: 100%;
+    text-align: center;
+  }
+  #show-left-menu-button {
+    display: inline;
+  }
+  div.page-title-fixed-outer {
+    padding-left: 0px;
+    left: -6px;
+  }
+  body.no-widgets div.page-title-fixed-outer div.page-title {
+    margin-right: -6px;
+    margin-left: 0;
+  }
+  #notif-box {
+    right: 4px;
+    width: 96%;
+    &:after {
+      right: 136px;
+    }
+  }
+  #search-bar-title {
+    margin-left: 4px;
+  }
+}
+
+/*
+show left menu 
+*/
+/*@media (min-width: 767px) {
+    body #sidebar-left-widget-box {
+        display: block !important;
+    }
+}*/
+
+/*
+hide right widget bar 
+*/
+@media (max-width: 1040px) {
+  #sidebar-right {
+    display: none;
+  }
+}

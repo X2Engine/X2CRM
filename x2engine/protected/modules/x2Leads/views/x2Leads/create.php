@@ -37,10 +37,11 @@
 $this->pageTitle = CHtml::encode (
     Yii::app()->settings->appName . ' - '.Yii::t('x2Leads', 'Create Lead'));
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('x2Leads','Leads List'),'url'=>array('index')),
-	array('label'=>Yii::t('x2Leads','Create Lead')),
-));
+$menuOptions = array(
+    'index', 'create',
+);
+$this->insertMenu($menuOptions);
+
 ?>
 <div class="page-title icon x2Leads"><h2><?php echo Yii::t('x2Leads','Create Lead'); ?></h2></div>
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users,'modelName'=>'X2Leads')); ?>

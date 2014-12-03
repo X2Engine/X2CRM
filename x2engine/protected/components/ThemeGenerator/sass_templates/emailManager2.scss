@@ -1,0 +1,110 @@
+.seen-message-row {
+    &, td, .from-cell {
+        background: "$content";
+        border-color: "$border";
+    }
+}
+
+#my-email-inbox-set-up-instructions-container, #inbox-body-container {
+    background: "$content";
+    border-color: "$border";
+}
+
+.unseen-message-row {
+    td, .from-cell {
+        border-color: "$border";
+        background: "$light_content";
+    }
+}
+
+#yw0, .pager, .x2grid-body-container {
+    background: "$content";
+    border-color: "$border";
+}
+
+.row {
+    &.ui-droppable, &.buttons.last-button-row {
+        background: "$content";
+        border-color: "$border";
+    }
+}
+
+#email-inbox-tabs .email-inbox-tab {
+    background: "$content";
+    border-color: "$border";
+}
+
+.email-inputs .row {
+    border-color: "$border";
+}
+
+#email-quota {
+    color: "$text";
+}
+
+.credentials-list {
+    .credentials-view {
+        color: "$text";
+    }
+    .default-state {
+        background: "$content";
+        color: "$text";
+        border-color: "$border";
+    }
+    .default-state-set {
+        background: "$highlight2";
+        color: "$smart_text2";
+        border-color: "$light_highlight2";
+    }
+}
+
+#email-list .x2grid-body-container.x2grid-no-pager .items tr {
+    background: "$content";
+    td {
+        border-color: "$content";
+    }
+}
+
+.empty-text-progress-bar {
+    background: "$highlight2";
+}
+
+.folder-link.current-folder {
+    background: "$light_content";
+}
+
+.mailbox-controls {
+    border-color: "$border";
+}
+
+.flagged-toggle {
+    &::before {
+        color: "$darker_content";
+    }
+    &.flagged {
+        &::before {
+            color: "$darker_highlight2";
+        }
+        &::after {
+            color: "$highlight2";
+        }
+    }
+}
+
+#message-container {
+	background: #EEE;
+}
+
+.reply-more-menu,
+.more-drop-down-list {
+	background: "$content";
+
+	li {
+		color: "$text";
+
+		&:hover {
+			background: "$light_content";
+		}
+	}
+}
+

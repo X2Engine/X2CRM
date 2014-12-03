@@ -33,25 +33,15 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?>
 
-<?php
-$menuItems = array( array('label'=>Yii::t('calendar', 'Calendar'), 				  'url'=>array('index')),
-					array('label'=>Yii::t('calendar', 'My Calendar Permissions')),
-			      );
-
-if(Yii::app()->params->isAdmin) 
-	array_push($menuItems, array('label'=>Yii::t('calendar', 'User Calendar Permissions'), 'url'=>array('userCalendarPermissions')));
-
-if(Yii::app()->settings->googleIntegration) // menu if google integration is enables has additional options
-	array_push($menuItems, array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')));
-
-$this->actionMenu = $this->formatMenu($menuItems);
-?>
-
-
-
-<?php
+$menuOptions = array(
+    'index', 'myPermissions',
+);
+if (Yii::app()->params->isAdmin)
+    $menuOptions[] = 'userPermissions';
+if (Yii::app()->settings->googleIntegration)
+    $menuOptions[] = 'sync';
+$this->insertMenu($menuOptions);
 
 $users = User::model()->findAllByAttributes(array('status'=>User::STATUS_ACTIVE));
 $users = array_combine(array_map(function($u){return $u->fullName;},$users),$users);
@@ -93,7 +83,10 @@ $editPermission = X2CalendarPermissions::getUserIdsWithEditPermission(Yii::app()
 ?>
 <div class="page-title"><h2><?php echo Yii::t('calendar', 'View Permission'); ?></h2></div>
 <div class="form">
-	<?php echo Yii::t('calendar', 'These users can view your calendar.'); ?>
+    <?php echo Yii::t('calendar', 'These users can view your {module}.', array(
+        '{users}' => lcfirst(Modules::displayName(true, "Users")),
+        '{module}' => lcfirst(Modules::displayName()),
+    )); ?>
 	<?php
 	echo CHtml::listBox('view-permission', $viewPermission, $names, array(
 		'class'=>'user-permission',
@@ -105,7 +98,10 @@ $editPermission = X2CalendarPermissions::getUserIdsWithEditPermission(Yii::app()
 </div>
 <div class="page-title rounded-top"><h2><?php echo Yii::t('calendar', 'Edit Permission'); ?></h2></div>
 <div class="form">
-	<?php echo Yii::t('calendar', 'These users can edit your calendar.'); ?>
+    <?php echo Yii::t('calendar', 'These {users} can edit your {module}.', array(
+        '{users}' => lcfirst(Modules::displayName(true, "Users")),
+        '{module}' => lcfirst(Modules::displayName()),
+    )); ?>
 	<?php
 	echo CHtml::listBox('edit-permission', $editPermission, $names, array(
 		'class'=>'user-permission',

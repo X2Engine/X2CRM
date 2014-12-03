@@ -32,8 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
-
 /*
 Step between full title bar and mobile title bar. Search bar minimizes and expands to make
 room for user menu links
@@ -59,164 +57,198 @@ room for user menu links
         display: block !important;
     }
 }*/
-
-
-
 /***********************************************************************
 * responsive page title
 ***********************************************************************/
-
+/* line 52, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
 .responsive-menu-items {
-    display: inline-block;
-    float: right;
+  display: inline-block;
+  float: right;
 }
 
+/* line 57, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
 .fc-header .responsive-menu-items {
-    display: table-cell;
+  display: table-cell;
 }
 
-.responsive-page-title > .mobile-dropdown-button,
-.fc-header.responsive-page-title .mobile-dropdown-button {
-    display: none;
-    margin-top: 11px;
+/* line 61, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+.responsive-page-title > .mobile-dropdown-button, .fc-header.responsive-page-title .mobile-dropdown-button {
+  display: none;
+  margin-top: 11px;
 }
 
-.responsive-page-title > .mobile-dropdown-button > .x2-bar,
-.fc-header.responsive-page-title .mobile-dropdown-button > .x2-bar {
-    width: 20px;
-    background-color: rgb(228, 228, 228);
+/* line 66, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+.responsive-page-title > .mobile-dropdown-button > .x2-bar, .fc-header.responsive-page-title .mobile-dropdown-button > .x2-bar {
+  width: 20px;
+  background-color: #e4e4e4;
 }
 
 @media (max-width: 451px) {
-    .icon.services > .icon.edit,
-    .icon.opportunities > .icon.edit {
-        display: none !important;
-    }
+  /* line 73, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  .icon.services > .icon.edit, .icon.opportunities > .icon.edit {
+    display: none !important;
+  }
 }
-
 /* used for hiding/showing responsive page title menu items */
 @media (min-width: 658px) {
-    div.responsive-page-title > h2 {
-        display: inline-block !important;
-    }
+  /* line 81, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  div.responsive-page-title > h2 {
+    display: inline-block !important;
+  }
 }
-
 @media (max-width: 657px) {
+  /* line 87, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #page {
+    min-width: 0px !important;
+  }
 
-    #page {
-        min-width: 0px !important;
-    }
+  /* line 91, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  .fc-header.responsive-page-title .mobile-dropdown-button {
+    display: table-cell;
+    float: right !important;
+    margin-right: 7px;
+  }
+  /* line 96, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  .fc-header .responsive-menu-items {
+    display: none;
+    float: right !important;
+    position: relative;
+    top: 33px;
+    right: 163px;
+    width: 0px;
+  }
 
+  /* line 105, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  .responsive-page-title > .mobile-dropdown-button {
+    display: block;
+    float: right;
+    margin-top: -25px;
+  }
 
-    .fc-header.responsive-page-title .mobile-dropdown-button {
-        display: table-cell;
-        float: right !important;
-        margin-right: 7px;
-    }
-    .fc-header .responsive-menu-items {
-        display: none;
-        float: right !important;
-        position: relative;
-        top: 33px;
-        right: 163px;
-        width: 0px;
-    }
+  /* line 110, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  div.responsive-page-title > .responsive-menu-items {
+    display: none;
+  }
 
-    .responsive-page-title > .mobile-dropdown-button {
-        display: block;
-        float: right;
-        margin-top: -25px;
-    }
-    div.responsive-page-title > .responsive-menu-items {
-        display: none;
-    }
+  /* line 113, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #search-bar button.x2-button {
+    border-radius: 0px 3px 3px 0px;
+    -moz-border-radius: 0px 3px 3px 0px;
+    -webkit-border-radius: 0px 3px 3px 0px;
+    -o-border-radius: 0px 3px 3px 0px;
+  }
 
+  /* line 119, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #fullscreen-button {
+    display: none !important;
+  }
 
+  /* line 122, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #main-menu-notif {
+    margin-right: -5px;
+  }
 
+  /***********************************************************************
+  * dialogs
+  ***********************************************************************/
+  /* line 128, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  .ui-dialog {
+    max-width: 95% !important;
+  }
 
+  /***********************************************************************
+  * Move top bar to left slide out menu 
+  ***********************************************************************/
+  /* used to hide scroll bar on left menu */
+  /* line 135, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #top-menus-container-inner {
+    overflow-y: scroll;
+    height: 100vh;
+    width: 172px;
+    overflow-x: hidden;
+  }
 
+  /* line 141, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #top-menus-container {
+    width: 150px;
+    margin-left: -150px;
+    overflow: hidden;
+    position: absolute;
+    background-color: gray;
+    float: left;
+    opacity: 1;
+    height: 100vh;
+    clear: both;
+  }
 
-    #search-bar button.x2-button {
-        border-radius: 0px 3px 3px 0px;
-        -moz-border-radius: 0px 3px 3px 0px;
-        -webkit-border-radius: 0px 3px 3px 0px;
-        -o-border-radius: 0px 3px 3px 0px;
-    }
+  /* line 152, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #main-menu {
+    padding-left: 0;
+    margin-top: 130px;
+  }
+  /* line 155, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #main-menu li {
+    float: none;
+  }
+  /* line 156, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #main-menu li.top-bar-module-link {
+    width: 142px;
+    display: block !important;
+  }
 
-    #fullscreen-button {
-        display: none !important;
-    }
-    #main-menu-notif {
-        margin-right: -5px;
-    }
+  /* line 163, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #user-menu li {
+    float: none;
+  }
 
- 
+  /* line 166, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #search-bar-box {
+    display: block !important;
+    width: 100px !important;
+    margin-left: 3px;
+  }
 
-    /***********************************************************************
-    * dialogs
-    ***********************************************************************/
+  /* line 171, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #search-bar {
+    position: absolute;
+    top: 5px;
+    margin: 0;
+  }
 
-    .ui-dialog {
-        max-width: 95% !important;
-    }
-
-    /***********************************************************************
-    * Move top bar to left slide out menu 
-    ***********************************************************************/
-
-    /* used to hide scroll bar on left menu */
-    #top-menus-container-inner {
-        overflow-y: scroll;
-        height: 100vh;
-        width: 172px;
-        overflow-x: hidden;
-    }
-    #top-menus-container {
-        width: 150px;
-        margin-left: -150px;
-        overflow: hidden;
-        position: absolute;
-        background-color: gray;
-        float: left;
-        opacity: 1;
-        height: 100vh;
-        clear: both;
-    }
-    #main-menu {
-        padding-left: 0;
-        margin-top: 130px;
-    }
-    #main-menu li.top-bar-module-link {
-        width: 142px;
-        display: block !important;
-    }
-    #main-menu li,
-    #user-menu li {
-        float: none;
-    }
-    #search-bar-box {
-        display: block !important;
-        width: 100px !important;
-        margin-left: 3px;
-    }
-    #search-bar {
-        position: absolute;
-        top: 5px;
-        margin: 0;
-    }
-    /*#user-menu li.x2-first {
-        margin-top: 41px;
-    }*/
-    #user-menu {
-        position: absolute;
-        z-index: 5000;
-        background-color: gray;
-        border-bottom: 1px solid rgb(111, 111, 111);
-        width: 150px;
-        height: 125px;
-        right: 0;
-        top: 0;
-    }
+  /*#user-menu li.x2-first {
+      margin-top: 41px;
+  }*/
+  /* line 179, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #user-menu {
+    position: absolute;
+    z-index: 5000;
+    background-color: gray;
+    border-bottom: 1px solid #6f6f6f;
+    width: 150px;
+    height: 125px;
+    right: 0;
+    top: 0;
+  }
+  /* line 188, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #user-menu .user-menu-link {
+    position: absolute;
+  }
+  /* line 191, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #user-menu .x2-first {
+    top: 36px;
+  }
+  /* line 193, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #user-menu .x2-first + .user-menu-link {
+    top: 64px;
+  }
+  /* line 195, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #user-menu .x2-first + .user-menu-link + .user-menu-link {
+    top: 92px;
+  }
+  /* line 197, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #user-menu .x2-first + .user-menu-link + .user-menu-link + .user-menu-link {
+    top: 92px;
+  }
 
     /*#user-menu.three-user-menu-links {
         height: 125px;
@@ -225,139 +257,135 @@ room for user menu links
     #user-menu.two-user-menu-links {
         height: 100px;
     }*/
+  /* change background of menu items to match side bar */
+  /* line 214, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #header.defaultBg #main-menu > li:hover, #header.defaultBg #main-menu > li.active {
+    background: #8F8F8F;
+  }
+  /* line 219, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #header.defaultBg #user-menu > li:hover, #header.defaultBg #user-menu > li.active {
+    background: #8F8F8F;
+  }
 
-    #user-menu .user-menu-link {
-        position: absolute;
-    }
+  /* line 224, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #more-menu {
+    display: none !important;
+  }
 
-    #user-menu .x2-first {
-        top: 36px;
-    }
+  /* line 227, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #user-menu-2 {
+    position: fixed;
+    right: 2px;
+    top: 0;
+  }
 
-    #user-menu .x2-first + .user-menu-link {
-        top: 64px;
-    }
+  /***********************************************************************
+  * Slide out right widgets
+  ***********************************************************************/
+  /* line 237, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  body.show-right-bar #sidebar-right {
+    display: block !important;
+    position: absolute;
+    top: 31px;
+    right: 0;
+    width: 288px;
+    max-width: 288px;
+  }
+  /* line 245, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  body.show-right-bar #content-container {
+    position: relative;
+    right: 294px;
+  }
+  /* line 249, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  body.show-right-bar #sidebar-left-widget-box {
+    position: relative;
+    right: 306px;
+  }
+  /* line 254, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  body.show-left-bar {
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+  /* line 255, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  body.show-left-bar #page {
+    overflow-x: hidden;
+  }
+  /* line 258, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  body.show-left-bar #header {
+    margin-left: 150px;
+  }
+  /* line 262, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  body.show-left-bar #top-menus-container {
+    display: block;
+  }
+  /* line 265, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  body.show-left-bar .page-title-fixed-inner {
+    padding-left: 161px;
+  }
+  /* line 268, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  body.show-left-bar #sidebar-left-widget-box {
+    padding-left: 150px;
+  }
+  /* line 271, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  body.show-left-bar #content-container, body.show-left-bar #footer {
+    margin-left: 151px;
+  }
 
-    #user-menu .x2-first + .user-menu-link + .user-menu-link {
-        top: 92px;
-    }
+  /***********************************************************************
+  * Slide out left menu
+  ***********************************************************************/
+  /***********************************************************************
+  * move left widgets over title bar
+  ***********************************************************************/
+  /* line 283, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  .page-title-placeholder {
+    display: none;
+  }
 
-    #user-menu .x2-first + .user-menu-link + .user-menu-link + .user-menu-link {
-        top: 92px;
-    }
+  /* line 286, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #sidebar-left-widget-box {
+    padding-right: 12px;
+  }
 
-    /* change background of menu items to match side bar */   
-    #header.defaultBg #main-menu > li:hover, #header.defaultBg #main-menu > li.active,
-    #header.defaultBg #user-menu > li:hover, #header.defaultBg #user-menu > li.active {
-        background: #8F8F8F;
-    }
-    #more-menu {
-        display: none !important;
-    }
-    #user-menu-2 {
-        position: fixed;
-        right: 2px;
-        top: 0;
-    }
+  /* line 289, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  .sidebar-left {
+    float: none;
+    width: 100%;
+    text-align: center;
+  }
 
-    /***********************************************************************
-    * Slide out right widgets
-    ***********************************************************************/
+  /* line 294, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #show-left-menu-button {
+    display: inline;
+  }
 
-    body.show-right-bar #sidebar-right {
-        display: block !important;
-        position: absolute;
-        top: 31px;
-        right: 0;
-        width: 288px;
-        max-width: 288px;
-    }
+  /* line 297, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  div.page-title-fixed-outer {
+    padding-left: 0px;
+    left: -6px;
+  }
 
-    body.show-right-bar #content-container {
-        position: relative;
-        right: 294px;
-    }
-    body.show-right-bar #sidebar-left-widget-box {
-        position: relative;
-        right: 306px;
-    }
+  /* line 301, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  body.no-widgets div.page-title-fixed-outer div.page-title {
+    margin-right: -6px;
+    margin-left: 0;
+  }
 
-    /***********************************************************************
-    * Slide out left menu
-    ***********************************************************************/
-    body.show-left-bar #page {
-        overflow-x: hidden;
-    }
-    body.show-left-bar #header {
-        margin-left: 150px;
-    }
-    body.show-left-bar {
-        overflow-x: hidden;
-    }
-    body.show-left-bar #top-menus-container {
-        display: block;
-    }
-    body.show-left-bar .page-title-fixed-inner {
-        padding-left: 161px;
-    }
-    body.show-left-bar #sidebar-left-widget-box {
-        padding-left: 150px;
-    }
-    body.show-left-bar #content-container {
-        margin-left: 151px;
-    }
-    body.show-left-bar {
-        overflow-y: hidden;
-    }
-    body.show-left-bar #footer {
-        margin-left: 151px;
-    }
+  /* line 305, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #notif-box {
+    right: 4px;
+    width: 96%;
+  }
+  /* line 308, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #notif-box:after {
+    right: 136px;
+  }
 
-    /***********************************************************************
-    * move left widgets over title bar
-    ***********************************************************************/
-    .page-title-placeholder {
-        display: none;
-    }
-
-    #sidebar-left-widget-box {
-        padding-right: 12px;
-    }
-
-    .sidebar-left {
-        float: none;
-        width: 100%;
-        text-align: center;
-    }
-
-    #show-left-menu-button {
-        display: inline;
-    }
-    div.page-title-fixed-outer {
-        padding-left: 0px;
-        left: -6px;
-    }
-
-    body.no-widgets div.page-title-fixed-outer div.page-title {
-        margin-right: -6px;
-        margin-left: 0;
-    }
-
-
-    #notif-box {
-        right: 4px;
-        width: 96%;
-    }
-    #notif-box:after {
-        right: 136px;
-    }
-
-    #search-bar-title {
-        margin-left: 4px;
-    }
-
+  /* line 312, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #search-bar-title {
+    margin-left: 4px;
+  }
 }
-
 /*
 show left menu 
 */
@@ -366,14 +394,12 @@ show left menu
         display: block !important;
     }
 }*/
-
 /*
 hide right widget bar 
 */
 @media (max-width: 1040px) {
-    #sidebar-right {
-        display: none;
-    }
+  /* line 330, ../../../compass/themes/x2engine/css/responsiveLayout.scss */
+  #sidebar-right {
+    display: none;
+  }
 }
-
-

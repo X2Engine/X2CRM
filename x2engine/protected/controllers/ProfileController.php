@@ -69,7 +69,7 @@ class ProfileController extends x2base {
                     'setDefaultCredentials', 'activity', 'ajaxSaveDefaultEmailTemplate',
                     'deleteActivityReport', 'createActivityReport', 'manageEmailReports',
                     'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport',
-                    'createProfileWidget','deleteSortableWidget'),
+                    'createProfileWidget','deleteSortableWidget','deleteTheme','previewTheme'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -195,13 +195,64 @@ class ProfileController extends x2base {
         echo $theme;
     }
 
+    public function canEditTheme($themeName) {
+        if ($themeName == 'Default') {
+            return false;
+        }
+
+
+        $themes = X2Model::model('Media')->findByAttributes(array(
+            'uploadedBy' => Yii::app()->user->id,
+            'fileName' => $themeName
+        ));
+
+        if ( $themes ) {
+            return false;
+        } 
+
+        return true;
+    }
+
+    public function actionDeleteTheme($themeName) {
+        if( !$this->canEditTheme($themeName) ) {
+            echo 'error';
+            return;
+        }
+
+        $theme = Media::model()->findByAttributes( 
+            array('associationType' => 'theme ',
+            'fileName' => $themeName)
+            );
+        if($theme){
+            $theme->delete();
+        }
+    }
+
+    public function actionPreviewTheme($themeName) {
+        $theme = Media::model()->findByAttributes( 
+            array('associationType' => 'theme ',
+            'fileName' => $themeName)
+            );
+
+        if($theme){
+            $settings = CJSON::decode($theme->description);
+            ThemeGenerator::previewTheme($settings);
+        }
+    }
+
     /**
-      Overwrite an existing theme that the user uploaded.
+     * Overwrite an existing theme that the user uploaded.
      */
     public function actionSaveTheme($themeAttributes) {
         $themeAttributesArr = CJSON::decode($themeAttributes);
         if (!in_array('themeName', array_keys($themeAttributesArr)))
             return;
+
+        if( !$this->canEditTheme( $themeAttributesArr['themeName'] ) ) {
+            echo t('profile', 'Cannot edit theme');
+            return;
+        }
+
 
         $themeModel = X2Model::model('Media')->findByAttributes(array(
             'uploadedBy' => Yii::app()->user->name,
@@ -276,7 +327,10 @@ class ProfileController extends x2base {
             }
             if (isset($_POST['preferences'])) {
                 $model->theme = $_POST['preferences'];
-                $model->save();
+                if ( $model->save() ) {
+                    Yii::import('application.components.ThemeGenerator.LoginThemeHelper');
+                    LoginThemeHelper::saveProfileTheme($_POST['preferences']['themeName']);
+                }
             }
             $this->refresh();
         }
@@ -371,22 +425,32 @@ class ProfileController extends x2base {
     /**
      * Basic CRUD for application credentials
      * @param type $id
-     * @param type $class
+     * @param type $class embedded model class name
      * @throws CHttpException
      */
     public function actionCreateUpdateCredentials($id = null, $class = null) {
+        if (!Yii::app()->params->isAdmin && $class === 'TwitterApp')
+            $this->denied ();
+
         $this->pageTitle = Yii::t('app', 'Edit Credentials');
         $profile = Yii::app()->params->profile;
         // Create or retrieve model:
         if (empty($id)) {
             if (empty($class))
-                throw new CHttpException(400, 'Class must be specified when creating new credentials.');
+                throw new CHttpException(
+                    400, 'Class must be specified when creating new credentials.');
             $model = new Credentials();
             $model->modelClass = $class;
         } else {
             $model = Credentials::model()->findByPk($id);
             if (empty($model))
                 throw new CHttpException(404);
+        }
+        if ($model->modelClass === 'TwitterApp') {
+            $model->private = 1;
+            $model->userId = Credentials::SYS_ID;
+            $model->name = 'Twitter app';
+            $disableMetaDataForm = true;
         }
         $model->scenario = $model->isNewRecord ? 'create' : 'update';
 
@@ -408,9 +472,18 @@ class ProfileController extends x2base {
                     $message = Yii::t('app', 'Saved') . ' ' . Formatter::formatLongDateTime($time);
                     $this->redirect(array('manageCredentials'));
                 }
+            } else {
+                //AuxLib::debugLogR ($model->getErrors ());
             }
         }
-        $this->render('createUpdateCredentials', array('model' => $model, 'profile' => $profile, 'message' => $message));
+        $this->render(
+            'createUpdateCredentials', 
+            array(
+                'model' => $model,
+                'profile' => $profile,
+                'disableMetaDataForm' => isset ($disableMetaDataForm) ? 
+                    $disableMetaDataForm : false,
+                'message' => $message));
     }
 
     /**
@@ -421,11 +494,8 @@ class ProfileController extends x2base {
         foreach ($attributes as $attr)
             ${$attr} = isset($_POST[$attr])? $_POST[$attr] : "";
         $this->attachBehavior('EmailDeliveryBehavior', new EmailDeliveryBehavior);
-        $valid = $this->testUserCredentials(
-            $email, $password, $server, $port, $security
-        );
-        if (!$valid)
-            echo "Failed";
+        $valid = $this->testUserCredentials($email, $password, $server, $port, $security);
+        if (!$valid) echo "Failed";
     }
 
     /**
@@ -878,6 +948,7 @@ class ProfileController extends x2base {
         } else {
             echo 'false';
         }
+
     }
 
     public function actionDeleteSortableWidget () {
@@ -885,11 +956,14 @@ class ProfileController extends x2base {
             throw new CHttpException (400, 'Bad Request');
         }
         $widgetKey = $_POST['widgetKey'];
+
+        $profile = self::getModelFromPost();
+
         list($widgetClass, $widgetUID) = SortableWidget::parseWidgetLayoutKey ($widgetKey);
-        if (SortableWidget::subtypeIsValid ('profile', $widgetClass)) {
             $widgetLayoutName = $_POST['widgetLayoutName'];
+        if (SortableWidget::subtypeIsValid ($widgetLayoutName, $widgetClass)) {
             if (SortableWidget::deleteSortableWidget (
-                Yii::app()->params->profile, $widgetClass, $widgetUID, $widgetLayoutName)) {
+                $profile, $widgetClass, $widgetUID, $widgetLayoutName)) {
 
                 echo 'success';
                 return;
@@ -897,6 +971,18 @@ class ProfileController extends x2base {
         }
         echo 'failure';
     }
+
+    public static function getModelFromPost() {
+        if (isset($_POST['modelName']) && isset($_POST['modelId'])) {
+            if ($_POST['modelName'] && $_POST['modelId']) {
+                return X2Model::model($_POST['modelName'])->findByPk($_POST['modelId']);
+            }
+        } 
+
+        return $profile = Yii::app()->params->profile;
+    }
+
+
 
     /**
      * Called to save profile widget sort order
@@ -912,7 +998,7 @@ class ProfileController extends x2base {
             echo 'Failure: invalid post params';
             return;
         }
-        $profile = Yii::app()->params->profile;
+        $profile = self::getModelFromPost();
         $widgetOrder = $_POST['widgetOrder'];
         $widgetType = $_POST['widgetType'];
 
@@ -943,8 +1029,8 @@ class ProfileController extends x2base {
             echo 'failure';
             return;
         }
-
-        $profile = Yii::app()->params->profile;
+        $profile = self::getModelFromPost();
+        // AuxLib::debugLogR($profile->attributes);
         $widgetKey = $_POST['widgetClass'];
         $widgetType = $_POST['widgetType'];
         list($widgetClass, $widgetUID) = SortableWidget::parseWidgetLayoutKey ($widgetKey);
@@ -984,6 +1070,16 @@ class ProfileController extends x2base {
         }
         $_POST['widgetClass'] = $_GET['widgetClass'];
         $_POST['widgetType'] = $_GET['widgetType'];
+
+        if (isset($_GET['modelName'])) {
+            $_POST['modelName'] = $_GET['modelName'];
+        }
+
+        if (isset($_GET['modelId'])) {
+            $_POST['modelId'] = $_GET['modelId'];
+        }
+
+
         $this->actionShowWidgetContents();
         return;
     }
@@ -1003,8 +1099,8 @@ class ProfileController extends x2base {
 
             throw new CHttpException (404, 'Bad Request');
         }
-        $profile = Yii::app()->params->profile;
 
+        $profile = self::getModelFromPost();
         $widgetClass = $_POST['widgetClass'];
         $key = $_POST['key'];
         $value = $_POST['value'];
@@ -1017,6 +1113,7 @@ class ProfileController extends x2base {
                 echo 'success';
                 return;
             }
+
         }
         echo 'failure';
     }
@@ -1141,6 +1238,7 @@ class ProfileController extends x2base {
         } else {
             $this->redirect('login');
         }
+
     }
 
     public function actionGetEvents($lastEventId, $lastTimestamp, $myProfileId, $profileId) {
@@ -1310,9 +1408,15 @@ class ProfileController extends x2base {
                 } else {
                     $event->important = 0;
                 }
-                $event->save();
+                if( $event->save() ) {
+                    echo 'success';
+                    return;
+                }
             }
         }
+
+        echo 'failure';
+
     }
 
     /*
@@ -1602,5 +1706,6 @@ class ProfileController extends x2base {
             'message' => $message,
         ));
     }
+
 
 }

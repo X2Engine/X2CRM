@@ -210,11 +210,17 @@ if (isset($layout)) {
                                                     unset($item);
                                                     $htmlString .= '</div></div>';
                                                     continue;
-                                                } elseif ($fieldPermissions[$field->fieldName] == 1) {
+                                                } elseif (
+                                                    $fieldPermissions[$field->fieldName] == 1) {
+
                                                     $item['readOnly'] = true;
+                                                } else {
+                                                    $item['readOnly'] = false;
                                                 }
                                             } else if (!$bypassPermissions) {
                                                 continue;
+                                            } else {
+                                                $item['readOnly'] = false;
                                             }
                                             $noItems = false;
 
@@ -251,29 +257,32 @@ if (isset($layout)) {
                                                     '<div class="formInputBox" 
                                   style="width:' . $item['width'] . 'px;height:' . $item['height'] . ';">';
                                             $default = $model->$fieldName == $field->attributeLabel;
-
-                                            if (isset($specialFields[$fieldName])) {
-                                                $htmlString .= $specialFields[$fieldName];
+                                            if (isset($idArray)) {
+                                                $htmlString .= X2Model::renderMergeInput($modelName, $idArray, $field);
                                             } else {
-                                                $htmlString .= $model->renderInput(
-                                                        $fieldName, array(
-                                                    'tabindex' => isset($item['tabindex']) ?
-                                                            $item['tabindex'] : null,
-                                                    'disabled' => $item['readOnly'] ?
-                                                            'disabled' : null,
-                                                    'style' => $field->type === 'text' ?
-                                                            'height: ' . $textFieldHeight : ''
-                                                ));
+                                                if (isset($specialFields[$fieldName])) {
+                                                    $htmlString .= $specialFields[$fieldName];
+                                                } else {
+                                                    $htmlString .= $model->renderInput(
+                                                            $fieldName, array(
+                                                        'tabindex' => isset($item['tabindex']) ?
+                                                                $item['tabindex'] : null,
+                                                        'disabled' => $item['readOnly'] ?
+                                                                'disabled' : null,
+                                                        'style' => $field->type === 'text' ?
+                                                                'height: ' . $textFieldHeight : ''
+                                                    ));
+                                                }
                                             }
                                             $htmlString .= "</div>";
 
                                             if ($field->type === 'link' && !$suppressQuickCreate &&
-                                                    isset(
-                                                            $modelsWhichSupportQuickCreate[$field->linkType])) {
-
+                                                isset(
+                                                    $modelsWhichSupportQuickCreate[
+                                                        $field->linkType])) {
                                                 $htmlString .=
-                                                        '<span class="quick-create-button create-' . $field->linkType . '">
-                                        +</span>';
+                                                    '<span class="quick-create-button create-' .
+                                                      $field->linkType . '">+</span>';
                                                 $quickCreateButtonTypes[] = $field->linkType;
                                             }
                                         }

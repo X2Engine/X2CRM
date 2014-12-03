@@ -78,6 +78,8 @@ if (!Contacts::model ()->hasAttribute (trim ($orderAttr))) {
 //look up all ids of the list we are currently viewing
 //find position of model in the list
 
+$moduleTitle = Modules::displayName();
+
 // decide which data provider to use
 if(is_numeric($listId)) {
 	$list = X2Model::model('X2List')->findByPk($listId);
@@ -86,16 +88,21 @@ if(is_numeric($listId)) {
         $vcrDataProvider = $searchModel->searchList($listId);
     }else{
         // default to All Contacts
-        $listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contact/contacts/index'));
+        $listLink = CHtml::link(
+            Yii::t('contacts','All {module}', array('{module}'=>$moduleTitle)),
+            array('/contact/contacts/index')
+        );
         $vcrDataProvider = $searchModel->searchAll();
     }
 } elseif($listId=='myContacts') {
-	$listLink = CHtml::link(
-        Yii::t('contacts','My Contacts'),array('/contacts/contacts/myContacts'));
+    $listLink = CHtml::link(
+        Yii::t('contacts','My {module}', array('{module}'=>$moduleTitle)),
+        array('/contacts/contacts/myContacts'));
 	$vcrDataProvider = $searchModel->searchMyContacts();
 } elseif($listId=='newContacts') {
-	$listLink = CHtml::link(
-        Yii::t('contacts','New Contacts'),array('/contacts/contacts/newContacts'));
+    $listLink = CHtml::link(
+        Yii::t('contacts','New {module}', array('{module}'=>$moduleTitle)),
+        array('/contacts/contacts/newContacts'));
 	$vcrDataProvider = $searchModel->searchNewContacts();
 } elseif($tagFlag){
     $listLink = CHtml::link(
@@ -103,8 +110,9 @@ if(is_numeric($listId)) {
     $_GET['tagField']=$listId;
     $vcrDataProvider = $searchModel->searchAll();
 } else {
-    // default to All Contacts
-	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/contacts/index'));	
+    $listLink = CHtml::link(
+        Yii::t('contacts','All {module}', array('{module}'=>$moduleTitle)),
+        array('/contacts/contacts/index'));	// default to All Contacts
 	$vcrDataProvider = $searchModel->searchAll();
 }
 
@@ -122,7 +130,7 @@ $vcrData = X2List::getVcrLinks($vcrDataProvider,$model->id);
 
 // if this contact isn't on the list, default to All Contacts (unless we already tried that)
 if($vcrData === false && $listId !== 'index') {
-	$listLink = CHtml::link(Yii::t('contacts','All Contacts'),array('/contacts/'.$path));
+	$listLink = CHtml::link(Yii::t('contacts','All {module}', array('{module}'=>$moduleTitle)),array('/contacts/'.$path));
 	$vcrDataProvider = $searchModel->searchAll();
 
 	if(empty($order))

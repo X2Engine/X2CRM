@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -42,7 +41,7 @@ Yii::import('application.modules.workflow.models.*');
 Yii::import('application.modules.users.models.*');
 
 /**
- * @package application.tests.unit.modules.contacts.models
+ * @package application.tests.unit.modules.workflow.controllers
  */
 class WorkflowTest extends X2DbTestCase {
 

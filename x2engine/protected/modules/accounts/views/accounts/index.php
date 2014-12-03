@@ -34,21 +34,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$menuItems = array(
-    array('label'=>Yii::t('accounts','All Accounts')),
-    array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
-    
-    array('label'=>Yii::t('accounts',"Import Accounts"), 'url'=>array('admin/importModels', 'model'=>'Accounts')),
-    array('label'=>Yii::t('accounts','Export Accounts'), 'url'=>array('admin/exportModels', 'model'=>'Accounts')),
-);
-
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
 $contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
 
-if($opportunityModule->visible && $contactModule->visible)
-	$menuItems[] = array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'accounts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+$menuOptions = array(
+    'all', 'create',  'import', 'export',
+);
+if ($opportunityModule->visible && $contactModule->visible)
+    $menuOptions[] = 'quick';
+$this->insertMenu($menuOptions);
 
-$this->actionMenu = $this->formatMenu($menuItems);
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
@@ -65,10 +60,10 @@ $('.search-form form').submit(function(){
 ?>
 <?php
 $this->widget('X2GridView', array(
-    'id'=>'accounts-grid',
-    'title'=>Yii::t('accounts','Accounts'),
-    'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-    'template'=>
+	'id'=>'accounts-grid',
+	'title'=>Modules::displayName(),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
+	'template'=>
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
         '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
         '<div id="x2-gridview-page-title" '.

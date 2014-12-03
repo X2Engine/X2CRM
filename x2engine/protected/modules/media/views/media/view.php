@@ -33,13 +33,11 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('media', 'All Media'), 'url'=>array('index')),
-	array('label'=>Yii::t('media', 'Upload'), 'url'=>array('upload')),
-	array('label'=>Yii::t('media', 'View')),
-	array('label'=>Yii::t('media', 'Update'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('media', 'Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('media','Are you sure you want to delete this item?'))),
-));
+
+$menuOptions = array(
+    'index', 'upload', 'view', 'edit', 'delete',
+);
+$this->insertMenu($menuOptions, $model);
 
 ?>
 <div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','File: '); ?></span> <?php echo $model->renderAttribute (($model->drive || !empty($model->name))? "name" : "fileName"); ?></h2>

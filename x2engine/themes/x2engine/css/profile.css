@@ -32,312 +32,322 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
-#profile-info-container .edit.right img {
-    margin-right: 12px;
-    margin-top: 7px;
-    margin-bottom: -3px;
-    opacity: 0.7;
+/* line 22, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-info-container .edit.right {
+  color: inherit;
+  margin-right: 7px;
+  margin-top: 2px;
+  margin-bottom: -3px;
+  opacity: 0.7;
 }
 
-#profile-info-minimize-button,
-#profile-info-maximize-button {
-    margin-right: 5px;
+/* line 30, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-info-minimize-button, #profile-info-maximize-button {
+  margin-right: 5px;
+  width: 14px;
+  color: inherit;
 }
 
+/* line 36, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-settings-button {
-    margin-top: 5px;
-    margin-right: 8px;
+  margin-top: 8px;
+  margin-right: 8px;
 }
 
-#profile-widgets-container .x2grid-header-container table,
-#profile-widgets-container-2 .x2grid-header-container table {
-    border:none;
+/* line 41, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-widgets-container .x2grid-header-container table, #profile-widgets-container-2 .x2grid-header-container table {
+  border: none;
 }
 
-#profile-widgets-container table,
-#profile-widgets-container-2 table {
-    margin:0;
+/* line 45, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-widgets-container table, #profile-widgets-container-2 table {
+  margin: 0;
 }
 
+/* line 49, ../../../compass/themes/x2engine/css/profile.scss */
 #content .x2-layout-island {
-    border: none;
+  border: none;
 }
 
-#profile-info-container,
-#activity-feed-container,
-.sortable-widget-container {
-    border: 1px solid #c5c5c5 !important;
+/* line 53, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-info-container, #activity-feed-container, .sortable-widget-container {
+  border: 1px solid #c5c5c5 !important;
 }
 
+/* line 57, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-info-container {
-    border-radius: 4px 4px 4px 4px;
-    -moz-border-radius: 4px 4px 4px 4px;
-    -webkit-border-radius: 4px 4px 4px 4px;
-    -o-border-radius: 4px 4px 4px 4px;
+  border-radius: 4px 4px 4px 4px;
+  -moz-border-radius: 4px 4px 4px 4px;
+  -webkit-border-radius: 4px 4px 4px 4px;
+  -o-border-radius: 4px 4px 4px 4px;
 }
 
+/* line 64, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-info {
-    border: none !important;
+  border: none !important;
 }
 
+/* line 68, ../../../compass/themes/x2engine/css/profile.scss */
 #content {
-    background: none !important;
-    border: none !important;
+  background: none !important;
+  border: none !important;
 }
 
-
+/* line 73, ../../../compass/themes/x2engine/css/profile.scss */
 #activity-feed-container-outer {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
+/* line 77, ../../../compass/themes/x2engine/css/profile.scss */
 #content .page-title {
-    -moz-border-radius: 3px 3px 0px 0px;
-    -o-border-radius: 3px 3px 0px 0px;
-    -webkit-border-radius: 3px 3px 0px 0px;
-    border-radius: 3px 3px 0px 0px;
+  -moz-border-radius: 3px 3px 0px 0px;
+  -o-border-radius: 3px 3px 0px 0px;
+  -webkit-border-radius: 3px 3px 0px 0px;
+  border-radius: 3px 3px 0px 0px;
 }
 
-
-
+/* line 84, ../../../compass/themes/x2engine/css/profile.scss */
 .profile-sort-placeholder {
-    height:200px;
+  height: 200px;
 }
 
-#profile-info-container .page-title,
-#activity-feed-container .page-title {
-    line-height: 29px;
-    height: 30px;
+/* line 88, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-info-container .page-title, #activity-feed-container .page-title {
+  line-height: 29px;
+  height: 30px;
 }
 
-#profile-info-container .page-title > h2,
-#activity-feed-container .page-title > h2 {
-    font-size: 17px;
+/* line 93, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-info-container .page-title > h2, #activity-feed-container .page-title > h2 {
+  font-size: 17px;
 }
 
+/* line 97, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-info-container .page-title > h2 {
-    background-position: -1px -8px;
+  background-position: -1px -8px;
 }
 
+/* line 101, ../../../compass/themes/x2engine/css/profile.scss */
 #activity-feed-container .page-title > h2 {
-    background-position: -1px 0px;
-    background-size: 29px;
-    padding-left: 34px;
+  background-position: -1px 0px;
+  background-size: 29px;
+  padding-left: 34px;
 }
 
-
-@media (max-width: 657px){
-    #activity-feed-container .responsive-page-title > .mobile-dropdown-button,
-    #profile-info-container .responsive-page-title > .mobile-dropdown-button {
-        margin-top: -22px;
-        margin-right: 7px;
-    }
+@media (max-width: 657px) {
+  /* line 108, ../../../compass/themes/x2engine/css/profile.scss */
+  #activity-feed-container .responsive-page-title > .mobile-dropdown-button, #profile-info-container .responsive-page-title > .mobile-dropdown-button {
+    margin-top: -22px;
+    margin-right: 7px;
+  }
 }
-
-
 /***********************************************************************
 * profile layout responsive css is duplicated 3 times. Once so that two
 * column profile can be used in browsers which don't support media
 * queries and two more times so that the layout responds correctly
 * both when the right widgets are shown and when they are hidden.
 ***********************************************************************/
-
-
 /* right widgets shown */
 /*@media (min-width: 1544px) {*/
 @media (min-width: 1344px) {
-    #profile-content-container.full-profile #profile-info-container-outer {
-        float: left;
-        width: 52%;
-    }
-    
-    /*  
-    Allows jQuery UI sortable to drop droppables into this container even if it's empty
-    */
-    #profile-content-container.full-profile #profile-widgets-container-2 {
-        padding-bottom:20px;
-        margin-bottom: -20px; /* prevent padding from taking up space in layout  */
-    }
-    
-    #profile-content-container.full-profile #profile-widgets-container-2.empty-widget-container {
-        padding-bottom:30px;
-    }
-    
-    /*  
-    Allows jQuery UI sortable to drop droppables into this container even if it's empty
-    */
-    #profile-content-container.full-profile #profile-widgets-container-inner {
-        padding-bottom:200px;
-        margin-bottom: -200px; /* prevent padding from taking up space in layout  */
-    }
-    
-    #profile-content-container.full-profile #profile-widgets-container-inner.empty-widget-container {
-        height: 100%;
-        position: fixed;
-        width: 33%;
-    }
-    
-    #profile-content-container.full-profile #profile-widgets-container-2 {
-        width: 52%;
-        clear: left;
-        float: left;
-        margin-left: 0;
-        margin-right: 0;
-    }
-    
-    #profile-content-container.full-profile #activity-feed-container-outer {
-        width: 52%;
-        clear: left;
-        float: left;
-        margin-left: 0;
-        margin-right: 0;
-        margin-top: 10px;
-    }
-    #profile-content-container.full-profile #activity-feed-container {
-        margin-right: 0;
-    }
-    
-    #profile-content-container.full-profile #profile-widgets-container {
-        float: right;
-        width: 48%;
-        margin-top: -10px;
-    }
-    
-    #profile-content-container.full-profile #profile-widgets-container-inner {
-        margin-left: 9px;
-    }
-}
-
-/* right widgets hidden */
-/*@media (min-width: 1232px) {*/
-@media (min-width: 1032px) {
-
-    .no-widgets #profile-content-container.full-profile #profile-info-container-outer {
-        float: left;
-        width: 52%;
-    }
-    
-    /*  
-    Allows jQuery UI sortable to drop droppables into this container even if it's empty
-    */
-    .no-widgets #profile-content-container.full-profile #profile-widgets-container-2 {
-        padding-bottom:20px;
-        margin-bottom: -20px; /* prevent padding from taking up space in layout  */
-    }
-    
-    .no-widgets #profile-content-container.full-profile #profile-widgets-container-2.empty-widget-container {
-        padding-bottom:30px;
-    }
-    
-    /*  
-    Allows jQuery UI sortable to drop droppables into this container even if it's empty
-    */
-    .no-widgets #profile-content-container.full-profile #profile-widgets-container-inner {
-        padding-bottom:200px;
-        margin-bottom: -200px; /* prevent padding from taking up space in layout  */
-    }
-    
-    .no-widgets #profile-content-container.full-profile #profile-widgets-container-inner.empty-widget-container {
-        height: 100%;
-        position: fixed;
-        width: 33%;
-    }
-    
-    .no-widgets #profile-content-container.full-profile #profile-widgets-container-2 {
-        width: 52%;
-        clear: left;
-        float: left;
-        margin-left: 0;
-        margin-right: 0;
-    }
-    
-    .no-widgets #profile-content-container.full-profile #activity-feed-container-outer {
-        width: 52%;
-        clear: left;
-        float: left;
-        margin-left: 0;
-        margin-right: 0;
-        margin-top: 10px;
-    }
-    .no-widgets #profile-content-container.full-profile #activity-feed-container {
-        margin-right: 0;
-    }
-    
-    .no-widgets #profile-content-container.full-profile #profile-widgets-container {
-        float: right;
-        width: 48%;
-        margin-top: -10px;
-    }
-    
-    .no-widgets #profile-content-container.full-profile #profile-widgets-container-inner {
-        margin-left: 9px;
-    }
-
-}
-
-
-/* for browsers which don't support media queries */
-
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-info-container-outer {
+  /* line 125, ../../../compass/themes/x2engine/css/profile.scss */
+  #profile-content-container.full-profile #profile-info-container-outer {
     float: left;
     width: 52%;
-}
-
-/*  
-Allows jQuery UI sortable to drop droppables into this container even if it's empty
-*/
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-2 {
-    padding-bottom:20px;
-    margin-bottom: -20px; /* prevent padding from taking up space in layout  */
-}
-
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-2.empty-widget-container {
-    padding-bottom:30px;
-}
-
-/*  
-Allows jQuery UI sortable to drop droppables into this container even if it's empty
-*/
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-inner {
-    padding-bottom:200px;
-    margin-bottom: -200px; /* prevent padding from taking up space in layout  */
-}
-
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-inner.empty-widget-container {
+  }
+  /* line 129, ../../../compass/themes/x2engine/css/profile.scss */
+  #profile-content-container.full-profile #profile-widgets-container-2 {
+    padding-bottom: 20px;
+    margin-bottom: -20px;
+    /* prevent padding from taking up space in layout  */
+  }
+  /* line 133, ../../../compass/themes/x2engine/css/profile.scss */
+  #profile-content-container.full-profile #profile-widgets-container-2.empty-widget-container {
+    padding-bottom: 30px;
+  }
+  /* line 137, ../../../compass/themes/x2engine/css/profile.scss */
+  #profile-content-container.full-profile #profile-widgets-container-inner {
+    padding-bottom: 200px;
+    margin-bottom: -200px;
+    /* prevent padding from taking up space in layout  */
+  }
+  /* line 141, ../../../compass/themes/x2engine/css/profile.scss */
+  #profile-content-container.full-profile #profile-widgets-container-inner.empty-widget-container {
     height: 100%;
     position: fixed;
     width: 33%;
-}
-
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-2 {
+  }
+  /* line 147, ../../../compass/themes/x2engine/css/profile.scss */
+  #profile-content-container.full-profile #profile-widgets-container-2 {
     width: 52%;
     clear: left;
     float: left;
     margin-left: 0;
     margin-right: 0;
-}
-
-#content.wide-profile-widget-layout #profile-content-container.full-profile #activity-feed-container-outer {
+  }
+  /* line 154, ../../../compass/themes/x2engine/css/profile.scss */
+  #profile-content-container.full-profile #activity-feed-container-outer {
     width: 52%;
     clear: left;
     float: left;
     margin-left: 0;
     margin-right: 0;
     margin-top: 10px;
-}
-#content.wide-profile-widget-layout #profile-content-container.full-profile #activity-feed-container {
+  }
+  /* line 162, ../../../compass/themes/x2engine/css/profile.scss */
+  #profile-content-container.full-profile #activity-feed-container {
     margin-right: 0;
-}
-
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container {
+  }
+  /* line 165, ../../../compass/themes/x2engine/css/profile.scss */
+  #profile-content-container.full-profile #profile-widgets-container {
     float: right;
     width: 48%;
     margin-top: -10px;
-}
-
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-inner {
+  }
+  /* line 170, ../../../compass/themes/x2engine/css/profile.scss */
+  #profile-content-container.full-profile #profile-widgets-container-inner {
     margin-left: 9px;
+  }
+
+  /*  
+  Allows jQuery UI sortable to drop droppables into this container even if it's empty
+  */
+  /*  
+  Allows jQuery UI sortable to drop droppables into this container even if it's empty
+  */
+}
+/* right widgets hidden */
+/*@media (min-width: 1232px) {*/
+@media (min-width: 1032px) {
+  /* line 186, ../../../compass/themes/x2engine/css/profile.scss */
+  .no-widgets #profile-content-container.full-profile #profile-info-container-outer {
+    float: left;
+    width: 52%;
+  }
+  /* line 190, ../../../compass/themes/x2engine/css/profile.scss */
+  .no-widgets #profile-content-container.full-profile #profile-widgets-container-2 {
+    padding-bottom: 20px;
+    margin-bottom: -20px;
+    /* prevent padding from taking up space in layout  */
+  }
+  /* line 194, ../../../compass/themes/x2engine/css/profile.scss */
+  .no-widgets #profile-content-container.full-profile #profile-widgets-container-2.empty-widget-container {
+    padding-bottom: 30px;
+  }
+  /* line 198, ../../../compass/themes/x2engine/css/profile.scss */
+  .no-widgets #profile-content-container.full-profile #profile-widgets-container-inner {
+    padding-bottom: 200px;
+    margin-bottom: -200px;
+    /* prevent padding from taking up space in layout  */
+  }
+  /* line 202, ../../../compass/themes/x2engine/css/profile.scss */
+  .no-widgets #profile-content-container.full-profile #profile-widgets-container-inner.empty-widget-container {
+    height: 100%;
+    position: fixed;
+    width: 33%;
+  }
+  /* line 208, ../../../compass/themes/x2engine/css/profile.scss */
+  .no-widgets #profile-content-container.full-profile #profile-widgets-container-2 {
+    width: 52%;
+    clear: left;
+    float: left;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  /* line 215, ../../../compass/themes/x2engine/css/profile.scss */
+  .no-widgets #profile-content-container.full-profile #activity-feed-container-outer {
+    width: 52%;
+    clear: left;
+    float: left;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 10px;
+  }
+  /* line 223, ../../../compass/themes/x2engine/css/profile.scss */
+  .no-widgets #profile-content-container.full-profile #activity-feed-container {
+    margin-right: 0;
+  }
+  /* line 226, ../../../compass/themes/x2engine/css/profile.scss */
+  .no-widgets #profile-content-container.full-profile #profile-widgets-container {
+    float: right;
+    width: 48%;
+    margin-top: -10px;
+  }
+  /* line 231, ../../../compass/themes/x2engine/css/profile.scss */
+  .no-widgets #profile-content-container.full-profile #profile-widgets-container-inner {
+    margin-left: 9px;
+  }
+
+  /*  
+  Allows jQuery UI sortable to drop droppables into this container even if it's empty
+  */
+  /*  
+  Allows jQuery UI sortable to drop droppables into this container even if it's empty
+  */
+}
+/* for browsers which don't support media queries */
+/* line 246, ../../../compass/themes/x2engine/css/profile.scss */
+#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-info-container-outer {
+  float: left;
+  width: 52%;
+}
+/* line 250, ../../../compass/themes/x2engine/css/profile.scss */
+#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-2 {
+  padding-bottom: 20px;
+  margin-bottom: -20px;
+  /* prevent padding from taking up space in layout  */
+}
+/* line 254, ../../../compass/themes/x2engine/css/profile.scss */
+#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-2.empty-widget-container {
+  padding-bottom: 30px;
+}
+/* line 258, ../../../compass/themes/x2engine/css/profile.scss */
+#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-inner {
+  padding-bottom: 200px;
+  margin-bottom: -200px;
+  /* prevent padding from taking up space in layout  */
+}
+/* line 262, ../../../compass/themes/x2engine/css/profile.scss */
+#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-inner.empty-widget-container {
+  height: 100%;
+  position: fixed;
+  width: 33%;
+}
+/* line 268, ../../../compass/themes/x2engine/css/profile.scss */
+#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-2 {
+  width: 52%;
+  clear: left;
+  float: left;
+  margin-left: 0;
+  margin-right: 0;
+}
+/* line 275, ../../../compass/themes/x2engine/css/profile.scss */
+#content.wide-profile-widget-layout #profile-content-container.full-profile #activity-feed-container-outer {
+  width: 52%;
+  clear: left;
+  float: left;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 10px;
+}
+/* line 283, ../../../compass/themes/x2engine/css/profile.scss */
+#content.wide-profile-widget-layout #profile-content-container.full-profile #activity-feed-container {
+  margin-right: 0;
+}
+/* line 286, ../../../compass/themes/x2engine/css/profile.scss */
+#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container {
+  float: right;
+  width: 48%;
+  margin-top: -10px;
+}
+/* line 291, ../../../compass/themes/x2engine/css/profile.scss */
+#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-inner {
+  margin-left: 9px;
 }
 
-
-
+/*  
+Allows jQuery UI sortable to drop droppables into this container even if it's empty
+*/
+/*  
+Allows jQuery UI sortable to drop droppables into this container even if it's empty
+*/

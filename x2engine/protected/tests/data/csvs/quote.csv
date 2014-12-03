@@ -1,0 +1,3 @@
+id,name,nameId,accountName,salesStage,expectedCloseDate,probability,leadSource,description,assignedTo,createDate,createdBy,associatedContacts,lastUpdated,lastActivity,updatedBy,expirationDate,status,currency,locked,type,invoiceStatus,invoiceCreateDate,invoiceIssuedDate,invoicePayedDate,template,total,subtotal
+1000,First,First_1000,,,,25,,"Testing quotes",admin,"September 17, 2014 6:00:38 PM",admin,,"September 17, 2014 6:00:38 PM","September 17, 2014 6:00:38 PM",admin,,Draft,USD,0,,,,,,,1350.00,0.00
+1001,Second,Second_1001,,,,90,,"Customer is seeking consultation",admin,"September 17, 2014 6:04:14 PM",admin,,"September 17, 2014 6:04:14 PM","September 17, 2014 6:04:14 PM",admin,,Issued,USD,0,invoice,Pending,"Wed Sep 17 11:06:19 PDT 2014",,,,450.00,0.00

@@ -47,12 +47,12 @@ class TimerUtil {
     private $endTime; 
 
     public function start () {
-        $this->startTime = round (microtime (true) * 1000);
+        $this->startTime = microtime (true);
         return $this;
     }
 
     public function stop () {
-        $this->endTime = round (microtime (true) * 1000);
+        $this->endTime = microtime (true);
         return $this;
     }
 
@@ -62,7 +62,7 @@ class TimerUtil {
     }
 
     public function read ($label='') {
-        AuxLib::debugLogR ($label . ($this->endTime - $this->startTime) . "\n");
+        AuxLib::debugLogR ($label . (round ($this->endTime - $this->startTime, 2)) . "\n");
         return $this;
     }
 

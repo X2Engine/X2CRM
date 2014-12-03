@@ -76,11 +76,43 @@ class InlineEmailForm extends X2Widget {
     public $skipEvent = 0;
 
     /**
+     * @var bool $hideFromField
+     */
+    public $hideFromField = false;  
+
+    /**
+     * @var bool $disableTemplates
+     */
+    public $disableTemplates = false;  
+
+    /**
      * @var string the association type of the email templates
      */
     public $associationType = null;
 
+    /**
+     * @var string $JSClass
+     */
+    public $JSClass = 'InlineEmailEditorManager'; 
+
+    public function getPackages () {
+        if (!isset ($this->_packages)) {
+            $this->_packages = array_merge (parent::getPackages (), array (
+                'InlineEmailEditorManager' => array(
+                    'baseUrl' => Yii::app()->request->baseUrl,
+                    'js' => array(
+                        'js/inlineEmailForm.js',
+                    ),
+                ),
+            ));
+        }
+        return $this->_packages;
+    }
+
     public function init(){
+        $this->disableTemplates = $this->disableTemplates ||
+            in_array ($this->associationType, 
+                array_keys (Docs::modelsWhichSupportEmailTemplates ()));
 
         // Prepare the model for initially displayed input:
         $this->model = new InlineEmail();
@@ -131,23 +163,7 @@ class InlineEmailForm extends X2Widget {
             $this->insertableAttributes = $this->model->insertableAttributes;
         }
 
-        Yii::app()->clientScript->registerScript('InlineEmailFormJS',"
-        $(function () {
-            x2.inlineEmailEditorManager = new x2.InlineEmailEditorManager ({
-                translations: ".CJSON::encode (array (
-                    'defaultTemplateDialogTitle' => 
-                        Yii::t('app', 'Set a Default Email Template'),
-                    'Cancel' => Yii::t('app', 'Cancel'),
-                    'Save' => Yii::t('app', 'Save'),
-                )).",
-                saveDefaultTemplateUrl: '".
-                    Yii::app()->controller->createUrl (
-                        '/profile/profile/ajaxSaveDefaultEmailTemplate')."',
-                tmpUploadUrl: '".Yii::app()->createUrl('/site/tmpUpload')."', 
-                rmTmpUploadUrl: '".Yii::app()->createUrl('/site/removeTmpUpload')."'
-            });
-        });
-        ", CClientScript::POS_END);
+        $this->registerJSClassInstantiation ();
 
         // Load resources:
         Yii::app()->clientScript->registerScriptFile(
@@ -155,8 +171,6 @@ class InlineEmailForm extends X2Widget {
         Yii::app()->clientScript->registerScriptFile(
             Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
         Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
-        Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/inlineEmailForm.js', CClientScript::POS_END);
         if(!empty($this->insertableAttributes)){
             Yii::app()->clientScript->registerScript('setInsertableAttributes', 
             'x2.insertableAttributes = '.CJSON::encode($this->insertableAttributes).';', 
@@ -173,11 +187,31 @@ class InlineEmailForm extends X2Widget {
             "window.hideInlineEmail = false;\n"
         ), CClientScript::POS_HEAD);
 
+        $this->registerPackages ();
         parent::init();
     }
 
+    public function registerJSClassInstantiation () {
+        Yii::app()->clientScript->registerScript('InlineEmailFormJS',"
+        x2.inlineEmailEditorManager = new x2.{$this->JSClass} ({
+            translations: ".CJSON::encode (array (
+                'defaultTemplateDialogTitle' => 
+                    Yii::t('app', 'Set a Default Email Template'),
+                'Cancel' => Yii::t('app', 'Cancel'),
+                'Save' => Yii::t('app', 'Save'),
+                'New Message' => Yii::t('app', 'New Message'),
+            )).",
+            disableTemplates: ".CJSON::encode ($this->disableTemplates).",
+            saveDefaultTemplateUrl: '".
+                Yii::app()->controller->createUrl (
+                    '/profile/profile/ajaxSaveDefaultEmailTemplate')."',
+            tmpUploadUrl: '".Yii::app()->createUrl('/site/tmpUpload')."', 
+            rmTmpUploadUrl: '".Yii::app()->createUrl('/site/removeTmpUpload')."'
+        });
+        ", CClientScript::POS_END);
+    }
+
     public function run(){
-        // First get user credentials:
         $this->render('application.components.views.inlineEmailForm', array(
             'type' => $this->templateType,
             'associationType' => $this->associationType,

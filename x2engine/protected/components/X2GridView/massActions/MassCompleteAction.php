@@ -36,6 +36,30 @@
 
 class MassCompleteAction extends MassAction {
 
+    protected $_label;
+
+    /**
+     * @return string label to display in the dropdown list
+     */
+    public function getLabel () {
+        if (!isset ($this->_label)) {
+            $this->_label = Yii::t('app', 'Complete selected');
+        }
+        return $this->_label;
+    }
+
+    public function getPackages () {
+        return array_merge (parent::getPackages (), array (
+            'X2MassComplete' => array(
+                'baseUrl' => Yii::app()->request->baseUrl,
+                'js' => array(
+                    'js/X2GridView/MassCompleteAction.js',
+                ),
+                'depends' => array ('X2MassAction'),
+            ),
+        ));
+    }
+
     public function execute (array $gvSelection) {
         $updatedRecordsNum = Actions::changeCompleteState ('complete', $gvSelection);
         if ($updatedRecordsNum > 0) {

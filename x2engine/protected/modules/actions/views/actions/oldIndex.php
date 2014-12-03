@@ -52,31 +52,22 @@ else if ($this->showActions == 'complete')
 else
 	$model->complete = '';
 
-$menuItems = array(
-	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
-	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
-	array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
-	array('label'=>Yii::t('actions','Create'),'url'=>array('create')),
-        array('label'=>Yii::t('actions', 'Import Actions'), 'url'=>array('admin/importModels', 'model'=>'Actions'), 'visible'=>Yii::app()->params->isAdmin),
-        array('label'=>Yii::t('actions', 'Export Actions'), 'url'=>array('admin/exportModels', 'model'=>'Actions'), 'visible'=>Yii::app()->params->isAdmin),
+
+$menuOptions = array(
+    'todays', 'my', 'everyones', 'create', 'import', 'export',
 );
-
 if($this->route === 'actions/actions/index') {
-	$heading = Yii::t('actions','Today\'s Actions');
+	$heading = Yii::t('actions','Today\'s {module}', array('{module}'=>Modules::displayName()));
 	$dataProvider=$model->searchIndex();
-	unset($menuItems[0]['url']);
-
 } elseif($this->route === 'actions/actions/viewAll') {
-	$heading = Yii::t('actions','All My Actions');
+	$heading = Yii::t('actions','All My {module}', array('{module}'=>Modules::displayName()));
 	$dataProvider=$model->searchAll();
-	unset($menuItems[1]['url']);
 } else {
-	$heading = Yii::t('actions','Everyone\'s Actions');
+	$heading = Yii::t('actions','Everyone\'s {module}', array('{module}'=>Modules::displayName()));
 	$dataProvider=$model->searchAllGroup();
-	unset($menuItems[2]['url']);
 }
+$this->insertMenu($menuOptions);
 
-$this->actionMenu = $this->formatMenu($menuItems);
 
 // functions for completeing/uncompleting multiple selected actions
 Yii::app()->clientScript->registerScript('oldActionsIndexScript', "
@@ -114,7 +105,7 @@ $this->widget('X2GridView', array(
         '/css/gridview',
     'enableQtips' => true,
     'qtipManager' => array (
-        'X2QtipManager',
+        'X2GridViewQtipManager',
         'loadingText'=> addslashes(Yii::t('app','loading...')),
         'qtipSelector' => ".contact-name"
     ),
@@ -133,7 +124,10 @@ $this->widget('X2GridView', array(
         '{items}{pager}',
     'fixedHeader' => true,
 	'dataProvider'=>$dataProvider,
-    'massActions' => array ('delete', 'tag', 'updateField', 'completeAction', 'uncompleteAction'),
+    'massActions' => array (
+        
+        'MassCompleteAction', 'MassUncompleteAction'
+    ),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
@@ -153,11 +147,11 @@ $this->widget('X2GridView', array(
 	),
 	'specialColumns'=>array(
 		'actionDescription'=>array(
-            'header'=>Yii::t('actions','Action Description'),
+            'header'=>Yii::t('actions','{action} Description', array('{action}'=>Modules::displayName(false))),
 			'name'=>'actionDescription',
 			'value'=>
                 'CHtml::link(
-                    ($data->actionDescription === "" ? Yii::t("actions", "View Action") :
+                    ($data->actionDescription === "" ? Yii::t("actions", "View {action}", array("{action}"=>Modules::displayName(false, "Actions"))) :
                         (($data->type=="attachment") ? 
                             Media::attachmentActionText($data->actionDescription) : 
                             CHtml::encode(Formatter::trimText($data->actionDescription)))),

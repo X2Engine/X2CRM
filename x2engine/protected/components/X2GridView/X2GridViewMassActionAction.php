@@ -42,14 +42,12 @@ class X2GridViewMassActionAction extends CAction {
      * Mass action names and mass action class names
      */
     private $massActionClasses = array (
-        'addToList' => 'MassAddToList',
-        'completeAction' => 'MassCompleteAction',
-        'uncompleteAction' => 'MassUncompleteAction',
-        'delete' => 'MassDelete',
-        'removeFromList' => 'MassRemoveFromList',
-        'tag' => 'MassTag',
-        'updateFields' => 'MassUpdateFields',
-        'createList' => 'NewListFromSelection',
+        'MassAddToList',
+        'MassCompleteAction',
+        'MassUncompleteAction',
+        'MassRemoveFromList',
+        'NewListFromSelection',
+         
     );
 
     private $_massActions;
@@ -60,8 +58,8 @@ class X2GridViewMassActionAction extends CAction {
     public function getMassActionInstances () {
         if (!isset ($this->_massActions)) {
             $this->_massActions = array ();
-            foreach ($this->massActionClasses as $action => $class) {
-                $this->_massActions[$action] = new $class;
+            foreach ($this->massActionClasses as $class) {
+                $this->_massActions[$class] = new $class;
             }
         }
         return $this->_massActions;
@@ -72,18 +70,26 @@ class X2GridViewMassActionAction extends CAction {
      * @param string $massAction
      */
     private function getInstanceFor ($massAction) {
-        $instance = $this->getMassActionInstances ();
-        if (!in_array ($massAction, array_keys ($instance))) {
-            /**/AuxLib::debugLogR ('invalid mass action');
+        $instances = $this->getMassActionInstances ();
+        if (!in_array ($massAction, array_keys ($instances))) {
+            /**/AuxLib::debugLogR ('invalid mass action '.$massAction);
             throw new CHttpException (400, Yii::t('app', 'Bad Request'));
         }
-        return $instance[$massAction];
+        return $instances[$massAction];
     }
 
     /**
      * Execute specified mass action on specified records
      */
     public function run(){
+        if (Yii::app()->user->isGuest) {
+            Yii::app()->controller->redirect(Yii::app()->controller->createUrl('/site/login'));
+        }
+
+        if (Yii::app()->request->getRequestType () === 'GET') {
+            $_POST = $_GET;
+        }
+
         if (isset ($_POST['passConfirm']) && $_POST['passConfirm']) {
             MassAction::superMassActionPasswordConfirmation ();
             return;

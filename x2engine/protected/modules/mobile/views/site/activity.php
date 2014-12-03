@@ -45,6 +45,7 @@ $this->widget('MenuList', array(
     'items' => $menuItems
 ));
 
+
 ?>
 <form id='feed-post-publisher'>
     <!--<input type='text' name='name' id='feed-post-editor' 

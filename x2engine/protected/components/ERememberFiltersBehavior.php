@@ -67,6 +67,11 @@
  * @version 1.2
  * @package application.components
  */
+/* x2modstart */
+Yii::import ('application.components.X2Settings.X2Settings');
+Yii::import ('application.components.X2Settings.GridViewDbSettingsBehavior');
+Yii::import ('application.components.X2Settings.GridViewSessionSettingsBehavior');
+/* x2modend */
 class ERememberFiltersBehavior extends CActiveRecordBehavior {
 
     /* x2modstart */ 

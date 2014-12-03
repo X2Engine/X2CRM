@@ -54,17 +54,18 @@ Yii::app()->clientScript->registerResponsiveCss('responsiveActionsCss',"
 
 ");
 
-$menuItems = array(
-	array('label'=>Yii::t('actions','Action List')),
-	array('label'=>Yii::t('actions','Create'),'url'=>array('create')),
-        array('label'=>Yii::t('actions', 'Import Actions'), 'url'=>array('admin/importModels', 'model'=>'Actions'), 'visible'=>Yii::app()->params->isAdmin),
-        array('label'=>Yii::t('actions', 'Export Actions'), 'url'=>array('admin/exportModels', 'model'=>'Actions'), 'visible'=>Yii::app()->params->isAdmin),
+$menuOptions = array(
+    'list', 'create', 'import', 'export',
 );
-$this->actionMenu = $this->formatMenu($menuItems);
+$this->insertMenu($menuOptions, $model);
 
 ?>
 <div class="responsive-page-title page-title icon actions" id="page-header">
-    <h2><?php echo Yii::t('actions','Actions');?></h2>
+    <h2>
+    <?php echo Yii::t('actions','{module}', array(
+        '{module}' => Modules::displayName(),
+    ));?>
+    </h2>
     <?php 
     echo ResponsiveHtml::gripButton ();
     ?>
@@ -74,7 +75,13 @@ $this->actionMenu = $this->formatMenu($menuItems);
         disabled until fixed header is added
         echo CHtml::link(Yii::t('actions','Back to Top'),'#',array('class'=>'x2-button right','id'=>'scroll-top-button')); */
         echo CHtml::link(Yii::t('actions','Filters'),'#',array('class'=>'controls-button x2-button right','id'=>'advanced-controls-toggle')); 
-        echo CHtml::link(Yii::t('actions','New Action'),array('/actions/actions/create'),array('class'=>'controls-button x2-button right','id'=>'create-button')); 
+        echo CHtml::link(
+            Yii::t('actions','New {module}', array(
+                '{module}' => Modules::displayName(false),
+            )),
+            array('/actions/actions/create'),
+            array('class'=>'controls-button x2-button right','id'=>'create-button')
+        ); 
         echo CHtml::link(Yii::t('actions','Switch to Grid'),array('index','toggleView'=>1),array('class'=>'x2-button right')); ?>
         </div>
 </div>

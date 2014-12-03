@@ -44,19 +44,17 @@ Yii::app()->clientScript->registerCss('inviteUsersCss',"
 
 ");
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+$menuOptions = array(
+    'feed', 'admin', 'create', 'invite',
+);
+$this->insertMenu($menuOptions);
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/profile/activity')),
-	array('label'=>Yii::t('users','Manage Users'), 'url'=>array('admin')),
-	array('label'=>Yii::t('users','Create User'), 'url'=>array('create')),
-	array('label'=>Yii::t('users','Invite Users')),
-));
 ?>
-<div class="page-title icon users"><h2><?php echo Yii::t('users','Invite Users to X2Engine'); ?></h2></div>
+<div class="page-title icon users"><h2>
+    <?php echo Yii::t('users','Invite {users} to X2Engine', array(
+        '{users}' => Modules::displayName(),
+    )); ?>
+</h2></div>
 
 <form method="POST">
 <div class="form">

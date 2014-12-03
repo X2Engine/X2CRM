@@ -34,13 +34,14 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('quotes','Quotes List'),'url'=>array('index')),
-	array('label'=>Yii::t('quotes','Invoice List'), 'url'=>array('indexInvoice')),
-	array('label'=>Yii::t('quotes','Create')),
-));
+$menuOptions = array(
+    'index', 'invoices', 'create',
+);
+$this->insertMenu($menuOptions);
 
-$title = CHtml::tag('h2',array(),Yii::t('quotes','Create Quote'));
+$title = CHtml::tag('h2',array(),Yii::t('quotes','Create {quote}', array(
+    '{quote}' => Modules::displayName(false),
+)));
 echo $quick?$title:CHtml::tag('div',array('class'=>'page-title icon quotes'),$title);
 ?>
 
@@ -52,7 +53,11 @@ $form=$this->beginWidget('CActiveForm', array(
 
 if($model->hasLineItemErrors): ?>
 <div class="errorSummary">
-	<h3><?php echo Yii::t('quotes','Could not save quote due to line item errors:'); ?></h3>
+    <h3>
+        <?php echo Yii::t('quotes','Could not save {quote} due to line item errors:',  array(
+            '{quote}' => lcfirst(Modules::displayName(false)),
+        )); ?>
+    </h3>
 	<ul>
 	<?php foreach($model->lineItemErrors as $error): ?>
 		<li><?php echo CHtml::encode($error); ?></li>
@@ -87,7 +92,15 @@ foreach($templateRec as $tmplRec){
 }
 echo '<div style="display:inline-block; margin: 8px 11px;">';
 echo '<strong>'.$form->label($model, 'template').'</strong>&nbsp;';
-echo $form->dropDownList($model, 'template', $templates).'&nbsp;'.CHtml::tag('span', array('class' => 'x2-hint', 'title' => Yii::t('quotes', 'To create a template for quotes and invoices, go to the Docs module and select "{crQu}".', array('{crQu}' => Yii::t('docs', 'Create Quote')))), '[?]');
+echo $form->dropDownList($model, 'template', $templates).'&nbsp;'
+    . CHtml::tag('span', array(
+        'class' => 'x2-hint',
+        'title' => Yii::t('quotes', 'To create a template for {quotes} and invoices, go to the {docs} module and select "Create {quote}".', array(
+            '{quotes}' => lcfirst(Modules::displayName()),
+            '{quote}' => Modules::displayName(false),
+            '{docs}' => Modules::displayName(true, "Docs"),
+        )),
+    ), '[?]');
 echo '</div><br />';
 echo '	<div class="row buttons" style="padding-left:0">'."\n";
 echo CHtml::submitButton(Yii::t('app', 'Create'), array('class' => 'x2-button'.($quick?' highlight':''), 'id' => 'quote-save-button', 'tabindex' => 25,'onClick' => 'return x2.quoteslineItems.validateAllInputs ();'))."\n";

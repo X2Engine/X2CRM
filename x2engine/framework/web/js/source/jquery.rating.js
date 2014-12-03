@@ -97,7 +97,9 @@
 				
 				// Create 'cancel' button
 				rater.append(
-					control.cancel = $('<div class="rating-cancel"><a title="' + control.cancel + '">' + control.cancelValue + '</a></div>')
+                    /* x2modstart */          
+					control.cancel = $('<div class="rating-cancel"><a class="fa fa-minus-circle" title="' + control.cancel + '">' + '</a></div>')
+                    /* x2modend */ 
 					.on('mouseover',function(){
 						$(this).rating('drain');
 						$(this).addClass('star-rating-hover');
@@ -117,8 +119,11 @@
 			}; // first element of group
 			
 			// insert rating star (thanks Jan Fanslau rev125 for blind support https://code.google.com/p/jquery-star-rating-plugin/issues/detail?id=125)
-			var star = $('<div role="text" aria-label="'+ this.title +'" class="star-rating rater-'+ control.serial +'"><a title="' + (this.title || this.value) + '">' + this.value + '</a></div>');
+            /* x2modstart */ 
+            // removed text value, added font awesome classes
+			var star = $('<div role="text" aria-label="'+ this.title +'" class="star-rating rater-'+ control.serial +'"><a class="fa fa-star-o" title="' + (this.title || this.value) + '">' + '</a></div>');
 			rater.append(star);
+            /* x2modend */ 
 			
 			// inherit attributes from input element
 			if(this.id) star.attr('id', this.id);
@@ -236,7 +241,13 @@
 			if(control.readOnly) return;
 			// Reset all stars and highlight them up to this element
 			this.rating('drain');
-			this.prevAll().addBack().filter('.rater-'+ control.serial).addClass('star-rating-hover');
+            /* x2modstart */ 
+			this.prevAll().addBack().filter('.rater-'+ control.serial).each (function () {
+			    $(this).addClass('star-rating-hover');
+                $(this).find ('a').addClass ('fa-star');
+                $(this).find ('a').removeClass ('fa-star-o');
+            });
+            /* x2modend */       
 		},// $.fn.rating.fill
 		
 		drain: function() { // drain all the stars.
@@ -244,7 +255,13 @@
 			// do not execute when control is in read-only mode
 			if(control.readOnly) return;
 			// Reset all stars
-			control.rater.children().filter('.rater-'+ control.serial).removeClass('star-rating-on').removeClass('star-rating-hover');
+            /* x2modstart */
+			control.rater.children().filter('.rater-'+ control.serial).each (function () {
+                $(this).removeClass('star-rating-on').removeClass('star-rating-hover');
+                $(this).find ('a').removeClass ('fa-star');
+                $(this).find ('a').addClass ('fa-star-o');
+            });
+            /* x2modend */ 
 		},// $.fn.rating.drain
 		
 		draw: function(){ // set value and stars to reflect current selection
@@ -254,7 +271,13 @@
 			// Set control value
 			var current = $( control.current );//? control.current.data('rating.input') : null );
 			var starson = current.length ? current.prevAll().addBack().filter('.rater-'+ control.serial) : null;
-			if(starson)	starson.addClass('star-rating-on');
+            /* x2modstart */ 
+			if(starson)	{
+                starson.addClass('star-rating-on');
+                starson.find ('a').addClass ('fa-star');
+                starson.find ('a').removeClass ('fa-star-o');
+            }
+            /* x2modend */ 
 			// Show/hide 'cancel' button
 			control.cancel[control.readOnly || control.required?'hide':'show']();
 			// Add/remove read-only classes to remove hand pointer

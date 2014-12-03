@@ -61,14 +61,19 @@ class QuickCreateRelationshipBehavior extends CBehavior {
      *
      * @return <array of strings>
      */
-    public static function getModelsWhichSupportQuickCreate () {
-        if (isset (self::$_modelsWhichSupportQuickCreate)) {
-            return self::$_modelsWhichSupportQuickCreate;
+    public static function getModelsWhichSupportQuickCreate ($includeActions=false) {
+        if (!isset (self::$_modelsWhichSupportQuickCreate)) {
+            self::$_modelsWhichSupportQuickCreate = array_diff (
+                array_keys (X2Model::getModelNames()), 
+                    array ('Docs', 'Groups', 'Campaign', 'Media', 'Quote',
+                        'BugReports'));
+            self::$_modelsWhichSupportQuickCreate[] = 'Actions';
         }
-        self::$_modelsWhichSupportQuickCreate = array_diff (array_keys (X2Model::getModelNames()), 
-                array ('Docs', 'Groups', 'Campaign', 'Media', 'Quote',
-                    'BugReports', 'Actions'));
-        return self::$_modelsWhichSupportQuickCreate;
+        $modelNames = self::$_modelsWhichSupportQuickCreate;
+        if (!$includeActions) {
+            array_pop ($modelNames);
+        }
+        return $modelNames;
     }
 
     /**
@@ -131,9 +136,6 @@ class QuickCreateRelationshipBehavior extends CBehavior {
      * For controllers implementing this behavior, this method should be called if the GET parameter
      * 'x2ajax' is set to '1' after the model is created and fields are set. 
      * 
-     * This method gets called in two contexts: from the record create page and from the record 
-     * view page.
-     * 
      * If called from the record create page:
      *  No record exists yet for the second model. An array is echoed containing values of the 
      *  first model which should be used to populate fields in the create form of the second model.
@@ -152,6 +154,8 @@ class QuickCreateRelationshipBehavior extends CBehavior {
 
         $errors = false;
 
+        if (isset ($_POST['validateOnly'])) return;
+
         if ($model->save ()) {
             if (isset ($_POST['ModelName'])) {
                 $secondModelName = $_POST['ModelName']; 
@@ -168,7 +172,8 @@ class QuickCreateRelationshipBehavior extends CBehavior {
                         'status' => 'success',
                         'data' => ($secondModel ? $this->owner->getDetailView ($secondModel) : ''),
                         'name' => $model->name,
-                        'id' => $model->id
+                        'id' => $model->id,
+                        'attributes' => $model->getVisibleAttributes (),
                     ));
             } else if (isset ($secondModelName)) {
                 $data = $this->getValuesOfNewRecordToUpdate ($model, $secondModelName);
@@ -177,12 +182,23 @@ class QuickCreateRelationshipBehavior extends CBehavior {
                         'status' => 'success',
                         'data' => $data,
                         'name' => $model->name,
-                        'id' => $model->id
+                        'id' => $model->id,
+                        'attributes' => $model->getVisibleAttributes (),
+                    ));
+            } else if (isset ($_POST['quickCreateOnly']) && $_POST['quickCreateOnly']) {
+                $model->refresh ();
+                echo CJSON::encode (
+                    array (
+                        'status' => 'success',
+                        'message' => Yii::t('app', '{recordType} created: {link}', array (
+                            '{recordType}' => get_class ($model),
+                            '{link}' => $model->link 
+                        )),
+                        'attributes' => $model->getVisibleAttributes (),
                     ));
             } else {
                 throw new CHttpException (400, Yii::t ('app', 'Bad Request'));
             }
-
 
             Yii::app()->end();
         } else {

@@ -49,9 +49,6 @@ if(Yii::app()->edition !== 'opensource') {
 <div id='icon-container'>
 <?php
 echo CHtml::image($logo,'');
-echo CHtml::image(Yii::app()->theme->baseUrl.'/images/x2EngineSticker.png','', array (
-    'id' => 'x2engine-sticker'
-));
 ?>
 </div>
 <?php
@@ -76,7 +73,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 	<div style="clear:both"><?php echo Yii::t('app','For customer and community support:');?> <a href="http://www.x2engine.com/">www.x2engine.com</a></div>
 	<div id="about-intro">
 		<div class="span-4">
-		<h4><?php echo Yii::t('app','Address');?></h4>
+		<h4><?php echo CHtml::encode (Yii::t('app','Address')); ?></h4>
 		<ul>
 			<li>X2Engine Inc.</li>
 			<li>PO Box 66752</li>
@@ -86,18 +83,19 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		</ul>
 		</div>
 		<div class="span-4">
-		<h4><?php echo Yii::t('app','Core Team');?></h4>
+		<h4><?php echo CHtml::encode (Yii::t('app','Core Team')); ?></h4>
 		<ul>
 			<li>John Roberts</li>
-			<li>Demitri Morgan</li>
 			<li>Derek Mueller</li>
 			<li>Tony Zavala</li>
 			<li>Raymond Colebaugh</li>
+			<li>Alex Rowe</li>
 			<li>Jake Houser</li>
 		</ul>
 		</div><br>
-		<h4 class="clear"><?php echo Yii::t('app','Contributors');?></h4>
+		<h4 class="clear"><?php echo CHtml::encode (Yii::t('app','Contributors'));?></h4>
 		<ul class="inline">
+			<li>Demitri Morgan</li>
 			<li>Sandra Tam</li>
             <li>Matthew Pearson</li>
 			<li>James Thomas</li>
@@ -130,8 +128,6 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		<h4><?php echo Yii::t('app','Code Base'); ?></h4>
 		<ul>
 			<li>GitHub: <a href="https://github.com/X2Engine/X2Engine" target="_blank">https://github.com/X2Engine/X2Engine</a></li>
-			<li>Google Code: <a href="http://code.google.com/p/x2engine/" target="_blank">http://code.google.com/p/x2engine/</a></li>
-			<li>SourceForge: <a href="https://sourceforge.net/projects/x2engine/" target="_blank">https://sourceforge.net/projects/x2engine/</a></li>
 			<!--BitBucket: <a href="https://bitbucket.org/X2Engine/X2Engine" target="_blank">https://bitbucket.org/X2Engine/X2Engine</a></li>-->
 		</ul>
 

@@ -38,20 +38,21 @@ Yii::app()->clientScript->registerScriptFile($this->module->getAssetsUrl ().'/js
     CClientScript::POS_BEGIN);
 
 require_once("protected/modules/charts/chartsConfig.php");
-$this->actionMenu = $this->formatMenu(array(
-	array('label' => Yii::t('charts', 'Lead Volume'), 'url' => array('leadVolume')),
-	// array('label' => Yii::t('charts', 'Lead Activity'), 'url' => array('leadActivity')),
-	// array('label' => Yii::t('charts', 'Lead Performance'), 'url' => array('leadPerformance')),
-	// array('label' => Yii::t('charts', 'Lead Sources'), 'url' => array('leadSources')),
-	// array('label' => Yii::t('charts', 'Workflow'), 'url' => array('workflow')),
-	array('label' => Yii::t('charts', 'Marketing'), 'url' => array('marketing')),
-	array('label' => Yii::t('charts', 'Pipeline'), 'url' => array('pipeline')),
-	array('label' => Yii::t('charts', 'Opportunities'))
-));
+
+$menuOptions = array(
+    'leadVolume', 'marketing', 'pipeline', 'opportunities',
+);
+$this->insertMenu($menuOptions);
+
 ?>
 
 
-<div class="page-title icon charts"><h2><?php echo Yii::t('charts', 'Opportunities Dashboard'); ?>&nbsp;&nbsp;</h2></div>
+<div class="page-title icon charts"><h2>
+    <?php
+    echo Yii::t('charts', '{opportunities} Dashboard', array(
+        '{opportunities}' => Modules::displayName(true, "Opportunities"),
+    )); ?>
+&nbsp;&nbsp;</h2></div>
 <div class="form">
 	<br>
 
@@ -74,7 +75,12 @@ $this->actionMenu = $this->formatMenu(array(
 	<div class="x2-chart-container-controls">
 		<div class="x2-chart-control">
 			<div class="row">
-				<?php echo $form->label($model, 'dateRange', array('label' => Yii::t('charts', 'Select leads received in the last').'&nbsp;&nbsp;&nbsp;&nbsp;')); ?>
+                <?php
+                echo $form->label($model, 'dateRange', array(
+                    'label' => Yii::t('charts', 'Select {leads} received in the last', array(
+                        '{leads}'=>strtolower(Modules::displayName(true, "X2Leads")),
+                    )).'&nbsp;&nbsp;&nbsp;&nbsp;'
+                )); ?>
 				<?php
 				echo $form->dropDownList($model, 'dateRange', array(
 					10 => Yii::t('charts', '{n} days',array('{n}'=>'10')),

@@ -34,19 +34,17 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 $authParams['X2Model'] = $model;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('quotes','Quotes List'), 'url'=>array('index')),
-	array('label'=>Yii::t('quotes','Invoice List'), 'url'=>array('indexInvoice')),
-	array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
-	array('label'=>Yii::t('quotes','View'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('quotes','Update')),
-	array('label'=>Yii::t('quotes','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-),$authParams);
+
+$menuOptions = array(
+    'index', 'invoices', 'create', 'view', 'edit', 'delete',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
+
 ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 <?php echo $quick?'':'<div class="page-title icon quotes">'; ?>
-<h2><span class="no-bold"><?php echo ($model->type == 'invoice')? Yii::t('quotes','Update Invoice:') : Yii::t('quotes','Update Quote:'); ?></span> <?php echo $model->name==''?'#'.$model->id:CHtml::encode($model->name); ?></h2>
+<h2><span class="no-bold"><?php echo ($model->type == 'invoice')? Yii::t('quotes','Update Invoice:') : Yii::t('quotes','Update {quote}:', array('{quote}'=>Modules::displayName(false))); ?></span> <?php echo $model->name==''?'#'.$model->id:CHtml::encode($model->name); ?></h2>
 <?php if(!$quick): ?>
 <a class="x2-button right" href="javascript:void(0);" onclick="$('#quote-save-button').click();"><?php echo Yii::t('app','Update'); ?></a>
 </div>
@@ -103,7 +101,7 @@ if($model->type == 'invoice') { ?>
 	    							</div>
 	    						</div>
 	    						<div class="formItem leftLabel">
-	    							<label><?php echo Yii::t('media', 'Invoice Payed'); ?></label>
+	    							<label><?php echo Yii::t('media', 'Invoice Paid'); ?></label>
 	    							<div class="formInputBox" style="width: 150px; height: auto;">
 	    								<?php echo $model->renderInput('invoicePayedDate'); ?>
 	    							</div>
@@ -138,7 +136,15 @@ foreach($templateRec as $tmplRec){
 echo '<div style="display:inline-block; margin: 8px 11px;" ' .
     'id="quote-template-dropdown">';
 echo '<strong>'.$form->label($model, 'template').'</strong>&nbsp;';
-echo $form->dropDownList($model, 'template', $templates).'&nbsp;'.CHtml::tag('span', array('class' => 'x2-hint', 'title' => Yii::t('quotes', 'To create a template for quotes and invoices, go to the Docs module and select "{crQu}".', array('{crQu}' => Yii::t('docs', 'Create Quote')))), '[?]');
+echo $form->dropDownList($model, 'template', $templates).'&nbsp;'
+    .CHtml::tag('span', array(
+        'class' => 'x2-hint',
+        'title' => Yii::t('quotes', 'To create a template for {quotes} and invoices, go to the {docs} module and select "Create {quote}".', array(
+            '{quotes}' => lcfirst(Modules::displayName()),
+            '{quote}' => Modules::displayName(false),
+            '{docs}' => Modules::displayName(true, "Docs"),
+        ))
+    ), '[?]');
 echo '</div><br />'; 
 echo '	<div class="row buttons" style="padding-left:0;">'."\n";
 echo CHtml::submitButton(Yii::t('app', 'Update'), array('class' => 'x2-button'.($quick?' highlight':''), 'id' => 'quote-save-button', 'tabindex' => 25, 'onClick' => 'return x2.quoteslineItems.validateAllInputs ();'))."\n";

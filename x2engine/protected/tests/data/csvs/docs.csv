@@ -1,0 +1,74 @@
+id,name,nameId,subject,emailTo,type,associationType,text,createdBy,createDate,editPermissions,updatedBy,lastUpdated,visibility
+52,"Sample Quote Template","Sample Quote Template_52",,,quote,,"<html>
+<head>
+    <title></title>
+</head>
+<body style=""width:1000px"">
+<table cellpadding=""1"" cellspacing=""1"" style=""width:100%"">
+    <tbody>
+        <tr>
+            <td><span style=""font-size: 36px;"">Sales {Quote.quoteOrInvoice}: {Quote.name}</span></td>
+            <td style=""text-align: right;"">{Quote.quoteOrInvoice} #{Quote.id}<br />
+            {Quote.createDate}</td>
+        </tr>
+    </tbody>
+</table>
+
+<table>
+    <tbody>
+        <tr>
+            <td style=""text-align: left"">Customer:</td>
+            <td style=""text-align: left; font-weight: bold;"">{Contact.name}</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td style=""text-align: left;"">{Contact.address}</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td style=""text-align: left;"">{Contact.city},&nbsp;{Contact.state}&nbsp;{Contact.zipcode}</td>
+        </tr>
+    </tbody>
+</table>
+
+<hr />{Quote.description}<br /><br />
+{Quote.lineItems}</body>
+</html>",Anyone,"May 7, 2013 10:42:19 PM",Anyone,Anyone,"May 7, 2013 10:42:19 PM",Public
+53,"First Doc","First Doc_53",,,,,"<html>
+<head>
+	<title></title>
+</head>
+<body>This is a sample<br />
+Testing Document<br />
+<br />
+&nbsp;
+<div style=""text-align: center;""><span style=""color:#FF0000;"">FOR INTERNAL USE ONLY</span></div>
+
+<div>&nbsp;</div>
+
+<div>&nbsp;</div>
+</body>
+</html>
+",admin,"September 17, 2014 11:06:52 PM",,admin,"September 17, 2014 11:06:52 PM",Public
+54,"Quote Template","Quote Template_54","Testing Quote Template",,quote,,"<html>
+<head>
+	<title></title>
+</head>
+<body>Quote #{Quote.id}<br />
+{Quote.dateCreated}<br />
+{Contact.lastName}, {Contact.firstName}<br />
+{Account.name}<br />
+<br />
+<br />
+Thank you for your purchase of {Quote.total}</body>
+</html>
+",admin,"September 17, 2014 11:09:11 PM",,admin,"September 17, 2014 11:09:11 PM",Public
+55,"Test Email Template","Test Email Template_55","Welcome Message",,email,Contacts,"<html>
+<head>
+	<title></title>
+</head>
+<body>Welcome, {firstName}<br />
+<br />
+Thank you for joining!</body>
+</html>
+",admin,"September 17, 2014 11:11:11 PM",,admin,"September 17, 2014 11:11:11 PM",Public

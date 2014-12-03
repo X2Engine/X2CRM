@@ -34,15 +34,21 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$menuItems = array( array('label'=>Yii::t('calendar', 'Calendar'), 				  'url'=>array('index')),
-					array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
-					array('label'=>Yii::t('calendar', 'User Calendar Permissions'))
-			      );
+$modTitles = array(
+    'calendar' => Modules::displayName(),
+    'actions' => Modules::displayName(true, "Actions"),
+    'user' => Modules::displayName(false, "Users"),
+    'users' => Modules::displayName(true, "Users"),
+);
 
-if(Yii::app()->settings->googleIntegration) // menu if google integration is enables has additional options
-	array_push($menuItems, array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')));
-
-$this->actionMenu = $this->formatMenu($menuItems);
+$menuOptions = array(
+    'index', 'myPermissions',
+);
+if (Yii::app()->params->isAdmin)
+    $menuOptions[] = 'userPermissions';
+if (Yii::app()->settings->googleIntegration)
+    $menuOptions[] = 'sync';
+$this->insertMenu($menuOptions);
 ?>
 
 <script type="text/javascript">
@@ -114,7 +120,11 @@ if(isset($id)) {
 	
 	<div class="page-title"><h2><?php echo Yii::t('calendar', 'View Permission'); ?></h2></div>
 	<div class="form">
-		<?php echo Yii::t('calendar', "These users can view {fullname}'s calendar.", array ('{fullname}' => $fullname)); ?>
+        <?php echo Yii::t('calendar', "These {users} can view {fullname}'s {calendar}.", array (
+            '{users}' => lcfirst($modTitles['users']),
+            '{fullname}' => $fullname,
+            '{calendar}' => $modTitles['calendar'],
+        )); ?>
 		<?php
 		echo CHtml::listBox('view-permission', $viewPermission, $names, array(
 			'class'=>'user-permission',
@@ -126,7 +136,11 @@ if(isset($id)) {
 	</div>
 	<div class="page-title rounded-top"><h2><?php echo Yii::t('calendar', 'Edit Permission'); ?></h2></div>
 	<div class="form">
-		<?php echo Yii::t('calendar', "These users can edit {fullname}'s calendar.", array ('{fullname}' => $fullname)); ?>
+        <?php echo Yii::t('calendar', "These {users} can edit {fullname}'s {calendar}.", array (
+            '{users}' => lcfirst($modTitles['users']),
+            '{fullname}' => $fullname,
+            '{calendar}' => $modTitles['calendar'],
+        )); ?>
 		<?php
 		echo CHtml::listBox('edit-permission', $editPermission, $names, array(
 			'class'=>'user-permission',
@@ -137,7 +151,9 @@ if(isset($id)) {
 		<br>
 		<div class="row buttons">
 			<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button', 'name'=>'save-button', 'tabindex'=>24)); ?>
-		    <?php echo CHtml::link(Yii::t('calendar', 'Back To User List'), $this->createUrl(''), array('class'=>'x2-button')); ?>
+            <?php echo CHtml::link(Yii::t('calendar', 'Back To {user} List', array(
+                '{user}' => $modTitles['user'],
+            )), $this->createUrl(''), array('class'=>'x2-button')); ?>
 		</div>
 	</div>
 	<?php
@@ -147,7 +163,12 @@ $this->endWidget();
 	<?php
 } else {
 	?>
-	<div class="page-title"><h2><?php echo Yii::t('calendar', 'User Calendar Permissions'); ?></h2></div>
+    <div class="page-title"><h2>
+        <?php echo Yii::t('calendar', '{user} {calendar} Permissions', array(
+            '{calendar}' => $modTitles['calendar'],
+            '{user}' => $modTitles['user'],
+        )); ?>
+    </h2></div>
 	<div style="padding: 8px">
 	<?php
 	foreach($users as $user) {

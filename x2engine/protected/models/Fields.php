@@ -57,7 +57,14 @@ class Fields extends CActiveRecord {
     const NAMEID_DELIM = '_';
 
     const RATING_MIN = 1;
+
     const RATING_MAX = 5;
+
+    const WRITE_PERMISSION = 2;
+
+    const READ_PERMISSION = 1;
+
+    const NO_PERMISSION = 0;
 
     private static $_purifier;
 
@@ -128,7 +135,7 @@ class Fields extends CActiveRecord {
             array('fieldName','uniqueFieldName'),
             array('linkType','length','max'=>250),
             array('type','length','max'=>20),
-            array('keyType','in','range' => array('MUL','UNI','PRI','FIX'), 'allowEmpty'=>true),
+            array('keyType','in','range' => array('MUL','UNI','PRI','FIX','FOR'), 'allowEmpty'=>true),
             array('keyType','requiredUnique'),
             array('data','validCustom'),
             // The following rule is used by search().

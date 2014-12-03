@@ -75,40 +75,21 @@ class Events extends CActiveRecord {
     }
 
     public static function parseModelName($model) {
-        $model = ucfirst($model);
-        switch ($model) {
-            case 'Contacts':
-                $model = 'contact';
-                break;
-            case 'Actions':
-                $model = 'action';
-                break;
-            case 'Accounts':
-                $model = 'account';
-                break;
-            case 'Opportunities':
-                $model = 'opportunity';
-                break;
-            case 'Campaign':
-                $model = 'marketing campaign';
-                break;
-            case 'Services':
-                $model = 'service case';
-                break;
-            case 'Docs':
-                $model = 'document';
-                break;
-            case 'Groups':
-                $model = 'group';
-                break;
-            case 'BugReports':
-                $model = 'bug report';
-                break;
-            case 'X2Leads':
-                $model = 'lead';
-                break;
-            default:
-                $model = strtolower($model);
+        $customModule = Modules::model()->findByAttributes(array(
+            'custom' => 1,
+            'name' => $model,
+        ));
+        if ($customModule) {
+            //$model = $customModule->title;
+            $model = Modules::itemDisplayName($customModule->name);
+            $model = strtolower($model);
+        } else {
+            switch ($model) {
+                case 'Product':
+                    $model .= 's'; break;
+            }
+            $model = Modules::displayName(false, ucfirst($model));
+            $model = strtolower($model);
         }
         return Yii::t('app', $model);
     }
@@ -202,8 +183,17 @@ class Events extends CActiveRecord {
                             }
                         } else {
                             if (!empty($authorText)) {
-                                $text = $authorText . Yii::t('app', "created a new {modelName}, {modelLink}", array('{modelName}' => Events::parseModelName($this->associationType),
-                                            '{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType, $requireAbsoluteUrl)));
+                                if (isset($action) && $this->user !== $action->assignedTo) {
+                                    // Include the assignee if this is for an action assigned to someone other than the creator
+                                    $translateText = "created a new {modelName} for {assignee}, {modelLink}";
+                                } else {
+                                    $translateText = "created a new {modelName}, {modelLink}";
+                                }
+                                $text = $authorText . Yii::t('app', $translateText, array(
+                                    '{modelName}' => Events::parseModelName($this->associationType),
+                                    '{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType, $requireAbsoluteUrl),
+                                    '{assignee}' => isset($action) ? User::getUserLinks ($action->assignedTo) : null,
+                                ));
                             } else {
                                 $text = Yii::t('app', "A new {modelName}, {modelLink}, has been created.", array('{modelName}' => Events::parseModelName($this->associationType),
                                             '{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType, $requireAbsoluteUrl)));
@@ -506,23 +496,29 @@ class Events extends CActiveRecord {
             case 'action_reminder':
                 $action = X2Model::model('Actions')->findByPk($this->associationId);
                 if (isset($action)) {
-                    $text = Yii::t('app', "Reminder! The following action is due now: {transModelLink}", array(
-                                '{transModelLink}' => X2Model::getModelLink($this->associationId, $this->associationType)
+                    $text = Yii::t('app', "Reminder! The following {action} is due now: {transModelLink}", array(
+                        '{transModelLink}' => X2Model::getModelLink($this->associationId, $this->associationType),
+                        '{action}' => strtolower(Modules::displayName (false, 'Actions')),
                     ));
                 } else {
-                    $text = Yii::t('app', "An action is due now, but the record could not be found.");
+                    $text = Yii::t('app', "An {action} is due now, but the record could not be found.", array(
+                        '{action}' => strtolower(Modules::displayName (false, 'Actions')),
+                    ));
                 }
                 break;
             case 'action_complete':
                 $action = X2Model::model('Actions')->findByPk($this->associationId);
                 if (isset($action)) {
-                    $text = $authorText . Yii::t('app', "completed the following action: {actionDescription}", array(
-                                '{actionDescription}' => X2Model::getModelLink(
-                                        $this->associationId, $this->associationType, $requireAbsoluteUrl)
-                                    )
+                    $text = $authorText . Yii::t('app', "completed the following {action}: {actionDescription}", array(
+                            '{actionDescription}' => X2Model::getModelLink(
+                                $this->associationId, $this->associationType, $requireAbsoluteUrl),
+                            '{action}' => strtolower(Modules::displayName (false, 'Actions')),
+                        )
                     );
                 } else {
-                    $text = $authorText . Yii::t('app', "completed an action, but the record could not be found.");
+                    $text = $authorText . Yii::t('app', "completed an {action}, but the record could not be found.", array(
+                        '{action}' => strtolower(Modules::displayName (false, 'Actions')),
+                    ));
                 }
                 break;
             case 'doc_update':

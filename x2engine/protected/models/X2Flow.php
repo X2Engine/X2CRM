@@ -393,8 +393,9 @@ class X2Flow extends CActiveRecord {
 
         // increment stack depth before doing anything that might call X2Flow::trigger()
         self::$_triggerDepth++;
-        return self::executeFlow ($flow, $params, $flowPath, $triggerLogId);
+        $result =  self::executeFlow ($flow, $params, $flowPath, $triggerLogId);
         self::$_triggerDepth--;  // this trigger call is done; decrement the stack depth
+        return $result;
     }
 
     /**

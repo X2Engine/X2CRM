@@ -25,6 +25,7 @@ CREATE TABLE `x2_accounts` (
     lastUpdated        BIGINT,
     lastActivity       BIGINT,
     updatedBy          VARCHAR(50),
+    dupeCheck          TINYINT DEFAULT 0,
 
     /* sales and marketing attributes */
     leadtype       VARCHAR(250),

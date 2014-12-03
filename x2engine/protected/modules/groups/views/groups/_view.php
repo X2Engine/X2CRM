@@ -38,7 +38,8 @@
 	<b><?php echo CHtml::encode($data->getAttributeLabel('name')); ?>:</b>
 	<?php echo CHtml::encode($data->name); ?>
 	<br />
-        <b><?php echo Yii::t('groups','Users:'); ?></b>
+        <b><?php echo Yii::t('groups','{users}:', array(
+            '{users}'=>Modules::displayName(true, "Users"))); ?></b>
         <?php echo $users;?>
         <br />
 

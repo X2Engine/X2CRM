@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.sortableWidget.*');
+Yii::import('application.components.X2Settings.*');
 Yii::import('application.modules.users.models.*');
 Yii::import('application.modules.bugReports.models.*');
 

@@ -34,12 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/profile/activity')),
-    array('label' => Yii::t('users', 'Manage Users')),
-    array('label' => Yii::t('users', 'Create User'), 'url' => array('create')),
-    array('label' => Yii::t('users', 'Invite Users'), 'url' => array('inviteUsers')),
-        ));
+$menuOptions = array(
+    'feed', 'admin', 'create', 'invite',
+);
+$this->insertMenu($menuOptions);
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
@@ -74,19 +72,22 @@ $this->widget('X2GridViewGeneric', array(
     'id' => 'users-grid',
 	'buttons'=>array('clearFilters','autoResize'),
     'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview/',
-    'template' => '<div class="page-title icon users"><h2>'.Yii::t('users', 'Manage Users').'</h2>'.
-    '{buttons}{filterHint}{summary}</div>{items}{pager}',
+    'title' => Yii::t('users', 'Manage {users}', array(
+        '{users}' => Modules::displayName(),
+    )),
+    'template' => '<div class="page-title icon users">{title}'.
+        '{buttons}{filterHint}{summary}</div>{items}{pager}',
     'summaryText' => Yii::t('app', '<b>{start}&ndash;{end}</b> of <b>{count}</b>')
-    .'<div class="form no-border" style="display:inline;"> '
-    .CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
-        'ajax' => array(
-            'url' => $this->createUrl('/profile/setResultsPerPage'),
-            'data' => 'js:{results:$(this).val()}',
-            'complete' => 'function(response) { $.fn.yiiGridView.update("users-grid"); }',
-        ),
-        'style' => 'margin: 0;',
-    ))
-    .' </div>',
+        .'<div class="form no-border" style="display:inline;"> '
+        .CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
+            'ajax' => array(
+                'url' => $this->createUrl('/profile/setResultsPerPage'),
+                'data' => 'js:{results:$(this).val()}',
+                'complete' => 'function(response) { $.fn.yiiGridView.update("users-grid"); }',
+            ),
+            'style' => 'margin: 0;',
+        ))
+        .' </div>',
     'gvSettingsName' => 'users-grid',
     'viewName' => 'admin',
     'dataProvider' => $model->search(),
@@ -142,12 +143,24 @@ $this->widget('X2GridViewGeneric', array(
 </div>
 <?php if($count > 0){ ?>
     <br />
-    <h2><?php echo Yii::t('users', "Invited Users"); ?></h2>
+    <h2><?php echo Yii::t('users', "Invited {users}", array('{users}'=>Modules::displayName())); ?></h2>
     <div class="form">
-        <b><?php echo Yii::t('users', "{n} user(s) have been invited but have not yet completed registration.", array('{n}' => $count)); ?></b>
+        <b><?php echo Yii::t('users', "{n} {user}(s) have been invited but have not yet completed registration.", array(
+            '{n}' => $count,
+            '{user}' => Modules::displayName(false),
+        )); ?></b>
         <br /><br />
-        <?php echo Yii::t('users', "To delete all users who have not completed their invite, click the button below."); ?>
+        <?php echo Yii::t('users', "To delete all {users} who have not completed their invite, "
+            ."click the button below.", array(
+                '{users}'=>Modules::displayName()
+        )); ?>
         <br /><br />
-        <?php echo CHtml::link(Yii::t('users', 'Delete Unregistered'), '#', array('class' => 'x2-button', 'submit' => 'deleteTemporary', 'confirm' => Yii::t('users', 'Are you sure you want to delete these users?'))); ?>
+        <?php echo CHtml::link(
+            Yii::t('users', 'Delete Unregistered'), '#', array(
+                'class' => 'x2-button',
+                'submit' => 'deleteTemporary',
+                'confirm' => Yii::t('users', 'Are you sure you want to delete these {users}?', array(
+                    '{users}'=>Modules::displayName()))
+        )); ?>
     </div>
 <?php } ?>

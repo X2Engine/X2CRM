@@ -1,0 +1,26 @@
+/* line 1, ../../../../../compass/themes/x2engine/css/components/DataWidget/BarWidget.scss */
+.bar {
+  fill: steelblue;
+}
+/* line 3, ../../../../../compass/themes/x2engine/css/components/DataWidget/BarWidget.scss */
+.bar:hover {
+  fill: brown;
+}
+
+/* line 8, ../../../../../compass/themes/x2engine/css/components/DataWidget/BarWidget.scss */
+.axis {
+  font-size: 10px;
+  font-weight: 300;
+}
+/* line 11, ../../../../../compass/themes/x2engine/css/components/DataWidget/BarWidget.scss */
+.axis path, .axis line {
+  fill: none;
+  /*stroke: #000;*/
+  stroke: none;
+  shape-rendering: crispEdges;
+}
+
+/* line 19, ../../../../../compass/themes/x2engine/css/components/DataWidget/BarWidget.scss */
+.x.axis path {
+  display: none;
+}

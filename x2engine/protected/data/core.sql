@@ -99,7 +99,7 @@ CREATE TABLE x2_admin(
 	gaTracking_public			VARCHAR(20) NULL,
 	gaTracking_internal			VARCHAR(20) NULL,
     sessionLog                  TINYINT         DEFAULT 0,
-    userActionBackdating        TINYINT         DEFAULT 0, 
+    userActionBackdating        TINYINT         DEFAULT 0,
     historyPrivacy              VARCHAR(20) DEFAULT "default",
     batchTimeout                INT DEFAULT 300,
     massActionsBatchSize        INT DEFAULT 10,
@@ -112,8 +112,10 @@ CREATE TABLE x2_admin(
     /* This is the rich text that gets displayed to contacts after they've clicked a do not email 
        link */
     doNotEmailPage   LONGTEXT DEFAULT NULL,
-    doNotEmailLinkText          VARCHAR(255) DEFAULT NULL
-) COLLATE = utf8_general_ci;
+    doNotEmailLinkText          VARCHAR(255) DEFAULT NULL,
+    twitterCredentialsId        INT UNSIGNED,
+    twitterRateLimits           TEXT DEFAULT NULL
+) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_api_hooks;
 /*&*/
@@ -146,6 +148,8 @@ CREATE TABLE x2_changelog(
 	timestamp				INT				NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci;
 /*&*/
+DROP TABLE IF EXISTS x2_email_inboxes;
+/*&*/
 DROP TABLE IF EXISTS x2_credentials;
 /*&*/
 CREATE TABLE x2_credentials(
@@ -159,7 +163,9 @@ CREATE TABLE x2_credentials(
 	lastUpdated	BIGINT DEFAULT NULL,
 	auth		TEXT, -- encrypted (hopefully) authentication data
 	INDEX(userId)
-) COLLATE = utf8_general_ci;
+) ENGINE=InnoDB COLLATE = utf8_general_ci;
+/*&*/
+ALTER TABLE `x2_admin` ADD CONSTRAINT FOREIGN KEY (`twitterCredentialsId`) REFERENCES x2_credentials(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
 /*&*/
 DROP TABLE IF EXISTS x2_credentials_default;
 /*&*/
@@ -255,7 +261,9 @@ CREATE TABLE x2_modules (
 	toggleable				INT,
 	adminOnly				INT,
 	editable				INT,
-	custom					INT
+	custom					INT,
+	enableRecordAliasing    TINYINT 	    DEFAULT 0,
+	itemName				VARCHAR(100)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_notifications;
@@ -350,6 +358,7 @@ CREATE TABLE x2_profile(
     showActions				VARCHAR(20),
     profileWidgetLayout     TEXT,
     recordViewWidgetLayout  TEXT,
+    dataWidgetLayout	    TEXT,
     miscLayoutSettings      TEXT,
     notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",
     loginSound              VARCHAR(100)    NULL DEFAULT "",
@@ -396,8 +405,10 @@ CREATE TABLE x2_relationships (
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	firstType				VARCHAR(100),
 	firstId					INT,
+	firstLabel				VARCHAR(100),
 	secondType				VARCHAR(100),
-	secondId				INT
+	secondId				INT,
+	secondLabel				VARCHAR(100)
 ) COLLATE = utf8_general_ci;
 /*&*/
 /* The following needs to be dropped first; there is a foreign key constraint */
@@ -613,3 +624,23 @@ CREATE TABLE `x2_trigger_logs` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (`flowId`) REFERENCES x2_flows(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS `x2_record_aliases`;
+/*&*/
+CREATE TABLE `x2_record_aliases` (
+  `id`                          INT             NOT NULL AUTO_INCREMENT,
+  `recordId`                    INT             NOT NULL,
+  `recordType`                  VARCHAR(100)    NOT NULL,
+  `alias`                       VARCHAR(100)    NOT NULL,
+  `aliasType`                   VARCHAR(100)    NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB, COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS `x2_failed_logins`;
+/*&*/
+CREATE TABLE x2_failed_logins (
+	IP VARCHAR(40) NOT NULL PRIMARY KEY,
+    attempts INTEGER UNSIGNED,
+	lastAttempt BIGINT DEFAULT NULL,
+    INDEX(IP)
+) COLLATE = utf8_general_ci, ENGINE=INNODB;

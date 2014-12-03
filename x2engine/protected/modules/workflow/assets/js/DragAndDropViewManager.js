@@ -1485,7 +1485,7 @@ DragAndDropViewManager.prototype._setUpQtips = function () {
 
     var that = this;
     $.each (['opportunities', 'contacts', 'accounts'], function (i, type) {
-        that._qtipManagers[type] = new X2QtipManager ({
+        that._qtipManagers[type] = new x2.X2GridViewQtipManager ({
             loadingText: that.translations['Loading...'],
             qtipSelector: '.stage-member-type-' + type + ' .stage-member-name a',
             modelType: type,

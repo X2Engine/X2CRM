@@ -36,8 +36,30 @@
 
 $justMeUrl = $this->controller->createUrl('/site/toggleShowTags', array('tags'=>'justMe'));
 $allUsersUrl = $this->controller->createUrl('/site/toggleShowTags', array('tags'=>'allUsers'));?><span style="float:left"><?php
-echo CHtml::ajaxLink(Yii::t('app','Just Me'), $justMeUrl,array('success'=>'function(response) { $("#myTags").show(); $("#allTags").hide(); } '))." | ".CHtml::ajaxLink(Yii::t('app','All Users'), $allUsersUrl,array('success'=>'function() { $("#allTags").show(); $("#myTags").hide(); }'))."<br />";
-?></span><span style="float:right"><span id="tag-hint" style="color:#06c">[?]</span></span> <br><br>
+echo CHtml::ajaxLink(
+    Yii::t('app','Just Me'), 
+    $justMeUrl,
+    array(
+        'success'=>'function(response) { 
+            $("#myTags").show(); 
+            $("#allTags").hide(); 
+        } '
+    ))." | ".CHtml::ajaxLink(Yii::t('app','All Users'), 
+    $allUsersUrl,
+    array(
+        'success'=>'function() { 
+            $("#allTags").show(); 
+            $("#myTags").hide(); 
+        }'))."<br />";
+?></span>
+<span style="float:right">
+    <?php
+    echo X2Html::hint (
+        Yii::t(
+            'app','Pressing the X button on a tag will hide it from this widget. Hidden tags can '.
+            'be restored from your Preferences page.')); 
+    ?>
+</span> <br><br>
 <div id="myTags" <?php echo ($showAllUsers? 'style="display:none;"' : ''); ?>>
 <?php
 foreach($myTags as &$tag) {
@@ -90,9 +112,5 @@ foreach($allTags as &$tag) {
         });
     }).mouseleave(function(){
         $('.hide-link-span').remove();
-    });
-    $('#tag-hint').qtip({
-       position:{'my':'top right','at':'bottom left'},
-       content:'<?php echo Yii::t('app','Pressing the X button on a tag will hide it from this widget. Hidden tags can be restored from your Preferences page.'); ?>'
     });
 </script>

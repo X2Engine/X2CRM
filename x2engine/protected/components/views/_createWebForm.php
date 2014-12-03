@@ -238,13 +238,18 @@ if ($webFormType === 'weblead') {
 <div class='row'>
     <div class="cell">
         <label class='left-label' 
-         for='generateLead'><?php echo Yii::t('app', 'Generate Lead: '); ?></label>
+         for='generateLead'><?php echo Yii::t('app', 'Generate {Lead}: ', array(
+             '{Lead}'=>Modules::displayName(false, 'X2Leads')
+         )); ?></label>
         <input id='generate-lead-checkbox' type='checkbox'  name='generateLead'>
         <?php
         echo X2Html::hint (
-            Yii::t('app', 'If you have this box checked, a new lead record will be associated '.
-                'with the new contact when the web lead form is submitted. The web lead form '.
-                'must be saved for this feature to take effect.'), false, null, true);
+            Yii::t('app', 'If you have this box checked, a new {lead} record will be associated '.
+                'with the new {contact} when the web lead form is submitted. The web lead form '.
+                'must be saved for this feature to take effect.', array(
+                    '{lead}'=>strtolower(Modules::displayName(false, 'X2Leads')),
+                    '{contact}'=>strtolower(Modules::displayName(false, 'Contacts'))
+                )), false, null, true);
         ?>
         <div id='generate-lead-form' style='display: none;'>
         <?php
@@ -258,13 +263,18 @@ if ($webFormType === 'weblead') {
 <div class='row'>
     <div class="cell">
         <label class='left-label' 
-         for='generateAccount'><?php echo Yii::t('app', 'Generate Account: '); ?></label>
+         for='generateAccount'><?php echo Yii::t('app', 'Generate {Account}: ', array(
+             '{Account}'=>Modules::displayName(false, 'Accounts')
+        )); ?></label>
         <input id='generate-account-checkbox' type='checkbox'  name='generateAccount'>
         <?php
         echo X2Html::hint (
-            Yii::t('app', 'If you have this box checked, a new account record will be generated '.
-                'using the new contact\'s company field when the web lead form is submitted. The '.
-                'web lead form must be saved for this feature to take effect.'), false, null, true);
+            Yii::t('app', 'If you have this box checked, a new {account} record will be generated '.
+                'using the new {contact}\'s company field when the web lead form is submitted. The '.
+                'web lead form must be saved for this feature to take effect.', array(
+                    '{account}'=>strtolower(Modules::displayName(false, 'Accounts')),
+                    '{contact}'=>strtolower(Modules::displayName(false, 'Contacts'))
+                )), false, null, true);
         ?>
     </div>
 </div>

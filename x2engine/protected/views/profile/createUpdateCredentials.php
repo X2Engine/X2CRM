@@ -48,7 +48,14 @@ $this->actionMenu = array(
 <div class="page-title"><h2><?php echo $model->pageTitle; ?></h2></div>
 <div style="padding:10px; display:inline-block;">
 <?php
-$this->renderPartial('_credentialsForm', array('model' => $model, 'includeTitle' => false, 'user' => $profile->user));
+$this->renderPartial(
+    '_credentialsForm', 
+    array(
+        'model' => $model,
+        'includeTitle' => false,
+        'disableMetaDataForm' => $disableMetaDataForm,
+        'user' => $profile->user
+    ));
 
 echo "<span>$message</span>";
 ?>

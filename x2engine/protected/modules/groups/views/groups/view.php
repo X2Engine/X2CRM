@@ -34,16 +34,17 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('groups','Group List'), 'url'=>array('index')),
-	array('label'=>Yii::t('groups','Create Group'), 'url'=>array('create')),
-	array('label'=>Yii::t('groups','View')),
-	array('label'=>Yii::t('groups','Update Group'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('groups','Delete Group'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
-));
+$menuOptions = array(
+    'index', 'create', 'view', 'edit', 'delete',
+);
+$this->insertMenu($menuOptions, $model);
+
 ?>
 <div class="page-title icon groups">
-	<h2><span class="no-bold"><?php echo Yii::t('groups','Group:'); ?></span> <?php echo $model->name; ?></h2>
+    <h2><span class="no-bold">
+        <?php echo Yii::t('groups','{group}:', array(
+            '{group}' => Modules::displayName(false),
+        )); ?></span> <?php echo $model->name; ?></h2>
 </div>
 <div class="form" style="min-height:300px;">
 <?php $this->renderPartial('_view',array('data'=>$model,'users'=>$users)); ?>

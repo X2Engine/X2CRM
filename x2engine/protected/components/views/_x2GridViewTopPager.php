@@ -37,7 +37,6 @@
 /*
 Parameters:
     gridId - the id property of the X2GridView instance
-    modelName - the modelName property of the X2GridView instance
     gridObj - object - the x2gridview instance
 Preconditions:
     - {pager} must be in the grid's template and the pager must have previous and next buttons
@@ -52,6 +51,7 @@ Yii::app()->clientScript->registerCss ('topPagerCss', "
     margin-right: 2px;
     margin-top: 1px;
     height: 0;
+    float: right;
 }
 .x2-gridview-top-pager a {
     padding: 0 7px;
@@ -80,11 +80,11 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'TopPagerInitScript',"
 ", CClientScript::POS_READY);
 
 ?>
-<div id='<?php echo $gridId; ?>-top-pager' class='x2-gridview-top-pager right'>
+<div id='<?php echo $gridId; ?>-top-pager' class='x2-gridview-top-pager'>
     <div class='x2-button-group'>
         <a class='top-pager-prev-button x2-button' 
-         title='<?php echo Yii::t('app', 'Previous Page'); ?>'>&lt;</a>
+         title='<?php echo Yii::t('app', 'Previous page'); ?>'>&lt;</a>
         <a class='top-pager-next-button x2-button x2-last-child'
-         title='<?php echo Yii::t('app', 'Next Page'); ?>'>&gt;</a>
+         title='<?php echo Yii::t('app', 'Next page'); ?>'>&gt;</a>
     </div>
 </div>

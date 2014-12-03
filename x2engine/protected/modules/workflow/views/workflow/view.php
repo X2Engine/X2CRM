@@ -54,7 +54,7 @@ Yii::app()->clientScript->registerPackages (array (
         ),
         'depends' => array ('history', 'auxlib'),
     ),
-), null, true);
+), true);
 
 Yii::app()->clientScript->registerScript('getWorkflowStage',"
 
@@ -293,50 +293,29 @@ $(function () {
 
 ",CClientScript::POS_HEAD);
 
-$this->setPageTitle(Yii::t('workflow', 'View Process'));
+Yii::app()->clientScript->registerX2Flashes();
+$this->setPageTitle(Yii::t('workflow', 'View {process}', array(
+    '{process}' => Modules::displayName(false),
+)));
 
-$isAdmin = (Yii::app()->params->isAdmin);
-
-
-$workflowViewMenuItems = array (
-	array(
-        'label'=>Yii::t('app','Funnel View'),
-        'linkOptions' => array ('id' => 'funnel-view-menu-item'),
-    ),
-	array(
-        'label'=>Yii::t('app','Pipeline View'),
-        'linkOptions' => array ('id' => 'pipeline-view-menu-item'),
-    ),
+$menuOptions = array(
+    'index', 'create', 'edit', 'funnel', 'pipeline', 'delete',
 );
+$this->insertMenu($menuOptions, $model);
 
-if ($perStageWorkflowView) {
-    $workflowViewMenuItems[1]['url'] = '#';
-} else {
-    $workflowViewMenuItems[0]['url'] = '#'; 
-}
-
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('workflow','All Processes'), 'url'=>array('index')),
-	array('label'=>Yii::t('app','Create'), 'url'=>array('create'), 'visible'=>$isAdmin),
-	array(
-        'label'=>Yii::t('workflow','Edit Process'), 
-        'url'=>array('update', 'id'=>$model->id), 
-        'visible'=>$isAdmin),
-    $workflowViewMenuItems[0],
-    $workflowViewMenuItems[1],
-	array(
-        'label'=>Yii::t('workflow','Delete Process'), 
-        'url'=>'#', 
-        'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),
-        'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 
-        'visible'=>$isAdmin
-    ),
-));
+// Handle disabling links for workflow views
+$unsetUrlIndex = ($perStageWorkflowView ? 4 : 3);
+unset($this->actionMenu[3]['url'], $this->actionMenu[4]['url']);
+$this->actionMenu[$unsetUrlIndex]['url'] = '#';
 
 ?>
 <div id='content-container-inner'>
 <div class="responsive-page-title page-title icon workflow x2-layout-island x2-layout-island-merge-bottom">
-    <h2><span class="no-bold"><?php echo Yii::t('workflow','Process:'); ?></span> 
+    <h2><span class="no-bold">
+        <?php echo Yii::t('workflow','{process}:', array(
+            '{process}' => Modules::displayName(false),
+        )); ?>
+    </span> 
         <?php 
         echo CHtml::dropDownList ('workflows', $model->id, $workflows, array (
             'class' => 'x2-minimal-select x2-select',

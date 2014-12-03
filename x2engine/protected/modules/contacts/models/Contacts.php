@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -49,7 +50,9 @@ class Contacts extends X2Model {
      * Returns the static model of the specified AR class.
      * @return Contacts the static model class
      */
-    public static function model($className=__CLASS__) { return parent::model($className); }
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
 
     /**
      * @return array relational rules.
@@ -57,89 +60,68 @@ class Contacts extends X2Model {
     public function relations() {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array_merge (parent::relations (), 
-            array (
-                 
-            )
-        );
+        return array_merge(parent::relations(), array(
+            
+        ));
     }
 
     /**
      * @return string the associated database table name
      */
-    public function tableName() { return 'x2_contacts'; }
+    public function tableName() {
+        return 'x2_contacts';
+    }
 
     public function behaviors() {
-        return array_merge(parent::behaviors(),array(
-            'X2LinkableBehavior'=>array(
-                'class'=>'X2LinkableBehavior',
-                'module'=>'contacts',
+        return array_merge(parent::behaviors(), array(
+            'X2LinkableBehavior' => array(
+                'class' => 'X2LinkableBehavior',
+                'module' => 'contacts',
             ),
-             
+            
             'ERememberFiltersBehavior' => array(
-                'class'=>'application.components.ERememberFiltersBehavior',
-                'defaults'=>array(),
-                'defaultStickOnClear'=>false
+                'class' => 'application.components.ERememberFiltersBehavior',
+                'defaults' => array(),
+                'defaultStickOnClear' => false
             ),
             'X2AddressBehavior' => array(
-                'class'=>'application.components.X2AddressBehavior',
+                'class' => 'application.components.X2AddressBehavior',
+            ),
+            'X2DuplicateBehavior' => array(
+                'class' => 'application.components.X2DuplicateBehavior',
+            ),
+            'ContactsNameBehavior' => array(
+                'class' => 'application.components.ContactsNameBehavior',
             ),
         ));
     }
 
-    public function rules () {
-        $parentRules = parent::rules ();
-        $parentRules[] = array (
+    public function rules() {
+        $parentRules = parent::rules();
+        $parentRules[] = array(
             'firstName,lastName', 'required', 'on' => 'webForm');
         return $parentRules;
     }
 
-    /**
-     * Sets the name field (full name) on record lookup
-     */
+    public function duplicateFields() {
+        return array_merge(parent::duplicateFields(), array(
+            'email',
+        ));
+    }
+
     public function afterFind() {
         parent::afterFind();
-
-        if(isset(Yii::app()->settings)) {
-            $admin=Yii::app()->settings;
-            if(!empty($admin->contactNameFormat)) {
-                $str = $admin->contactNameFormat;
-                $str = str_replace('firstName',$this->firstName,$str);
-                $str = str_replace('lastName',$this->lastName,$str);
-            } else {
-                $str = $this->firstName.' '.$this->lastName;
-            }
-            if($admin->properCaseNames)
-                $str = $this->ucwords_specific($str,array('-',"'",'.'),'UTF-8');
-
-            $this->name = $str;
-        }
-        if($this->trackingKey === null && self::$autoPopulateFields) {
+        if ($this->trackingKey === null && self::$autoPopulateFields) {
             $this->trackingKey = self::getNewTrackingKey();
             $this->update(array('trackingKey'));
         }
     }
 
     /**
-     * Sets the name field (full name) before saving
      * @return boolean whether or not to save
      */
     public function beforeSave() {
-        if(isset(Yii::app()->settings)) {
-            $admin = Yii::app()->settings;
-            if(!empty($admin->contactNameFormat)) {
-                $str = $admin->contactNameFormat;
-                $str = str_replace('firstName',$this->firstName,$str);
-                $str = str_replace('lastName',$this->lastName,$str);
-            } else {
-                $str = $this->firstName.' '.$this->lastName;
-            }
-            if($admin->properCaseNames)
-                $str = $this->ucwords_specific($str,array('-',"'",'.'),'UTF-8');
-
-            $this->name = $str;
-        }
-        if($this->trackingKey === null) {
+        if ($this->trackingKey === null) {
             $this->trackingKey = self::getNewTrackingKey();
         }
 
@@ -155,8 +137,8 @@ class Contacts extends X2Model {
      * when checking for duplicates in {@link ContactsController}
      */
     public function afterUpdate() {
-        if (!Yii::app()->params->noSession && $this->asa ('changelog') && 
-            $this->asa ('changelog')->enabled) {//$this->scenario != 'noChangelog') {
+        if (!Yii::app()->params->noSession && $this->asa('changelog') &&
+                $this->asa('changelog')->enabled) {//$this->scenario != 'noChangelog') {
             // send subscribe emails if anyone has subscribed to this contact
             $result = Yii::app()->db->createCommand()
                     ->select('user_id')
@@ -184,12 +166,12 @@ class Contacts extends X2Model {
 
             $adminProfile = Yii::app()->params->adminProfile;
             foreach ($result as $subscription) {
-                $subscription=array();
-                if(isset($subscription['user_id'])){
+                $subscription = array();
+                if (isset($subscription['user_id'])) {
                     $profile = X2Model::model('Profile')->findByPk($subscription['user_id']);
                     if ($profile && $profile->emailAddress && $adminProfile && $adminProfile->emailAddress) {
-                        $to = array('to'=>array(array($profile->fullName, $profile->emailAddress)));
-                        Yii::app()->controller->sendUserEmail($to, $subject, $message,null,Credentials::$sysUseId['systemNotificationEmail']);
+                        $to = array('to' => array(array($profile->fullName, $profile->emailAddress)));
+                        Yii::app()->controller->sendUserEmail($to, $subject, $message, null, Credentials::$sysUseId['systemNotificationEmail']);
                     }
                 }
             }
@@ -207,18 +189,17 @@ class Contacts extends X2Model {
         // /* x2temp */
         // $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
         // if(!empty($groupLinks))
-            // $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
-
+        // $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
         // $condition .= 'OR (visibility=2 AND assignedTo IN
-            // (SELECT username FROM x2_group_to_user WHERE groupId IN
-                // (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+        // (SELECT username FROM x2_group_to_user WHERE groupId IN
+        // (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
         $contactArray = X2Model::model('Contacts')->findAll($condition);
-        $names=array(0=>'None');
-        foreach($contactArray as $user){
+        $names = array(0 => 'None');
+        foreach ($contactArray as $user) {
             $first = $user->firstName;
             $last = $user->lastName;
             $name = $first . ' ' . $last;
-            $names[$user->id]=$name;
+            $names[$user->id] = $name;
         }
         return $names;
     }
@@ -228,44 +209,43 @@ class Contacts extends X2Model {
      *    @return $names An array of strings containing the names of contacts.
      */
     public static function getAllNames() {
-        $contactArray = X2Model::model('Contacts')->findAll($condition='visibility=1');
-        $names=array(0=>'None');
-        foreach($contactArray as $user){
+        $contactArray = X2Model::model('Contacts')->findAll($condition = 'visibility=1');
+        $names = array(0 => 'None');
+        foreach ($contactArray as $user) {
             $first = $user->firstName;
             $last = $user->lastName;
             $name = $first . ' ' . $last;
-            $names[$user->id]=$name;
+            $names[$user->id] = $name;
         }
         return $names;
     }
 
     public static function getContactLinks($contacts) {
-        if(!is_array($contacts))
-            $contacts = explode(' ',$contacts);
+        if (!is_array($contacts))
+            $contacts = explode(' ', $contacts);
 
         $links = array();
-        foreach($contacts as &$id){
-            if($id !=0 ) {
+        foreach ($contacts as &$id) {
+            if ($id != 0) {
                 $model = X2Model::model('Contacts')->findByPk($id);
-                if(isset($model))
-                    $links[] = CHtml::link($model->name,array('/contacts/contacts/view','id'=>$id));
+                if (isset($model))
+                    $links[] = CHtml::link($model->name, array('/contacts/contacts/view', 'id' => $id));
                 //$links.=$link.', ';
-
             }
         }
         //$links=substr($links,0,strlen($links)-2);
-        return implode(', ',$links);
+        return implode(', ', $links);
     }
 
     public static function getMailingList($criteria) {
 
-        $mailingList=array();
+        $mailingList = array();
 
-        $arr=X2Model::model('Contacts')->findAll();
-        foreach($arr as $contact){
-            $i=preg_match("/$criteria/i",$contact->backgroundInfo);
-            if($i>=1){
-                $mailingList[]=$contact->email;
+        $arr = X2Model::model('Contacts')->findAll();
+        foreach ($arr as $contact) {
+            $i = preg_match("/$criteria/i", $contact->backgroundInfo);
+            if ($i >= 1) {
+                $mailingList[] = $contact->email;
             }
         }
         return $mailingList;
@@ -281,16 +261,15 @@ class Contacts extends X2Model {
     public function searchMyContacts() {
         $criteria = new CDbCriteria;
 
-        $accessLevel = Yii::app()->user->checkAccess('ContactsView')? 1 : 0;
-        $conditions=$this->getAccessConditions($accessLevel);
-        foreach($conditions as $arr){
-            $criteria->addCondition($arr['condition'],$arr['operator']);
-            $criteria->params = array_merge($criteria->params,$arr['params']);
+        $accessLevel = Yii::app()->user->checkAccess('ContactsView') ? 1 : 0;
+        $conditions = $this->getAccessConditions($accessLevel);
+        foreach ($conditions as $arr) {
+            $criteria->addCondition($arr['condition'], $arr['operator']);
+            $criteria->params = array_merge($criteria->params, $arr['params']);
         }
 
         // $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
         // $parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
-
         // $parameters['condition']=$condition;
         // $criteria->scopes=array('findAll'=>array($parameters));
 
@@ -298,20 +277,20 @@ class Contacts extends X2Model {
     }
 
     public function searchNewContacts() {
-        $criteria=new CDbCriteria;
+        $criteria = new CDbCriteria;
         // $condition = 'assignedTo="'.Yii::app()->user->getName().'" AND createDate > '.mktime(0,0,0);
-        $condition = 't.createDate > '.mktime(0,0,0);
-        $accessLevel = Yii::app()->user->checkAccess('ContactsView')? 1 : 0;
-        $conditions=$this->getAccessConditions($accessLevel);
-        foreach($conditions as $arr){
-            $criteria->addCondition($arr['condition'],$arr['operator']);
-            $criteria->params = array_merge($criteria->params,$arr['params']);
+        $condition = 't.createDate > ' . mktime(0, 0, 0);
+        $accessLevel = Yii::app()->user->checkAccess('ContactsView') ? 1 : 0;
+        $conditions = $this->getAccessConditions($accessLevel);
+        foreach ($conditions as $arr) {
+            $criteria->addCondition($arr['condition'], $arr['operator']);
+            $criteria->params = array_merge($criteria->params, $arr['params']);
         }
 
-        $parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
+        $parameters = array('limit' => ceil(Profile::getResultsPerPage()));
 
-        $parameters['condition']=$condition;
-        $criteria->scopes=array('findAll'=>array($parameters));
+        $parameters['condition'] = $condition;
+        $criteria->scopes = array('findAll' => array($parameters));
 
         return $this->searchBase($criteria);
     }
@@ -354,13 +333,13 @@ class Contacts extends X2Model {
     }
 
     public function searchAdmin() {
-        $criteria=new CDbCriteria;
+        $criteria = new CDbCriteria;
         return $this->searchBase($criteria);
     }
 
     public function searchAccount($id) {
         $criteria = new CDbCriteria;
-        $criteria->compare('company',$id);
+        $criteria->compare('company', $id);
 
         return $this->searchBase($criteria);
     }
@@ -369,29 +348,28 @@ class Contacts extends X2Model {
      * Returns a DataProvider for all the contacts in the specified list,
      * using this Contact model's attributes as a search filter
      */
-    public function searchList($id, $pageSize=null) {
+    public function searchList($id, $pageSize = null) {
         $list = X2List::model()->findByPk($id);
 
-        if(isset($list)) {
+        if (isset($list)) {
             $search = $list->queryCriteria();
 
             $this->compareAttributes($search);
 
-            return new SmartActiveDataProvider('Contacts',array(
-                'criteria'=>$search,
-                'sort'=>array(
-                    'defaultOrder'=>'t.lastUpdated DESC'    // true = ASC
+            return new SmartActiveDataProvider('Contacts', array(
+                'criteria' => $search,
+                'sort' => array(
+                    'defaultOrder' => 't.lastUpdated DESC'    // true = ASC
                 ),
-                'pagination'=>array(
-                    'pageSize'=>isset($pageSize)? $pageSize : Profile::getResultsPerPage(),
+                'pagination' => array(
+                    'pageSize' => isset($pageSize) ? $pageSize : Profile::getResultsPerPage(),
                 ),
             ));
-
         } else {    //if list is not working, return all contacts
             return $this->searchBase();
         }
     }
-    
+
     /**
      * Generates a random tracking key and guarantees uniqueness
      * @return String $key a unique random tracking key
@@ -401,13 +379,13 @@ class Contacts extends X2Model {
         $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
         // try up to 100 times to guess a unique key
-        for($i=0; $i<100; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $key = '';
-            for($j=0; $j<32; $j++)    // generate a random 32 char alphanumeric string
-                $key .= substr($chars,rand(0,strlen($chars)-1), 1);
+            for ($j = 0; $j < 32; $j++)    // generate a random 32 char alphanumeric string
+                $key .= substr($chars, rand(0, strlen($chars) - 1), 1);
 
             // check if this key is already used
-            if(X2Model::model('Contacts')->exists('trackingKey="'.$key.'"'))    
+            if (X2Model::model('Contacts')->exists('trackingKey="' . $key . '"'))
                 continue;
             else
                 return $key;
@@ -417,48 +395,4 @@ class Contacts extends X2Model {
 
     
 
-
-    function ucwords_specific ($string, $delimiters = '', $encoding = NULL)
-    {
-
-        if ($encoding === NULL) { $encoding = mb_internal_encoding();}
-
-        if (is_string($delimiters))
-        {
-            $delimiters =  str_split( str_replace(' ', '', $delimiters));
-        }
-
-        $delimiters_pattern1 = array();
-        $delimiters_replace1 = array();
-        $delimiters_pattern2 = array();
-        $delimiters_replace2 = array();
-        foreach ($delimiters as $delimiter)
-        {
-            $ucDelimiter=$delimiter;
-            $delimiter=strtolower($delimiter);
-            $uniqid = uniqid();
-            $delimiters_pattern1[]   = '/'. preg_quote($delimiter) .'/';
-            $delimiters_replace1[]   = $delimiter.$uniqid.' ';
-            $delimiters_pattern2[]   = '/'. preg_quote($ucDelimiter.$uniqid.' ') .'/';
-            $delimiters_replace2[]   = $ucDelimiter;
-            $delimiters_cleanup_replace1[]   = '/'. preg_quote($delimiter.$uniqid).' ' .'/';
-            $delimiters_cleanup_pattern1[]   = $delimiter;
-        }
-        $return_string = mb_strtolower($string, $encoding);
-        //$return_string = $string;
-        $return_string = preg_replace($delimiters_pattern1, $delimiters_replace1, $return_string);
-
-        $words = explode(' ', $return_string);
-
-        foreach ($words as $index => $word)
-        {
-            $words[$index] = mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding).mb_substr($word, 1, mb_strlen($word, $encoding), $encoding);
-        }
-        $return_string = implode(' ', $words);
-
-        $return_string = preg_replace($delimiters_pattern2, $delimiters_replace2, $return_string);
-        $return_string = preg_replace($delimiters_cleanup_replace1, $delimiters_cleanup_pattern1, $return_string);
-
-        return $return_string;
-    }
 }

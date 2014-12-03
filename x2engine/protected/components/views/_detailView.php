@@ -37,13 +37,12 @@
 $attributeLabels = $model->attributeLabels();
 
 // $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
-
 // $showWorkflow = Yii::app()->params->profile->showWorkflow;
 
 $cs = Yii::app()->getClientScript();
 
 
-if($modelName=='contacts' || $modelName=='opportunities'){
+if ($modelName == 'contacts' || $modelName == 'opportunities') {
     $cs->registerScript('toggleWorkflow', "
     function showWorkflow() {
         $('tr#workflow-row').show();
@@ -53,190 +52,219 @@ if($modelName=='contacts' || $modelName=='opportunities'){
         $('tr#workflow-row').hide();
         $('tr#workflow-toggle').show();
     }
-    ",CClientScript::POS_HEAD);
+    ", CClientScript::POS_HEAD);
 }
 
 // $(function() {\n"
 // .($showWorkflow? "showWorkflow();\n" : "hideWorkflow()\n")
 // ."});",CClientScript::POS_HEAD);
 
-$cs->registerScript('setFormName',"
+$cs->registerScript('setFormName', "
 window.formName = '$modelName';
-",CClientScript::POS_HEAD);
+", CClientScript::POS_HEAD);
 
 $scenario = isset($scenario) ? $scenario : 'Default';
 $nameLink = isset($nameLink) ? $nameLink : false;
 
+$authParams['X2Model'] = $model;
+$moduleName = X2Model::getModuleName($modelName);
+$modelEdit = Yii::app()->params->isAdmin || Yii::app()->user->checkAccess(ucfirst($moduleName) . 'Update', $authParams);
+
 // check the app cache for the data
-$layoutData = Yii::app()->cache->get('form_'.$modelName.'_'.$scenario);    
+$layoutData = Yii::app()->cache->get('form_' . $modelName . '_' . $scenario);
 $fields = array();
 
 
 // remove this later, once all models extend X2Models
-if(method_exists($model,'getFields')) {
+if (method_exists($model, 'getFields')) {
     $fields = $model->getFields(true);
 } else {
-    foreach(X2Model::model('Fields')->findAllByAttributes(
-        array('modelName'=>ucfirst($modelName))) as $fieldModel) {
+    foreach (X2Model::model('Fields')->findAllByAttributes(
+            array('modelName' => ucfirst($modelName))) as $fieldModel) {
 
         $fields[$fieldModel->fieldName] = $fieldModel;
     }
 }
 
-if($layoutData === false) {
+if ($layoutData === false) {
     $layout = FormLayout::model()->findByAttributes(
-        array('model'=>ucfirst($modelName),'defaultView'=>1,'scenario'=>$scenario));
+            array('model' => ucfirst($modelName), 'defaultView' => 1, 'scenario' => $scenario));
 
-    if(isset($layout)) {
-        $layoutData = json_decode($layout->layout,true);
-        Yii::app()->cache->set('form_'.$modelName.'_'.$scenario,$layoutData,0);    // cache the data
+    if (isset($layout)) {
+        $layoutData = json_decode($layout->layout, true);
+        Yii::app()->cache->set('form_' . $modelName . '_' . $scenario, $layoutData, 0);    // cache the data
     }
 }
 
-if($layoutData !== false && isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
-?>
-    <div class="x2-layout<?php if(isset($halfWidth) && $halfWidth) echo ' half-width'; ?>">
-    <?php
+if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
+    echo '<div class="x2-layout' . ((isset($halfWidth) && $halfWidth) ? ' half-width' : '') . '">';
     $formSettings = Profile::getFormSettings($modelName);
-    
+
     $fieldPermissions = array();
-    
-    if(!Yii::app()->params->isAdmin && !empty(Yii::app()->params->roles)) {
+
+    if (!Yii::app()->params->isAdmin && !empty(Yii::app()->params->roles)) {
         $rolePermissions = Yii::app()->db->createCommand()
-            ->select('fieldId, permission')
-            ->from('x2_role_to_permission')
-            ->join('x2_fields','x2_fields.modelName="'.$modelName.
-                '" AND x2_fields.id=fieldId AND roleId IN ('.implode(',',Yii::app()->params->roles).')')
-            ->queryAll();
-    
-        foreach($rolePermissions as &$permission) {
-            if(!isset($fieldPermissions[$permission['fieldId']]) || 
-               $fieldPermissions[$permission['fieldId']] < (int)$permission['permission']) {
-                $fieldPermissions[$permission['fieldId']] = (int)$permission['permission'];
+                ->select('fieldId, permission')
+                ->from('x2_role_to_permission')
+                ->join('x2_fields', 'x2_fields.modelName="' . $modelName .
+                        '" AND x2_fields.id=fieldId AND roleId IN (' . implode(',', Yii::app()->params->roles) . ')')
+                ->queryAll();
+
+        foreach ($rolePermissions as &$permission) {
+            if (!isset($fieldPermissions[$permission['fieldId']]) ||
+                    $fieldPermissions[$permission['fieldId']] < (int) $permission['permission']) {
+                $fieldPermissions[$permission['fieldId']] = (int) $permission['permission'];
             }
         }
     }
 
-    if(!isset($specialFields))
+    if (!isset($specialFields))
         $specialFields = array();
-    if(!isset($suppressFields))
+    if (!isset($suppressFields))
         $suppressFields = array();
-    
+
     $i = 0;
-    foreach($layoutData['sections'] as &$section) {
+    foreach ($layoutData['sections'] as &$section) {
         $noItems = true; // if no items, don't display section
         // set defaults
-        if(!isset($section['title'])) $section['title'] = '';
-        if(!isset($section['collapsible'])) $section['collapsible'] = false;
-        if(!isset($section['rows'])) $section['rows'] = array();
-        if(!isset($formSettings[$i])) {
-            $formSettings[$i] = ($section['title'] === 'Social Media' ? 0 : 1);
+        if (!isset($section['title']))
+            $section['title'] = '';
+        if (!isset($section['collapsible']))
+            $section['collapsible'] = false;
+        if (!isset($section['rows']))
+            $section['rows'] = array();
+        if (!isset($formSettings[$i])) {
+            $formSettings[$i] = 1;
         }
-    
+
         $collapsed = !$formSettings[$i] && $section['collapsible'];
-    
+
         $htmlString = '';
-    
+
         $htmlString .= '<div class="formSection';
-        if($section['collapsible'])
+        if ($section['collapsible'])
             $htmlString .= ' collapsible';
-        if(!$collapsed)
+        if (!$collapsed)
             $htmlString .= ' showSection';
         $htmlString .= '">';
-    
+
         $htmlString .= '<div class="formSectionHeader">';
-        if($section['collapsible']) {
-            $htmlString .= 
-                '<a href="javascript:void(0)" class="formSectionHide">
-                    <img src="'.Yii::app()->getBaseUrl().'/themes/x2engine/images/icons/Collapse_Widget.png" alt="-">
+        if ($section['collapsible']) {
+            $htmlString .=
+                    '<a href="javascript:void(0)" class="formSectionHide">
+                    <img src="' . Yii::app()->getBaseUrl() . '/themes/x2engine/images/icons/Collapse_Widget.png" alt="-">
                 </a>';
-            $htmlString .= 
-                '<a href="javascript:void(0)" class="formSectionShow">
-                    <img src="'.Yii::app()->getBaseUrl().'/themes/x2engine/images/icons/Expand_Inverted.png" alt="+">
+            $htmlString .=
+                    '<a href="javascript:void(0)" class="formSectionShow">
+                    <img src="' . Yii::app()->getBaseUrl() . '/themes/x2engine/images/icons/Expand_Inverted.png" alt="+">
                 </a>';
         }
-        if(!empty($section['title'])) {
-            $htmlString .= '<span class="sectionTitle" title="'.addslashes($section['title']).'">'.
-                Yii::t(strtolower(Yii::app()->controller->id),$section['title']).'</span>';
+        if (!empty($section['title'])) {
+            $htmlString .= '<span class="sectionTitle" title="' . addslashes($section['title']) . '">' .
+                    Yii::t(strtolower(Yii::app()->controller->id), $section['title']) . '</span>';
         } else {
             $htmlString .= '<span class="sectionTitle"></span>';
         }
         $htmlString .= '</div>';
-    
-        if(!empty($section['rows'])) {
+
+        if (!empty($section['rows'])) {
             $htmlString .= '<div class="tableWrapper"';
-            if($collapsed)
+            if ($collapsed)
                 $htmlString .= ' style="display:none;"';
             $htmlString .= '><table>';
-    
-            foreach($section['rows'] as &$row) {
-                $htmlString .= '<tr class="formSectionRow">';
-                if(isset($row['cols'])) {
-                    foreach($row['cols'] as &$col) {
-    
-                        $width = isset($col['width'])? ' style="width:'.$col['width'].'px"' : '';
-                        $htmlString .= "<td$width>";
-                        if(isset($col['items'])) {
-                            foreach($col['items'] as &$item) {
-    
-    
-                                if(isset($item['name'],$item['labelType'],$item['readOnly'],$item['height'],
-                                    $item['width'])) {
 
-                                    $fieldName = preg_replace('/^formItem_/u','',$item['name']);
-                                    if(isset($fields[$fieldName])) {
+            foreach ($section['rows'] as &$row) {
+                $htmlString .= '<tr class="formSectionRow">';
+                if (isset($row['cols'])) {
+                    foreach ($row['cols'] as &$col) {
+
+                        $width = isset($col['width']) ? ' style="width:' . $col['width'] . 'px"' : '';
+                        $htmlString .= "<td$width>";
+                        if (isset($col['items'])) {
+                            foreach ($col['items'] as &$item) {
+
+
+                                if (isset($item['name'], $item['labelType'], $item['readOnly'], $item['height'], $item['width'])) {
+
+                                    $fieldName = preg_replace('/^formItem_/u', '', $item['name']);
+                                    if (isset($fields[$fieldName])) {
                                         $field = $fields[$fieldName];
-    
-                                        if(in_array ($fieldName, $suppressFields) || 
-                                           isset($fieldPermissions[$field->id]) && 
-                                           $fieldPermissions[$field->id] == 0) {
+
+                                        if (in_array($fieldName, $suppressFields) ||
+                                                isset($fieldPermissions[$field->id]) &&
+                                                $fieldPermissions[$field->id] == 0) {
                                             unset($item);
                                             $htmlString .= '</div></div>';
                                             continue;
                                         } else {
                                             $noItems = false;
                                         }
-    
-                                        $labelType = isset($item['labelType'])? $item['labelType'] : 'top';
-                                        switch($labelType) {
-                                            case 'inline':    $labelClass = 'inlineLabel'; break;
-                                            case 'none':    $labelClass = 'noLabel'; break;
-                                            case 'left':    $labelClass = 'leftLabel'; break;
+
+                                        $labelType = isset($item['labelType']) ? $item['labelType'] : 'top';
+                                        switch ($labelType) {
+                                            case 'inline': $labelClass = 'inlineLabel';
+                                                break;
+                                            case 'none': $labelClass = 'noLabel';
+                                                break;
+                                            case 'left': $labelClass = 'leftLabel';
+                                                break;
                                             case 'top':
-                                            default:        $labelClass = 'topLabel';
+                                            default: $labelClass = 'topLabel';
                                         }
-    
-                                        $htmlString .= "<div id=\"{$field->modelName}_{$field->fieldName}_field\"".
-                                            " class=\"formItem $labelClass\">";
-                                        $htmlString .= CHtml::label($model->getAttributeLabel($field->fieldName),
-                                            false);
-    
+                                        $inlineEdit = $modelEdit && (!$field->readOnly && (!isset($fieldPermissions[$field->id]) || (isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] === 2)));
+                                        $htmlString .= "<div id=\"{$field->modelName}_{$field->fieldName}_field\"" .
+                                                " class=\"formItem $labelClass";
+                                        if ($inlineEdit) {
+                                            $htmlString.= "  inline-edit";
+                                        }
+                                        $htmlString .= "\">";
+                                        $htmlString .= CHtml::label($model->getAttributeLabel($field->fieldName), false);
+
                                         $class = 'formInputBox';
-                                        $style = 'width:'.$item['width'].'px;';
-                                        if($field->type == 'text') {
+                                        $style = 'width:' . $item['width'] . 'px;';
+                                        if ($field->type == 'text') {
                                             $class .= ' textBox';
-                                            $style .= 'min-height:'.$item['height'].'px;';
+                                            $style .= 'height:' . $item['height'] . 'px;';
                                         }
-    
-                                        // if($field->type == 'text')
-                                            // $style .= 'min-height:'.$item['height'].'px;';
-                                        $htmlString .= '<div class="'.$class.'" style="'.$style.'">';
-    
-                                        if(isset($specialFields[$fieldName])) {
+
+                                        if ($field->type === 'text')
+                                            $textFieldHeight = $item['height'] . 'px';
+
+                                        $htmlString .= '<div class="' . $class . '" style="' . $style . '">';
+                                        if ($inlineEdit) {
+                                            $htmlString .= '<span class="model-input" id="' . $field->modelName . '_' . $field->fieldName . '_field-input" style="display:none">' . $model->renderInput($field->fieldName, array(
+                                                        'tabindex' => isset($item['tabindex']) ?
+                                                                $item['tabindex'] : null,
+                                                        'disabled' => $item['readOnly'] ?
+                                                                'disabled' : null,
+                                                        'style' => $field->type === 'text' ?
+                                                                'height: ' . $textFieldHeight : '',
+                                                    )) . '</span>';
+                                            if ($field->type === 'rating') {
+                                                $val = $model->$fieldName;
+                                                if (empty($model->$fieldName)) {
+                                                    $val = 0;
+                                                }
+                                                Yii::app()->clientScript->registerScript('rating-' . $fieldName, 'ratingFields["' . $field->modelName . '[' . $field->fieldName . ']"] = ' . $val, CClientScript::POS_READY);
+                                            }
+                                        }
+                                        $htmlString .= '<span class="model-attribute" id="' . $field->modelName . '_' . $field->fieldName . '_field-field">';
+                                        if (isset($specialFields[$fieldName])) {
                                             $fieldHtml = $specialFields[$fieldName];
                                         } else {
-                                            if($field->fieldName == 'name' && $nameLink && $model->asa('X2LinkableBehavior')){
+                                            if ($field->fieldName == 'name' && $nameLink && $model->asa('X2LinkableBehavior')) {
                                                 $fieldHtml = $model->link;
-                                            }else{
+                                            } else {
                                                 $fieldHtml = $model->renderAttribute(
                                                         $field->fieldName, true, false);
                                             }
                                         }
-                                        if($fieldHtml === '') {
+                                        if ($fieldHtml === '') {
                                             $htmlString .= '&nbsp;';
                                         } else {
                                             $htmlString .= $fieldHtml;
                                         }
+                                        $htmlString .= '</span>';
                                     }
                                 }
                                 unset($item);
@@ -253,9 +281,68 @@ if($layoutData !== false && isset($layoutData['sections']) && count($layoutData[
         }
         unset($row);
         $htmlString .= '</div>';
-        if (!$noItems) echo $htmlString;
+        if (!$noItems)
+            echo $htmlString;
         $i++;
     }
     echo '</div>';
 }
-
+Yii::app()->clientScript->registerScript('inline-edit-js', "
+    var editFlag = false;
+    var ratingFields = {};
+    $('.model-attribute').on('click', 'a', function(event) {
+        event.stopPropagation();
+    });
+    $('.inline-edit').on('click', function() {
+        editFlag = true;
+        $('.inline-edit-button').show();
+        console.log($('#' + $(this).attr('id') + '-field').height());
+        $('#' + $(this).attr('id') + '-input').height($('#' + $(this).attr('id') + '-field').height());
+        $('#' + $(this).attr('id') + '-input').show();
+        $('#' + $(this).attr('id') + '-field').hide();
+    });
+    $('#inline-edit-cancel').on('click', function() {
+        $('.inline-edit-button').hide();
+        $('.model-input').hide();
+        $('.model-attribute').show();
+        editFlag = false;
+        return false;
+    });
+    $('#inline-edit-save').on('click', function() {
+        attributes = {};
+        $('.model-input input, .model-input select, .model-input textarea').each(function() {
+            attributes[$(this).attr('name')] = $(this).val();
+        });
+        $.each(ratingFields, function(index, value) {
+            if (typeof value === 'undefined') {
+                attributes[index] = '';
+            } else {
+                attributes[index] = value;
+            }
+        });
+        $('.inline-edit-button').hide();
+        
+        $.ajax({
+            url: yii.scriptUrl + '/site/ajaxSave',
+            type: 'POST',
+            data: {attributes: attributes, modelId: $model->id},
+            success: function(data) {
+                results = $.parseJSON(data);
+                $.each(results, function(index, value) {
+                    $('#' + index + '_field-field').html(value);
+                    $('#' + index + '_field-field input[type=radio]').rating();
+                    $('#' + index + '_field-field input[type=radio]').rating('readOnly', true);
+                });
+                $('.model-input').hide();
+                $('.model-attribute').show();
+                editFlag = false;
+            }
+        });
+        return false;
+    });
+    $(window).bind('beforeunload', function() {
+        if (editFlag) {
+            return 'There are unsaved changes on this page.';
+        }
+    });", CClientScript::POS_END);
+?>

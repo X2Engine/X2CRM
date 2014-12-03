@@ -48,41 +48,22 @@ Yii::app()->clientScript->registerScript('tipScript',"
             }
         });
     });
-");
-
-Yii::app()->clientScript->registerCss('tipCss',"
-.tip-title {
-    text-align: center;
-    font-weight: bold;
-}
-.tip {
-    text-align: center;
-}
-#tip-content{
-    margin-right:22px;
-}
-.tip-refresh {
-    opacity: 0.4;
-}
-.tip-refresh:hover {
-    opacity: 0.6;
-}
-");
+", CClientScript::POS_END);
 
 ?>
-<span class="tip-refresh" title="Refresh Tip"></span>
+<span class="tip-refresh fa fa-refresh fa-lg" title="Refresh Tip"></span>
 <div id="tip-content">
     <div class='tip-title'>
         <div id="tip-title">
             <?php
-            echo $module." Tip";
+            echo CHtml::encode ($module." Tip");
             ?>
         </div>
     </div>
     <div class='tip'>
         <div id="tip">
             <?php
-            echo $tip;
+            echo CHtml::encode ($tip);
             ?>
         </div>
     </div>

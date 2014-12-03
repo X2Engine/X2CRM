@@ -32,82 +32,109 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
+/* line 22, ../../../compass/themes/x2engine/css/about-page.scss */
 #about-intro {
-    margin: 10px 0;
-    max-width: 450px;
+  margin: 10px 0;
+  max-width: 450px;
 }
+/* line 25, ../../../compass/themes/x2engine/css/about-page.scss */
 #about-intro li {
-    font-size: 12px;
+  font-size: 12px;
 }
-#about-intro ul, #about-credits ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin: 0 0 10px 10px;
-    color: #666;
+/* line 28, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-intro ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0 0 10px 10px;
+  color: #666;
 }
+
+/* line 36, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-credits ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0 0 10px 10px;
+  color: #666;
+}
+
+/* line 43, ../../../compass/themes/x2engine/css/about-page.scss */
 #about-intro h4, #about-credits h4 {
-    line-height: 1em;
-    margin: 3px 0;
+  line-height: 1em;
+  margin: 3px 0;
 }
+
+/* line 48, ../../../compass/themes/x2engine/css/about-page.scss */
 #about-intro ul.inline li {
-    display: inline;
+  display: inline;
 }
+/* line 50, ../../../compass/themes/x2engine/css/about-page.scss */
 #about-intro ul.inline li:after {
-    content: ', ';
+  content: ', ';
 }
+/* line 53, ../../../compass/themes/x2engine/css/about-page.scss */
 #about-intro ul.inline li:last-child:after {
-    content: '';
+  content: '';
 }
+
+/* line 59, ../../../compass/themes/x2engine/css/about-page.scss */
 #about-credits li {
-    font-size: 11px;
+  font-size: 11px;
 }
+/* line 62, ../../../compass/themes/x2engine/css/about-page.scss */
 #about-credits .no-underline {
-    text-decoration: none;
+  text-decoration: none;
 }
+
+/* line 67, ../../../compass/themes/x2engine/css/about-page.scss */
 #about-legal {
-    clear: both;
-    font-size: 10px;
-    color: #666;
+  clear: both;
+  font-size: 10px;
+  color: #666;
 }
-#about-map img {
-    -moz-box-shadow:     0 3px 10px 2px rgba(0,0,0,0.5);
-    -webkit-box-shadow:     0 3px 10px 2px rgba(0,0,0,0.5);
-    box-shadow:             0 3px 10px 2px rgba(0,0,0,0.5);
-    border-radius:             8px;
-    -moz-border-radius:         8px;
-    -webkit-border-radius:     8px;
-    -o-border-radius:         8px;
-    margin-bottom: 5px;
-}
+
+/* line 73, ../../../compass/themes/x2engine/css/about-page.scss */
 #about-map {
-    float: right;
-    width: 260px;
-    margin-top: 0px;
-    font-size: 11px;
+  float: right;
+  width: 260px;
+  margin-top: 0px;
+  font-size: 11px;
+}
+/* line 74, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-map img {
+  -moz-box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -o-border-radius: 8px;
+  margin-bottom: 5px;
 }
 
-
+/* line 90, ../../../compass/themes/x2engine/css/about-page.scss */
 #content {
-    padding: 15px 22px;
+  padding: 15px 22px;
 }
 
+/* line 94, ../../../compass/themes/x2engine/css/about-page.scss */
 .center-column-container {
-    margin-bottom: 10px !important;
-    margin-left:10px !important;
-    max-width:500px !important;
-    clear:none !important;
+  margin-bottom: 10px !important;
+  margin-left: 10px !important;
+  max-width: 500px !important;
+  clear: none !important;
 }
 
+/* line 101, ../../../compass/themes/x2engine/css/about-page.scss */
 #icon-container {
-    float: left;
+  float: left;
 }
+/* line 103, ../../../compass/themes/x2engine/css/about-page.scss */
 #icon-container img {
-    display: block;
+  display: block;
 }
 
+/* line 108, ../../../compass/themes/x2engine/css/about-page.scss */
 #x2engine-sticker {
-    width: 140px;
-    height: auto;
+  width: 140px;
+  height: auto;
 }
-

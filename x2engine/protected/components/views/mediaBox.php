@@ -77,7 +77,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
                 $jsSelectorId = CJSON::encode("#$baseId");
 				$propertyId = addslashes($baseId);
 				$desc = CHtml::encode($item['description']);
-                echo '<span class="media-item">';
+                echo '<span class="x2-pillbox media-item">';
                 $path = Media::getFilePath($item['uploadedBy'], $item['fileName']);
                 $filename = $item['drive']?$item['name']:$item['fileName'];
                 if(mb_strlen($filename, 'UTF-8') > 35){
@@ -86,7 +86,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
                 echo CHtml::link($filename, array('/media/media/view', 'id'=>$item['id']), array(
                     'class' => 'x2-link media'.(Media::isImageExt($item['fileName']) ? ' image-file' : ''),
                     'id' => $baseId,
-                    'style' => 'curosr:pointer;',
+                    'style' => 'cursor:pointer;',
                     'data-url' => Media::getFullFileUrl($path),
                 ));
                 echo '</span>';
@@ -145,7 +145,7 @@ $escapedName = preg_replace('/[@\.]/','',$username);
 				            $jsSelectorId = CJSON::encode("#$baseId");
 							$propertyId = addslashes($baseId);
 							$desc = CHtml::encode($item['description']);
-                            echo '<span class="media-item">';
+                            echo '<span class="x2-pillbox" class="media-item">';
                             $path = Media::getFilePath($item['uploadedBy'], $item['fileName']);
                             $filename = $item['drive']?$item['name']:$item['fileName'];
                             if(mb_strlen($filename, 'UTF-8') > 35){

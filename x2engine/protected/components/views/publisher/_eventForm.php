@@ -226,7 +226,10 @@ $('#Actions_associationType').change (function () {
                 $model, 'visibility', 
                 array(
                     0 => Yii::t('actions', 'Private'), 1 => Yii::t('actions', 'Public'),
-                    2 => Yii::t('actions', "User's Group")
+                    2 => Yii::t('actions', "{User}'s {Group}", array(
+                        '{User}' => Modules::displayName(false, 'Users'),
+                        '{Group}' => Modules::displayName(false, 'Groups'),
+                    ))
                 ),
                 array('class'=>'action-visibility-dropdown')); 
 

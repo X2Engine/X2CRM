@@ -36,6 +36,44 @@
 
 class MassRemoveFromList extends MassAction {
 
+    protected $_label;
+
+    /**
+     * Renders the mass action dialog, if applicable
+     * @param string $gridId id of grid view
+     */
+    public function renderDialog ($gridId, $modelName) {
+        echo "
+            <div class='mass-action-dialog' id='".$this->getDialogId ($gridId)."' 
+             style='display: none;'>
+                <span>".
+                    Yii::t('app', 'Remove all selected records from this list?')."
+                </span>
+            </div>";
+    }
+
+    /**
+     * @return string label to display in the dropdown list
+     */
+    public function getLabel () {
+        if (!isset ($this->_label)) {
+            $this->_label = Yii::t('app', 'Remove selected from list');
+        }
+        return $this->_label;
+    }
+
+    public function getPackages () {
+        return array_merge (parent::getPackages (), array (
+            'X2MassRemoveFromList' => array(
+                'baseUrl' => Yii::app()->request->baseUrl,
+                'js' => array(
+                    'js/X2GridView/MassRemoveFromList.js',
+                ),
+                'depends' => array ('X2MassAction'),
+            ),
+        ));
+    }
+
     public function execute (array $gvSelection) {
         if (Yii::app()->controller->modelClass !== 'Contacts' || !isset ($_POST['listId'])) {
             throw new CHttpException (400, Yii::t('app', 'Bad Request'));

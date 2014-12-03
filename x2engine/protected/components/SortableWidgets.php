@@ -78,12 +78,12 @@ class SortableWidgets extends CJuiWidget {
                             if(response === 'success') {
                                 var link = $('#widget_'+widget+
                                     ' .portlet-minimize a.portlet-minimize-button');
-                                var newLink = ($(link).find('img').attr('class')=='expand-widget') ?
-                                    '<img src=\"".$themeURL."/images/icons/Collapse_Widget.png\"' + 
-                                      'class=\'collapse-widget\' />' : 
+                                var newLink = ($(link).find('span').hasClass('expand-widget')) ?
+                                    '<span '+ 
+                                      'class=\"fa fa-caret-down collapse-widget\" ></span>' : 
                                     // toggle link between [+] and [-]
-                                    '<img src=\"".$themeURL."/images/icons/Expand_Widget.png\" ' +
-                                      'class=\'expand-widget\'/>';            
+                                    '<span '+
+                                      'class=\"fa fa-caret-left expand-widget\"></span>';            
                                 link.html(newLink);
 
                                 // slide widget open or closed
@@ -133,15 +133,15 @@ class SortableWidgets extends CJuiWidget {
 
                 $minimizeLink = CHtml::link(
                     $visible ? 
-                        CHtml::image(
-                            $themeURL.'/images/icons/Collapse_Widget.png', '',
-                            array('class' => 'collapse-widget')) : 
-                        CHtml::image(
-                            $themeURL.'/images/icons/Expand_Widget.png', '',
-                            array('class' => 'expand-widget'))
+                        CHtml::tag('span',
+                            array('class' => 'fa fa-caret-down collapse-widget'), '') : 
+
+                        CHtml::tag('span',
+                            array('class' => 'fa fa-caret-left expand-widget'), '')
+
                     , '#', array('class' => 'portlet-minimize-button')
                     ).' '.CHtml::link(
-                        CHtml::image($themeURL.'/images/icons/Close_Widget.png'), '#',
+                        '<i class="fa fa-times"></i>', '#',
                         array(
                             'onclick' => "$('#widget_$class').hideWidgetRight(); return false;",
                             'class' => 'portlet-close-button'
@@ -193,10 +193,10 @@ class SortableWidgets extends CJuiWidget {
                                 $(\'#widget-dropdown a\').css("text-align", "none");
                                 $(\'#widget-dropdown a\').css("text-align", "center !important");
                              </script>
-                            <span id="gear-img-container" style="float:left">
-                                <img src="'.Yii::app()->theme->baseUrl.'/images/widgets.png" 
+                            <span id="gear-img-container" class="gear-img-container fa fa-cog fa-lg" style="width: 18px; height: 18px">
+                                <span
                                  style="opacity:0.3" onmouseout="this.style.opacity=0.3;"
-                                 onmouseover="this.style.opacity=1" />
+                                 onmouseover="this.style.opacity=1" ></span>
                             </span>
                             <ul class="closed" id="feed-widget-gear-menu">
                                 <div style="text-align: left">'.
@@ -210,7 +210,7 @@ class SortableWidgets extends CJuiWidget {
                                 <div id="bottomUp" style="font-weight:normal; float: left">'.
                                     Yii::t('app','Bottom Up').
                                 '</div>
-                                <hr>
+                                <!--hr>
                                 <div style="text-align: left">'.
                                     Yii::t('app','Background Color').
                                 '</div>
@@ -218,7 +218,7 @@ class SortableWidgets extends CJuiWidget {
                                     CHtml::textField( 
                                         'widgets-activity-feed-widget-bg-color',
                                         $activityFeedWidgetBgColor).
-                                '</colorPicker>
+                                '</colorPicker-->
                             </ul>';
                     }elseif($class == "MediaBox" && Yii::app()->settings->googleIntegration){
                         $auth = new GoogleAuthenticator();
@@ -234,12 +234,16 @@ class SortableWidgets extends CJuiWidget {
                                 </span>
                                 <ul class="closed" id="media-widget-gear-menu">
                                     <div style="text-align: left">'.
-                                        Yii::t('app','Media Widget Settings').
+                                        Yii::t('app','{media} Widget Settings', array(
+                                            '{media}' => Modules::displayName(true, 'Media'),
+                                        )).
                                     '</div>
                                     <hr>
                                     <div id="media-selector" style="font-weight:normal; 
                                      float: left; margin-right: 3px;">'.
-                                        Yii::t('app','X2 Media').
+                                         Yii::t('app','X2 {media}', array(
+                                            '{media}' => Modules::displayName(true, 'Media'),
+                                         )).
                                     '</div>
                                     <div id="drive-selector" style="font-weight:normal; 
                                      float: left">'.

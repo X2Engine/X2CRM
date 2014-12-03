@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
+Yii::import('application.components.ThemeGenerator.LoginThemeHelper');
 /**
  * For code shared between mobile and full app site controllers
  *
@@ -52,6 +52,7 @@ class CommonSiteControllerBehavior extends CBehavior {
         Session::cleanUpSessions();
 
         $ip = $this->owner->getRealIp();
+        
         $userModel = $model->getUser();
         $isRealUser = $userModel instanceof User;
         $effectiveUsername = $isRealUser ? $userModel->username : $model->username;
@@ -82,42 +83,45 @@ class CommonSiteControllerBehavior extends CBehavior {
         /* get the number of failed login attempts from this IP within timeout interval. If the 
         number of login attempts exceeds maximum, display captcha */
         $badAttemptsRefreshTimeout = 900;
-        $maxFailedLoginAttemptsPerIP = 100; 
-        $badAttemptsWithThisIp = Yii::app()->db->createCommand(
-            'SELECT SUM(status) FROM x2_sessions where lastUpdated > :cutoff GROUP BY ip')
-            ->queryScalar(array (
-                ':cutoff' => time () - $badAttemptsRefreshTimeout
-            ));
-
+        $maxFailedLoginAttemptsPerIP = 100;
+        $maxLoginsBeforeCaptcha = 5;
+        
+        $this->pruneTimedOutBans();
+        $failedLoginRecord = FailedLogins::model()->findByPk ($ip);
+        $badAttemptsWithThisIp = ($failedLoginRecord) ? $failedLoginRecord->attempts : 0;
+        if ($badAttemptsWithThisIp >= $maxFailedLoginAttemptsPerIP) {
+            throw new CHttpException (403, Yii::t('app',
+                'You are not authorized to use this application'));
+        }
         // if this client has already tried to log in, increment their attempt count
-        if($session === null){
+        if ($session === null) {
             $session = new Session;
             $session->id = $sessionId;
             $session->user = $model->getSessionUserName();
             $session->lastUpdated = time();
             $session->status = 0;
             $session->IP = $ip;
-        }else{
+        } else {
             $session->lastUpdated = time();
             $session->user = $model->getSessionUserName();
-            if($session->status < -1) {
-                $model->useCaptcha = true;
-                if($session->status < -2)
-                    $model->setScenario('loginWithCaptcha');
-            }
-        }
-
-        if ($badAttemptsWithThisIp > $maxFailedLoginAttemptsPerIP) {
-            $model->useCaptcha = true;
-            $session->status = -2;
         }
 
         if($isActiveUser === false){
             $model->verifyCode = ''; // clear captcha code
             $model->validate (); // validate captcha if it's being used
+            $this->recordFailedLogin ($ip);
             $session->save();
+            if ($badAttemptsWithThisIp + 1 >= $maxFailedLoginAttemptsPerIP) {
+                throw new CHttpException (403, Yii::t('app',
+                    'You are not authorized to use this application'));
+            } else if ($badAttemptsWithThisIp >= $maxLoginsBeforeCaptcha - 1) {
+                $model->useCaptcha = true;
+                $model->setScenario('loginWithCaptcha');
+                $session->status = -2;
+            }
         }else{
             if($model->validate() && $model->login()){  // user successfully logged in
+                
                 if($model->rememberMe){
                     foreach(array('username','rememberMe') as $attr) {
                         // Expires in 30 days
@@ -148,6 +152,17 @@ class CommonSiteControllerBehavior extends CBehavior {
                 if(YII_DEBUG && EmailDeliveryBehavior::DEBUG_EMAIL)
                     Yii::app()->session['debugEmailWarning'] = 1;
 
+                // if ( isset($_POST['themeName']) ) {
+                //     $profile = X2Model::model('Profile')->findByPk(Yii::app()->user->id);
+                //     $profile->theme = array_merge( 
+                //         $profile->theme, 
+                //         ThemeGenerator::loadDefault( $_POST['themeName'])
+                //     );
+                //     $profile->save();
+                // }
+
+                LoginThemeHelper::login();
+
                 if ($isMobile) {
                     $cookie = new CHttpCookie('x2mobilebrowser', 'true'); // create cookie
                     $cookie->expire = time() + 31104000; // expires in 1 year
@@ -162,12 +177,46 @@ class CommonSiteControllerBehavior extends CBehavior {
                     }
                 }
 
+
             } else{ // login failed
                 $model->verifyCode = ''; // clear captcha code
+                $this->recordFailedLogin ($ip);
                 $session->save();
+                if ($badAttemptsWithThisIp + 1 >= $maxFailedLoginAttemptsPerIP) {
+                    throw new CHttpException (403, Yii::t('app',
+                        'You are not authorized to use this application'));
+                } else if ($badAttemptsWithThisIp >= $maxLoginsBeforeCaptcha - 1) {
+                    $model->useCaptcha = true;
+                    $model->setScenario('loginWithCaptcha');
+                    $session->status = -2;
+                }
             }
         }
         $model->rememberMe = false;
     }
+
+    public function recordFailedLogin($ip) {
+        $record = FailedLogins::model()->findByPk ($ip);
+        if ($record) {
+            $record->attempts++;
+        } else {
+            $record = new FailedLogins;
+            $record->IP = $ip;
+            $record->attempts = 1;
+        }
+        $record->lastAttempt = time();
+        $record->save();
+    }
+
+    private function pruneTimedOutBans() {
+        $badAttemptsRefreshTimeout = 900;
+        
+        Yii::app()->db->createCommand()
+            ->delete ('x2_failed_logins', 'lastAttempt < :timeout', array(
+                ':timeout' => time() - ($badAttemptsRefreshTimeout * 60)
+            ));
+    }
+
+    
 }
 

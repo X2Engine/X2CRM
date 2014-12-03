@@ -36,13 +36,14 @@
 ?>
 
 <?php
-$this->actionMenu = $this->formatMenu(array(
-    array('label' => Yii::t('calendar', 'Calendar'), 'url' => array('index')),
-    array('label' => Yii::t('calendar', 'My Calendar Permissions'), 'url' => array('myCalendarPermissions')),
-//	array('label'=>Yii::t('calendar','List'),'url'=>array('list')),
-//	array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
-    array('label' => Yii::t('calendar', 'Sync My Actions To Google Calendar')),
-        ));
+
+$actionsTitle = Modules::displayName(true, "Actions");
+
+$menuOptions = array(
+    'index', 'myPermissions', 'sync',
+);
+$this->insertMenu($menuOptions);
+
 ?>
 
 <?php
@@ -90,17 +91,24 @@ $(function() {
                     if(isset($syncGoogleCalendarName) && $syncGoogleCalendarName){ 
                         echo Yii::t(
                             'calendar',
-                            'Your actions are being synced to the Google Calendar '.
+                            'Your {actions} are being synced to the Google Calendar '.
                             '"{calendarName}".',
-                            array('{calendarName}' => $syncGoogleCalendarName)); 
+                            array(
+                                '{calendarName}' => $syncGoogleCalendarName,
+                                '{actions}' => lcfirst($actionsTitle),
+                            )); 
                     ?> <br />
                     <?php } 
                     echo CHtml::link(
-                        Yii::t('calendar', "Don't Sync My Actions To Google Calendar"),
+                        Yii::t('calendar', "Don't Sync My {actions} To Google Calendar", array(
+                            '{actions}' => $actionsTitle,
+                        )),
                         $this->createUrl('').'?unlinkGoogleCalendar'); 
                 }else{ 
                     echo CHtml::link(
-                        Yii::t('calendar', "Sync My Actions To Google Calendar"),
+                        Yii::t('calendar', "Sync My {actions} To Google Calendar", array(
+                            '{actions}' => $actionsTitle,
+                        )),
                         $auth->getAuthorizationUrl(null)); 
                 } 
             }else{

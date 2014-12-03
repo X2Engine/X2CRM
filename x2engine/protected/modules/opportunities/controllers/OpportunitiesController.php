@@ -424,4 +424,106 @@ class OpportunitiesController extends x2base {
         $this->renderPartial('qtip', array('model' => $model));
     }
 
+    /**
+     * Create a menu for Opportunities
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
+     */
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Opportunities = Modules::displayName();
+        $Opportunity = Modules::displayName(false);
+        $modelId = isset($model) ? $model->id : 0;
+
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'index', 'create', 'view', 'edit', 'share', 'delete', 'attach', 'import', 'export', 'quick',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'index',
+                'label'=>Yii::t('opportunities','{opportunities} List', array(
+                    '{opportunities}'=>$Opportunities,
+                )),
+                'url'=>array('index')
+            ),
+            array(
+                'name'=>'create',
+                'label'=>Yii::t('opportunities','Create {opportunity}', array(
+                    '{opportunity}'=>$Opportunity,
+                )),
+                'url'=>array('create')
+            ),
+            array(
+                'name'=>'view',
+                'label'=>Yii::t('opportunities','View'),
+                'url'=>array('view','id'=>$modelId)
+            ),
+            array(
+                'name'=>'edit',
+                'label'=>Yii::t('opportunities','Edit {opportunity}', array(
+                    '{opportunity}'=>$Opportunity,
+                )),
+                'url'=>array('update', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'share',
+                'label'=>Yii::t('accounts','Share {opportunity}', array(
+                    '{opportunity}'=>$Opportunity,
+                )),
+                'url'=>array('shareOpportunity','id'=>$modelId)
+            ),
+            array(
+                'name'=>'delete',
+                'label'=>Yii::t('opportunities','Delete'),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'submit'=>array('delete','id'=>$modelId),
+                    'confirm'=>'Are you sure you want to delete this item?')
+            ),
+            array(
+                'name'=>'attach',
+                'label'=>Yii::t('app','Attach A File/Photo'),
+                'url'=>'#',
+                'linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')
+            ),
+            array(
+                'name'=>'quotes',
+                'label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)',
+                'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
+            array(
+                'name'=>'import',
+                'label'=>Yii::t('opportunities', 'Import {opportunities}', array(
+                    '{opportunities}'=>$Opportunities,
+                )),
+                'url'=>array('admin/importModels', 'model'=>'Opportunity'),
+            ),
+            array(
+                'name'=>'export',
+                'label'=>Yii::t('opportunities', 'Export {opportunities}', array(
+                    '{opportunities}'=>$Opportunities,
+                )),
+                'url'=>array('admin/exportModels', 'model'=>'Opportunity'),
+            ),
+            array(
+                'name'=>'quick',
+                'label'=>Yii::t('app', 'Quick Create'),
+                'url'=>array('/site/createRecords', 'ret'=>'opportunities'),
+                'linkOptions'=>array(
+                    'id'=>'x2-create-multiple-records-button',
+                    'class'=>'x2-hint',
+                    'title'=>Yii::t('app', 'Create a {contact}, {account}, and {opportunity}.', array(
+                        '{opportunity}'=>$Opportunity,
+                        '{contact}'=>Modules::displayName(false, "Contacts"),
+                        '{account}'=>Modules::displayName(false, "Accounts"),
+                    )))
+            )
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
+    }
 }

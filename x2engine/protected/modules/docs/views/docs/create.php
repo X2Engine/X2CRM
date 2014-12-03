@@ -37,7 +37,9 @@
 if($this->action->id == 'createEmail'){
     $title = Yii::t('docs', 'Create Email Template');
 }else if($this->action->id == 'createQuote'){
-    $title = Yii::t('docs', 'Create Quote Template');
+    $title = Yii::t('docs', 'Create {quote} Template', array(
+        '{quote}' => Modules::displayName(false, "Quotes"),
+    ));
 }else{
     $title = Yii::t('docs', 'Create Document');
 }

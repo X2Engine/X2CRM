@@ -34,11 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('accounts','All Accounts'), 'url'=>array('index')),
-	array('label'=>Yii::t('accounts','Create Account')),
-));
+$menuOptions = array('all', 'create');
+$this->insertMenu($menuOptions);
+
 ?>
-<div class="page-title icon accounts"><h2><?php echo Yii::t('accounts','Create Account'); ?></h2></div>
+<div class="page-title icon accounts"><h2><?php echo Yii::t('accounts','Create {module}', array('{module}'=>Modules::displayName(false))); ?></h2></div>
 
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'accounts')); ?>

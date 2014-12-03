@@ -6,7 +6,214 @@ $uninstallPla = implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','uninstall-pla.
 $formLayouts = array(
     'INSERT INTO x2_form_layouts
         (id,model,version,layout,defaultView,defaultForm,createDate,lastUpdated) VALUES
-        (14,"Campaign","View","{\"version\":\"1.2\",\"sections\":[{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_name\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"230\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_description\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"39\",\"width\":\"483\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_listId\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"NaN\"},{\"name\":\"formItem_type\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"135\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":true,\"title\":\"Email Template\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_subject\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"226\",\"tabindex\":\"0\"},{\"name\":\"formItem_template\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"22\",\"width\":\"133\",\"tabindex\":\"0\"},{\"name\":\"formItem_content\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"259\",\"width\":\"478\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_active\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"},{\"name\":\"formItem_complete\",\"labelType\":\"left\",\"readOnly\":\"1\",\"height\":\"22\",\"width\":\"17\",\"tabindex\":\"0\"}]}]}]},{\"collapsible\":false,\"title\":\"\",\"rows\":[{\"cols\":[{\"width\":572,\"items\":[{\"name\":\"formItem_assignedTo\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"},{\"name\":\"formItem_visibility\",\"labelType\":\"left\",\"readOnly\":\"0\",\"height\":\"24\",\"width\":\"145\",\"tabindex\":\"0\"}]}]}]}]}","1","0","' . time() . '","' . time() . '")'
+        (14,"Campaign","View",\'
+{
+    "sections": [
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_name", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "230"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": ""
+        }, 
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "39", 
+                                    "labelType": "left", 
+                                    "name": "formItem_description", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "483"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": ""
+        }, 
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_listId", 
+                                    "readOnly": "0", 
+                                    "tabindex": "NaN", 
+                                    "width": "135"
+                                }, 
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_type", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "135"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": ""
+        }, 
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_enableRedirectLinks", 
+                                    "readOnly": "undefined", 
+                                    "tabindex": "undefined", 
+                                    "width": "154"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": ""
+        }, 
+        {
+            "collapsible": true, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_subject", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "226"
+                                }, 
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_template", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "133"
+                                }, 
+                                {
+                                    "height": "259", 
+                                    "labelType": "left", 
+                                    "name": "formItem_content", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "478"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": "Email Template"
+        }, 
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_active", 
+                                    "readOnly": "1", 
+                                    "tabindex": "0", 
+                                    "width": "17"
+                                }, 
+                                {
+                                    "height": "22", 
+                                    "labelType": "left", 
+                                    "name": "formItem_complete", 
+                                    "readOnly": "1", 
+                                    "tabindex": "0", 
+                                    "width": "17"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": ""
+        }, 
+        {
+            "collapsible": false, 
+            "rows": [
+                {
+                    "cols": [
+                        {
+                            "items": [
+                                {
+                                    "height": "24", 
+                                    "labelType": "left", 
+                                    "name": "formItem_assignedTo", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "145"
+                                }, 
+                                {
+                                    "height": "24", 
+                                    "labelType": "left", 
+                                    "name": "formItem_visibility", 
+                                    "readOnly": "0", 
+                                    "tabindex": "0", 
+                                    "width": "145"
+                                }
+                            ], 
+                            "width": 572
+                        }
+                    ]
+                }
+            ], 
+            "title": ""
+        }
+    ], 
+    "version": "1.2"
+}
+\',"1","0","' . time() . '","' . time() . '")'
 );
 
 return array(

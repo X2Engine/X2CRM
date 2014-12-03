@@ -111,9 +111,9 @@ CREATE TABLE x2_subscribe_contacts(
 ) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules`
-(`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
+(`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable, enableRecordAliasing)
 VALUES
-('contacts', 'Contacts', 1, 1, 1, 1, 0, 0, 0);
+('contacts', 'Contacts', 1, 1, 1, 1, 0, 0, 0, 1);
 /*&*/
 INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)
@@ -149,7 +149,7 @@ VALUES
 ('Contacts', 'updatedBy',      'Updated By',             0, 0, 'varchar',    0, 1, NULL,         0, 0, '',       0, 1, NULL),
 ('Contacts', 'leadSource',     'Lead Source',            0, 0, 'dropdown',   0, 0, '103',        0, 0, '',       0, 1, NULL),
 ('Contacts', 'leadDate',       'Lead Date',              0, 0, 'date',       0, 0, NULL,         0, 0, '',       0, 1, NULL),
-('Contacts', 'priority',       'Priority',               0, 0, 'varchar',    0, 0, NULL,         0, 0, '',       0, 1, NULL),
+("Contacts", "priority",          "Priority",         0, 0, "dropdown",    0, 0, 124, 0, 0, "",     0, 1, NULL),
 ('Contacts', 'rating',         'Confidence',             0, 0, 'rating',     0, 0, NULL,         0, 0, '',       0, 1, NULL),
 ('Contacts', 'createDate',     'Create Date',            0, 0, 'dateTime',   0, 1, NULL,         0, 0, '',       0, 1, NULL),
 ('Contacts', 'facebook',       'Facebook',               0, 0, 'url',        0, 0, 'facebook',   0, 0, '',       0, 1, NULL),

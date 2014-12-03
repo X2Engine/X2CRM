@@ -43,7 +43,12 @@ $dragAndDropView = isset ($parentView) && $parentView === '_dragAndDropView';
     <?php
     if (!$dragAndDropView) {
     ?>
-    <h2><?php echo Yii::t('workflow', 'Process Status'); ?></h2>
+    <h2>
+        <?php
+        echo Yii::t('workflow', '{process} Status', array(
+            '{process}' => Modules::displayName(false),
+        )); ?>
+    </h2>
     <?php 
     }
     $form = $this->beginWidget('CActiveForm', array(
@@ -107,7 +112,9 @@ $dragAndDropView = isset ($parentView) && $parentView === '_dragAndDropView';
     <div class="row row-no-title">
         <div class="cell">
             <?php 
-            echo CHtml::label(Yii::t('workflow','User'), 'users');
+            echo CHtml::label(Yii::t('workflow','{user}', array(
+                '{user}' => Modules::displayName(false, "Users"),
+            )), 'users');
             echo CHtml::dropDownList(
                 'users',$users,
                 array_merge(array(''=>Yii::t('app','All')),User::getNames())); ?>

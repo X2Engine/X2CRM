@@ -1,0 +1,235 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/* line 22, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#per-stage-view-container-first {
+  overflow-x: scroll;
+}
+
+/* line 26, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#title-bar-workflow-select {
+  height: 26px;
+  max-width: 250px;
+  margin-bottom: 0px;
+  position: relative;
+  top: -1px;
+}
+
+/* line 34, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#workflow-model-type-filter + button {
+  margin-top: 2px;
+}
+
+/* line 39, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#stage-data-summary > {
+  h3, span {
+    display: inline-block;
+  }
+  h3 {
+    margin-right: 8px;
+  }
+  span {
+    margin-right: 6px;
+  }
+}
+
+/* line 42, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+/* line 45, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+/* line 50, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#data-summary-box {
+  box-sizing: border-box;
+  width: 100%;
+  display: block;
+  clear: both;
+  padding-left: 5px;
+  padding-bottom: 5px;
+}
+
+/* line 59, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+.row-no-title {
+  margin-top: 15px;
+  margin-bottom: 4px;
+}
+
+/***********************************************************************
+* funnel 
+***********************************************************************/
+/* line 68, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+.funnel-stage-count {
+  cursor: pointer;
+}
+
+/* line 72, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+.stage-name-link, .funnel-stage-value {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* line 77, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+.funnel-total-records, .funnel-total-value {
+  font-size: 18px;
+}
+
+/* line 81, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#funnel-container {
+  position: relative;
+  width: 248px;
+  float: left;
+  margin-left: 140px;
+  margin-right: 208px;
+  margin-top: 17px;
+  margin-bottom: 26px;
+}
+
+/***********************************************************************
+* ui switch buttons 
+***********************************************************************/
+/* line 95, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#per-stage-view-button {
+  height: 26px;
+  box-sizing: border-box;
+  > div {
+    width: 19px;
+    height: 2px;
+    border-radius: 2px;
+    background-color: #7e7b7b;
+    margin: -2px 0 5px 0;
+    position: relative;
+    top: 9px;
+  }
+}
+
+/* line 96, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+/* line 109, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#drag-and-drop-view-button {
+  height: 26px;
+  box-sizing: border-box;
+  > div {
+    display: inline-block;
+    width: 2px;
+    height: 16px;
+    border-radius: 2px;
+    background-color: #7e7b7b;
+    margin: 4px 0 5px 0;
+  }
+}
+
+/* line 112, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+/* line 122, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#content {
+  background: none !important;
+  border: none !important;
+}
+
+/* line 127, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#content-container-inner {
+  border: none !important;
+}
+
+/* line 131, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#process-status-container {
+  width: 440px;
+  margin-left: 6px;
+  overflow-x: hidden;
+  border: none;
+}
+
+/* line 138, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#drag-and-drop-view-button {
+  margin-left: -4px;
+}
+
+/* line 144, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+.grid-view table.items {
+  margin-top: 0 !important;
+}
+
+/* line 148, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+#process-status-container {
+  margin-bottom: 0 !important;
+}
+
+/* line 152, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+.grid-view .x2-layout-island {
+  margin-top: 4px;
+  > h2 {
+    margin-top: 6px;
+    margin-left: 6px;
+  }
+}
+
+/* line 154, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+/* line 160, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+.grid-container {
+  margin-top: 5px;
+}
+
+/***********************************************************************
+* funnel 
+***********************************************************************/
+/* line 168, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
+
+.stage-name-link {
+  max-width: 200px;
+  min-width: 125px;
+  position: absolute;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

@@ -35,16 +35,10 @@
  *****************************************************************************************/
 
 $authParams['X2Model'] = $model;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','View'),'url'=>array('view', 'id'=>$model->id)),
-    array('label'=>Yii::t('contacts','Edit Contact'),'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('contacts','Share Contact')),
-	array('label'=>Yii::t('contacts','View Relationships'),'url'=>array('viewRelationships','id'=>$model->id)),
-	array('label'=>Yii::t('contacts','Delete Contact'),'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-),$authParams);
+$menuOptions = array(
+    'all', 'lists', 'create', 'view', 'edit', 'share', 'delete',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
@@ -52,7 +46,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/email
 
 Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
 ?>
-<div class="page-title icon contacts"><h2><span class="no-bold"><?php echo Yii::t('contacts','Share Contact');?>:</span> <?php echo CHtml::encode($model->firstName." ".$model->lastName);?></h2></div>
+<div class="page-title icon contacts"><h2><span class="no-bold"><?php echo Yii::t('contacts','Share {module}', array('{module}'=>Modules::displayName(false)));?>:</span> <?php echo CHtml::encode($model->firstName." ".$model->lastName);?></h2></div>
 <?php
 if(!empty($status)) {
 	$index = array_search('200',$status);
@@ -81,7 +75,7 @@ $form = $this->beginWidget('CActiveForm', array(
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
 ?>
-<h2><?php echo Yii::t('contacts','Contact:'); ?> <b><?php echo CHtml::encode($model->firstName.' '.$model->lastName); ?></b></h2>
+<h2><?php echo Yii::t('contacts','{module}:', array('{module}'=>Modules::displayName(false))); ?> <b><?php echo CHtml::encode($model->firstName.' '.$model->lastName); ?></b></h2>
 <?php
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts'));
 $this->endWidget(); ?>

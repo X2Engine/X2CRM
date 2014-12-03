@@ -1208,4 +1208,72 @@ class WorkflowController extends x2base {
         }
     }
 
+    /**
+     * Create a menu for Process
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
+     */
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Processes = Modules::displayName();
+        $Process = Modules::displayName(false);
+        $modelId = isset($model) ? $model->id : 0;
+
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'index', 'create', 'edit', 'view', 'funnel', 'pipeline', 'delete',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'index',
+                'label'=>Yii::t('workflow','All {processes}', array(
+                    '{processes}' => $Processes,
+                )),
+                'url'=>array('index')
+            ),
+            array(
+                'name'=>'create',
+                'label'=>Yii::t('app','Create'),
+                'url'=>array('create'),
+                'visible'=>Yii::app()->params->isAdmin
+            ),
+            array(
+                'name'=>'edit',
+                'label'=>Yii::t('workflow','Edit {process}', array(
+                    '{process}' => $Process,
+                )), 
+                'url'=>array('update', 'id'=>$modelId), 
+                'visible'=>Yii::app()->params->isAdmin
+            ),
+            array(
+                'name'=>'funnel',
+                'label'=>Yii::t('app','Funnel View'),
+                'url'=>array('view', 'id'=>$modelId, 'perStageWorkflowView'=>'true'),
+                'linkOptions' => array ('id' => 'funnel-view-menu-item'),
+            ),
+            array(
+                'name'=>'pipeline',
+                'label'=>Yii::t('app','Pipeline View'),
+                'url'=>array('view', 'id'=>$modelId, 'perStageWorkflowView'=>'false'),
+                'linkOptions' => array ('id' => 'pipeline-view-menu-item'),
+            ),
+            array(
+                'name'=>'delete',
+                'label'=>Yii::t('workflow','Delete {process}', array(
+                    '{process}' => $Process,
+                )), 
+                'url'=>'#', 
+                'linkOptions'=>array('submit'=>array('delete','id'=>$modelId),
+                'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 
+                'visible'=>Yii::app()->params->isAdmin
+            ),
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
+    }
 }
+

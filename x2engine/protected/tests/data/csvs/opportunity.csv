@@ -1,0 +1,3 @@
+id,name,nameId,accountName,contactName,quoteAmount,salesStage,expectedCloseDate,probability,leadSource,description,assignedTo,createDate,visibility,associatedContacts,lastUpdated,lastActivity,updatedBy
+1,One,One_1,,,123.00,Won,"Thu Sep 18 17:00:00 PDT 2014",99,,,admin,"September 16, 2014 11:15:13 PM",Public,,"September 16, 2014 11:15:13 PM","September 16, 2014 11:15:13 PM",admin
+2,Two,Two_2,,,0.00,Lost,,0,"Walk In","Failed op",admin,"September 16, 2014 11:15:36 PM",Public,,"September 16, 2014 11:15:36 PM","September 16, 2014 11:15:36 PM",admin

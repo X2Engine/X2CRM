@@ -34,10 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('groups','Group List')),
-	array('label'=>Yii::t('groups','Create Group'), 'url'=>array('create')),
-));
+$menuOptions = array(
+    'index', 'create',
+);
+$this->insertMenu($menuOptions);
 
 ?>
 <div class="flush-grid-view">
@@ -46,8 +46,9 @@ $this->actionMenu = $this->formatMenu(array(
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'roles-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title icon groups"><h2>'.Yii::t('groups','Groups').'</h2><div class="title-bar">'
-		.'{summary}</div></div>{items}{pager}',
+	'template'=> '<div class="page-title icon groups"><h2>'.Yii::t('groups','{groups}', array(
+            '{groups}' => Modules::displayName(),
+        )).'</h2><div class="title-bar">{summary}</div></div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	'columns'=>array(
 		array(
@@ -57,7 +58,9 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'type'=>'raw',
 		),
 		array(
-            'header'=>Yii::t('groups','Users'),
+            'header'=>Yii::t('groups','{users}', array(
+                '{users}' => Modules::displayName(true, "Users")
+            )),
 			'name'=>'users',
 			'value'=>'count(GroupToUser::model()->findAllByAttributes(array("groupId"=>$data->id)))',
 			'type'=>'raw',

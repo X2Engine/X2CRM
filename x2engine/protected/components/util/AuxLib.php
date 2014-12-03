@@ -274,12 +274,9 @@ class AuxLib {
     }
 
     public static function coerceToArray (&$arr) {
-        if (is_string ($arr)) {
+        if (!is_array ($arr)) {
             $arr = array ($arr);
-        } else if (is_array ($arr)) {
-        } else {
-            throw new CException ('Invalid argument type');
-        }
+        } 
     }
 
     /**
@@ -288,7 +285,7 @@ class AuxLib {
      *  debug_backtrace does have an optional limit argument, but it wasn't introduced until php
      *  5.4.0.
      */
-    public static function printStackTrace ($limit=null) {
+    public static function trace ($limit=null) {
         if ($limit !== null) {
             /**/AuxLib::debugLogR (
                 array_slice (debug_backtrace (DEBUG_BACKTRACE_IGNORE_ARGS), 0, $limit));

@@ -40,6 +40,7 @@
     Powered by X2Engine -->
 	<b>X2Engine <?php echo Yii::app()->params->version; ?>
 	<?php echo Yii::app()->editionLabel; ?></b> |
+    <?php echo CHtml::link('X2Touch',array('/x2touch')); ?> | 
 	<?php echo CHtml::link(Yii::t('app','About'),array('/site/page','view'=>'about')); ?> | 
 	
 	<a href="http://www.x2engine.com/">Powered by X2Engine</a>. <br>Copyright &copy; 2011-<?php echo date('Y'); ?> X2Engine Inc.

@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -89,7 +90,7 @@ class AdminController extends Controller {
      *
      * @return array An array of actions to include.
      */
-    public function actions(){
+    public function actions() {
         return array_merge($this->webUpdaterActions, array(
             
             'automateTranslation' => array(
@@ -110,19 +111,19 @@ class AdminController extends Controller {
      * files but do not have corresponding translations. Since the advent of the
      * translation automation feature, this method should be largely unnecessary.
      */
-    public function actionCalculateMissingTranslations(){
+    public function actionCalculateMissingTranslations() {
         $untranslated = array();
         $languages = scandir('protected/messages');
-        foreach($languages as $lang){
-            if(!in_array($lang, array('template', '.', '..'))){
+        foreach ($languages as $lang) {
+            if (!in_array($lang, array('template', '.', '..'))) {
                 $untranslated[$lang] = 0;
-                $files = scandir('protected/messages/'.$lang);
-                foreach($files as $file){
-                    if($file != '.' && $file != '..'){
-                        $translations = array_values(include('protected/messages/'.$lang.'/'.$file));
-                        foreach($translations as $message){
-                            if(empty($message)){
-                                $untranslated[$lang]++;
+                $files = scandir('protected/messages/' . $lang);
+                foreach ($files as $file) {
+                    if ($file != '.' && $file != '..') {
+                        $translations = array_values(include('protected/messages/' . $lang . '/' . $file));
+                        foreach ($translations as $message) {
+                            if (empty($message)) {
+                                $untranslated[$lang] ++;
                             }
                         }
                     }
@@ -142,30 +143,30 @@ class AdminController extends Controller {
      * As of the advent of the translation automation function, redundancy
      * cleanup is a part of that process and this method should be unnecessary.
      */
-    public function actionCalculateTranslationRedundancy(){
+    public function actionCalculateTranslationRedundancy() {
         $max = array('file1' => 'null', 'file2' => 'null', 'redundancy' => 0);
         $files = scandir('protected/messages/template');
         $duplicates = array();
         $languageList = array();
         $totalWords = array();
         $untranslated = 0;
-        foreach($files as $file){
-            if($file != '.' && $file != '..'){
+        foreach ($files as $file) {
+            if ($file != '.' && $file != '..') {
                 $languageList[$file] = array_keys(include("protected/messages/template/$file"));
             }
         }
         $keys = array_keys($languageList);
-        for($i = 0; $i < count($languageList); $i++){
+        for ($i = 0; $i < count($languageList); $i++) {
             $totalWords = array_merge($totalWords, $languageList[$keys[$i]]);
-            for($j = $i + 1; $j < count($languageList); $j++){
+            for ($j = $i + 1; $j < count($languageList); $j++) {
                 $intersect = array_intersect($languageList[$keys[$i]], $languageList[$keys[$j]]);
-                if(!empty($intersect)){
+                if (!empty($intersect)) {
                     $duplicates = array_unique(array_merge($duplicates, $intersect));
                     /**/printR($intersect);
                     $unique = count($languageList[$keys[$i]]) + count($languageList[$keys[$j]]) - count($intersect);
                     $redundancy = round(count($intersect) / $unique * 100, 2);
-                    echo "Between ".$keys[$i]." and ".$keys[$j].": ".$redundancy."% items identical.<br />";
-                    if($redundancy > $max['redundancy']){
+                    echo "Between " . $keys[$i] . " and " . $keys[$j] . ": " . $redundancy . "% items identical.<br />";
+                    if ($redundancy > $max['redundancy']) {
                         $max['file1'] = $keys[$i];
                         $max['file2'] = $keys[$j];
                         $max['redundancy'] = $redundancy;
@@ -173,9 +174,9 @@ class AdminController extends Controller {
                 }
             }
         }
-        echo "<br>The most redundant files are ".$max['file1']." and ".$max['file2']." with a redundancy of ".$max['redundancy']."%<br><br>";
-        echo "There are ".count($duplicates)." entries which occur more than once.<br><br>";
-        echo "There are ".count($totalWords)." entries in the translation files.";
+        echo "<br>The most redundant files are " . $max['file1'] . " and " . $max['file2'] . " with a redundancy of " . $max['redundancy'] . "%<br><br>";
+        echo "There are " . count($duplicates) . " entries which occur more than once.<br><br>";
+        echo "There are " . count($totalWords) . " entries in the translation files.";
     }
 
     /**
@@ -189,7 +190,7 @@ class AdminController extends Controller {
      * relevant controllers must be specified by name in the array at the top
      * of the function.
      */
-    public function actionFindMissingPermissions(){
+    public function actionFindMissingPermissions() {
         $controllers = array(
             'AdminController' => 'application.controllers.AdminController',
             'StudioController' => 'application.controllers.StudioController',
@@ -200,46 +201,70 @@ class AdminController extends Controller {
             'ContactsController' => 'application.modules.contacts.controllers.ContactsController',
             'DocsController' => 'application.modules.docs.controllers.DocsController',
             'GroupsController' => 'application.modules.groups.controllers.GroupsController',
-            'MarketingController' => 'application.modules.marketing.controllers.MarketingController',
+            'MarketingController' => 
+                'application.modules.marketing.controllers.MarketingController',
             'WeblistController' => 'application.modules.marketing.controllers.WeblistController',
             'MediaController' => 'application.modules.media.controllers.MediaController',
-            'OpportunitiesController' => 'application.modules.opportunities.controllers.OpportunitiesController',
+            'OpportunitiesController' => 
+                'application.modules.opportunities.controllers.OpportunitiesController',
             'ProductsController' => 'application.modules.products.controllers.ProductsController',
             'QuotesController' => 'application.modules.quotes.controllers.QuotesController',
+            //'RelationshipsController' => 
+                //'application.controllers.RelationshipsController',
             'ReportsController' => 'application.modules.reports.controllers.ReportsController',
             'ServicesController' => 'application.modules.services.controllers.ServicesController',
             'UsersController' => 'application.modules.users.controllers.UsersController',
             'WorkflowController' => 'application.modules.workflow.controllers.WorkflowController',
             'X2LeadsController' => 'application.modules.x2Leads.controllers.X2LeadsController',
-            'BugReportsController' => 'application.modules.bugReports.controllers.BugReportsController',
+            'BugReportsController' => 
+                'application.modules.bugReports.controllers.BugReportsController',
+             
         );
         $missingPermissions = array();
         $auth = Yii::app()->authManager;
-        foreach($controllers as $class => $controller){
+        foreach ($controllers as $class => $controller) {
             Yii::import($controller);
             $methods = get_class_methods($class); // Grab all functions from the controller
             $arr = explode('Controller', $class);
             $name = $arr[0];
-            if(is_array($methods)){
-                foreach($methods as $method){
-                    if(strpos($method, 'action') === 0 && $method != 'actions'){ // Only look for methods that start with "action"
-                        $method = $name.substr($method, 6);
+            if (is_array($methods)) {
+                foreach ($methods as $method) {
+                    // Only look for methods that start with "action"
+                    if (strpos($method, 'action') === 0 && $method != 'actions') { 
+                        $method = $name . substr($method, 6);
                         $authItem = $auth->getAuthItem($method);
-                        if(is_null($authItem)) // We can't find a permission, add it to the list of missing ones
+                        // We can't find a permission, add it to the list of missing ones
+                        if (is_null($authItem)) 
                             $missingPermissions[] = $method;
                     }
+                }
+            }
+            if (preg_match ('/modules/', $controller)) {
+                $moduleName = preg_replace (
+                    '/application.modules.([^.]+)\..*/', '$1', $controller);
+                $moduleClassName = ucfirst ($moduleName).'Module';
+                Yii::import (preg_replace ('/controller.*/', '*', $controller));
+                $controller = new $class ('', new $moduleClassName ($moduleName, null));
+                $actions = $controller->actions ();
+                foreach ($actions as $actionName => $params) {
+                    $method = $name . ucfirst ($actionName);
+                    $authItem = $auth->getAuthItem($method);
+                    if (is_null($authItem)) 
+                        $missingPermissions[] = $method;
                 }
             }
         }
         /**/printR($missingPermissions);
     }
 
+    
+
     /**
      * View the main admin menu
      */
-    public function actionIndex(){
+    public function actionIndex() {
         //if(isset($_GET['translateMode'])) // Old feature Matthew implemented to better visualize missing translations, no longer used.
-            //Yii::app()->session['translate'] = $_GET['translateMode'] == 1;
+        //Yii::app()->session['translate'] = $_GET['translateMode'] == 1;
         $this->render('index');
     }
 
@@ -253,25 +278,25 @@ class AdminController extends Controller {
      * @return boolean True if the action is allowed to continue, otherwise throw exception.
      * @throws CHttpException Generates a 403 error if authorization fails
      */
-    protected function beforeAction($action = null){
+    protected function beforeAction($action = null) {
         $auth = Yii::app()->authManager;
-        $action = ucfirst($this->getId()).ucfirst($this->getAction()->getId());
+        $action = ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
         $authItem = $auth->getAuthItem($action);
         // Backwards-compatible way (to make updates safe) of determining if the user has admin rights.
         $imAdmin = false;
-        if(Yii::app()->params->hasProperty('isAdmin')){
+        if (Yii::app()->params->hasProperty('isAdmin')) {
             $imAdmin = Yii::app()->user->checkAccess($action) || is_null($authItem) || Yii::app()->params->isAdmin;
-        }else if(version_compare(Yii::app()->params->version, '2.0') >= 0){
+        } else if (version_compare(Yii::app()->params->version, '2.0') >= 0) {
             $imAdmin = Yii::app()->user->checkAccess('AdminIndex') || is_null($authItem);
-        }else{
+        } else {
             $imAdmin = Yii::app()->user->name == 'admin';
         }
-        if($imAdmin){
+        if ($imAdmin) {
             return true;
-        }elseif(Yii::app()->user->isGuest){
+        } elseif (Yii::app()->user->isGuest) {
             Yii::app()->user->returnUrl = Yii::app()->request->requestUri;
             $this->redirect($this->createUrl('/site/login'));
-        }else{
+        } else {
             throw new CHttpException(403, 'You are not authorized to perform this action.');
         }
     }
@@ -303,7 +328,7 @@ class AdminController extends Controller {
      *
      * @return array An array consisting of the filters to be used.
      */
-    public function filters(){
+    public function filters() {
         // return the filter configuration for this controller, e.g.:
         return array(
             //'accessControl',
@@ -340,8 +365,8 @@ class AdminController extends Controller {
      *
      * @return array An array of behaviors to implement.
      */
-    public function behaviors(){
-        if(!isset($this->behaviors)){
+    public function behaviors() {
+        if (!isset($this->behaviors)) {
             $missingClasses = array();
             $behaviors = array();
             $maxTries = 3;
@@ -349,31 +374,31 @@ class AdminController extends Controller {
             $x2planUrl = 'https://x2planet.com/updates/x2engine/protected'; // NOT using UpdaterBehavior.updateServer because that behavior may not yet exist
             $files = array_merge(array_fill_keys(self::$behaviorClasses, 'behavior'), array_fill_keys(self::$dependencies, 'dependency'));
             $tryCurl = in_array(ini_get('allow_url_fopen'), array(0, 'Off', 'off'));
-            foreach($files as $class => $type){
+            foreach ($files as $class => $type) {
                 // First try to download from the X2Engine update server...
                 $path = "components/$class.php";
-                $absPath = Yii::app()->basePath."/$path";
-                if(!file_exists($absPath)){
-                    if(!is_dir(dirname($absPath))){
+                $absPath = Yii::app()->basePath . "/$path";
+                if (!file_exists($absPath)) {
+                    if (!is_dir(dirname($absPath))) {
                         mkdir(dirname($absPath));
                     }
                     $i = 0;
-                    while(!$this->copyRemote("$x2planUrl/$path", $absPath, $tryCurl) && $i < $maxTries){
+                    while (!$this->copyRemote("$x2planUrl/$path", $absPath, $tryCurl) && $i < $maxTries) {
                         $i++;
                     }
                     // Try to download the file from Github...
-                    if($i >= $maxTries){
+                    if ($i >= $maxTries) {
                         $i = 0;
-                        while(!$this->copyRemote("$GithubUrl/$path", $path, $tryCurl) && $i < $maxTries){
+                        while (!$this->copyRemote("$GithubUrl/$path", $path, $tryCurl) && $i < $maxTries) {
                             $i++;
                         }
                     }
                     // Mark the file as a failed download.
-                    if($i >= $maxTries){
+                    if ($i >= $maxTries) {
                         $missingClasses[] = "protected/$path";
                     }
                 }
-                if($type == 'behavior'){
+                if ($type == 'behavior') {
                     $behaviors[$class] = array(
                         'class' => $class
                     );
@@ -383,12 +408,12 @@ class AdminController extends Controller {
             // Display error.
             // Uncomment this next line to test:
             // $missingClasses[] = 'FOO';
-            if(count($missingClasses))
+            if (count($missingClasses))
                 $this->missingClassesException($missingClasses);
 
             // Add extraneous behavior properties:
-            foreach(self::$behaviorProperties as $class => $properties){
-                foreach($properties as $name => $value){
+            foreach (self::$behaviorProperties as $class => $properties) {
+                foreach ($properties as $name => $value) {
                     $behaviors[$class][$name] = $value;
                 }
             }
@@ -405,7 +430,7 @@ class AdminController extends Controller {
      * the admin tab.  This system has been replaced with Yii's built in RBAC
      * which uses {@link AdminController::beforeAction} to determine permissions.
      */
-    public function accessRules(){
+    public function accessRules() {
         /* return array(
           array('allow', // allow authenticated user to perform 'create' and 'update' actions
           'actions' => array('getRoutingType', 'getRole', 'getWorkflowStages', 'download', 'cleanUp', 'sql', 'getFieldData', 'installUpdate'),
@@ -446,9 +471,9 @@ class AdminController extends Controller {
      *
      * @param type $filterChain The filter chain Yii is currently acting on.
      */
-    public function filterClearCache($filterChain){
+    public function filterClearCache($filterChain) {
         $cache = Yii::app()->cache;
-        if(isset($cache))
+        if (isset($cache))
             $cache->flush();
         $filterChain->run();
     }
@@ -457,12 +482,12 @@ class AdminController extends Controller {
      * A filter to clear the authItem cache.
      * @param type $filterChain The filter chain Yii is currently acting on.
      */
-    public function filterClearAuthCache($filterChain){
+    public function filterClearAuthCache($filterChain) {
         // Check for existence of authCache object (for backwards compatibility)
-        if(!is_null(Yii::app()->db->getSchema()->getTable('x2_auth_cache'))){
-            if(Yii::app()->hasComponent('authCache')){
+        if (!is_null(Yii::app()->db->getSchema()->getTable('x2_auth_cache'))) {
+            if (Yii::app()->hasComponent('authCache')) {
                 $authCache = Yii::app()->authCache;
-                if(isset($authCache))
+                if (isset($authCache))
                     $authCache->clear();
             }
         }
@@ -497,7 +522,6 @@ class AdminController extends Controller {
       'mailingList' => $mailingList,
       ));
       } */
-
     /**
      * @deprecated
      * Deprecated method to actually send mass emails.
@@ -532,15 +556,15 @@ class AdminController extends Controller {
      * records have that tag. From here, the admin can mass delete individual tags
      * or remove all tags.
      */
-    public function actionManageTags(){
+    public function actionManageTags() {
         $dataProvider = new CActiveDataProvider('Tags', array(
-                    'criteria' => array(
-                        'group' => 'tag'
-                    ),
-                    'pagination' => array(
-                        'pageSize' => isset($pageSize) ? $pageSize : Profile::getResultsPerPage(),
-                    ),
-                ));
+            'criteria' => array(
+                'group' => 'tag'
+            ),
+            'pagination' => array(
+                'pageSize' => isset($pageSize) ? $pageSize : Profile::getResultsPerPage(),
+            ),
+        ));
 
         $this->render('manageTags', array(
             'dataProvider' => $dataProvider,
@@ -551,12 +575,12 @@ class AdminController extends Controller {
      * This function is called via AJAX by Manage Tags to remove a tag.
      * @param string $tag The name of the tag to be deleted.
      */
-    public function actionDeleteTag($tag){
-        if(!empty($tag)){
-            if($tag != 'all'){
-                $tag = "#".$tag;
+    public function actionDeleteTag($tag) {
+        if (!empty($tag)) {
+            if ($tag != 'all') {
+                $tag = "#" . $tag;
                 X2Model::model('Tags')->deleteAllByAttributes(array('tag' => $tag));
-            }else{
+            } else {
                 X2Model::model('Tags')->deleteAll();
             }
         }
@@ -567,7 +591,7 @@ class AdminController extends Controller {
      * An administrative page to see a list of all current sessions. From here,
      * the admin can toggle visible/invisible or end any user session.
      */
-    public function actionManageSessions(){
+    public function actionManageSessions() {
         $dataProvider = new CActiveDataProvider('Session');
 
         $this->render('manageSessions', array(
@@ -575,18 +599,20 @@ class AdminController extends Controller {
         ));
     }
 
+    
+
     /**
      * An AJAX called function to set a particular session to visible or invisible
      * @param $id The ID of the session to be toggled.
      */
-    public function actionToggleSession($id){
-        if(isset($_GET['id'])){
+    public function actionToggleSession($id) {
+        if (isset($_GET['id'])) {
             $id = $_GET['id'];
             $session = Session::model()->findByPk($id);
-            if(isset($session)){
+            if (isset($session)) {
                 $session->status = !$session->status;
                 $ret = $session->status;
-                if($session->save()){
+                if ($session->save()) {
                     echo $ret;
                 }
             }
@@ -598,7 +624,7 @@ class AdminController extends Controller {
      * logging the user out.
      * @param $id The ID of the session.
      */
-    public function actionEndSession($id){
+    public function actionEndSession($id) {
         echo Session::model()->deleteByPk($id);
     }
 
@@ -612,15 +638,15 @@ class AdminController extends Controller {
      * here. The admin can also click into a session to load the full history
      * of session related activity for that session.
      */
-    public function actionViewSessionLog(){
+    public function actionViewSessionLog() {
         $sessionLog = new CActiveDataProvider('SessionLog', array(
-                    'sort' => array(
-                        'defaultOrder' => 'timestamp DESC',
-                    ),
-                    'pagination' => array(
-                        'pageSize' => Profile::getResultsPerPage()
-                    )
-                ));
+            'sort' => array(
+                'defaultOrder' => 'timestamp DESC',
+            ),
+            'pagination' => array(
+                'pageSize' => Profile::getResultsPerPage()
+            )
+        ));
         $this->render('viewSessionLog', array(
             'dataProvider' => $sessionLog,
         ));
@@ -631,16 +657,16 @@ class AdminController extends Controller {
      * of a particular session, from login to logout.
      * @param $id The ID of the session
      */
-    public function actionViewSessionHistory($id){
+    public function actionViewSessionHistory($id) {
         $sessions = X2Model::model('SessionLog')->findAllByAttributes(array('sessionId' => $id));
         $firstTimestamp = 0;
         $lastTimestamp = 0;
         $str = "<table class='items'><thead><tr><th>User</th><th>Status</th><th>Timestamp</th></tr></thead>";
-        foreach($sessions as $session){
+        foreach ($sessions as $session) {
             $str.="<tr>";
-            $str.="<td>".User::getUserLinks($session->user)."</td>";
-            $str.="<td>".SessionLog::parseStatus($session->status)."</td>";
-            $str.="<td>".Formatter::formatCompleteDate($session->timestamp)."</td>";
+            $str.="<td>" . User::getUserLinks($session->user) . "</td>";
+            $str.="<td>" . SessionLog::parseStatus($session->status) . "</td>";
+            $str.="<td>" . Formatter::formatCompleteDate($session->timestamp) . "</td>";
             $str.="</tr>";
         }
         $str.="</table>";
@@ -651,15 +677,15 @@ class AdminController extends Controller {
      * An administrative function to display a grid of user view data--that is a
      * log of when a user viewed a particular record.
      */
-    public function actionUserViewLog(){
+    public function actionUserViewLog() {
         $dataProvider = new CActiveDataProvider('ViewLog', array(
-                    'sort' => array(
-                        'defaultOrder' => 'timestamp DESC',
-                    ),
-                    'pagination' => array(
-                        'pageSize' => Profile::getResultsPerPage()
-                    )
-                ));
+            'sort' => array(
+                'defaultOrder' => 'timestamp DESC',
+            ),
+            'pagination' => array(
+                'pageSize' => Profile::getResultsPerPage()
+            )
+        ));
         $this->render('userViewLog', array(
             'dataProvider' => $dataProvider,
         ));
@@ -668,7 +694,7 @@ class AdminController extends Controller {
     /**
      * Delete all ViewLog entries from the database.
      */
-    public function actionClearViewHistory(){
+    public function actionClearViewHistory() {
         X2model::model('ViewLog')->deleteAll();
         $this->redirect('userViewLog');
     }
@@ -680,10 +706,10 @@ class AdminController extends Controller {
      * for lead distribution within the app.  The user is echoed out to allow for
      * access via AJAX request.
      */
-    public function actionGetRoutingType(){
+    public function actionGetRoutingType() {
         $assignee = $this->getNextAssignee();
         //support original behavior
-        if($assignee == "Anyone")
+        if ($assignee == "Anyone")
             $assignee = "";
         echo $assignee;
     }
@@ -696,24 +722,24 @@ class AdminController extends Controller {
      * {@link AdminController::actionGetRoutingType} when the "Custom Round Robin"
      * lead distribution method is chosen.
      */
-    public function actionRoundRobinRules(){
+    public function actionRoundRobinRules() {
         $model = new LeadRouting;
         $users = User::getNames();
         unset($users['Anyone']);
         unset($users['admin']);
         $priorityArray = array();
-        for($i = 1; $i <= LeadRouting::model()->count() + 1; $i++){
+        for ($i = 1; $i <= LeadRouting::model()->count() + 1; $i++) {
             $priorityArray[$i] = $i;
         }
         $dataProvider = new CActiveDataProvider('LeadRouting', array(
-                    'criteria' => array(
-                        'order' => 'priority ASC',
-                    )
-                ));
-        if(isset($_POST['LeadRouting'])){
+            'criteria' => array(
+                'order' => 'priority ASC',
+            )
+        ));
+        if (isset($_POST['LeadRouting'])) {
             $values = $_POST['Values'];
             $criteria = array();
-            for($i = 0; $i < count($values['field']); $i++){
+            for ($i = 0; $i < count($values['field']); $i++) {
                 $tempArr = array(
                     $values['field'][$i], $values['comparison'][$i], $values['value'][$i]);
                 $criteria[] = implode(',', $tempArr);
@@ -721,24 +747,23 @@ class AdminController extends Controller {
             $model->criteria = json_encode($criteria);
             $model->attributes = $_POST['LeadRouting'];
             $model->priority = $_POST['LeadRouting']['priority'];
-            if(isset($_POST['group'])){
+            if (isset($_POST['group'])) {
                 $group = true;
                 $model->groupType = $_POST['groupType'];
-            }else{
+            } else {
                 $model->groupType = null;
             }
 
             $model->users = Fields::parseUsers($model->users);
             $check = LeadRouting::model()->findByAttributes(array('priority' => $model->priority));
-            if(isset($check)){
-                $query = 
-                    "UPDATE x2_lead_routing ".
-                    "SET priority=priority+1 ".
-                    "WHERE priority>='$model->priority'";
+            if (isset($check)) {
+                $query = "UPDATE x2_lead_routing " .
+                        "SET priority=priority+1 " .
+                        "WHERE priority>='$model->priority'";
                 $command = Yii::app()->db->createCommand($query);
                 $command->execute();
             }
-            if($model->save()){
+            if ($model->save()) {
                 $this->redirect('roundRobinRules');
             }
         }
@@ -762,71 +787,71 @@ class AdminController extends Controller {
      * tables in this method, and then the user is redirected back to the "Manage Roles"
      * page.
      */
-/*    public function actionRoleEditor(){
-        $model = new Roles;
-        if(isset($_POST['Roles'])){
-            $model->attributes = $_POST['Roles'];
-            if(!isset($_POST['viewPermissions']))
-                $viewPermissions = array();
-            else
-                $viewPermissions = $_POST['viewPermissions'];
-            if(!isset($_POST['editPermissions']))
-                $editPermissions = array();
-            else
-                $editPermissions = $_POST['editPermissions'];
-            if(isset($_POST['Roles']['users']))
-                $users = $model->users;
-            else
-                $users = array();
-            $model->users = "";
-            if($model->save()){
+    /*    public function actionRoleEditor(){
+      $model = new Roles;
+      if(isset($_POST['Roles'])){
+      $model->attributes = $_POST['Roles'];
+      if(!isset($_POST['viewPermissions']))
+      $viewPermissions = array();
+      else
+      $viewPermissions = $_POST['viewPermissions'];
+      if(!isset($_POST['editPermissions']))
+      $editPermissions = array();
+      else
+      $editPermissions = $_POST['editPermissions'];
+      if(isset($_POST['Roles']['users']))
+      $users = $model->users;
+      else
+      $users = array();
+      $model->users = "";
+      if($model->save()){
 
-                foreach($users as $user){
-                    $role = new RoleToUser;
-                    $role->roleId = $model->id;
-                    if(!is_numeric($user)){
-                        $userRecord = User::model()->findByAttributes(array('username' => $user));
-                        $role->userId = $userRecord->id;
-                        $role->type = 'user';
-                    }/* x2temp */  /*else{
-                        $role->userId = $user;
-                        $role->type = 'group';
-                    }/* end x2temp */   /*
-                    $role->save();
-                }
-                $fields = Fields::model()->findAll();
-                $temp = array();
-                foreach($fields as $field){
-                    $temp[] = $field->id;
-                }
-                $both = array_intersect($viewPermissions, $editPermissions);
-                $view = array_diff($viewPermissions, $editPermissions);
-                $neither = array_diff($temp, $viewPermissions);
-                foreach($both as $field){
-                    $rolePerm = new RoleToPermission;
-                    $rolePerm->roleId = $model->id;
-                    $rolePerm->fieldId = $field;
-                    $rolePerm->permission = 2;
-                    $rolePerm->save();
-                }
-                foreach($view as $field){
-                    $rolePerm = new RoleToPermission;
-                    $rolePerm->roleId = $model->id;
-                    $rolePerm->fieldId = $field;
-                    $rolePerm->permission = 1;
-                    $rolePerm->save();
-                }
-                foreach($neither as $field){
-                    $rolePerm = new RoleToPermission;
-                    $rolePerm->roleId = $model->id;
-                    $rolePerm->fieldId = $field;
-                    $rolePerm->permission = 0;
-                    $rolePerm->save();
-                }
-            }
-            $this->redirect('manageRoles');
-        }
-    } */
+      foreach($users as $user){
+      $role = new RoleToUser;
+      $role->roleId = $model->id;
+      if(!is_numeric($user)){
+      $userRecord = User::model()->findByAttributes(array('username' => $user));
+      $role->userId = $userRecord->id;
+      $role->type = 'user';
+      }/* x2temp */ /* else{
+      $role->userId = $user;
+      $role->type = 'group';
+      }/* end x2temp */ /*
+      $role->save();
+      }
+      $fields = Fields::model()->findAll();
+      $temp = array();
+      foreach($fields as $field){
+      $temp[] = $field->id;
+      }
+      $both = array_intersect($viewPermissions, $editPermissions);
+      $view = array_diff($viewPermissions, $editPermissions);
+      $neither = array_diff($temp, $viewPermissions);
+      foreach($both as $field){
+      $rolePerm = new RoleToPermission;
+      $rolePerm->roleId = $model->id;
+      $rolePerm->fieldId = $field;
+      $rolePerm->permission = 2;
+      $rolePerm->save();
+      }
+      foreach($view as $field){
+      $rolePerm = new RoleToPermission;
+      $rolePerm->roleId = $model->id;
+      $rolePerm->fieldId = $field;
+      $rolePerm->permission = 1;
+      $rolePerm->save();
+      }
+      foreach($neither as $field){
+      $rolePerm = new RoleToPermission;
+      $rolePerm->roleId = $model->id;
+      $rolePerm->fieldId = $field;
+      $rolePerm->permission = 0;
+      $rolePerm->save();
+      }
+      }
+      $this->redirect('manageRoles');
+      }
+      } */
 
     /**
      * Delete an existing role.
@@ -835,9 +860,9 @@ class AdminController extends Controller {
      * page to allow for the deletion of admin created roles.  Default system roles
      * (authenticated, guest, and admin) cannot be deleted this way.
      */
-    public function actionDeleteRole(){
+    public function actionDeleteRole() {
         $auth = Yii::app()->authManager;
-        if(isset($_POST['role']) && !in_array($_POST['role'], array('authenticated', 'guest', 'admin'))){
+        if (isset($_POST['role']) && !in_array($_POST['role'], array('authenticated', 'guest', 'admin'))) {
             $id = $_POST['role'];
             $role = Roles::model()->findByAttributes(array('name' => $id));
             if (!isset($role)) {
@@ -847,15 +872,15 @@ class AdminController extends Controller {
             }
             $id = $role->id;
             $userRoles = RoleToUser::model()->findAllByAttributes(array('roleId' => $role->id));
-            foreach($userRoles as $userRole){
+            foreach ($userRoles as $userRole) {
                 $userRole->delete();
             }
             $permissions = RoleToPermission::model()->findAllByAttributes(array('roleId' => $role->id));
-            foreach($permissions as $permission){
+            foreach ($permissions as $permission) {
                 $permission->delete();
             }
             $workflowRoles = RoleToWorkflow::model()->findAllByAttributes(array('replacementId' => $role->id));
-            foreach($workflowRoles as $workflow){
+            foreach ($workflowRoles as $workflow) {
                 $workflow->delete();
             }
             $auth->removeAuthItem($role->name);
@@ -871,23 +896,23 @@ class AdminController extends Controller {
      * This action is called by a form on the {@link AdminController::actionManageRoles}
      * page to allow for the modification of an existing role.
      */
-    public function actionEditRole(){
+    public function actionEditRole() {
         $model = new Roles;
 
-        if(isset($_POST['Roles'])){
+        if (isset($_POST['Roles'])) {
             $id = $_POST['Roles']['name'];
-            $timeout = isset ($_POST['Roles']['timeout']) ? $_POST['Roles']['timeout'] : null;
+            $timeout = isset($_POST['Roles']['timeout']) ? $_POST['Roles']['timeout'] : null;
             $model = Roles::model()->findByAttributes(array('name' => $id));
             $id = $model->id;
-            if(!isset($_POST['viewPermissions']))
+            if (!isset($_POST['viewPermissions']))
                 $viewPermissions = array();
             else
                 $viewPermissions = $_POST['viewPermissions'];
-            if(!isset($_POST['editPermissions']))
+            if (!isset($_POST['editPermissions']))
                 $editPermissions = array();
             else
                 $editPermissions = $_POST['editPermissions'];
-            if(isset($_POST['users']))
+            if (isset($_POST['users']))
                 $users = $_POST['users'];
             else
                 $users = array();
@@ -897,25 +922,25 @@ class AdminController extends Controller {
             } else {
                 $model->timeout = null;
             }
-            if($model->save()){
+            if ($model->save()) {
 
                 $userRoles = RoleToUser::model()->findAllByAttributes(array('roleId' => $model->id));
-                foreach($userRoles as $role){
+                foreach ($userRoles as $role) {
                     $role->delete();
                 }
                 $permissions = RoleToPermission::model()->findAllByAttributes(array('roleId' => $model->id));
-                foreach($permissions as $permission){
+                foreach ($permissions as $permission) {
                     $permission->delete();
                 }
-                foreach($users as $user){
+                foreach ($users as $user) {
                     $userRecord = User::model()->findByAttributes(array('username' => $user));
                     $role = new RoleToUser;
                     $role->roleId = $model->id;
-                    if(!is_numeric($user)){
+                    if (!is_numeric($user)) {
                         $userRecord = User::model()->findByAttributes(array('username' => $user));
                         $role->userId = $userRecord->id;
                         $role->type = 'user';
-                    }/* x2temp */else{
+                    }/* x2temp */ else {
                         $role->userId = $user;
                         $role->type = 'group';
                     }/* end x2temp */
@@ -923,27 +948,27 @@ class AdminController extends Controller {
                 }
                 $fields = Fields::model()->findAll();
                 $temp = array();
-                foreach($fields as $field){
+                foreach ($fields as $field) {
                     $temp[] = $field->id;
                 }
                 $both = array_intersect($viewPermissions, $editPermissions);
                 $view = array_diff($viewPermissions, $editPermissions);
                 $neither = array_diff($temp, $viewPermissions);
-                foreach($both as $field){
+                foreach ($both as $field) {
                     $rolePerm = new RoleToPermission;
                     $rolePerm->roleId = $model->id;
                     $rolePerm->fieldId = $field;
                     $rolePerm->permission = 2;
                     $rolePerm->save();
                 }
-                foreach($view as $field){
+                foreach ($view as $field) {
                     $rolePerm = new RoleToPermission;
                     $rolePerm->roleId = $model->id;
                     $rolePerm->fieldId = $field;
                     $rolePerm->permission = 1;
                     $rolePerm->save();
                 }
-                foreach($neither as $field){
+                foreach ($neither as $field) {
                     $rolePerm = new RoleToPermission;
                     $rolePerm->roleId = $model->id;
                     $rolePerm->fieldId = $field;
@@ -967,29 +992,29 @@ class AdminController extends Controller {
      * Workflow exceptions modify which fields are visible or editable based on
      * what stage of a workflow a contact is in.
      */
-    public function actionRoleException(){
+    public function actionRoleException() {
         $model = new Roles;
         $temp = Workflow::model()->findAll();
         $workflows = array();
-        foreach($temp as $workflow){
+        foreach ($temp as $workflow) {
             $workflows[$workflow->id] = $workflow->name;
         }
-        if(isset($_POST['Roles'])){
+        if (isset($_POST['Roles'])) {
             $workflow = $_POST['workflow'];
-            if(isset($workflow) && !empty($workflow))
+            if (isset($workflow) && !empty($workflow))
                 $workflowName = Workflow::model()->findByPk($workflow)->name;
             else
                 $this->redirect('manageRoles');
             $stage = $_POST['workflowStages'];
-            if(isset($stage) && !empty($stage))
+            if (isset($stage) && !empty($stage))
                 $stageName = X2Model::model('WorkflowStage')->findByAttributes(array('workflowId' => $workflow, 'stageNumber' => $stage))->name;
             else
                 $this->redirect('manageRoles');
-            if(!isset($_POST['viewPermissions']))
+            if (!isset($_POST['viewPermissions']))
                 $viewPermissions = array();
             else
                 $viewPermissions = $_POST['viewPermissions'];
-            if(!isset($_POST['editPermissions']))
+            if (!isset($_POST['editPermissions']))
                 $editPermissions = array();
             else
                 $editPermissions = $_POST['editPermissions'];
@@ -998,7 +1023,7 @@ class AdminController extends Controller {
             $oldRole = Roles::model()->findByAttributes(array('name' => $model->name));
             $model->users = "";
             $model->name.=" - $workflowName: $stageName";
-            if($model->save()){
+            if ($model->save()) {
                 $replacement = new RoleToWorkflow;
                 $replacement->workflowId = $workflow;
                 $replacement->stageId = $stage;
@@ -1007,28 +1032,28 @@ class AdminController extends Controller {
                 $replacement->save();
                 $fields = Fields::model()->findAll();
                 $temp = array();
-                foreach($fields as $field){
+                foreach ($fields as $field) {
                     $temp[] = $field->id;
                 }
 
                 $both = array_intersect($viewPermissions, $editPermissions);
                 $view = array_diff($viewPermissions, $editPermissions);
                 $neither = array_diff($temp, $viewPermissions);
-                foreach($both as $field){
+                foreach ($both as $field) {
                     $rolePerm = new RoleToPermission;
                     $rolePerm->roleId = $model->id;
                     $rolePerm->fieldId = $field;
                     $rolePerm->permission = 2;
                     $rolePerm->save();
                 }
-                foreach($view as $field){
+                foreach ($view as $field) {
                     $rolePerm = new RoleToPermission;
                     $rolePerm->roleId = $model->id;
                     $rolePerm->fieldId = $field;
                     $rolePerm->permission = 1;
                     $rolePerm->save();
                 }
-                foreach($neither as $field){
+                foreach ($neither as $field) {
                     $rolePerm = new RoleToPermission;
                     $rolePerm->roleId = $model->id;
                     $rolePerm->fieldId = $field;
@@ -1048,15 +1073,15 @@ class AdminController extends Controller {
      * completion dates to be in the past, and to what extent they can modify a
      * workflow action once it is marked as complete.
      */
-    public function actionWorkflowSettings(){
+    public function actionWorkflowSettings() {
         $admin = &Yii::app()->settings;
-        if(isset($_POST['Admin'])){
+        if (isset($_POST['Admin'])) {
 
             $admin->attributes = $_POST['Admin'];
             // $admin->timeout *= 60;	//convert from minutes to seconds
 
 
-            if($admin->save()){
+            if ($admin->save()) {
                 // $this->redirect('workflowSettings');
             }
         }
@@ -1072,14 +1097,14 @@ class AdminController extends Controller {
      * This method is called via AJAX request and echoes back a dropdown with
      * options consisting of all stages for a particular workflow.
      */
-    public function actionGetWorkflowStages(){
-        if(isset($_POST['workflow'])){
+    public function actionGetWorkflowStages() {
+        if (isset($_POST['workflow'])) {
             $id = $_POST['workflow'];
             $stages = Workflow::getStages($id);
-            foreach($stages as $key => $value){
+            foreach ($stages as $key => $value) {
                 echo CHtml::tag('option', array('value' => $key + 1), CHtml::encode($value), true);
             }
-        }else{
+        } else {
             echo CHtml::tag('option', array('value' => ''), CHtml::encode(var_dump($_POST)), true);
         }
     }
@@ -1092,10 +1117,10 @@ class AdminController extends Controller {
      * finds all relevant information about the role and echoes it back as a form
      * to allow for editing of the role.
      */
-    public function actionGetRole(){
-        if(isset($_POST['Roles'])){
+    public function actionGetRole() {
+        if (isset($_POST['Roles'])) {
             $id = $_POST['Roles']['name'];
-            if(is_null($id)){
+            if (is_null($id)) {
                 echo "";
                 exit;
             }
@@ -1103,16 +1128,16 @@ class AdminController extends Controller {
             $id = $role->id;
             $roles = RoleToUser::model()->findAllByAttributes(array('roleId' => $id));
             $users = array();
-            foreach($roles as $link){
-                if($link->type == 'user'){
+            foreach ($roles as $link) {
+                if ($link->type == 'user') {
                     $user = User::model()->findByPk($link->userId);
-                    if(isset($user))
+                    if (isset($user))
                         $users[] = $user->username;
                 }
                 /* x2temp */
-                else{
+                else {
                     $group = Groups::model()->findByPk($link->userId);
-                    if(isset($group))
+                    if (isset($group))
                         $users[] = $group->id;
                 }
                 /* end x2temp */
@@ -1120,15 +1145,15 @@ class AdminController extends Controller {
             $allUsers = User::model()->findAll('status="1"');
             $selected = array();
             $unselected = array();
-            foreach($users as $user){
+            foreach ($users as $user) {
                 $selected[] = $user;
             }
-            foreach($allUsers as $user){
-                $unselected[$user->username] = $user->firstName." ".$user->lastName;
+            foreach ($allUsers as $user) {
+                $unselected[$user->username] = $user->firstName . " " . $user->lastName;
             }
             /* x2temp */
             $groups = Groups::model()->findAll();
-            foreach($groups as $group){
+            foreach ($groups as $group) {
                 $unselected[$group->id] = $group->name;
             }
             /* end x2temp */
@@ -1139,20 +1164,20 @@ class AdminController extends Controller {
             if (isset($_GET['mode']) && in_array($_GET['mode'], array('edit', 'exception'))) {
                 // Handle whether this was called from editRole or roleException, they
                 // need different IDs to work on the same page.
-                $sliderId .= "-".$_GET['mode'];
-                $textfieldId .= "-".$_GET['mode'];
+                $sliderId .= "-" . $_GET['mode'];
+                $textfieldId .= "-" . $_GET['mode'];
             }
 
             $timeoutSet = $role->timeout !== null;
             echo "
                 <div class='row' id='set-session-timeout-row'>
-                <input id='set-session-timeout' type='checkbox' class='left' ".
-                ($timeoutSet ? 'checked="checked"' : '').">
-                <label>".Yii::t('admin', 'Enable Session Timeout')."</label>
+                <input id='set-session-timeout' type='checkbox' class='left' " .
+            ($timeoutSet ? 'checked="checked"' : '') . ">
+                <label>" . Yii::t('admin', 'Enable Session Timeout') . "</label>
                 </div>
             ";
-            echo "<div id='timeout-row' class='row' ".
-                ($timeoutSet ? '' : "style='display: none;'").">";
+            echo "<div id='timeout-row' class='row' " .
+            ($timeoutSet ? '' : "style='display: none;'") . ">";
             echo Yii::t('admin', 'Set role session expiration time (in minutes).');
             echo "<br />";
             $this->widget('zii.widgets.jui.CJuiSlider', array(
@@ -1163,11 +1188,11 @@ class AdminController extends Controller {
                     'max' => 1440,
                     'step' => 5,
                     'change' => "js:function(event,ui) {
-                                    $('#".$textfieldId."').val(ui.value);
+                                    $('#" . $textfieldId . "').val(ui.value);
                                     $('#save-button').addClass('highlight');
                                 }",
                     'slide' => "js:function(event,ui) {
-                                    $('#".$textfieldId."').val(ui.value);
+                                    $('#" . $textfieldId . "').val(ui.value);
                                 }",
                 ),
                 'htmlOptions' => array(
@@ -1176,23 +1201,22 @@ class AdminController extends Controller {
                 ),
             ));
             echo CHtml::activeTextField(
-                $role, 'timeout',
-                array(
-                    'id'=>$textfieldId,
-                    'disabled'=> ($role->timeout !== null ? '' : 'disabled'),
-                ));
+                    $role, 'timeout', array(
+                'id' => $textfieldId,
+                'disabled' => ($role->timeout !== null ? '' : 'disabled'),
+            ));
             echo "</div>";
             Yii::app()->clientScript->registerScript('timeoutScript', "
                 $('#set-session-timeout').change (function () {
                     if ($(this).is (':checked')) {
                         $('#timeout-row').slideDown ();
-                        $('#".$textfieldId."').removeAttr ('disabled');
+                        $('#" . $textfieldId . "').removeAttr ('disabled');
                     } else {
                         $('#timeout-row').slideUp ();
-                        $('#".$textfieldId."').attr ('disabled', 'disabled');
+                        $('#" . $textfieldId . "').attr ('disabled', 'disabled');
                     }
                 });
-                $('#".$textfieldId."').val( $('#".$sliderId."').slider('value') );
+                $('#" . $textfieldId . "').val( $('#" . $sliderId . "').slider('value') );
             ", CClientScript::POS_READY);
             echo "<script>";
             Yii::app()->clientScript->echoScripts();
@@ -1206,17 +1230,16 @@ class AdminController extends Controller {
             $editSelected = array();
             $fieldUnselected = array();
             $fieldPerms = RoleToPermission::model()->findAllByAttributes(array('roleId' => $role->id));
-            foreach($fieldPerms as $perm){
-                if($perm->permission == 2){
+            foreach ($fieldPerms as $perm) {
+                if ($perm->permission == 2) {
                     $viewSelected[] = $perm->fieldId;
                     $editSelected[] = $perm->fieldId;
-                }else if($perm->permission == 1){
+                } else if ($perm->permission == 1) {
                     $viewSelected[] = $perm->fieldId;
                 }
             }
-            foreach($fields as $field){
-                $fieldUnselected[$field->id] = 
-                    X2Model::getModelTitle ($field->modelName)." - ".$field->attributeLabel;
+            foreach ($fields as $field) {
+                $fieldUnselected[$field->id] = X2Model::getModelTitle($field->modelName) . " - " . $field->attributeLabel;
             }
             echo "<br /><label>View Permissions</label>";
             echo CHtml::dropDownList('viewPermissions[]', $viewSelected, $fieldUnselected, array('class' => 'multiselect', 'multiple' => 'multiple', 'size' => 8));
@@ -1232,48 +1255,48 @@ class AdminController extends Controller {
      * of roles.  It also displays a grid with all user created roles (default
      * roles are not included and cannot be edited this way).
      */
-    public function actionManageRoles(){
+    public function actionManageRoles() {
         $dataProvider = new CActiveDataProvider('Roles');
         $roles = $dataProvider->getData();
         $arr = array();
-        foreach($roles as $role){
+        foreach ($roles as $role) {
             $arr[$role->name] = $role->name;
         }
         $temp = Workflow::model()->findAll();
         $workflows = array();
-        foreach($temp as $workflow){
+        foreach ($temp as $workflow) {
             $workflows[$workflow->id] = $workflow->name;
         }
 
         $model = new Roles;
         $model->timeout = 60;
-        if(isset($_POST['Roles'])){
+        if (isset($_POST['Roles'])) {
             $model->attributes = $_POST['Roles'];
-            if(!isset($_POST['viewPermissions']))
+            if (!isset($_POST['viewPermissions']))
                 $viewPermissions = array();
             else
                 $viewPermissions = $_POST['viewPermissions'];
-            if(!isset($_POST['editPermissions']))
+            if (!isset($_POST['editPermissions']))
                 $editPermissions = array();
             else
                 $editPermissions = $_POST['editPermissions'];
-            if(isset($_POST['Roles']['users']))
+            if (isset($_POST['Roles']['users']))
                 $users = $model->users;
             else
                 $users = array();
             $model->users = "";
             $model->timeout *= 60;
 
-            if($model->save()){
+            if ($model->save()) {
 
-                foreach($users as $user){
+                foreach ($users as $user) {
                     $role = new RoleToUser;
                     $role->roleId = $model->id;
-                    if(!is_numeric($user)){
+                    if (!is_numeric($user)) {
                         $userRecord = User::model()->findByAttributes(array('username' => $user));
                         $role->userId = $userRecord->id;
                         $role->type = 'user';
-                    }/* x2temp */else{
+                    }/* x2temp */ else {
                         $role->userId = $user;
                         $role->type = 'group';
                     }/* end x2temp */
@@ -1281,27 +1304,27 @@ class AdminController extends Controller {
                 }
                 $fields = Fields::model()->findAll();
                 $temp = array();
-                foreach($fields as $field){
+                foreach ($fields as $field) {
                     $temp[] = $field->id;
                 }
                 $both = array_intersect($viewPermissions, $editPermissions);
                 $view = array_diff($viewPermissions, $editPermissions);
                 $neither = array_diff($temp, $viewPermissions);
-                foreach($both as $field){
+                foreach ($both as $field) {
                     $rolePerm = new RoleToPermission;
                     $rolePerm->roleId = $model->id;
                     $rolePerm->fieldId = $field;
                     $rolePerm->permission = 2;
                     $rolePerm->save();
                 }
-                foreach($view as $field){
+                foreach ($view as $field) {
                     $rolePerm = new RoleToPermission;
                     $rolePerm->roleId = $model->id;
                     $rolePerm->fieldId = $field;
                     $rolePerm->permission = 1;
                     $rolePerm->save();
                 }
-                foreach($neither as $field){
+                foreach ($neither as $field) {
                     $rolePerm = new RoleToPermission;
                     $rolePerm->roleId = $model->id;
                     $rolePerm->fieldId = $field;
@@ -1312,8 +1335,7 @@ class AdminController extends Controller {
                 foreach ($model->getErrors() as $err)
                     $errors = $err;
                 $errors = implode(',', $errors);
-                Yii::app()->user->setFlash('error',Yii::t('admin',
-                    "Unable to save role: {errors}", array('{errors}'=>$errors)));
+                Yii::app()->user->setFlash('error', Yii::t('admin', "Unable to save role: {errors}", array('{errors}' => $errors)));
             }
             $this->redirect('manageRoles');
         }
@@ -1366,12 +1388,12 @@ class AdminController extends Controller {
      * This action renders the user changelog page, which contains a list of all
      * changes made by users within the app.
      */
-    public function actionViewChangelog(){
+    public function actionViewChangelog() {
 
         $model = new Changelog('search');
-        if(isset($_GET['Changelog'])){
-            foreach($_GET['Changelog'] as $field => $value){
-                if($model->hasAttribute($field)){
+        if (isset($_GET['Changelog'])) {
+            foreach ($_GET['Changelog'] as $field => $value) {
+                if ($model->hasAttribute($field)) {
                     $model->$field = $value;
                 }
             }
@@ -1384,7 +1406,7 @@ class AdminController extends Controller {
     /**
      * Delete all changelog entries from the database.
      */
-    public function actionClearChangelog(){
+    public function actionClearChangelog() {
         Changelog::model()->deleteAll();
         $this->redirect('viewChangelog');
     }
@@ -1395,27 +1417,27 @@ class AdminController extends Controller {
      * This method is called by a form on the "Manage Notification Criteria" page
      * and is used to create a new criteria for generation notifications.
      */
-    public function actionAddCriteria(){
+    public function actionAddCriteria() {
         $criteria = new Criteria;
         $users = User::getNames();
         $dataProvider = new CActiveDataProvider('Criteria');
         unset($users['']);
         unset($users['Anyone']);
         $criteria->users = Yii::app()->user->getName();
-        if(isset($_POST['Criteria'])){
+        if (isset($_POST['Criteria'])) {
             $criteria->attributes = $_POST['Criteria'];
             $str = "";
             $arr = $criteria->users;
-            if($criteria->type == 'assignment' && count($arr) > 1){
+            if ($criteria->type == 'assignment' && count($arr) > 1) {
                 $this->redirect('addCriteria');
             }
-            if(isset($arr)){
+            if (isset($arr)) {
                 $str = implode(', ', $arr);
             }
             $criteria->users = $str;
-            if($criteria->modelType != null && $criteria->comparisonOperator != null){
-                if($criteria->save()){
-
+            if ($criteria->modelType != null && $criteria->comparisonOperator != null) {
+                if ($criteria->save()) {
+                    
                 }
                 $this->refresh();
             }
@@ -1435,7 +1457,7 @@ class AdminController extends Controller {
      *
      * @param int $id The ID of the criteria to be deleted.
      */
-    public function actionDeleteCriteria($id){
+    public function actionDeleteCriteria($id) {
 
         Criteria::model()->deleteByPk($id);
         $this->redirect(array('addCriteria'));
@@ -1448,7 +1470,7 @@ class AdminController extends Controller {
      * for the lead distribution process.
      * @param int $id The ID of the rule to be deleted.
      */
-    public function actionDeleteRouting($id){
+    public function actionDeleteRouting($id) {
 
         LeadRouting::model()->deleteByPk($id);
         $this->redirect(array('roundRobinRules'));
@@ -1511,39 +1533,39 @@ class AdminController extends Controller {
      * notification poll times, and basic privacy the for action history.
      * These settings are application wide and not per user.
      */
-    public function actionAppSettings(){
+    public function actionAppSettings() {
 
         $admin = &Yii::app()->settings;
-        if(isset($_POST['Admin'])){
+        if (isset($_POST['Admin'])) {
 
             // if(!isset($_POST['Admin']['ignoreUpdates']))
             // $admin->ignoreUpdates = 1;
             $oldFormat = $admin->contactNameFormat;
             $admin->attributes = $_POST['Admin'];
-            foreach($_POST['Admin'] as $attribute => $value){
-                if($admin->hasAttribute($attribute)){
+            foreach ($_POST['Admin'] as $attribute => $value) {
+                if ($admin->hasAttribute($attribute)) {
                     $admin->$attribute = $value;
                 }
             }
-            if(isset($_POST['currency'])){
-                if($_POST['currency'] == 'other'){
+            if (isset($_POST['currency'])) {
+                if ($_POST['currency'] == 'other') {
                     $admin->currency = $_POST['currency2'];
-                    if(empty($admin->currency))
+                    if (empty($admin->currency))
                         $admin->addError('currency', Yii::t('admin', 'Please enter a valid currency type.'));
                 } else
                     $admin->currency = $_POST['currency'];
             }
-            if($oldFormat != $admin->contactNameFormat){
-                if($admin->contactNameFormat == 'lastName, firstName'){
+            if ($oldFormat != $admin->contactNameFormat) {
+                if ($admin->contactNameFormat == 'lastName, firstName') {
                     $command = Yii::app()->db->createCommand()->setText('UPDATE x2_contacts SET name=CONCAT(lastName,", ",firstName)')->execute();
-                }elseif($admin->contactNameFormat == 'firstName lastName'){
+                } elseif ($admin->contactNameFormat == 'firstName lastName') {
                     $command = Yii::app()->db->createCommand()->setText('UPDATE x2_contacts SET name=CONCAT(firstName," ",lastName)')->execute();
                 }
             }
             $admin->timeout *= 60; //convert from minutes to seconds
 
 
-            if($admin->save()){
+            if ($admin->save()) {
                 $this->redirect('appSettings');
             }
         }
@@ -1561,15 +1583,15 @@ class AdminController extends Controller {
      * for automated deletion of any chosen types after a set time period to help
      * keep the database cleaner.
      */
-    public function actionActivitySettings(){
+    public function actionActivitySettings() {
 
         $admin = &Yii::app()->settings;
         $admin->eventDeletionTypes = json_decode($admin->eventDeletionTypes, true);
-        if(isset($_POST['Admin'])){
+        if (isset($_POST['Admin'])) {
 
             $admin->eventDeletionTime = $_POST['Admin']['eventDeletionTime'];
             $admin->eventDeletionTypes = json_encode($_POST['Admin']['eventDeletionTypes']);
-            if($admin->save()){
+            if ($admin->save()) {
                 $this->redirect('activitySettings');
             }
         }
@@ -1584,13 +1606,13 @@ class AdminController extends Controller {
      * This method allows for the admin to configure which option to use for lead
      * distribution.  This is what determines the actions of {@link LeadRoutingBehavior}.
      */
-    public function actionSetLeadRouting(){
+    public function actionSetLeadRouting() {
 
         $admin = &Yii::app()->settings; //Admin::model()->findByPk(1);
-        if(isset($_POST['Admin'])){
+        if (isset($_POST['Admin'])) {
             $routing = $_POST['Admin']['leadDistribution'];
             $online = $_POST['Admin']['onlineOnly'];
-            if($routing == 'singleUser'){
+            if ($routing == 'singleUser') {
                 $user = $_POST['Admin']['rrId'];
                 $admin->rrId = $user;
             }
@@ -1598,7 +1620,7 @@ class AdminController extends Controller {
             $admin->leadDistribution = $routing;
             $admin->onlineOnly = $online;
 
-            if($admin->save()){
+            if ($admin->save()) {
                 $this->redirect('index');
             }
         }
@@ -1614,16 +1636,16 @@ class AdminController extends Controller {
      * This method allows for the admin to configure which option to use for service case
      * distribution.  This is what determines the actions of {@link ServiceRoutingBehavior}.
      */
-    public function actionSetServiceRouting(){
+    public function actionSetServiceRouting() {
 
         $admin = &Yii::app()->settings; //Admin::model()->findByPk(1);
-        if(isset($_POST['Admin'])){
+        if (isset($_POST['Admin'])) {
             $routing = $_POST['Admin']['serviceDistribution'];
             $online = $_POST['Admin']['serviceOnlineOnly'];
-            if($routing == 'singleUser'){
+            if ($routing == 'singleUser') {
                 $user = $_POST['Admin']['srrId'];
                 $admin->srrId = $user;
-            }else if($routing == 'singleGroup'){
+            } else if ($routing == 'singleGroup') {
                 $group = $_POST['Admin']['sgrrId'];
                 $admin->sgrrId = $group;
             }
@@ -1631,7 +1653,7 @@ class AdminController extends Controller {
             $admin->serviceDistribution = $routing;
             $admin->serviceOnlineOnly = $online;
 
-            if($admin->save()){
+            if ($admin->save()) {
                 $this->redirect('index');
             }
         }
@@ -1648,17 +1670,17 @@ class AdminController extends Controller {
      * allow for users to log in with their Google account and sync X2Engine's calendars
      * with their Google Calendar.
      */
-    public function actionGoogleIntegration(){
+    public function actionGoogleIntegration() {
 
         $admin = &Yii::app()->settings;
-        if(isset($_POST['Admin'])){
-            foreach($admin->attributes as $fieldName => $field){
-                if(isset($_POST['Admin'][$fieldName])){
+        if (isset($_POST['Admin'])) {
+            foreach ($admin->attributes as $fieldName => $field) {
+                if (isset($_POST['Admin'][$fieldName])) {
                     $admin->$fieldName = $_POST['Admin'][$fieldName];
                 }
             }
 
-            if($admin->save()){
+            if ($admin->save()) {
                 $this->redirect('googleIntegration');
             }
         }
@@ -1667,28 +1689,37 @@ class AdminController extends Controller {
         ));
     }
 
+    public function actionTwitterIntegration () {
+        $credId = Yii::app()->settings->twitterCredentialsId;
+        if ($credId && ($cred = Credentials::model ()->findByPk ($credId))) {
+            $this->redirect ('/profile/createUpdateCredentials?id='.$credId);
+        } else {
+            $this->redirect ('/profile/createUpdateCredentials?class=TwitterApp');
+        }
+    }
+
     /**
      * Configure email settings.
      *
      * This allows for configuration of how emails are handled by X2Engine.  The admin
      * can select to use the server that the software is hosted on or a separate mail server.
      */
-    public function actionEmailSetup(){
+    public function actionEmailSetup() {
 
         $admin = &Yii::app()->settings;
-        Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/manageCredentials.js');
-        if(isset($_POST['Admin'])){
+        Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/manageCredentials.js');
+        if (isset($_POST['Admin'])) {
             $admin->attributes = $_POST['Admin'];
 
-            if($admin->save()){
+            if ($admin->save()) {
                 $this->redirect('emailSetup');
             }
         } else {
             // set defaults
-            if (!isset ($admin->doNotEmailLinkText))
-                $admin->doNotEmailLinkText = Admin::getDoNotEmailLinkDefaultText ();
-            if (!isset ($admin->doNotEmailPage))
-                $admin->doNotEmailPage = Admin::getDoNotEmailDefaultPage ();
+            if (!isset($admin->doNotEmailLinkText))
+                $admin->doNotEmailLinkText = Admin::getDoNotEmailLinkDefaultText();
+            if (!isset($admin->doNotEmailPage))
+                $admin->doNotEmailPage = Admin::getDoNotEmailDefaultPage();
         }
 
         $this->render('emailSetup', array(
@@ -1706,58 +1737,58 @@ class AdminController extends Controller {
      * @param bool $search If set to 1/true, perform a lookup for an existing field
      * @param bool $save If set to 1/true, attempt to save the model; otherwise just echo the form.
      */
-    public function actionCreateUpdateField($search=0,$save=0,$override=0){
-        if($search) {
+    public function actionCreateUpdateField($search = 0, $save = 0, $override = 0) {
+        if ($search) {
             // A field is being looked up, to populate form fields for customizing
             // an existing field
             $new = false;
-            if(isset($_POST['Fields'])) {
-                $model = Fields::model()->findByAttributes(array_intersect_key($_POST['Fields'],array_fill_keys(array('modelName','fieldName'),null)));
+            if (isset($_POST['Fields'])) {
+                $model = Fields::model()->findByAttributes(array_intersect_key($_POST['Fields'], array_fill_keys(array('modelName', 'fieldName'), null)));
             }
         } else {
             // Requesting the form
             $new = true;
         }
-        if(!isset($model) || !(bool) $model){
+        if (!isset($model) || !(bool) $model) {
             // If the field model wasn't found, create the object
             $model = new Fields;
         }
-        
-        if(isset($_POST['Fields']) && ($model->isNewRecord || $override)){
+
+        if (isset($_POST['Fields']) && ($model->isNewRecord || $override)) {
             $model->attributes = $_POST['Fields'];
         }
 
         $message = '';
         $error = false;
 
-        if(isset($_POST['Fields']) && $save) {
+        if (isset($_POST['Fields']) && $save) {
             $model->attributes = $_POST['Fields'];
             // Set the default value
-            if(isset($_POST['AmorphousModel'])) {
+            if (isset($_POST['AmorphousModel'])) {
                 $aModel = $_POST['AmorphousModel'];
                 $model->defaultValue = $model->parseValue($aModel['customized_field']);
             }
 
             $new = $model->isNewRecord;
             $model->modified = 1; // The field has been modified
-            if($new) // The field should be marked as custom since the user is adding it
+            if ($new) // The field should be marked as custom since the user is adding it
                 $model->custom = 1;
 
-            if($model->save()) {
-                $message = $new ? Yii::t('admin','Field added.') : Yii::t('admin','Field modified successfully.');
-                if($new) {
+            if ($model->save()) {
+                $message = $new ? Yii::t('admin', 'Field added.') : Yii::t('admin', 'Field modified successfully.');
+                if ($new) {
                     $model = new Fields;
                 }
             } else {
                 $error = true;
-                $message = Yii::t('admin','Please correct the following errors.');
+                $message = Yii::t('admin', 'Please correct the following errors.');
             }
         }
         $dummyModel = new AmorphousModel;
-        $dummyModel->addField($model,'customized_field');
-        $dummyModel->setAttribute('customized_field',$model->defaultValue);
+        $dummyModel->addField($model, 'customized_field');
+        $dummyModel->setAttribute('customized_field', $model->defaultValue);
 
-        $this->renderPartial('createUpdateField',array(
+        $this->renderPartial('createUpdateField', array(
             'model' => $model,
             'new' => $new,
             'dummyModel' => $dummyModel,
@@ -1772,21 +1803,20 @@ class AdminController extends Controller {
      * This method allows for the deletion of custom fields.  Default fields cannot
      * be deleted in this way.
      */
-    public function actionRemoveField($getCount = false){
+    public function actionRemoveField($getCount = false) {
 
-        if(isset($_POST['field']) && $_POST['field'] != ""){
+        if (isset($_POST['field']) && $_POST['field'] != "") {
             $id = $_POST['field'];
             $field = Fields::model()->findByPk($id);
-            if($getCount) {
-                $nonNull =  $field->countNonNull();
-                if($nonNull) {
-                    echo Yii::t('admin','This field contains data; it is non-empty in {n} records.',
-                        array(
-                            '{n}'=>'<span style="color:red;font-weight:bold">'.$nonNull.'</span>'
-                        )
+            if ($getCount) {
+                $nonNull = $field->countNonNull();
+                if ($nonNull) {
+                    echo Yii::t('admin', 'This field contains data; it is non-empty in {n} records.', array(
+                        '{n}' => '<span style="color:red;font-weight:bold">' . $nonNull . '</span>'
+                            )
                     );
                 } else {
-                    echo Yii::t('admin','The field appears to be empty. Deleting it will not result in any data loss.');
+                    echo Yii::t('admin', 'The field appears to be empty. Deleting it will not result in any data loss.');
                 }
                 Yii::app()->end();
             }
@@ -1801,7 +1831,7 @@ class AdminController extends Controller {
      * This action serves as the landing page for all of the custom field related
      * actions within the software.
      */
-    public function actionManageFields(){
+    public function actionManageFields() {
         // New model for the form:
         $model = new Fields;
 
@@ -1810,23 +1840,22 @@ class AdminController extends Controller {
         $criteria = new CDbCriteria;
         $criteria->addCondition('modified=1');
         $searchModel->setAttributes(
-            isset($_GET['Fields'])?$_GET['Fields']:array(),
-            false);
-        foreach($searchModel->attributes as $name => $value) {
-            $criteria->compare($name,$value);
+                isset($_GET['Fields']) ? $_GET['Fields'] : array(), false);
+        foreach ($searchModel->attributes as $name => $value) {
+            $criteria->compare($name, $value);
         }
         $pageSize = Profile::getResultsPerPage();
         $dataProvider = new SmartActiveDataProvider('Fields', array(
-                    'criteria' => $criteria,
-                    'pagination' => array(
-                        'pageSize' => Profile::getResultsPerPage(),
-                    ),
-                ));
+            'criteria' => $criteria,
+            'pagination' => array(
+                'pageSize' => Profile::getResultsPerPage(),
+            ),
+        ));
 
         // Set up fields list
         $fields = Fields::model()->findAllByAttributes(array('custom' => '1'));
         $arr = array();
-        foreach($fields as $field){
+        foreach ($fields as $field) {
             $arr[$field->id] = $field->attributeLabel;
         }
 
@@ -1845,16 +1874,16 @@ class AdminController extends Controller {
      * menu.  The page is a basic doc editor which is then saved as a Module record
      * of type "Document."
      */
-    public function actionCreatePage(){
+    public function actionCreatePage() {
         $existingDocs = X2Model::model('Docs')->findAll();
         $existingDocs = CHtml::listData($existingDocs, 'id', 'name');
         $model = new Docs;
         $users = User::getNames();
-        if(isset($_POST['Docs'])){
+        if (isset($_POST['Docs'])) {
 
             $model->attributes = $_POST['Docs'];
             $arr = $model->editPermissions;
-            if(isset($arr))
+            if (isset($arr))
                 $model->editPermissions = Fields::parseUsers($arr);
             $model->createdBy = 'admin';
             $model->createDate = time();
@@ -1872,9 +1901,9 @@ class AdminController extends Controller {
             $module->name = 'document';
             $module->title = $model->name;
 
-            if($module->save()){
-                if($model->save()){
-                    $this->redirect(array('/docs/docs/view', 'id'=>$model->id,'static'=>'true'));
+            if ($module->save()) {
+                if ($model->save()) {
+                    $this->redirect(array('/docs/docs/view', 'id' => $model->id, 'static' => 'true'));
                 }
             }
         } else if (isset($_POST['existingDoc'])) {
@@ -1891,7 +1920,7 @@ class AdminController extends Controller {
                 $module->menuPosition = Modules::model()->count();
                 $module->name = 'document';
                 $module->title = $docRecord->name;
-                if ($module->save()){
+                if ($module->save()) {
                     echo $docRecord->id;
                     Yii::app()->end();
                 } else {
@@ -1918,9 +1947,9 @@ class AdminController extends Controller {
      *
      * @param int $id The ID of the page being viewed.
      */
-    public function actionViewPage($id){
+    public function actionViewPage($id) {
         $model = CActiveRecord::model('Docs')->findByPk($id);
-        if(!isset($model))
+        if (!isset($model))
             $this->redirect(array('/docs/docs/index'));
 
         $this->render('viewTemplate', array(
@@ -1931,47 +1960,64 @@ class AdminController extends Controller {
     /**
      * Change the title of a module.
      *
-     * This allows for the configuration of the display name of a module.  As of
-     * version 2.0, this will not affect text other than the top bar menu.
+     * This allows for the configuration of the display name of a module. Before
+     * version 5.0, this would not affect text other than the top bar menu.
      */
-    public function actionRenameModules(){
+    public function actionRenameModules() {
 
         $order = Modules::model()->findAllByAttributes(
-            array(
-                'visible' => 1,
-            )
+                array(
+                    'visible' => 1,
+                )
         );
         $menuItems = array();
+        $itemNames = array();
         foreach($order as $module){
             $menuItems[$module->name] = Yii::t('app', $module->title);
+            if ($module->custom || $module->name === 'bugReports')
+                $itemNames[$module->name] = Modules::itemDisplayName($module->name);
         }
-        foreach($menuItems as $key => $value) {
+        foreach ($menuItems as $key => $value) {
             $menuItems[$key] = preg_replace('/&#58;/', ':', $value); // decode any colons
         }
 
-        if(isset($_POST['module']) && isset($_POST['name'])){
+        if (isset($_POST['module']) && isset($_POST['name'])) {
             $module = $_POST['module'];
             $name = $_POST['name'];
 
             $moduleRecord = Modules::model()->findByAttributes(
-                array(
-                    'name' => $module,
-                    'title' => $menuItems[$module],
-                )
+                    array(
+                        'name' => $module,
+                        'title' => $menuItems[$module],
+                    )
             );
             if(isset($moduleRecord)){
-                if ($moduleRecord->retitle ($name)) {
-                    $this->redirect('index');
+                $match = Modules::model()->findByAttributes(array('title'=>$name));
+                $itemName = isset($_POST['itemName'])? $_POST['itemName'] : "";
+
+                if (empty($name)) {
+                    Yii::app()->user->setFlash('error', Yii::t('admin', "You must specify a title."));
+                } else if (isset($match) && ($match->name !== $moduleRecord->name)) {
+                    Yii::app()->user->setFlash('error', Yii::t('admin', "A module with this title already exists."));
+                } else {
+                    $moduleRecord->title = $name;
+                    if (!empty($itemName) && ($moduleRecord->custom || $moduleRecord->name === 'bugReports'))
+                        $moduleRecord->itemName = $itemName;
+
+                    if ($moduleRecord->retitle ($name)) {
+                        $this->redirect('index');
+                    }
                 }
             }
         }
 
         $this->render('renameModules', array(
             'modules' => $menuItems,
+            'itemNames' => $itemNames,
         ));
     }
 
-     
+    
 
     /**
      * Re-arrange the top bar menu.
@@ -1979,70 +2025,70 @@ class AdminController extends Controller {
      * This form allows for the admin to change the order and visibility of top bar
      * menu items for all users.
      */
-    public function actionManageModules(){
+    public function actionManageModules() {
 
         $modules = Modules::model()->findAll(array('order' => 'menuPosition ASC'));
 
         $menuItems = array();  // assoc. array with correct order, containing realName => nickName
         $selectedItems = array();
 
-        foreach($modules as $module){
-            if($module->name != 'users'){
-                if($module->name != 'document')
+        foreach ($modules as $module) {
+            if ($module->name != 'users') {
+                if ($module->name != 'document')
                     $menuItems[$module->name] = Yii::t('app', $module->title);
                 else
                     $menuItems[$module->title] = $module->title;
-                if($module->visible){
+                if ($module->visible) {
                     $selectedItems[] = ($module->name != 'document') ? $module->name : $module->title;
                 }
             }
         }
 
 
-        if(isset($_POST['formSubmit'])){
+        if (isset($_POST['formSubmit'])) {
             $selectedItems = isset($_POST['menuItems']) ? $_POST['menuItems'] : array();
             $newMenuItems = array();
 
 
             // build $newMenuItems array
-            foreach($selectedItems as $item){
+            foreach ($selectedItems as $item) {
                 $newMenuItems[$item] = $menuItems[$item]; // copy each selected item into $newMenuItems
                 unset($menuItems[$item]);     // and remove them from $menuItems
             }
-            foreach($newMenuItems as $key => $item){
+            foreach ($newMenuItems as $key => $item) {
                 $moduleRecord = Modules::model()->findByAttributes(array('name' => $key));
-                if(isset($moduleRecord)){
+                if (isset($moduleRecord)) {
                     $moduleRecord->visible = 1;
                     $moduleRecord->menuPosition = array_search($key, array_keys($newMenuItems));
-                    if($moduleRecord->save()){
-
+                    if ($moduleRecord->save()) {
+                        
                     }
-                }else{
+                } else {
                     $moduleRecord = Modules::model()->findByAttributes(array('title' => $key));
-                    if(isset($moduleRecord)){
+                    if (isset($moduleRecord)) {
                         $moduleRecord->visible = 1;
                         $moduleRecord->menuPosition = array_search($key, array_keys($newMenuItems));
-                        if($moduleRecord->save()){
-
+                        if ($moduleRecord->save()) {
+                            
                         }
                     }
                 }
             }
-            foreach($menuItems as $key => $item){
+            foreach ($menuItems as $key => $item) {
                 $moduleRecord = Modules::model()->findByAttributes(array('name' => $key));
-                if(isset($moduleRecord)){
+                if (isset($moduleRecord)) {
                     $moduleRecord->visible = 0;
                     $moduleRecord->menuPosition = -1;
-                    if($moduleRecord->save()){
-
+                    if ($moduleRecord->save()) {
+                        
                     }
-                }else{
+                } else {
                     $moduleRecord = Modules::model()->findByAttributes(array('title' => $key));
-                    if(isset($moduleRecord)){
+                    if (isset($moduleRecord)) {
                         $moduleRecord->visible = 0;
                         $moduleRecord->menuPosition = -1;
-                        if($moduleRecord->save()){
-
+                        if ($moduleRecord->save()) {
+                            
                         }
                     }
                 }
@@ -2062,8 +2108,8 @@ class AdminController extends Controller {
      * This method allows for the admin to upload their own logo to go in place of
      * the X2Engine logo in the top left corner of the software.
      */
-    public function actionUploadLogo(){
-        if(isset($_FILES['logo-upload'])){
+    public function actionUploadLogo() {
+        if (isset($_FILES['logo-upload'])) {
             $temp = CUploadedFile::getInstanceByName('logo-upload');
             if ($temp === null) {
                 Yii::app()->user->setFlash('error', Yii::t('admin', 'There was an error uploading your logo.'));
@@ -2075,11 +2121,11 @@ class AdminController extends Controller {
                 Yii::app()->user->setFlash('error', Yii::t('admin', 'Invalid file extension.'));
                 $this->redirect('uploadLogo');
             }
-            $temp->saveAs('uploads/logos/'.$name);
+            $temp->saveAs('uploads/logos/' . $name);
             $admin = Profile::model()->findByPk(1);
             $logo = Media::model()->findByAttributes(array('associationId' => $admin->id, 'associationType' => 'logo'));
-            if(isset($logo)){
-                if(file_exists($logo->fileName))
+            if (isset($logo)) {
+                if (file_exists($logo->fileName))
                     unlink($logo->fileName);
                 $logo->delete();
             }
@@ -2088,9 +2134,9 @@ class AdminController extends Controller {
             $logo->associationType = 'logo';
 
             $logo->associationId = $admin->id;
-            $logo->fileName = 'uploads/logos/'.$name;
+            $logo->fileName = 'uploads/logos/' . $name;
 
-            if($logo->save()){
+            if ($logo->save()) {
                 $this->redirect('index');
             }
         }
@@ -2101,22 +2147,22 @@ class AdminController extends Controller {
     /**
      * Reverts the logo back to X2Engine.
      */
-    public function actionToggleDefaultLogo(){
+    public function actionToggleDefaultLogo() {
 
         $adminProf = Yii::app()->params->adminProfile;
         $logo = Media::model()->findByAttributes(array('associationId' => $adminProf->id, 'associationType' => 'logo'));
-        if(!isset($logo)){
+        if (!isset($logo)) {
 
             $logo = new Media;
             $logo->associationType = 'logo';
             $name = 'yourlogohere.png';
             $logo->associationId = $adminProf->id;
-            $logo->fileName = 'uploads/logos/'.$name;
+            $logo->fileName = 'uploads/logos/' . $name;
 
-            if($logo->save()){
-
+            if ($logo->save()) {
+                
             }
-        }else if($logo->fileName != 'uploads/logos/yourlogohere.png'){
+        } else if ($logo->fileName != 'uploads/logos/yourlogohere.png') {
             $logo->delete();
         }
         $this->redirect(array('index'));
@@ -2129,7 +2175,7 @@ class AdminController extends Controller {
      * Any translation for any language can be edited and saved from here, and new
      * ones can be added.
      */
-    public function actionTranslationManager(){
+    public function actionTranslationManager() {
         $this->layout = null;
         $messagePath = 'protected/messages';
         include('protected/components/TranslationManager.php');
@@ -2145,102 +2191,184 @@ class AdminController extends Controller {
      * module will have its file contents re-generated to be at the latest version
      * of the template files.
      */
-    public function actionConvertCustomModules(){
+    public function actionConvertCustomModules() {
         $status = array();
-        if(!empty($_POST)){
+        if (!empty($_POST)) {
             $updateFlag = false;
-            if(isset($_POST['updateFlag']) && $_POST['updateFlag'] == "Yes"){
+            if (isset($_POST['updateFlag']) && $_POST['updateFlag'] == "Yes") {
                 $updateFlag = true; // We need to update file contents as well.
             }
             $modules = X2Model::model('Modules')->findAllByAttributes(array('custom' => 1));
-            if(count($modules)==0){ // There are no custom modules...
+            if (count ($modules)==0){ // There are no custom modules...
                 $status['admin']['error']=Yii::t('admin','Fatal error - No custom modules found.');
                 $status['admin']['title']=Yii::t('admin','Module Conversion');
             }
-            foreach($modules as $module){
+            foreach ($modules as $module){
                 $moduleName = $module->name;
+                $modulePath = 'protected/modules/'.$moduleName;
                 $ucName = ucfirst($moduleName);
-                if(is_dir('protected/modules/'.$moduleName)){
-                     $status[$moduleName]=array('title'=>$module->title,'messages'=>array(),'error'=>null); // Log everything in the "status" array
-                     $status[$moduleName]['messages'][]=Yii::t('admin',"Module exists").": $moduleName";
-                    if(FileUtil::ccopy('protected/modules/'.$moduleName, 'backup/modules/'.$moduleName)){ // Attempt to make a backup
+                if (is_dir ($modulePath)){
+                    $failed = false;
+                    // Log everything in the "status" array
+                    $status[$moduleName] = array(
+                        'title'=>$module->title,
+                        'messages'=>array(),
+                        'error'=>null
+                    );
+                    $status[$moduleName]['messages'][] = Yii::t('admin',"Module exists").
+                        ": $moduleName";
+                    // Attempt to make a backup
+                    if (FileUtil::ccopy($modulePath, 'backup/modules/'.$moduleName)) {
                         $backupFlag = true;
-                        $status[$moduleName]['messages'][]=Yii::t('admin','Module successfully backed up in backup/modules/{moduleName}',array(
-                            '{moduleName}'=>$moduleName
+                        $status[$moduleName]['messages'][] = Yii::t('admin','Module successfully '.
+                            'backed up in backup/modules/{moduleName}',array(
+                                '{moduleName}'=>$moduleName
                         ));
-                    }else{
+                    } else {
                         $backupFlag = false;
-                        $status[$moduleName]['messages'][]=Yii::t('admin','Backup failed. Unable to write to backup directory.');
+                        $status[$moduleName]['messages'][] = Yii::t('admin',
+                            'Backup failed. Unable to write to backup directory.');
                     }
-                    if(file_exists('protected/modules/'.$moduleName.'/controllers/DefaultController.php')){ // Controller needs to be updated to the new format
-                        if(rename('protected/modules/'.$moduleName.'/controllers/DefaultController.php', 'protected/modules/'.$moduleName.'/controllers/'.$ucName.'Controller.php')){
-                            $status[$moduleName]['messages'][]=Yii::t('admin','{default} still existed and was successfully renamed to {controller}.',array(
-                                '{default}'=>'DefaultController',
-                                '{controller}'=>$ucName.'Controller',
+                    if (file_exists ($modulePath.'/controllers/DefaultController.php')) {
+                        // Controller needs to be updated to the new format
+                        $renamed = rename ($modulePath.'/controllers/DefaultController.php',
+                            $modulePath.'/controllers/'.$ucName.'Controller.php'
+                        );
+                        if ($renamed) {
+                            $status[$moduleName]['messages'][] = Yii::t('admin',
+                                '{default} still existed and was successfully renamed to '.
+                                '{controller}.',array(
+                                    '{default}'=>'DefaultController',
+                                    '{controller}'=>$ucName.'Controller',
                             ));
-                            $file = Yii::app()->file->set('protected/modules/'.$moduleName.'/controllers/'.$ucName.'Controller.php');
+                            $file = Yii::app()->file->set($modulePath.'/controllers/'.
+                                $ucName.'Controller.php');
                             $contents = $file->getContents();
-                            $contents = str_replace(array('DefaultController'), array($ucName.'Controller'), $contents);
-                            if($file->setContents($contents) !== false){
-                                $status[$moduleName]['messages'][]=Yii::t('admin','Class declaration successfully altered.');
+                            $contents = str_replace(array('DefaultController'),
+                                array($ucName.'Controller'), $contents);
+                            $success = $file->setContents($contents);
+
+                            if($success !== false){
+                                $status[$moduleName]['messages'][]=Yii::t('admin',
+                                    'Class declaration successfully altered.');
                             }else{
-                                $status[$moduleName]['error']=Yii::t('admin','Fatal error - Unable to change class delcaration. Aborting module conversion.');
+                                $status[$moduleName]['error']=Yii::t('admin',
+                                    'Fatal error - Unable to change class declaration. '.
+                                    'Aborting module conversion.');
+                                $failed = true;
                                 if($backupFlag){
-                                    FileUtil::rrmdir('protected/modules/'.$moduleName);
-                                    if(FileUtil::ccopy('backup/modules/'.$moduleName, 'protected/modules/'.$moduleName)){
-                                        $status[$moduleName]['error'].=" ".Yii::t('admin','Module backup was successfully restored.');
+                                    FileUtil::rrmdir($modulePath);
+                                    if (FileUtil::ccopy('backup/modules/'.$moduleName, $modulePath)) {
+                                        $status[$moduleName]['error'] .= " ".Yii::t('admin',
+                                            'Module backup was successfully restored.');
                                     }
                                 }
                             }
-                        }else{ // Fail for this module, restore from backup if we were able to.
-                            $status[$moduleName]['error']=Yii::t('admin','Fatal error - Unable to rename controller class. Aborting module conversion.');
+                        } else { // Fail for this module, restore from backup if we were able to.
+                            $status[$moduleName]['error'] = Yii::t('admin',
+                                'Fatal error - Unable to rename controller class. '.
+                                'Aborting module conversion.');
+                            $failed = true;
                             if($backupFlag){
-                                FileUtil::rrmdir('protected/modules/'.$moduleName);
-                                if(FileUtil::ccopy('backup/modules/'.$moduleName, 'protected/modules/'.$moduleName)){
-                                    $status[$moduleName]['error'].=" ".Yii::t('admin','Module backup was successfully restored.');
+                                FileUtil::rrmdir($modulePath);
+                                if(FileUtil::ccopy('backup/modules/'.$moduleName, $modulePath)) {
+                                    $status[$moduleName]['error'].=" ".Yii::t('admin',
+                                        'Module backup was successfully restored.');
                                 }
                             }
                         }
                     }
-                    if(is_dir('protected/modules/'.$moduleName.'/views/default')){ // The view files need to be updated to the new format
-                        if (is_dir('protected/modules/'.$moduleName.'/views/'.$moduleName)) {
-                            FileUtil::ccopy('protected/modules/'.$moduleName.'/views/default/', 'protected/modules/'.$moduleName.'/views/'.$moduleName);
-                            $status[$moduleName]['messages'][]=Yii::t('admin', 'Module view folder already exists. View files successfully copied.');
+                    if (is_dir ($modulePath.'/views/default' && !$failed)) {
+                        // The view files need to be updated to the new format
+                        if (is_dir($modulePath.'/views/'.$moduleName)) {
+                            FileUtil::ccopy($modulePath.'/views/default/',
+                                $modulePath.'/views/'.$moduleName);
+                            $status[$moduleName]['messages'][] = Yii::t('admin',
+                                'Module view folder already exists. View files successfully copied.');
                         }else {
-                            if(rename('protected/modules/'.$moduleName.'/views/default', 'protected/modules/'.$moduleName.'/views/'.$moduleName)){
-                                $status[$moduleName]['messages'][]=Yii::t('admin','Module view folder successfully renamed.');
+                            $renamed = rename ($modulePath.'/views/default',
+                                $modulePath.'/views/'.$moduleName);
+                            if ($renamed){
+                                $status[$moduleName]['messages'][] = Yii::t('admin',
+                                    'Module view folder successfully renamed.');
                             }else{
-                               $status[$moduleName]['error']=Yii::t('admin','Fatal error - Unable to rename module view folder. Aborting module conversion.');
+                                $status[$moduleName]['error'] = Yii::t('admin',
+                                    'Fatal error - Unable to rename module view folder. '.
+                                    'Aborting module conversion.');
+                               $failed = true;
                                 if($backupFlag){
-                                    FileUtil::rrmdir('protected/modules/'.$moduleName);
-                                    if(FileUtil::ccopy('backup/modules/'.$moduleName, 'protected/modules/'.$moduleName)){
-                                        $status[$moduleName]['error'].=" ".Yii::t('admin','Module backup was successfully restored.');
+                                    FileUtil::rrmdir($modulePath);
+                                    if(FileUtil::ccopy('backup/modules/'.$moduleName, $modulePath)){
+                                        $status[$moduleName]['error'] .= " ".Yii::t('admin',
+                                            'Module backup was successfully restored.');
                                     }
                                 }
                             }
                         }
                     }
+                    $viewDir = $modulePath.'/views/'.$moduleName;
+                    if (is_dir($viewDir) && !$failed) {
+                        // Update view files to use item name from database
+                        $viewFiles = scandir ($viewDir);
+                        $success = true;
+                        foreach ($viewFiles as $filename) {
+                            if (!preg_match('/^\w+\.php$/', $filename))
+                                continue;
+                            $file = Yii::app()->file->set($viewDir."/".$filename);
+                            $contents = $file->getContents();
+                            $contents = str_replace('$moduleConfig[\'recordName\']',
+                                'Modules::itemDisplayName()', $contents);
+                            if ($filename === 'index.php') {
+                                // Replace the gridview title
+                                $searchPattern = '\'title\'=>$moduleConfig[\'title\']';
+                                $replacement = '\'title\'=>Modules::displayName(true, '.
+                                    '$moduleConfig[\'moduleName\'])';
+                                $contents = str_replace($searchPattern, $replacement, $contents);
+                            }
+                            $success = $success && $file->setContents($contents);
+                        }
+                        if (!$success) {
+                            $status[$moduleName]['error']=Yii::t('admin',
+                                'Fatal error - Unable to update view files. '.
+                                'Aborting module conversion.');
+                            $failed = true;
+                            if ($backupFlag) {
+                                FileUtil::rrmdir($modulePath);
+                                if (FileUtil::ccopy('backup/modules/'.$moduleName, $modulePath)) {
+                                    $status[$moduleName]['error'] .= " ".Yii::t('admin',
+                                        'Module backup was successfully restored.');
+                                }
+                            }
+                        }
+                    }
+
                     $auth = Yii::app()->authManager;
-                    $testItem = $auth->getAuthItem($ucName.'ReadOnlyAccess'); // Check for a common access item's existence
-                    if(is_null($testItem)){ // It doesn't exist, we need to create permissions for this module.
+                    // Check for a common access item's existence
+                    $testItem = $auth->getAuthItem($ucName.'ReadOnlyAccess');
+                    // It doesn't exist, we need to create permissions for this module.
+                    if(is_null($testItem)){
                         $this->createDefaultModulePermissions ($ucName);
-                        $status[$moduleName]['messages'][]=Yii::t('admin','Permissions configuration complete.');
+                        $status[$moduleName]['messages'][] = Yii::t('admin',
+                            'Permissions configuration complete.');
                     }
                     if($updateFlag){
-                        // If they specified we need to update, re-generate the custom module from the template files.
+                        // If they specified we need to update, re-generate the custom module
+                        // from the template files.
                         include('protected/modules/'.$moduleName.'/'.$moduleName.'Config.php');
                         $this->createSkeletonDirectories($moduleName);
-                        $this->writeConfig($moduleConfig['title'], $moduleConfig['moduleName'], $moduleConfig['recordName']);
-                        $status[$moduleName]['messages'][]=Yii::t('admin','Module files updated to the latest version.');
+                        $this->writeConfig($moduleConfig['title'], $moduleConfig['moduleName'],
+                            $moduleConfig['recordName']);
+                        $status[$moduleName]['messages'][]=Yii::t('admin',
+                            'Module files updated to the latest version.');
                     }
                 }
             }
             $authCache = Yii::app()->authCache;
-            if(isset($authCache)) // Auth cache needs to be cleared to reset cached permissions
+            if (isset($authCache)) // Auth cache needs to be cleared to reset cached permissions
                 $authCache->clear();
         }
-        $this->render('convertCustomModules',array(
-            'status'=>$status,
+        $this->render('convertCustomModules', array(
+            'status' => $status,
         ));
     }
 
@@ -2251,11 +2379,11 @@ class AdminController extends Controller {
      * software. These modules are more basic in functionality than most other X2
      * modules, but are fully customizable from the studio.
      */
-    public function actionCreateModule(){
+    public function actionCreateModule() {
 
         $errors = array();
 
-        if(isset($_POST['moduleName'])){
+        if (isset($_POST['moduleName'])) {
 
             $title = trim($_POST['title']);
             $recordName = trim($_POST['recordName']);
@@ -2263,71 +2391,71 @@ class AdminController extends Controller {
             $moduleName = trim($_POST['moduleName']);
 
             // are there any non-alphanumeric or _ chars? or non-alpha characters at the beginning?
-            if(preg_match('/\W/', $moduleName) || preg_match('/^[^a-zA-Z]+/', $moduleName)) {
+            if (preg_match('/\W/', $moduleName) || preg_match('/^[^a-zA-Z]+/', $moduleName)) {
                 $errors[] = Yii::t('module', 'Invalid table name'); //$this->redirect('createModule');
             }
 
-            if($moduleName == '') // we will attempt to use the title as the backend name, if possible
-                $moduleName = $title; 
+            if ($moduleName == '') // we will attempt to use the title as the backend name, if possible
+                $moduleName = $title;
 
-            if($recordName == '') // use title for record name if none is provided
-                $recordName = $title; 
+            if ($recordName == '') // use title for record name if none is provided
+                $recordName = $title;
 
             $trans = include('protected/data/transliteration.php');
 
             // replace characters with their A-Z equivalent, if possible
-            $moduleName = strtolower(strtr($moduleName, $trans));  
-            
+            $moduleName = strtolower(strtr($moduleName, $trans));
+
             // now remove all remaining non-alphanumeric or _ chars
-            $moduleName = preg_replace('/\W/', '', $moduleName); 
-            
+            $moduleName = preg_replace('/\W/', '', $moduleName);
+
             // remove any numbers or _ from the beginning
-            $moduleName = preg_replace('/^[0-9_]+/', '', $moduleName); 
+            $moduleName = preg_replace('/^[0-9_]+/', '', $moduleName);
 
 
-            if($moduleName == '') { // if there is nothing left of moduleName at this point,
-                $moduleName = 'module'.substr(time(), 5);  // just generate a random one
+            if ($moduleName == '') { // if there is nothing left of moduleName at this point,
+                $moduleName = 'module' . substr(time(), 5);  // just generate a random one
             }
 
-            if(!is_null(Modules::model()->findByAttributes(array('title' => $title))) || 
-               !is_null(Modules::model()->findByAttributes(array('name' => $moduleName)))) {
+            if (!is_null(Modules::model()->findByAttributes(array('title' => $title))) ||
+                    !is_null(Modules::model()->findByAttributes(array('name' => $moduleName)))) {
                 $errors[] = Yii::t('module', 'A module with that name already exists');
             }
-            if(empty($errors)){
+            if (empty($errors)) {
                 $dirFlag = false;
                 $configFlag = false;
                 $tableFlag = false;
-                try{
+                try {
                     $this->createSkeletonDirectories($moduleName);
                     $dirFlag = true; // Try to create the fileset
                     $this->writeConfig($title, $moduleName, $recordName);
                     $configFlag = true; // Write the configuration
                     $this->createNewTable($moduleName);
                     $tableFlag = true; // Create the DB table
-                }catch(Exception $e){
+                } catch (Exception $e) {
                     /*
                      * If any of the operations in the try block fail, we need
                      * to roll back whatever successfully happened before that.
                      * The flag variables below indicate which rollback operations
                      * to take.
                      */
-                    if($dirFlag){
-                        FileUtil::rrmdir('protected/modules/'.$moduleName);
-                    }else{
+                    if ($dirFlag) {
+                        FileUtil::rrmdir('protected/modules/' . $moduleName);
+                    } else {
                         $errors[] = Yii::t('module', 'Unable to create custom module directory.');
                     }
-                    if($configFlag){
+                    if ($configFlag) {
                         // Nothing, already taken care of by the file delete above
-                    }elseif($dirFlag){
+                    } elseif ($dirFlag) {
                         $errors[] = Yii::t('module', 'Unable to create config file for custom module.');
                     }
-                    if($tableFlag){
+                    if ($tableFlag) {
                         $this->deleteTable($moduleName);
-                    }elseif($dirFlag && $configFlag){
+                    } elseif ($dirFlag && $configFlag) {
                         $errors[] = Yii::t('module', 'Unable to create table for custom module.');
                     }
                 }
-                if(empty($errors)){
+                if (empty($errors)) {
                     $moduleRecord = new Modules;
                     $moduleRecord->name = $moduleName;
                     $moduleRecord->title = $title;
@@ -2340,7 +2468,7 @@ class AdminController extends Controller {
                     $moduleRecord->menuPosition = Modules::model()->count();
                     $moduleRecord->save();
 
-                    Yii::import('application.modules.'.$moduleName.'.models.*');
+                    Yii::import('application.modules.' . $moduleName . '.models.*');
                     $layoutModel = new FormLayout;
                     $layoutModel->model = ucfirst($moduleName);
                     $layoutModel->version = "Default";
@@ -2351,7 +2479,7 @@ class AdminController extends Controller {
                     $layoutModel->defaultForm = true;
                     $layoutModel->save();
 
-                    $this->redirect(array('/'.$moduleName.'/index'));
+                    $this->redirect(array('/' . $moduleName . '/index'));
                 }
             }
         }
@@ -2368,9 +2496,9 @@ class AdminController extends Controller {
      *
      * @param string $moduleName The name of the module being created
      */
-    private function createNewTable($moduleName){
+    private function createNewTable($moduleName) {
         $moduleTitle = ucfirst($moduleName);
-        $sqlList = array("CREATE TABLE x2_".$moduleName."(
+        $sqlList = array("CREATE TABLE x2_" . $moduleName . "(
 			id INT NOT NULL AUTO_INCREMENT primary key,
 			assignedTo VARCHAR(250),
 			name VARCHAR(250) NOT NULL,
@@ -2389,11 +2517,11 @@ class AdminController extends Controller {
             "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type, readOnly) VALUES ('$moduleTitle', 'createDate', 'Create Date', '0', 'date', '1')",
             "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type, readOnly) VALUES ('$moduleTitle', 'lastUpdated', 'Last Updated', '0', 'date', '1')",
             "INSERT INTO x2_fields (modelName, fieldName, attributeLabel, custom, type, readOnly) VALUES ('$moduleTitle', 'updatedBy', 'Updated By', '0', 'assignment', '1')");
-        foreach($sqlList as $sql){
+        foreach ($sqlList as $sql) {
             $command = Yii::app()->db->createCommand($sql);
             $command->execute();
         }
-        $this->createDefaultModulePermissions ($moduleTitle);
+        $this->createDefaultModulePermissions($moduleTitle);
     }
 
     /**
@@ -2405,97 +2533,94 @@ class AdminController extends Controller {
         $auth = Yii::app()->authManager;
         $authRule = 'return $this->checkAssignment($params);';
         $guestSite = $auth->getAuthItem('GuestSiteFunctionsTask');
-        $auth->createOperation($moduleName.'GetItems');  // Guest Access
-        $auth->createOperation($moduleName.'View');  // Read Only
-        $auth->createOperation($moduleName.'Create');  // Basic Access
-        $auth->createOperation($moduleName.'Update');  // Update Access
-        $auth->createOperation($moduleName.'Index');  // Minimum Requirements
-        $auth->createOperation($moduleName.'Admin');  // Admin Access
-        $auth->createOperation($moduleName.'Delete');  // Full Access
-        $auth->createOperation($moduleName.'GetTerms');  // Minimum Requirements
-        $auth->createOperation($moduleName.'DeleteNote');  // Full Access
-        $auth->createOperation($moduleName.'Search');  // Minimum Requirements
-
+        $auth->createOperation($moduleName . 'GetItems');  // Guest Access
+        $auth->createOperation($moduleName . 'View');  // Read Only
+        $auth->createOperation($moduleName . 'Create');  // Basic Access
+        $auth->createOperation($moduleName . 'Update');  // Update Access
+        $auth->createOperation($moduleName . 'Index');  // Minimum Requirements
+        $auth->createOperation($moduleName . 'Admin');  // Admin Access
+        $auth->createOperation($moduleName . 'Delete');  // Full Access
+        $auth->createOperation($moduleName . 'GetTerms');  // Minimum Requirements
+        $auth->createOperation($moduleName . 'DeleteNote');  // Full Access
+        $auth->createOperation($moduleName . 'Search');  // Minimum Requirements
         // Access Group Definitions
-        $roleAdminAccess = $auth->createTask($moduleName.'AdminAccess');
-        $roleFullAccess = $auth->createTask($moduleName.'FullAccess');
-        $rolePrivateFullAccess = $auth->createTask($moduleName.'PrivateFullAccess');
-        $roleUpdateAccess = $auth->createTask($moduleName.'UpdateAccess');
-        $rolePrivateUpdateAccess = $auth->createTask($moduleName.'PrivateUpdateAccess');
-        $roleBasicAccess = $auth->createTask($moduleName.'BasicAccess');
-        $roleReadOnlyAccess = $auth->createTask($moduleName.'ReadOnlyAccess');
-        $rolePrivateReadOnlyAccess = $auth->createTask($moduleName.'PrivateReadOnlyAccess');
-        $roleMinimumRequirements = $auth->createTask($moduleName.'MinimumRequirements');
+        $roleAdminAccess = $auth->createTask($moduleName . 'AdminAccess');
+        $roleFullAccess = $auth->createTask($moduleName . 'FullAccess');
+        $rolePrivateFullAccess = $auth->createTask($moduleName . 'PrivateFullAccess');
+        $roleUpdateAccess = $auth->createTask($moduleName . 'UpdateAccess');
+        $rolePrivateUpdateAccess = $auth->createTask($moduleName . 'PrivateUpdateAccess');
+        $roleBasicAccess = $auth->createTask($moduleName . 'BasicAccess');
+        $roleReadOnlyAccess = $auth->createTask($moduleName . 'ReadOnlyAccess');
+        $rolePrivateReadOnlyAccess = $auth->createTask($moduleName . 'PrivateReadOnlyAccess');
+        $roleMinimumRequirements = $auth->createTask($moduleName . 'MinimumRequirements');
 
         // Private Task Definitions
-        $rolePrivateDelete = $auth->createTask($moduleName.'DeletePrivate',
-            'Delete their own records', $authRule);
-        $rolePrivateDelete->addChild($moduleName.'Delete');
-        $rolePrivateDelete->addChild($moduleName.'DeleteNote');
-        $rolePrivateUpdate = $auth->createTask($moduleName.'UpdatePrivate',
-            'Update their own records', $authRule);
-        $rolePrivateUpdate->addChild($moduleName.'Update');
-        $rolePrivateView = $auth->createTask($moduleName.'ViewPrivate',
-            'View their own record', $authRule);
-        $rolePrivateView->addChild($moduleName.'View');
+        $rolePrivateDelete = $auth->createTask($moduleName . 'DeletePrivate', 'Delete their own records', $authRule);
+        $rolePrivateDelete->addChild($moduleName . 'Delete');
+        $rolePrivateDelete->addChild($moduleName . 'DeleteNote');
+        $rolePrivateUpdate = $auth->createTask($moduleName . 'UpdatePrivate', 'Update their own records', $authRule);
+        $rolePrivateUpdate->addChild($moduleName . 'Update');
+        $rolePrivateView = $auth->createTask($moduleName . 'ViewPrivate', 'View their own record', $authRule);
+        $rolePrivateView->addChild($moduleName . 'View');
 
         // Guest Requirements
-        $guestSite->addChild($moduleName.'GetItems');
+        $guestSite->addChild($moduleName . 'GetItems');
 
         // Minimum Requirements
-        $roleMinimumRequirements->addChild($moduleName.'Index');
-        $roleMinimumRequirements->addChild($moduleName.'GetTerms');
-        $roleMinimumRequirements->addChild($moduleName.'Search');
+        $roleMinimumRequirements->addChild($moduleName . 'Index');
+        $roleMinimumRequirements->addChild($moduleName . 'GetTerms');
+        $roleMinimumRequirements->addChild($moduleName . 'Search');
 
         // Read Only
-        $roleReadOnlyAccess->addChild($moduleName.'MinimumRequirements');
-        $roleReadOnlyAccess->addChild($moduleName.'View');
+        $roleReadOnlyAccess->addChild($moduleName . 'MinimumRequirements');
+        $roleReadOnlyAccess->addChild($moduleName . 'View');
 
         // Private Read Only
-        $rolePrivateReadOnlyAccess->addChild($moduleName.'MinimumRequirements');
-        $rolePrivateReadOnlyAccess->addChild($moduleName.'ViewPrivate');
+        $rolePrivateReadOnlyAccess->addChild($moduleName . 'MinimumRequirements');
+        $rolePrivateReadOnlyAccess->addChild($moduleName . 'ViewPrivate');
 
         // Basic Access
-        $roleBasicAccess->addChild($moduleName.'MinimumRequirements');
-        $roleBasicAccess->addChild($moduleName.'Create');
+        $roleBasicAccess->addChild($moduleName . 'MinimumRequirements');
+        $roleBasicAccess->addChild($moduleName . 'Create');
 
         // Update Access
-        $roleUpdateAccess->addChild($moduleName.'MinimumRequirements');
-        $roleUpdateAccess->addChild($moduleName.'Update');
+        $roleUpdateAccess->addChild($moduleName . 'MinimumRequirements');
+        $roleUpdateAccess->addChild($moduleName . 'Update');
 
         // Private Update Access
-        $rolePrivateUpdateAccess->addChild($moduleName.'MinimumRequirements');
-        $rolePrivateUpdateAccess->addChild($moduleName.'UpdatePrivate');
+        $rolePrivateUpdateAccess->addChild($moduleName . 'MinimumRequirements');
+        $rolePrivateUpdateAccess->addChild($moduleName . 'UpdatePrivate');
 
         // Full Access
-        $roleFullAccess->addChild($moduleName.'MinimumRequirements');
-        $roleFullAccess->addChild($moduleName.'Delete');
-        $roleFullAccess->addChild($moduleName.'DeleteNote');
+        $roleFullAccess->addChild($moduleName . 'MinimumRequirements');
+        $roleFullAccess->addChild($moduleName . 'Delete');
+        $roleFullAccess->addChild($moduleName . 'DeleteNote');
 
         // Private Full Access
-        $rolePrivateFullAccess->addChild($moduleName.'MinimumRequirements');
-        $rolePrivateFullAccess->addChild($moduleName.'DeletePrivate');
+        $rolePrivateFullAccess->addChild($moduleName . 'MinimumRequirements');
+        $rolePrivateFullAccess->addChild($moduleName . 'DeletePrivate');
 
         // Admin Access
-        $roleAdminAccess->addChild($moduleName.'MinimumRequirements');
-        $roleAdminAccess->addChild($moduleName.'Admin');
+        $roleAdminAccess->addChild($moduleName . 'MinimumRequirements');
+        $roleAdminAccess->addChild($moduleName . 'Admin');
 
+        // Assign the permissions to roles
         $defaultRole = $auth->getAuthItem('DefaultRole');
-        $defaultRole->removeChild($moduleName.'Index');
-        $defaultRole->addChild($moduleName.'UpdateAccess');
-        $defaultRole->addChild($moduleName.'BasicAccess');
-        $defaultRole->addChild($moduleName.'ReadOnlyAccess');
-        $defaultRole->addChild($moduleName.'MinimumRequirements');
+        $defaultRole->removeChild($moduleName . 'Index');
+        $defaultRole->addChild($moduleName . 'UpdateAccess');
+        $defaultRole->addChild($moduleName . 'BasicAccess');
+        $defaultRole->addChild($moduleName . 'ReadOnlyAccess');
+        $defaultRole->addChild($moduleName . 'MinimumRequirements');
 
         $adminRole = $auth->getAuthItem('administrator');
-        $adminRole->removeChild($moduleName.'Admin');
-        $adminRole->addChild($moduleName.'AdminAccess');
-        $adminRole->addChild($moduleName.'FullAccess');
-        $adminRole->addChild($moduleName.'UpdateAccess');
-        $adminRole->addChild($moduleName.'PrivateUpdateAccess');
-        $adminRole->addChild($moduleName.'BasicAccess');
-        $adminRole->addChild($moduleName.'ReadOnlyAccess');
-        $adminRole->addChild($moduleName.'MinimumRequirements');
+        $adminRole->removeChild($moduleName . 'Admin');
+        $adminRole->addChild($moduleName . 'AdminAccess');
+        $adminRole->addChild($moduleName . 'FullAccess');
+        $adminRole->addChild($moduleName . 'UpdateAccess');
+        $adminRole->addChild($moduleName . 'PrivateUpdateAccess');
+        $adminRole->addChild($moduleName . 'BasicAccess');
+        $adminRole->addChild($moduleName . 'ReadOnlyAccess');
+        $adminRole->addChild($moduleName . 'MinimumRequirements');
     }
 
     /**
@@ -2503,37 +2628,37 @@ class AdminController extends Controller {
      * the database table.
      * @param string $moduleName The name of the module being deleted
      */
-    private function deleteTable($moduleName){
+    private function deleteTable($moduleName) {
         $moduleTitle = ucfirst($moduleName);
         $ucName = $moduleTitle;
         $sqlList = array(
-            'DROP TABLE IF EXISTS `x2_'.$moduleName.'`',
-            'DELETE FOM x2_fields WHERE modelName="'.$moduleTitle.'"',
+            'DROP TABLE IF EXISTS `x2_' . $moduleName . '`',
+            'DELETE FOM x2_fields WHERE modelName="' . $moduleTitle . '"',
         );
-        foreach($sqlList as $sql){
+        foreach ($sqlList as $sql) {
             $command = Yii::app()->db->createCommand($sql);
             $command->execute();
         }
         $auth = Yii::app()->authManager;
-        $auth->removeAuthItem($ucName.'GetItems');
-        $auth->removeAuthItem($ucName.'View');
-        $auth->removeAuthItem($ucName.'Create');
-        $auth->removeAuthItem($ucName.'Update');
-        $auth->removeAuthItem($ucName.'Index');
-        $auth->removeAuthItem($ucName.'Admin');
-        $auth->removeAuthItem($ucName.'Delete');
-        $auth->removeAuthItem($ucName.'GetTerms');
-        $auth->removeAuthItem($ucName.'DeleteNote');
-        $auth->removeAuthItem($ucName.'Search');
-        $auth->removeAuthItem($ucName.'AdminAccess');
-        $auth->removeAuthItem($ucName.'FullAccess');
-        $auth->removeAuthItem($ucName.'PrivateFullAccess');
-        $auth->removeAuthItem($ucName.'UpdateAccess');
-        $auth->removeAuthItem($ucName.'PrivateUpdateAccess');
-        $auth->removeAuthItem($ucName.'BasicAccess');
-        $auth->removeAuthItem($ucName.'ReadOnlyAccess');
-        $auth->removeAuthItem($ucName.'PrivateReadOnlyAccess');
-        $auth->removeAuthItem($ucName.'MinimumRequirements');
+        $auth->removeAuthItem($ucName . 'GetItems');
+        $auth->removeAuthItem($ucName . 'View');
+        $auth->removeAuthItem($ucName . 'Create');
+        $auth->removeAuthItem($ucName . 'Update');
+        $auth->removeAuthItem($ucName . 'Index');
+        $auth->removeAuthItem($ucName . 'Admin');
+        $auth->removeAuthItem($ucName . 'Delete');
+        $auth->removeAuthItem($ucName . 'GetTerms');
+        $auth->removeAuthItem($ucName . 'DeleteNote');
+        $auth->removeAuthItem($ucName . 'Search');
+        $auth->removeAuthItem($ucName . 'AdminAccess');
+        $auth->removeAuthItem($ucName . 'FullAccess');
+        $auth->removeAuthItem($ucName . 'PrivateFullAccess');
+        $auth->removeAuthItem($ucName . 'UpdateAccess');
+        $auth->removeAuthItem($ucName . 'PrivateUpdateAccess');
+        $auth->removeAuthItem($ucName . 'BasicAccess');
+        $auth->removeAuthItem($ucName . 'ReadOnlyAccess');
+        $auth->removeAuthItem($ucName . 'PrivateReadOnlyAccess');
+        $auth->removeAuthItem($ucName . 'MinimumRequirements');
     }
 
     /**
@@ -2544,21 +2669,21 @@ class AdminController extends Controller {
      * their new directories, renames them, and replaces the contents to fit the
      * new module name.
      *
-     * @param string $moduleName The name of the moduel being created
+     * @param string $moduleName The name of the module being created
      */
-    private function createSkeletonDirectories($moduleName){
+    private function createSkeletonDirectories($moduleName) {
 
         $errors = array();
 
         $templateFolderPath = 'protected/modules/template/';
-        $moduleFolderPath = 'protected/modules/'.$moduleName.'/';
+        $moduleFolderPath = 'protected/modules/' . $moduleName . '/';
 
         $moduleFolder = Yii::app()->file->set($moduleFolderPath);
-        if(!$moduleFolder->exists && $moduleFolder->createDir() === false)
-            throw new Exception('Error creating module folder "'.$moduleFolderPath.'".');
+        if (!$moduleFolder->exists && $moduleFolder->createDir() === false)
+            throw new Exception('Error creating module folder "' . $moduleFolderPath . '".');
 
-        if(Yii::app()->file->set($templateFolderPath)->copy($moduleName) === false)
-            throw new Exception('Error copying Template folder "'.$templateFolderPath.'".');
+        if (Yii::app()->file->set($templateFolderPath)->copy($moduleName) === false)
+            throw new Exception('Error copying Template folder "' . $templateFolderPath . '".');
 
         // list of files to process
         $fileNames = array(
@@ -2578,18 +2703,18 @@ class AdminController extends Controller {
             'views/templates/view.php',
         );
 
-        foreach($fileNames as $fileName){
+        foreach ($fileNames as $fileName) {
             // calculate proper file name
-            $fileName = $moduleFolderPath.$fileName;
+            $fileName = $moduleFolderPath . $fileName;
 
             $file = Yii::app()->file->set($fileName);
-            if(!$file->exists)
-                throw new Exception('Unable to find template file "'.$fileName.'".');
+            if (!$file->exists)
+                throw new Exception('Unable to find template file "' . $fileName . '".');
 
             // rename files
             $newFileName = str_replace(array('templates', 'Templates'), array($moduleName, ucfirst($moduleName)), $file->filename);
-            if($file->setFileName($newFileName) === false)
-                throw new Exception('Error renaming template file "'.$fileName.'" to "'.$newFileName.'".');
+            if ($file->setFileName($newFileName) === false)
+                throw new Exception('Error renaming template file "' . $fileName . '" to "' . $newFileName . '".');
 
             // chmod($file->filename, 0755);
             // $file->setPermissions(0755);
@@ -2597,13 +2722,13 @@ class AdminController extends Controller {
             $contents = $file->getContents();
             $contents = str_replace(array('templates', 'Templates'), array($moduleName, ucfirst($moduleName)), $contents);
 
-            if($file->setContents($contents) === false)
-                throw new Exception('Error modifying template file "'.$newFileName.'".');
+            if ($file->setContents($contents) === false)
+                throw new Exception('Error modifying template file "' . $newFileName . '".');
         }
-        if(!is_dir('protected/modules/'.$moduleName.'/views/'.$moduleName)){
-            rename('protected/modules/'.$moduleName.'/views/templates', 'protected/modules/'.$moduleName.'/views/'.$moduleName);
-        }else{
-            FileUtil::ccopy('protected/modules/'.$moduleName.'/views/templates', 'protected/modules/'.$moduleName.'/views/'.$moduleName);
+        if (!is_dir('protected/modules/' . $moduleName . '/views/' . $moduleName)) {
+            rename('protected/modules/' . $moduleName . '/views/templates', 'protected/modules/' . $moduleName . '/views/' . $moduleName);
+        } else {
+            FileUtil::ccopy('protected/modules/' . $moduleName . '/views/templates', 'protected/modules/' . $moduleName . '/views/' . $moduleName);
         }
     }
 
@@ -2617,9 +2742,9 @@ class AdminController extends Controller {
      * @param string $moduleName The actual name of the module
      * @param string $recordName What to call the records of this module
      */
-    private function writeConfig($title, $moduleName, $recordName){
+    private function writeConfig($title, $moduleName, $recordName) {
 
-        $configFilePath = 'protected/modules/'.$moduleName.'/'.$moduleName.'Config.php';
+        $configFilePath = 'protected/modules/' . $moduleName . '/' . $moduleName . 'Config.php';
         $configFile = Yii::app()->file->set($configFilePath, true);
 
         $contents = str_replace(
@@ -2634,8 +2759,8 @@ class AdminController extends Controller {
                 ), $configFile->getContents()
         );
 
-        if($configFile->setContents($contents) === false)
-            throw new Exception('Error writing to config file "'.$configFilePath.'".');
+        if ($configFile->setContents($contents) === false)
+            throw new Exception('Error writing to config file "' . $configFilePath . '".');
     }
 
     /**
@@ -2644,84 +2769,23 @@ class AdminController extends Controller {
      * This method deletes an admin created module from the system.  All files are
      * deleted as well as the table associated with it.
      */
-    public function actionDeleteModule(){
-
-        if(isset($_POST['name'])){
+    public function actionDeleteModule() {
+        if (isset($_POST['name'])) {
             $moduleName = $_POST['name'];
             $module = Modules::model()->findByPk($moduleName);
             $moduleName = $module->name;
-            if(isset($module)){
-                if($module->name != 'document' && $module->delete()){
-                    $config = include('protected/modules/'.$moduleName.'/register.php');
-                    $uninstall = $config['uninstall'];
-                    if(isset($config['version'])){
-                        foreach($uninstall as $sql){
-                            // New convention:
-                            // If element is a string, treat as a path to an SQL script file.
-                            // Otherwise, if array, treat as a list of SQL commands to run.
-                            $sqlComm = $sql;
-                            if(is_string($sql)){
-                                if(file_exists($sql)){
-                                    $sqlComm = explode('/*&*/', file_get_contents($sql));
-                                }
-                            }
-                            foreach($sqlComm as $sqlLine){
-                                $query = Yii::app()->db->createCommand($sqlLine);
-                                try{
-                                    $query->execute();
-                                }catch(CDbException $e){
-
-                                }
-                            }
-                        }
-                    }else{
-                        // The old way, for backwards compatibility:
-                        foreach($uninstall as $sql){
-                            $query = Yii::app()->db->createCommand($sql);
-                            $query->execute();
-                        }
-                    }
-                    X2Model::model('Fields')->deleteAllByAttributes(array('modelName' => $moduleName));
-                    X2Model::model('Fields')->updateAll(array('linkType' => null, 'type' => 'varchar'), "linkType='$moduleName'");
-                    X2Model::model('FormLayout')->deleteAllByAttributes(array('model' => $moduleName));
-                    X2Model::model('Relationships')->deleteAll('firstType = :model OR secondType = :model', array(':model' => $moduleName));
-                    $auth = Yii::app()->authManager;
-                    $auth = Yii::app()->authManager;
-                    $ucName = ucfirst($moduleName);
-                    $auth->removeAuthItem($ucName.'GetItems');
-                    $auth->removeAuthItem($ucName.'View');
-                    $auth->removeAuthItem($ucName.'Create');
-                    $auth->removeAuthItem($ucName.'Update');
-                    $auth->removeAuthItem($ucName.'Index');
-                    $auth->removeAuthItem($ucName.'Admin');
-                    $auth->removeAuthItem($ucName.'Delete');
-                    $auth->removeAuthItem($ucName.'GetTerms');
-                    $auth->removeAuthItem($ucName.'DeleteNote');
-                    $auth->removeAuthItem($ucName.'Search');
-                    $auth->removeAuthItem($ucName.'AdminAccess');
-                    $auth->removeAuthItem($ucName.'FullAccess');
-                    $auth->removeAuthItem($ucName.'PrivateFullAccess');
-                    $auth->removeAuthItem($ucName.'UpdateAccess');
-                    $auth->removeAuthItem($ucName.'PrivateUpdateAccess');
-                    $auth->removeAuthItem($ucName.'BasicAccess');
-                    $auth->removeAuthItem($ucName.'ReadOnlyAccess');
-                    $auth->removeAuthItem($ucName.'PrivateReadOnlyAccess');
-                    $auth->removeAuthItem($ucName.'MinimumRequirements');
-                    $auth->removeAuthItem($ucName.'ViewPrivate');
-                    $auth->removeAuthItem($ucName.'UpdatePrivate');
-                    $auth->removeAuthItem($ucName.'DeletePrivate');
-
-                    FileUtil::rrmdir('protected/modules/'.$moduleName);
-                }else{
+            if (isset($module)) {
+                if ($module->name != 'document' && $module->delete())
+                    $this->deleteModuleData ($moduleName);
+                else
                     $module->delete();
-                }
             }
             $this->redirect(array('/admin/index'));
         }
 
         $arr = array();
         $modules = Modules::model()->findAllByAttributes(array('toggleable' => 1));
-        foreach($modules as $item){
+        foreach ($modules as $item) {
             $arr[$item->id] = $item->title;
         }
 
@@ -2731,12 +2795,77 @@ class AdminController extends Controller {
     }
 
     /**
+     * Helper function to remove the files and SQL data associated with a module
+     * @param string $moduleName Name of the module to delete
+     */
+    private function deleteModuleData($moduleName) {
+        $config = include('protected/modules/' . $moduleName . '/register.php');
+        $uninstall = $config['uninstall'];
+        if (isset($config['version'])) {
+            foreach ($uninstall as $sql) {
+                // New convention:
+                // If element is a string, treat as a path to an SQL script file.
+                // Otherwise, if array, treat as a list of SQL commands to run.
+                $sqlComm = $sql;
+                if (is_string($sql)) {
+                    if (file_exists($sql)) {
+                        $sqlComm = explode('/*&*/', file_get_contents($sql));
+                    }
+                }
+                foreach ($sqlComm as $sqlLine) {
+                    $query = Yii::app()->db->createCommand($sqlLine);
+                    try {
+                        $query->execute();
+                    } catch (CDbException $e) {
+                    }
+                }
+            }
+        } else {
+            // The old way, for backwards compatibility:
+            foreach ($uninstall as $sql) {
+                $query = Yii::app()->db->createCommand($sql);
+                $query->execute();
+            }
+        }
+        X2Model::model('Fields')->deleteAllByAttributes(array('modelName' => $moduleName));
+        X2Model::model('Fields')->updateAll(array('linkType' => null, 'type' => 'varchar'), "linkType='$moduleName'");
+        X2Model::model('FormLayout')->deleteAllByAttributes(array('model' => $moduleName));
+        X2Model::model('Relationships')->deleteAll('firstType = :model OR secondType = :model', array(':model' => $moduleName));
+        $auth = Yii::app()->authManager;
+        $ucName = ucfirst($moduleName);
+        $auth->removeAuthItem($ucName . 'GetItems');
+        $auth->removeAuthItem($ucName . 'View');
+        $auth->removeAuthItem($ucName . 'Create');
+        $auth->removeAuthItem($ucName . 'Update');
+        $auth->removeAuthItem($ucName . 'Index');
+        $auth->removeAuthItem($ucName . 'Admin');
+        $auth->removeAuthItem($ucName . 'Delete');
+        $auth->removeAuthItem($ucName . 'GetTerms');
+        $auth->removeAuthItem($ucName . 'DeleteNote');
+        $auth->removeAuthItem($ucName . 'Search');
+        $auth->removeAuthItem($ucName . 'AdminAccess');
+        $auth->removeAuthItem($ucName . 'FullAccess');
+        $auth->removeAuthItem($ucName . 'PrivateFullAccess');
+        $auth->removeAuthItem($ucName . 'UpdateAccess');
+        $auth->removeAuthItem($ucName . 'PrivateUpdateAccess');
+        $auth->removeAuthItem($ucName . 'BasicAccess');
+        $auth->removeAuthItem($ucName . 'ReadOnlyAccess');
+        $auth->removeAuthItem($ucName . 'PrivateReadOnlyAccess');
+        $auth->removeAuthItem($ucName . 'MinimumRequirements');
+        $auth->removeAuthItem($ucName . 'ViewPrivate');
+        $auth->removeAuthItem($ucName . 'UpdatePrivate');
+        $auth->removeAuthItem($ucName . 'DeletePrivate');
+
+        FileUtil::rrmdir('protected/modules/' . $moduleName);
+    }
+
+    /**
      * Export the mapping from the model importer
      */
     public function actionExportMapping() {
         $model = $_POST['model'];
-        $name = (isset($_POST['name']) && !empty($_POST['name']))? $_POST['name'] : "Unknown";
-        $name .= " to X2Engine ".Yii::app()->params->version;
+        $name = (isset($_POST['name']) && !empty($_POST['name'])) ? $_POST['name'] : "Unknown";
+        $name .= " to X2Engine " . Yii::app()->params->version;
         $keys = $_POST['keys'];
         $attributes = $_POST['attributes'];
         $this->verifyImportMap($model, $keys, $attributes, true);
@@ -2751,27 +2880,27 @@ class AdminController extends Controller {
     /**
      * Export records from a model
      */
-    public function actionExportModels($listId = null){
+    public function actionExportModels($listId = null) {
         unset($_SESSION['modelExportFile'], $_SESSION['exportModelCriteria'], $_SESSION['modelExportMeta']);
         $modelList = Modules::getExportableModules();
         // Determine the model selected by the user
-        if(isset($_GET['model']) || isset($_POST['model'])) {
-            $model = (isset($_GET['model']))? $_GET['model'] : $_POST['model'];
+        if (isset($_GET['model']) || isset($_POST['model'])) {
+            $model = (isset($_GET['model'])) ? $_GET['model'] : $_POST['model'];
             $modelName = str_replace(' ', '', $model);
         }
         if (isset($model) && in_array($modelName, array_keys($modelList))) {
             $staticModel = X2Model::model($modelName);
-            $modulePath = '/'.$staticModel->module;
+            $modulePath = '/' . $staticModel->module;
             $modulePath .= $modulePath;
-            if(is_null($listId) || $model != 'Contacts'){
+            if (is_null($listId) || $model != 'Contacts') {
                 $file = "records_export.csv";
-                $listName = CHtml::link(Yii::t('admin', 'All {model}', array('{model}'=>$model)), array($modulePath.'/index'), array('style' => 'text-decoration:none;'));
+                $listName = CHtml::link(Yii::t('admin', 'All {model}', array('{model}' => $model)), array($modulePath . '/index'), array('style' => 'text-decoration:none;'));
                 $_SESSION['exportModelCriteria'] = array('with' => array()); // Forcefully disable eager loading so it doesn't go super-slow)
-            }else{
+            } else {
                 $list = X2List::load($listId);
                 $_SESSION['exportModelCriteria'] = $list->queryCriteria();
-                $file = "list".$listId.".csv";
-                $listName = CHtml::link(Yii::t('admin', 'List')." $listId: ".$list->name, array($modulePath.'/list','id'=>$listId), array('style' => 'text-decoration:none;'));
+                $file = "list" . $listId . ".csv";
+                $listName = CHtml::link(Yii::t('admin', 'List') . " $listId: " . $list->name, array($modulePath . '/list', 'id' => $listId), array('style' => 'text-decoration:none;'));
             }
             $filePath = $this->safePath($file);
             $_SESSION['modelExportFile'] = $file;
@@ -2781,11 +2910,11 @@ class AdminController extends Controller {
                 $attributes = array_merge($attributes, array('actionDescription' => null));
             }
             $meta = array_keys($attributes);
-            if(isset($list)){
+            if (isset($list)) {
                 // Figure out gridview settings to export those columns
                 $gridviewSettings = json_decode(Yii::app()->params->profile->gridviewSettings, true);
-                if(isset($gridviewSettings['contacts_list'.$listId])){
-                    $tempMeta = array_keys($gridviewSettings['contacts_list'.$listId]);
+                if (isset($gridviewSettings['contacts_list' . $listId])) {
+                    $tempMeta = array_keys($gridviewSettings['contacts_list' . $listId]);
                     $meta = array_intersect($tempMeta, $meta);
                 }
             }
@@ -2800,19 +2929,19 @@ class AdminController extends Controller {
             if (isset($model))
                 unset($model);
         }
-        
+
         $viewParam = array(
             'modelList' => $modelList,
             'listId' => $listId,
             'model' => ''
         );
-        if(isset($model)) {
+        if (isset($model)) {
             $viewParam['model'] = $model;
-            if($model == 'Contacts') {
+            if ($model == 'Contacts') {
                 $viewParam['listName'] = $listName;
             }
         }
-        
+
         $this->render('exportModels', $viewParam);
     }
 
@@ -2821,18 +2950,18 @@ class AdminController extends Controller {
      * This is a generalized version of the Contacts export.
      * @param int $page The page of the data provider to export
      */
-    public function actionExportModelRecords($page, $model){
+    public function actionExportModelRecords($page, $model) {
         X2Model::$autoPopulateFields = false;
         $file = $this->safePath($_SESSION['modelExportFile']);
         $fields = X2Model::model(str_replace(' ', '', $model))->getFields();
         $fp = fopen($file, 'a+');
         // Load data provider based on export criteria
         $dp = new CActiveDataProvider($model, array(
-                    'criteria' => isset($_SESSION['exportModelCriteria']) ? $_SESSION['exportModelCriteria'] : array(),
-                    'pagination' => array(
-                        'pageSize' => 100,
-                    ),
-                ));
+            'criteria' => isset($_SESSION['exportModelCriteria']) ? $_SESSION['exportModelCriteria'] : array(),
+            'pagination' => array(
+                'pageSize' => 100,
+            ),
+        ));
         // Flip through to the right page.
         $pg = $dp->getPagination();
         $pg->setCurrentPage($page);
@@ -2842,20 +2971,20 @@ class AdminController extends Controller {
 
         // We need to set our data to be human friendly, so loop through all the
         // records and format any date / link / visibility fields.
-        foreach($records as $record){
-            foreach($fields as $field){
+        foreach ($records as $record) {
+            foreach ($fields as $field) {
                 $fieldName = $field->fieldName;
-                if($field->type == 'date' || $field->type == 'dateTime'){
-                    if(is_numeric($record->$fieldName))
+                if ($field->type == 'date' || $field->type == 'dateTime') {
+                    if (is_numeric($record->$fieldName))
                         $record->$fieldName = Formatter::formatLongDateTime($record->$fieldName);
-                }elseif($field->type == 'link'){
+                }elseif ($field->type == 'link') {
                     $name = $record->$fieldName;
                     if (!empty($field->linkType)) {
                         list($name, $id) = Fields::nameAndId($name);
                     }
                     if (!empty($name))
                         $record->$fieldName = $name;
-                }elseif($fieldName == 'visibility'){
+                }elseif ($fieldName == 'visibility') {
                     $record->$fieldName = $record->$fieldName == 1 ? 'Public' : 'Private';
                 }
             }
@@ -2865,7 +2994,7 @@ class AdminController extends Controller {
             if ($model === 'Actions') {
                 // Export descriptions with Actions
                 $recordAttributes = array_merge($recordAttributes, array(
-                    'actionDescription'=>$record->actionDescription
+                    'actionDescription' => $record->actionDescription
                 ));
             }
             $tempAttributes = array_intersect_key($recordAttributes, $combinedMeta);
@@ -2876,9 +3005,48 @@ class AdminController extends Controller {
         unset($dp);
 
         fclose($fp);
-        if($page + 1 < $pageCount){
+        if ($page + 1 < $pageCount) {
             echo $page + 1;
         }
+    }
+
+    protected function generateModuleSqlData ($moduleName) {
+        $sql = "";
+        $disallow = array(
+            "id",
+            "assignedTo",
+            "name",
+            "nameId",
+            "description",
+            "createDate",
+            "lastUpdated",
+            "updatedBy",
+        );
+
+        $fields = Fields::model()->findAllByAttributes(array('modelName' => ucfirst($moduleName)));
+        foreach ($fields as $field) {
+            if (array_search($field->fieldName, $disallow) === false) {
+                $fieldType = $field->type;
+                $columnDefinitions = Fields::getFieldTypes('columnDefinition');
+                if (isset($columnDefinitions[$fieldType])) {
+                    $fieldType = $columnDefinitions[$fieldType];
+                } else {
+                    $fieldType = 'VARCHAR(250)';
+                }
+                $sql.="/*&*/ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName $fieldType;/*&*/INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, linkType) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1', '$field->type', '$field->linkType');";
+            }
+        }
+        $formLayouts = X2Model::model('FormLayout')->findAllByAttributes(array('model' => $moduleName));
+        foreach ($formLayouts as $layout) {
+            $attributes = $layout->attributes;
+            unset($attributes['id']);
+            $attributeKeys = array_keys($attributes);
+            $attributeValues = array_values($attributes);
+            $keys = implode(", ", $attributeKeys);
+            $values = "'" . implode("', '", $attributeValues) . "'";
+            $sql.="/*&*/INSERT INTO x2_form_layouts ($keys) VALUES ($values);";
+        }
+        return $sql;
     }
 
     /**
@@ -2888,64 +3056,30 @@ class AdminController extends Controller {
      * files and SQL for installation required to set up the module again.  These
      * zip files can be imported into other X2 installations.
      */
-    public function actionExportModule(){
+    public function actionExportModule() {
         $dlFlag = false;
-        if(isset($_POST['name'])){
+        if (isset($_POST['name'])) {
             $moduleName = ($_POST['name']);
 
-            $fields = Fields::model()->findAllByAttributes(array('modelName' => ucfirst($moduleName)));
-            $sql = "";
-
-            $disallow = array(
-                "id",
-                "assignedTo",
-                "name",
-                "nameId",
-                "description",
-                "createDate",
-                "lastUpdated",
-                "updatedBy",
-            );
-            foreach($fields as $field){
-                if(array_search($field->fieldName, $disallow) === false){
-                    $fieldType = $field->type;
-                    $columnDefinitions = Fields::getFieldTypes('columnDefinition');
-                    if(isset($columnDefinitions[$fieldType])){
-                        $fieldType = $columnDefinitions[$fieldType];
-                    }else{
-                        $fieldType = 'VARCHAR(250)';
-                    }
-                    $sql.="/*&*/ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName $fieldType;/*&*/INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, linkType) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1', '$field->type', '$field->linkType');";
-                }
-            }
-            $formLayouts = X2Model::model('FormLayout')->findAllByAttributes(array('model' => $moduleName));
-            foreach($formLayouts as $layout){
-                $attributes = $layout->attributes;
-                unset($attributes['id']);
-                $attributeKeys = array_keys($attributes);
-                $attributeValues = array_values($attributes);
-                $keys = implode(", ", $attributeKeys);
-                $values = "'".implode("', '", $attributeValues)."'";
-                $sql.="/*&*/INSERT INTO x2_form_layouts ($keys) VALUES ($values);";
-            }
+            $sql = $this->generateModuleSqlData($moduleName);
             $db = Yii::app()->file->set("protected/modules/$moduleName/sqlData.sql");
             $db->create();
             $db->setContents($sql);
 
-            if(file_exists($moduleName.".zip")){
-                unlink($moduleName.".zip");
+            if (file_exists($moduleName . ".zip")) {
+                unlink($moduleName . ".zip");
             }
 
             $zip = Yii::app()->zip;
-            $zip->makeZip('protected/modules/'.$moduleName, $moduleName.".zip");
+            $zip->makeZip('protected/modules/' . $moduleName, $moduleName . ".zip");
             $dlFlag = true;
         }
 
         $arr = array();
 
         $modules = Modules::model()->findAll();
-        foreach($modules as $module){
-            if($module->custom){
+        foreach ($modules as $module) {
+            if ($module->custom) {
                 $arr[$module->name] = $module->title;
             }
         }
@@ -2957,172 +3091,30 @@ class AdminController extends Controller {
         ));
     }
 
+    /************************************************************************
+     *          Record Importing Methods
+     ***********************************************************************/
+
     /**
      * The general model import page
      */
     public function actionImportModels(){
-        /**
-         * Internal method... could probably be refactored out but I wanted to
-         * keep this compartmentalized and easy to keep track of in the event it
-         * needed to be called more often. The goal of this function is to attempt
-         * to map meta into a series of Contact attributes, which it will do via
-         * string comparison on the Contact attribute names, the Contact attribute
-         * labels and a pattern match.
-         * @param array $attributes Contact model's attributes
-         * @param array $meta Provided metadata in the CSV
-         */
-        function createImportMap($attributes, $meta){
-            // We need to do data processing on attributes, first copy & preserve
-            $originalAttributes = $attributes;
-            // Easier to just do both strtolower than worry about case insensitive comparison
-            $attributes = array_map('strtolower', $attributes);
-            $processedMeta = array_map('strtolower', $meta);
-            // Remove any non word characters or underscores
-            $processedMeta = preg_replace('/[\W|_]/', '', $processedMeta);
-            // Now do the same with Contact attribute labels
-            $labels = X2Model::model(str_replace(' ', '', $_SESSION['model']))->attributeLabels();
-            $labels = array_map('strtolower', $labels);
-            $labels = preg_replace('/[\W|_]/', '', $labels);
-            /*
-             * At the end of this loop, any fields we are able to suggest a mapping
-             * for are automatically populated into an array in $_SESSION with
-             * the format:
-             *
-             * $_SESSION['importMap'][<x2_attribute>] = <metadata_attribute>
-             */
-            foreach($meta as $metaVal){
-                // Ignore the import failures column
-                if ($metaVal == 'X2_Import_Failures')
-                    continue;
-                // Same reason as $originalAttributes
-                $originalMetaVal = $metaVal;
-                $metaVal = strtolower(preg_replace('/[\W|_]/', '', $metaVal));
-                /*
-                 * First check if we're lucky and maybe the processed metadata value
-                 * matches a contact attribute directly. Things like first_name
-                 * would be converted to firstname and so match perfectly. If we
-                 * find a match here, assume it is the most correct possibility
-                 * and add it to our session import map
-                 */
-                if(in_array($metaVal, $attributes)){
-                    $attrKey = array_search($metaVal, $attributes);
-                    $_SESSION['importMap'][$originalAttributes[$attrKey]] = $originalMetaVal;
-                /*
-                 * The next possibility is that the metadata value matches an attribute
-                 * label perfectly. This is more common for a field like company
-                 * where the label is "Account" but it's our second best bet for
-                 * figuring out the metadata.
-                 */
-                }elseif(in_array($metaVal, $labels)){
-                    $attrKey = array_search($metaVal, $labels);
-                    $_SESSION['importMap'][$attrKey] = $originalMetaVal;
-                /*
-                 * The third best option is that there is a partial word match
-                 * on the metadata value. However, we don't want to do a simple
-                 * preg search as that may give weird results, we want to limit
-                 * with a word boundary to see if the first part matches. This isn't
-                 * ideal but it fixes some edge cases.
-                 */
-                }elseif(count(preg_grep("/\b$metaVal/i", $attributes)) > 0){
-                    $keys = array_keys(preg_grep("/\b$metaVal/i", $attributes));
-                    $attrKey = $keys[0];
-                    if(!isset($_SESSION['importMap'][$originalMetaVal]))
-                        $_SESSION['importMap'][$originalAttributes[$attrKey]] = $originalMetaVal;
-                /*
-                 * Finally, check if there is a partial word match on the attribute
-                 * label as opposed to the field name
-                 */
-                }elseif(count(preg_grep("/\b$metaVal/i", $labels)) > 0){
-                    $keys = array_keys(preg_grep("/\b$metaVal/i", $labels));
-                    $attrKey = $keys[0];
-                    if(!isset($_SESSION['importMap'][$originalMetaVal]))
-                        $_SESSION['importMap'][$attrKey] = $originalMetaVal;
-                }
-            }
-            /*
-             * Finally, we want to do a quick reverse operation in case there
-             * were any fields that weren't mapped correctly based on the directionality
-             * of the word boundary. For example, if we were checking "zipcode"
-             * against "zip" this would not be a match because the pattern "zipcode"
-             * is longer and will fail. However, "zip" will match into "zipcode"
-             * and should be accounted for. This loop goes through the x2 attributes
-             * instead of the metadata to ensure bidirectionality.
-             */
-            foreach($originalAttributes as $attribute){
-                if(in_array($attribute, $processedMeta)){
-                    $metaKey = array_search($attribute, $processedMeta);
-                    $_SESSION['importMap'][$attribute] = $meta[$metaKey];
-                }elseif(count(preg_grep("/\b$attribute/i", $processedMeta)) > 0){
-                    $matches = preg_grep("/\b$attribute/i", $processedMeta);
-                    $metaKeys = array_keys($matches);
-                    $metaValue = $meta[$metaKeys[0]];
-                    if(!isset($_SESSION['importMap'][$attribute]))
-                        $_SESSION['importMap'][$attribute] = $metaValue;
-                }
-            }
-        }
-
         // Determine the model selected by the user
-        if(isset($_GET['model']) || isset($_POST['model'])) {
-            $_SESSION['model'] = (isset($_GET['model']))? $_GET['model'] : $_POST['model'];
+        if (isset($_GET['model']) || isset($_POST['model'])) {
+            $_SESSION['model'] = (isset($_GET['model'])) ? $_GET['model'] : $_POST['model'];
         }
-        if(isset($_FILES['data'])){
+        if (isset($_FILES['data'])) {
             $temp = CUploadedFile::getInstanceByName('data');
             $temp->saveAs($filePath = $this->safePath('data.csv'));
             ini_set('auto_detect_line_endings', 1); // Account for Mac based CSVs if possible
-            if(file_exists($filePath))
+            if (file_exists($filePath))
                 $fp = fopen($filePath, 'r+');
             else
                 throw new Exception('There was an error saving the models file.');
-            $meta = fgetcsv($fp);
-            if($meta === false)
-                throw new Exception('There was an error parsing the models of the CSV.');
-            while("" === end($meta)){
-                array_pop($meta); // Remove empty data from the end of the metadata
-            }
-            if(count($meta) == 1){ // This was from a global export CSV, the first row is the version
-                $version = $meta[0]; // Remove it and repeat the above process
-                $meta = fgetcsv($fp);
-                if($meta === false)
-                    throw new Exception('There was an error parsing the contents of the CSV.');
-                while("" === end($meta)){
-                    array_pop($meta);
-                }
-            }
-            if(empty($meta)){
-                $_SESSION['errors'] = Yii::t('admin', "Empty CSV or no metadata specified");
-                $this->redirect('importModels');
-            }
 
-            // Set our file offset for importing Contacts
-            $_SESSION['offset'] = ftell($fp);
-            $_SESSION['metaData'] = $meta;
-            $failedContacts = fopen($this->safePath('failedRecords.csv'), 'w+');
-            // Add the import failures column to the failed records meta
-            $failedHeader = $meta;
-            if (end($meta) != 'X2_Import_Failures')
-                $failedHeader[] = 'X2_Import_Failures';
-            fputcsv($failedContacts, $failedHeader);
-            fclose($failedContacts);
-
-            $x2attributes = array_keys(X2Model::model(str_replace(' ', '', $_SESSION['model']))->attributes);
-            while("" === end($x2attributes)){
-                array_pop($x2attributes);
-            }
-            if ($_SESSION['model'] === 'Actions') {
-                // add Action.description to attributes so that it is automatically mapped
-                $x2attributes[] = 'actionDescription';
-            }
-            // Initialize session data
-            $_SESSION['importMap'] = array();
-            $_SESSION['imported'] = 0;
-            $_SESSION['failed'] = 0;
-            $_SESSION['created'] = 0;
-            $_SESSION['fields'] = X2Model::model(str_replace(' ', '', $_SESSION['model']))->getFields(true);
-            $_SESSION['x2attributes'] = $x2attributes;
-            $_SESSION['mapName'] = "";
-
+            list($meta, $x2attributes) = $this->initializeModelImporter($fp);
             $preselectedMap = false;
+
             if (isset($_POST['x2maps'])) {
                 // Use an existing import map from the app
                 $importMap = $this->loadImportMap($_POST['x2maps']);
@@ -3137,63 +3129,25 @@ class AdminController extends Controller {
                 $preselectedMap = true;
             } else if (CUploadedFile::getInstanceByName('mapping') instanceof CUploadedFile
                     && CUploadedFile::getInstanceByName('mapping')->size > 0) {
-                // Handle an uploaded mapping
-                $temp = CUploadedFile::getInstanceByName('mapping');
-                $temp->saveAs($mapPath = $this->safePath('mapping.json'));
-                $mappingFile = fopen($mapPath, 'r');
-                $importMap = fread($mappingFile, filesize($mapPath));
-                $importMap = json_decode($importMap, true);
-                if ($importMap === null) {
-                    $_SESSION['errors'] = Yii::t('admin', 'Invalid JSON string specified');
-                    $this->redirect('importModels');
-                }
-                if (array_key_exists('mapping', $importMap)) {
-                    $_SESSION['importMap'] = $importMap['mapping'];
-                    if (isset($importMap['name']))
-                        $_SESSION['mapName'] = $importMap['name'];
-                    else
-                        $_SESSION['mapName'] = Yii::t('admin', "Untitled Mapping");
-                    // Make sure $importMap is consistent with legacy import map format
-                    $importMap = $importMap['mapping'];
-                } else {
-                    $_SESSION['importMap'] = $importMap;
-                    $_SESSION['mapName'] = Yii::t('admin', "Untitled Mapping");
-                }
+                $this->loadUploadedImportMap();
                 $preselectedMap = true;
-
-                fclose($mappingFile);
-                if (file_exists($mapPath))
-                    unlink($mapPath);
+                $importMap = $_SESSION['importMap'];
             } else {
                 // Set up import map via the internal function
-                createImportMap($x2attributes, $meta);
+                $this->createImportMap($x2attributes, $meta);
 
                 $importMap = $_SESSION['importMap'];
                 // We need the flipped version to display to users more easily which
                 // of their fields maps to what X2 field
                 $importMap = array_flip($importMap);
             }
-
-            // This grabs 5 sample records from the CSV to get an example of what
-            // the data looks like.
-            $sampleRecords = array();
-            for($i = 0; $i < 5; $i++){
-                if($sampleRecord = fgetcsv($fp)){
-                    if(count($sampleRecord) > count($meta)){
-                        $sampleRecord = array_slice($sampleRecord, 0, count($meta));
-                    }
-                    if(count($sampleRecord) < count($meta)){
-                        $sampleRecord = array_pad($sampleRecord, count($meta), null);
-                    }
-                    if(!empty($meta)){
-                        $sampleRecord = array_combine($meta, $sampleRecord);
-                        $sampleRecords[] = $sampleRecord;
-                    }
-                }
-            }
+            $sampleRecords = $this->prepareImportSampleRecords($meta, $fp);
             fclose($fp);
+
             // Remove the import failures column; the user doesn't need to know about it
-            $meta = array_filter($meta, function($x) { return $x !== 'X2_Import_Failures'; });
+            $meta = array_filter($meta, function($x) {
+                return $x !== 'X2_Import_Failures';
+            });
 
             $this->render('processModels', array(
                 'attributes' => $x2attributes,
@@ -3204,15 +3158,11 @@ class AdminController extends Controller {
                 'importMap' => $importMap,
                 'preselectedMap' => $preselectedMap,
             ));
-        }else{
+        } else {
             $modelList = Modules::getExportableModules();
-            if(isset($_SESSION['errors'])){
-                $errors = $_SESSION['errors'];
-            }else{
-                $errors = "";
-            }
+            $errors = (isset($_SESSION['errors']) ? $_SESSION['errors'] : "");
             $this->render('importModels', array(
-                'model' => isset ($_SESSION['model']) ? $_SESSION['model'] : '',
+                'model' => isset($_SESSION['model']) ? $_SESSION['model'] : '',
                 'modelList' => $modelList,
                 'errors' => $errors,
             ));
@@ -3220,15 +3170,228 @@ class AdminController extends Controller {
     }
 
     /**
+     * Read metadata from the CSV and initialize session variables
+     * @param resource $fp File pointer to CSV
+     * @return array CSV Metadata and X2Attributes
+     */
+    protected function initializeModelImporter($fp) {
+        $meta = fgetcsv($fp);
+        if($meta === false)
+            throw new Exception('There was an error parsing the models of the CSV.');
+        while("" === end($meta)){
+            array_pop($meta); // Remove empty data from the end of the metadata
+        }
+        if(count($meta) == 1){ // This was from a global export CSV, the first row is the version
+            $version = $meta[0]; // Remove it and repeat the above process
+            $meta = fgetcsv($fp);
+            if($meta === false)
+                throw new Exception('There was an error parsing the contents of the CSV.');
+            while("" === end($meta)){
+                array_pop($meta);
+            }
+        }
+        if(empty($meta)){
+            $_SESSION['errors'] = Yii::t('admin', "Empty CSV or no metadata specified");
+            $this->redirect('importModels');
+        }
+
+        // Set our file offset for importing Contacts
+        $_SESSION['offset'] = ftell($fp);
+        $_SESSION['metaData'] = $meta;
+        $failedContacts = fopen($this->safePath('failedRecords.csv'), 'w+');
+        // Add the import failures column to the failed records meta
+        $failedHeader = $meta;
+        if (end($meta) != 'X2_Import_Failures')
+            $failedHeader[] = 'X2_Import_Failures';
+        fputcsv($failedContacts, $failedHeader);
+        fclose($failedContacts);
+
+        $x2attributes = array_keys(X2Model::model(str_replace(' ', '', $_SESSION['model']))->attributes);
+        while("" === end($x2attributes)){
+            array_pop($x2attributes);
+        }
+        if ($_SESSION['model'] === 'Actions') {
+            // add Action.description to attributes so that it is automatically mapped
+            $x2attributes[] = 'actionDescription';
+        }
+        // Initialize session data
+        $_SESSION['importMap'] = array();
+        $_SESSION['imported'] = 0;
+        $_SESSION['failed'] = 0;
+        $_SESSION['created'] = 0;
+        $_SESSION['fields'] = X2Model::model(str_replace(' ', '', $_SESSION['model']))->getFields(true);
+        $_SESSION['x2attributes'] = $x2attributes;
+        $_SESSION['mapName'] = "";
+
+        return array($meta, $x2attributes);
+    }
+
+    /**
+     * The goal of this function is to attempt to map meta into a series of
+     * Contact attributes, which it will do via string comparison on the Contact
+     * attribute names, the Contact attribute labels and a pattern match.
+     * @param array $attributes Contact model's attributes
+     * @param array $meta Provided metadata in the CSV
+     */
+    protected function createImportMap($attributes, $meta) {
+        // We need to do data processing on attributes, first copy & preserve
+        $originalAttributes = $attributes;
+        // Easier to just do both strtolower than worry about case insensitive comparison
+        $attributes = array_map('strtolower', $attributes);
+        $processedMeta = array_map('strtolower', $meta);
+        // Remove any non word characters or underscores
+        $processedMeta = preg_replace('/[\W|_]/', '', $processedMeta);
+        // Now do the same with Contact attribute labels
+        $labels = X2Model::model(str_replace(' ', '', $_SESSION['model']))->attributeLabels();
+        $labels = array_map('strtolower', $labels);
+        $labels = preg_replace('/[\W|_]/', '', $labels);
+        /*
+         * At the end of this loop, any fields we are able to suggest a mapping
+         * for are automatically populated into an array in $_SESSION with
+         * the format:
+         *
+         * $_SESSION['importMap'][<x2_attribute>] = <metadata_attribute>
+         */
+        foreach($meta as $metaVal){
+            // Ignore the import failures column
+            if ($metaVal == 'X2_Import_Failures')
+                continue;
+            // Same reason as $originalAttributes
+            $originalMetaVal = $metaVal;
+            $metaVal = strtolower(preg_replace('/[\W|_]/', '', $metaVal));
+            /*
+             * First check if we're lucky and maybe the processed metadata value
+             * matches a contact attribute directly. Things like first_name
+             * would be converted to firstname and so match perfectly. If we
+             * find a match here, assume it is the most correct possibility
+             * and add it to our session import map
+             */
+            if(in_array($metaVal, $attributes)){
+                $attrKey = array_search($metaVal, $attributes);
+                $_SESSION['importMap'][$originalAttributes[$attrKey]] = $originalMetaVal;
+            /*
+             * The next possibility is that the metadata value matches an attribute
+             * label perfectly. This is more common for a field like company
+             * where the label is "Account" but it's our second best bet for
+             * figuring out the metadata.
+             */
+            }elseif(in_array($metaVal, $labels)){
+                $attrKey = array_search($metaVal, $labels);
+                $_SESSION['importMap'][$attrKey] = $originalMetaVal;
+            /*
+             * The third best option is that there is a partial word match
+             * on the metadata value. However, we don't want to do a simple
+             * preg search as that may give weird results, we want to limit
+             * with a word boundary to see if the first part matches. This isn't
+             * ideal but it fixes some edge cases.
+             */
+            }elseif(count(preg_grep("/\b$metaVal/i", $attributes)) > 0){
+                $keys = array_keys(preg_grep("/\b$metaVal/i", $attributes));
+                $attrKey = $keys[0];
+                if(!isset($_SESSION['importMap'][$originalMetaVal]))
+                    $_SESSION['importMap'][$originalAttributes[$attrKey]] = $originalMetaVal;
+            /*
+             * Finally, check if there is a partial word match on the attribute
+             * label as opposed to the field name
+             */
+            }elseif(count(preg_grep("/\b$metaVal/i", $labels)) > 0){
+                $keys = array_keys(preg_grep("/\b$metaVal/i", $labels));
+                $attrKey = $keys[0];
+                if(!isset($_SESSION['importMap'][$originalMetaVal]))
+                    $_SESSION['importMap'][$attrKey] = $originalMetaVal;
+            }
+        }
+        /*
+         * Finally, we want to do a quick reverse operation in case there
+         * were any fields that weren't mapped correctly based on the directionality
+         * of the word boundary. For example, if we were checking "zipcode"
+         * against "zip" this would not be a match because the pattern "zipcode"
+         * is longer and will fail. However, "zip" will match into "zipcode"
+         * and should be accounted for. This loop goes through the x2 attributes
+         * instead of the metadata to ensure bidirectionality.
+         */
+        foreach($originalAttributes as $attribute){
+            if(in_array($attribute, $processedMeta)){
+                $metaKey = array_search($attribute, $processedMeta);
+                $_SESSION['importMap'][$attribute] = $meta[$metaKey];
+            }elseif(count(preg_grep("/\b$attribute/i", $processedMeta)) > 0){
+                $matches = preg_grep("/\b$attribute/i", $processedMeta);
+                $metaKeys = array_keys($matches);
+                $metaValue = $meta[$metaKeys[0]];
+                if(!isset($_SESSION['importMap'][$attribute]))
+                    $_SESSION['importMap'][$attribute] = $metaValue;
+            }
+        }
+    }
+
+    /**
+     * This grabs 5 sample records from the CSV to get an example of what
+     * the data looks like.
+     * @return array Sample records
+     */
+    protected function prepareImportSampleRecords($meta, $fp) {
+        $sampleRecords = array();
+        for($i = 0; $i < 5; $i++){
+            if($sampleRecord = fgetcsv($fp)){
+                if(count($sampleRecord) > count($meta)){
+                    $sampleRecord = array_slice($sampleRecord, 0, count($meta));
+                }
+                if(count($sampleRecord) < count($meta)){
+                    $sampleRecord = array_pad($sampleRecord, count($meta), null);
+                }
+                if(!empty($meta)){
+                    $sampleRecord = array_combine($meta, $sampleRecord);
+                    $sampleRecords[] = $sampleRecord;
+                }
+            }
+        }
+        return $sampleRecords;
+    }
+
+    /**
+     * Save and attempt to load the uploaded import mapping
+     */
+    protected function loadUploadedImportMap() {
+        $temp = CUploadedFile::getInstanceByName('mapping');
+        $temp->saveAs($mapPath = $this->safePath('mapping.json'));
+        $mappingFile = fopen($mapPath, 'r');
+        $importMap = fread($mappingFile, filesize($mapPath));
+        $importMap = json_decode($importMap, true);
+        if ($importMap === null) {
+            $_SESSION['errors'] = Yii::t('admin', 'Invalid JSON string specified');
+            $this->redirect('importModels');
+        }
+        $_SESSION['importMap'] = $importMap;
+
+        if (array_key_exists('mapping', $importMap)) {
+            $_SESSION['importMap'] = $importMap['mapping'];
+            if (isset($importMap['name']))
+                $_SESSION['mapName'] = $importMap['name'];
+            else
+                $_SESSION['mapName'] = Yii::t('admin', "Untitled Mapping");
+            // Make sure $importMap is consistent with legacy import map format
+            $importMap = $importMap['mapping'];
+        } else {
+            $_SESSION['importMap'] = $importMap;
+            $_SESSION['mapName'] = Yii::t('admin', "Untitled Mapping");
+        }
+
+        fclose($mappingFile);
+        if (file_exists($mapPath))
+            unlink($mapPath);
+    }
+
+    /**
      * Bulk import of model records
+     *
+     * The actual meat of the import process happens here, this is called recursively via
+     * AJAX to import sets of records. This is a refactored and generalized version of the
+     * old Contacts importRecords.
      */
     public function actionImportModelRecords() {
-        /*
-         * The actual meat of the import process happens here, this is called
-         * recursively via AJAX to import sets of records.
-         * This is a generalized version of the old Contacts importRecords.
-         */
-        if(isset($_POST['count']) && file_exists($path = $this->safePath('data.csv')) && isset($_POST['model'])){
+        if(isset($_POST['count']) && file_exists($path = $this->safePath('data.csv')) &&
+                isset($_POST['model'])){
+
             X2Model::$autoPopulateFields = empty($_POST['performance-mode']);
             $importedIds = array();
             $modelName = ucfirst($_POST['model']);
@@ -3237,6 +3400,20 @@ class AdminController extends Controller {
             $importMap = $_SESSION['importMap'];
             $fp = fopen($path, 'r+');
             fseek($fp, $_SESSION['offset']); // Seek to the right file offset
+            // Store valid model attributes to insert in bulk later
+            $modelContainer = array(
+                $modelName => array(),
+            );
+            // Add a container to store the text if we're importing Actions
+            if ($modelName === 'Actions')
+                $modelContainer['ActionText'] = array();
+            // Store an array of relationships for each record
+            $relationships = array();
+            // Keep track of the linked models that were created
+            $createdLinkedModels = array();
+            // Whether the user has mapped the ID field
+            $mappedId = false;
+
             for($i = 0; $i < $count; $i++){
                 $arr = fgetcsv($fp); // Loop through and start importing
                 if($arr !== false && !is_null($arr)){
@@ -3244,315 +3421,678 @@ class AdminController extends Controller {
                         // Skip empty lines
                         continue;
                     }
-                    if(count($arr) > count($metaData)){
+                    if(count($arr) > count($metaData))
                         $arr = array_slice($arr, 0, count($metaData));
-                    }
-                    if(count($arr) < count($metaData)){
+                    else if (count($arr) < count($metaData))
                         $arr = array_pad($arr, count($metaData), null);
-                    }
                     unset($_POST);
-                    $relationships = array();
+
+                    // Add a container for this model's relationships
+                    $relationships[] = array();
                     $linkedRecordPreexist = array();
                     // Nix all invalid multibyte sequences to avoid errors
                     $arr = array_map('Formatter::mbSanitize',$arr);
-                    if(!empty($metaData) && !empty($arr)){
+                    if (!empty($metaData) && !empty($arr))
                         $importAttributes = array_combine($metaData, $arr);
-                    }else{
+                    else
                         continue;
-                    }
 
                     $model = new $modelName;
-                    if ($_SESSION['skipActivityFeed'] === 1)
-                        $model->createEvent = false;
-                    /*
-                     * This import assumes we have human readable data in the CSV
-                     * and will thus need to convert. The loop below converts link,
-                     * date, and dateTime fields to the appropriate machine friendly
-                     * data.
-                     */
                     foreach($metaData as $attribute){
-                        $isActionText = ($modelName === 'Actions' && $importMap[$attribute] === 'actionDescription');
-                        if (isset($importMap[$attribute]) && ($model->hasAttribute ($importMap[$attribute]) || $isActionText)) {
-                            if (empty($importAttributes[$attribute]) && ($importAttributes[$attribute] !== 0 && $importAttributes[$attribute] !== '0')) {
-                                /**
-                                 * Skip setting the attribute if it has already been set or if the entry from
-                                 * the CSV is empty. This allows multiple fields in the CSV to be mapped to the
-                                 * same attribute in X2, for example, if there are records with one field set and
-                                 * not the other, or vice versa.
-                                 */
-                                continue;
-                            }
-                            if (strtolower($attribute) === 'id') {
-                                // ensure the provided id is valid
-                                if (!preg_match('/^\d+$/', $importAttributes[$attribute]) || $importAttributes[$attribute] >= 4294967295) {
-                                    unset($importMap[$attribute]);
-                                    unset($importAttributes[$attribute]);
-                                    continue;
-                                }
-                            }
-                            $fieldRecord = Fields::model()->findByAttributes(array('modelName' => $modelName, 'fieldName' => $importMap[$attribute]));
-                            switch($fieldRecord->type){
-                                case "link":
-                                    $className = ucfirst($fieldRecord->linkType);
-                                    if(ctype_digit($importAttributes[$attribute])){
-                                        $lookup = X2Model::model($className)->findByPk($importAttributes[$attribute]);
-                                        $model->$importMap[$attribute] = $importAttributes[$attribute];
-                                        if(!empty($lookup)){
-                                            // Create a link to the existing record
-                                            $model->$importMap[$attribute] = $lookup->nameId;
-                                            $relationship = new Relationships;
-                                            $relationship->firstType = $modelName;
-                                            $relationship->secondType = $className;
-                                            $relationship->secondId = $importAttributes[$attribute];
-                                            $relationships[] = $relationship;
-                                            $linkedRecordPreexist["{$relationship->secondType}-{$relationship->secondId}"] = true;
-                                        }
-                                    }else{
-                                        $lookup = X2Model::model($className)->findByAttributes(array('name' => $importAttributes[$attribute]));
-                                        if(isset($lookup)){
-                                            $model->$importMap[$attribute] = $lookup->nameId;
-                                            $relationship = new Relationships;
-                                            $relationship->firstType = $modelName;
-                                            $relationship->secondType = $className;
-                                            $relationship->secondId = $lookup->id;
-                                            $relationships[] = $relationship;
-                                            $linkedRecordPreexist["{$relationship->secondType}-{$relationship->secondId}"] = true;
-                                        }elseif(isset($_SESSION['createRecords']) && $_SESSION['createRecords'] == 1 &&
-                                                !($modelName === 'BugReports' && $fieldRecord->linkType === 'BugReports')){
-                                            // Skip creating related bug reports; the created report wouldn't hold any useful info.
-
-                                            $className = ucfirst($fieldRecord->linkType);
-                                            if(class_exists($className)){
-                                                $lookup = new $className;
-                                                if($_SESSION['skipActivityFeed'] === 1)
-                                                    $lookup->createEvent = false;
-                                                $lookup->name = $importAttributes[$attribute];
-                                                if($lookup->hasAttribute('visibility')){
-                                                    $lookup->visibility = 1;
-                                                }
-                                                if($lookup->hasAttribute('description')){
-                                                    $lookup->description = "Generated by ".$modelName." import.";
-                                                }
-                                                if($lookup->hasAttribute('createDate')){
-                                                    $lookup->createDate = time();
-                                                }
-                                                if($lookup->save()){
-                                                    if(isset($_SESSION['created'][$className])){
-                                                        $_SESSION['created'][$className]++;
-                                                    }else{
-                                                        $_SESSION['created'][$className] = 1;
-                                                    }
-                                                    $model->$importMap[$attribute] = $lookup->nameId;
-                                                    $relationship = new Relationships;
-                                                    $relationship->firstType = $modelName;
-                                                    $relationship->secondType = $className;
-                                                    $relationship->secondId = $lookup->id;
-                                                    $relationships[] = $relationship;
-                                                    $linkedRecordPreexist["{$relationship->secondType}-{$relationship->secondId}"] = false;
-                                                }
-                                            }
-                                        }else{
-                                            $model->$importMap[$attribute] = $importAttributes[$attribute];
-                                        }
-                                    }
-                                    break;
-                                case "dateTime":
-                                case "date":
-                                    if(strtotime($importAttributes[$attribute]) !== false){
-                                        $model->$importMap[$attribute] = strtotime($importAttributes[$attribute]);
-                                    }elseif(is_numeric($importAttributes[$attribute])){
-                                        $model->$importMap[$attribute] = $importAttributes[$attribute];
-                                    }else{
-
-                                    }
-                                    break;
-                                default:
-                                    $model->$importMap[$attribute] = $importAttributes[$attribute];
-                            }
+                        if ($importMap[$attribute] === 'id')
+                            $mappedId = true;
+                        $isActionText = ($modelName === 'Actions' &&
+                            $importMap[$attribute] === 'actionDescription');
+                        if (isset($importMap[$attribute]) &&
+                                ($model->hasAttribute ($importMap[$attribute]) || $isActionText)) {
+                            $this->importRecordAttribute ($modelName, $model, $importMap[$attribute],
+                                $importAttributes[$attribute], $relationships, $modelContainer,
+                                $createdLinkedModels);
                             $_POST[$importMap[$attribute]] = $model->$importMap[$attribute];
                         }
                     }
-                    if ($modelName === 'Contacts') {
-                        // Help out the user in the special case where a Contact's full name
-                        // is set, but first and last name aren't, or vice versa.
-                        if (!empty($model->name) && (empty($model->firstName) && empty($model->lastName))) {
-                            $names = preg_split('/ /', $model->name);
-                            if (count($names) === 2) {
-                                $model->firstName = $names[0];
-                                $model->lastName = $names[1];
-                            }
-                        } else if (empty($model->name) && (!empty($model->firstName) && !empty($model->lastName)))
-                            $model->name = $model->firstName ." ". $model->lastName;
-                    }
-                    if ($modelName === 'Actions') {
-                        if (empty($model->actionDescription) && !empty($model->subject))
-                            $model->actionDescription = $model->subject;
-                        if (isset($model->associationType)) {
-                            // Handle reconstructing Action associations
-                            $exportableModules = array_merge(array_keys(Modules::getExportableModules()), array('None'));
-                            $exportableModules = array_map('lcfirst', $exportableModules);
-                            $model->associationType = lcfirst($model->associationType);
-                            if (!in_array($model->associationType, $exportableModules)) {
-                                // Invalid association type
-                                $model->addError ('associationType', Yii::t('admin', 'Unknown associationType.'));
-                            } else if (!isset($model->associationId) && isset($model->associationName)) {
-                                // Retrieve associationId
-                                $staticAssociationModel = X2Model::model($model->associationType);
-                                if ($staticAssociationModel->hasAttribute('name') && !ctype_digit($model->associationName))
-                                    $associationModelParams = array('name'=>$model->associationName);
-                                else
-                                    $associationModelParams = array('id' => $model->associationName);
-                                $lookup = $staticAssociationModel->findByAttributes($associationModelParams);
-                                if (isset($lookup)) {
-                                    $model->associationId = $lookup->id;
-                                    $model->associationName = $lookup->hasAttribute('name')? $lookup->name : $lookup->id;
-                                }
-                            }
-                        }
-                    }
-                    if ($model->hasAttribute('visibility')) {
-                        // Nobody every remembers to set visibility... set it for them
-                        if(empty($model->visibility) && ($model->visibility !== 0 && $model->visibility !== "0") || $model->visibility == 'Public'){
-                            $model->visibility = 1;
-                        }elseif($model->visibility == 'Private'){
-                            $model->visibility = 0;
-                        }
-                    }
-                    // If date fields were provided, do not create new values for them
-                    if(!empty($model->createDate) || !empty($model->lastUpdated) || !empty($model->lastActivity)){
-                        $model->disableBehavior('X2TimestampBehavior');
-                        if(empty($model->createDate)){
-                            $model->createDate = time();
-                        }
-                        if(empty($model->lastUpdated)){
-                            $model->lastUpdated = time();
-                        }
-                        if($model->hasAttribute('lastActivity') && empty($model->lastActivity)){
-                            $model->lastActivity = time();
-                        }
-                    }
-                    if($_SESSION['leadRouting'] == 1){
-                        $assignee = $this->getNextAssignee();
-                        if($assignee == "Anyone")
-                            $assignee = "";
-                        $model->assignedTo = $assignee;
-                    }
-                    // Loop through our override and set the manual data
-                    foreach($_SESSION['override'] as $attr => $val){
-                        $model->$attr = $val;
-                    }
-                    if(! $model->hasErrors() && $model->validate()){
-                        if(!empty($model->id)){
-                            $lookup = X2Model::model(str_replace(' ', '', $modelName))->findByPk($model->id);
-                            if(isset($lookup)){
-                                Relationships::model()->deleteAllByAttributes(array('firstType' => $modelName, 'firstId' => $lookup->id));
-                                Relationships::model()->deleteAllByAttributes(array('secondType' => $modelName, 'secondId' => $lookup->id));
-                                $lookup->delete();
-                                unset($lookup);
-                            }
-                        }
-                        // Save our model & create the import records and 
-                        // relationships. Passing $validate=false to CActiveRecord.save
-                        // because validation has already happened at this point
-                        if($model->save(false)){
-                            $importedIds[] = $model->id;
-                            $importLink = new Imports;
-                            $importLink->modelType = $modelName;
-                            $importLink->modelId = $model->id;
-                            $importLink->importId = $_SESSION['importId'];
-                            $importLink->timestamp = time();
-                            $importLink->save();
-                            $_SESSION['imported']++;
-                            foreach($relationships as $relationship){
-                                $relationship->firstId = $model->id;
-                                if($relationship->save() && !$linkedRecordPreexist["{$relationship->secondType}-{$relationship->secondId}"]){
-                                    $importLink = new Imports;
-                                    $importLink->modelType = $relationship->secondType;
-                                    $importLink->modelId = $relationship->secondId;
-                                    $importLink->importId = $_SESSION['importId'];
-                                    $importLink->timestamp = time();
-                                    $importLink->save();
-                                }
-                            }
-                            // Add all listed tags
-                            foreach($_SESSION['tags'] as $tag){
-                                $tagModel = new Tags;
-                                $tagModel->taggedBy = 'Import';
-                                $tagModel->timestamp = time();
-                                $tagModel->type = $modelName;
-                                $tagModel->itemId = $model->id;
-                                $tagModel->tag = $tag;
-                                $tagModel->itemName = $model->name;
-                                $tagModel->save();
-                            }
-                            // Log a comment if one was requested
-                            if(!empty($_SESSION['comment'])){
-                                $action = new Actions;
-                                $action->associationType = lcfirst(str_replace(' ', '', $modelName));
-                                $action->associationId = $model->id;
-                                $action->actionDescription = $_SESSION['comment'];
-                                $action->createDate = time();
-                                $action->updatedBy = Yii::app()->user->getName();
-                                $action->lastUpdated = time();
-                                $action->complete = "Yes";
-                                $action->completeDate = time();
-                                $action->completedBy = Yii::app()->user->getName();
-                                $action->type = "note";
-                                $action->visibility = 1;
-                                $action->reminder = "No";
-                                $action->priority = 1; // Set priority to Low
-                                if($action->save()){
-                                    $importLink = new Imports;
-                                    $importLink->modelType = "Actions";
-                                    $importLink->modelId = $action->id;
-                                    $importLink->importId = $_SESSION['importId'];
-                                    $importLink->timestamp = time();
-                                    $importLink->save();
-                                }
-                            }
-                        }
-                    }else{
-                        // If the import failed, then put the data into the failedRecords CSV for easy recovery.
-                        $failedRecords = fopen($this->safePath('failedRecords.csv'), 'a+');
-                        $errorMsg = array();
-                        foreach ($model->errors as $error)
-                            $errorMsg[] = strtr(implode(' ', array_values($error)), '"', "'");
-                        $errorMsg = implode(' ', $errorMsg);
-                        // Add the error to the last column of the csv record
-                        if (end($metaData) === 'X2_Import_Failures')
-                            $arr[count($arr)-1] = $errorMsg;
-                        else
-                            $arr[] = $errorMsg;
-                        fputcsv($failedRecords, $arr);
-                        fclose($failedRecords);
-                        $_SESSION['failed']++;
-                    }
+                    $this->fixupImportedAttributes ($modelName, $model);
+
+                    if (! $model->hasErrors() && $model->validate())
+                        $this->saveImportedModel ($model, $modelName, $modelContainer, $importedIds);
+                    else
+                        $this->markFailedRecord ($model, $arr, $metaData);
                 }else{
-                    if(!X2Model::$autoPopulateFields)
-                        X2Model::massUpdateNameId($modelName,$importedIds);
-                    echo json_encode(array(
-                        '1',
-                        $_SESSION['imported'],
-                        $_SESSION['failed'],
-                        json_encode($_SESSION['created']),
-                    ));
+                    $this->finishImportBatch ($modelName, $modelContainer, $relationships,
+                        $createdLinkedModels, $mappedId, true);
                     return;
                 }
             }
             // Change the offset to wherever we got to and continue.
             $_SESSION['offset'] = ftell($fp);
-            // Populate the nameId field since auto-populating fields is
-            // disabled and it is far more efficient to do it in a single query:
-            if(!X2Model::$autoPopulateFields)
-                X2Model::massUpdateNameId($modelName,$importedIds);
-            echo json_encode(array(
-                '0',
-                $_SESSION['imported'],
-                $_SESSION['failed'],
-                json_encode($_SESSION['created']),
-            ));
+            $this->finishImportBatch ($modelName, $modelContainer, $relationships,
+                $createdLinkedModels, $mappedId);
         }
     }
+
+    /**
+     * The import assumes we have human readable data in the CSV and will thus need to convert. This
+     * method converts link, date, and dateTime fields to the appropriate machine friendly data.
+     * @param string $modelName The model class being imported
+     * @param X2Model $model The currently importing model record
+     * @param string $fieldName Field to set
+     * @param string $importAttribute Value to set field
+     * @param array $relationships Attributes of Relationships to be created
+     * @param array $modelContainer Attributes of Models to be created
+     * @param array $createdLinkedModels Linked models that will be created
+     */
+    protected function importRecordAttribute($modelName, X2Model &$model, $fieldName, $importAttribute,
+            &$relationships, &$modelContainer, &$createdLinkedModels) {
+
+        $fieldRecord = Fields::model()->findByAttributes(array(
+            'modelName' => $modelName,
+            'fieldName' => $fieldName,
+        ));
+        /**
+         * Skip setting the attribute if it has already been set or if the entry from
+         * the CSV is empty.
+         */
+        if (empty($importAttribute) && ($importAttribute !== 0 && $importAttribute !== '0')) {
+            return;
+        }
+        if ($fieldName === 'actionDescription' && $modelName === 'Actions') {
+            $text = new ActionText;
+            $text->text = $importAttribute;
+            if (isset($model->id))
+                $text->actionId = $model->id;
+            $modelContainer['ActionText'][] = $text->attributes;
+            return;
+        }
+
+
+        // ensure the provided id is valid
+        if ((strtolower($fieldName) === 'id')
+                && (!preg_match('/^\d+$/', $importAttribute) || $importAttribute >= 4294967295)) {
+            return;
+        }
+        switch($fieldRecord->type){
+            case "link":
+                $this->importRecordLinkAttribute ($modelName, $model, $fieldRecord, $importAttribute,
+                    $relationships, $modelContainer, $createdLinkedModels);
+                break;
+            case "dateTime":
+            case "date":
+                if(strtotime($importAttribute) !== false){
+                    $model->$fieldName = strtotime($importAttribute);
+                }elseif(is_numeric($importAttribute)){
+                    $model->$fieldName = $importAttribute;
+                }else{
+
+                }
+                break;
+            default:
+                $model->$fieldName = $importAttribute;
+        }
+    }
+
+    /**
+     * Handle setting link type fields and create linked records if specified
+     * @param string $modelName The model class being imported
+     * @param X2Model $model The currently importing model record
+     * @param Fields $fieldRecord Field to set
+     * @param string $importAttribute Value to set field
+     * @param array $relationships Attributes of Relationships to be created
+     * @param array $modelContainer Attributes of Models to be created
+     * @param array $createdLinkedModels Linked models that will be created
+     */
+    protected function importRecordLinkAttribute($modelName, X2Model &$model, Fields $fieldRecord,
+            $importAttribute, &$relationships, &$modelContainer, &$createdLinkedModels) {
+        $fieldName = $fieldRecord->fieldName;
+        $className = ucfirst($fieldRecord->linkType);
+
+        if(ctype_digit($importAttribute)){
+            $lookup = X2Model::model($className)->findByPk($importAttribute);
+            $model->$fieldName = $importAttribute;
+            if(!empty($lookup)){
+                // Create a link to the existing record
+                $model->$fieldName = $lookup->nameId;
+                $relationship = new Relationships;
+                $relationship->firstType = $modelName;
+                $relationship->secondType = $className;
+                $relationship->secondId = $importAttribute;
+                $relationships[count($relationships)-1][] = $relationship->attributes;
+            }
+        } else {
+            $lookup = X2Model::model($className)->findByAttributes(array('name' => $importAttribute));
+            if (isset($lookup)) {
+                $model->$fieldName = $lookup->nameId;
+                $relationship = new Relationships;
+                $relationship->firstType = $modelName;
+                $relationship->secondType = $className;
+                $relationship->secondId = $lookup->id;
+                $relationships[count($relationships)-1][] = $relationship->attributes;
+            } elseif (isset($_SESSION['createRecords']) && $_SESSION['createRecords'] == 1 &&
+                    !($modelName === 'BugReports' && $fieldRecord->linkType === 'BugReports')) {
+                // Skip creating related bug reports; the created report wouldn't hold any useful info.
+                $className = ucfirst($fieldRecord->linkType);
+                if (class_exists($className)){
+                    $lookup = new $className;
+                    if ($_SESSION['skipActivityFeed'] === 1)
+                        $lookup->createEvent = false;
+                    $lookup->name = $importAttribute;
+                    if ($lookup->hasAttribute('visibility'))
+                        $lookup->visibility = 1;
+                    if ($lookup->hasAttribute('description'))
+                        $lookup->description = "Generated by ".$modelName." import.";
+                    if ($lookup->hasAttribute('createDate'))
+                        $lookup->createDate = time();
+
+                    if (!array_key_exists($className, $modelContainer))
+                        $modelContainer = array_merge($modelContainer, array($className => array()));
+                    // Ensure this linked record has not already been accounted for
+                    $createNewLinkedRecord = true;
+                    if ($model->hasAttribute('name')) {
+                        $model->$fieldName = $lookup->name;
+                    } else {
+                        $model->$fieldName = $importAttribute;
+                    }
+
+                    foreach ($modelContainer[$className] as $record) {
+                        if ($record['name'] === $lookup->name) {
+                            $createNewLinkedRecord = false;
+                            break;
+                        }
+                    }
+
+                    if ($createNewLinkedRecord) {
+                        $modelContainer[$className][] = $lookup->attributes;
+                        if(isset($_SESSION['created'][$className])){
+                            $_SESSION['created'][$className]++;
+                        }else{
+                            $_SESSION['created'][$className] = 1;
+                        }
+                    }
+                    $relationship = new Relationships;
+                    $relationship->firstType = $modelName;
+                    $relationship->secondType = $className;
+                    $relationships[count($relationships)-1][] = $relationship->attributes;
+                    $createdLinkedModels[] = $model->$fieldName;
+                }
+            } else {
+                $model->$fieldName = $importAttribute;
+            }
+        }
+    }
+
+    /**
+     * This method is used after importing a records attributes to perform extra tasks, such as
+     * assigning lead routing, setting visibility, and reconstructing Action associations.
+     * @param string $modelName Name of the model being imported
+     * @param X2Model $model Current moel to import
+     */
+    protected function fixupImportedAttributes($modelName, X2Model &$model) {
+        if ($modelName === 'Contacts') {
+            // Help out the user in the special case where a Contact's full name
+            // is set, but first and last name aren't, or vice versa.
+            if (!empty($model->name) && (empty($model->firstName) && empty($model->lastName))) {
+                $names = preg_split('/ /', $model->name);
+                if (count($names) === 2) {
+                    $model->firstName = $names[0];
+                    $model->lastName = $names[1];
+                }
+            } else if (empty($model->name) && (!empty($model->firstName) && !empty($model->lastName)))
+                $model->name = $model->firstName ." ". $model->lastName;
+        }
+
+        if ($modelName === 'Actions' && isset($model->associationType))
+            $this->reconstructImportedActionAssoc($model);
+
+        if ($model->hasAttribute('visibility')) {
+            // Nobody every remembers to set visibility... set it for them
+            if(empty($model->visibility) && ($model->visibility !== 0 && $model->visibility !== "0")
+                    || $model->visibility == 'Public') {
+                $model->visibility = 1;
+            } elseif($model->visibility == 'Private')
+                $model->visibility = 0;
+        }
+        // If date fields were provided, do not create new values for them
+        if (!empty($model->createDate) || !empty($model->lastUpdated) ||
+                !empty($model->lastActivity)) {
+            $now = time();
+            if (empty($model->createDate))
+                $model->createDate = $now;
+            if (empty($model->lastUpdated))
+                $model->lastUpdated = $now;
+            if ($model->hasAttribute('lastActivity') && empty($model->lastActivity))
+                $model->lastActivity = $now;
+        }
+        if($_SESSION['leadRouting'] == 1){
+            $assignee = $this->getNextAssignee();
+            if($assignee == "Anyone")
+                $assignee = "";
+            $model->assignedTo = $assignee;
+        }
+        // Loop through our override and set the manual data
+        foreach($_SESSION['override'] as $attr => $val){
+            $model->$attr = $val;
+        }
+    }
+
+    /**
+     * Handle reconstructing and validating Action associations
+     * @param Action $model Action to reconstruct association
+     */
+    protected function reconstructImportedActionAssoc(Actions &$model) {
+        $exportableModules = array_merge(
+            array_keys(Modules::getExportableModules()),
+            array('None')
+        );
+        $exportableModules = array_map('lcfirst', $exportableModules);
+        $model->associationType = lcfirst($model->associationType);
+        if (!in_array($model->associationType, $exportableModules)) {
+            // Invalid association type
+            $model->addError ('associationType', Yii::t('admin', 'Unknown associationType.'));
+        } else if (isset($model->associationId) && $model->associationId !== '0') {
+            $associatedModel = X2Model::model($model->associationType)
+                ->findByPk($model->associationId);
+            if ($associatedModel)
+                $model->associationName = $associatedModel->nameId;
+        } else if (!isset($model->associationId) && isset($model->associationName)) {
+            // Retrieve associationId
+            $staticAssociationModel = X2Model::model($model->associationType);
+            if ($staticAssociationModel->hasAttribute('name') &&
+                    !ctype_digit($model->associationName)) {
+                $associationModelParams = array('name'=>$model->associationName);
+            } else {
+                $associationModelParams = array('id' => $model->associationName);
+            }
+            $lookup = $staticAssociationModel->findByAttributes($associationModelParams);
+            if (isset($lookup)) {
+                $model->associationId = $lookup->id;
+                $model->associationName = $lookup->hasAttribute('nameId') ?
+                    $lookup->nameId : $lookup->name;
+            }
+        }
+    }
+
+    /**
+     * Finalize this batch of records by performing a mass insert, handling accounting,
+     * updating nameIds, and rendering the JSON response
+     * @param string $modelName Name of the model class being imported
+     * @param array $modelContainer Array of model attributes to be created
+     * @param array $relationships Array of relationship attributes to be created
+     * @param array $createdLinkedModels Array of name|nameId of the newly created linked records
+     * @param boolean $mappedId Whether the primary model's ID has been mapped: this alters
+     *    the result of lastInsertId
+     * @param boolean $finished Whether this batch has reached the end of the CSV
+     */
+    protected function finishImportBatch($modelName, $modelContainer, $relationships,
+            $createdLinkedModels, $mappedId, $finished = false) {
+        // Keep track of the lastInsertId for each type
+        $lastInsertedIds = array();
+
+        // First insert the records being imported
+        $lastInsertedIds[$modelName] = $this->insertMultipleRecords(
+            $modelName,
+            $modelContainer[$modelName]
+        );
+        $primaryModelCount = count($modelContainer[$modelName]);
+        // If id was mapped, then lastInsertId would actually be the last in the sequence.
+        // Otherwise, lastInsertId would be the first
+        if ($mappedId) {
+            $primaryIdRange = range (
+                $lastInsertedIds[$modelName] - $primaryModelCount + 1,
+                $lastInsertedIds[$modelName]
+            );
+        } else {
+            $primaryIdRange = range (
+                $lastInsertedIds[$modelName],
+                $lastInsertedIds[$modelName] + $primaryModelCount - 1
+            );
+        }
+        $this->handleImportAccounting ($modelContainer[$modelName], $modelName, $lastInsertedIds,
+            $relationships, $createdLinkedModels, $mappedId);
+        $this->massUpdateImportedNameIds ($lastInsertedIds[$modelName], $modelName,
+            $primaryModelCount);
+
+        // Now create remaining auxiliary records
+        foreach ($modelContainer as $type => $models) {
+            if ($type === $modelName) // these were already processed
+                continue;
+
+            if ($modelName === 'Actions' && $type = 'ActionText') {
+                // set the actionIds and insert ActionText records
+                $firstInsertedId = $primaryIdRange[0];
+                $actionTexts = array();
+                foreach ($models as $i => $model) {
+                    if (empty($model) or isset($model['actionId']))
+                        continue;
+                    $model['actionId'] = $firstInsertedId + $i;
+                    $actionTexts[] = $model;
+                }
+                $this->insertMultipleRecords ('ActionText', $actionTexts);
+            } else {
+                // otherwise handle the records normally
+                $lastInsertedIds[$type] = $this->insertMultipleRecords ($type, $models);
+                $this->handleImportAccounting ($models, $type, $lastInsertedIds,
+                    $relationships, $createdLinkedModels);
+                $this->fixupLinkFields ($modelName, $type, $primaryIdRange);
+                // related records won't have ID set; therefore, lastInsertId would have
+                // returned the first record in a sequence
+                $this->massUpdateImportedNameIds ($lastInsertedIds[$type] + count($models) - 1,
+                    $type, count($models));
+            }
+        }
+        $this->establishImportRelationships ($relationships, $primaryIdRange[0],
+            $createdLinkedModels, $mappedId);
+
+        echo json_encode(array(
+            ($finished ? '1' : '0'),
+            $_SESSION['imported'],
+            $_SESSION['failed'],
+            json_encode($_SESSION['created']),
+        ));
+    }
+
+    /**
+     * Populate the nameId field since auto-populating fields is
+     * disabled and it is far more efficient to do it in a single query
+     */
+    protected function massUpdateImportedNameIds($lastInsertId, $type, $count) {
+        $hasNameId = Fields::model()->findByAttributes(array(
+            'fieldName' => 'nameId',
+            'modelName' => $type,
+        ));
+        if (!X2Model::$autoPopulateFields && $hasNameId) {
+            $importedIds = range (
+                $lastInsertId - $count + 1,
+                $lastInsertId
+            );
+            X2Model::massUpdateNameId($type,$importedIds);
+        }
+    }
+
+    /**
+     * Create additional records related to the import, including the requested Tags, comment
+     * Actions, Import records, Events, and Relationships
+     * @param array $models Array of arrays of model attributes
+     * @param string $modelName Name of the model being imported
+     * @param array $lastInsertedIds The last MySQL IDs that were created, indexed by model type
+     * @param array $relationships Array of relationship attributes to be created
+     * @param array $createdLinkedModels Array of the name|nameId of newly created linked records
+     * @param boolean $mappedId Whether ID was mapped: this affects lastInsertId's behavior
+     */
+    protected function handleImportAccounting($models, $modelName, $lastInsertedIds, $relationships,
+            $createdLinkedModels, $mappedId = false) {
+        $now = time();
+        $editingUsername = Yii::app()->user->name;
+        $modelContainer = array(
+            'Imports' => array(),
+            'Actions' => array(),
+            'Events' => array(),
+            'Notification' => array(),
+            'Tags' => array(),
+        );
+        if ($mappedId)
+            $firstNewId = $lastInsertedIds[$modelName] - count($models) + 1;
+        else
+            $firstNewId = $lastInsertedIds[$modelName];
+        for($i = 0; $i < count($models); $i++) {
+            $record = $models[$i];
+            if ($mappedId) {
+                $modelId = $models[$i]['id'];
+            } else {
+                $modelId = $i + $firstNewId;
+            }
+            // Create a event for the imported record, and create a notification for the assigned
+            // user if one exists, since X2ChangelogBehavior will not be triggered with
+            // createMultipleInsertCommand()
+            if ($_SESSION['skipActivityFeed'] !== 1) {
+                $event = new Events;
+                $event->visibility = array_key_exists('visibility', $record) ?
+                    $record['visibility'] : 1;
+                $event->associationType = $modelName;
+                $event->associationId = $modelId;
+                $event->timestamp = $now;
+                $event->user = $editingUsername;
+                $event->type = 'record_create';
+                $modelContainer['Events'][] = $event->attributes;
+            }
+            if (array_key_exists('assignedTo', $record) && !empty($record['assignedTo']) &&
+                    $record['assignedTo'] != $editingUsername && $record['assignedTo'] != 'Anyone') {
+                $notif = new Notification;
+                $notif->user = $record['assignedTo'];
+                $notif->createdBy = $editingUsername;
+                $notif->createDate = $now;
+                $notif->type = 'create';
+                $notif->modelType = $modelName;
+                $notif->modelId = $modelId;
+                $modelContainer['Notification'][] = $notif->attributes;
+            }
+
+            // Add all listed tags
+            foreach($_SESSION['tags'] as $tag){
+                $tagModel = new Tags;
+                $tagModel->taggedBy = 'Import';
+                $tagModel->timestamp = $now;
+                $tagModel->type = $modelName;
+                $tagModel->itemId = $modelId;
+                $tagModel->tag = $tag;
+                $tagModel->itemName = $modelName;
+                $modelContainer['Tags'][] = $tagModel->attributes;
+            }
+            // Log a comment if one was requested
+            if(!empty($_SESSION['comment'])){
+                $action = new Actions;
+                $action->associationType = lcfirst(str_replace(' ', '', $modelName));
+                $action->associationId = $modelId;
+                $action->createDate = $now;
+                $action->updatedBy = Yii::app()->user->getName();
+                $action->lastUpdated = $now;
+                $action->complete = "Yes";
+                $action->completeDate = $now;
+                $action->completedBy = Yii::app()->user->getName();
+                $action->type = "note";
+                $action->visibility = 1;
+                $action->reminder = "No";
+                $action->priority = 1; // Set priority to Low
+                $modelContainer['Actions'][] = $action->attributes;
+            }
+
+            $importLink = new Imports;
+            $importLink->modelType = $modelName;
+            $importLink->modelId = $modelId;
+            $importLink->importId = $_SESSION['importId'];
+            $importLink->timestamp = $now;
+            $modelContainer['Imports'][] = $importLink->attributes;
+        }
+
+        foreach ($modelContainer as $type => $records) {
+            if (empty($records))
+                continue;
+            $lastInsertId = $this->insertMultipleRecords ($type, $records);
+            if ($type === 'Actions') {
+                // Create ActionText and Import records for the comment Actions that were created
+                if (empty($records))
+                    continue;
+                $actionImportRecords = array();
+                $actionTextRecords = array();
+                $actionIdRange = range ($lastInsertId, $lastInsertId + count($records) - 1);
+                foreach ($actionIdRange as $i) {
+                    $importLink = new Imports;
+                    $importLink->modelType = "Actions";
+                    $importLink->modelId = $i;
+                    $importLink->importId = $_SESSION['importId'];
+                    $importLink->timestamp = $now;
+                    $actionImportRecords[] = $importLink->attributes;
+
+                    $actionText = new ActionText;
+                    $actionText->actionId = $i;
+                    $actionText->text = $_SESSION['comment'];
+                    $actionTextRecords[] = $actionText->attributes;
+                }
+                $this->insertMultipleRecords ('Imports', $actionImportRecords);
+                $this->insertMultipleRecords ('ActionText', $actionTextRecords);
+            }
+        }
+    }
+
+    /**
+     * Process the link-type fields to set nameId
+     * @param int $count The number of primary models being imported
+     * @param string $modelName The primary model being imported
+     * @param string $type The model of the linked record
+     * @param array $lastInsertedIds Array of last inserted IDs, indexed by model name
+     */
+    protected function fixupLinkFields ($modelName, $type, $primaryIdRange) {
+        $linkTypeFields = Yii::app()->db->createCommand()
+            ->select('fieldName')
+            ->from('x2_fields')
+            ->where('type = "link" AND modelName = :modelName AND linkType = :linkType', array(
+                ':modelName' => $modelName,
+                ':linkType' => $type,
+            ))->queryColumn();
+        $primaryTable = X2Model::model($modelName)->tableName();
+        foreach ($linkTypeFields as $field) {
+            // update each link type field
+            $staticModel = X2Model::model($type);
+            if (!$staticModel->hasAttribute('name'))
+                continue;
+            $secondaryTable = $staticModel->tableName();
+
+            $sql = 'UPDATE `'.$primaryTable.'` a JOIN `'.$secondaryTable.'` b '.
+                       'ON a.'.$field.' = b.name '.
+                       'SET `'.$field.'` = CONCAT(b.name, \''.Fields::NAMEID_DELIM.'\', b.id) '.
+                       'WHERE a.id in ('.implode(',', $primaryIdRange).')';
+            Yii::app()->db->createCommand ($sql)->execute();
+        }
+    }
+
+    /**
+     * Create relationships records for the linked models
+     * @param array $relationships Relationship attributes
+     * @param int $firstNewId The first inserted id
+     * @param array $createdLinkedModels
+     * @param boolean $mappedId Whether or not ID was a mapped field
+     */
+    protected function establishImportRelationships($relationships, $firstNewId,
+            $createdLinkedModels, $mappedId = false) {
+        $validRelationships = array();
+
+        foreach ($relationships as $i => $modelsRelationships) {
+            $modelId = $i + $firstNewId;
+            if (empty($modelsRelationships)) // skip placeholders
+                continue;
+            foreach ($modelsRelationships as $relationship) {
+                $relationship['firstId'] = $modelId;
+                if (empty($relationship['secondId'])) {
+                    $model = X2Model::model($relationship['firstType'])
+                        ->findByPk ($modelId);
+                    $linkedStaticModel = X2Model::model($relationship['secondType']);
+                    if (!$model)
+                        continue;
+                    $fields = Yii::app()->db->createCommand()
+                        ->select('fieldName')
+                        ->from('x2_fields')
+                        ->where('type = \'link\' AND modelName = :firstType AND '.
+                            'linkType = :secondType', array(
+                                ':firstType' => $relationship['firstType'],
+                                ':secondType' => $relationship['secondType'],
+                        ))->queryColumn();
+                    foreach ($fields as $field) {
+                        // Check for relationships to new linked models for each link type field
+                        if (empty($model->$field)) // skip fields that weren't set
+                            continue;
+                        $attr = $linkedStaticModel->hasAttribute('nameId') ? 'nameId' : 'name';
+                        $linkedId = Yii::app()->db->createCommand()
+                            ->select('id')
+                            ->from($linkedStaticModel->tableName())
+                            ->where($attr.' = :reference', array(
+                                ':reference' => $model->$field,
+                            ))->queryScalar();
+                        if (!$linkedId)
+                            continue;
+                        $relationship['secondId'] = $linkedId;
+                    }
+                }
+                if (!empty($relationship['secondId']))
+                    $validRelationships[] = $relationship;
+            }
+        }
+        $this->insertMultipleRecords ('Relationships', $validRelationships);
+    }
+
+    /**
+     * Execute a multiple insert command
+     * @param string $modelType Child of X2Model
+     * @param array $models Array of model attributes to create
+     * @return int Last inserted id
+     */
+    protected function insertMultipleRecords($modelType, $models) {
+        if (empty($models))
+            return null;
+        $tableName = X2Model::model($modelType)->tableName();
+        Yii::app()->db->schema->commandBuilder
+            ->createMultipleInsertCommand($tableName, $models)
+            ->execute();
+        $lastInsertId = Yii::app()->db->schema->commandBuilder
+            ->getLastInsertId($tableName);
+        return $lastInsertId;
+    }
+
+    /**
+     * Remove a record with the same ID, save the model attributes in the container, and increment
+     * the count of imported records
+     * @param X2Model $model
+     * @param array $modelContainer Array of validated models attributes
+     * @param array $importedIds Array of ids from imported models
+     */
+    protected function saveImportedModel(X2Model $model, $modelName, &$modelContainer, &$importedIds) {
+        if(!empty($model->id)){
+            $lookup = X2Model::model(str_replace(' ', '', $modelName))->findByPk($model->id);
+            if(isset($lookup)){
+                Relationships::model()->deleteAllByAttributes(array(
+                    'firstType' => $modelName,
+                    'firstId' => $lookup->id)
+                );
+                Relationships::model()->deleteAllByAttributes(array(
+                    'secondType' => $modelName,
+                    'secondId' => $lookup->id)
+                );
+                $lookup->delete();
+                unset($lookup);
+            }
+        }
+        // Save our model & create the import records and 
+        // relationships. Passing $validate=false to CActiveRecord.save
+        // because validation has already happened at this point
+        $modelContainer[$modelName][] = $model->attributes;
+        $_SESSION['imported']++;
+        $importedIds[] = $model->id;
+    }
+
+    /**
+     * Save the failed record into a CSV with validation errors
+     * @param X2Model $model
+     * @param array $arr
+     * @param array $metadata
+     */
+    protected function markFailedRecord (X2Model $model, &$arr, $metaData) {
+        // If the import failed, then put the data into the failedRecords CSV for easy recovery.
+        $failedRecords = fopen($this->safePath('failedRecords.csv'), 'a+');
+        $errorMsg = array();
+        foreach ($model->errors as $error)
+            $errorMsg[] = strtr(implode(' ', array_values($error)), '"', "'");
+        $errorMsg = implode(' ', $errorMsg);
+
+        // Add the error to the last column of the csv record
+        if (end($metaData) === 'X2_Import_Failures')
+            $arr[count($arr)-1] = $errorMsg;
+        else
+            $arr[] = $errorMsg;
+        fputcsv($failedRecords, $arr);
+        fclose($failedRecords);
+        $_SESSION['failed']++;
+    }
+
+    /************************************************************************
+     *          End Record Importing Methods
+     ***********************************************************************/
 
     /**
      * Import a zip of a module.
@@ -3560,9 +4100,9 @@ class AdminController extends Controller {
      * This method will allow the admin to import a zip file of an exported X2
      * module.
      */
-    public function actionImportModule(){
+    public function actionImportModule() {
 
-        if(isset($_FILES['data'])){
+        if (isset($_FILES['data'])) {
 
             $module = Yii::app()->file->set('data');
             if (!$module->exists) {
@@ -3580,7 +4120,7 @@ class AdminController extends Controller {
                 $this->redirect('importModule');
             }
 
-            $filename = $this->asa('ImportExportBehavior')->safePath($moduleName.".zip");
+            $filename = $this->asa('ImportExportBehavior')->safePath($moduleName . ".zip");
             if ($module->copy($filename) === false || !file_exists($filename)) {
                 Yii::app()->user->setFlash('error', Yii::t('admin', "There was an error saving the module."));
                 $this->redirect('importModule');
@@ -3593,17 +4133,17 @@ class AdminController extends Controller {
 
             $regPath = "protected/modules/$moduleName/register.php";
             $regFile = realpath($regPath);
-            if($regFile){
+            if ($regFile) {
                 $install = require_once($regFile);
-                foreach($install['install'] as $sql){
+                foreach ($install['install'] as $sql) {
                     $sqlComm = $sql;
-                    if(is_string($sql)){
-                        if(file_exists($sql)){
+                    if (is_string($sql)) {
+                        if (file_exists($sql)) {
                             $sqlComm = explode('/*&*/', file_get_contents($sql));
                         }
                     }
-                    foreach($sqlComm as $sqlLine){
-                        if(!empty($sqlLine)){
+                    foreach ($sqlComm as $sqlLine) {
+                        if (!empty($sqlLine)) {
                             $command = Yii::app()->db->createCommand($sqlLine);
                             $command->execute();
                         }
@@ -3612,9 +4152,9 @@ class AdminController extends Controller {
             }
             unlink($filename);
 
-            $this->createDefaultModulePermissions (ucfirst($moduleName));
+            $this->createDefaultModulePermissions(ucfirst($moduleName));
 
-            $this->redirect(array($moduleName.'/index'));
+            $this->redirect(array($moduleName . '/index'));
         }
         $this->render('importModule');
     }
@@ -3629,13 +4169,13 @@ class AdminController extends Controller {
      * This has been mostly superceded by the import/export feature but a use may
      * yet be found for it.
      */
-    public function actionRegisterModules(){
+    public function actionRegisterModules() {
 
         $modules = scandir('protected/modules');
         $modules = array_combine($modules, $modules);
         $arr = array();
-        foreach($modules as $module){
-            if(file_exists("protected/modules/$module/register.php") && is_null(Modules::model()->findByAttributes(array('name' => $module)))){
+        foreach ($modules as $module) {
+            if (file_exists("protected/modules/$module/register.php") && is_null(Modules::model()->findByAttributes(array('name' => $module)))) {
                 $arr[] = ($module);
             }
         }
@@ -3657,11 +4197,11 @@ class AdminController extends Controller {
      *
      * @param string $module The name of the module being toggled.
      */
-    public function actionToggleModule($module){
+    public function actionToggleModule($module) {
 
         $config = include("protected/modules/$module/register.php");
         $exists = Modules::model()->findByAttributes(array('name' => $module));
-        if(!isset($exists)){
+        if (!isset($exists)) {
             $moduleRecord = new Modules;
             $moduleRecord->editable = $config['editable'] ? 1 : 0;
             $moduleRecord->searchable = $config['searchable'] ? 1 : 0;
@@ -3673,17 +4213,17 @@ class AdminController extends Controller {
             $moduleRecord->visible = 1;
             $moduleRecord->menuPosition = Modules::model()->count();
 
-            if($moduleRecord->save()){
+            if ($moduleRecord->save()) {
                 $install = $config['install'];
             }
-        }else{
+        } else {
             $exists->visible = $exists->visible ? 0 : 1;
 
-            if($exists->save()){
-                if($exists->toggleable){
+            if ($exists->save()) {
+                if ($exists->toggleable) {
                     $uninstall = $config['uninstall'];
-                }else{
-
+                } else {
+                    
                 }
             }
         }
@@ -3696,44 +4236,44 @@ class AdminController extends Controller {
      * This method allows the admin to create and edit the form layouts for
      * all editable modules within the software.
      */
-    public function actionEditor(){
+    public function actionEditor() {
 
         $layoutModel = null;
         $defaultView = false;
         $defaultForm = false;
 
-        if(isset($_GET['id']) && !empty($_GET['id'])){
+        if (isset($_GET['id']) && !empty($_GET['id'])) {
 
             $id = $_GET['id'];
             $layoutModel = FormLayout::model()->findByPk($id);
 
-            if(!isset($layoutModel))
+            if (!isset($layoutModel))
                 $this->redirect(array('editor'));
 
             $modelName = $layoutModel->model;
 
-            if(isset($_POST['layout'])){
+            if (isset($_POST['layout'])) {
                 $layoutModel->layout = urldecode($_POST['layout']);
                 $layoutModel->defaultView = isset($_POST['defaultView']) && $_POST['defaultView'] == 1;
                 $layoutModel->defaultForm = isset($_POST['defaultForm']) && $_POST['defaultForm'] == 1;
                 $layoutModel->scenario = isset($_POST['scenario']) ? $_POST['scenario'] : 'Default';
 
                 // if this is the default view, unset defaultView for all other forms
-                if($layoutModel->defaultView)
-                    FormLayout::clearDefaultViews ($modelName, $layoutModel->scenario);
+                if ($layoutModel->defaultView)
+                    FormLayout::clearDefaultViews($modelName, $layoutModel->scenario);
                 // if this is the default form, unset defaultForm for all other forms
-                if($layoutModel->defaultForm)
-                    FormLayout::clearDefaultForms ($modelName, $layoutModel->scenario);
+                if ($layoutModel->defaultForm)
+                    FormLayout::clearDefaultForms($modelName, $layoutModel->scenario);
 
                 $layoutModel->save();
                 $this->redirect(array('editor', 'id' => $id));
             }
-        }else{
+        }else {
             $modelName = isset($_GET['model']) ? $_GET['model'] : '';
-            if(!empty($modelName)){
-                try{
+            if (!empty($modelName)) {
+                try {
                     $model = X2Model::model($modelName);
-                }catch(Exception $e){
+                } catch (Exception $e) {
                     throw new CHttpException(400, 'The model you have requested does not exist. Please do not repeat this request.');
                 }
             }
@@ -3743,25 +4283,25 @@ class AdminController extends Controller {
         $modules = Modules::model()->findAllByAttributes(array('editable' => 1));
 
         $modelList = array('' => '---');
-        foreach($modules as $module){
-            if($module->name == 'marketing')
+        foreach ($modules as $module) {
+            if ($module->name == 'marketing')
                 $modelList['Campaign'] = Yii::t('marketing', 'Campaign');
-            elseif($module->name == 'opportunities')
+            elseif ($module->name == 'opportunities')
                 $modelList['Opportunity'] = Yii::t('opportunities', 'Opportunity');
-            elseif($module->name == 'products')
+            elseif ($module->name == 'products')
                 $modelList['Product'] = Yii::t('products', 'Product');
-            elseif($module->name == 'quotes')
+            elseif ($module->name == 'quotes')
                 $modelList['Quote'] = Yii::t('quotes', 'Quote');
             else
                 $modelList[ucfirst($module->name)] = Yii::t('app', $module->title);
         }
 
         $versionList = array('' => '---');
-        if(!empty($modelName)){
+        if (!empty($modelName)) {
             $layouts = FormLayout::model()->findAllByAttributes(array('model' => $modelName));
 
-            foreach($layouts as &$layout)
-                $versionList[$layout->id] = $layout->version.(($layout->defaultView || $layout->defaultForm) ? ' ('.Yii::t('admin', 'Default').')' : '');
+            foreach ($layouts as &$layout)
+                $versionList[$layout->id] = $layout->version . (($layout->defaultView || $layout->defaultForm) ? ' (' . Yii::t('admin', 'Default') . ')' : '');
             unset($layout);
         }
 
@@ -3782,13 +4322,13 @@ class AdminController extends Controller {
      * This method is called via AJAX from within {@link actionEditor} to create
      * new form layouts for use with the modules.
      */
-    public function actionCreateFormLayout(){
-        if(isset($_GET['newLayout'], $_GET['model'], $_GET['layoutName'])){
+    public function actionCreateFormLayout() {
+        if (isset($_GET['newLayout'], $_GET['model'], $_GET['layoutName'])) {
             // $currentLayouts = FormLayout::model()->findAllByAttributes(array('model'=>$_GET['model']));
 
             $newLayout = new FormLayout;
 
-            if(isset($_POST['layout']))
+            if (isset($_POST['layout']))
                 $newLayout->layout = urldecode($_POST['layout']);
 
             $newLayout->version = $_GET['layoutName'];
@@ -3807,26 +4347,26 @@ class AdminController extends Controller {
      *
      * @param int $id The ID of the layout to be deleted.
      */
-    public function actionDeleteFormLayout($id){
+    public function actionDeleteFormLayout($id) {
 
         $layout = FormLayout::model()->findByPk($id);
-        if(isset($layout)){
+        if (isset($layout)) {
             $modelName = $layout->model;
             $defaultView = $layout->defaultView;
             $defaultForm = $layout->defaultForm;
             $layout->delete();
 
             // if we just deleted the default, find the next layout and make it the default
-            if($defaultView){
+            if ($defaultView) {
                 $newDefaultView = FormLayout::model()->findByAttributes(array('model' => $modelName));
-                if(isset($newDefaultView)){
+                if (isset($newDefaultView)) {
                     $newDefaultView->defaultView = true;
                     $newDefaultView->save();
                 }
             }
-            if($defaultForm){
+            if ($defaultForm) {
                 $newDefaultForm = FormLayout::model()->findByAttributes(array('model' => $modelName));
-                if(isset($newDefaultForm)){
+                if (isset($newDefaultForm)) {
                     $newDefaultForm->defaultForm = true;
                     $newDefaultForm->save();
                 }
@@ -3842,17 +4382,17 @@ class AdminController extends Controller {
      * This method allows the admin to access the functions related to creating
      * and editing admin created dropdowns in the app.
      */
-    public function actionManageDropDowns(){
+    public function actionManageDropDowns() {
 
         $dataProvider = new CActiveDataProvider('Dropdowns');
         $model = new Dropdowns;
 
         $dropdowns = $dataProvider->getData();
-        foreach($dropdowns as $dropdown){
+        foreach ($dropdowns as $dropdown) {
             $temp = json_decode($dropdown->options, true);
-            if(is_array($temp)){
+            if (is_array($temp)) {
                 $str = implode(", ", $temp);
-            }else{
+            } else {
                 $str = $dropdown->options;
             }
             $dropdown->options = $str;
@@ -3872,26 +4412,27 @@ class AdminController extends Controller {
      * This method allows the admin to create a custom dropdown to be used with
      * a module in conjunction with the form editor.
      */
-    public function actionDropDownEditor(){
+    public function actionDropDownEditor() {
         $model = new Dropdowns;
 
-        if(isset($_POST['Dropdowns'])){
+        if (isset($_POST['Dropdowns'])) {
             $model->attributes = $_POST['Dropdowns'];
             $temp = array();
-            if (isset ($model->options)) {
-                foreach($model->options as $option){
-                    if($option != "") {
+            if (isset($model->options)) {
+                foreach ($model->options as $option) {
+                    if ($option != "") {
                         $temp[$option] = $option;
                     }
                 }
             }
-            if(count($temp) > 0){
+            if (count($temp) > 0) {
                 $model->options = json_encode($temp);
-                if($model->save()){
+                if ($model->save()) {
+                    
                 }
             }
             $this->redirect(
-                'manageDropDowns'
+                    'manageDropDowns'
             );
         }
     }
@@ -3899,10 +4440,10 @@ class AdminController extends Controller {
     /**
      * Delete a custom dropdown
      */
-    public function actionDeleteDropdown(){
+    public function actionDeleteDropdown() {
         $dropdowns = Dropdowns::model()->findAll();
 
-        if(isset($_POST['dropdown'])){
+        if (isset($_POST['dropdown'])) {
             if ($_POST['dropdown'] != Actions::COLORS_DROPDOWN_ID) {
                 $model = Dropdowns::model()->findByPk($_POST['dropdown']);
                 $model->delete();
@@ -3918,53 +4459,52 @@ class AdminController extends Controller {
     /**
      * Edit a previously created dropdown
      */
-    public function actionEditDropdown(){
+    public function actionEditDropdown() {
         $model = new Dropdowns;
 
-        if(isset($_POST['Dropdowns'])){
+        if (isset($_POST['Dropdowns'])) {
             $model = Dropdowns::model()->findByPk(
-                $_POST['Dropdowns']['id']);
+                    $_POST['Dropdowns']['id']);
             if ($model->id == Actions::COLORS_DROPDOWN_ID) {
-                if (AuxLib::issetIsArray ($_POST['Dropdowns']['values']) &&
-                    AuxLib::issetIsArray ($_POST['Dropdowns']['labels']) &&
-                    count ($_POST['Dropdowns']['values']) ===
-                    count ($_POST['Dropdowns']['labels'])) {
+                if (AuxLib::issetIsArray($_POST['Dropdowns']['values']) &&
+                        AuxLib::issetIsArray($_POST['Dropdowns']['labels']) &&
+                        count($_POST['Dropdowns']['values']) ===
+                        count($_POST['Dropdowns']['labels'])) {
 
-                    if (AuxLib::issetIsArray ($_POST['Admin']) && 
-                        isset ($_POST['Admin']['enableColorDropdownLegend'])) {
+                    if (AuxLib::issetIsArray($_POST['Admin']) &&
+                            isset($_POST['Admin']['enableColorDropdownLegend'])) {
 
-                        Yii::app()->settings->enableColorDropdownLegend = 
-                            $_POST['Admin']['enableColorDropdownLegend'];
-                        Yii::app()->settings->save ();
+                        Yii::app()->settings->enableColorDropdownLegend = $_POST['Admin']['enableColorDropdownLegend'];
+                        Yii::app()->settings->save();
                     }
 
-                    $options = array_combine (
-                        $_POST['Dropdowns']['values'],
-                        $_POST['Dropdowns']['labels']);
+                    $options = array_combine(
+                            $_POST['Dropdowns']['values'], $_POST['Dropdowns']['labels']);
                     $temp = array();
                     foreach ($options as $value => $label) {
-                        if($value != "")
+                        if ($value != "")
                             $temp[$value] = $label;
                     }
-                    $model->options = json_encode ($temp);
-                    $model->save ();
+                    $model->options = json_encode($temp);
+                    $model->save();
                 }
             } else {
                 $model->attributes = $_POST['Dropdowns'];
                 $temp = array();
-                if(is_array($model->options) && count($model->options) > 0) {
-                    foreach($model->options as $option){
-                        if($option != "")
+                if (is_array($model->options) && count($model->options) > 0) {
+                    foreach ($model->options as $option) {
+                        if ($option != "")
                             $temp[$option] = $option;
                     }
                     $model->options = json_encode($temp);
-                    if($model->save()){
+                    if ($model->save()) {
+                        
                     }
                 }
             }
         }
         $this->redirect(
-            'manageDropDowns'
+                'manageDropDowns'
         );
     }
 
@@ -3974,8 +4514,8 @@ class AdminController extends Controller {
      * This method is called via AJAX by {@link actionEditDropdown} to get the
      * options of the dropdown for the edit dropdown page.
      */
-    public function actionGetDropdown(){
-        if(isset($_POST['Dropdowns']['id'])){
+    public function actionGetDropdown() {
+        if (isset($_POST['Dropdowns']['id'])) {
             $id = $_POST['Dropdowns']['id'];
             $model = Dropdowns::model()->findByPk($id);
             $str = "";
@@ -3985,34 +4525,34 @@ class AdminController extends Controller {
 
             $options = json_decode($model->options);
             if ($id == Actions::COLORS_DROPDOWN_ID) {
-                $this->renderPartial (
-                    'application.modules.actions.views.actions._colorDropdownForm', array (
-                        'model' => $model,
-                        'options' => $options,
-                    ), false, true);
+                $this->renderPartial(
+                        'application.modules.actions.views.actions._colorDropdownForm', array(
+                    'model' => $model,
+                    'options' => $options,
+                        ), false, true);
             } else {
-                foreach($options as $option){
+                foreach ($options as $option) {
                     $str.=
-                        "<li>
+                            "<li>
                             <input type=\"text\" size=\"30\"  name=\"Dropdowns[options][]\" 
                              value='$option' />
                                 <div class=\"\">
                                     <a href=\"javascript:void(0)\" 
                                      onclick=\"x2.dropdownManager.moveOptionUp(this);\">
-                                        [".Yii::t('admin', 'Up')."]</a>
+                                        [" . Yii::t('admin', 'Up') . "]</a>
                                     <a href=\"javascript:void(0)\" 
                                      onclick=\"x2.dropdownManager.moveOptionDown(this);\">
-                                        [".Yii::t('admin', 'Down')."]</a>
+                                        [" . Yii::t('admin', 'Down') . "]</a>
                                     <a href=\"javascript:void(0)\" 
                                      onclick=\"x2.dropdownManager.deleteOption(this);\">
-                                        [".Yii::t('admin', 'Del')."]</a>
+                                        [" . Yii::t('admin', 'Del') . "]</a>
                                 </div>
                                 <br />
                         </li>";
                 }
-                echo $str.CHtml::activeLabel($model, 'multi', array (
+                echo $str . CHtml::activeLabel($model, 'multi', array(
                     'class' => 'multi-checkbox-label',
-                )).'&nbsp;'.CHtml::activeCheckBox($model, 'multi');
+                )) . '&nbsp;' . CHtml::activeCheckBox($model, 'multi');
             }
         }
     }
@@ -4023,15 +4563,15 @@ class AdminController extends Controller {
      * This method is called via AJAX on the field editor to get a list of dropdowns
      * or modules to be used for modifying the type of field.
      */
-    public function actionGetFieldType(){
-        if(isset($_POST['Fields']['type'])){
+    public function actionGetFieldType() {
+        if (isset($_POST['Fields']['type'])) {
             $field = new Fields;
             $field->attributes = $_POST['Fields'];
             $type = $_POST['Fields']['type'];
             $model = new AmorphousModel();
-            $model->addField($field,'customized_field');
+            $model->addField($field, 'customized_field');
 
-            $this->renderPartial('fieldDefault',array(
+            $this->renderPartial('fieldDefault', array(
                 'field' => $field,
                 'dummyModel' => $model,
                 'type' => $type,
@@ -4045,22 +4585,22 @@ class AdminController extends Controller {
      *
      * This method is used to export all of the data from the software as a CSV
      */
-    public function actionExport(){
+    public function actionExport() {
         $modelList = array(
             'Admin' => array('name' => Yii::t('admin', 'Admin Settings'), 'count' => 1),
         );
         $modules = Modules::model()->findAll();
-        foreach($modules as $module){
+        foreach ($modules as $module) {
             $name = ucfirst($module->name);
-            if($name != 'Document'){
-                $controllerName = $name.'Controller';
-                if(file_exists('protected/modules/'.$module->name.'/controllers/'.$controllerName.'.php')){
+            if ($name != 'Document') {
+                $controllerName = $name . 'Controller';
+                if (file_exists('protected/modules/' . $module->name . '/controllers/' . $controllerName . '.php')) {
                     Yii::import("application.modules.$module->name.controllers.$controllerName");
                     $controller = new $controllerName($controllerName);
                     $model = $controller->modelClass;
-                    if(class_exists($model)){
+                    if (class_exists($model)) {
                         $recordCount = X2Model::model($model)->count();
-                        if($recordCount > 0){ // Only display modules we actually have data for...
+                        if ($recordCount > 0) { // Only display modules we actually have data for...
                             $modelList[$model] = array('name' => Yii::t('app', $module->title), 'count' => $recordCount);
                         }
                     }
@@ -4088,9 +4628,9 @@ class AdminController extends Controller {
     /**
      * Helper function to generate the necessary CSV via ajax and insert version data.
      */
-    public function actionPrepareExport(){
+    public function actionPrepareExport() {
         $fp = fopen($this->safePath(), 'w+');
-        fputcsv($fp, array('v'.Yii::app()->params->version));
+        fputcsv($fp, array('v' . Yii::app()->params->version));
         fclose($fp);
     }
 
@@ -4104,47 +4644,46 @@ class AdminController extends Controller {
      * @param string $model The name of the current model being exported
      * @param int $page The page of data which the data provider's paginator is on
      */
-    public function actionGlobalExport($model, $page){
-        if(class_exists($model)){
+    public function actionGlobalExport($model, $page) {
+        if (class_exists($model)) {
             ini_set('memory_limit', -1);
             $file = $this->safePath();
             $fp = fopen($file, 'a+');
             $tempModel = X2Model::model($model);
             $meta = array_keys($tempModel->attributes);
-            if($model == 'Actions'){
+            if ($model == 'Actions') {
                 $meta[] = 'actionDescription';
             }
             $meta[] = $model;
-            if($page == 0)
+            if ($page == 0)
                 fputcsv($fp, $meta); // If we're on the first page for this model, need to add metadata.
             $dp = new CActiveDataProvider($model, array(
-                        'pagination' => array(
-                            'pageSize' => 100,
-                        ),
-                    ));
+                'pagination' => array(
+                    'pageSize' => 100,
+                ),
+            ));
             $pg = $dp->getPagination();
             $pg->setCurrentPage($page); // These two lines will set the data provider
             $dp->setPagination($pg); // paginator to the requested page of data
             $records = $dp->getData();
             $pageCount = $dp->getPagination()->getPageCount(); // Total number of pages
 
-            foreach($records as $record){
+            foreach ($records as $record) {
                 // Re-pack all unpacked attributes for writing to a file, so that
                 // they can be interpolated as strings:
-                foreach($record->behaviors() as $name => $config) {
+                foreach ($record->behaviors() as $name => $config) {
                     $behavior = $record->asa($name);
-                    if($behavior instanceof TransformedFieldStorageBehavior) {
+                    if ($behavior instanceof TransformedFieldStorageBehavior) {
                         $behavior->packAll();
                         $record->disableBehavior($name);
                     }
-
                 }
                 $tempAttributes = $tempModel->attributes;
                 $tempAttributes = array_merge($tempAttributes, $record->attributes);
-                if($model == 'Actions'){
+                if ($model == 'Actions') {
                     $tempAttributes['actionDescription'] = $record->actionDescription;
                 }
-                if($model == 'Profile'){
+                if ($model == 'Profile') {
                     $tempAttributes['theme'] = json_encode($record->theme);
                 }
                 $tempAttributes[] = $model;
@@ -4154,17 +4693,18 @@ class AdminController extends Controller {
             unset($tempModel, $dp);
 
             fclose($fp);
-            if($page + 1 < $pageCount){
+            if ($page + 1 < $pageCount) {
                 echo $page + 1; // If there are still more pages to go, echo the next page number
             }
         }
     }
+
 //  $file = Yii::app()->file->set($this->safePath($file));
     /**
      * Helper function called in a lot of places to download a file
      * @param string $file Filepath of the requested file
      */
-    public function actionDownloadData($file){
+    public function actionDownloadData($file) {
         $this->sendFile($file);
     }
 
@@ -4178,7 +4718,7 @@ class AdminController extends Controller {
      * @param string $stage The stage to be run for this step
      * @param int $importId The ID of the import being rolled back
      */
-    public function actionRollbackStage($model, $stage, $importId){
+    public function actionRollbackStage($model, $stage, $importId) {
         $stages = array(
             // Delete all tag data
             "tags" => "DELETE a FROM x2_tags a
@@ -4196,7 +4736,7 @@ class AdminController extends Controller {
                 x2_imports b ON b.modelId=a.associationId AND b.modelType=a.associationType
                 WHERE b.modelType='$model' AND b.importId='$importId'",
             // Delete the records themselves
-            "records" => "DELETE a FROM ".X2Model::model($model)->tableName()." a
+            "records" => "DELETE a FROM " . X2Model::model($model)->tableName() . " a
                 INNER JOIN
                 x2_imports b ON b.modelId=a.id
                 WHERE b.modelType='$model' AND b.importId='$importId'",
@@ -4212,9 +4752,9 @@ class AdminController extends Controller {
     /**
      * An administrative view to rollback any data imports which have been conducted.
      */
-    public function actionRollbackImport(){
+    public function actionRollbackImport() {
         // If an import ID is passed, load specific information about this import
-        if(isset($_GET['importId'])){
+        if (isset($_GET['importId'])) {
             $importId = $_GET['importId'];
             $types = Yii::app()->db->createCommand()
                     ->select('modelType')
@@ -4230,7 +4770,7 @@ class AdminController extends Controller {
                     ->queryRow();
             $count = $count['COUNT(*)'];
             $typeArray = array();
-            foreach($types as $tempArr){
+            foreach ($types as $tempArr) {
                 $typeArray[] = $tempArr['modelType'];
             }
             $this->render('rollbackImport', array(
@@ -4238,7 +4778,7 @@ class AdminController extends Controller {
                 'dataProvider' => null,
                 'count' => $count,
             ));
-        }else{
+        } else {
             // Otherwise, load a list of imports to choose from
             $data = array();
             $imports = Yii::app()->db->createCommand()
@@ -4246,7 +4786,7 @@ class AdminController extends Controller {
                     ->from('x2_imports')
                     ->group('importId')
                     ->queryAll();
-            foreach($imports as $key => $array){
+            foreach ($imports as $key => $array) {
                 $data[$key]['id'] = $key;
                 $data[$key]['importId'] = $array['importId'];
                 $count = Yii::app()->db->createCommand()
@@ -4288,8 +4828,8 @@ class AdminController extends Controller {
      * each row should be the type of record being imported (e.g. Contacts, Actions, etc.)
      * This particular function merely renders the upload page.
      */
-    public function actionImport(){
-        if(isset($_FILES['data'])){
+    public function actionImport() {
+        if (isset($_FILES['data'])) {
             $overwrite = $_POST['overwrite'];
             $_SESSION['overwrite'] = $overwrite;
             $_SESSION['counts'] = array();
@@ -4303,7 +4843,7 @@ class AdminController extends Controller {
             $this->render('processImport', array(
                 'overwrite' => $overwrite,
             ));
-        }else{
+        } else {
             $this->render('import');
         }
     }
@@ -4314,12 +4854,12 @@ class AdminController extends Controller {
      * preserved between the AJAX requests which will occur as a part of the import
      * process.
      */
-    public function actionPrepareImport(){
+    public function actionPrepareImport() {
         $fp = fopen($this->safePath(), 'r+');
         $version = fgetcsv($fp); // The first row should be just the version number of the data
         $version = $version[0];
         $tempMeta = fgetcsv($fp);
-        while("" === end($tempMeta)){ // Clear all blank rows from the metadata
+        while ("" === end($tempMeta)) { // Clear all blank rows from the metadata
             array_pop($tempMeta);
         }
         $model = array_pop($tempMeta); // The last column should be the model class
@@ -4337,9 +4877,9 @@ class AdminController extends Controller {
         $criteria->order = "importId DESC";
         $criteria->limit = 1;
         $import = Imports::model()->find($criteria);
-        if(isset($import)){ // Set the ID of the current import to be 1 higher than the last one
+        if (isset($import)) { // Set the ID of the current import to be 1 higher than the last one
             $_SESSION['importId'] = $import->importId + 1;
-        }else{
+        } else {
             $_SESSION['importId'] = 1;
         }
         $failedImport = fopen($this->safePath('failedImport.csv'), 'w+'); // Prepare a CSV for any failed records
@@ -4350,40 +4890,40 @@ class AdminController extends Controller {
 
     public function actionPrepareModelImport() {
         // Keys & attributes are our finalized import map
-        if(isset($_POST['attributes']) && isset($_POST['keys']) && isset($_POST['model'])){
+        if (isset($_POST['attributes']) && isset($_POST['keys']) && isset($_POST['model'])) {
             $model = $_POST['model'];
             $keys = $_POST['keys'];
             $attributes = $_POST['attributes'];
-            $preselectedMap = (isset($_POST['preselectedMap']) && $_POST['preselectedMap'] === 'true')? true : false;
+            $preselectedMap = (isset($_POST['preselectedMap']) && $_POST['preselectedMap'] === 'true') ? true : false;
             $_SESSION['tags'] = array();
             // Grab any tags that need to be added to each record
-            if(isset($_POST['tags']) && !empty($_POST['tags'])){
+            if (isset($_POST['tags']) && !empty($_POST['tags'])) {
                 $tags = explode(',', $_POST['tags']);
-                foreach($tags as $tag){
-                    if(substr($tag, 0, 1) != "#")
-                        $tag = "#".$tag;
+                foreach ($tags as $tag) {
+                    if (substr($tag, 0, 1) != "#")
+                        $tag = "#" . $tag;
                     $_SESSION['tags'][] = $tag;
                 }
             }
             // The override allows the user to specify fixed values for certain fields
             $_SESSION['override'] = array();
-            if(isset($_POST['forcedAttributes']) && isset($_POST['forcedValues'])){
+            if (isset($_POST['forcedAttributes']) && isset($_POST['forcedValues'])) {
                 $override = array_combine($_POST['forcedAttributes'], $_POST['forcedValues']);
                 $_SESSION['override'] = $override;
             }
             // Comments will log a comment on the record
             $_SESSION['comment'] = "";
-            if(isset($_POST['comment']) && !empty($_POST['comment'])){
+            if (isset($_POST['comment']) && !empty($_POST['comment'])) {
                 $_SESSION['comment'] = $_POST['comment'];
             }
             // Whether to use lead routing
             $_SESSION['leadRouting'] = 0;
-            if(isset($_POST['routing']) && $_POST['routing'] == 1){
+            if (isset($_POST['routing']) && $_POST['routing'] == 1) {
                 $_SESSION['leadRouting'] = 1;
             }
             // Whether to post the new records to the activity feed
             $_SESSION['skipActivityFeed'] = 0;
-            if(isset($_POST['skipActivityFeed']) && $_POST['skipActivityFeed'] == 1){
+            if (isset($_POST['skipActivityFeed']) && $_POST['skipActivityFeed'] == 1) {
                 $_SESSION['skipActivityFeed'] = 1;
             }
             $criteria = new CDbCriteria;
@@ -4392,9 +4932,9 @@ class AdminController extends Controller {
             $import = Imports::model()->find($criteria);
             // Figure out which import this is so we can set up the Imports models
             // for this import.
-            if(isset($import)){
+            if (isset($import)) {
                 $_SESSION['importId'] = $import->importId + 1;
-            }else{
+            } else {
                 $_SESSION['importId'] = 1;
             }
             $_SESSION['createRecords'] = $_POST['createRecords'] == "checked" ? "1" : "0";
@@ -4407,7 +4947,7 @@ class AdminController extends Controller {
             }
             $this->verifyImportMap($model, $keys, $attributes);
             $cache = Yii::app()->cache;
-            if(isset($cache)){
+            if (isset($cache)) {
                 $cache->flush();
             }
         }
@@ -4487,8 +5027,7 @@ class AdminController extends Controller {
                 if (strtolower($attr['fieldName']) == 'visibility')
                     continue;
                 // Ignore missing first/last name, this can be inferred from full name
-                if ($model === 'Contacts' && ($attr['fieldName'] === 'firstName' || $attr['fieldName'] === 'lastName')
-                        && in_array('name', array_values($importMap)))
+                if ($model === 'Contacts' && ($attr['fieldName'] === 'firstName' || $attr['fieldName'] === 'lastName') && in_array('name', array_values($importMap)))
                     continue;
                 // Otherwise, a required field is missing and should be reported to the user
                 if (!in_array($attr['fieldName'], array_values($importMap)))
@@ -4523,16 +5062,16 @@ class AdminController extends Controller {
     protected function availableImportMaps($model = null) {
         $maps = array();
         if ($model === "X2Leads")
-                $model = "Leads";
-        $modelName = (isset($model))? lcfirst($model) : '.*';
+            $model = "Leads";
+        $modelName = (isset($model)) ? lcfirst($model) : '.*';
         $importMapDir = "importMaps";
-        $files = scandir ($this->safePath($importMapDir));
+        $files = scandir($this->safePath($importMapDir));
         foreach ($files as $file) {
             $filename = basename($file);
             // Filenames are in the form "app-model.json"
-            if (!preg_match('/^.*-'.$modelName.'\.json$/', $filename))
+            if (!preg_match('/^.*-' . $modelName . '\.json$/', $filename))
                 continue;
-            $mapping = file_get_contents($this->safePath($importMapDir.DIRECTORY_SEPARATOR.$file));
+            $mapping = file_get_contents($this->safePath($importMapDir . DIRECTORY_SEPARATOR . $file));
             $mapping = json_decode($mapping, true);
             $maps[$file] = $mapping['name'];
         }
@@ -4548,7 +5087,7 @@ class AdminController extends Controller {
         if (empty($filename))
             return null;
         $importMapDir = "importMaps";
-        $map = file_get_contents($this->safePath($importMapDir.DIRECTORY_SEPARATOR.$filename));
+        $map = file_get_contents($this->safePath($importMapDir . DIRECTORY_SEPARATOR . $filename));
         $map = json_decode($map, true);
         return $map;
     }
@@ -4560,17 +5099,17 @@ class AdminController extends Controller {
      * Controller refactor) but I'm only writing comments right now and trying
      * not to make code modifications.
      */
-    public function actionPublicInfo(){
+    public function actionPublicInfo() {
         $admin = &Yii::app()->settings;
-        if(isset($_POST['Admin'])){
+        if (isset($_POST['Admin'])) {
             $admin->attributes = $_POST['Admin'];
-            if($admin->save()){
+            if ($admin->save()) {
                 $this->redirect('publicInfo');
             }
         }
-        if($admin->externalBaseUrl == '' && !$admin->hasErrors('externalBaseUrl'))
+        if ($admin->externalBaseUrl == '' && !$admin->hasErrors('externalBaseUrl'))
             $admin->externalBaseUrl = Yii::app()->request->getHostInfo();
-        if($admin->externalBaseUri == '' && !$admin->hasErrors('externalBaseUri'))
+        if ($admin->externalBaseUri == '' && !$admin->hasErrors('externalBaseUri'))
             $admin->externalBaseUri = Yii::app()->baseUrl;
         $this->render('publicInfo', array(
             'model' => $admin,
@@ -4588,8 +5127,8 @@ class AdminController extends Controller {
      *
      * @return null A return statement to cease further execution, could probably be cleaned up & removed
      */
-    public function actionGlobalImport(){
-        if(isset($_POST['count']) && file_exists($this->safePath())){
+    public function actionGlobalImport() {
+        if (isset($_POST['count']) && file_exists($this->safePath())) {
             $metaData = $_SESSION['metaData']; // Grab the most recent metadata
             $modelType = $_SESSION['model']; // And model
             $count = $_POST['count'];
@@ -4601,14 +5140,14 @@ class AdminController extends Controller {
              * which we always store in the $_SESSION['offset'] variable.
              */
             fseek($fp, $_SESSION['offset']);
-            for($i = 0; $i < $count; $i++){ // Loop up to the speficied count.
+            for ($i = 0; $i < $count; $i++) { // Loop up to the speficied count.
                 $arr = fgetcsv($fp); // Grab the next row
-                if($arr !== false && !is_null($arr)){
-                    while("" === end($arr)){ // Remove blank space from the end
+                if ($arr !== false && !is_null($arr)) {
+                    while ("" === end($arr)) { // Remove blank space from the end
                         array_pop($arr);
                     }
                     $newType = array_pop($arr); // Pull the last column to check the model type
-                    if($newType != $modelType){
+                    if ($newType != $modelType) {
                         /*
                          * If this is the first row of a new model type, the data
                          * in the last column will be a different class name. In that
@@ -4623,12 +5162,12 @@ class AdminController extends Controller {
                         $_SESSION['metaData'] = $arr;
                         $modelType = $_SESSION['model'];
                         $metaData = $_SESSION['metaData'];
-                    }else{
+                    } else {
                         $attributes = array_combine($metaData, $arr);
-                        if($modelType == "Actions" && (isset($attributes['type']) && $attributes['type'] == 'workflow')){
+                        if ($modelType == "Actions" && (isset($attributes['type']) && $attributes['type'] == 'workflow')) {
                             // In the event that we're importing workflow, we need a special scenario.
                             $model = new Actions('workflow');
-                        }else{
+                        } else {
                             $model = new $modelType;
                         }
                         /*
@@ -4640,9 +5179,9 @@ class AdminController extends Controller {
                          * converted again) due to the fact that a user could supply
                          * either human readable or machine readable data.
                          */
-                        foreach($attributes as $key => $value){
-                            if($model->hasAttribute($key) && isset($value)){
-                                if($value == "")
+                        foreach ($attributes as $key => $value) {
+                            if ($model->hasAttribute($key) && isset($value)) {
+                                if ($value == "")
                                     $value = null;
                                 $model->$key = $value;
                             }
@@ -4651,8 +5190,8 @@ class AdminController extends Controller {
                         $model->disableBehavior('changelog');
                         // Don't manually set the timestamp fields
                         $model->disableBehavior('X2TimestampBehavior');
-                        if($model instanceof User || $model instanceof Profile){
-                            if($model->id == '1'){
+                        if ($model instanceof User || $model instanceof Profile) {
+                            if ($model->id == '1') {
                                 /*
                                  * If a model of type User with the ID of one is
                                  * being imported skip so that we DO NOT
@@ -4671,10 +5210,10 @@ class AdminController extends Controller {
                          * change made to ID being a "unique" field in X2Model's rules
                          * This should be investigated at some point.
                          */
-                        if($model->validate() || $modelType == "User" || $modelType == 'Profile'){
+                        if ($model->validate() || $modelType == "User" || $modelType == 'Profile') {
                             $saveFlag = true;
-                            if($lookupFlag){
-                                if($_SESSION['overwrite'] == 1){ // If the user specified to overwrite, delete the old lookup
+                            if ($lookupFlag) {
+                                if ($_SESSION['overwrite'] == 1) { // If the user specified to overwrite, delete the old lookup
                                     if ($modelType === "Fields") {
                                         /**
                                          * Leave fields intact; the record information would be deleted when
@@ -4684,15 +5223,15 @@ class AdminController extends Controller {
                                     }
                                     $lookup->disableBehavior('changelog');
                                     $lookup->delete();
-                                }else{
+                                } else {
                                     $saveFlag = false; // Otherwise, note a failure in the logging section that we were unable to overwrite a record.
-                                    isset($_SESSION['overwriteFailure'][$modelType]) ? $_SESSION['overwriteFailure'][$modelType]++ : $_SESSION['overwriteFailure'][$modelType] = 1;
+                                    isset($_SESSION['overwriteFailure'][$modelType]) ? $_SESSION['overwriteFailure'][$modelType] ++ : $_SESSION['overwriteFailure'][$modelType] = 1;
                                 }
-                                if(!$model->validate()){
+                                if (!$model->validate()) {
                                     $saveFlag = false;
                                     $failedImport = fopen($this->safePath('failedImport.csv'), 'a+');
                                     $lastFailed = $_SESSION['lastFailed'];
-                                    if($lastFailed != $modelType){
+                                    if ($lastFailed != $modelType) {
                                         $tempMeta = $metaData; // Keep track of the metadata of failed records
                                         $tempMeta[] = $modelType;
                                         fputcsv($failedImport, $tempMeta);
@@ -4703,11 +5242,11 @@ class AdminController extends Controller {
                                     $attr[] = $modelType;
                                     fputcsv($failedImport, $attr);
                                     $_SESSION['lastFailed'] = $modelType; // Specify the most recent model type failure in case metadata needs to be changed
-                                    isset($_SESSION['failed']) ? $_SESSION['failed']++ : $_SESSION['failed'] = 1;
+                                    isset($_SESSION['failed']) ? $_SESSION['failed'] ++ : $_SESSION['failed'] = 1;
                                 }
                             }
-                            if($saveFlag && $model->save()){
-                                if($modelType != "Admin" && !(($modelType == "User" || $modelType == "Profile") && ($model->id == '1' || $model->username == 'api'))){
+                            if ($saveFlag && $model->save()) {
+                                if ($modelType != "Admin" && !(($modelType == "User" || $modelType == "Profile") && ($model->id == '1' || $model->username == 'api'))) {
                                     // Generate a new "Imports" model in case of rollback
                                     $importLink = new Imports;
                                     $importLink->modelType = $modelType;
@@ -4728,9 +5267,9 @@ class AdminController extends Controller {
                                      */
                                     if ($_SESSION['overwrite']) {
                                         if ($model->defaultView)
-                                            FormLayout::clearDefaultViews ($modelName);
+                                            FormLayout::clearDefaultViews($modelName);
                                         if ($model->defaultForm)
-                                            FormLayout::clearDefaultForms ($modelName);
+                                            FormLayout::clearDefaultForms($modelName);
                                     } else {
                                         $model->defaultView = false;
                                         $model->defaultForm = false;
@@ -4738,22 +5277,22 @@ class AdminController extends Controller {
                                     }
                                 }
                                 // Relic of when action description wasn't a field, not sure if necessary.
-                                if($modelType == 'Actions' && isset($attributes['actionDescription'])){
+                                if ($modelType == 'Actions' && isset($attributes['actionDescription'])) {
                                     $model->actionDescription = $attributes['actionDescription'];
                                 }
                                 // Update counts in the session logging variables.
-                                isset($_SESSION['counts'][$modelType]) ? $_SESSION['counts'][$modelType]++ : $_SESSION['counts'][$modelType] = 1;
-                                if($lookupFlag){
-                                    isset($_SESSION['overwriten'][$modelType]) ? $_SESSION['overwriten'][$modelType]++ : $_SESSION['overwriten'][$modelType] = 1;
-                                }else{
+                                isset($_SESSION['counts'][$modelType]) ? $_SESSION['counts'][$modelType] ++ : $_SESSION['counts'][$modelType] = 1;
+                                if ($lookupFlag) {
+                                    isset($_SESSION['overwriten'][$modelType]) ? $_SESSION['overwriten'][$modelType] ++ : $_SESSION['overwriten'][$modelType] = 1;
+                                } else {
                                     isset($_SESSION['overwriten'][$modelType])? : $_SESSION['overwriten'][$modelType] = 0;
                                 }
                             }
-                        }else{
+                        } else {
                             // Put the failed lead into the failed import CSV
                             $failedImport = fopen($this->safePath('failedImport.csv'), 'a+');
                             $lastFailed = $_SESSION['lastFailed'];
-                            if($lastFailed != $modelType){
+                            if ($lastFailed != $modelType) {
                                 $tempMeta = $metaData;
                                 $tempMeta[] = $modelType;
                                 fputcsv($failedImport, $tempMeta);
@@ -4764,10 +5303,10 @@ class AdminController extends Controller {
                             $attr[] = $modelType;
                             fputcsv($failedImport, $attr);
                             $_SESSION['lastFailed'] = $modelType;
-                            isset($_SESSION['failed']) ? $_SESSION['failed']++ : $_SESSION['failed'] = 1;
+                            isset($_SESSION['failed']) ? $_SESSION['failed'] ++ : $_SESSION['failed'] = 1;
                         }
                     }
-                }else{
+                } else {
                     // "0" at the beginning means we reached the end of the file
                     // and don't need to do another set.
                     echo json_encode(array(
@@ -4796,7 +5335,7 @@ class AdminController extends Controller {
      * Post-processing function for the import tool, unset session variables
      * and delete the uploaded data file.
      */
-    public function actionCleanUpImport(){
+    public function actionCleanUpImport() {
         unlink($this->safePath());
         unset($_SESSION['counts']);
         unset($_SESSION['overwriten']);
@@ -4807,11 +5346,11 @@ class AdminController extends Controller {
         unset($_SESSION['lastFailed']);
         unset($_SESSION['overwriteFailure']);
     }
-    
+
     /**
      * Post-processing for the import process to clean out the SESSION vars.
      */
-    public function actionCleanUpModelImport(){
+    public function actionCleanUpModelImport() {
         unset($_SESSION['tags']);
         unset($_SESSION['override']);
         unset($_SESSION['comment']);
@@ -4826,10 +5365,10 @@ class AdminController extends Controller {
         unset($_SESSION['fields']);
         unset($_SESSION['x2attributes']);
         unset($_SESSION['model']);
-        if(file_exists($path = $this->safePath('data.csv'))){
+        if (file_exists($path = $this->safePath('data.csv'))) {
             unlink($path);
         }
-        if(file_exists($path = $this->safePath('importMapping.json'))){
+        if (file_exists($path = $this->safePath('importMapping.json'))) {
             unlink($path);
         }
     }
@@ -4839,23 +5378,23 @@ class AdminController extends Controller {
      *
      * This method controls the update interval setting for the application.
      */
-    public function actionUpdaterSettings(){
+    public function actionUpdaterSettings() {
         $admin = &Yii::app()->settings;
         // Save new updater cron settings in crontab
         $cf = new CronForm;
         $cf->jobs = array(
             'app_update' => array(
-                'cmd' => Yii::app()->basePath.DIRECTORY_SEPARATOR.'yiic update app --lock=1',
+                'cmd' => Yii::app()->basePath . DIRECTORY_SEPARATOR . 'yiic update app --lock=1',
                 'desc' => Yii::t('admin', 'Automatic software updates cron job'),
             ),
         );
-        if(isset($_POST['Admin'])){
+        if (isset($_POST['Admin'])) {
             $admin->setAttributes($_POST['Admin']);
-            foreach(array('unique_id', 'edition') as $var)
-                if(isset($_POST['unique_id']))
+            foreach (array('unique_id', 'edition') as $var)
+                if (isset($_POST['unique_id']))
                     $admin->$var = $_POST[$var];
-            if($admin->save()){
-                if(isset($_POST['cron'])){
+            if ($admin->save()) {
+                if (isset($_POST['cron'])) {
                     // Save new updater cron settings in crontab
                     $cf->save($_POST);
                 } else {
@@ -4865,10 +5404,10 @@ class AdminController extends Controller {
                 $this->redirect('updaterSettings');
             }
         }
-        foreach($cf->jobs as $tag => $attributes){
+        foreach ($cf->jobs as $tag => $attributes) {
             $commands[$tag] = $attributes['cmd'];
         }
-        if(isset($_POST['cron'])){
+        if (isset($_POST['cron'])) {
             // Save new updater cron settings in crontab
             $cf->save($_POST);
         }
@@ -4885,33 +5424,33 @@ class AdminController extends Controller {
      * @param string $body The body of the response message
      * @param string $content_type The response mimetype.
      */
-    private function _sendResponse($status = 200, $body = '', $content_type = 'text/html'){
+    private function _sendResponse($status = 200, $body = '', $content_type = 'text/html') {
         // set the status
-        $status_header = 'HTTP/1.1 '.$status.' '.$this->_getStatusCodeMessage($status);
+        $status_header = 'HTTP/1.1 ' . $status . ' ' . $this->_getStatusCodeMessage($status);
         header($status_header);
         // and the content type
-        header('Content-type: '.$content_type);
+        header('Content-type: ' . $content_type);
 
         // pages with body are easy
-        if($body != ''){
+        if ($body != '') {
             // send the body
             echo $body;
             exit;
         }
         // we need to create the body if none is passed
-        else{
+        else {
             // create some body messages
             $message = '';
 
             // this is purely optional, but makes the pages a little nicer to read
             // for your users.  Since you won't likely send a lot of different status codes,
             // this also shouldn't be too ponderous to maintain
-            switch($status){
+            switch ($status) {
                 case 401:
                     $message = 'You must be authorized to view this page.';
                     break;
                 case 404:
-                    $message = 'The requested URL '.$_SERVER['REQUEST_URI'].' was not found.';
+                    $message = 'The requested URL ' . $_SERVER['REQUEST_URI'] . ' was not found.';
                     break;
                 case 500:
                     $message = 'The server encountered an error processing your request.';
@@ -4923,7 +5462,7 @@ class AdminController extends Controller {
 
             // servers don't always have a signature turned on
             // (this is an apache directive "ServerSignature On")
-            $signature = ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'].' Server at '.$_SERVER['SERVER_NAME'].' Port '.$_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
+            $signature = ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] . ' Server at ' . $_SERVER['SERVER_NAME'] . ' Port ' . $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
 
             // this should be templated in a real-world solution
             $body = '
@@ -4931,13 +5470,13 @@ class AdminController extends Controller {
 	<html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-		<title>'.$status.' '.$this->_getStatusCodeMessage($status).'</title>
+		<title>' . $status . ' ' . $this->_getStatusCodeMessage($status) . '</title>
 	</head>
 	<body>
-		<h1>'.$this->_getStatusCodeMessage($status).'</h1>
-		<p>'.$message.'</p>
+		<h1>' . $this->_getStatusCodeMessage($status) . '</h1>
+		<p>' . $message . '</p>
 		<hr />
-		<address>'.$signature.'</address>
+		<address>' . $signature . '</address>
 	</body>
 	</html>';
 
@@ -4952,7 +5491,7 @@ class AdminController extends Controller {
      * @param integer $status
      * @return string
      */
-    private function _getStatusCodeMessage($status){
+    private function _getStatusCodeMessage($status) {
         // these could be stored in a .ini file and loaded
         // via parse_ini_file()... however, this will suffice
         // for an example
@@ -4981,16 +5520,16 @@ class AdminController extends Controller {
      * Prints an error message explaing what has gone wrong when the classes are missing.
      * @param array $classes The missing dependencies
      */
-    public function missingClassesException($classes){
+    public function missingClassesException($classes) {
         $message = Yii::t('admin', 'One or more dependencies of AdminController are missing and could not be automatically retrieved. They are {classes}', array('{classes}' => implode(', ', $classes)));
-        $message .= "\n\n".Yii::t('admin', 'To diagnose this error, please upload and run the requirements check script on your server.');
+        $message .= "\n\n" . Yii::t('admin', 'To diagnose this error, please upload and run the requirements check script on your server.');
         $message .= "\nhttps://x2planet.com/installs/requirements.php";
-        $message .= "\n\n".Yii::t('admin', 'The error is most likely due to one of the following things:');
-        $message .= "\n(1) ".Yii::t('admin', 'PHP processes run by the web server do not have permission to create or modify files');
-        $message .= "\n(2) ".Yii::t('admin', 'x2planet.com and raw.github.com are currently unavailable');
-        $message .= "\n(3) ".Yii::t('admin', 'This web server has no outbound internet connection. This could be because it is behind a firewall that does not permit outbound connections, operating within a private network with broken domain name resolution, or with no outbound route.');
-        $message .= "\n\n".Yii::t('admin', 'To stop this error from occurring, if the problem persists, restore the file {adminController} to the copy from your version of X2Engine:', array('{adminController}' => 'protected/controllers/AdminController.php'));
-        $message .= "\n"."https://raw.github.com/X2Engine/X2Engine/".Yii::app()->params->version."/x2engine/protected/controllers/AdminController.php";
+        $message .= "\n\n" . Yii::t('admin', 'The error is most likely due to one of the following things:');
+        $message .= "\n(1) " . Yii::t('admin', 'PHP processes run by the web server do not have permission to create or modify files');
+        $message .= "\n(2) " . Yii::t('admin', 'x2planet.com and raw.github.com are currently unavailable');
+        $message .= "\n(3) " . Yii::t('admin', 'This web server has no outbound internet connection. This could be because it is behind a firewall that does not permit outbound connections, operating within a private network with broken domain name resolution, or with no outbound route.');
+        $message .= "\n\n" . Yii::t('admin', 'To stop this error from occurring, if the problem persists, restore the file {adminController} to the copy from your version of X2Engine:', array('{adminController}' => 'protected/controllers/AdminController.php'));
+        $message .= "\n" . "https://raw.github.com/X2Engine/X2Engine/" . Yii::app()->params->version . "/x2engine/protected/controllers/AdminController.php";
         $this->error500($message);
     }
 
@@ -5001,9 +5540,9 @@ class AdminController extends Controller {
      *  white: tasks (type 1)
      *  red: actions (type 2)
      */
-    public function actionAuthGraph(){
+    public function actionAuthGraph() {
 
-        if(!Yii::app()->params->isAdmin)
+        if (!Yii::app()->params->isAdmin)
             return;
 
         $allTasks = array();
@@ -5016,14 +5555,14 @@ class AdminController extends Controller {
                 ->where('type=1')
                 ->queryColumn();
 
-        foreach($taskNames as $task){
+        foreach ($taskNames as $task) {
             $children = Yii::app()->db->createCommand()
                     ->select('child')
                     ->from('x2_auth_item_child')
                     ->where('parent=:parent', array(':parent' => $task))
                     ->queryColumn();
 
-            foreach($children as $child)
+            foreach ($children as $child)
                 $allTasks[$task][$child] = array();
         }
 
@@ -5033,16 +5572,16 @@ class AdminController extends Controller {
                 ->where('bizrule IS NOT NULL')
                 ->queryColumn();
 
-        function buildGraph($task, &$allTasks, &$authGraph){
+        function buildGraph($task, &$allTasks, &$authGraph) {
 
-            if(!isset($allTasks[$task]) || empty($allTasks[$task])){
+            if (!isset($allTasks[$task]) || empty($allTasks[$task])) {
                 return array();
-            }else{
+            } else {
                 $children = array();
 
-                foreach(array_keys($allTasks[$task]) as $child){
+                foreach (array_keys($allTasks[$task]) as $child) {
 
-                    if(isset($authGraph[$child]) && $authGraph[$child] === false)
+                    if (isset($authGraph[$child]) && $authGraph[$child] === false)
                         continue;
 
                     $childGraph = buildGraph($child, $allTasks, $authGraph);
@@ -5054,11 +5593,11 @@ class AdminController extends Controller {
             }
         }
 
-        foreach(array_keys($allTasks) as $task)
+        foreach (array_keys($allTasks) as $task)
             $authGraph[$task] = buildGraph($task, $allTasks, $authGraph);
 
-        foreach(array_keys($authGraph) as $key){
-            if(empty($authGraph[$key]))
+        foreach (array_keys($authGraph) as $key) {
+            if (empty($authGraph[$key]))
                 unset($authGraph[$key]);
         }
 
@@ -5077,15 +5616,15 @@ class AdminController extends Controller {
      * @param boolean $curl Whether to use CURL
      * @return boolean
      */
-    public function copyRemote($remoteFile, $localFile, $curl){
+    public function copyRemote($remoteFile, $localFile, $curl) {
         $this->checkRemoteMethods();
-        if(!$curl){
+        if (!$curl) {
             $context = stream_context_create(array(
                 'http' => array(
                     'timeout' => 15  // Timeout in seconds
-                    )));
+            )));
             return copy($remoteFile, $localFile, $context) !== false;
-        }else{
+        } else {
             // Try using CURL
             $ch = curl_init($remoteFile);
             $curlopt = array(
@@ -5097,7 +5636,7 @@ class AdminController extends Controller {
             );
             curl_setopt_array($ch, $curlopt);
             $contents = curl_exec($ch);
-            if((bool) $contents){
+            if ((bool) $contents) {
                 return file_put_contents($localFile, $contents) !== false;
             } else
                 return false;
@@ -5110,13 +5649,10 @@ class AdminController extends Controller {
      * If true, signifies that there is no possible way to retrieve remote files.
      * @return boolean
      */
-    public function getNoRemoteAccess(){
-        if(!isset($this->_noRemoteAccess))
-            $this->_noRemoteAccess =
-                    !extension_loaded('curl')
-                    && (
-                    in_array(ini_get('allow_url_fopen'), array(0, 'Off', 'off'))
-                    || !(function_exists('file_get_contents') && function_exists('copy'))
+    public function getNoRemoteAccess() {
+        if (!isset($this->_noRemoteAccess))
+            $this->_noRemoteAccess = !extension_loaded('curl') && (
+                    in_array(ini_get('allow_url_fopen'), array(0, 'Off', 'off')) || !(function_exists('file_get_contents') && function_exists('copy'))
                     );
         return $this->_noRemoteAccess;
     }
@@ -5124,8 +5660,8 @@ class AdminController extends Controller {
     /**
      * Check whether it is possible to retrieve remote files.
      */
-    public function checkRemoteMethods(){
-        if($this->noRemoteAccess)
+    public function checkRemoteMethods() {
+        if ($this->noRemoteAccess)
             $this->error500(Yii::t('admin', 'X2Engine needs to retrieve one or more remote files, but no remote access methods are available on this web server, because allow_url_fopen is disabled and the CURL extension is missing.'));
     }
 
@@ -5137,20 +5673,20 @@ class AdminController extends Controller {
      * last-ditch effort to fail gracefully.
      * @param type $message
      */
-    public function error500($message){
+    public function error500($message) {
         $app = Yii::app();
         $email = Yii::app()->params->adminEmail;
         $inAction = $this->action instanceof CAction;
-        if($app->params->hasProperty('admin')){
-            if($app->params->admin->hasProperty('emailFromAddr'))
+        if ($app->params->hasProperty('admin')) {
+            if ($app->params->admin->hasProperty('emailFromAddr'))
                 $email = $app->params->admin->emailFromAddr;
-        } else if($app->hasProperty('settings')) {
-            if($app->settings->hasProperty('emailFromAddr')){
+        } else if ($app->hasProperty('settings')) {
+            if ($app->settings->hasProperty('emailFromAddr')) {
                 $email = $app->settings->emailFromAddr;
             }
         }
         $inAction = @is_subclass_of($this->action, 'CAction');
-        if($inAction){
+        if ($inAction) {
             $data = array(
                 'scenario' => 'error',
                 'message' => Yii::t('admin', "Cannot run {action}.", array('{action}' => $this->action->id)),
@@ -5158,7 +5694,7 @@ class AdminController extends Controller {
             );
             $this->render('updater', $data);
             Yii::app()->end();
-        }else{
+        } else {
             $data = array(
                 'time' => time(),
                 'admin' => $email,
@@ -5174,20 +5710,20 @@ class AdminController extends Controller {
     /**
      * Change the application name
      */
-    public function actionChangeApplicationName () {
-        $model = Admin::model ()->findByPk (1);
-        if (isset ($_POST['Admin'])) {
-            $model->setAttributes ($_POST['Admin']);
-            if ($model->save ()) {
+    public function actionChangeApplicationName() {
+        $model = Admin::model()->findByPk(1);
+        if (isset($_POST['Admin'])) {
+            $model->setAttributes($_POST['Admin']);
+            if ($model->save()) {
                 $this->redirect('index');
-            } 
+            }
         }
-        $this->render ('changeApplicationName', array (
+        $this->render('changeApplicationName', array(
             'model' => $model
         ));
     }
 
-     
+    
 
     /**
      * Echo a list of model attributes as a dropdown.
@@ -5196,24 +5732,28 @@ class AdminController extends Controller {
      * It takes the model or module name as POST data and returns a list of dropdown
      * options consisting of the fields available to that model.
      */
-    public function actionGetAttributes(){
+    public function actionGetAttributes() {
         $data = array();
         $type = null;
 
-        if(isset($_POST['Criteria']['modelType']))
+        if (isset($_POST['Criteria']['modelType']))
             $type = ucfirst($_POST['Criteria']['modelType']);
-        if(isset($_POST['Fields']['modelName']))
+        if (isset($_POST['Fields']['modelName']))
             $type = $_POST['Fields']['modelName'];
 
-           if(isset($type)){
-            if($type == 'Marketing') $type = 'Campaign';
-            elseif ($type == 'Quotes') $type = 'Quote';
-            elseif ($type == 'Products') $type = 'Product';
-            elseif ($type == 'Opportunities') $type = 'Opportunity';
+        if (isset($type)) {
+            if ($type == 'Marketing')
+                $type = 'Campaign';
+            elseif ($type == 'Quotes')
+                $type = 'Quote';
+            elseif ($type == 'Products')
+                $type = 'Product';
+            elseif ($type == 'Opportunities')
+                $type = 'Opportunity';
 
-            foreach(X2Model::model('Fields')->findAllByAttributes(array('modelName' => $type)) as $field){
-                if($field->fieldName != 'id'){
-                    if(isset($_POST['Criteria']))
+            foreach (X2Model::model('Fields')->findAllByAttributes(array('modelName' => $type)) as $field) {
+                if ($field->fieldName != 'id') {
+                    if (isset($_POST['Criteria']))
                         $data[$field->fieldName] = $field->attributeLabel;
                     else
                         $data[$field->id] = $field->attributeLabel;
@@ -5226,4 +5766,5 @@ class AdminController extends Controller {
         echo CHtml::listOptions('', $data, $htmlOptions);
     }
 
+    
 }

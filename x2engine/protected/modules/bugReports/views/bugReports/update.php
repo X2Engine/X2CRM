@@ -37,13 +37,13 @@
 include("protected/modules/bugReports/bugReportsConfig.php");
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),
-	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
-	array('label'=>Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName']))),
-	array('label'=>Yii::t('module','Delete {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
+	array('label'=>Yii::t('module','{X} List',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('index')),
+	array('label'=>Yii::t('module','Create {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('create')),
+	array('label'=>Yii::t('module','View {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('view', 'id'=>$model->id)),
+	array('label'=>Yii::t('module','Update {X}',array('{X}'=>Modules::itemDisplayName()))),
+	array('label'=>Yii::t('module','Delete {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
 ));
 ?>
-<div class="page-title"><h2><?php echo Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName'])); ?> #<?php echo $model->id; ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('module','Update {X}',array('{X}'=>Modules::itemDisplayName())); ?> #<?php echo $model->id; ?></h2></div>
 
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users, 'modelName'=>'bugReports')); ?>

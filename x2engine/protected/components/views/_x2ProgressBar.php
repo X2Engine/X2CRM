@@ -70,7 +70,7 @@ Yii::app()->clientScript->registerCss('_x2ProgressBarCSS',"
 
 Yii::app()->clientScript->registerScript('_x2ProgressBarJS'.$this->uid,"
 
-(function () {
+;(function () {
 
 function ProgressBar (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;

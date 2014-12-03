@@ -60,6 +60,7 @@ class X2WebModule extends CWebModule {
         }
 		return $this->_assetsUrl;
 	}
+
 }
 
 ?>

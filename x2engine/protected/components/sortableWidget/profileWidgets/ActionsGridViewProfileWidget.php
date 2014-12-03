@@ -101,12 +101,14 @@ class ActionsGridViewProfileWidget extends GridViewWidget {
                 parent::getGridViewConfig (),
                 array (
                     'massActions' => array (
-                        'delete', 'tag', 'updateField', 'completeAction', 'uncompleteAction'),
+                         
+                        'MassCompleteAction', 'MassUncompleteAction',
+                    ),
                     'enableQtips' => true,
                     'qtipManager' => array (
-                        'X2QtipManager',
+                        'X2GridViewQtipManager',
                         'loadingText'=> addslashes(Yii::t('app','loading...')),
-                        'qtipSelector' => ".contact-name"
+                        'qtipSelector' => ".contact-name",
                     ),
                     'moduleName' => 'Actions',
                 	'defaultGvSettings'=>array(
@@ -121,7 +123,9 @@ class ActionsGridViewProfileWidget extends GridViewWidget {
                 	),
                 	'specialColumns'=>array(
                 		'actionDescription'=>array(
-                            'header'=>Yii::t('actions','Action Description'),
+                            'header'=>Yii::t('actions','{Action} Description', array(
+                                '{Action}' => Modules::displayName(false, 'Actions')
+                            )),
                 			'name'=>'actionDescription',
                 			'value'=>
                                 'CHtml::link(

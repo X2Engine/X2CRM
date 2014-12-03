@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 Yii::import ('application.extensions.unique-attributes-validator.UniqueAttributesValidator');
-Yii::import('application.components.JSONFieldsBehavior');
+Yii::import('application.components.NormalizedJSONFieldsBehavior');
 
 /**
  * This is the model class for table "x2_chart_settings".
@@ -60,8 +60,8 @@ class ChartSetting extends CActiveRecord {
 
     public function behaviors(){
         return array(
-            'JSONFieldsBehavior' => array(
-                'class' => 'application.components.JSONFieldsBehavior',
+            'NormalizedJSONFieldsBehavior' => array(
+                'class' => 'application.components.NormalizedJSONFieldsBehavior',
                 'transformAttributes' => array('settings' => array(
                     'startDate', 'endDate', 'binSize', 'firstMetric', 'visibilityFilter',
 					'usersFilter', 'eventsFilter', 'socialSubtypesFilter',

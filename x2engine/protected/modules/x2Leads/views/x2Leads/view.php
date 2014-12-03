@@ -34,13 +34,21 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->pageTitle = CHtml::encode (
-    Yii::app()->settings->appName . ' - '.Yii::t('x2Leads', 'View Lead'));
+$this->pageTitle = CHtml::encode(
+                Yii::app()->settings->appName . ' - ' . Yii::t('x2Leads', 'View Lead'));
+
+$authParams['assignedTo'] = $model->assignedTo;
+
+$menuOptions = array(
+    'index', 'create', 'view', 'edit', 'delete', 'attach', 'quotes',
+    'convertToContact', 'convert', 'print',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
 
 
 Yii::app()->clientScript->registerResponsiveCssFile(
-    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
-Yii::app()->clientScript->registerCss('leadViewCss',"
+        Yii::app()->theme->baseUrl . '/css/responsiveRecordView.css');
+Yii::app()->clientScript->registerCss('leadViewCss', "
 
 #content {
     background: none !important;
@@ -53,22 +61,8 @@ Yii::app()->clientScript->registerCss('leadViewCss',"
 
 ");
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relationships.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl() . '/js/Relationships.js');
 
-$menuItems = array(
-	array('label'=>Yii::t('x2Leads','Leads List'), 'url'=>array('index')),
-	array('label'=>Yii::t('x2Leads','Create Lead'), 'url'=>array('create')),
-	array('label'=>Yii::t('x2Leads','View')),
-	array('label'=>Yii::t('x2Leads','Edit Lead'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('x2Leads','Delete Lead'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
-    array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
-    array(
-        'label' => Yii::t('x2Leads', 'Convert to Opportunity'),
-        'url' => '#',
-        'linkOptions' => array ('id' => 'convert-lead-button'),
-    ),
-);
 Yii::app()->clientScript->registerScript('leadsJS', "
 
 // widget data
@@ -77,166 +71,96 @@ $(function() {
 	$('body').data('modelId', $model->id);
 });
 
-(function () {
-
-    var conversionIncompatibilityWarnings = ".CJSON::encode ($conversionIncompatibilityWarnings).";
-
-    $('#convert-lead-button').click (function () {
-
-        // no incompatibilities present. convert the lead
-        if (!conversionIncompatibilityWarnings.length) {
-            window.location = '".$this->createUrl (
-                '/x2Leads/x2Leads/convertLead', array ('id' => $model->id))."';
-            return false;
-        }
-
-        if ($('#conversion-warning-dialog').closest ('.ui-dialog').length) {
-            $('#conversion-warning-dialog').dialog ('open');
-        } else {
-            // show the warning dialog to the user
-            $('#conversion-warning-dialog').dialog ({
-                title: '".Yii::t('x2Leads', 'Lead Conversion Warning')."',
-                autoOpen: true,
-                width: 500,
-                buttons: [
-                    {
-                        text: '".Yii::t('x2Leads', 'Convert Anyway')."',
-                        id: 'force-convert-button',
-                        click: function () {
-                            window.location = '".$this->createUrl (
-                                '/x2Leads/x2Leads/convertLead', array (
-                                'id' => $model->id,
-                                'force' => true,
-                            ))."';
-                        }
-                    },
-                    {
-                        text: '".Yii::t('x2Leads', 'Cancel')."',
-                        id: 'force-convert-button',
-                        click: function () {
-                            $('#conversion-warning-dialog').dialog ('close');
-                        }
-                    }
-                ]
-            });
-        }
-        return false;
-    });
-
-}) ();
-
-
-
 ");
 
-$menuItems[] = array(
-	'label' => Yii::t('app', 'Print Record'), 
-	'url' => '#',
-	'linkOptions' => array (
-		'onClick'=>"window.open('".
-			Yii::app()->createUrl('/site/printRecord', array (
-				'modelClass' => 'X2Leads', 
-				'id' => $model->id, 
-				'pageTitle' => Yii::t('app', 'Leads').': '.$model->name
-			))."');"
-	)
-);
-
-$authParams['assignedTo'] = $model->assignedTo;
-$this->actionMenu = $this->formatMenu($menuItems, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
 
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
     <div class="page-title-fixed-inner">
-    <div class="page-title icon x2Leads">
-	<h2><span class="no-bold"><?php echo Yii::t('x2Leads','Leads:'); ?> </span><?php echo CHtml::encode($model->name); ?></h2>
-	<?php echo CHtml::link('<span></span>',array('update', 'id'=>$model->id),array('class'=>'x2-button icon edit right')); ?>
-    </div>
+        <div class="page-title icon x2Leads">
+            <h2><span class="no-bold"><?php echo Yii::t('x2Leads', 'Leads:'); ?> </span><?php echo CHtml::encode($model->name); ?></h2>
+            <?php
+            echo CHtml::link('<span></span>', array('update', 'id' => $model->id), array('class' => 'x2-button icon edit right'));
+            echo CHtml::link('<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/OK.png' .
+                    '" style="height:18px;position:relative;top:3px;right:1px;"></img>', '#', array('id' => 'inline-edit-save', 'class' => 'x2-button icon right inline-edit-button', 'style' => 'display:none;'));
+            echo CHtml::link('<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/NOT_OK.png' .
+                    '" style="height:18px;position:relative;top:3px;right:1px;"></img>', '#', array('id' => 'inline-edit-cancel', 'class' => 'x2-button icon right inline-edit-button', 'style' => 'display:none;'));
+            ?>
+        </div>
     </div>
 </div>
 <div id="main-column" class="half-width">
-<?php
-
-if ($opportunity instanceof Opportunity) {
-    ?>
-    <div class='form'>
     <?php
-    echo CHtml::errorSummary ($opportunity, Yii::t('x2Leads', 'Lead conversion failed.'));
+    $this->beginWidget('CActiveForm', array(
+        'id' => 'contacts-form',
+        'enableAjaxValidation' => false,
+        'action' => array('saveChanges', 'id' => $model->id),
+    ));
+
+    $this->renderPartial('application.components.views._detailView', array('model' => $model, 'modelName' => 'X2Leads'));
+    $this->endWidget();
+
+    $this->widget('InlineEmailForm', array(
+        'attributes' => array(
+            'modelName' => 'X2Leads',
+            'modelId' => $model->id,
+            'targetModel' => $model,
+        ),
+        'startHidden' => true,
+    ));
+
+    $this->widget('X2WidgetList', array('block' => 'center', 'model' => $model, 'modelType' => 'x2Leads'));
     ?>
-    </div>
-    <?php
-}
-
-$this->beginWidget('CActiveForm', array(
-	'id'=>'contacts-form',
-	'enableAjaxValidation'=>false,
-	'action'=>array('saveChanges','id'=>$model->id),
-));
-
-$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'X2Leads'));
-$this->endWidget();
-
-$this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'x2Leads'));
-
-?>
     <div id="quote-form-wrapper">
-        <?php
-        $this->widget('InlineQuotes', array(
-            'startHidden' => true,
-            'recordId' => $model->id,
-            'account' => $model->getLinkedAttribute('accountName', 'name'),
-            'modelName' => X2Model::getModuleModelName ()
-        ));
-        ?>
+    <?php
+    $this->widget('InlineQuotes', array(
+        'startHidden' => true,
+        'recordId' => $model->id,
+        'account' => $model->getLinkedAttribute('accountName', 'name'),
+        'modelName' => X2Model::getModuleModelName()
+    ));
+    ?>
     </div>
 
-<?php 
+<?php
 $this->widget(
-    'Attachments',
-    array(
-        'associationType'=>'x2Leads','associationId'=>$model->id,
-        'startHidden'=>true
-    )
-); 
-
+        'Attachments', array(
+    'associationType' => 'x2Leads', 'associationId' => $model->id,
+    'startHidden' => true
+        )
+);
 ?>
 </div>
 <div class="history half-width">
-<?php
-$this->widget('Publisher',
-	array(
-		'associationType'=>'x2Leads',
-		'associationId'=>$model->id,
-		'assignedTo'=>Yii::app()->user->getName(),
-		'calendar' => false
-	)
-);
-
-$this->widget('History',array('associationType'=>'x2Leads','associationId'=>$model->id));
-?>
-</div>
-
-<div id='conversion-warning-dialog' style='display: none;' class='form'>
-    <p><?php 
-    echo Yii::t('x2Leads', 'Converting this lead to an opportunity could result in data from your'.
-        ' lead being lost. The following field incompatibilities have been detected: '); ?>
-    </p>
-    <ul class='errorSummary'>
     <?php
-    foreach ($conversionIncompatibilityWarnings as $message) {
-        ?>
-        <li><?php echo $message ?></li>
-        <?php
-    }
+    $this->widget('Publisher', array(
+        'associationType' => 'x2Leads',
+        'associationId' => $model->id,
+        'assignedTo' => Yii::app()->user->getName(),
+        'calendar' => false
+            )
+    );
+
+    $this->widget('History', array('associationType' => 'x2Leads', 'associationId' => $model->id));
     ?>
-    </ul>
-    <p><?php 
-    echo Yii::t('x2Leads', 'To resolve these incompatibilities, make sure that every custom '.
-        'leads field has a corresponding opportunities custom field of the same name and type.');
-    ?>
-    </p>
 </div>
 
-<?php $this->widget('CStarRating',array('name'=>'rating-js-fix', 'htmlOptions'=>array('style'=>'display:none;'))); ?>
+    <?php
+    $this->widget('CStarRating', array('name' => 'rating-js-fix', 'htmlOptions' => array('style' => 'display:none;')));
+
+    $this->widget('X2ModelConversionWidget', array(
+        'buttonSelector' => '#convert-lead-button',
+        'targetClass' => 'Opportunity',
+        'namespace' => 'Opportunity',
+        'model' => $model,
+    ));
+
+    $this->widget('X2ModelConversionWidget', array(
+        'buttonSelector' => '#convert-lead-to-contact-button',
+        'targetClass' => 'Contacts',
+        'namespace' => 'Contacts',
+        'model' => $model,
+    ));
+    ?>

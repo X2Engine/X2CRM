@@ -32,96 +32,90 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
+/* line 24, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > .ui-tabs-nav {
-    /*display: inline-block;*/
-    display: block;
-    float: left;
-    margin-bottom: 0px;
+  /*display: inline-block;*/
+  display: block;
+  float: left;
+  margin-bottom: 0px;
 }
-
+/* line 30, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > #publisher-tabs-row-1 {
-    margin-right: -10px;
+  margin-right: -10px;
 }
-
+/* line 34, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher.multi-row-tabs-publisher .form {
-    position: relative;
-    top: -1px;
+  position: relative;
+  top: -1px;
 }
 
 /***********************************************************************
 * multi row tabs 
 ***********************************************************************/
-
-#publisher-tabs-row-2.ui-tabs-nav li.ui-state-active {
-    position: relative;
-    z-index: 1;
-}
-
+/* line 44, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher-tabs-row-2 {
-    background: #f8f8f8;
-    width: 100%; 
-    box-sizing: border-box;
-    border-radius: 4px 4px 0 0;
-    height: 32px;
-    border: 1px solid #ccc;
-    border-bottom: none;
-    margin-bottom: -6px !important;
-    margin-top: 0px;
-    /*display: block !important;*/
+  background: #f8f8f8;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 4px 4px 0 0;
+  height: 32px;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  margin-bottom: -6px !important;
+  margin-top: 0px;
+  /*display: block !important;*/
 }
-#publisher-tabs-row-2 li:first-child {
-    margin-left: 3px;
+/* line 45, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher-tabs-row-2.ui-tabs-nav li.ui-state-active {
+  position: relative;
+  z-index: 1;
 }
+/* line 59, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher-tabs-row-2 li {
-    margin-top: -1px;
-    height: 24px;
+  margin-top: -1px;
+  height: 24px;
 }
-
+/* line 60, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher-tabs-row-2 li:first-child {
+  margin-left: 3px;
+}
+/* line 66, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher-tabs-row-2.unselected-tab-row {
-    background: #eee; 
+  background: #eee;
 }
 
 /***********************************************************************
 * comment tab 
 ***********************************************************************/
-
-#new-comment .text-area-wrapper {
-    margin-bottom: 5px;
+/* line 75, ../../../compass/themes/x2engine/css/publisher.scss */
+#new-comment .text-area-wrapper, #products .text-area-wrapper {
+  margin-bottom: 5px;
 }
 
 /***********************************************************************
 * products tab 
 ***********************************************************************/
-
-#products .text-area-wrapper {
-    margin-bottom: 5px;
-}
-
-
-
 /***********************************************************************
 * action tab 
 ***********************************************************************/
-
+/* line 87, ../../../compass/themes/x2engine/css/publisher.scss */
 #action-reminder-container {
-    font-size: 12px;
-    line-height: 22px;
+  font-size: 12px;
+  line-height: 22px;
 }
-#action-reminder-container select,
-#action-reminder-container input,
-#action-reminder-container div {
-    float: left;
+/* line 90, ../../../compass/themes/x2engine/css/publisher.scss */
+#action-reminder-container select, #action-reminder-container input, #action-reminder-container div {
+  float: left;
 }
-
+/* line 93, ../../../compass/themes/x2engine/css/publisher.scss */
 #action-reminder-container select {
-    margin-left: 4px;
+  margin-left: 4px;
 }
-
+/* line 96, ../../../compass/themes/x2engine/css/publisher.scss */
 #action-reminder-container > div {
-    border-radius: 3px;
-    border: 1px solid rgb(206, 206, 206);
-    background: white;
-    padding: 5px;
-    margin-bottom: 6px;
+  border-radius: 3px;
+  border: 1px solid #cecece;
+  background: white;
+  padding: 5px;
+  margin-bottom: 6px;
 }

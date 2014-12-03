@@ -1024,29 +1024,39 @@ class UpdaterBehavior extends ResponseBehavior {
                                 continue;
                             $sqlErr = $e->getMessage();
                             try{
-                                if($backup){ // Run the recovery
-                                    $this->restoreDatabaseBackup();
-                                    $dbRestoreMessage = Yii::t('admin', 'The database has been restored to the backup copy.');
-                                }else{ // No recovery available; print messages instead
-                                    if((bool) realpath($this->dbBackupPath)) // Backup available
-                                        $dbRestoreMessage = Yii::t('admin', 'To restore the database to its previous state, use the database dump file {file} stored in {dir}', array('{file}' => self::BAKFILE, '{dir}' => 'protected/data'));
-                                    else // No backup available
-                                        $dbRestoreMessage = Yii::t('admin', 'If you made a backup of the database before running the updater, you will need to apply it manually.');
-                                }
+                                $this->handleSqlFailure ($sql, $sqlRun, $sqlErr, $backup);
                             }catch(Exception $re){ // Database recovery failed. We're SOL
                                 $dbRestoreMessage = $re->getMessage();
+                                $this->sqlError($sql, $sqlRun, "$sqlErr\n$dbRestoreMessage");
                             }
-                            $this->sqlError($sql, $sqlRun, "$sqlErr\n$dbRestoreMessage");
                         }
                     }
                 }
             }
             if(count($part['migrationScripts'])){
                 $this->output(Yii::t('admin', 'Running migration scripts for version {ver}...', array('{ver}' => $part['version'])));
-                $this->runMigrationScripts($part['migrationScripts'], $sqlRun);
+                $this->runMigrationScripts($part['migrationScripts'], $sqlRun, $backup);
             }
         }
         return true;
+    }
+
+    /**
+     * Handle database backups in the event of failure
+     * @param string $error SQL Error
+     * @param bool $backup Whether to restore from backup
+     */
+    public function handleSqlFailure($sql, $sqlRun, $sqlErr, $backup, $throw = true) {
+        if ($backup) { // Run the recovery
+            $this->restoreDatabaseBackup();
+            $dbRestoreMessage = Yii::t('admin', 'The database has been restored to the backup copy.');
+        } else { // No recovery available; print messages instead
+            if((bool) realpath($this->dbBackupPath)) // Backup available
+                $dbRestoreMessage = Yii::t('admin', 'To restore the database to its previous state, use the database dump file {file} stored in {dir}', array('{file}' => self::BAKFILE, '{dir}' => 'protected/data'));
+            else // No backup available
+                $dbRestoreMessage = Yii::t('admin', 'If you made a backup of the database before running the updater, you will need to apply it manually.');
+        }
+        $this->sqlError($sql, $sqlRun, "$sqlErr\n$dbRestoreMessage", $throw);
     }
 
     /**
@@ -2013,15 +2023,19 @@ class UpdaterBehavior extends ResponseBehavior {
      * @param type $ran List of database changes and other scripts that have
      *  already been run
      */
-    public function runMigrationScripts($scripts, &$ran){
+    public function runMigrationScripts($scripts, &$ran, $backup){
         $that = $this;
         $script = '';
-        $scriptExc = function($e) use(&$ran, &$script, $that){
-                    $that->sqlError(Yii::t('admin', 'migration script {file}', array('{file}' => $script)), $ran, $e->getMessage(),false);
+        $scriptExc = function($e) use(&$ran, &$script, $that, $backup){
+                    $that->handleSqlFailure ($script, $ran, $e->getMessage(), $backup, false);
                 };
-        $scriptErr = function($errno, $errstr, $errfile, $errline, $errcontext) use(&$ran, &$script, $that){
-                    if($errno == E_ERROR) {
-                        $that->sqlError(Yii::t('admin', 'migration script {file}', array('{file}' => $script)), $ran, "$errstr [$errno] : $errfile L$errline; $errcontext",false);
+        $scriptErr = function($errno, $errstr, $errfile, $errline, $errcontext) use(&$ran, &$script, $that, $backup) {
+                    $unrecoverable = array(
+                        E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING
+                    );
+                    if (!in_array($errno, $unrecoverable)) {
+                        $that->handleSqlFailure ($script, $ran,
+                            "$errstr [$errno] : $errfile L$errline; $errcontext ", $backup, false);
                     }
                 };
         set_error_handler($scriptErr);
@@ -2029,7 +2043,12 @@ class UpdaterBehavior extends ResponseBehavior {
         sort($scripts);
         foreach($scripts as $script){
             $this->output(Yii::t('admin', 'Running migration script: {script}', array('{script}' => $script)));
-            require_once($this->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
+            if (YII_DEBUG && YII_UNIT_TESTING) {
+                // To allow the same migration script to be executed twice in testing
+                require($this->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
+            } else {
+                require_once($this->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
+            }
             $ran[] = Yii::t('admin', 'migration script {file}', array('{file}' => $script));
         }
         restore_exception_handler();

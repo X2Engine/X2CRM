@@ -43,6 +43,14 @@
  * @var User $user The system user
  */
 
+Yii::app()->clientScript->registerCss('credentialsFormCss',"
+
+form > .twitter-credential-input {
+    width: 300px; 
+}
+
+");
+
 echo '<div class="form">';
 
 $action = null;
@@ -60,23 +68,25 @@ echo $includeTitle ? $model->pageTitle.'<hr />' : '';
 // Model class hidden field, so that it saves properly:
 echo CHtml::activeHiddenField($model,'modelClass');
 
-echo CHtml::activeLabel($model, 'name');
-echo CHtml::error($model, 'name');
-echo CHtml::activeTextField($model, 'name');
+if (!$disableMetaDataForm) {
+    echo CHtml::activeLabel($model, 'name');
+    echo CHtml::error($model, 'name');
+    echo CHtml::activeTextField($model, 'name');
 
-echo CHtml::activeLabel($model, 'private');
-echo CHtml::activeCheckbox($model, 'private',array('value'=>1));
-echo CHtml::tag('span', array('class' => 'x2-hint', 'style'=>'display:inline-block; margin-left:5px;', 'title' => Yii::t('app', 'If you disable this option, administrators and users granted privilege to do so will be able to use these credentials on your behalf.')),'[?]');
+    echo CHtml::activeLabel($model, 'private');
+    echo CHtml::activeCheckbox($model, 'private',array('value'=>1));
+    echo CHtml::tag('span', array('class' => 'x2-hint', 'style'=>'display:inline-block; margin-left:5px;', 'title' => Yii::t('app', 'If you disable this option, administrators and users granted privilege to do so will be able to use these credentials on your behalf.')),'[?]');
 
-if($model->isNewRecord){
-	if(Yii::app()->user->checkAccess('CredentialsAdmin')){
-		$users = array($user->id => Yii::t('app', 'You'));
-		$users[Credentials::SYS_ID] = 'System';
-		echo CHtml::activeLabel($model, 'userId');
-		echo CHtml::activeDropDownList($model, 'userId', $users, array('selected' => Credentials::SYS_ID));
-	}else{
-		echo CHtml::activeHiddenField($model, 'userId', array('value' => $user->id));
-	}
+    if($model->isNewRecord){
+        if(Yii::app()->user->checkAccess('CredentialsAdmin')){
+            $users = array($user->id => Yii::t('app', 'You'));
+            $users[Credentials::SYS_ID] = 'System';
+            echo CHtml::activeLabel($model, 'userId');
+            echo CHtml::activeDropDownList($model, 'userId', $users, array('selected' => Credentials::SYS_ID));
+        }else{
+            echo CHtml::activeHiddenField($model, 'userId', array('value' => $user->id));
+        }
+    }
 }
 
 ?>
@@ -94,8 +104,13 @@ $this->widget('EmbeddedModelForm', array(
 <?php
 echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button credentials-save','style'=>'display:inline-block;margin-top:0;'));
 echo CHtml::link(Yii::t('app','Cancel'),array('/profile/manageCredentials'),array('class'=>'x2-button credentials-cancel'));
-echo CHtml::link(Yii::t('app', 'Verify Credentials'), "#", array('class' => 'x2-button credentials-verify', 'style' => 'margin-left: 5px;'));
-?><span id='verify-credentials-loading'></span></div><?php
+if (isset ($model->auth->enableVerification) && $model->auth->enableVerification) {
+    echo CHtml::link(Yii::t('app', 'Verify Credentials'), "#", array('class' => 'x2-button credentials-verify', 'style' => 'margin-left: 5px;'));
+    ?><div id='verify-credentials-loading'></div>
+<?php
+}
+?>
+</div><?php
 echo CHtml::endForm();
 
 
@@ -156,7 +171,11 @@ $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
 
             var successMsg = "<?php echo Yii::t('app', 'Authentication successful.'); ?>";
             var failureMsg = "<?php echo Yii::t('app', 'Failed to authenticate! Please check you credentials.'); ?>";
-            $('#verify-credentials-loading').addClass ('x2-loading-icon');
+            $('#verify-credentials-loading').addClass ('loading-icon');
+            // Hide previous result if any
+            $('#verification-result').html('');
+            $('#verification-result').removeClass();
+
             $.ajax({
                 url: "<?php echo $verifyCredsUrl; ?>",
                 type: 'post',
@@ -168,7 +187,7 @@ $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
                     security: security
                 },
                 complete: function(xhr) {
-                    $('#verify-credentials-loading').removeClass ('x2-loading-icon');
+                    $('#verify-credentials-loading').removeClass ('loading-icon');
                     if (xhr.responseText === '') {
                         $("#verification-result").addClass('flash-success');
                         $("#verification-result").removeClass('flash-error');

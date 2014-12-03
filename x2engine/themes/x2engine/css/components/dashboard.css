@@ -1,0 +1,2430 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***************************************
+* Mixin for border radius 
+***************************************/
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
+/* line 56, ../../../../compass/css/lib/standards.scss */
+.pseudo-link {
+  cursor: pointer;
+  color: #004baf;
+  transition: color .1s;
+}
+/* line 61, ../../../../compass/css/lib/standards.scss */
+.pseudo-link:hover {
+  color: #006cfb;
+}
+
+/***************************************
+* CSS to extend when for elements that 
+* become opauqe on mouseover
+***************************************/
+/* line 70, ../../../../compass/css/lib/standards.scss */
+.opacity-hover, .toolbar #minimize-dashboard {
+  opacity: 0.3;
+}
+/* line 73, ../../../../compass/css/lib/standards.scss */
+.opacity-hover:hover, .toolbar #minimize-dashboard:hover {
+  opacity: 1.0;
+}
+
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***************************************
+* Mixin for border radius 
+***************************************/
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
+/* line 56, ../../../../compass/css/lib/standards.scss */
+.pseudo-link {
+  cursor: pointer;
+  color: #004baf;
+  transition: color .1s;
+}
+/* line 61, ../../../../compass/css/lib/standards.scss */
+.pseudo-link:hover {
+  color: #006cfb;
+}
+
+/***************************************
+* CSS to extend when for elements that 
+* become opauqe on mouseover
+***************************************/
+/* line 70, ../../../../compass/css/lib/standards.scss */
+.opacity-hover, .toolbar #minimize-dashboard {
+  opacity: 0.3;
+}
+/* line 73, ../../../../compass/css/lib/standards.scss */
+.opacity-hover:hover, .toolbar #minimize-dashboard:hover {
+  opacity: 1.0;
+}
+
+/* line 24, ../../../../compass/themes/x2engine/css/layout.scss */
+.right-widget-title {
+  display: inline-block;
+}
+
+/*
+prevent menu items from moving to the next line (would prevent items from being added to more
+menu with JS
+*/
+/* line 33, ../../../../compass/themes/x2engine/css/layout.scss */
+#main-menu {
+  width: 50000px;
+}
+
+/* line 37, ../../../../compass/themes/x2engine/css/layout.scss */
+.top-bar-module-link:hover {
+  background-color: #E9E9E9;
+}
+
+/* line 41, ../../../../compass/themes/x2engine/css/layout.scss */
+#search-bar-title {
+  float: left;
+  margin-left: 18px;
+  margin-right: 6px;
+}
+
+/* line 47, ../../../../compass/themes/x2engine/css/layout.scss */
+#your-logo {
+  /*width: 36px;*/
+  height: 30px;
+}
+
+/* line 52, ../../../../compass/themes/x2engine/css/layout.scss */
+#show-left-menu-button {
+  cursor: pointer;
+  display: none;
+  float: left;
+  height: 25px;
+  padding-top: 7px;
+  width: 31px;
+  padding-right: 20px;
+  margin-right: -28px;
+}
+
+/* line 63, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-bar {
+  width: 19px;
+  height: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -o-border-radius: 2px;
+  border-radius: 2px;
+  background-color: white;
+  margin: 0px 0 5px 0;
+}
+
+/* line 71, ../../../../compass/themes/x2engine/css/layout.scss */
+html {
+  height: 100%;
+}
+
+/* line 75, ../../../../compass/themes/x2engine/css/layout.scss */
+body {
+  height: 100%;
+  background: #fdfdfd;
+  /*min-width:880px;*/
+}
+/* line 79, ../../../../compass/themes/x2engine/css/layout.scss */
+body:before {
+  content: "";
+  height: 100%;
+  float: left;
+  width: 0;
+  margin-top: -32767px;
+}
+
+/*Opera Fix*/
+/* line 90, ../../../../compass/themes/x2engine/css/layout.scss */
+#page-container {
+  min-height: 100%;
+  overflow: hidden;
+}
+
+/* line 95, ../../../../compass/themes/x2engine/css/layout.scss */
+#page {
+  margin-top: 32px;
+  overflow: auto;
+  padding-bottom: 100px;
+}
+
+/* line 101, ../../../../compass/themes/x2engine/css/layout.scss */
+#header {
+  height: 32px;
+  background: #1f559b;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+/* line 108, ../../../../compass/themes/x2engine/css/layout.scss */
+#header.defaultBg {
+  background: url(../images/default_header.gif) top left repeat-x #3d70b4;
+  /* #417dcd to #3d70b4 */
+}
+
+/* line 114, ../../../../compass/themes/x2engine/css/layout.scss */
+#header-inner {
+  height: 31px;
+  /* #header.defaultBg #header-inner { */
+  opacity: 0.95;
+  background-image: url(../images/stripes2.png);
+  background-repeat: no-repeat;
+  background-size: auto;
+}
+
+/************************************************************
+* Admin flash messages; displayed at the top of every page
+************************************************************/
+/* line 127, ../../../../compass/themes/x2engine/css/layout.scss */
+div.admin-flash-message {
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  height: 12px;
+  width: 100%;
+  border-bottom: 1px solid #F1D031;
+  padding: 2px 0;
+  position: fixed;
+  left: 0;
+  z-index: 1000;
+  text-align: center;
+  background-color: #FFFFC2;
+  color: black;
+}
+
+/**
+ * ---------------------- Search Bar ----------------------
+ */
+/* line 146, ../../../../compass/themes/x2engine/css/layout.scss */
+.main-menu li.search-bar {
+  padding-left: 0;
+  /* position:relative; */
+  /* padding:3px 0 0 10px; */
+}
+
+/* line 152, ../../../../compass/themes/x2engine/css/layout.scss */
+#search-bar-title a {
+  line-height: 16px;
+  /* padding-top:5px; */
+  /* display:block; */
+}
+
+/* line 159, ../../../../compass/themes/x2engine/css/layout.scss */
+#search-bar form {
+  padding: 0;
+}
+/* line 162, ../../../../compass/themes/x2engine/css/layout.scss */
+#search-bar a.x2-button {
+  float: right;
+  margin: 6px 0 0 5px;
+}
+/* line 166, ../../../../compass/themes/x2engine/css/layout.scss */
+#search-bar button.x2-button {
+  float: right;
+  margin: 2px 0 0 0;
+  padding: 0;
+  -webkit-border-radius: 0 3px 3px 0;
+  -moz-border-radius: 0 3px 3px 0;
+  -ms-border-radius: 0 3px 3px 0;
+  -o-border-radius: 0 3px 3px 0;
+  border-radius: 0 3px 3px 0;
+}
+/* line 171, ../../../../compass/themes/x2engine/css/layout.scss */
+#search-bar button.x2-button span {
+  display: block;
+  margin: 0;
+  padding: 0;
+  height: 25px;
+  width: 30px;
+  background: url(../images/search-icon.png) 8px 5px no-repeat;
+}
+
+/* line 182, ../../../../compass/themes/x2engine/css/layout.scss */
+#email-search-submit span {
+  display: block;
+  margin: 0;
+  padding: 0;
+  height: 25px;
+  width: 30px;
+  background: url(../images/icons/search-button.png) 8px 5px no-repeat;
+}
+
+/* line 191, ../../../../compass/themes/x2engine/css/layout.scss */
+#search-bar-box {
+  width: 200px;
+  margin: 2px 0 0 0;
+  float: right;
+  padding: 4px 5px 5px 5px;
+  border: 1px solid #868686;
+  border-right: none;
+  background: #fff;
+  font-size: 12px;
+  height: 16px !important;
+  color: #aaa;
+  -webkit-border-radius: 4px 0 0 4px;
+  -moz-border-radius: 4px 0 0 4px;
+  -ms-border-radius: 4px 0 0 4px;
+  -o-border-radius: 4px 0 0 4px;
+  border-radius: 4px 0 0 4px;
+}
+
+/**
+ * ---------------------- Main Menu -----------------------
+ */
+/* line 209, ../../../../compass/themes/x2engine/css/layout.scss */
+#main-menu-icon {
+  display: inline-block;
+  background: url(../images/x2-mini-icon.png) center no-repeat;
+  float: right;
+  height: 30px;
+  width: 30px;
+  margin: 0;
+}
+
+/* line 218, ../../../../compass/themes/x2engine/css/layout.scss */
+.main-menu, .dropdown ul {
+  list-style: none;
+  margin: 0;
+  display: block;
+}
+
+/* line 224, ../../../../compass/themes/x2engine/css/layout.scss */
+.main-menu > li {
+  /* height:32px; */
+  margin: 3px;
+  /* padding:5px; */
+  float: left;
+  display: block;
+  /* padding:0 5px; */
+  /* margin:0; */
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+}
+/* line 233, ../../../../compass/themes/x2engine/css/layout.scss */
+.main-menu > li.special {
+  margin: 0 5px 0 0;
+}
+/* line 235, ../../../../compass/themes/x2engine/css/layout.scss */
+.main-menu > li.special span, .main-menu > li.special a {
+  padding: 0;
+}
+
+/* line 242, ../../../../compass/themes/x2engine/css/layout.scss */
+li.special.leadrouting-indicator span {
+  display: block;
+  margin-top: 10px;
+  height: 7px;
+  width: 7px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+  border-radius: 6px;
+  background: #f00;
+  border: 2px solid #fff;
+}
+/* line 251, ../../../../compass/themes/x2engine/css/layout.scss */
+li.special.leadrouting-indicator.visible span {
+  background: #0f0;
+}
+
+/* line 256, ../../../../compass/themes/x2engine/css/layout.scss */
+#main-menu > li.active:first-child a {
+  padding-left: 10px;
+}
+
+/* line 260, ../../../../compass/themes/x2engine/css/layout.scss */
+#user-menu {
+  float: right;
+}
+
+/* line 264, ../../../../compass/themes/x2engine/css/layout.scss */
+#user-menu-2 {
+  float: right;
+  padding-left: 4px;
+}
+
+/* line 269, ../../../../compass/themes/x2engine/css/layout.scss */
+#user-menu > li:last-child a {
+  padding-right: 0;
+}
+
+/* line 274, ../../../../compass/themes/x2engine/css/layout.scss */
+.main-menu a, .main-menu span {
+  display: block;
+  font-size: 13px;
+  padding: 0 8px;
+  font-weight: bold;
+  text-decoration: none;
+}
+/* line 282, ../../../../compass/themes/x2engine/css/layout.scss */
+.main-menu > li > a, .main-menu > li > span {
+  color: #F5F5F5;
+  line-height: 32px;
+  height: 32px;
+  text-shadow: rgba(0, 0, 0, 0.5) 0 1px 4px;
+  /* temp */
+  line-height: 25px;
+  height: 25px;
+}
+
+/* line 294, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown > span {
+  cursor: pointer;
+  padding-right: 15px;
+  margin-right: 8px;
+  background: url(../images/dropdown-arrow.png) transparent no-repeat center right;
+}
+
+/* line 301, ../../../../compass/themes/x2engine/css/layout.scss */
+.main-menu > li.special:hover, #header.defaultBg .main-menu > li.special:hover {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+/* line 308, ../../../../compass/themes/x2engine/css/layout.scss */
+.main-menu > li:hover, .main-menu > li.active {
+  /* background:url(../images/black_15.png); */
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* line 315, ../../../../compass/themes/x2engine/css/layout.scss */
+#header.defaultBg .main-menu > li:hover, #header.defaultBg .main-menu > li.active {
+  /* temp */
+  background: #8F8F8F;
+  background: #3068b2;
+  /* background:rgba(255,255,255,0.15); */
+}
+
+/* line 323, ../../../../compass/themes/x2engine/css/layout.scss */
+.main-menu > li.special:hover, #header.defaultBg .main-menu > li.special:hover {
+  background: none;
+}
+
+/**
+ * --------------------- Dropdown Menu --------------------
+ */
+/* line 331, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown {
+  position: relative;
+}
+
+/* line 335, ../../../../compass/themes/x2engine/css/layout.scss */
+#profile-dropdown > ul {
+  left: -60px;
+}
+
+/* line 339, ../../../../compass/themes/x2engine/css/layout.scss */
+#more-menu.dropdown > ul {
+  left: 3px;
+}
+/* line 341, ../../../../compass/themes/x2engine/css/layout.scss */
+#more-menu.dropdown > ul:after {
+  left: 15px;
+}
+
+/* line 346, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown ul {
+  visibility: hidden;
+  position: absolute;
+  z-index: 1000;
+  background: #f6f6f6;
+  /* border:1px solid #666; */
+  top: 29px;
+  /* margin-top:6px; */
+  padding: 2px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  -moz-box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* line 361, ../../../../compass/themes/x2engine/css/layout.scss */
+#user-menu .dropdown ul {
+  left: auto;
+  right: 0;
+}
+
+/* line 367, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown ul.open {
+  visibility: visible;
+}
+/* line 370, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown ul:after {
+  position: absolute;
+  z-index: 1500;
+  top: -6px;
+  left: 98px;
+  display: inline-block;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #f6f6f6;
+  border-left: 6px solid transparent;
+  content: '';
+}
+
+/* line 383, ../../../../compass/themes/x2engine/css/layout.scss */
+#user-menu .dropdown ul:after {
+  left: auto;
+  right: 20px;
+}
+
+/* line 389, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown ul li {
+  white-space: nowrap;
+  height: auto;
+  text-shadow: none;
+  min-width: 120px;
+  font-size: 12px;
+  float: none;
+  padding: 0;
+}
+/* line 397, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown ul li:first-child {
+  -webkit-border-radius: 2px 2px 0 0;
+  -moz-border-radius: 2px 2px 0 0;
+  -ms-border-radius: 2px 2px 0 0;
+  -o-border-radius: 2px 2px 0 0;
+  border-radius: 2px 2px 0 0;
+}
+/* line 400, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown ul li:last-child {
+  -webkit-border-radius: 0 0 2px 2px;
+  -moz-border-radius: 0 0 2px 2px;
+  -ms-border-radius: 0 0 2px 2px;
+  -o-border-radius: 0 0 2px 2px;
+  border-radius: 0 0 2px 2px;
+}
+/* line 403, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown ul li:only-child {
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -o-border-radius: 2px;
+  border-radius: 2px;
+}
+/* line 406, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown ul li.divider {
+  border-top: 1px solid #ccc;
+  height: 0;
+  margin: 2px 5px;
+}
+/* line 410, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown ul li.divider span {
+  display: none;
+}
+/* line 414, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown ul li a, .dropdown ul li span {
+  display: block;
+  padding: 0 20px;
+  height: auto;
+}
+/* line 419, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown ul li a {
+  font-weight: normal;
+  color: #000;
+  font-size: 15px;
+  line-height: 25px;
+  text-shadow: none;
+}
+/* line 427, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown:hover ul li:hover {
+  background-color: #E9E9E9;
+}
+/* line 429, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown:hover ul li:hover a {
+  text-decoration: none;
+}
+/* line 433, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown li.active {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-width: 1px 0 1px 0;
+}
+
+/* line 440, ../../../../compass/themes/x2engine/css/layout.scss */
+#profile-dropdown {
+  padding: 0;
+  margin-left: -5px;
+  z-index: 1;
+}
+/* line 444, ../../../../compass/themes/x2engine/css/layout.scss */
+#profile-dropdown span {
+  height: auto;
+  margin: 0 8px 0 0;
+  padding-left: 6px;
+}
+/* line 449, ../../../../compass/themes/x2engine/css/layout.scss */
+#profile-dropdown img {
+  /* 	margin-top:2px; */
+  margin: -2px 5px 0 -2px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  vertical-align: middle;
+  /* margin-right:8px; */
+}
+
+/* End Dropdown Menu */
+/* Widget Dropdown Menu */
+/* line 463, ../../../../compass/themes/x2engine/css/layout.scss */
+#widget-dropdown > span {
+  background: none;
+  float: left;
+}
+/* line 467, ../../../../compass/themes/x2engine/css/layout.scss */
+#widget-dropdown ul:after {
+  position: absolute;
+  z-index: 1500;
+  top: -6px;
+  left: 4px;
+  display: inline-block;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #f6f6f6;
+  border-left: 6px solid transparent;
+  content: '';
+}
+
+/* End Widget Dropdown Menu */
+/* Submenu Bar */
+/* line 484, ../../../../compass/themes/x2engine/css/layout.scss */
+#submenu-bar {
+  clear: both;
+  width: auto;
+  padding: 4px 0;
+  background: #333;
+}
+/* line 489, ../../../../compass/themes/x2engine/css/layout.scss */
+#submenu-bar a.x2-button {
+  float: right;
+  margin: 0 0 0 5px;
+  border: none;
+  line-height: 26px;
+  /* padding:0 8px; */
+}
+/* line 496, ../../../../compass/themes/x2engine/css/layout.scss */
+#submenu-bar ul {
+  display: block;
+  float: left;
+  width: auto;
+  overflow: auto;
+  margin: 0;
+  padding: 5px 0;
+}
+/* line 504, ../../../../compass/themes/x2engine/css/layout.scss */
+#submenu-bar li {
+  display: block;
+  float: left;
+  border-right: 1px solid #666;
+  margin: 0 5px 0 0;
+  padding: 0 5px 0 0;
+}
+/* line 510, ../../../../compass/themes/x2engine/css/layout.scss */
+#submenu-bar li:last-child {
+  border-right: none;
+}
+/* line 513, ../../../../compass/themes/x2engine/css/layout.scss */
+#submenu-bar li a {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+}
+/* line 517, ../../../../compass/themes/x2engine/css/layout.scss */
+#submenu-bar li a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+/* line 522, ../../../../compass/themes/x2engine/css/layout.scss */
+#submenu-bar li span {
+  color: #fff;
+  font-weight: bold;
+  cursor: default;
+}
+
+/* color:#09F; */
+/* line 532, ../../../../compass/themes/x2engine/css/layout.scss */
+#transparency-button, #fullscreen-button, #user-menu-button, #widget-button {
+  position: relative;
+  margin: 3px 0 0 0;
+  padding: 0;
+  border: none;
+  text-decoration: none;
+}
+
+/* line 540, ../../../../compass/themes/x2engine/css/layout.scss */
+#transparency-button span, #fullscreen-button span, #user-menu-button span {
+  display: block;
+  background-image: url(../images/contrast-icon.png);
+  background-position: center center;
+  background-repeat: no-repeat;
+  width: 28px;
+}
+
+/* line 548, ../../../../compass/themes/x2engine/css/layout.scss */
+#fullscreen-button {
+  height: 25px;
+  width: 25px;
+  text-shadow: none;
+  background-image: none;
+  text-decoration: none;
+}
+
+/* line 557, ../../../../compass/themes/x2engine/css/layout.scss */
+#user-menu-button {
+  display: inline-block;
+  margin-top: 1px;
+  vertical-align: middle;
+}
+/* line 561, ../../../../compass/themes/x2engine/css/layout.scss */
+#user-menu-button span {
+  height: 25px;
+  background: url(../images/user.png) center center no-repeat;
+  text-decoration: none;
+}
+
+/**
+ * -------------------- Notifications ---------------------
+ */
+/* line 572, ../../../../compass/themes/x2engine/css/layout.scss */
+#main-menu-notif {
+  display: block;
+  float: right;
+  padding: 0;
+  margin-top: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  background: #fff;
+  text-decoration: none;
+  text-align: center;
+  font-size: 18px;
+  line-height: 25px;
+}
+/* line 583, ../../../../compass/themes/x2engine/css/layout.scss */
+#main-menu-notif span {
+  color: #09f;
+  display: block;
+  padding: 0 10px;
+  line-height: 25px;
+  font-size: 18px;
+  text-decoration: none;
+  text-shadow: none;
+}
+
+/* line 595, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-widget .widget-sort-handle {
+  height: 15px;
+  width: 15px;
+  margin-right: -8px;
+  margin-left: 2px;
+}
+/* line 601, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-widget.form {
+  overflow: hidden;
+}
+
+/* line 606, ../../../../compass/themes/x2engine/css/layout.scss */
+#x2-hidden-widgets-menu {
+  width: 130px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: none;
+  /* visibility:hidden; */
+  position: absolute;
+  z-index: 1000;
+  background: #f6f6f6;
+  /* border:1px solid #666; */
+  top: 40px;
+  /* margin-top:6px; */
+  padding: 2px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  -moz-box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
+}
+/* line 622, ../../../../compass/themes/x2engine/css/layout.scss */
+#x2-hidden-widgets-menu:after {
+  position: absolute;
+  z-index: 1500;
+  top: -6px;
+  right: 115px;
+  display: inline-block;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #f6f6f6;
+  border-left: 6px solid transparent;
+  content: '';
+}
+
+/* line 632, ../../../../compass/themes/x2engine/css/layout.scss */
+.widget-icon {
+  height: 25px;
+  width: 25px;
+  text-shadow: none;
+}
+
+/* #widget-menu.visible {
+	visibility: visible;
+} */
+/*#main-column .x2-widget.form {
+	border-right: none;
+	border-left: none;
+}
+#main-column.half-width .x2-widget.form {
+	border-right: 1px solid #ccc;
+}*/
+/* line 652, ../../../../compass/themes/x2engine/css/layout.scss */
+span.x2-hidden-widgets-menu-item.ui-draggable {
+  padding: 0 10px;
+}
+
+/* line 657, ../../../../compass/themes/x2engine/css/layout.scss */
+#x2-hidden-widgets-menu li span.x2-hidden-widgets-menu-item:hover {
+  background: #eee;
+}
+/* line 660, ../../../../compass/themes/x2engine/css/layout.scss */
+#x2-hidden-widgets-menu ul {
+  padding-left: 0px;
+  list-style-type: none;
+}
+/* line 664, ../../../../compass/themes/x2engine/css/layout.scss */
+#x2-hidden-widgets-menu li span.x2-hidden-widgets-menu-item {
+  padding-left: 10px;
+  font-weight: normal;
+  color: #000;
+  font-size: 15px;
+  line-height: 25px;
+  text-shadow: none;
+  cursor: pointer;
+}
+
+/* line 675, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-hidden-widgets-menu-item.ui-draggable-dragging {
+  background: white;
+  border: 1px solid #CCC;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+}
+
+/* line 681, ../../../../compass/themes/x2engine/css/layout.scss */
+#content-widgets {
+  /*padding-bottom: 10px;*/
+}
+
+/* line 685, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2widget-header {
+  cursor: pointer;
+}
+
+/* line 689, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-hidden-widgets-menu-divider {
+  border-top: 1px solid #CCC;
+  margin: 2px 5px;
+  height: 0px;
+}
+
+/* line 695, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-tag-list {
+  min-height: 25px;
+}
+
+/* line 699, ../../../../compass/themes/x2engine/css/layout.scss */
+#notif-box-shadow-correct {
+  width: 440px;
+  height: 40px;
+  display: block;
+}
+
+/* line 705, ../../../../compass/themes/x2engine/css/layout.scss */
+#notif-box {
+  display: none;
+  width: 400px;
+  min-height: 50px;
+  padding: 0 2px;
+  /* min-height:60px; */
+  top: 40px;
+  background: #f0f0f0;
+  position: absolute;
+  right: 160px;
+  z-index: 2000;
+  /* border:1px solid #333; */
+  /* border-top:none; */
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  -moz-box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
+}
+/* line 721, ../../../../compass/themes/x2engine/css/layout.scss */
+#notif-box:after {
+  position: absolute;
+  z-index: 1500;
+  top: -6px;
+  right: 12px;
+  display: inline-block;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #f6f6f6;
+  border-left: 6px solid transparent;
+  content: '';
+}
+/* line 733, ../../../../compass/themes/x2engine/css/layout.scss */
+#notif-box .notif {
+  /* border-bottom:1px solid #999; */
+  position: relative;
+  overflow: auto;
+  padding: 1px 5px;
+  margin-bottom: 5px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -o-border-radius: 2px;
+  border-radius: 2px;
+}
+
+/* line 744, ../../../../compass/themes/x2engine/css/layout.scss */
+#notifications .notif.unviewed {
+  background: #eef0ff;
+  font-weight: bold;
+}
+/* line 748, ../../../../compass/themes/x2engine/css/layout.scss */
+#notifications .notif .msg {
+  float: left;
+  margin-right: 15px;
+}
+/* line 752, ../../../../compass/themes/x2engine/css/layout.scss */
+#notifications .notif .close {
+  position: absolute;
+  right: 4px;
+  top: 0;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 14px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* line 764, ../../../../compass/themes/x2engine/css/layout.scss */
+#no-notifications {
+  padding: 2px;
+  height: 30px;
+}
+
+/* line 769, ../../../../compass/themes/x2engine/css/layout.scss */
+#notif-view-all {
+  float: left;
+  margin-right: 5px;
+  display: block;
+  padding: 2px 2px 4px 2px;
+}
+
+/* line 776, ../../../../compass/themes/x2engine/css/layout.scss */
+#notif-clear-all {
+  display: block;
+  padding: 2px 2px 4px 2px;
+}
+
+/* line 781, ../../../../compass/themes/x2engine/css/layout.scss */
+#notif-view-all a, #notif-clear-all a {
+  color: black;
+}
+
+/* line 785, ../../../../compass/themes/x2engine/css/layout.scss */
+#notif-view-all a:hover, #notif-clear-all a:hover {
+  text-decoration: underline;
+}
+
+/* line 789, ../../../../compass/themes/x2engine/css/layout.scss */
+.notif {
+  overflow: hidden !important;
+}
+
+/**
+ * ------------------------ Body --------------------------
+ */
+/* line 797, ../../../../compass/themes/x2engine/css/layout.scss */
+#page-body {
+  /* clear:both; */
+  /* background:#efeee8; */
+  /* overflow:auto; */
+  padding-bottom: 50px;
+  /* margin:0; */
+  /* padding-top:10px; */
+  /* background:#fff; */
+  /* border:none; */
+}
+
+/* #sidebar-left-container {float:left;width:150px;background:none;} */
+/* line 810, ../../../../compass/themes/x2engine/css/layout.scss */
+#actions {
+  margin-bottom: 0;
+}
+
+/* line 814, ../../../../compass/themes/x2engine/css/layout.scss */
+.sidebar-left {
+  background: white;
+  width: 150px;
+  /* margin-left:20px; */
+  clear: left;
+  margin: 5px 5px 0 5px;
+  /* padding:0 0 10px 0; */
+  /* position:relative; */
+  border: 1px solid #c5c5c5;
+  /* border-width:0 1px 1px 0;
+  margin-right: -1px; */
+  float: left;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+}
+/* line 827, ../../../../compass/themes/x2engine/css/layout.scss */
+.sidebar-left > .left-widget-collapsed + div {
+  background: #ddd;
+}
+/* line 830, ../../../../compass/themes/x2engine/css/layout.scss */
+.sidebar-left * {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Left sidebar */
+/*
+Remove border radius from left widget title bars which are preceded by a collapsed left widget
+*/
+/* .sidebar-left {
+	margin-top:5px;
+	border-radius:			4px;
+	-moz-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
+	-webkit-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
+	box-shadow:				0 1px 6px rgba(0,0,0,0.5);
+} */
+/* line 855, ../../../../compass/themes/x2engine/css/layout.scss */
+#main-menu-bar a, #main-menu-bar span, #main-menu-bar img {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* line 865, ../../../../compass/themes/x2engine/css/layout.scss */
+.sidebar-left #recent-items a, #sidebar-left #top-contacts-list a, #main-menu-bar #notif-box *, #search-bar span, #search-bar-box {
+  -webkit-touch-callout: text;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* line 874, ../../../../compass/themes/x2engine/css/layout.scss */
+#top-contacts-list > li > a {
+  width: auto;
+  padding: 9px 8px;
+}
+
+/**
+ * ----------------------- Portlets -----------------------
+ */
+/* line 883, ../../../../compass/themes/x2engine/css/layout.scss */
+.portlet {
+  padding: 0;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+}
+
+/* line 888, ../../../../compass/themes/x2engine/css/layout.scss */
+.portlet-decoration {
+  padding: 1px;
+  /* background:#eee; */
+  text-align: center;
+  /* border-width:1px 0 1px 0; */
+  /* 	-moz-box-shadow:		inset 0 1px 0 0 #fff;
+  	-webkit-box-shadow:		inset 0 1px 0 0 #fff;
+  	box-shadow:				inset 0 1px 0 0 #fff; */
+  -webkit-border-radius: 4px 4px 0 0;
+  -moz-border-radius: 4px 4px 0 0;
+  -ms-border-radius: 4px 4px 0 0;
+  -o-border-radius: 4px 4px 0 0;
+  border-radius: 4px 4px 0 0;
+  background: #ddd;
+  /*background:-moz-linear-gradient(top,	#e0e0e0 0%, #ccc 100%);
+  background:-webkit-linear-gradient(top,	#e0e0e0 0%, #ccc 100%);
+  background:-o-linear-gradient(top,		#e0e0e0 0%, #ccc 100%);
+  background:-ms-linear-gradient(top,		#e0e0e0 0%, #ccc 100%);
+  background:linear-gradient(to bottom,	#e0e0e0 0%, #ccc 100%);*/
+}
+
+/* .portlet:first-child .portlet-decoration {
+ 	border-radius:			4px 4px 0 0;
+} */
+/* line 909, ../../../../compass/themes/x2engine/css/layout.scss */
+.portlet-title {
+  display: block;
+  font-size: 8pt;
+  font-weight: bold;
+  line-height: 18px;
+  color: #333;
+  cursor: default;
+}
+
+/* line 918, ../../../../compass/themes/x2engine/css/layout.scss */
+.portlet-content {
+  padding: 5px 10px;
+  overflow: auto;
+  background: #fff;
+  clear: both;
+}
+
+/* line 925, ../../../../compass/themes/x2engine/css/layout.scss */
+#sidebar-right .portlet-content, .sidebar-left > div:last-child > .portlet-content {
+  -webkit-border-radius: 0 0 4px 4px;
+  -moz-border-radius: 0 0 4px 4px;
+  -ms-border-radius: 0 0 4px 4px;
+  -o-border-radius: 0 0 4px 4px;
+  border-radius: 0 0 4px 4px;
+}
+
+/* .portlet:last-child .portlet-content {
+	border-radius:			0 0 4px 4px;
+} */
+/* line 934, ../../../../compass/themes/x2engine/css/layout.scss */
+.portlet-content ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+/* line 940, ../../../../compass/themes/x2engine/css/layout.scss */
+.portlet-content li {
+  margin: 0 0 5px 0;
+}
+
+/* line 945, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown .gear-img-container {
+  float: left;
+  opacity: 0.3;
+  cursor: pointer;
+  font-size: 120%;
+  margin: 0px;
+  padding-top: 5px;
+  padding-right: 0px;
+  padding-left: 1px;
+}
+/* line 956, ../../../../compass/themes/x2engine/css/layout.scss */
+.dropdown .gear-img-container:hover {
+  opacity: 1.0;
+}
+
+/* line 962, ../../../../compass/themes/x2engine/css/layout.scss */
+#flexible-content {
+  /* margin-right:20px; */
+  min-height: 0;
+  overflow: hidden;
+  zoom: 1;
+  /*margin-top: 5px;*/
+}
+
+/* line 970, ../../../../compass/themes/x2engine/css/layout.scss */
+#sidebar-left-widget-box {
+  /*margin-top: 5px;*/
+}
+
+/*#sidebar-left-widget-box {
+    float: left;
+    margin-left: -60px;
+}*/
+/* line 979, ../../../../compass/themes/x2engine/css/layout.scss */
+#sidebar-right {
+  margin: 5px 5px 10px 5px;
+  z-index: 100;
+  width: 22%;
+  float: right;
+  padding-bottom: 10px;
+  /* 	border-left:1px solid #999;
+  	border-width:0 1px; */
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+}
+/* line 988, ../../../../compass/themes/x2engine/css/layout.scss */
+#sidebar-right .portlet {
+  margin-bottom: 5px;
+  border: 1px solid #c5c5c5;
+}
+
+/* line 994, ../../../../compass/themes/x2engine/css/layout.scss */
+#content-container {
+  overflow: hidden;
+  zoom: 1;
+}
+
+/* line 999, ../../../../compass/themes/x2engine/css/layout.scss */
+#content {
+  margin: 5px 5px 0px 5px;
+  padding-bottom: 3px;
+  /* padding:0 0 0 10px; */
+  border: 1px solid #c5c5c5;
+  /* border-top:none; */
+  overflow: hidden;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  background: #fff;
+}
+
+/* line 1010, ../../../../compass/themes/x2engine/css/layout.scss */
+#content-container-inner {
+  border: 1px solid #c5c5c5;
+  border-top: none;
+  -webkit-border-radius: 0 0 4px 4px;
+  -moz-border-radius: 0 0 4px 4px;
+  -ms-border-radius: 0 0 4px 4px;
+  -o-border-radius: 0 0 4px 4px;
+  border-radius: 0 0 4px 4px;
+}
+
+/* line 1016, ../../../../compass/themes/x2engine/css/layout.scss */
+#content-fullscreen {
+  position: relative;
+  padding: 0 10px 20px 10px;
+  margin: 5px 10px 10px 0;
+}
+
+/**
+ * --------------------- Page Title -----------------------
+ */
+/* line 1027, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title, div.toolbar, div.section-title {
+  -webkit-border-radius: 4px 4px 0 0;
+  -moz-border-radius: 4px 4px 0 0;
+  -ms-border-radius: 4px 4px 0 0;
+  -o-border-radius: 4px 4px 0 0;
+  border-radius: 4px 4px 0 0;
+  background-repeat: no-repeat;
+  background-position: 0 -5px;
+  padding: 0 5px;
+  border-bottom: 1px solid #aaa;
+  /* border-top:1px solid #eee; */
+  /* background-color:#aaa; */
+  background: #c0c0c0;
+  /*background:-moz-linear-gradient(top,				#c0c0c0 0%,		#b0b0b0 100%);
+  background:-webkit-gradient(0% 0%,0% 100%,	from(	#c0c0c0 ), to(	#b0b0b0	));
+  background:-webkit-linear-gradient(top,				#c0c0c0 0%,		#b0b0b0 100%);
+  background:-o-linear-gradient(top,					#c0c0c0 0%,		#b0b0b0 100%);
+  background:-ms-linear-gradient(top,					#c0c0c0 0%,		#b0b0b0 100%);
+  background:linear-gradient(to bottom,				#c0c0c0 0%,		#b0b0b0 100%);*/
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#c0c0c0', endColorstr='#b0b0b0',GradientType=0 );
+  /* margin-bottom:5px; */
+  /* overflow:auto; */
+  line-height: 34px;
+  height: 35px;
+  /* 	-moz-box-shadow:		inset 0 1px 0 0 rgba(255,255,255,0.4);
+  	-webkit-box-shadow:		inset 0 1px 0 0 rgba(255,255,255,0.4);
+  	box-shadow:				inset 0 1px 0 0 rgba(255,255,255,0.4); */
+  /* 	-moz-box-shadow:	0 1px 6px 0 rgba(0,0,0,0.5);
+  	-webkit-box-shadow:	0 1px 6px 0 rgba(0,0,0,0.5);
+  	box-shadow:			0 1px 6px 0 rgba(0,0,0,0.5); */
+}
+
+/* line 1056, ../../../../compass/themes/x2engine/css/layout.scss */
+table.fc-header {
+  -webkit-border-radius: 4px 4px 0 0;
+  -moz-border-radius: 4px 4px 0 0;
+  -ms-border-radius: 4px 4px 0 0;
+  -o-border-radius: 4px 4px 0 0;
+  border-radius: 4px 4px 0 0;
+  background-repeat: no-repeat;
+  background-position: 0 -5px;
+  padding: 0 5px;
+  border-bottom: 1px solid #aaa;
+  /* border-top:1px solid #eee; */
+  /* background-color:#aaa; */
+  background: #c0c0c0;
+  /*background:-moz-linear-gradient(top,				#c0c0c0 0%,		#b0b0b0 100%);
+  background:-webkit-gradient(0% 0%,0% 100%,	from(	#c0c0c0 ), to(	#b0b0b0	));
+  background:-webkit-linear-gradient(top,				#c0c0c0 0%,		#b0b0b0 100%);
+  background:-o-linear-gradient(top,					#c0c0c0 0%,		#b0b0b0 100%);
+  background:-ms-linear-gradient(top,					#c0c0c0 0%,		#b0b0b0 100%);
+  background:linear-gradient(to bottom,				#c0c0c0 0%,		#b0b0b0 100%);*/
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#c0c0c0', endColorstr='#b0b0b0',GradientType=0 );
+  /* margin-bottom:5px; */
+  /* overflow:auto; */
+  line-height: 34px;
+  height: 35px;
+  /* 	-moz-box-shadow:		inset 0 1px 0 0 rgba(255,255,255,0.4);
+  	-webkit-box-shadow:		inset 0 1px 0 0 rgba(255,255,255,0.4);
+  	box-shadow:				inset 0 1px 0 0 rgba(255,255,255,0.4); */
+  /* 	-moz-box-shadow:	0 1px 6px 0 rgba(0,0,0,0.5);
+  	-webkit-box-shadow:	0 1px 6px 0 rgba(0,0,0,0.5);
+  	box-shadow:			0 1px 6px 0 rgba(0,0,0,0.5); */
+}
+
+/* line 1084, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title, div.toolbar {
+  background: #CECECE;
+  border-bottom: none;
+}
+/* line 1087, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title h2, div.toolbar h2 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: auto;
+  padding-right: 14px;
+}
+
+/* line 1096, ../../../../compass/themes/x2engine/css/layout.scss */
+.grid-view div.page-title, .grid-view div.toolbar {
+  border-bottom: 1px solid #666;
+}
+/* line 1098, ../../../../compass/themes/x2engine/css/layout.scss */
+.grid-view div.page-title h2, .grid-view div.toolbar h2 {
+  overflow: visible;
+}
+
+/* used when elements with page-title class are not at the top of the content box */
+/* line 1106, ../../../../compass/themes/x2engine/css/layout.scss */
+div.rounded-top {
+  -webkit-border-radius: 3px 3px 0 0;
+  -moz-border-radius: 3px 3px 0 0;
+  -ms-border-radius: 3px 3px 0 0;
+  -o-border-radius: 3px 3px 0 0;
+  border-radius: 3px 3px 0 0;
+}
+/* line 1109, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon h2, div.icon.toolbar h2 {
+  display: inline-block;
+  padding-left: 49px;
+  margin-left: 0;
+  background-repeat: no-repeat;
+  background-position: -1px -5px;
+}
+
+/* line 1118, ../../../../compass/themes/x2engine/css/layout.scss */
+table.fc-header .fc-header-title h2 {
+  display: inline-block;
+  padding-left: 49px;
+  margin-left: 0;
+  background-repeat: no-repeat;
+  background-position: -1px -5px;
+}
+
+/* line 1126, ../../../../compass/themes/x2engine/css/layout.scss */
+.page-title span.icon, .toolbar span.icon {
+  height: 29px;
+  width: 44px;
+  display: inline-block;
+  padding: 0;
+  background-position: -1px -7px;
+}
+
+/* line 1135, ../../../../compass/themes/x2engine/css/layout.scss */
+span.icon.contacts {
+  background-image: url("../images/contacts.png");
+}
+
+/* line 1141, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.emailInboxes h2, div.icon.emailInboxes.toolbar h2 {
+  background-image: url("../images/eventIcons/email_from.png");
+}
+/* line 1144, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.profile h2, div.icon.profile.toolbar h2 {
+  background-image: url("../images/user_icon.png");
+}
+/* line 1147, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.actions h2, div.icon.actions.toolbar h2 {
+  background-image: url("../images/actions.png");
+}
+/* line 1150, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.contacts h2, div.icon.contacts.toolbar h2 {
+  background-image: url("../images/contacts.png");
+}
+/* line 1153, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.accounts h2, div.icon.accounts.toolbar h2 {
+  background-image: url("../images/accounts.png");
+}
+/* line 1156, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.products h2, div.icon.products.toolbar h2 {
+  background-image: url("../images/products.png");
+}
+/* line 1159, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.quotes h2, div.icon.quotes.toolbar h2 {
+  background-image: url("../images/quotes.png");
+}
+/* line 1162, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.opportunities h2, div.icon.opportunities.toolbar h2 {
+  background-image: url("../images/opportunities.png");
+}
+/* line 1165, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.services h2, div.icon.services.toolbar h2 {
+  background-image: url("../images/services.png");
+}
+/* line 1168, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.workflow h2, div.icon.workflow.toolbar h2 {
+  background-image: url("../images/workflow.png");
+}
+/* line 1171, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.marketing h2, div.icon.marketing.toolbar h2 {
+  background-image: url("../images/marketing.png");
+}
+/* line 1174, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.x2flow h2, div.icon.x2flow.toolbar h2 {
+  background-image: url("../images/x2flow.png");
+  background-position: left center;
+}
+/* line 1178, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.x2Leads h2, div.icon.x2Leads.toolbar h2 {
+  background-image: url("../images/x2Leads.png");
+}
+/* line 1181, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.docs h2, div.icon.docs.toolbar h2 {
+  background-image: url("../images/docs.png");
+}
+/* line 1184, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.groups h2, div.icon.groups.toolbar h2 {
+  background-image: url("../images/groups.png");
+}
+/* line 1187, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.media h2, div.icon.media.toolbar h2 {
+  background-image: url("../images/media.png");
+  background-position-y: -6px;
+  background-position-x: -4px;
+}
+/* line 1192, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.users h2, div.icon.users.toolbar h2 {
+  background-image: url("../images/groups.png");
+}
+/* line 1195, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.charts h2, div.icon.charts.toolbar h2 {
+  background-image: url("../images/charts.png");
+}
+
+/* line 1200, ../../../../compass/themes/x2engine/css/layout.scss */
+table.fc-header .fc-header-title h2 {
+  background-image: url("../images/calendar.png");
+}
+
+/* line 1204, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title.icon.activity-feed h2, div.icon.activity-feed.toolbar h2 {
+  background-image: url("../images/Activity.png");
+  background-position: top 2px left 6px;
+  background-size: 32px;
+}
+
+/*table.fc-header.icon.calendar h2 {background-image:url('../images/calendar.png');}*/
+/* line 1212, ../../../../compass/themes/x2engine/css/layout.scss */
+td.fc-header-left h2 {
+  padding-left: 45px;
+}
+
+/* div.page-title.icon.charts {
+	background-image:url('../images/charts.png');
+}
+div.page-title.icon.docs {
+	background-image:url('../images/docs.png');
+}
+div.page-title.icon.groups {
+	background-image:url('../images/groups.png');
+}
+div.page-title.icon.marketing {
+	background-image:url('../images/marketing.png');
+}
+div.page-title.icon.media {
+	background-image:url('../images/media.png');
+}
+div.page-title.icon.opportunities {
+	background-image:url('../images/opportunities.png');
+}
+div.page-title.icon.products {
+	background-image:url('../images/products.png');
+}
+div.page-title.icon.quotes {
+	background-image:url('../images/quotes.png');
+}
+div.page-title.icon.services {
+	background-image:url('../images/services.png');
+}
+div.page-title.icon.workflow {
+	background-image:url('../images/workflow.png');
+} */
+/* html.lt-ie9 div.page-title {border:1px solid #ccc;} */
+/* line 1249, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title-placeholder {
+  height: 36px;
+  clear: both;
+}
+/* line 1253, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title-fixed-outer {
+  width: 100%;
+  height: 0;
+  position: fixed;
+  z-index: 500;
+  top: 32px;
+  left: 0;
+  -webkit-transform: translateZ(0);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding-left: 151px;
+}
+
+/* line 1268, ../../../../compass/themes/x2engine/css/layout.scss */
+.no-borders div.page-title-fixed-outer {
+  padding-right: 36px;
+}
+
+/* line 1273, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title-fixed-inner {
+  height: 0;
+  padding-right: 22%;
+  padding-left: 11px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+/* line 1281, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title-fixed-outer {
+  padding-right: 9px;
+}
+/* line 1282, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title-fixed-outer div.page-title, div.page-title-fixed-outer div.toolbar {
+  margin-left: 5px;
+  margin-right: 6px;
+  width: auto;
+  border: 1px solid #D1D1D1;
+  border-top: none;
+  -webkit-border-radius: 0 0 4px 4px;
+  -moz-border-radius: 0 0 4px 4px;
+  -ms-border-radius: 0 0 4px 4px;
+  -o-border-radius: 0 0 4px 4px;
+  border-radius: 0 0 4px 4px;
+}
+
+/*
+duplicated css for browsers which don't support media queries
+*/
+/* line 1299, ../../../../compass/themes/x2engine/css/layout.scss */
+body.no-widgets #content-container {
+  padding-right: 0;
+  margin-right: 0;
+}
+/* line 1303, ../../../../compass/themes/x2engine/css/layout.scss */
+body.no-widgets #sidebar-right {
+  display: none;
+}
+
+/* line 1310, ../../../../compass/themes/x2engine/css/layout.scss */
+.no-widgets div.page-title-fixed-outer div.page-title, .no-widgets div.page-title-fixed-outer div.toolbar {
+  margin-right: 0px;
+}
+/* line 1313, ../../../../compass/themes/x2engine/css/layout.scss */
+.no-widgets div.page-title-fixed-inner {
+  padding-right: 0 !important;
+}
+/* line 1317, ../../../../compass/themes/x2engine/css/layout.scss */
+.no-widgets .x2-gridview-fixed-top-bar-inner {
+  padding-right: 0 !important;
+}
+/* line 1321, ../../../../compass/themes/x2engine/css/layout.scss */
+.no-widgets div.page-title-fixed-outer {
+  padding-right: 5px;
+}
+/* line 1324, ../../../../compass/themes/x2engine/css/layout.scss */
+.no-widgets div.page-title-fixed-inner {
+  padding-right: 0 !important;
+}
+/* line 1328, ../../../../compass/themes/x2engine/css/layout.scss */
+.no-widgets .x2-gridview-fixed-top-bar-inner {
+  padding-right: 0 !important;
+}
+/* line 1331, ../../../../compass/themes/x2engine/css/layout.scss */
+.no-widgets div.page-title-fixed-outer {
+  padding-right: 5px;
+}
+
+@media (max-width: 1040px) {
+  /* line 1338, ../../../../compass/themes/x2engine/css/layout.scss */
+  div.page-title-fixed-outer div.page-title, div.page-title-fixed-outer div.toolbar {
+    margin-right: 0px;
+  }
+  /* line 1341, ../../../../compass/themes/x2engine/css/layout.scss */
+  div.page-title-fixed-inner {
+    padding-right: 0 !important;
+  }
+
+  /* line 1345, ../../../../compass/themes/x2engine/css/layout.scss */
+  .x2-gridview-fixed-top-bar-inner {
+    padding-right: 0 !important;
+  }
+
+  /* line 1348, ../../../../compass/themes/x2engine/css/layout.scss */
+  div.page-title-fixed-outer {
+    padding-right: 5px;
+  }
+
+  /* line 1351, ../../../../compass/themes/x2engine/css/layout.scss */
+  #content-container {
+    padding-right: 0;
+    margin-right: 0;
+  }
+
+  /* line 1355, ../../../../compass/themes/x2engine/css/layout.scss */
+  #sidebar-right {
+    display: none;
+  }
+
+  /* line 1358, ../../../../compass/themes/x2engine/css/layout.scss */
+  div.page-title-fixed-inner, .x2-gridview-fixed-top-bar-inner {
+    padding-right: 0 !important;
+  }
+
+  /* line 1361, ../../../../compass/themes/x2engine/css/layout.scss */
+  div.page-title-fixed-outer {
+    padding-right: 5px;
+  }
+}
+/* line 1366, ../../../../compass/themes/x2engine/css/layout.scss */
+.half-width div.page-title-fixed-outer div.page-title, .half-width div.page-title-fixed-outer div.toolbar {
+  margin-right: 35%;
+}
+
+/* line 1370, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title h2, div.toolbar h2, table.fc-header h2 {
+  display: inline;
+  font-weight: bold;
+  color: #333;
+  margin: 0 10px;
+  font-size: 18px;
+}
+
+/***********************************************************************
+* calendar overrides 
+***********************************************************************/
+/* line 1382, ../../../../compass/themes/x2engine/css/layout.scss */
+.fc-content .ui-widget-header {
+  background: none;
+}
+
+/* line 1387, ../../../../compass/themes/x2engine/css/layout.scss */
+table.fc-header td.fc-header-right {
+  padding-right: 5px;
+}
+/* line 1390, ../../../../compass/themes/x2engine/css/layout.scss */
+table.fc-header .fc-button {
+  margin: 3px 0 0 0;
+  height: 24px;
+  line-height: 25px;
+}
+/* line 1395, ../../../../compass/themes/x2engine/css/layout.scss */
+table.fc-header .fc-header-space {
+  padding-left: 5px;
+}
+
+/* line 1400, ../../../../compass/themes/x2engine/css/layout.scss */
+.fc-button-prev {
+  -webkit-border-radius: 4px 0 0 4px;
+  -moz-border-radius: 4px 0 0 4px;
+  -ms-border-radius: 4px 0 0 4px;
+  -o-border-radius: 4px 0 0 4px;
+  border-radius: 4px 0 0 4px;
+  border-right: none;
+  margin-right: 0px;
+}
+
+/* line 1406, ../../../../compass/themes/x2engine/css/layout.scss */
+.fc-button-next {
+  -webkit-border-radius: 0px 4px 4px 0px;
+  -moz-border-radius: 0px 4px 4px 0px;
+  -ms-border-radius: 0px 4px 4px 0px;
+  -o-border-radius: 0px 4px 4px 0px;
+  border-radius: 0px 4px 4px 0px;
+}
+
+/* line 1412, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title h2 .no-bold, div.toolbar h2 .no-bold {
+  /* font-weight:normal; */
+  color: #666;
+}
+/* line 1416, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .summary, div.toolbar .summary {
+  /* color:#eee; */
+  margin-right: 2px;
+}
+/* line 1420, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .title-bar, div.toolbar .title-bar {
+  float: right;
+  color: #555;
+  display: inline-block;
+  vertical-align: middle;
+}
+/* line 1425, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .title-bar a, div.toolbar .title-bar a {
+  text-decoration: none;
+  cursor: pointer;
+}
+/* line 1430, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .summary a, div.toolbar .summary a, div.page-title .x2-hint, div.toolbar .x2-hint {
+  text-decoration: none;
+  cursor: pointer;
+}
+/* line 1434, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .title-bar a:hover, div.toolbar .title-bar a:hover, div.page-title .summary a:hover, div.toolbar .summary a:hover, div.page-title .x2-hint:hover, div.toolbar .x2-hint:hover {
+  color: #0070FF;
+  text-shadow: none;
+}
+/* line 1439, ../../../../compass/themes/x2engine/css/layout.scss */
+div.form .x2-hint:hover {
+  color: #0070FF;
+  text-shadow: none;
+}
+/* line 1444, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .title-bar .x2-button, div.toolbar .title-bar .x2-button {
+  color: #000;
+  margin-top: 4px;
+}
+/* line 1447, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .title-bar .x2-button:hover, div.toolbar .title-bar .x2-button:hover {
+  color: #000;
+  text-decoration: none;
+}
+/* line 1452, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title div.form select, div.toolbar div.form select {
+  /*border:none;*/
+}
+/* line 1455, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button-group, div.toolbar .x2-button-group {
+  display: inline-block;
+  /*margin:0 5px 0 0;*/
+  margin: 0;
+}
+/* line 1460, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title > .x2-button, div.toolbar > .x2-button {
+  vertical-align: middle;
+  margin: 5px 5px 0 0;
+  padding: 0 5px;
+}
+
+/* div.page-title .x2-button {padding:1px 15px;border:1px solid #888;margin:3px 0 0 5px;-webkit-box-shadow:none;-moz-box-shadow:none;box-shadow:none;} */
+/* div.page-title .form .x2-button{border: 1px solid #999} */
+/* line 1471, ../../../../compass/themes/x2engine/css/layout.scss */
+.responsive-menu-items > .x2-button {
+  vertical-align: middle;
+  margin: 5px 5px 0 0;
+  padding: 0 5px;
+}
+
+/* line 1477, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button-group .x2-button, div.toolbar .x2-button-group .x2-button {
+  margin: 1px 0px 0 0;
+}
+
+/* line 1482, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-button.icon span {
+  width: 26px;
+}
+/* line 1485, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-button.icon.edit span {
+  background: url(../images/icons/Edit.png) center center no-repeat;
+}
+
+/* line 1490, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-edit-icon {
+  background: url(../images/icons/Edit.png) center center no-repeat;
+}
+
+/* line 1498, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button.icon.edit2 span, div.toolbar .x2-button.icon.edit2 span {
+  background: url(../images/icons/Edit2.png) center center no-repeat;
+  background-size: contain;
+}
+/* line 1502, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button.icon.sync span, div.toolbar .x2-button.icon.sync span {
+  background: url(../images/icons/Sync.png) center center no-repeat;
+}
+/* line 1505, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button.icon.copy span, div.toolbar .x2-button.icon.copy span {
+  background: url(../images/icons/Copy.png) center center no-repeat;
+}
+/* line 1508, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button.icon.email, div.toolbar .x2-button.icon.email {
+  width: 36px;
+  margin-top: 2px !important;
+}
+/* line 1509, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button.icon.email img, div.toolbar .x2-button.icon.email img {
+  max-width: 36px !important;
+}
+/* line 1516, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button.search-button span, div.toolbar .x2-button.search-button span {
+  background: url(../images/icons/search-button.png) 5px center no-repeat;
+}
+/* line 1525, ../../../../compass/themes/x2engine/css/layout.scss */
+div.title-bar .x2-button.column-selector-link span {
+  background: url(../images/icons/columns-button.png) center center no-repeat;
+}
+/* line 1529, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button.column-selector-link span, div.toolbar .x2-button.column-selector-link span {
+  background: url(../images/icons/columns-button.png) center center no-repeat;
+}
+/* line 1532, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button.auto-resize-button span, div.toolbar .x2-button.auto-resize-button span {
+  background: url(../images/icons/resize.png) center center no-repeat;
+}
+/* line 1535, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button.right, div.toolbar .x2-button.right {
+  display: block;
+  vertical-align: top;
+  margin: 3px 5px 0 0;
+}
+/* line 1540, ../../../../compass/themes/x2engine/css/layout.scss */
+div.page-title .x2-button.left, div.toolbar .x2-button.left {
+  display: block;
+  vertical-align: top;
+  margin: 5px 5px 0 0;
+}
+/* line 1546, ../../../../compass/themes/x2engine/css/layout.scss */
+div.grid-top-bar .x2-button span, div.page-title .x2-button span, div.toolbar .x2-button span {
+  display: block;
+  height: 24px;
+  width: 24px;
+}
+
+/*div.page-title .x2-button.icon.email span {background:url(../images/icons/email-button.png) left center no-repeat;}*/
+/* line 1555, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-button.icon span {
+  display: block;
+  height: 24px;
+  width: 24px;
+}
+
+/* line 1561, ../../../../compass/themes/x2engine/css/layout.scss */
+.icon.email {
+  height: 29px;
+  width: 35px;
+  margin-top: 3px !important;
+}
+/* line 1565, ../../../../compass/themes/x2engine/css/layout.scss */
+.icon.email span {
+  height: 29px !important;
+  width: 35px !important;
+  margin-top: 0px;
+  background-size: cover !important;
+}
+
+/**
+ * ------------ Fullscreen (no widgets) Rules -------------
+ */
+/* line 1577, ../../../../compass/themes/x2engine/css/layout.scss */
+#content-fullscreen div.page-title, #content-fullscreen div.toolbar {
+  margin-bottom: 5px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #666;
+}
+
+/* line 1583, ../../../../compass/themes/x2engine/css/layout.scss */
+#footer {
+  position: relative;
+  margin-top: -85px;
+  min-height: 75px;
+  clear: both;
+  text-align: center;
+  padding: 5px 10px;
+  color: #333;
+  font-size: 10px;
+  clear: both;
+  background: #efeee8;
+  /* background: rgba(255,255,255,0.5); */
+}
+/* line 1595, ../../../../compass/themes/x2engine/css/layout.scss */
+#footer.defaultBg {
+  border-top: 1px solid #ccc;
+  color: #999;
+  background: #efeee8;
+  background: #efeee8;
+  /* Old browsers */
+  background: -moz-linear-gradient(top, #f7f7f7 0%, #efeee8 100%);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f7f7f7), color-stop(100%, #efeee8));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #f7f7f7 0%, #efeee8 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #f7f7f7 0%, #efeee8 100%);
+  /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #f7f7f7 0%, #efeee8 100%);
+  /* IE10+ */
+  background: linear-gradient(to bottom, #f7f7f7 0%, #efeee8 100%);
+  /* W3C */
+}
+/* line 1614, ../../../../compass/themes/x2engine/css/layout.scss */
+#footer a {
+  color: #175CA3;
+}
+/* line 1616, ../../../../compass/themes/x2engine/css/layout.scss */
+#footer a:hover {
+  color: #8dbff2;
+}
+
+/* line 1622, ../../../../compass/themes/x2engine/css/layout.scss */
+#powered-by-x2engine {
+  margin: 5px 0 0 0;
+}
+
+/* line 1626, ../../../../compass/themes/x2engine/css/layout.scss */
+#login-page #footer {
+  color: #333;
+}
+
+/* line 1630, ../../../../compass/themes/x2engine/css/layout.scss */
+#footer .hr {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  clear: both;
+  float: none;
+  width: 100%;
+  height: 0px;
+  margin: 0 0 1em;
+}
+
+/* line 1640, ../../../../compass/themes/x2engine/css/layout.scss */
+#page-fader {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+/* line 1647, ../../../../compass/themes/x2engine/css/layout.scss */
+#page-fader span {
+  background: url(../images/contrast-icon.png) center center no-repeat;
+  height: 24px;
+  width: 24px;
+  display: block;
+}
+
+/* line 1655, ../../../../compass/themes/x2engine/css/layout.scss */
+#response-time {
+  margin: 0 0 5px 0;
+  /* position:absolute;bottom:5px;left:10px; */
+}
+
+/* line 1660, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-hint {
+  color: #06C;
+  cursor: default;
+}
+
+/* line 1665, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-hint-asterisk {
+  line-height: 0;
+  font-size: 20px;
+  position: relative;
+  top: 7px;
+}
+
+/* for layout sections positioned outside of the layout tray */
+/* line 1674, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-layout-island {
+  border: 1px solid #c5c5c5;
+  background-color: white;
+  -webkit-border-radius: 4px 4px 4px 4px;
+  -moz-border-radius: 4px 4px 4px 4px;
+  -ms-border-radius: 4px 4px 4px 4px;
+  -o-border-radius: 4px 4px 4px 4px;
+  border-radius: 4px 4px 4px 4px;
+}
+/* line 1678, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-layout-island.x2-layout-island-merge-bottom {
+  border-bottom: none;
+  -webkit-border-radius: 4px 4px 0px 0px;
+  -moz-border-radius: 4px 4px 0px 0px;
+  -ms-border-radius: 4px 4px 0px 0px;
+  -o-border-radius: 4px 4px 0px 0px;
+  border-radius: 4px 4px 0px 0px;
+}
+/* line 1682, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-layout-island.x2-layout-island-merge-top {
+  border-top: none;
+  -webkit-border-radius: 0px 0px 4px 4px;
+  -moz-border-radius: 0px 0px 4px 4px;
+  -ms-border-radius: 0px 0px 4px 4px;
+  -o-border-radius: 0px 0px 4px 4px;
+  border-radius: 0px 0px 4px 4px;
+}
+/* line 1686, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-layout-island.x2-layout-island-merge-top-bottom {
+  border-top: none;
+  border-bottom: none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+}
+
+/***********************************************************************
+* webkit scroll bars 
+***********************************************************************/
+/* line 1697, ../../../../compass/themes/x2engine/css/layout.scss */
+::-webkit-scrollbar {
+  height: 10px;
+}
+/* line 1699, ../../../../compass/themes/x2engine/css/layout.scss */
+::-webkit-scrollbar:vertical {
+  width: 10px;
+}
+
+/* line 1704, ../../../../compass/themes/x2engine/css/layout.scss */
+::-webkit-scrollbar-track {
+  border-left: 1px solid #e6e6e6;
+}
+/* line 1705, ../../../../compass/themes/x2engine/css/layout.scss */
+::-webkit-scrollbar-track:horizontal {
+  border-top: 1px solid #e6e6e6;
+}
+
+/* line 1711, ../../../../compass/themes/x2engine/css/layout.scss */
+::-webkit-scrollbar-thumb {
+  background-color: #d8d8d8;
+}
+
+/* line 1715, ../../../../compass/themes/x2engine/css/layout.scss */
+.single-column-layout-content {
+  max-width: 950px;
+}
+/* line 1717, ../../../../compass/themes/x2engine/css/layout.scss */
+.single-column-layout-content .page-title-island {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+/* line 1723, ../../../../compass/themes/x2engine/css/layout.scss */
+.admin-form-container {
+  max-width: 630px;
+}
+
+/* line 1727, ../../../../compass/themes/x2engine/css/layout.scss */
+body.disable-mobile-layout {
+  min-width: 888px;
+}
+/* line 1729, ../../../../compass/themes/x2engine/css/layout.scss */
+body.disable-mobile-layout #header {
+  min-width: 888px;
+}
+/* line 1732, ../../../../compass/themes/x2engine/css/layout.scss */
+body.disable-mobile-layout.no-widgets .page-title-fixed-inner > div {
+  min-width: 716px;
+}
+/* line 1735, ../../../../compass/themes/x2engine/css/layout.scss */
+body.disable-mobile-layout .page-title.icon.profile > h2, body.disable-mobile-layout .icon.profile.toolbar > h2 {
+  float: left;
+}
+
+/***********************************************************************
+* iframes
+***********************************************************************/
+/* line 1744, ../../../../compass/themes/x2engine/css/layout.scss */
+#action-frame, #x2-view-email-dialog > iframe {
+  border: none;
+}
+
+/* line 1748, ../../../../compass/themes/x2engine/css/layout.scss */
+.only-in-edition {
+  opacity: 0.5;
+}
+
+/* line 1753, ../../../../compass/themes/x2engine/css/layout.scss */
+#content .page-title, #content .toolbar {
+  -webkit-border-radius: 3px 3px 0px 0px;
+  -moz-border-radius: 3px 3px 0px 0px;
+  -ms-border-radius: 3px 3px 0px 0px;
+  -o-border-radius: 3px 3px 0px 0px;
+  border-radius: 3px 3px 0px 0px;
+}
+/* line 1756, ../../../../compass/themes/x2engine/css/layout.scss */
+#content .page-title-fixed-inner > .page-title, #content .page-title-fixed-inner > .toolbar {
+  -webkit-border-radius: 0 0 3px 3px;
+  -moz-border-radius: 0 0 3px 3px;
+  -ms-border-radius: 0 0 3px 3px;
+  -o-border-radius: 0 0 3px 3px;
+  border-radius: 0 0 3px 3px;
+}
+/* line 1759, ../../../../compass/themes/x2engine/css/layout.scss */
+#content .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-top-bar-inner > .page-title, #content .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-top-bar-inner > .toolbar {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+}
+/* line 1762, ../../../../compass/themes/x2engine/css/layout.scss */
+#content .x2-gridview-fixed-top-bar-inner > .page-title, #content .x2-gridview-fixed-top-bar-inner > .toolbar {
+  -webkit-border-radius: 3px 3px 0px 0px;
+  -moz-border-radius: 3px 3px 0px 0px;
+  -ms-border-radius: 3px 3px 0px 0px;
+  -o-border-radius: 3px 3px 0px 0px;
+  border-radius: 3px 3px 0px 0px;
+}
+
+/* line 1767, ../../../../compass/themes/x2engine/css/layout.scss */
+.fix-y {
+  position: absolute;
+}
+
+/***********************************************************************
+* flashes 
+***********************************************************************/
+/* line 1775, ../../../../compass/themes/x2engine/css/layout.scss */
+.fixed-flashes-container {
+  position: fixed;
+  opacity: 0.9;
+  bottom: 10px;
+}
+
+/* line 1781, ../../../../compass/themes/x2engine/css/layout.scss */
+.flashes-container {
+  margin-left: 5px;
+  margin-top: 5px;
+  margin-right: 5px;
+}
+/* line 1785, ../../../../compass/themes/x2engine/css/layout.scss */
+.flashes-container > div {
+  margin-top: 5px;
+}
+/* line 1788, ../../../../compass/themes/x2engine/css/layout.scss */
+.flashes-container .flash-list-header {
+  margin-bottom: 4px;
+}
+/* line 1791, ../../../../compass/themes/x2engine/css/layout.scss */
+.flashes-container .x2-gridview-flashes-list {
+  clear: both;
+  margin-bottom: 5px;
+}
+
+/* line 1797, ../../../../compass/themes/x2engine/css/layout.scss */
+.flashes-container-close-button {
+  position: absolute;
+  right: 10px;
+}
+
+/* line 1803, ../../../../compass/themes/x2engine/css/layout.scss */
+.flashes-container .flash-list-left-arrow, .flashes-container .flash-list-down-arrow {
+  margin-left: 6px;
+  margin-top: 3px;
+}
+
+/* line 1809, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-flashes-list {
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* line 1814, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-flashes-list-no-style {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+/***********************************************************************
+* Class to remove backdrop
+***********************************************************************/
+/* line 1822, ../../../../compass/themes/x2engine/css/layout.scss */
+.no-backdrop {
+  background: none !important;
+}
+
+/***********************************************************************
+* grid layout 
+***********************************************************************/
+/* line 1831, ../../../../compass/themes/x2engine/css/layout.scss */
+.x2-col {
+  float: left;
+}
+
+/* line 27, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.toolbar {
+  height: 26px;
+}
+/* line 31, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.toolbar .x2-button {
+  float: right;
+  margin-left: 10px;
+}
+/* line 36, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.toolbar .x2-button.disabled-link {
+  opacity: 0.5;
+}
+/* line 41, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.toolbar #minimize-dashboard {
+  color: inherit;
+  position: relative;
+  top: 3px;
+  width: 15px;
+  margin: 0px 15px;
+  float: right;
+}
+/* line 51, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.toolbar #save-chart-message {
+  display: none;
+  float: right;
+  font-weight: bold;
+}
+/* line 56, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.toolbar #save-chart-message:hover {
+  background: inherit;
+}
+
+/* line 62, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.chart-dashboard {
+  padding-top: 5px;
+  display: block;
+  border-bottom: 1px solid #c5c5c5;
+}
+/* line 68, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.chart-dashboard .no-hidden-data-widgets-text {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+/* line 74, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.chart-dashboard #report-list {
+  display: none;
+}
+/* line 76, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.chart-dashboard #report-list a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+/* line 86, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.chart-dashboard .connected-sortable-data-container {
+  float: left;
+  width: 50%;
+  margin: 0px;
+  height: 100%;
+  padding-top: 1px;
+}
+/* line 94, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.chart-dashboard .page-title span, .chart-dashboard .toolbar span {
+  float: right;
+}
+/* line 98, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.chart-dashboard #dashboard-fullscreen-button {
+  display: inline;
+}
+/* line 104, ../../../../compass/themes/x2engine/css/components/dashboard.scss */
+.chart-dashboard .popup-dropdown-menu {
+  display: none;
+}

@@ -37,11 +37,11 @@
 include("protected/modules/bugReports/bugReportsConfig.php");
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('index')),
-	array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
-	array('label'=>Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName']))),
-	array('label'=>Yii::t('module','Update {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('module','Delete {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
+	array('label'=>Yii::t('module','{X} List',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('index')),
+	array('label'=>Yii::t('module','Create {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('create')),
+	array('label'=>Yii::t('module','View {X}',array('{X}'=>Modules::itemDisplayName()))),
+	array('label'=>Yii::t('module','Update {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>Yii::t('module','Delete {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
     array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
 
 ));
@@ -49,7 +49,7 @@ $this->actionMenu = $this->formatMenu(array(
 <div class="page-title">
     <h2>
     <?php 
-         echo Yii::t('module','View {X}',array('{X}'=>$moduleConfig['recordName'])); ?>: <?php 
+         echo Yii::t('module','View {X}',array('{X}'=>Modules::itemDisplayName())); ?>: <?php 
          echo $model->name; 
     ?>
     </h2>
@@ -63,6 +63,12 @@ $this->actionMenu = $this->formatMenu(array(
             'onclick' => 'toggleEmailForm(); return false;'
         )
     );
+    echo CHtml::link('<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/OK.png'.
+            '" style="height:18px;position:relative;top:3px;right:1px;"></img>','#',
+            array('id'=>'inline-edit-save','class'=>'x2-button icon right inline-edit-button','style'=>'display:none;'));
+    echo CHtml::link('<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/NOT_OK.png'.
+            '" style="height:18px;position:relative;top:3px;right:1px;"></img>','#',
+            array('id'=>'inline-edit-cancel','class'=>'x2-button icon right inline-edit-button','style'=>'display:none;'));
     ?>
 </div>
 <div id="main-column" class="half-width">

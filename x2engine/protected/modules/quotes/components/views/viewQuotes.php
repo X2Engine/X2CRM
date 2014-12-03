@@ -70,11 +70,16 @@ $deleteButton = $canDo['QuickDelete'] ? ' '. CHtml::ajaxLink(
 	),
 	array('id'=> "delete-quote-{$quote->id}", 'title'=>Yii::t('quotes', "Delete Quote"), 'live'=>false)
 ):'';
-$emailButton = (!in_array($modelName, array("X2Leads", "Opportunity"))) ? CHtml::link(
-    '['. Yii::t('products','Email') .']',
-    'javascript:void(0)',
-    array('id'=>"email-quote-{$quote->id}", 'onClick'=>"x2.inlineQuotes.sendEmail({$quote->id},".json_encode($quote->templateModel?$quote->templateModel->id:0).")")
-):'';
+$emailButton = 
+    CHtml::link(
+        '['. Yii::t('products','Email') .']',
+        'javascript:void(0)',
+        array(
+            'id'=>"email-quote-{$quote->id}", 
+            'onClick'=>"x2.inlineQuotes.sendEmail(
+                {$quote->id},".json_encode($quote->templateModel?$quote->templateModel->id:0).")"
+        )
+    );
 $printButton = CHtml::link(
     '['. Yii::t('quotes','Print') .']',
     'javascript:void(0)',
