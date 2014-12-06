@@ -5,7 +5,7 @@
   border-color: $colors[border] 
 }
 
-#my-email-inbox-set-up-instructions-container, #inbox-body-container {
+#my-email-inbox-set-up-instructions-container{
   background: $colors[content]
   border-color: $colors[border] 
 }
@@ -101,6 +101,14 @@
 #my-email-inbox-reconfigure-instructions-container {
   background: $colors[content]
   border-color: $colors[border]
+}
+
+.mailbox-controls {
+  background: $colors[content]
+}
+
+.email-sync-check-box-container .right-label{
+  color: $colors[text]
 }
 
 "; ?>

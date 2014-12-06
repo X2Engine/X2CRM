@@ -525,6 +525,12 @@ $timezones = array(
                                 $moduleLabel = 'Process';
                             } else if ($moduleLabel === 'X2Leads') {
                                 $moduleLabel = 'Leads';
+                            } else if ($moduleLabel === 'X2Activity') {
+                                $moduleLabel = 'Activity';
+                            } else if ($moduleLabel === 'BugReports') {
+                                $moduleLabel = 'Bug Reports';
+                            } else if ($moduleLabel === 'EmailInboxes') {
+                                $moduleLabel = 'Email Inboxes';
                             }
                             ?>
                             <div class="checkbox-grid-cell">

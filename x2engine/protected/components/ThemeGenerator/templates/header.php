@@ -40,6 +40,15 @@
 	color: $colors[text]
 }
 
+#notifs-grid .items td {
+	border-color: $colors[border]
+}
+
+#notifs-grid .unviewed td,
+#notifications .notif.unviewed {
+	background: $colors[light_content]
+}
+
 a#main-menu-nofif span {
 	color: #09f !important;
 }

@@ -34,7 +34,6 @@
  *****************************************************************************************/
 
 x2.ActivityFeed = (function () {
-
 function ActivityFeed (argsDict) {
     var that = this;
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;

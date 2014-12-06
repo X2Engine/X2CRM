@@ -4,9 +4,6 @@
 	background: $colors[content]
 }
 
-#stage-member-lists-container .items a {
-	 color: blue !important;
-}
 
 #per-stage-view-container-first{
 	background: $colors[content]
@@ -23,6 +20,41 @@
 
 #workflow-gridview {
 	background: none !important;
+}
+
+.stage-member-value {
+	color: $colors[text]
+}
+
+.workflow-stage-arrow {
+	display: none !important;
+}
+
+#stage-member-list-container-top-scrollbar-outer,
+.stage-list-title,
+#stage-member-lists-container .items .empty,
+#stage-member-lists-container .items .stage-member-container
+{
+	border-color: $colors[border]
+}
+
+#stage-member-lists-container .record-stage-change-pending,
+#stage-member-lists-container .record-stage-change-pending:hover {
+	background: $colors[lighter_content]
+}
+
+.funnel-stage-count {
+	color: #222 !important;
+}
+
+#workflowDetailsForm .details,
+#workflowDetailsForm td,
+#workflowDetailsForm th,
+#workflowDetailsForm textarea
+{
+	background: $colors[content]
+	color: $colors[text]
+	border-color: $colors[border]
 }
 
 "; ?>

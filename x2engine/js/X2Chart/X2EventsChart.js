@@ -52,6 +52,21 @@ function X2EventsChart (argsDict) {
 	var colors;
 	// color palette used for lines of feed chart
 	colors = [
+
+		// New colors
+		'#1F77B4',
+		'#FF7F0E',
+		'#D62728',
+		'#E377C2',
+		'#2CA02C',
+		'#8C564B',
+		'#7F7F7F',
+		'#17BECF',
+		'#BCBD22',
+		'#9467BD',
+		'#E6EFC2',
+
+		//old colors
 		'#7EB2E6', // pale blue
 		'#94E3DF', // pastel light blue
 		'#9BE081', // pastel green

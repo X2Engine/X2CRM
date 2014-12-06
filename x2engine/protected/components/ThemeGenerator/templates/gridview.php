@@ -16,6 +16,7 @@ th {
     color: $colors[text]
 }
 
+.grid-view .summary,
 .flush-grid-view .summary{
     color: $colors[text];
 }
@@ -87,12 +88,12 @@ ul.column-selector {
 
 .grid-view .active-indicator {
     background: $colors[highlight2]
-    border: $colors[none]
+    border: none !important;
 }
 
 .grid-view .inactive-indicator {
-    background: $colors[none]
-    border: $colors[none]
+    background: none !important;
+    border: none !important;
 }
 
 .x2-gridview #x2-gridview-page-title span.x2-hint {
@@ -112,6 +113,10 @@ ul.column-selector {
 }
 
 .grid-view table.items {
+    border-color: $colors[border]
+}
+
+.grid-view .page-title {
     border-color: $colors[border]
 }
 

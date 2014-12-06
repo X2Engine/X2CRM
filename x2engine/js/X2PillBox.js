@@ -132,7 +132,7 @@ PillBox.prototype._setUpPillBoxElements = function () {
     var that = this;
 
     this.element$.attr ({
-        'class': 'x2-pill-box',
+        'class': 'x2-pill-box ' + this.element$.attr ('class'),
         'title': this.translations.helpText
     });
 

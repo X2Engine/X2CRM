@@ -62,7 +62,7 @@ class TimerUtil {
     }
 
     public function read ($label='') {
-        AuxLib::debugLogR ($label . (round ($this->endTime - $this->startTime, 2)) . "\n");
+        /**/AuxLib::debugLogR ($label . (round ($this->endTime - $this->startTime, 2)) . "\n");
         return $this;
     }
 

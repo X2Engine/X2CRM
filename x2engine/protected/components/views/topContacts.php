@@ -77,9 +77,7 @@ foreach($topContacts as $contact) {
 	$link = '<strong>'.CHtml::encode($contact->firstName).' '.CHtml::encode($contact->lastName).'</strong><br />'.CHtml::encode($contact->phone);
 	echo CHtml::link($link,array('/contacts/contacts/view','id'=>$contact->id));
 	
-	echo CHtml::link(CHtml::image (
-        Yii::app()->theme->baseUrl.'/images/icons/Delete_Activity.png', '[x]'
-        ),'#',array(
+	echo CHtml::link(X2Html::fa('fa-times'),'#',array(
 		'class'=>'delete-link',
 		'onclick'=>"removeTopContact('".$contact->id."'); return false;" //."','".$viewId."'); return false;"
 	));

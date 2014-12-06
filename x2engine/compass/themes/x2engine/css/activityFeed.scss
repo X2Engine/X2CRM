@@ -247,9 +247,6 @@
         display: inline-block;
     }
 
-    .like-count {
-        padding-left: 3px;
-    }
 
     .important-link, .sticky-link {
         &.x2-hint {
@@ -257,33 +254,52 @@
         }
     }
 
-    .active-icon {
-        opacity: 0.5;
+
+    %icon {
+       margin-left: 10px;
+    }
+
+    %active-icon {
+        @extend %icon;
+        opacity: 0.6;
         cursor: pointer;
+        color: $nearBlack;
 
         &:hover {
-            opacity: 0.7;
+            opacity: 0.8;
         }
     }
 
-    .inactive-icon {
-        opacity: 0.9;
+    %inactive-icon {
+        @extend %icon;
+        opacity: 1.0;
         cursor: pointer;
 
         &:hover {
-            opacity: 1.0;
+            opacity: 0.9;
         }
     }
 
     .feed-comment-icon, .broadcast-icon, .like-icon, .sticky-icon, .feed-make-important-icon{
-        @extend .active-icon;
+        @extend %active-icon;
     }
 
     .unsticky-icon, .unlike-icon, .feed-make-unimportant-icon {
-        @extend .inactive-icon;
+        @extend %inactive-icon;
+    }
+    
+    .like-count {
+        @extend %active-icon;
+        opacity: 0.6;
+        padding-left: 3px;
+        color: $darkBlue;
+        margin-left: 0px;
     }
 
-
+    .unlike-button[style*="none"] + .like-count {
+        color: $nearBlack;
+    }    
+    
     #activity-feed-settings-button {
         cursor: pointer;
         float: right;

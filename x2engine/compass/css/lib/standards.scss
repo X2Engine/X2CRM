@@ -36,6 +36,7 @@
 @import "colors";
 
 
+
 $contrast: 15%;
 
 @mixin dark-border($color) {
@@ -81,12 +82,17 @@ $contrast: 15%;
 * CSS to extend when for elements that 
 * become opauqe on mouseover
 ***************************************/
-.opacity-hover {
-	opacity: 0.3;
+
+@mixin opacity-hover($default: 0.3, $hover: 1.0) {
+	opacity: $default;
 
 	&:hover {
-		opacity: 1.0;
-	}
+		opacity: $hover;
+	}	
+}
+
+.opacity-hover {
+	@include opacity-hover();
 }
 
 @mixin box-shadow($content) {
@@ -102,13 +108,23 @@ $contrast: 15%;
 	content: '';
 }
 
-@mixin fa($unicode) {
+@mixin fa($unicode, $placing: 'before') {
 	text-align: center;
 	text-decoration: none;
 	font-family: FontAwesome;
 
-	&:before {
-	    content: $unicode;        
+	@if $placing == 'before' {
+		&:before {
+		    content: $unicode;
+		    @content; 
+		}		
+	} 
+	@else {
+		&:after {
+		    content: $unicode;        
+		    @content;
+		}		
 	}
 
 }
+

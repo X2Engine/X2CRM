@@ -2030,6 +2030,9 @@ class UpdaterBehavior extends ResponseBehavior {
                     $that->handleSqlFailure ($script, $ran, $e->getMessage(), $backup, false);
                 };
         $scriptErr = function($errno, $errstr, $errfile, $errline, $errcontext) use(&$ran, &$script, $that, $backup) {
+            if (error_reporting () === 0) { // handle case of '@' error suppression
+                return false;
+            }
                     $unrecoverable = array(
                         E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING
                     );
@@ -2041,6 +2044,8 @@ class UpdaterBehavior extends ResponseBehavior {
         set_error_handler($scriptErr);
         set_exception_handler($scriptExc);
         sort($scripts);
+        // add in case this is a version before introduction of this constant
+        defined('YII_UNIT_TESTING') or define('YII_UNIT_TESTING',false);
         foreach($scripts as $script){
             $this->output(Yii::t('admin', 'Running migration script: {script}', array('{script}' => $script)));
             if (YII_DEBUG && YII_UNIT_TESTING) {

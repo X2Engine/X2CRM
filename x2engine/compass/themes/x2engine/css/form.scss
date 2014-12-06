@@ -303,10 +303,10 @@ div.form {
   span.required {
     color: red;
   }
-  div.error label, label.error, span.error {
+  div.error:not(.x2-pill-box) label, label.error, span.error {
     color: #C00;
   }
-  div.error {
+  div.error:not(.x2-pill-box) {
     input, textarea, select {
       background: #FEE;
       border-color: #C00;

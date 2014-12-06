@@ -1,2 +1,0 @@
-http://www.yiiframework.com/extension/datetimepicker/
-License: New BSD License

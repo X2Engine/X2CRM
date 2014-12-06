@@ -569,19 +569,16 @@
   width: 100%;
   height: 100%;
   z-index: -10;
-  /*background: #464646;*/
-  /*background: radial-gradient(#282828, #181818);*/
-  /*background: radial-gradient(#484848, #181818);*/
-  /*background: radial-gradient(#305079, #06090F);*/
+  background: #203758;
   background: radial-gradient(#233d5f, #06090f);
 }
-/* line 506, ../../../compass/themes/x2engine/css/login.scss */
+/* line 503, ../../../compass/themes/x2engine/css/login.scss */
 #body-tag .background .stripe-container {
   width: 650px;
   height: 100%;
   margin: auto;
 }
-/* line 512, ../../../compass/themes/x2engine/css/login.scss */
+/* line 509, ../../../compass/themes/x2engine/css/login.scss */
 #body-tag .background .stripe {
   /*background: #C7C7C7;*/
   background: white;
@@ -589,7 +586,7 @@
   width: 275px;
   height: 100%;
 }
-/* line 518, ../../../compass/themes/x2engine/css/login.scss */
+/* line 515, ../../../compass/themes/x2engine/css/login.scss */
 #body-tag .background .stripe.small {
   width: 8px;
   margin: 0px 8px;
@@ -598,7 +595,7 @@
 /*
 racing stripe
 */
-/* line 529, ../../../compass/themes/x2engine/css/login.scss */
+/* line 526, ../../../compass/themes/x2engine/css/login.scss */
 body {
   /*    background: url('../images/stripes_background.png') !important;
       background-position: center -550px !important;
@@ -606,7 +603,7 @@ body {
   */
 }
 
-/* line 536, ../../../compass/themes/x2engine/css/login.scss */
+/* line 533, ../../../compass/themes/x2engine/css/login.scss */
 #dark-theme-button {
   /*    position: absolute;
       bottom:10px;
@@ -618,16 +615,16 @@ body {
   text-decoration: none;
 }
 
-/* line 547, ../../../compass/themes/x2engine/css/login.scss */
+/* line 544, ../../../compass/themes/x2engine/css/login.scss */
 #body-tag a:hover {
   opacity: 0.85;
 }
 
-/* line 551, ../../../compass/themes/x2engine/css/login.scss */
+/* line 548, ../../../compass/themes/x2engine/css/login.scss */
 .row.theme-selection {
   margin-top: 5px;
 }
-/* line 553, ../../../compass/themes/x2engine/css/login.scss */
+/* line 550, ../../../compass/themes/x2engine/css/login.scss */
 .row.theme-selection span {
   background: red;
   float: left;
@@ -646,35 +643,35 @@ body {
   border-radius: 2px;
   cursor: pointer;
 }
-/* line 570, ../../../compass/themes/x2engine/css/login.scss */
+/* line 567, ../../../compass/themes/x2engine/css/login.scss */
 .row.theme-selection span.switch {
   background: none;
   float: right;
 }
-/* line 573, ../../../compass/themes/x2engine/css/login.scss */
+/* line 570, ../../../compass/themes/x2engine/css/login.scss */
 .row.theme-selection span.switch a {
   text-decoration: none;
   font-size: 20px;
 }
-/* line 578, ../../../compass/themes/x2engine/css/login.scss */
+/* line 575, ../../../compass/themes/x2engine/css/login.scss */
 .row.theme-selection span:hover {
   opacity: 0.9;
 }
 
-/* line 584, ../../../compass/themes/x2engine/css/login.scss */
+/* line 581, ../../../compass/themes/x2engine/css/login.scss */
 .x2-blue:hover {
   opacity: 0.95;
 }
 
 @media (max-width: 657px) {
-  /* line 589, ../../../compass/themes/x2engine/css/login.scss */
+  /* line 586, ../../../compass/themes/x2engine/css/login.scss */
   #login-box-outer {
     top: 0 !important;
     bottom: 0;
     height: 87%;
   }
 
-  /* line 594, ../../../compass/themes/x2engine/css/login.scss */
+  /* line 591, ../../../compass/themes/x2engine/css/login.scss */
   body {
     background-position: center -650px !important;
   }

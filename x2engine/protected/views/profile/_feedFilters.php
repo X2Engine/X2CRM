@@ -44,7 +44,8 @@ Yii::app()->clientScript->registerCss('feedFiltersCSs',"
     color: inherit;
     text-decoration: none;
     opacity: 0.5;
-    margin: 7px;
+    margin-right: 9px;
+    margin-top: 3px;
 }
 #feed-filters-button > span {
     display: block;

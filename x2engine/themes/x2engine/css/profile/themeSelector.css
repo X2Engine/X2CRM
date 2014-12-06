@@ -68,18 +68,20 @@
 /* line 25, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker {
   margin-top: 10px;
+  max-height: 231px;
+  overflow-y: scroll;
 }
-/* line 27, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 30, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container {
   padding: 2px;
   margin: 5px;
   display: inline-block;
   text-align: center;
   border-radius: 3px;
-  border: 1px solid transparent;
+  border: 1px solid rgba(0, 0, 0, 0);
   cursor: pointer;
 }
-/* line 36, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 39, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container-inner {
   padding: 10px;
   padding-top: 5px;
@@ -87,73 +89,73 @@
   text-align: center;
   border-radius: 3px;
 }
-/* line 44, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 47, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container:hover {
   border: 1px solid grey;
 }
-/* line 47, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 50, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container.active {
   border: 1px solid black;
 }
-/* line 50, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 53, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container #edit {
   float: right;
   opacity: 0;
 }
-/* line 54, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 57, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container:hover #edit {
   opacity: 1;
 }
-/* line 57, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 60, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container #name {
   float: left;
   display: inline-block;
   font-weight: bold;
   margin-bottom: 3px;
 }
-/* line 63, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 66, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container #uploadedBy {
   float: right;
   font-size: 90%;
 }
-/* line 68, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 71, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-color {
   width: 35px;
   height: 25px;
   display: inline-block;
 }
-/* line 72, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 75, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-color[name="highlight2"] {
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
 }
-/* line 76, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 79, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-color[name="background"] {
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
 }
-/* line 81, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 84, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .hidden {
   display: none;
 }
-/* line 84, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 87, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container-inner {
   background: white;
   color: black;
 }
-/* line 89, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 92, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container[name="Default"] .scheme-color[name="content"] {
   background: white;
 }
-/* line 92, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 95, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container[name="Default"] .scheme-color[name="highlight1"] {
   background: #c5c5c5;
 }
-/* line 95, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 98, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container[name="Default"] .scheme-color[name="highlight2"] {
   background: #01b701;
 }
-/* line 98, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
+/* line 101, ../../../../compass/themes/x2engine/css/profile/themeSelector.scss */
 #theme-picker .scheme-container[name="Default"] .scheme-color[name="link"] {
   background: #004baf;
 }

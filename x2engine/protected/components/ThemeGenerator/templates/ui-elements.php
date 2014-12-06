@@ -48,6 +48,10 @@ ul.open:after {
 	border-bottom-color: $colors[highlight1]
 }
 
+/*********************************
+* Multiselect 
+********************************/
+
 .ui-multiselect a {
 	color: blue !important;
 }
@@ -59,6 +63,7 @@ ul.open:after {
 .ui-multiselect-checkboxes li label.ui-state-hover {
 	background: $colors[lighter_content]
 	border-color: $colors[border]
+	color: $colors[text]
 }
 
 .ui-multiselect,
@@ -113,7 +118,7 @@ textarea.x2-textarea {
 	color: $colors[text]
 }
 
-input[type='text'],
+input[type='text']:not(.error),
 select,
 select option,
 .x2-select,
@@ -163,9 +168,6 @@ select:hover {
 	color: $colors[lighter_text]
 }
 
-// .ui-datepicker-calendar {
-// 	background: $colors[content]
-// }
 
 .x2-sortlist .ui-sortable li {
 	background: $colors[content]
@@ -197,7 +199,7 @@ select:hover {
 .x2-button.x2-disabled-button,
 .x2-button.disabled-link {
 	background: $colors[dark_highlight1]
-	box-shadow: $colors[none]
+	box-shadow: none !important;
 }
 
 .x2-small-button.x2-disabled-button,
@@ -229,7 +231,7 @@ select:hover {
 }
 
 .qtip-content h2 {
-	color: $colors[inherit];
+	color: inherit !important;;
 }
 
 .delete-tag {
@@ -257,6 +259,33 @@ a.x2-icon-button span,
 
 .ui-dialog-titlebar-close {
 	color: $colors[smart_text]
+}
+
+.ui-autocomplete {
+	background: $colors[content]
+	color: $colors[text]
+	border-color: $colors[border]
+}
+
+.ui-autocomplete .ui-state-hover,
+.ui-autocomplete li:hover,
+.ui-autocomplete li:hover a {
+	background: $colors[lighter_content]
+	border-color: $colors[border]
+}
+
+input#upload {
+	border-color: $colors[border]
+	
+}
+
+textarea:not(.error) {
+	border-color: $colors[border]
+}
+
+
+.ui-sortable .handle {
+	border-color: $colors[border]
 }
 
 "; ?>

@@ -180,6 +180,7 @@ X2Forms.prototype.errorSummaryAppend = function (form$, errorMessages) {
 X2Forms.prototype.clearErrorMessages = function (form) {
     $(form).find ('.x2-forms-error-msg').remove ();
     $(form).find ('.error-summary-container').remove ();
+    $(form).find ('.errorSummary').remove ();
     $(form).find ('.error').removeClass ('error');
 };
 

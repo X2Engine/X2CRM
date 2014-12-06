@@ -524,7 +524,9 @@ curl_info:' . print_r(curl_getinfo($this->ch), true) . '
 			$this->_mergeCss();
 		}
 
-		parent::renderHead($output);
+        /* x2modstart */ 
+		//parent::renderHead($output);
+        /* x2modend */ 
 	}
 
 	public function renderBodyBegin(&$output) {

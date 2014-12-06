@@ -514,14 +514,20 @@ auxlib.getUnselected = function (elem) {
 };
 
 auxlib.pageLoading = function () {
-    var throbber$ = $('<div>', {
+    if (auxlib.throbber$)
+        auxlib.throbber$.remove ();
+    auxlib.throbber$ = $('<div>', {
         'class': 'x2-loading-icon load8 full-page-loader x2-loader',
     });
-    throbber$.append ($('<div>', {
+    auxlib.throbber$.append ($('<div>', {
         'class': 'loader'
     }));
-    $('#content').append (throbber$);
-    return throbber$;
+    $('#content').append (auxlib.throbber$);
+    return auxlib.throbber$;
+};
+
+auxlib.pageLoadingStop = function () {
+    auxlib.throbber$.remove ();
 };
 
 auxlib.containerLoading = function (elem$) {
@@ -583,6 +589,13 @@ auxlib.emptyStringArray = function (size, fill) {
 
 auxlib.length = function(obj) {
     return auxlib.keys(obj).length;
+}
+
+auxlib.fa = function(icon, htmlOptions) {
+    if (typeof htmlOptions === 'undefined'){
+        htmlOptions = {}
+    }
+    return $('<i class="fa"></i>', htmlOptions).addClass(icon);
 }
 
 $(function () {

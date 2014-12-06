@@ -3,7 +3,7 @@
 
 ul.main-menu > li > a, ul.main-menu > li > span {
     color: $colors[smart_text]
-    text-shadow: $colors[none];
+    text-shadow: none !important;;
 }
 
 div.page-title, 
@@ -22,16 +22,13 @@ div.page-title h2 {
 }
 
 div.page-title {
-    background-color: $colors[highlight1];
+    background-color: $colors[highlight1]
+    border-color: $colors[border]
 }
 
 #page-container {
-    /* background-color: $colors[background] */
+    background: $colors[background] 
     background: radial-gradient( $colors[background_hex], $colors[darker_background_hex] ) !important;
-}
-
-#feed-box {
-    background-color: {activityFeedWidgetBgColor};
 }
 
 
@@ -50,11 +47,11 @@ a:hover {
 
 
 .portlet-title, .widget-title {
-    color: $colors[smart_text];
+    color: $colors[smart_text]
 }
 
 .portlet-content {
-    background: $colors[content];
+    background: $colors[content]
     color: $colors[text];
 }
 
@@ -80,7 +77,7 @@ a:hover {
 }
 
 span.tag {
-    background: $colors[none]
+    background: none !important;
     border-color: $colors[lighter_content]
 }
 
@@ -89,9 +86,6 @@ span.tag {
     color: $colors[text]
 }
 
-.error-summary-container {
-    background: $colors[content]
-}
 
 .scheme-container.active {
     border-color: $colors[text]

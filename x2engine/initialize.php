@@ -405,7 +405,7 @@ function addValidationError($attr, $error) {
  * @param type $module
  */
 function installModule($module, $respond = True) {
-    if ($module === 'x2Activity')
+    if ($module === 'x2Activity' || $module === 'charts')
         return;
     global $dbo;
     $moduleName = installer_t($module);

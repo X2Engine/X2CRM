@@ -56,16 +56,34 @@ class X2ClientScript extends NLSClientScript {
 
     public function getDefaultPackages () {
         if (!isset ($this->_defaultPackages)) {
-            $this->_defaultPackages = array (
-                'auxlib' => array(
-                    'baseUrl' => Yii::app()->request->baseUrl,
-                    'js' => array(
-                        'js/auxlib.js',
-                    ),
-                ),
+            $this->_defaultPackages = array_merge (
+                $this->getIEDefaultPackages(), 
+                array(
+                    'auxlib' => array(
+                        'baseUrl' => Yii::app()->request->baseUrl,
+                        'js' => array(
+                            'js/auxlib.js'
+                        )
+                    )
+                )
             );
         }
         return $this->_defaultPackages;
+    }
+
+    public function getIEDefaultPackages() {
+        if (AuxLib::getIEVer() >= 9)  {
+            return array();
+        }
+        return array(
+            'aight' => array(
+                'baseUrl' => Yii::app()->request->baseUrl,
+                'js' => array(
+                    'js/lib/aight/aight.js',
+                ),
+                'depends' => array('jquery'),
+            ),
+        );     
     }
 
     /**
@@ -279,6 +297,76 @@ class X2ClientScript extends NLSClientScript {
 					$jsFiles[$url]=$value;
 			}
 			$this->scriptFiles[$this->coreScriptPosition]=$jsFiles;
+		}
+	}
+
+	/**
+	 * Inserts the scripts in the head section.
+	 * @param string $output the output to be inserted with scripts.
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+	 */
+	public function renderHead(&$output)
+	{
+        parent::renderHead ($output);
+		$html='';
+		foreach($this->metaTags as $meta)
+			$html.=CHtml::metaTag($meta['content'],null,null,$meta)."\n";
+		foreach($this->linkTags as $link)
+			$html.=CHtml::linkTag(null,null,null,null,$link)."\n";
+		foreach($this->cssFiles as $url=>$media)
+			$html.=CHtml::cssFile($url,$media)."\n";
+        /* x2modstart */ 
+        if (Auxlib::getIEVer () < 10) { 
+            // merge inline css
+            $mergedCss = array ();
+            $mediaType = null;
+            foreach ($this->css as $css) {
+                if (preg_match ('/@import/', $css[0])) {
+                    $html .= CHtml::css($css[0],$css[1])."\n";
+                    continue;
+                }
+                if ($mediaType === null) { 
+                    $mediaType = $css[1];
+                }
+                if ($css[1] === $mediaType) {
+                    if (!isset ($mergedCss[$mediaType])) {
+                        $mergedCss[$mediaType] = '';
+                    }
+                    $mergedCss[$mediaType] .= "\n".$css[0];
+                }
+            }
+            foreach ($mergedCss as $type => $css) {
+                $html.=CHtml::css($css,$type)."\n";
+            }
+        } else {
+            foreach($this->css as $css)
+                $html.=CHtml::css($css[0],$css[1])."\n";
+        }
+        /* x2modend */ 
+		if($this->enableJavaScript)
+		{
+			if(isset($this->scriptFiles[self::POS_HEAD]))
+			{
+				foreach($this->scriptFiles[self::POS_HEAD] as $scriptFileValueUrl=>$scriptFileValue)
+				{
+					if(is_array($scriptFileValue))
+						$html.=CHtml::scriptFile($scriptFileValueUrl,$scriptFileValue)."\n";
+					else
+						$html.=CHtml::scriptFile($scriptFileValueUrl)."\n";
+				}
+			}
+			if(isset($this->scripts[self::POS_HEAD]))
+				$html.=$this->renderScriptBatch($this->scripts[self::POS_HEAD]);
+		}
+		if($html!=='')
+		{
+			$count=0;
+			$output=preg_replace('/(<title\b[^>]*>|<\\/head\s*>)/is','<###head###>$1',$output,1,$count);
+			if($count)
+				$output=str_replace('<###head###>',$html,$output);
+			else
+				$output=$html.$output;
 		}
 	}
 
@@ -534,9 +622,12 @@ class X2ClientScript extends NLSClientScript {
         $admin = $this->admin;
         $isGuest = $this->isGuest;
 
+
         // jQuery and jQuery UI libraries
         $this->registerCoreScript('jquery')
            ->registerCoreScript('jquery.ui');
+
+       $this->registerPackages($this->getDefaultPackages());
 
         $cldScript = $this->getCurrencyConfigScript ();
 
@@ -545,7 +636,7 @@ class X2ClientScript extends NLSClientScript {
             "'".addslashes(Yii::app()->createUrl('/profile/saveMiscLayoutSetting'))."'"
                 ), 'passAuxLibVars'
         );
-
+        
         $this->registerX2ModelMappingsScript ();
         $this->registerX2Forms ();
         $this->registerX2QuickCreate ();
@@ -727,6 +818,5 @@ class X2ClientScript extends NLSClientScript {
             }) ();
         ", CClientScript::POS_HEAD);
     }
-
 
 }

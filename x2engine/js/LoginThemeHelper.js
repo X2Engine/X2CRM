@@ -28,9 +28,7 @@ x2.LoginThemeHelper = (function(){
 		
 		themes.push( { name: 'theme', colors: this.currentThemeBG } );
 
-		console.log(themes)
 
-		console.debug(this);
 		if( !this.currentColor )
 			this.currentColor = defaultArgs.currentColor;
 
@@ -38,13 +36,12 @@ x2.LoginThemeHelper = (function(){
 		this.form$ = $(this.formSelector);
 
 		for(var i in themes) {
-			this.appendTheme(themes[i]);
+            if (themes.hasOwnProperty (i)) this.appendTheme(themes[i]);
 		}
 
 		this.setUpClickBehavior();
 		var that = this;
-
-		var currentColorArr =  themes.filter( function(d) { return d.name == that.currentColor } );
+		var currentColorArr = themes.filter( function(d) { return d.name == that.currentColor } );
 		this.applyTheme( currentColorArr[0]);
 
 		this.setUpThemeSwitch();

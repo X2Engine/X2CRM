@@ -399,14 +399,68 @@ class X2Html extends CHtml {
         return $html;
     }
 
-    public static function fa($iconClass, $htmlOptions = array(), $content='') {
+    public static function fa($iconClass, $htmlOptions = array(), $content=' ') {
         if (!isset($htmlOptions['class'])) {
             $htmlOptions['class'] = '';
         }
         
         $htmlOptions['class'] .= " fa $iconClass";
-        return self::tag('span', $htmlOptions, $content);
+        return self::tag('i', $htmlOptions, $content);
     }
 
+    public static function emailFormButton() {
+        return CHtml::link(
+            '', 
+            '#',
+        array(
+            'class' => 'x2-button icon right email',
+            'title' => Yii::t('app', 'Open email form'),
+            'onclick' => 'toggleEmailForm(); return false;'
+        ));
+    }
+
+    public static function editRecordButton($model) {
+        return CHtml::link('', array(
+                'update', 
+                'id' => $model->id
+            ), array(
+                'class' => 'x2-button icon edit right',
+                'title' => Yii::t('app', "Edit")
+        )); 
+    }
+
+    public static function inlineEditButtons() {
+        $html = '';
+        $html .= CHtml::link( 
+            X2Html::fa('fa-check-circle fa-lg').Yii::t('app', 'Confirm'),
+            '#',
+             array(
+                'id'=>'inline-edit-save',
+                'class'=>'x2-button icon right inline-edit-button highlight',
+                'style'=>'display:none;',
+                'title'=> Yii::t('app', 'Confirm change to fields')
+            )
+        );
+
+        $html .= CHtml::link(
+            X2Html::fa('fa-times fa-lg').'  '.Yii::t('app', 'Cancel'),
+            '#',
+            array(
+                'id'=>'inline-edit-cancel',
+                'class'=>'x2-button icon right inline-edit-button',
+                'style'=>'display:none;',
+                'title'=> Yii::t('app', 'Cancel changes to fields')
+            )
+        );
+
+        return $html;
+    }
+
+
+
+
+    public static function addErrorCss(&$htmlOptions) {
+        return parent::addErrorCss ($htmlOptions);
+    }
 
 }

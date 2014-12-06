@@ -1,9 +1,8 @@
-<?php return "
+<?php return ""; $x="
 
 .seen-message-row td,
 .seen-message-row .from-cell,
-#my-email-inbox-set-up-instructions-container,
-#inbox-body-container {
+#my-email-inbox-set-up-instructions-container {
 	background: $colors[content]
 	border-color: $colors[border]
 }

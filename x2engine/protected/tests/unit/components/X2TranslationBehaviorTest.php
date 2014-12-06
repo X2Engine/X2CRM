@@ -116,7 +116,7 @@ class X2TranslationBehaviorTest extends X2TestCase {
 		$fl = $cmpb->fileList();
 		$t1 = time();
 		// Should not take super-long
-		$this->assertLessThan(5, $t1-$t0);
+		$this->assertLessThan(10, $t1-$t0);
 
 	}
 

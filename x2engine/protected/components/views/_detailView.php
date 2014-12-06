@@ -152,11 +152,11 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
         if ($section['collapsible']) {
             $htmlString .=
                     '<a href="javascript:void(0)" class="formSectionHide">
-                    <img src="' . Yii::app()->getBaseUrl() . '/themes/x2engine/images/icons/Collapse_Widget.png" alt="-">
+                    '.X2Html::fa('fa-caret-down').'
                 </a>';
             $htmlString .=
                     '<a href="javascript:void(0)" class="formSectionShow">
-                    <img src="' . Yii::app()->getBaseUrl() . '/themes/x2engine/images/icons/Expand_Inverted.png" alt="+">
+                    '.X2Html::fa('fa-caret-right').'
                 </a>';
         }
         if (!empty($section['title'])) {
@@ -289,17 +289,21 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
 }
 Yii::app()->clientScript->registerScript('inline-edit-js', "
     var editFlag = false;
+    var linkClick = false;
     var ratingFields = {};
     $('.model-attribute').on('click', 'a', function(event) {
-        event.stopPropagation();
+        linkClick = true;
     });
     $('.inline-edit').on('click', function() {
-        editFlag = true;
-        $('.inline-edit-button').show();
-        console.log($('#' + $(this).attr('id') + '-field').height());
-        $('#' + $(this).attr('id') + '-input').height($('#' + $(this).attr('id') + '-field').height());
-        $('#' + $(this).attr('id') + '-input').show();
-        $('#' + $(this).attr('id') + '-field').hide();
+        if(!linkClick){
+            editFlag = true;
+            $('.inline-edit-button').show();
+            $('#' + $(this).attr('id') + '-input').height($('#' + $(this).attr('id') + '-field').height());
+            $('#' + $(this).attr('id') + '-input').show();
+            $('#' + $(this).attr('id') + '-field').hide();
+            $('#' + $(this).attr('id') + '-input input').focus();
+        }
+        linkClick = false;
     });
     $('#inline-edit-cancel').on('click', function() {
         $('.inline-edit-button').hide();

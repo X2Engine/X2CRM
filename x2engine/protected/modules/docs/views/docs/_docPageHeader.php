@@ -60,9 +60,10 @@ $this->insertMenu($menuOptions, $model, $authParams);
 <?php
 if(!$model->isNewRecord){
     if($model->checkEditPermission() && $action != 'update'){
-        echo CHtml::link('<span></span>', array('/docs/docs/update', 'id' => $model->id), array('class' => 'x2-button x2-hint icon edit right', 'title' => Yii::t('docs', 'Edit')));
+        echo X2Html::editRecordButton($model);
+        // echo CHtml::link('<span></span>', array('/docs/docs/update', 'id' => $model->id), array('class' => 'x2-button x2-hint icon edit right', 'title' => Yii::t('docs', 'Edit')));
     }
-    echo CHtml::link('<span></span>', array('/docs/docs/create', 'duplicate' => $model->id), array('class' => 'x2-button icon copy right x2-hint', 'title' => Yii::t('docs', 'Make a copy')));
+    echo CHtml::link('<span></span>', array('/docs/docs/create', 'duplicate' => $model->id), array('class' => 'x2-button icon copy right', 'title' => Yii::t('docs', 'Make a copy')));
     echo "<br>\n";
 }
 ?>

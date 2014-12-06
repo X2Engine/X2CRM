@@ -128,8 +128,7 @@ InlineFunnel.prototype._addInteractionButtons = function () {
 
         if (this.workflowStatus.stages[i+1]['createDate'] !== null) { // if started
 
-            var revertButtonImage = $('<img>', {
-                src: this.revertButtonUrl,
+            var revertButtonImage = auxlib.fa('fa-undo fa-lg', {
                 title: this.translations['Revert Stage']
             });
             var revertButton = $('<a>', { href: '#' });
@@ -144,10 +143,10 @@ InlineFunnel.prototype._addInteractionButtons = function () {
                 }
             } else { // started but not completed
 
-                var completeButtonImage = $('<img>', {
-                    src: this.completeButtonUrl,
+                var completeButtonImage = auxlib.fa('fa-check-circle fa-lg', {
                     title: this.translations['Complete Stage']
                 });
+
                 if (previousCheck && editPermission) { // can complete
                     var completeButton = $('<a>', { href: '#' });
                     if (parseInt (this.stagesWhichRequireComments[i], 10)) {

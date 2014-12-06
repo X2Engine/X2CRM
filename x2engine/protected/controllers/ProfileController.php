@@ -284,8 +284,8 @@ class ProfileController extends x2base {
     }
 
     /**
-      Create a new theme record in the Media table, prevent duplicate filenames.
-      If theme cannot be saved, error message object is returned.
+     * Create a new theme record in the Media table, prevent duplicate filenames.
+     * If theme cannot be saved, error message object is returned.
      */
     public function actionCreateTheme($themeAttributes) {
         $themeAttributesArr = CJSON::decode($themeAttributes);
@@ -326,7 +326,7 @@ class ProfileController extends x2base {
                 }
             }
             if (isset($_POST['preferences'])) {
-                $model->theme = $_POST['preferences'];
+                $model->theme = ThemeGenerator::generatePalette($_POST['preferences']);
                 if ( $model->save() ) {
                     Yii::import('application.components.ThemeGenerator.LoginThemeHelper');
                     LoginThemeHelper::saveProfileTheme($_POST['preferences']['themeName']);
@@ -362,24 +362,29 @@ class ProfileController extends x2base {
                 'condition' => "((private = 1 AND uploadedBy = '" . Yii::app()->user->name . "') OR private = 0) AND associationType = 'theme'",
                 'order' => 'createDate DESC'
             ),
+            'pagination' => false
         ));
         $myBackgroundProvider = new CActiveDataProvider('Media', array(
             'criteria' => array(
                 'condition' => "(associationType = 'bg-private' AND associationId = '" . Yii::app()->user->getId() . "') OR associationType = 'bg'",
-                'order' => 'createDate DESC'
+                'order' => 'createDate DESC',
             ),
+            'pagination' => false
         ));
+
         $myLoginSoundProvider = new CActiveDataProvider('Media', array(
             'criteria' => array(
                 'condition' => "(associationType='loginSound' AND (private=0 OR private IS NULL OR uploadedBy='" . Yii::app()->user->getName() . "'))",
                 'order' => 'createDate DESC'
             ),
+            'pagination' => false
         ));
         $myNotificationSoundProvider = new CActiveDataProvider('Media', array(
             'criteria' => array(
                 'condition' => "(associationType='notificationSound' AND (private=0 OR private IS NULL OR uploadedBy='" . Yii::app()->user->getName() . "'))",
                 'order' => 'createDate DESC'
             ),
+            'pagination' => false
         ));
         $hiddenTags = json_decode(Yii::app()->params->profile->hiddenTags, true);
         if (empty($hiddenTags))

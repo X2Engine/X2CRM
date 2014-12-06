@@ -134,10 +134,10 @@ class SortableWidgets extends CJuiWidget {
                 $minimizeLink = CHtml::link(
                     $visible ? 
                         CHtml::tag('span',
-                            array('class' => 'fa fa-caret-down collapse-widget'), '') : 
+                            array('class' => 'fa fa-caret-down collapse-widget'), ' ') : 
 
                         CHtml::tag('span',
-                            array('class' => 'fa fa-caret-left expand-widget'), '')
+                            array('class' => 'fa fa-caret-left expand-widget'), ' ')
 
                     , '#', array('class' => 'portlet-minimize-button')
                     ).' '.CHtml::link(

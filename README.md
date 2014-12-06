@@ -1,69 +1,68 @@
-# X2Engine 4.3 #
-10/9/2014
+# X2Engine 5.0 #
+12/5/2014
 
-New in 4.3 (see [CHANGELOG](CHANGELOG.md) for full history):
+New in 5.0 (see [CHANGELOG](CHANGELOG.md) for full history):
 
 * **Highlights**
-  * New calendar profile widget
-  * The clock widget now allows you to choose from analog, digital, and digital 24-hour
-  * Improvement to role access editor _(Professional Edition)_:
-    * New user interface enables more fine-grained control over role-based permissions
-  * Profile widget improvements:
-    * New website viewer widget
-    * Leads module grid widget
-    * Can now create grid widgets for custom modules
-    * Can now clone, rename, and delete profile widgets
-    * Persistent grid widget filters
-    * Quick Contact widget now provides appropriate input fields for all required fields
-  * Grid view improvements (Contacts module only):
-    * Can now select all records on all pages
-    * Perform updates on thousands of records at a time
-  * X2Flow improvements _(Professional Edition)_:
-    * Improved X2Flow Remote API Call Action supports custom request headers 
-    * New "Has Tags" flow condition
-  * Calendar improvements:
-    * New weekly agenda view
-    * New customizable event subtype and status dropdowns
-    * Can now customize event color dropdown
-  * Importer improvements:
-    * Added preset import maps to transfer records from other systems
-    * Action descriptions can now be imported/exported
-    * Actions associations will now be verified to ensure the type is known to X2 and that the associated record exists
-    * Added a loading throbber to indicate activity
-    * Added a timeout warning when max_execution_time is set to 30 seconds or less
-  * Static pages can now be created from existing Docs instead of only a new Doc
-  * New feature to validate email credentials from the 'Manage Apps' page
-  * Improved contact lists grid view
-* General changlog/developer notes
-  * Updated calendar widget to be hidden and shown according to persistent settings
-  * Fixed bug preventing tags from being added to leads
-  * Fixed inline process widget in Opportunities module
-  * Custom assignment fields now produce links in grid views
-  * Importer Bugfixes
-    * Action.description will now be automatically mapped
-    * Fixed bug when uploading import maps
-    * Added better handling of empty rows
-  * Fixed purification issue with insertableAttributes
-  * Patched file upload filter bypass vulnerability
-  * Fixed missing link to modify Doc permissions when logged in as admin
-  * Fixed issue that caused phone number links to be prepended international dialing codes unconditionally
-  * Updated the web lead form to search for duplicate contacts on all custom Contact email fields
-  * Fixed issue preventing Automatic Updates settings form from being saved
-  * Fixed issue which caused process funnel record counts to be incorrect
-  * Fixed bug in importer preventing action descriptions from being imported
-  * Improved error reporting and handling on media upload tool
-  * Improved currency validation and fixed consistency issues when changing a products currency
-  * Fixed error reporting when attempting to upgrade without a key
-  * _(Platinum Edition)_ Updated Fingerprint index to display a human-readable timezone string
-  * Default permissions will now be created when importing a module
-  * Fixed Account link type fields for Contacts and Opportunities created on the Quick Create page
-  * Fixed links in 'My Actions' widget
-  * Fixed bug in Google Calendar Sync which prevented calendar and action history from updating
-    after publishing events or actions
-  * Fixed bug in importer preventing equal valued fields from being set
-* Tracked Bug Fixes:  
-  * [1401](http://x2software.com/index.php/bugReports/1401): Undefined index: tags 
-  * [1492](http://x2software.com/index.php/bugReports/1492): User Report  
+  * New in _Platinum Edition_
+    * Advanced Security Tools
+      * Ban, whitelist, or blacklist IP addresses
+      * View a log of user logins and failed login attempts
+      * Lock out IPs or users after a certain number of failed login attempts
+  * New in _Professional Edition_
+    * Integrated Email Client
+      * Manage inbound and outbound emails through private and/or shared email inboxes
+      * Automatically or manually Log emails to the action histories of associated records
+      * View contact information via hovering tooltip
+      * Create contacts and actions on the fly from email address links
+    * Reports 2.0
+      * New summation and rows & columns reports
+      * Drill down into summation report groups
+      * Improved report filtering, sorting, and column selection
+      * Create reports on almost any record type
+      * Report on attributes of related records
+    * Charts 2.0
+      * Customizable charting dashboard
+      * Generate gauge, bar, line, pie, and time series charts built from data in saved reports
+    * X2Packager
+      * Export and package modules, custom fields, flows, themes, and more
+      * Import packages to instantly inherit a pre-built X2Engine environment
+    * Record merge tool
+      * Interactively mass merge contact or account records from the grid view or duplicate checker
+    * X2Graph
+      * Explore and edit record relationships through an interactive relationships graph
+      * Visualize relationships across all records simultaneously
+      * Dynamically add relationship graph nodes and edges
+  * New in _Open Source Edition_
+    * User Interface Revamp
+      * Vastly improved app themability
+        * Prepackaged dark and light themes
+        * Simplified theme color selection
+        * Themable login screen
+        * Login animation
+    * X2Touch 2.0
+      * Refreshed user interface
+    * Inline Editing
+      * Edit record fields from the record view page
+    * Module Deep Rename
+      * All references to the module are now fully replaced with your custom name, including in actionable events, dropdown menus, and relationships.
+    * Importer 3.0
+      * Automatic field detection
+      * Configurable import batch size
+      * Greatly reduced import time
+    * Improved campaign click tracking
+      * Automatically generate email redirect links
+      * Track email clicks with the campaign chart and campaign progress grids
+    * Record aliasing
+      * Add multiple email addresses, phone numbers, and social media handles to Contact records
+      * Click-to-call/chat Skype aliases
+    * Twitter integration
+      * New contact Twitter feed widget allows you to view the Twitter feed for any of the contact's Twitter aliases
+    * Calendar event copying
+      * Duplicate a Calendar event from the event tooltip
+    * Duplicate checker now detects both contact and account duplicates
+    * Convert leads to opportunities or contacts
+* Tracked Bug Fixes:
   * [1553](http://x2software.com/index.php/bugReports/1553): "Do Not Email Page" does not save  
   * [1554](http://x2software.com/index.php/bugReports/1554): explode() expects parameter 2 to be string, array given  
   * [1555](http://x2software.com/index.php/bugReports/1555): Invalid argument supplied for foreach()  
@@ -73,16 +72,21 @@ New in 4.3 (see [CHANGELOG](CHANGELOG.md) for full history):
   * [1572](http://x2software.com/index.php/bugReports/1572): Unable to resolve the request "actions/viewAll/showActions/incomplete".  
   * [1574](http://x2software.com/index.php/bugReports/1574): Trying to get property of non-object  
   * [1578](http://x2software.com/index.php/bugReports/1578): Undefined variable: users  
-  * [1584](http://x2software.com/index.php/bugReports/1584): Undefined variable: newFields
-  * [1589](http://x2software.com/index.php/bugReports/1589): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '3' for key 'PRIMARY'
-  * [1596](http://x2software.com/index.php/bugReports/1596): Undefined variable: fmtNumber
+  * [1584](http://x2software.com/index.php/bugReports/1584): Undefined variable: newFields  
+  * [1589](http://x2software.com/index.php/bugReports/1589): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '3' for key 'PRIMARY'  
+  * [1596](http://x2software.com/index.php/bugReports/1596): Undefined variable: fmtNumber  
   * [1621](http://x2software.com/index.php/bugReports/1621): Non-static method Tags::normalizeTags() should not be called statically, assuming $this from incompatible context  
-  * [1648](http://x2software.com/index.php/bugReports/1648): Invalid address:  
+  * [1648](http://x2software.com/index.php/bugReports/1648): Invalid address:   
   * [1659](http://x2software.com/index.php/bugReports/1659): User Report  
   * [1660](http://x2software.com/index.php/bugReports/1660): Undefined index: first  
   * [1688](http://x2software.com/index.php/bugReports/1688): Undefined index: last  
   * [1697](http://x2software.com/index.php/bugReports/1697): htmlspecialchars(): Invalid multibyte sequence in argument  
   * [1706](http://x2software.com/index.php/bugReports/1706): Undefined variable: email  
+  * [1808](http://x2software.com/index.php/bugReports/1808): Undefined index: fingerprint  
+  * [1849](http://x2software.com/index.php/bugReports/1849): Undefined variable: l  
+  * [1856](http://x2software.com/index.php/bugReports/1856): Trying to get property of non-object  
+  * [1857](http://x2software.com/index.php/bugReports/1857): Undefined variable: imporMap  
+  * [1876](http://x2software.com/index.php/bugReports/1876): ContactsNameBehavior and its behaviors do not have a method or closure named "setName". 
 
 
 

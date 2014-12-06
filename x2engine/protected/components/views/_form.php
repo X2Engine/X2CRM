@@ -158,11 +158,11 @@ if (isset($layout)) {
             if ($section['collapsible']) {
                 $htmlString .=
                         '<a href="javascript:void(0)" class="formSectionHide">
-                    <img src="' . Yii::app()->getBaseUrl() . '/themes/x2engine/images/icons/Collapse_Widget.png" alt="-">
+                   '.X2Html::fa('fa-caret-down').'
                 </a>';
                 $htmlString .=
                         '<a href="javascript:void(0)" class="formSectionShow">
-                    <img src="' . Yii::app()->getBaseUrl() . '/themes/x2engine/images/icons/Expand_Inverted.png" alt="+">
+                    '.X2Html::fa('fa-caret-right').'
                 </a>';
             }
             if (!empty($section['title'])) {

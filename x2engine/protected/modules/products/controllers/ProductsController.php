@@ -152,11 +152,11 @@ class ProductsController extends x2base {
             $action->visibility = 1;
             $action->complete='Yes';
         
-            $action->actionDescription = "Update: <b>{$model->name}</b>
-            Type: <b>{$model->type}</b>
-            Price: <b>{$model->price}</b>
-            Currency: <b>{$model->currency}</b>
-            Inventory: <b>{$model->inventory}</b>";
+            $action->actionDescription = "Update: {$model->name}
+            Type: {$model->type}
+            Price: {$model->price}
+            Currency: {$model->currency}
+            Inventory: {$model->inventory}";
             $action->save();         
             parent::update($model,$temp,'0');
         }

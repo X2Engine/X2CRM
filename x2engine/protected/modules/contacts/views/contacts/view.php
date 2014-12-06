@@ -155,7 +155,7 @@ if(true) {//!IS_ANDROID && !IS_IPAD){
             );
         }
         echo CHtml::link(
-            '<span></span>', $this->createUrl('update', array('id' => $model->id)),
+            '', $this->createUrl('update', array('id' => $model->id)),
             array(
                 'class' => 'x2-button icon edit right',
                 'title' => Yii::t('app', 'Edit {module}', array(
@@ -164,21 +164,8 @@ if(true) {//!IS_ANDROID && !IS_IPAD){
             )
         );
     }
-    echo CHtml::link(
-        '<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/icons/email_button.png'.
-            '"></img>', '#',
-        array(
-            'class' => 'x2-button icon right email',
-            'title' => Yii::t('app', 'Open email form'),
-            'onclick' => 'toggleEmailForm(); return false;'
-        )
-    );
-    echo CHtml::link('<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/OK.png'.
-            '" style="height:18px;position:relative;top:3px;right:1px;"></img>','#',
-            array('id'=>'inline-edit-save','class'=>'x2-button icon right inline-edit-button','style'=>'display:none;'));
-    echo CHtml::link('<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/NOT_OK.png'.
-            '" style="height:18px;position:relative;top:3px;right:1px;"></img>','#',
-            array('id'=>'inline-edit-cancel','class'=>'x2-button icon right inline-edit-button','style'=>'display:none;'));
+    echo X2Html::emailFormButton();
+    echo X2Html::inlineEditButtons();
     ?>
 </div>
 <?php

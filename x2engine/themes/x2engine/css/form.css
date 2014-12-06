@@ -315,11 +315,11 @@ div.form span.required {
   color: red;
 }
 /* line 292, ../../../compass/themes/x2engine/css/form.scss */
-div.form div.error label, div.form label.error, div.form span.error {
+div.form div.error:not(.x2-pill-box) label, div.form label.error, div.form span.error {
   color: #C00;
 }
 /* line 296, ../../../compass/themes/x2engine/css/form.scss */
-div.form div.error input, div.form div.error textarea, div.form div.error select {
+div.form div.error:not(.x2-pill-box) input, div.form div.error:not(.x2-pill-box) textarea, div.form div.error:not(.x2-pill-box) select {
   background: #FEE;
   border-color: #C00;
 }

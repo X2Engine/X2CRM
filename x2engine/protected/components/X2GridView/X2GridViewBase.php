@@ -68,6 +68,11 @@ abstract class X2GridViewBase extends CGridView {
     public $gridViewJSClass = 'gvSettings';
     public $ajax = false;
     public $massActions = array ();
+
+    /**
+     * @var string $pagerClass
+     */
+    public $pagerClass = 'CLinkPager';
      
     /**
      * @var bool If true, the users will be able to select & perform mass action on all records 
@@ -364,10 +369,9 @@ abstract class X2GridViewBase extends CGridView {
         }
     }
 
-    public function init() {
-        $this->registerPackages ();
+    public function setPager () {
         $this->pager = array (
-            'class' => 'CLinkPager', 
+            'class' => $this->pagerClass, 
             'header' => '',
             'htmlOptions' => array (
                 'id' => $this->namespacePrefix . 'Pager'
@@ -379,6 +383,11 @@ abstract class X2GridViewBase extends CGridView {
             'firstPageLabel' => '<<',
             'lastPageLabel' => '>>',
         );
+    }
+
+    public function init() {
+        $this->registerPackages ();
+        $this->setPager ();
 
         $this->baseScriptUrl = Yii::app()->theme->getBaseUrl().'/css/gridview';
 

@@ -99,7 +99,7 @@ class EmailDeliveryBehavior extends CBehavior {
      * 
      * @param type $header
      */
-    public static function addressHeaderToArray($header) {
+    public static function addressHeaderToArray($header,$ignoreInvalidAddresses=false) {
         // First, tokenize all pieces of the header to avoid splitting inside of
         // recipient names:
         preg_match_all('/"(?:\\\\.|[^\\\\"])*"|[^,\s]+/', $header, $matches);
@@ -134,10 +134,12 @@ class EmailDeliveryBehavior extends CBehavior {
                 if(count($matches) == 3 && $emailValidator->validateValue($matches[2])){  
                     $headerArray[] = array($matches[1], $matches[2]);
                 }else{
-                    throw new CException(Yii::t('app', 'Invalid email address list.'));
+                    if (!$ignoreInvalidAddresses)
+                        throw new CException(Yii::t('app', 'Invalid email address list.'));
                 }
             }else{
-                throw new CException(Yii::t('app', 'Invalid email address list:'.$recipient));
+                if (!$ignoreInvalidAddresses)
+                    throw new CException(Yii::t('app', 'Invalid email address list:'.$recipient));
             }
         }
         return $headerArray;            

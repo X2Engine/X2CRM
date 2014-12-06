@@ -52,6 +52,7 @@ $borderGray: #B0B0B0;
     display: inline-block;
     height: 34px;
     & > .record-name {
+        box-sizing: border-box;
         margin-left: 0;
         display: inline-block;
         height: 25px;
@@ -64,17 +65,17 @@ $borderGray: #B0B0B0;
         margin-right: 0;
     }
     .view-aliases-button {
+        box-sizing: border-box;
         background: none;
         border: none;
-        height: 27px;
+        height: 25px;
         position: relative;
         margin-left: -4px;
-        top: -9px;
+        top: -8px;
         border: 1px solid transparent;
-        border-left: 1px solid transparent;
+        border-left: none;
         border-radius: 0 3px 3px 0;
         &:hover {
-            border-left: 1px solid $borderGray;
             background: rgb(218, 218, 218);
         }
     }

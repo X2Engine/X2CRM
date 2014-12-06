@@ -171,7 +171,7 @@ $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
 
             var successMsg = "<?php echo Yii::t('app', 'Authentication successful.'); ?>";
             var failureMsg = "<?php echo Yii::t('app', 'Failed to authenticate! Please check you credentials.'); ?>";
-            $('#verify-credentials-loading').addClass ('loading-icon');
+            auxlib.containerLoading($('#verify-credentials-loading'));
             // Hide previous result if any
             $('#verification-result').html('');
             $('#verification-result').removeClass();
@@ -187,7 +187,8 @@ $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
                     security: security
                 },
                 complete: function(xhr) {
-                    $('#verify-credentials-loading').removeClass ('loading-icon');
+                    $('#verify-credentials-loading').children().remove();
+                    // auxlib.pageLoadingStop();
                     if (xhr.responseText === '') {
                         $("#verification-result").addClass('flash-success');
                         $("#verification-result").removeClass('flash-error');
